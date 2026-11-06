@@ -5,7 +5,7 @@ import css from "./phase-first.module.css";
 type Report=ReturnType<typeof phaseFirstReport>;
 const score=(v:number|null)=>v===null?"N/A":v.toFixed(1)+" / 100";
 export default function PhaseFirstTable(){
- const [scope,setScope]=useState<PhaseFirstScope>("axsome"),[data,setData]=useState<Report|null>(null),[error,setError]=useState("");
+ const [scope,setScope]=useState<PhaseFirstScope>("sinovac"),[data,setData]=useState<Report|null>(null),[error,setError]=useState("");
  const [detail,setDetail]=useState<Report["trials"][number]|null>(null),[detailError,setDetailError]=useState("");
  const [search,setSearch]=useState(""),[phase,setPhase]=useState("ALL"),[page,setPage]=useState(0),[expanded,setExpanded]=useState<string|null>(null);
  useEffect(()=>{const c=new AbortController();setData(null);setError("");fetch('/api/phase-first?scope='+scope,{signal:c.signal}).then(async r=>{if(!r.ok)throw Error("Phase-first source data unavailable");return r.json();}).then(r=>{if(!c.signal.aborted)setData(r);}).catch(e=>{if(e.name!=="AbortError")setError(e.message);});return ()=>c.abort();},[scope]);
@@ -14,7 +14,7 @@ export default function PhaseFirstTable(){
  const rows=filtered.slice(page*20,page*20+20);
  return <section>
   <div className={css.controls}>
-   <label>Research universe <select value={scope} onChange={e=>{setScope(e.target.value as typeof scope);setPage(0);setPhase("ALL");setSearch("");setExpanded(null);}}><option value="axsome">Axsome · 28 census trials</option><option value="alkermes">Alkermes · all identified phases</option><option value="census">Existing 762-trial research census</option></select></label>
+   <label>Research universe <select value={scope} onChange={e=>{setScope(e.target.value as typeof scope);setPage(0);setPhase("ALL");setSearch("");setExpanded(null);}}><option value="sinovac">Sinovac · 27 census trials</option><option value="axsome">Axsome · 28 census trials</option><option value="alkermes">Alkermes · all identified phases</option><option value="census">Existing 762-trial research census</option></select></label>
    <label>Phase <select value={phase} onChange={e=>{setPhase(e.target.value);setPage(0);}}><option value="ALL">All verified phases</option>{Object.keys(data?.byPhase??{}).map(p=><option key={p}>{p}</option>)}</select></label>
    <label>Find trial <input value={search} onChange={e=>{setSearch(e.target.value);setPage(0);}} placeholder="Identifier, drug, indication or sponsor"/></label>
    <a href={'/api/phase-first?scope='+scope+'&format=csv'}>Download ratings CSV</a>
@@ -26,6 +26,7 @@ export default function PhaseFirstTable(){
     <p><strong>{data.scoredComponents}</strong> scored components</p><p><strong>{data.fdaPredictions}</strong> FDA predictions</p>
    </div>
    <p>{data.sourceScope} Registry association does not establish current ownership. Phase-entry dates are shown only when documented; study start is kept separate.</p>
+   {data.companyResearch?.eligibilityNote&&<p role="note"><strong>{data.companyResearch.eligibilityNote}</strong> {data.companyResearch.eligibilitySourceUrl&&<a href={data.companyResearch.eligibilitySourceUrl} target="_blank" rel="noopener noreferrer">Original eligibility evidence</a>}</p>}
    <p><strong>Evidence classifications:</strong> {Object.entries(data.evidenceCounts).map(([s,n])=>s+': '+n).join(' · ')}.</p>
    <p><strong>Coverage is not efficacy.</strong> Pending results and later-stage requirements are excluded from evidence completeness. A partial rating averages only scored eligible components; N/A is never replaced with zero.</p>
    {data.companyResearch&&<details><summary>Company research coverage and unresolved issues</summary><p>{data.companyResearch.documentsReviewed} source documents reviewed; {data.companyResearch.factsRecorded} linked facts. These include supporting facts already known elsewhere; they are not all newly recovered facts.</p><ul>{data.companyResearch.blockers.map((b,i)=><li key={i}>{"nctId" in b?b.nctId+": ":""}{b.issue}</li>)}</ul></details>}
@@ -53,6 +54,7 @@ export default function PhaseFirstTable(){
        <details><summary>Existing three-level survey hierarchy</summary>{data.surveyHierarchy.map(g=><div key={g.key}><h3>{g.key} · {g.name}</h3>{g.surveys.map(s=><details key={s.number}><summary>Survey {s.number} · {s.name}</summary><ul>{s.questions.map(q=><li key={q.id}>{q.label} ({q.id})</li>)}</ul></details>)}</div>)}<p>Existing survey responses and calibration are preserved; this applicability view does not create new survey grades.</p></details>
        <PhaseHistory trialId={t.trialId}/>
        <p><a href={'/api/phase-first/history?trialId='+t.trialId} target="_blank" rel="noopener noreferrer">Persisted phase/rating history</a> · <a href={'/raas-history?nctId='+t.trialId}>Existing RAAS history</a></p>
+       {t.pipeline.companyRestriction&&<p><strong>{t.pipeline.companyRestriction}</strong></p>}
        <p>{t.pipeline.restrictions}</p>
       </>}
      </div>

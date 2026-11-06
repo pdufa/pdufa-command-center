@@ -3,7 +3,7 @@ export const dynamic="force-dynamic";
 export const maxDuration=60;
 export async function GET(request:Request){
  const u=new URL(request.url),scope=u.searchParams.get("scope")??"alkermes";
- if(scope!=="alkermes"&&scope!=="axsome"&&scope!=="census")return Response.json({error:"Use scope=alkermes, scope=axsome or scope=census"},{status:400});
+ if(scope!=="alkermes"&&scope!=="axsome"&&scope!=="sinovac"&&scope!=="census")return Response.json({error:"Use scope=alkermes, scope=axsome, scope=sinovac or scope=census"},{status:400});
  const report=phaseFirstReport(scope);const id=u.searchParams.get("trialId");
  if(id&&!/^(NCT|ISRCTN)\d{8}$/.test(id))return Response.json({error:"Invalid exact trial identifier"},{status:400});
  const trials=id?report.trials.filter(t=>t.trialId===id):report.trials;

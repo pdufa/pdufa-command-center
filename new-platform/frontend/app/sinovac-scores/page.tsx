@@ -10,6 +10,7 @@ export default function SinovacScores(){
  return <main className="shell" style={{maxWidth:1330}}>
   <div className="topline">PDUFA COMMAND CENTER · SVA · COMPANY RESEARCH #2 · 2026-11-06</div>
   <h1>Sinovac — 27 Phase 3 trial records</h1>
+  <p><Link href="/phase-first">Open current phase-specific evidence, missing-data audit and rating history</Link>. The documentary scores below are the preserved earlier source snapshot.</p>
   <p><strong>All 27 exact-NCT trials have numeric documentary coverage scores.</strong> These measure the fraction of the existing 30 analytical data slots with recorded evidence or observations, <strong>not clinical efficacy, regulatory probability or trade suitability</strong>. A full five-factor clinical rating remains unavailable unless supported by five individually reviewed primary and benchmark sources.</p>
   <div className="panel" style={{border:"2px solid #d19a54"}}>
    <h2>Trading gate — excluded from actionable shortlist</h2>

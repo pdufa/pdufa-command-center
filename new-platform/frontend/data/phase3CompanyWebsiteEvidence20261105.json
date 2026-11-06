@@ -7311,6 +7311,105 @@
       "recoveryBatch": "SUPN_SEVEN_EXACT_PHASE3_20261106",
       "sourceLocator": "Exact study protocol 810P302 crosswalk: https://clinicaltrials.gov/study/NCT02618434",
       "evidenceScope": "HISTORICAL_SOURCE_FACT_NOT_PREDICTION"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentNumber": 13,
+      "evidence": "SAP plans overall power80%, serotype power93.3%, one-sided alpha0.025, control seroconversion90%, NI margin-10 percentage points;233/group inflated to360/group for dropout and failed blood collection.",
+      "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/64/NCT05850364/SAP_001.pdf",
+      "publicationDate": "2024-10-28",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "sourceLocator": "section4.3, pages7-8",
+      "reviewedAt": "2026-11-06",
+      "evidenceScope": "EXACT_TRIAL_SOURCE_FACT_NOT_SCORE_OR_PREDICTION"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentNumber": 14,
+      "evidence": "SAP section7.9 specifies LOCF for missing FAS immunogenicity values and no imputation of missing safety values. These are planned methods, not proof that missingness is harmless.",
+      "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/64/NCT05850364/SAP_001.pdf",
+      "publicationDate": "2024-10-28",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "sourceLocator": "section7.9, page20",
+      "reviewedAt": "2026-11-06",
+      "evidenceScope": "EXACT_TRIAL_SOURCE_FACT_NOT_SCORE_OR_PREDICTION"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentNumber": 15,
+      "evidence": "SAP section7.11 requires noninferiority for all three poliovirus serotypes jointly. It specifies no type-I adjustment under this intersection rule and allocates type-II error for overall80% power; no interim analysis planned.",
+      "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/64/NCT05850364/SAP_001.pdf",
+      "publicationDate": "2024-10-28",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "sourceLocator": "section7.11, page20",
+      "reviewedAt": "2026-11-06",
+      "evidenceScope": "EXACT_TRIAL_SOURCE_FACT_NOT_SCORE_OR_PREDICTION"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentNumber": 1,
+      "evidence": "Published C1/S1 seroconversion rates differ by serotype; overall prespecified NI is not adjudicated. This source fact is not a PASS/FAIL or a forecast.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42659917/",
+      "publicationDate": "2026-08-27",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "sourceLocator": "PubMed abstract, Results",
+      "reviewedAt": "2026-11-06",
+      "evidenceScope": "EXACT_TRIAL_SOURCE_FACT_NOT_SCORE_OR_PREDICTION"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentNumber": 3,
+      "evidence": "Reported7-day AR rates92.8% versus95.5%; no inferred serious-event or discontinuation rates.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42659917/",
+      "publicationDate": "2026-08-27",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "sourceLocator": "PubMed abstract, Results",
+      "reviewedAt": "2026-11-06",
+      "evidenceScope": "EXACT_TRIAL_SOURCE_FACT_NOT_SCORE_OR_PREDICTION"
+    },
+    {
+      "nctId": "NCT05850364",
+      "assessmentNumber": 29,
+      "evidence": "Exact NCT05850364 appears in the published trial report. Public results exist despite no registry results tables; no primary-endpoint verdict inferred.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42659917/",
+      "publicationDate": "2026-08-27",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "sourceLocator": "PubMed abstract, Methods; e-publication2026-08-27",
+      "reviewedAt": "2026-11-06",
+      "evidenceScope": "EXACT_TRIAL_SOURCE_FACT_NOT_SCORE_OR_PREDICTION"
+    },
+    {
+      "nctId": "NCT06049927",
+      "assessmentNumber": 13,
+      "evidence": "SAP plans overall80% power, one-sided alpha0.025 and joint SCR/GMT noninferiority across four strains; type-II error is allocated0.16 to SCR and0.04 to GMT. SCR margin-10 percentage points; GMT-ratio lower bound at least2/3.",
+      "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/27/NCT06049927/SAP_001.pdf",
+      "publicationDate": "2024-06-18",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "sourceLocator": "section4.3, pages7-8",
+      "reviewedAt": "2026-11-06",
+      "evidenceScope": "EXACT_TRIAL_SOURCE_FACT_NOT_SCORE_OR_PREDICTION"
+    },
+    {
+      "nctId": "NCT06049927",
+      "assessmentNumber": 14,
+      "evidence": "SAP section6.10 specifies10 multiple imputations under MAR for the primary estimand in FAS/mFAS with Rubin pooling; additional sensitivity analyses are specified. This is a plan, not proof that the MAR assumption holds.",
+      "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/27/NCT06049927/SAP_001.pdf",
+      "publicationDate": "2024-06-18",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "sourceLocator": "section6.10, pages20-22",
+      "reviewedAt": "2026-11-06",
+      "evidenceScope": "EXACT_TRIAL_SOURCE_FACT_NOT_SCORE_OR_PREDICTION"
+    },
+    {
+      "nctId": "NCT06049927",
+      "assessmentNumber": 15,
+      "evidence": "SAP section6.11 uses joint four-strain SCR/GMT conditions, subsequent absolute SCR/SPR criteria, and fixed-sequence testing of0.5mL before0.25mL. Adequacy requires interpretation; merely listing multiple endpoints is not a positive grade.",
+      "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/27/NCT06049927/SAP_001.pdf",
+      "publicationDate": "2024-06-18",
+      "classification": "DOCUMENTED_SOURCE_FACT",
+      "sourceLocator": "section6.11, pages22-23",
+      "reviewedAt": "2026-11-06",
+      "evidenceScope": "EXACT_TRIAL_SOURCE_FACT_NOT_SCORE_OR_PREDICTION"
     }
   ],
   "lastResearchDate": "2026-11-06"

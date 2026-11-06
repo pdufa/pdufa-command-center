@@ -8,7 +8,7 @@ const {phaseFirstReport}=require(path.join(root,'lib/phase-first-report.ts'));
 const file=path.join(root,'data/phaseFirstRatingHistory20261106.json');
 const ledger=fs.existsSync(file)?JSON.parse(fs.readFileSync(file,'utf8')):{schemaVersion:1,scope:'PHASE_FIRST_APPEND_ONLY_RATING_HISTORY',records:[]};
 const ids=new Set(ledger.records.map(r=>r.eventId));let added=0;
-for(const scope of ['alkermes','axsome','census']){
+for(const scope of ['alkermes','axsome','sinovac','census']){
  const report=phaseFirstReport(scope);
  for(const t of report.trials){
   const payload={trialId:t.trialId,nctId:t.nctId,ticker:t.ticker,programId:t.programId,drug:t.drug,indication:t.indication,

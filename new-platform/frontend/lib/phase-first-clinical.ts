@@ -23,6 +23,7 @@ export type FactorKey="efficacy"|"clinicalBenefit"|"statistics"|"reproducibility
 export type ReviewedFactor={key:FactorKey;grade:number|null;sourceUrl:string|null;
  sourceDate:string|null;benchmarkSourceUrl:string|null;finding:string|null;assessedAt?:string|null;phaseScope?:readonly string[]};
 export type ClinicalContext={
+ pipelineRestriction?:string|null;pipelineRestrictionSource?:string|null;
  ticker:string;drug:string;indication:string;programId:string;programPhase:string|null;
  programSourceUrl:string|null;legacyStage:"pre"|"post"|null;stageVerified:boolean;
  safetyPrimary:boolean;notApplicableFactors:readonly string[];
@@ -174,6 +175,6 @@ export function evaluatePhaseFirst(trial:PhaseTrial,context:ClinicalContext,asOf
   fdaPrediction:{status:fdaState,probabilities:null,confidence:null,
    reason:early?"The individual trial has not reached the applicable regulatory-prediction stage.":
     "A calibrated, exact-application, pre-decision FDA model and complete frozen eligibility evidence have not been established. A clinical research rating is not an approval/CRL/extension probability."},
-  pipeline:{automaticTransfer:false,phaseRequirementMet:trial.phases.includes("PHASE3"),marketCapStatus:"CURRENT_MARKET_CAP_RECHECK_REQUIRED",
+  pipeline:{automaticTransfer:false,companyRestriction:context.pipelineRestriction??null,companyRestrictionSource:context.pipelineRestrictionSource??null,phaseRequirementMet:trial.phases.includes("PHASE3"),marketCapStatus:"CURRENT_MARKET_CAP_RECHECK_REQUIRED",
    restrictions:"Existing public-company, $300m–$10bn, Phase 3/post-Phase 3, US FDA and validated Pipeline filters remain authoritative; no admission or score history is changed."}};
 }

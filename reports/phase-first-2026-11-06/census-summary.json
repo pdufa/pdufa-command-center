@@ -12,8 +12,8 @@
     "Phase 3": 672
   },
   "evidenceCounts": {
-    "AVAILABLE": 7701,
-    "MISSING": 10036,
+    "AVAILABLE": 7738,
+    "MISSING": 9999,
     "PENDING": 6291,
     "NOT YET EXPECTED": 2056,
     "NOT APPLICABLE": 1346,
@@ -51,8 +51,8 @@
     {
       "id": "mechanism",
       "label": "Mechanism of action",
-      "MISSING": 738,
-      "AVAILABLE": 24
+      "MISSING": 737,
+      "AVAILABLE": 25
     },
     {
       "id": "preclinical",
@@ -62,9 +62,9 @@
     {
       "id": "safety",
       "label": "Initial / cumulative safety results",
-      "MISSING": 149,
+      "MISSING": 148,
       "NOT APPLICABLE": 25,
-      "AVAILABLE": 340,
+      "AVAILABLE": 341,
       "PENDING": 248
     },
     {
@@ -90,10 +90,10 @@
     {
       "id": "biologicalActivity",
       "label": "Early biological activity",
-      "MISSING": 478,
+      "MISSING": 477,
       "NOT APPLICABLE": 25,
       "PENDING": 258,
-      "AVAILABLE": 1
+      "AVAILABLE": 2
     },
     {
       "id": "priorPhase1",
@@ -122,18 +122,18 @@
     {
       "id": "endpointPerformance",
       "label": "Endpoint performance",
-      "MISSING": 470,
+      "MISSING": 469,
       "NOT APPLICABLE": 25,
       "PENDING": 258,
-      "AVAILABLE": 9
+      "AVAILABLE": 10
     },
     {
       "id": "uncertainty",
       "label": "Statistical uncertainty",
-      "MISSING": 300,
+      "MISSING": 298,
       "NOT APPLICABLE": 25,
       "PENDING": 251,
-      "AVAILABLE": 186
+      "AVAILABLE": 188
     },
     {
       "id": "phase3Entry",
@@ -162,8 +162,8 @@
     {
       "id": "comparator",
       "label": "Comparator / control",
-      "MISSING": 734,
-      "AVAILABLE": 28
+      "MISSING": 707,
+      "AVAILABLE": 55
     },
     {
       "id": "enrollment",
@@ -174,7 +174,8 @@
     {
       "id": "power",
       "label": "Statistical power assumptions",
-      "MISSING": 762
+      "MISSING": 760,
+      "AVAILABLE": 2
     },
     {
       "id": "protocol",
@@ -191,14 +192,15 @@
     {
       "id": "priorEfficacySafety",
       "label": "Prior efficacy and safety evidence",
-      "MISSING": 762
+      "MISSING": 761,
+      "AVAILABLE": 1
     },
     {
       "id": "phase3Results",
       "label": "Available Phase 3 outcomes",
-      "MISSING": 103,
+      "MISSING": 102,
       "NOT APPLICABLE": 67,
-      "AVAILABLE": 369,
+      "AVAILABLE": 370,
       "PENDING": 223
     },
     {
