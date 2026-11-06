@@ -13,6 +13,18 @@ type TrialRow={
 };
 type Snapshot={schemaVersion:number;asOf:string;total:number;note:string;
  classifications:{code:string;label:string}[];counts:Record<string,number>;rows:TrialRow[]};
+type MissingAudit={
+ trials:number;scope:string;assessment:{
+ totalSlots:number;predicted:number;observed:number;sourceFacts:number;unscored:number;
+ trialsWithNumericalPredictions:number;trialsWithOutcomeAdjudication:number;
+ };fields:{
+ missingDrugField:number;unknownRegistryStatus:number;detailedOfficialResearch:number;
+ missingDetailedOfficialResearch:number;storedProtocol:number;missingStoredProtocol:number;
+ unverifiedFDAApplication:number;unverifiedPDUFADate:number;
+ missingAdjudicatedEndpoint:number;outsideDatedMarketCapScreen:number;
+ };perQuestion:{number:number;heading:string;predictions:number;observed:number;sourceFacts:number;unscored:number}[];
+ exceptions:{unknownRegistryNcts:string[];outsideMarketCapScreenNcts:string[]};
+};
 const cell={padding:"8px 10px",borderBottom:"1px solid #d9e5de",textAlign:"left" as const,verticalAlign:"top" as const};
 const endpointByNct=new Map(endpointAdjudications.records.map(r=>[r.nctId,r] as const));
 const endpointClass=(r:TrialRow):string=>{
@@ -30,6 +42,8 @@ const labels:Record<string,string>={
 };
 export default function Phase3UnifiedClassifications(){
  const [data,setData]=useState<Snapshot|null>(null);
+ const [audit,setAudit]=useState<MissingAudit|null>(null);
+ const [auditError,setAuditError]=useState("");
  const [error,setError]=useState("");
  const [query,setQuery]=useState("");
  const [classification,setClassification]=useState("ALL");
@@ -48,6 +62,19 @@ export default function Phase3UnifiedClassifications(){
     if(!controller.signal.aborted)setData(d);
    })
    .catch(()=>{if(!controller.signal.aborted)setError("The source classification ledger could not be loaded or verified.");});
+  return ()=>controller.abort();
+ },[]);
+ useEffect(()=>{
+  const controller=new AbortController();
+  fetch("/api/phase3-missing-data-audit",{cache:"no-store",signal:controller.signal})
+   .then(async r=>{if(!r.ok)throw Error("Missing-data source unavailable");return await r.json() as MissingAudit;})
+   .then(d=>{
+    if(d.trials!==762||d.assessment.totalSlots!==22860||
+       d.assessment.predicted+d.assessment.observed+d.assessment.sourceFacts+d.assessment.unscored!==22860||
+       d.perQuestion.length!==30)throw Error("Missing-data audit failed integrity checks");
+    if(!controller.signal.aborted)setAudit(d);
+   })
+   .catch(()=>{if(!controller.signal.aborted)setAuditError("Missing-data audit could not be loaded.");});
   return ()=>controller.abort();
  },[]);
  const filtered=useMemo(()=>{
@@ -100,6 +127,57 @@ export default function Phase3UnifiedClassifications(){
      placeholder="Ticker, NCT, company, indication, classification" style={{display:"block",padding:9,width:"100%",maxWidth:510,marginTop:5}}/>
    </label>
    <p style={{fontSize:12,margin:"12px 0"}}><strong><a href="/api/phase3-unified-190-columns">Download all 762 trials · 190 columns (CSV)</a></strong>{" · "}<a href="/phase3-unified-classifications-2026-11-05.csv" download>Original classification CSV</a></p>
+   <section aria-label="Phase 3 missing data audit" data-phase3-missing-audit="762"
+    style={{border:"1px solid #a1b5a7",borderRadius:10,padding:12,margin:"12px 0"}}>
+    <h3 style={{margin:"0 0 8px"}}>Missing-data recheck · all 762 NCTs</h3>
+    {!audit?<p style={{fontSize:12}}>{auditError||"Checking saved research coverage…"}</p>:<>
+     <p style={{fontSize:13,margin:"8px 0"}}>
+      <strong>{audit.assessment.unscored.toLocaleString()} of {audit.assessment.totalSlots.toLocaleString()}</strong> assessment question slots remain UNSCORED;{" "}
+      {audit.assessment.sourceFacts.toLocaleString()} hold documented source facts,{" "}
+      {audit.assessment.observed} observed outcome/readout facts, and{" "}
+      {audit.assessment.predicted} have numerical predictions across{" "}
+      {audit.assessment.trialsWithNumericalPredictions} trials.
+     </p>
+     <p style={{fontSize:12,margin:"8px 0"}}>
+      <strong>Registry research:</strong> {audit.fields.detailedOfficialResearch} saved detailed records;{" "}
+      {audit.fields.missingDetailedOfficialResearch} without detailed research in this dataset.
+      <strong> Protocol summaries:</strong> {audit.fields.storedProtocol} stored,{" "}
+      {audit.fields.missingStoredProtocol} not stored across the full census.
+     </p>
+     <p style={{fontSize:12,margin:"8px 0"}}>
+      <strong>Important missingness:</strong> {audit.fields.missingDrugField} separately named drug fields empty
+      (but registered interventions are preserved); {audit.fields.unknownRegistryStatus} unknown registry statuses;{" "}
+      {audit.fields.missingAdjudicatedEndpoint} primary-endpoint outcomes not adjudicated;{" "}
+      {audit.fields.unverifiedFDAApplication} FDA applications unverified;{" "}
+      {audit.fields.unverifiedPDUFADate} PDUFA dates unverified.
+     </p>
+     <p style={{fontSize:12,margin:"8px 0"}}>
+      <strong>Universe exception:</strong> {audit.fields.outsideDatedMarketCapScreen} trial(s) outside the stored
+      dated market-cap screen ({audit.exceptions.outsideMarketCapScreenNcts.join(", ")||"none"}).
+      Registry-status exceptions: {audit.exceptions.unknownRegistryNcts.join(", ")||"none"}.
+     </p>
+     <p style={{fontSize:12,margin:"8px 0"}}><strong>
+      <a href="/api/phase3-missing-data-audit?format=csv">Download missing-data audit · 762 trial rows × 46 columns (CSV)</a>
+     </strong></p>
+     <details>
+      <summary style={{cursor:"pointer",fontWeight:650,fontSize:13}}>Expand missing data by all 30 analytical questions</summary>
+      <div style={{overflowX:"auto",maxHeight:420,overflowY:"auto"}}>
+       <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:670}}>
+        <thead><tr>{["Question","Unscored","Documented source facts","Observed evidence","Predictions"].map(h=>
+         <th key={h} scope="col" style={cell}>{h}</th>)}</tr></thead>
+        <tbody>{audit.perQuestion.map(q=><tr key={q.number}>
+         <td style={cell}>Q{String(q.number).padStart(2,"0")} · {q.heading}</td>
+         <td style={cell}>{q.unscored}</td><td style={cell}>{q.sourceFacts}</td>
+         <td style={cell}>{q.observed}</td><td style={cell}>{q.predictions}</td>
+        </tr>)}</tbody>
+       </table>
+      </div>
+     </details>
+     <p style={{fontSize:11,margin:"8px 0 0"}}>Scope: {audit.scope}.
+      An UNSCORED question is not proof that no public evidence exists, and a source fact is not a scientific
+      prediction. Verified FDA application and PDUFA dates can be inapplicable for earlier-stage trials.</p>
+    </>}
+   </section>
    <p role="status" style={{fontSize:12}}>Showing {shown.length} of {filtered.length} matching trials · source classification as of {data.asOf}. Dated registry status is not proof of trial results.</p>
    <div role="region" aria-label="Unified Phase 3 trial classifications" style={{overflowX:"auto",maxHeight:630,overflowY:"auto"}}>
     <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:1000}}>
