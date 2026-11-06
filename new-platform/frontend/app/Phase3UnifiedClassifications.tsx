@@ -67,6 +67,7 @@ export default function Phase3UnifiedClassifications(){
     <input type="search" value={query} onChange={e=>{setQuery(e.target.value);setPage(0)}}
      placeholder="Ticker, NCT, company, indication, classification" style={{display:"block",padding:9,width:"100%",maxWidth:510,marginTop:5}}/>
    </label>
+   <p style={{fontSize:12,margin:"12px 0"}}><a href="/phase3-unified-classifications-2026-11-05.csv" download>Download all 762 classifications (CSV)</a></p>
    <p role="status" style={{fontSize:12}}>Showing {shown.length} of {filtered.length} matching trials · source classification as of {data.asOf}. Dated registry status is not proof of trial results.</p>
    <div role="region" aria-label="Unified Phase 3 trial classifications" style={{overflowX:"auto",maxHeight:630,overflowY:"auto"}}>
     <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:1000}}>
