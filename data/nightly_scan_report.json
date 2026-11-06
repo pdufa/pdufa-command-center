@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-05T04:21:49.292773+00:00",
-  "latest_run_id": 41966647172,
-  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/41966647172",
-  "latest_run_started_at_utc": "2026-11-05T04:15:13Z",
+  "updated_at_utc": "2026-11-06T04:50:32.833718+00:00",
+  "latest_run_id": 42164211710,
+  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42164211710",
+  "latest_run_started_at_utc": "2026-11-06T04:43:48Z",
   "latest_run_conclusion": null,
   "scope": "CLINICAL_POOL_PIPELINE_AND_PHASE3_RESULTS_COLLECTORS_ONLY",
   "status": "PARTIAL",
   "verification": {
-    "checked_at_utc": "2026-11-05T04:21:49.292792+00:00",
+    "checked_at_utc": "2026-11-06T04:50:32.833735+00:00",
     "artifact_integrity": "PASS",
     "all_source_coverage": "NOT_VERIFIED",
     "description": "Archived clinical reports checked against source-state JSON; no independent FDA/SEC/issuer/market verification."
@@ -19,76 +19,84 @@
       "label": "PIPELINE \u2014 trial inventory",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 41966647172,
+      "run_id": 42164211710,
       "new_records": null,
-      "changed_trials_this_execution": 43,
+      "changed_trials_this_execution": 70,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_checked": 717,
         "companies_due": 717,
-        "tracked_trials_checked": 11632,
-        "tracked_trials_total": 11632,
+        "tracked_trials_checked": 11635,
+        "tracked_trials_total": 11635,
         "registry_companies": 717,
         "companies_with_warnings": 0,
         "tracked_trials_with_warnings": 0
       },
       "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-11-05T04:20:14.631713+00:00",
+      "collected_at_utc": "2026-11-06T04:48:42.119132+00:00",
       "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/41966647172"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42164211710"
     },
     {
       "scan": "3",
       "label": "PIPELINE \u2014 clinical enrichment",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 41966647172,
+      "run_id": 42164211710,
       "new_records": null,
       "changed_trials_this_execution": null,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_due": 717,
-        "studies_checked": 15552,
-        "matched_trials": 3713,
+        "studies_checked": 15554,
+        "matched_trials": 3711,
         "registry_companies": 717,
         "market_cap_source_unavailable": 1
       },
       "collector_status": "COMPLETE WITH WARNINGS",
-      "collected_at_utc": "2026-11-05T04:21:02.840772+00:00",
+      "collected_at_utc": "2026-11-06T04:49:26.123923+00:00",
       "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/41966647172"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42164211710"
     },
     {
       "scan": "4",
       "label": "PHASE 3 RESULTS \u2014 posted readout",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 41966647172,
-      "new_records": 1,
+      "run_id": 42164211710,
+      "new_records": 2,
       "changed_trials_this_execution": null,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_due": 717,
-        "studies_checked": 3982,
-        "matched_posted_results": 99,
+        "studies_checked": 3997,
+        "matched_posted_results": 103,
         "registry_companies": 717
       },
       "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-11-05T04:21:29.993205+00:00",
+      "collected_at_utc": "2026-11-06T04:49:59.122813+00:00",
       "new_record_details": [
         {
-          "ticker": "NVO",
-          "drug": "KBP-5074 | Placebo",
-          "nct_id": "NCT04968184",
-          "results_posted_at": "2026-11-04",
-          "source_url": "https://clinicaltrials.gov/study/NCT04968184",
+          "ticker": "GILD",
+          "drug": "B/F/TAF | Bictegravir/Lenacapavir (BIC/LEN) FDC | Lenacapavir | Placebo to match B/F/TAF | Placebo to match BIC/LEN FDC | Placebo to match Lenacapavir",
+          "nct_id": "NCT06333808",
+          "results_posted_at": "2026-11-05",
+          "source_url": "https://clinicaltrials.gov/study/NCT06333808",
+          "verification_status": "DRUG_IDENTITY_REVIEW"
+        },
+        {
+          "ticker": "INCY",
+          "drug": "Placebo | Povorcitinib",
+          "nct_id": "NCT05620836",
+          "results_posted_at": "2026-11-05",
+          "source_url": "https://clinicaltrials.gov/study/NCT05620836",
           "verification_status": "DRUG_IDENTITY_REVIEW"
         }
       ],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/41966647172"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42164211710"
     }
   ],
   "metrics": {
@@ -105,6 +113,16 @@
     "issuer/program identity and complete source coverage audit"
   ],
   "history": [
+    {
+      "run_id": 42164211710,
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42164211710",
+      "started_at_utc": "2026-11-06T04:43:48Z",
+      "run_conclusion": null,
+      "status": "PARTIAL",
+      "new_records": null,
+      "changed_trials": null,
+      "errors": 0
+    },
     {
       "run_id": 41966647172,
       "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/41966647172",
