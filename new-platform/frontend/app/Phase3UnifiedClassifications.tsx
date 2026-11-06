@@ -129,7 +129,7 @@ export default function Phase3UnifiedClassifications(){
     <input type="search" value={query} onChange={e=>{setQuery(e.target.value);setPage(0)}}
      placeholder="Ticker, NCT, company, indication, classification" style={{display:"block",padding:9,width:"100%",maxWidth:510,marginTop:5}}/>
    </label>
-   <p style={{fontSize:12,margin:"12px 0"}}><strong><a href="/api/phase3-unified-190-columns">Download all 762 trials · 190 columns (CSV)</a></strong>{" · "}<a href="/phase3-unified-classifications-2026-11-05.csv" download>Original classification CSV</a></p>
+   <p style={{fontSize:12,margin:"12px 0"}}><strong><a href="/api/phase3-unified-190-columns?live=1">Download live-registry evidence · all 762 trials × 190 columns (CSV)</a></strong>{" · "}<a href="/api/phase3-unified-190-columns">Saved evidence version</a>{" · "}<a href="/phase3-unified-classifications-2026-11-05.csv" download>Original classification CSV</a></p>
    <section aria-label="Six-source online research sweep" data-phase3-six-source-sweep="762"
     style={{border:"1px solid #a1b5a7",borderRadius:10,padding:12,margin:"12px 0"}}>
     <h3 style={{margin:"0 0 8px"}}>Online source recovery · all 762 trials</h3>
