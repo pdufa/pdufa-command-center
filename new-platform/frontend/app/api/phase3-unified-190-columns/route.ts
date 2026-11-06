@@ -2,6 +2,7 @@ import ledger from "../../../public/phase3-unified-classifications-2026-11-05.js
 import endpointAdjudications from "../../../data/phase3EndpointAdjudications20261105.json";
 import {UNIVERSAL_PHASE3_QUESTIONS} from "../../../lib/phase3-universal-questions";
 import {phase3QuestionSlots} from "../../../lib/phase3-top-questions";
+import {PHASE3_ONLINE_TRIAL_COUNT,phase3OnlineRecord,phase3OnlineSourceFact,phase3OnlineCoverageLabel,phase3OnlineReviewLeads} from "../../../lib/phase3-online-source-evidence";
 
 export const dynamic = "force-dynamic";
 
@@ -41,6 +42,7 @@ const writeRow=(cells:unknown[])=>cells.map(escaped).join(",");
 export async function GET(){
  if(HEADERS.length!==190||ledger.total!==762||ledger.rows.length!==762||
     new Set(ledger.rows.map(r=>r.nctId)).size!==762||
+    PHASE3_ONLINE_TRIAL_COUNT!==762||
     endpointByNct.size!==20||endpointAdjudications.records.length!==20||
     endpointAdjudications.records.some(x=>!ledger.rows.some(r=>r.nctId===x.nctId))){
   return Response.json({error:"Phase 3 190-column ledger integrity check failed"},{status:503});
@@ -49,6 +51,7 @@ export async function GET(){
  let passedCount=0,failedCount=0;
  for(const r of ledger.rows){
   const endpoint=endpointByNct.get(r.nctId);
+  const onlineRecord=phase3OnlineRecord(r.nctId);
   const outcome=endpoint?.endpointOutcome||r.readoutOutcome;
   const endpointEvidenceUrl=endpoint?.evidenceUrl||r.readoutEvidenceUrl||"";
   const observedPass=outcome==="PRIMARY_ENDPOINT_MET"&&
@@ -70,9 +73,11 @@ export async function GET(){
   const observations=slots.filter(q=>!q.answer&&Boolean(q.observation)).length;
   const base=[
    r.nctId,r.ticker,r.company,r.classification,r.classificationCode,
-   r.registryStatus,r.rosterStatus,r.registryAsOf,r.readoutEvidenceType,
+   r.registryStatus,r.rosterStatus,r.registryAsOf,
+   r.readoutEvidenceType==="NOT_VERIFIED"&&onlineRecord?.resultsPosted?"CTGOV_RESULTS_POSTED_UNADJUDICATED":r.readoutEvidenceType,
    r.readoutSourceDate,outcome,r.drug,r.indication,r.registeredInterventions,
-   r.fdaApplicationStatus,r.fdaReviewType,r.pdufaGoalDate,endpointEvidenceUrl,
+   r.fdaApplicationStatus,r.fdaReviewType,r.pdufaGoalDate,
+   endpointEvidenceUrl||(onlineRecord?.resultsPosted?"https://clinicaltrials.gov/study/"+r.nctId:""),
    r.registrySourceUrl,r.classificationEvidence
   ];
   const extra=[
@@ -107,6 +112,14 @@ export async function GET(){
     return ["SOURCE_FACT_ONLY","","",
      "Placebo appears in the registered intervention list; comparator adequacy not assessed",
      r.registrySourceUrl];
+   const newlySourced=phase3OnlineSourceFact(r.nctId,q.number);
+   if(newlySourced)return [newlySourced.status,"","",newlySourced.description,newlySourced.sourceUrl];
+   if([1,2,3,28,29,30].includes(q.number)){
+    const leads=phase3OnlineReviewLeads(r.nctId);
+    if(leads.summary)return ["UNSCORED","", "",
+     q.missingEvidence+" | Source leads awaiting question-specific adjudication: "+leads.summary,
+     leads.urls.join(" | ")];
+   }
    return ["UNSCORED","","",q.missingEvidence,""];
   });
   const statuses=Array.from({length:30},(_,i)=>questions[i*5]);
@@ -115,9 +128,10 @@ export async function GET(){
   extra[13]=countedPredictions;
   extra[14]=countedEvidence;
   extra[15]=30-countedPredictions-countedEvidence;
-  extra[17]=endpoint?"PUBLIC_ENDPOINT_EVIDENCE_REVIEWED":
+  extra[17]=phase3OnlineCoverageLabel(r.nctId)+"; "+
+   (endpoint?"PUBLIC_ENDPOINT_EVIDENCE_REVIEWED":
    countedPredictions?"REVIEWED_PRE_READOUT_PREDICTIONS":
-   countedEvidence?"PARTIAL_REGISTRY_SOURCE_FACTS":"NO_REVIEWED_QUESTION_EVIDENCE";
+   countedEvidence?"PARTIAL_DOCUMENTED_SOURCE_FACTS":"NO_SCORED_QUESTION_EVIDENCE");
   const values=[...base,...extra,...questions];
   if(values.length!==190){
    return Response.json({error:"Question-field alignment failed"},{status:503});
@@ -131,7 +145,7 @@ export async function GET(){
  return new Response("\uFEFF"+rows.join("\r\n")+"\r\n",{
   status:200,headers:{
    "Content-Type":"text/csv; charset=utf-8",
-   "Content-Disposition":'attachment; filename="Phase3-762-Trials-190-Columns-2026-11-05-adjudicated.csv"',
+   "Content-Disposition":'attachment; filename="Phase3-762-Trials-190-Columns-2026-11-05-online-sources.csv"',
    "Cache-Control":"no-store"
   }
  });
