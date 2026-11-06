@@ -2,6 +2,11 @@
 import {useEffect,useMemo,useState} from "react";
 import type {ActivePhase3Trial} from "../lib/phase3-active-cohorts";
 import Phase3UnifiedClassifications from "./Phase3UnifiedClassifications";
+import Phase3PreDataBatch from "./Phase3PreDataBatch";
+import {TopPhase3ResearchExample} from "./Phase3TopAnalysis";
+import CapScreenedTopPhase3Spreadsheet from "./CapScreenedTopPhase3Spreadsheet";
+import {parsePhase3CensusCsv} from "../lib/phase3-census-rows";
+import {classifyPhase3Readouts,type ReadoutClassification} from "../lib/phase3-public-readout";
 type CohortPayload={
  asOf:string;sourceAsOf:string;totalPool:number;activeTotal:number;
  counts:{PRE_DATA:number;POST_DATA:number;HISTORICAL:number;VERIFY:number};
@@ -72,6 +77,32 @@ function Sheet({kind,rows,query}:{kind:"PRE_DATA"|"POST_DATA";rows:ActivePhase3T
   </div>
  </section>;
 }
+/** The previous 741-trial tools are retained as historical research, never mixed
+ * into the two current 258-active-study spreadsheets. Mounted on demand only. */
+function LegacyArchive({query}:{query:string}){
+ const [data,setData]=useState<ReadoutClassification|null>(null);
+ const [error,setError]=useState("");
+ useEffect(()=>{
+  const ctrl=new AbortController();
+  Promise.all([
+   fetch("/phase3-census-2026-10-26.csv",{cache:"no-store",signal:ctrl.signal}),
+   fetch("/phase3-public-readout-evidence-2026-11-01.json",{cache:"no-store",signal:ctrl.signal})
+  ]).then(async ([c,e])=>{
+   if(!c.ok||!e.ok)throw Error("Archived issuer research unavailable");
+   return classifyPhase3Readouts(await e.json(),parsePhase3CensusCsv(await c.text()).rows);
+  }).then(d=>{if(!ctrl.signal.aborted)setData(d);})
+   .catch(err=>{if(!ctrl.signal.aborted&&err.name!=="AbortError")setError("Archived issuer research could not be loaded.");});
+  return()=>ctrl.abort();
+ },[]);
+ return <div>
+  <p><strong>Legacy historical research only.</strong> This older 741-study issuer snapshot, its analysis and its review candidates are excluded from the new active TOP/BOTTOM spreadsheets. Original evidence has not been deleted.</p>
+  <TopPhase3ResearchExample/>
+  <Phase3PreDataBatch query={query}/>
+  {error&&<p role="alert">{error}</p>}
+  {!data&&!error&&<p role="status">Loading historical issuer research…</p>}
+  {data&&<CapScreenedTopPhase3Spreadsheet classification={data} query={query}/>}
+ </div>;
+}
 export default function Phase3SourceOnlySheets(){
  const [data,setData]=useState<CohortPayload|null>(null);
  const [error,setError]=useState("");
@@ -96,7 +127,7 @@ export default function Phase3SourceOnlySheets(){
  if(!data)return <p role="status">Loading the reconciled 238 Pre-Data and 20 Post-Data trials…</p>;
  const pre=data.rows.filter(r=>r.cohort==="PRE_DATA");
  const post=data.rows.filter(r=>r.cohort==="POST_DATA");
- return <section data-phase3-active-top-bottom="258" style={{padding:"8px 0"}}>
+ return <section data-phase3-active-top-bottom="258" data-surveys-ratings-cancelled="true" style={{padding:"8px 0"}}>
   <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:14}}>
    <h2 style={{margin:"4px 0"}}>Active Phase 3 · TOP and BOTTOM spreadsheets</h2>
    <strong>{data.activeTotal} total active studies</strong>
@@ -113,7 +144,13 @@ export default function Phase3SourceOnlySheets(){
   <details open={openHistorical} onToggle={e=>setOpenHistorical(e.currentTarget.open)}
    style={{border:"1px solid #a5c7b2",borderRadius:10,padding:12,marginTop:14}}>
    <summary style={{cursor:"pointer",fontWeight:700}}>Historical / full 762-NCT source archive (not in active spreadsheets)</summary>
-   {openHistorical&&<Phase3UnifiedClassifications/>}
+   {openHistorical&&<>
+    <Phase3UnifiedClassifications/>
+    <details style={{border:"1px solid #cbd8d0",borderRadius:8,padding:12,margin:"12px 0"}}>
+      <summary style={{cursor:"pointer",fontWeight:700}}>Legacy issuer research tools (741-study archived snapshot)</summary>
+      <LegacyArchive query={query}/>
+    </details>
+   </>}
   </details>
   <p style={{fontSize:12}}>Classification reconciled {data.asOf} against the source snapshot dated {data.sourceAsOf}.
    Pre-Data does not guarantee unpublished results. Posted registry results and issuer announcements are not interchangeable.
