@@ -1,5 +1,6 @@
 "use client";
 import {useState} from "react";
+import Phase3OfficialResearchEvidence from "./Phase3OfficialResearchEvidence";
 import {phase3QuestionSlots,phase3CompletedQuestions,phase3DocumentedQuestionFacts,PHASE3_QUESTION_COUNT} from "../lib/phase3-top-questions";
 const tableCell={padding:"8px",borderBottom:"1px solid #d6e6db",textAlign:"left" as const};
 export function TopPhase3Analysis({nctId}:{nctId:string}){
@@ -15,6 +16,7 @@ export function TopPhase3Analysis({nctId}:{nctId:string}){
   {expanded&&<div style={{fontSize:12,lineHeight:1.5,marginTop:7}}>
    <p><strong>Pre-readout research only.</strong> Predictions, source documentation and missing evidence
     are separate. Source-documentation scores are NOT approval probabilities. RAAS surveys remain cancelled.</p>
+   <Phase3OfficialResearchEvidence nctId={nctId}/>
    {questions.map(q=><details key={q.number} open={openQuestions.includes(q.number)}
     onToggle={e=>{const nowOpen=e.currentTarget.open;
      setOpenQuestions(old=>nowOpen?
