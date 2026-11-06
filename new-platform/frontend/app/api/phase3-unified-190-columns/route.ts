@@ -101,7 +101,7 @@ export async function GET(){
   }
   rows.push(writeRow(values));
  }
- if(rows.length!==763||passedCount!==1){
+ if(rows.length!==763||passedCount!==ledger.rows.filter(r=>r.classificationVerified&&r.readoutOutcome==="PRIMARY_ENDPOINT_MET"&&Boolean(r.readoutEvidenceUrl)).length){
   return Response.json({error:"Trial/pass reconciliation failed"},{status:503});
  }
  return new Response("\uFEFF"+rows.join("\r\n")+"\r\n",{
