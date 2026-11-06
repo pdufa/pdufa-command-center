@@ -1,6 +1,7 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
 import endpointAdjudications from "../data/phase3EndpointAdjudications20261105.json";
+import liveCoverageSummary from "../public/phase3-six-source-harvest-summary-20261105.json";
 
 type TrialRow={
  nctId:string;ticker:string;company:string;registryStatus:string;rosterStatus:string;
@@ -127,6 +128,27 @@ export default function Phase3UnifiedClassifications(){
      placeholder="Ticker, NCT, company, indication, classification" style={{display:"block",padding:9,width:"100%",maxWidth:510,marginTop:5}}/>
    </label>
    <p style={{fontSize:12,margin:"12px 0"}}><strong><a href="/api/phase3-unified-190-columns">Download all 762 trials · 190 columns (CSV)</a></strong>{" · "}<a href="/phase3-unified-classifications-2026-11-05.csv" download>Original classification CSV</a></p>
+   <section aria-label="Six-source online research sweep" data-phase3-six-source-sweep="762"
+    style={{border:"1px solid #a1b5a7",borderRadius:10,padding:12,margin:"12px 0"}}>
+    <h3 style={{margin:"0 0 8px"}}>Online source recovery · all 762 trials</h3>
+    <p style={{fontSize:13,margin:"6px 0"}}>
+     <strong>{liveCoverageSummary.sources.clinicalTrialsGov.nctRecordsRetrieved} / 762</strong> registry records queried;{" "}
+     <strong>{liveCoverageSummary.sources.clinicalTrialsGov.postedResults}</strong> have posted registry results,
+     including <strong>{liveCoverageSummary.sources.clinicalTrialsGov.postedStatisticalAnalyses}</strong> with statistical analyses.
+     <strong> {liveCoverageSummary.sources.clinicalTrialsGov.publicDocuments}</strong> have public documents.
+    </p>
+    <p style={{fontSize:12,margin:"6px 0"}}>
+     <strong>{liveCoverageSummary.sources.pubMed.trialsWithExactNctArticleMentions}</strong> NCTs have PubMed article mentions;{" "}
+     <strong>{liveCoverageSummary.sources.secEdgar.trialsWithExactNctFilingMentions}</strong> have SEC filing mentions.
+     Publications and filings are evidence leads, not verified primary-endpoint outcomes.
+    </p>
+    <p style={{fontSize:12,margin:"6px 0"}}>
+     <strong><a href="/api/phase3-live-registry-backfill">Download current registry evidence for all 762 trials (CSV)</a></strong>{" · "}
+     <a href="/phase3-six-source-harvest-summary-20261105.json">Six-source coverage report (JSON)</a>
+    </p>
+    <p style={{fontSize:11,margin:"6px 0 0"}}>AACT, FDA and international sources were also probed; access and NCT-to-application matching limitations are documented in the report.
+     A posted registry result is not automatically PASS, and an SEC or PubMed hit is not proof of success.</p>
+   </section>
    <section aria-label="Phase 3 missing data audit" data-phase3-missing-audit="762"
     style={{border:"1px solid #a1b5a7",borderRadius:10,padding:12,margin:"12px 0"}}>
     <h3 style={{margin:"0 0 8px"}}>Missing-data recheck · all 762 NCTs</h3>
