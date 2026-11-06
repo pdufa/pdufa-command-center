@@ -70,9 +70,11 @@ class PostScanRepairTests(unittest.TestCase):
     def test_workflow_order_and_old_trigger_removal(self):
         root = Path(__file__).resolve().parents[1] / ".github" / "workflows"
         orchestrator = (root / "pdufa-nightly-scoring-then-repair.yml").read_text(encoding="utf-8")
-        for name in ("PDUFA Nightly Scan Report Publisher",
-                     "PDUFA Nightly FDA SEC Financial Market Issuer Sources"):
-            self.assertIn(name, orchestrator)
+        self.assertIn("PDUFA Nightly FDA SEC Financial Market Issuer Sources", orchestrator)
+        self.assertIn("Surveys and ratings cancelled", orchestrator)
+        self.assertIn("source_run_id: ${{ steps.handoff.outputs.source_run_id }}", orchestrator)
+        self.assertNotIn("Generate dated nightly scoring report", orchestrator)
+        self.assertNotIn("Capture source-verified experimental RAAS metric changes", orchestrator)
         self.assertIn("needs: scoring", orchestrator)
         self.assertIn("needs: [scoring, error-check]", orchestrator)
         self.assertLess(orchestrator.index("\n  scoring:"), orchestrator.index("\n  error-check:"))
