@@ -39,7 +39,7 @@ function statusFor(
  if(ir?.companyUrl){
   if(q.number===3&&ir.safetyEvidence)return "SOURCE_FACT_ONLY";
   if(q.number===17&&/secondary endpoint/i.test(ir.specificEvidence||""))return "SOURCE_FACT_ONLY";
-  if(q.number===18&&/patient.reported|\\bPRO\\b/i.test(ir.specificEvidence||""))return "SOURCE_FACT_ONLY";
+  if(q.number===18&&/patient.reported|\bPRO\b/i.test(ir.specificEvidence||""))return "SOURCE_FACT_ONLY";
   if(q.number===24&&/discontinuation/i.test(ir.safetyEvidence||""))return "SOURCE_FACT_ONLY";
  }
  if(q.observation)return "SOURCE_FACT_ONLY";
