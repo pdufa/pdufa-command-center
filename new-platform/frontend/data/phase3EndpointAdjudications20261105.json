@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 19,
+  "totalReviewed": 20,
   "counts": {
     "PRIMARY_ENDPOINT_MET": 16,
-    "PRIMARY_ENDPOINT_NOT_MET": 1,
+    "PRIMARY_ENDPOINT_NOT_MET": 2,
     "NO_BINARY_PASS_FAIL": 2
   },
   "scope": "762 Phase 3 trial census; 19 public-readout subset",
-  "note": "Observed primary endpoint conclusions, not FDA approvals. Review sources under the exact NCT. Single-arm/descriptive PK trials are not forced into binary PASS/FAIL.",
+  "note": "Observed primary endpoint conclusions, not FDA approvals. Review exact NCT sponsor and intervention. Some trials have unknown registry status but published results; preserve both independently.",
   "records": [
     {
       "nctId": "NCT04770753",
@@ -180,6 +180,15 @@
       "evidenceType": "PEER_REVIEWED_PHASE3_RESULTS",
       "reviewedAt": "2026-11-05",
       "qualification": "Primary-endpoint evidence only; not a regulatory or trading recommendation"
+    },
+    {
+      "nctId": "NCT05021536",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "Amylyx PHOENIX Phase 3 study of AMX0035 in ALS did not meet prespecified Week 48 ALSFRS-R change primary endpoint versus placebo (p=0.667); company announced March 8, 2024. Registry recruitment status UNKNOWN is separate from the observed outcome.",
+      "evidenceUrl": "https://investors.amylyx.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-topline-results-global-phase-3",
+      "evidenceType": "ISSUER_READOUT_AND_SEC_8K",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Exact-NCT sponsor drug/indication/readout crosswalk; primary endpoint miss only; not a new FDA or trading decision"
     }
   ]
 }
