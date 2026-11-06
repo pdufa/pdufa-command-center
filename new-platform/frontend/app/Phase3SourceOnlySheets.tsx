@@ -222,7 +222,7 @@ export default function Phase3SourceOnlySheets(){
     {" · "}<a href="/api/phase3-active-190-coverage?format=csv">Missing-data and score-coverage report</a>
    </p>
    {scoreError&&<p role="alert">{scoreError}. The spreadsheet rows and 190-column exports remain available.</p>}
-   {coverageError&&<p role="alert">{coverageError}. Individual trial exports remain available.</p>
+   {coverageError&&<p role="alert">{coverageError}. Individual trial exports remain available.</p>}
   <Sheet kind="PRE_DATA" rows={pre} query={query} scores={scores} scoreLoading={scoreLoading} coverage={coverage} coverageLoading={coverageLoading}/>
   <Sheet kind="POST_DATA" rows={post} query={query} scores={scores} scoreLoading={scoreLoading} coverage={coverage} coverageLoading={coverageLoading}/>
   <details open={openHistorical} onToggle={e=>setOpenHistorical(e.currentTarget.open)}
