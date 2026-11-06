@@ -57,7 +57,7 @@ export async function GET(request:Request){
  const ticker=(params.get("ticker")||"").trim().toUpperCase();
  const nctId=(params.get("nctId")||"").trim().toUpperCase();
  if(!["all","active","pre","post"].includes(cohort)||!/^([A-Z0-9.]{1,8})?$/.test(ticker)||
-  !/^(NCT\\d{8})?$/.test(nctId))
+  !/^(NCT\d{8})?$/.test(nctId))
   return Response.json({error:"Invalid cohort, ticker or exact NCT selector"},{status:400});
  const preIds=new Set(activePhase3Cohorts.pre.map(r=>r.nctId));
  const postIds=new Set(activePhase3Cohorts.post.map(r=>r.nctId));
