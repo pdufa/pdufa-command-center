@@ -9,9 +9,9 @@
   "documentedQuestionSlots": 271,
   "unscoredQuestionSlots": 539,
   "registryResultsPosted": 0,
-  "historicalPrimaryOutcomesSourced": 8,
-  "historicalPrimaryMet": 7,
-  "historicalPrimaryMixed": 1,
+  "historicalPrimaryOutcomesSourced": 14,
+  "historicalPrimaryMet": 12,
+  "historicalPrimaryMixed": 2,
   "unvalidatedClinicalFiveScores": 0,
   "tradeGate": {
     "status": "EXCLUDED_FROM_ACTIONABLE_TRADING_SHORTLIST",
@@ -26,7 +26,10 @@
     "All 27 source records get numeric documentary completeness; this is not a five-factor clinical score.",
     "Historical observed endpoints sourced from exact-NCT clinical publications are not FDA decisions.",
     "No market signal or dated price is inferred during SVA trading halt.",
-    "ClinicalTrials.gov may have no results posted even when a peer-reviewed clinical publication is available."
+    "ClinicalTrials.gov may have no results posted even when a peer-reviewed clinical publication is available.",
+    "All 27 registered primary endpoint descriptions cross-reconciled with original 2026-11-05 ClinicalTrials.gov deep registry snapshots; none has saved registry-posted results in that baseline. Journal readouts are separate sources.",
+    "SVA US shares reported trading halted since 2019 in 2025 Form 20-F filed June 2026; continue to exclude from tradable US shortlist pending authoritative evidence of trading resumption.",
+    "Original-source recovery now covers 14 of 27 Sinovac historical primary endpoint classes (12 met, 2 mixed/nonbinary); remaining 13 are unadjudicated, frequently ongoing. Clinical-five RAAS ratings still unavailable."
   ],
   "records": [
     {
@@ -54,8 +57,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": "https://pubmed.ncbi.nlm.nih.gov/42659917/",
-      "otherPublishedResearchNote": "2026 randomized multicountry poliovirus noninferiority article reports seroconversion by serotype, but full prespecified adjusted confidence interval decision remains unadjudicated."
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT07416110",
@@ -82,8 +84,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT02451969",
@@ -110,8 +111,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT03526978",
@@ -126,9 +126,9 @@
       "unscoredQuestionCount": 20,
       "fiveFactorClinicalScore": null,
       "clinicalScoreReason": "Not assigned: no full set of five exact-NCT source-calibrated clinical grades; documentary score is not efficacy or PDUFA probability.",
-      "observedPrimaryOutcome": null,
-      "observedPrimaryOutcomeRationale": null,
-      "observedPrimarySource": null,
+      "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
+      "observedPrimaryOutcomeRationale": "Randomized Sinovac sIPV vs IPV Phase 3 (per-protocol n=553 vs 562) demonstrated noninferiority for poliovirus types 1, 2, 3 seroconversion. Fever was more common in investigational arm (61.6% vs 49.8%); seroconversion is a surrogate, not clinical protection efficacy.",
+      "observedPrimarySource": "https://pubmed.ncbi.nlm.nih.gov/30958543/",
       "registeredPrimaryEndpoint": "The seroconversion rates (SCRs) of each group after primary immunization.",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT03526978",
@@ -138,8 +138,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT03822754",
@@ -154,9 +153,9 @@
       "unscoredQuestionCount": 20,
       "fiveFactorClinicalScore": null,
       "clinicalScoreReason": "Not assigned: no full set of five exact-NCT source-calibrated clinical grades; documentary score is not efficacy or PDUFA probability.",
-      "observedPrimaryOutcome": null,
-      "observedPrimaryOutcomeRationale": null,
-      "observedPrimarySource": null,
+      "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
+      "observedPrimaryOutcomeRationale": "Trial A (sIPV followed by two bOPV doses): randomized double-blind Phase 3 trial in 240 infants, with Sabin-strain inactivated polio vaccine versus conventional IPV in the same oral polio schedule; reported prespecified noninferiority of seroconversion against poliovirus types 1 and 3. Two separate randomization cohorts; seroconversion surrogate rather than direct poliomyelitis efficacy.",
+      "observedPrimarySource": "https://pubmed.ncbi.nlm.nih.gov/31660344/",
       "registeredPrimaryEndpoint": "The difference between experimental group and control group of type I,III neutralizing antibody seroconversion rate after primary immunization. And the lower limit of 95% confidence intervals of the difference value.",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT03822754",
@@ -166,8 +165,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT03822767",
@@ -182,9 +180,9 @@
       "unscoredQuestionCount": 20,
       "fiveFactorClinicalScore": null,
       "clinicalScoreReason": "Not assigned: no full set of five exact-NCT source-calibrated clinical grades; documentary score is not efficacy or PDUFA probability.",
-      "observedPrimaryOutcome": null,
-      "observedPrimaryOutcomeRationale": null,
-      "observedPrimarySource": null,
+      "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
+      "observedPrimaryOutcomeRationale": "Trial B (two sIPV followed by one bOPV dose): randomized double-blind Phase 3 trial in 240 infants, with Sabin-strain inactivated polio vaccine versus conventional IPV in the same oral polio schedule; reported prespecified noninferiority of seroconversion against poliovirus types 1 and 3. Two separate randomization cohorts; seroconversion surrogate rather than direct poliomyelitis efficacy.",
+      "observedPrimarySource": "https://pubmed.ncbi.nlm.nih.gov/31660344/",
       "registeredPrimaryEndpoint": "The difference between experimental group and control group of type I,III neutralizing antibody seroconversion rate after primary immunization. And the lower limit of 95% confidence intervals of the difference value.",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT03822767",
@@ -194,8 +192,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT03853993",
@@ -222,8 +219,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT03859141",
@@ -250,8 +246,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT03909074",
@@ -267,7 +262,7 @@
       "fiveFactorClinicalScore": null,
       "clinicalScoreReason": "Not assigned: no full set of five exact-NCT source-calibrated clinical grades; documentary score is not efficacy or PDUFA probability.",
       "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
-      "observedPrimaryOutcomeRationale": "Randomized controlled 36–71-month EV71 vaccine Phase III trial reports immunogenicity noninferiority against licensed vaccine in older children (GMT 370.0 vs 296.2) and similar adverse-reaction incidence. The registered outcomes are antibody seroconversion and geometric mean titers, not field protection.",
+      "observedPrimaryOutcomeRationale": "EV71 older-child immunobridging trial (older cohort 36–71 months, comparator 6–35 months): anti-EV71 seroconversion 95.5% was noninferior to younger cohort 98.5% and above active older-age control 86.0%. This is immunogenicity noninferiority, not clinical HFMD prevention.",
       "observedPrimarySource": "https://pubmed.ncbi.nlm.nih.gov/33269798/",
       "registeredPrimaryEndpoint": "The seroconversion rates (SCR) of the EV71 neutralizing antibody calculated based on the cutoff value of 1:8 | The Geometric mean titer (GMT) of the EV71 neutralizing antibody in the susceptible population",
       "registryResultsPosted": false,
@@ -278,8 +273,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT04386707",
@@ -295,8 +289,8 @@
       "fiveFactorClinicalScore": null,
       "clinicalScoreReason": "Not assigned: no full set of five exact-NCT source-calibrated clinical grades; documentary score is not efficacy or PDUFA probability.",
       "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
-      "observedPrimaryOutcomeRationale": "Randomized Phase III three-commercial-lot Sabin IPV study reports all three poliovirus types met prespecified lot-to-lot GMT equivalence intervals 0.67–1.50 and pooled immunogenicity seroconversion noninferiority to control IPV for types 1, 2 and 3. These are surrogate immune endpoints.",
-      "observedPrimarySource": "https://www.mdpi.com/2076-393X/10/2/254",
+      "observedPrimaryOutcomeRationale": "Sinovac three-lot Sabin IPV randomized Phase 3 of 1300 infants: pairwise GMT ratio confidence intervals met 0.67–1.50 equivalence margin for three poliovirus types, and pooled sIPV was noninferior to comparator IPV for all three seroconversion endpoints. Surrogate immunogenicity only.",
+      "observedPrimarySource": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8879689/",
       "registeredPrimaryEndpoint": "Immunogenicity index-Geometric mean titer of neutralizing antibody | Immunogenicity index-Seroconversion rates of neutralizing antibody",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT04386707",
@@ -306,8 +300,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT05245552",
@@ -334,8 +327,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT05386810",
@@ -351,7 +343,7 @@
       "fiveFactorClinicalScore": null,
       "clinicalScoreReason": "Not assigned: no full set of five exact-NCT source-calibrated clinical grades; documentary score is not efficacy or PDUFA probability.",
       "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
-      "observedPrimaryOutcomeRationale": "Five-dose multidose Sabin IPV randomized blinded Phase III stage II comparison reported pairwise lot GMT ratios for types 1–3 within prespecified equivalence range 0.67–1.50 and seroconversion noninferiority to both control groups (98.02%, 94.07%, 98.77% across types). Lot consistency and immunogenicity, not clinical polio prevention.",
+      "observedPrimaryOutcomeRationale": "Five-dose Sabin inactivated poliovirus vaccine: phase III lot consistency GMT ratios between 0.67 and 1.50 for all serotypes; vaccine arm seroconversion 98.02%, 94.07%, 98.77% for types 1–3, noninferior to comparator control arms. This is immunogenicity and lot consistency, not prevention efficacy.",
       "observedPrimarySource": "https://www.sciencedirect.com/science/article/pii/S1201971223000206",
       "registeredPrimaryEndpoint": "Safety index-incidence of adverse reactions | Immunogenicity index-Geometric mean titers (GMT) | Immunogenicity index- seroconversion rate of neutralizing antibody",
       "registryResultsPosted": false,
@@ -362,8 +354,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT05431725",
@@ -378,9 +369,9 @@
       "unscoredQuestionCount": 20,
       "fiveFactorClinicalScore": null,
       "clinicalScoreReason": "Not assigned: no full set of five exact-NCT source-calibrated clinical grades; documentary score is not efficacy or PDUFA probability.",
-      "observedPrimaryOutcome": null,
-      "observedPrimaryOutcomeRationale": null,
-      "observedPrimarySource": null,
+      "observedPrimaryOutcome": "NO_BINARY_PASS_FAIL",
+      "observedPrimaryOutcomeRationale": "Randomized Phase 3 Sinovac-QIV versus Vaxigrip-Tetra humoral/cellular analyses: HAI response increased in both arms, with reported GMT fold increase 9–10 versus 7–8. Exact trial has published immune measurements but no single confirmed binary pivotal success criterion adjudicated in this research pass.",
+      "observedPrimarySource": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12796199/",
       "registeredPrimaryEndpoint": "Seroconversion rates of HI antibody | GMTs of HI antibody",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT05431725",
@@ -390,8 +381,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": "https://www.nature.com/articles/s41467-025-67102-y",
-      "otherPublishedResearchNote": "2025 subset immunogenicity report found both vaccines increased antibody titers; not a verified noninferiority primary pass or US FDA action."
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT06049927",
@@ -406,9 +396,9 @@
       "unscoredQuestionCount": 20,
       "fiveFactorClinicalScore": null,
       "clinicalScoreReason": "Not assigned: no full set of five exact-NCT source-calibrated clinical grades; documentary score is not efficacy or PDUFA probability.",
-      "observedPrimaryOutcome": null,
-      "observedPrimaryOutcomeRationale": null,
-      "observedPrimarySource": null,
+      "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
+      "observedPrimaryOutcomeRationale": "Multicenter blinded Phase 3 of 3300 infants 6–35 months: full-dose and half-dose Sinovac quadrivalent influenza vaccine met immunogenicity noninferiority to licensed half-dose trivalent comparator for shared strains. No vaccine-related serious adverse events reported; immunologic surrogate outcome only.",
+      "observedPrimarySource": "https://pubmed.ncbi.nlm.nih.gov/41391373/",
       "registeredPrimaryEndpoint": "Seroconversion rates of HI antibody | Geometric Mean Titers (GMTs) of HI antibody | Number of Participants With Seroprotection to Influenza Vaccine Antigens",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT06049927",
@@ -418,8 +408,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT07211152",
@@ -446,8 +435,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT07357545",
@@ -474,8 +462,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT06734832",
@@ -502,8 +489,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT07055295",
@@ -530,8 +516,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT07055893",
@@ -558,8 +543,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT07505810",
@@ -586,8 +570,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT07505823",
@@ -614,8 +597,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT07505836",
@@ -642,8 +624,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT07505888",
@@ -670,8 +651,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT07793227",
@@ -698,8 +678,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT01507857",
@@ -726,8 +705,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT01636245",
@@ -742,9 +720,9 @@
       "unscoredQuestionCount": 19,
       "fiveFactorClinicalScore": null,
       "clinicalScoreReason": "Not assigned: no full set of five exact-NCT source-calibrated clinical grades; documentary score is not efficacy or PDUFA probability.",
-      "observedPrimaryOutcome": null,
-      "observedPrimaryOutcomeRationale": null,
-      "observedPrimarySource": null,
+      "observedPrimaryOutcome": "PRIMARY_ENDPOINT_MET",
+      "observedPrimaryOutcomeRationale": "Three Sinovac EV71 lots met prespecified pairwise GMT equivalence bounds (95% confidence interval of log GMT differences within ±0.176); n=1400 and reported seropositivity 99.7–100%. This is lot-equivalence immunogenicity, not prevention efficacy.",
+      "observedPrimarySource": "https://pubmed.ncbi.nlm.nih.gov/24108780/",
       "registeredPrimaryEndpoint": "The GMT of anti-EV71 antibodies in serum 28 days after the two-dose regimen",
       "registryResultsPosted": false,
       "registryUrl": "https://clinicaltrials.gov/study/NCT01636245",
@@ -754,8 +732,7 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": "https://pmc.ncbi.nlm.nih.gov/articles/PMC4070950/",
-      "otherPublishedResearchNote": "2014 cross-reactive antibody assay reports 30 sera from this exact lot trial; not a full primary lot-consistency analysis."
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     },
     {
       "nctId": "NCT07611513",
@@ -782,10 +759,10 @@
       "pdufaDateVerified": false,
       "marketEligibility": "RESEARCH_ONLY_US_NASDAQ_TRADING_HALTED",
       "sourceAsOf": "2026-11-06",
-      "otherPublishedResearchSource": null,
-      "otherPublishedResearchNote": null
+      "scoreInterpretation": "DOCUMENTATION_COVERAGE_ONLY_NOT_CLINICAL_EFFICACY"
     }
   ],
-  "exactTrialPrimaryEndpointsCaptured": 27,
-  "independentlyPublishedResearchNotYetPrimaryAdjudicated": 3
+  "historicalPrimaryNotMet": 0,
+  "registryPrimaryEndpointsDocumented": 27,
+  "numericalDocumentationScores": 27
 }
