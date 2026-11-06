@@ -24,8 +24,8 @@ test("All nine exact Agios active NCTs are represented, five post and four pre",
 });
 test("Source facts are date-qualified and cannot introduce numerical clinical scores",()=>{
  assert.equal(evidence.asOf,"2026-11-06");
- assert.equal(evidence.facts.length,17);
- assert.equal(new Set(evidence.facts.map(f=>f.nctId+"#"+f.question)).size,17);
+ assert.equal(evidence.facts.length,31);
+ assert.equal(new Set(evidence.facts.map(f=>f.nctId+"#"+f.question)).size,31);
  const ids=new Set(evidence.trials.map(t=>t.nctId));
  for(const f of evidence.facts){
   assert.ok(ids.has(f.nctId));
