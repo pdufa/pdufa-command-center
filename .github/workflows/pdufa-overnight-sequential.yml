@@ -18,10 +18,15 @@ on:
         type: string
         required: false
         default: ''
-  # Source changes validate the workflow; only an explicit dispatch runs scans.
+  # Validate overnight wiring whenever its test or called workflow changes.
+  # Push validation never launches scans; only explicit dispatch can collect sources.
   push:
     branches: [main]
-    paths: ['.github/workflows/pdufa-overnight-sequential.yml']
+    paths:
+      - '.github/workflows/pdufa-overnight-sequential.yml'
+      - '.github/workflows/pdufa-nightly-scoring-then-repair.yml'
+      - 'scripts/nightly_sequence.py'
+      - 'tests/test_nightly_pacific_sequence.py'
   pull_request:
     branches: [main]
     paths:
