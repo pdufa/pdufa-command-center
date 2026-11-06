@@ -134,7 +134,7 @@ export async function GET(request:Request){
      return ["SOURCE_FACT_ONLY","","","Issuer-reported safety/tolerability: "+investor.safetyEvidence+"; no calibrated safety forecast inferred",investor.companyUrl];
     if(q.number===17&&/secondary endpoint/i.test(investor.specificEvidence||""))
      return ["SOURCE_FACT_ONLY","","","Issuer mentions clinical secondary endpoint(s): "+investor.specificEvidence+"; no prospective score inferred",investor.companyUrl];
-    if(q.number===18&&/patient.reported|\\bPRO\\b/i.test(investor.specificEvidence||""))
+    if(q.number===18&&/patient.reported|\bPRO\b/i.test(investor.specificEvidence||""))
      return ["SOURCE_FACT_ONLY","","","Issuer mentions patient-reported outcomes: "+investor.specificEvidence,investor.companyUrl];
     if(q.number===24&&/discontinuation/i.test(investor.safetyEvidence||""))
      return ["SOURCE_FACT_ONLY","","","Issuer-reported retention/discontinuation fact: "+investor.safetyEvidence,investor.companyUrl];
