@@ -6,6 +6,7 @@ const ledger=JSON.parse(fs.readFileSync(path.join(root,"public/phase3-unified-cl
 const route=fs.readFileSync(path.join(root,"app/api/phase3-unified-190-columns/route.ts"),"utf8");
 const screen=fs.readFileSync(path.join(root,"app/Phase3UnifiedClassifications.tsx"),"utf8");
 const questionDef=fs.readFileSync(path.join(root,"lib/phase3-universal-questions.ts"),"utf8");
+const adjudications=JSON.parse(fs.readFileSync(path.join(root,"data/phase3EndpointAdjudications20261105.json"),"utf8"));
 const headerCount=(name)=>{
  const m=route.match(new RegExp("const "+name+" = \\[([\\s\\S]*?)\\];"));
  assert.ok(m,"Missing column group "+name);
@@ -24,17 +25,28 @@ test("The 762-row assessment has exactly 190 columns (20 legacy + 20 analysis + 
  assert.match(route,/rows\.length!==763/);
  assert.match(screen,/api\/phase3-unified-190-columns/);
 });
-test("Passing classification requires explicit exact-NCT readout; not registry status or a prediction",()=>{
- const observed=ledger.rows.filter(r=>r.classificationVerified&&
-  r.readoutOutcome==="PRIMARY_ENDPOINT_MET"&&r.readoutEvidenceUrl);
- assert.equal(observed.length,1);
- assert.equal(observed[0].nctId,"NCT05711940");
- assert.equal(ledger.rows.filter(r=>r.readoutOutcome==="NOT_INDEPENDENTLY_REVIEWED").length,761);
+test("All 762 unique NCTs retain evidence-qualified 190-column outcome states",()=>{
+ const known=new Set(ledger.rows.map(r=>r.nctId));
+ assert.equal(adjudications.totalReviewed,19);
+ assert.equal(adjudications.records.length,19);
+ assert.equal(new Set(adjudications.records.map(r=>r.nctId)).size,19);
+ assert.ok(adjudications.records.every(r=>known.has(r.nctId)&&r.evidenceUrl&&r.rationale));
+ assert.equal(adjudications.counts.PRIMARY_ENDPOINT_MET,16);
+ assert.equal(adjudications.counts.PRIMARY_ENDPOINT_NOT_MET,1);
+ assert.equal(adjudications.counts.NO_BINARY_PASS_FAIL,2);
+ const failed=adjudications.records.find(r=>r.endpointOutcome==="PRIMARY_ENDPOINT_NOT_MET");
+ assert.equal(failed.nctId,"NCT04308590");
+ assert.equal(762-19,743);
  assert.match(route,/PASS_DOCUMENTED_PRIMARY_ENDPOINT/);
- assert.match(route,/\"UNDETERMINED\"/);
- assert.match(route,/\"PREDICTED_PRE_READOUT\"/);
- assert.match(route,/\"SOURCE_FACT_ONLY\"/);
- assert.match(route,/\"UNSCORED\"/);
+ assert.match(route,/FAIL_DOCUMENTED_PRIMARY_ENDPOINT/);
+ assert.match(route,/"NON_BINARY_ENDPOINT"/);
+ assert.match(route,/"UNDETERMINED"/);
+ assert.match(route,/endpointByNct/);
+ assert.match(route,/OBSERVED_PRIMARY_ENDPOINT_NOT_MET/);
+ assert.match(route,/countedEvidence/);
+ assert.match(route,/"UNSCORED"/);
+ assert.match(route,/"PREDICTED_PRE_READOUT"/);
  assert.match(screen,/Passing classification/);
  assert.match(screen,/data-passing-classification/);
+ assert.match(screen,/setPassingFilter/);
 });
