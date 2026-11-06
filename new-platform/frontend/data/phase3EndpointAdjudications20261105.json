@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 76,
+  "totalReviewed": 83,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 55,
-    "PRIMARY_ENDPOINT_NOT_MET": 12,
+    "PRIMARY_ENDPOINT_MET": 60,
+    "PRIMARY_ENDPOINT_NOT_MET": 14,
     "NO_BINARY_PASS_FAIL": 9
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
@@ -803,6 +803,97 @@
       "recoveryBatch": "ACAD_ALKS_HISTORICAL_PASS_20261106",
       "evidenceType": "OFFICIAL_SOURCE_EXACT_PROTOCOL_CROSSWALK",
       "qualification": "Historical endpoint designation only; does not estimate future FDA approval probability."
+    },
+    {
+      "nctId": "NCT03247530",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "812P301 pediatric ADHD-RS-5 week-6: 100 mg LS mean -16.6 (p=0.0004), 200 mg -17.7 (p<0.0001), placebo -10.9; both prespecified active dose comparisons statistically significant.",
+      "evidenceUrl": "https://ir.supernus.com/news-releases/news-release-details/supernus-announces-positive-results-two-phase-iii-studies-spn",
+      "sourceDate": "2018-12-06",
+      "identityCrosswalk": "NCT03247530 = 812P301; https://pubmed.ncbi.nlm.nih.gov/32723670/",
+      "identityEvidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/32723670/",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SUPN_SEVEN_EXACT_PHASE3_20261106",
+      "evidenceType": "ISSUER_READOUT_VERIFIED_REGISTRY_CROSSWALK",
+      "qualification": "Historical primary trial outcome only; not a prospective RAAS prediction. Dose-specific results preserved."
+    },
+    {
+      "nctId": "NCT03247517",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "812P302 adolescent ADHD-RS-5 week-6: 200 mg LS mean -16.0 (p=0.0232), 400 mg -16.5 (p=0.0091), placebo -11.4; both active dose comparisons met primary endpoint.",
+      "evidenceUrl": "https://www.sec.gov/Archives/edgar/data/1356576/000110465918074466/a18-41980_1ex99d1.htm",
+      "sourceDate": "2018-12-20",
+      "identityCrosswalk": "NCT03247517 = 812P302; https://clinicaltrials.gov/study/NCT03247517?tab=results",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03247517?tab=results",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SUPN_SEVEN_EXACT_PHASE3_20261106",
+      "evidenceType": "ISSUER_READOUT_VERIFIED_REGISTRY_CROSSWALK",
+      "qualification": "Historical primary trial outcome only; not a prospective RAAS prediction. Dose-specific results preserved."
+    },
+    {
+      "nctId": "NCT03247543",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "812P303 pediatric ADHD-RS-5 week-8: 200 mg -17.6 (p=0.0038), 400 mg -17.5 (p=0.0063), placebo -11.7. Both doses met primary endpoint.",
+      "evidenceUrl": "https://ir.supernus.com/news-releases/news-release-details/supernus-announces-positive-results-two-phase-iii-studies-spn",
+      "sourceDate": "2018-12-06",
+      "identityCrosswalk": "NCT03247543 = 812P303; https://pubmed.ncbi.nlm.nih.gov/33750646/",
+      "identityEvidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/33750646/",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SUPN_SEVEN_EXACT_PHASE3_20261106",
+      "evidenceType": "ISSUER_READOUT_VERIFIED_REGISTRY_CROSSWALK",
+      "qualification": "Historical primary trial outcome only; not a prospective RAAS prediction. Dose-specific results preserved."
+    },
+    {
+      "nctId": "NCT03247556",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "812P304 week-7 ADHD-RS-5 change: 400 mg -18.3 vs placebo -13.2 (p=0.0082) met primary; 600 mg -16.7 (p=0.0712) did NOT meet significance. Study-level success is dose-specific and does not imply 600 mg pass.",
+      "evidenceUrl": "https://ir.supernus.com/news-releases/news-release-details/supernus-announces-p304-phase-iii-data-confirming-positive",
+      "sourceDate": "2019-03-28",
+      "identityCrosswalk": "NCT03247556 = 812P304; https://pmc.ncbi.nlm.nih.gov/articles/PMC8146561/",
+      "identityEvidenceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC8146561/",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SUPN_SEVEN_EXACT_PHASE3_20261106",
+      "evidenceType": "ISSUER_READOUT_VERIFIED_REGISTRY_CROSSWALK",
+      "qualification": "Historical primary trial outcome only; not a prospective RAAS prediction. Dose-specific results preserved."
+    },
+    {
+      "nctId": "NCT04016779",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "812P306 adult AISRS week-6: active viloxazine ER change -15.5 vs placebo -11.7; primary p=0.0040, sensitivity p=0.0085. Flexible-dose 200–600 mg, not standalone evidence that every fixed dose passes.",
+      "evidenceUrl": "https://ir.supernus.com/news-releases/news-release-details/supernus-announces-positive-results-phase-iii-study-spn-812-0",
+      "sourceDate": "2020-12-22",
+      "identityCrosswalk": "NCT04016779 = 812P306; https://pmc.ncbi.nlm.nih.gov/articles/PMC10575801/",
+      "identityEvidenceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10575801/",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SUPN_SEVEN_EXACT_PHASE3_20261106",
+      "evidenceType": "ISSUER_READOUT_VERIFIED_REGISTRY_CROSSWALK",
+      "qualification": "Historical primary trial outcome only; not a prospective RAAS prediction. Dose-specific results preserved."
+    },
+    {
+      "nctId": "NCT02618408",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "810P301/CHIME 1 combined final-stage analysis failed primary endpoint: 36 mg median impulsive-aggression episode reduction 58.6% but p=0.092 versus placebo; interim stage 1 p=0.029 does not override final combined result.",
+      "evidenceUrl": "https://supernus.gcs-web.com/news-releases/news-release-details/supernus-announces-third-quarter-2019-financial-results-and",
+      "sourceDate": "2019-11-05",
+      "identityCrosswalk": "NCT02618408 = 810P301; https://clinicaltrials.gov/study/NCT02618408",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT02618408",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SUPN_SEVEN_EXACT_PHASE3_20261106",
+      "evidenceType": "ISSUER_READOUT_VERIFIED_REGISTRY_CROSSWALK",
+      "qualification": "Historical primary trial outcome only; not a prospective RAAS prediction. Dose-specific results preserved."
+    },
+    {
+      "nctId": "NCT02618434",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "810P302/CHIME 2 did not meet primary endpoint; company reports 36 mg median impulsive-aggression episode reduction 51.3%, p=0.961 versus placebo. Company ended SPN-810 impulsive aggression program.",
+      "evidenceUrl": "https://ir.supernus.com/node/11506",
+      "sourceDate": "2020-02-25",
+      "identityCrosswalk": "NCT02618434 = 810P302; https://clinicaltrials.gov/study/NCT02618434",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT02618434",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SUPN_SEVEN_EXACT_PHASE3_20261106",
+      "evidenceType": "ISSUER_READOUT_VERIFIED_REGISTRY_CROSSWALK",
+      "qualification": "Historical primary trial outcome only; not a prospective RAAS prediction. Dose-specific results preserved."
     }
   ]
 }
