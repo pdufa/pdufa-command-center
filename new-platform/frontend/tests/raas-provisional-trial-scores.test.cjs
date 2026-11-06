@@ -94,7 +94,7 @@ test("nightly source audit remains idempotent after metric grade was appended",(
  assert.deepEqual(reread.ledger.records,grades.records);
  history.parseRaasTrialHistory(reread.ledger);
 });
-test("pilot score UI is labeled as partial and non-validated, and nightly capture persists it",()=>{
+test("legacy pilot score UI is historically preserved while nightly scoring capture remains cancelled",()=>{
  const scoreSource=read("lib/raas-provisional-trial-scores.ts");
  const summary=read("app/TrialRaasDisclosure.tsx");
  const button=read("app/RaasTrialHistoryButton.tsx");
@@ -105,7 +105,8 @@ test("pilot score UI is labeled as partial and non-validated, and nightly captur
  assert.match(summary,/data-raas-provisional-component/);
  assert.match(button,/data-raas-current-provisional-metric/);
  assert.match(button,/Overall RAAS remains —\/100/);
- assert.match(workflow,/node scripts\/raas_trial_provisional_metric_capture\.cjs/);
+ assert.match(workflow,/Surveys and ratings cancelled/);
+ assert.doesNotMatch(workflow,/run:\\s*node scripts\\/raas_trial_provisional_metric_capture\\.cjs/);
  for(const [source,name] of [[scoreSource,"raas-provisional-trial-scores.ts"],
   [summary,"TrialRaasDisclosure.tsx"],[button,"RaasTrialHistoryButton.tsx"]]){
   const result=ts.transpileModule(source,{fileName:name,reportDiagnostics:true,
