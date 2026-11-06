@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-06",
+  "scope": "ALL_762_PHASE3_TRIAL_PRIMARY_ENDPOINT_DEFINITION_AND_DISPOSITION_AUDIT",
+  "censusTrials": 762,
+  "individuallyReconciledNctRows": 762,
+  "registeredPrimaryOutcomeIn2026Snapshot": 756,
+  "historicalPublicationDefinedPrimaryEndpoint": 5,
+  "withdrawnZeroEnrolledNotApplicable": 1,
+  "unresolvedEndpointDefinitionDisposition": 0,
+  "registryResultsPosted": 337,
+  "publicRegistryProtocols": 248,
+  "publicRegistryStatisticalAnalysisPlans": 246,
+  "scientificallyAdjudicatedHistoricalPrimaryOutcomes": 86,
+  "endpointDispositionCoveragePercent": 100,
+  "actualEfficacyOrFdaPredictionCoveragePercent": null,
+  "sourcePolicy": "100% is documentary endpoint definition/disposition coverage, NOT 100% five-factor clinical scoring, protocol correctness, U.S. FDA decisions, calibrated predictions or current tradable 300M–10B Pipeline eligibility.",
+  "csvPath": "reports/phase3-missingness-2026-11-06/phase3-primary-endpoint-coverage-762.csv",
+  "snapshotSourcePaths": [
+    "new-platform/frontend/data/phase3RegistryDeepResults20261105Part01.json",
+    "...Part02-06.json",
+    "new-platform/frontend/data/phase3PreRegistryPrimaryEndpointRecovery20261106.json",
+    "new-platform/frontend/data/phase3EndpointAdjudications20261105.json"
+  ]
+}
