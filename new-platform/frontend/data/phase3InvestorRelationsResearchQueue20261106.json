@@ -10126,8 +10126,8 @@
     {
       "ticker": "LXRX",
       "company": "Lexicon Pharmaceuticals",
-      "officialInvestorRelationsUrl": null,
-      "searchStatus": "NOT_YET_REVIEWED",
+      "officialInvestorRelationsUrl": "https://investors.lexpharma.com/",
+      "searchStatus": "PARTIALLY_REVIEWED",
       "trials": [
         {
           "nctId": "NCT01677910",
@@ -10149,21 +10149,116 @@
         },
         {
           "nctId": "NCT02384941",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_PRIMARY_ENDPOINT_MET"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 17,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 21,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 23,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 24,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            }
+          ]
         },
         {
           "nctId": "NCT02421510",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_PRIMARY_ENDPOINT_MET"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 17,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 21,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 23,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 24,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            }
+          ]
         },
         {
           "nctId": "NCT02531035",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_PRIMARY_ENDPOINT_MET"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 17,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 23,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 24,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            }
+          ]
         },
         {
           "nctId": "NCT02926937",
@@ -10191,9 +10286,30 @@
         },
         {
           "nctId": "NCT03242252",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_PRIMARY_ENDPOINT_MET"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 17,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 21,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            }
+          ]
         },
         {
           "nctId": "NCT03285594",
@@ -10203,9 +10319,34 @@
         },
         {
           "nctId": "NCT03315143",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_PRIMARY_ENDPOINT_MET"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 17,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 24,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            }
+          ]
         },
         {
           "nctId": "NCT03332771",
@@ -10227,9 +10368,42 @@
         },
         {
           "nctId": "NCT03521934",
-          "identityMatched": false,
-          "assessmentReviewStatus": "NOT_YET_REVIEWED",
-          "questionReview": []
+          "identityMatched": true,
+          "assessmentReviewStatus": "PARTIALLY_REVIEWED",
+          "questionReview": [
+            {
+              "number": 1,
+              "status": "DOCUMENTED_PRIMARY_ENDPOINT_MET"
+            },
+            {
+              "number": 3,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 17,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 18,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 19,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 24,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 29,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            },
+            {
+              "number": 30,
+              "status": "DOCUMENTED_SOURCE_FACT"
+            }
+          ]
         },
         {
           "nctId": "NCT06481891",
