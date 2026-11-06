@@ -1,7 +1,8 @@
 import {populationGeographyFact,populationGeographyIntegrity,populationGeographyRecords} from "../../../lib/phase3-population-geography";
 import {irAssessment,irResearchIntegrity,requiresResearchStatus} from "../../../lib/phase3-ir-research";
-import {activePhase3Cohorts} from "../../../lib/phase3-active-cohorts";
+import {activePhase3Cohorts,IONIS_VERIFIED_READOUTS} from "../../../lib/phase3-active-cohorts";
 import agiosEvidence from "../../../data/agiosPhase3Evidence20261106.json";
+import ionisEvidence from "../../../data/ionisPhase3Evidence20261106.json";
 import {loadLivePhase3Registry} from "../phase3-live-registry-backfill/route";
 import registryCrosswalk from "../../../data/phase3RegistryDrugComparatorCrosswalk20261106.json";
 import endpointAdjudications from "../../../data/phase3EndpointAdjudications20261105.json";
@@ -14,6 +15,7 @@ export const dynamic = "force-dynamic";
 export const maxDuration = 60;
 const ledger=activePhase3Cohorts.snapshot;
 const agiosFacts=new Map(agiosEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
+const ionisFacts=new Map(ionisEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
 
 /** One Phase 3 trial per exact NCT; predictions never count as observed PASS/FAIL. */
 const baseHeaders = [
@@ -88,6 +90,10 @@ export async function GET(request:Request){
     investorByNct.size!==investorRelationsEvidence.records.length||
     endpointAdjudications.records.some(x=>!ledger.rows.some(r=>r.nctId===x.nctId))||
     agiosEvidence.trials.length!==9||agiosFacts.size!==agiosEvidence.facts.length||
+    ionisEvidence.trials.length!==12||ionisFacts.size!==ionisEvidence.facts.length||
+    ionisEvidence.trials.some(t=>!(t.cohort==="PRE_DATA"?preIds:postIds).has(t.nctId))||
+    ionisEvidence.facts.some(f=>!ionisEvidence.trials.some(t=>t.nctId===f.nctId)||
+      f.question<1||f.question>30||f.score!==null||!f.sourceUrl.startsWith("https://"))||
     agiosEvidence.trials.some(t=>!(t.cohort==="PRE_DATA"?preIds:postIds).has(t.nctId))||
     agiosEvidence.facts.some(f=>!agiosEvidence.trials.some(t=>t.nctId===f.nctId)||
       f.question<1||f.question>30||f.score!==null||!f.sourceUrl.startsWith("https://"))){
@@ -114,9 +120,15 @@ export async function GET(request:Request){
    observedFail?"FAIL_DOCUMENTED_PRIMARY_ENDPOINT":
    noBinary?"NON_BINARY_ENDPOINT":"UNDETERMINED";
   const passRationale=endpoint?.rationale||
+   (r.readoutEvidenceType==="FDA_APPROVAL_SUPPORTING_TRIAL"?
+     "FDA confirms historical approval supported by this exact NCT; no separate binary primary-endpoint verdict inferred":
+    r.readoutEvidenceType==="PEER_REVIEWED_OPEN_LABEL_RESULTS"?
+     "Peer-reviewed exact-trial open-label safety data are descriptive; a placebo-controlled efficacy PASS/FAIL is not established":
+    r.readoutEvidenceType==="ISSUER_READOUT"&&r.readoutOutcome==="PRIMARY_ENDPOINT_MET"?
+     "Issuer reports primary endpoint met; interpret evidence and limitations from the exact source":
    (r.classificationCode==="P3_TERMINATED"?"Trial terminated; an efficacy FAIL is not established by trial status":
     r.classificationCode==="P3_WITHDRAWN"?"Trial withdrawn; an efficacy FAIL is not established by trial status":
-    "No source-qualified Phase 3 primary-endpoint determination available in the saved evidence");
+    "No source-qualified Phase 3 primary-endpoint determination available in the saved evidence"));
   const fullPassRationale=passRationale+(endpoint?.qualification?" | Qualification: "+endpoint.qualification:"");
   const slots=phase3QuestionSlots(r.nctId);
   const predictions=slots.filter(q=>Boolean(q.answer)).length;
@@ -157,7 +169,7 @@ export async function GET(request:Request){
     fullPassRationale+"; observed result, not a prospective prediction",endpointEvidenceUrl];
    if(q.number===1&&noBinary)return ["DOCUMENTED_NON_BINARY_ENDPOINT","","",
     fullPassRationale,endpointEvidenceUrl];
-   if(q.number===29&&endpoint)return ["DOCUMENTED_PUBLIC_READOUT","","",
+   if(q.number===29&&(endpoint||(r.classificationVerified&&r.readoutEvidenceUrl&&r.classificationCode==="P3_POST_DATA_ISSUER")))return ["DOCUMENTED_PUBLIC_READOUT","","",
     "Public Phase 3 readout or results exist. "+fullPassRationale,endpointEvidenceUrl];
    const researched=irAssessment(r.nctId,q.number);
    if(researched)return [researched.classification,"","",
@@ -168,6 +180,10 @@ export async function GET(request:Request){
    if(agiosFact)return [agiosFact.status,"","",
     agiosFact.evidence+" | Published: "+agiosFact.sourceDate+" | Source fact only; no forecast or clinical score inferred",
     agiosFact.sourceUrl];
+   const ionisFact=ionisFacts.get(r.nctId+"#"+q.number);
+   if(ionisFact)return [ionisFact.status,"","",
+    ionisFact.evidence+" | Dated evidence: "+ionisFact.sourceDate+
+    " | Source fact, not a prospective efficacy or RAAS score",ionisFact.sourceUrl];
    // Issuer investor-relations statements are historical SOURCE FACTS, not subjective predictive scores.
    if(q.number===30&&investor?.regulatoryEvidenceStatus&&investor?.regulatoryEvidenceUrl)
     return ["SOURCE_FACT_ONLY","","",
@@ -269,17 +285,17 @@ export async function GET(request:Request){
   }
   if(included(r))rows.push(writeRow(values));
  }
+ const additionalPasses=IONIS_VERIFIED_READOUTS.filter(r=>r.outcome==="PRIMARY_ENDPOINT_MET"&&!endpointByNct.has(r.nctId)).length;
  if((cohort==="all"&&!ticker&&!nctId&&rows.length!==763)||
-    rows.length!==includedCount+1||passedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_MET||
+    rows.length!==includedCount+1||passedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_MET+additionalPasses||
     failedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_NOT_MET){
   return Response.json({error:"Trial/pass reconciliation failed"},{status:503});
  }
  return new Response("\uFEFF"+rows.join("\r\n")+"\r\n",{
   status:200,headers:{
    "Content-Type":"text/csv; charset=utf-8",
-   "Content-Disposition":includeLive?
-     'attachment; filename="Phase3-762-Trials-190-Columns-Live-Registry-2026-11-06.csv"':
-     'attachment; filename="Phase3-762-Trials-190-Columns-2026-11-06-enriched.csv"',
+   "Content-Disposition":'attachment; filename="Phase3-'+(cohort==="all"?"Historical": "Active")+
+    "-"+includedCount+"-Trials-190-Columns-2026-11-06"+(includeLive?"-Live":"")+".csv"+'"',
    "Cache-Control":"no-store"
   }
  });

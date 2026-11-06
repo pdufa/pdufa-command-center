@@ -1,0 +1,479 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-06",
+  "ticker": "IONS",
+  "company": "Ionis Pharmaceuticals, Inc.",
+  "scope": "Exactly 12 active Phase 3 census study IDs, including newly source-confirmed post-readout FUSION, FDA supporting zilganersen study, and peer-reviewed OASISplus extension.",
+  "warnings": [
+    "No new numerical clinical grade or RAAS FDA approval probability is created from source facts.",
+    "Open-label extensions are not interchangeable with the parent randomized pivotal studies.",
+    "Registry-derived source dates are the historical updates indicated by the linked source, not continuous live monitoring.",
+    "Three older Pre-Data labels are corrected by exact-trial issuer, FDA or peer-reviewed evidence; active count stays 258."
+  ],
+  "trials": [
+    {
+      "nctId": "NCT04768972",
+      "drug": "ION363",
+      "indication": "Amyotrophic lateral sclerosis (FUS mutation)",
+      "cohort": "POST_DATA",
+      "registryUrl": "https://clinicaltrials.gov/study/NCT04768972"
+    },
+    {
+      "nctId": "NCT04849741",
+      "drug": "Zilganersen (ION373)",
+      "indication": "Alexander disease",
+      "cohort": "POST_DATA",
+      "registryUrl": "https://clinicaltrials.gov/study/NCT04849741"
+    },
+    {
+      "nctId": "NCT05071300",
+      "drug": "Eplontersen",
+      "indication": "Hereditary ATTR polyneuropathy",
+      "cohort": "PRE_DATA",
+      "registryUrl": "https://clinicaltrials.gov/study/NCT05071300"
+    },
+    {
+      "nctId": "NCT05130450",
+      "drug": "Olezarsen",
+      "indication": "Familial chylomicronemia syndrome",
+      "cohort": "PRE_DATA",
+      "registryUrl": "https://clinicaltrials.gov/study/NCT05130450"
+    },
+    {
+      "nctId": "NCT05185843",
+      "drug": "Olezarsen",
+      "indication": "Familial chylomicronemia syndrome",
+      "cohort": "PRE_DATA",
+      "registryUrl": "https://clinicaltrials.gov/study/NCT05185843"
+    },
+    {
+      "nctId": "NCT05392114",
+      "drug": "Donidalorsen",
+      "indication": "Hereditary angioedema",
+      "cohort": "POST_DATA",
+      "registryUrl": "https://clinicaltrials.gov/study/NCT05392114"
+    },
+    {
+      "nctId": "NCT05667493",
+      "drug": "Eplontersen",
+      "indication": "ATTR cardiomyopathy",
+      "cohort": "PRE_DATA",
+      "registryUrl": "https://clinicaltrials.gov/study/NCT05667493"
+    },
+    {
+      "nctId": "NCT05681351",
+      "drug": "Olezarsen",
+      "indication": "Severe hypertriglyceridemia",
+      "cohort": "PRE_DATA",
+      "registryUrl": "https://clinicaltrials.gov/study/NCT05681351"
+    },
+    {
+      "nctId": "NCT06914609",
+      "drug": "Obudanersen (ION582)",
+      "indication": "Angelman syndrome",
+      "cohort": "PRE_DATA",
+      "registryUrl": "https://clinicaltrials.gov/study/NCT06914609"
+    },
+    {
+      "nctId": "NCT07298447",
+      "drug": "Donidalorsen",
+      "indication": "Pediatric hereditary angioedema",
+      "cohort": "PRE_DATA",
+      "registryUrl": "https://clinicaltrials.gov/study/NCT07298447"
+    },
+    {
+      "nctId": "NCT07727538",
+      "drug": "Olezarsen",
+      "indication": "Pediatric familial chylomicronemia syndrome",
+      "cohort": "PRE_DATA",
+      "registryUrl": "https://clinicaltrials.gov/study/NCT07727538"
+    },
+    {
+      "nctId": "NCT07782827",
+      "drug": "Obudanersen (ION582)",
+      "indication": "Angelman syndrome",
+      "cohort": "PRE_DATA",
+      "registryUrl": "https://clinicaltrials.gov/study/NCT07782827"
+    }
+  ],
+  "facts": [
+    {
+      "nctId": "NCT04768972",
+      "question": 7,
+      "evidence": "FUSION efficacy primary outcome is a joint-rank functional/ventilation-free survival assessment through study Day 505; this is endpoint definition only, not evidence of achieving it.",
+      "sourceUrl": "https://opentrials.com/clinical-trials/NCT04768972/fusion-a-study-to-evaluate-the-efficacy-safety-pharmacokinetics-and",
+      "sourceDate": "2026-07-21",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04768972",
+      "question": 9,
+      "evidence": "Multicenter FUSION has a 60-week randomized placebo-controlled Part 1 (ION363 versus placebo, 2:1), then open-label extension phases. Registered Phase 1-3 is a mixed phase; do not infer Phase 3-only design.",
+      "sourceUrl": "https://clinicaltrials.ucsd.edu/trial/NCT04768972",
+      "sourceDate": "2026-07-18",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04768972",
+      "question": 12,
+      "evidence": "89 patients reported enrolled (actual), as of July 2026 registry-derived update; sample size does not establish statistical power.",
+      "sourceUrl": "https://clinicaltrials.ucsd.edu/trial/NCT04768972",
+      "sourceDate": "2026-07-18",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04849741",
+      "question": 12,
+      "evidence": "FDA states NCT04849741 included 49 randomized controlled patients aged 2 years or older plus four patients under age 2 in an open-label substudy; 53 patients in these components, not 54.",
+      "sourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+      "sourceDate": "2026-09-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05071300",
+      "question": 7,
+      "evidence": "Open-label eplontersen long-term study records change from baseline in platelet count as an outcome. It is not the pivotal trial's clinical efficacy verdict.",
+      "sourceUrl": "https://spzco.com/security/IONS/trials",
+      "sourceDate": "2025-12-04",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05071300",
+      "question": 9,
+      "evidence": "This is a long-term open-label study of eplontersen; no placebo comparison is established for this extension, so comparator adequacy cannot be presumed.",
+      "sourceUrl": "https://spzco.com/security/IONS/trials",
+      "sourceDate": "2025-12-04",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05071300",
+      "question": 12,
+      "evidence": "151 patients are listed in the source's dated registry summary; this describes the long-term follow-up cohort, not a confirmatory efficacy-power calculation.",
+      "sourceUrl": "https://spzco.com/security/IONS/trials",
+      "sourceDate": "2025-12-04",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05130450",
+      "question": 9,
+      "evidence": "Phase 3 open-label extension of BALANCE (NCT04568434) in FCS; parent-trial efficacy must not be assigned to this extension.",
+      "sourceUrl": "https://www.guidelinecentral.com/clinical-trial/?id=NCT05130450",
+      "sourceDate": "2025-12-11",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05130450",
+      "question": 12,
+      "evidence": "Up to 60 participants planned for the FCS olezarsen open-label extension. This is a planned cohort size.",
+      "sourceUrl": "https://www.guidelinecentral.com/clinical-trial/?id=NCT05130450",
+      "sourceDate": "2025-12-11",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05185843",
+      "question": 9,
+      "evidence": "Phase 3 multicenter open-label safety study in patients with FCS previously treated with volanesorsen; 209-week olezarsen treatment period.",
+      "sourceUrl": "https://www.guidelinecentral.com/clinical-trial/?id=NCT05185843",
+      "sourceDate": "2025-12-11",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05185843",
+      "question": 12,
+      "evidence": "24 patients in the registered long-term open-label safety study; not a randomized pivotal efficacy cohort.",
+      "sourceUrl": "https://www.guidelinecentral.com/clinical-trial/?id=NCT05185843",
+      "sourceDate": "2025-12-11",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05392114",
+      "question": 3,
+      "evidence": "Published Year-1 OASISplus OLE cohort (83 participants): 22 patients (27%) reported treatment-related adverse events, none classified as serious treatment-related events; safety data are descriptive and do not establish a comparative clinical grade.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+      "sourceDate": "2026-02-23",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05392114",
+      "question": 12,
+      "evidence": "The published one-year OASISplus open-label extension subset included 83 participants (69 on Q4W and 14 on Q8W). This is the reported OLE subset, not total NCT05392114 enrollment.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+      "sourceDate": "2026-02-23",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05392114",
+      "question": 17,
+      "evidence": "Published open-label OASISplus Year-1 reduction in mean hereditary-angioedema attack rate compared with baseline: 94% Q4W and 95% Q8W. This is an uncontrolled within-cohort observation, not a placebo-adjusted efficacy PASS.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+      "sourceDate": "2026-02-23",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05392114",
+      "question": 24,
+      "evidence": "Published one-year OASISplus extension subgroup completion: 75 of 83 participants (90.4%). Do not infer the entire extension study has completed.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+      "sourceDate": "2026-02-23",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05392114",
+      "question": 29,
+      "evidence": "Published peer-reviewed exact-NCT OASISplus one-year open-label extension cohort report dated Feb 23, 2026: 83 patients; primary safety described with 22/83 reporting treatment-related adverse events, no related serious AEs. Nonbinary endpoint interpretation.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+      "sourceDate": "2026-02-23",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05667493",
+      "question": 7,
+      "evidence": "Long-term eplontersen ATTR-CM extension primarily evaluates safety and tolerability over extended dosing; not a new randomized efficacy superiority study.",
+      "sourceUrl": "https://clinicaltrials.ucsf.edu/trial/NCT05667493",
+      "sourceDate": "2026-04-17",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05667493",
+      "question": 9,
+      "evidence": "Multicenter open-label Phase 3 extension from ION-682884-CS2, up to 36 months of eplontersen dosing; parent pivotal results must remain separate.",
+      "sourceUrl": "https://clinicaltrials.ucsf.edu/trial/NCT05667493",
+      "sourceDate": "2026-04-17",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05667493",
+      "question": 12,
+      "evidence": "Approximately 1,400 participants planned for eplontersen ATTR-CM long-term extension. Enrollment target is not a completed enrollment or statistical power claim.",
+      "sourceUrl": "https://clinicaltrials.ucsf.edu/trial/NCT05667493",
+      "sourceDate": "2026-04-17",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05681351",
+      "question": 7,
+      "evidence": "CORE-OLE primary follow-up evaluates clinical laboratory changes, adverse events and concomitant medication use through Week 157. This is an extension safety assessment, not proof of clinical benefit.",
+      "sourceUrl": "https://clinicaltrials.ucsd.edu/trial/NCT05681351",
+      "sourceDate": "2025-12-01",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05681351",
+      "question": 9,
+      "evidence": "Open-label extension after SHTG CORE/CORE2 parent trials, with 157-week treatment and 13-week follow-up. Parent trial outcomes may not be duplicated as extension outcomes.",
+      "sourceUrl": "https://clinicaltrials.ucsd.edu/trial/NCT05681351",
+      "sourceDate": "2025-12-01",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05681351",
+      "question": 12,
+      "evidence": "Approximately 885 patients participating in the dated institution listing; source describes extension enrollment rather than a placebo-controlled efficacy sample.",
+      "sourceUrl": "https://clinicaltrials.ucsd.edu/trial/NCT05681351",
+      "sourceDate": "2025-12-01",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT06914609",
+      "question": 7,
+      "evidence": "Issuer identifies Bayley-4 expressive communication as primary endpoint of pivotal REVEAL cohort; planned readout anticipated 2H 2027, no prospective success inferred.",
+      "sourceUrl": "https://ir.ionispharma.com/news-releases/news-release-details/ionis-completes-enrollment-pivotal-cohort-phase-3-reveal-study",
+      "sourceDate": "2026-07-06",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT06914609",
+      "question": 9,
+      "evidence": "Global Phase 3 REVEAL is randomized, double blind and controlled, with pediatric pivotal cohort and separate adult cohort. Do not treat the pooled cohorts as one endpoint sample.",
+      "sourceUrl": "https://ir.ionispharma.com/news-releases/news-release-details/ionis-completes-enrollment-pivotal-cohort-phase-3-reveal-study",
+      "sourceDate": "2026-07-06",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT06914609",
+      "question": 12,
+      "evidence": "Issuer reported 136 participants enrolled in pivotal pediatric cohort as of July 6, 2026; approximately 158 targeted overall. Enrollment is not trial outcome.",
+      "sourceUrl": "https://ir.ionispharma.com/news-releases/news-release-details/ionis-completes-enrollment-pivotal-cohort-phase-3-reveal-study",
+      "sourceDate": "2026-07-06",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT06914609",
+      "question": 17,
+      "evidence": "Issuer lists secondary endpoints including disease severity, cognition, sleep, motor function and daily-living skills. Endpoint existence is not an efficacy result.",
+      "sourceUrl": "https://ir.ionispharma.com/news-releases/news-release-details/ionis-completes-enrollment-pivotal-cohort-phase-3-reveal-study",
+      "sourceDate": "2026-07-06",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT07298447",
+      "question": 7,
+      "evidence": "Pediatric donidalorsen trial has safety, tolerability and pharmacokinetics as objectives, including treatment-emergent adverse events as a primary measure; not a placebo-controlled pivotal efficacy outcome.",
+      "sourceUrl": "https://dashboard.datalookout.com/trial/NCT07298447",
+      "sourceDate": "2026-11-02",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT07298447",
+      "question": 9,
+      "evidence": "Registered pediatric HAE study is nonrandomized and open label with three weight-based dose groups; this cannot be scored as an RCT.",
+      "sourceUrl": "https://dashboard.datalookout.com/trial/NCT07298447",
+      "sourceDate": "2026-11-02",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT07298447",
+      "question": 12,
+      "evidence": "Target enrollment 20 pediatric patients aged 2 through 11 years; estimated, not actual accrual.",
+      "sourceUrl": "https://dashboard.datalookout.com/trial/NCT07298447",
+      "sourceDate": "2026-11-02",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT07727538",
+      "question": 7,
+      "evidence": "Pediatric FCS olezarsen study evaluates fasting triglyceride change as an efficacy outcome, with prospective longitudinal safety/PK/PD. No results yet adjudicated.",
+      "sourceUrl": "https://clinicaltrials.ucsf.edu/trial/NCT07727538",
+      "sourceDate": "2026-10-29",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT07727538",
+      "question": 9,
+      "evidence": "Phase 3 pediatric FCS trial is open label and multicenter, with one-year treatment and optional long-term extension; no placebo comparison is claimed.",
+      "sourceUrl": "https://clinicaltrials.ucsf.edu/trial/NCT07727538",
+      "sourceDate": "2026-10-29",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT07727538",
+      "question": 12,
+      "evidence": "12 participants expected across the pediatric FCS study; estimated recruitment target, not study completion.",
+      "sourceUrl": "https://clinicaltrials.ucsf.edu/trial/NCT07727538",
+      "sourceDate": "2026-10-29",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT07782827",
+      "question": 7,
+      "evidence": "CHAMPION Cohort 1 primary endpoint is Bayley-4 expressive communication raw score change without caregiver input at Week 52; endpoint definition, not outcome.",
+      "sourceUrl": "https://www.allclinicaltrials.com/study/NCT07782827",
+      "sourceDate": "2026-10-20",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT07782827",
+      "question": 9,
+      "evidence": "CHAMPION is a single-group open-label Phase 3 study in UPD/imprinting-defect Angelman syndrome, not the placebo-controlled REVEAL cohort.",
+      "sourceUrl": "https://www.allclinicaltrials.com/study/NCT07782827",
+      "sourceDate": "2026-10-20",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT07782827",
+      "question": 12,
+      "evidence": "Target enrollment 30 participants for CHAMPION (anticipated), with the registry reporting September 2026 study start.",
+      "sourceUrl": "https://www.allclinicaltrials.com/study/NCT07782827",
+      "sourceDate": "2026-10-20",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04768972",
+      "question": 3,
+      "evidence": "Ionis reports most ulefnersen FUSION adverse events were mild or moderate. Sponsor topline safety statement is descriptive and not an independent safety grade.",
+      "sourceUrl": "https://ir.ionis.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+      "sourceDate": "2026-09-22",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04768972",
+      "question": 17,
+      "evidence": "Issuer reports statistically significant secondary endpoints including serum neurofilament light chain change and time to death/permanent ventilation/rescue or progression-related withdrawal; trial-level results, not an FDA decision.",
+      "sourceUrl": "https://ir.ionis.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+      "sourceDate": "2026-09-22",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04768972",
+      "question": 29,
+      "evidence": "Exact FUSION (ION363 / ulefnersen) Phase 3 topline issuer readout dated Sept 22, 2026: prespecified primary functional/survival joint-rank test reported positive, p=0.0005. Observed outcome not a prospective forecast.",
+      "sourceUrl": "https://ir.ionis.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+      "sourceDate": "2026-09-22",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04849741",
+      "question": 9,
+      "evidence": "FDA identifies the supporting NCT04849741 pivotal main study as a 49-patient multicenter randomized controlled comparison and a separate four-patient open-label pediatric substudy; do not merge the design arms.",
+      "sourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+      "sourceDate": "2026-09-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04849741",
+      "question": 29,
+      "evidence": "FDA explicitly identifies NCT04849741 as an efficacy-and-safety supporting clinical study of approved zilganersen (ZANVASTRO). This is approval evidence, not a separately adjudicated binary trial primary endpoint.",
+      "sourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+      "sourceDate": "2026-09-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT04849741",
+      "question": 30,
+      "evidence": "FDA approved ZANVASTRO (zilganersen) for Alexander disease on Sept 3, 2026; application-level historical approval explicitly crosswalked to study NCT04849741. FDA outcome is NOT a numeric RAAS probability.",
+      "sourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+      "sourceDate": "2026-09-03",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    },
+    {
+      "nctId": "NCT05392114",
+      "question": 18,
+      "evidence": "OASISplus one-year open-label extension patients reported mean AE-QoL improvement at Week 52: 28.1 points Q4W, 26.7 points Q8W; uncontrolled comparison, not placebo adjusted.",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+      "sourceDate": "2026-02-23",
+      "status": "SOURCE_FACT_ONLY",
+      "score": null
+    }
+  ]
+}
