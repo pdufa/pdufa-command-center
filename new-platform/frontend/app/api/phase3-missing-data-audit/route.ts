@@ -1,6 +1,7 @@
 import ledger from "../../../public/phase3-unified-classifications-2026-11-05.json";
 import registryCrosswalk from "../../../data/phase3RegistryDrugComparatorCrosswalk20261106.json";
 import adjudications from "../../../data/phase3EndpointAdjudications20261105.json";
+import investorRelationsEvidence from "../../../data/phase3CompanyWebsiteEvidence20261105.json";
 import preData from "../../../data/phase3PreDataBatch20261105.json";
 import officialResearch from "../../../data/phase3PreDataOfficialResearch.json";
 import {UNIVERSAL_PHASE3_QUESTIONS} from "../../../lib/phase3-universal-questions";
@@ -10,6 +11,7 @@ import {phase3OnlineRecord,phase3OnlineSourceFact,PHASE3_ONLINE_TRIAL_COUNT,PHAS
 export const dynamic="force-dynamic";
 
 const endpointByNct=new Map(adjudications.records.map(x=>[x.nctId,x] as const));
+const investorByNct=new Map(investorRelationsEvidence.records.map(x=>[x.nctId,x] as const));
 const registryByNct=new Map(registryCrosswalk.records.map(x=>[x.nctId,x] as const));
 const preDataByNct=new Map(preData.trials.map(x=>[x.nctId,x] as const));
 const officialByNct=new Set(officialResearch.records.map(x=>x.nctId));
@@ -33,6 +35,13 @@ function statusFor(
  if(q.number===1&&e?.endpointOutcome==="PRIMARY_ENDPOINT_NOT_MET")return "OBSERVED_PRIMARY_ENDPOINT_NOT_MET";
  if(q.number===1&&e?.endpointOutcome==="NO_BINARY_PASS_FAIL")return "DOCUMENTED_NON_BINARY_ENDPOINT";
  if(q.number===29&&e)return "DOCUMENTED_PUBLIC_READOUT";
+ const ir=investorByNct.get(r.nctId);
+ if(ir?.companyUrl){
+  if(q.number===3&&ir.safetyEvidence)return "SOURCE_FACT_ONLY";
+  if(q.number===17&&/secondary endpoint/i.test(ir.specificEvidence||""))return "SOURCE_FACT_ONLY";
+  if(q.number===18&&/patient.reported|\\bPRO\\b/i.test(ir.specificEvidence||""))return "SOURCE_FACT_ONLY";
+  if(q.number===24&&/discontinuation/i.test(ir.safetyEvidence||""))return "SOURCE_FACT_ONLY";
+ }
  if(q.observation)return "SOURCE_FACT_ONLY";
  if(q.number===11&&registryByNct.get(r.nctId)?.comparators)return "SOURCE_FACT_ONLY";
  if(q.number===25&&r.registrySourceUrl)return "SOURCE_FACT_ONLY";
