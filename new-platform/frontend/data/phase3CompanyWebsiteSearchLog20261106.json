@@ -209,6 +209,27 @@
       "requiresUserDirection": false,
       "hardToResolve": [],
       "scope": "Reviewed 7/19 census studies with exact protocol/NCT crosswalks. Five SPN-812 positive readouts (one 600 mg dose nonsignificant in P304), two SPN-810 negative trials; remaining 12 SUPN trials not reviewed in this batch. No FDA approval or numerical RAAS prediction inferred."
+    },
+    {
+      "ticker": "SVA",
+      "company": "Sinovac Biotech Co., Ltd",
+      "trials": 27,
+      "reviewedAt": "2026-11-06",
+      "status": "PARTIAL_SOURCE_REVIEW",
+      "officialInvestorRelationsUrl": "https://www.sinovac.com/en-us/news/release",
+      "manufacturerUrl": "https://www.sinovac.com/",
+      "exactRegistryTrials": [
+        "NCT07416110",
+        "NCT07505810",
+        "NCT07611513"
+      ],
+      "requiresUserDirection": false,
+      "hardToResolve": [
+        "SVA Nasdaq trading remains halted according to its filed 2025 Form 20-F; restored listing compliance does not prove active trading. Keep SVA historical 27-NCT research corpus but do not use for tradable US market-cap shortlist until verified.",
+        "2026 issuer press releases emphasize China NMPA approval and NDA review; no trial-level US FDA PDUFA date established from these company-wide statements.",
+        "Other 24 census NCTs have registry links but no new trial-specific original-source adjudication in this pass."
+      ],
+      "scope": "27/27 exact NCT IDs and registry status carried forward from the November 6 census; three ongoing Phase 3 vaccine studies crosschecked to original ClinicalTrials.gov records, company Phase IIIa HFMD4 announcement and SEC trading-halt provenance. No primary endpoint successes or five-factor RAAS scores inferred."
     }
   ]
 }
