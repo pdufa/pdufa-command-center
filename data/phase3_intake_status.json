@@ -1,25 +1,33 @@
 {
   "mode": "daily",
-  "started_at": "2026-11-05T04:21:24.193765+00:00",
+  "started_at": "2026-11-06T04:49:48.898542+00:00",
   "registry_companies": 717,
   "pages": 4,
-  "studies_checked": 3982,
-  "matched_posted_results": 99,
-  "new_records": 1,
+  "studies_checked": 3997,
+  "matched_posted_results": 103,
+  "new_records": 2,
   "new_record_details": [
     {
-      "ticker": "NVO",
-      "drug": "KBP-5074 | Placebo",
-      "nct_id": "NCT04968184",
-      "results_posted_at": "2026-11-04",
-      "source_url": "https://clinicaltrials.gov/study/NCT04968184",
+      "ticker": "GILD",
+      "drug": "B/F/TAF | Bictegravir/Lenacapavir (BIC/LEN) FDC | Lenacapavir | Placebo to match B/F/TAF | Placebo to match BIC/LEN FDC | Placebo to match Lenacapavir",
+      "nct_id": "NCT06333808",
+      "results_posted_at": "2026-11-05",
+      "source_url": "https://clinicaltrials.gov/study/NCT06333808",
+      "verification_status": "DRUG_IDENTITY_REVIEW"
+    },
+    {
+      "ticker": "INCY",
+      "drug": "Placebo | Povorcitinib",
+      "nct_id": "NCT05620836",
+      "results_posted_at": "2026-11-05",
+      "source_url": "https://clinicaltrials.gov/study/NCT05620836",
       "verification_status": "DRUG_IDENTITY_REVIEW"
     }
   ],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-11-05T04:21:29.858655+00:00",
-  "stored_results": 2497,
+  "finished_at": "2026-11-06T04:49:59.022557+00:00",
+  "stored_results": 2499,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
 }
