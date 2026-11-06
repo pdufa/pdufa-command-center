@@ -2,6 +2,7 @@ import ledger from "../../../public/phase3-unified-classifications-2026-11-05.js
 import {loadLivePhase3Registry} from "../phase3-live-registry-backfill/route";
 import registryCrosswalk from "../../../data/phase3RegistryDrugComparatorCrosswalk20261106.json";
 import endpointAdjudications from "../../../data/phase3EndpointAdjudications20261105.json";
+import investorRelationsEvidence from "../../../data/phase3CompanyWebsiteEvidence20261105.json";
 import {UNIVERSAL_PHASE3_QUESTIONS} from "../../../lib/phase3-universal-questions";
 import {phase3QuestionSlots} from "../../../lib/phase3-top-questions";
 import {PHASE3_ONLINE_TRIAL_COUNT,phase3OnlineRecord,phase3OnlineSourceFact,phase3OnlineCoverageLabel,phase3OnlineReviewLeads} from "../../../lib/phase3-online-source-evidence";
@@ -33,6 +34,7 @@ const questionHeaders = UNIVERSAL_PHASE3_QUESTIONS.flatMap((q,i)=>{
 });
 const HEADERS=[...baseHeaders,...extendedHeaders,...questionHeaders];
 const endpointByNct=new Map(endpointAdjudications.records.map(x=>[x.nctId,x] as const));
+const investorByNct=new Map(investorRelationsEvidence.records.map(x=>[x.nctId,x] as const));
 const registryByNct=new Map(registryCrosswalk.records.map(r=>[r.nctId,r] as const));
 
 const escaped=(input:unknown):string=>{
@@ -68,6 +70,7 @@ export async function GET(request:Request){
  let passedCount=0,failedCount=0;
  for(const r of ledger.rows){
   const endpoint=endpointByNct.get(r.nctId);
+  const investor=investorByNct.get(r.nctId);
   const onlineRecord=phase3OnlineRecord(r.nctId);
   const registry=registryByNct.get(r.nctId);
   const liveRegistry=liveByNct.get(r.nctId);
@@ -125,6 +128,17 @@ export async function GET(request:Request){
     fullPassRationale,endpointEvidenceUrl];
    if(q.number===29&&endpoint)return ["DOCUMENTED_PUBLIC_READOUT","","",
     "Public Phase 3 readout or results exist. "+fullPassRationale,endpointEvidenceUrl];
+   // Issuer investor-relations statements are historical SOURCE FACTS, not subjective predictive scores.
+   if(investor?.companyUrl){
+    if(q.number===3&&investor.safetyEvidence)
+     return ["SOURCE_FACT_ONLY","","","Issuer-reported safety/tolerability: "+investor.safetyEvidence+"; no calibrated safety forecast inferred",investor.companyUrl];
+    if(q.number===17&&/secondary endpoint/i.test(investor.specificEvidence||""))
+     return ["SOURCE_FACT_ONLY","","","Issuer mentions clinical secondary endpoint(s): "+investor.specificEvidence+"; no prospective score inferred",investor.companyUrl];
+    if(q.number===18&&/patient.reported|\\bPRO\\b/i.test(investor.specificEvidence||""))
+     return ["SOURCE_FACT_ONLY","","","Issuer mentions patient-reported outcomes: "+investor.specificEvidence,investor.companyUrl];
+    if(q.number===24&&/discontinuation/i.test(investor.safetyEvidence||""))
+     return ["SOURCE_FACT_ONLY","","","Issuer-reported retention/discontinuation fact: "+investor.safetyEvidence,investor.companyUrl];
+   }
    if(liveRegistry){
     const url=liveRegistry.registryUrl;
     const fact=(description:string)=>["SOURCE_FACT_ONLY","","",description,url];
