@@ -62,7 +62,7 @@ test("Live registry drug and comparator evidence are imported without inventing 
  assert.equal(drugCrosswalk.records.filter(r=>Boolean(r.comparators)).length,532);
  assert.equal(ledger.rows.filter(r=>Boolean(r.drug)||Boolean(m.get(r.nctId)?.drugInterventions)).length,659);
  assert.match(route,/registryByNct/);
- assert.match(route,/r\.drug\|\|registry\?\.drugInterventions/);
+ assert.match(route,/r\.drug\|\|liveRegistry\?\.drugInterventions\|\|registry\?\.drugInterventions/);
  assert.match(route,/registry\?\.comparators/);
  assert.match(audit,/fields\.missingDrugField!==103/);
 });
