@@ -8,6 +8,7 @@ const links=[
  {label:"COMPARE TRIALS",href:"/compare-trials"},
  {label:"SCAN",href:"/scans"},
  {label:"PREDICTIONS",href:"/predictions"},
+ {label:"ALKS SCORES",href:"/alkermes-scores"},
  {label:"#1",href:"/patient-population"},
  {label:"SYSTEM STATUS",href:"/installation-audit"}
 ];
