@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 33,
+  "totalReviewed": 43,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 27,
-    "PRIMARY_ENDPOINT_NOT_MET": 4,
+    "PRIMARY_ENDPOINT_MET": 35,
+    "PRIMARY_ENDPOINT_NOT_MET": 6,
     "NO_BINARY_PASS_FAIL": 2
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
-  "note": "33 exact-NCT Phase 3 endpoint research adjudications; registry status and FDA regulatory decisions remain separate from clinical endpoint PASS/FAIL. Newly added Acadia HARMONY, ENHANCE-1 and ADVANCE-2 publications/issuer readouts retain study-specific protocol and population.",
+  "note": "43 exact-NCT historical Phase 3/Phase 2-3 outcome research adjudications after Agios and Axsome investor relations review. Positive and negative primary endpoints distinct from FDA or prospective calibration.",
   "records": [
     {
       "nctId": "NCT04770753",
@@ -306,6 +306,96 @@
       "evidenceType": "PEER_REVIEWED_EXACT_NCT_PHASE3_PRIMARY_RESULT",
       "reviewedAt": "2026-11-05",
       "qualification": "Positive randomized-withdrawal clinical relapse-prevention result applies to initial responders; does not imply efficacy in the entire screened population or FDA labeling approval for dementia-related psychosis."
+    },
+    {
+      "nctId": "NCT03548220",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Agios Pharmaceuticals ACTIVATE / adult non-regularly transfused PK deficiency. Primary sustained ≥1.5 g/dL hemoglobin response in 40% mitapivat versus 0% placebo (two-sided p<0.0001). Exact-trial match: ACTIVATE adult non-regular-transfusion study matches NCT03548220; distinguish ACTIVATE-T NCT03559699.",
+      "evidenceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-phase-3-activate-trial-mitapivat-achieved-its",
+      "evidenceType": "ISSUER_INVESTOR_RELATIONS_EXACT_NCT_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Clinical primary-endpoint determination only; no prospective RAAS score or FDA approval inferred. Prespecified randomized placebo comparison met; FDA approval or PDUFA is a distinct event."
+    },
+    {
+      "nctId": "NCT03559699",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Agios Pharmaceuticals ACTIVATE-T / adult regularly transfused PK deficiency. Ten of 27 adults (37%) achieved ≥33% transfusion burden reduction versus individual historical baseline; one-sided p=0.0002. Exact-trial match: ACTIVATE-T single-arm 27-person study matches NCT03559699, independently identified in Lancet Haematology PMID 35988546.",
+      "evidenceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-phase-3-activate-t-trial-mitapivat-achieved",
+      "evidenceType": "ISSUER_INVESTOR_RELATIONS_EXACT_NCT_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Clinical primary-endpoint determination only; no prospective RAAS score or FDA approval inferred. Historical single-arm efficacy benchmark passed; this is not a randomized placebo comparison or a new FDA approval determination."
+    },
+    {
+      "nctId": "NCT05144256",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "Agios Pharmaceuticals ACTIVATE-KidsT (AG348-C-022) / regularly transfused pediatric PK deficiency. Prespecified Bayesian primary statistical criterion was not met with low/moderate adult ACTIVATE-T information borrowing; transfusion reduction responders 9/32 (28.1%) mitapivat versus 2/17 (11.8%) placebo. Exact-trial match: ACTIVATE-KidsT AG348-C-022 is NCT05144256; distinguish nonregular-transfusion ACTIVATE-Kids AG348-C-023.",
+      "evidenceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-results-phase-3-activate-kidst-study-mitapivat",
+      "evidenceType": "ISSUER_INVESTOR_RELATIONS_EXACT_NCT_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Clinical primary-endpoint determination only; no prospective RAAS score or FDA approval inferred. A numerically favorable response cannot override the prespecified statistical failure."
+    },
+    {
+      "nctId": "NCT05175105",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Agios Pharmaceuticals ACTIVATE-Kids (AG348-C-023) / nonregularly transfused pediatric PK deficiency. Prespecified Bayesian hemoglobin-response criterion met at all borrowing weights; responders 6/19 (31.6%) mitapivat and 0/11 placebo. Exact-trial match: ACTIVATE-Kids AG348-C-023 maps to NCT05175105, separate from ACTIVATE-KidsT.",
+      "evidenceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-phase-3-activate-kids-study-mitapivat-children-pyruvate",
+      "evidenceType": "ISSUER_INVESTOR_RELATIONS_EXACT_NCT_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Clinical primary-endpoint determination only; no prospective RAAS score or FDA approval inferred. Pediatric efficacy success does not establish application receipt, review or FDA approval."
+    },
+    {
+      "nctId": "NCT03226522",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Axsome Therapeutics ADVANCE-1 (Phase 2/3) / Alzheimer agitation. Sponsor's pivotal program summary reports week-5 CMAI primary endpoint met in ADVANCE-1 (p=0.010); 15.4-point reduction on AXS-05 versus 11.5 points placebo. Exact-trial match: Peer-reviewed ADVANCE-1 publication maps to NCT03226522; distinguish the separate ADVANCE-2 NCT05557409.",
+      "evidenceUrl": "https://www.globenewswire.com/news-release/2024/12/30/3002588/33090/en/Axsome-Therapeutics-Announces-Successful-Completion-and-Results-of-Phase-3-Clinical-Program-of-AXS-05-in-Alzheimer-s-Disease-Agitation.html",
+      "evidenceType": "ISSUER_INVESTOR_RELATIONS_EXACT_NCT_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Clinical primary-endpoint determination only; no prospective RAAS score or FDA approval inferred. Designated combined Phase 2/3 study in historical Phase 3 census; FDA program decisions must be tracked separately."
+    },
+    {
+      "nctId": "NCT05557409",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "Axsome Therapeutics ADVANCE-2 / Alzheimer agitation. Primary week-5 CMAI change failed statistical significance: mean reduction 13.8 on AXS-05 versus 12.6 points on placebo. Exact-trial match: ADVANCE-2 408-person Phase 3 AXS-05 Alzheimer agitation trial is registry NCT05557409.",
+      "evidenceUrl": "https://www.globenewswire.com/news-release/2024/12/30/3002588/33090/en/Axsome-Therapeutics-Announces-Successful-Completion-and-Results-of-Phase-3-Clinical-Program-of-AXS-05-in-Alzheimer-s-Disease-Agitation.html",
+      "evidenceType": "ISSUER_INVESTOR_RELATIONS_EXACT_NCT_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Clinical primary-endpoint determination only; no prospective RAAS score or FDA approval inferred. Negative trial-specific primary endpoint is not overturned by positive results in other AXS-05 trials."
+    },
+    {
+      "nctId": "NCT04797715",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Axsome Therapeutics ACCORD-1 / Alzheimer agitation randomized withdrawal. Primary time-to-relapse randomized withdrawal endpoint met, hazard ratio 0.275 versus placebo (p=0.014). Exact-trial match: ACCORD-1 Phase 3 withdrawal study is NCT04797715, documented in Phase 2/3 program publication.",
+      "evidenceUrl": "https://www.globenewswire.com/news-release/2024/12/30/3002588/33090/en/Axsome-Therapeutics-Announces-Successful-Completion-and-Results-of-Phase-3-Clinical-Program-of-AXS-05-in-Alzheimer-s-Disease-Agitation.html",
+      "evidenceType": "ISSUER_INVESTOR_RELATIONS_EXACT_NCT_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Clinical primary-endpoint determination only; no prospective RAAS score or FDA approval inferred. Result is specific to previously responding patients entering withdrawal, not an all-comers induction efficacy result."
+    },
+    {
+      "nctId": "NCT04947553",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Axsome Therapeutics ACCORD-2 / Alzheimer agitation randomized withdrawal. Primary time-to-relapse met: hazard ratio 0.276 versus placebo, p=0.001; secondary relapse prevention also p=0.001. Exact-trial match: ACCORD-2 NCT04947553 distinct from ACCORD-1 NCT04797715 and ADVANCE-2 NCT05557409.",
+      "evidenceUrl": "https://www.globenewswire.com/news-release/2024/12/30/3002588/33090/en/Axsome-Therapeutics-Announces-Successful-Completion-and-Results-of-Phase-3-Clinical-Program-of-AXS-05-in-Alzheimer-s-Disease-Agitation.html",
+      "evidenceType": "ISSUER_INVESTOR_RELATIONS_EXACT_NCT_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Clinical primary-endpoint determination only; no prospective RAAS score or FDA approval inferred. Responder-enriched randomized-withdrawal primary endpoint; not proof of unrestricted efficacy or FDA approval."
+    },
+    {
+      "nctId": "NCT05059223",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Axsome Therapeutics SYMPHONY (AXS-12-301) / narcolepsy. Week-5 weekly cataplexy attack reduction: 83% AXS-12 versus 66% placebo, p=0.018, primary endpoint met. Exact-trial match: NCT05059223 names SYMPHONY (AXS-12-301), randomized five-week narcolepsy study.",
+      "evidenceUrl": "https://www.globenewswire.com/news-release/2024/03/25/2851469/33090/en/Axsome-Therapeutics-Announces-AXS-12-Achieves-Primary-Endpoint-in-the-SYMPHONY-Phase-3-Trial-in-Narcolepsy.html",
+      "evidenceType": "ISSUER_INVESTOR_RELATIONS_EXACT_NCT_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Clinical primary-endpoint determination only; no prospective RAAS score or FDA approval inferred. The 2024 clinical success is distinct from the AXS-12 application/regulatory process."
+    },
+    {
+      "nctId": "NCT05113745",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Axsome Therapeutics ENCORE (AXS-12-302) / narcolepsy randomized withdrawal. After open-label AXS-12, withdrawal phase week-3 increase in cataplexy attacks was 10.29 per week on placebo versus 1.32 on continuing AXS-12 (p=0.017). Exact-trial match: NCT05113745 is ENCORE (AXS-12-302) Phase 3, distinct from SYMPHONY NCT05059223.",
+      "evidenceUrl": "https://www.globenewswire.com/news-release/2024/11/26/2987364/33090/en/Axsome-Therapeutics-Announces-AXS-12-Achieves-Primary-Endpoint-in-ENCORE-Long-Term-Phase-3-Trial-in-Narcolepsy.html",
+      "evidenceType": "ISSUER_INVESTOR_RELATIONS_EXACT_NCT_READOUT",
+      "reviewedAt": "2026-11-05",
+      "qualification": "Clinical primary-endpoint determination only; no prospective RAAS score or FDA approval inferred. Responder/exposure-selected randomized withdrawal results, not an all-comers comparator result."
     }
   ]
 }
