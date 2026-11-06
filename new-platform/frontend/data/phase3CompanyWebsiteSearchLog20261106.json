@@ -215,21 +215,45 @@
       "company": "Sinovac Biotech Co., Ltd",
       "trials": 27,
       "reviewedAt": "2026-11-06",
-      "status": "PARTIAL_SOURCE_REVIEW",
+      "status": "PARTIAL_SOURCE_REVIEW_12_TRIAL_READOUTS_FOUND",
       "officialInvestorRelationsUrl": "https://www.sinovac.com/en-us/news/release",
       "manufacturerUrl": "https://www.sinovac.com/",
       "exactRegistryTrials": [
+        "NCT01507857",
+        "NCT01636245",
+        "NCT02451969",
+        "NCT03526978",
+        "NCT03822754",
+        "NCT03822767",
+        "NCT03853993",
+        "NCT03859141",
+        "NCT03909074",
+        "NCT04386707",
+        "NCT05245552",
+        "NCT05386810",
+        "NCT05431725",
+        "NCT05850364",
+        "NCT06049927",
+        "NCT06734832",
+        "NCT07055295",
+        "NCT07055893",
+        "NCT07211152",
+        "NCT07357545",
         "NCT07416110",
         "NCT07505810",
-        "NCT07611513"
+        "NCT07505823",
+        "NCT07505836",
+        "NCT07505888",
+        "NCT07611513",
+        "NCT07793227"
       ],
       "requiresUserDirection": false,
       "hardToResolve": [
         "SVA Nasdaq trading remains halted according to its filed 2025 Form 20-F; restored listing compliance does not prove active trading. Keep SVA historical 27-NCT research corpus but do not use for tradable US market-cap shortlist until verified.",
         "2026 issuer press releases emphasize China NMPA approval and NDA review; no trial-level US FDA PDUFA date established from these company-wide statements.",
-        "Other 24 census NCTs have registry links but no new trial-specific original-source adjudication in this pass."
+        "All 27 registry primary outcome descriptions cross-checked; 12 exact-NCT published source adjudications saved and 15 still require original readout evidence. No full five-factor clinical RAAS grade established."
       ],
-      "scope": "27/27 exact NCT IDs and registry status carried forward from the November 6 census; three ongoing Phase 3 vaccine studies crosschecked to original ClinicalTrials.gov records, company Phase IIIa HFMD4 announcement and SEC trading-halt provenance. No primary endpoint successes or five-factor RAAS scores inferred."
+      "scope": "27/27 exact-NCT registry primary endpoints reconciled; 12/27 peer/issuer historical outcome adjudications, 27/27 numerical documentation scores, 0/27 full validated clinical-five scores. SVA US trading flag remains research-only."
     }
   ]
 }
