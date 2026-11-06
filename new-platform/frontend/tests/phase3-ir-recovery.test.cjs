@@ -44,11 +44,11 @@ test('actual audit and 190-column CSV reconcile all 762 identities and all 30 qu
  }
  for(const key in sums)assert.equal(report.assessment[key],sums[key]);
  assert.equal(report.assessment.predicted,61);assert.equal(report.assessment.trialsWithNumericalPredictions,4);
- assert.deepEqual(report.endpointOutcomes,{PRIMARY_ENDPOINT_MET:41,PRIMARY_ENDPOINT_NOT_MET:7,NO_BINARY_PASS_FAIL:3});
- assert.equal(report.fields.missingAdjudicatedEndpoint,711);
- assert.equal(report.fields.investorRelationsRegulatoryTrialLinks,14);
- assert.equal(report.fields.investorRelationsFDAApplicationPrograms,6);
- assert.equal(report.fields.unverifiedPDUFADate,754); // approval dates never become goal dates
+ assert.deepEqual(report.endpointOutcomes,{PRIMARY_ENDPOINT_MET:46,PRIMARY_ENDPOINT_NOT_MET:8,NO_BINARY_PASS_FAIL:3});
+ assert.equal(report.fields.missingAdjudicatedEndpoint,705);
+ assert.equal(report.fields.investorRelationsRegulatoryTrialLinks,20);
+ assert.equal(report.fields.investorRelationsFDAApplicationPrograms,11);
+ assert.equal(report.fields.unverifiedPDUFADate,753); // approval dates never become goal dates
  const ardelyx=report.investorRelationsCoverage.find(c=>c.ticker==='ARDX');
  assert.equal(ardelyx.matchedTrials,7);assert.equal(ardelyx.trials.length,10);
  assert.equal(ardelyx.trialsRequiringInvestigation,10);
@@ -66,12 +66,12 @@ test('actual audit and 190-column CSV reconcile all 762 identities and all 30 qu
 test('new evidence has unique exact-NCT question keys and explicit dates, scope and correction blockers',()=>{
  assert.ok(research.irResearchIntegrity(new Set(ledger.rows.map(r=>r.nctId))));
  assert.equal(ir.assessmentRecords.filter(r=>r.nctId.startsWith('NCT')&&ir.records.find(t=>t.nctId===r.nctId)?.ticker==='ARDX').length,48);
- assert.equal(ir.assessmentRecords.length,68);
+ assert.equal(ir.assessmentRecords.length,111);
  assert.equal(new Set(endpoints.records.map(r=>r.nctId)).size,endpoints.records.length);
  assert.equal(endpoints.totalReviewed,endpoints.records.length);
  for(const [key,count] of Object.entries(endpoints.counts))assert.equal(count,endpoints.records.filter(r=>r.endpointOutcome===key).length);
  for(const r of ir.assessmentRecords){assert.ok(r.publicationDate&&r.sourceUrl&&r.evidenceScope);assert.equal(r.score,undefined);}
- assert.equal(ir.assessmentRecords.filter(r=>r.classification==='REQUIRES_INTERPRETATION').length,3);
+ assert.equal(ir.assessmentRecords.filter(r=>r.classification==='REQUIRES_INTERPRETATION').length,4);
  assert.equal(research.isObservedStatus('DOCUMENTED_SOURCE_FACT'),false);
  assert.equal(research.isSourceFactStatus('REQUIRES_INTERPRETATION'),false);
  assert.equal(research.irResearchIntegrity(new Set(['NCT00000000'])),false);
