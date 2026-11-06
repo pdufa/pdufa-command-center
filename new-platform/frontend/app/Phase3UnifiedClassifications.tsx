@@ -52,7 +52,7 @@ export default function Phase3UnifiedClassifications(){
  const shown=filtered.slice(currentPage*perPage,(currentPage+1)*perPage);
  return <section data-phase3-unified-census="762" style={{margin:"14px 0 22px",padding:14,border:"2px solid #7ea18b",borderRadius:12}}>
   <h2 style={{margin:"0 0 7px"}}>Unified Phase 3 master spreadsheet · 762 trials</h2>
-  <p style={{fontSize:13,margin:"0 0 10px"}}>One unique NCT per row. <strong>Classification is based on observed evidence, not assumed 425/337 counts.</strong> The original registry state and readout evidence are retained separately. FDA statuses are not asserted without an application-level source.</p>
+  <p style={{fontSize:13,margin:"0 0 10px"}}>One unique NCT per row. <strong>Classification is based on observed evidence, not assumed 425/337 counts.</strong> The original registry state and readout evidence are retained separately. Only exact-NCT evidence supports a documented primary-endpoint PASS; unadjudicated trials remain undetermined, not FAIL. A full 190-column assessment export is available below. FDA statuses are not asserted without an application-level source.</p>
   {!data?<p role="status">{error||"Loading classifications for 762 trials…"}</p>:<>
    <div style={{display:"flex",flexWrap:"wrap",gap:8,margin:"10px 0 14px"}}>
     {data.classifications.map(c=><button type="button" key={c.code} onClick={()=>{setClassification(classification===c.code?"ALL":c.code);setPage(0)}}
@@ -67,17 +67,18 @@ export default function Phase3UnifiedClassifications(){
     <input type="search" value={query} onChange={e=>{setQuery(e.target.value);setPage(0)}}
      placeholder="Ticker, NCT, company, indication, classification" style={{display:"block",padding:9,width:"100%",maxWidth:510,marginTop:5}}/>
    </label>
-   <p style={{fontSize:12,margin:"12px 0"}}><a href="/phase3-unified-classifications-2026-11-05.csv" download>Download all 762 classifications (CSV)</a></p>
+   <p style={{fontSize:12,margin:"12px 0"}}><strong><a href="/api/phase3-unified-190-columns">Download all 762 trials · 190 columns (CSV)</a></strong>{" · "}<a href="/phase3-unified-classifications-2026-11-05.csv" download>Original classification CSV</a></p>
    <p role="status" style={{fontSize:12}}>Showing {shown.length} of {filtered.length} matching trials · source classification as of {data.asOf}. Dated registry status is not proof of trial results.</p>
    <div role="region" aria-label="Unified Phase 3 trial classifications" style={{overflowX:"auto",maxHeight:630,overflowY:"auto"}}>
     <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:1000}}>
-     <thead><tr>{["Ticker","Trial / NCT","Company","Registry status","Trial classification","Result","FDA / PDUFA","Evidence / details"].map(x=><th key={x} scope="col" style={{...cell,position:"sticky",top:0,background:"var(--surface,#f7f9f8)",zIndex:1}}>{x}</th>)}</tr></thead>
-     <tbody>{shown.map(r=><tr key={r.nctId} data-nct-id={r.nctId} data-trial-classification={r.classificationCode}>
+     <thead><tr>{["Ticker","Trial / NCT","Company","Registry status","Trial classification","Passing classification","Result","FDA / PDUFA","Evidence / details"].map(x=><th key={x} scope="col" style={{...cell,position:"sticky",top:0,background:"var(--surface,#f7f9f8)",zIndex:1}}>{x}</th>)}</tr></thead>
+     <tbody>{shown.map(r=><tr key={r.nctId} data-nct-id={r.nctId} data-trial-classification={r.classificationCode} data-passing-classification={r.classificationVerified&&r.readoutOutcome==="PRIMARY_ENDPOINT_MET"&&r.readoutEvidenceUrl?"PASS_DOCUMENTED_PRIMARY_ENDPOINT":"UNDETERMINED"}>
       <td style={cell}>{r.ticker}</td>
       <td style={cell}><a href={r.registrySourceUrl} rel="noopener noreferrer" target="_blank">{r.nctId}</a></td>
       <td style={cell}>{r.company}</td>
       <td style={cell}>{r.registryStatus.replaceAll("_"," ")}</td>
       <td style={cell}><strong>{r.classification}</strong></td>
+      <td style={cell}>{r.classificationVerified&&r.readoutOutcome==="PRIMARY_ENDPOINT_MET"&&r.readoutEvidenceUrl?<strong>PASS · documented primary endpoint</strong>:"Undetermined"}</td>
       <td style={cell}>{labels[r.readoutOutcome]||r.readoutOutcome.replaceAll("_"," ")}</td>
       <td style={cell}>{r.fdaApplicationStatus==="NOT_VERIFIED"?"FDA application not verified":r.fdaApplicationStatus}{r.pdufaGoalDate?" · "+r.pdufaGoalDate:""}</td>
       <td style={cell}>
