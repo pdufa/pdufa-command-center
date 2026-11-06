@@ -47,9 +47,9 @@
     "activeTradingShortlist": "HOLD_EXCLUDE_PENDING_TRADABILITY_AND_US_FDA_EVIDENCE",
     "researchCensus": "RETAIN_ALL_27"
   },
-  "sourcePassStatus": "27_OF_27_REGISTERED_PRIMARY_DEFINITIONS_RECONCILED; 12_OF_27_PUBLISHED_OUTCOMES_CLASSIFIED; 0_OF_27_REGISTRY_RESULTS_POSTED; 0_US_PDUFA_CONFIRMED",
+  "sourcePassStatus": "27_OF_27_REGISTRY_PRIMARY_ENDPOINTS_RECONCILED; 14_OF_27_ORIGINAL_SOURCE_HISTORICAL_OUTCOMES; ZERO_REGISTRY_POSTED_RESULTS; ZERO_US_PDUFA",
   "noFalseCompletenessClaim": true,
-  "nextResearch": "Fifteen NCTs remain unadjudicated, including nine ongoing/pre-readout; obtain journal or manufacturer final original-source endpoint analyses for the historical remainder. Do not infer clinical scores or trading eligibility.",
+  "nextResearch": "Thirteen trial outcomes remain unadjudicated. Pursue original published protocol-specific results; distinguish ongoing trials, no public final readout, and missing source evidence.",
   "records": [
     {
       "nctId": "NCT01507857",
@@ -179,8 +179,12 @@
       "censusClassification": "P3_COMPLETED_READOUT_UNVERIFIED",
       "unscoredQ01ToQ30": 20,
       "documentedQ01ToQ30SourceFacts": 10,
-      "historicalEndpointAdjudicationStatus": "UNADJUDICATED",
-      "exactOriginalSourceReview": null,
+      "historicalEndpointAdjudicationStatus": "PRIMARY_ENDPOINT_MET",
+      "exactOriginalSourceReview": {
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/31660344/",
+        "reviewedAt": "2026-11-06",
+        "qualification": "Historical immunogenicity noninferiority only; not direct infection-prevention efficacy, US FDA approval or prospective RAAS prediction."
+      },
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
       "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
@@ -205,8 +209,12 @@
       "censusClassification": "P3_COMPLETED_READOUT_UNVERIFIED",
       "unscoredQ01ToQ30": 20,
       "documentedQ01ToQ30SourceFacts": 10,
-      "historicalEndpointAdjudicationStatus": "UNADJUDICATED",
-      "exactOriginalSourceReview": null,
+      "historicalEndpointAdjudicationStatus": "PRIMARY_ENDPOINT_MET",
+      "exactOriginalSourceReview": {
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/31660344/",
+        "reviewedAt": "2026-11-06",
+        "qualification": "Historical immunogenicity noninferiority only; not direct infection-prevention efficacy, US FDA approval or prospective RAAS prediction."
+      },
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
       "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
@@ -628,13 +636,7 @@
       "unscoredQ01ToQ30": 21,
       "documentedQ01ToQ30SourceFacts": 9,
       "historicalEndpointAdjudicationStatus": "UNADJUDICATED",
-      "exactOriginalSourceReview": {
-        "title": "Rabies vaccine lot-to-lot immunogenicity consistency, Phase IIIb",
-        "sourceUrl": "https://clinicaltrials.gov/study/NCT07416110",
-        "program": "PVRV-SF",
-        "status": "PRE_READOUT",
-        "sourceType": "ORIGINAL_REGISTRY"
-      },
+      "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
       "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
@@ -660,13 +662,7 @@
       "unscoredQ01ToQ30": 20,
       "documentedQ01ToQ30SourceFacts": 10,
       "historicalEndpointAdjudicationStatus": "UNADJUDICATED",
-      "exactOriginalSourceReview": {
-        "title": "ACYW135 conjugate meningococcal vaccine in children 3-5 months",
-        "sourceUrl": "https://clinicaltrials.gov/study/NCT07505810",
-        "program": "MCV4",
-        "status": "PRE_READOUT",
-        "sourceType": "ORIGINAL_REGISTRY"
-      },
+      "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
       "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
@@ -770,13 +766,7 @@
       "unscoredQ01ToQ30": 19,
       "documentedQ01ToQ30SourceFacts": 11,
       "historicalEndpointAdjudicationStatus": "UNADJUDICATED",
-      "exactOriginalSourceReview": {
-        "title": "HFMD4 tetravalent inactivated enterovirus vaccine, Phase IIIa protective efficacy",
-        "sourceUrl": "https://clinicaltrials.gov/study/NCT07611513",
-        "program": "HFMD4",
-        "status": "PRE_READOUT",
-        "sourceType": "ORIGINAL_REGISTRY"
-      },
+      "exactOriginalSourceReview": null,
       "usFdaApplicationLink": "NOT_VERIFIED",
       "usPdufaDate": "NOT_VERIFIED",
       "liveUSStockTradability": "FLAGGED_HALT_REQUIRES_RECHECK",
