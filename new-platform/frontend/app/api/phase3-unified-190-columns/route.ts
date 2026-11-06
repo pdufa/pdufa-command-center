@@ -73,8 +73,9 @@ export async function GET(request:Request){
  let liveByNct=new Map<string,LiveRegistry>();
  if(includeLive){
   try{
-   const live=await loadLivePhase3Registry();
-   if(live.failedBatches>0||live.rows.some(row=>!row.registry))
+   const needed=ledger.rows.filter(included).map(r=>r.nctId);
+   const live=await loadLivePhase3Registry(needed);
+   if(live.failedBatches>0||live.rows.length!==needed.length||live.rows.some(row=>!row.registry))
     return Response.json({error:"Live registry collection incomplete; use default snapshot or retry"},{status:503});
    liveByNct=new Map(live.rows.map(row=>[row.original.nctId,row.registry] as const));
   }catch(e){
@@ -216,6 +217,9 @@ export async function GET(request:Request){
     if(q.number===3&&liveRegistry.adverseEventsPosted)
      return fact("Official registry adverse-event data posted, "+
       liveRegistry.seriousAdverseEventTerms+" serious-event terms; safety acceptability has not been judged.");
+    if(q.number===6&&liveRegistry.eligibilityCriteria)
+     return fact("Registered inclusion/exclusion criteria (documentary only, not validated against earlier human trial populations): "+
+      liveRegistry.eligibilityCriteria);
     if(q.number===7&&liveRegistry.primaryOutcomes)
      return fact("Live registry primary outcome(s): "+liveRegistry.primaryOutcomes);
     if(q.number===8&&liveRegistry.primaryTimeframes)
@@ -232,6 +236,21 @@ export async function GET(request:Request){
     if([13,14,15].includes(q.number)&&liveRegistry.hasPublicSAP)
      return fact("Public statistical analysis plan located in registry. The plan has not been critically reviewed "+
       "for power, missing-data handling or multiplicity: "+liveRegistry.protocolOrSAPDocuments);
+    if(q.number===18&&liveRegistry.patientReportedOutcomeTitles)
+     return fact("Registered patient-reported or functional outcome measure(s): "+liveRegistry.patientReportedOutcomeTitles+
+      "; outcomes are specified, but an observed or predicted clinical benefit is not established.");
+    if(q.number===19&&liveRegistry.subgroupOutcomeTitles)
+     return fact("Registered outcome labels mention subgroup/stratification: "+liveRegistry.subgroupOutcomeTitles+
+      "; no subgroup consistency, statistical interaction or prespecification validation inferred.");
+    if(q.number===22&&liveRegistry.infectionEventTerms)
+     return fact("Reported registry infection-related adverse-event terms: "+liveRegistry.infectionEventTerms+
+      "; comparative tolerability has not been assessed.");
+    if(q.number===24&&liveRegistry.participantFlowDiscontinuations)
+     return fact("Official participant flow includes discontinuations: "+liveRegistry.participantFlowDiscontinuations+
+      "; no conclusion about missing-data robustness.");
+    if(q.number===26&&(liveRegistry.siteCount>0||liveRegistry.countries))
+     return fact("Registry site geography: "+liveRegistry.siteCount+" sites; countries: "+
+      liveRegistry.countries+"; recruitment representativeness has not been assessed.");
     if(q.number===17&&(liveRegistry.secondaryOutcomeCount??0)>0)
      return fact("Official registry lists "+liveRegistry.secondaryOutcomeCount+
       " secondary outcomes; no efficacy inference made.");
@@ -241,7 +260,7 @@ export async function GET(request:Request){
     if(q.number===25&&liveRegistry.registryStatus)
      return fact("Live registry status: "+liveRegistry.registryStatus+
       "; status is distinct from primary endpoint success.");
-    if(q.number===27&&/\\bplacebo\\b/i.test(liveRegistry.interventionNames))
+    if(q.number===27&&/\bplacebo\b/i.test(liveRegistry.interventionNames))
      return fact("Live registry names placebo in interventions; comparator adequacy not assessed.");
     if(q.number===29&&liveRegistry.registryResultsPosted)
      return fact("Official trial results have been posted; PASS/FAIL not independently adjudicated.");
