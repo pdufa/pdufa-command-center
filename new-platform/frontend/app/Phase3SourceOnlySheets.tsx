@@ -5,6 +5,7 @@ import {classifyPhase3Readouts,type ReadoutClassification,type ReadoutRow} from 
 import CapScreenedTopPhase3Spreadsheet from "./CapScreenedTopPhase3Spreadsheet";
 import {TopPhase3ResearchExample} from "./Phase3TopAnalysis";
 import Phase3PreDataBatch from "./Phase3PreDataBatch";
+import Phase3UnifiedClassifications from "./Phase3UnifiedClassifications";
 const tableStyle={width:"100%",borderCollapse:"collapse" as const,fontSize:13};
 const cell={padding:"9px",borderBottom:"1px solid #d8e2dc",textAlign:"left" as const};
 function Rows({rows,query}:{rows:ReadoutRow[];query:string}){
@@ -38,8 +39,9 @@ export default function Phase3SourceOnlySheets(){
   return()=>controller.abort();
  },[]);
  const q=useMemo(()=>query.trim().toLowerCase(),[query]);
- if(!data)return <><Phase3PreDataBatch query={query}/><p role="status">{status}</p></>;
+ if(!data)return <><Phase3UnifiedClassifications/><Phase3PreDataBatch query={query}/><p role="status">{status}</p></>;
  return <section data-surveys-ratings-cancelled="true" style={{padding:"8px 0"}}>
+  <Phase3UnifiedClassifications/>
   <p role="status"><strong>Surveys and ratings: cancelled.</strong> Source-only Phase 3 spreadsheets remain available; no clinical grades or scorecards are generated here.</p>
   <label style={{display:"block",margin:"12px 0"}}>Search ticker, NCT, company, therapy or indication
    <input type="search" value={query} onChange={e=>setQuery(e.target.value)} placeholder="Search trial records" style={{display:"block",width:"100%",maxWidth:400,padding:8}}/>
