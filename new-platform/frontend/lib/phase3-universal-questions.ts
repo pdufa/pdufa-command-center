@@ -3,6 +3,11 @@
  * DOCUMENTED source checks are observations, not outcome predictions.
  */
 import batch from "../data/phase3PreDataBatch20261105.json";
+import officialResearchRaw from "../data/phase3PreDataOfficialResearch.json";
+type OfficialPrior={nctId:string;registeredResults?:{primary?:{title:string;analyses?:{pValue?:string|number|null;pValueModifier?:string}[]}[];seriousEventCount?:number}|null};
+type OfficialRecord={nctId:string;sourceState:string;registry?:{primaryOutcomes?:{measure:string;timeFrame:string}[];secondaryOutcomes?:{measure:string;timeFrame:string}[];allocation?:string;masking?:string;enrollment?:number;status?:string;interventions?:{name:string;type:string}[];arms?:{label:string;type:string}[];hasResults?:boolean;resultsFirstPosted?:string};priorPhase2?:{matches:OfficialPrior[]}};
+const officialResearch=officialResearchRaw as unknown as {records:OfficialRecord[]};
+const officialByNct=new Map(officialResearch.records.map(r=>[r.nctId,r] as const));
 export type PreDataProtocol={primaryEndpoint:string;primaryTimeframe:string;allocation:string;masking:string;interventionModel:string;comparator:string;enrollment:string;enrollmentType:string;firstPosted:string;sourceUpdated:string;checkedAt:string;resultsFirstPosted:string};
 export type PreDataTrial={nctId:string;ticker:string;company:string;indication:string;interventions:string;registryStatus:string;registryPhase:string;marketCapUsd:number;marketCapCheckedAt:string;registrySourceUrl:string;registryAsOf:string;readoutStatus:string;protocol:PreDataProtocol|null;priorPhase2Lead:{phase2Nct:string;pValue:string;sourceUrl:string;sourceDate:string}|null};
 export const phase3PredataSnapshot=batch as {schemaVersion:number;asOf:string;note:string;counts:{registryActiveCapScreen:number;knownIssuerReadoutsExcluded:number;preReadoutResearchCandidates:number;withStoredProtocol:number;withoutStoredProtocol:number;withPriorPhase2EvidenceLead:number;withProgramSpecificThirtyPredictions:number};excludedKnownIssuerReadouts:{nctId:string;ticker:string}[];trials:PreDataTrial[]};
@@ -47,16 +52,53 @@ const summary=(value:string,max=340)=>value.length>max?value.slice(0,max-1)+"…
 export function sourceObservation(nctId:string,number:number):SourceObservation|null{
  const t=getPreDataTrial(nctId);if(!t)return null;
  const p=t.protocol;
- const doc=(description:string):SourceObservation=>({description:summary(description),documentationScore:100,sourceUrl:t.registrySourceUrl});
+ const research=officialByNct.get(nctId), registry=research?.registry;
+ const prior=research?.priorPhase2?.matches||[];
+ const sourcedPrimary=prior.flatMap(r=>(r.registeredResults?.primary||[]).flatMap(p=>
+  (p.analyses||[]).filter(a=>a.pValue!==null&&a.pValue!==undefined&&a.pValue!=="")
+   .map(a=>({nctId:r.nctId,pValue:String(a.pValue),modifier:a.pValueModifier||"",endpoint:p.title}))));
+ const doc=(description:string,sourceUrl=t.registrySourceUrl):SourceObservation=>
+  ({description:summary(description),documentationScore:100,sourceUrl});
  switch(number){
-  case 7:return p?.primaryEndpoint?.trim()?doc("Registry primary outcome: "+p.primaryEndpoint):null;
-  case 8:return p?.primaryTimeframe?.trim()?doc("Registry primary outcome timeframe: "+p.primaryTimeframe):null;
-  case 9:return p?.allocation?.trim()?doc("Registry allocation: "+p.allocation):null;
-  case 10:return p?.masking?.trim()?doc("Registry masking: "+p.masking):null;
-  case 11:return p?.comparator?.trim()?doc("Saved protocol comparator field: "+p.comparator):null;
-  case 12:return p?.enrollment?.trim()?doc("Registry enrollment: "+p.enrollment+" ("+p.enrollmentType.toLowerCase()+")"):null;
-  case 25:return t.registryStatus?doc("Registry status on "+t.registryAsOf+": "+t.registryStatus.replaceAll("_"," ")):null;
-  case 27:return /\bplacebo\b/i.test(t.interventions)?doc("Placebo is named in the registered intervention list; trial arms and formal comparison remain to be checked."):null;
+  case 2:return sourcedPrimary.length>0?doc(
+   "Earlier same-drug same-condition Phase 2 registry primary p-values (direction and comparator need independent review): "+
+   sourcedPrimary.slice(0,5).map(a=>a.nctId+" "+a.modifier+"p="+a.pValue+" ("+a.endpoint.slice(0,50)+")").join("; "),
+   "https://clinicaltrials.gov/study/"+sourcedPrimary[0].nctId):null;
+  case 3:{
+   const priorSafety=prior.find(r=>r.registeredResults&&r.registeredResults.seriousEventCount!==undefined);
+   return priorSafety?doc("An earlier matched Phase 2 registry record reports "+
+    priorSafety.registeredResults?.seriousEventCount+
+    " named serious-adverse-event categories; this is NOT a patient-level rate or safety verdict.",
+    "https://clinicaltrials.gov/study/"+priorSafety.nctId):null;
+  }
+  case 7:return p?.primaryEndpoint?.trim()?doc("Registry primary outcome: "+p.primaryEndpoint):
+   registry?.primaryOutcomes?.[0]?.measure?doc("Official registry primary outcome: "+registry.primaryOutcomes[0].measure):null;
+  case 8:return p?.primaryTimeframe?.trim()?doc("Registry primary outcome timeframe: "+p.primaryTimeframe):
+   registry?.primaryOutcomes?.[0]?.timeFrame?doc("Official registry primary outcome timeframe: "+registry.primaryOutcomes[0].timeFrame):null;
+  case 9:return p?.allocation?.trim()?doc("Registry allocation: "+p.allocation):
+   registry?.allocation?doc("Official registry allocation: "+registry.allocation):null;
+  case 10:return p?.masking?.trim()?doc("Registry masking: "+p.masking):
+   registry?.masking?doc("Official registry masking: "+registry.masking):null;
+  case 11:{
+   const compare=(registry?.arms||[]).filter(a=>["PLACEBO_COMPARATOR","ACTIVE_COMPARATOR","SHAM_COMPARATOR","NO_INTERVENTION"].includes(a.type));
+   return p?.comparator?.trim()?doc("Saved protocol comparator field: "+p.comparator):
+    compare.length>0?doc("Official registry comparator arms: "+compare.map(a=>a.type+": "+a.label).join(" | ")):null;
+  }
+  case 12:return p?.enrollment?.trim()?doc("Registry enrollment: "+p.enrollment+" ("+p.enrollmentType.toLowerCase()+")"):
+   registry?.enrollment!==undefined?doc("Official registry enrollment: "+registry.enrollment):null;
+  case 17:return registry?.secondaryOutcomes?.length?doc(
+   "Registered secondary outcomes (presence only, NOT predicted efficacy): "+
+   registry.secondaryOutcomes.slice(0,3).map(x=>x.measure).join("; ")):null;
+  case 18:{
+   const pro=registry?.secondaryOutcomes?.filter(x=>/quality.of.life|patient.report|functional|symptom|pain|fatigue/i.test(x.measure))||[];
+   return pro.length?doc("Registered patient symptom/quality-of-life outcome(s), NOT observed benefits: "+
+    pro.slice(0,3).map(x=>x.measure).join("; ")):null;
+  }
+  case 25:return registry?.status?doc("Official registry status checked in source backfill: "+registry.status):
+   t.registryStatus?doc("Registry status on "+t.registryAsOf+": "+t.registryStatus.replaceAll("_"," ")):null;
+  case 27:return /\bplacebo\b/i.test(t.interventions)||
+   (registry?.interventions||[]).some(x=>/\bplacebo\b/i.test(x.name))?
+   doc("Placebo is named among registered interventions. The existence of an arm does NOT prove adequate power or treatment superiority."):null;
   default:return null;
  }
 }
