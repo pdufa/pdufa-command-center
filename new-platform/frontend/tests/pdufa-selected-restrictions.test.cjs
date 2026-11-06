@@ -22,9 +22,9 @@ test("23 selected controls; all seven user-unselected restrictions OFF",()=>{
  assert.ok(p.DISABLED_POLICY.every(r=>!r.enabled));
  assert.equal(new Set([...p.ENABLED_POLICY,...p.DISABLED_POLICY].map(r=>r.id)).size,30);
 });
-test("762 exact NCTs reconcile: 260 active, 499 historical, 3 unknown",()=>{
+test("762 exact NCTs reconcile to latest registry: 258 active, 501 historical, 3 unknown",()=>{
  assert.equal(audit.trialCount,762);
- assert.deepEqual(audit.lifecycle,{ACTIVE:260,HISTORICAL:499,VERIFY:3});
+ assert.deepEqual(audit.lifecycle,{ACTIVE:258,HISTORICAL:501,VERIFY:3});
  assert.equal(audit.lifecycle.ACTIVE+audit.lifecycle.HISTORICAL+audit.lifecycle.VERIFY,762);
  assert.equal(audit.qualification,"NOT_VERIFIED");
  assert.equal(audit.rules.length,23);
@@ -33,7 +33,7 @@ test("762 exact NCTs reconcile: 260 active, 499 historical, 3 unknown",()=>{
 });
 test("Closed study exclusion applies only to Active Phase View; unknown is not a failure",()=>{
  const active=audit.rules.find(r=>r.id==="activeview");
- assert.deepEqual(active.counts,{PASS:260,FAIL:499,UNKNOWN:3});
+ assert.deepEqual(active.counts,{PASS:258,FAIL:501,UNKNOWN:3});
  assert.equal(p.trialLifecycle("SUSPENDED"),"VERIFY");
  assert.equal(p.trialLifecycle("UNKNOWN"),"VERIFY");
  assert.equal(p.trialLifecycle("COMPLETED"),"HISTORICAL");
