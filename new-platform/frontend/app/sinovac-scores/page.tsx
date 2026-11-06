@@ -57,6 +57,6 @@ export default function SinovacScores(){
     </table>
    </div>
   </section>
-  <p><strong>Source as of:</strong> {data.asOf}. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/sva-27-documentary-scores-2026-11-06.csv" target="_blank" rel="noopener noreferrer">Download all 27 evidence scores (CSV)</a>. <Link href="/pipeline">Back to Pipeline</Link>.</p>
+  <p><strong>Source as of:</strong> {data.asOf}. <a href="https://github.com/pdufa/pdufa-command-center/blob/main/reports/sva-27-documentation-and-outcome-scores-2026-11-06.csv" target="_blank" rel="noopener noreferrer">Download all 27 evidence scores (CSV)</a>. <Link href="/pipeline">Back to Pipeline</Link>.</p>
  </main>
 }
