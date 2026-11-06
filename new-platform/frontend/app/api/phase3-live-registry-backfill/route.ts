@@ -268,7 +268,7 @@ export async function GET(request:Request){
  return new Response("\uFEFF"+csvRows.join("\r\n")+"\r\n",{
   headers:{
    "Content-Type":"text/csv; charset=utf-8",
-   "Content-Disposition":'attachment; filename="Phase3-762-Live-Registry-Evidence-Backfill-With-Statistical-Safety-Results.csv"',
+   "Content-Disposition":'attachment; filename="Phase3-'+rows.length+'-Live-Registry-Evidence-Backfill-With-Statistical-Safety-Results.csv"',
    "Cache-Control":"no-store",
    "X-Trials-Fetched":String(observed.length),
    "X-Failed-Registry-Batches":String(failedBatches)
