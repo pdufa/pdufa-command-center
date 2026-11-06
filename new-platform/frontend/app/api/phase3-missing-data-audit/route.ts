@@ -41,6 +41,7 @@ function statusFor(
   if(q.number===17&&/secondary endpoint/i.test(ir.specificEvidence||""))return "SOURCE_FACT_ONLY";
   if(q.number===18&&/patient.reported|\bPRO\b/i.test(ir.specificEvidence||""))return "SOURCE_FACT_ONLY";
   if(q.number===24&&/discontinuation/i.test(ir.safetyEvidence||""))return "SOURCE_FACT_ONLY";
+  if(q.number===30&&ir.regulatoryUrl&&/NDA under FDA review.*PDUFA/i.test(ir.regulatory||""))return "SOURCE_FACT_ONLY";
  }
  if(q.observation)return "SOURCE_FACT_ONLY";
  if(q.number===11&&registryByNct.get(r.nctId)?.comparators)return "SOURCE_FACT_ONLY";
