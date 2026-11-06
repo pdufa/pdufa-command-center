@@ -2,6 +2,7 @@
 import {useEffect,useMemo,useState} from "react";
 import endpointAdjudications from "../data/phase3EndpointAdjudications20261105.json";
 import liveCoverageSummary from "../public/phase3-six-source-harvest-summary-20261105.json";
+import issuerResearch from "../data/phase3CompanyWebsiteEvidence20261105.json";
 
 type TrialRow={
  nctId:string;ticker:string;company:string;registryStatus:string;rosterStatus:string;
@@ -149,6 +150,28 @@ export default function Phase3UnifiedClassifications(){
      <a href="/api/phase3-source-coverage?format=csv">Recovered source facts for 762 trials (CSV)</a>{" · "}
      <a href="/phase3-six-source-harvest-summary-20261105.json">Six-source coverage report (JSON)</a>
     </p>
+    <details style={{margin:"11px 0 0",padding:9,border:"1px solid #b9cabf",borderRadius:8}}>
+     <summary style={{cursor:"pointer",fontSize:13,fontWeight:700}}>
+      Company website review: {issuerResearch.trialCount} additional exact-NCT readouts across {issuerResearch.companyCount} issuers
+     </summary>
+     <p style={{fontSize:12}}>These are primary-outcome sources confirmed through sponsor investor websites;
+      they are not calibrated trading signals or verified FDA approval decisions.
+      Mixed-dose and co-primary outcomes retain their failed comparisons.</p>
+     <div style={{overflowX:"auto"}}>
+      <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:620}}>
+       <thead><tr>{["Issuer / study","Trial","Reported result","Company source"].map(h=>
+        <th key={h} scope="col" style={cell}>{h}</th>)}</tr></thead>
+       <tbody>{issuerResearch.records.map(r=><tr key={r.nctId}>
+        <td style={cell}>{r.ticker} · {r.study}</td>
+        <td style={cell}><a href={"https://clinicaltrials.gov/study/"+r.nctId}
+         target="_blank" rel="noopener noreferrer">{r.nctId}</a></td>
+        <td style={cell}>{r.specificEvidence}</td>
+        <td style={cell}><a href={r.companyUrl} target="_blank" rel="noopener noreferrer">
+         Issuer release</a></td>
+       </tr>)}</tbody>
+      </table>
+     </div>
+    </details>
     <p style={{fontSize:11,margin:"6px 0 0"}}>AACT, FDA and international sources were also probed; access and NCT-to-application matching limitations are documented in the report.
      A posted registry result is not automatically PASS, and an SEC or PubMed hit is not proof of success.</p>
    </section>
