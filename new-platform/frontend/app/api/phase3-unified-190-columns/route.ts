@@ -63,6 +63,7 @@ export async function GET(request:Request){
     new Set(ledger.rows.map(r=>r.nctId)).size!==762||
     PHASE3_ONLINE_TRIAL_COUNT!==762||registryByNct.size!==762||registryCrosswalk.records.length!==762||
     endpointByNct.size!==43||endpointAdjudications.records.length!==43||
+    investorRelationsEvidence.records.filter(x=>Boolean(x.regulatoryEvidenceStatus)).length!==8||
     endpointAdjudications.records.some(x=>!ledger.rows.some(r=>r.nctId===x.nctId))){
   return Response.json({error:"Phase 3 190-column ledger integrity check failed"},{status:503});
  }
@@ -101,7 +102,9 @@ export async function GET(request:Request){
    r.readoutEvidenceType==="NOT_VERIFIED"&&onlineRecord?.resultsPosted?"CTGOV_RESULTS_POSTED_UNADJUDICATED":r.readoutEvidenceType,
    r.readoutSourceDate,outcome,r.drug||liveRegistry?.drugInterventions||registry?.drugInterventions||"",
    r.indication,liveRegistry?.interventionNames||r.registeredInterventions,
-   r.fdaApplicationStatus,r.fdaReviewType,r.pdufaGoalDate,
+   investor?.regulatoryEvidenceStatus||r.fdaApplicationStatus,
+   investor?.regulatoryReviewType&&investor.regulatoryReviewType!=="NOT_VERIFIED"?investor.regulatoryReviewType:r.fdaReviewType,
+   investor?.pdufaGoalDate||r.pdufaGoalDate,
    endpointEvidenceUrl||(onlineRecord?.resultsPosted?"https://clinicaltrials.gov/study/"+r.nctId:""),
    r.registrySourceUrl,r.classificationEvidence
   ];
@@ -111,7 +114,8 @@ export async function GET(request:Request){
    endpoint?.evidenceType||r.readoutEvidenceType||"NOT_VERIFIED",
    r.classificationCode,Boolean(endpoint)||r.classificationVerified,
    r.registryStatus,r.registryAsOf,r.marketCapSourceStatus,r.inDatedMarketCapScreen,
-   r.fdaApplicationStatus!=="NOT_VERIFIED",Boolean(r.pdufaGoalDate),
+   Boolean(investor?.regulatoryEvidenceStatus&&investor?.regulatoryEvidenceUrl)||r.fdaApplicationStatus!=="NOT_VERIFIED",
+   Boolean(investor?.pdufaGoalDate&&investor?.pdufaEvidenceUrl)||Boolean(r.pdufaGoalDate),
    predictions,observations,30-predictions-observations,
    "UNIVERSAL_PHASE3_30_QUESTION_EVIDENCE_AWARE_V1",
    predictions?"REVIEWED_PRE_READOUT_PREDICTIONS":
@@ -129,6 +133,10 @@ export async function GET(request:Request){
    if(q.number===29&&endpoint)return ["DOCUMENTED_PUBLIC_READOUT","","",
     "Public Phase 3 readout or results exist. "+fullPassRationale,endpointEvidenceUrl];
    // Issuer investor-relations statements are historical SOURCE FACTS, not subjective predictive scores.
+   if(q.number===30&&investor?.regulatoryEvidenceStatus&&investor?.regulatoryEvidenceUrl)
+    return ["SOURCE_FACT_ONLY","","",
+     "FDA drug/indication application evidence crosswalk (not a trial outcome): "+investor.regulatoryEvidence,
+     [investor.regulatoryEvidenceUrl,investor.pdufaEvidenceUrl].filter(Boolean).join(" | ")];
    if(investor?.companyUrl){
     if(q.number===3&&investor.safetyEvidence)
      return ["SOURCE_FACT_ONLY","","","Issuer-reported safety/tolerability: "+investor.safetyEvidence+"; no calibrated safety forecast inferred",investor.companyUrl];

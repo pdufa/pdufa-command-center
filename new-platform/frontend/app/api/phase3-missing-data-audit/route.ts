@@ -36,6 +36,7 @@ function statusFor(
  if(q.number===1&&e?.endpointOutcome==="NO_BINARY_PASS_FAIL")return "DOCUMENTED_NON_BINARY_ENDPOINT";
  if(q.number===29&&e)return "DOCUMENTED_PUBLIC_READOUT";
  const ir=investorByNct.get(r.nctId);
+ if(q.number===30&&ir?.regulatoryEvidenceStatus&&ir.regulatoryEvidenceUrl)return "SOURCE_FACT_ONLY";
  if(ir?.companyUrl){
   if(q.number===3&&ir.safetyEvidence)return "SOURCE_FACT_ONLY";
   if(q.number===17&&/secondary endpoint/i.test(ir.specificEvidence||""))return "SOURCE_FACT_ONLY";
@@ -68,7 +69,9 @@ export async function GET(request:Request){
     UNIVERSAL_PHASE3_QUESTIONS.length!==30||
     preData.trials.length!==253||
     officialResearch.records.length!==253||
-    adjudications.records.length!==43||PHASE3_ONLINE_TRIAL_COUNT!==762||
+    adjudications.records.length!==43||
+    investorRelationsEvidence.records.filter(x=>Boolean(x.regulatoryEvidenceStatus)).length!==8||
+    PHASE3_ONLINE_TRIAL_COUNT!==762||
     registryCrosswalk.records.length!==762||registryByNct.size!==762){
    return Response.json({error:"The research snapshot failed a count/identity check"},{status:503});
  }
@@ -103,8 +106,8 @@ export async function GET(request:Request){
    onlineStatisticalAnalyses:Boolean(online?.resultsAnalysisCount),
    pubmedArticleLeads:Boolean(online?.pubmedPMIDs.length),
    secFilingLeads:Boolean((online?.secFilingMentions||0)>0),
-   unverifiedFDAApplication:r.fdaApplicationStatus==="NOT_VERIFIED",
-   unverifiedPDUFADate:!r.pdufaGoalDate,
+   unverifiedFDAApplication:r.fdaApplicationStatus==="NOT_VERIFIED"&&!investorByNct.get(r.nctId)?.regulatoryEvidenceStatus,
+   unverifiedPDUFADate:!r.pdufaGoalDate&&!investorByNct.get(r.nctId)?.pdufaGoalDate,
    outsideDatedMarketCapScreen:!r.inDatedMarketCapScreen,
    ...c,questionStatuses:statuses
   });
@@ -129,6 +132,8 @@ export async function GET(request:Request){
   unverifiedFDAApplication:rows.filter(r=>r.unverifiedFDAApplication).length,
   unverifiedPDUFADate:rows.filter(r=>r.unverifiedPDUFADate).length,
   missingAdjudicatedEndpoint:rows.filter(r=>!r.hasEndpointAdjudication).length,
+  investorRelationsRegulatoryTrialLinks:rows.filter(r=>Boolean(investorByNct.get(r.nctId)?.regulatoryEvidenceStatus)).length,
+  investorRelationsFDAApplicationPrograms:new Set(investorRelationsEvidence.records.filter(r=>Boolean(r.regulatoryProgramId)).map(r=>r.regulatoryProgramId)).size,
   outsideDatedMarketCapScreen:rows.filter(r=>r.outsideDatedMarketCapScreen).length,
   onlineRegistryRecords:PHASE3_ONLINE_TRIAL_COUNT,
   onlinePrimaryEndpointCount:rows.filter(r=>r.onlinePrimaryEndpoint).length,
@@ -143,6 +148,8 @@ export async function GET(request:Request){
     assessment.trialsWithOutcomeAdjudication!==43||
     fields.unknownRegistryStatus!==3||
     fields.missingDrugField!==103||
+    fields.investorRelationsRegulatoryTrialLinks!==8||fields.investorRelationsFDAApplicationPrograms!==3||
+    fields.unverifiedFDAApplication!==754||fields.unverifiedPDUFADate!==754||
     fields.onlinePrimaryEndpointCount!==756||fields.registryResultsPosted!==337||
     fields.pubmedNctArticleLeads!==288){
   return Response.json({error:"Missingness audit reconciliation failed"},{status:503});
@@ -164,6 +171,8 @@ export async function GET(request:Request){
    "Source-fact columns document available registry facts, not favorable clinical or FDA predictions.",
    "Crosswalk identifies registered DRUG-type interventions in 657 studies; other intervention types such as biologics, devices, or vaccines are not automatically labeled DRUG.",
    "Not every historical or pre-readout Phase 3 trial has an FDA application or PDUFA date.",
+   "Eight linked trial rows represent only three drug-indication FDA application programs; clinical endpoint outcomes remain distinct from the program-level FDA decision.",
+   "Historical PDUFA action dates are 2022-02-17 and 2026-04-30; issuer-reported future AXS-12 target date is 2027-05-01.",
    "Online registry primary outcome documentation, comparator arms and posted results have been imported as source facts, never as numeric drug-success forecasts."
   ]
  };

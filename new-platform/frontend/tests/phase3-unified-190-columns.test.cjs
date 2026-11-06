@@ -7,6 +7,7 @@ const route=fs.readFileSync(path.join(root,"app/api/phase3-unified-190-columns/r
 const screen=fs.readFileSync(path.join(root,"app/Phase3UnifiedClassifications.tsx"),"utf8");
 const questionDef=fs.readFileSync(path.join(root,"lib/phase3-universal-questions.ts"),"utf8");
 const adjudications=JSON.parse(fs.readFileSync(path.join(root,"data/phase3EndpointAdjudications20261105.json"),"utf8"));
+const investorEvidence=JSON.parse(fs.readFileSync(path.join(root,"data/phase3CompanyWebsiteEvidence20261105.json"),"utf8"));
 const drugCrosswalk=JSON.parse(fs.readFileSync(path.join(root,"data/phase3RegistryDrugComparatorCrosswalk20261106.json"),"utf8"));
 const audit=fs.readFileSync(path.join(root,"app/api/phase3-missing-data-audit/route.ts"),"utf8");
 const headerCount=(name)=>{
@@ -46,8 +47,18 @@ test("All 762 unique NCTs retain evidence-qualified 190-column outcome states",(
  assert.ok(adjudications.records.some(r=>r.nctId==="NCT04576949"&&r.endpointOutcome==="PRIMARY_ENDPOINT_MET"));
  assert.ok(adjudications.records.some(r=>r.nctId==="NCT05206370"&&r.endpointOutcome==="PRIMARY_ENDPOINT_MET"));
  for(const nct of ["NCT03548220","NCT03559699","NCT05144256","NCT05175105","NCT03226522","NCT05557409","NCT04797715","NCT04947553","NCT05059223","NCT05113745"])assert.ok(adjudications.records.some(r=>r.nctId===nct&&r.evidenceUrl));
+ assert.equal(investorEvidence.regulatoryApplicationLinkCount,8);
+ assert.equal(investorEvidence.regulatoryApplicationProgramCount,3);
+ assert.equal(investorEvidence.records.filter(r=>Boolean(r.regulatoryEvidenceStatus)).length,8);
+ assert.equal(investorEvidence.records.filter(r=>r.pdufaGoalDate==="2027-05-01").length,2);
+ assert.ok(investorEvidence.records.some(r=>r.nctId==="NCT05557409"&&r.regulatoryEvidenceStatus==="FDA_APPROVED_HISTORICAL"));
+ assert.ok(adjudications.records.some(r=>r.nctId==="NCT05557409"&&r.endpointOutcome==="PRIMARY_ENDPOINT_NOT_MET"));
  assert.match(route,/investorByNct/);
  assert.match(audit,/investorByNct/);
+ assert.match(audit,/fields\.unverifiedFDAApplication!==754/);
+ assert.match(audit,/fields\.unverifiedPDUFADate!==754/);
+ assert.match(route,/investor\?\.pdufaGoalDate\|\|r\.pdufaGoalDate/);
+ assert.match(route,/q\.number===30&&investor\?\.regulatoryEvidenceStatus/);
  assert.match(route,/Issuer-reported safety\/tolerability/);
  assert.match(route,/PASS_DOCUMENTED_PRIMARY_ENDPOINT/);
  assert.match(route,/FAIL_DOCUMENTED_PRIMARY_ENDPOINT/);
