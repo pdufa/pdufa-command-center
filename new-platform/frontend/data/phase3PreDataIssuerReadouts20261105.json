@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-05",
+  "scope": "EXACT_NCT_CONFIRMED_PHASE3_ISSUER_TOPLINE_ADDITIONS",
+  "records": [
+    {
+      "nctId": "NCT05711940",
+      "ticker": "CMPS",
+      "drug": "COMP360 psilocybin",
+      "indication": "treatment-resistant depression",
+      "trialName": "COMP006",
+      "publicPrimaryEndpointReportedOn": "2026-02-17",
+      "result": "MET_PRIMARY_ENDPOINT",
+      "issuerSourceUrl": "https://ir.compasspathways.com/News--Events-/news/news-details/2026/Compass-Pathways-Successfully-Achieves-Primary-Endpoint-in-Second-Phase-3-Trial-Evaluating-COMP360-Psilocybin-for-Treatment-Resistant-Depression/",
+      "registrySourceUrl": "https://clinicaltrials.gov/study/NCT05711940",
+      "trialNameToNctCrosswalkSourceUrl": "https://recruit.cumc.columbia.edu/studyinfopage/3012",
+      "note": "Exact COMP006/NCT crosswalk corroborated by Columbia recruiting page. Issuer reports successful Week 6 MADRS primary endpoint: -3.8 vs 1 mg comparator, p<0.001. Do not mark an unreleased trial; do not treat as FDA approval."
+    }
+  ]
+}

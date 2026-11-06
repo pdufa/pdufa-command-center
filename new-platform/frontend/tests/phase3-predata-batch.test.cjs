@@ -30,4 +30,14 @@ test("All 30 universal questions avoid inventing efficacy predictions",()=>{
  assert.match(panel,/Export all/);
  assert.match(panel,/phase3AnalysisCsvValues\(t.nctId\)/);
  assert.match(panel,/not all independently confirmed unpublished/);
+ assert.match(panel,/additionalIssuerReadouts.records/);
+});
+
+test("Issuer-published COMP006 stays outside pre-data TOP while its dated evidence is retained",()=>{
+ const j=JSON.parse(read("data/phase3PreDataIssuerReadouts20261105.json"));
+ assert.equal(j.records.length,1);
+ assert.equal(j.records[0].nctId,"NCT05711940");
+ assert.equal(j.records[0].publicPrimaryEndpointReportedOn,"2026-02-17");
+ assert.match(read("app/Phase3PreDataBatch.tsx"),/additionalIssuerReadouts.records.map/);
+ assert.match(read("lib/raas-cap-screened-top-phase3.ts"),/additionalIssuerReadouts.records.map/);
 });

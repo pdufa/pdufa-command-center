@@ -7,6 +7,7 @@
 import type {ReadoutClassification,ReadoutRow} from "./phase3-public-readout";
 import type {RaasScreenedTrialRoster} from "./raas-full-universe-roster";
 import {phase3AnalysisCsvHeaders,phase3AnalysisCsvValues} from "./phase3-top-questions";
+import additionalIssuerReadouts from "../data/phase3PreDataIssuerReadouts20261105.json";
 export type CapScreenedTopPhase3={
  sourceAsOf:string;
  candidates:ReadoutRow[];
@@ -22,7 +23,7 @@ export function splitCapScreenedTopPhase3(
   !roster.details||roster.details.size!==roster.rows.length||
   !roster.sourceAsOf||!classification||classification.total!==741)
   throw Error("TOP_CAP_SCREENED_PHASE3_INPUT_INVALID");
- const knownPost=new Set(classification.post.map(x=>x.nctId));
+ const knownPost=new Set([...classification.post.map(x=>x.nctId),...additionalIssuerReadouts.records.map(x=>x.nctId)]);
  const pre=new Map(classification.pre.map(x=>[x.nctId,x.ticker]));
  const candidates:ReadoutRow[]=[],alreadyTop:ReadoutRow[]=[];
  let excludedKnownPost=0;

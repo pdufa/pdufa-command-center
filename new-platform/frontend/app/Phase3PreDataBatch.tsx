@@ -4,6 +4,7 @@ import {phase3PredataSnapshot,phase3PreDataSourceFactCount} from "../lib/phase3-
 import {phase3AnalysisCsvHeaders,phase3AnalysisCsvValues,phase3CompletedQuestions} from "../lib/phase3-top-questions";
 import {TopPhase3Analysis} from "./Phase3TopAnalysis";
 import research from "../data/phase3PreDataOfficialResearch.json";
+import additionalIssuerReadouts from "../data/phase3PreDataIssuerReadouts20261105.json";
 const th={padding:"9px",borderBottom:"2px solid #a2c6af",textAlign:"left" as const};
 const td={padding:"9px",borderBottom:"1px solid #d8e5dc",verticalAlign:"top" as const};
 const PAGE_SIZE=25;
@@ -15,7 +16,10 @@ const postedAsOfCutoff=(nctId:string):boolean=>{
  const r=researchByNct.get(nctId);const day=r?.registry?.resultsFirstPosted||"";
  return Boolean(r?.registry?.hasResults&&(!day||day<=publishedResearch.sourceCutoff));
 };
-const postedIds=new Set(publishedResearch.records.filter(x=>postedAsOfCutoff(x.nctId)).map(x=>x.nctId));
+const postedIds=new Set([
+ ...publishedResearch.records.filter(x=>postedAsOfCutoff(x.nctId)).map(x=>x.nctId),
+ ...additionalIssuerReadouts.records.map(x=>x.nctId),
+]);
 
 const csvCell=(s:string)=>'"'+(/^[=+\-@]/.test(s)?"'"+s:s).replaceAll('"','""')+'"';
 export default function Phase3PreDataBatch({query}:{query:string}){
@@ -63,7 +67,7 @@ export default function Phase3PreDataBatch({query}:{query:string}){
    Dated $300M–$10B active Phase 3 source screen ({phase3PredataSnapshot.asOf}):
    <strong> {trials.length} registry-unposted candidates</strong>, after excluding
    {phase3PredataSnapshot.counts.knownIssuerReadoutsExcluded} previously confirmed issuer readouts and
-   {excludedPosted.length} additional trials with official registry results posted.
+   {publishedResearch.records.filter(x=>postedAsOfCutoff(x.nctId)).length} additional trials with official registry results posted, and {additionalIssuerReadouts.records.length} exact-NCT issuer-reported result.
    These are <strong>not all independently confirmed unpublished</strong>;
    an issuer may have announced results before registry posting.
   </p>
@@ -104,13 +108,15 @@ export default function Phase3PreDataBatch({query}:{query:string}){
    <button type="button" disabled={activePage>=lastPage-1} onClick={()=>setPage(p=>Math.min(lastPage-1,p+1))}>Next 25</button>
   </div>
   <details style={{marginTop:12}}><summary style={{cursor:"pointer",fontWeight:700}}>
-   Registry results already posted · {excludedPosted.length} excluded from pre-data batch
+   Registry- or issuer-reported results · {excludedPosted.length} excluded from pre-data batch
   </summary>
    <p>These records remain available for historical research but are not treated as unreleased Phase 3 outcomes.
     Company/issuer readout confirmation is a separate check.</p>
    <ul>{excludedPosted.map(t=><li key={t.nctId}>
     <a href={t.registrySourceUrl} target="_blank" rel="noopener noreferrer">{t.ticker} · {t.nctId}</a>
-    {" — registry results first posted "+(researchByNct.get(t.nctId)?.registry?.resultsFirstPosted||"date not provided")}
+    {" — "+(additionalIssuerReadouts.records.some(r=>r.nctId===t.nctId)?
+   "issuer topline reported "+additionalIssuerReadouts.records.find(r=>r.nctId===t.nctId)?.publicPrimaryEndpointReportedOn:
+   "registry results first posted "+(researchByNct.get(t.nctId)?.registry?.resultsFirstPosted||"date not provided"))}
    </li>)}</ul>
   </details>
   <p style={{fontSize:11,color:"#435b4c",marginTop:10}}>
