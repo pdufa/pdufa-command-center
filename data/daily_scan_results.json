@@ -1,25 +1,25 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-06T04:15:36.620444+00:00",
+  "updated_at_utc": "2026-11-06T05:04:32.721844+00:00",
   "days": [
     {
       "date_pacific": "2026-11-05",
-      "run_id": 42161397218,
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42161397218",
-      "status": "RUN_FAILED",
-      "run_started_at_utc": "2026-11-06T04:15:14+00:00",
+      "run_id": 42164211710,
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42164211710",
+      "status": "PARTIAL",
+      "run_started_at_utc": "2026-11-06T04:43:48+00:00",
       "scheduled_8pm_pacific_utc": "2026-11-06T04:00:00+00:00",
-      "start_delay_minutes": 15,
-      "scan_night_source": "GUARDED_SCHEDULER_INPUT",
-      "registered_at_utc": "2026-11-06T04:15:36.619752+00:00",
+      "start_delay_minutes": 43,
+      "scan_night_source": "ACTUAL_START_DATE_FALLBACK",
+      "registered_at_utc": "2026-11-06T05:04:32.721043+00:00",
       "sections": {
         "master": {
           "previous": null,
           "new": null,
-          "updated": null,
+          "updated": 70,
           "removed": null,
-          "total": null,
-          "basis": "Same-run inventory evidence unavailable."
+          "total": 11635,
+          "basis": "Same-night verified collector: tracked clinical trial inventory. This is not the qualified Pipeline total or an independently certified unique-NCT published master feed. Updated means trial records changed, not new trials or new GEM candidates."
         },
         "pipeline": {
           "previous": null,
@@ -55,8 +55,10 @@
         }
       },
       "notes": [
-        "The published source report does not match this exact overnight run; counts deliberately withheld.",
-        "Nightly workflow conclusion: failure."
+        "70 tracked trial records changed during this run; newly added trials and qualified Pipeline additions remain unverified.",
+        "Same-run source audit: 991 of 1121 verified; 23 unresolved, 2 conflicted, 93 unavailable, 12 not applicable. Full coverage verified: no.",
+        "Clinical collection and the full overnight sequence are different verification standards; full-source certification is not implied.",
+        "FDA, SEC, issuer and/or market source families remain unverified."
       ]
     },
     {
