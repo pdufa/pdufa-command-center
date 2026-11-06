@@ -1,9 +1,9 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-06",
-  "totalReviewed": 98,
+  "totalReviewed": 100,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 70,
+    "PRIMARY_ENDPOINT_MET": 72,
     "PRIMARY_ENDPOINT_NOT_MET": 17,
     "NO_BINARY_PASS_FAIL": 11
   },
@@ -1086,6 +1086,32 @@
       "recoveryBatch": "SVA_ADDITIONAL_EXACT_PUBLISHED_20261106",
       "evidenceType": "EXACT_NCT_PEER_REVIEWED_HISTORICAL_PHASE3_ENDPOINT",
       "qualification": "Retrospective vaccine immunogenicity/clinical result only. Does not establish a US FDA decision, PDUFA date, market access, or calibrated trial score."
+    },
+    {
+      "nctId": "NCT03822754",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Trial A (sIPV followed by two bOPV doses): randomized double-blind Phase 3 trial in 240 infants, with Sabin-strain inactivated polio vaccine versus conventional IPV in the same oral polio schedule; reported prespecified noninferiority of seroconversion against poliovirus types 1 and 3. Two separate randomization cohorts; seroconversion surrogate rather than direct poliomyelitis efficacy.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/31660344/",
+      "sourceDate": "2019-08-26",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03822754",
+      "identityCrosswalk": "Published article explicitly identifies both studies separately: Trial A NCT03822754 and Trial B NCT03822767. This row represents only Trial A (sIPV followed by two bOPV doses).",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_SEQUENTIAL_POLIO_TWO_EXACT_NCT_20261106",
+      "evidenceType": "PEER_REVIEWED_TWO_SEPARATE_PHASE3_TRIALS",
+      "qualification": "Historical immunogenicity noninferiority only; not direct infection-prevention efficacy, US FDA approval or prospective RAAS prediction."
+    },
+    {
+      "nctId": "NCT03822767",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Trial B (two sIPV followed by one bOPV dose): randomized double-blind Phase 3 trial in 240 infants, with Sabin-strain inactivated polio vaccine versus conventional IPV in the same oral polio schedule; reported prespecified noninferiority of seroconversion against poliovirus types 1 and 3. Two separate randomization cohorts; seroconversion surrogate rather than direct poliomyelitis efficacy.",
+      "evidenceUrl": "https://pubmed.ncbi.nlm.nih.gov/31660344/",
+      "sourceDate": "2019-08-26",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03822767",
+      "identityCrosswalk": "Published article explicitly identifies both studies separately: Trial A NCT03822754 and Trial B NCT03822767. This row represents only Trial B (two sIPV followed by one bOPV dose).",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "SVA_SEQUENTIAL_POLIO_TWO_EXACT_NCT_20261106",
+      "evidenceType": "PEER_REVIEWED_TWO_SEPARATE_PHASE3_TRIALS",
+      "qualification": "Historical immunogenicity noninferiority only; not direct infection-prevention efficacy, US FDA approval or prospective RAAS prediction."
     }
   ]
 }
