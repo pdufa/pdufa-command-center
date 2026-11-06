@@ -106,7 +106,7 @@ test("legacy pilot score UI is historically preserved while nightly scoring capt
  assert.match(button,/data-raas-current-provisional-metric/);
  assert.match(button,/Overall RAAS remains —\/100/);
  assert.match(workflow,/Surveys and ratings cancelled/);
- assert.doesNotMatch(workflow,/run:\\s*node scripts\\/raas_trial_provisional_metric_capture\\.cjs/);
+ assert.doesNotMatch(workflow,/node scripts\/raas_trial_provisional_metric_capture\.cjs/);
  for(const [source,name] of [[scoreSource,"raas-provisional-trial-scores.ts"],
   [summary,"TrialRaasDisclosure.tsx"],[button,"RaasTrialHistoryButton.tsx"]]){
   const result=ts.transpileModule(source,{fileName:name,reportDiagnostics:true,
