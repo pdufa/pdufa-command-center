@@ -1,14 +1,14 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 83,
+  "totalReviewed": 86,
   "counts": {
     "PRIMARY_ENDPOINT_MET": 60,
-    "PRIMARY_ENDPOINT_NOT_MET": 14,
+    "PRIMARY_ENDPOINT_NOT_MET": 17,
     "NO_BINARY_PASS_FAIL": 9
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
-  "note": "43 exact-NCT adjudications; 10 added from Agios and Axsome investor relations, distinguishing Bayesian failures and randomized withdrawal studies from FDA decisions.",
+  "note": "43 exact-NCT adjudications; 10 added from Agios and Axsome investor relations, distinguishing Bayesian failures and randomized withdrawal studies from FDA decisions. Additional 2026-11-06 pre-registry source recovery includes three Ionis primary failures; no primary efficacy adjudication for zero-enrollment withdrawn peramivir NCT00486980.",
   "records": [
     {
       "nctId": "NCT04770753",
@@ -894,6 +894,45 @@
       "recoveryBatch": "SUPN_SEVEN_EXACT_PHASE3_20261106",
       "evidenceType": "ISSUER_READOUT_VERIFIED_REGISTRY_CROSSWALK",
       "qualification": "Historical primary trial outcome only; not a prospective RAAS prediction. Dose-specific results preserved."
+    },
+    {
+      "nctId": "NCT00017407",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "Historical Affinitak (ISIS 3521)/carboplatin/paclitaxel NSCLC Phase III primary overall-survival log-rank comparison did not meet primary endpoint (p=0.81); median survival 10.0 vs 9.7 months. A secondary/stratified subgroup p-value does not override primary failure.",
+      "evidenceUrl": "https://ir.ionis.com/node/9891",
+      "sourceDate": "2003-03-17",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "PRE_REGISTRY_PRIMARY_ENDPOINT_20261106",
+      "identityCrosswalk": "Exact NCT00017407 = Carboplatin and Paclitaxel With or Without ISIS 3521, not the separate gemcitabine/cisplatin ALERT trial.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00017407",
+      "evidenceType": "ORIGINAL_ISSUER_PHASE3_READOUT_WITH_EXACT_REGISTRY_CROSSWALK",
+      "qualification": "Historical original primary analysis only; no inferred FDA approval outcome or numerical RAAS prediction."
+    },
+    {
+      "nctId": "NCT00048113",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "ISIS 2302-CS20 phase III alicaforsen in active Crohn's disease did not meet prespecified clinical remission by week 12 (CDAI ≤150) versus placebo; original sponsor said both trials failed, with peer-reviewed analysis confirming each study failed. Pooled rates not attributed to individual NCT.",
+      "evidenceUrl": "https://ir.ionis.com/news-releases/news-release-details/isis-pharmaceuticals-announces-results-alicaforsen-phase-3",
+      "sourceDate": "2004-12-02",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "PRE_REGISTRY_PRIMARY_ENDPOINT_20261106",
+      "identityCrosswalk": "NCT00048113 = ISIS 2302-CS20 North American trial; combined paper https://pubmed.ncbi.nlm.nih.gov/17296530/.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00048113",
+      "evidenceType": "ORIGINAL_ISSUER_PAIRED_TRIAL_READOUT_PLUS_PUBLICATION",
+      "qualification": "Trial-specific failure from identical-design two-trial issuer and published report; pooled treatment arm rates not assigned to this one NCT."
+    },
+    {
+      "nctId": "NCT00048295",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "ISIS 2302-CS21 phase III alicaforsen in Crohn's disease did not meet clinical remission by week 12 (CDAI ≤150) versus placebo. Both separate trials and pooled primary test failed according to original issuer and peer-reviewed report; no trial-specific pooled rate assigned.",
+      "evidenceUrl": "https://ir.ionis.com/news-releases/news-release-details/isis-pharmaceuticals-announces-results-alicaforsen-phase-3",
+      "sourceDate": "2004-12-02",
+      "reviewedAt": "2026-11-06",
+      "recoveryBatch": "PRE_REGISTRY_PRIMARY_ENDPOINT_20261106",
+      "identityCrosswalk": "NCT00048295 = ISIS 2302-CS21 European/Israeli trial; combined paper https://pubmed.ncbi.nlm.nih.gov/17296530/.",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT00048295",
+      "evidenceType": "ORIGINAL_ISSUER_PAIRED_TRIAL_READOUT_PLUS_PUBLICATION",
+      "qualification": "Historical primary endpoint non-success only; no FDA outcome or new trading prediction."
     }
   ]
 }
