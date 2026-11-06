@@ -1,0 +1,615 @@
+{
+  "NCT07363577": [
+    {
+      "number": 1,
+      "heading": "Primary endpoint success forecast",
+      "question": "Will LB-102 meet the NOVA-2 primary Week 6 PANSS change endpoint versus placebo?",
+      "prediction": "PASS",
+      "score": 73,
+      "summary": "Prediction: superiority on Week 6 PANSS total-score change.",
+      "reason": "In Phase 2 NOVA-1, 50 mg and 75 mg doses reduced PANSS more than placebo at Week 4; mean changes were -14.3 and -14.0 versus -9.3 points with placebo. NOVA-2 extends assessment to six weeks and includes a 100 mg arm whose Phase 2 sample was smaller.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "LB-102 randomized Phase 2 NOVA-1, JAMA Psychiatry (2026)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/42018313/"
+        },
+        {
+          "label": "NOVA-2 registry (NCT07363577)",
+          "url": "https://clinicaltrials.gov/study/NCT07363577"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "heading": "Prior statistical significance",
+      "question": "Does the earlier LB-102 schizophrenia trial provide statistically persuasive efficacy support?",
+      "prediction": "PASS",
+      "score": 89,
+      "summary": "Prior randomized evidence supports antipsychotic activity.",
+      "reason": "A randomized Phase 2 trial of 359 adults demonstrated p<0.001 at 50 mg, p=0.002 at 75 mg, and nominal p=0.002 at 100 mg against placebo at Week 4. This is earlier-stage evidence, not NOVA-2's result.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "LB-102 randomized Phase 2 NOVA-1, JAMA Psychiatry (2026)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/42018313/"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "heading": "Safety and tolerability forecast",
+      "question": "Will LB-102's safety and tolerability permit its intended use?",
+      "prediction": "PASS",
+      "score": 65,
+      "summary": "An acceptable profile is plausible, but metabolic and prolactin effects remain concerns.",
+      "reason": "In Phase 2, treatment-emergent adverse events were reported in 69% with 50 mg, 57% with 75 mg, 75% with 100 mg, versus 56% with placebo; treatment-emergent adverse events caused withdrawal in 2, 3 and 3 participants by dose. A larger Phase 3 cohort could identify additional or cumulative risks.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "LB-102 randomized Phase 2 NOVA-1, JAMA Psychiatry (2026)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/42018313/"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "heading": "Biological target validation",
+      "question": "Is the drug's receptor mechanism plausible in schizophrenia?",
+      "prediction": "PASS",
+      "score": 83,
+      "summary": "Dopamine antagonism is an established antipsychotic mechanism.",
+      "reason": "LB-102 antagonizes D2/D3 and 5-HT7 receptors. D2 antagonism has clinically validated antipsychotic precedent, though the added 5-HT7 component does not guarantee superiority.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "LB Pharmaceuticals Phase 3 NOVA-2 timing (July 2026)",
+          "url": "https://ir.lbpharma.com/press_releases/lb-pharmaceuticals-announces-accelerated-timing-of-topline-results-from-the-phase-3-nova-2-trial-of-lb-102-in-schizophrenia/"
+        },
+        {
+          "label": "LB-102 randomized Phase 2 NOVA-1, JAMA Psychiatry (2026)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/42018313/"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "heading": "Phase 3 dose justification",
+      "question": "Does earlier dose-ranging support NOVA-2's selected 50 mg and 100 mg doses?",
+      "prediction": "PASS",
+      "score": 68,
+      "summary": "The selected doses have earlier activity, with more uncertainty at 100 mg.",
+      "reason": "Phase 2 included 50, 75 and 100 mg; the 100 mg group comprised only 36 participants compared with 107 and 108 at 50 and 75 mg. NOVA-2 includes 50 and 100 mg arms. A dose-response estimate is less precise for 100 mg.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "LB-102 randomized Phase 2 NOVA-1, JAMA Psychiatry (2026)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/42018313/"
+        },
+        {
+          "label": "NOVA-2 registry (NCT07363577)",
+          "url": "https://clinicaltrials.gov/study/NCT07363577"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "heading": "Patient population generalizability",
+      "question": "Are Phase 2 findings reasonably transferable to NOVA-2's acute schizophrenia population?",
+      "prediction": "PASS",
+      "score": 79,
+      "summary": "Population alignment is a material advantage.",
+      "reason": "Both the earlier NOVA-1 study and NOVA-2 target adults with acute schizophrenia. Protocol and recruitment differences remain possible, and the assessment horizon shifts from Week 4 to Week 6.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "LB-102 randomized Phase 2 NOVA-1, JAMA Psychiatry (2026)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/42018313/"
+        },
+        {
+          "label": "LB Pharmaceuticals Phase 3 NOVA-2 timing (July 2026)",
+          "url": "https://ir.lbpharma.com/press_releases/lb-pharmaceuticals-announces-accelerated-timing-of-topline-results-from-the-phase-3-nova-2-trial-of-lb-102-in-schizophrenia/"
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "heading": "Prior clinical effect size",
+      "question": "Does the previous study show a meaningful magnitude of antipsychotic benefit?",
+      "prediction": "PASS",
+      "score": 82,
+      "summary": "The prior 50 mg effect is clinically encouraging.",
+      "reason": "Placebo mean PANSS change was -9.3; the 50 mg arm was -14.3 (approximately 5 additional PANSS points) with a reported Hedges g of 0.61. Whether this repeats at Week 6 in NOVA-2 is unknown.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "LB-102 randomized Phase 2 NOVA-1, JAMA Psychiatry (2026)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/42018313/"
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "heading": "Secondary clinical endpoints",
+      "question": "Are NOVA-2's global severity and related secondary outcomes likely to be supportive?",
+      "prediction": "PASS",
+      "score": 61,
+      "summary": "Supportive symptom measures are plausible, but hierarchy success remains uncertain.",
+      "reason": "Phase 2 reported directional consistency in CGI-S and PANSS positive/negative subscales. NOVA-2 registers CGI-S as a secondary measure. Earlier directional findings do not establish the Phase 3 multiplicity-adjusted result.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "LB-102 randomized Phase 2 NOVA-1, JAMA Psychiatry (2026)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/42018313/"
+        },
+        {
+          "label": "NOVA-2 registry (NCT07363577)",
+          "url": "https://clinicaltrials.gov/study/NCT07363577"
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "heading": "Retention and discontinuation",
+      "question": "Will adverse event-related discontinuation remain manageable?",
+      "prediction": "PASS",
+      "score": 63,
+      "summary": "Retention appears feasible, with meaningful tolerability risk.",
+      "reason": "In Phase 2, treatment-emergent adverse events causing withdrawal occurred in 2/107 participants at 50 mg and 3/36 at 100 mg, versus 2/108 placebo; Phase 3 duration and size could increase discontinuations.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "LB-102 randomized Phase 2 NOVA-1, JAMA Psychiatry (2026)",
+          "url": "https://pubmed.ncbi.nlm.nih.gov/42018313/"
+        },
+        {
+          "label": "NOVA-2 registry (NCT07363577)",
+          "url": "https://clinicaltrials.gov/study/NCT07363577"
+        }
+      ]
+    }
+  ],
+  "NCT07671911": [
+    {
+      "number": 1,
+      "heading": "Primary endpoint success forecast",
+      "question": "Will OCEAN-1 meet its Week 26 objective cough-frequency primary endpoint versus placebo?",
+      "prediction": "PASS",
+      "score": 66,
+      "summary": "Predict a benefit on cough frequency at Week 26 while acknowledging duration-related uncertainty.",
+      "reason": "CORAL Phase 2b showed a 53.4% reduction in 24-hour cough frequency with the 54 mg dose versus 16.9% with placebo at Week 6. OCEAN-1 tests the same 54 mg regimen in IPF cough, but Week 26 exceeds the prior controlled exposure, so durability is unknown.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-1 registry NCT07671911",
+          "url": "https://clinicaltrials.gov/study/NCT07671911"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "heading": "Prior statistical significance",
+      "question": "Is earlier same-drug/same-indication evidence statistically supportive?",
+      "prediction": "PASS",
+      "score": 87,
+      "summary": "A placebo-controlled Phase 2b trial achieved statistical separation.",
+      "reason": "CORAL randomized 165 IPF cough patients; 54 mg twice-daily nalbuphine ER had a statistically significant reduction in objective cough frequency (reported p<0.001 in the peer-reviewed article). This is not Phase 3 efficacy data.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "heading": "Safety and tolerability forecast",
+      "question": "Is tolerability likely adequate through Week 26?",
+      "prediction": "UNCERTAIN",
+      "score": 52,
+      "summary": "Gastrointestinal adverse effects and discontinuation create meaningful risk.",
+      "reason": "In CORAL at 54 mg, nausea occurred in 37.2%, vomiting 25.6%, dizziness 11.6% and adverse-event discontinuation 14.0%, versus 5.0% discontinuation on placebo. A Week 26 course may pose additional retention challenges.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-1 registry NCT07671911",
+          "url": "https://clinicaltrials.gov/study/NCT07671911"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "heading": "Biological target validation",
+      "question": "Is the cough suppression mechanism supported by prior human evidence?",
+      "prediction": "PASS",
+      "score": 76,
+      "summary": "Kappa opioid agonism/mu antagonism has direct human proof of cough suppression.",
+      "reason": "Nalbuphine ER is a kappa-opioid receptor agonist and mu-opioid receptor antagonist. In the randomized CORAL study, objective cough frequency fell with treatment across three doses; mechanism and clinical effect are linked but do not guarantee Phase 3 replication.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "heading": "Phase 3 dose justification",
+      "question": "Does 54 mg nalbuphine ER have directly studied dose-response support?",
+      "prediction": "PASS",
+      "score": 79,
+      "summary": "The selected 54 mg dose has direct randomized earlier-stage efficacy evidence.",
+      "reason": "The CORAL study evaluated 27, 54 and 108 mg twice daily. At 54 mg, objective cough frequency improved significantly and patient-reported cough frequency improved (p=0.004), although tolerability was not benign.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-1 registry NCT07671911",
+          "url": "https://clinicaltrials.gov/study/NCT07671911"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "heading": "Patient population generalizability",
+      "question": "Does the prior trial population match the Phase 3 indication?",
+      "prediction": "PASS",
+      "score": 81,
+      "summary": "Both trials evaluate chronic cough associated with IPF.",
+      "reason": "CORAL enrolled patients with IPF-associated cough for at least eight weeks; OCEAN studies IPF-related chronic cough. The same broad population supports transfer, with differences in follow-up and trial protocols.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-1 registry NCT07671911",
+          "url": "https://clinicaltrials.gov/study/NCT07671911"
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "heading": "Prior clinical effect size",
+      "question": "Is the prior trial's objective cough reduction of a clinically relevant magnitude?",
+      "prediction": "PASS",
+      "score": 84,
+      "summary": "The prior treatment-placebo difference supports an efficacy forecast.",
+      "reason": "In CORAL the 54 mg group experienced an average 53.4% relative reduction in objective cough frequency at Week 6 compared with 16.9% for placebo. This is Phase 2b evidence and not an IZAR or OCEAN result.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "heading": "Secondary clinical endpoints",
+      "question": "Are the patient-reported secondary cough outcomes likely supportive?",
+      "prediction": "PASS",
+      "score": 63,
+      "summary": "Patient-reported benefit is plausible but not ensured.",
+      "reason": "CORAL's 54 mg arm improved patient-reported cough frequency with nominal p=0.004 versus placebo. The Phase 3 secondary scales and timing differ, and multiplicity adjustment has not been established.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-1 registry NCT07671911",
+          "url": "https://clinicaltrials.gov/study/NCT07671911"
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "heading": "Patient-reported outcomes",
+      "question": "Will patients report meaningful improvement in cough burden?",
+      "prediction": "PASS",
+      "score": 64,
+      "summary": "Subjective symptom improvements may accompany objective cough reduction.",
+      "reason": "CORAL showed patient-reported cough-frequency improvement in the 54 mg arm, but the durability of patient-reported quality-of-life effects over the longer Phase 3 horizon is unknown.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-1 registry NCT07671911",
+          "url": "https://clinicaltrials.gov/study/NCT07671911"
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "heading": "Key prespecified subgroups",
+      "question": "Will benefits generally extend across baseline patient subgroups?",
+      "prediction": "PASS",
+      "score": 61,
+      "summary": "The prior study suggests broad directionally consistent effects.",
+      "reason": "CORAL reported consistent effects across age, background antifibrotic use, baseline severity, and several other prespecified subgroups. Small subgroup counts and longer Phase 3 follow-up limit confidence.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "heading": "Retention and discontinuation",
+      "question": "Will study retention support interpretable primary efficacy results?",
+      "prediction": "UNCERTAIN",
+      "score": 51,
+      "summary": "Retention deserves specific scrutiny because of adverse effects and study length.",
+      "reason": "CORAL 54 mg had 14.0% adverse-event treatment discontinuations over six weeks. OCEAN-1 evaluates Week 26, so substantially longer exposure and dropout assumptions require direct verification.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-1 registry NCT07671911",
+          "url": "https://clinicaltrials.gov/study/NCT07671911"
+        }
+      ]
+    }
+  ],
+  "NCT07868419": [
+    {
+      "number": 1,
+      "heading": "Primary endpoint success forecast",
+      "question": "Will OCEAN-2 meet its Week 14 objective cough-frequency primary endpoint versus placebo?",
+      "prediction": "PASS",
+      "score": 74,
+      "summary": "Predict a benefit on cough frequency at Week 14 while acknowledging duration-related uncertainty.",
+      "reason": "CORAL Phase 2b showed a 53.4% reduction in 24-hour cough frequency with the 54 mg dose versus 16.9% with placebo at Week 6. OCEAN-2 tests the same 54 mg regimen in IPF cough, but Week 14 exceeds the prior controlled exposure, so durability is unknown.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-2 registry NCT07868419",
+          "url": "https://clinicaltrials.gov/study/NCT07868419"
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "heading": "Prior statistical significance",
+      "question": "Is earlier same-drug/same-indication evidence statistically supportive?",
+      "prediction": "PASS",
+      "score": 87,
+      "summary": "A placebo-controlled Phase 2b trial achieved statistical separation.",
+      "reason": "CORAL randomized 165 IPF cough patients; 54 mg twice-daily nalbuphine ER had a statistically significant reduction in objective cough frequency (reported p<0.001 in the peer-reviewed article). This is not Phase 3 efficacy data.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "heading": "Safety and tolerability forecast",
+      "question": "Is tolerability likely adequate through Week 14?",
+      "prediction": "UNCERTAIN",
+      "score": 57,
+      "summary": "Gastrointestinal adverse effects and discontinuation create meaningful risk.",
+      "reason": "In CORAL at 54 mg, nausea occurred in 37.2%, vomiting 25.6%, dizziness 11.6% and adverse-event discontinuation 14.0%, versus 5.0% discontinuation on placebo. A Week 14 course may pose additional retention challenges.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-2 registry NCT07868419",
+          "url": "https://clinicaltrials.gov/study/NCT07868419"
+        }
+      ]
+    },
+    {
+      "number": 4,
+      "heading": "Biological target validation",
+      "question": "Is the cough suppression mechanism supported by prior human evidence?",
+      "prediction": "PASS",
+      "score": 76,
+      "summary": "Kappa opioid agonism/mu antagonism has direct human proof of cough suppression.",
+      "reason": "Nalbuphine ER is a kappa-opioid receptor agonist and mu-opioid receptor antagonist. In the randomized CORAL study, objective cough frequency fell with treatment across three doses; mechanism and clinical effect are linked but do not guarantee Phase 3 replication.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        }
+      ]
+    },
+    {
+      "number": 5,
+      "heading": "Phase 3 dose justification",
+      "question": "Does 54 mg nalbuphine ER have directly studied dose-response support?",
+      "prediction": "PASS",
+      "score": 79,
+      "summary": "The selected 54 mg dose has direct randomized earlier-stage efficacy evidence.",
+      "reason": "The CORAL study evaluated 27, 54 and 108 mg twice daily. At 54 mg, objective cough frequency improved significantly and patient-reported cough frequency improved (p=0.004), although tolerability was not benign.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-2 registry NCT07868419",
+          "url": "https://clinicaltrials.gov/study/NCT07868419"
+        }
+      ]
+    },
+    {
+      "number": 6,
+      "heading": "Patient population generalizability",
+      "question": "Does the prior trial population match the Phase 3 indication?",
+      "prediction": "PASS",
+      "score": 81,
+      "summary": "Both trials evaluate chronic cough associated with IPF.",
+      "reason": "CORAL enrolled patients with IPF-associated cough for at least eight weeks; OCEAN studies IPF-related chronic cough. The same broad population supports transfer, with differences in follow-up and trial protocols.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-2 registry NCT07868419",
+          "url": "https://clinicaltrials.gov/study/NCT07868419"
+        }
+      ]
+    },
+    {
+      "number": 16,
+      "heading": "Prior clinical effect size",
+      "question": "Is the prior trial's objective cough reduction of a clinically relevant magnitude?",
+      "prediction": "PASS",
+      "score": 84,
+      "summary": "The prior treatment-placebo difference supports an efficacy forecast.",
+      "reason": "In CORAL the 54 mg group experienced an average 53.4% relative reduction in objective cough frequency at Week 6 compared with 16.9% for placebo. This is Phase 2b evidence and not an IZAR or OCEAN result.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        }
+      ]
+    },
+    {
+      "number": 17,
+      "heading": "Secondary clinical endpoints",
+      "question": "Are the patient-reported secondary cough outcomes likely supportive?",
+      "prediction": "PASS",
+      "score": 63,
+      "summary": "Patient-reported benefit is plausible but not ensured.",
+      "reason": "CORAL's 54 mg arm improved patient-reported cough frequency with nominal p=0.004 versus placebo. The Phase 3 secondary scales and timing differ, and multiplicity adjustment has not been established.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-2 registry NCT07868419",
+          "url": "https://clinicaltrials.gov/study/NCT07868419"
+        }
+      ]
+    },
+    {
+      "number": 18,
+      "heading": "Patient-reported outcomes",
+      "question": "Will patients report meaningful improvement in cough burden?",
+      "prediction": "PASS",
+      "score": 64,
+      "summary": "Subjective symptom improvements may accompany objective cough reduction.",
+      "reason": "CORAL showed patient-reported cough-frequency improvement in the 54 mg arm, but the durability of patient-reported quality-of-life effects over the longer Phase 3 horizon is unknown.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-2 registry NCT07868419",
+          "url": "https://clinicaltrials.gov/study/NCT07868419"
+        }
+      ]
+    },
+    {
+      "number": 19,
+      "heading": "Key prespecified subgroups",
+      "question": "Will benefits generally extend across baseline patient subgroups?",
+      "prediction": "PASS",
+      "score": 61,
+      "summary": "The prior study suggests broad directionally consistent effects.",
+      "reason": "CORAL reported consistent effects across age, background antifibrotic use, baseline severity, and several other prespecified subgroups. Small subgroup counts and longer Phase 3 follow-up limit confidence.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        }
+      ]
+    },
+    {
+      "number": 24,
+      "heading": "Retention and discontinuation",
+      "question": "Will study retention support interpretable primary efficacy results?",
+      "prediction": "UNCERTAIN",
+      "score": 57,
+      "summary": "Retention deserves specific scrutiny because of adverse effects and study length.",
+      "reason": "CORAL 54 mg had 14.0% adverse-event treatment discontinuations over six weeks. OCEAN-2 evaluates Week 14, so substantially longer exposure and dropout assumptions require direct verification.",
+      "asOf": "2026-11-05",
+      "evidenceCutoff": "Published evidence available before target Phase 3 primary readout",
+      "sources": [
+        {
+          "label": "CORAL randomized Phase 2b, JAMA (January 2026)",
+          "url": "https://jamanetwork.com/journals/jama/fullarticle/2844186"
+        },
+        {
+          "label": "OCEAN-2 registry NCT07868419",
+          "url": "https://clinicaltrials.gov/study/NCT07868419"
+        }
+      ]
+    }
+  ]
+}

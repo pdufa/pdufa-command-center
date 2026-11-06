@@ -41,3 +41,14 @@ test("Issuer-published COMP006 stays outside pre-data TOP while its dated eviden
  assert.match(read("app/Phase3PreDataBatch.tsx"),/additionalIssuerReadouts.records.map/);
  assert.match(read("lib/raas-cap-screened-top-phase3.ts"),/additionalIssuerReadouts.records.map/);
 });
+
+test("Three more verified pre-data trial programs have individually sourced predictions",()=>{
+ const p=JSON.parse(read("data/phase3ReviewedPredictions20261105.json"));
+ const expected={"NCT07363577":9,"NCT07671911":11,"NCT07868419":11};
+ for(const [nct,n] of Object.entries(expected)){
+  assert.equal(p[nct].length,n);
+  assert.equal(new Set(p[nct].map(a=>a.number)).size,n);
+  assert.ok(p[nct].every(a=>a.asOf==="2026-11-05"&&a.score>=0&&a.score<=100&&a.sources.length>0));
+ }
+ assert.match(read("lib/phase3-top-questions.ts"),/reviewedPredictionsRaw/);
+});
