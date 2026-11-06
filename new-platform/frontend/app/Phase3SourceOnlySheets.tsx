@@ -100,6 +100,7 @@ function LegacyArchive({query}:{query:string}){
   <Phase3PreDataBatch query={query}/>
   {error&&<p role="alert">{error}</p>}
   {!data&&!error&&<p role="status">Loading historical issuer research…</p>}
+  {data&&<p>{data.unverified.length} historically unverified issuer-status records remain preserved outside the active 238/20 sheets.</p>}
   {data&&<CapScreenedTopPhase3Spreadsheet classification={data} query={query}/>}
  </div>;
 }
