@@ -38,8 +38,11 @@ export async function GET(request:Request){
  try{
   const query=new URL(request.url).searchParams;
   const format=query.get("format")||"json";
+  const live=query.get("live")==="1";
+  if(query.has("live")&&!["0","1"].includes(query.get("live")||""))
+   return Response.json({error:"live must be 0 or 1"},{status:400});
   if(!["json","csv"].includes(format))return Response.json({error:"format must be json or csv"},{status:400});
-  const result=await export190(new Request("http://phase3.internal/api/phase3-unified-190-columns?cohort=active"));
+  const result=await export190(new Request("http://phase3.internal/api/phase3-unified-190-columns?cohort=active"+(live?"&live=1":"")));
   if(!result.ok)return Response.json({error:"190-column source export not ready"},{status:503});
   const matrix=parseCsv(await result.text());
   const [headers,...data]=matrix;
@@ -121,10 +124,12 @@ export async function GET(request:Request){
     r.fdaPredictionStatus,r.missingQuestionNumbers.join("|")]);
    return new Response("\uFEFF"+[names,...values].map(x=>x.map(csvCell).join(",")).join("\r\n")+"\r\n",{
     headers:{"Content-Type":"text/csv; charset=utf-8","Cache-Control":"no-store",
-     "Content-Disposition":'attachment; filename="PDUFA-258-Active-Trials-190-Field-Coverage-2026-11-06.csv"'}
+     "Content-Disposition":'attachment; filename="PDUFA-258-Active-Trials-190-Field-Coverage-2026-11-06'+(live?"-live-official-registry":"")+'.csv"'}
    });
   }
-  return Response.json({asOf:activePhase3Cohorts.asOf,totals,perQuestion,rows,
+  return Response.json({asOf:activePhase3Cohorts.asOf,liveOfficialRegistry:live,
+   officialRegistryCheckedAt:live?new Date().toISOString():null,
+   totals,perQuestion,rows,
    definitions:{
     nonemptyCells:"Includes status labels, missing-evidence descriptions and other metadata; NOT the number of verified scientific facts.",
     documentedQuestions:"Exact-trial observed or source-supported information; not prospective predictions.",
