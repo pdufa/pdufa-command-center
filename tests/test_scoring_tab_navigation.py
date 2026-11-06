@@ -20,6 +20,7 @@ def test_active_navigation_links_pipeline_tools_scan_and_predictions_without_gem
         "SCAN": "/scans",
         "PREDICTIONS": "/predictions",
         "ALKS SCORES": "/alkermes-scores",
+        "SVA SCORES": "/sinovac-scores",
         "#1": "/patient-population",
         "SYSTEM STATUS": "/installation-audit",
     }
