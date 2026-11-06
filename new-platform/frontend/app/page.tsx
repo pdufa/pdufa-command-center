@@ -17,6 +17,7 @@ const links=[
   {href:"/restrictions",title:"RESTRICTIONS — Pipeline Eligibility",desc:"Three hard scope gates and status of verification before commercial assessments."},
   {href:"/predictions",title:"PREDICTIONS — FDA Outcome Research",desc:"Research-only outcome evidence; no unsupported regulatory probability."},
   {href:"/alkermes-scores",title:"ALKS — 34-Trial Clinical Scores",desc:"Evidence-graded scientific factors for all Alkermes trials, with explicit missing ratings and original-source links."},
+  {href:"/sinovac-scores",title:"SVA — 27-Trial Evidence Scores",desc:"Original-source trial readouts and per-trial documentation scores, with halted-US-trading eligibility flag."},
 ];
 export default function Home() {
  const [auth,setAuth]=useState<AuthState>("checking");
