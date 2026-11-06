@@ -1,3 +1,5 @@
+import discoveryAvenues from "../../../data/phase3DiscoveryAvenues20261106.json";
+import {populationGeographyFact,populationGeographyIntegrity,populationGeographyRecords} from "../../../lib/phase3-population-geography";
 import {irAssessment,irResearchIntegrity,isObservedStatus,isSourceFactStatus,requiresResearchStatus,investorRelationsCoverage} from "../../../lib/phase3-ir-research";
 import ledger from "../../../public/phase3-unified-classifications-2026-11-05.json";
 import registryCrosswalk from "../../../data/phase3RegistryDrugComparatorCrosswalk20261106.json";
@@ -16,7 +18,7 @@ const investorByNct=new Map(investorRelationsEvidence.records.map(x=>[x.nctId,x]
 const registryByNct=new Map(registryCrosswalk.records.map(x=>[x.nctId,x] as const));
 const preDataByNct=new Map(preData.trials.map(x=>[x.nctId,x] as const));
 const officialByNct=new Set(officialResearch.records.map(x=>x.nctId));
-type QuestionAudit={number:number;heading:string;predictions:number;observed:number;sourceFacts:number;unscored:number;verifiedFacts:number;numericalAssessments:number;observedOutcomes:number;requiringResearch:number;notPubliclyAvailable:number;requiresInterpretation:number};
+type QuestionAudit={number:number;heading:string;predictions:number;observed:number;sourceFacts:number;unscored:number;verifiedFacts:number;numericalAssessments:number;observedOutcomes:number;requiringResearch:number;notPubliclyAvailable:number;requiresInterpretation:number;documentaryInterpretationPending:number};
 type TrialAudit={
  nctId:string;ticker:string;classificationCode:string;registryStatus:string;
  missingDrug:boolean;unknownRegistryStatus:boolean;hasDetailedOfficialResearch:boolean;
@@ -47,6 +49,7 @@ function statusFor(
   if(q.number===24&&/discontinuation/i.test(ir.safetyEvidence||""))return "SOURCE_FACT_ONLY";
   if(q.number===30&&ir.regulatoryUrl&&/NDA under FDA review.*PDUFA/i.test(ir.regulatory||""))return "SOURCE_FACT_ONLY";
  }
+ if(populationGeographyFact(r.nctId,q.number))return "DOCUMENTED_SOURCE_FACT";
  if(q.observation)return "SOURCE_FACT_ONLY";
  if(q.number===11&&registryByNct.get(r.nctId)?.comparators)return "SOURCE_FACT_ONLY";
  if(q.number===25&&r.registrySourceUrl)return "SOURCE_FACT_ONLY";
@@ -74,13 +77,14 @@ export async function GET(request:Request){
     officialResearch.records.length!==253||
     endpointByNct.size!==adjudications.records.length||
     !irResearchIntegrity(new Set(ledger.rows.map(r=>r.nctId)))||
+    !populationGeographyIntegrity(new Set(ledger.rows.map(r=>r.nctId)))||
     investorByNct.size!==investorRelationsEvidence.records.length||
     PHASE3_ONLINE_TRIAL_COUNT!==762||
     registryCrosswalk.records.length!==762||registryByNct.size!==762){
    return Response.json({error:"The research snapshot failed a count/identity check"},{status:503});
  }
  const perQuestion:QuestionAudit[]=UNIVERSAL_PHASE3_QUESTIONS.map((q,i)=>({
-  number:i+1,heading:q.heading,predictions:0,observed:0,sourceFacts:0,unscored:0,verifiedFacts:0,numericalAssessments:0,observedOutcomes:0,requiringResearch:0,notPubliclyAvailable:0,requiresInterpretation:0
+  number:i+1,heading:q.heading,predictions:0,observed:0,sourceFacts:0,unscored:0,verifiedFacts:0,numericalAssessments:0,observedOutcomes:0,requiringResearch:0,notPubliclyAvailable:0,requiresInterpretation:0,documentaryInterpretationPending:0
  }));
  const rows:TrialAudit[]=[];
  for(const r of ledger.rows){
@@ -103,6 +107,12 @@ export async function GET(request:Request){
    if(requiresResearchStatus(st))q.requiringResearch++;
    if(st==="NOT_PUBLICLY_DISCLOSED")q.notPubliclyAvailable++;
    if(st==="REQUIRES_INTERPRETATION")q.requiresInterpretation++;
+   // Newly collected design fields document eligibility/sites, not a critical
+   // generalizability assessment. Keep that work in the research denominator.
+   if(isSourceFactStatus(st)&&!irAssessment(r.nctId,i+1)&&populationGeographyFact(r.nctId,i+1)){
+    q.documentaryInterpretationPending++;
+    q.requiringResearch++;
+   }
   }
   rows.push({
    nctId:r.nctId,ticker:r.ticker,classificationCode:r.classificationCode,
@@ -129,6 +139,8 @@ export async function GET(request:Request){
   observed:rows.reduce((a,r)=>a+r.observed,0),
   sourceFacts:rows.reduce((a,r)=>a+r.sourceFacts,0),
   unscored:rows.reduce((a,r)=>a+r.unscored,0),
+  researchPendingIncludingDocumentedDesign:perQuestion.reduce((a,q)=>a+q.requiringResearch,0),
+  documentedDesignInterpretationPending:perQuestion.reduce((a,q)=>a+q.documentaryInterpretationPending,0),
   trialsWithNumericalPredictions:rows.filter(r=>r.predicted>0).length,
   trialsWithOutcomeAdjudication:rows.filter(r=>r.hasEndpointAdjudication).length
  };
@@ -145,6 +157,9 @@ export async function GET(request:Request){
   investorRelationsRegulatoryTrialLinks:rows.filter(r=>Boolean(investorByNct.get(r.nctId)?.regulatoryEvidenceStatus)).length,
   investorRelationsFDAApplicationPrograms:new Set(investorRelationsEvidence.records.filter(r=>Boolean(r.regulatoryProgramId)).map(r=>r.regulatoryProgramId)).size,
   outsideDatedMarketCapScreen:rows.filter(r=>r.outsideDatedMarketCapScreen).length,
+  populationGeographyRecords:populationGeographyRecords.length,
+  populationEligibilityFacts:rows.filter(r=>populationGeographyFact(r.nctId,6)).length,
+  registeredGeographyFacts:rows.filter(r=>populationGeographyFact(r.nctId,26)).length,
   onlineRegistryRecords:PHASE3_ONLINE_TRIAL_COUNT,
   onlinePrimaryEndpointCount:rows.filter(r=>r.onlinePrimaryEndpoint).length,
   registryResultsPosted:rows.filter(r=>r.onlineRegistryResults).length,
@@ -166,11 +181,13 @@ export async function GET(request:Request){
   asOf:ledger.asOf,officialResearchAsOf:officialResearch.asOf,
   onlineResearchAsOf:PHASE3_ONLINE_SOURCE_DATE,
   registryDrugCrosswalkAsOf:registryCrosswalk.asOf,
+  populationGeographyScope:"Registered eligibility and site entries only; scientific interpretation remains pending. Documentary coverage is not completed numerical assessment.",
   scope:"Saved numerical assessments plus the online exact-NCT 762-registry, PubMed and SEC source discovery; publication and filing hits remain research leads, not adjudicated clinical outcomes",
   trials:rows.length,questionsPerTrial:30,columnsInAssessmentExport:190,
   assessment,fields,perQuestion,
   endpointOutcomes:derivedOutcomes,
   investorRelationsCoverage:investorRelationsCoverage(),
+  discoveryAvenues,
   exceptions:{
    unknownRegistryNcts:rows.filter(r=>r.unknownRegistryStatus).map(r=>r.nctId),
    outsideMarketCapScreenNcts:rows.filter(r=>r.outsideDatedMarketCapScreen).map(r=>r.nctId)

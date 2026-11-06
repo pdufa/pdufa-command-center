@@ -1,0 +1,43 @@
+{
+  "asOf": "2026-11-06",
+  "purpose": "User-supplied screenshot avenues reviewed for leads; primary sources and exact NCT crosswalks establish facts.",
+  "sourcePolicy": "SECONDARY_DISCOVERY_ONLY_NO_IMPORTED_PROBABILITIES_OR_UNVERIFIED_OUTCOMES",
+  "avenues": [
+    {
+      "name": "BiopharmaWatch",
+      "url": "https://www.biopharmawatch.com/PDUFA-calendar",
+      "status": "PUBLIC_PAGE_REVIEWED_FOR_LEADS",
+      "finding": "Visible November calendar includes SVRA; followed the molgramostim lead to Savara investor relations and SEC originals. Calendar probabilities were not imported."
+    },
+    {
+      "name": "FDA Tracker",
+      "url": "https://www.fdatracker.com/fda-calendar/",
+      "status": "PUBLIC_PAGE_REVIEWED_ENHANCED_ACCESS_BLOCKED",
+      "blocker": "Enhanced calendar requires sign-up or login; no account access was available. Continued through other public and primary sources."
+    },
+    {
+      "name": "Assyro",
+      "url": "https://www.assyro.com/tools/pdufa-calendar/2026",
+      "status": "PUBLIC_PAGE_REVIEWED_FOR_LEADS",
+      "finding": "TRYNGOLZA application/supplement row used as a discovery lead; FDA June 2026 label independently identifies CORE and CORE2 by exact NCT. Calendar date and decided status were not treated as an FDA outcome."
+    },
+    {
+      "name": "CheckRare",
+      "url": "https://checkrare.com/2026-orphan-drugs-pdufa-dates-and-fda-approvals/",
+      "status": "PUBLIC_PAGE_REVIEWED_FOR_LEADS",
+      "finding": "Reviewed orphan-drug date/status table and original-source links; no orphan designation or trial-specific approval inferred from a calendar row alone."
+    }
+  ],
+  "companyScientificSources": [
+    "https://ionis.com/scientific-publications",
+    "https://ionis.com/science-and-innovation/pipeline",
+    "https://ir.ionis.com/static-files/ca2193a5-e267-4261-b57c-ab1315aa5fad"
+  ],
+  "unresolvedResearch": [
+    "FDA Tracker enhanced data remains inaccessible without account access.",
+    "Calendar entries are not a complete historical trial census or proof that a date is unchanged.",
+    "Registered population/site facts do not complete scientific generalizability assessments.",
+    "Savara target is based on dated issuer/SEC disclosures; independent FDA correspondence and newer source freshness remain to be reviewed.",
+    "Later Ionis studies and other issuers' scientific/SAP evidence remain in the question-level queue."
+  ]
+}

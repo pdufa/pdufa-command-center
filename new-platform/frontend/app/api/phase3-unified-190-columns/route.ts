@@ -1,3 +1,4 @@
+import {populationGeographyFact,populationGeographyIntegrity,populationGeographyRecords} from "../../../lib/phase3-population-geography";
 import {irAssessment,irResearchIntegrity,requiresResearchStatus} from "../../../lib/phase3-ir-research";
 import ledger from "../../../public/phase3-unified-classifications-2026-11-05.json";
 import {loadLivePhase3Registry} from "../phase3-live-registry-backfill/route";
@@ -65,6 +66,7 @@ export async function GET(request:Request){
     PHASE3_ONLINE_TRIAL_COUNT!==762||registryByNct.size!==762||registryCrosswalk.records.length!==762||
     endpointByNct.size!==endpointAdjudications.records.length||
     !irResearchIntegrity(new Set(ledger.rows.map(r=>r.nctId)))||
+    !populationGeographyIntegrity(new Set(ledger.rows.map(r=>r.nctId)))||
     investorByNct.size!==investorRelationsEvidence.records.length||
     endpointAdjudications.records.some(x=>!ledger.rows.some(r=>r.nctId===x.nctId))){
   return Response.json({error:"Phase 3 190-column ledger integrity check failed"},{status:503});
@@ -137,7 +139,8 @@ export async function GET(request:Request){
     "Public Phase 3 readout or results exist. "+fullPassRationale,endpointEvidenceUrl];
    const researched=irAssessment(r.nctId,q.number);
    if(researched)return [researched.classification,"","",
-    researched.evidence+" | Published: "+researched.publicationDate+" | Scope: "+researched.evidenceScope,
+    researched.evidence+" | Published: "+researched.publicationDate+" | Scope: "+researched.evidenceScope+
+     ("chronologyQualification" in researched&&researched.chronologyQualification?" | Chronology: "+researched.chronologyQualification:""),
     researched.sourceUrl];
    // Issuer investor-relations statements are historical SOURCE FACTS, not subjective predictive scores.
    if(q.number===30&&investor?.regulatoryEvidenceStatus&&investor?.regulatoryEvidenceUrl)
@@ -156,6 +159,10 @@ export async function GET(request:Request){
     if(q.number===30&&investor.regulatoryUrl&&/NDA under FDA review.*PDUFA/i.test(investor.regulatory||""))
      return ["SOURCE_FACT_ONLY","","","Drug/indication-level issuer regulatory milestone, NOT an individual trial approval or predicted outcome: "+investor.regulatory,investor.regulatoryUrl];
    }
+   const population=populationGeographyFact(r.nctId,q.number);
+   if(population)return [population.classification,"","",
+    population.evidence+" | Registry published: "+population.publicationDate+" | Critical review: "+population.criticalReviewStatus,
+    population.sourceUrl];
    if(liveRegistry){
     const url=liveRegistry.registryUrl;
     const fact=(description:string)=>["SOURCE_FACT_ONLY","","",description,url];

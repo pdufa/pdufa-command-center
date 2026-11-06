@@ -1,10 +1,10 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-05",
-  "totalReviewed": 51,
+  "totalReviewed": 57,
   "counts": {
-    "PRIMARY_ENDPOINT_MET": 41,
-    "PRIMARY_ENDPOINT_NOT_MET": 7,
+    "PRIMARY_ENDPOINT_MET": 46,
+    "PRIMARY_ENDPOINT_NOT_MET": 8,
     "NO_BINARY_PASS_FAIL": 3
   },
   "scope": "762 exact-NCT Phase 3 trial census; per-trial endpoint adjudications require primary readout evidence",
@@ -490,6 +490,78 @@
       "identityCrosswalk": "Official registry: NCT03873116 = BCX7353-301 = APeX-J; drug berotralstat (BCX7353); indication HAE.",
       "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT03873116",
       "qualification": "Historical result only, no retrospective prediction. APeX-J is a separate 19-patient Japanese study; avoralstat is a separate drug from berotralstat."
+    },
+    {
+      "nctId": "NCT04568434",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "80 mg monthly met six-month triglyceride primary comparison: placebo-adjusted -44%, p<0.001. The 50 mg comparison was not significant (-22%, p=0.078).",
+      "evidenceUrl": "https://www.sec.gov/Archives/edgar/data/874015/000114036124018449/ef20026226_ex99-1.htm",
+      "evidenceType": "OFFICIAL_ISSUER_TRIAL_SPECIFIC_RESULTS",
+      "sourceDate": "2024-04-07",
+      "reviewedAt": "2026-11-06",
+      "identityCrosswalk": "Exact registry NCT04568434, sponsor protocol ISIS 678354-CS3; BALANCE, olezarsen. Indication: Familial Chylomicronemia Syndrome",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT04568434",
+      "qualification": "Observed historical result, not a prospective prediction. Dose, external-comparator and pooled-program distinctions remain explicit."
+    },
+    {
+      "nctId": "NCT05139810",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "Primary monthly HAE attack-rate reduction versus placebo: 80 mg Q4W 81%, p<0.001; Q8W 55%, p=0.004 over weeks 1-25.",
+      "evidenceUrl": "https://ir.ionis.com/news-releases/news-release-details/ionis-presents-positive-results-oasis-hae-and-oasisplus-studies",
+      "evidenceType": "OFFICIAL_ISSUER_TRIAL_SPECIFIC_RESULTS",
+      "sourceDate": "2024-05-31",
+      "reviewedAt": "2026-11-06",
+      "identityCrosswalk": "Exact registry NCT05139810, sponsor protocol ISIS 721744-CS5; OASIS-HAE, donidalorsen. Indication: Hereditary Angioedema",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT05139810",
+      "qualification": "Observed historical result, not a prospective prediction. Dose, external-comparator and pooled-program distinctions remain explicit."
+    },
+    {
+      "nctId": "NCT04136184",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "All three co-primary endpoints met versus an external placebo group. Week-66 mNIS+7 change +0.3 versus +25.1; difference -24.8 points, p<0.001.",
+      "evidenceUrl": "https://ir.ionis.com/news-releases/news-release-details/eplontersen-phase-3-results-published-jama-show-consistent-and",
+      "evidenceType": "OFFICIAL_ISSUER_TRIAL_SPECIFIC_RESULTS",
+      "sourceDate": "2023-09-28",
+      "reviewedAt": "2026-11-06",
+      "identityCrosswalk": "Exact registry NCT04136184, sponsor protocol ION-682884-CS3; NEURO-TTRansform, eplontersen. Indication: Hereditary Transthyretin-Mediated Amyloid Polyneuropathy",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT04136184",
+      "qualification": "Observed historical result, not a prospective prediction. Dose, external-comparator and pooled-program distinctions remain explicit."
+    },
+    {
+      "nctId": "NCT04136171",
+      "endpointOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "rationale": "Primary composite of cardiovascular mortality and recurrent cardiovascular events through Week 140 did not meet statistical significance versus placebo.",
+      "evidenceUrl": "https://ir.ionispharma.com/news-releases/news-release-details/update-cardio-ttransform-phase-3-trial-eplontersen-adults",
+      "evidenceType": "OFFICIAL_ISSUER_TRIAL_SPECIFIC_RESULTS",
+      "sourceDate": "2026-07-09",
+      "reviewedAt": "2026-11-06",
+      "identityCrosswalk": "Exact registry NCT04136171, sponsor protocol ION-682884-CS2; CARDIO-TTRansform, eplontersen. Indication: Transthyretin-Mediated Amyloid Cardiomyopathy (ATTR CM)",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT04136171",
+      "qualification": "Observed historical result, not a prospective prediction. Dose, external-comparator and pooled-program distinctions remain explicit."
+    },
+    {
+      "nctId": "NCT05079919",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "CORE six-month placebo-adjusted triglyceride reduction: 50 mg 63%, 80 mg 72%; each p<0.001. Trial-specific presentation table, not the pooled pancreatitis result.",
+      "evidenceUrl": "https://ir.ionis.com/static-files/ca2193a5-e267-4261-b57c-ab1315aa5fad",
+      "evidenceType": "OFFICIAL_ISSUER_TRIAL_SPECIFIC_RESULTS",
+      "sourceDate": "2025-11-08",
+      "reviewedAt": "2026-11-06",
+      "identityCrosswalk": "Exact registry NCT05079919, sponsor protocol ISIS 678354-CS5; CORE-TIMI 72a, olezarsen. Indication: Severe Hypertriglyceridemia",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT05079919",
+      "qualification": "Observed historical result, not a prospective prediction. Dose, external-comparator and pooled-program distinctions remain explicit."
+    },
+    {
+      "nctId": "NCT05552326",
+      "endpointOutcome": "PRIMARY_ENDPOINT_MET",
+      "rationale": "CORE2 six-month placebo-adjusted triglyceride reduction: 50 mg 49%, 80 mg 55%; each p<0.001. Trial-specific presentation table, not the pooled pancreatitis result.",
+      "evidenceUrl": "https://ir.ionis.com/static-files/ca2193a5-e267-4261-b57c-ab1315aa5fad",
+      "evidenceType": "OFFICIAL_ISSUER_TRIAL_SPECIFIC_RESULTS",
+      "sourceDate": "2025-11-08",
+      "reviewedAt": "2026-11-06",
+      "identityCrosswalk": "Exact registry NCT05552326, sponsor protocol ISIS 678354-CS6; CORE2-TIMI 72b, olezarsen. Indication: Severe Hypertriglyceridemia",
+      "identityEvidenceUrl": "https://clinicaltrials.gov/study/NCT05552326",
+      "qualification": "Observed historical result, not a prospective prediction. Dose, external-comparator and pooled-program distinctions remain explicit."
     }
   ]
 }

@@ -1,0 +1,141 @@
+{
+  "checkedAt": "2026-11-06T14:47:53.416479+00:00",
+  "scope": "URL/content transport validation. Primary-source review, exact registry identity and scientific interpretation are separate.",
+  "sources": [
+    {
+      "url": "https://cdn.clinicaltrials.gov/large-docs/10/NCT05139810/Prot_SAP_000.pdf",
+      "httpStatus": 200,
+      "finalUrl": "https://cdn.clinicaltrials.gov/large-docs/10/NCT05139810/Prot_SAP_000.pdf",
+      "sha256": "f206e092877d3726ededff2f806407881dc7972d300ebd88c63a4331439a7776",
+      "bytes": 4519152
+    },
+    {
+      "url": "https://cdn.clinicaltrials.gov/large-docs/34/NCT04568434/Prot_SAP_000.pdf",
+      "httpStatus": 200,
+      "finalUrl": "https://cdn.clinicaltrials.gov/large-docs/34/NCT04568434/Prot_SAP_000.pdf",
+      "sha256": "1b968b367b16c3a7c88cae1a1f906df131d81da0a44185522c0d7d163403f114",
+      "bytes": 5439986
+    },
+    {
+      "url": "https://checkrare.com/2026-orphan-drugs-pdufa-dates-and-fda-approvals/",
+      "blocker": "HTTP Error 403: Forbidden",
+      "alternateAccess": "Successfully read through web source reader in this session; shell transport restriction recorded separately.",
+      "alternateAccessMethod": "WEB_READER"
+    },
+    {
+      "url": "https://investors.savarapharma.com/news/news-details/2026/Savara-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx",
+      "blocker": "HTTP Error 403: Forbidden",
+      "alternateAccess": "Successfully read through web source reader in this session; shell transport restriction recorded separately.",
+      "alternateAccessMethod": "WEB_READER"
+    },
+    {
+      "url": "https://ionis.com/science-and-innovation/pipeline",
+      "blocker": "HTTP Error 403: Forbidden",
+      "alternateAccess": "Successfully read through web source reader in this session; shell transport restriction recorded separately.",
+      "alternateAccessMethod": "WEB_READER"
+    },
+    {
+      "url": "https://ionis.com/scientific-publications",
+      "blocker": "HTTP Error 403: Forbidden",
+      "alternateAccess": "Successfully read through web source reader in this session; shell transport restriction recorded separately.",
+      "alternateAccessMethod": "WEB_READER"
+    },
+    {
+      "url": "https://ir.ionis.com/news-releases/news-release-details/eplontersen-phase-3-results-published-jama-show-consistent-and",
+      "blocker": "HTTP Error 503: Service Unavailable",
+      "alternateAccess": "Successfully read through web source reader in this session; shell transport restriction recorded separately.",
+      "alternateAccessMethod": "WEB_READER"
+    },
+    {
+      "url": "https://ir.ionis.com/news-releases/news-release-details/ionis-presents-positive-results-oasis-hae-and-oasisplus-studies",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ionis.com/news-releases/news-release-details/ionis-presents-positive-results-oasis-hae-and-oasisplus-studies",
+      "sha256": "c3494a9134924940107328fe96d15a68f621d884e174f93f5f4a9cb184285e70",
+      "bytes": 52298
+    },
+    {
+      "url": "https://ir.ionis.com/static-files/ca2193a5-e267-4261-b57c-ab1315aa5fad",
+      "blocker": "HTTP Error 503: Service Unavailable",
+      "alternateAccess": "Successfully read through web source reader in this session; shell transport restriction recorded separately.",
+      "alternateAccessMethod": "WEB_READER"
+    },
+    {
+      "url": "https://ir.ionispharma.com/news-releases/news-release-details/update-cardio-ttransform-phase-3-trial-eplontersen-adults",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ionispharma.com/news-releases/news-release-details/update-cardio-ttransform-phase-3-trial-eplontersen-adults",
+      "sha256": "4ca7d00aa212c3832e2e8216bbbcc7e255941a0cabbb4c7919b245fd5bd96de5",
+      "bytes": 46537
+    },
+    {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/37768671/",
+      "httpStatus": 203,
+      "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/37768671/",
+      "sha256": "d3411460e34bdcd8bb9894c8a93ec3d4302fd93511e682bbed7994c7de57b4db",
+      "bytes": 5590
+    },
+    {
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/219407s000lbl.pdf",
+      "httpStatus": 200,
+      "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/219407s000lbl.pdf",
+      "sha256": "f31f838b6bfb80027314aeefc97d931f17b93611a0d4756d79199f89e272a94c",
+      "bytes": 1477782
+    },
+    {
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218614s004lbl.pdf",
+      "httpStatus": 200,
+      "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218614s004lbl.pdf",
+      "sha256": "9ce24f21dccc08002cb9b84c8de6cb7103586ca59f070d2a3a0b992feab4fa02",
+      "bytes": 1916749
+    },
+    {
+      "url": "https://www.assyro.com/tools/pdufa-calendar/2026",
+      "httpStatus": 200,
+      "finalUrl": "https://www.assyro.com/tools/pdufa-calendar/2026",
+      "sha256": "12ee73b105086168129fe8e4b9e923bc19cd1802a23e6e2039a21db30645318b",
+      "bytes": 445343
+    },
+    {
+      "url": "https://www.biopharmawatch.com/PDUFA-calendar",
+      "httpStatus": 200,
+      "finalUrl": "https://www.biopharmawatch.com/PDUFA-calendar",
+      "sha256": "2199b5ef972ad5b55515549b23d8e5057461c219cfda45486215bbcc172d4e1c",
+      "bytes": 810577
+    },
+    {
+      "url": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshot-tryngolza",
+      "httpStatus": 200,
+      "finalUrl": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshot-tryngolza",
+      "sha256": "87f8645c0016a24f0ae7156b44e2311ac5d5aef9283696bd9d24b28c195bfaf5",
+      "bytes": 53009
+    },
+    {
+      "url": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshots-wainua",
+      "httpStatus": 200,
+      "finalUrl": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshots-wainua",
+      "sha256": "d4f48cee0691a8255227a4c03cb9f894e9c7d9a6c7ef6d6516f208db919fcb6e",
+      "bytes": 54284
+    },
+    {
+      "url": "https://www.fdatracker.com/fda-calendar/",
+      "httpStatus": 200,
+      "finalUrl": "https://www.fdatracker.com/fda-calendar/",
+      "sha256": "7a14d445f698fe3d353ef86d4c3eda37fd6b61af825b25b69642b30aedac3b0c",
+      "bytes": 68314
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526344585/svra-20260630.htm",
+      "httpStatus": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526344585/svra-20260630.htm",
+      "sha256": "fa6942b5409a1ff5a00dc1985341fc04a6ce921f2f8aa99356f5534541ab6d35",
+      "bytes": 1981832
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/874015/000114036124018449/ef20026226_ex99-1.htm",
+      "httpStatus": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/874015/000114036124018449/ef20026226_ex99-1.htm",
+      "sha256": "93a134d868db2be8132d67577aa2932ae8750027e5cd8914955210b89ca9fbfb",
+      "bytes": 33417
+    }
+  ],
+  "scientificPrimaryCrosscheck": "NEURO-TTRansform primary publication PMID 37768671 and FDA snapshot distinguish historical placebo from concurrent randomization; linked in research record."
+}
