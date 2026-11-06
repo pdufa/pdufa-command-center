@@ -58,7 +58,7 @@ export async function GET(request:Request){
     UNIVERSAL_PHASE3_QUESTIONS.length!==30||
     preData.trials.length!==253||
     officialResearch.records.length!==253||
-    adjudications.records.length!==33||PHASE3_ONLINE_TRIAL_COUNT!==762||
+    adjudications.records.length!==43||PHASE3_ONLINE_TRIAL_COUNT!==762||
     registryCrosswalk.records.length!==762||registryByNct.size!==762){
    return Response.json({error:"The research snapshot failed a count/identity check"},{status:503});
  }
@@ -130,7 +130,7 @@ export async function GET(request:Request){
  if(assessment.totalSlots!==22860||
     assessment.predicted+assessment.observed+assessment.sourceFacts+assessment.unscored!==total||
     assessment.trialsWithNumericalPredictions!==4||
-    assessment.trialsWithOutcomeAdjudication!==33||
+    assessment.trialsWithOutcomeAdjudication!==43||
     fields.unknownRegistryStatus!==3||
     fields.missingDrugField!==103||
     fields.onlinePrimaryEndpointCount!==756||fields.registryResultsPosted!==337||
