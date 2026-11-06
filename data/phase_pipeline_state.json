@@ -1,31 +1,26 @@
 {
-  "started_at": "2026-11-05T04:20:24.725521+00:00",
+  "started_at": "2026-11-06T04:48:53.579079+00:00",
   "status": "COMPLETE WITH WARNINGS",
   "registry_companies": 717,
-  "scope": "Industry Phase 2/3 records updated since 2024-11-05",
+  "scope": "Industry Phase 2/3 records updated since 2024-11-06",
   "source_max_age_days": 180,
-  "studies_scanned": 15552,
-  "matched_trials": 3713,
+  "studies_scanned": 15554,
+  "matched_trials": 3711,
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
   "new_master_programs": [
     {
-      "ticker": "LYEL",
-      "drug": "rondecabtagene autoleucel",
-      "nct_id": "NCT07188558"
-    },
-    {
-      "ticker": "NTLA",
-      "drug": "NTLA-2001",
-      "nct_id": "NCT06128629"
+      "ticker": "SGMT",
+      "drug": "Denifanstat",
+      "nct_id": "NCT07863193"
     }
   ],
-  "finished_at": "2026-11-05T04:21:02.635388+00:00",
-  "stored_trials": 7409,
-  "phase2_programs": 1060,
-  "master_programs": 133,
-  "review_trials": 3082,
+  "finished_at": "2026-11-06T04:49:25.920921+00:00",
+  "stored_trials": 7412,
+  "phase2_programs": 1024,
+  "master_programs": 136,
+  "review_trials": 3084,
   "market_cap_verified_tickers": 417,
   "market_cap_listing_excluded_tickers": 1,
   "market_cap_source_unavailable": 1,
