@@ -19,13 +19,13 @@
       "verified": 0
     },
     {
-      "researchGaps": 84,
+      "researchGaps": 78,
       "slots": 174,
       "sourceContext": 84,
       "sourceInterpretationRequired": 25,
       "survey": "Clinical Benefit",
       "surveyNumber": 3,
-      "verified": 32
+      "verified": 39
     },
     {
       "researchGaps": 28,
@@ -252,7 +252,7 @@
       "registryPointers": 6,
       "slots": 38,
       "ticker": "BLTE",
-      "verified": 0
+      "verified": 1
     },
     {
       "nctId": "NCT05126758",
@@ -356,7 +356,7 @@
       "registryPointers": 6,
       "slots": 38,
       "ticker": "PHVS",
-      "verified": 0
+      "verified": 2
     },
     {
       "nctId": "NCT06669754",
@@ -364,7 +364,7 @@
       "registryPointers": 6,
       "slots": 38,
       "ticker": "PHVS",
-      "verified": 0
+      "verified": 2
     },
     {
       "nctId": "NCT06087276",
@@ -372,7 +372,7 @@
       "registryPointers": 6,
       "slots": 38,
       "ticker": "PRAX",
-      "verified": 0
+      "verified": 2
     },
     {
       "nctId": "NCT02500381",
@@ -417,12 +417,12 @@
   ],
   "dispositionCount": 1102,
   "dispositions": {
-    "ADDITIONAL_PRIMARY_RESEARCH_REQUIRED": 479,
-    "EXTERNAL_PRIMARY_SOURCE_CONTENT_REVIEW_REQUIRED": 37,
+    "ADDITIONAL_PRIMARY_RESEARCH_REQUIRED": 473,
+    "EXTERNAL_PRIMARY_SOURCE_CONTENT_REVIEW_REQUIRED": 36,
     "MODELING_INPUTS_UNAVAILABLE": 286,
     "PRIMARY_SOURCE_INTERPRETATION_REQUIRED": 237,
     "PUBLICATION_CONTENT_REVIEW_REQUIRED": 27,
-    "REVIEWED_ANSWER_PRESENT": 36
+    "REVIEWED_ANSWER_PRESENT": 43
   },
   "externalSourceMappedSlots": 100,
   "ingredients": 38,
@@ -432,7 +432,7 @@
   "sourceContextSlots": 328,
   "surveys": 20,
   "trials": 29,
-  "verifiedSurveyAnswers": 36,
-  "verifiedSurveyPercent": 3.27,
+  "verifiedSurveyAnswers": 43,
+  "verifiedSurveyPercent": 3.9,
   "warning": "100% research disposition coverage does NOT mean 100% verified evidence, graded surveys, or validated RAAS."
 }

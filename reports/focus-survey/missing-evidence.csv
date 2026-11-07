@@ -297,7 +297,6 @@ NCT05244304,BLTE,"Belite Bio, Inc.",2,Unmet Medical Need,standardOfCare,Current 
 NCT05244304,BLTE,"Belite Bio, Inc.",2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,25,No source-validated ingredient answer,,,0
 NCT05244304,BLTE,"Belite Bio, Inc.",2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,25,No source-validated ingredient answer,,,0
 NCT05244304,BLTE,"Belite Bio, Inc.",3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,MISSING,,,,25,No source-validated ingredient answer,,,0
-NCT05244304,BLTE,"Belite Bio, Inc.",3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,25,No source-validated ingredient answer,,,0
 NCT05244304,BLTE,"Belite Bio, Inc.",3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,25,No source-validated ingredient answer,,,0
 NCT05244304,BLTE,"Belite Bio, Inc.",3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,25,No source-validated ingredient answer,,,0
 NCT05244304,BLTE,"Belite Bio, Inc.",3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,25,No source-validated ingredient answer,,,0
@@ -769,12 +768,10 @@ NCT06343779,PHVS,Pharvaris N.V.,1,Patient Population,bestSubgroup,Best-Respondin
 NCT06343779,PHVS,Pharvaris N.V.,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06343779,PHVS,Pharvaris N.V.,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06343779,PHVS,Pharvaris N.V.,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,7,No source-validated ingredient answer,,,0
-NCT06343779,PHVS,Pharvaris N.V.,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06343779,PHVS,Pharvaris N.V.,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06343779,PHVS,Pharvaris N.V.,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06343779,PHVS,Pharvaris N.V.,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06343779,PHVS,Pharvaris N.V.,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,7,No source-validated ingredient answer,,,0
-NCT06343779,PHVS,Pharvaris N.V.,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06343779,PHVS,Pharvaris N.V.,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06343779,PHVS,Pharvaris N.V.,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06343779,PHVS,Pharvaris N.V.,6,Competitive Advantage,closestCompetitor,Closest Competing Therapy,MISSING,,,,7,No source-validated ingredient answer,,,0
@@ -807,8 +804,6 @@ NCT06669754,PHVS,Pharvaris N.V.,1,Patient Population,bestSubgroup,Best-Respondin
 NCT06669754,PHVS,Pharvaris N.V.,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,5,No source-validated ingredient answer,,,0
 NCT06669754,PHVS,Pharvaris N.V.,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,5,No source-validated ingredient answer,,,0
 NCT06669754,PHVS,Pharvaris N.V.,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,5,No source-validated ingredient answer,,,0
-NCT06669754,PHVS,Pharvaris N.V.,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,MISSING,,,,5,No source-validated ingredient answer,,,0
-NCT06669754,PHVS,Pharvaris N.V.,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,5,No source-validated ingredient answer,,,0
 NCT06669754,PHVS,Pharvaris N.V.,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,5,No source-validated ingredient answer,,,0
 NCT06669754,PHVS,Pharvaris N.V.,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,5,No source-validated ingredient answer,,,0
 NCT06669754,PHVS,Pharvaris N.V.,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,5,No source-validated ingredient answer,,,0
@@ -846,10 +841,8 @@ NCT06087276,PRAX,"Praxis Precision Medicines, Inc.",2,Unmet Medical Need,standar
 NCT06087276,PRAX,"Praxis Precision Medicines, Inc.",2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,5,No source-validated ingredient answer,,,0
 NCT06087276,PRAX,"Praxis Precision Medicines, Inc.",2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,5,No source-validated ingredient answer,,,0
 NCT06087276,PRAX,"Praxis Precision Medicines, Inc.",3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,MISSING,,,,5,No source-validated ingredient answer,,,0
-NCT06087276,PRAX,"Praxis Precision Medicines, Inc.",3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,5,No source-validated ingredient answer,,,0
 NCT06087276,PRAX,"Praxis Precision Medicines, Inc.",3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,5,No source-validated ingredient answer,,,0
 NCT06087276,PRAX,"Praxis Precision Medicines, Inc.",3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,5,No source-validated ingredient answer,,,0
-NCT06087276,PRAX,"Praxis Precision Medicines, Inc.",3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,5,No source-validated ingredient answer,,,0
 NCT06087276,PRAX,"Praxis Precision Medicines, Inc.",3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,5,No source-validated ingredient answer,,,0
 NCT06087276,PRAX,"Praxis Precision Medicines, Inc.",4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,5,No source-validated ingredient answer,,,0
 NCT06087276,PRAX,"Praxis Precision Medicines, Inc.",5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,5,No source-validated ingredient answer,,,0

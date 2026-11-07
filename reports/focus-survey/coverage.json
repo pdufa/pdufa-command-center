@@ -18,11 +18,11 @@
     },
     {
       "capturedNeedsReview": 25,
-      "missing": 117,
+      "missing": 110,
       "name": "Clinical Benefit",
       "slots": 174,
       "surveyNumber": 3,
-      "verified": 32
+      "verified": 39
     },
     {
       "capturedNeedsReview": 0,
@@ -237,11 +237,11 @@
     {
       "capturedNeedsReview": 2,
       "literatureLeads": 25,
-      "missing": 36,
+      "missing": 35,
       "nctId": "NCT05244304",
       "registryRetrieved": true,
       "ticker": "BLTE",
-      "verified": 0
+      "verified": 1
     },
     {
       "capturedNeedsReview": 2,
@@ -354,29 +354,29 @@
     {
       "capturedNeedsReview": 2,
       "literatureLeads": 7,
-      "missing": 36,
+      "missing": 34,
       "nctId": "NCT06343779",
       "registryRetrieved": true,
       "ticker": "PHVS",
-      "verified": 0
+      "verified": 2
     },
     {
       "capturedNeedsReview": 2,
       "literatureLeads": 5,
-      "missing": 36,
+      "missing": 34,
       "nctId": "NCT06669754",
       "registryRetrieved": true,
       "ticker": "PHVS",
-      "verified": 0
+      "verified": 2
     },
     {
       "capturedNeedsReview": 2,
       "literatureLeads": 5,
-      "missing": 36,
+      "missing": 34,
       "nctId": "NCT06087276",
       "registryRetrieved": true,
       "ticker": "PRAX",
-      "verified": 0
+      "verified": 2
     },
     {
       "capturedNeedsReview": 2,
@@ -425,7 +425,7 @@
     }
   ],
   "focusTrials": 29,
-  "generatedAt": "2026-11-07T20:35:10+00:00",
+  "generatedAt": "2026-11-07T20:40:36+00:00",
   "googleSheetsSync": "SUCCESS",
   "ingredientSlots": 1102,
   "leadCapturePercent": 9.89,
@@ -434,15 +434,15 @@
   "sourceRegistryTrials": 29,
   "statuses": {
     "IDENTITY_REVIEW_REQUIRED": 0,
-    "MISSING": 957,
+    "MISSING": 950,
     "MODELED": 0,
     "NOT_APPLICABLE": 0,
     "SOURCE_CAPTURED_NEEDS_REVIEW": 109,
     "SOURCE_UNAVAILABLE": 0,
-    "VERIFIED": 36
+    "VERIFIED": 43
   },
   "surveyCategories": 20,
   "surveyIngredients": 38,
-  "verifiedPercent": 3.27,
+  "verifiedPercent": 3.9,
   "warning": "Registry and literature leads are not reviewed ingredient findings. 38 slots per trial does not mean 38 verified assessments."
 }
