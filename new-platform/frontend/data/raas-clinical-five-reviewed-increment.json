@@ -2704,6 +2704,26 @@
       "criticalRiskReview": "Absence of serious events on IV meloxicam among a small sample does not rule out NSAID bleeding, renal or cardiovascular risks.",
       "reviewerMethod": "Mixed safety research grade 50 for limited descriptive tolerability, no extrapolation of pooled participant safety to this NCT.",
       "independentReview": "AI_SOURCE_CROSSCHECKED"
+    },
+    {
+      "nctId": "NCT06736574",
+      "ticker": "CYTK",
+      "drug": "omecamtiv mecarbil",
+      "indication": "Heart Failure With Reduced Ejection Fraction",
+      "stage": "pre",
+      "metricId": "pre-1-3",
+      "finding": "MIXED_EVIDENCE",
+      "assessedAt": "2026-11-06",
+      "sourceDate": "2016-12-10",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27914656/",
+      "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT06736574",
+      "benchmarkId": "COMET-HF protocol and human PK/PD dose reproducibility benchmark for CYTK NCT06736574 pre-1-3",
+      "benchmarkContext": "The current COMET-HF protocol uses plasma-concentration-guided 25, 37.5 or 50 mg twice-daily dosing in severe HFrEF, consistent with pharmacokinetic-guided prior development. COSMIC-HF was a randomized Phase 2 20-week physiological PK/PD benchmark, not a hard-event replication of COMET-HF; prior GALACTIC-HF yielded modest clinical outcome effects and the original NDA received a 2023 CRL.",
+      "observedResult": "In randomized, double-blind Phase 2 COSMIC-HF (NCT01786512), mean maximum plasma concentration at week 12 was 318 (SD 129) ng/mL for PK-guided titration versus 200 (SD 71) ng/mL for fixed 25 mg BID. PK-guided treatment versus placebo yielded systolic ejection time +25 ms (95% CI 18–32), stroke volume +3.6 mL (95% CI 0.5–6.7), and NT-proBNP -970 pg/mL (95% CI -1672 to -268) at week 20. Current COMET-HF has no readout. These measured PK/PD and surrogate improvements support pharmacologic activity, not demonstrated future event reduction.",
+      "uncertaintyReview": "COSMIC-HF used a shorter 20-week interval and stable HFrEF (LVEF <=40%); COMET-HF enrolls a narrower severe-HFrEF population for an event-driven hard-clinical-outcome trial. Surrogates and plasma exposures do not determine COMET-HF efficacy, current dose exposure distribution, or long-term safety. Earlier GALACTIC-HF clinical benefit was modest, so evidence is mixed rather than above benchmark.",
+      "criticalRiskReview": "Possible exposure-related myocardial ischemia/troponin concerns and dose adjustment variability remain relevant. Original NDA's 2023 CRL was for insufficient efficacy evidence; PK/PD replication cannot substitute for a new adequately controlled confirmatory outcome result. This score is provisional clinical research only, not approval probability or a current trial outcome.",
+      "reviewerMethod": "AI-assisted review of the 2016 peer-reviewed randomized COSMIC-HF PK/PD paper, cross-checked against the exact current COMET-HF NCT registry protocol and existing program-specific clinical/CRL assessments; graded MIXED_EVIDENCE under unchanged five-factor rubric. No independent human adjudication and no prospective FDA forecast.",
+      "independentReview": "AI_SOURCE_CROSSCHECKED"
     }
   ],
   "newlyAcceptedClinicalCount": 135
