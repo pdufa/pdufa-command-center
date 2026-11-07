@@ -142,10 +142,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
        {section==="pipeline"&&<><p className={styles.muted}>Timeline columns count Pacific calendar days from the verified public Phase 3 readout release to today and to the FDA PDUFA target. Research ends at PDUFA − 3. Unverified dates never become numerical countdowns.</p><p className={styles.muted}>Competitive columns are source-gated. A blank assessment is neither zero nor evidence of failure. Expand each cell for its reason, exact purpose and required verification.</p><CompetitiveColumnPurposes /></>}
        {section==="pool"?<PoolMasterSpreadsheet rows={page.rows.filter((r):r is PoolItem=>!isReview(r))} />:<div className={styles.scroll}><table className={styles.table}>
          <thead><tr>
-           {section==="pool"?
-             ["Source ID","Ticker","Company","Drug","Indication","Recorded stage","Cap source value","Record type"].map(k=><th key={k}>{k}</th>):
-             <>{["NCT","Ticker","Company","Drug","Indication"].map(k=><th key={k}>{k}</th>)}<PipelineTimelineHeaders /><CompetitiveAssessmentHeaders />{["Registry status","Cap at census","POOL match","Screening status","Current SOC cost ($/12 mo)","Proposed cost ($/12 mo)","Details"].map(k=><th key={k}>{k}</th>)}</>
-           }
+           {["NCT","Ticker","Company","Drug","Indication"].map(k=><th key={k}>{k}</th>)}<PipelineTimelineHeaders /><CompetitiveAssessmentHeaders />{["Registry status","Cap at census","POOL match","Screening status","Current SOC cost ($/12 mo)","Proposed cost ($/12 mo)","Details"].map(k=><th key={k}>{k}</th>)}
          </tr></thead>
          <tbody>{page.rows.map(r=>isReview(r)?
            <tr key={r.nctId}>
