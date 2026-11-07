@@ -8,7 +8,7 @@ from fastapi.testclient import TestClient
 import pytest
 
 from app import main
-from app.peak_research import KEY, _load, outcome_readiness, research_register
+from app.peak_research import KEY, _load, outcome_readiness, research_register, main_readiness
 from app.phase3_research_batch import evaluate_candidate_batch
 from app.phase3_sheet_population_preview import build_sheet_population_preview
 from app.science_40_dossier import evaluate_science_40
@@ -117,4 +117,17 @@ def test_authenticated_read_only_route_never_uses_storage_or_accepts_external_re
     body = response.json()
     assert body["science40"]["independentlyReviewedAssessments"] == 0
     assert body["outcome"]["decisionReadinessGrade"] == "ABSTAIN"
+    assert body["main"] == main_readiness(body["science40"], body["researchRegister"])
+    assert body["outcome"]["predictionClasses"] == ["PASS", "CRL", "EXTENSION"]
+    assert body["outcome"]["probabilities"] == {"PASS": None, "CRL": None, "EXTENSION": None}
+    assert body["outcome"]["extensionIsNonapproval"] is False
     assert body["sheetWritesEnabled"] is body["productionSchedulingEnabled"] is body["tradeAuthorized"] is False
+
+
+def test_main_rejects_borrowed_evidence_and_never_invents_model_or_prediction_time():
+    science = evaluate_science_40(exact_key=KEY, evidence={}, as_of="2026-10-28")
+    with pytest.raises(ValueError, match="identity"):
+        main_readiness(science, {"exactKey": "OTHER"})
+    summary = main_readiness(science, None)
+    assert summary["modelVersion"] is summary["predictionTimestamp"] is None
+    assert summary["prediction"] == "INSUFFICIENT_EVIDENCE"
