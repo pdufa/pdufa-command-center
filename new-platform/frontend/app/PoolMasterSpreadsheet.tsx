@@ -150,9 +150,15 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
  },[hydrated,layouts]);
  const layout=layouts[view];
  const edit=(fn:(l:Layout)=>Layout)=>setLayouts(p=>({...p,[view]:fn(p[view])}));
- const switchIn=(key:keyof Layout,id:string)=>edit(l=>({
-  ...l,[key]:l[key].includes(id as never)?l[key].filter(x=>x!==id):[...l[key],id]
- }));
+ const switchIn=(key:"expanded"|"hiddenSegments"|"hiddenColumns",id:string)=>edit(l=>{
+  if(key==="hiddenColumns"){
+   const col=id as Key;
+   return {...l,hiddenColumns:l.hiddenColumns.includes(col)
+    ?l.hiddenColumns.filter(x=>x!==col):[...l.hiddenColumns,col]};
+  }
+  const list=l[key];
+  return {...l,[key]:list.includes(id)?list.filter(x=>x!==id):[...list,id]};
+ });
  const orderedSegments=useMemo(()=>layout.segmentOrder.map(key=>SEGMENTS.find(s=>s.key===key)!),[layout.segmentOrder]);
  const COLUMNS_BY_SEGMENT=layout.columnOrder;
  const visible=useMemo(()=>orderedSegments
@@ -161,15 +167,15 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
    .map(key=>COLUMN_LOOKUP.get(key)!)),[layout,orderedSegments]);
  const clinicalVisible=isGroupVisible(layout,GROUP_CLINICAL,COLUMNS_BY_SEGMENT);
  const qualificationVisible=isGroupVisible(layout,GROUP_QUALIFICATION,COLUMNS_BY_SEGMENT);
- const toggleClinical=()=>edit(l=>toggleColumnGroup(l,GROUP_CLINICAL,l.columnOrder));
- const toggleQualification=()=>edit(l=>toggleColumnGroup(l,GROUP_QUALIFICATION,l.columnOrder));
+ const toggleClinical=()=>edit(l=>({...l,...toggleColumnGroup(l,GROUP_CLINICAL,l.columnOrder)}));
+ const toggleQualification=()=>edit(l=>({...l,...toggleColumnGroup(l,GROUP_QUALIFICATION,l.columnOrder)}));
  const resetView=()=>edit(()=>defaultLayout(view));
  const resetColumnOrder=()=>edit(l=>({...l,...normalizePoolColumnOrder(null,DEFAULT_COLUMNS_BY_SEGMENT,ALL_SEGMENTS)}));
  const [reorderNotice,setReorderNotice]=useState("");
- const shiftSegment=(id:string,direction:-1|1)=>edit(l=>stepPoolSegment(l,id,direction));
- const shiftColumn=(key:Key,direction:-1|1)=>edit(l=>stepPoolColumn(l,key,direction));
+ const shiftSegment=(id:string,direction:-1|1)=>edit(l=>({...l,...stepPoolSegment(l,id,direction)}));
+ const shiftColumn=(key:Key,direction:-1|1)=>edit(l=>({...l,...stepPoolColumn(l,key,direction)}));
  const transferColumn=(key:Key,target:string)=>edit(l=>{
-  const shifted=movePoolColumn(l,key,target);
+  const shifted={...l,...movePoolColumn(l,key,target)};
   return {...shifted,expanded:[...new Set([...shifted.expanded,target])],
    hiddenSegments:shifted.hiddenSegments.filter(s=>s!==target),
    hiddenColumns:shifted.hiddenColumns.filter(k=>k!==key)};
@@ -184,7 +190,7 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
   const value=event.dataTransfer.getData("text/plain");
   if(value.startsWith("pool-segment:")){
    const source=value.slice("pool-segment:".length);
-   edit(l=>reorderPoolSegment(l,source,target));
+   edit(l=>({...l,...reorderPoolSegment(l,source,target)}));
    setReorderNotice("Segment order updated.");
   }else if(value.startsWith("pool-column:")){
    const key=value.slice("pool-column:".length) as Key;
@@ -197,7 +203,7 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
   if(!value.startsWith("pool-column:"))return;
   const key=value.slice("pool-column:".length) as Key;
   if(!ALL_KEYS.includes(key))return;
-  edit(l=>movePoolColumn(l,key,targetSegment,targetKey));
+  edit(l=>({...l,...movePoolColumn(l,key,targetSegment,targetKey)}));
   setReorderNotice("Column order updated.");
  };
  const findSegment=(key:Key)=>layout.segmentOrder.find(id=>layout.columnOrder[id].includes(key))||"";
