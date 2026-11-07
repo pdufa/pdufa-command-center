@@ -1,0 +1,135 @@
+{
+  "schemaVersion": 1,
+  "scope": "TOP_ONLY_BLOCKED_SOURCE_ALTERNATE_RETRIEVAL_NOT_AUTOMATIC_FACTS",
+  "retrievedAt": "2026-11-07T00:36:47.632Z",
+  "records": [
+    {
+      "url": "https://ir.arrivent.com/static-files/c40b400a-7cf2-4a24-aacf-8112027b2163",
+      "nctIds": [
+        "NCT07185997"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://ir.arrivent.com/static-files/c40b400a-7cf2-4a24-aacf-8112027b2163: (404) Not Found"
+    },
+    {
+      "url": "https://candeltx.com/wp-content/uploads/news/R%26D_Day_Candel_Therapeutics.pdf",
+      "nctIds": [
+        "NCT01436968"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://candeltx.com/wp-content/uploads/news/R%26D_Day_Candel_Therapeutics.pdf: (404) Not Found"
+    },
+    {
+      "url": "https://ir.candeltx.com/static-files/a5e53128-5256-4d4a-97ee-0ef1044b57d1",
+      "nctIds": [
+        "NCT01436968"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://ir.candeltx.com/static-files/a5e53128-5256-4d4a-97ee-0ef1044b57d1: (404) Not Found"
+    },
+    {
+      "url": "https://www.candeltx.com/wp-content/uploads/news/R%26D_Day_Candel_Therapeutics.pdf",
+      "nctIds": [
+        "NCT01436968"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://www.candeltx.com/wp-content/uploads/news/R%26D_Day_Candel_Therapeutics.pdf: (500) Redirected to https://candeltx.com/wp-content/uploads/news/R&D_Day_Candel_Therapeutics.pdf which is not accessible via this tool. (non-retryable error)"
+    },
+    {
+      "url": "https://s201.q4cdn.com/710325604/files/doc_presentations/2025/Jun/13/Geron-Corporate-Deck-June-2025-FINAL.pdf",
+      "nctIds": [
+        "NCT04576156"
+      ],
+      "state": "WEB_FALLBACK_RETRIEVED_SOURCE_TEXT_REQUIRES_REVIEW",
+      "detail": "Alternate web retrieval recorded; no automatic facts or grade"
+    },
+    {
+      "url": "https://s201.q4cdn.com/710325604/files/doc_presentations/2025/Aug/07/Geron-Corporate-Deck-Aug-2025-v7.pdf",
+      "nctIds": [
+        "NCT04576156"
+      ],
+      "state": "WEB_FALLBACK_RETRIEVED_SOURCE_TEXT_REQUIRES_REVIEW",
+      "detail": "Alternate web retrieval recorded; no automatic facts or grade"
+    },
+    {
+      "url": "https://s201.q4cdn.com/710325604/files/doc_news/Publications/2022/12.1/fon-2022-0235.pdf",
+      "nctIds": [
+        "NCT04576156"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://s201.q4cdn.com/710325604/files/doc_news/Publications/2022/12.1/fon-2022-0235.pdf: (404) Not Found"
+    },
+    {
+      "url": "https://ir.iovance.com/static-files/5a1232a2-2137-47d1-92bd-a98cb15aa721",
+      "nctIds": [
+        "NCT05727904"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://ir.iovance.com/static-files/5a1232a2-2137-47d1-92bd-a98cb15aa721: (404) Not Found"
+    },
+    {
+      "url": "https://ir.iovance.com/static-files/5c22aa14-6117-40e5-9f95-a22c6981f0e6",
+      "nctIds": [
+        "NCT05727904"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://ir.iovance.com/static-files/5c22aa14-6117-40e5-9f95-a22c6981f0e6: (404) Not Found"
+    },
+    {
+      "url": "https://ir.iovance.com/static-files/a829b645-572a-407d-8a9c-325a07d6e3f3",
+      "nctIds": [
+        "NCT05727904"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://ir.iovance.com/static-files/a829b645-572a-407d-8a9c-325a07d6e3f3: (404) Not Found"
+    },
+    {
+      "url": "https://ir.kodiak.com/static-files/579ed216-f770-426f-b0d6-dfab81e6af82",
+      "nctIds": [
+        "NCT06556368"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://ir.kodiak.com/static-files/579ed216-f770-426f-b0d6-dfab81e6af82: (404) Not Found"
+    },
+    {
+      "url": "https://ir.intelliatx.com/static-files/a57908a6-aaca-404d-9072-32471cd3d41e",
+      "nctIds": [
+        "NCT06672237"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://ir.intelliatx.com/static-files/a57908a6-aaca-404d-9072-32471cd3d41e: (403) Forbidden"
+    },
+    {
+      "url": "https://investors.ocutx.com/static-files/9a2366eb-bf3f-45d8-b6f4-8aad4928c536",
+      "nctIds": [
+        "NCT06223958"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://investors.ocutx.com/static-files/9a2366eb-bf3f-45d8-b6f4-8aad4928c536: (403) Forbidden"
+    },
+    {
+      "url": "https://ir.tayshagtx.com/static-files/094002d1-c9db-40f7-9727-302c852ea4e4",
+      "nctIds": [
+        "NCT05606614"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://ir.tayshagtx.com/static-files/094002d1-c9db-40f7-9727-302c852ea4e4: (404) Not Found"
+    },
+    {
+      "url": "https://ir.tayshagtx.com/static-files/fba25829-34f6-4b8d-9e20-43b78406e16c",
+      "nctIds": [
+        "NCT05606614"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://ir.tayshagtx.com/static-files/fba25829-34f6-4b8d-9e20-43b78406e16c: (404) Not Found"
+    },
+    {
+      "url": "https://investors.x4pharma.com/static-files/ed2f4b6e-8181-4472-a7b1-d1eb3a6a2896",
+      "nctIds": [
+        "NCT06056297"
+      ],
+      "state": "WEB_FALLBACK_BLOCKED",
+      "detail": "Failed to fetch https://investors.x4pharma.com/static-files/ed2f4b6e-8181-4472-a7b1-d1eb3a6a2896: (403) Forbidden"
+    }
+  ]
+}

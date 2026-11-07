@@ -1,0 +1,198 @@
+{
+  "schemaVersion": 1,
+  "scope": "TOP_ONLY_READOUT_FACTS_NO_MEMBERSHIP_OR_FORECAST_CHANGE",
+  "records": [
+    {
+      "nctId": "NCT03900429",
+      "pmid": "38324483",
+      "date": "2024-02-08",
+      "datePrecision": "DAY",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/38324483/",
+      "kind": "PUBLICATION_READOUT",
+      "outcome": "PUBLIC_RESULTS_NOT_NEWLY_ADJUDICATED",
+      "rationale": "MAESTRO-NASH: ongoing randomized Phase3 trial,966 primary-analysis patients. Both prespecified histological endpoints reported against placebo; ongoing clinical outcomes are separate.",
+      "purpose": "PIVOTAL_EFFICACY",
+      "endpointComponents": [
+        {
+          "endpoint": "NASH resolution without worsening fibrosis",
+          "reported": "25.9%/29.9% for80/100mg vs9.7% placebo;P<0.001 each"
+        },
+        {
+          "endpoint": "Fibrosis improvement without worsening NAFLD activity",
+          "reported": "24.2%/25.9% vs14.2%;P<0.001 each"
+        }
+      ],
+      "safety": "SAEs10.9%/12.7% vs11.5%; diarrhea/nausea more frequent with resmetirom.",
+      "identityEvidence": "Original PubMed abstract explicitly identifies NCT03900429; current registry protocol/phase and publication population cross-checked. Parent trial and open-label cohorts remain distinct.",
+      "reviewedAt": "2026-11-06",
+      "confidence": "HIGH",
+      "numericalGrade": null,
+      "fdaPrediction": null
+    },
+    {
+      "nctId": "NCT01436968",
+      "pmid": "42225101",
+      "date": "2026-06",
+      "datePrecision": "MONTH",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42225101/",
+      "kind": "PUBLICATION_READOUT",
+      "outcome": "PUBLIC_RESULTS_NOT_NEWLY_ADJUDICATED",
+      "rationale": "CAN-2409:745 randomized; long-term follow-up ongoing. Disease-free survival HR0.70 (95%CI0.52\u20130.94),p=.016 versus placebo on background radiotherapy.",
+      "purpose": "PIVOTAL_EFFICACY",
+      "endpointComponents": [
+        {
+          "endpoint": "Disease-free survival",
+          "reported": "HR0.70;95%CI0.52\u20130.94;p=.016"
+        }
+      ],
+      "safety": "Grade3+ TEAEs8% versus7%; serious AEs6% versus7%.",
+      "identityEvidence": "Original PubMed abstract explicitly identifies NCT01436968; current registry protocol/phase and publication population cross-checked. Parent trial and open-label cohorts remain distinct.",
+      "reviewedAt": "2026-11-06",
+      "confidence": "HIGH",
+      "numericalGrade": null,
+      "fdaPrediction": null
+    },
+    {
+      "nctId": "NCT06634420",
+      "pmid": "42294842",
+      "date": "2026-06-13",
+      "datePrecision": "DAY",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42294842/",
+      "kind": "PUBLICATION_READOUT",
+      "outcome": "PUBLIC_RESULTS_NOT_NEWLY_ADJUDICATED",
+      "rationale": "HAELO Phase3:80 randomized,52 active/28 placebo; monthly attacks0.26 versus2.10 over weeks5\u201328. Longer follow-up remains distinct from the released primary analysis.",
+      "purpose": "PIVOTAL_EFFICACY",
+      "endpointComponents": [
+        {
+          "endpoint": "Monthly HAE attack rate",
+          "reported": "Relative difference\u221287%;95%CI\u221293% to\u221278%;P<.001"
+        }
+      ],
+      "safety": "AEs92% versus86%; no serious or grade3+ AEs reported in active arm within this reported cutoff.",
+      "identityEvidence": "Original PubMed abstract explicitly identifies NCT06634420; current registry protocol/phase and publication population cross-checked. Parent trial and open-label cohorts remain distinct.",
+      "reviewedAt": "2026-11-06",
+      "confidence": "HIGH",
+      "numericalGrade": null,
+      "fdaPrediction": null
+    },
+    {
+      "nctId": "NCT04452591",
+      "pmid": "42508433",
+      "date": "2026-08",
+      "datePrecision": "MONTH",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42508433/",
+      "kind": "PUBLICATION_READOUT",
+      "outcome": "PUBLIC_RESULTS_NOT_NEWLY_ADJUDICATED",
+      "rationale": "BOND-003 cohortC: single-arm ongoing Phase3 trial;110 response-evaluable patients and112 safety patients. Do not treat descriptive complete response as randomized superiority.",
+      "purpose": "PIVOTAL_SINGLE_ARM",
+      "endpointComponents": [
+        {
+          "endpoint": "Centrally confirmed complete response at any time",
+          "reported": "83/110 (75%);95%CI66.3\u201383.2"
+        }
+      ],
+      "safety": "Treatment-related AEs63%; two grade2 serious treatment-related events; no grade3/4 treatment-related events or related discontinuations/deaths reported.",
+      "identityEvidence": "Original PubMed abstract explicitly identifies NCT04452591; current registry protocol/phase and publication population cross-checked. Parent trial and open-label cohorts remain distinct.",
+      "reviewedAt": "2026-11-06",
+      "confidence": "HIGH",
+      "numericalGrade": null,
+      "fdaPrediction": null
+    },
+    {
+      "nctId": "NCT04848506",
+      "pmid": "40540987",
+      "date": "2025-06-19",
+      "datePrecision": "DAY",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/40540987/",
+      "kind": "PUBLICATION_READOUT",
+      "outcome": "PUBLIC_RESULTS_NOT_NEWLY_ADJUDICATED",
+      "rationale": "FOREST-HCM ongoing Phase2/3 open-label extension:213 enrolled and46 with48-week observations. Findings belong to this extension, not a new randomized replication of parent trials.",
+      "purpose": "EXTENSION",
+      "endpointComponents": [
+        {
+          "endpoint": "48-week extension observations",
+          "reported": "82% improved at least one NYHA class;46 evaluated at48weeks"
+        }
+      ],
+      "safety": "Two of46 had transient asymptomatic LVEF<50%, neither causing drug discontinuation.",
+      "identityEvidence": "Original PubMed abstract explicitly identifies NCT04848506; current registry protocol/phase and publication population cross-checked. Parent trial and open-label cohorts remain distinct.",
+      "reviewedAt": "2026-11-06",
+      "confidence": "HIGH",
+      "numericalGrade": null,
+      "fdaPrediction": null
+    },
+    {
+      "nctId": "NCT03022825",
+      "pmid": "40956664",
+      "date": "2025-09-16",
+      "datePrecision": "DAY",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/40956664/",
+      "kind": "PUBLICATION_READOUT",
+      "outcome": "PUBLIC_RESULTS_NOT_NEWLY_ADJUDICATED",
+      "rationale": "QUILT-3.032 Phase2/3 cohortB high-grade papillary disease: exact-NCT36-month follow-up. Do not pool its outcomes with cohortA carcinoma-in-situ results.",
+      "purpose": "SUPPORTIVE_SINGLE_ARM",
+      "endpointComponents": [
+        {
+          "endpoint": "Disease-free survival at12months",
+          "reported": "58.2%;95%CI46.6\u201368.2"
+        },
+        {
+          "endpoint": "Disease-free survival at36months",
+          "reported": "38.2%;95%CI25.6\u201350.6"
+        }
+      ],
+      "safety": "Treatment-related AEs mostly grade1/2;3% grade3 and none grade4/5 in the reported cohort.",
+      "identityEvidence": "Original PubMed abstract explicitly identifies NCT03022825; current registry protocol/phase and publication population cross-checked. Parent trial and open-label cohorts remain distinct.",
+      "reviewedAt": "2026-11-06",
+      "confidence": "HIGH",
+      "numericalGrade": null,
+      "fdaPrediction": null
+    },
+    {
+      "nctId": "NCT02736656",
+      "pmid": "40802027",
+      "date": "2025-08-13",
+      "datePrecision": "DAY",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/40802027/",
+      "kind": "PUBLICATION_READOUT",
+      "outcome": "PUBLIC_RESULTS_NOT_NEWLY_ADJUDICATED",
+      "rationale": "Viloxazine ER Phase3 open-label extension:1100 participants; safety is primary. Efficacy is descriptive relative to earlier baseline, not controlled confirmation.",
+      "purpose": "SAFETY_PRIMARY_EXTENSION",
+      "endpointComponents": [
+        {
+          "endpoint": "Safety-primary long-term tolerability",
+          "reported": "AE discontinuations8.2%;median exposure260days"
+        }
+      ],
+      "safety": "Common AEs include nasopharyngitis9.7%,somnolence9.5%,headache8.9%; no new concerns claimed by authors, not an independently graded benefit-risk conclusion.",
+      "identityEvidence": "Original PubMed abstract explicitly identifies NCT02736656; current registry protocol/phase and publication population cross-checked. Parent trial and open-label cohorts remain distinct.",
+      "reviewedAt": "2026-11-06",
+      "confidence": "HIGH",
+      "numericalGrade": null,
+      "fdaPrediction": null
+    },
+    {
+      "nctId": "NCT04130997",
+      "pmid": "41697690",
+      "date": "2026-04-01",
+      "datePrecision": "DAY",
+      "url": "https://pubmed.ncbi.nlm.nih.gov/41697690/",
+      "kind": "PUBLICATION_READOUT",
+      "outcome": "PUBLIC_RESULTS_NOT_NEWLY_ADJUDICATED",
+      "rationale": "ULTIMATE open-label extension:851 enrolled after parent trials. Extension results are attributable to this NCT, not invented individual parent-trial estimates.",
+      "purpose": "EXTENSION",
+      "endpointComponents": [
+        {
+          "endpoint": "Long-term relapse/disability observations",
+          "reported": "At year5 CDP24:8.0% continuous-treatment vs14.3% switched cohort;nonrandomized extension context"
+        }
+      ],
+      "safety": "Serious infections excludingCOVID:2.10 versus2.58 per100participant-years, by extension cohort.",
+      "identityEvidence": "Original PubMed abstract explicitly identifies NCT04130997; current registry protocol/phase and publication population cross-checked. Parent trial and open-label cohorts remain distinct.",
+      "reviewedAt": "2026-11-06",
+      "confidence": "HIGH",
+      "numericalGrade": null,
+      "fdaPrediction": null
+    }
+  ]
+}

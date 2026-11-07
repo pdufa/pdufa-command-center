@@ -1,0 +1,48 @@
+{
+  "summary": {
+    "scope": "EXISTING_TOP_ONLY",
+    "asOf": "2026-11-07",
+    "version": "TOP_ONLY_190_ACCOUNTABILITY_20261107_V1",
+    "trialCount": 235,
+    "fieldsPerTrial": 190,
+    "companiesSearched": 108,
+    "exactNctSearches": 235,
+    "documentsAttempted": 191,
+    "documentsRetrieved": 175,
+    "documentsBlocked": 16,
+    "documentsRecoveredViaFallback": 2,
+    "unresolvedDocumentBlocks": 14,
+    "allFieldsAccounted": 235,
+    "allMetricsEvaluated": 235,
+    "completeClinicalOverallScores": 6,
+    "completeThirtyMetricOverallScores": 0,
+    "withMissingSourceEvidence": 235,
+    "sourceStateCounts": {
+      "VERIFIED": 2728,
+      "MISSING EXPECTED": 2579,
+      "UNVERIFIED": 383,
+      "PENDING": 1125,
+      "NOT YET EXPECTED": 235,
+      "NOT APPLICABLE": 0,
+      "CONFLICTING": 0
+    }
+  },
+  "csvRows": 235,
+  "csvColumns": 190,
+  "frontendTestsPassed": 1326,
+  "topTestsPassed": 9,
+  "typecheck": "PASS",
+  "build": "PASS",
+  "browser": {
+    "desktopRowsInitially": 25,
+    "completeScoreFilterRows": 6,
+    "companySearchRows": 4,
+    "all190DetailsRendered": true,
+    "collapsedByDefault": true,
+    "horizontalExpansionBorder": "2px",
+    "mobileViewport": 393,
+    "mobileDetailsWidth": 311,
+    "noBodyOverflow": true,
+    "pageErrors": []
+  }
+}

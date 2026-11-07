@@ -1,0 +1,2352 @@
+[
+  {
+    "nctId": "NCT06159673",
+    "ticker": "ACAD",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 58.3
+  },
+  {
+    "nctId": "NCT06194799",
+    "ticker": "ACAD",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07095465",
+    "ticker": "ACAD",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07392125",
+    "ticker": "ACHV",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 37.5
+  },
+  {
+    "nctId": "NCT07506863",
+    "ticker": "AGIO",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07517133",
+    "ticker": "AGIO",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07656415",
+    "ticker": "AGIO",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07859423",
+    "ticker": "AGIO",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT04987229",
+    "ticker": "ALKS",
+    "gradedClinicalFactors": 1,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT05303064",
+    "ticker": "ALKS",
+    "gradedClinicalFactors": 5,
+    "clinicalOverall": 50,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06767683",
+    "ticker": "ALKS",
+    "gradedClinicalFactors": 1,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07455383",
+    "ticker": "ALKS",
+    "gradedClinicalFactors": 5,
+    "clinicalOverall": 60,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07502443",
+    "ticker": "ALKS",
+    "gradedClinicalFactors": 5,
+    "clinicalOverall": 60,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07540897",
+    "ticker": "ALKS",
+    "gradedClinicalFactors": 5,
+    "clinicalOverall": 60,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT06846541",
+    "ticker": "ALMS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07795164",
+    "ticker": "ALT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 54.2
+  },
+  {
+    "nctId": "NCT05401357",
+    "ticker": "AMRX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07898072",
+    "ticker": "AMRX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06510816",
+    "ticker": "ANNX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07020819",
+    "ticker": "ANNX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07807969",
+    "ticker": "ANNX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT06566820",
+    "ticker": "APMD",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT05905926",
+    "ticker": "ARDX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07382167",
+    "ticker": "ARDX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 52
+  },
+  {
+    "nctId": "NCT06822790",
+    "ticker": "ARWR",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06880770",
+    "ticker": "ARWR",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07037771",
+    "ticker": "ARWR",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07473843",
+    "ticker": "ARWR",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06007690",
+    "ticker": "AURA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT05607550",
+    "ticker": "AVBP",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07185997",
+    "ticker": "AVBP",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07037277",
+    "ticker": "AVIR",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06413433",
+    "ticker": "AXSM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT06568367",
+    "ticker": "AXSM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT06878976",
+    "ticker": "AXSM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07398417",
+    "ticker": "AXSM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07484217",
+    "ticker": "AXSM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07637162",
+    "ticker": "AXSM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07717879",
+    "ticker": "AXSM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07717892",
+    "ticker": "AXSM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07766655",
+    "ticker": "AXSM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07773883",
+    "ticker": "AXSM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT06788990",
+    "ticker": "BCAX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT04933721",
+    "ticker": "BCRX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT05949593",
+    "ticker": "BLTE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06388083",
+    "ticker": "BLTE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07755904",
+    "ticker": "BRVE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT01436968",
+    "ticker": "CADL",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 55.2
+  },
+  {
+    "nctId": "NCT07660094",
+    "ticker": "CADL",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT04452591",
+    "ticker": "CGON",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 51.7
+  },
+  {
+    "nctId": "NCT06111235",
+    "ticker": "CGON",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07256392",
+    "ticker": "CLDX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07266402",
+    "ticker": "CLDX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07570654",
+    "ticker": "CMPS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT05208047",
+    "ticker": "COGT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 54.2
+  },
+  {
+    "nctId": "NCT06561048",
+    "ticker": "CRVS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT04848506",
+    "ticker": "CYTK",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 55.2
+  },
+  {
+    "nctId": "NCT06412666",
+    "ticker": "CYTK",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT06736574",
+    "ticker": "CYTK",
+    "gradedClinicalFactors": 4,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT05065216",
+    "ticker": "DMAC",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT05371613",
+    "ticker": "DNLI",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06075537",
+    "ticker": "DNLI",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07486934",
+    "ticker": "DYN",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07608432",
+    "ticker": "DYN",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07905183",
+    "ticker": "ELVN",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07908381",
+    "ticker": "ENTA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 54.2
+  },
+  {
+    "nctId": "NCT06346067",
+    "ticker": "ERAS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT05416307",
+    "ticker": "ETRA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06864988",
+    "ticker": "FDMT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07064759",
+    "ticker": "FDMT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07867080",
+    "ticker": "FDMT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07276724",
+    "ticker": "GENB",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07359846",
+    "ticker": "GENB",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT04576156",
+    "ticker": "GERN",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 62.5
+  },
+  {
+    "nctId": "NCT07832552",
+    "ticker": "HROW",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT03022825",
+    "ticker": "IBRX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 51.7
+  },
+  {
+    "nctId": "NCT06745908",
+    "ticker": "IBRX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT05987332",
+    "ticker": "IDYA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07015190",
+    "ticker": "IDYA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07804186",
+    "ticker": "IDYA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT04871282",
+    "ticker": "IMNM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT06295731",
+    "ticker": "INBX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 54.2
+  },
+  {
+    "nctId": "NCT05071300",
+    "ticker": "IONS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT05130450",
+    "ticker": "IONS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT05185843",
+    "ticker": "IONS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT05667493",
+    "ticker": "IONS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT05681351",
+    "ticker": "IONS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 60
+  },
+  {
+    "nctId": "NCT06914609",
+    "ticker": "IONS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07298447",
+    "ticker": "IONS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07727538",
+    "ticker": "IONS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07782827",
+    "ticker": "IONS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT05727904",
+    "ticker": "IOVA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07140783",
+    "ticker": "IRD",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT05883748",
+    "ticker": "IRON",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07902817",
+    "ticker": "JBIO",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07001800",
+    "ticker": "KARD",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07210723",
+    "ticker": "KARD",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07771465",
+    "ticker": "KARD",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07010159",
+    "ticker": "KNSA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT06556368",
+    "ticker": "KOD",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT06990399",
+    "ticker": "KOD",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06996080",
+    "ticker": "KOD",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07734844",
+    "ticker": "KOD",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07016750",
+    "ticker": "KRYS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07007312",
+    "ticker": "KURA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT06193889",
+    "ticker": "KYTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07363577",
+    "ticker": "LBRX",
+    "gradedClinicalFactors": 5,
+    "clinicalOverall": 50,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07369154",
+    "ticker": "LBRX",
+    "gradedClinicalFactors": 3,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 62.5
+  },
+  {
+    "nctId": "NCT06652633",
+    "ticker": "LKFT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06481891",
+    "ticker": "LXRX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT06724614",
+    "ticker": "MANE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT06972264",
+    "ticker": "MANE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07146022",
+    "ticker": "MANE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07699471",
+    "ticker": "MBX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT03900429",
+    "ticker": "MDGL",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 51.7
+  },
+  {
+    "nctId": "NCT04951219",
+    "ticker": "MDGL",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT05500222",
+    "ticker": "MDGL",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT06325566",
+    "ticker": "MESO",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07568535",
+    "ticker": "MESO",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 37.5
+  },
+  {
+    "nctId": "NCT06553768",
+    "ticker": "MIRM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06907290",
+    "ticker": "MIRM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07200908",
+    "ticker": "MIRM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07298330",
+    "ticker": "MIRM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07454837",
+    "ticker": "MIRM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06641089",
+    "ticker": "MLTX",
+    "gradedClinicalFactors": 1,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06768671",
+    "ticker": "MLTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 58.3
+  },
+  {
+    "nctId": "NCT07007637",
+    "ticker": "MLTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 62.5
+  },
+  {
+    "nctId": "NCT07223138",
+    "ticker": "MLTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 62.5
+  },
+  {
+    "nctId": "NCT05968430",
+    "ticker": "MLYS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT05898620",
+    "ticker": "NGNE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07690371",
+    "ticker": "NKTR",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07711418",
+    "ticker": "NKTR",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07516093",
+    "ticker": "NRIX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 54.2
+  },
+  {
+    "nctId": "NCT06128629",
+    "ticker": "NTLA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06634420",
+    "ticker": "NTLA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 55.2
+  },
+  {
+    "nctId": "NCT06672237",
+    "ticker": "NTLA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT05303519",
+    "ticker": "NUVB",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT06564324",
+    "ticker": "NUVB",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07154706",
+    "ticker": "NUVB",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07712757",
+    "ticker": "NUVB",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06223958",
+    "ticker": "OCUL",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT06495918",
+    "ticker": "OCUL",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07235085",
+    "ticker": "OCUL",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07516132",
+    "ticker": "OCUL",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT06016738",
+    "ticker": "OLMA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07085767",
+    "ticker": "OLMA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07723248",
+    "ticker": "ORIC",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07365826",
+    "ticker": "PCVX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07425392",
+    "ticker": "PCVX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07901738",
+    "ticker": "PGEN",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07752407",
+    "ticker": "PHAT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT05818553",
+    "ticker": "PRAX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06087276",
+    "ticker": "PRAX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 55.2
+  },
+  {
+    "nctId": "NCT07010471",
+    "ticker": "PRAX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07019922",
+    "ticker": "PRAX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07287163",
+    "ticker": "PRAX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07505004",
+    "ticker": "PRAX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT05099770",
+    "ticker": "PROK",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT05515536",
+    "ticker": "PTCT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 64
+  },
+  {
+    "nctId": "NCT06302348",
+    "ticker": "PTCT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07681713",
+    "ticker": "PTCT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06033586",
+    "ticker": "PTGX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT05643872",
+    "ticker": "PVLA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06239480",
+    "ticker": "PVLA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07563881",
+    "ticker": "RAPP",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07594119",
+    "ticker": "RAPP",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT02716246",
+    "ticker": "RARE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT04360265",
+    "ticker": "RARE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT05125809",
+    "ticker": "RARE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT05345171",
+    "ticker": "RARE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT05768854",
+    "ticker": "RARE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT05933200",
+    "ticker": "RARE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT06636071",
+    "ticker": "RARE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 64
+  },
+  {
+    "nctId": "NCT06608927",
+    "ticker": "RCUS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07011719",
+    "ticker": "RCUS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT03566043",
+    "ticker": "RGNX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT05693142",
+    "ticker": "RGNX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07236606",
+    "ticker": "RGNX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT04138927",
+    "ticker": "RIGL",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06982521",
+    "ticker": "RLAY",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 54.2
+  },
+  {
+    "nctId": "NCT07464145",
+    "ticker": "RLMD",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 37.5
+  },
+  {
+    "nctId": "NCT06760546",
+    "ticker": "RYTM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 66.7
+  },
+  {
+    "nctId": "NCT07863193",
+    "ticker": "SGMT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07160634",
+    "ticker": "SLDB",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT04229979",
+    "ticker": "SLS",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07211958",
+    "ticker": "SNDX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT03992430",
+    "ticker": "SRPT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 62.5
+  },
+  {
+    "nctId": "NCT05881408",
+    "ticker": "SRPT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 66.7
+  },
+  {
+    "nctId": "NCT05967351",
+    "ticker": "SRPT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 62.5
+  },
+  {
+    "nctId": "NCT06246513",
+    "ticker": "SRPT",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06872125",
+    "ticker": "STOK",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 52
+  },
+  {
+    "nctId": "NCT02736656",
+    "ticker": "SUPN",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 51.7
+  },
+  {
+    "nctId": "NCT06734832",
+    "ticker": "SVA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07055295",
+    "ticker": "SVA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07055893",
+    "ticker": "SVA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07416110",
+    "ticker": "SVA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07505810",
+    "ticker": "SVA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07505823",
+    "ticker": "SVA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07505836",
+    "ticker": "SVA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07505888",
+    "ticker": "SVA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07611513",
+    "ticker": "SVA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07793227",
+    "ticker": "SVA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06431776",
+    "ticker": "SVRA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT04130997",
+    "ticker": "TGTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 48.3
+  },
+  {
+    "nctId": "NCT05877963",
+    "ticker": "TGTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07211633",
+    "ticker": "TGTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07220252",
+    "ticker": "TGTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07671911",
+    "ticker": "TRVI",
+    "gradedClinicalFactors": 5,
+    "clinicalOverall": 55,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 66.7
+  },
+  {
+    "nctId": "NCT07868419",
+    "ticker": "TRVI",
+    "gradedClinicalFactors": 3,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 66.7
+  },
+  {
+    "nctId": "NCT05606614",
+    "ticker": "TSHA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07480564",
+    "ticker": "TSHA",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT07355075",
+    "ticker": "TTRX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE2 / PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 41.7
+  },
+  {
+    "nctId": "NCT06247085",
+    "ticker": "TVTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06431893",
+    "ticker": "TVTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06774131",
+    "ticker": "URGN",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT03588975",
+    "ticker": "VCEL",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT06915233",
+    "ticker": "VCEL",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT06903338",
+    "ticker": "VIR",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07128550",
+    "ticker": "VIR",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07104383",
+    "ticker": "VKTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07104500",
+    "ticker": "VKTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07868835",
+    "ticker": "VKTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 37.5
+  },
+  {
+    "nctId": "NCT07868939",
+    "ticker": "VKTX",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "NOT_YET_RECRUITING",
+    "sourceCompleteness": 37.5
+  },
+  {
+    "nctId": "NCT06456580",
+    "ticker": "VOR",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07404865",
+    "ticker": "VOR",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT06072781",
+    "ticker": "VSTM",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT05667142",
+    "ticker": "XENE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT05716100",
+    "ticker": "XENE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT05718817",
+    "ticker": "XENE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ENROLLING_BY_INVITATION",
+    "sourceCompleteness": 66.7
+  },
+  {
+    "nctId": "NCT06775379",
+    "ticker": "XENE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06922110",
+    "ticker": "XENE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 50
+  },
+  {
+    "nctId": "NCT07076407",
+    "ticker": "XENE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07172516",
+    "ticker": "XENE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT07217860",
+    "ticker": "XENE",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "ACTIVE_NOT_RECRUITING",
+    "sourceCompleteness": 45.8
+  },
+  {
+    "nctId": "NCT06056297",
+    "ticker": "XFOR",
+    "gradedClinicalFactors": 0,
+    "clinicalOverall": null,
+    "originalThirtyMetricOverall": null,
+    "phase": "PHASE3",
+    "status": "RECRUITING",
+    "sourceCompleteness": 50
+  }
+]

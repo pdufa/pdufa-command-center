@@ -1,0 +1,138 @@
+{
+  "schemaVersion": 1,
+  "scope": "TOP_ONLY_REVIEWED_EXACT_NCT_DOCUMENT_FACTS_NO_NEW_NUMERICAL_GRADES",
+  "records": [
+    {
+      "nctId": "NCT06159673",
+      "question": 13,
+      "sourceUrl": "https://acadia.com/en-us/pdf/healthcare-professionals/scientific-publications/congress-materials/AAGP_2025_ACP-204_Study_Design_Poster_15_FINAL.pdf",
+      "sourceDate": "2025-03",
+      "retrievedAt": "2026-11-07T00:34:09.739916+00:00",
+      "evidence": "The ACP-204 design poster specifies approximately 318 participants in Part 1 and 378 in each Part 2A/2B, with at least 80% and 85% power respectively at two-sided alpha 0.05. These are planned assumptions, not demonstrated efficacy or a power-adequacy grade.",
+      "evidenceClassification": "DOCUMENTED_SOURCE_FACT",
+      "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT06159673",
+      "question": 14,
+      "sourceUrl": "https://acadia.com/en-us/pdf/healthcare-professionals/scientific-publications/congress-materials/AAGP_2025_ACP-204_Study_Design_Poster_15_FINAL.pdf",
+      "sourceDate": "2025-03",
+      "retrievedAt": "2026-11-07T00:34:09.739916+00:00",
+      "evidence": "Poster defines a per-protocol population excluding material protocol deviations from the full analysis set. This is an analysis-set definition; a complete missing-data method or sensitivity plan is not established by this statement.",
+      "evidenceClassification": "DOCUMENTED_SOURCE_FACT",
+      "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT04576156",
+      "question": 19,
+      "sourceUrl": "https://ir.geron.com/static-files/6b164d12-0852-4384-91d3-9cfb07905abc",
+      "sourceDate": "2025-09",
+      "retrievedAt": "2026-11-07T00:34:15.342625+00:00",
+      "evidence": "IMpactMF/MYF3001 poster describes stratification by intermediate-2 versus high DIPSS risk and baseline platelet strata (75 to below150 versus at least150 \u00d710^9/L). Prespecified strata do not establish subgroup efficacy.",
+      "evidenceClassification": "DOCUMENTED_SOURCE_FACT",
+      "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT04576156",
+      "question": 14,
+      "sourceUrl": "https://ir.geron.com/static-files/6b164d12-0852-4384-91d3-9cfb07905abc",
+      "sourceDate": "2025-09",
+      "retrievedAt": "2026-11-07T00:34:15.342625+00:00",
+      "evidence": "IMpactMF poster describes survival sensitivity analyses for crossover/subsequent therapy and assessment of proportional-hazards assumptions. This is limited design evidence; robustness to missing data is not assumed.",
+      "evidenceClassification": "DOCUMENTED_SOURCE_FACT",
+      "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT06872125",
+      "question": 28,
+      "sourceUrl": "https://investor.stoketherapeutics.com/news-releases/news-release-details/stoke-therapeutics-announces-third-quarter-2026-financial",
+      "sourceDate": "2026-10-29",
+      "retrievedAt": "2026-11-07T00:34:27.212841+00:00",
+      "evidence": "Stoke reports FDA discussion of a planned multicomponent Vineland-3 secondary assessment for EMPEROR and plans an NDA in second-half2027. This is issuer-reported alignment, not independent FDA acceptance or an assigned PDUFA date.",
+      "evidenceClassification": "DOCUMENTED_SOURCE_FACT",
+      "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT06872125",
+      "question": 24,
+      "sourceUrl": "https://investor.stoketherapeutics.com/news-releases/news-release-details/stoke-therapeutics-announces-third-quarter-2026-financial",
+      "sourceDate": "2026-10-29",
+      "retrievedAt": "2026-11-07T00:34:27.212841+00:00",
+      "evidence": "As of October29,2026, issuer reports no treatment discontinuations in EMPEROR; approximately20 participants reached Week52 and continued into extension. This is an interim operational update, not final disposition or blinded efficacy.",
+      "evidenceClassification": "DOCUMENTED_SOURCE_FACT",
+      "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT06872125",
+      "question": 17,
+      "sourceUrl": "https://investor.stoketherapeutics.com/news-releases/news-release-details/stoke-therapeutics-announces-third-quarter-2026-financial",
+      "sourceDate": "2026-10-29",
+      "retrievedAt": "2026-11-07T00:34:27.212841+00:00",
+      "evidence": "For EMPEROR, issuer describes a multivariate repeated-measures model across four prespecified Vineland-3 subdomains, averaged into a cognition/behavior treatment effect at Week52. This is a planned analysis, not a result.",
+      "evidenceClassification": "DOCUMENTED_SOURCE_FACT",
+      "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT06087276",
+      "question": 1,
+      "sourceUrl": "https://investors.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
+      "sourceDate": "2025-10-16",
+      "retrievedAt": "2026-11-07T00:34:25.180272+00:00",
+      "evidence": "Issuer identifies Essential3 NCT06087276 and reports both components separately: parallel Study1 mADL11 change at Week8 improved4.3 points (p<0.0001); randomized-withdrawal Study2 maintained response versus placebo (p=0.0369). These are observed component results, not a prospective forecast. Ongoing long-term safety enrollment remains distinct.",
+      "evidenceClassification": "DOCUMENTED_OBSERVED_COMPONENT_RESULTS",
+      "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT06087276",
+      "question": 3,
+      "sourceUrl": "https://investors.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
+      "sourceDate": "2025-10-16",
+      "retrievedAt": "2026-11-07T00:34:25.180272+00:00",
+      "evidence": "Essential3 safety table: Study1 any TEAE221/233(94.9%) on ulixacaltamide versus177/234(75.6%) placebo; any SAE2/233(0.86%) versus8/234(3.4%). Study2 any TEAE209/231(90.5%), any SAE4/231(1.73%). Issuer reports no drug-related serious adverse events. No pooled individual-trial safety grade inferred.",
+      "evidenceClassification": "DOCUMENTED_SOURCE_FACT",
+      "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT06087276",
+      "question": 14,
+      "sourceUrl": "https://investors.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
+      "sourceDate": "2025-10-16",
+      "retrievedAt": "2026-11-07T00:34:25.180272+00:00",
+      "evidence": "Essential3 Study1 prespecified delta-adjusted tipping-point analysis remained significant at the maximum tested shift(delta2.5,p=0.0026). This is one disclosed sensitivity analysis, not proof that all missing-data concerns are resolved.",
+      "evidenceClassification": "DOCUMENTED_SOURCE_FACT",
+      "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT06087276",
+      "question": 24,
+      "sourceUrl": "https://investors.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
+      "sourceDate": "2025-10-16",
+      "retrievedAt": "2026-11-07T00:34:25.180272+00:00",
+      "evidence": "Essential3 discontinuation table is retained by component: drug-related TEAEs leading to discontinuation63/233(27.0%) versus4/234(1.7%) in Study1;65/231(28.1%) in Study2. All study discontinuations83/233(35.6%) versus13/234(5.6%) in Study1;88/231(38.1%) in Study2. Favorable headline language does not negate attrition.",
+      "evidenceClassification": "DOCUMENTED_SOURCE_FACT",
+      "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT06087276",
+      "question": 29,
+      "sourceUrl": "https://investors.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
+      "sourceDate": "2025-10-16",
+      "retrievedAt": "2026-11-07T00:34:25.180272+00:00",
+      "evidence": "Issuer has publicly disclosed results for both Essential3 pivotal components on October16,2025; unreleased-primary-readout status is not confirmed. Frozen TOP membership is retained under the user scope restriction; no move or historical prediction is created.",
+      "evidenceClassification": "DOCUMENTED_PUBLIC_READOUT_EXISTS",
+      "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    }
+  ]
+}

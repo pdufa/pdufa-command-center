@@ -1,5 +1,6 @@
 "use client";
 import {useEffect,useMemo,useState} from "react";
+import TopOnlyCompletionSheet from "./TopOnlyCompletionSheet";
 import type {ActivePhase3Trial} from "../lib/phase3-active-cohorts";
 import Phase3UnifiedClassifications from "./Phase3UnifiedClassifications";
 import Phase3PreDataBatch from "./Phase3PreDataBatch";
@@ -228,7 +229,7 @@ export default function Phase3SourceOnlySheets(){
   </p>
    {scoreError&&<p role="alert">{scoreError}. The spreadsheet rows and 190-column exports remain available.</p>}
    {coverageError&&<p role="alert">{coverageError}. Individual trial exports remain available.</p>}
-  <Sheet kind="PRE_DATA" rows={pre} query={query} scores={scores} scoreLoading={scoreLoading} coverage={coverage} coverageLoading={coverageLoading}/>
+  <TopOnlyCompletionSheet query={query}/>
   <Sheet kind="POST_DATA" rows={post} query={query} scores={scores} scoreLoading={scoreLoading} coverage={coverage} coverageLoading={coverageLoading}/>
   <details open={openHistorical} onToggle={e=>setOpenHistorical(e.currentTarget.open)}
    style={{border:"1px solid #a5c7b2",borderRadius:10,padding:12,marginTop:14}}>

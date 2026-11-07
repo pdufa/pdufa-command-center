@@ -1,0 +1,48 @@
+"use client";
+import {useEffect,useMemo,useState} from "react";
+import type {topOnlyReport,topOnlySummary} from "../lib/top-only-completion";
+import css from "./TopOnlyCompletionSheet.module.css";
+type Trial=ReturnType<typeof topOnlyReport>["trials"][number];
+type Summary=ReturnType<typeof topOnlySummary>;
+type Payload=Omit<ReturnType<typeof topOnlyReport>,"trials"|"headers">&{rows:Summary[]};
+const display=(n:number|null)=>n===null?"N/A":n.toFixed(1)+" /100";
+export default function TopOnlyCompletionSheet({query}:{query:string}){
+ const[data,setData]=useState<Payload|null>(null),[error,setError]=useState("");
+ const[selected,setSelected]=useState<string|null>(null),[detail,setDetail]=useState<Trial|null>(null),[detailError,setDetailError]=useState("");
+ const[sort,setSort]=useState("ticker"),[filter,setFilter]=useState("all"),[page,setPage]=useState(0);
+ useEffect(()=>{const c=new AbortController();fetch('/api/top-only-completion',{signal:c.signal}).then(async r=>{if(!r.ok)throw Error('TOP completion data unavailable');return r.json();}).then(r=>{if(!c.signal.aborted)setData(r);}).catch(e=>{if(e.name!=="AbortError")setError(e.message);});return()=>c.abort();},[]);
+ useEffect(()=>{setDetail(null);setDetailError("");if(!selected)return;const c=new AbortController();fetch('/api/top-only-completion?nctId='+selected,{signal:c.signal}).then(async r=>{if(!r.ok)throw Error('Exact TOP trial details unavailable');return r.json();}).then(r=>{if(!c.signal.aborted)setDetail(r.trial);}).catch(e=>{if(e.name!=="AbortError")setDetailError(e.message);});return()=>c.abort();},[selected]);
+ const rows=useMemo(()=>{const q=query.toLowerCase();return (data?.rows??[]).filter(t=>[t.nctId,t.ticker,t.company,t.drug,t.indication,t.phase,t.status].join(' ').toLowerCase().includes(q)&&(filter==='all'||filter==='scored'&&t.clinicalFullScore!==null||filter==='missing'&&t.hasMissingSourceEvidence)).sort((a,b)=>sort==='score'?(b.clinicalFullScore??-1)-(a.clinicalFullScore??-1):sort==='evidence'?(b.sourceCompleteness??-1)-(a.sourceCompleteness??-1):sort==='nct'?a.nctId.localeCompare(b.nctId):a.ticker.localeCompare(b.ticker)||a.nctId.localeCompare(b.nctId));},[data,query,filter,sort]);
+ const current=Math.min(page,Math.max(0,Math.ceil(rows.length/25)-1));
+ return <section className={css.root} aria-label="TOP-only completion and ratings" data-top-only="true">
+  <h2>TOP · existing trials only</h2>
+  <p>All 190 columns receive a sourced value or an explicit evidence status. Accounted-for fields are not all verified facts. All 30 metric dispositions are evaluated; the active clinical model retains five equal weights. The separate complete 30-metric RAAS score requires all its original inputs.</p>
+  {error&&<p role="alert">{error}</p>}{!data&&!error&&<p role="status">Loading TOP-only research…</p>}
+  {data&&<><p><strong>{data.trialCount} TOP trials · {data.allFieldsAccounted} with 190/190 fields accounted for · {data.allMetricsEvaluated} with 30/30 metric dispositions</strong></p>
+   <p>{data.completeClinicalOverallScores} complete clinical overall scores · {data.completeThirtyMetricOverallScores} complete 30-metric scores · {data.withMissingSourceEvidence} trials with source gaps. N/A is never zero. Existing score history and other spreadsheets are preserved.</p>
+   <div className={css.controls}><label>TOP sort <select value={sort} onChange={e=>setSort(e.target.value)}><option value="ticker">Ticker</option><option value="nct">NCT</option><option value="score">Complete clinical score</option><option value="evidence">Source completeness</option></select></label><label>TOP filter <select value={filter} onChange={e=>{setFilter(e.target.value);setPage(0);}}><option value="all">All existing TOP</option><option value="scored">Complete clinical score</option><option value="missing">Source evidence missing</option></select></label><a href="/api/top-only-completion?format=csv">TOP 190-column CSV</a><a href="/api/top-only-completion?format=metrics">All TOP metric dispositions CSV</a></div>
+   <p>Select a rating caret to expand its evidence to the right; swipe horizontally on a phone.</p>
+   <div className={css.scroll} role="region" aria-label="TOP ratings with horizontal evidence expansion" tabIndex={0}>
+    <div className={css.header}><span>TRIAL</span><span>PHASE / STATUS</span><span>FIELDS</span><span>CLINICAL OVERALL</span><span>30-METRIC OVERALL</span><span>EVIDENCE</span><span>EXPANDED RATING</span></div>
+    {rows.slice(current*25,current*25+25).map(t=>{const open=selected===t.nctId;return <div className={css.row} key={t.nctId} data-expanded={open} data-top-nct={t.nctId}>
+     <div><a href={'https://clinicaltrials.gov/study/'+t.nctId} target="_blank" rel="noopener noreferrer"><strong>{t.ticker} · {t.nctId}</strong></a><p>{t.drug}</p></div>
+     <div>{t.phase}<small>{t.status}</small></div><div>{t.fieldsAccounted}/190<small>{t.metricsEvaluated}/30 dispositions</small></div>
+     <div><button className={css.rating} aria-expanded={open} aria-controls={'top-details-'+t.nctId} onClick={()=>setSelected(open?null:t.nctId)}>{display(t.clinicalFullScore)} {open?'◂':'▸'}</button><small>{t.clinicalScoredFactors}/5 graded · full five-factor formula</small></div>
+     <div>{display(t.legacyThirtyMetricFullScore)}<small>Original 30-metric formula</small></div><div>{t.sourceCompleteness??'N/A'}%<small>{t.blockerCount} research blockers</small></div>
+     <div className={css.detail} id={'top-details-'+t.nctId} hidden={!open}>
+      {open&&!detail&&!detailError&&<p role="status">Loading exact TOP evidence…</p>}{open&&detailError&&<p role="alert">{detailError}</p>}
+      {open&&detail?.nctId===t.nctId&&<><h3>{detail.nctId} · rating ingredients</h3><p>Clinical model {detail.clinicalModel}. Full score {display(detail.clinicalFullScore)}; no imputed grades.</p>
+       {detail.knownPublicResults&&<p><strong>Published findings exist. TOP membership is retained as requested; these observations do not create a retrospective prediction.</strong></p>}
+       <div className={css.rail}>{detail.clinicalFactors.map(f=><article key={f.id}><strong>{f.name}</strong><p>{display(f.grade)}</p><small>Weight 20% · {f.grade===null?'UNSCORED':'SOURCE-REVIEWED'}</small><p>{f.finding??f.requiredEvidence}</p>{f.sourceUrl&&<a href={f.sourceUrl} target="_blank" rel="noopener noreferrer">Evidence ({f.sourceDate})</a>}{f.benchmarkSourceUrl&&<p><a href={f.benchmarkSourceUrl} target="_blank" rel="noopener noreferrer">Benchmark</a></p>}</article>)}</div>
+       <details><summary>All 30 metric dispositions and original weights</summary>{detail.metrics.map(m=><article key={m.id}><h4>{m.id} · {m.name}</h4><strong>{display(m.score)}</strong><p>{m.state} · original weight {m.originalWeightPercent}% · active clinical weight {m.activeClinicalWeightPercent}%</p><p>{m.definition}</p><p>{m.scoreRule}</p><p>{m.blocker??m.finding}</p>{m.sourceUrl&&<a href={m.sourceUrl} target="_blank" rel="noopener noreferrer">Metric source</a>}{m.benchmarkSourceUrl&&<p><a href={m.benchmarkSourceUrl} target="_blank" rel="noopener noreferrer">Metric benchmark</a></p>}</article>)}</details>
+       <details><summary>All 190 fields, statuses and provenance</summary><div className={css.fields}>{detail.fields.map(f=><article key={f.column}><strong>{f.column}. {f.name} · {f.state}</strong><p>{f.value??f.exportValue}</p><small>{f.reason}</small><p><a href={f.provenance.url} target="_blank" rel="noopener noreferrer">Source</a> · date {f.provenance.date??'not independently recorded'} · retrieved {f.provenance.retrievedAt}</p></article>)}</div></details>
+       <p>FDA prediction: {detail.predictionEligibility}. {detail.predictionReason}</p>
+       <details><summary>Source searches and document access</summary><p>Exact NCT search: {detail.sourceDiscovery.exactNctSearch?.q}</p><p>Company search: {detail.sourceDiscovery.companySearch?.q}</p><p>{detail.sourceDiscovery.caution}</p>{detail.sourceDiscovery.documents.map(d=><p key={d.url}><a href={d.url} target="_blank" rel="noopener noreferrer">{d.title}</a> · {d.state}{d.alternateAccess&&' · '+d.alternateAccess}</p>)}{detail.additionalReviewedFacts.map((f,i)=><article key={i}><strong>Q{f.question} · {f.evidenceClassification}</strong><p>{f.evidence}</p><a href={f.sourceUrl} target="_blank" rel="noopener noreferrer">Reviewed source ({f.sourceDate})</a></article>)}</details>
+       <details><summary>Exact remaining blockers ({detail.blockers.length})</summary><ul>{detail.blockers.map((b,i)=><li key={i}>{b}</li>)}</ul></details>
+       <details><summary>Publication leads · not automatic grades</summary>{detail.publicationLeads.map(p=><p key={p.pmid}><a href={p.url} target="_blank" rel="noopener noreferrer">{p.title}</a> · {p.classification}</p>)}</details>
+       <p><a href={detail.historyLinks.raas}>Preserved RAAS history</a> · <a href={'/api/top-only-completion?nctId='+detail.nctId}>TOP evidence and saved snapshot history</a></p>
+      </>}
+     </div></div>;})}
+   </div><div className={css.controls}><button disabled={current===0} onClick={()=>setPage(current-1)}>Previous TOP page</button><span>{rows.length} matched TOP records</span><button disabled={(current+1)*25>=rows.length} onClick={()=>setPage(current+1)}>Next TOP page</button></div></>}
+ </section>;
+}
