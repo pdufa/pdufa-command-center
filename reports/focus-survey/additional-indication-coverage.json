@@ -1,0 +1,15 @@
+{
+  "candidateOtherIndicationLinks": 151,
+  "focusTrials": 29,
+  "focusTrialsWithCandidates": 22,
+  "generatedAt": "2026-11-07T20:09:35+00:00",
+  "schemaVersion": 1,
+  "searchTruncatedDrugs": [
+    "Molgramostim"
+  ],
+  "searchesSuccessful": 20,
+  "searchesUnavailable": 0,
+  "uniqueDrugQueries": 20,
+  "verifiedAdditionalIndicationSurveyAnswers": 0,
+  "warning": "Candidate trial links only. Different registry conditions can be synonyms. Product rights and true additional indications remain unverified."
+}
