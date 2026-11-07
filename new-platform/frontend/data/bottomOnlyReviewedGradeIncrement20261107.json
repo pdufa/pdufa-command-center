@@ -222,6 +222,26 @@
       "criticalRiskReview": "FDA approval is not absence of toxicity; clinical safety depends on infection risk, neutropenia and the need for corticosteroids.",
       "reviewerMethod": "AI-assisted independent-source comparison of FDA approval summary and peer-reviewed ROSELLA survival, with explicit limitations; provisional ordinal clinical research grade, not FDA probability.",
       "independentReview": "AI_SOURCE_CROSSCHECKED"
+    },
+    {
+      "nctId": "NCT04770779",
+      "ticker": "AGIO",
+      "drug": "mitapivat",
+      "indication": "transfusion-dependent thalassemia",
+      "stage": "post",
+      "metricId": "post-1-4",
+      "finding": "MIXED_EVIDENCE",
+      "assessedAt": "2026-11-07",
+      "sourceDate": "2026-09-12",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/",
+      "benchmarkSourceUrl": "https://onlinelibrary.wiley.com/doi/10.1002/ajh.70472",
+      "benchmarkId": "ENERGIZE-T exact-NCT primary randomized 48-week versus ongoing five-year extension review",
+      "benchmarkContext": "The September 2026 clinical-trials review confirms a 48-week randomized 2:1 ENERGIZE-T transfusion-reduction study and a planned open-label extension lasting up to five years. Transfusion-reduction response is achieved in ANY consecutive 12-week period, not proof of continuous benefit throughout 48 weeks. Independent placebo-controlled replication or post-extension causal durability is not established by this report.",
+      "observedResult": "In peer-reviewed randomized ENERGIZE-T, 238 of 258 (92%) randomized participants completed the double-blind period. At least one qualifying 12-week transfusion-reduction response occurred in 52/171 (30%) mitapivat vs 11/87 (13%) placebo; adjusted difference 18 percentage points (95% CI 8–27), p=0.0003. Its long open-label extension continues and cannot be used as blinded durability replication.",
+      "uncertaintyReview": "The primary 'any 12-week window' response does not establish sustained reduction for each participant across the entire 48-week period. Longer-term observational extension participants are selected and receive no concurrent placebo; results, attrition patterns and long-horizon response trajectories remain incompletely disclosed.",
+      "criticalRiskReview": "Do not label 48-week study duration as 48-week continuous efficacy, or call the nonrandomized planned OLE independent confirmatory trial evidence. Hemoglobin benefit and durability may vary by thalassemia genotype and baseline transfusion burden.",
+      "reviewerMethod": "AI-assisted review of dated peer-reviewed Lancet exact-NCT controlled ENERGIZE-T results and 2026 American Journal of Hematology trial-status context. MIXED_EVIDENCE 50/100 is provisional clinical durability and replication assessment, not FDA approval or market probability.",
+      "independentReview": "AI_SOURCE_CROSSCHECKED"
     }
   ]
 }
