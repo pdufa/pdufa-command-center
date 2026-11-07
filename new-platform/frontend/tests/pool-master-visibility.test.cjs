@@ -18,7 +18,7 @@ test("POOL displays unfiltered clinical trial records from all phases",()=>{
  assert.match(workspace,/page\.nextOffset/);
 });
 test("POOL never shows an invisible empty table on fetch or sign-in failure",()=>{
- assert.match(grid,/rows\.length===0&&<tr>/);
+ assert.match(grid,/sortedRows\.length===0&&<tr>/);
  assert.match(grid,/Loading clinical POOL records/);
  assert.match(grid,/No clinical records loaded/);
  assert.match(workspace,/Return to the dashboard to sign in/);
