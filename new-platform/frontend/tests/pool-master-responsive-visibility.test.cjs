@@ -37,8 +37,8 @@ test("POOL Master component parses as valid TypeScript JSX",()=>{
 
 
 test("two main POOL buttons have separate segment-group handlers and pressed colors",()=>{
- assert.match(component,/const toggleClinical=\(\)=>edit\(l=>toggleColumnGroup\(l,GROUP_CLINICAL,COLUMNS_BY_SEGMENT\)\)/);
- assert.match(component,/const toggleQualification=\(\)=>edit\(l=>toggleColumnGroup\(l,GROUP_QUALIFICATION,COLUMNS_BY_SEGMENT\)\)/);
+ assert.match(component,/const toggleClinical=\(\)=>edit\(l=>\(\{\.\.\.l,\.\.\.toggleColumnGroup\(l,GROUP_CLINICAL,l\.columnOrder\)/);
+ assert.match(component,/const toggleQualification=\(\)=>edit\(l=>\(\{\.\.\.l,\.\.\.toggleColumnGroup\(l,GROUP_QUALIFICATION,l\.columnOrder\)/);
  assert.match(component,/aria-pressed=\{clinicalVisible\} onClick=\{toggleClinical\}/);
  assert.match(component,/aria-pressed=\{qualificationVisible\} onClick=\{toggleQualification\}/);
  assert.match(component,/clinicalVisible\?"Hide All":"Show All"/);
