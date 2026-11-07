@@ -65,7 +65,9 @@ test("FOCUS and MAIN display only the current final-list gate scope",()=>{
   assert.ok(focus.includes("finalGateByNct.get(t.nct)"));
   assert.ok(focus.includes("gateAudit.gates.map"));
   assert.ok(focus.includes("Acceptance gates · final FOCUS trials only"));
-  assert.ok(main.includes("Current 31-gate scope · final FOCUS trials only"));
+  assert.ok(main.includes("Current MAIN scope · 7 gates · Core Platform and Pipeline only"));
+  assert.ok(main.includes("MAIN_ACTIVE_GATE_IDS"));
+  assert.ok(!main.includes("currentScopeReplacements"));
   assert.ok(main.includes("FOCUS_FINAL_TRIAL_AUDIT.totalChecks"));
-  assert.ok(!main.includes("Current 31-gate scope · POOL / FOCUS / TOOLS"));
+  assert.ok(!main.includes("Current 31-gate scope"));
 });
