@@ -1336,6 +1336,340 @@
           "state": "VERIFIED"
         }
       ]
+    },
+    {
+      "retrievedAt": "2026-11-07T17:03:22.015963+00:00",
+      "records": [
+        {
+          "nctId": "NCT05535946",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05535946",
+          "sha256": "ea492b1488f4265fb516ef9b8aa9eb6ade0f6b6969b06c9ab4538149581248ca",
+          "retrievedAt": "2026-11-07T17:03:20.284085+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT04770753",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04770753",
+          "sha256": "e8133c0fbaa1c8bfef5e33df6498ec43c4ac21ce5c14da7f7d927dab782803cd",
+          "retrievedAt": "2026-11-07T17:03:20.302307+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT04770779",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04770779",
+          "sha256": "eb6181a1520352f388c3b006bde71c5149ec3a7bea108f0a9333b48aae4a2dee",
+          "retrievedAt": "2026-11-07T17:03:20.251173+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05031780",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05031780",
+          "sha256": "e4b447fb4e007785a61864df1fb756b402b7149d8302fe10283b58864504fad3",
+          "retrievedAt": "2026-11-07T17:03:20.225643+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05144256",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05144256",
+          "sha256": "639bcdcb66412be8a472e833bc99a5d4f3063c999e27a0c61c6a161b131ede16",
+          "retrievedAt": "2026-11-07T17:03:20.347458+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05175105",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05175105",
+          "sha256": "56d883a770f43cb2ea1db582699da6b9c3ebb2069704b6636d8b5922d3451037",
+          "retrievedAt": "2026-11-07T17:03:20.393354+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT06747468",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06747468",
+          "sha256": "6013f8e722e2cfa23fbb6e588854b524ee49cda17feca1c54988f6b3f0a04c25",
+          "retrievedAt": "2026-11-07T17:03:20.406506+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05453968",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05453968",
+          "sha256": "5ccc4fdb7494d2db534558e366a286f630eb43f690d007bf61071b107bd6d6e6",
+          "retrievedAt": "2026-11-07T17:03:20.444405+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT06445023",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06445023",
+          "sha256": "f2de318cc50902ec9e8dd7e0ce153670208d483a42d74b73938f8ba2f640ccf1",
+          "retrievedAt": "2026-11-07T17:03:20.478121+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT06455202",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06455202",
+          "sha256": "e5e57d160b8db26d2586472baf38a17da331c76b9fed108b7b59fbbe52bc254a",
+          "retrievedAt": "2026-11-07T17:03:20.536538+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05711940",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05711940",
+          "sha256": "bc67cc9af96d6252ce3ed270f2ab373e04d2c7514d5df54b98e4961e669be339",
+          "retrievedAt": "2026-11-07T17:03:20.541547+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05257408",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05257408",
+          "sha256": "f54e006839e80ac21f382eaec8131d6844f93d8fc6226920052a7c9034dd4965",
+          "retrievedAt": "2026-11-07T17:03:20.642561+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT06081894",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06081894",
+          "sha256": "833e4c6edc5a686f138835cb7094de691f74cfae679c23987081c16d43015b56",
+          "retrievedAt": "2026-11-07T17:03:20.612304+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT02598661",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02598661",
+          "sha256": "2ceba1d16678cc20b34b9876d52fc7e181a1b5a90ed502edda14d2d3eb755af6",
+          "retrievedAt": "2026-11-07T17:03:20.870619+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT04768972",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04768972",
+          "sha256": "d3f85ebf2597dea47f3f8cda3c372a4478e49551b2daabae33c257bdb9ea82ad",
+          "retrievedAt": "2026-11-07T17:03:20.672801+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT04849741",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04849741",
+          "sha256": "a3fb792312434d2a2d743f954571e5a77f4f64e38fdd035bc674da8f1a694f97",
+          "retrievedAt": "2026-11-07T17:03:20.744532+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05392114",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05392114",
+          "sha256": "b95a3db71a68f4f96858983245aad7442738bd0ead16cdbe118557bf86838438",
+          "retrievedAt": "2026-11-07T17:03:20.778327+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT06641076",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06641076",
+          "sha256": "e405d8cb1b46a53d15f6d6594988cbe0554a334d7a6abfdd519600464f7c1091",
+          "retrievedAt": "2026-11-07T17:03:20.808927+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05210790",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05210790",
+          "sha256": "7889a327ac6b6dc495cbe13b40f70e04d7dec6736634a429d0e65a824410cccf",
+          "retrievedAt": "2026-11-07T17:03:20.975937+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05774756",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05774756",
+          "sha256": "ba122ce7849fb4a2ac7ecf8e014237f140bc1ab7129a6bc995e0df4e09e3f42c",
+          "retrievedAt": "2026-11-07T17:03:20.989252+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT04544293",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04544293",
+          "sha256": "f09a874416bf6573a8893106b2f97a87853ba449076499e445c48cf1e05ff297",
+          "retrievedAt": "2026-11-07T17:03:21.022622+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05243550",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05243550",
+          "sha256": "ff2c6acea249c15234d6f1d4b7d174de50b282e8f96e0f00ad00e4cabf4f91e4",
+          "retrievedAt": "2026-11-07T17:03:21.055389+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT04716231",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04716231",
+          "sha256": "ca4d91a3523f7a6cd6e0df780fe7a30da714264a48ce46179f81d1e202058bfb",
+          "retrievedAt": "2026-11-07T17:03:21.107682+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05507203",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507203",
+          "sha256": "5c72de31d4cb07f2651debecebde7f53a4fd3856789415492c65cc69bd950eeb",
+          "retrievedAt": "2026-11-07T17:03:21.210141+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05507216",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507216",
+          "sha256": "24e798ad472136bd2a33548ec9519eab6faf4169f5f2ef65c8b972d560a55810",
+          "retrievedAt": "2026-11-07T17:03:21.163895+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT04576949",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04576949",
+          "sha256": "81c7492947ddbbb6f49a8388e461cf286a931654ee1c619f800335af969bd47b",
+          "retrievedAt": "2026-11-07T17:03:21.233998+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05206370",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05206370",
+          "sha256": "5cbf206a7ec9cd49c8fb823f2d5b12e542fec4e22da6a84a02d333ba3934f2ca",
+          "retrievedAt": "2026-11-07T17:03:21.285137+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05811247",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05811247",
+          "sha256": "e53500a653f8ff8dffeb543c776f9ab4092c608f72b3894ab247f027a8ce202f",
+          "retrievedAt": "2026-11-07T17:03:21.329520+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05813275",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05813275",
+          "sha256": "c6e7d34dac397ad5798e0aaf38325ad16fe977ad66e4c8caee63e4129723c8ba",
+          "retrievedAt": "2026-11-07T17:03:21.347042+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05059223",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05059223",
+          "sha256": "0a5dad958fae62e22217a36fcd93c994f12055c482e6ce4a5fbeecf1fc23d8f1",
+          "retrievedAt": "2026-11-07T17:03:21.365073+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05113745",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05113745",
+          "sha256": "4db53262f3dc660796c806c61ce2c572e13f9a34b9192eb27c941b2756fc2f94",
+          "retrievedAt": "2026-11-07T17:03:21.411022+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05244304",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05244304",
+          "sha256": "e9721e28001f94edff89bfe3344f8437ecf44a783383876674503719dea56b59",
+          "retrievedAt": "2026-11-07T17:03:21.451595+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05126758",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05126758",
+          "sha256": "20d27667821d1a4e98bf931ba8e87ea45c266e223206adab669852fba5838ae8",
+          "retrievedAt": "2026-11-07T17:03:21.486263+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05208047",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05208047",
+          "sha256": "f9ed331b9dac371767bfd9bc2429d60974edebf2e4a3b364cbef243af812ef0e",
+          "retrievedAt": "2026-11-07T17:03:21.529117+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT03697109",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT03697109",
+          "sha256": "602d10925e7480d5470e932725cfc100c589105e895ed7cff9912020ecd7137d",
+          "retrievedAt": "2026-11-07T17:03:21.611349+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT04308590",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04308590",
+          "sha256": "95589aee53172cca5e9b713bb523cb3175bec76769c49c3401cec65373eba38e",
+          "retrievedAt": "2026-11-07T17:03:21.637632+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05767346",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05767346",
+          "sha256": "4c662f0e888dc6ebcfb81772bfbe783bcf8cc91777a054513a806733e47c5953",
+          "retrievedAt": "2026-11-07T17:03:21.679333+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT04871282",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04871282",
+          "sha256": "995939ba534f7a9ba8027ae03920fd805fd277b4aed4c60654cbb3a8c4f00c08",
+          "retrievedAt": "2026-11-07T17:03:21.674124+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT06411379",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06411379",
+          "sha256": "0bd8e1a37233d9b2de7b08cf58de99d396b1fb2b7baec4231df5202754fde932",
+          "retrievedAt": "2026-11-07T17:03:21.750218+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT06411899",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06411899",
+          "sha256": "4323134b47b01a29a9140d018af125571855ef43f6bc56b1451ce6b8bc9e0790",
+          "retrievedAt": "2026-11-07T17:03:21.771368+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT06153693",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06153693",
+          "sha256": "5d6307966b94db474eb75bc5cfbb3a1a448037cfffc46faab8c43e37a513afcb",
+          "retrievedAt": "2026-11-07T17:03:21.832960+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT06343779",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06343779",
+          "sha256": "607c554eb0d5a9d62ada47787088bae17d12c5a1a5c4de2991cbb57a7521f55b",
+          "retrievedAt": "2026-11-07T17:03:21.814573+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT06669754",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06669754",
+          "sha256": "34a3dcce0b8466d01947c87b276b985b5a799f74decde4c0b0618c6df9185726",
+          "retrievedAt": "2026-11-07T17:03:21.882840+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT06087276",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06087276",
+          "sha256": "2fa4d709951905e2a9d0ca4918c8ba77106be3639c5cb8454af47aa7333c9fe5",
+          "retrievedAt": "2026-11-07T17:03:21.911651+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT02500381",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02500381",
+          "sha256": "4b0584903dd165d3221205dcfb53375ade50e2d2713fb29f2b09fb3e1d0961cd",
+          "retrievedAt": "2026-11-07T17:03:21.943873+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT06331299",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06331299",
+          "sha256": "c0720bb9912e674113391713ecd591fe79e5a27030268f8d4f30cc3fbc4adbf9",
+          "retrievedAt": "2026-11-07T17:03:21.975576+00:00",
+          "state": "VERIFIED"
+        },
+        {
+          "nctId": "NCT05662241",
+          "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05662241",
+          "sha256": "330b115f72b76996011a35f2750883aac9a553096a0f08c464a63b00f3cebb75",
+          "retrievedAt": "2026-11-07T17:03:22.014749+00:00",
+          "state": "VERIFIED"
+        }
+      ]
     }
   ]
 }
