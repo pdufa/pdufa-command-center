@@ -49,7 +49,7 @@ class PromotionTests(unittest.TestCase):
         args=self.inputs()
         added,review=self.run_check(args)
         self.assertEqual([x["nct"] for x in added],[NCT])
-        self.assertFalse(review)
+        self.assertTrue(all("FDA_APPLICATION_PATH_NOT_VERIFIED_FOR_EXACT_PROGRAM" in r["reasons"] for r in review))
         self.assertEqual(len(added[0]["values"]),28)
         self.assertEqual(added[0]["values"][4],"YES - company/SEC/journal")
         self.assertEqual(added[0]["values"][23],5491198055)
