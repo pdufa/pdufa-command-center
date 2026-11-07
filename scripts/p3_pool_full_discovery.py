@@ -71,40 +71,86 @@ def validate_existing(rows):
     return indexed
 
 
-def cap_eligible(pool, caps, cutoff):
+def cap_secondary_targets(pool, caps, cutoff):
+    """Never allow secondary quotes to mask a current verified out-of-band cap."""
+    index={r.get("ticker"):r for r in caps}
+    out=set()
+    for p in pool.values():
+        ticker=p["ticker"]
+        r=index.get(ticker)
+        if r is None:
+            out.add(ticker)
+            continue
+        try:
+            stamp=datetime.fromisoformat(r["market_cap_checked_at"].replace("Z","+00:00"))
+            age=cutoff-stamp.astimezone(timezone.utc).date()
+            if (r.get("market_cap_status")!="VERIFIED" or
+                not link_ok(r.get("market_cap_source")) or
+                age<timedelta(0) or age>MAX_CAP_AGE or
+                not r.get("market_cap")):
+                out.add(ticker)
+        except (KeyError,ValueError,TypeError,OverflowError):
+            out.add(ticker)
+    return out
+
+
+def cap_eligible(pool, caps, cutoff, secondary_caps=None):
+    from p3_market_cap_secondary import SOURCE
     market = {}
     for row in caps:
         ticker = row.get("ticker", "")
         if not TICKER.fullmatch(ticker) or ticker in market:
             raise ValueError("Invalid or duplicate market-cap ticker: " + ticker)
         market[ticker] = row
+    secondary_caps=secondary_caps or {}
     counters = Counter()
     filtered = {}
     for nct, row in pool.items():
-        record = market.get(row["ticker"])
-        if record is None:
-            counters["CAP_MISSING"] += 1
+        ticker=row["ticker"]
+        record=market.get(ticker)
+        primary_issue = "CAP_MISSING" if record is None else None
+        primary=None
+        if record is not None:
+            try:
+                cap=float(record["market_cap"])
+                stamp=datetime.fromisoformat(record["market_cap_checked_at"].replace("Z","+00:00"))
+                if stamp.tzinfo is None:
+                    raise ValueError("Naive timestamp")
+                age=cutoff-stamp.astimezone(timezone.utc).date()
+                if (record.get("market_cap_status")!="VERIFIED" or
+                    not link_ok(record.get("market_cap_source")) or
+                    age<timedelta(0) or age>MAX_CAP_AGE):
+                    primary_issue="CAP_UNVERIFIED_OR_STALE"
+                elif not 300_000_000 <= cap <= 10_000_000_000:
+                    counters["CAP_OUT_OF_BAND"]+=1
+                    continue
+                else:
+                    primary=(int(cap),stamp.date().isoformat(),record["market_cap_source"])
+            except (KeyError,ValueError,TypeError,OverflowError):
+                primary_issue="CAP_UNVERIFIED_OR_STALE"
+        candidate=primary
+        kind="PRIMARY_NASDAQ_VERIFIED"
+        if not candidate and ticker in secondary_caps:
+            try:
+                cap,observed,url=secondary_caps[ticker]
+                from datetime import date
+                dated=date.fromisoformat(str(observed))
+                expected=SOURCE.format(ticker=ticker.lower())
+                if (isinstance(cap,int) and not isinstance(cap,bool) and
+                    300_000_000<=cap<=10_000_000_000 and url==expected and
+                    timedelta(0)<=cutoff-dated<=timedelta(days=4)):
+                    candidate=(cap,dated.isoformat(),url)
+                    kind="SECONDARY_DATED_ROUNDED_QUOTE"
+            except (ValueError,TypeError,OverflowError):
+                pass
+        if not candidate:
+            counters[primary_issue or "CAP_UNVERIFIED_OR_STALE"]+=1
             continue
-        try:
-            cap = float(record["market_cap"])
-            stamp = datetime.fromisoformat(record["market_cap_checked_at"].replace("Z", "+00:00"))
-            if stamp.tzinfo is None:
-                raise ValueError("Naive timestamp")
-            age = cutoff - stamp.astimezone(timezone.utc).date()
-            if record["market_cap_status"] != "VERIFIED" or not link_ok(record["market_cap_source"]) or age < timedelta(0) or age > MAX_CAP_AGE:
-                counters["CAP_UNVERIFIED_OR_STALE"] += 1
-                continue
-        except (ValueError, TypeError, KeyError, OverflowError):
-            counters["CAP_UNVERIFIED_OR_STALE"] += 1
-            continue
-        if not 300_000_000 <= cap <= 10_000_000_000:
-            counters["CAP_OUT_OF_BAND"] += 1
-            continue
-        filtered[nct] = {**row, "marketCap": int(cap), "marketCapSource": record["market_cap_source"],
-                         "capChecked": stamp.date().isoformat()}
-        counters["CAP_ELIGIBLE"] += 1
+        filtered[nct]={**row,"marketCap":candidate[0],"marketCapSource":candidate[2],
+                       "capChecked":candidate[1],"capSourceKind":kind}
+        counters["CAP_ELIGIBLE"]+=1
     if sum(counters.values()) != len(pool):
-        raise AssertionError("Cap counters must partition the entire POOL")
+        raise AssertionError("Cap counters must partition entire POOL")
     return filtered, dict(counters)
 
 
@@ -238,13 +284,21 @@ def classify(pool, eligible, registry, existing, discovery, catalog, as_of):
                        "issuerReadoutLead": discovery.get(nct),
                        "reviewedFDAStage": stages.get(nct),
                        "reason": reason})
-    review.sort(key=lambda r: (r["reason"] != "CHECK_FOR_PROMOTION_BY_EXISTING_EXACT_NCT_GATES",
-                               not r["registryResultsPosted"], r["ticker"], r["nct"]))
+    # Prioritize recently posted non-terminated data over archival 2010-2020 records.
+    def rank(r):
+        day=r["registryResultsDate"] or (r["issuerReadoutLead"] or {}).get("date") or "0000-00-00"
+        numeric=int(day.replace("-","")) if re.fullmatch(r"\d{4}-\d{2}-\d{2}",day) else 0
+        return (r["reason"]!="CHECK_FOR_PROMOTION_BY_EXISTING_EXACT_NCT_GATES",
+                r["registryStatus"] in {"TERMINATED","WITHDRAWN"},
+                -numeric,r["ticker"],r["nct"])
+    review.sort(key=rank)
     counts = dict(counters)
     counts["POOL_RECORDS"] = len(pool)
     counts["CAP_ELIGIBLE"] = len(eligible)
     counts["EXISTING_P3"] = len(existing)
     counts["REVIEW_QUEUE"] = len(review)
+    counts["REVIEW_POSTED_2025_OR_LATER"] = sum((r["registryResultsDate"] or "") >= "2025-01-01" for r in review)
+    counts["REVIEW_TERMINATED"] = sum(r["registryStatus"]=="TERMINATED" for r in review)
     counts["REVIEWED_FDA_STAGE_CATALOG"] = len(stages)
     return review, counts
 
@@ -259,17 +313,20 @@ def google_values(auth, tab, cell_range):
 
 
 def execute(pool_rows, existing_rows, cap_rows, discovery_rows, catalog, registry_get=requests.get,
-            checked_at=None):
+            checked_at=None, secondary_caps=None, secondary_errors=None):
     checked_at = checked_at or datetime.now(timezone.utc)
     day = checked_at.date()
     pool = validate_pool(pool_rows)
     existing = validate_existing(existing_rows)
-    eligible, cap_counts = cap_eligible(pool, cap_rows, day)
+    eligible, cap_counts = cap_eligible(pool, cap_rows, day, secondary_caps=secondary_caps)
     current = sorted(eligible)
     registry, batches = fetch_registry_batches(current, get=registry_get)
     discovery = issuer_discovery_index(discovery_rows, pool)
     review, counts = classify(pool, eligible, registry, existing, discovery, catalog, day)
     counts.update({k: v for k, v in cap_counts.items() if k != "CAP_ELIGIBLE"})
+    counts["SECONDARY_CAP_TRIALS_SCREENED"] = sum(r["capSourceKind"]=="SECONDARY_DATED_ROUNDED_QUOTE" for r in eligible.values())
+    counts["SECONDARY_CAP_TICKERS_UNRESOLVED"] = len(secondary_errors or {})
+    counts["EXISTING_P3_OUTSIDE_CURRENT_CAP_SCREEN"] = len(set(existing)-set(eligible))
     counts["REGISTRY_QUERIED"] = len(current)
     counts["REGISTRY_BATCHES"] = batches
     if counts.get("REGISTRY_RECORDS_RETURNED", 0) + counts.get("REGISTRY_NOT_RETURNED", 0) != len(current):
@@ -277,12 +334,12 @@ def execute(pool_rows, existing_rows, cap_rows, discovery_rows, catalog, registr
     summary = {"schemaVersion": "p3-full-pool-discovery-v1",
                "asOf": checked_at.isoformat(), "status": "COMPLETE" if not counts.get("REGISTRY_NOT_RETURNED") else "PARTIAL_REGISTRY_MATCHES",
                "sources": {"pool": "Google Master Trials (Published)",
-                           "marketCaps": "data/phase_pipeline_market_caps.csv",
+                           "marketCaps": "data/phase_pipeline_market_caps.csv + strictly dated Stock Analysis fallback",
                            "registry": API, "issuerResults": "data/post_phase3_discoveries.csv",
                            "regulatory": "new-platform/backend/app/phase3_curated_announcements.json"},
                "counts": counts,
                "notes": [
-                   "All POOL identities receive a cap screen; only in-band caps receive ClinicalTrials.gov queries.",
+                   "All POOL identities receive a cap screen; verified in-band primary or strictly dated rounded fallback are queried.",
                    "Registry-posted results are not the same as issuer-public topline data.",
                    "No FDA filing, PDUFA assignment, or trial efficacy conclusion is inferred from study completion.",
                    "Only manually reviewed exact drug/indication issuer/FDA sources can trigger automatic promotion.",
@@ -306,7 +363,12 @@ def main():
     p3 = google_values(auth, SHEET_NAME, "A3:C")
     with CANDIDATES.open(encoding="utf-8") as f:
         catalog = json.load(f)
-    summary, detail = execute(pool, p3, load_csv(CAPS), load_csv(DISCOVERIES), catalog)
+    from p3_market_cap_secondary import lookup_missing_primary
+    caps=load_csv(CAPS)
+    secondary_targets=cap_secondary_targets(validate_pool(pool),caps,datetime.now(timezone.utc).date())
+    secondary,secondary_errors=lookup_missing_primary(secondary_targets,datetime.now(timezone.utc).date())
+    summary, detail = execute(pool, p3, caps, load_csv(DISCOVERIES), catalog,
+                              secondary_caps=secondary, secondary_errors=secondary_errors)
     for path, result in ((OUT, summary), (REVIEW, detail)):
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_text(json.dumps(result, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
