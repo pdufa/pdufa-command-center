@@ -102,7 +102,7 @@ test("navigation links and API views remain independent of historical GEM preset
  const ui=read("app/FunnelWorkspace.tsx");
  assert.match(nav,/label:"POOL",href:"\/pool"/);
  assert.match(nav,/label:"TOOLS",href:"\/tools"/);
- assert.match(nav,/label:"P3 POST-DATA",href:"\/p3-post-data"/);
+ assert.match(nav,/label:"FOCUS",href:"\/focus"/);
  assert.doesNotMatch(nav,/label:"#1",href:"\/patient-population"/);
  assert.match(api,/readFile\(join\(process.cwd\(\),"public","phase3-census-2026-10-26.csv"\)/);
  assert.match(api,/authConfigured\(\)/);

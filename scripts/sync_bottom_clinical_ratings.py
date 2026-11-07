@@ -73,7 +73,7 @@ def main():
     auth=api_auth();before=sheets_values(auth,'A3:AB');validate_grid(before)
     ratings=json.loads(EXPORT.read_text())['records'];changes=build_plan(before,ratings)
     base=f'https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}'
-    metadata=requests.get(base,headers=auth,params={'ranges':f"'{SHEET_NAME}'!M4:S204",'includeGridData':'true'},timeout=45);metadata.raise_for_status()
+    metadata=requests.get(base,headers=auth,params={'ranges':f"{SHEET_NAME}!M4:S204",'includeGridData':'true'},timeout=45);metadata.raise_for_status()
     sheet=next(s for s in metadata.json()['sheets'] if s['properties']['title']==SHEET_NAME)
     notes={}
     cells={}

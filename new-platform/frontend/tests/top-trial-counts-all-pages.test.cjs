@@ -5,14 +5,14 @@ const fs=require("node:fs");
 const path=require("node:path");
 const read=name=>fs.readFileSync(path.join(__dirname,"../app",name),"utf8");
 
-test("production home only surfaces the POOL and P3 POST-DATA trial lists",()=>{
+test("production home only surfaces the POOL and FOCUS trial lists",()=>{
  const home=read("page.tsx");
  const nav=read("GlobalNavigation.tsx");
  assert.match(home,/href:"\/pool"/);
- assert.match(home,/href:"\/p3-post-data"/);
+ assert.match(home,/href:"\/focus"/);
  assert.match(home,/\/api\/auth/);
  assert.match(nav,/label:"POOL",href:"\/pool"/);
- assert.match(nav,/label:"P3 POST-DATA",href:"\/p3-post-data"/);
+ assert.match(nav,/label:"FOCUS",href:"\/focus"/);
  assert.match(nav,/label:"TOOLS",href:"\/tools"/);
  assert.doesNotMatch(nav,/label:"(?:PIPELINE|SCAN|RESULTS|GOAL|GEM|TOP|BOTTOM|PREDICTIONS)"/);
  assert.doesNotMatch(home,/streamlit\.app|GemQualificationChecklist|href:"\/raas-/);
@@ -29,7 +29,7 @@ test("both active trial populations and their POOL controls have native routes",
  assert.doesNotMatch(tools,/Phase3SourceOnlySheets|Phase3ReadoutSheets/);
 });
 
-test("P3 POST-DATA has verified candidate snapshot data and evidence",()=>{
+test("FOCUS has verified candidate snapshot data and evidence",()=>{
  const sheet=JSON.parse(fs.readFileSync(path.join(__dirname,"../data/p3PostDataActive.json"),"utf8"));
  const page=read("p3-post-data/page.tsx");
  assert.equal(sheet.schemaVersion,1);

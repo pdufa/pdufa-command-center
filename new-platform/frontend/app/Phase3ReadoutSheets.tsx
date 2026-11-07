@@ -170,7 +170,7 @@ function StageSurveyIngredients({bucket}:{bucket:RaasStage}){
  const factors=clinicalFiveDefinitions(bucket);
  return <section className={css.stageSurveyIngredients} data-raas-stage-survey-ingredients={bucket}>
   <div className={css.stageSurveyHeading}>
-   <strong>{bucket==="pre"?"TOP · before Phase 3 results":"BOTTOM · after Phase 3 results"}</strong>
+   <strong>{bucket==="pre"?"TOP · before Phase 3 results":"FOCUS · after Phase 3 results"}</strong>
    <p>Five clinical RAAS assessments only. Financial, FDA-regulatory,
     commercial and investment-risk rankings have been retired.</p>
    <small>5 equal-weight clinical research factors · missing evidence stays N/A</small>
@@ -247,7 +247,7 @@ function SurveyExplorer({row,bucket,feed,researchStatus,onClose}:{
    <div className={css.surveyDialogHead}>
      <div>
        <p className={css.surveyEyebrow}>{bucket==="pre"?"UPPER · 3 · PHASE 3 BEFORE READOUT":"LOWER · P · PHASE 3 AFTER READOUT"}</p>
-       <h3>{bucket==="pre"?"TOP Surveys":"BOTTOM Surveys"} · {row.ticker}</h3>
+       <h3>{bucket==="pre"?"TOP Surveys":"FOCUS Surveys"} · {row.ticker}</h3>
        <p>{row.company} · {row.nctId}</p>
      </div>
      <button type="button" className={css.surveyClose} onClick={onClose} autoFocus>Close ✕</button>
@@ -456,7 +456,7 @@ function SynthesisPanel({row,bucket,feed,researchStatus,onClose,onDetailedSurvey
       tabIndex={-1} aria-label={"SURVEY synthesis for "+row.ticker+" "+row.nctId}>
      <div className={css.surveyDialogHead}>
        <div><p className={css.surveyEyebrow}>{bucket==="pre"?"UPPER · 3 · BEFORE DATA RELEASE":"LOWER · P · AFTER DATA RELEASE"}</p>
-         <h3>{bucket==="pre"?"TOP SURVEY":"BOTTOM SURVEY"} · {row.ticker}</h3><p>{row.company} · {row.nctId}</p></div>
+         <h3>{bucket==="pre"?"TOP SURVEY":"FOCUS SURVEY"} · {row.ticker}</h3><p>{row.company} · {row.nctId}</p></div>
        <button className={css.surveyClose} type="button" onClick={onClose}>Close ✕</button>
      </div>
      <div className={css.surveyDialogBody}>
@@ -774,7 +774,7 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
         {sortedHeader("nctId","NCT / trial")}
         {sortedHeader("company","Company")}
         {bucket==="post"&&sortedHeader("factorP","Factor P · p-value","Sort by reported numeric p-value threshold, not FDA approval probability")}
-        <th scope="col" title="Proposed phase-specific risk-adjusted appreciation score; grade not yet validated">{bucket==="pre"?<><span>TOP-RAAS</span><TopRaasAccuracyButton/></>:<span>BOTTOM-RAAS</span>}</th>
+        <th scope="col" title="Proposed phase-specific risk-adjusted appreciation score; grade not yet validated">{bucket==="pre"?<><span>TOP-RAAS</span><TopRaasAccuracyButton/></>:<span>FOCUS-RAAS</span>}</th>
         {showSurveys&&sortedHeader("survey","Survey Ratings","Sort by count of verified research inputs; not clinical quality")}
         {showSynthesis&&sortedHeader("synthesis","SURVEY","Sort by evidence-readiness gates; not expected stock appreciation")}
         {sortedHeader("drug","Drug / therapy")}
@@ -804,15 +804,15 @@ function TrialTable({rows,bucket,originalOrder,showSurveys,showSynthesis,
           <RaasTrialHistoryButton row={row} bucket={bucket}/>
         </td>{showSurveys&&<td className={css.surveyCell}>
           <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row,"details")}
-            aria-label={(bucket==="pre"?"Explore TOP pre-readout":"Explore BOTTOM post-readout")+" survey ingredients and shared five groups, twenty surveys and thirty-eight research questions for "+row.ticker+" "+row.nctId}>
-            {bucket==="pre"?"TOP Surveys":"BOTTOM Surveys"} <span aria-hidden="true">→</span>
+            aria-label={(bucket==="pre"?"Explore TOP pre-readout":"Explore FOCUS post-readout")+" survey ingredients and shared five groups, twenty surveys and thirty-eight research questions for "+row.ticker+" "+row.nctId}>
+            {bucket==="pre"?"TOP Surveys":"FOCUS Surveys"} <span aria-hidden="true">→</span>
           </button>
           <small>{researchStatus==="loading"?"Loading verified inputs":
             researchFor(row)?researchFor(row)!.verified+" verified / 38":"Not assessed · 5 groups"}</small>
         </td>}{showSynthesis&&<td className={css.surveyCell}>
           <button type="button" className={css.surveyOpenButton} onClick={()=>onSurveyOpen(row,"synthesis")}
             aria-label={"Open "+(bucket==="pre"?"TOP":"BOTTOM")+" SURVEY combined assessment and stage-specific RAAS ingredients for "+row.ticker+" "+row.nctId}>
-            {bucket==="pre"?"TOP SURVEY":"BOTTOM SURVEY"} <span aria-hidden="true">→</span>
+            {bucket==="pre"?"TOP SURVEY":"FOCUS SURVEY"} <span aria-hidden="true">→</span>
           </button>
           <small>{researchFor(row)?
             (researchFor(row)!.ready?"Ready for evidence review":
@@ -917,10 +917,10 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
     return sortPhase3Readouts(found,rows,sort,desc,bucket,benefitFeed);
   },[rows,query,sort,desc,bucket,benefitFeed]);
   const pre=bucket==="pre";
-  return <section className={css.sheet} aria-label={pre?"Top pre-release spreadsheet":"Bottom post-release spreadsheet"}>
+  return <section className={css.sheet} aria-label={pre?"Top pre-release spreadsheet":"FOCUS post-release spreadsheet"}>
     <details className={css.sheetAccordion}>
       <summary className={css.sheetHeading}>
-        <div><h3>{pre?"TOP SPREADSHEET · $300M–$10B PHASE 3 UNIVERSE":"BOTTOM SPREADSHEET · P · PHASE 3 DATA RELEASED"}</h3>
+        <div><h3>{pre?"TOP SPREADSHEET · $300M–$10B PHASE 3 UNIVERSE":"FOCUS SPREADSHEET · P · PHASE 3 DATA RELEASED"}</h3>
           <p>{caption}</p></div>
         <strong className={css.sheetSummaryCount}>
           {pre?"Cap-screened Phase 3 intake + ":""}{number(rows.length)} issuer-checked trials · {number(matched.length)} matching
@@ -966,7 +966,7 @@ function Spreadsheet({bucket,rows,query,caption,showSurveys,showSynthesis,onSurv
       <button type="button" onClick={()=>setDesc(v=>!v)}>{desc?"Descending ↓":"Ascending ↑"}</button>
       <button type="button" className={css.resetSortingButton}
         onClick={resetSorting} disabled={sort==="ticker"&&!desc}
-        aria-label={pre?"Reset TOP spreadsheet sorting to Ticker A to Z":"Reset BOTTOM spreadsheet sorting to Ticker A to Z"}
+        aria-label={pre?"Reset TOP spreadsheet sorting to Ticker A to Z":"Reset FOCUS spreadsheet sorting to Ticker A to Z"}
         title="Reset this spreadsheet to its default Ticker A–Z sort">
         ↺ Reset Sorting
       </button>
@@ -1057,8 +1057,8 @@ export default function Phase3ReadoutSheets(){
     <div className={css.title}>
       <h2>Phase 3 · Public Data Release</h2>
       <p>Open only the section you want to work with. All segments start collapsed.</p>
-      <p><a href="/raas-top-bottom" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>TOP + BOTTOM · 5 clinical factors, missing evidence and history</a></p>
-      <p><a href="/raas-top-bottom" style={{fontWeight:800,color:"#176945",textDecoration:"underline"}}>Dedicated TOP + BOTTOM scoring workspace</a></p>
+      <p><a href="/raas-top-bottom" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>TOP + FOCUS · 5 clinical factors, missing evidence and history</a></p>
+      <p><a href="/raas-top-bottom" style={{fontWeight:800,color:"#176945",textDecoration:"underline"}}>Dedicated TOP + FOCUS scoring workspace</a></p>
       <p><a href="/raas-scan" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>RAAS full-universe trial assessments · all available cap-screened Phase 3 candidates, with scores and History</a></p>
       <p><a href="/raas-scan" style={{fontWeight:750,color:"#176945",textDecoration:"underline"}}>RAAS rating-system accuracy and expandable history · global self-audit</a></p>
     </div>
@@ -1077,7 +1077,7 @@ export default function Phase3ReadoutSheets(){
       </div>
     </details>
     <details className={css.topSegment} data-segment="phase3-search">
-      <summary className={css.topSegmentSummary}>Search across TOP &amp; BOTTOM spreadsheets
+      <summary className={css.topSegmentSummary}>Search across TOP &amp; FOCUS spreadsheets
         <span>▾</span>
       </summary>
       <div className={css.topSegmentBody}>
@@ -1121,11 +1121,11 @@ export default function Phase3ReadoutSheets(){
      border:"1px solid #b7d5c3",padding:"12px 14px",borderRadius:9,
      margin:"12px 0",background:"#f4faf6"}}>
      <strong style={{display:"block",fontSize:15}}>
-      RAAS scoring applies only to the TOP and BOTTOM spreadsheets
+      RAAS scoring applies only to the TOP and FOCUS spreadsheets
      </strong>
      <p style={{fontSize:13,margin:"7px 0 0"}}>
       {data.pre.length} source-classified TOP trials · {data.post.length}
-      {" "}source-classified BOTTOM trials · {data.unverified.length}
+      {" "}source-classified FOCUS trials · {data.unverified.length}
       {" "}awaiting exact issuer-readout verification.
       Neither the 11,000+ POOL nor the 762-NCT registry evidence inventory
       is automatically scored.

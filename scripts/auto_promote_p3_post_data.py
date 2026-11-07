@@ -234,7 +234,7 @@ def evaluate(catalog, caps, census, pool_ids, existing, cutoff, phase3_check=reg
 
 
 def sheets_values(auth, range_name, sheet_name=SHEET_NAME):
-    url = API + quote(f"'{sheet_name}'!{range_name}", safe="!':")
+    url = API + quote(f"{sheet_name}!{range_name}" if sheet_name == 'FOCUS' else f"'{sheet_name}'!{range_name}", safe="!':")
     response = requests.get(url, headers=auth, params={"valueRenderOption":"UNFORMATTED_VALUE"}, timeout=60)
     response.raise_for_status()
     return response.json().get("values", [])
@@ -268,7 +268,7 @@ def main():
     if additions:
         first = 3 + len(current)
         last = first + len(additions)-1
-        url = API + quote(f"'{SHEET_NAME}'!A3:AB", safe="!:") + ":append"
+        url = API + quote(f"{SHEET_NAME}!A3:AB", safe="!:") + ":append"
         result=requests.post(url,headers=auth,
             params={"valueInputOption":"RAW","insertDataOption":"INSERT_ROWS"},
             json={"majorDimension":"ROWS","values":[x["values"] for x in additions]},

@@ -11,13 +11,13 @@ test("active site top navigation and workbench offer no GEM stage links",()=>{
  const home=read("new-platform/frontend/app/page.tsx");
  assert.match(nav,/label:"POOL",href:"\/pool"/);
  assert.match(nav,/label:"TOOLS",href:"\/tools"/);
- assert.match(nav,/label:"P3 POST-DATA",href:"\/p3-post-data"/);
+ assert.match(nav,/label:"FOCUS",href:"\/focus"/);
  assert.doesNotMatch(nav,/label:"GEM(?: JR)?"/);
  assert.doesNotMatch(workspace,/\["GEM_JR","GEM JR"\].*\["GEM","GEM"\]/);
  assert.match(workspace,/\(\["PIPELINE"\] as RestrictionPresetStage\[\]\)/);
  assert.doesNotMatch(home,/from "\.\/Workspace"/);
  assert.match(home,/href:"\/pool"/);
- assert.match(home,/href:"\/p3-post-data"/);
+ assert.match(home,/href:"\/focus"/);
 });
 test("live source workspace has no GEM membership ledger, inputs or stage qualifiers",()=>{
  const source=read("new-platform/backend/app/source_workspace.py");

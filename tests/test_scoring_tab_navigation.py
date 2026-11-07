@@ -10,11 +10,11 @@ ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "new-platform/frontend/app"
 
 
-def test_active_navigation_links_only_pool_p3_postdata_and_pool_tools():
+def test_active_navigation_links_only_pool_focus_and_pool_tools():
     source = (APP / "GlobalNavigation.tsx").read_text(encoding="utf-8")
     expected = {
         "POOL": "/pool",
-        "P3 POST-DATA": "/p3-post-data",
+        "FOCUS": "/focus",
         "TOOLS": "/tools",
     }
     for label, href in expected.items():

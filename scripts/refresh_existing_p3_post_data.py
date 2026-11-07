@@ -253,7 +253,7 @@ def build_plan(rows, market_rows, catalog, registry, cutoff, checked_at,
             counts["rowsChanged"] += 1
             for idx, value in sorted(updates.items()):
                 column = a1_col(idx)
-                data.append({"range":f"'{SHEET_NAME}'!{column}{row_no}",
+                data.append({"range":f"{SHEET_NAME}!{column}{row_no}",
                              "majorDimension":"ROWS","values":[[value]]})
         report.append({"nct":nct,"ticker":ticker,"row":row_no,
                        "updatedColumns":[a1_col(k) for k in sorted(updates)],

@@ -74,16 +74,16 @@ export default function RaasTopBottomCompletionPanel({
   window.setTimeout(()=>URL.revokeObjectURL(uri),1500);
  }
  if(!plan)return <p role="alert" data-raas-top-bottom-completion-error="true">
-  Exact TOP/BOTTOM score and source identity counts could not be reconciled.
+  Exact TOP/FOCUS score and source identity counts could not be reconciled.
   No completion or rating is inferred.
  </p>;
  const {summary}=plan;
  return <section data-raas-top-bottom-metric-completion="SOURCE_VERIFIED_RESEARCH_ONLY"
-  aria-label="TOP and BOTTOM RAAS scoring completeness and missing evidence"
+  aria-label="TOP and FOCUS RAAS scoring completeness and missing evidence"
   style={{margin:"12px 0 18px",padding:13,border:"1px solid #a4cfb1",
    background:"#f4faf5",borderRadius:10}}>
   <h2 style={{fontSize:18,margin:"0 0 9px",color:"#16492b"}}>
-   TOP + BOTTOM RAAS · metric completion tracker
+   TOP + FOCUS RAAS · metric completion tracker
   </h2>
   <p data-raas-user-accepted-source-policy="true"
    style={{fontSize:13,lineHeight:1.5,margin:"6px 0 12px",color:"#295239"}}>
@@ -96,7 +96,7 @@ export default function RaasTopBottomCompletionPanel({
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(135px,1fr))",
    gap:9,marginBottom:11}}>
    {[
-    {n:summary.classifiedTrialRows,label:"Trials in TOP/BOTTOM"},
+    {n:summary.classifiedTrialRows,label:"Trials in TOP/FOCUS"},
     {n:summary.allMetricSlots,label:"Exact metric slots set up"},
     {n:summary.provisionalMetricGrades,label:"Source-accepted research grades"},
     {n:publishedCount,label:"Published evidence leads · need rubric grade"},
@@ -176,9 +176,9 @@ export default function RaasTopBottomCompletionPanel({
     <label style={{display:"flex",flexDirection:"column",gap:4,fontSize:12}}>
      Spreadsheet
      <select value={stage} onChange={e=>{setStage(e.target.value as typeof stage);setPage(0)}}
-      aria-label="Filter missing RAAS evidence tasks by TOP or BOTTOM" style={buttonStyle}>
-      <option value="all">TOP + BOTTOM</option><option value="TOP">TOP only</option>
-      <option value="BOTTOM">BOTTOM only</option>
+      aria-label="Filter missing RAAS evidence tasks by TOP or FOCUS" style={buttonStyle}>
+      <option value="all">TOP + FOCUS</option><option value="TOP">TOP only</option>
+      <option value="BOTTOM">FOCUS only</option>
      </select>
     </label>
     <label style={{display:"flex",flexDirection:"column",gap:4,fontSize:12}}>

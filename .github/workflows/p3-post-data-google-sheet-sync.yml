@@ -85,9 +85,9 @@ jobs:
       - name: Install the existing deterministic scoring dependencies
         working-directory: new-platform/frontend
         run: npm ci --ignore-scripts --no-audit --no-fund
-      - name: Validate BOTTOM source identity and Sheets write protections
+      - name: Validate FOCUS source identity and Sheets write protections
         run: python -m unittest discover -s tests -p 'test_bottom*.py' -v
-      - name: Harvest all preserved and active BOTTOM source packets
+      - name: Harvest all preserved and active FOCUS source packets
         run: |
           python scripts/bottom_only_evidence_backfill.py --fetch
           python scripts/bottom_only_publication_search.py
