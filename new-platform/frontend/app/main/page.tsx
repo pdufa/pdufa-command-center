@@ -4,8 +4,8 @@ import {MAIN_DAILY_EVIDENCE} from "../../lib/main-daily-evidence";
 import {FOCUS_FINAL_TRIAL_AUDIT} from "../../lib/focus-final-gate-checks";
 
 export const metadata:Metadata={
-  title:"MAIN · Technical status and evidence gates | PDUFA",
-  description:"Verified release checks, dated installation evidence, and separate SCIENCE and OUTCOME readiness."
+  title:"MAIN · Core Platform and Pipeline acceptance | PDUFA",
+  description:"Seven active MAIN checks: Core Platform and Pipeline, with immutable legacy acceptance history."
 };
 
 const release={
@@ -22,24 +22,15 @@ const card={border:"1px solid #c9d9d1",borderRadius:10,padding:16,background:"#f
 const fine={fontSize:13,lineHeight:1.55,color:"#46594d"} as const;
 const grid={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,250px),1fr))",gap:12} as const;
 
-/** Current MAIN keeps 31 evidence checks, replacing four superseded archival
- * checks with applicable final-list FOCUS acceptance requirements.
- * These entries are explicitly unverified until runtime/source proof exists.
- * The signed historical inventory remains unchanged for audit provenance.
+/** The user-retained MAIN acceptance scope: Core Platform (3) + Pipeline (4).
+ * These gate IDs come from the immutable dated historical inventory. Keeping
+ * a gate in the active checklist does NOT make its old status current evidence.
+ * All removed branches remain in the historical audit, not the active scope.
+ * Trial-specific Pipeline review is restricted to final FOCUS NCTs.
  */
-const currentScopeReplacements=[
-  {id:"pool-focus.exact-handoff",status:"Not verified",
-    note:"Verify only the NCTs in the dated FOCUS final roster against original POOL, issuer, exact drug/indication and FDA application cycle. Historical and early-stage NCTs never enter acceptance; conflicts stay UNKNOWN.",
-    evidenceUri:"https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/lib/pool-pipeline-funnel.ts"},
-  {id:"focus.current-eligibility",status:"Not verified",
-    note:"Check current issuer listing and $300M–$10B cap, final pivotal Phase 3 readout, commercial rights and FDA cycle for each of the exact final-list FOCUS NCTs only.",
-    evidenceUri:"https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/lib/pipeline-gate-evidence.ts"},
-  {id:"focus.nightly-sync",status:"Not verified",
-    note:"Verify nightly exact-NCT POOL → final FOCUS → Google Sheets synchronization against the dated final-list roster, including deduplication and independently checked output. Never include other phases in gate acceptance.",
-    evidenceUri:"https://github.com/pdufa/pdufa-command-center/blob/main/.github/workflows/p3-post-data-google-sheet-sync.yml"},
-  {id:"tools.wt-runtime",status:"Not verified",
-    note:"Independently verify WT controls and chart state only for the exact-NCT final FOCUS trial cohort; broader TOOLS phase screens and retired scan configurations are not accepted cohort members.",
-    evidenceUri:"https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/lib/wt-entry-stay-exit.ts"},
+export const MAIN_ACTIVE_GATE_IDS=[
+  "core-platform.code","core-platform.deployment","core-platform.runtime",
+  "pipeline.code","pipeline.deployment","pipeline.runtime","pipeline.evidence"
 ] as const;
 
 function Status({name,status,detail}:{name:string;status:string;detail:string}){
@@ -52,13 +43,19 @@ function Status({name,status,detail}:{name:string;status:string;detail:string}){
 export default function MainStatus(){
   const checked=MAIN_DAILY_EVIDENCE.valid;
   const historicalDay=checked?MAIN_DAILY_EVIDENCE.history.at(-1)?.asOf:null;
-  const activeGateRows=checked?[
-    ...MAIN_DAILY_EVIDENCE.observations.filter(g=>!g.id.startsWith("gem-jr-gem-wt.")).map(g=>({...g,sourceKind:"Dated historical evidence",note:g.id.startsWith("core-platform.")?g.note:"This legacy observation is not acceptance for the "+FOCUS_FINAL_TRIAL_AUDIT.trialCount+" exact-NCT final-list FOCUS cohort. Review source-specific evidence only for the active final listing; old broader-population counts are not applicable."})),
-    ...currentScopeReplacements.map(g=>({...g,sourceKind:"Current scope — pending verification"})),
-  ]:[];
-  const activeScopeValid=checked&&activeGateRows.length===31&&
-    new Set(activeGateRows.map(g=>g.id)).size===31;
-  const carriedVerified=activeGateRows.filter(g=>g.status==="Verified").length;
+  const activeGateRows=checked?MAIN_ACTIVE_GATE_IDS.map(id=>{
+    const observation=MAIN_DAILY_EVIDENCE.observations.find(g=>g.id===id);
+    if(!observation)return null;
+    return {...observation,
+      sourceKind:"Historical observation · not fresh acceptance",
+      note:id.startsWith("pipeline.")
+        ?"Reverify this Pipeline installation requirement against the "+FOCUS_FINAL_TRIAL_AUDIT.trialCount+" exact NCTs in the current final FOCUS list. The 2026-10-26 status is archival; other clinical phases and research datasets are excluded."
+        :observation.note};
+  }).filter((g):g is NonNullable<typeof g>=>g!==null):[];
+  const activeScopeValid=checked&&activeGateRows.length===7&&
+    MAIN_ACTIVE_GATE_IDS.every(id=>activeGateRows.some(g=>g.id===id))&&
+    new Set(activeGateRows.map(g=>g.id)).size===7;
+  const historicalProofsInActiveScope=activeGateRows.filter(g=>g.status==="Verified").length;
   return <main className="shell" style={{maxWidth:1100,margin:"0 auto",padding:"20px 12px 45px"}}>
     <div className="topline">PDUFA COMMAND CENTER · MAIN</div>
     <h1>MAIN · Technical status and prediction readiness</h1>
@@ -103,7 +100,7 @@ export default function MainStatus(){
     <div style={grid} aria-label="Separate evidence gates">
       <Status name="MAIN · technical acceptance"
         status="Still open"
-        detail="Release and CI checks pass, but complete authenticated runtime, source health, scheduling, recovery and program eligibility require separate acceptance evidence."/>
+        detail="The active MAIN checklist contains only Core Platform and Pipeline checks. Evidence from the dated 31-gate archive is not an automatic new acceptance."/>
       <Status name="SCIENCE · trial review"
         status="Not certified"
         detail="Phase-correct source evidence and independently reviewed scientific investigation coverage remain incomplete. Published trial facts are not automatically scores."/>
@@ -120,28 +117,28 @@ export default function MainStatus(){
       <p style={fine}>Snapshot: <strong>{historicalDay??"Not verified"}</strong> (Pacific).
         This is an immutable historical scope, not today's percentage.
         A green production build must not retroactively mark the other gates complete.
-        Its superseded requirements are not part of the active POOL / FOCUS / TOOLS checklist.</p>
-      <Link href="/installation-audit">Inspect dated installation gates and protected SCIENCE / OUTCOME checks</Link>
+        The full 31-gate record is archived and is not the current MAIN checklist.</p>
+      <Link href="/installation-audit">Open archived 31-gate evidence and the separate scientific/outcome audits</Link>
     </section>
     <section style={{...card,marginTop:16}} aria-label="Active final FOCUS trial acceptance cohort">
       <h2 style={{marginTop:0}}>Final trial acceptance · {FOCUS_FINAL_TRIAL_AUDIT.trialCount} FOCUS trials only</h2>
       <p><strong>{FOCUS_FINAL_TRIAL_AUDIT.trialCount} unique NCTs</strong> across {FOCUS_FINAL_TRIAL_AUDIT.uniqueCompanies} recorded tickers, from the final-list Google Sheets snapshot dated {FOCUS_FINAL_TRIAL_AUDIT.asOf}.
         These are the <strong>only trial records</strong> subject to current MAIN acceptance gate assessment. POOL and the historical Phase 3/TOOLS all-phase tallies stay as references and do not count toward the final-trial gate denominator.</p>
       <p><strong>{FOCUS_FINAL_TRIAL_AUDIT.totalChecks} trial-specific evidence checks</strong> ({FOCUS_FINAL_TRIAL_AUDIT.checksPerTrial} per trial) · {FOCUS_FINAL_TRIAL_AUDIT.independentlyVerified} independently verified · {FOCUS_FINAL_TRIAL_AUDIT.pointers} recorded source pointers · {FOCUS_FINAL_TRIAL_AUDIT.review} requiring source review · {FOCUS_FINAL_TRIAL_AUDIT.missing} missing source evidence.</p>
-      <p style={fine}>Evidence pointers, historical market-cap figures and planned FDA filings are not independently certified eligibility or live data. The 31 MAIN technical installation checks remain distinct from these per-trial checks; accepting platform infrastructure never makes an individual trial FDA qualified.</p>
+      <p style={fine}>Evidence pointers, historical market-cap figures and planned FDA filings are not independently certified eligibility or live data. The 7 active MAIN technical installation checks remain distinct from these per-trial checks; accepting platform infrastructure never makes an individual trial FDA qualified.</p>
       <Link href="/focus">Inspect all final-list trials and expandable gate findings</Link>
     </section>
-    <section style={{...card,marginTop:16}} aria-label="Active MAIN final trial acceptance checks">
-      <h2 style={{marginTop:0}}>Current 31-gate scope · final FOCUS trials only</h2>
-      <p style={fine}>All trial-level MAIN checks are now restricted to the {FOCUS_FINAL_TRIAL_AUDIT.trialCount} exact NCTs currently on the final FOCUS listing. Core platform and recovery gates still assess shared infrastructure.
-        The active checklist replaces four obsolete historical check slots with exact-data transfer, current final-trial eligibility, nightly sync and independent WT runtime checks.
-        No archived scan is restored. Statuses inherited from October 26 are dated evidence,
-        not current certifications; the four replacement checks remain unverified.
-        A passing build, code present or Preview READY is not runtime acceptance.</p>
+    <section style={{...card,marginTop:16}} aria-label="Active MAIN Core Platform and Pipeline gates">
+      <h2 style={{marginTop:0}}>Current MAIN scope · 7 gates · Core Platform and Pipeline only</h2>
+      <p style={fine}>Only two sections remain in the active MAIN checklist: <strong>Core Platform (3)</strong> and <strong>Pipeline (4)</strong>.
+        The other six former sections (24 gates) have been removed from active MAIN acceptance.
+        Core Platform checks the shared infrastructure; Pipeline trial checks apply only to the {FOCUS_FINAL_TRIAL_AUDIT.trialCount} exact-NCT final FOCUS listing.
+        Source data and services outside the checklist continue operating; removing their installation gates does not disable RAAS, FDA monitoring, analysis, or reporting.
+        Historic October 26 statuses are not fresh verification, and no archived scan is restored.</p>
       {activeScopeValid ? <details>
         <summary style={{cursor:"pointer",fontWeight:700}}>
-          View all {activeGateRows.length} applicable checks · {carriedVerified} historical proof recorded,
-          {" "}{activeGateRows.length-carriedVerified} requiring fresh verification
+          View all {activeGateRows.length} active MAIN gates · {historicalProofsInActiveScope} October 26 historical proof recorded,
+          {" "}{activeGateRows.length-historicalProofsInActiveScope} without historical verification · all require current-scope review
         </summary>
         <div style={{overflowX:"auto",marginTop:12}}>
           <table style={{width:"100%",borderCollapse:"collapse",fontSize:13,minWidth:600}}>
@@ -159,7 +156,7 @@ export default function MainStatus(){
             </tr>)}</tbody>
           </table>
         </div>
-      </details> : <p role="alert">The 31-check active scope cannot be established from saved evidence.</p>}
+      </details> : <p role="alert">The 7-check Core Platform / Pipeline active scope cannot be established from saved evidence.</p>}
     </section>
     <section style={{...card,marginTop:16}} aria-label="Next verified work">
       <h2 style={{marginTop:0}}>Next MAIN acceptance step</h2>
