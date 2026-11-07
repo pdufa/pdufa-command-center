@@ -64,3 +64,26 @@
 .moveTo{font-size:11px;padding:5px;max-width:100%;min-height:29px;border-radius:5px;border:1px solid #c1d5c7;background:#fff;color:#184833}
 .thDrag{font-weight:800;color:#367457}
 @media(max-width:640px){.columnOptions{max-height:340px}.columnOption{gap:5px}.columnCheck{min-width:100px}.moveTo{max-width:170px}}
+
+/* Three distinct top-level controls. Visibility colors are independent; reset is purple. */
+.actions{align-items:stretch}
+.actions .groupButton,.actions .resetOrder{
+ display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:4px;min-width:150px;min-height:58px;text-align:center;
+ text-transform:uppercase;letter-spacing:.02em;line-height:1.25;
+}
+.actions .groupButton small,.actions .resetOrder small{
+ display:block;font-size:10px;letter-spacing:.035em;font-weight:700;
+ opacity:.88;
+}
+.actions .resetOrder{
+ background:#6c42a5!important;color:#fff!important;border-color:#58328d!important;
+}
+.actions .resetOrder:hover,.actions .resetOrder:focus-visible{
+ background:#54318a!important;color:#fff!important;border-color:#452372!important;
+}
+@media(max-width:640px){
+ .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
+ .actions .groupButton,.actions .resetOrder{min-width:0;width:100%}
+ .actions .resetOrder{grid-column:1/-1}
+}

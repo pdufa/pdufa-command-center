@@ -84,3 +84,15 @@ test("POOL Master offers drag/drop, arrow reorder, cross-segment moves and top r
  assert.match(style,/\.dragHandle\{/);
  assert.match(style,/\.movePair button\{/);
 });
+
+test("top action labels are Clinical & Dates, Qualification & FOCUS, and Column Order with separate purple reset",()=>{
+ assert.match(component,/<span>Clinical &amp; Dates<\/span>/);
+ assert.match(component,/<span>Qualification &amp; FOCUS<\/span>/);
+ assert.match(component,/<span>Column Order<\/span>/);
+ assert.match(component,/<small>Reset<\/small>/);
+ assert.match(component,/aria-label="Reset Column Order"/);
+ assert.match(style,/\.actions \.resetOrder\{/);
+ assert.match(style,/background:#6c42a5!important/);
+ assert.match(style,/\.actions button\[data-visibility="visible"\]/);
+ assert.match(style,/\.actions button\[data-visibility="hidden"\]/);
+});

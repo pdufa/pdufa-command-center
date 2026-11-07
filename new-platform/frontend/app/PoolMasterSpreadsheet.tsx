@@ -213,16 +213,22 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
    <div><h3>POOL Master · 32 columns</h3>
     <p>All stages stay in POOL. Drag segment handles or column headings to reorder, or use move arrows on phone. Choose a segment to transfer a column. These changes affect display only.</p></div>
    <div className={css.actions} aria-label="Independent POOL column group visibility">
-    <button type="button" data-visibility={clinicalVisible?"visible":"hidden"}
-     aria-pressed={clinicalVisible} onClick={toggleClinical}>
-     {clinicalVisible?"Hide All":"Show All"} · Clinical + Dates
+    <button type="button" className={css.groupButton} data-visibility={clinicalVisible?"visible":"hidden"}
+     aria-pressed={clinicalVisible} onClick={toggleClinical}
+     aria-label={"Clinical and Dates — "+(clinicalVisible?"Hide All":"Show All")}>
+     <span>Clinical &amp; Dates</span>
+     <small>{clinicalVisible?"Hide All":"Show All"}</small>
     </button>
-    <button type="button" data-visibility={qualificationVisible?"visible":"hidden"}
-     aria-pressed={qualificationVisible} onClick={toggleQualification}>
-     {qualificationVisible?"Hide All":"Show All"} · Qualification + FOCUS
+    <button type="button" className={css.groupButton} data-visibility={qualificationVisible?"visible":"hidden"}
+     aria-pressed={qualificationVisible} onClick={toggleQualification}
+     aria-label={"Qualification and FOCUS — "+(qualificationVisible?"Hide All":"Show All")}>
+     <span>Qualification &amp; FOCUS</span>
+     <small>{qualificationVisible?"Hide All":"Show All"}</small>
     </button>
-    <button type="button" className={css.resetOrder} onClick={resetColumnOrder}>
-     Reset Column Order
+    <button type="button" className={css.resetOrder} onClick={resetColumnOrder}
+     aria-label="Reset Column Order" title="Restore the original column and segment order">
+     <span>Column Order</span>
+     <small>Reset</small>
     </button>
    </div>
   </div>
