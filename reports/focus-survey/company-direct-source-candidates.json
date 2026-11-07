@@ -2,6 +2,64 @@
   "records": [
     {
       "candidateDrugs": [
+        "ABX464"
+      ],
+      "company": "Abivax S.A.",
+      "excerpt": "didate, obefazimod, and beyond. Our primary goal is to develop and commercialize obefazimod for the treatment of inflammatory diseases, starting with ulcerative colitis. Top-line results for the 8-week induction trials were announced in Q3 2025 , and results for the 44-week maintenance trial were announced in June 2026 . Patient enrollment for ENHANCE-CD in Crohn’s disease was initiated in Q3 2024 ; 12-week induction data readout is anticipated mid-year 2027 Our proprietary chemical library represents further untapped possibilities. We have launched a research effort, based on the mechanistic concept of obefazimod, to discover new potential follow-on drug candidates. Q=quarter. Active Abivax",
+      "ingredientCandidates": [],
+      "nctId": "NCT05507203",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Ulcerative Colitis"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-06-29T13:10:16+00:00",
+      "sourceDetails": {
+        "contentSha256": "8d03950ad4097fdae9c314a1a981c4a0f3deaade01972a8de3d0c39279ba521b",
+        "exactNctMentionInFullPage": false,
+        "originalSourceUrl": "https://www.abivax.com/pipeline/",
+        "seedContext": "Canonical FOCUS regulatoryUrl (unverified official-source candidate)",
+        "sourceChars": 4263,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "INDICATION_CONTEXT_ONLY",
+      "sourceTitle": "Our Pipeline | Abivax",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://www.abivax.com/pipeline/",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "ABVX"
+    },
+    {
+      "candidateDrugs": [
+        "ABX464"
+      ],
+      "company": "Abivax S.A.",
+      "excerpt": "didate, obefazimod, and beyond. Our primary goal is to develop and commercialize obefazimod for the treatment of inflammatory diseases, starting with ulcerative colitis. Top-line results for the 8-week induction trials were announced in Q3 2025 , and results for the 44-week maintenance trial were announced in June 2026 . Patient enrollment for ENHANCE-CD in Crohn’s disease was initiated in Q3 2024 ; 12-week induction data readout is anticipated mid-year 2027 Our proprietary chemical library represents further untapped possibilities. We have launched a research effort, based on the mechanistic concept of obefazimod, to discover new potential follow-on drug candidates. Q=quarter. Active Abivax",
+      "ingredientCandidates": [],
+      "nctId": "NCT05507216",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Ulcerative Colitis"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-06-29T13:10:16+00:00",
+      "sourceDetails": {
+        "contentSha256": "8d03950ad4097fdae9c314a1a981c4a0f3deaade01972a8de3d0c39279ba521b",
+        "exactNctMentionInFullPage": false,
+        "originalSourceUrl": "https://www.abivax.com/pipeline/",
+        "seedContext": "Canonical FOCUS regulatoryUrl (unverified official-source candidate)",
+        "sourceChars": 4263,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "INDICATION_CONTEXT_ONLY",
+      "sourceTitle": "Our Pipeline | Abivax",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://www.abivax.com/pipeline/",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "ABVX"
+    },
+    {
+      "candidateDrugs": [
         "Cytisinicline"
       ],
       "company": "Achieve Life Sciences",
@@ -158,6 +216,42 @@
     },
     {
       "candidateDrugs": [
+        "Deramiocel"
+      ],
+      "company": "Capricor Therapeutics, Inc.",
+      "excerpt": "Exhibit 99.1 Capricor Therapeutics Announces Extension of PDUFA Target Action Date as FDA Continues Review of Deramiocel BLA – New PDUFA target action date of November 22, 2026 follows submission of additional Phase 3 HOPE-3 data and analyses supporting a refined proposed indication – SAN DIEGO , Aug. 24, 2026 (GLOBE NEWSWIRE) — Capricor Therapeutics (NASDAQ: CAPR), a biotechnology company developing transformative cell and exosome-based therapeutics for the treatment of rare diseases, today announced that the U.S. Food and Drug Administration (FDA) has extended the Prescription Drug User Fee Act (PDUFA) target action date for its Biologics License Application (BLA) for Deramiocel, an invest",
+      "ingredientCandidates": [],
+      "nctId": "NCT05126758",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Muscular Dystrophies",
+        "Muscular Dystrophy, Duchenne",
+        "Muscular Disorders, Atrophic",
+        "Muscular Diseases",
+        "Neuromuscular Diseases",
+        "Genetic Diseases, X-Linked",
+        "Genetic Diseases, Inborn",
+        "Nervous System Diseases"
+      ],
+      "reviewed": false,
+      "sourceDate": "",
+      "sourceDetails": {
+        "contentSha256": "f70efc6857d15be6cc9fea506aa55e36e1936e042b08b68f21da69fc200e6d77",
+        "exactNctMentionInFullPage": false,
+        "originalSourceUrl": "https://www.capricor.com/investors/sec-filings/all-sec-filings/content/0001104659-26-100071/capr-20260824xex99d1.htm",
+        "seedContext": "Canonical FOCUS regulatoryUrl (unverified official-source candidate)",
+        "sourceChars": 7876,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "DRUG_MENTION_ONLY",
+      "sourceTitle": "",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://www.capricor.com/investors/sec-filings/all-sec-filings/content/0001104659-26-100071/capr-20260824xex99d1.htm",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "CAPR"
+    },
+    {
+      "candidateDrugs": [
         "Aficamten (5 mg",
         "10 mg",
         "15 mg and 20 mg)",
@@ -220,6 +314,35 @@
     },
     {
       "candidateDrugs": [
+        "Aficamten"
+      ],
+      "company": "Cytokinetics, Inc.",
+      "excerpt": "from ACACIA-HCM ( ssessment omparing ficamten to Placebo on ardiac Endpoints dults with Non-Obstructive HCM ), the pivotal Phase 3 clinical trial of aficamten in patients with symptomatic non-obstructive hypertrophic cardiomyopathy (nHCM) were presented in a Hot Line Session at the European Society of Cardiology (ESC) Congress 2026 in Munich, Germany, and simultaneously published in The New England Journal of Medicine ACACIA-HCM met both dual primary endpoints, demonstrating statistically significant improvements from baseline to Week 36 compared to placebo in both Kansas City Cardiomyopathy Questionnaire Clinical Summary Score (KCCQ-CSS) and maximal exercise performance (pVO ). Results for ",
+      "ingredientCandidates": [],
+      "nctId": "NCT06081894",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Symptomatic Non-Obstructive Hypertrophic Cardiomyopathy"
+      ],
+      "reviewed": false,
+      "sourceDate": "",
+      "sourceDetails": {
+        "contentSha256": "d85d8d9db968b23efc29f6b2bcaf76793625135a9b7b7ff620d46904c0d333d0",
+        "exactNctMentionInFullPage": false,
+        "originalSourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Results-from-ACACIA-HCM-Presented-in-Hot-Line-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026-and-Published-in-The-New-England-Journal-of-Medicine/default.aspx",
+        "seedContext": "Canonical FOCUS resultsUrl (unverified official-source candidate)",
+        "sourceChars": 24677,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "ISSUER_OR_SOURCE_LEAD_ONLY",
+      "sourceTitle": "Cytokinetics, Incorporated - Cytokinetics Announces Positive Results from ACACIA-HCM Presented in Hot Line Session at the European Society of Cardiology (ESC) Congress 2026 and Published in The New England Journal of Medicine",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Results-from-ACACIA-HCM-Presented-in-Hot-Line-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026-and-Published-in-The-New-England-Journal-of-Medicine/default.aspx",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "CYTK"
+    },
+    {
+      "candidateDrugs": [
         "AL102"
       ],
       "company": "Immunome, Inc.",
@@ -250,6 +373,66 @@
     },
     {
       "candidateDrugs": [
+        "AL102"
+      ],
+      "company": "Immunome, Inc.",
+      "excerpt": "Immunome Announces Detailed Phase 3 RINGSIDE Data for Varegacestat in Adults with Progressing Desmoid Tumors at the 2026 ASCO Annual Meeting - Investor Relations Skip to main content Skip to footer Opens in a new tab Overview News Events & Presentations Events Presentations Stock Info Financials SEC Filings Governance Governance Documents Board of Directors Executive Management Committee Composition Resources Investor Email Alerts Investor Contacts Overview News Events & Presentations Events Presentations Stock Info Financials SEC Filings Governance Governance Documents Board of Directors Executive Management Committee Composition Resources Investor Email Alerts Investor Contacts Home 2022 I",
+      "ingredientCandidates": [],
+      "nctId": "NCT04871282",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Desmoid",
+        "Desmoid Tumor"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-05-30T12:00:14+00:00",
+      "sourceDetails": {
+        "contentSha256": "8b7d03992dfe439c39c6f3606f24570aaa4c995964045d21be8738e0fc361524",
+        "exactNctMentionInFullPage": true,
+        "originalSourceUrl": "https://investors.immunome.com/immunome-announces-detailed-phase-3-ringside-data-for-varegacestat-in-adults-with-progressing-desmoid-tumors-at-the-2026-asco-annual-meeting/",
+        "seedContext": "Canonical FOCUS resultsUrl (unverified official-source candidate)",
+        "sourceChars": 14260,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "EXACT_NCT",
+      "sourceTitle": "Immunome Announces Detailed Phase 3 RINGSIDE Data for Varegacestat in Adults with Progressing Desmoid Tumors at the 2026 ASCO Annual Meeting - Investor Relations",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://investors.immunome.com/immunome-announces-detailed-phase-3-ringside-data-for-varegacestat-in-adults-with-progressing-desmoid-tumors-at-the-2026-asco-annual-meeting/",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "IMNM"
+    },
+    {
+      "candidateDrugs": [
+        "AL102"
+      ],
+      "company": "Immunome, Inc.",
+      "excerpt": "Immunome Announces U.S. FDA Acceptance of New Drug Application for Varegacestat for the Treatment of Adults with Desmoid Tumors - Investor Relations Skip to main content Skip to footer Opens in a new tab Overview News Events & Presentations Events Presentations Stock Info Financials SEC Filings Governance Governance Documents Board of Directors Executive Management Committee Composition Resources Investor Email Alerts Investor Contacts Overview News Events & Presentations Events Presentations Stock Info Financials SEC Filings Governance Governance Documents Board of Directors Executive Management Committee Composition Resources Investor Email Alerts Investor Contacts Home 2022 Immunome Annou",
+      "ingredientCandidates": [],
+      "nctId": "NCT04871282",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Desmoid",
+        "Desmoid Tumor"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-07-08T11:30:33+00:00",
+      "sourceDetails": {
+        "contentSha256": "022a07dd7f7e45419cc96f05e7417f7d8fd733a4bfa6200222c653cadf753747",
+        "exactNctMentionInFullPage": true,
+        "originalSourceUrl": "https://investors.immunome.com/immunome-announces-u-s-fda-acceptance-of-new-drug-application-for-varegacestat-for-the-treatment-of-adults-with-desmoid-tumors/",
+        "seedContext": "Canonical FOCUS regulatoryUrl (unverified official-source candidate)",
+        "sourceChars": 9784,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "EXACT_NCT",
+      "sourceTitle": "Immunome Announces U.S. FDA Acceptance of New Drug Application for Varegacestat for the Treatment of Adults with Desmoid Tumors - Investor Relations",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://investors.immunome.com/immunome-announces-u-s-fda-acceptance-of-new-drug-application-for-varegacestat-for-the-treatment-of-adults-with-desmoid-tumors/",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "IMNM"
+    },
+    {
+      "candidateDrugs": [
         "lorundrostat Dose 1",
         "lorundrostat Dose 2"
       ],
@@ -275,6 +458,66 @@
       "sourceTitle": "Mineralys Therapeutics Presents New Lorundrostat Data in Participants with Hypertension and Chronic Kidney Disease at ASN Kidney Week 2026 :: Mineralys Therapeutics, Inc. (MLYS)",
       "sourceType": "COMPANY",
       "sourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/123/mineralys-therapeutics-presents-new-lorundrostat-data-in",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "MLYS"
+    },
+    {
+      "candidateDrugs": [
+        "lorundrostat Dose 1",
+        "lorundrostat Dose 2"
+      ],
+      "company": "Mineralys Therapeutics, Inc.",
+      "excerpt": "tics Announces Positive Topline Results from Launch-HTN and Advance-HTN Pivotal Trials of Lorundrostat for the Treatment of Uncontrolled or Resistant Hypertension :: Mineralys Therapeutics, Inc. (MLYS) Skip to main content Skip to section navigation Skip to footer About Discover Mineralys Purpose & Values Our Team Science Lorundrostat Aldosterone Hypertension Cardio-Renal-Metabolic Syndrome Pipeline Investors Publications Medical Affairs Contact Us Careers & Culture Partnering Contact Form Menu About Discover Mineralys Purpose & Values Our Team Science Lorundrostat Aldosterone Hypertension Cardio-Renal-Metabolic Syndrome Pipeline Investors Publications Medical Affairs Contact Us Careers & Cu",
+      "ingredientCandidates": [],
+      "nctId": "NCT06153693",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Hypertension"
+      ],
+      "reviewed": false,
+      "sourceDate": "",
+      "sourceDetails": {
+        "contentSha256": "8bed61c9a6ccf987594c2beb038443f711a53fe560ac6d6a79b9ee529488a8ce",
+        "exactNctMentionInFullPage": true,
+        "originalSourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/60/mineralys-therapeutics-announces-positive-topline-results",
+        "seedContext": "Canonical FOCUS resultsUrl (unverified official-source candidate)",
+        "sourceChars": 16127,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "EXACT_NCT",
+      "sourceTitle": "Mineralys Therapeutics Announces Positive Topline Results from Launch-HTN and Advance-HTN Pivotal Trials of Lorundrostat for the Treatment of Uncontrolled or Resistant Hypertension :: Mineralys Therapeutics, Inc. (MLYS)",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/60/mineralys-therapeutics-announces-positive-topline-results",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "MLYS"
+    },
+    {
+      "candidateDrugs": [
+        "lorundrostat Dose 1",
+        "lorundrostat Dose 2"
+      ],
+      "company": "Mineralys Therapeutics, Inc.",
+      "excerpt": "S) Skip to main content Skip to section navigation Skip to footer About Discover Mineralys Purpose & Values Our Team Science Lorundrostat Aldosterone Hypertension Cardio-Renal-Metabolic Syndrome Pipeline Investors Publications Medical Affairs Contact Us Careers & Culture Partnering Contact Form Menu About Discover Mineralys Purpose & Values Our Team Science Lorundrostat Aldosterone Hypertension Cardio-Renal-Metabolic Syndrome Pipeline Investors Publications Medical Affairs Contact Us Careers & Culture Partnering Contact Form Press Releases Investors Investors Overview News & Events Overview Press Releases IR Calendar Presentations Email Alerts SEC Filings All SEC Filings Governance Overview ",
+      "ingredientCandidates": [],
+      "nctId": "NCT06153693",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Hypertension"
+      ],
+      "reviewed": false,
+      "sourceDate": "",
+      "sourceDetails": {
+        "contentSha256": "f8cf0a833490acddd7719c54f7dcd8b7e91f3fb6a7a1b9d88a5f3167064d0e62",
+        "exactNctMentionInFullPage": false,
+        "originalSourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/127/mineralys-therapeutics-reports-third-quarter-2026-financial",
+        "seedContext": "Canonical FOCUS regulatoryUrl (unverified official-source candidate)",
+        "sourceChars": 14949,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "INDICATION_CONTEXT_ONLY",
+      "sourceTitle": "Mineralys Therapeutics Reports Third Quarter 2026 Financial Results and Provides Corporate Update :: Mineralys Therapeutics, Inc. (MLYS)",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/127/mineralys-therapeutics-reports-third-quarter-2026-financial",
       "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
       "ticker": "MLYS"
     },

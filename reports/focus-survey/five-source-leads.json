@@ -3075,9 +3075,9 @@
         "doi": "10.1056/nejmoa2510198",
         "indexedSource": "MED",
         "openAccess": false,
-        "searchMode": "DRUG_INDICATION"
+        "searchMode": "TRIAL"
       },
-      "sourceMatch": "DRUG_AND_INDICATION",
+      "sourceMatch": "EXACT_NCT",
       "sourceTitle": "A Phase 3 Trial of Atacicept in Patients with IgA Nephropathy.",
       "sourceType": "LITERATURE",
       "sourceUrl": "https://europepmc.org/article/MED/41196369",
@@ -3473,9 +3473,9 @@
         "doi": "10.1056/nejmoa2610103",
         "indexedSource": "MED",
         "openAccess": false,
-        "searchMode": "DRUG_INDICATION"
+        "searchMode": "TRIAL"
       },
-      "sourceMatch": "DRUG_AND_INDICATION",
+      "sourceMatch": "EXACT_NCT",
       "sourceTitle": "Atacicept in IgA Nephropathy - Phase 3 Trial Final Efficacy Analysis.",
       "sourceType": "LITERATURE",
       "sourceUrl": "https://europepmc.org/article/MED/42911181",
@@ -3925,7 +3925,7 @@
         "doi": "10.1038/s41698-022-00308-1",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "DRUG_INDICATION"
+        "searchMode": "TRIAL"
       },
       "sourceMatch": "INDICATION_CONTEXT_ONLY",
       "sourceTitle": "Molecular pathogenesis of desmoid tumor and the role of γ-secretase inhibition.",
@@ -13889,7 +13889,7 @@
         "doi": "10.1016/s0140-6736(26)01855-6",
         "indexedSource": "MED",
         "openAccess": false,
-        "searchMode": "DRUG_INDICATION"
+        "searchMode": "DISEASE_CONTEXT"
       },
       "sourceMatch": "DRUG_AND_INDICATION",
       "sourceTitle": "Deucrictibant: a novel oral on-demand treatment for hereditary angioedema.",

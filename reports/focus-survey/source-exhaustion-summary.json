@@ -1,0 +1,94 @@
+{
+  "blockedSourceSlots": 712,
+  "familyStatuses": [
+    {
+      "count": 203,
+      "family": "CLINICAL_GUIDELINES",
+      "status": "NOT_YET_SEARCHED"
+    },
+    {
+      "count": 174,
+      "family": "CMS_PAYER",
+      "status": "NOT_YET_SEARCHED"
+    },
+    {
+      "count": 608,
+      "family": "COMPANY",
+      "status": "ACCESS_BLOCKED_RETRY_ANOTHER_AVENUE"
+    },
+    {
+      "count": 492,
+      "family": "COMPANY",
+      "status": "BACKGROUND_OR_ISSUER_LINK_NOT_ANSWER"
+    },
+    {
+      "count": 2,
+      "family": "COMPANY",
+      "status": "EVIDENCE_LEAD_REQUIRES_REVIEW"
+    },
+    {
+      "count": 210,
+      "family": "FDA",
+      "status": "BACKGROUND_OR_ISSUER_LINK_NOT_ANSWER"
+    },
+    {
+      "count": 225,
+      "family": "FDA",
+      "status": "SEARCHED_NO_INGREDIENT_MATCH"
+    },
+    {
+      "count": 647,
+      "family": "LITERATURE",
+      "status": "BACKGROUND_OR_ISSUER_LINK_NOT_ANSWER"
+    },
+    {
+      "count": 107,
+      "family": "LITERATURE",
+      "status": "EVIDENCE_LEAD_REQUIRES_REVIEW"
+    },
+    {
+      "count": 174,
+      "family": "NIH_EPIDEMIOLOGY",
+      "status": "NOT_YET_SEARCHED"
+    },
+    {
+      "count": 29,
+      "family": "PATENT_EXCLUSIVITY",
+      "status": "NOT_YET_SEARCHED"
+    },
+    {
+      "count": 127,
+      "family": "REGISTRY",
+      "status": "EVIDENCE_LEAD_REQUIRES_REVIEW"
+    },
+    {
+      "count": 569,
+      "family": "REGISTRY",
+      "status": "SEARCHED_NO_INGREDIENT_MATCH"
+    },
+    {
+      "count": 232,
+      "family": "SEC",
+      "status": "ACCESS_BLOCKED_RETRY_ANOTHER_AVENUE"
+    }
+  ],
+  "ingredients": 38,
+  "meaning": "This measures which source avenues were tried, which failed, and which still require review. Not a verified survey score.",
+  "nextActions": {
+    "READ_AND_ADJUDICATE_CAPTURED_PRIMARY_EVIDENCE": 173,
+    "REVIEWED_FACT_PRESENT_ADDITIONAL_CONTEXT_MAY_BE_MISSING": 43,
+    "SEARCH_UNVISITED_SOURCE_FAMILY": 138,
+    "UNBLOCK_WITH_INDEPENDENT_PRIMARY_SOURCE": 590,
+    "VERIFY_EXTERNAL_PRIMARY_SOURCES_OR_MODEL_WITH_ASSUMPTIONS": 158
+  },
+  "researchExhausted": 0,
+  "schemaVersion": 1,
+  "slotsWithEvidenceLeads": 201,
+  "sourceAttempts": 3219,
+  "sourceReceipts": 3799,
+  "surveySlots": 1102,
+  "surveys": 20,
+  "trials": 29,
+  "unsearchedSourceSlots": 493,
+  "verifiedIngredientInputs": 43
+}

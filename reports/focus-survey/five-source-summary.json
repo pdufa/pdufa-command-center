@@ -2,7 +2,7 @@
   "companyIssuers": 20,
   "errorCount": 19,
   "focusTrials": 29,
-  "generatedAt": "2026-11-07T20:40:34+00:00",
+  "generatedAt": "2026-11-07T21:29:53+00:00",
   "newSourceLeads": 555,
   "perTrial": [
     {
@@ -454,24 +454,24 @@
       "ticker": "CORT"
     },
     {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "COGT"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "COGT"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "COGT"
+    },
+    {
       "error": "ValueError:PUBLIC_SOURCE_TOO_LARGE",
       "sourceType": "COMPANY",
       "ticker": "ACHV"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "COGT"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "COGT"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "COGT"
     },
     {
       "error": "HTTP_403",
