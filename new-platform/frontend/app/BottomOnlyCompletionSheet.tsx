@@ -35,7 +35,8 @@ export default function BottomOnlyCompletionSheet({query}:{query:string}){
     <label>Filter <select value={filter} onChange={e=>{setFilter(e.target.value);setPage(0)}}><option value="all">All BOTTOM trials</option><option value="scored">Complete five-factor scores</option><option value="missing">Source gaps</option></select></label>
     <a href="/api/bottom-only-completion?format=csv">BOTTOM 190-column CSV</a>
     <a href="/api/bottom-only-completion?format=metrics">BOTTOM ratings CSV</a>
-    <a href="/api/bottom-only-completion?format=facts">Reviewed evidence CSV</a></div>
+    <a href="/api/bottom-only-completion?format=facts">Reviewed evidence CSV</a>
+    <a href="/api/bottom-only-completion?format=rating-evidence">All 115 rating evidence packets CSV</a></div>
    <p>Click a score caret to open the evidence ingredients horizontally to the right. Swipe horizontally on iPhone to read the expanded panel.</p>
    <div className={css.scroll} role="region" tabIndex={0} aria-label="BOTTOM post-readout trial scores with horizontal evidence expansion">
     <div className={css.header}><span>TRIAL</span><span>READOUT</span><span>190 FIELDS</span><span>CLINICAL 5-FACTOR</span><span>ORIGINAL 30-METRIC</span><span>EVIDENCE</span><span>EXPANDED FINDINGS AND HISTORY</span></div>
