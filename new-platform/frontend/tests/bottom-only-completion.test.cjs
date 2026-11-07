@@ -111,3 +111,20 @@ test('saved five-factor score events preserve historical state and one additive 
  assert.equal(new Set(events.map(e=>e.eventId)).size,events.length);
  assert.ok(events.every(e=>ids.has(e.nctId)));
 });
+
+test("every BOTTOM trial has five traceable rating-input packets without fabricated scores",()=>{
+ for(const trial of report.trials){
+  assert.equal(trial.clinicalFactors.length,5);
+  for(const factor of trial.clinicalFactors){
+   assert.equal(factor.reviewEvidenceCount,factor.reviewEvidence.length);
+   assert.ok(["NUMERICAL_RESEARCH_GRADE_PRESENT","EVIDENCE_FOUND_SCIENTIFIC_GRADING_REQUIRED","SOURCE_DISCOVERY_OR_DISCLOSURE_REQUIRED"].includes(factor.ratingReadiness));
+   for(const item of factor.reviewEvidence){
+    assert.ok(Number.isInteger(item.question)&&item.question>=1&&item.question<=30);
+    assert.match(item.sourceUrl,/^https:\/\//);
+    assert.ok(item.evidence.trim().length>10);
+    assert.notEqual(item.assessmentStatus,"REVIEWED_NUMERICAL_GRADE");
+   }
+  }
+  assert.ok(trial.clinicalFactors.find(f=>f.id==="post-1-1")?.reviewEvidenceCount>0);
+ }
+});
