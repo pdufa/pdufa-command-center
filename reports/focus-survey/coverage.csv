@@ -1,12 +1,12 @@
 surveyNumber,name,slots,verified,capturedNeedsReview,missing
 1,Patient Population,58,0,0,58
 2,Unmet Medical Need,87,0,0,87
-3,Clinical Benefit,174,15,29,130
+3,Clinical Benefit,174,17,27,130
 4,Survival Benefit,29,0,0,29
 5,Quality-of-Life Improvement,29,0,2,27
 6,Competitive Advantage,145,1,0,144
 7,Treatment Convenience,58,0,58,0
-8,Safety Advantage,87,0,24,63
+8,Safety Advantage,87,2,24,61
 9,Healthcare Cost Savings,87,0,0,87
 10,Insurance Coverage Potential,29,0,0,29
 11,Expected Treatment Price,29,0,0,29

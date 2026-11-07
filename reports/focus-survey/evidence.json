@@ -189,7 +189,7 @@
       "ingredientName": "Responder / Remission Advantage",
       "nctId": "NCT05507203",
       "publicationLeads": 16,
-      "reason": "Source lead needs clinical review",
+      "reason": null,
       "registryLeads": [
         {
           "count": 2,
@@ -200,10 +200,10 @@
           "url": "https://clinicaltrials.gov/study/NCT05507203"
         }
       ],
-      "reviewedSourceDate": null,
-      "reviewedSourceUrl": null,
-      "reviewedValue": null,
-      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "reviewedSourceDate": "2025-07-22",
+      "reviewedSourceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week/",
+      "reviewedValue": "ABTECT-1 Phase 3 induction, Week 8 clinical remission (modified Mayo): obefazimod/ABX464 50 mg 69/318 (21.7%) versus placebo 4/158 (2.5%). Issuer-reported placebo-adjusted difference +19.3 percentage points; p<0.0001. This is a source-checked trial endpoint observation, not an approval probability.",
+      "status": "VERIFIED",
       "surveyName": "Clinical Benefit",
       "surveyNumber": 3,
       "ticker": "ABVX"
@@ -455,12 +455,12 @@
       "ingredientName": "Treatment Discontinuation Difference",
       "nctId": "NCT05507203",
       "publicationLeads": 16,
-      "reason": "No source-validated ingredient answer",
+      "reason": null,
       "registryLeads": [],
-      "reviewedSourceDate": null,
-      "reviewedSourceUrl": null,
-      "reviewedValue": null,
-      "status": "MISSING",
+      "reviewedSourceDate": "2025-07-22",
+      "reviewedSourceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week/",
+      "reviewedValue": "ABTECT-1 Week 8 induction treatment-emergent adverse events leading to study-drug discontinuation: ABX464 50 mg 17/318 (5.3%) versus placebo 6/158 (3.8%). Crude study-specific proportions; not a causal or exposure-adjusted safety advantage.",
+      "status": "VERIFIED",
       "surveyName": "Safety Advantage",
       "surveyNumber": 8,
       "ticker": "ABVX"
@@ -907,7 +907,7 @@
       "ingredientName": "Responder / Remission Advantage",
       "nctId": "NCT05507216",
       "publicationLeads": 16,
-      "reason": "Source lead needs clinical review",
+      "reason": null,
       "registryLeads": [
         {
           "count": 2,
@@ -918,10 +918,10 @@
           "url": "https://clinicaltrials.gov/study/NCT05507216"
         }
       ],
-      "reviewedSourceDate": null,
-      "reviewedSourceUrl": null,
-      "reviewedValue": null,
-      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "reviewedSourceDate": "2025-07-22",
+      "reviewedSourceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week/",
+      "reviewedValue": "ABTECT-2 Phase 3 induction, Week 8 clinical remission (modified Mayo): obefazimod/ABX464 50 mg 63/318 (19.8%) versus placebo 10/159 (6.3%). Issuer-reported placebo-adjusted difference +13.4 percentage points; p=0.0001. This is a source-checked trial endpoint observation, not an approval probability.",
+      "status": "VERIFIED",
       "surveyName": "Clinical Benefit",
       "surveyNumber": 3,
       "ticker": "ABVX"
@@ -1173,12 +1173,12 @@
       "ingredientName": "Treatment Discontinuation Difference",
       "nctId": "NCT05507216",
       "publicationLeads": 16,
-      "reason": "No source-validated ingredient answer",
+      "reason": null,
       "registryLeads": [],
-      "reviewedSourceDate": null,
-      "reviewedSourceUrl": null,
-      "reviewedValue": null,
-      "status": "MISSING",
+      "reviewedSourceDate": "2025-07-22",
+      "reviewedSourceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week/",
+      "reviewedValue": "ABTECT-2 Week 8 induction treatment-emergent adverse events leading to study-drug discontinuation: ABX464 50 mg 15/318 (4.7%) versus placebo 9/159 (5.7%). Crude study-specific proportions; not a causal or exposure-adjusted safety advantage.",
+      "status": "VERIFIED",
       "surveyName": "Safety Advantage",
       "surveyNumber": 8,
       "ticker": "ABVX"

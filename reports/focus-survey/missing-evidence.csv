@@ -8,7 +8,6 @@ NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,clinicalBenefit,Clinical Patient
 NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
 NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
 NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,16,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.responseMeasures,2
 NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507203,ABVX,Abivax S.A.,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507203,ABVX,Abivax S.A.,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,16,No source-validated ingredient answer,,,0
@@ -21,7 +20,6 @@ NCT05507203,ABVX,Abivax S.A.,7,Treatment Convenience,convenience,Treatment Conve
 NCT05507203,ABVX,Abivax S.A.,7,Treatment Convenience,treatmentSequence,Place in Treatment Sequence,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.treatmentArms,3
 NCT05507203,ABVX,Abivax S.A.,8,Safety Advantage,safetyAdvantage,Safety Advantage,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.adverseEventGroups,3
 NCT05507203,ABVX,Abivax S.A.,8,Safety Advantage,seriousAes,Serious Adverse Event Difference,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.seriousEventGroups,3
-NCT05507203,ABVX,Abivax S.A.,8,Safety Advantage,discontinuation,Treatment Discontinuation Difference,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,hospitalizationReduction,Hospitalization / Complication Reduction,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,costDifference,Treatment Cost Advantage,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,valuePerOutcome,Value per Clinical Outcome,MISSING,,,,16,No source-validated ingredient answer,,,0
@@ -46,7 +44,6 @@ NCT05507216,ABVX,Abivax S.A.,3,Clinical Benefit,clinicalBenefit,Clinical Patient
 NCT05507216,ABVX,Abivax S.A.,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507216,registry.reportedOutcomeMeasures,4
 NCT05507216,ABVX,Abivax S.A.,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507216,registry.reportedOutcomeMeasures,4
 NCT05507216,ABVX,Abivax S.A.,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,16,No source-validated ingredient answer,,,0
-NCT05507216,ABVX,Abivax S.A.,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507216,registry.responseMeasures,2
 NCT05507216,ABVX,Abivax S.A.,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507216,ABVX,Abivax S.A.,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507216,ABVX,Abivax S.A.,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,16,No source-validated ingredient answer,,,0
@@ -59,7 +56,6 @@ NCT05507216,ABVX,Abivax S.A.,7,Treatment Convenience,convenience,Treatment Conve
 NCT05507216,ABVX,Abivax S.A.,7,Treatment Convenience,treatmentSequence,Place in Treatment Sequence,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507216,registry.treatmentArms,3
 NCT05507216,ABVX,Abivax S.A.,8,Safety Advantage,safetyAdvantage,Safety Advantage,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507216,registry.adverseEventGroups,3
 NCT05507216,ABVX,Abivax S.A.,8,Safety Advantage,seriousAes,Serious Adverse Event Difference,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507216,registry.seriousEventGroups,3
-NCT05507216,ABVX,Abivax S.A.,8,Safety Advantage,discontinuation,Treatment Discontinuation Difference,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507216,ABVX,Abivax S.A.,9,Healthcare Cost Savings,hospitalizationReduction,Hospitalization / Complication Reduction,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507216,ABVX,Abivax S.A.,9,Healthcare Cost Savings,costDifference,Treatment Cost Advantage,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507216,ABVX,Abivax S.A.,9,Healthcare Cost Savings,valuePerOutcome,Value per Clinical Outcome,MISSING,,,,16,No source-validated ingredient answer,,,0

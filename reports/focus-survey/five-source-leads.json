@@ -1436,7 +1436,7 @@
         "doi": "10.1007/s40618-024-02468-2",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "DRUG_MENTION_ONLY",
       "sourceTitle": "Relacorilant or surgery improved hemostatic markers in Cushing syndrome.",
@@ -1495,7 +1495,7 @@
         "doi": "10.1016/s2213-8587(25)00362-6",
         "indexedSource": "MED",
         "openAccess": false,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "DRUG_AND_INDICATION",
       "sourceTitle": "Efficacy and safety of relacorilant for the treatment of patients with Cushing's syndrome (GRACE): a multicentre, phase 3, double-blind, placebo-controlled, randomised-withdrawal study.",
@@ -1756,7 +1756,7 @@
         "doi": null,
         "indexedSource": "PMC",
         "openAccess": true,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "DRUG_AND_INDICATION",
       "sourceTitle": "OR12-05 Effects of Relacorilant on Body Weight and Body Composition in Patients With Endogenous Hypercortisolism in the Phase 3 GRACE and GRADIENT Studies",
@@ -1787,7 +1787,7 @@
         "doi": null,
         "indexedSource": "PMC",
         "openAccess": true,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "DRUG_AND_INDICATION",
       "sourceTitle": "SUN-463 Efficacy and Safety of Relacorilant in Individuals With Adrenal Hypercortisolism: Results From the Phase 3 GRACE and GRADIENT Studies",
@@ -1873,7 +1873,7 @@
         "doi": null,
         "indexedSource": "PMC",
         "openAccess": true,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "EXACT_NCT",
       "sourceTitle": "PMON165 Favorable Liver Safety Profile of the Selective Glucocorticoid Receptor Modulator Relacorilant in Healthy and Hepatically Impaired Adults and in Patients with Cushing Syndrome",
@@ -2086,7 +2086,7 @@
         "doi": "10.1007/s40265-025-02228-3",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "DISEASE_CONTEXT"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "DRUG_AND_INDICATION",
       "sourceTitle": "Pharmacotherapy for Autoimmune Pulmonary Alveolar Proteinosis.",
@@ -3075,9 +3075,9 @@
         "doi": "10.1056/nejmoa2510198",
         "indexedSource": "MED",
         "openAccess": false,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
-      "sourceMatch": "EXACT_NCT",
+      "sourceMatch": "DRUG_AND_INDICATION",
       "sourceTitle": "A Phase 3 Trial of Atacicept in Patients with IgA Nephropathy.",
       "sourceType": "LITERATURE",
       "sourceUrl": "https://europepmc.org/article/MED/41196369",
@@ -3473,9 +3473,9 @@
         "doi": "10.1056/nejmoa2610103",
         "indexedSource": "MED",
         "openAccess": false,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
-      "sourceMatch": "EXACT_NCT",
+      "sourceMatch": "DRUG_AND_INDICATION",
       "sourceTitle": "Atacicept in IgA Nephropathy - Phase 3 Trial Final Efficacy Analysis.",
       "sourceType": "LITERATURE",
       "sourceUrl": "https://europepmc.org/article/MED/42911181",
@@ -3925,7 +3925,7 @@
         "doi": "10.1038/s41698-022-00308-1",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "INDICATION_CONTEXT_ONLY",
       "sourceTitle": "Molecular pathogenesis of desmoid tumor and the role of γ-secretase inhibition.",
@@ -7933,7 +7933,7 @@
         "doi": "10.1093/ecco-jcc/jjaf074",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "INDICATION_CONTEXT_ONLY",
       "sourceTitle": "Obefazimod in patients with moderate-to-severely active ulcerative colitis: efficacy and safety analysis from the 96-week open-label maintenance phase 2b study.",
@@ -14140,7 +14140,7 @@
         "doi": "10.1007/s40259-024-00687-w",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "INDICATION_CONTEXT_ONLY",
       "sourceTitle": "Interleukin-17 Inhibitors in the Treatment of Hidradenitis Suppurativa.",
@@ -14170,7 +14170,7 @@
         "doi": "10.1080/19420862.2024.2443538",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "ISSUER_OR_SOURCE_LEAD_ONLY",
       "sourceTitle": "Antibodies to watch in 2025.",
@@ -16458,7 +16458,7 @@
         "doi": "10.3390/antib15050088",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "DRUG_AND_INDICATION",
       "sourceTitle": "Targeted Therapy for Antihistamine-Refractory Chronic Spontaneous Urticaria: A Critical Narrative Review and an Evidence-Graded Approach to Agent Selection.",

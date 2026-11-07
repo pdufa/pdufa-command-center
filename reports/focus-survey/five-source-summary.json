@@ -2,7 +2,7 @@
   "companyIssuers": 20,
   "errorCount": 19,
   "focusTrials": 29,
-  "generatedAt": "2026-11-07T20:03:35+00:00",
+  "generatedAt": "2026-11-07T20:07:35+00:00",
   "newSourceLeads": 555,
   "perTrial": [
     {
@@ -469,6 +469,11 @@
       "ticker": "COGT"
     },
     {
+      "error": "ValueError:PUBLIC_SOURCE_TOO_LARGE",
+      "sourceType": "COMPANY",
+      "ticker": "ACHV"
+    },
+    {
       "error": "HTTP_403",
       "sourceType": "COMPANY",
       "ticker": "MLTX"
@@ -489,9 +494,9 @@
       "ticker": "ABVX"
     },
     {
-      "error": "ValueError:PUBLIC_SOURCE_TOO_LARGE",
+      "error": "HTTP_403",
       "sourceType": "COMPANY",
-      "ticker": "ACHV"
+      "ticker": "PRAX"
     },
     {
       "error": "HTTP_403",
@@ -501,17 +506,12 @@
     {
       "error": "HTTP_403",
       "sourceType": "COMPANY",
-      "ticker": "PRAX"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "SRPT"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
       "ticker": "VERA"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "ZBIO"
     },
     {
       "error": "HTTP_403",
@@ -521,7 +521,7 @@
     {
       "error": "HTTP_403",
       "sourceType": "COMPANY",
-      "ticker": "ZBIO"
+      "ticker": "SRPT"
     },
     {
       "error": "URLError:<urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1011)>",

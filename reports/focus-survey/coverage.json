@@ -17,12 +17,12 @@
       "verified": 0
     },
     {
-      "capturedNeedsReview": 29,
+      "capturedNeedsReview": 27,
       "missing": 130,
       "name": "Clinical Benefit",
       "slots": 174,
       "surveyNumber": 3,
-      "verified": 15
+      "verified": 17
     },
     {
       "capturedNeedsReview": 0,
@@ -58,11 +58,11 @@
     },
     {
       "capturedNeedsReview": 24,
-      "missing": 63,
+      "missing": 61,
       "name": "Safety Advantage",
       "slots": 87,
       "surveyNumber": 8,
-      "verified": 0
+      "verified": 2
     },
     {
       "capturedNeedsReview": 0,
@@ -163,22 +163,22 @@
   ],
   "byTrial": [
     {
-      "capturedNeedsReview": 8,
+      "capturedNeedsReview": 7,
       "literatureLeads": 16,
-      "missing": 30,
+      "missing": 29,
       "nctId": "NCT05507203",
       "registryRetrieved": true,
       "ticker": "ABVX",
-      "verified": 0
+      "verified": 2
     },
     {
-      "capturedNeedsReview": 8,
+      "capturedNeedsReview": 7,
       "literatureLeads": 16,
-      "missing": 30,
+      "missing": 29,
       "nctId": "NCT05507216",
       "registryRetrieved": true,
       "ticker": "ABVX",
-      "verified": 0
+      "verified": 2
     },
     {
       "capturedNeedsReview": 6,
@@ -425,24 +425,24 @@
     }
   ],
   "focusTrials": 29,
-  "generatedAt": "2026-11-07T20:03:35+00:00",
+  "generatedAt": "2026-11-07T20:07:35+00:00",
   "googleSheetsSync": "SUCCESS",
   "ingredientSlots": 1102,
-  "leadCapturePercent": 10.25,
+  "leadCapturePercent": 10.07,
   "literatureLeads": 333,
   "schemaVersion": 1,
   "sourceRegistryTrials": 29,
   "statuses": {
     "IDENTITY_REVIEW_REQUIRED": 0,
-    "MISSING": 973,
+    "MISSING": 971,
     "MODELED": 0,
     "NOT_APPLICABLE": 0,
-    "SOURCE_CAPTURED_NEEDS_REVIEW": 113,
+    "SOURCE_CAPTURED_NEEDS_REVIEW": 111,
     "SOURCE_UNAVAILABLE": 0,
-    "VERIFIED": 16
+    "VERIFIED": 20
   },
   "surveyCategories": 20,
   "surveyIngredients": 38,
-  "verifiedPercent": 1.45,
+  "verifiedPercent": 1.81,
   "warning": "Registry and literature leads are not reviewed ingredient findings. 38 slots per trial does not mean 38 verified assessments."
 }
