@@ -429,7 +429,7 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
    <div><strong>ⓘ {infoKey in IDENTITY_INFO?infoKey==="nct"?"NCT ID":infoKey==="ticker"?"Ticker":"Company":COLUMN_LOOKUP.get(infoKey as Key)?.label}</strong>
     <p>{infoText}</p></div>
    <button type="button" onClick={()=>setInfoKey(null)} aria-label="Close column information">Close</button>
-  </aside>
+  </aside>}
   <p className={css.sortScope}>Sort arrows (↕) reorder only the current 50-row page; use another tap for descending and a third to restore original order. Phase checkboxes filter the full POOL before pagination.</p>
   <div className={css.scroll} role="region" tabIndex={0} aria-label="Scrollable POOL master trial spreadsheet">
    <table className={css.table}>
