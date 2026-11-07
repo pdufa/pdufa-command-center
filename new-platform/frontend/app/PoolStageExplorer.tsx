@@ -9,7 +9,6 @@ import ToolsResultsSpreadsheet, {type ToolsSpreadsheetRow,type SelectedFiltersSu
 import ToolsFunnel from "./ToolsFunnel";
 import ToolsOptionNumber from "./ToolsOptionNumber";
 import ToolsOpeningTrialGrid from "./ToolsOpeningTrialGrid";
-import ToolsAssessmentSection from "./ToolsAssessmentSection";
 import type {CompetitivePopulationScan} from "../lib/tools-competitive-readiness";
 import {TOOLS_CLEAR_EVENT,TOOLS_FILTERS_STORAGE_KEY,readToolsPreference,saveToolsPreference,
   parseToolsFilterSelections,clearToolsPreferences} from "../lib/tools-selection-persistence";
@@ -294,25 +293,10 @@ export default function PoolStageExplorer(){
       </div>
     </details>
 
-    {/* All five section headings remain available, even before filters are selected. */}
-    <details className={styles.poolSegment} data-pool-segment="assessments">
-      <summary className={styles.poolSegmentSummary}>
-        <span>3 · Scientific Assessments</span>
-        <small>20 research assessments · {count(page?.total??0)} matching trials</small>
-      </summary>
-      <div className={styles.poolSegmentBody}>
-        {hasSelections?<ToolsAssessmentSection
-          rows={page?.spreadsheetRows||[]}
-          total={page?.total??0}
-          offset={offset}
-          loading={loading}
-          error={error}
-        />:<p className={styles.muted}>Select a Phase or FDA designation in section 2 to view the 20 assessments. This section stays available and collapsed until you open it.</p>}
-      </div>
-    </details>
+    {/* Survey assessment panel retired; clinical research remains available independently. */}
     <details className={styles.poolSegment} data-pool-segment="live-trials">
       <summary className={styles.poolSegmentSummary}>
-        <span>4 · Live Trial Spreadsheet</span>
+        <span>3 · Live Trial Spreadsheet</span>
         <small>{count(page?.total??0)} matching trials · sortable results</small>
       </summary>
       <div className={styles.poolSegmentBody}>
@@ -340,7 +324,7 @@ export default function PoolStageExplorer(){
     </details>
       <details id="tools-advanced-research" className={styles.poolSegment} data-pool-segment="advanced">
         <summary className={styles.poolSegmentSummary}>
-          <span>5 · Additional filters and detailed research</span>
+          <span>4 · Additional filters and detailed research</span>
           <small>Quick filters, comparisons, rankings and CSV export</small>
         </summary>
         <div className={styles.poolSegmentBody}>
