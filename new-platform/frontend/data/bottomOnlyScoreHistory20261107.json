@@ -1,0 +1,897 @@
+{
+  "schemaVersion": 1,
+  "scope": "BOTTOM_ONLY_APPEND_ONLY_CLINICAL_SCORE_EVENTS",
+  "sourceAsOf": "2026-11-07",
+  "records": [
+    {
+      "eventId": "BOTTOM_NCT05535946_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT05535946",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT04770753_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT04770753",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 4,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/"
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/"
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT04770779_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT04770779",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 4,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT05031780_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT05031780",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT05144256_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT05144256",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT05175105_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT05175105",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT06747468_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT06747468",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT05453968_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT05453968",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT06445023_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT06445023",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 4,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "sourceUrl": "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer"
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT06455202_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT06455202",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 4,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "sourceUrl": "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer"
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT05711940_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT05711940",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT05257408_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT05257408",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT06081894_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT06081894",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": 45,
+      "clinicalScoredFactors": 5,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "sourceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "sourceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "sourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Results-from-ACACIA-HCM-Presented-in-Hot-Line-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026-and-Published-in-The-New-England-Journal-of-Medicine/default.aspx"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "sourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Results-from-ACACIA-HCM-Presented-in-Hot-Line-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026-and-Published-in-The-New-England-Journal-of-Medicine/default.aspx"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 25,
+          "sourceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021"
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT02598661_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT02598661",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT04768972_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT04768972",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT04849741_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT04849741",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT05392114_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT05392114",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT06641076_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT06641076",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 3,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "sourceUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "sourceUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial"
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "sourceUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial"
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT05210790_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT05210790",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT05774756_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT05774756",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT04544293_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT04544293",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT05243550_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT05243550",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT04716231_20261106_REVIEWED_FIVE_SNAPSHOT",
+      "nctId": "NCT04716231",
+      "recordedAt": "2026-11-06",
+      "eventType": "RESEARCH_SCORE_SNAPSHOT",
+      "clinicalFullScore": null,
+      "clinicalScoredFactors": 0,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "sourceUrl": null
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "sourceUrl": null
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Saved score snapshot derived from original review feed, before BOTTOM-only additive grade."
+    },
+    {
+      "eventId": "BOTTOM_NCT04770753_20261107_REVIEWED_GRADE_CHANGE",
+      "nctId": "NCT04770753",
+      "recordedAt": "2026-11-07",
+      "eventType": "RESEARCH_SCORE_CHANGE",
+      "previousClinicalFullScore": null,
+      "clinicalFullScore": 55,
+      "previousClinicalScoredFactors": 4,
+      "clinicalScoredFactors": 5,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "sourceUrl": "https://onlinelibrary.wiley.com/doi/full/10.1111/bjh.70838"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/"
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "One new source-reviewed exploratory open-label durability grade; no original grade/history overwritten."
+    }
+  ]
+}

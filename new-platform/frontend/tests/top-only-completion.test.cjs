@@ -58,7 +58,7 @@ test('TOP API exports exact 190-column CSV, all metric rows, and rejects out-of-
  assert.equal((await GET(new Request('http://localhost/api/top-only-completion?nctId=NCT00000000'))).status,404);assert.equal((await GET(new Request('http://localhost/api/top-only-completion?nctId=invalid'))).status,400);
  const detail=await(await GET(new Request('http://localhost/api/top-only-completion?nctId='+base.records[0].nctId))).json();assert.equal(detail.trial.fields.length,190);assert.ok(detail.history.length);
 });
-test('TOP UI replacement leaves original POST sheet invocation and scoring modules intact',()=>{
- const ui=fs.readFileSync(path.join(__dirname,'../app/Phase3SourceOnlySheets.tsx'),'utf8');assert.match(ui,/<TopOnlyCompletionSheet query=\{query\}\/>/);assert.match(ui,/<Sheet kind="POST_DATA" rows=\{post\} query=\{query\} scores=\{scores\} scoreLoading=\{scoreLoading\} coverage=\{coverage\} coverageLoading=\{coverageLoading\}\/>/);
+test('TOP UI and TOP scoring modules remain intact while BOTTOM has its own independent renderer',()=>{
+ const ui=fs.readFileSync(path.join(__dirname,'../app/Phase3SourceOnlySheets.tsx'),'utf8');assert.match(ui,/<TopOnlyCompletionSheet query=\{query\}\/>/);assert.match(ui,/<BottomOnlyCompletionSheet query=\{query\}\/>/);
  const model=fs.readFileSync(path.join(__dirname,'../lib/top-only-completion.ts'),'utf8');assert.doesNotMatch(model,/writeFile|sendTelegram|GEM_JR|streamlit|updatePipeline/);
 });
