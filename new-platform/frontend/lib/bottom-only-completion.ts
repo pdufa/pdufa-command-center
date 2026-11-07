@@ -85,7 +85,7 @@ export function bottomOnlyReport(){
    const added=trialFacts.find(f=>f.question===i+1);
    const fromSaved=isUrl(sourceUrl)&&originalStatus!=="UNSCORED";
    const state=tagQuestion(originalStatus,fromSaved,Boolean(added));
-   if(added&&!fromSaved){values[offset]=added.classification;values[offset+3]=added.evidence+" | Limit: "+added.criticalLimit;values[offset+4]=added.sourceUrl;}
+   if(added&&!fromSaved){values[offset]=added.classification;if(!original[offset+3].trim())values[offset+3]=added.evidence+" | Limit: "+added.criticalLimit;if(!original[offset+4].trim())values[offset+4]=added.sourceUrl;}
    return {number:i+1,state,originalStatus,
     explanation:added?.evidence??original[offset+3]??"",
     criticalLimit:added?.criticalLimit??null,
