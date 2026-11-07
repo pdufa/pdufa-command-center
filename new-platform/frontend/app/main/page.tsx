@@ -108,26 +108,6 @@ export default function MainStatus(){
         status="ABSTAIN"
         detail="No independently calibrated PASS / CRL / EXTENSION forecast has passed the application-cycle, freeze, outcome and historical backtest gates."/>
     </div>
-    <section style={{...card,marginTop:16}} aria-label="Historical MAIN acceptance inventory">
-      <h2 style={{marginTop:0}}>Original historical acceptance baseline</h2>
-      {checked?<p><strong>{MAIN_DAILY_EVIDENCE.verified} of {MAIN_DAILY_EVIDENCE.total}</strong>
-        {" "}historical technical gates verified ·
-        {" "}<strong>{MAIN_DAILY_EVIDENCE.acceptedSections} of {MAIN_DAILY_EVIDENCE.sections}</strong> sections fully accepted.</p>:
-        <p role="alert">Saved MAIN evidence did not validate; historical progress is withheld.</p>}
-      <p style={fine}>Snapshot: <strong>{historicalDay??"Not verified"}</strong> (Pacific).
-        This is an immutable historical scope, not today's percentage.
-        A green production build must not retroactively mark the other gates complete.
-        The full 31-gate record is archived and is not the current MAIN checklist.</p>
-      <Link href="/installation-audit">Open archived 31-gate evidence and the separate scientific/outcome audits</Link>
-    </section>
-    <section style={{...card,marginTop:16}} aria-label="Active final FOCUS trial acceptance cohort">
-      <h2 style={{marginTop:0}}>Final trial acceptance · {FOCUS_FINAL_TRIAL_AUDIT.trialCount} FOCUS trials only</h2>
-      <p><strong>{FOCUS_FINAL_TRIAL_AUDIT.trialCount} unique NCTs</strong> across {FOCUS_FINAL_TRIAL_AUDIT.uniqueCompanies} recorded tickers, from the final-list Google Sheets snapshot dated {FOCUS_FINAL_TRIAL_AUDIT.asOf}.
-        These are the <strong>only trial records</strong> subject to current MAIN acceptance gate assessment. POOL and the historical Phase 3/TOOLS all-phase tallies stay as references and do not count toward the final-trial gate denominator.</p>
-      <p><strong>{FOCUS_FINAL_TRIAL_AUDIT.totalChecks} trial-specific evidence checks</strong> ({FOCUS_FINAL_TRIAL_AUDIT.checksPerTrial} per trial) · {FOCUS_FINAL_TRIAL_AUDIT.independentlyVerified} independently verified · {FOCUS_FINAL_TRIAL_AUDIT.pointers} recorded source pointers · {FOCUS_FINAL_TRIAL_AUDIT.review} requiring source review · {FOCUS_FINAL_TRIAL_AUDIT.missing} missing source evidence.</p>
-      <p style={fine}>Evidence pointers, historical market-cap figures and planned FDA filings are not independently certified eligibility or live data. The 7 active MAIN technical installation checks remain distinct from these per-trial checks; accepting platform infrastructure never makes an individual trial FDA qualified.</p>
-      <Link href="/focus">Inspect all final-list trials and expandable gate findings</Link>
-    </section>
     <section style={{...card,marginTop:16}} aria-label="Active MAIN Core Platform and Pipeline gates">
       <h2 style={{marginTop:0}}>Current MAIN scope · 7 gates · Core Platform and Pipeline only</h2>
       <p style={fine}>Only two sections remain in the active MAIN checklist: <strong>Core Platform (3)</strong> and <strong>Pipeline (4)</strong>.
@@ -158,7 +138,27 @@ export default function MainStatus(){
         </div>
       </details> : <p role="alert">The 7-check Core Platform / Pipeline active scope cannot be established from saved evidence.</p>}
     </section>
-    <section style={{...card,marginTop:16}} aria-label="Next verified work">
+    <section style={{...card,marginTop:16}} aria-label="Active final FOCUS trial acceptance cohort">
+      <h2 style={{marginTop:0}}>Final trial acceptance · {FOCUS_FINAL_TRIAL_AUDIT.trialCount} FOCUS trials only</h2>
+      <p><strong>{FOCUS_FINAL_TRIAL_AUDIT.trialCount} unique NCTs</strong> across {FOCUS_FINAL_TRIAL_AUDIT.uniqueCompanies} recorded tickers, from the final-list Google Sheets snapshot dated {FOCUS_FINAL_TRIAL_AUDIT.asOf}.
+        These are the <strong>only trial records</strong> subject to current MAIN acceptance gate assessment. POOL and the historical Phase 3/TOOLS all-phase tallies stay as references and do not count toward the final-trial gate denominator.</p>
+      <p><strong>{FOCUS_FINAL_TRIAL_AUDIT.totalChecks} trial-specific evidence checks</strong> ({FOCUS_FINAL_TRIAL_AUDIT.checksPerTrial} per trial) · {FOCUS_FINAL_TRIAL_AUDIT.independentlyVerified} independently verified · {FOCUS_FINAL_TRIAL_AUDIT.pointers} recorded source pointers · {FOCUS_FINAL_TRIAL_AUDIT.review} requiring source review · {FOCUS_FINAL_TRIAL_AUDIT.missing} missing source evidence.</p>
+      <p style={fine}>Evidence pointers, historical market-cap figures and planned FDA filings are not independently certified eligibility or live data. The 7 active MAIN technical installation checks remain distinct from these per-trial checks; accepting platform infrastructure never makes an individual trial FDA qualified.</p>
+      <Link href="/focus">Inspect all final-list trials and expandable gate findings</Link>
+    </section>
+    <details style={{marginTop:16}} aria-label="Archived superseded 31-gate MAIN evidence">\n      <summary style={{cursor:"pointer",fontSize:13}}>Archived October 2026 31-gate acceptance record (not active)</summary>\n    <section style={{...card,marginTop:16}} aria-label="Historical MAIN acceptance inventory">
+      <h2 style={{marginTop:0}}>Original historical acceptance baseline</h2>
+      {checked?<p><strong>{MAIN_DAILY_EVIDENCE.verified} of {MAIN_DAILY_EVIDENCE.total}</strong>
+        {" "}historical technical gates verified ·
+        {" "}<strong>{MAIN_DAILY_EVIDENCE.acceptedSections} of {MAIN_DAILY_EVIDENCE.sections}</strong> sections fully accepted.</p>:
+        <p role="alert">Saved MAIN evidence did not validate; historical progress is withheld.</p>}
+      <p style={fine}>Snapshot: <strong>{historicalDay??"Not verified"}</strong> (Pacific).
+        This is an immutable historical scope, not today's percentage.
+        A green production build must not retroactively mark the other gates complete.
+        The full 31-gate record is archived and is not the current MAIN checklist.</p>
+      <Link href="/installation-audit">Open archived 31-gate evidence and the separate scientific/outcome audits</Link>
+    </section>
+    </details>\n    <section style={{...card,marginTop:16}} aria-label="Next verified work">
       <h2 style={{marginTop:0}}>Next MAIN acceptance step</h2>
       <p>Verify the authenticated deployed POOL → FOCUS handoff for the {FOCUS_FINAL_TRIAL_AUDIT.trialCount} exact final-list NCTs only, checking
         company, drug, indication and FDA application/cycle identities, then reconcile
