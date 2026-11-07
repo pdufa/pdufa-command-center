@@ -1,6 +1,6 @@
 import {populationGeographyFact,populationGeographyIntegrity,populationGeographyRecords} from "../../../lib/phase3-population-geography";
 import {irAssessment,irResearchIntegrity,requiresResearchStatus} from "../../../lib/phase3-ir-research";
-import {activePhase3Cohorts,IONIS_VERIFIED_READOUTS} from "../../../lib/phase3-active-cohorts";
+import {activePhase3Cohorts,IONIS_VERIFIED_READOUTS,NEW_VERIFIED_READOUTS} from "../../../lib/phase3-active-cohorts";
 import {activeOfficialRegistryRecord,activeOfficialRegistryIntegrity,ACTIVE_OFFICIAL_REGISTRY_AS_OF} from "../../../lib/phase3-active-official-registry";
 import {phase3PeerReviewedFact,phase3PeerEvidenceIntegrity,phase3RegistryBinaryFact} from "../../../lib/phase3-source-fact-enrichment";
 import agiosEvidence from "../../../data/agiosPhase3Evidence20261106.json";
@@ -18,6 +18,7 @@ export const maxDuration = 60;
 const ledger=activePhase3Cohorts.snapshot;
 const agiosFacts=new Map(agiosEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
 const ionisFacts=new Map(ionisEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
+const sixVerified=new Map(NEW_VERIFIED_READOUTS.map(r=>[r.nctId,r] as const));
 
 /** One Phase 3 trial per exact NCT; predictions never count as observed PASS/FAIL. */
 const baseHeaders = [
@@ -119,14 +120,14 @@ export async function GET(request:Request){
   const observedPass=outcome==="PRIMARY_ENDPOINT_MET"&&
    Boolean(endpointEvidenceUrl)&&(Boolean(endpoint)||r.classificationVerified);
   const observedFail=outcome==="PRIMARY_ENDPOINT_NOT_MET"&&
-   Boolean(endpointEvidenceUrl)&&Boolean(endpoint);
+   Boolean(endpointEvidenceUrl)&&(Boolean(endpoint)||r.classificationVerified);
   const noBinary=outcome==="NO_BINARY_PASS_FAIL";
   if(observedPass)passedCount++;
   if(observedFail)failedCount++;
   const passing=observedPass?"PASS_DOCUMENTED_PRIMARY_ENDPOINT":
    observedFail?"FAIL_DOCUMENTED_PRIMARY_ENDPOINT":
    noBinary?"NON_BINARY_ENDPOINT":"UNDETERMINED";
-  const passRationale=endpoint?.rationale||
+  const passRationale=endpoint?.rationale||sixVerified.get(r.nctId)?.evidence||
    (r.readoutEvidenceType==="FDA_APPROVAL_SUPPORTING_TRIAL"?
      "FDA confirms historical approval supported by this exact NCT; no separate binary primary-endpoint verdict inferred":
     r.readoutEvidenceType==="PEER_REVIEWED_OPEN_LABEL_RESULTS"?
@@ -155,7 +156,7 @@ export async function GET(request:Request){
    r.registrySourceUrl,r.classificationEvidence
   ];
   const extra=[
-   passing,fullPassRationale,endpoint?endpointEvidenceUrl:observedPass?endpointEvidenceUrl:"",
+   passing,fullPassRationale,endpoint?endpointEvidenceUrl:(observedPass||observedFail)?endpointEvidenceUrl:"",
    endpoint?.reviewedAt||r.readoutSourceDate||"",
    endpoint?.evidenceType||r.readoutEvidenceType||"NOT_VERIFIED",
    r.classificationCode,Boolean(endpoint)||r.classificationVerified,
@@ -319,10 +320,12 @@ export async function GET(request:Request){
   }
   if(included(r))rows.push(writeRow(values));
  }
- const additionalPasses=IONIS_VERIFIED_READOUTS.filter(r=>r.outcome==="PRIMARY_ENDPOINT_MET"&&!endpointByNct.has(r.nctId)).length;
+ const newlyVerified=[...IONIS_VERIFIED_READOUTS,...NEW_VERIFIED_READOUTS];
+ const additionalPasses=newlyVerified.filter(r=>r.outcome==="PRIMARY_ENDPOINT_MET"&&!endpointByNct.has(r.nctId)).length;
+ const additionalFails=newlyVerified.filter(r=>r.outcome==="PRIMARY_ENDPOINT_NOT_MET"&&!endpointByNct.has(r.nctId)).length;
  if((cohort==="all"&&!ticker&&!nctId&&rows.length!==763)||
     rows.length!==includedCount+1||passedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_MET+additionalPasses||
-    failedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_NOT_MET){
+    failedCount!==endpointAdjudications.counts.PRIMARY_ENDPOINT_NOT_MET+additionalFails){
   return Response.json({error:"Trial/pass reconciliation failed"},{status:503});
  }
  return new Response("\uFEFF"+rows.join("\r\n")+"\r\n",{
