@@ -1,0 +1,230 @@
+{
+  "scope": "EXISTING_BOTTOM_ONLY",
+  "asOf": "2026-11-07",
+  "trialCount": 23,
+  "totalCells": 4370,
+  "allFieldsAccounted": 23,
+  "allMetricDispositions": 690,
+  "activeFactors": 115,
+  "activeFactorsGraded": 25,
+  "missingActiveFactorGrades": 90,
+  "completeClinicalScores": 2,
+  "completeThirtyMetricScores": 0,
+  "sourceBackedQuestionItems": 436,
+  "totalQuestionItems": 690,
+  "unresolvedQuestionItems": 254,
+  "additionalReviewedSourceFacts": 11,
+  "additionalProvisionalGrades": 1,
+  "gradedCoveragePercent": 21.7,
+  "sourceCoveragePercent": 63.2,
+  "notValidatedFdaProbability": true,
+  "perTrial": [
+    {
+      "nctId": "NCT05535946",
+      "ticker": "ABVX",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 18,
+      "sourceGaps": 12
+    },
+    {
+      "nctId": "NCT04770753",
+      "ticker": "AGIO",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 5,
+      "clinicalScore": 55,
+      "evidenceQuestionsCovered": 23,
+      "sourceGaps": 7
+    },
+    {
+      "nctId": "NCT04770779",
+      "ticker": "AGIO",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 4,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 21,
+      "sourceGaps": 9
+    },
+    {
+      "nctId": "NCT05031780",
+      "ticker": "AGIO",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 19,
+      "sourceGaps": 11
+    },
+    {
+      "nctId": "NCT05144256",
+      "ticker": "AGIO",
+      "readoutOutcome": "PRIMARY_ENDPOINT_NOT_MET",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 16,
+      "sourceGaps": 14
+    },
+    {
+      "nctId": "NCT05175105",
+      "ticker": "AGIO",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 16,
+      "sourceGaps": 14
+    },
+    {
+      "nctId": "NCT06747468",
+      "ticker": "AMLX",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 14,
+      "sourceGaps": 16
+    },
+    {
+      "nctId": "NCT05453968",
+      "ticker": "BCRX",
+      "readoutOutcome": "NO_BINARY_PASS_FAIL",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 23,
+      "sourceGaps": 7
+    },
+    {
+      "nctId": "NCT06445023",
+      "ticker": "CLDX",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 4,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 16,
+      "sourceGaps": 14
+    },
+    {
+      "nctId": "NCT06455202",
+      "ticker": "CLDX",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 4,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 16,
+      "sourceGaps": 14
+    },
+    {
+      "nctId": "NCT05711940",
+      "ticker": "CMPS",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 16,
+      "sourceGaps": 14
+    },
+    {
+      "nctId": "NCT05257408",
+      "ticker": "CORT",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 22,
+      "sourceGaps": 8
+    },
+    {
+      "nctId": "NCT06081894",
+      "ticker": "CYTK",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 5,
+      "clinicalScore": 45,
+      "evidenceQuestionsCovered": 14,
+      "sourceGaps": 16
+    },
+    {
+      "nctId": "NCT02598661",
+      "ticker": "GERN",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 22,
+      "sourceGaps": 8
+    },
+    {
+      "nctId": "NCT04768972",
+      "ticker": "IONS",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 15,
+      "sourceGaps": 15
+    },
+    {
+      "nctId": "NCT04849741",
+      "ticker": "IONS",
+      "readoutOutcome": "NO_BINARY_PASS_FAIL",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 16,
+      "sourceGaps": 14
+    },
+    {
+      "nctId": "NCT05392114",
+      "ticker": "IONS",
+      "readoutOutcome": "NO_BINARY_PASS_FAIL",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 20,
+      "sourceGaps": 10
+    },
+    {
+      "nctId": "NCT06641076",
+      "ticker": "MLTX",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 3,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 16,
+      "sourceGaps": 14
+    },
+    {
+      "nctId": "NCT05210790",
+      "ticker": "PTGX",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 21,
+      "sourceGaps": 9
+    },
+    {
+      "nctId": "NCT05774756",
+      "ticker": "RYTM",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 25,
+      "sourceGaps": 5
+    },
+    {
+      "nctId": "NCT04544293",
+      "ticker": "SVRA",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 24,
+      "sourceGaps": 6
+    },
+    {
+      "nctId": "NCT05243550",
+      "ticker": "URGN",
+      "readoutOutcome": "NO_BINARY_PASS_FAIL",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 23,
+      "sourceGaps": 7
+    },
+    {
+      "nctId": "NCT04716231",
+      "ticker": "VERA",
+      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "factorsScored": 0,
+      "clinicalScore": null,
+      "evidenceQuestionsCovered": 20,
+      "sourceGaps": 10
+    }
+  ]
+}
