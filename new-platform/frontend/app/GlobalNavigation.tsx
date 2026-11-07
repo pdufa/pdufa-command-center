@@ -1,18 +1,13 @@
 "use client";
 import Link from "next/link";
 import {usePathname} from "next/navigation";
+
 const links=[
- {label:"PIPELINE",href:"/pipeline"},
+ {label:"POOL",href:"/pool"},
+ {label:"P3 POST-DATA",href:"/p3-post-data"},
  {label:"TOOLS",href:"/tools"},
- {label:"CHARTS",href:"/charts"},
- {label:"COMPARE TRIALS",href:"/compare-trials"},
- {label:"SCAN",href:"/scans"},
- {label:"PREDICTIONS",href:"/predictions"},
- {label:"ALKS SCORES",href:"/alkermes-scores"},
- {label:"SVA RESEARCH",href:"/sinovac-scores"},
- {label:"#1",href:"/patient-population"},
- {label:"SYSTEM STATUS",href:"/installation-audit"}
 ];
+
 export default function GlobalNavigation(){
  const pathname=usePathname();
  return <nav aria-label="Site navigation" style={{position:"sticky",top:0,zIndex:1000,background:"#10233a",color:"#fff",borderBottom:"2px solid #16a085",padding:"9px 12px",display:"flex",gap:8,alignItems:"center",overflowX:"auto",whiteSpace:"nowrap",WebkitOverflowScrolling:"touch"}}>
