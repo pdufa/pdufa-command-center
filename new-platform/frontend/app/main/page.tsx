@@ -61,7 +61,7 @@ export default function MainStatus(){
         and independent TOOLS Phase / FDA designation intersection counts.</p>
       <p>The all-phase $300M–$10B dated market-cap screen reconciled
         <strong> 2,698 of 11,644</strong> source clinical trial records:
-        115 lacked verified cap data, 8,830 were outside the cap range, and 1 issuer
+        115 lacked verified cap data, 8,830 were outside the cap range, and 1 trial
         was excluded by the listing screen. These are <strong>not</strong> 2,698 completed
         Phase 3 programs or a certified FOCUS population. The original-source
         issuer listing, licensing rights, pivotal readout and FDA application dates
