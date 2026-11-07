@@ -1,60 +1,6 @@
-/** All survey/rating UI is retired. Original implementation is retained below
- * as inactive archival reference so historical research is not destroyed. */
-const RAAS_SURVEYS_RATINGS_CANCELLED=true;
-/** Primary RAAS workspace: all 762 source-backed trial setup rows.
- * Neither saved research metric coverage nor registry evidence implies
- * independent validation of numerical ratings or FDA predictions.
- */
-import type {Metadata} from "next";
-import Link from "next/link";
-import status from "../../data/raas-all-trials-partial-metric-ratings-status.json";
-import Raas762ScoringWorkspace from "../Raas762ScoringWorkspace";
-import css from "../raas-history/page.module.css";
+import {redirect} from "next/navigation";
 
-export const metadata:Metadata={
- title:"RAAS · 762 Trial Scoring Setup | PDUFA",
- description:"762 exact research NCTs, each assigned a single five-factor clinical research checklist, with missing evidence, filters and NCT history."
-};
-export default function Raas762Page(){
- if (RAAS_SURVEYS_RATINGS_CANCELLED) return <main className={css.root} data-raas-ratings-retired="raas-762">
-  <header className={css.header}>
-   <Link className={css.back} href="/tools">← TOOLS</Link>
-   <h1>Surveys and ratings cancelled</h1>
-   <p>Historical source records and trial data are preserved. No new RAAS ratings are generated from this workspace.</p>
-   <p><Link href="/raas-top-bottom">Open source-only TOP and BOTTOM Phase 3 spreadsheets</Link></p>
-  </header>
- </main>;
- return <main className={css.root} data-raas-primary-scoring-setup="762-nct-rows">
-  <header className={css.header}>
-   <Link className={css.back} href="/tools">← TOOLS</Link>
-   <h1>RAAS · 762-trial scoring setup</h1>
-   <p><strong>One trial per row, all 762 NCTs.</strong> Each trial has one
-    five-factor clinical checklist assigned to its current Before/Past registry-posting
-    spreadsheet, with missing-review status and unified NCT history.</p>
-  </header>
-  <p className={css.notice} data-raas-stage-application-boundary="top-bottom-only">
-   <strong>RAAS research scope:</strong> Exactly 762 Before/Past registry-
-   classified trial rows, not the 11,000+ POOL. The registry-posting
-   classification is NOT a dated issuer readout. Any separate issuer-
-   verified TOP/BOTTOM classification, FDA prediction, and full RAAS score
-   still require separate issuer evidence, not a guess.{" "}
-   <Link href="/tools#raas-top-bottom-sheets">
-    Open the TOP/BOTTOM Phase 3 spreadsheets</Link>.
-  </p>
-  <Raas762ScoringWorkspace/>
-  <p className={css.disclaimer}>
-   <strong>Current score audit:</strong> {status.uniqueNctsWithActualProvisionalMetricScores}
-   {" "}of {status.researchTrials} NCTs have a saved provisional metric review
-   somewhere in the two-stage research ledger (not necessarily in their current
-   registry-posting category); {status.fullValidatedRaasScores} independently validated
-   full RAAS ratings. This is the saved 762-trial registry research universe, not
-   a claim that 762/762 scores are complete or that all meet current
-   $300M–$10B Phase 3 PDUFA Pipeline restrictions.
-  </p>
-  <p className={css.foot}>
-   <Link href="/raas-evidence-backlog">Evidence gaps and prioritization for these same 762 trials</Link>
-   {" · "}<Link href="/raas-review-queue">Independent source-review assignments</Link>
-   {" · "}<Link href="/raas-scan">Technical RAAS scan diagnostics</Link>.
-  </p>
- </main>;
+/** The old 762-trial scoring cohort is no longer an active spreadsheet. */
+export default function RetiredRaas762Page(){
+ redirect("/p3-post-data");
 }
