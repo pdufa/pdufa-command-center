@@ -21,7 +21,7 @@ import requests
 
 ROOT = Path(__file__).resolve().parents[1]
 SHEET_ID = "1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU"
-SHEET_NAME = "BOTTOM — ACTIVE"
+SHEET_NAME = "FOCUS"
 CANDIDATES = ROOT / "new-platform/backend/app/phase3_curated_announcements.json"
 CAPS = ROOT / "data/phase_pipeline_market_caps.csv"
 CENSUS = ROOT / "data/phase3_all_years_300m_10b_trials.csv"

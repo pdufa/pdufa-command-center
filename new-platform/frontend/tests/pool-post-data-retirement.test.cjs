@@ -6,21 +6,21 @@ const path=require("node:path");
 const root=path.join(__dirname,"..");
 const source=p=>fs.readFileSync(path.join(root,p),"utf8");
 
-test("active site navigation lists only POOL, P3 POST-DATA and POOL tools",()=>{
+test("active site navigation lists only POOL, FOCUS and POOL tools",()=>{
  const nav=source("app/GlobalNavigation.tsx");
  const home=source("app/page.tsx");
  const tools=source("app/tools/page.tsx");
  const links=[...nav.matchAll(/\{label:"([^"]+)",href:"([^"]+)"\}/g)].map(m=>[m[1],m[2]]);
- assert.deepEqual(links,[["POOL","/pool"],["P3 POST-DATA","/p3-post-data"],["TOOLS","/tools"]]);
+ assert.deepEqual(links,[["POOL","/pool"],["FOCUS","/focus"],["TOOLS","/tools"]]);
  assert.match(home,/href:"\/pool"/);
- assert.match(home,/href:"\/p3-post-data"/);
+ assert.match(home,/href:"\/focus"/);
  assert.match(home,/\/api\/auth/);
  assert.doesNotMatch(home,/href:"\/(?:raas-762|raas-top-bottom|scans|pipeline|gem)/);
  assert.match(tools,/PoolStageExplorer/);
- assert.match(tools,/href="\/p3-post-data"/);
+ assert.match(tools,/href="\/focus"/);
 });
 
-test("P3 POST-DATA allows any positive number of unique qualified NCT records with source links",()=>{
+test("FOCUS allows any positive number of unique qualified NCT records with source links",()=>{
  const page=source("app/p3-post-data/page.tsx");
  const snapshot=JSON.parse(source("data/p3PostDataActive.json"));
  assert.equal(snapshot.schemaVersion,1);

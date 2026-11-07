@@ -6,7 +6,7 @@ import snapshot from "../../data/p3PostDataActive.json";
 import {bottomTrialHistory} from "../../lib/bottom-only-exports";
 
 export const metadata:Metadata={
- title:"P3 POST-DATA — Results-released FDA/PDUFA candidates | PDUFA",
+ title:"FOCUS — Results-released FDA/PDUFA candidates | PDUFA",
  description:"Only companies with $300M–$10B market cap, published Phase 3 results and an active FDA/PDUFA application path."
 };
 const source="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit#gid=202611061";
@@ -17,10 +17,10 @@ const researchByNct=new Map(bottomOnlyReport().trials.map(t=>[t.nctId,t]));
 export default function P3PostDataPage(){
  return <main style={{maxWidth:1220,margin:"28px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif",color:"#173d2b"}}>
   <nav style={{display:"flex",gap:18,marginBottom:18}}><Link href="/pool">POOL</Link><Link href="/tools">TOOLS</Link></nav>
-  <h1>P3 POST-DATA</h1>
+  <h1>FOCUS</h1>
   <p><strong>{trials.length} distinct NCT trials</strong> · Publicly reported Phase 3 results · $300M–$10B market cap · Current FDA/PDUFA path.</p>
   <p>Snapshot of the verified Google Sheets list as of {snapshot.asOf}. Refreshed from the source of truth after the scheduled sync. Completed trials remain if their drug continues toward approval. No TOP, GEM or historical research-only cohort is included.</p>
-  <p><a href={source} target="_blank" rel="noopener noreferrer" style={{fontWeight:700}}>Open and edit the source-of-truth P3 Post-Data spreadsheet</a></p>
+  <p><a href={source} target="_blank" rel="noopener noreferrer" style={{fontWeight:700}}>Open and edit the source-of-truth FOCUS spreadsheet</a></p>
   <p style={{fontSize:13}}>Saved RAAS research and scoring history stays attached to the exact NCT, where available. Missing history is not a zero score.</p>
   <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:780,fontSize:14}}>

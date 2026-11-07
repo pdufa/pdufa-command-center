@@ -15,7 +15,7 @@ export function GET(request:Request){
  }
  if(format){
   if(!['csv','metrics','facts','rating-evidence'].includes(format))return Response.json({error:'Unknown export'},{status:422,headers});
-  return new Response(bottomExport(format,activeNcts),{headers:{...headers,'Content-Type':'text/csv; charset=utf-8','Content-Disposition':`attachment; filename="p3-post-data-${format}.csv"`}});
+  return new Response(bottomExport(format,activeNcts),{headers:{...headers,'Content-Type':'text/csv; charset=utf-8','Content-Disposition':`attachment; filename="focus-${format}.csv"`}});
  }
  return Response.json(bottomSummary(activeNcts),{headers});
 }

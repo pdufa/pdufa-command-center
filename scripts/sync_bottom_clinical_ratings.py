@@ -12,7 +12,7 @@ from pathlib import Path
 ROOT=Path(__file__).resolve().parents[1]
 EXPORT=ROOT/'reports/bottom-only-20261107/bottom-score-sync.json'
 SHEET_ID='1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU'
-SHEET_NAME='BOTTOM — ACTIVE'
+SHEET_NAME='FOCUS'
 EXPECTED={1:'NCT ID',12:'Provisional Component Scores (Not Overall)',16:'RAAS Score Status',17:'Research Review As-Of',18:'Open RAAS Metric Details'}
 
 def build_plan(rows,ratings):

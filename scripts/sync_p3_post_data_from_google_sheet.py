@@ -17,7 +17,7 @@ import requests
 
 SPREADSHEET_ID = "1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU"
 SOURCE_URL = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/edit#gid=202611061"
-RANGE = "'BOTTOM — ACTIVE'!A4:AB"
+RANGE = "'FOCUS'!A4:AB"
 TARGET = Path("new-platform/frontend/data/p3PostDataActive.json")
 
 
@@ -84,7 +84,7 @@ def main():
     snapshot = {
         "schemaVersion": 1,
         "asOf": datetime.now(timezone.utc).date().isoformat(),
-        "origin": "BOTTOM — ACTIVE / Google Sheet",
+        "origin": "FOCUS / Google Sheet",
         "source": SOURCE_URL,
         "records": trials,
     }
