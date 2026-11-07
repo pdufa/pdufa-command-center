@@ -152,6 +152,59 @@ class ExistingRowRefreshTests(unittest.TestCase):
         self.assertNotIn("Z4",cells)
         self.assertNotIn("W4",cells)
 
+    def test_secondary_cap_fills_missing_primary_once_without_touching_raas(self):
+        self.caps = []
+        backup={"COGT":(523250000,self.today.isoformat(),
+                        "https://stockanalysis.com/stocks/cogt/market-cap/")}
+        data,report=refresh.build_plan([self.headers,self.row],self.caps,self.catalog,
+                self.registry,self.today,self.now,backup_caps=backup)
+        cells=self.cells(data)
+        self.assertEqual(cells["X4"],523250000)
+        self.assertEqual(cells["Y4"],self.today.isoformat())
+        self.assertEqual(cells["AB4"],backup["COGT"][2])
+        self.assertEqual(report["counts"]["backupCapRowsUpdated"],1)
+        self.assertEqual(report["records"][0]["marketCapSourceKind"],
+                         "SECONDARY_DATED_PUBLISHER_QUOTE")
+        self.assertNotIn("MARKET_CAP_NOT_IN_CURRENT_LEDGER",report["records"][0]["review"])
+        self.assertFalse(set(cells).intersection({
+            f"{refresh.a1_col(i)}4" for i in refresh.IMMUTABLE}))
+
+    def test_verified_primary_market_cap_has_priority_over_backup(self):
+        backup={"COGT":(523250000,self.today.isoformat(),
+                        "https://stockanalysis.com/stocks/cogt/market-cap/")}
+        data,report=refresh.build_plan([self.headers,self.row],self.caps,self.catalog,
+                self.registry,self.today,self.now,backup_caps=backup)
+        self.assertEqual(self.cells(data)["X4"],5491198055)
+        self.assertEqual(report["counts"]["backupCapRowsUpdated"],0)
+
+    def test_primary_verified_out_of_range_never_masked_by_secondary(self):
+        self.caps[0]["market_cap"]="12000000000"
+        backup={"COGT":(523250000,self.today.isoformat(),
+                        "https://stockanalysis.com/stocks/cogt/market-cap/")}
+        data,report=refresh.build_plan([self.headers,self.row],self.caps,self.catalog,
+                self.registry,self.today,self.now,backup_caps=backup)
+        self.assertNotIn("X4",self.cells(data))
+        self.assertIn("MARKET_CAP_OUTSIDE_ACTIVE_RANGE",report["records"][0]["review"])
+
+    def test_secondary_older_than_existing_preserves_current_market_cap(self):
+        self.caps=[]
+        older=(self.today-timedelta(days=1)).isoformat()
+        backup={"COGT":(523250000,older,
+                        "https://stockanalysis.com/stocks/cogt/market-cap/")}
+        data,report=refresh.build_plan([self.headers,self.row],self.caps,self.catalog,
+                self.registry,self.today,self.now,backup_caps=backup)
+        self.assertNotIn("X4",self.cells(data))
+        self.assertIn("BACKUP_MARKET_CAP_OLDER_THAN_SAVED",report["records"][0]["review"])
+
+    def test_forged_secondary_url_is_rejected(self):
+        self.caps=[]
+        backup={"COGT":(523250000,self.today.isoformat(),
+                        "https://forged.example/stocks/cogt/market-cap/")}
+        data,report=refresh.build_plan([self.headers,self.row],self.caps,self.catalog,
+                self.registry,self.today,self.now,backup_caps=backup)
+        self.assertNotIn("X4",self.cells(data))
+        self.assertIn("BACKUP_MARKET_CAP_SOURCE_INVALID",report["records"][0]["review"])
+
     def test_duplicate_identity_rejected(self):
         with self.assertRaisesRegex(ValueError,"Duplicate NCT"):
             refresh.validate_grid([self.headers,self.row,self.row])
