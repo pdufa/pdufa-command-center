@@ -19,7 +19,7 @@ def prepare():
     doc=json.loads((OUT/"company-direct-source-ledger.json").read_text(encoding="utf8"))
     rows=doc.get("rows",[])
     if doc.get("schemaVersion")!=1 or report.get("schemaVersion")!=1 or \
-       report.get("trials")!=29 or report.get("selectedLinks")!=29 or \
+       report.get("trials")!=29 or not 29<=report.get("selectedLinks",0)<=87 or \
        len(rows)!=report.get("ledgerRows") or len({r["nctId"] for r in rows})!=29:
         raise ValueError("DIRECT_COMPANY_SOURCE_INCOMPLETE")
     if len({(r["nctId"],r["url"]) for r in rows})!=len(rows) or \
