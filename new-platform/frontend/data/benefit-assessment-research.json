@@ -266,6 +266,56 @@
       "advantages": []
     },
     {
+      "nctId": "NCT05507203",
+      "ticker": "ABVX",
+      "drug": "ABX464",
+      "indication": "Ulcerative Colitis",
+      "facts": {
+        "responseRemission": {
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week/",
+          "sourceDate": "2025-07-22",
+          "confidence": "MODERATE",
+          "value": "ABTECT-1 Phase 3 induction, Week 8 clinical remission (modified Mayo): obefazimod/ABX464 50 mg 69/318 (21.7%) versus placebo 4/158 (2.5%). Issuer-reported placebo-adjusted difference +19.3 percentage points; p<0.0001. This is a source-checked trial endpoint observation, not an approval probability.",
+          "method": "Cross-matched the public Abivax July 22 2025 ABTECT induction release (Study 105/106) with exact ClinicalTrials.gov NCT05507203 50 mg/placebo group identifiers, week 8 modified Mayo endpoint, count values and matching analyzed group denominators from registry results posted 2026-09-10. Company-adjusted difference is reproduced as reported, NOT confused with the unadjusted fractions. Do not infer an FDA approval or RAAS grade."
+        },
+        "discontinuation": {
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week/",
+          "sourceDate": "2025-07-22",
+          "confidence": "MODERATE",
+          "value": "ABTECT-1 Week 8 induction treatment-emergent adverse events leading to study-drug discontinuation: ABX464 50 mg 17/318 (5.3%) versus placebo 6/158 (3.8%). Crude study-specific proportions; not a causal or exposure-adjusted safety advantage.",
+          "method": "Read issuer's original ABTECT-1/ABTECT-2 adverse-event comparison table published July 22 2025 and reconciled each dose/arm with exact ClinicalTrials.gov NCT05507203 group counts and corresponding 8-week trial. Captures reason-coded TEAE discontinuation counts only; clinical safety superiority and long-term exposure are not established."
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT05507216",
+      "ticker": "ABVX",
+      "drug": "ABX464",
+      "indication": "Ulcerative Colitis",
+      "facts": {
+        "responseRemission": {
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week/",
+          "sourceDate": "2025-07-22",
+          "confidence": "MODERATE",
+          "value": "ABTECT-2 Phase 3 induction, Week 8 clinical remission (modified Mayo): obefazimod/ABX464 50 mg 63/318 (19.8%) versus placebo 10/159 (6.3%). Issuer-reported placebo-adjusted difference +13.4 percentage points; p=0.0001. This is a source-checked trial endpoint observation, not an approval probability.",
+          "method": "Cross-matched the public Abivax July 22 2025 ABTECT induction release (Study 105/106) with exact ClinicalTrials.gov NCT05507216 50 mg/placebo group identifiers, week 8 modified Mayo endpoint, count values and matching analyzed group denominators from registry results posted 2026-09-10. Company-adjusted difference is reproduced as reported, NOT confused with the unadjusted fractions. Do not infer an FDA approval or RAAS grade."
+        },
+        "discontinuation": {
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week/",
+          "sourceDate": "2025-07-22",
+          "confidence": "MODERATE",
+          "value": "ABTECT-2 Week 8 induction treatment-emergent adverse events leading to study-drug discontinuation: ABX464 50 mg 15/318 (4.7%) versus placebo 9/159 (5.7%). Crude study-specific proportions; not a causal or exposure-adjusted safety advantage.",
+          "method": "Read issuer's original ABTECT-1/ABTECT-2 adverse-event comparison table published July 22 2025 and reconciled each dose/arm with exact ClinicalTrials.gov NCT05507216 group counts and corresponding 8-week trial. Captures reason-coded TEAE discontinuation counts only; clinical safety superiority and long-term exposure are not established."
+        }
+      },
+      "advantages": []
+    },
+    {
       "nctId": "NCT05767346",
       "ticker": "CYTK",
       "drug": "Aficamten",
