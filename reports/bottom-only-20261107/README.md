@@ -64,3 +64,11 @@ Each reviewed numerical factor retains the grade, approved finding/benchmark, ci
 - Canonical Sheets writes touch M/Q/R/S only, preserve prior values and notes, and leave validated overall probabilities and archived /30 cells unchanged. Active 29-trial sync receipt verifies 94 further cells and all 843 readback cells; the first five overlaps were synchronized earlier in 18 cells.
 
 See `verification.json` for test/build/browser/deployment evidence and `sheets-active29-sync-receipt.json` for canonical sheet parity. Live verification and release references are recorded only after successful checks.
+
+## Verified release
+
+Code commit `4b6d0eec1c077aa274f36d887497b8e731443deb` deployed to production as `dpl_27QhQPsW8x5nS9YcnEwGdmH53Z5J` (READY). Chromium verified https://pdufa-new-dashboard.vercel.app/p3-post-data: 29 rows, 29 exact-NCT research matches, 145 clinical cards, all histories, source/API parity, active-only filtering and mobile horizontal expansion; zero page errors. Canonical Sheets readback separately verifies all 29 records, 94 new value writes and preserved notes.
+
+Validation: full frontend suite 1275/1275 passed; updated BOTTOM-targeted suite 11/11 passed including the additional legacy history regression; Python source/sync safety suite 12/12 passed; production build passed; recalculation is idempotent. An initial full-suite run had one unrelated short-timeout failure under concurrent build load, which passed in isolation and in the full rerun. All receipts are in `verification.json` and the browser result directories. Main was updated directly; no pull request was opened.
+
+The existing canonical Sheets workflow also completed successfully: run `42351124549`, automatic refresh commit `2d3ecb947`; all active scores remained 128/145 and the service-account integration verified zero further sheet writes were needed. Sync receipts are retained in an append-only audit history.

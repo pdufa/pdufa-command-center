@@ -70,7 +70,7 @@ export default function BottomOnlyCompletionSheet({query}:{query:string}){
     <a href="/api/p3-post-data-research?format=csv">BOTTOM 190-column CSV</a>
     <a href="/api/p3-post-data-research?format=metrics">BOTTOM ratings CSV</a>
     <a href="/api/p3-post-data-research?format=facts">Reviewed evidence CSV</a>
-    <a href="/api/p3-post-data-research?format=rating-evidence">All 115 rating evidence packets CSV</a></div>
+    <a href="/api/p3-post-data-research?format=rating-evidence">Clinical rating evidence packets CSV</a></div>
    <p>Click a score caret to open the evidence ingredients horizontally to the right. Swipe horizontally on iPhone to read the expanded panel.</p>
    <div className={css.scroll} role="region" tabIndex={0} aria-label="BOTTOM post-readout trial scores with horizontal evidence expansion">
     <div className={css.header}><span>TRIAL</span><span>READOUT</span><span>190 FIELDS</span><span>CLINICAL 5-FACTOR</span><span>ORIGINAL 30-METRIC</span><span>EVIDENCE</span><span>EXPANDED FINDINGS AND HISTORY</span></div>

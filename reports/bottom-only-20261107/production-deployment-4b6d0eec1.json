@@ -1,0 +1,39 @@
+{
+  "verifiedAt": "2026-11-07T07:26:16.597Z",
+  "id": "dpl_27QhQPsW8x5nS9YcnEwGdmH53Z5J",
+  "name": "pdufa-new-dashboard",
+  "url": "pdufa-new-dashboard-r71zgkjyv-pdufa.vercel.app",
+  "type": "LAMBDAS",
+  "state": "READY",
+  "createdAt": 1794036243062,
+  "creator": {
+    "uid": "eXsRwmwJbZmkhY9HEKRdlrf5",
+    "username": "pdufa"
+  },
+  "project": {
+    "id": "prj_7VRIuXH3FzUseTmXkzLDYQbEAd5l",
+    "name": "pdufa-new-dashboard",
+    "framework": "nextjs"
+  },
+  "meta": {
+    "githubCommitRef": "main",
+    "githubCommitSha": "4b6d0eec1c077aa274f36d887497b8e731443deb",
+    "githubCommitMessage": "Research all 29 active BOTTOM trials and complete supported clinical ratings",
+    "githubRepo": "pdufa-command-center",
+    "githubOrg": "pdufa"
+  },
+  "alias": [
+    "pdufa-new-dashboard.vercel.app",
+    "pdufa-new-dashboard-pdufa.vercel.app",
+    "pdufa-new-dashboard-git-main-pdufa.vercel.app"
+  ],
+  "target": "production",
+  "regions": [
+    "iad1"
+  ],
+  "buildingAt": 1794036244085,
+  "ready": 1794036275955,
+  "readyState": "READY",
+  "source": "git",
+  "aliasError": null
+}

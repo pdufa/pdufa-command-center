@@ -26,4 +26,11 @@ class BottomSheetSyncTests(unittest.TestCase):
         rows,r=self.fixture();plan=m.build_plan(rows,[r]);requests=m.batch_requests(plan,202611061,{(3,12):'Existing audit observation'})
         first=requests[0]['updateCells'];cell=first['rows'][0]['values'][0]
         self.assertIn('Existing audit observation',cell['note']);self.assertIn('Prior value',cell['note']);self.assertEqual(first['fields'],'userEnteredValue,note,userEnteredFormat.wrapStrategy')
+    def test_zero_write_recheck_keeps_prior_sync_audit(self):
+        import tempfile,json
+        with tempfile.TemporaryDirectory() as folder:
+            directory=Path(folder);first={'writes':18,'verified':True};second={'writes':0,'verified':True}
+            m.persist_receipt(directory,first);m.persist_receipt(directory,second);m.persist_receipt(directory,second)
+            self.assertEqual(json.loads((directory/'sheets-sync-history.json').read_text())['runs'],[first,second])
+            self.assertEqual(json.loads((directory/'sheets-sync-receipt.json').read_text()),second)
 if __name__=='__main__':unittest.main()

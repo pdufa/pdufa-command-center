@@ -56,6 +56,16 @@ def batch_requests(changes,sheet_id,existing_notes=None):
         requests.append({'updateCells':{'range':{'sheetId':sheet_id,'startRowIndex':row,'endRowIndex':row+1,'startColumnIndex':col,'endColumnIndex':col+1},'rows':[{'values':[{'userEnteredValue':{'stringValue':change['value']},'note':note,'userEnteredFormat':{'wrapStrategy':'WRAP'}}]}],'fields':'userEnteredValue,note,userEnteredFormat.wrapStrategy'}})
     return requests
 
+def persist_receipt(directory, report):
+    """Keep latest receipt convenient without discarding earlier sync audits."""
+    latest=directory/'sheets-sync-receipt.json'
+    history_file=directory/'sheets-sync-history.json'
+    history=json.loads(history_file.read_text()) if history_file.exists() else {'runs':[]}
+    for receipt in ([json.loads(latest.read_text())] if latest.exists() else [])+[report]:
+        if receipt not in history['runs']:history['runs'].append(receipt)
+    history_file.write_text(json.dumps(history,indent=2)+'\n')
+    latest.write_text(json.dumps(report,indent=2)+'\n')
+
 def main():
     # Use established auth/identity/header validation and Sheets readback.
     from refresh_existing_p3_post_data import api_auth,sheets_values,validate_grid
@@ -85,6 +95,6 @@ def main():
             actual=after[ri][ci] if ci<len(after[ri]) else ''
             if actual!=expected.get((ri,ci),prior):raise RuntimeError('SHEET_READBACK_MISMATCH')
     report={'writes':len(changes),'matchedNcts':sorted({c['nctId'] for c in changes}),'changes':changes,'verified':True}
-    (ROOT/'reports/bottom-only-20261107/sheets-sync-receipt.json').write_text(json.dumps(report,indent=2)+'\n')
+    persist_receipt(ROOT/'reports/bottom-only-20261107',report)
     print(json.dumps({'writes':len(changes),'verified':True}))
 if __name__=='__main__':main()

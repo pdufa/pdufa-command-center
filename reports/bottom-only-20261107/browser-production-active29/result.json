@@ -1,0 +1,15 @@
+{
+  "base": "https://pdufa-new-dashboard.vercel.app",
+  "activeRows": 29,
+  "exactResearchMatches": 29,
+  "testedClinicalCards": 145,
+  "historyVerified": true,
+  "apiParityVerified": true,
+  "activeFilteringVerified": true,
+  "retiredEndpointStill404": true,
+  "mobileHorizontalExpansion": {
+    "client": 312,
+    "scroll": 1500
+  },
+  "pageErrors": []
+}

@@ -79,7 +79,7 @@
     "recalculationIdempotent": true
   },
   "active29Verification": {
-    "status": "LOCAL_AND_CANONICAL_SHEETS_VERIFIED_PRODUCTION_PENDING",
+    "status": "LOCAL_CANONICAL_SHEETS_AND_PRODUCTION_VERIFIED",
     "preservation": {
       "bottomOnlyBaseline20261107.json": {
         "originalRecordsPreserved": 23,
@@ -115,7 +115,7 @@
       }
     },
     "pythonTests": {
-      "passed": 11,
+      "passed": 12,
       "failed": 0
     },
     "recalculationIdempotent": true,
@@ -171,10 +171,35 @@
       "id": 410058282,
       "stateBeforeChange": "active",
       "triggersAndScheduleUnchanged": true,
-      "manuallyDispatched": false
+      "manuallyDispatched": false,
+      "runId": 42351124549,
+      "conclusion": "success",
+      "url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42351124549",
+      "automaticRefreshCommit": "2d3ecb947",
+      "clinicalScoresUnchanged": true,
+      "sheetWriteRecheck": 0
     },
     "deployment": {
-      "status": "PENDING_COMMIT_AND_GIT_DEPLOY"
+      "status": "READY",
+      "id": "dpl_27QhQPsW8x5nS9YcnEwGdmH53Z5J",
+      "commit": "4b6d0eec1c077aa274f36d887497b8e731443deb",
+      "url": "https://pdufa-new-dashboard.vercel.app/p3-post-data",
+      "browserVerifiedAll29": true
+    },
+    "browserProduction": {
+      "base": "https://pdufa-new-dashboard.vercel.app",
+      "activeRows": 29,
+      "exactResearchMatches": 29,
+      "testedClinicalCards": 145,
+      "historyVerified": true,
+      "apiParityVerified": true,
+      "activeFilteringVerified": true,
+      "retiredEndpointStill404": true,
+      "mobileHorizontalExpansion": {
+        "client": 312,
+        "scroll": 1500
+      },
+      "pageErrors": []
     }
   }
 }
