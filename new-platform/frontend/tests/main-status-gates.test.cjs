@@ -32,9 +32,11 @@ test("MAIN status page reports dated release proof without promoting old install
   assert.doesNotMatch(html,/FDA approval probability.*\d+%/);
 });
 
-test("MAIN navigation is a control page and the two active population routes are preserved",()=>{
-  const source=fs.readFileSync(path.join(__dirname,"../app/GlobalNavigation.tsx"),"utf8");
-  for(const entry of ['{label:"POOL",href:"/pool"}','{label:"FOCUS",href:"/focus"}',
-    '{label:"MAIN",href:"/main"}'])assert.ok(source.includes(entry),entry);
-  assert.ok(!source.includes('label:"GEM"')&&!source.includes('label:"TOP"'));
+test("MAIN is reachable without adding a new active population tab",()=>{
+  const nav=fs.readFileSync(path.join(__dirname,"../app/GlobalNavigation.tsx"),"utf8");
+  const home=fs.readFileSync(path.join(__dirname,"../app/page.tsx"),"utf8");
+  const links=[...nav.matchAll(/\\{label:"([^"]+)",href:"([^"]+)"\\}/g)].map(x=>[x[1],x[2]]);
+  assert.deepEqual(links,[["POOL","/pool"],["FOCUS","/focus"],["TOOLS","/tools"]]);
+  assert.match(home,/<Link href="\\/main">MAIN/);
+  assert.ok(!nav.includes('label:"GEM"')&&!nav.includes('label:"TOP"'));
 });
