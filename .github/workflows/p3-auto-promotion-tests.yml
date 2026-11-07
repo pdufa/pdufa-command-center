@@ -34,5 +34,6 @@ jobs:
       - name: Verify eligibility gates, exact-NCT dedupe and fail-closed review
         run: |
           python -m unittest discover -s tests -p 'test_p3_auto_promotion.py' -v
+          python -m unittest discover -s tests -p 'test_p3_regulatory_stage_rules.py' -v
           python -m unittest discover -s tests -p 'test_p3_existing_row_refresh.py' -v
           python -m unittest discover -s tests -p 'test_p3_market_cap_secondary.py' -v

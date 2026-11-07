@@ -275,7 +275,7 @@ def main():
             timeout=60)
         result.raise_for_status()
         reported=(result.json().get("updates") or {}).get("updatedRange","")
-        if not reported.startswith(f"'{SHEET_NAME}'!A{first}:"):
+        if not reported.split("!")[-1].startswith(f"A{first}:"):
             raise RuntimeError("P3 append did not return expected range: "+reported)
         check = sheets_values(auth, f"A{first}:B{last}")
         expected = [[a["ticker"],a["nct"]] for a in additions]

@@ -30,7 +30,7 @@ class RegulatoryTests(unittest.TestCase):
             result,issue=gate.classify_regulatory_path(item,CUTOFF,CUTOFF)
             self.assertIsNone(issue)
             self.assertEqual(result["stage"],stage)
-            self.assertIn("PDUFA",result["display"]) if stage=="PDUFA_ASSIGNED" else None
+            if stage=="PDUFA_ASSIGNED": self.assertEqual(result["display"],"2026-12-15")
             if stage in {"PLANNED","SUBMITTED","ACCEPTED"}:
                 self.assertNotEqual(result["display"],"2026-12-15")
 

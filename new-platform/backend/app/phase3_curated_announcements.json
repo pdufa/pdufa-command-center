@@ -20,7 +20,7 @@
         "pdufa_target_date": "2026-11-30"
       }
     },
-    "APPLICATION|CLDX|BARZOLOVOLIMAB_CSU_EMBARQ_CSU1": {
+    "APPLICATION|CLDX|BARZOLVOLIMAB_CSU_EMBARQ_CSU1": {
       "nctId": "NCT06445023",
       "drug": "barzolvolimab",
       "indication": "chronic spontaneous urticaria",
@@ -43,7 +43,7 @@
       },
       "clinicalRiskNote": "Company-reported topline Phase 3 results; not an FDA-reviewed efficacy conclusion."
     },
-    "APPLICATION|CLDX|BARZOLOVOLIMAB_CSU_EMBARQ_CSU2": {
+    "APPLICATION|CLDX|BARZOLVOLIMAB_CSU_EMBARQ_CSU2": {
       "nctId": "NCT06455202",
       "drug": "barzolvolimab",
       "indication": "chronic spontaneous urticaria",
