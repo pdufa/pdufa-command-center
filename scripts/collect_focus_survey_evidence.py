@@ -316,7 +316,7 @@ def reviewed_fact(record, row, packet, ingredient):
     # Match only complete comma/semicolon/plus-delimited components, not substrings.
     drug_match = drug not in ("placebo", "vehicle", "sham", "control") and any(
         drug == name or name.startswith(drug + " (") or
-        drug in [part.strip() for part in re.split(r"[,;]|\\s+\\+\\s+", name)]
+        drug in [part.strip() for part in re.split(r"[,;]|\s+\+\s+", name)]
         for name in interventions
     )
     if not drug or not indication or not drug_match or indication not in indications:
