@@ -113,7 +113,7 @@ test("all-trial page exposes clinical integrity filter and exact NCT source pack
   "data-raas-registry-source-interpretation-review",
   "primaryNumericCICount","saeDenominatorGroupCount"])
   assert.ok(client.includes(needle),"missing clinical source audit "+needle);
- assert.ok(csvRoute.includes("sourceIntegrityIssueCodes"));
+ assert.ok(csvRoute.includes("RETIRED_COHORT"),"obsolete 762-row export must remain retired");
  for(const name of ["app/raas-evidence-backlog/EvidenceBacklogClient.tsx",
   "app/api/raas-registry-source-packet/route.ts"]){
   const code=read(name);
