@@ -24,7 +24,7 @@ test("MAIN status page reports dated release proof without promoting old install
   assert.match(html,/Verified production runtime smoke/);
   assert.match(html,/42394008611/);
   assert.match(html,/2,698 of 11,644/);
-  assert.match(html,/not 2,698 completed/);
+  assert.match(html,/<strong>not<\/strong> 2,698 completed/);
   assert.match(html,/not.*complete technical acceptance/);
   assert.match(html,/1 of 31/);
   assert.match(html,/31-gate audit · exact evidence and blockers/);
