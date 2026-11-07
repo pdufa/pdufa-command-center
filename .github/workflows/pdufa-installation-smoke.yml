@@ -232,7 +232,7 @@ jobs:
                 "unlisted",excluded[0],"; still NOT_VERIFIED")
           assert zero.get("total")==0, "Zero checked filters should yield zero trial matches"
           assert zero.get("stageStats",{}).get("trials")>0, "POOL source trial count missing"
-          print("PASS: Purple Pipeline card has",screen["screenedTrials"],"exact matched completed Phase 3 research NCTs; not fully qualified")
+          print("PASS: dated TOOLS cap-screen card has",screen["screenedTrials"],"all-phase clinical NCT records; NOT a completed Phase 3 or qualified FOCUS count")
 
           every_stage=["Early Phase 1","Phase 1","Phase 1/2","Phase 2","Phase 2/3",
                        "Phase 3","Phase 3 Results","NDA/BLA Submission","FDA Acceptance",
