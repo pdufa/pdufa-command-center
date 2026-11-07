@@ -424,6 +424,39 @@
       "advantages": []
     },
     {
+      "nctId": "NCT05662241",
+      "ticker": "ZBIO",
+      "drug": "Obexelimab",
+      "indication": "IgG4 Related Disease",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "INDIGO Phase 3 (NCT05662241), 194 randomized, 52-week primary adjudicated flare requiring rescue: obexelimab vs placebo reduced IgG4-RD flare risk 56% (HR 0.44; 95% CI 0.277–0.711; p=0.0005). 73.2% vs 45.4% were flare-free at Week 52; company reported.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://investors.zenasbio.com/news-releases/news-release-details/zenas-biopharma-announces-data-registrational-phase-3-indigo",
+          "sourceDate": "2026-06-02",
+          "method": "Exact IgG4-RD INDIGO NCT05662241 matched to registry drug and indication using Zenas official trial list, and Jun 2 company release reporting journal publication. Verified effect HR, 95% CI and comparator; not a conclusion of approval or superiority versus standard active therapy.",
+          "confidence": "MODERATE"
+        },
+        "magnitude": {
+          "value": "INDIGO Phase 3 primary flare hazard ratio 0.44 (95% CI 0.277–0.711, p=0.0005), corresponding to 56% lower hazard over 52 weeks versus placebo. 194 randomized, approximately 97 per arm; 73.2% obexelimab vs 45.4% placebo flare-free at Week 52.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://investors.zenasbio.com/news-releases/news-release-details/zenas-biopharma-announces-data-registrational-phase-3-indigo",
+          "sourceDate": "2026-06-02",
+          "method": "Issuer June 2, 2026 INDIGO/IgG4-related disease report explicitly identifies primary time-to-flare HR and 52-week rates; verified company-reported quantities with interval, not post-hoc selection or independent regulator endpoint evaluation.",
+          "confidence": "MODERATE"
+        },
+        "responseRemission": {
+          "value": "INDIGO Phase 3 adjudicated complete remission at Week 52: 37.1% obexelimab versus 19.6% placebo (absolute difference +17.5 percentage points by displayed rounded figures), company reports p=0.0049. Remission required absence of adjudicated flare and rescue and inactive disease.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://investors.zenasbio.com/news-releases/news-release-details/zenas-biopharma-announces-data-registrational-phase-3-indigo",
+          "sourceDate": "2026-06-02",
+          "method": "Reproduced Zenas June 2 report Week52 remission definition and two randomized arms. Published release itself describes 17.7% improvement (likely unrounded model); distinguish simple rounded-group subtraction 17.5 percentage points and avoid claiming a treatment-adjusted difference.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
       "nctId": "NCT05767346",
       "ticker": "CYTK",
       "drug": "Aficamten",
@@ -574,6 +607,31 @@
           "sourceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
           "sourceDate": "2025-10-16",
           "method": "Source-reviewed issuer's Study 2 prespecified withdrawal response analysis, exact single NCT06087276 program. Response is in previously stabilized run-in responders, not broad first-use population; no permanent remission claim or FDA approval inference.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT06331299",
+      "ticker": "URGN",
+      "drug": "UGN-103",
+      "indication": "Bladder Cancer",
+      "facts": {
+        "responseRemission": {
+          "value": "UTOPIA Phase 3 single-arm trial NCT06331299: 3-month complete response in 77/99 treated patients (77.8%; 95% CI 68.3–85.5%), as reported by issuer. No randomized concurrent comparator; cross-trial comparison to UGN-102 cannot prove superiority.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1668243/000143774926034780/urgn20260930_10q.htm",
+          "sourceDate": "2026-11-04",
+          "method": "Issuer UroGen 2026-11-04 Form 10-Q UTOPIA efficacy disclosure and exact NCT06331299 registered single-arm design. Full denominator 99 and observed 3-month CR retained. No placebo rate or clinically comparative effect estimated.",
+          "confidence": "MODERATE"
+        },
+        "durability": {
+          "value": "UTOPIA Phase 3 NCT06331299: among patients achieving 3-month complete response after intravesical UGN-103, 6-month duration-of-response event-free probability by Kaplan-Meier was 94.5% (95% CI 86.1–97.9%), issuer reported May 2026 and reiterated Nov 4.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1668243/000143774926034780/urgn20260930_10q.htm",
+          "sourceDate": "2026-11-04",
+          "method": "Cross-checked UroGen 2026 10-Q Phase 3 UTOPIA follow-up, conditional post-response Kaplan-Meier DOR and 95% CI. Not 94.5% of all treated patients; 12-month DOR was not yet supplied to FDA as of issuer report.",
           "confidence": "MODERATE"
         }
       },
