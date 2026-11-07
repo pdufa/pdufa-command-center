@@ -344,7 +344,7 @@
     },
     {
       "capturedNeedsReview": 2,
-      "literatureLeads": 0,
+      "literatureLeads": 13,
       "missing": 36,
       "nctId": "NCT06153693",
       "registryRetrieved": true,
@@ -425,11 +425,11 @@
     }
   ],
   "focusTrials": 29,
-  "generatedAt": "2026-11-07T19:58:48+00:00",
+  "generatedAt": "2026-11-07T20:03:35+00:00",
   "googleSheetsSync": "SUCCESS",
   "ingredientSlots": 1102,
   "leadCapturePercent": 10.25,
-  "literatureLeads": 320,
+  "literatureLeads": 333,
   "schemaVersion": 1,
   "sourceRegistryTrials": 29,
   "statuses": {

@@ -1,0 +1,537 @@
+{
+  "companyIssuers": 20,
+  "errorCount": 19,
+  "focusTrials": 29,
+  "generatedAt": "2026-11-07T20:03:35+00:00",
+  "newSourceLeads": 555,
+  "perTrial": [
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "convenience",
+        "durability",
+        "eligibleUsPatients",
+        "responseRemission"
+      ],
+      "nctId": "NCT05507203",
+      "sourceCounts": {
+        "COMPANY": 1,
+        "LITERATURE": 22
+      },
+      "strongSourceContext": 4,
+      "ticker": "ABVX"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "convenience",
+        "durability",
+        "eligibleUsPatients",
+        "responseRemission"
+      ],
+      "nctId": "NCT05507216",
+      "sourceCounts": {
+        "COMPANY": 1,
+        "LITERATURE": 22
+      },
+      "strongSourceContext": 4,
+      "ticker": "ABVX"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "convenience",
+        "eligibleUsPatients",
+        "licensingValue",
+        "safetyAdvantage",
+        "treatmentSequence",
+        "valuationImpact"
+      ],
+      "nctId": "NCT04576949",
+      "sourceCounts": {
+        "FDA": 1,
+        "LITERATURE": 18,
+        "SEC": 1
+      },
+      "strongSourceContext": 8,
+      "ticker": "ACHV"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "convenience",
+        "eligibleUsPatients",
+        "safetyAdvantage",
+        "treatmentSequence",
+        "valuationImpact"
+      ],
+      "nctId": "NCT05206370",
+      "sourceCounts": {
+        "FDA": 1,
+        "LITERATURE": 17,
+        "SEC": 1
+      },
+      "strongSourceContext": 7,
+      "ticker": "ACHV"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "convenience",
+        "safetyAdvantage"
+      ],
+      "nctId": "NCT05811247",
+      "sourceCounts": {
+        "LITERATURE": 15
+      },
+      "strongSourceContext": 1,
+      "ticker": "APMD"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "convenience",
+        "qualityOfLife",
+        "safetyAdvantage"
+      ],
+      "nctId": "NCT05813275",
+      "sourceCounts": {
+        "LITERATURE": 13
+      },
+      "strongSourceContext": 2,
+      "ticker": "APMD"
+    },
+    {
+      "candidateIngredientIds": [
+        "responseRemission",
+        "treatmentSequence",
+        "unmetNeed"
+      ],
+      "nctId": "NCT05059223",
+      "sourceCounts": {
+        "COMPANY": 3,
+        "FDA": 4,
+        "LITERATURE": 11
+      },
+      "strongSourceContext": 4,
+      "ticker": "AXSM"
+    },
+    {
+      "candidateIngredientIds": [
+        "responseRemission",
+        "treatmentSequence",
+        "unmetNeed"
+      ],
+      "nctId": "NCT05113745",
+      "sourceCounts": {
+        "COMPANY": 3,
+        "FDA": 4,
+        "LITERATURE": 11,
+        "SEC": 1
+      },
+      "strongSourceContext": 4,
+      "ticker": "AXSM"
+    },
+    {
+      "candidateIngredientIds": [],
+      "nctId": "NCT05244304",
+      "sourceCounts": {
+        "LITERATURE": 11
+      },
+      "strongSourceContext": 0,
+      "ticker": "BLTE"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "magnitude",
+        "safetyAdvantage"
+      ],
+      "nctId": "NCT05126758",
+      "sourceCounts": {
+        "COMPANY": 1,
+        "LITERATURE": 14,
+        "SEC": 1
+      },
+      "strongSourceContext": 1,
+      "ticker": "CAPR"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "discontinuation",
+        "licensingValue",
+        "magnitude",
+        "responseRemission",
+        "safetyAdvantage",
+        "treatmentSequence"
+      ],
+      "nctId": "NCT06445023",
+      "sourceCounts": {
+        "FDA": 1,
+        "LITERATURE": 22
+      },
+      "strongSourceContext": 6,
+      "ticker": "CLDX"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "discontinuation",
+        "licensingValue",
+        "magnitude",
+        "responseRemission",
+        "safetyAdvantage",
+        "treatmentSequence"
+      ],
+      "nctId": "NCT06455202",
+      "sourceCounts": {
+        "FDA": 1,
+        "LITERATURE": 23
+      },
+      "strongSourceContext": 6,
+      "ticker": "CLDX"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "durability",
+        "safetyAdvantage",
+        "survivalBenefit",
+        "valuationImpact"
+      ],
+      "nctId": "NCT05208047",
+      "sourceCounts": {
+        "COMPANY": 1,
+        "LITERATURE": 16,
+        "SEC": 1
+      },
+      "strongSourceContext": 2,
+      "ticker": "COGT"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "responseRemission",
+        "safetyAdvantage"
+      ],
+      "nctId": "NCT03697109",
+      "sourceCounts": {
+        "LITERATURE": 21
+      },
+      "strongSourceContext": 7,
+      "ticker": "CORT"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "safetyAdvantage"
+      ],
+      "nctId": "NCT04308590",
+      "sourceCounts": {
+        "FDA": 3,
+        "LITERATURE": 19
+      },
+      "strongSourceContext": 6,
+      "ticker": "CORT"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "closestCompetitor",
+        "qualityOfLife",
+        "safetyAdvantage",
+        "treatmentSequence",
+        "unmetNeed"
+      ],
+      "nctId": "NCT05767346",
+      "sourceCounts": {
+        "COMPANY": 4,
+        "FDA": 1,
+        "LITERATURE": 16,
+        "SEC": 1
+      },
+      "strongSourceContext": 7,
+      "ticker": "CYTK"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "closestCompetitor",
+        "qualityOfLife",
+        "responseRemission"
+      ],
+      "nctId": "NCT06081894",
+      "sourceCounts": {
+        "COMPANY": 4,
+        "LITERATURE": 17,
+        "SEC": 1
+      },
+      "strongSourceContext": 3,
+      "ticker": "CYTK"
+    },
+    {
+      "candidateIngredientIds": [],
+      "nctId": "NCT04871282",
+      "sourceCounts": {
+        "COMPANY": 3,
+        "FDA": 1,
+        "LITERATURE": 19
+      },
+      "strongSourceContext": 1,
+      "ticker": "IMNM"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "eligibleUsPatients",
+        "magnitude",
+        "responseRemission",
+        "safetyAdvantage"
+      ],
+      "nctId": "NCT06411379",
+      "sourceCounts": {
+        "LITERATURE": 19,
+        "SEC": 1
+      },
+      "strongSourceContext": 2,
+      "ticker": "MLTX"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "eligibleUsPatients",
+        "magnitude",
+        "responseRemission",
+        "safetyAdvantage"
+      ],
+      "nctId": "NCT06411899",
+      "sourceCounts": {
+        "LITERATURE": 19,
+        "SEC": 1
+      },
+      "strongSourceContext": 2,
+      "ticker": "MLTX"
+    },
+    {
+      "candidateIngredientIds": [],
+      "nctId": "NCT06153693",
+      "sourceCounts": {
+        "COMPANY": 3,
+        "FDA": 1,
+        "LITERATURE": 16
+      },
+      "strongSourceContext": 0,
+      "ticker": "MLYS"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "convenience",
+        "durability",
+        "safetyAdvantage"
+      ],
+      "nctId": "NCT06343779",
+      "sourceCounts": {
+        "FDA": 3,
+        "LITERATURE": 21
+      },
+      "strongSourceContext": 6,
+      "ticker": "PHVS"
+    },
+    {
+      "candidateIngredientIds": [
+        "convenience",
+        "safetyAdvantage"
+      ],
+      "nctId": "NCT06669754",
+      "sourceCounts": {
+        "FDA": 3,
+        "LITERATURE": 15,
+        "SEC": 1
+      },
+      "strongSourceContext": 1,
+      "ticker": "PHVS"
+    },
+    {
+      "candidateIngredientIds": [],
+      "nctId": "NCT06087276",
+      "sourceCounts": {
+        "LITERATURE": 13
+      },
+      "strongSourceContext": 0,
+      "ticker": "PRAX"
+    },
+    {
+      "candidateIngredientIds": [],
+      "nctId": "NCT02500381",
+      "sourceCounts": {
+        "FDA": 3,
+        "LITERATURE": 16
+      },
+      "strongSourceContext": 0,
+      "ticker": "SRPT"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "closestCompetitor",
+        "convenience",
+        "magnitude",
+        "safetyAdvantage",
+        "treatmentSequence",
+        "valuationImpact"
+      ],
+      "nctId": "NCT04544293",
+      "sourceCounts": {
+        "LITERATURE": 17,
+        "SEC": 1
+      },
+      "strongSourceContext": 8,
+      "ticker": "SVRA"
+    },
+    {
+      "candidateIngredientIds": [],
+      "nctId": "NCT06331299",
+      "sourceCounts": {
+        "FDA": 4,
+        "LITERATURE": 10,
+        "SEC": 1
+      },
+      "strongSourceContext": 0,
+      "ticker": "URGN"
+    },
+    {
+      "candidateIngredientIds": [
+        "clinicalBenefit",
+        "eligibleUsPatients",
+        "magnitude",
+        "safetyAdvantage"
+      ],
+      "nctId": "NCT04716231",
+      "sourceCounts": {
+        "LITERATURE": 22
+      },
+      "strongSourceContext": 6,
+      "ticker": "VERA"
+    },
+    {
+      "candidateIngredientIds": [],
+      "nctId": "NCT05662241",
+      "sourceCounts": {
+        "LITERATURE": 13
+      },
+      "strongSourceContext": 0,
+      "ticker": "ZBIO"
+    }
+  ],
+  "schemaVersion": 1,
+  "sourceCounts": {
+    "COMPANY": 24,
+    "FDA": 31,
+    "LITERATURE": 488,
+    "SEC": 12
+  },
+  "sourceErrors": [
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "APMD"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "BLTE"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "CLDX"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "CORT"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "COGT"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "COGT"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "COGT"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "MLTX"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "ABVX"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "ABVX"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "ABVX"
+    },
+    {
+      "error": "ValueError:PUBLIC_SOURCE_TOO_LARGE",
+      "sourceType": "COMPANY",
+      "ticker": "ACHV"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "PHVS"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "PRAX"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "SRPT"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "VERA"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "URGN"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "ZBIO"
+    },
+    {
+      "error": "URLError:<urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1011)>",
+      "sourceType": "COMPANY",
+      "ticker": "SVRA"
+    }
+  ],
+  "sourceStatus": "RESEARCH_LEADS_ONLY_NOT_SURVEY_ANSWERS",
+  "surveyGroups": 20,
+  "surveyIngredients": 38,
+  "verifiedSurveyAnswersCreated": 0,
+  "warning": "A source lead does not resolve any unreviewed survey ingredient; FDA labels and SEC filings are not drug-program proof."
+}
