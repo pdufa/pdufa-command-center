@@ -29,9 +29,8 @@ def tables():
   base=[issuer["ticker"],issuer.get("cik",""),issuer.get("secCompanyName",""),
         issuer.get("status","")]
   if not issuer.get("facts"):
-   facts.append(base+["","","","","","","",
-     issuer.get("sourceError") or issuer.get("factsError") or "No selected reported metric",
-     "NO_FINANCIAL_FACT_ACCEPTED",False])
+   facts.append(base+["No source-validated metric","","","","","","","","",
+     issuer.get("sourceError") or issuer.get("factsError") or "NO_FINANCIAL_FACT_ACCEPTED",False])
   for f in issuer.get("facts",[]):
    facts.append(base+[
      f.get("metric",""),f.get("value",""),f.get("unit",""),
