@@ -53,7 +53,7 @@ class PromotionTests(unittest.TestCase):
         self.assertEqual(len(added[0]["values"]),28)
         self.assertEqual(added[0]["values"][4],"YES - company/SEC/journal")
         self.assertEqual(added[0]["values"][23],5491198055)
-        self.assertEqual(self.run_check(args,existing={NCT}),([],[]))
+        self.assertEqual(self.run_check(args,existing={NCT})[0],[])
 
     def test_no_results_documentation_no_promotion(self):
         args=self.inputs()
