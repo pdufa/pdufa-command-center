@@ -15,8 +15,8 @@ const csv=(rows:unknown[][],name:string)=>new Response("\uFEFF"+rows.map(r=>r.ma
 export async function GET(request:Request){
  try{
   const url=new URL(request.url),id=url.searchParams.get("nctId"),format=url.searchParams.get("format")||"json";
-  if(id&&!/^NCT\d{8}$/.test(id)||!["json","csv","metrics","facts"].includes(format))
-   return Response.json({error:"Use a valid BOTTOM NCT or format json|csv|metrics|facts"},{status:400});
+  if(id&&!/^NCT\d{8}$/.test(id)||!["json","csv","metrics","facts","rating-evidence"].includes(format))
+   return Response.json({error:"Use a valid BOTTOM NCT or format json|csv|metrics|facts|rating-evidence"},{status:400});
   const report=bottomOnlyReport(),trials=report.trials.filter(t=>!id||t.nctId===id);
   if(id&&trials.length!==1)return Response.json({error:"NCT is not in the frozen BOTTOM spreadsheet"},{status:404});
   if(format==="csv")return csv([report.headers,...trials.map(t=>t.fields.map(f=>f.exportValue))],"bottom-only-190.csv");
@@ -25,6 +25,12 @@ export async function GET(request:Request){
    ...trials.flatMap(t=>t.metrics.map(m=>[t.nctId,m.id,m.name,m.activeInClinicalModel,m.score,m.originalWeightPercent,
     m.activeClinicalWeightPercent,m.state,m.finding,m.sourceUrl,m.benchmarkSourceUrl,m.blocker]))
   ],"bottom-only-metric-dispositions.csv");
+  if(format==="rating-evidence")return csv([
+   ["NCT","Ticker","Factor ID","Factor","Clinical grade","Rating readiness","Source count","Question","Source date","Source URL","Evidence class","Observed evidence","Critical limitation","Benchmark needed"],
+   ...trials.flatMap(t=>t.clinicalFactors.flatMap(f=>f.reviewEvidence.length?
+    f.reviewEvidence.map(e=>[t.nctId,t.ticker,f.id,f.name,f.grade,f.ratingReadiness,f.reviewEvidenceCount,e.question,e.sourceDate,e.sourceUrl,e.classification,e.evidence,e.criticalLimit,f.requiredEvidence]):
+    [[t.nctId,t.ticker,f.id,f.name,f.grade,f.ratingReadiness,0,"","","","NO_CURRENT_MATCH","No accepted exact-trial research evidence yet.","Not a negative finding; research or disclosure pending.",f.requiredEvidence]]))
+  ],"bottom-only-115-factor-source-evidence.csv");
   if(format==="facts")return csv([
    ["NCT","Question","Classification","Evidence","Critical limitation","Source date","Source URL"],
    ...trials.flatMap(t=>t.additionalReviewedFacts.map(f=>[t.nctId,f.question,f.classification,f.evidence,f.criticalLimit,f.sourceDate,f.sourceUrl]))
