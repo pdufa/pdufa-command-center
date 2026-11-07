@@ -1,9 +1,10 @@
 "use client";
 
-import {useEffect,useMemo,useState} from "react";
+import {useEffect,useMemo,useState,type DragEvent} from "react";
 import snapshot from "../data/p3PostDataActive.json";
 import css from "./PoolMasterSpreadsheet.module.css";
 import {isGroupVisible,toggleColumnGroup} from "../lib/pool-column-visibility";
+import {normalizePoolColumnOrder,reorderPoolSegment,stepPoolSegment,movePoolColumn,stepPoolColumn} from "../lib/pool-column-order";
 
 export type PoolMasterRow={
  id:string;ticker:string;company?:string;drug?:string;indication?:string;
@@ -21,7 +22,8 @@ type Key="phase"|"status"|"drug"|"intervention"|"route"|"indication"
 type Column={key:Key;label:string};
 type Segment={key:string;label:string;columns:readonly Column[]};
 type View="phone"|"desktop";
-type Layout={expanded:string[];hiddenSegments:string[];hiddenColumns:Key[]};
+type Layout={expanded:string[];hiddenSegments:string[];hiddenColumns:Key[];
+ segmentOrder:string[];columnOrder:Record<string,Key[]>};
 const SEGMENTS:readonly Segment[]=[
  {key:"clinical",label:"Clinical Information",columns:[
   {key:"phase",label:"Clinical phase"},{key:"status",label:"Trial status"},
@@ -49,13 +51,15 @@ const ALL_KEYS=SEGMENTS.flatMap(s=>s.columns.map(c=>c.key));
 const ALL_SEGMENTS=SEGMENTS.map(s=>s.key);
 const GROUP_CLINICAL=["clinical","dates"] as const;
 const GROUP_QUALIFICATION=["qualifiers","focus"] as const;
-const COLUMNS_BY_SEGMENT:Record<string,readonly Key[]>=Object.fromEntries(
+const DEFAULT_COLUMNS_BY_SEGMENT:Record<string,readonly Key[]>=Object.fromEntries(
  SEGMENTS.map(s=>[s.key,s.columns.map(c=>c.key)]));
+const COLUMN_LOOKUP=new Map(SEGMENTS.flatMap(s=>s.columns.map(c=>[c.key,c] as const)));
 
 const storageKey=(view:View)=>"pdufa:pool-column-layout:v1:"+view;
 const defaultLayout=(view:View):Layout=>({
  expanded:view==="phone"?["focus"]:["qualifiers","focus"],
- hiddenSegments:[],hiddenColumns:[]
+ hiddenSegments:[],hiddenColumns:[],
+ ...normalizePoolColumnOrder(null,DEFAULT_COLUMNS_BY_SEGMENT,ALL_SEGMENTS)
 });
 const uniqueAllowed=(input:unknown,allowed:readonly string[])=>{
  if(!Array.isArray(input))return [];
@@ -69,6 +73,7 @@ function recoverLayout(raw:string|null,view:View):Layout{
    expanded:uniqueAllowed(candidate.expanded,ALL_SEGMENTS),
    hiddenSegments:uniqueAllowed(candidate.hiddenSegments,ALL_SEGMENTS),
    hiddenColumns:uniqueAllowed(candidate.hiddenColumns,ALL_KEYS) as Key[],
+   ...normalizePoolColumnOrder(candidate,DEFAULT_COLUMNS_BY_SEGMENT,ALL_SEGMENTS),
   };
  }catch{return defaultLayout(view);}
 }
@@ -148,17 +153,59 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
  const switchIn=(key:keyof Layout,id:string)=>edit(l=>({
   ...l,[key]:l[key].includes(id as never)?l[key].filter(x=>x!==id):[...l[key],id]
  }));
- const visible=useMemo(()=>SEGMENTS.filter(s=>layout.expanded.includes(s.key)&&!layout.hiddenSegments.includes(s.key))
-   .flatMap(s=>s.columns.filter(c=>!layout.hiddenColumns.includes(c.key))),[layout]);
+ const orderedSegments=useMemo(()=>layout.segmentOrder.map(key=>SEGMENTS.find(s=>s.key===key)!),[layout.segmentOrder]);
+ const COLUMNS_BY_SEGMENT=layout.columnOrder;
+ const visible=useMemo(()=>orderedSegments
+  .filter(s=>layout.expanded.includes(s.key)&&!layout.hiddenSegments.includes(s.key))
+  .flatMap(s=>(layout.columnOrder[s.key]||[]).filter(key=>!layout.hiddenColumns.includes(key))
+   .map(key=>COLUMN_LOOKUP.get(key)!)),[layout,orderedSegments]);
  const clinicalVisible=isGroupVisible(layout,GROUP_CLINICAL,COLUMNS_BY_SEGMENT);
  const qualificationVisible=isGroupVisible(layout,GROUP_QUALIFICATION,COLUMNS_BY_SEGMENT);
- const toggleClinical=()=>edit(l=>toggleColumnGroup(l,GROUP_CLINICAL,COLUMNS_BY_SEGMENT));
- const toggleQualification=()=>edit(l=>toggleColumnGroup(l,GROUP_QUALIFICATION,COLUMNS_BY_SEGMENT));
+ const toggleClinical=()=>edit(l=>toggleColumnGroup(l,GROUP_CLINICAL,l.columnOrder));
+ const toggleQualification=()=>edit(l=>toggleColumnGroup(l,GROUP_QUALIFICATION,l.columnOrder));
  const resetView=()=>edit(()=>defaultLayout(view));
+ const resetColumnOrder=()=>edit(l=>({...l,...normalizePoolColumnOrder(null,DEFAULT_COLUMNS_BY_SEGMENT,ALL_SEGMENTS)}));
+ const [reorderNotice,setReorderNotice]=useState("");
+ const shiftSegment=(id:string,direction:-1|1)=>edit(l=>stepPoolSegment(l,id,direction));
+ const shiftColumn=(key:Key,direction:-1|1)=>edit(l=>stepPoolColumn(l,key,direction));
+ const transferColumn=(key:Key,target:string)=>edit(l=>{
+  const shifted=movePoolColumn(l,key,target);
+  return {...shifted,expanded:[...new Set([...shifted.expanded,target])],
+   hiddenSegments:shifted.hiddenSegments.filter(s=>s!==target),
+   hiddenColumns:shifted.hiddenColumns.filter(k=>k!==key)};
+ });
+ const dragStart=(event:DragEvent<HTMLElement>,kind:"segment"|"column",id:string)=>{
+  event.dataTransfer.setData("text/plain","pool-"+kind+":"+id);
+  event.dataTransfer.effectAllowed="move";
+ };
+ const acceptDrag=(event:DragEvent<HTMLElement>)=>{event.preventDefault();event.dataTransfer.dropEffect="move";};
+ const dropOnSegment=(event:DragEvent<HTMLElement>,target:string)=>{
+  event.preventDefault();
+  const value=event.dataTransfer.getData("text/plain");
+  if(value.startsWith("pool-segment:")){
+   const source=value.slice("pool-segment:".length);
+   edit(l=>reorderPoolSegment(l,source,target));
+   setReorderNotice("Segment order updated.");
+  }else if(value.startsWith("pool-column:")){
+   const key=value.slice("pool-column:".length) as Key;
+   if(ALL_KEYS.includes(key)){transferColumn(key,target);setReorderNotice("Column moved into "+target+".");}
+  }
+ };
+ const dropOnColumn=(event:DragEvent<HTMLElement>,targetSegment:string,targetKey:Key)=>{
+  event.preventDefault();event.stopPropagation();
+  const value=event.dataTransfer.getData("text/plain");
+  if(!value.startsWith("pool-column:"))return;
+  const key=value.slice("pool-column:".length) as Key;
+  if(!ALL_KEYS.includes(key))return;
+  edit(l=>movePoolColumn(l,key,targetSegment,targetKey));
+  setReorderNotice("Column order updated.");
+ };
+ const findSegment=(key:Key)=>layout.segmentOrder.find(id=>layout.columnOrder[id].includes(key))||"";
+
  return <section aria-label="POOL Master Spreadsheet with responsive column visibility" data-pool-master="true" className={css.section}>
   <div className={css.top}>
    <div><h3>POOL Master · 32 columns</h3>
-    <p>All stages stay in POOL. Hide or expand entire column segments, or choose individual columns. Hidden fields still participate in research and eligibility checks.</p></div>
+    <p>All stages stay in POOL. Drag segment handles or column headings to reorder, or use move arrows on phone. Choose a segment to transfer a column. These changes affect display only.</p></div>
    <div className={css.actions} aria-label="Independent POOL column group visibility">
     <button type="button" data-visibility={clinicalVisible?"visible":"hidden"}
      aria-pressed={clinicalVisible} onClick={toggleClinical}>
@@ -168,6 +215,9 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
      aria-pressed={qualificationVisible} onClick={toggleQualification}>
      {qualificationVisible?"Hide All":"Show All"} · Qualification + FOCUS
     </button>
+    <button type="button" className={css.resetOrder} onClick={resetColumnOrder}>
+     Reset Column Order
+    </button>
    </div>
   </div>
   <p className={css.viewport} data-viewport={view}>
@@ -176,38 +226,72 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
    {" "}Layouts are saved separately on this device.
    {" "}<button className={css.resetLink} type="button" onClick={resetView}>Reset {view==="phone"?"Phone":"PC"} View</button>
   </p>
+  <p className={css.reorderHint}>Reorder segments with the drag handle or left/right arrows. Reorder columns with the handles or arrows; use the dropdown to move them between segments.</p>
   <div className={css.segments} role="group" aria-label="POOL column segments">
-   {SEGMENTS.map(s=>{
+   {orderedSegments.map((s,segmentIndex)=>{
     const hidden=layout.hiddenSegments.includes(s.key),expanded=layout.expanded.includes(s.key);
-    const active=s.columns.filter(c=>!layout.hiddenColumns.includes(c.key)).length;
-    return <div key={s.key} className={css.segment} data-segment={s.key}>
+    const columns=layout.columnOrder[s.key]||[];
+    const active=columns.filter(k=>!layout.hiddenColumns.includes(k)).length;
+    return <div key={s.key} className={css.segment} data-segment={s.key}
+     onDragOver={acceptDrag} onDrop={event=>dropOnSegment(event,s.key)}>
      <div className={css.segmentHead}>
+      <span className={css.dragHandle} draggable="true" title="Drag to reorder segment"
+       onDragStart={event=>dragStart(event,"segment",s.key)}>⠿</span>
+      <div className={css.movePair} role="group" aria-label={"Reorder "+s.label+" segment"}>
+       <button type="button" aria-label={"Move "+s.label+" segment left"} disabled={segmentIndex===0}
+        onClick={()=>shiftSegment(s.key,-1)}>←</button>
+       <button type="button" aria-label={"Move "+s.label+" segment right"} disabled={segmentIndex===orderedSegments.length-1}
+        onClick={()=>shiftSegment(s.key,1)}>→</button>
+      </div>
       <button type="button" className={css.segmentToggle} aria-expanded={!hidden&&expanded}
        aria-pressed={!hidden&&expanded} disabled={hidden} onClick={()=>switchIn("expanded",s.key)}>
-       {expanded&&!hidden?"▾":"▸"} {s.label} <small>{active}/{s.columns.length}</small>
+       {expanded&&!hidden?"▾":"▸"} {s.label} <small>{active}/{columns.length}</small>
       </button>
       <button type="button" className={css.visibilityToggle} aria-pressed={hidden}
        onClick={()=>switchIn("hiddenSegments",s.key)}>{hidden?"Restore":"Hide segment"}</button>
      </div>
      {expanded&&!hidden&&<div className={css.columnOptions}>
-      {s.columns.map(c=><label key={c.key}>
-       <input type="checkbox" checked={!layout.hiddenColumns.includes(c.key)}
-        onChange={()=>switchIn("hiddenColumns",c.key)}/>
-       <span>{c.label}</span>
-      </label>)}
+      {columns.map((key,columnIndex)=>{
+       const c=COLUMN_LOOKUP.get(key)!;
+       return <div className={css.columnOption} key={key}
+        onDragOver={acceptDrag} onDrop={event=>dropOnColumn(event,s.key,key)}>
+        <span className={css.dragHandle} draggable="true" title={"Drag "+c.label+" to reorder"}
+         onDragStart={event=>dragStart(event,"column",key)}>⠿</span>
+        <label className={css.columnCheck}>
+         <input type="checkbox" checked={!layout.hiddenColumns.includes(key)}
+          onChange={()=>switchIn("hiddenColumns",key)}/>
+         <span>{c.label}</span>
+        </label>
+        <div className={css.movePair} role="group" aria-label={"Reorder "+c.label}>
+         <button type="button" aria-label={"Move "+c.label+" left"} disabled={columnIndex===0}
+          onClick={()=>shiftColumn(key,-1)}>←</button>
+         <button type="button" aria-label={"Move "+c.label+" right"} disabled={columnIndex===columns.length-1}
+          onClick={()=>shiftColumn(key,1)}>→</button>
+        </div>
+        <select className={css.moveTo} aria-label={"Move "+c.label+" to another segment"}
+         value={s.key} onChange={event=>transferColumn(key,event.target.value)}>
+         {orderedSegments.map(segment=><option key={segment.key} value={segment.key}>{segment.label}</option>)}
+        </select>
+       </div>;
+      })}
      </div>}
     </div>;
    })}
   </div>
   <div className={css.summary} role="status">Showing 3 identity columns + {visible.length} of 29 optional columns.
-   {" "}Swipe horizontally for additional fields.</div>
+   {" "}Swipe horizontally for additional fields. {reorderNotice}</div>
   <div className={css.scroll} role="region" tabIndex={0} aria-label="Scrollable POOL master trial spreadsheet">
    <table className={css.table}>
     <thead><tr>
      <th scope="col" className={css.ticker}>Ticker</th>
      <th scope="col" className={css.company}>Company</th>
      <th scope="col" className={css.nct}>NCT ID</th>
-     {visible.map(c=><th scope="col" className={css.dataColumn} key={c.key}>{c.label}</th>)}
+     {visible.map(c=><th scope="col" className={css.dataColumn} key={c.key}
+      draggable="true" title={"Drag to move "+c.label}
+      onDragStart={event=>dragStart(event,"column",c.key)}
+      onDragOver={acceptDrag}
+      onDrop={event=>dropOnColumn(event,findSegment(c.key),c.key)}>
+       <span className={css.thDrag}>⠿</span> {c.label}</th>)}
     </tr></thead>
     <tbody>{rows.length===0&&<tr><td colSpan={3+visible.length} role="status">
        {loading?"Loading clinical POOL records…":error?

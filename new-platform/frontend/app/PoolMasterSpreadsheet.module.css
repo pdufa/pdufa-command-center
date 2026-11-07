@@ -47,3 +47,20 @@
 .actions button:not(:disabled):active,.segment button:not(:disabled):active{filter:brightness(.91)}
 .resetLink{border:0;background:transparent;color:#175a42;text-decoration:underline;padding:0 2px;font:inherit;font-weight:700;cursor:pointer}
 .resetLink:focus-visible{outline:3px solid #279873;outline-offset:2px}
+
+/* Column and segment ordering controls; always usable by touch without HTML drag/drop. */
+.reorderHint{margin:0;color:#496657;font-size:12px;line-height:1.5}
+.resetOrder{background:#e5efff!important;color:#133a65!important;border-color:#95b5de!important}
+.resetOrder:hover{background:#d5e8ff!important}
+.dragHandle{display:inline-flex;align-items:center;justify-content:center;min-width:24px;min-height:28px;border-radius:5px;color:#315d4b;background:#e3efe8;font-size:19px;font-weight:700;cursor:grab;user-select:none;touch-action:pan-y}
+.dragHandle:active{cursor:grabbing}
+.segmentHead{align-items:center}
+.segmentToggle{min-width:80px}
+.columnOption{display:flex;align-items:center;flex-wrap:wrap;gap:6px;border:1px solid #dfe9e1;border-radius:6px;padding:6px;background:white}
+.columnCheck{display:flex;align-items:center;gap:6px;flex:1;min-width:110px;font-size:12px}
+.movePair{display:inline-flex;gap:2px;align-items:center}
+.movePair button{border:1px solid #c1d5c7;color:#18523d;background:#fff;border-radius:5px;min-width:29px;min-height:29px;font-size:15px;cursor:pointer}
+.movePair button:disabled{opacity:.3;cursor:not-allowed}
+.moveTo{font-size:11px;padding:5px;max-width:100%;min-height:29px;border-radius:5px;border:1px solid #c1d5c7;background:#fff;color:#184833}
+.thDrag{font-weight:800;color:#367457}
+@media(max-width:640px){.columnOptions{max-height:340px}.columnOption{gap:5px}.columnCheck{min-width:100px}.moveTo{max-width:170px}}

@@ -69,3 +69,18 @@ test("column-group buttons do not alter the opposite group's visibility or hidde
  assert.equal(isGroupVisible(state,b,cols),true);
  assert.equal(isGroupVisible(state,a,cols),false);
 });
+
+test("POOL Master offers drag/drop, arrow reorder, cross-segment moves and top reset order",()=>{
+ assert.match(component,/const resetColumnOrder=\(\)=>edit/);
+ assert.match(component,/Reset Column Order/);
+ assert.match(component,/onDragStart=\{event=>dragStart\(event,"segment",s.key\)\}/);
+ assert.match(component,/onDragStart=\{event=>dragStart\(event,"column",key\)\}/);
+ assert.match(component,/onDrop=\{event=>dropOnColumn\(event,s.key,key\)\}/);
+ assert.match(component,/onDrop=\{event=>dropOnSegment\(event,s.key\)\}/);
+ assert.match(component,/aria-label=\{"Move "\+c.label\+" to another segment"\}/);
+ assert.match(component,/layout.segmentOrder/);
+ assert.match(component,/layout.columnOrder/);
+ assert.match(component,/window.localStorage.setItem\(storageKey\(device\)/);
+ assert.match(style,/\.dragHandle\{/);
+ assert.match(style,/\.movePair button\{/);
+});
