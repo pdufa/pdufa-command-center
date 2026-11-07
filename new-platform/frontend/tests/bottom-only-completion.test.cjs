@@ -159,7 +159,7 @@ test("BOTTOM ABVX readout gets five explicit post-readout clinical grades only, 
  const payload=await live.json();assert.equal(payload.trial.clinicalFullScore,60);
  assert.equal(payload.history.length,3);
  assert.ok(t.additionalReviewedFacts.some(f=>f.question===3&&f.sourceUrl.includes("ir.abivax.com/node/12341/html")));
- assert.ok(t.additionalReviewedFacts.some(f=>f.question===16&&f.criticalLimit.includes("not independent maintenance")===false));
+ assert.ok(t.additionalReviewedFacts.some(f=>f.question===16&&f.criticalLimit.includes("not independent maintenance")));
  assert.equal(report.completeClinicalOverallScores,3);
  assert.equal(report.activeFactorsScored,30);
  assert.equal(report.completeThirtyMetricOverallScores,0);
