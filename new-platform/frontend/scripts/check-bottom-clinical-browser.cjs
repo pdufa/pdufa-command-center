@@ -7,12 +7,13 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  const response=await page.goto(base+'/p3-post-data',{waitUntil:'networkidle'});assert.equal(response.status(),200);
  const active=require('../data/p3PostDataActive.json').records;
  assert.equal(await page.locator('tbody > tr').count(),active.length);
- assert.equal(await page.locator('[data-clinical-nct]').count(),5);
- const list=await (await page.request.get(base+'/api/p3-post-data-research')).json();
- assert.equal(list.rows.length,5);
+ assert.equal(await page.locator('[data-clinical-nct]').count(),active.length);
+ const readJson=route=>page.evaluate(async url=>{const r=await fetch(url);return {status:r.status,body:await r.json()};},route);
+ const list=(await readJson('/api/p3-post-data-research')).body;
+ assert.equal(list.rows.length,active.length);
  for(const row of list.rows){
   assert.ok(active.some(r=>r.nct===row.nctId));
-  const detail=await (await page.request.get(base+'/api/p3-post-data-research?nctId='+row.nctId)).json();
+  const detail=(await readJson('/api/p3-post-data-research?nctId='+row.nctId)).body;
   assert.equal(detail.trial.clinicalFullScore,row.clinicalFullScore);
   assert.ok(detail.history.every(h=>h.nctId===row.nctId));
   const cell=page.locator('[data-clinical-nct="'+row.nctId+'"]');
@@ -23,9 +24,9 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
   assert.ok(await cell.getByText('Saved factor grades and evidence',{exact:true}).count());
   await cell.locator('button').click();
  }
- assert.equal((await page.request.get(base+'/api/p3-post-data-research?nctId=NCT05257408')).status(),404);
- assert.equal((await page.request.get(base+'/api/bottom-only-completion')).status(),404);
- const csv=await (await page.request.get(base+'/api/p3-post-data-research?format=rating-evidence')).text();assert.equal(csv.trim().split('\r\n').length,26);
+ assert.equal((await readJson('/api/p3-post-data-research?nctId=NCT05257408')).status,404);
+ assert.equal(await page.evaluate(async()=> (await fetch('/api/bottom-only-completion')).status),404);
+ const csv=await page.evaluate(async()=> (await fetch('/api/p3-post-data-research?format=rating-evidence')).text());assert.equal(csv.trim().split('\r\n').length,active.length*5+1);
  const savara=page.locator('[data-clinical-nct="NCT04544293"]');
  await savara.locator('button').click();await savara.locator('article').first().waitFor();await savara.scrollIntoViewIfNeeded();
  await page.screenshot({path:path.join(output,'desktop.png')});
@@ -33,6 +34,6 @@ const {chromium}=require('playwright'),assert=require('node:assert/strict'),fs=r
  const horizontal=await savara.locator('[role=region]').evaluate(e=>({client:e.clientWidth,scroll:e.scrollWidth}));
  assert.ok(horizontal.scroll>horizontal.client);
  await page.screenshot({path:path.join(output,'mobile.png')});assert.deepEqual(errors,[]);
- const result={base,activeRows:active.length,exactResearchMatches:5,testedClinicalCards:25,historyVerified:true,apiParityVerified:true,activeFilteringVerified:true,retiredEndpointStill404:true,mobileHorizontalExpansion:horizontal,pageErrors:errors};
+ const result={base,activeRows:active.length,exactResearchMatches:active.length,testedClinicalCards:active.length*5,historyVerified:true,apiParityVerified:true,activeFilteringVerified:true,retiredEndpointStill404:true,mobileHorizontalExpansion:horizontal,pageErrors:errors};
  fs.writeFileSync(path.join(output,'result.json'),JSON.stringify(result,null,2)+'\n');console.log(JSON.stringify(result));await browser.close();
 })().catch(e=>{console.error(e);process.exit(1)});

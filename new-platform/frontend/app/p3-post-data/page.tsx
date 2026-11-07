@@ -3,8 +3,7 @@ import Link from "next/link";
 import {bottomOnlyReport} from "../../lib/bottom-only-completion";
 import {BottomClinicalRating} from "../BottomOnlyCompletionSheet";
 import snapshot from "../../data/p3PostDataActive.json";
-import researchHistory from "../../data/bottomOnlyResearchHistory20261107.json";
-import scoreHistory from "../../data/bottomOnlyScoreHistory20261107.json";
+import {bottomTrialHistory} from "../../lib/bottom-only-exports";
 
 export const metadata:Metadata={
  title:"P3 POST-DATA — Results-released FDA/PDUFA candidates | PDUFA",
@@ -14,7 +13,6 @@ const source="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEs
 /** Snapshot of the user's source-of-truth Google Sheet. Historical 762-trial cohorts are not active listings. */
 const trials=snapshot.records;
 const researchByNct=new Map(bottomOnlyReport().trials.map(t=>[t.nctId,t]));
-const savedEvents=[...researchHistory.records,...scoreHistory.records];
 
 export default function P3PostDataPage(){
  return <main style={{maxWidth:1220,margin:"28px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif",color:"#173d2b"}}>
@@ -27,9 +25,9 @@ export default function P3PostDataPage(){
   <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:780,fontSize:14}}>
     <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>Clinical research rating</th><th style={{padding:10}}>RAAS history</th></tr></thead>
-    <tbody>{trials.map((t,i)=>{const history=savedEvents.filter(h=>h.nctId===t.nct);const research=researchByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
+    <tbody>{trials.map((t,i)=>{const history=bottomTrialHistory(t.nct);const research=researchByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
       <td style={{padding:10,fontWeight:700}}>{t.ticker}</td>
-      <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a></td>
+      <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a>{research&&<small style={{display:"block"}}>{research.drug}</small>}</td>
       <td style={{padding:10}}>{t.company}</td>
       <td style={{padding:10,textAlign:"right"}}>{(t.marketCap/1e9).toFixed(2)}</td>
       <td style={{padding:10}}>{t.fdaStatus}</td>

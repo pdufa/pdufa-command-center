@@ -1,12 +1,34 @@
 import {bottomOnlyReport,bottomOnlySummary} from './bottom-only-completion';
 import scoreHistory from '../data/bottomOnlyScoreHistory20261107.json';
 import researchHistory from '../data/bottomOnlyResearchHistory20261107.json';
+import sharedHistory from '../data/raas-trial-score-history.json';
 export function bottomTrialHistory(nctId:string){
- return [...researchHistory.records,...scoreHistory.records].filter(r=>r.nctId===nctId);
+ const shared=sharedHistory.records.filter(r=>r.nctId===nctId).map(r=>({
+  ...r,eventType:r.kind,note:r.summary,historyOrigin:'PRESERVED_SHARED_CROSS_STAGE',
+  legacyScore:r.score,legacyScoreKind:r.scoreKind,
+  metricGrades:(('metricGrades' in r?r.metricGrades:[])??[]).map(g=>({
+   ...g,id:g.metricId,grade:g.score,observedResult:g.inputs,
+   sourceUrl:g.sourceUrl
+  }))
+ }));
+ return [...researchHistory.records,...scoreHistory.records,...shared].filter(r=>r.nctId===nctId);
 }
 export function bottomSummary(allowedNcts?:ReadonlySet<string>){
  const {trials,headers,...summary}=bottomOnlyReport();
- return {...summary,activeMatchedResearchCount:trials.filter(t=>!allowedNcts||allowedNcts.has(t.nctId)).length,rows:trials.filter(t=>!allowedNcts||allowedNcts.has(t.nctId)).map(bottomOnlySummary)};
+ const selected=trials.filter(t=>!allowedNcts||allowedNcts.has(t.nctId));
+ return {...summary,
+  scope:allowedNcts?'CANONICAL_ACTIVE_BOTTOM_ONLY':summary.scope,
+  preservedResearchTrialCount:trials.length,trialCount:selected.length,
+  activeMatchedResearchCount:selected.length,
+  allFieldsAccounted:selected.filter(t=>t.fields.length===headers.length).length,
+  allMetricsEvaluated:selected.filter(t=>t.metrics.length===30).length,
+  activeFactorCount:selected.length*5,
+  activeFactorsScored:selected.reduce((n,t)=>n+t.clinicalScoredFactors,0),
+  completeClinicalOverallScores:selected.filter(t=>t.clinicalFullScore!==null).length,
+  sourceBackedQuestionCount:selected.reduce((n,t)=>n+t.sourceBackedQuestions,0),
+  totalQuestionCount:selected.length*30,
+  unresolvedQuestionCount:selected.reduce((n,t)=>n+t.sourceGaps,0),
+  rows:selected.map(bottomOnlySummary)};
 }
 export function csvCell(value:unknown){
  let text=value===null||value===undefined?'':typeof value==='object'?JSON.stringify(value):String(value);

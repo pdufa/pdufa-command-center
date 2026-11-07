@@ -5,7 +5,7 @@ import css from "./TopOnlyCompletionSheet.module.css";
 type Trial=ReturnType<typeof bottomOnlyReport>["trials"][number];
 type Summary=ReturnType<typeof bottomOnlySummary>;
 type Data=Omit<ReturnType<typeof bottomOnlyReport>,"trials"|"headers">&{rows:Summary[]};
-type HistoryItem={eventId:string;recordedAt:string;eventType?:string;outcome?:string;readoutEvidenceUrl?:string;clinicalFullScore?:number|null;clinicalScoredFactors?:number;metricGrades?:{id:string;grade:number|null;sourceUrl?:string|null;observedResult?:string|null}[];note?:string;reason?:string;scoreVersion?:string};
+type HistoryItem={eventId:string;recordedAt:string;eventType?:string;outcome?:string;readoutEvidenceUrl?:string;clinicalFullScore?:number|null;clinicalScoredFactors?:number;metricGrades?:{id:string;grade:number|null;sourceUrl?:string|null;observedResult?:string|null}[];note?:string;reason?:string;scoreVersion?:string;stage?:string;legacyScore?:number|null;legacyScoreKind?:string};
 const show=(n:number|null)=>n===null?"Not scored":n.toFixed(1)+" / 100";
 const readable=(s:string)=>s.replaceAll("_"," ");
 /** Used inside the existing active roster. Membership is supplied by that page,
@@ -36,7 +36,7 @@ export function BottomClinicalRating({nctId,score,graded}:{nctId:string;score:nu
      {f.benchmarkSourceUrl&&<> · <a href={f.benchmarkSourceUrl} target="_blank" rel="noopener noreferrer">Benchmark</a></>}
     </article>)}</div>
     <p>Source-backed questions: {trial.sourceBackedQuestions}/30 ({trial.evidenceCompletenessPercent}%).</p>
-    <details><summary>Exact-NCT score history ({events.length})</summary>{events.map(e=><article key={e.eventId}><strong>{e.recordedAt} · {e.eventType} · {e.scoreVersion}</strong><p>{e.reason??e.note}</p>{e.clinicalScoredFactors!==undefined&&<p>{e.clinicalScoredFactors}/5 · {show(e.clinicalFullScore??null)}</p>}<details><summary>Saved factor grades and evidence</summary>{e.metricGrades?.map(g=><p key={g.id}>{g.id}: {show(g.grade)} · {g.observedResult}{g.sourceUrl&&<> · <a href={g.sourceUrl} target="_blank" rel="noopener noreferrer">Saved source</a></>}</p>)}</details></article>)}</details>
+    <details><summary>Exact-NCT score history ({events.length})</summary>{events.map(e=><article key={e.eventId}><strong>{e.recordedAt} · {e.eventType} · {e.stage} · {e.scoreVersion}</strong><p>{e.reason??e.note}</p>{e.clinicalScoredFactors!==undefined&&<p>{e.clinicalScoredFactors}/5 · {show(e.clinicalFullScore??null)}</p>}{e.legacyScoreKind&&<p>Archived {e.stage} history · {e.legacyScoreKind}: {show(e.legacyScore??null)}</p>}<details><summary>Saved factor grades and evidence</summary>{e.metricGrades?.map(g=><p key={g.id}>{g.id}: {show(g.grade)} · {g.observedResult}{g.sourceUrl&&<> · <a href={g.sourceUrl} target="_blank" rel="noopener noreferrer">Saved source</a></>}</p>)}</details></article>)}</details>
     <a href={'/api/p3-post-data-research?nctId='+nctId}>Complete research fields, provenance and audit</a>
    </>}
   </div>}

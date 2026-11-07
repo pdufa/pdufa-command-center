@@ -782,6 +782,822 @@
         }
       ],
       "evidenceNote": "Actual Phase 3 efficacy: 75; Week 36 UPCR reduction 45.7% vs 6.8%, adjusted difference 41.8 points (CI 28.9–52.3). Final Week 52 eGFR difference 5.58 (CI 3.68–7.48); both p<0.001.; Source: https://pubmed.ncbi.nlm.nih.gov/42911181/; Benchmark: https://clinicaltrials.gov/study/NCT04716231; Uncertainty: 431 randomized, 428 treated; interim n203 is a different cutoff. Final versus registry SAE counts differ; neither cutoff is silently substituted. Two years does not establish lifetime kidney benefit.\nClinical importance and patient benefit: 75; Kidney progression 11/214 (5.1%) vs 38/214 (17.8%), HR 0.24 (95% CI 0.12–0.48), p<0.001. Dialysis, transplantation or death: 0 vs 7.; Source: https://pubmed.ncbi.nlm.nih.gov/42911181/; Benchmark: https://clinicaltrials.gov/study/NCT04716231; Uncertainty: 431 randomized, 428 treated; interim n203 is a different cutoff. Final versus registry SAE counts differ; neither cutoff is silently substituted. Two years does not establish lifetime kidney benefit.\nStatistical reliability: 75; Prespecified Week 52 eGFR difference CI 3.68–7.48; Week 104 slope difference CI 3.55–6.45; final report describes hierarchical testing in a randomized double-blind design.; Source: https://pubmed.ncbi.nlm.nih.gov/42911181/; Benchmark: https://clinicaltrials.gov/study/NCT04716231; Uncertainty: 431 randomized, 428 treated; interim n203 is a different cutoff. Final versus registry SAE counts differ; neither cutoff is silently substituted. Two years does not establish lifetime kidney benefit.\nReplication and durability: 50; Week 104 annualized eGFR slope difference 5.00 mL/min/1.73 m²/year (95% CI 3.55–6.45), p<0.001; Week 52 difference 5.58.; Source: https://pubmed.ncbi.nlm.nih.gov/42911181/; Benchmark: https://clinicaltrials.gov/study/NCT04716231; Uncertainty: 431 randomized, 428 treated; interim n203 is a different cutoff. Final versus registry SAE counts differ; neither cutoff is silently substituted. Two years does not establish lifetime kidney benefit.\nSafety and tolerability: 50; Final report: any AEs 160/214 (74.8%) vs 167/214 (78.0%); SAEs 7.0% vs 15.4%; one placebo death. Registry separately reports SAEs 1/214 vs 11/214.; Source: https://pubmed.ncbi.nlm.nih.gov/42911181/; Benchmark: https://clinicaltrials.gov/study/NCT04716231; Uncertainty: 431 randomized, 428 treated; interim n203 is a different cutoff. Final versus registry SAE counts differ; neither cutoff is silently substituted. Two years does not establish lifetime kidney benefit.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT05507203",
+      "ticker": "ABVX",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": 60,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; Week 8 clinical remission: 50 mg 69/318 (21.7%), 25 mg 38/160 (23.8%), placebo 4/158 (2.5%).; Source: https://clinicaltrials.gov/api/v2/studies/NCT05507203; Benchmark: https://clinicaltrials.gov/study/NCT05507203; Uncertainty: Eight-week induction study. Registry primary remission measurements are counts despite the proportion title. ABTECT-1 enrollment 639 differs from 636 primary analyzed; do not silently equate enrollment and outcome denominators. ABTECT-2 25 mg comparison failed in issuer report (p=0.1034). Later maintenance selects induction responders, not a replicate of all induction participants.\nClinical importance and patient benefit: 75; Modified Mayo clinical remission incorporates rectal bleeding, stool frequency and endoscopic subscores; observed Week 8 remission: 50 mg 69/318 (21.7%), 25 mg 38/160 (23.8%), placebo 4/158 (2.5%).; Source: https://clinicaltrials.gov/api/v2/studies/NCT05507203; Benchmark: https://clinicaltrials.gov/study/NCT05507203; Uncertainty: Eight-week induction study. Registry primary remission measurements are counts despite the proportion title. ABTECT-1 enrollment 639 differs from 636 primary analyzed; do not silently equate enrollment and outcome denominators. ABTECT-2 25 mg comparison failed in issuer report (p=0.1034). Later maintenance selects induction responders, not a replicate of all induction participants.\nStatistical reliability: 50; Registry randomized/blinded design;primary groups318/160/158(analyzed636),versus enrollment639;remission69/318,38/160and4/158. The three-person enrollment/analysis discrepancy is unresolved.; Source: https://clinicaltrials.gov/api/v2/studies/NCT05507203; Benchmark: https://clinicaltrials.gov/study/NCT05507203; Uncertainty: Eight-week induction study. Registry primary remission measurements are counts despite the proportion title. ABTECT-1 enrollment 639 differs from 636 primary analyzed; do not silently equate enrollment and outcome denominators. ABTECT-2 25 mg comparison failed in issuer report (p=0.1034). Later maintenance selects induction responders, not a replicate of all induction participants.\nReplication and durability: 50; Both distinct induction studies show 50 mg remission activity. Their 25 mg results differ; later maintenance randomizes induction responders and reports 44-week benefit.; Source: https://clinicaltrials.gov/api/v2/studies/NCT05507203; Benchmark: https://clinicaltrials.gov/study/NCT05507203; Uncertainty: Eight-week induction study. Registry primary remission measurements are counts despite the proportion title. ABTECT-1 enrollment 639 differs from 636 primary analyzed; do not silently equate enrollment and outcome denominators. ABTECT-2 25 mg comparison failed in issuer report (p=0.1034). Later maintenance selects induction responders, not a replicate of all induction participants.\nSafety and tolerability: 50; Eight-week registry safety groups 50 mg/25 mg/placebo: SAEs 14/318, 1/160 and 3/158; other AEs 90/318, 34/160 and 28/158; no deaths in any group.; Source: https://clinicaltrials.gov/api/v2/studies/NCT05507203; Benchmark: https://clinicaltrials.gov/study/NCT05507203; Uncertainty: Eight-week induction study. Registry primary remission measurements are counts despite the proportion title. ABTECT-1 enrollment 639 differs from 636 primary analyzed; do not silently equate enrollment and outcome denominators. ABTECT-2 25 mg comparison failed in issuer report (p=0.1034). Later maintenance selects induction responders, not a replicate of all induction participants.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT05507216",
+      "ticker": "ABVX",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": 55,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 50; Week 8 clinical remission: 50 mg 63/318 (19.8%), 25 mg 18/159 (11.3%), placebo 10/159 (6.3%).; Source: https://clinicaltrials.gov/api/v2/studies/NCT05507216; Benchmark: https://clinicaltrials.gov/study/NCT05507216; Uncertainty: Eight-week induction study. Registry primary remission measurements are counts despite the proportion title. ABTECT-1 enrollment 639 differs from 636 primary analyzed; do not silently equate enrollment and outcome denominators. ABTECT-2 25 mg comparison failed in issuer report (p=0.1034). Later maintenance selects induction responders, not a replicate of all induction participants.\nClinical importance and patient benefit: 75; Modified Mayo clinical remission incorporates rectal bleeding, stool frequency and endoscopic subscores; observed Week 8 remission: 50 mg 63/318 (19.8%), 25 mg 18/159 (11.3%), placebo 10/159 (6.3%).; Source: https://clinicaltrials.gov/api/v2/studies/NCT05507216; Benchmark: https://clinicaltrials.gov/study/NCT05507216; Uncertainty: Eight-week induction study. Registry primary remission measurements are counts despite the proportion title. ABTECT-1 enrollment 639 differs from 636 primary analyzed; do not silently equate enrollment and outcome denominators. ABTECT-2 25 mg comparison failed in issuer report (p=0.1034). Later maintenance selects induction responders, not a replicate of all induction participants.\nStatistical reliability: 50; Randomized blinded Week 8 primary analysis with arm counts: 50 mg 63/318 (19.8%), 25 mg 18/159 (11.3%), placebo 10/159 (6.3%). ABTECT-2 25 mg primary contrast p=0.1034; registry primary analyses do not include full sensitivity tables.; Source: https://clinicaltrials.gov/api/v2/studies/NCT05507216; Benchmark: https://clinicaltrials.gov/study/NCT05507216; Uncertainty: Eight-week induction study. Registry primary remission measurements are counts despite the proportion title. ABTECT-1 enrollment 639 differs from 636 primary analyzed; do not silently equate enrollment and outcome denominators. ABTECT-2 25 mg comparison failed in issuer report (p=0.1034). Later maintenance selects induction responders, not a replicate of all induction participants.\nReplication and durability: 50; Both distinct induction studies show 50 mg remission activity. Their 25 mg results differ; later maintenance randomizes induction responders and reports 44-week benefit.; Source: https://clinicaltrials.gov/api/v2/studies/NCT05507216; Benchmark: https://clinicaltrials.gov/study/NCT05507216; Uncertainty: Eight-week induction study. Registry primary remission measurements are counts despite the proportion title. ABTECT-1 enrollment 639 differs from 636 primary analyzed; do not silently equate enrollment and outcome denominators. ABTECT-2 25 mg comparison failed in issuer report (p=0.1034). Later maintenance selects induction responders, not a replicate of all induction participants.\nSafety and tolerability: 50; Eight-week registry safety groups 50 mg/25 mg/placebo: SAEs 6/318, 6/159 and 7/159; other AEs 115/318, 40/159 and 32/159; no deaths in any group.; Source: https://clinicaltrials.gov/api/v2/studies/NCT05507216; Benchmark: https://clinicaltrials.gov/study/NCT05507216; Uncertainty: Eight-week induction study. Registry primary remission measurements are counts despite the proportion title. ABTECT-1 enrollment 639 differs from 636 primary analyzed; do not silently equate enrollment and outcome denominators. ABTECT-2 25 mg comparison failed in issuer report (p=0.1034). Later maintenance selects induction responders, not a replicate of all induction participants.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT04576949",
+      "ticker": "ACHV",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": 50,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 50; ORCA-2 randomized 810 adults. 12-week cytisinicline achieved continuous abstinence weeks 9-12 32.6% versus 7.0% placebo, OR 6.3 (95% CI 3.7-11.6); sustained weeks 9-24 21.1% versus 4.8%. Six-week course 25.3% versus 4.4% weeks 3-6, OR 8.0 (95% CI 3.9-16.3).; Source: https://pubmed.ncbi.nlm.nih.gov/37432430/; Benchmark: https://pubmed.ncbi.nlm.nih.gov/40257755/; Uncertainty: Randomized trial with reported confidence bounds but material attrition at follow-up (76.3% completed) and uncertainty in generalization outside trial behavioral support. No full PDUFA submission or FDA safety review is audited.\nClinical importance and patient benefit: 50; Biochemically confirmed continuous smoking abstinence is a patient-important endpoint; absolute sustained abstinence at week 24 remained 21.1% versus 4.8% at 12-week dosing, leaving most treated patients nonabstinent.; Source: https://pubmed.ncbi.nlm.nih.gov/37432430/; Benchmark: https://pubmed.ncbi.nlm.nih.gov/40257755/; Uncertainty: Randomized trial with reported confidence bounds but material attrition at follow-up (76.3% completed) and uncertainty in generalization outside trial behavioral support. No full PDUFA submission or FDA safety review is audited.\nStatistical reliability: 50; Peer-reviewed ORCA-2 randomized smoking-cessation trial: 12-week cytisinicline vs placebo, weeks 9–12 biochemically verified abstinence 32.6% vs 7.0%, OR 6.3 (95% CI 3.7–11.6), p<0.001. At weeks 9–24, OR 5.3 (95% CI 2.8–11.1), p<0.001. 618/810 (76.3%) completed follow-up; analyses of 6-week and 12-week dose schedules introduce multiple contrasts.; Source: https://pubmed.ncbi.nlm.nih.gov/37432430/; Benchmark: https://www.fda.gov/regulatory-information/search-fda-guidance-documents/e9r1-statistical-principles-clinical-trials-addendum-estimands-and-sensitivity-analysis-clinical; Uncertainty: Confidence intervals exclude 1.0 for both referenced 12-week comparisons, but 23.7% did not complete follow-up. The available abstract does not independently verify protocol-specified missing-as-smoking handling, sensitivity analyses for departures, or familywise multiplicity across treatment durations, endpoints and follow-ups.\nReplication and durability: 50; ORCA-3 separately randomized 792 adults and replicated a favorable 12-week treatment effect, but 6-week primary odds ratios varied markedly (8.0 in ORCA-2 versus 2.9 in ORCA-3). Sustained week-24 abstinence was reported, not long-term life-course abstinence.; Source: https://pubmed.ncbi.nlm.nih.gov/37432430/; Benchmark: https://pubmed.ncbi.nlm.nih.gov/40257755/; Uncertainty: Randomized trial with reported confidence bounds but material attrition at follow-up (76.3% completed) and uncertainty in generalization outside trial behavioral support. No full PDUFA submission or FDA safety review is audited.\nSafety and tolerability: 50; ORCA-2 810-person Phase 3 published trial: 618 (76.3%) completed; across cytisinicline treated arms 16 participants (2.9%) discontinued due to an adverse event. Nausea, insomnia, and abnormal dreams each occurred in fewer than 10% per group; no drug-related serious adverse events. Benefit for 12-week cytisinicline was 32.6% vs 7.0% abstinence at weeks 9–12 and 21.1% vs 4.8% sustained through week 24.; Source: https://pubmed.ncbi.nlm.nih.gov/37432430/; Benchmark: https://pubmed.ncbi.nlm.nih.gov/40257755/; Uncertainty: Event percentages are from JAMA trial report, no adjudicated drug-vs-approved-treatment safety comparison, incomplete observation (23.7% no trial completion), and rare risks cannot be ruled out.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT05206370",
+      "ticker": "ACHV",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": 50,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 50; ORCA-3 randomized 792 adults. At 12-week dosing, 30.3% abstinent weeks 9-12 versus 9.4% placebo, OR 4.4 (95% CI 2.6-7.3); weeks 9-24 sustained abstinence was 20.5% versus 4.2%. Six-week dosing weeks 3-6 showed 14.8% versus 6.0% placebo, OR 2.9 (95% CI 1.5-5.6).; Source: https://pubmed.ncbi.nlm.nih.gov/40257755/; Benchmark: https://pubmed.ncbi.nlm.nih.gov/37432430/; Uncertainty: 79.3% completed follow-up, leaving potential missingness/attrition uncertainty. Different calendar pandemic exposures between ORCA-2 and ORCA-3 may affect observed abstinence, as discussed in the publication.\nClinical importance and patient benefit: 50; Biochemically confirmed continuous abstinence is patient-important. Persistence of 20.5% versus 4.2% from weeks 9 through 24 confirms clinically relevant sustained behavior in a subgroup, but substantial relapse or nonresponse remains.; Source: https://pubmed.ncbi.nlm.nih.gov/40257755/; Benchmark: https://pubmed.ncbi.nlm.nih.gov/37432430/; Uncertainty: 79.3% completed follow-up, leaving potential missingness/attrition uncertainty. Different calendar pandemic exposures between ORCA-2 and ORCA-3 may affect observed abstinence, as discussed in the publication.\nStatistical reliability: 50; Peer-reviewed ORCA-3 randomized replication: 12-week cytisinicline vs placebo, abstinence weeks 9–12 was 30.3% vs 9.4%, OR 4.4 (95% CI 2.6–7.3), p<0.001; for 6-week schedule weeks 3–6 OR 2.9 (95% CI 1.5–5.6), p<0.001. Overall trial completion 628/792 (79.3%).; Source: https://pubmed.ncbi.nlm.nih.gov/40257755/; Benchmark: https://www.fda.gov/regulatory-information/search-fda-guidance-documents/e9r1-statistical-principles-clinical-trials-addendum-estimands-and-sensitivity-analysis-clinical; Uncertainty: Both named published confidence intervals exclude OR=1, but 20.7% had incomplete follow-up and the abstract alone does not establish full multiplicity-adjusted familywise inference, intended estimand, or prespecified adverse-missing-data tipping point.\nReplication and durability: 50; ORCA-2 peer-reviewed study corroborated the direction and timing of treatment benefit. Short-course OR was materially smaller in ORCA-3 than ORCA-2, and at 24 weeks most treated participants were not continuously abstinent.; Source: https://pubmed.ncbi.nlm.nih.gov/40257755/; Benchmark: https://pubmed.ncbi.nlm.nih.gov/37432430/; Uncertainty: 79.3% completed follow-up, leaving potential missingness/attrition uncertainty. Different calendar pandemic exposures between ORCA-2 and ORCA-3 may affect observed abstinence, as discussed in the publication.\nSafety and tolerability: 50; ORCA-3 792-person three-arm randomized Phase 3 trial: 628 (79.3%) completed; JAMA report states no treatment-related serious adverse events. At 12 weeks 30.3% cytisinicline-treated versus 9.4% placebo achieved continuous abstinence, and 20.5% versus 4.2% sustained abstinence through week 24.; Source: https://pubmed.ncbi.nlm.nih.gov/40257755/; Benchmark: https://pubmed.ncbi.nlm.nih.gov/37432430/; Uncertainty: The abstract does not give complete arm-level adverse-event frequencies or adverse-event-related discontinuation across all regimens. Overall trial completion 79.3%; post-trial rare-event risk and other-medication comparisons remain unverified.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT05811247",
+      "ticker": "APMD",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": null,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "state": "MISSING_EVIDENCE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 50; Treatment policy AHI difference -4.08 events/hour (95% CI -6.14 to -2.03), p<0.001; while-on-treatment -5.81 (CI -8.07 to -3.55), p<0.0001.; Source: https://clinicaltrials.gov/api/v2/studies/NCT05811247; Benchmark: https://clinicaltrials.gov/study/NCT05811247; Uncertainty: LunAIRo randomized660, treatment-policy primary650, on-treatment533;51-week safety328/327. Six-month AHI is physiological; no exact-trial fatigue outcome was established in retrieved packet. Registry study AE withdrawals12/329vs7/331 are not SynAIRgy therapy discontinuations. Do not transfer the sibling trial fatigue or discontinuation percentages.\nClinical importance and patient benefit: MISSING_EVIDENCE; LunAIRo retrieved registry results quantify AHI but not patient fatigue/function or QoL results. SynAIRgy fatigue results belong to another exact NCT and are not substituted.; Source: Not reported; Benchmark: Not applicable; Uncertainty: LunAIRo retrieved registry results quantify AHI but not patient fatigue/function or QoL results. SynAIRgy fatigue results belong to another exact NCT and are not substituted.\nStatistical reliability: 75; Treatment policy AHI difference -4.08 events/hour (95% CI -6.14 to -2.03), p<0.001; while-on-treatment -5.81 (CI -8.07 to -3.55), p<0.0001.; Source: https://clinicaltrials.gov/api/v2/studies/NCT05811247; Benchmark: https://clinicaltrials.gov/study/NCT05811247; Uncertainty: LunAIRo randomized660, treatment-policy primary650, on-treatment533;51-week safety328/327. Six-month AHI is physiological; no exact-trial fatigue outcome was established in retrieved packet. Registry study AE withdrawals12/329vs7/331 are not SynAIRgy therapy discontinuations. Do not transfer the sibling trial fatigue or discontinuation percentages.\nReplication and durability: 50; Six-month primary controlled results are positive in both distinct pivotal studies, with different on-treatment and treatment-policy effect magnitudes. LunAIRo safety exposure extends to 51 weeks.; Source: https://clinicaltrials.gov/api/v2/studies/NCT05811247; Benchmark: https://clinicaltrials.gov/study/NCT05811247; Uncertainty: LunAIRo randomized660, treatment-policy primary650, on-treatment533;51-week safety328/327. Six-month AHI is physiological; no exact-trial fatigue outcome was established in retrieved packet. Registry study AE withdrawals12/329vs7/331 are not SynAIRgy therapy discontinuations. Do not transfer the sibling trial fatigue or discontinuation percentages.\nSafety and tolerability: 50; LunAIRo registry SAEs5/328vs10/327;other AEs220/328vs122/327;study AE withdrawals12/329vs7/331. No deaths.; Source: https://clinicaltrials.gov/api/v2/studies/NCT05811247; Benchmark: https://clinicaltrials.gov/study/NCT05811247; Uncertainty: LunAIRo randomized660, treatment-policy primary650, on-treatment533;51-week safety328/327. Six-month AHI is physiological; no exact-trial fatigue outcome was established in retrieved packet. Registry study AE withdrawals12/329vs7/331 are not SynAIRgy therapy discontinuations. Do not transfer the sibling trial fatigue or discontinuation percentages.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT05813275",
+      "ticker": "APMD",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": 50,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 25,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 50; Treatment policy AHI difference -3.99 events/hour (95% CI -6.40 to -1.59), p=0.001; while-on-treatment -6.54 (CI -8.80 to -4.28), p<0.0001.; Source: https://clinicaltrials.gov/api/v2/studies/NCT05813275; Benchmark: https://clinicaltrials.gov/study/NCT05813275; Uncertainty: AD109 2.5/75 mg versus placebo in patients unable/unwilling to use PAP. Separate full-analysis and while-on-treatment denominators. SynAIRgy publication reports no significant PROMIS-Fatigue difference and AE discontinuations 21.2% vs 3.1%; those exact percentages must not transfer to LunAIRo. AHI benefit is not established cardiovascular or mortality benefit.\nClinical importance and patient benefit: 50; Controlled airway obstruction and oxygenation improve; SynAIRgy independently reports no significant PROMIS-Fatigue improvement. AHI effects: Treatment policy AHI difference -3.99 events/hour (95% CI -6.40 to -1.59), p=0.001; while-on-treatment -6.54 (CI -8.80 to -4.28), p<0.0001.; Source: https://pubmed.ncbi.nlm.nih.gov/42148495/; Benchmark: https://clinicaltrials.gov/study/NCT05813275; Uncertainty: AD109 2.5/75 mg versus placebo in patients unable/unwilling to use PAP. Separate full-analysis and while-on-treatment denominators. SynAIRgy publication reports no significant PROMIS-Fatigue difference and AE discontinuations 21.2% vs 3.1%; those exact percentages must not transfer to LunAIRo. AHI benefit is not established cardiovascular or mortality benefit.\nStatistical reliability: 75; Treatment policy AHI difference -3.99 events/hour (95% CI -6.40 to -1.59), p=0.001; while-on-treatment -6.54 (CI -8.80 to -4.28), p<0.0001.; Source: https://clinicaltrials.gov/api/v2/studies/NCT05813275; Benchmark: https://clinicaltrials.gov/study/NCT05813275; Uncertainty: AD109 2.5/75 mg versus placebo in patients unable/unwilling to use PAP. Separate full-analysis and while-on-treatment denominators. SynAIRgy publication reports no significant PROMIS-Fatigue difference and AE discontinuations 21.2% vs 3.1%; those exact percentages must not transfer to LunAIRo. AHI benefit is not established cardiovascular or mortality benefit.\nReplication and durability: 50; Six-month primary controlled results are positive in both distinct pivotal studies, with different on-treatment and treatment-policy effect magnitudes. LunAIRo safety exposure extends to 51 weeks.; Source: https://clinicaltrials.gov/api/v2/studies/NCT05813275; Benchmark: https://clinicaltrials.gov/study/NCT05813275; Uncertainty: AD109 2.5/75 mg versus placebo in patients unable/unwilling to use PAP. Separate full-analysis and while-on-treatment denominators. SynAIRgy publication reports no significant PROMIS-Fatigue difference and AE discontinuations 21.2% vs 3.1%; those exact percentages must not transfer to LunAIRo. AHI benefit is not established cardiovascular or mortality benefit.\nSafety and tolerability: 25; Exact-trial registry SAEs 5/325 vs 8/319; other AEs 176/325 vs 50/319. SynAIRgy published AE-related discontinuations 21.2% vs 3.1%.; Source: https://pubmed.ncbi.nlm.nih.gov/42148495/; Benchmark: https://clinicaltrials.gov/study/NCT05813275; Uncertainty: AD109 2.5/75 mg versus placebo in patients unable/unwilling to use PAP. Separate full-analysis and while-on-treatment denominators. SynAIRgy publication reports no significant PROMIS-Fatigue difference and AE discontinuations 21.2% vs 3.1%; those exact percentages must not transfer to LunAIRo. AHI benefit is not established cardiovascular or mortality benefit.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT05059223",
+      "ticker": "AXSM",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": null,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "state": "MISSING_EVIDENCE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; Weekly cataplexy reduction 83% AXS-12 vs 66% placebo at Week 5, p=0.018; remission 33% vs 9.5%, p=0.008.; Source: https://www.sec.gov/Archives/edgar/data/1579428/000095017024035655/axsm-ex99_1.htm; Benchmark: https://clinicaltrials.gov/study/NCT05059223; Uncertainty: SYMPHONY n90, five weeks, randomized placebo-controlled. Several secondary comparisons reported without complete multiplicity/CI details. ENCORE is a distinct enriched withdrawal study; no direct transfer of long-term percentages.\nClinical importance and patient benefit: 75; CGI-S daytime sleepiness change -1.8 vs -0.9, p=0.027; concurrent EDS/cataplexy response 57% vs 33%, p=0.029; FOSQ-10 total p=0.005.; Source: https://www.sec.gov/Archives/edgar/data/1579428/000095017024035655/axsm-ex99_1.htm; Benchmark: https://clinicaltrials.gov/study/NCT05059223; Uncertainty: SYMPHONY n90, five weeks, randomized placebo-controlled. Several secondary comparisons reported without complete multiplicity/CI details. ENCORE is a distinct enriched withdrawal study; no direct transfer of long-term percentages.\nStatistical reliability: MISSING_EVIDENCE; SYMPHONY release gives primary p=0.018 and multiple secondary p-values but no effect CI, full multiplicity or missing-data sensitivity analysis. No default statistical grade.; Source: Not reported; Benchmark: Not applicable; Uncertainty: SYMPHONY release gives primary p=0.018 and multiple secondary p-values but no effect CI, full multiplicity or missing-data sensitivity analysis. No default statistical grade.\nReplication and durability: 50; Five-week randomized cataplexy benefit, with distinct ENCORE withdrawal trial confirming loss of control after six months among selected continuing patients.; Source: https://www.sec.gov/Archives/edgar/data/1579428/000095017024035655/axsm-ex99_1.htm; Benchmark: https://clinicaltrials.gov/study/NCT05059223; Uncertainty: SYMPHONY n90, five weeks, randomized placebo-controlled. Several secondary comparisons reported without complete multiplicity/CI details. ENCORE is a distinct enriched withdrawal study; no direct transfer of long-term percentages.\nSafety and tolerability: 50; No serious adverse events in either SYMPHONY arm; one AE discontinuation in each arm. Active dry mouth n6, nausea n6 and constipation n4, mostly mild/moderate.; Source: https://www.sec.gov/Archives/edgar/data/1579428/000095017024035655/axsm-ex99_1.htm; Benchmark: https://clinicaltrials.gov/study/NCT05059223; Uncertainty: SYMPHONY n90, five weeks, randomized placebo-controlled. Several secondary comparisons reported without complete multiplicity/CI details. ENCORE is a distinct enriched withdrawal study; no direct transfer of long-term percentages.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT05113745",
+      "ticker": "AXSM",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": 60,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; Weekly cataplexy increased 1.32 on continued AXS-12 versus 10.29 on placebo after withdrawal at Week 3, p=0.017.; Source: https://www.sec.gov/Archives/edgar/data/1579428/000095017024130755/axsm-ex99_1.htm; Benchmark: https://clinicaltrials.gov/study/NCT05113745; Uncertainty: ENCORE enrolled 68 for six-month open-label dosing, then randomized 42 (22 continued/20 placebo) for three weeks. Selection, withdrawal/rebound and short blinded duration limit generalization; no full arm-level SAE table in release.\nClinical importance and patient benefit: 75; Worsening concentration on NSAQ 14.3% continued vs 52.6% placebo, p=0.011; worsening overall narcolepsy PGI-C 16.7% vs 52.6%, p=0.024.; Source: https://www.sec.gov/Archives/edgar/data/1579428/000095017024130755/axsm-ex99_1.htm; Benchmark: https://clinicaltrials.gov/study/NCT05113745; Uncertainty: ENCORE enrolled 68 for six-month open-label dosing, then randomized 42 (22 continued/20 placebo) for three weeks. Selection, withdrawal/rebound and short blinded duration limit generalization; no full arm-level SAE table in release.\nStatistical reliability: 50; Randomized n42 after open-label n68, primary p=0.017 and quantified symptom recurrence difference 1.32 vs 10.29 attacks/week.; Source: https://www.sec.gov/Archives/edgar/data/1579428/000095017024130755/axsm-ex99_1.htm; Benchmark: https://clinicaltrials.gov/study/NCT05113745; Uncertainty: ENCORE enrolled 68 for six-month open-label dosing, then randomized 42 (22 continued/20 placebo) for three weeks. Selection, withdrawal/rebound and short blinded duration limit generalization; no full arm-level SAE table in release.\nReplication and durability: 50; Six-month open-label treatment followed by three-week blinded withdrawal; SYMPHONY independently supports short-term efficacy.; Source: https://www.sec.gov/Archives/edgar/data/1579428/000095017024130755/axsm-ex99_1.htm; Benchmark: https://clinicaltrials.gov/study/NCT05113745; Uncertainty: ENCORE enrolled 68 for six-month open-label dosing, then randomized 42 (22 continued/20 placebo) for three weeks. Selection, withdrawal/rebound and short blinded duration limit generalization; no full arm-level SAE table in release.\nSafety and tolerability: 50; Six-month open-label ENCORE AE discontinuation17.6%;common nausea5.9%and tachycardia5.9%. In randomized withdrawal n22continued/n20placebo, relatedAEs4.5%vs15%,AE withdrawals0%vs5%.; Source: https://www.sec.gov/Archives/edgar/data/1579428/000095017024130755/axsm-ex99_1.htm; Benchmark: https://clinicaltrials.gov/study/NCT05113745; Uncertainty: Documented arm-level toxicity and discontinuation facts support this provisional assessment. Full all-cause SAE totals and exposure-adjusted rare-event risks remain unresolved; different periods/populations are not pooled.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT05244304",
+      "ticker": "BLTE",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": null,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "state": "NOT_REPORTED"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; DDAF lesion-growth reduction 35.7% versus placebo using prespecified unstructured MMRM, p=0.0033; fellow eye 33.6%, p=0.041.; Source: https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite; Benchmark: https://clinicaltrials.gov/study/NCT05244304; Uncertainty: DRAGON n104 over 24 months. DDAF lesion growth is anatomical; visual acuity changed minimally in both groups. Post-hoc autoregressive covariance was not the prespecified primary analysis. Four treatment-related drug discontinuations; complete arm-level SAE table not supplied.\nClinical importance and patient benefit: 50; Retinal lesion progression slowed, but overall visual acuity changes were minimal in both groups over 24 months.; Source: https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite; Benchmark: https://clinicaltrials.gov/study/NCT05244304; Uncertainty: DRAGON n104 over 24 months. DDAF lesion growth is anatomical; visual acuity changed minimally in both groups. Post-hoc autoregressive covariance was not the prespecified primary analysis. Four treatment-related drug discontinuations; complete arm-level SAE table not supplied.\nStatistical reliability: 50; Prespecified MMRM p=0.0033, effect 35.7%; post-hoc autoregressive MMRM p<0.0001, effect 35.4%.; Source: https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite; Benchmark: https://clinicaltrials.gov/study/NCT05244304; Uncertainty: DRAGON n104 over 24 months. DDAF lesion growth is anatomical; visual acuity changed minimally in both groups. Post-hoc autoregressive covariance was not the prespecified primary analysis. Four treatment-related drug discontinuations; complete arm-level SAE table not supplied.\nReplication and durability: 50; Lesion growth reduction measured through 24 months, with fellow-eye corroboration in the same participants.; Source: https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite; Benchmark: https://clinicaltrials.gov/study/NCT05244304; Uncertainty: DRAGON n104 over 24 months. DDAF lesion growth is anatomical; visual acuity changed minimally in both groups. Post-hoc autoregressive covariance was not the prespecified primary analysis. Four treatment-related drug discontinuations; complete arm-level SAE table not supplied.\nSafety and tolerability: NOT_REPORTED; DRAGON issuer reports four treatment-related drug discontinuations but no exact arm-level complete serious-event and severity table or safety exposure denominators.; Source: Not reported; Benchmark: Not applicable; Uncertainty: DRAGON issuer reports four treatment-related drug discontinuations but no exact arm-level complete serious-event and severity table or safety exposure denominators.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT05126758",
+      "ticker": "CAPR",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": null,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "state": "MISSING_EVIDENCE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; PUL 2.0 percentage-change difference 4.55 percentage points (95% CI 0.47–8.63), p=0.029, in randomized n106.; Source: https://pubmed.ncbi.nlm.nih.gov/42526472/; Benchmark: https://clinicaltrials.gov/study/NCT05126758; Uncertainty: HOPE-3 n106 randomized (54/52). Primary publication reports a percentage-change treatment difference, not absolute PUL points. Issuer PUL evaluable n105 and LVEF evaluable n83 are distinct denominators. No mortality inference from LVEF or transfer of HOPE-2 safety counts.\nClinical importance and patient benefit: 50; Upper-limb progression slowed by issuer-reported 54%; supportive LVEF slowing 91%, p=0.041, evaluated in n83 versus n105 evaluable primary PUL.; Source: https://pubmed.ncbi.nlm.nih.gov/42526472/; Benchmark: https://clinicaltrials.gov/study/NCT05126758; Uncertainty: HOPE-3 n106 randomized (54/52). Primary publication reports a percentage-change treatment difference, not absolute PUL points. Issuer PUL evaluable n105 and LVEF evaluable n83 are distinct denominators. No mortality inference from LVEF or transfer of HOPE-2 safety counts.\nStatistical reliability: 50; Primary effect CI 0.47–8.63, p=0.029; only 83/106 had evaluable cardiac MRI versus 105 evaluable primary assessments.; Source: https://pubmed.ncbi.nlm.nih.gov/42526472/; Benchmark: https://clinicaltrials.gov/study/NCT05126758; Uncertainty: HOPE-3 n106 randomized (54/52). Primary publication reports a percentage-change treatment difference, not absolute PUL points. Issuer PUL evaluable n105 and LVEF evaluable n83 are distinct denominators. No mortality inference from LVEF or transfer of HOPE-2 safety counts.\nReplication and durability: 50; Randomized quarterly dosing evaluated at 12 months, with earlier Phase 2 HOPE-2 clinical activity noted in publication.; Source: https://pubmed.ncbi.nlm.nih.gov/42526472/; Benchmark: https://clinicaltrials.gov/study/NCT05126758; Uncertainty: HOPE-3 n106 randomized (54/52). Primary publication reports a percentage-change treatment difference, not absolute PUL points. Issuer PUL evaluable n105 and LVEF evaluable n83 are distinct denominators. No mortality inference from LVEF or transfer of HOPE-2 safety counts.\nSafety and tolerability: MISSING_EVIDENCE; HOPE-3 indexed Lancet abstract says safety similar; open issuer release lacks full AE/SAE/discontinuation table. Indexed full text is subscription-only. Exact arm-level data needed; HOPE-2 cannot substitute.; Source: Not reported; Benchmark: Not applicable; Uncertainty: HOPE-3 indexed Lancet abstract says safety similar; open issuer release lacks full AE/SAE/discontinuation table. Indexed full text is subscription-only. Exact arm-level data needed; HOPE-2 cannot substitute.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT05208047",
+      "ticker": "COGT",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": 55,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; PEAK Phase 3 NCT05208047 (bezuclastinib plus sunitinib vs active comparator sunitinib alone) reported median blinded-independent-review PFS 16.5 vs 9.2 months, HR 0.50 (95% CI 0.39–0.65), p<0.0001. Source is sponsor ASCO release; a meaningful PFS increment in post-imatinib GIST rather than a placebo-only assay.; Source: https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3; Benchmark: https://www.fda.gov/regulatory-information/search-fda-guidance-documents/clinical-trial-endpoints-approval-cancer-drugs-and-biologics; Uncertainty: PFS is not overall survival. Full peer-reviewed participant-level SAP, censoring analyses, intercurrent events, independent radiology audit and long-term OS tradeoffs remain unverified here.\nClinical importance and patient benefit: 50; In post-imatinib advanced GIST, tumor progression and need for later treatment are clinically important; PEAK median PFS improved 7.3 months vs sunitinib active control. Source-reported PFS HR=0.50. Mature overall survival, functional or quality-of-life head-to-head differences are not provided by the NDA acceptance press release.; Source: https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3; Benchmark: https://www.fda.gov/regulatory-information/search-fda-guidance-documents/clinical-trial-endpoints-approval-cancer-drugs-and-biologics; Uncertainty: PFS clinical meaning varies with GIST symptom burden, competing toxicity and censoring. Full OS, pain, patient reported outcomes and crossover analyses were not independently assessed.\nStatistical reliability: 50; PEAK primary treatment contrast includes HR 0.50, 95% CI 0.39–0.65, p<0.0001 for progression or death; median 16.5 vs 9.2 months. This source-supported interval excludes HR=1 but is not itself a review of all prespecified endpoints, power or sensitivity analyses.; Source: https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3; Benchmark: https://www.fda.gov/regulatory-information/search-fda-guidance-documents/multiple-endpoints-clinical-trials; Uncertainty: Public ASCO presentation summary lacks independently audited full SAP, detailed censoring by arm, multiplicity for key secondary outcomes, missing-data sensitivity and ITT vs per-protocol stress tests.\nReplication and durability: 50; Median PFS 16.5 months combination vs 9.2 months sunitinib; HR0.50 (95% CI0.39–0.65), p<0.0001; objective response46% vs26%.; Source: https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak; Benchmark: https://clinicaltrials.gov/study/NCT05208047; Uncertainty: PEAK is a single pivotal combination trial in imatinib-resistant/intolerant GIST. Current sponsor PFS is not OS. Grade 3+ transaminase elevations 10.8% vs 1.4% and treatment-related AE discontinuations 7.4% vs 3.8%; full all-cause SAE table remains missing.\nSafety and tolerability: 50; PEAK combinationvs sunitinib: Grade3+hypertension29.4%vs27.4%,neutropenia15.2%vs15.4%,ALT/AST10.8%vs1.4%,anemia9.3%vs4.8%,diarrhea7.8%vs7.2%. Related-AE withdrawals7.4%vs3.8%;transaminases led to dose reduction12.7%,discontinuation1.5%,allGrade3resolved,noGrade4.; Source: https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak; Benchmark: https://clinicaltrials.gov/study/NCT05208047; Uncertainty: Documented arm-level toxicity and discontinuation facts support this provisional assessment. Full all-cause SAE totals and exposure-adjusted rare-event risks remain unresolved; different periods/populations are not pooled.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT03697109",
+      "ticker": "CORT",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": 50,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 50; GRACE NCT03697109 randomized-withdrawal efficacy (published 2026-02-20): among hypertension responders, loss of blood-pressure response occurred in 11/21 (52%) continuing relacorilant versus 19/22 (86%) receiving placebo at week 12. Difference -34 percentage points, OR 0.17 (95% CI 0.04-0.77), P=0.022. The prespecified primary hypertension endpoint was met, but the prespecified design target was a 50 percentage-point contrast; secondary hyperglycemia analyses were not statistically significant.; Source: https://pubmed.ncbi.nlm.nih.gov/41730814/; Benchmark: https://pubmed.ncbi.nlm.nih.gov/22466348/; Uncertainty: Randomized-withdrawal population was response enriched following 22 weeks of open-label treatment: 62 randomized overall, 43 evaluable for hypertension endpoint. Missing endpoint values classified as lost response (roughly 23% missing across arms); modified ITT and per-protocol sensitivity analyses still favored relacorilant. Wide OR confidence limits, selection/generalizability, protocol revisions, and unknown longer-term durability prevent strong efficacy calibration.\nClinical importance and patient benefit: 50; GRACE NCT03697109 randomized-withdrawal hypertension responders: loss of BP control 11/21 (52%) on continued relacorilant vs 19/22 (86%) after placebo substitution, 34 percentage points favoring treatment. Ambulatory SBP adjusted between-arm difference -6.5 mmHg (95% CI -11.9 to -1.1; P=0.019) in evaluable paired subset.; Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/; Benchmark: https://academic.oup.com/eurheartj/article/45/38/3912/7741010; Uncertainty: The cohort was selected for response during prior open-label treatment, so results do not establish population-wide patient benefit. Patient-reported physical function, hospitalization and survival improvement not demonstrated in these randomized data.\nStatistical reliability: 50; GRACE NCT03697109 hypertension loss primary ITT OR 0.17, 95% CI 0.04 to 0.77, P=0.022 (11/21 vs 19/22). Modified ITT 9/19 vs 15/18 (P=0.029), per-protocol 7/15 vs 15/18 (P=0.032). Trial treated missing week-12 data as loss of response; only 62 total subjects randomized after open-label enrichment.; Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/; Benchmark: https://www.fda.gov/regulatory-information/search-fda-guidance-documents/multiple-endpoints-clinical-trials; Uncertainty: Primary analysis and two sensitivity subsets remain conventionally significant, but small n, original co-primary endpoint amendment, and selected study population limit certainty.\nReplication and durability: 50; In GRACE, 11/21 continued relacorilant vs 19/22 placebo-substituted patients lost BP control by week 12, showing a sustained on-treatment contrast in selected patients. Independent GRADIENT NCT04308590 had relacorilant SBP reduction -6.6 versus -2.1 mmHg placebo but the between-group primary comparison was nonsignificant.; Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/; Benchmark: https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3; Uncertainty: The open-label treatment period and short randomized-withdrawal window do not establish long-term randomized maintenance in all hypercortisolism etiologies. Different etiology and trial design limit direct cross-study reproducibility.\nSafety and tolerability: 50; GRACE randomized-withdrawal safety: back pain 5/30 versus 6/32, headache 3/30 versus 4/32, acne 3/30 versus 0, bursitis 3/30 versus 0, and withdrawal discontinuation 5/30 versus 5/32. No hypokalemia, adrenal insufficiency, endometrial hypertrophy bleeding, or drug-induced QT prolongation observed in the trial.; Source: https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/; Benchmark: https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3; Uncertainty: Earlier GRACE open-label stage had 57/152 discontinuations for multiple reasons including AEs and withdrawal. A small selected 12-week randomized population does not establish rare or long-term safety or peer drug superiority.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT04308590",
+      "ticker": "CORT",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": 40,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 25,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 25,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 25; GRADIENT NCT04308590 randomized 137 adults for 22 weeks. Mean ABPM systolic BP reduced 6.6 mmHg with relacorilant (within-arm P=0.012) and 2.1 mmHg with placebo (within-arm nonsignificant). Issuer explicitly states the primary placebo-adjusted between-arm SBP comparison was NOT statistically significant.; Source: https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3; Benchmark: https://academic.oup.com/eurheartj/article/45/38/3912/7741010; Uncertainty: Full between-arm primary confidence interval and trial SAP were not disclosed; known inferential primary miss remains source documented, while exact possible effect sizes are uncertain.\nClinical importance and patient benefit: 50; GRADIENT NCT04308590 showed placebo-adjusted fasting glucose change -22.2 mg/dL (P=0.002), oral glucose tolerance AUC -2.6 h*mmol/L (P=0.046), HbA1c -0.3 percentage point (P=0.019) and body weight -3.9 kg (P=0.0001). Five placebo vs one treated patients needed antihypertensive rescue; prespecified SBP primary comparison was nonsignificant.; Source: https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3; Benchmark: https://academic.oup.com/eurheartj/article/45/38/3912/7741010; Uncertainty: Nominal secondary P values may not be familywise significant after a failed primary; no independently verified patient QoL or hard health outcome is established.\nStatistical reliability: 25; GRADIENT NCT04308590 issuer stated prespecified between-group SBP primary was not statistically significant, even though relacorilant within-arm change was -6.6 mmHg (P=0.012). Nominal placebo-adjusted fasting glucose P=0.002 and body-weight P=0.0001 were favorable but are secondary.; Source: https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3; Benchmark: https://www.fda.gov/regulatory-information/search-fda-guidance-documents/multiple-endpoints-clinical-trials; Uncertainty: Missing full primary confidence interval, dropout-adjusted sensitivity and multiplicity hierarchy mean secondary robustness is not settled; known primary miss is an adverse inferential fact rather than an unknown.\nReplication and durability: 50; GRADIENT NCT04308590 sponsor reported no statistically significant difference between relacorilant and placebo on prespecified ambulatory SBP primary, despite within-relacorilant -6.6 mmHg versus placebo -2.1 mmHg and favorable glucose/weight secondary outcomes. GRACE NCT03697109 documented maintenance of hypertension control during 12-week blinded withdrawal in patients previously responding.; Source: https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3; Benchmark: https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893; Uncertainty: GRADIENT 22-week primary is negative, and no subsequent independent adrenal-only confirmation or longer blinded durability has been disclosed, but other relacorilant hypercortisolism subgroup signals exist.\nSafety and tolerability: 50; ClinicalTrials.gov posted GRADIENT NCT04308590 results reported treatment-emergent adverse events through week 26 in 67 of 68 relacorilant patients (98.5%) versus 60 of 69 placebo patients (87.0%). Serious-adverse-event term tables include dyspnoea 2/68 versus 0/69 and acute myocardial infarction 1/68 versus 1/69; these counts are term-level and cannot be summed as unique patients with serious events.; Source: https://clinicaltrials.gov/study/NCT04308590; Benchmark: https://clinicaltrials.gov/study/NCT03697109; Uncertainty: The higher frequency of any TEAE on active treatment is recorded, but treatment causality cannot be established from aggregate event counts. The published source lacks an indication-matched active-treatment peer head-to-head, full per-patient attribution and sufficiently long follow-up to exclude rare harms.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT05767346",
+      "ticker": "CYTK",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": 60,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; Exact MAPLE-HCM NCT05767346 double-blind double-dummy 24-week active-control trial randomized 88 aficamten vs 87 metoprolol. Adjusted between-arm peak VO2 change +2.3 mL/kg/min (95% CI +1.5 to +3.1; P<0.001) at primary time point. 2026 prespecified follow-up exercise analysis found >=3.0 mL/kg/min improvements in 20.5% active versus 3.7% metoprolol; metoprolol arm average change was negative.; Source: https://pubmed.ncbi.nlm.nih.gov/40888697/; Benchmark: https://pubmed.ncbi.nlm.nih.gov/42624353/; Uncertainty: 175 randomized, 165 (94%) with core-lab validated CPET in later exercise analysis. Some mean contrast arose from deterioration under metoprolol, so superiority to beta blocker does not show equivalence to a placebo comparator or survival impact. Post-hoc/secondary contrasts do not replace the primary prespecified endpoint.\nClinical importance and patient benefit: 75; MAPLE-HCM NCT05767346 aficamten vs metoprolol at 24 weeks: KCCQ-OSS adjusted mean difference +7.8 points (95% CI +3.3 to +12.3, P=0.001). A >=20-point health status gain occurred in 38.6% vs 18.4% (absolute difference +20.2 points; NNT ~4.9), and deterioration of at least five points occurred in 6.8% vs 18.4%.; Source: https://www.jacc.org/doi/full/10.1016/j.jacc.2025.10.059; Benchmark: https://pubmed.ncbi.nlm.nih.gov/33183512/; Uncertainty: CI for mean OSS effect includes <5 points and self-reported health status is subjective; adverse outcome differences, missing questionnaire reporting and generalizability to all HCM cases remain relevant.\nStatistical reliability: 50; MAPLE-HCM NCT05767346 primary between-arm pVO2 +2.3 mL/kg/min (95% CI +1.5 to +3.1; P<0.001); NYHA, KCCQ, LVOT gradient, NT-proBNP and LAVI secondary outcomes favored aficamten, while left ventricular mass index difference was nonsignificant.; Source: https://www.nejm.org/doi/10.1056/NEJMoa2504654; Benchmark: https://www.fda.gov/regulatory-information/search-fda-guidance-documents/multiple-endpoints-clinical-trials; Uncertainty: A significant primary contrast and consistent secondary outcomes support efficacy, but confidence intervals and multiplicity for every secondary and sensitivity to missing data have not been independently audited as a separate research question.\nReplication and durability: 50; MAPLE NCT05767346 randomized 88 aficamten versus 87 metoprolol with 24-week adjusted peak VO2 difference +2.3 mL/kg/min (95% CI +1.5 to +3.1, P<0.001). The separate SEQUOIA trial reported a 24-week placebo-adjusted +1.7 mL/kg/min, 95% CI +1.0 to +2.4.; Source: https://www.nejm.org/doi/10.1056/NEJMoa2504654; Benchmark: https://www.nejm.org/doi/10.1056/NEJMoa2401424; Uncertainty: Positive short-term direction replicated with different controls, but 52-week MAPLE treatment durability, all subgroup interaction CIs, and comparative long-term cardiac safety require more evidence.\nSafety and tolerability: 50; MAPLE-HCM NCT05767346: any serious AE 7/88 (8%) aficamten vs 6/87 (6.9%) metoprolol; withdrawal due to AE 1.1% vs 3.4%. LVEF<50% by core laboratory 1/88 versus 0/87, while mean LVEF change was -5.3% active vs -0.5% metoprolol. One sudden death after brief viral illness occurred in aficamten group and requires context, not automatic drug attribution.; Source: https://ir.cytokinetics.com/press-releases/press-release-details/2025/Cytokinetics-Presents-Additional-Data-from-MAPLE-HCM-at-the-Hypertrophic-Cardiomyopathy-Medical-Society-Scientific-Sessions-and-American-Heart-Association-Scientific-Sessions-2025/default.aspx; Benchmark: https://pubmed.ncbi.nlm.nih.gov/39056349/; Uncertainty: Small active-control sample limits risk precision; near-equal serious AE incidence does not prove long-term safety equivalence. Ejection fraction reduction and monitoring burden are substantive risks.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT04871282",
+      "ticker": "IMNM",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": null,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "state": "MISSING_EVIDENCE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "state": "MISSING_EVIDENCE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "state": "MISSING_EVIDENCE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; Progression/death HR0.16, p<0.0001; confirmed RECIST ORR56% varegacestat vs9% placebo, p<0.0001, by blinded independent central review.; Source: https://www.sec.gov/Archives/edgar/data/1472012/000119312526344636/imnm-20260630.htm; Benchmark: https://clinicaltrials.gov/study/NCT04871282; Uncertainty: IR detailed-readout page returned HTTP202 interstitial; accessible 10-Q supplies RINGSIDE Part B results. Registry NCT04871282 contains earlier and randomized parts; enrollment198 is not automatically randomized Part B n. Full primary CI, SAE and attrition tables were not in the retrieved disclosure.\nClinical importance and patient benefit: 75; Week12 worst-pain change -2.24(SE0.27) vs +0.18(SE0.27), difference -2.42(SE0.37), p<0.0001; more than2-point separation already at Week4.; Source: https://www.sec.gov/Archives/edgar/data/1472012/000119312526344636/imnm-20260630.htm; Benchmark: https://clinicaltrials.gov/study/NCT04871282; Uncertainty: IR detailed-readout page returned HTTP202 interstitial; accessible 10-Q supplies RINGSIDE Part B results. Registry NCT04871282 contains earlier and randomized parts; enrollment198 is not automatically randomized Part B n. Full primary CI, SAE and attrition tables were not in the retrieved disclosure.\nStatistical reliability: MISSING_EVIDENCE; Accessible SEC10-Q reports RINGSIDE HR0.16,p<0.0001 and pain SEs but no primary PFS CI, full SAP or missing-data sensitivities. Detailed issuer page and search index return interstitials.; Source: Not reported; Benchmark: Not applicable; Uncertainty: Accessible SEC10-Q reports RINGSIDE HR0.16,p<0.0001 and pain SEs but no primary PFS CI, full SAP or missing-data sensitivities. Detailed issuer page and search index return interstitials.\nReplication and durability: MISSING_EVIDENCE; RINGSIDE filing provides Week12pain and Week24tumor-volume changes but no longitudinal PFS/response-duration estimates or independent confirmatory study sufficient for durability grading.; Source: Not reported; Benchmark: Not applicable; Uncertainty: RINGSIDE filing provides Week12pain and Week24tumor-volume changes but no longitudinal PFS/response-duration estimates or independent confirmatory study sufficient for durability grading.\nSafety and tolerability: MISSING_EVIDENCE; Accessible SEC readout only says safety consistent with GSI therapies; detailed IR page is access-blocked. Exact PartB arm-level AE/SAE and discontinuations remain unestablished.; Source: Not reported; Benchmark: Not applicable; Uncertainty: Accessible SEC readout only says safety consistent with GSI therapies; detailed IR page is access-blocked. Exact PartB arm-level AE/SAE and discontinuations remain unestablished.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT06411379",
+      "ticker": "MLTX",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": null,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "state": "NOT_REPORTED"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; Week16 HiSCR75: 34.8% vs17.5%, composite primary p<0.001.; Source: https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm; Benchmark: https://clinicaltrials.gov/study/NCT06411379; Uncertainty: Distinct VELA trials and populations, not IZAR psoriatic arthritis. Only pooled safety n559/279 supplied: SAEs2.5%/1.8%, AE discontinuation2.9%/1.4%, oral candidiasis7.3%/0.4%. These pooled counts are not assigned to either exact NCT. VELA-2 composite primary failure breaks its confirmatory hierarchy. Week52 as-observed pooled results are not exact-study controlled durability.\nClinical importance and patient benefit: 75; DLQI >=4-point improvement59.0% vs37.8%; pain NRS >=3-point improvement28.4% vs12.7%; HiSQOL change-9.4 vs-3.8.; Source: https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm; Benchmark: https://clinicaltrials.gov/study/NCT06411379; Uncertainty: Distinct VELA trials and populations, not IZAR psoriatic arthritis. Only pooled safety n559/279 supplied: SAEs2.5%/1.8%, AE discontinuation2.9%/1.4%, oral candidiasis7.3%/0.4%. These pooled counts are not assigned to either exact NCT. VELA-2 composite primary failure breaks its confirmatory hierarchy. Week52 as-observed pooled results are not exact-study controlled durability.\nStatistical reliability: 75; Prespecified primary and key secondary composite tests succeeded in VELA-1; VELA-2 primary composite p=0.053 versus treatment-policy p=0.033. Multiple-testing control was performed within composite strategy only.; Source: https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm; Benchmark: https://clinicaltrials.gov/study/NCT06411379; Uncertainty: Distinct VELA trials and populations, not IZAR psoriatic arthritis. Only pooled safety n559/279 supplied: SAEs2.5%/1.8%, AE discontinuation2.9%/1.4%, oral candidiasis7.3%/0.4%. These pooled counts are not assigned to either exact NCT. VELA-2 composite primary failure breaks its confirmatory hierarchy. Week52 as-observed pooled results are not exact-study controlled durability.\nReplication and durability: 50; Separate VELA-1 and VELA-2 show positive observed Week16 lesion and symptom changes, but only VELA-1 succeeds on the primary composite; available Week52 summaries are pooled as-observed.; Source: https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm; Benchmark: https://clinicaltrials.gov/study/NCT06411379; Uncertainty: Distinct VELA trials and populations, not IZAR psoriatic arthritis. Only pooled safety n559/279 supplied: SAEs2.5%/1.8%, AE discontinuation2.9%/1.4%, oral candidiasis7.3%/0.4%. These pooled counts are not assigned to either exact NCT. VELA-2 composite primary failure breaks its confirmatory hierarchy. Week52 as-observed pooled results are not exact-study controlled durability.\nSafety and tolerability: NOT_REPORTED; VELA-1/2 publication contains POOLED safety559active/279placebo, including SAEs2.5%vs1.8%,discontinuations2.9%vs1.4% and candidiasis7.3%vs0.4%. Exact VELA-1 safety counts are not separately disclosed; pooled counts cannot become exact-trial rates.; Source: Not reported; Benchmark: Not applicable; Uncertainty: VELA-1/2 publication contains POOLED safety559active/279placebo, including SAEs2.5%vs1.8%,discontinuations2.9%vs1.4% and candidiasis7.3%vs0.4%. Exact VELA-1 safety counts are not separately disclosed; pooled counts cannot become exact-trial rates.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT06411899",
+      "ticker": "MLTX",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": null,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 25,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "state": "NOT_REPORTED"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 50; Week16 HiSCR75: 35.9% vs25.6%; prespecified composite primary p=0.053, treatment-policy p=0.033.; Source: https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm; Benchmark: https://clinicaltrials.gov/study/NCT06411899; Uncertainty: Distinct VELA trials and populations, not IZAR psoriatic arthritis. Only pooled safety n559/279 supplied: SAEs2.5%/1.8%, AE discontinuation2.9%/1.4%, oral candidiasis7.3%/0.4%. These pooled counts are not assigned to either exact NCT. VELA-2 composite primary failure breaks its confirmatory hierarchy. Week52 as-observed pooled results are not exact-study controlled durability.\nClinical importance and patient benefit: 50; DLQI >=4-point improvement58.1% vs39.0%; pain NRS >=3-point improvement29.8% vs14.9%; HiSQOL change-9.0 vs-3.5.; Source: https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm; Benchmark: https://clinicaltrials.gov/study/NCT06411899; Uncertainty: Distinct VELA trials and populations, not IZAR psoriatic arthritis. Only pooled safety n559/279 supplied: SAEs2.5%/1.8%, AE discontinuation2.9%/1.4%, oral candidiasis7.3%/0.4%. These pooled counts are not assigned to either exact NCT. VELA-2 composite primary failure breaks its confirmatory hierarchy. Week52 as-observed pooled results are not exact-study controlled durability.\nStatistical reliability: 25; Prespecified primary and key secondary composite tests succeeded in VELA-1; VELA-2 primary composite p=0.053 versus treatment-policy p=0.033. Multiple-testing control was performed within composite strategy only.; Source: https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm; Benchmark: https://clinicaltrials.gov/study/NCT06411899; Uncertainty: Distinct VELA trials and populations, not IZAR psoriatic arthritis. Only pooled safety n559/279 supplied: SAEs2.5%/1.8%, AE discontinuation2.9%/1.4%, oral candidiasis7.3%/0.4%. These pooled counts are not assigned to either exact NCT. VELA-2 composite primary failure breaks its confirmatory hierarchy. Week52 as-observed pooled results are not exact-study controlled durability.\nReplication and durability: 50; Separate VELA-1 and VELA-2 show positive observed Week16 lesion and symptom changes, but only VELA-1 succeeds on the primary composite; available Week52 summaries are pooled as-observed.; Source: https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm; Benchmark: https://clinicaltrials.gov/study/NCT06411899; Uncertainty: Distinct VELA trials and populations, not IZAR psoriatic arthritis. Only pooled safety n559/279 supplied: SAEs2.5%/1.8%, AE discontinuation2.9%/1.4%, oral candidiasis7.3%/0.4%. These pooled counts are not assigned to either exact NCT. VELA-2 composite primary failure breaks its confirmatory hierarchy. Week52 as-observed pooled results are not exact-study controlled durability.\nSafety and tolerability: NOT_REPORTED; VELA-2 exact arm safety counts are not supplied; published safety is pooled across VELA-1/2. Preserve pooled candidiasis and withdrawal signal as program evidence, not an exact VELA-2 numerical grade.; Source: Not reported; Benchmark: Not applicable; Uncertainty: VELA-2 exact arm safety counts are not supplied; published safety is pooled across VELA-1/2. Preserve pooled candidiasis and withdrawal signal as program evidence, not an exact VELA-2 numerical grade.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT06153693",
+      "ticker": "MLYS",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": null,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": null,
+          "state": "NOT_REPORTED"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; Week6 SBP change-16.9 vs-7.9mmHg; adjusted difference-9.1(95%CI-13.3 to-4.9),p<0.001. Week12 issuer difference-11.7mmHg,p<0.0001.; Source: https://pubmed.ncbi.nlm.nih.gov/40587141/; Benchmark: https://clinicaltrials.gov/study/NCT06153693; Uncertainty: Launch-HTN n1083 randomized1:2:1; 808 pooled50mg primary participants, distinct from individual safety dose groups. Six-to-twelve-week BP endpoint is a risk-factor surrogate; no measured stroke/survival benefit. Electrolyte and kidney-function events require monitoring. Advance-HTN is Phase2, not second Phase3.\nClinical importance and patient benefit: NOT_REPORTED; Launch-HTN reports6/12-week blood pressure lowering, not measured patient symptom/function, stroke or survival benefit. A risk-factor surrogate is not automatically a numerical demonstrated patient-benefit grade.; Source: Not reported; Benchmark: Not applicable; Uncertainty: Launch-HTN reports6/12-week blood pressure lowering, not measured patient symptom/function, stroke or survival benefit. A risk-factor surrogate is not automatically a numerical demonstrated patient-benefit grade.\nStatistical reliability: 75; Randomized1083; prespecified pooled50mg primary SBP difference-9.1mmHg with95%CI-13.3 to-4.9; concordant Week12 office and independent Phase2 ambulatory direction.; Source: https://pubmed.ncbi.nlm.nih.gov/40587141/; Benchmark: https://clinicaltrials.gov/study/NCT06153693; Uncertainty: Launch-HTN n1083 randomized1:2:1; 808 pooled50mg primary participants, distinct from individual safety dose groups. Six-to-twelve-week BP endpoint is a risk-factor surrogate; no measured stroke/survival benefit. Electrolyte and kidney-function events require monitoring. Advance-HTN is Phase2, not second Phase3.\nReplication and durability: 50; Blood pressure reductions present at6 and12weeks; distinct Advance-HTN Phase2 ambulatory BP study also positive at12weeks.; Source: https://pubmed.ncbi.nlm.nih.gov/40587141/; Benchmark: https://clinicaltrials.gov/study/NCT06153693; Uncertainty: Launch-HTN n1083 randomized1:2:1; 808 pooled50mg primary participants, distinct from individual safety dose groups. Six-to-twelve-week BP endpoint is a risk-factor surrogate; no measured stroke/survival benefit. Electrolyte and kidney-function events require monitoring. Advance-HTN is Phase2, not second Phase3.\nSafety and tolerability: 50; Issuer SAEs50mg12(2.2%), optional escalation2(0.7%), placebo8(3.0%); one treatment-related SAE. Publication discontinuations due hyperkalemia/hyponatremia each0.37% in active groups, kidney reduction0.56% in fixed50mg.; Source: https://pubmed.ncbi.nlm.nih.gov/40587141/; Benchmark: https://clinicaltrials.gov/study/NCT06153693; Uncertainty: Launch-HTN n1083 randomized1:2:1; 808 pooled50mg primary participants, distinct from individual safety dose groups. Six-to-twelve-week BP endpoint is a risk-factor surrogate; no measured stroke/survival benefit. Electrolyte and kidney-function events require monitoring. Advance-HTN is Phase2, not second Phase3.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT06343779",
+      "ticker": "PHVS",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": null,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "state": "MISSING_EVIDENCE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; Median symptom-relief onset1.28h(95%CI1.05–1.52) vs>12h(5.82 to>12),p<0.0001 in88paired participants.; Source: https://pubmed.ncbi.nlm.nih.gov/42849489/; Benchmark: https://clinicaltrials.gov/study/NCT06343779; Uncertainty: RAPIDe-3 randomized134;113 treated201attacks; primary paired efficacy88. Crossover controls are within-person and require paired treated attacks. Acute IR evidence must not transfer to CHAPTER XR prevention or chronic safety.\nClinical importance and patient benefit: 75; Patient-reported relief onset1.28h vs>12h; issuer reports median complete resolution11.95h with active drug.; Source: https://pubmed.ncbi.nlm.nih.gov/42849489/; Benchmark: https://clinicaltrials.gov/study/NCT06343779; Uncertainty: RAPIDe-3 randomized134;113 treated201attacks; primary paired efficacy88. Crossover controls are within-person and require paired treated attacks. Acute IR evidence must not transfer to CHAPTER XR prevention or chronic safety.\nStatistical reliability: 50; Randomized134,113treated,88paired primary efficacy participants; symptom-relief CIs separated and p<0.0001.; Source: https://pubmed.ncbi.nlm.nih.gov/42849489/; Benchmark: https://clinicaltrials.gov/study/NCT06343779; Uncertainty: RAPIDe-3 randomized134;113 treated201attacks; primary paired efficacy88. Crossover controls are within-person and require paired treated attacks. Acute IR evidence must not transfer to CHAPTER XR prevention or chronic safety.\nReplication and durability: 50; 201attacks treated by113participants; paired crossover relief in88; complete symptom resolution on active drug median11.95h.; Source: https://pubmed.ncbi.nlm.nih.gov/42849489/; Benchmark: https://clinicaltrials.gov/study/NCT06343779; Uncertainty: RAPIDe-3 randomized134;113 treated201attacks; primary paired efficacy88. Crossover controls are within-person and require paired treated attacks. Acute IR evidence must not transfer to CHAPTER XR prevention or chronic safety.\nSafety and tolerability: MISSING_EVIDENCE; RAPIDe-3 abstract documents two fatigue events, no severe/serious treatment-related events and no AE withdrawals, but not complete all-cause arm/exposure safety table. Indexed full Lancet report is subscription-only; no assumption all SAEs are zero.; Source: Not reported; Benchmark: Not applicable; Uncertainty: RAPIDe-3 abstract documents two fatigue events, no severe/serious treatment-related events and no AE withdrawals, but not complete all-cause arm/exposure safety table. Indexed full Lancet report is subscription-only; no assumption all SAEs are zero.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT06669754",
+      "ticker": "PHVS",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": null,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": null,
+          "state": "NOT_REPORTED"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "state": "NOT_REPORTED"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; Mean monthly HAE attacks83% lower than placebo,p<0.0001; Type1/2 subgroup n80 reduction87%.; Source: https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm; Benchmark: https://clinicaltrials.gov/study/NCT06669754; Uncertainty: CHAPTER-3 n85,55active/30placebo;40mg once daily for24weeks. Complete arm rates/CIs and all-cause SAE table absent from top-line. No-treatment-related SAE is not no-all-cause SAE. IR on-demand RAPIDe-3 is a different formulation/estimand.\nClinical importance and patient benefit: 75; Direct reduction in HAE attack burden83% versus placebo, with protection reported withinWeek1 and maintained through24weeks.; Source: https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm; Benchmark: https://clinicaltrials.gov/study/NCT06669754; Uncertainty: CHAPTER-3 n85,55active/30placebo;40mg once daily for24weeks. Complete arm rates/CIs and all-cause SAE table absent from top-line. No-treatment-related SAE is not no-all-cause SAE. IR on-demand RAPIDe-3 is a different formulation/estimand.\nStatistical reliability: NOT_REPORTED; CHAPTER-3 reports83%attack reduction,p<0.0001 and sequential secondary multiplicity control, but no primary effect CI, full missing-data sensitivity or arm-level counts in retrieved topline.; Source: Not reported; Benchmark: Not applicable; Uncertainty: CHAPTER-3 reports83%attack reduction,p<0.0001 and sequential secondary multiplicity control, but no primary effect CI, full missing-data sensitivity or arm-level counts in retrieved topline.\nReplication and durability: 50; Sponsor reports onset in first week and maintained protection through24weeks of randomized treatment; independent Phase2 support is not second pivotal replication.; Source: https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm; Benchmark: https://clinicaltrials.gov/study/NCT06669754; Uncertainty: CHAPTER-3 n85,55active/30placebo;40mg once daily for24weeks. Complete arm rates/CIs and all-cause SAE table absent from top-line. No-treatment-related SAE is not no-all-cause SAE. IR on-demand RAPIDe-3 is a different formulation/estimand.\nSafety and tolerability: NOT_REPORTED; CHAPTER-3 reports no treatment-related SAEs and one AE withdrawal per arm, but no complete all-cause AE/SAE and severity counts. Those are distinct from no-drug-related-SAE statement.; Source: Not reported; Benchmark: Not applicable; Uncertainty: CHAPTER-3 reports no treatment-related SAEs and one AE withdrawal per arm, but no complete all-cause AE/SAE and severity counts. Those are distinct from no-drug-related-SAE statement.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT06087276",
+      "ticker": "PRAX",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": 55,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 25,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; Study1 mADL11 change-4.3active vs-1.7placebo atWeek8,p<0.0001: observed between-arm difference-2.6points. Study2 response maintained55% vs33%,OR2.7(95%CI1.06–6.92),p=0.0369.; Source: https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1; Benchmark: https://clinicaltrials.gov/study/NCT06087276; Uncertainty: Essential3 contains two studies under ONE exactNCT. Study1 n473randomized, reported mITT199/233 and safety233/234; Study2 n238 enrolled,80 randomized responders. Headline4.3points is active change from baseline, not placebo-adjusted effect. Historical interim endpoint wasWeek12; finalWeek8 and missing-data sensitivity disclosed.\nClinical importance and patient benefit: 50; Study1 mADL11 between-arm change-2.6points; PGI-C3.3vs3.9 and CGI-S change-0.41vs-0.12. Study2 PGI-C/CGI-S differences were not significant.; Source: https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1; Benchmark: https://clinicaltrials.gov/study/NCT06087276; Uncertainty: Essential3 contains two studies under ONE exactNCT. Study1 n473randomized, reported mITT199/233 and safety233/234; Study2 n238 enrolled,80 randomized responders. Headline4.3points is active change from baseline, not placebo-adjusted effect. Historical interim endpoint wasWeek12; finalWeek8 and missing-data sensitivity disclosed.\nStatistical reliability: 75; Prespecified delta-adjusted tipping-point analysis at maximum shift2.5 remained significant,p=0.0026; imputed changes-3.3vs-1.6. Week12 change-3.4vs-1.9,p=0.0049.; Source: https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1; Benchmark: https://clinicaltrials.gov/study/NCT06087276; Uncertainty: Essential3 contains two studies under ONE exactNCT. Study1 n473randomized, reported mITT199/233 and safety233/234; Study2 n238 enrolled,80 randomized responders. Headline4.3points is active change from baseline, not placebo-adjusted effect. Historical interim endpoint wasWeek12; finalWeek8 and missing-data sensitivity disclosed.\nReplication and durability: 50; Study1 effects fromWeek2through12; independent randomized withdrawal Study2 under sameNCT maintains response55% vs33% after8-week induction.; Source: https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1; Benchmark: https://clinicaltrials.gov/study/NCT06087276; Uncertainty: Essential3 contains two studies under ONE exactNCT. Study1 n473randomized, reported mITT199/233 and safety233/234; Study2 n238 enrolled,80 randomized responders. Headline4.3points is active change from baseline, not placebo-adjusted effect. Historical interim endpoint wasWeek12; finalWeek8 and missing-data sensitivity disclosed.\nSafety and tolerability: 25; Study1 anyTEAEs221/233(94.9%)vs177/234(75.6%); SAEs2/233(0.86%)vs8/234(3.4%); drug-related AE discontinuations63/233(27.0%)vs4/234(1.7%); all study discontinuations35.6%vs5.6%.; Source: https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1; Benchmark: https://clinicaltrials.gov/study/NCT06087276; Uncertainty: Essential3 contains two studies under ONE exactNCT. Study1 n473randomized, reported mITT199/233 and safety233/234; Study2 n238 enrolled,80 randomized responders. Headline4.3points is active change from baseline, not placebo-adjusted effect. Historical interim endpoint wasWeek12; finalWeek8 and missing-data sensitivity disclosed.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT02500381",
+      "ticker": "SRPT",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": null,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 25,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 25,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 25,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 25,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": null,
+          "state": "NOT_REPORTED"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 25; Primary treatment difference0.05steps/second at96weeks,p=0.309; did not meet primary significance criterion.; Source: https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-therapeutics-announces-third-quarter-2025-financial; Benchmark: https://clinicaltrials.gov/study/NCT02500381; Uncertainty: ESSENCE pooled exon45/exon53 skipping therapies under oneNCT; do not count as two independent trials. Registered enrollment228 versus COVID-excluded analysis168+57=225 reflect different analysis populations. Company attributes pandemic interference; post-hoc subset does not replace primary.\nClinical importance and patient benefit: 25; Patient-important four-step ascend primary difference0.05steps/second,p=0.309; sponsor post-hoc non-COVID subset0.11steps/second,p=0.09.; Source: https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-therapeutics-announces-third-quarter-2025-financial; Benchmark: https://clinicaltrials.gov/study/NCT02500381; Uncertainty: ESSENCE pooled exon45/exon53 skipping therapies under oneNCT; do not count as two independent trials. Registered enrollment228 versus COVID-excluded analysis168+57=225 reflect different analysis populations. Company attributes pandemic interference; post-hoc subset does not replace primary.\nStatistical reliability: 25; Primaryp=0.309; exclusion of57COVID-overlap participants yieldsp=0.09 in168others; neither is significant.; Source: https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-therapeutics-announces-third-quarter-2025-financial; Benchmark: https://clinicaltrials.gov/study/NCT02500381; Uncertainty: ESSENCE pooled exon45/exon53 skipping therapies under oneNCT; do not count as two independent trials. Registered enrollment228 versus COVID-excluded analysis168+57=225 reflect different analysis populations. Company attributes pandemic interference; post-hoc subset does not replace primary.\nReplication and durability: 25; 96-week controlled functional result failed; post-hoc non-COVID subgroup direction favorable butp=0.09.; Source: https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-therapeutics-announces-third-quarter-2025-financial; Benchmark: https://clinicaltrials.gov/study/NCT02500381; Uncertainty: ESSENCE pooled exon45/exon53 skipping therapies under oneNCT; do not count as two independent trials. Registered enrollment228 versus COVID-excluded analysis168+57=225 reflect different analysis populations. Company attributes pandemic interference; post-hoc subset does not replace primary.\nSafety and tolerability: NOT_REPORTED; ESSENCE source provides product warning language and failed functional endpoint, but no exact trial arm-level AE/SAE and withdrawal table. Labels for separate exon-skipping drugs are not pooled trial safety evidence.; Source: Not reported; Benchmark: Not applicable; Uncertainty: ESSENCE source provides product warning language and failed functional endpoint, but no exact trial arm-level AE/SAE and withdrawal table. Labels for separate exon-skipping drugs are not pooled trial safety evidence.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT06331299",
+      "ticker": "URGN",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": null,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 25,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": null,
+          "state": "PENDING"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 50; Registry Month3 CR77.8% of99treated(95%CI68.3–85.5), corresponding to77responders.; Source: https://clinicaltrials.gov/api/v2/studies/NCT06331299; Benchmark: https://clinicaltrials.gov/study/NCT06331299; Uncertainty: UTOPIA is a single-arm trial of UGN-103, not ENVISION UGN-102.99treated. Three-month response does not establish24-month durability; duration-of-response outcomes are not posted. No surgical/placebo control; keep studies/drugs distinct.\nClinical importance and patient benefit: 50; Six weekly intravesical UGN-103instillations;77.8% Month3complete response in99treated.; Source: https://clinicaltrials.gov/api/v2/studies/NCT06331299; Benchmark: https://clinicaltrials.gov/study/NCT06331299; Uncertainty: UTOPIA is a single-arm trial of UGN-103, not ENVISION UGN-102.99treated. Three-month response does not establish24-month durability; duration-of-response outcomes are not posted. No surgical/placebo control; keep studies/drugs distinct.\nStatistical reliability: 25; Single-arm open-label99treated; CR95%CI68.3–85.5; no randomized concurrent control.; Source: https://clinicaltrials.gov/api/v2/studies/NCT06331299; Benchmark: https://clinicaltrials.gov/study/NCT06331299; Uncertainty: UTOPIA is a single-arm trial of UGN-103, not ENVISION UGN-102.99treated. Three-month response does not establish24-month durability; duration-of-response outcomes are not posted. No surgical/placebo control; keep studies/drugs distinct.\nReplication and durability: PENDING; UTOPIA registry posts Month3response only; duration-of-response outcomes are NOT_POSTED. Do not transfer24-month ENVISION durability from UGN-102 to UGN-103.; Source: Not reported; Benchmark: Not applicable; Uncertainty: UTOPIA registry posts Month3response only; duration-of-response outcomes are NOT_POSTED. Do not transfer24-month ENVISION durability from UGN-102 to UGN-103.\nSafety and tolerability: 50; Registry99treated:2SAEs,0deaths,59with other AEs. No concurrent placebo or TURBT safety arm.; Source: https://clinicaltrials.gov/api/v2/studies/NCT06331299; Benchmark: https://clinicaltrials.gov/study/NCT06331299; Uncertainty: UTOPIA is a single-arm trial of UGN-103, not ENVISION UGN-102.99treated. Three-month response does not establish24-month durability; duration-of-response outcomes are not posted. No surgical/placebo control; keep studies/drugs distinct.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
+    },
+    {
+      "nctId": "NCT05662241",
+      "ticker": "ZBIO",
+      "asOf": "2026-11-07",
+      "clinicalFullScore": 65,
+      "factors": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 75,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "state": "SOURCE_REVIEWED_PROVISIONAL_GRADE"
+        }
+      ],
+      "evidenceNote": "Actual Phase 3 efficacy: 75; Primary flare HR0.44,56% relative risk reduction,p=0.0005; all four key secondary endpoints also met per10-Q.; Source: https://www.sec.gov/Archives/edgar/data/1953926/000110465926123040/zbio-20260930x10q.htm; Benchmark: https://clinicaltrials.gov/study/NCT05662241; Uncertainty: INDIGO randomized194; source10-Q distinguishes IgG4-related disease from MoonStone multiple-sclerosis trial. Primary hazard CI and exact arm SAE/discontinuation tables not in retrieved filing; no transfer from RMS or unrelated BTK products.\nClinical importance and patient benefit: 75; Week52 Glucocorticoid Toxicity Index cumulative worsening difference-11.4versusplacebo,p=0.021; fewer patients crossed source-described toxicity thresholds.; Source: https://www.sec.gov/Archives/edgar/data/1953926/000110465926123040/zbio-20260930x10q.htm; Benchmark: https://clinicaltrials.gov/study/NCT05662241; Uncertainty: INDIGO randomized194; source10-Q distinguishes IgG4-related disease from MoonStone multiple-sclerosis trial. Primary hazard CI and exact arm SAE/discontinuation tables not in retrieved filing; no transfer from RMS or unrelated BTK products.\nStatistical reliability: 75; INDIGO randomized97/97 for52weeks; primary independently adjudicated flare HR0.44(95%CI0.28–0.71),p<0.001; flares26/97vs53/97. All key secondaries met, including remission37.1%vs19.6%,p=0.005 and steroid rescue329.5vs929.8mg,p=0.004.; Source: https://pubmed.ncbi.nlm.nih.gov/42233621/; Benchmark: https://clinicaltrials.gov/study/NCT05662241; Uncertainty: Primary publication and protocol now available. No individual-patient reanalysis. Full discontinuation, censoring sensitivity and rare-event details not all in indexed abstract.\nReplication and durability: 50; Steroid toxicity assessed atWeek52 with positive pivotal flare result; one INDIGO pivotal cohort.; Source: https://www.sec.gov/Archives/edgar/data/1953926/000110465926123040/zbio-20260930x10q.htm; Benchmark: https://clinicaltrials.gov/study/NCT05662241; Uncertainty: INDIGO randomized194; source10-Q distinguishes IgG4-related disease from MoonStone multiple-sclerosis trial. Primary hazard CI and exact arm SAE/discontinuation tables not in retrieved filing; no transfer from RMS or unrelated BTK products.\nSafety and tolerability: 50; Over52weeks,97per arm: SAEs10.3%obexelimabvs18.6%placebo; arthralgias19.6%vs11.3%, hypersensitivity16.5%vs11.3%, diarrhea11.3%vs6.2%.; Source: https://pubmed.ncbi.nlm.nih.gov/42233621/; Benchmark: https://clinicaltrials.gov/study/NCT05662241; Uncertainty: Primary publication and protocol now available. No individual-patient reanalysis. Full discontinuation, censoring sensitivity and rare-event details not all in indexed abstract.\nEqual 20% weights. Research only, not FDA probability. Exact-NCT snapshots retained in repository."
     }
   ]
 }

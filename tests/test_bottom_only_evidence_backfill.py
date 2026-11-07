@@ -18,4 +18,20 @@ class BottomBackfillTests(unittest.TestCase):
         doc=self.document();doc['resultsSection']={'outcomeMeasuresModule':{'outcomeMeasures':[{'type':'SECONDARY','reportingStatus':'NOT_POSTED','title':'Future endpoint'}]}}
         facts,review=m.extract('NCT00000001',doc)
         self.assertFalse(any(f['question']==17 for f in facts))
+    def test_administrative_refresh_preserves_clinical_hash(self):
+        import copy
+        original=self.document();updated=copy.deepcopy(original)
+        updated['protocolSection']['statusModule']['lastUpdatePostDateStruct']={'date':'2026-11-07'}
+        self.assertEqual(m.clinical_fingerprint(original),m.clinical_fingerprint(updated))
+        updated['resultsSection']={'outcomeMeasuresModule':{'outcomeMeasures':[{'title':'Changed clinical result'}]}}
+        self.assertNotEqual(m.clinical_fingerprint(original),m.clinical_fingerprint(updated))
+    def test_active_intake_appends_without_removing_historical_identity(self):
+        historical={'nctId':'NCT00000002','notes':'Retain original audit'}
+        baseline={'records':[historical]};matrix={'headers':['']*190,'rows':[['history']+['']*189]}
+        active={'asOf':'2026-11-07','records':[{'nct':'NCT00000001','ticker':'TEST','company':'Test','marketCap':500000000,'resultsUrl':'https://clinicaltrials.gov/study/NCT00000001','fdaStatus':'Pending'}]}
+        added=m.reconcile_active_inventory(baseline,matrix,active,{'NCT00000001':self.document()})
+        self.assertEqual(len(added),1);self.assertEqual(baseline['records'][0],historical)
+        self.assertEqual(matrix['rows'][0][0],'history');self.assertEqual(len(matrix['rows'][1]),190)
+        self.assertFalse(added[0]['classificationVerified'])
+        self.assertEqual(m.reconcile_active_inventory(baseline,matrix,active,{}),[])
 if __name__=='__main__':unittest.main()

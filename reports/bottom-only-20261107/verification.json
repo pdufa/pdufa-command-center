@@ -1,78 +1,180 @@
 {
   "asOf": "2026-11-07",
-  "frontendTests": {
-    "passed": 1272,
-    "failed": 0,
-    "command": "node --test --test-concurrency=6 tests/*.test.cjs",
-    "status": 0
+  "initial23TrialVerification": {
+    "asOf": "2026-11-07",
+    "frontendTests": {
+      "passed": 1272,
+      "failed": 0,
+      "command": "node --test --test-concurrency=6 tests/*.test.cjs",
+      "status": 0
+    },
+    "pythonTests": {
+      "passed": 9,
+      "failed": 0,
+      "command": "python -m unittest discover -s tests -p 'test_bottom*.py' -v"
+    },
+    "productionBuild": {
+      "command": "npm run build",
+      "status": 0
+    },
+    "browserLocal": {
+      "base": "http://localhost:3000",
+      "activeRows": 29,
+      "exactResearchMatches": 5,
+      "testedClinicalCards": 25,
+      "historyVerified": true,
+      "apiParityVerified": true,
+      "activeFilteringVerified": true,
+      "retiredEndpointStill404": true,
+      "mobileHorizontalExpansion": {
+        "client": 312,
+        "scroll": 1500
+      },
+      "pageErrors": []
+    },
+    "preservation": {
+      "bottomOnlyReviewedFacts20261107.json": {
+        "originalRecordsPreserved": 66,
+        "currentRecords": 350
+      },
+      "bottomOnlyReviewedGradeIncrement20261107.json": {
+        "originalRecordsPreserved": 12,
+        "currentRecords": 74
+      },
+      "bottomOnlyScoreHistory20261107.json": {
+        "originalRecordsPreserved": 27,
+        "currentRecords": 79
+      },
+      "bottomOnlyBaseline20261107.json": {
+        "byteIdentical": true,
+        "sha256": "45ccf8fd94446536d8272ef575a2b31202500821a96d3152a5c8f4f2c357170e"
+      },
+      "bottomOnly190Baseline20261107.json": {
+        "byteIdentical": true,
+        "sha256": "4d26a6c7af444f5081d7b40530dc0c51c36f373ae8a0c5071267af3d61adaa58"
+      },
+      "raas-reviewed-metric-assessments.json": {
+        "byteIdentical": true,
+        "sha256": "db91894cd9f34dbbf4424097fdac8e7a8e6a16f5fec71e95b40cbc8171576159"
+      },
+      "raas-clinical-five-reviewed-increment.json": {
+        "byteIdentical": true,
+        "sha256": "3e9b708b0b9f64dc7fef9460faf2c4f10ead356d5ae8741a05e1b145360db874"
+      },
+      "p3PostDataActive.json": {
+        "byteIdentical": true,
+        "sha256": "ac9a72ff8594992f402e57890704f1c0adc16a23b4cc504518e33d89c631dc53"
+      }
+    },
+    "sheets": {
+      "verified": true,
+      "valueCellsWritten": 18,
+      "cellsCompared": 843,
+      "activeRows": 29,
+      "exactNctMatches": 5
+    },
+    "deployment": {
+      "status": "NOT_YET_DEPLOYED"
+    },
+    "recalculationIdempotent": true
   },
-  "pythonTests": {
-    "passed": 9,
-    "failed": 0,
-    "command": "python -m unittest discover -s tests -p 'test_bottom*.py' -v"
-  },
-  "productionBuild": {
-    "command": "npm run build",
-    "status": 0
-  },
-  "browserLocal": {
-    "base": "http://localhost:3000",
-    "activeRows": 29,
-    "exactResearchMatches": 5,
-    "testedClinicalCards": 25,
-    "historyVerified": true,
-    "apiParityVerified": true,
-    "activeFilteringVerified": true,
-    "retiredEndpointStill404": true,
-    "mobileHorizontalExpansion": {
-      "client": 312,
-      "scroll": 1500
+  "active29Verification": {
+    "status": "LOCAL_AND_CANONICAL_SHEETS_VERIFIED_PRODUCTION_PENDING",
+    "preservation": {
+      "bottomOnlyBaseline20261107.json": {
+        "originalRecordsPreserved": 23,
+        "currentRecords": 47
+      },
+      "bottomOnly190Baseline20261107.json": {
+        "originalRecordsPreserved": 23,
+        "currentRecords": 47
+      },
+      "bottomOnlyReviewedFacts20261107.json": {
+        "originalRecordsPreserved": 66,
+        "currentRecords": 831
+      },
+      "bottomOnlyReviewedGradeIncrement20261107.json": {
+        "originalRecordsPreserved": 12,
+        "currentRecords": 151
+      },
+      "bottomOnlyScoreHistory20261107.json": {
+        "originalRecordsPreserved": 27,
+        "currentRecords": 173
+      },
+      "p3PostDataActive.json": {
+        "byteIdentical": true,
+        "sha256": "ac9a72ff8594992f402e57890704f1c0adc16a23b4cc504518e33d89c631dc53"
+      },
+      "raas-reviewed-metric-assessments.json": {
+        "byteIdentical": true,
+        "sha256": "db91894cd9f34dbbf4424097fdac8e7a8e6a16f5fec71e95b40cbc8171576159"
+      },
+      "raas-clinical-five-reviewed-increment.json": {
+        "byteIdentical": true,
+        "sha256": "3e9b708b0b9f64dc7fef9460faf2c4f10ead356d5ae8741a05e1b145360db874"
+      }
     },
-    "pageErrors": []
-  },
-  "preservation": {
-    "bottomOnlyReviewedFacts20261107.json": {
-      "originalRecordsPreserved": 66,
-      "currentRecords": 350
+    "pythonTests": {
+      "passed": 11,
+      "failed": 0
     },
-    "bottomOnlyReviewedGradeIncrement20261107.json": {
-      "originalRecordsPreserved": 12,
-      "currentRecords": 74
+    "recalculationIdempotent": true,
+    "sheets": {
+      "verified": true,
+      "activeRows": 29,
+      "exactNctMatches": 29,
+      "valueCellsWritten": 94,
+      "cellsCompared": 843,
+      "priorValuesPreservedInNotes": true,
+      "unrelatedCellsUnchanged": true,
+      "retrievedAt": "2026-11-07T07:17:44.527Z",
+      "notesReadbackVerified": 94,
+      "wrapReadbackVerified": 94
     },
-    "bottomOnlyScoreHistory20261107.json": {
-      "originalRecordsPreserved": 27,
-      "currentRecords": 79
+    "frontendInitialRun": {
+      "passed": 1274,
+      "failed": 1,
+      "failedTest": "phase3-library: Analyze creates a genuinely new run",
+      "finding": "Existing 50ms async assertion failed under concurrent build, passed in isolated 11-test rerun, and complete lower-concurrency rerun passed 1275/1275."
     },
-    "bottomOnlyBaseline20261107.json": {
-      "byteIdentical": true,
-      "sha256": "45ccf8fd94446536d8272ef575a2b31202500821a96d3152a5c8f4f2c357170e"
+    "productionBuild": {
+      "command": "npm run build",
+      "status": 0
     },
-    "bottomOnly190Baseline20261107.json": {
-      "byteIdentical": true,
-      "sha256": "4d26a6c7af444f5081d7b40530dc0c51c36f373ae8a0c5071267af3d61adaa58"
+    "frontendTests": {
+      "passed": 1275,
+      "failed": 0,
+      "command": "node --test --test-concurrency=4 tests/*.test.cjs",
+      "status": 0
     },
-    "raas-reviewed-metric-assessments.json": {
-      "byteIdentical": true,
-      "sha256": "db91894cd9f34dbbf4424097fdac8e7a8e6a16f5fec71e95b40cbc8171576159"
+    "bottomTargetedTests": {
+      "passed": 11,
+      "failed": 0,
+      "includesNewLegacyHistoryRegression": true
     },
-    "raas-clinical-five-reviewed-increment.json": {
-      "byteIdentical": true,
-      "sha256": "3e9b708b0b9f64dc7fef9460faf2c4f10ead356d5ae8741a05e1b145360db874"
+    "browserLocal": {
+      "base": "http://localhost:3002",
+      "activeRows": 29,
+      "exactResearchMatches": 29,
+      "testedClinicalCards": 145,
+      "historyVerified": true,
+      "apiParityVerified": true,
+      "activeFilteringVerified": true,
+      "retiredEndpointStill404": true,
+      "mobileHorizontalExpansion": {
+        "client": 312,
+        "scroll": 1500
+      },
+      "pageErrors": []
     },
-    "p3PostDataActive.json": {
-      "byteIdentical": true,
-      "sha256": "ac9a72ff8594992f402e57890704f1c0adc16a23b4cc504518e33d89c631dc53"
+    "existingWorkflow": {
+      "id": 410058282,
+      "stateBeforeChange": "active",
+      "triggersAndScheduleUnchanged": true,
+      "manuallyDispatched": false
+    },
+    "deployment": {
+      "status": "PENDING_COMMIT_AND_GIT_DEPLOY"
     }
-  },
-  "sheets": {
-    "verified": true,
-    "valueCellsWritten": 18,
-    "cellsCompared": 843,
-    "activeRows": 29,
-    "exactNctMatches": 5
-  },
-  "deployment": {
-    "status": "NOT_YET_DEPLOYED"
-  },
-  "recalculationIdempotent": true
+  }
 }

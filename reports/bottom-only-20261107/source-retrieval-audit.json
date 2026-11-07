@@ -917,5 +917,1316 @@
     "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
     "query": "NCT06641076",
     "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05535946",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05535946",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05535946",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05535946-registry.json",
+    "sha256": "ea492b1488f4265fb516ef9b8aa9eb6ade0f6b6969b06c9ab4538149581248ca",
+    "retrievedAt": "2026-11-07T06:37:47.071702+00:00"
+  },
+  {
+    "nctId": "NCT05535946",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05535946",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05535946",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05535946-source-0.json",
+    "sha256": "ea492b1488f4265fb516ef9b8aa9eb6ade0f6b6969b06c9ab4538149581248ca",
+    "retrievedAt": "2026-11-07T06:37:47.080421+00:00"
+  },
+  {
+    "nctId": "NCT05535946",
+    "url": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial/",
+    "finalUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial/",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05535946-source-1.html",
+    "sha256": "83e7246e574adb8a7dfd66e59d8942beabd22f5febdd08d0d35d5d3d801ec6c4",
+    "retrievedAt": "2026-11-07T06:37:47.289320+00:00"
+  },
+  {
+    "nctId": "NCT05535946",
+    "url": "https://ir.abivax.com/node/12341/html",
+    "finalUrl": "https://ir.abivax.com/node/12341/html",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05535946-source-2.html",
+    "sha256": "86d53c7068d8122eb09092b2eda0016f6c4239a63b35eaf268645f6b8231f486",
+    "retrievedAt": "2026-11-07T06:37:47.243640+00:00"
+  },
+  {
+    "nctId": "NCT05535946",
+    "url": "https://ir.abivax.com/static-files/99de1b8a-f695-4e75-a38f-9d970eb52d52",
+    "finalUrl": "https://ir.abivax.com/static-files/99de1b8a-f695-4e75-a38f-9d970eb52d52",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05535946-source-3.html",
+    "sha256": "bfee5c897e0753166efcbf122a03a061cc87eaa1ca8122182e65f8ffb2cf68f3",
+    "retrievedAt": "2026-11-07T06:37:47.098922+00:00"
+  },
+  {
+    "nctId": "NCT04770753",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04770753",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04770753",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04770753-registry.json",
+    "sha256": "e8133c0fbaa1c8bfef5e33df6498ec43c4ac21ce5c14da7f7d927dab782803cd",
+    "retrievedAt": "2026-11-07T06:37:47.081479+00:00"
+  },
+  {
+    "nctId": "NCT04770753",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04770753",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04770753",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04770753-source-0.json",
+    "sha256": "e8133c0fbaa1c8bfef5e33df6498ec43c4ac21ce5c14da7f7d927dab782803cd",
+    "retrievedAt": "2026-11-07T06:37:47.423459+00:00"
+  },
+  {
+    "nctId": "NCT04770753",
+    "url": "https://clinicaltrials.gov/study/NCT04770753",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT04770753",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04770753-source-1.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:47.448824+00:00"
+  },
+  {
+    "nctId": "NCT04770753",
+    "url": "https://onlinelibrary.wiley.com/doi/full/10.1111/bjh.70838",
+    "error": "HTTP Error 403: Forbidden",
+    "retrievedAt": "2026-11-07T06:37:47.347168+00:00"
+  },
+  {
+    "nctId": "NCT04770753",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/40544857/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT04770753-source-3.html",
+    "sha256": "695f0acadae43cf45682a6bb494970dd228f85b37ed3479f862b9b640d59d426",
+    "retrievedAt": "2026-11-07T06:37:47.399328+00:00"
+  },
+  {
+    "nctId": "NCT04770779",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04770779",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04770779",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04770779-registry.json",
+    "sha256": "eb6181a1520352f388c3b006bde71c5149ec3a7bea108f0a9333b48aae4a2dee",
+    "retrievedAt": "2026-11-07T06:37:47.543848+00:00"
+  },
+  {
+    "nctId": "NCT04770779",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04770779",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04770779",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04770779-source-0.json",
+    "sha256": "eb6181a1520352f388c3b006bde71c5149ec3a7bea108f0a9333b48aae4a2dee",
+    "retrievedAt": "2026-11-07T06:37:47.517211+00:00"
+  },
+  {
+    "nctId": "NCT04770779",
+    "url": "https://clinicaltrials.gov/study/NCT04770779",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT04770779",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04770779-source-1.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:47.658211+00:00"
+  },
+  {
+    "nctId": "NCT04770779",
+    "url": "https://onlinelibrary.wiley.com/doi/10.1002/ajh.70472",
+    "error": "HTTP Error 403: Forbidden",
+    "retrievedAt": "2026-11-07T06:37:47.642149+00:00"
+  },
+  {
+    "nctId": "NCT04770779",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42721980/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT04770779-source-3.html",
+    "sha256": "5bf1b73818e6884dab14fc10ca5e1303be1911b1ec7b90a575b4380607022310",
+    "retrievedAt": "2026-11-07T06:37:47.707314+00:00"
+  },
+  {
+    "nctId": "NCT05031780",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05031780",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05031780",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05031780-registry.json",
+    "sha256": "e4b447fb4e007785a61864df1fb756b402b7149d8302fe10283b58864504fad3",
+    "retrievedAt": "2026-11-07T06:37:47.693738+00:00"
+  },
+  {
+    "nctId": "NCT05031780",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05031780",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05031780",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05031780-source-0.json",
+    "sha256": "e4b447fb4e007785a61864df1fb756b402b7149d8302fe10283b58864504fad3",
+    "retrievedAt": "2026-11-07T06:37:47.714119+00:00"
+  },
+  {
+    "nctId": "NCT05031780",
+    "url": "https://investor.agios.com/news-releases/news-release-details/agios-announces-topline-results-rise-phase-3-trial-mitapivat",
+    "finalUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-topline-results-rise-phase-3-trial-mitapivat",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05031780-source-1.html",
+    "sha256": "61e6171c17c0bac35afc3cda1ead47b55b1117d9eddc5abc0805716167e48dd5",
+    "retrievedAt": "2026-11-07T06:37:48.012526+00:00"
+  },
+  {
+    "nctId": "NCT05031780",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42913682/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/42913682/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05031780-source-2.html",
+    "sha256": "e5cbd1bd5d25147a20f4392b0027681ee7588764c826e4a9d01adc07a931509c",
+    "retrievedAt": "2026-11-07T06:37:47.864063+00:00"
+  },
+  {
+    "nctId": "NCT05144256",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05144256",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05144256",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05144256-registry.json",
+    "sha256": "639bcdcb66412be8a472e833bc99a5d4f3063c999e27a0c61c6a161b131ede16",
+    "retrievedAt": "2026-11-07T06:37:47.796412+00:00"
+  },
+  {
+    "nctId": "NCT05144256",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05144256",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05144256",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05144256-source-0.json",
+    "sha256": "639bcdcb66412be8a472e833bc99a5d4f3063c999e27a0c61c6a161b131ede16",
+    "retrievedAt": "2026-11-07T06:37:47.867496+00:00"
+  },
+  {
+    "nctId": "NCT05144256",
+    "url": "https://investor.agios.com/news-releases/news-release-details/agios-announces-results-phase-3-activate-kidst-study-mitapivat",
+    "finalUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-results-phase-3-activate-kidst-study-mitapivat",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05144256-source-1.html",
+    "sha256": "273ac2cd946ec3edc623145826d9f0ac921e0c9205ec20818f8e66f64cec01ae",
+    "retrievedAt": "2026-11-07T06:37:49.037936+00:00"
+  },
+  {
+    "nctId": "NCT05175105",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05175105",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05175105",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05175105-registry.json",
+    "sha256": "56d883a770f43cb2ea1db582699da6b9c3ebb2069704b6636d8b5922d3451037",
+    "retrievedAt": "2026-11-07T06:37:47.916649+00:00"
+  },
+  {
+    "nctId": "NCT05175105",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05175105",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05175105",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05175105-source-0.json",
+    "sha256": "56d883a770f43cb2ea1db582699da6b9c3ebb2069704b6636d8b5922d3451037",
+    "retrievedAt": "2026-11-07T06:37:47.948415+00:00"
+  },
+  {
+    "nctId": "NCT05175105",
+    "url": "https://investor.agios.com/news-releases/news-release-details/agios-phase-3-activate-kids-study-mitapivat-children-pyruvate",
+    "finalUrl": "https://investor.agios.com/news-releases/news-release-details/agios-phase-3-activate-kids-study-mitapivat-children-pyruvate",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05175105-source-1.html",
+    "sha256": "8a0714147cc9c75c9785a1c8ef119a8e6bed6e84778c32f981ee5bb2e066e219",
+    "retrievedAt": "2026-11-07T06:37:48.735492+00:00"
+  },
+  {
+    "nctId": "NCT06747468",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06747468",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06747468",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06747468-registry.json",
+    "sha256": "6013f8e722e2cfa23fbb6e588854b524ee49cda17feca1c54988f6b3f0a04c25",
+    "retrievedAt": "2026-11-07T06:37:48.041908+00:00"
+  },
+  {
+    "nctId": "NCT06747468",
+    "url": "https://amylyx.gcs-web.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-positive-topline-results-0",
+    "finalUrl": "https://amylyx.gcs-web.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-positive-topline-results-0",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06747468-source-0.html",
+    "sha256": "63bad3cb9544c466a8f9aedf20629c4146119061fb9de67f26a0a464325e77b4",
+    "retrievedAt": "2026-11-07T06:37:48.462947+00:00"
+  },
+  {
+    "nctId": "NCT06747468",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06747468",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06747468",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06747468-source-1.json",
+    "sha256": "6013f8e722e2cfa23fbb6e588854b524ee49cda17feca1c54988f6b3f0a04c25",
+    "retrievedAt": "2026-11-07T06:37:48.074036+00:00"
+  },
+  {
+    "nctId": "NCT06747468",
+    "url": "https://investors.amylyx.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-positive-topline-results-0",
+    "finalUrl": "https://investors.amylyx.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-positive-topline-results-0",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06747468-source-2.html",
+    "sha256": "33bd8c0b5ac71db748e1b6c10bb932844b4c258bcd675637dd50e71df301891c",
+    "retrievedAt": "2026-11-07T06:37:48.479206+00:00"
+  },
+  {
+    "nctId": "NCT05453968",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05453968",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05453968",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05453968-registry.json",
+    "sha256": "5ccc4fdb7494d2db534558e366a286f630eb43f690d007bf61071b107bd6d6e6",
+    "retrievedAt": "2026-11-07T06:37:48.195080+00:00"
+  },
+  {
+    "nctId": "NCT05453968",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05453968",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05453968",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05453968-source-0.json",
+    "sha256": "5ccc4fdb7494d2db534558e366a286f630eb43f690d007bf61071b107bd6d6e6",
+    "retrievedAt": "2026-11-07T06:37:48.307484+00:00"
+  },
+  {
+    "nctId": "NCT05453968",
+    "url": "https://clinicaltrials.gov/study/NCT05453968",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05453968",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05453968-source-1.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:48.426093+00:00"
+  },
+  {
+    "nctId": "NCT05453968",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/40716738/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/40716738/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05453968-source-2.html",
+    "sha256": "cecff11a8b0f5102edaf3c777a7f24e6f085d9f44a52b372d9cc23a96110484d",
+    "retrievedAt": "2026-11-07T06:37:48.559511+00:00"
+  },
+  {
+    "nctId": "NCT06445023",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06445023",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06445023",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06445023-registry.json",
+    "sha256": "f2de318cc50902ec9e8dd7e0ce153670208d483a42d74b73938f8ba2f640ccf1",
+    "retrievedAt": "2026-11-07T06:37:48.590136+00:00"
+  },
+  {
+    "nctId": "NCT06445023",
+    "url": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+    "finalUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06445023-source-0.html",
+    "sha256": "865bd1a74b2602d7b8223ff07540ff45f45afd867d10e5bcc185c5274dcae330",
+    "retrievedAt": "2026-11-07T06:37:49.015434+00:00"
+  },
+  {
+    "nctId": "NCT06445023",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06445023",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06445023",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06445023-source-1.json",
+    "sha256": "f2de318cc50902ec9e8dd7e0ce153670208d483a42d74b73938f8ba2f640ccf1",
+    "retrievedAt": "2026-11-07T06:37:48.640697+00:00"
+  },
+  {
+    "nctId": "NCT06445023",
+    "url": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+    "finalUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06445023-source-2.html",
+    "sha256": "78d98de4bbab810e1a42f88e754942313a1f40ea448644c8b47683b448ffa55d",
+    "retrievedAt": "2026-11-07T06:37:49.351217+00:00"
+  },
+  {
+    "nctId": "NCT06445023",
+    "url": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm",
+    "finalUrl": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06445023-source-3.html",
+    "sha256": "80cce53dab44acfd249cb9aae440f6e659446654f61329c07920ace6bbc01e90",
+    "retrievedAt": "2026-11-07T06:37:49.043846+00:00"
+  },
+  {
+    "nctId": "NCT06455202",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06455202",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06455202",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06455202-registry.json",
+    "sha256": "e5e57d160b8db26d2586472baf38a17da331c76b9fed108b7b59fbbe52bc254a",
+    "retrievedAt": "2026-11-07T06:37:48.782798+00:00"
+  },
+  {
+    "nctId": "NCT06455202",
+    "url": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+    "finalUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06455202-source-0.html",
+    "sha256": "865bd1a74b2602d7b8223ff07540ff45f45afd867d10e5bcc185c5274dcae330",
+    "retrievedAt": "2026-11-07T06:37:49.000908+00:00"
+  },
+  {
+    "nctId": "NCT06455202",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06455202",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06455202",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06455202-source-1.json",
+    "sha256": "e5e57d160b8db26d2586472baf38a17da331c76b9fed108b7b59fbbe52bc254a",
+    "retrievedAt": "2026-11-07T06:37:48.964849+00:00"
+  },
+  {
+    "nctId": "NCT06455202",
+    "url": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+    "finalUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06455202-source-2.html",
+    "sha256": "78d98de4bbab810e1a42f88e754942313a1f40ea448644c8b47683b448ffa55d",
+    "retrievedAt": "2026-11-07T06:37:49.349175+00:00"
+  },
+  {
+    "nctId": "NCT06455202",
+    "url": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm",
+    "finalUrl": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06455202-source-3.html",
+    "sha256": "80cce53dab44acfd249cb9aae440f6e659446654f61329c07920ace6bbc01e90",
+    "retrievedAt": "2026-11-07T06:37:49.260736+00:00"
+  },
+  {
+    "nctId": "NCT05711940",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05711940",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05711940",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05711940-registry.json",
+    "sha256": "bc67cc9af96d6252ce3ed270f2ab373e04d2c7514d5df54b98e4961e669be339",
+    "retrievedAt": "2026-11-07T06:37:49.205442+00:00"
+  },
+  {
+    "nctId": "NCT05711940",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05711940",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05711940",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05711940-source-0.json",
+    "sha256": "bc67cc9af96d6252ce3ed270f2ab373e04d2c7514d5df54b98e4961e669be339",
+    "retrievedAt": "2026-11-07T06:37:49.195489+00:00"
+  },
+  {
+    "nctId": "NCT05711940",
+    "url": "https://ir.compasspathways.com/News--Events-/news/news-details/2026/Compass-Pathways-Successfully-Achieves-Primary-Endpoint-in-Second-Phase-3-Trial-Evaluating-COMP360-Psilocybin-for-Treatment-Resistant-Depression/",
+    "finalUrl": "https://ir.compasspathways.com/News--Events-/news/news-details/2026/Compass-Pathways-Successfully-Achieves-Primary-Endpoint-in-Second-Phase-3-Trial-Evaluating-COMP360-Psilocybin-for-Treatment-Resistant-Depression/",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05711940-source-1.html",
+    "sha256": "a28c124873924212ebb4491906c6094bf040571f43bee65216d2fc34f92489f9",
+    "retrievedAt": "2026-11-07T06:37:49.718530+00:00"
+  },
+  {
+    "nctId": "NCT05257408",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05257408",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05257408",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05257408-registry.json",
+    "sha256": "f54e006839e80ac21f382eaec8131d6844f93d8fc6226920052a7c9034dd4965",
+    "retrievedAt": "2026-11-07T06:37:49.439222+00:00"
+  },
+  {
+    "nctId": "NCT05257408",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05257408",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05257408",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05257408-source-0.json",
+    "sha256": "f54e006839e80ac21f382eaec8131d6844f93d8fc6226920052a7c9034dd4965",
+    "retrievedAt": "2026-11-07T06:37:49.483154+00:00"
+  },
+  {
+    "nctId": "NCT05257408",
+    "url": "https://clinicaltrials.gov/study/NCT05257408",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05257408",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05257408-source-1.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:49.458764+00:00"
+  },
+  {
+    "nctId": "NCT05257408",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/41974149/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/41974149/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05257408-source-2.html",
+    "sha256": "4b5d94d4494dd5ac8df696fd6b37f6c6848175b02b7c583d79556351a297fc34",
+    "retrievedAt": "2026-11-07T06:37:49.611300+00:00"
+  },
+  {
+    "nctId": "NCT05257408",
+    "url": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or",
+    "finalUrl": "https://www.fda.gov/drugs/cancer-approvals/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05257408-source-3.html",
+    "sha256": "39a1efa7913db944b8ed0a8eac0402aea2849aa322ce6528b5aff99626daac76",
+    "retrievedAt": "2026-11-07T06:37:50.281043+00:00"
+  },
+  {
+    "nctId": "NCT06081894",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06081894",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06081894",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06081894-registry.json",
+    "sha256": "833e4c6edc5a686f138835cb7094de691f74cfae679c23987081c16d43015b56",
+    "retrievedAt": "2026-11-07T06:37:49.615779+00:00"
+  },
+  {
+    "nctId": "NCT06081894",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06081894",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06081894",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06081894-source-0.json",
+    "sha256": "833e4c6edc5a686f138835cb7094de691f74cfae679c23987081c16d43015b56",
+    "retrievedAt": "2026-11-07T06:37:49.635872+00:00"
+  },
+  {
+    "nctId": "NCT06081894",
+    "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Results-from-ACACIA-HCM-Presented-in-Hot-Line-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026-and-Published-in-The-New-England-Journal-of-Medicine/default.aspx",
+    "finalUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Results-from-ACACIA-HCM-Presented-in-Hot-Line-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026-and-Published-in-The-New-England-Journal-of-Medicine/default.aspx",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06081894-source-1.html",
+    "sha256": "135ec2cd073787333e4854ba1192db7d3b63dd7ac852ab8c6a291d634a76507a",
+    "retrievedAt": "2026-11-07T06:37:50.018867+00:00"
+  },
+  {
+    "nctId": "NCT06081894",
+    "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Topline-Results-from-ACACIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-with-Non-Obstructive-Hypertrophic-Cardiomyopathy/default.aspx",
+    "finalUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Topline-Results-from-ACACIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-with-Non-Obstructive-Hypertrophic-Cardiomyopathy/default.aspx",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06081894-source-2.html",
+    "sha256": "3638bd29489d13e0dfe5452087bc40bcacb17deb66d729b702ae12af2090aaf0",
+    "retrievedAt": "2026-11-07T06:37:50.152917+00:00"
+  },
+  {
+    "nctId": "NCT06081894",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42663312/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/42663312/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT06081894-source-3.html",
+    "sha256": "21957d666f5f8ce8ee04dab7d5aee5a18ba3b230d5265ea1366ca5ef69fe9e1d",
+    "retrievedAt": "2026-11-07T06:37:49.833310+00:00"
+  },
+  {
+    "nctId": "NCT06081894",
+    "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021",
+    "error": "HTTP Error 403: Forbidden",
+    "retrievedAt": "2026-11-07T06:37:49.896572+00:00"
+  },
+  {
+    "nctId": "NCT02598661",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT02598661",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02598661",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT02598661-registry.json",
+    "sha256": "2ceba1d16678cc20b34b9876d52fc7e181a1b5a90ed502edda14d2d3eb755af6",
+    "retrievedAt": "2026-11-07T06:37:50.010548+00:00"
+  },
+  {
+    "nctId": "NCT02598661",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT02598661",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02598661",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT02598661-source-0.json",
+    "sha256": "2ceba1d16678cc20b34b9876d52fc7e181a1b5a90ed502edda14d2d3eb755af6",
+    "retrievedAt": "2026-11-07T06:37:50.178906+00:00"
+  },
+  {
+    "nctId": "NCT02598661",
+    "url": "https://clinicaltrials.gov/study/NCT02598661",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT02598661",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT02598661-source-1.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:50.135356+00:00"
+  },
+  {
+    "nctId": "NCT02598661",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/38048786/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/38048786/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT02598661-source-2.html",
+    "sha256": "3f5572e4e0acdf2d8fa5fea60f6344a81a7cce041f81132c41ec029c67c2b3be",
+    "retrievedAt": "2026-11-07T06:37:50.221727+00:00"
+  },
+  {
+    "nctId": "NCT04768972",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04768972",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04768972",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04768972-registry.json",
+    "sha256": "d3f85ebf2597dea47f3f8cda3c372a4478e49551b2daabae33c257bdb9ea82ad",
+    "retrievedAt": "2026-11-07T06:37:50.161912+00:00"
+  },
+  {
+    "nctId": "NCT04768972",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04768972",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04768972",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04768972-source-0.json",
+    "sha256": "d3f85ebf2597dea47f3f8cda3c372a4478e49551b2daabae33c257bdb9ea82ad",
+    "retrievedAt": "2026-11-07T06:37:50.289911+00:00"
+  },
+  {
+    "nctId": "NCT04768972",
+    "url": "https://ionispharmaceuticalsinc.gcs-web.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+    "finalUrl": "https://ionispharmaceuticalsinc.gcs-web.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04768972-source-1.html",
+    "sha256": "1f86905a5a6e2e43883524c8fbf16cc004d11d5658d724e50c8dee127c74af9c",
+    "retrievedAt": "2026-11-07T06:37:50.506749+00:00"
+  },
+  {
+    "nctId": "NCT04768972",
+    "url": "https://ir.ionis.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+    "finalUrl": "https://ir.ionis.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04768972-source-2.html",
+    "sha256": "fc38445651530b57f11470ed81c9310dba2250be97408f448d10fb4195f63500",
+    "retrievedAt": "2026-11-07T06:37:50.662672+00:00"
+  },
+  {
+    "nctId": "NCT04849741",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04849741",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04849741",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04849741-registry.json",
+    "sha256": "a3fb792312434d2a2d743f954571e5a77f4f64e38fdd035bc674da8f1a694f97",
+    "retrievedAt": "2026-11-07T06:37:50.302740+00:00"
+  },
+  {
+    "nctId": "NCT04849741",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04849741",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04849741",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04849741-source-0.json",
+    "sha256": "a3fb792312434d2a2d743f954571e5a77f4f64e38fdd035bc674da8f1a694f97",
+    "retrievedAt": "2026-11-07T06:37:50.345759+00:00"
+  },
+  {
+    "nctId": "NCT04849741",
+    "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220210Orig1s000lbl.pdf",
+    "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220210Orig1s000lbl.pdf",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04849741-source-1.html",
+    "sha256": "25734f6fd281f53bdf9fc7a0999805641f46a9301dd5f62d1de1f7e47475d5a0",
+    "retrievedAt": "2026-11-07T06:37:50.688472+00:00"
+  },
+  {
+    "nctId": "NCT04849741",
+    "url": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+    "finalUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04849741-source-2.html",
+    "sha256": "8235f57f80324a89dcec5c3f7ae7cd8036bb954b61314910b3b723c412d9ec92",
+    "retrievedAt": "2026-11-07T06:37:50.607153+00:00"
+  },
+  {
+    "nctId": "NCT05392114",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05392114",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05392114",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05392114-registry.json",
+    "sha256": "b95a3db71a68f4f96858983245aad7442738bd0ead16cdbe118557bf86838438",
+    "retrievedAt": "2026-11-07T06:37:50.441785+00:00"
+  },
+  {
+    "nctId": "NCT05392114",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05392114",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05392114",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05392114-source-0.json",
+    "sha256": "b95a3db71a68f4f96858983245aad7442738bd0ead16cdbe118557bf86838438",
+    "retrievedAt": "2026-11-07T06:37:50.489677+00:00"
+  },
+  {
+    "nctId": "NCT05392114",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05392114-source-1.html",
+    "sha256": "ea5def5a4b1a751d4dbbe7480f8daa55b6b6d13bc9858d9041615c7a7dc463ed",
+    "retrievedAt": "2026-11-07T06:37:50.723577+00:00"
+  },
+  {
+    "nctId": "NCT06641076",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06641076",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06641076",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06641076-registry.json",
+    "sha256": "e405d8cb1b46a53d15f6d6594988cbe0554a334d7a6abfdd519600464f7c1091",
+    "retrievedAt": "2026-11-07T06:37:50.638147+00:00"
+  },
+  {
+    "nctId": "NCT06641076",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06641076",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06641076",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06641076-source-0.json",
+    "sha256": "e405d8cb1b46a53d15f6d6594988cbe0554a334d7a6abfdd519600464f7c1091",
+    "retrievedAt": "2026-11-07T06:37:50.667593+00:00"
+  },
+  {
+    "nctId": "NCT06641076",
+    "url": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+    "finalUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06641076-source-1.html",
+    "sha256": "baec5cc1b07defe4477147508b759e90ff685a95958418da4b1acb75268efa89",
+    "retrievedAt": "2026-11-07T06:37:51.145736+00:00"
+  },
+  {
+    "nctId": "NCT06641076",
+    "url": "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+    "finalUrl": "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06641076-source-2.html",
+    "sha256": "abb2cac0b79dff93539ac2ae284762ca574802fc71e9d24aba9b6f04d8c5f9a7",
+    "retrievedAt": "2026-11-07T06:37:51.115165+00:00"
+  },
+  {
+    "nctId": "NCT05210790",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05210790",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05210790",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05210790-registry.json",
+    "sha256": "7889a327ac6b6dc495cbe13b40f70e04d7dec6736634a429d0e65a824410cccf",
+    "retrievedAt": "2026-11-07T06:37:50.930842+00:00"
+  },
+  {
+    "nctId": "NCT05210790",
+    "url": "https://ascopubs.org/doi/full/10.1200/JCO-26-00992",
+    "error": "HTTP Error 403: Forbidden",
+    "retrievedAt": "2026-11-07T06:37:50.904700+00:00"
+  },
+  {
+    "nctId": "NCT05210790",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05210790",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05210790",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05210790-source-1.json",
+    "sha256": "7889a327ac6b6dc495cbe13b40f70e04d7dec6736634a429d0e65a824410cccf",
+    "retrievedAt": "2026-11-07T06:37:50.927835+00:00"
+  },
+  {
+    "nctId": "NCT05210790",
+    "url": "https://clinicaltrials.gov/study/NCT05210790",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05210790",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05210790-source-2.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:50.940329+00:00"
+  },
+  {
+    "nctId": "NCT05210790",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42868322/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/42868322/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05210790-source-3.html",
+    "sha256": "ed1e581267ebbc25bbdcda3a592adb7a5bcd31123662333d0faa335700f3d01e",
+    "retrievedAt": "2026-11-07T06:37:51.064840+00:00"
+  },
+  {
+    "nctId": "NCT05774756",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05774756",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05774756",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05774756-registry.json",
+    "sha256": "ba122ce7849fb4a2ac7ecf8e014237f140bc1ab7129a6bc995e0df4e09e3f42c",
+    "retrievedAt": "2026-11-07T06:37:51.179660+00:00"
+  },
+  {
+    "nctId": "NCT05774756",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05774756",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05774756",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05774756-source-0.json",
+    "sha256": "ba122ce7849fb4a2ac7ecf8e014237f140bc1ab7129a6bc995e0df4e09e3f42c",
+    "retrievedAt": "2026-11-07T06:37:51.127014+00:00"
+  },
+  {
+    "nctId": "NCT05774756",
+    "url": "https://clinicaltrials.gov/study/NCT05774756",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05774756",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05774756-source-1.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:51.132326+00:00"
+  },
+  {
+    "nctId": "NCT05774756",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42418774/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/42418774/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05774756-source-2.html",
+    "sha256": "fad0f344382c2c8d62f1a6c629a512366e382ed82014b4162dfcf94176033388",
+    "retrievedAt": "2026-11-07T06:37:51.308103+00:00"
+  },
+  {
+    "nctId": "NCT04544293",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04544293",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04544293",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04544293-registry.json",
+    "sha256": "f09a874416bf6573a8893106b2f97a87853ba449076499e445c48cf1e05ff297",
+    "retrievedAt": "2026-11-07T06:37:51.294855+00:00"
+  },
+  {
+    "nctId": "NCT04544293",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04544293",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04544293",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04544293-source-0.json",
+    "sha256": "f09a874416bf6573a8893106b2f97a87853ba449076499e445c48cf1e05ff297",
+    "retrievedAt": "2026-11-07T06:37:51.310090+00:00"
+  },
+  {
+    "nctId": "NCT04544293",
+    "url": "https://clinicaltrials.gov/study/NCT04544293",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT04544293",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04544293-source-1.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:51.379598+00:00"
+  },
+  {
+    "nctId": "NCT04544293",
+    "url": "https://investors.savarapharma.com/news/news-details/2024/Savara-Announces-Molgramostim-Nebulizer-Solution-Molgramostim-Achieved-Statistical-Significance-for-Primary-Endpoint-and-Multiple-Secondary-Endpoints-in-IMPALA-2-a-Pivotal-Phase-3-Clinical-Trial-in-Autoimmune-Pulmonary-Alveolar--06-26-2024/default.aspx",
+    "finalUrl": "https://investors.savarapharma.com/news/news-details/2024/Savara-Announces-Molgramostim-Nebulizer-Solution-Molgramostim-Achieved-Statistical-Significance-for-Primary-Endpoint-and-Multiple-Secondary-Endpoints-in-IMPALA-2-a-Pivotal-Phase-3-Clinical-Trial-in-Autoimmune-Pulmonary-Alveolar--06-26-2024/default.aspx",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04544293-source-2.html",
+    "sha256": "ffdc10451be75c7f67857345ec3aba14f20363bf65bedf811ddad17489da16bb",
+    "retrievedAt": "2026-11-07T06:37:51.951190+00:00"
+  },
+  {
+    "nctId": "NCT04544293",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/40834301/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/40834301/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT04544293-source-3.html",
+    "sha256": "796514c78ef330a45c29608899cb452bc2d0992c9dccd72b912e5ce0496faaf6",
+    "retrievedAt": "2026-11-07T06:37:51.438810+00:00"
+  },
+  {
+    "nctId": "NCT05243550",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05243550",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05243550",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05243550-registry.json",
+    "sha256": "ff2c6acea249c15234d6f1d4b7d174de50b282e8f96e0f00ad00e4cabf4f91e4",
+    "retrievedAt": "2026-11-07T06:37:51.482859+00:00"
+  },
+  {
+    "nctId": "NCT05243550",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05243550",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05243550",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05243550-source-0.json",
+    "sha256": "ff2c6acea249c15234d6f1d4b7d174de50b282e8f96e0f00ad00e4cabf4f91e4",
+    "retrievedAt": "2026-11-07T06:37:51.490942+00:00"
+  },
+  {
+    "nctId": "NCT05243550",
+    "url": "https://clinicaltrials.gov/study/NCT05243550",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05243550",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05243550-source-1.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:51.585309+00:00"
+  },
+  {
+    "nctId": "NCT05243550",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/41880645/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/41880645/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05243550-source-2.html",
+    "sha256": "90b51d407c13d6e48341010b22d4b344529ea6a97511edb9ed8ccc011555e37a",
+    "retrievedAt": "2026-11-07T06:37:51.600213+00:00"
+  },
+  {
+    "nctId": "NCT04716231",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04716231",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04716231",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04716231-registry.json",
+    "sha256": "ca4d91a3523f7a6cd6e0df780fe7a30da714264a48ce46179f81d1e202058bfb",
+    "retrievedAt": "2026-11-07T06:37:51.573987+00:00"
+  },
+  {
+    "nctId": "NCT04716231",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04716231",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04716231",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04716231-source-0.json",
+    "sha256": "ca4d91a3523f7a6cd6e0df780fe7a30da714264a48ce46179f81d1e202058bfb",
+    "retrievedAt": "2026-11-07T06:37:51.642589+00:00"
+  },
+  {
+    "nctId": "NCT04716231",
+    "url": "https://clinicaltrials.gov/study/NCT04716231",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT04716231",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04716231-source-1.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:51.745304+00:00"
+  },
+  {
+    "nctId": "NCT04716231",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/41196369/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/41196369/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT04716231-source-2.html",
+    "sha256": "7c254c35340d8682a2d139afd65ea56cc6c35df5404d75144fda16800527fc5e",
+    "retrievedAt": "2026-11-07T06:37:51.787662+00:00"
+  },
+  {
+    "nctId": "NCT04716231",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42911181/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/42911181/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT04716231-source-3.html",
+    "sha256": "520df8de0f00a4031605cf75dd052c598875f81b39834c6cb84517a6e37f0934",
+    "retrievedAt": "2026-11-07T06:37:51.800586+00:00"
+  },
+  {
+    "nctId": "NCT05507203",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05507203",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507203",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05507203-registry.json",
+    "sha256": "5c72de31d4cb07f2651debecebde7f53a4fd3856789415492c65cc69bd950eeb",
+    "retrievedAt": "2026-11-07T06:37:51.768534+00:00"
+  },
+  {
+    "nctId": "NCT05507203",
+    "url": "https://clinicaltrials.gov/study/NCT05507203",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05507203",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05507203-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:51.821469+00:00"
+  },
+  {
+    "nctId": "NCT05507216",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05507216",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507216",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05507216-registry.json",
+    "sha256": "24e798ad472136bd2a33548ec9519eab6faf4169f5f2ef65c8b972d560a55810",
+    "retrievedAt": "2026-11-07T06:37:51.920887+00:00"
+  },
+  {
+    "nctId": "NCT05507216",
+    "url": "https://clinicaltrials.gov/study/NCT05507216",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05507216",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05507216-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:51.964883+00:00"
+  },
+  {
+    "nctId": "NCT04576949",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04576949",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04576949",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04576949-registry.json",
+    "sha256": "81c7492947ddbbb6f49a8388e461cf286a931654ee1c619f800335af969bd47b",
+    "retrievedAt": "2026-11-07T06:37:51.953804+00:00"
+  },
+  {
+    "nctId": "NCT04576949",
+    "url": "https://clinicaltrials.gov/study/NCT04576949",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT04576949",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04576949-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:52.001418+00:00"
+  },
+  {
+    "nctId": "NCT05206370",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05206370",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05206370",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05206370-registry.json",
+    "sha256": "5cbf206a7ec9cd49c8fb823f2d5b12e542fec4e22da6a84a02d333ba3934f2ca",
+    "retrievedAt": "2026-11-07T06:37:51.972119+00:00"
+  },
+  {
+    "nctId": "NCT05206370",
+    "url": "https://clinicaltrials.gov/study/NCT05206370",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05206370",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05206370-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:52.119176+00:00"
+  },
+  {
+    "nctId": "NCT05811247",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05811247",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05811247",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05811247-registry.json",
+    "sha256": "e53500a653f8ff8dffeb543c776f9ab4092c608f72b3894ab247f027a8ce202f",
+    "retrievedAt": "2026-11-07T06:37:52.155936+00:00"
+  },
+  {
+    "nctId": "NCT05811247",
+    "url": "https://clinicaltrials.gov/study/NCT05811247",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05811247",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05811247-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:52.190071+00:00"
+  },
+  {
+    "nctId": "NCT05813275",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05813275",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05813275",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05813275-registry.json",
+    "sha256": "c6e7d34dac397ad5798e0aaf38325ad16fe977ad66e4c8caee63e4129723c8ba",
+    "retrievedAt": "2026-11-07T06:37:52.174476+00:00"
+  },
+  {
+    "nctId": "NCT05813275",
+    "url": "https://clinicaltrials.gov/study/NCT05813275",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05813275",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05813275-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:52.198161+00:00"
+  },
+  {
+    "nctId": "NCT05059223",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05059223",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05059223",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05059223-registry.json",
+    "sha256": "0a5dad958fae62e22217a36fcd93c994f12055c482e6ce4a5fbeecf1fc23d8f1",
+    "retrievedAt": "2026-11-07T06:37:52.181487+00:00"
+  },
+  {
+    "nctId": "NCT05059223",
+    "url": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024035655/axsm-ex99_1.htm",
+    "finalUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024035655/axsm-ex99_1.htm",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05059223-source-0.html",
+    "sha256": "34a271600f07917e334459f574ba2008f8b1d9ccde6fc0237fb5dc3276a98e38",
+    "retrievedAt": "2026-11-07T06:37:52.343857+00:00"
+  },
+  {
+    "nctId": "NCT05113745",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05113745",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05113745",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05113745-registry.json",
+    "sha256": "4db53262f3dc660796c806c61ce2c572e13f9a34b9192eb27c941b2756fc2f94",
+    "retrievedAt": "2026-11-07T06:37:52.321772+00:00"
+  },
+  {
+    "nctId": "NCT05113745",
+    "url": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024130755/axsm-ex99_1.htm",
+    "finalUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024130755/axsm-ex99_1.htm",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05113745-source-0.html",
+    "sha256": "1c509c88cbb60ca21878ce8eb6496bffc90cfc42f60f4241c966de01e329251a",
+    "retrievedAt": "2026-11-07T06:37:52.435056+00:00"
+  },
+  {
+    "nctId": "NCT05244304",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05244304",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05244304",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05244304-registry.json",
+    "sha256": "e9721e28001f94edff89bfe3344f8437ecf44a783383876674503719dea56b59",
+    "retrievedAt": "2026-11-07T06:37:52.348919+00:00"
+  },
+  {
+    "nctId": "NCT05244304",
+    "url": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite",
+    "finalUrl": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05244304-source-0.html",
+    "sha256": "0a08fca2f2052ede54fed1f30d2f5dcda27c808a33916d0a67c8882b779c4aae",
+    "retrievedAt": "2026-11-07T06:37:52.667568+00:00"
+  },
+  {
+    "nctId": "NCT05126758",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05126758",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05126758",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05126758-registry.json",
+    "sha256": "20d27667821d1a4e98bf931ba8e87ea45c266e223206adab669852fba5838ae8",
+    "retrievedAt": "2026-11-07T06:37:52.364132+00:00"
+  },
+  {
+    "nctId": "NCT05126758",
+    "url": "https://www.capricor.com/investors/news-events/press-releases/detail/331/capricor-therapeutics-announces-positive-topline-results",
+    "finalUrl": "https://www.capricor.com/investors/news-events/press-releases/detail/331/capricor-therapeutics-announces-positive-topline-results",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05126758-source-0.html",
+    "sha256": "2498dc9182407f96d42d5a0b894c01640a74457b97c3d2e9a30ef79d29ce256a",
+    "retrievedAt": "2026-11-07T06:37:52.813723+00:00"
+  },
+  {
+    "nctId": "NCT05208047",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05208047",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05208047",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05208047-registry.json",
+    "sha256": "f9ed331b9dac371767bfd9bc2429d60974edebf2e4a3b364cbef243af812ef0e",
+    "retrievedAt": "2026-11-07T06:37:52.486893+00:00"
+  },
+  {
+    "nctId": "NCT05208047",
+    "url": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak",
+    "finalUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05208047-source-0.html",
+    "sha256": "6664ad0af39d22a996870332c63134274a46516a2710fc0df187a8995c5ddef6",
+    "retrievedAt": "2026-11-07T06:37:53.009430+00:00"
+  },
+  {
+    "nctId": "NCT03697109",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT03697109",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT03697109",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT03697109-registry.json",
+    "sha256": "602d10925e7480d5470e932725cfc100c589105e895ed7cff9912020ecd7137d",
+    "retrievedAt": "2026-11-07T06:37:52.520226+00:00"
+  },
+  {
+    "nctId": "NCT03697109",
+    "url": "https://clinicaltrials.gov/study/NCT03697109",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT03697109",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT03697109-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:52.599076+00:00"
+  },
+  {
+    "nctId": "NCT04308590",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04308590",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04308590",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04308590-registry.json",
+    "sha256": "95589aee53172cca5e9b713bb523cb3175bec76769c49c3401cec65373eba38e",
+    "retrievedAt": "2026-11-07T06:37:52.685089+00:00"
+  },
+  {
+    "nctId": "NCT04308590",
+    "url": "https://clinicaltrials.gov/study/NCT04308590",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT04308590",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04308590-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:52.676730+00:00"
+  },
+  {
+    "nctId": "NCT05767346",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05767346",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05767346",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05767346-registry.json",
+    "sha256": "4c662f0e888dc6ebcfb81772bfbe783bcf8cc91777a054513a806733e47c5953",
+    "retrievedAt": "2026-11-07T06:37:52.770836+00:00"
+  },
+  {
+    "nctId": "NCT05767346",
+    "url": "https://clinicaltrials.gov/study/NCT05767346",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05767346",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05767346-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:52.871577+00:00"
+  },
+  {
+    "nctId": "NCT04871282",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04871282",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04871282",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04871282-registry.json",
+    "sha256": "995939ba534f7a9ba8027ae03920fd805fd277b4aed4c60654cbb3a8c4f00c08",
+    "retrievedAt": "2026-11-07T06:37:52.818191+00:00"
+  },
+  {
+    "nctId": "NCT04871282",
+    "url": "https://investors.immunome.com/immunome-announces-detailed-phase-3-ringside-data-for-varegacestat-in-adults-with-progressing-desmoid-tumors-at-the-2026-asco-annual-meeting/",
+    "finalUrl": "https://investors.immunome.com/immunome-announces-detailed-phase-3-ringside-data-for-varegacestat-in-adults-with-progressing-desmoid-tumors-at-the-2026-asco-annual-meeting/",
+    "status": 202,
+    "path": "reports/bottom-only-20261107/sources/NCT04871282-source-0.html",
+    "sha256": "0f725b5c270a1b377defbfc63c31f5490d0b6c02bfe28883d79a122c4062182d",
+    "retrievedAt": "2026-11-07T06:37:53.244197+00:00"
+  },
+  {
+    "nctId": "NCT06411379",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06411379",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06411379",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06411379-registry.json",
+    "sha256": "0bd8e1a37233d9b2de7b08cf58de99d396b1fb2b7baec4231df5202754fde932",
+    "retrievedAt": "2026-11-07T06:37:52.926819+00:00"
+  },
+  {
+    "nctId": "NCT06411379",
+    "url": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm",
+    "finalUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06411379-source-0.html",
+    "sha256": "773e252fb4ddce856718e221f7ee521b6f0b9a3cb788af3bf12cbb509bd0422b",
+    "retrievedAt": "2026-11-07T06:37:53.096136+00:00"
+  },
+  {
+    "nctId": "NCT06411899",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06411899",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06411899",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06411899-registry.json",
+    "sha256": "4323134b47b01a29a9140d018af125571855ef43f6bc56b1451ce6b8bc9e0790",
+    "retrievedAt": "2026-11-07T06:37:52.961571+00:00"
+  },
+  {
+    "nctId": "NCT06411899",
+    "url": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm",
+    "finalUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06411899-source-0.html",
+    "sha256": "773e252fb4ddce856718e221f7ee521b6f0b9a3cb788af3bf12cbb509bd0422b",
+    "retrievedAt": "2026-11-07T06:37:53.236209+00:00"
+  },
+  {
+    "nctId": "NCT06153693",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06153693",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06153693",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06153693-registry.json",
+    "sha256": "5d6307966b94db474eb75bc5cfbb3a1a448037cfffc46faab8c43e37a513afcb",
+    "retrievedAt": "2026-11-07T06:37:53.097319+00:00"
+  },
+  {
+    "nctId": "NCT06153693",
+    "url": "https://ir.mineralystx.com/news-events/press-releases/detail/60/mineralys-therapeutics-announces-positive-topline-results",
+    "finalUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/60/mineralys-therapeutics-announces-positive-topline-results",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06153693-source-0.html",
+    "sha256": "240079053da97b0e38c3bcad87e051212d429905b3d343547985ff7b36110153",
+    "retrievedAt": "2026-11-07T06:37:53.431507+00:00"
+  },
+  {
+    "nctId": "NCT06343779",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06343779",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06343779",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06343779-registry.json",
+    "sha256": "607c554eb0d5a9d62ada47787088bae17d12c5a1a5c4de2991cbb57a7521f55b",
+    "retrievedAt": "2026-11-07T06:37:53.132162+00:00"
+  },
+  {
+    "nctId": "NCT06343779",
+    "url": "https://ir.pharvaris.com/news-releases/news-release-details/phase-3-study-results-highlighting-deucrictibants-rapid-and",
+    "finalUrl": "https://ir.pharvaris.com/news-releases/news-release-details/phase-3-study-results-highlighting-deucrictibants-rapid-and",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06343779-source-0.html",
+    "sha256": "937ad04258a6b094a649b58e1cc3a0c7ac88334094ee92fbc1e61c5c24dcf667",
+    "retrievedAt": "2026-11-07T06:37:54.292835+00:00"
+  },
+  {
+    "nctId": "NCT06669754",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06669754",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06669754",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06669754-registry.json",
+    "sha256": "34a3dcce0b8466d01947c87b276b985b5a799f74decde4c0b0618c6df9185726",
+    "retrievedAt": "2026-11-07T06:37:53.233135+00:00"
+  },
+  {
+    "nctId": "NCT06669754",
+    "url": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm",
+    "finalUrl": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06669754-source-0.html",
+    "sha256": "3ebcb180cdb2ba9a519a4218a9666c9be62ba4dd58ec9883c1cd12060f39182f",
+    "retrievedAt": "2026-11-07T06:37:53.280930+00:00"
+  },
+  {
+    "nctId": "NCT06087276",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06087276",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06087276",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06087276-registry.json",
+    "sha256": "2fa4d709951905e2a9d0ca4918c8ba77106be3639c5cb8454af47aa7333c9fe5",
+    "retrievedAt": "2026-11-07T06:37:53.390290+00:00"
+  },
+  {
+    "nctId": "NCT06087276",
+    "url": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
+    "finalUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06087276-source-0.html",
+    "sha256": "352aa9dc71ed1671476b85f62d0ce1ff59d4b47f50ff992e628ebf3abe41d633",
+    "retrievedAt": "2026-11-07T06:37:53.780025+00:00"
+  },
+  {
+    "nctId": "NCT02500381",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT02500381",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02500381",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT02500381-registry.json",
+    "sha256": "4b0584903dd165d3221205dcfb53375ade50e2d2713fb29f2b09fb3e1d0961cd",
+    "retrievedAt": "2026-11-07T06:37:53.388662+00:00"
+  },
+  {
+    "nctId": "NCT02500381",
+    "url": "https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-therapeutics-announces-third-quarter-2025-financial",
+    "finalUrl": "https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-therapeutics-announces-third-quarter-2025-financial",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT02500381-source-0.html",
+    "sha256": "f8a10c192222a37996c196145ae4be3f8b79a8c800fd7855e54afcfaa7a0f9d8",
+    "retrievedAt": "2026-11-07T06:37:53.928774+00:00"
+  },
+  {
+    "nctId": "NCT06331299",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06331299",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06331299",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06331299-registry.json",
+    "sha256": "c0720bb9912e674113391713ecd591fe79e5a27030268f8d4f30cc3fbc4adbf9",
+    "retrievedAt": "2026-11-07T06:37:53.567949+00:00"
+  },
+  {
+    "nctId": "NCT06331299",
+    "url": "https://clinicaltrials.gov/study/NCT06331299",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT06331299",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06331299-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:37:53.581910+00:00"
+  },
+  {
+    "nctId": "NCT05662241",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05662241",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05662241",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05662241-registry.json",
+    "sha256": "330b115f72b76996011a35f2750883aac9a553096a0f08c464a63b00f3cebb75",
+    "retrievedAt": "2026-11-07T06:37:53.575115+00:00"
+  },
+  {
+    "nctId": "NCT05662241",
+    "url": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926123040/zbio-20260930x10q.htm",
+    "finalUrl": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926123040/zbio-20260930x10q.htm",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05662241-source-0.html",
+    "sha256": "207a71ad2d1bf64dca5c78b7864c440fc1a1bec15d904e26dced7ece3e8ee402",
+    "retrievedAt": "2026-11-07T06:37:53.736917+00:00"
   }
 ]

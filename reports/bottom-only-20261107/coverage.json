@@ -1,63 +1,63 @@
 {
   "scope": "EXISTING_BOTTOM_ONLY",
   "asOf": "2026-11-07",
-  "version": "BOTTOM_ONLY_POST_READOUT_20261107_V2",
-  "trialCount": 23,
-  "processedTrials": 23,
-  "totalCells": 4370,
-  "activeFactors": 115,
-  "activeFactorsGraded": 98,
-  "missingActiveFactorGrades": 17,
-  "completeClinicalScores": 14,
+  "version": "BOTTOM_ONLY_POST_READOUT_20261107_V3",
+  "trialCount": 47,
+  "processedTrials": 47,
+  "totalCells": 8930,
+  "activeFactors": 235,
+  "activeFactorsGraded": 203,
+  "missingActiveFactorGrades": 32,
+  "completeClinicalScores": 26,
   "completeThirtyMetricScores": 0,
-  "sourceBackedQuestionItems": 487,
-  "totalQuestionItems": 690,
-  "unresolvedQuestionItems": 203,
-  "sourceCoveragePercent": 70.6,
-  "nonMissingFieldCount": 2566,
-  "gradedCoveragePercent": 85.2,
+  "sourceBackedQuestionItems": 853,
+  "totalQuestionItems": 1410,
+  "unresolvedQuestionItems": 557,
+  "sourceCoveragePercent": 60.5,
+  "nonMissingFieldCount": 4332,
+  "gradedCoveragePercent": 86.4,
   "notValidatedFdaProbability": true,
-  "fieldPopulationPercent": 58.7,
-  "applicableResearchFieldCount": 2990,
-  "sourceVerifiedResearchFieldCount": 1622,
-  "fieldEvidenceCompletionPercent": 54.2,
+  "fieldPopulationPercent": 48.5,
+  "applicableResearchFieldCount": 6110,
+  "sourceVerifiedResearchFieldCount": 3558,
+  "fieldEvidenceCompletionPercent": 58.2,
   "fullyPopulatedResearchTrials": 0,
-  "partialResearchTrials": 23,
+  "partialResearchTrials": 47,
   "unavailableResearchTrials": 0,
   "factorCoverage": [
     {
       "id": "post-1-1",
       "name": "Actual Phase 3 efficacy",
-      "numericallyScored": 21,
+      "numericallyScored": 45,
       "pending": 1,
       "blocked": 1
     },
     {
       "id": "post-1-2",
       "name": "Clinical importance and patient benefit",
-      "numericallyScored": 21,
-      "pending": 2,
+      "numericallyScored": 43,
+      "pending": 4,
       "blocked": 0
     },
     {
       "id": "post-1-3",
       "name": "Statistical reliability",
-      "numericallyScored": 20,
-      "pending": 3,
+      "numericallyScored": 41,
+      "pending": 6,
       "blocked": 0
     },
     {
       "id": "post-1-4",
       "name": "Replication and durability",
-      "numericallyScored": 21,
-      "pending": 2,
+      "numericallyScored": 43,
+      "pending": 4,
       "blocked": 0
     },
     {
       "id": "post-1-5",
       "name": "Safety and tolerability",
-      "numericallyScored": 15,
-      "pending": 8,
+      "numericallyScored": 31,
+      "pending": 16,
       "blocked": 0
     }
   ],
@@ -163,6 +163,558 @@
       "metricId": "post-1-5",
       "state": "PENDING",
       "blocker": "Blinded safety and no-new-signal statement lacks arm-level SAE/discontinuation tables. Full study readout expected H1 2027."
+    },
+    {
+      "nctId": "NCT05811247",
+      "metricId": "post-1-2",
+      "state": "MISSING_EVIDENCE",
+      "blocker": "LunAIRo retrieved registry results quantify AHI but not patient fatigue/function or QoL results. SynAIRgy fatigue results belong to another exact NCT and are not substituted."
+    },
+    {
+      "nctId": "NCT05059223",
+      "metricId": "post-1-3",
+      "state": "MISSING_EVIDENCE",
+      "blocker": "SYMPHONY release gives primary p=0.018 and multiple secondary p-values but no effect CI, full multiplicity or missing-data sensitivity analysis. No default statistical grade."
+    },
+    {
+      "nctId": "NCT05244304",
+      "metricId": "post-1-5",
+      "state": "NOT_REPORTED",
+      "blocker": "DRAGON issuer reports four treatment-related drug discontinuations but no exact arm-level complete serious-event and severity table or safety exposure denominators."
+    },
+    {
+      "nctId": "NCT05126758",
+      "metricId": "post-1-5",
+      "state": "MISSING_EVIDENCE",
+      "blocker": "HOPE-3 indexed Lancet abstract says safety similar; open issuer release lacks full AE/SAE/discontinuation table. Indexed full text is subscription-only. Exact arm-level data needed; HOPE-2 cannot substitute."
+    },
+    {
+      "nctId": "NCT04871282",
+      "metricId": "post-1-3",
+      "state": "MISSING_EVIDENCE",
+      "blocker": "Accessible SEC10-Q reports RINGSIDE HR0.16,p<0.0001 and pain SEs but no primary PFS CI, full SAP or missing-data sensitivities. Detailed issuer page and search index return interstitials."
+    },
+    {
+      "nctId": "NCT04871282",
+      "metricId": "post-1-4",
+      "state": "MISSING_EVIDENCE",
+      "blocker": "RINGSIDE filing provides Week12pain and Week24tumor-volume changes but no longitudinal PFS/response-duration estimates or independent confirmatory study sufficient for durability grading."
+    },
+    {
+      "nctId": "NCT04871282",
+      "metricId": "post-1-5",
+      "state": "MISSING_EVIDENCE",
+      "blocker": "Accessible SEC readout only says safety consistent with GSI therapies; detailed IR page is access-blocked. Exact PartB arm-level AE/SAE and discontinuations remain unestablished."
+    },
+    {
+      "nctId": "NCT06411379",
+      "metricId": "post-1-5",
+      "state": "NOT_REPORTED",
+      "blocker": "VELA-1/2 publication contains POOLED safety559active/279placebo, including SAEs2.5%vs1.8%,discontinuations2.9%vs1.4% and candidiasis7.3%vs0.4%. Exact VELA-1 safety counts are not separately disclosed; pooled counts cannot become exact-trial rates."
+    },
+    {
+      "nctId": "NCT06411899",
+      "metricId": "post-1-5",
+      "state": "NOT_REPORTED",
+      "blocker": "VELA-2 exact arm safety counts are not supplied; published safety is pooled across VELA-1/2. Preserve pooled candidiasis and withdrawal signal as program evidence, not an exact VELA-2 numerical grade."
+    },
+    {
+      "nctId": "NCT06153693",
+      "metricId": "post-1-2",
+      "state": "NOT_REPORTED",
+      "blocker": "Launch-HTN reports6/12-week blood pressure lowering, not measured patient symptom/function, stroke or survival benefit. A risk-factor surrogate is not automatically a numerical demonstrated patient-benefit grade."
+    },
+    {
+      "nctId": "NCT06343779",
+      "metricId": "post-1-5",
+      "state": "MISSING_EVIDENCE",
+      "blocker": "RAPIDe-3 abstract documents two fatigue events, no severe/serious treatment-related events and no AE withdrawals, but not complete all-cause arm/exposure safety table. Indexed full Lancet report is subscription-only; no assumption all SAEs are zero."
+    },
+    {
+      "nctId": "NCT06669754",
+      "metricId": "post-1-3",
+      "state": "NOT_REPORTED",
+      "blocker": "CHAPTER-3 reports83%attack reduction,p<0.0001 and sequential secondary multiplicity control, but no primary effect CI, full missing-data sensitivity or arm-level counts in retrieved topline."
+    },
+    {
+      "nctId": "NCT06669754",
+      "metricId": "post-1-5",
+      "state": "NOT_REPORTED",
+      "blocker": "CHAPTER-3 reports no treatment-related SAEs and one AE withdrawal per arm, but no complete all-cause AE/SAE and severity counts. Those are distinct from no-drug-related-SAE statement."
+    },
+    {
+      "nctId": "NCT02500381",
+      "metricId": "post-1-5",
+      "state": "NOT_REPORTED",
+      "blocker": "ESSENCE source provides product warning language and failed functional endpoint, but no exact trial arm-level AE/SAE and withdrawal table. Labels for separate exon-skipping drugs are not pooled trial safety evidence."
+    },
+    {
+      "nctId": "NCT06331299",
+      "metricId": "post-1-4",
+      "state": "PENDING",
+      "blocker": "UTOPIA registry posts Month3response only; duration-of-response outcomes are NOT_POSTED. Do not transfer24-month ENVISION durability from UGN-102 to UGN-103."
     }
-  ]
+  ],
+  "currentActive": {
+    "trialCount": 29,
+    "processedTrials": 29,
+    "activeFactors": 145,
+    "activeFactorsGraded": 128,
+    "missingActiveFactorGrades": 17,
+    "completeClinicalScores": 15,
+    "totalQuestionItems": 870,
+    "sourceBackedQuestionItems": 469,
+    "sourceCoveragePercent": 53.9,
+    "applicableResearchFieldCount": 3770,
+    "sourceVerifiedResearchFieldCount": 2262,
+    "fieldEvidenceCompletionPercent": 60,
+    "fullyPopulatedResearchTrials": 0,
+    "partialResearchTrials": 29,
+    "unavailableResearchTrials": 0,
+    "factorCoverage": [
+      {
+        "id": "post-1-1",
+        "name": "Actual Phase 3 efficacy",
+        "numericallyScored": 29,
+        "pending": 0,
+        "blocked": 0
+      },
+      {
+        "id": "post-1-2",
+        "name": "Clinical importance and patient benefit",
+        "numericallyScored": 27,
+        "pending": 2,
+        "blocked": 0
+      },
+      {
+        "id": "post-1-3",
+        "name": "Statistical reliability",
+        "numericallyScored": 26,
+        "pending": 3,
+        "blocked": 0
+      },
+      {
+        "id": "post-1-4",
+        "name": "Replication and durability",
+        "numericallyScored": 27,
+        "pending": 2,
+        "blocked": 0
+      },
+      {
+        "id": "post-1-5",
+        "name": "Safety and tolerability",
+        "numericallyScored": 19,
+        "pending": 10,
+        "blocked": 0
+      }
+    ],
+    "blockers": [
+      {
+        "nctId": "NCT06445023",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "Retrieved Phase 3 issuer readout and 2026 Q3 SEC filing provide qualitative tolerability but no exact-study arm-level all-cause SAE and discontinuation tables. Do not substitute Phase 2 data."
+      },
+      {
+        "nctId": "NCT06455202",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "Retrieved Phase 3 issuer readout and 2026 Q3 SEC filing provide qualitative tolerability but no exact-study arm-level all-cause SAE and discontinuation tables. Do not substitute CSU1 or Phase 2 data."
+      },
+      {
+        "nctId": "NCT05811247",
+        "metricId": "post-1-2",
+        "state": "MISSING_EVIDENCE",
+        "blocker": "LunAIRo retrieved registry results quantify AHI but not patient fatigue/function or QoL results. SynAIRgy fatigue results belong to another exact NCT and are not substituted."
+      },
+      {
+        "nctId": "NCT05059223",
+        "metricId": "post-1-3",
+        "state": "MISSING_EVIDENCE",
+        "blocker": "SYMPHONY release gives primary p=0.018 and multiple secondary p-values but no effect CI, full multiplicity or missing-data sensitivity analysis. No default statistical grade."
+      },
+      {
+        "nctId": "NCT05244304",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "DRAGON issuer reports four treatment-related drug discontinuations but no exact arm-level complete serious-event and severity table or safety exposure denominators."
+      },
+      {
+        "nctId": "NCT05126758",
+        "metricId": "post-1-5",
+        "state": "MISSING_EVIDENCE",
+        "blocker": "HOPE-3 indexed Lancet abstract says safety similar; open issuer release lacks full AE/SAE/discontinuation table. Indexed full text is subscription-only. Exact arm-level data needed; HOPE-2 cannot substitute."
+      },
+      {
+        "nctId": "NCT04871282",
+        "metricId": "post-1-3",
+        "state": "MISSING_EVIDENCE",
+        "blocker": "Accessible SEC10-Q reports RINGSIDE HR0.16,p<0.0001 and pain SEs but no primary PFS CI, full SAP or missing-data sensitivities. Detailed issuer page and search index return interstitials."
+      },
+      {
+        "nctId": "NCT04871282",
+        "metricId": "post-1-4",
+        "state": "MISSING_EVIDENCE",
+        "blocker": "RINGSIDE filing provides Week12pain and Week24tumor-volume changes but no longitudinal PFS/response-duration estimates or independent confirmatory study sufficient for durability grading."
+      },
+      {
+        "nctId": "NCT04871282",
+        "metricId": "post-1-5",
+        "state": "MISSING_EVIDENCE",
+        "blocker": "Accessible SEC readout only says safety consistent with GSI therapies; detailed IR page is access-blocked. Exact PartB arm-level AE/SAE and discontinuations remain unestablished."
+      },
+      {
+        "nctId": "NCT06411379",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "VELA-1/2 publication contains POOLED safety559active/279placebo, including SAEs2.5%vs1.8%,discontinuations2.9%vs1.4% and candidiasis7.3%vs0.4%. Exact VELA-1 safety counts are not separately disclosed; pooled counts cannot become exact-trial rates."
+      },
+      {
+        "nctId": "NCT06411899",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "VELA-2 exact arm safety counts are not supplied; published safety is pooled across VELA-1/2. Preserve pooled candidiasis and withdrawal signal as program evidence, not an exact VELA-2 numerical grade."
+      },
+      {
+        "nctId": "NCT06153693",
+        "metricId": "post-1-2",
+        "state": "NOT_REPORTED",
+        "blocker": "Launch-HTN reports6/12-week blood pressure lowering, not measured patient symptom/function, stroke or survival benefit. A risk-factor surrogate is not automatically a numerical demonstrated patient-benefit grade."
+      },
+      {
+        "nctId": "NCT06343779",
+        "metricId": "post-1-5",
+        "state": "MISSING_EVIDENCE",
+        "blocker": "RAPIDe-3 abstract documents two fatigue events, no severe/serious treatment-related events and no AE withdrawals, but not complete all-cause arm/exposure safety table. Indexed full Lancet report is subscription-only; no assumption all SAEs are zero."
+      },
+      {
+        "nctId": "NCT06669754",
+        "metricId": "post-1-3",
+        "state": "NOT_REPORTED",
+        "blocker": "CHAPTER-3 reports83%attack reduction,p<0.0001 and sequential secondary multiplicity control, but no primary effect CI, full missing-data sensitivity or arm-level counts in retrieved topline."
+      },
+      {
+        "nctId": "NCT06669754",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "CHAPTER-3 reports no treatment-related SAEs and one AE withdrawal per arm, but no complete all-cause AE/SAE and severity counts. Those are distinct from no-drug-related-SAE statement."
+      },
+      {
+        "nctId": "NCT02500381",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "ESSENCE source provides product warning language and failed functional endpoint, but no exact trial arm-level AE/SAE and withdrawal table. Labels for separate exon-skipping drugs are not pooled trial safety evidence."
+      },
+      {
+        "nctId": "NCT06331299",
+        "metricId": "post-1-4",
+        "state": "PENDING",
+        "blocker": "UTOPIA registry posts Month3response only; duration-of-response outcomes are NOT_POSTED. Do not transfer24-month ENVISION durability from UGN-102 to UGN-103."
+      }
+    ]
+  },
+  "originalResearchCohort": {
+    "trialCount": 23,
+    "processedTrials": 23,
+    "activeFactors": 115,
+    "activeFactorsGraded": 98,
+    "missingActiveFactorGrades": 17,
+    "completeClinicalScores": 14,
+    "totalQuestionItems": 690,
+    "sourceBackedQuestionItems": 487,
+    "sourceCoveragePercent": 70.6,
+    "applicableResearchFieldCount": 2990,
+    "sourceVerifiedResearchFieldCount": 1797,
+    "fieldEvidenceCompletionPercent": 60.1,
+    "fullyPopulatedResearchTrials": 0,
+    "partialResearchTrials": 23,
+    "unavailableResearchTrials": 0,
+    "factorCoverage": [
+      {
+        "id": "post-1-1",
+        "name": "Actual Phase 3 efficacy",
+        "numericallyScored": 21,
+        "pending": 1,
+        "blocked": 1
+      },
+      {
+        "id": "post-1-2",
+        "name": "Clinical importance and patient benefit",
+        "numericallyScored": 21,
+        "pending": 2,
+        "blocked": 0
+      },
+      {
+        "id": "post-1-3",
+        "name": "Statistical reliability",
+        "numericallyScored": 20,
+        "pending": 3,
+        "blocked": 0
+      },
+      {
+        "id": "post-1-4",
+        "name": "Replication and durability",
+        "numericallyScored": 21,
+        "pending": 2,
+        "blocked": 0
+      },
+      {
+        "id": "post-1-5",
+        "name": "Safety and tolerability",
+        "numericallyScored": 15,
+        "pending": 8,
+        "blocked": 0
+      }
+    ],
+    "blockers": [
+      {
+        "nctId": "NCT05144256",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "Exact pediatric arm-level all-cause AE/SAE and exposure-adjusted safety tables are not in the retrieved topline. No AE withdrawals is insufficient for a complete safety assessment."
+      },
+      {
+        "nctId": "NCT05175105",
+        "metricId": "post-1-2",
+        "state": "NOT_REPORTED",
+        "blocker": "Hb response is quantified but pediatric fatigue, function or QoL magnitude and validated patient-benefit benchmark are not reported."
+      },
+      {
+        "nctId": "NCT05175105",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "Topline says similar AEs and no withdrawals; full pediatric arm-level AE/SAE counts and severity tables are not reported."
+      },
+      {
+        "nctId": "NCT06747468",
+        "metricId": "post-1-3",
+        "state": "MISSING_EVIDENCE",
+        "blocker": "Full effect CIs, absolute arm event rates, multiplicity and missing-data sensitivity results are absent from retrieved issuer topline; publication search did not establish these."
+      },
+      {
+        "nctId": "NCT06747468",
+        "metricId": "post-1-4",
+        "state": "PENDING",
+        "blocker": "Only 16-week controlled results reported; 32-week open-label extension remains ongoing and no published longer follow-up was located."
+      },
+      {
+        "nctId": "NCT06747468",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "No drug-related SAE statement does not supply all-cause SAE rates, denominators or discontinuation table by arm."
+      },
+      {
+        "nctId": "NCT05453968",
+        "metricId": "post-1-1",
+        "state": "BLOCKED_RULE",
+        "blocker": "Exact Phase 3 primary outcomes are pediatric pharmacokinetics. No approved conversion from PK exposure matching to the active primary clinical efficacy grade exists. Required rule: how to grade a PK-primary pediatric bridging study under post-1-1 without presenting secondary uncontrolled attack reduction as randomized primary efficacy."
+      },
+      {
+        "nctId": "NCT06445023",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "Retrieved Phase 3 issuer readout and 2026 Q3 SEC filing provide qualitative tolerability but no exact-study arm-level all-cause SAE and discontinuation tables. Do not substitute Phase 2 data."
+      },
+      {
+        "nctId": "NCT06455202",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "Retrieved Phase 3 issuer readout and 2026 Q3 SEC filing provide qualitative tolerability but no exact-study arm-level all-cause SAE and discontinuation tables. Do not substitute CSU1 or Phase 2 data."
+      },
+      {
+        "nctId": "NCT05711940",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "COMP006 25 mg six SAEs in six people (2%) reported, but matching 1 mg/10 mg all-cause SAE and withdrawal tables are not supplied in the retrieved release. COMP005 safety is not this NCT."
+      },
+      {
+        "nctId": "NCT04768972",
+        "metricId": "post-1-1",
+        "state": "PENDING",
+        "blocker": "FUSION issuer reports p=0.0005 for joint rank, n73 primary population, without arm-level joint-rank effect or confidence interval. Detailed congress/publication results promised later."
+      },
+      {
+        "nctId": "NCT04768972",
+        "metricId": "post-1-2",
+        "state": "PENDING",
+        "blocker": "No quantitative ALSFRS-R, survival, rescue or QoL arm effects supplied in topline; composite p-value cannot establish magnitude of patient benefit."
+      },
+      {
+        "nctId": "NCT04768972",
+        "metricId": "post-1-3",
+        "state": "PENDING",
+        "blocker": "Only primary p-value; no effect CI, full multiplicity or missing-data sensitivity results. Complete statistical results promised later."
+      },
+      {
+        "nctId": "NCT04768972",
+        "metricId": "post-1-4",
+        "state": "PENDING",
+        "blocker": "72-week design and extension plans are documented but actual longitudinal effects, attrition and independent confirmatory results are not disclosed."
+      },
+      {
+        "nctId": "NCT04768972",
+        "metricId": "post-1-5",
+        "state": "PENDING",
+        "blocker": "Most AEs mild/moderate is qualitative; all-cause AE/SAE, attribution and discontinuation counts by arm not disclosed; full results forthcoming."
+      },
+      {
+        "nctId": "NCT06641076",
+        "metricId": "post-1-3",
+        "state": "PENDING",
+        "blocker": "Week 16 issuer release explicitly withholds placebo comparisons and full arm data to maintain blinding through Week 52; numerical CIs, multiplicity and sensitivity results await H1 2027 readout."
+      },
+      {
+        "nctId": "NCT06641076",
+        "metricId": "post-1-5",
+        "state": "PENDING",
+        "blocker": "Blinded safety and no-new-signal statement lacks arm-level SAE/discontinuation tables. Full study readout expected H1 2027."
+      }
+    ]
+  },
+  "historicalOutsideActive": {
+    "trialCount": 18,
+    "processedTrials": 18,
+    "activeFactors": 90,
+    "activeFactorsGraded": 75,
+    "missingActiveFactorGrades": 15,
+    "completeClinicalScores": 11,
+    "totalQuestionItems": 540,
+    "sourceBackedQuestionItems": 384,
+    "sourceCoveragePercent": 71.1,
+    "applicableResearchFieldCount": 2340,
+    "sourceVerifiedResearchFieldCount": 1296,
+    "fieldEvidenceCompletionPercent": 55.4,
+    "fullyPopulatedResearchTrials": 0,
+    "partialResearchTrials": 18,
+    "unavailableResearchTrials": 0,
+    "factorCoverage": [
+      {
+        "id": "post-1-1",
+        "name": "Actual Phase 3 efficacy",
+        "numericallyScored": 16,
+        "pending": 1,
+        "blocked": 1
+      },
+      {
+        "id": "post-1-2",
+        "name": "Clinical importance and patient benefit",
+        "numericallyScored": 16,
+        "pending": 2,
+        "blocked": 0
+      },
+      {
+        "id": "post-1-3",
+        "name": "Statistical reliability",
+        "numericallyScored": 15,
+        "pending": 3,
+        "blocked": 0
+      },
+      {
+        "id": "post-1-4",
+        "name": "Replication and durability",
+        "numericallyScored": 16,
+        "pending": 2,
+        "blocked": 0
+      },
+      {
+        "id": "post-1-5",
+        "name": "Safety and tolerability",
+        "numericallyScored": 12,
+        "pending": 6,
+        "blocked": 0
+      }
+    ],
+    "blockers": [
+      {
+        "nctId": "NCT05144256",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "Exact pediatric arm-level all-cause AE/SAE and exposure-adjusted safety tables are not in the retrieved topline. No AE withdrawals is insufficient for a complete safety assessment."
+      },
+      {
+        "nctId": "NCT05175105",
+        "metricId": "post-1-2",
+        "state": "NOT_REPORTED",
+        "blocker": "Hb response is quantified but pediatric fatigue, function or QoL magnitude and validated patient-benefit benchmark are not reported."
+      },
+      {
+        "nctId": "NCT05175105",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "Topline says similar AEs and no withdrawals; full pediatric arm-level AE/SAE counts and severity tables are not reported."
+      },
+      {
+        "nctId": "NCT06747468",
+        "metricId": "post-1-3",
+        "state": "MISSING_EVIDENCE",
+        "blocker": "Full effect CIs, absolute arm event rates, multiplicity and missing-data sensitivity results are absent from retrieved issuer topline; publication search did not establish these."
+      },
+      {
+        "nctId": "NCT06747468",
+        "metricId": "post-1-4",
+        "state": "PENDING",
+        "blocker": "Only 16-week controlled results reported; 32-week open-label extension remains ongoing and no published longer follow-up was located."
+      },
+      {
+        "nctId": "NCT06747468",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "No drug-related SAE statement does not supply all-cause SAE rates, denominators or discontinuation table by arm."
+      },
+      {
+        "nctId": "NCT05453968",
+        "metricId": "post-1-1",
+        "state": "BLOCKED_RULE",
+        "blocker": "Exact Phase 3 primary outcomes are pediatric pharmacokinetics. No approved conversion from PK exposure matching to the active primary clinical efficacy grade exists. Required rule: how to grade a PK-primary pediatric bridging study under post-1-1 without presenting secondary uncontrolled attack reduction as randomized primary efficacy."
+      },
+      {
+        "nctId": "NCT05711940",
+        "metricId": "post-1-5",
+        "state": "NOT_REPORTED",
+        "blocker": "COMP006 25 mg six SAEs in six people (2%) reported, but matching 1 mg/10 mg all-cause SAE and withdrawal tables are not supplied in the retrieved release. COMP005 safety is not this NCT."
+      },
+      {
+        "nctId": "NCT04768972",
+        "metricId": "post-1-1",
+        "state": "PENDING",
+        "blocker": "FUSION issuer reports p=0.0005 for joint rank, n73 primary population, without arm-level joint-rank effect or confidence interval. Detailed congress/publication results promised later."
+      },
+      {
+        "nctId": "NCT04768972",
+        "metricId": "post-1-2",
+        "state": "PENDING",
+        "blocker": "No quantitative ALSFRS-R, survival, rescue or QoL arm effects supplied in topline; composite p-value cannot establish magnitude of patient benefit."
+      },
+      {
+        "nctId": "NCT04768972",
+        "metricId": "post-1-3",
+        "state": "PENDING",
+        "blocker": "Only primary p-value; no effect CI, full multiplicity or missing-data sensitivity results. Complete statistical results promised later."
+      },
+      {
+        "nctId": "NCT04768972",
+        "metricId": "post-1-4",
+        "state": "PENDING",
+        "blocker": "72-week design and extension plans are documented but actual longitudinal effects, attrition and independent confirmatory results are not disclosed."
+      },
+      {
+        "nctId": "NCT04768972",
+        "metricId": "post-1-5",
+        "state": "PENDING",
+        "blocker": "Most AEs mild/moderate is qualitative; all-cause AE/SAE, attribution and discontinuation counts by arm not disclosed; full results forthcoming."
+      },
+      {
+        "nctId": "NCT06641076",
+        "metricId": "post-1-3",
+        "state": "PENDING",
+        "blocker": "Week 16 issuer release explicitly withholds placebo comparisons and full arm data to maintain blinding through Week 52; numerical CIs, multiplicity and sensitivity results await H1 2027 readout."
+      },
+      {
+        "nctId": "NCT06641076",
+        "metricId": "post-1-5",
+        "state": "PENDING",
+        "blocker": "Blinded safety and no-new-signal statement lacks arm-level SAE/discontinuation tables. Full study readout expected H1 2027."
+      }
+    ]
+  }
 }
