@@ -52,7 +52,7 @@ export default function MainStatus(){
   const checked=MAIN_DAILY_EVIDENCE.valid;
   const historicalDay=checked?MAIN_DAILY_EVIDENCE.history.at(-1)?.asOf:null;
   const activeGateRows=checked?[
-    ...MAIN_DAILY_EVIDENCE.observations.filter(g=>!g.id.startsWith("gem-jr-gem-wt.")).map(g=>({...g,sourceKind:"Dated historical evidence"})),
+    ...MAIN_DAILY_EVIDENCE.observations.filter(g=>!g.id.startsWith("gem-jr-gem-wt.")).map(g=>({...g,sourceKind:"Dated historical evidence",note:/\\bGEM\\b/i.test(g.note)?"This dated note includes superseded research-group totals; consult the original audit for historical details. Current-source acceptance still needs independent verification.":g.note})),
     ...currentScopeReplacements.map(g=>({...g,sourceKind:"Current scope — pending verification"})),
   ]:[];
   const activeScopeValid=checked&&activeGateRows.length===31&&
