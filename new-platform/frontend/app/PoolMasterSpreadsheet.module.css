@@ -159,3 +159,12 @@
 .latestDownloadToolbar button:focus-visible{outline:3px solid #279873;outline-offset:2px}
 .downloadPending{margin:0;border-left:3px solid #7d8c9b;padding:8px 10px;
  background:#f3f6f9;color:#405466;font-size:12px;line-height:1.55}
+
+/* Source-only detailed registry facts; NCT remains the fixed identity key. */
+.registryAction{display:flex;flex-direction:column;align-items:flex-start;gap:3px;margin-top:7px;max-width:100%}
+.registryAction button{font:inherit;font-size:10px;font-weight:700;line-height:1.25;border:1px solid #9bbfad;border-radius:5px;padding:5px 6px;background:#e9f5ee;color:#165b40;cursor:pointer;white-space:normal;text-align:left}
+.registryAction button:hover{background:#d9ecdf}
+.registryAction button:disabled{opacity:.65;cursor:wait}
+.registryAction button:focus-visible{outline:3px solid #279873;outline-offset:2px}
+.registryAction small{display:block;max-width:100%;overflow-wrap:anywhere;font-size:10px;line-height:1.3;color:#54715f}
+.registryAction small[role="alert"]{color:#a72e33}
