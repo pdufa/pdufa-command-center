@@ -60,3 +60,12 @@ test("documented binary registry negatives count as facts, never synthetic clini
  assert.equal(d.totals.documentedQuestions+d.totals.predictedQuestions+
   d.totals.unscoredQuestions,d.totals.questionSlots);
 });
+
+test("documentary clinical facts join phase-first provenance but never become reviewed grades",()=>{
+ const phase=fs.readFileSync(require.resolve("../lib/phase-first-report.ts"),"utf8");
+ assert.match(phase,/peerEvidence\.facts/);
+ assert.match(phase,/fact\.question===20\?"benefitRisk"/);
+ assert.match(phase,/fact\.question===21\?"phase3Results"/);
+ assert.match(phase,/fact\.question===28\?"fdaOutcome"/);
+ assert.match(phase,/Historical observed evidence only, not a numerical clinical or FDA prediction/);
+});
