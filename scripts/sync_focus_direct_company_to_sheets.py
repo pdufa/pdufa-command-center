@@ -6,7 +6,7 @@ from pathlib import Path
 from sync_focus_survey_evidence_to_sheets import sync_tables
 ROOT=Path(__file__).resolve().parents[1]
 OUT=ROOT/"reports/focus-survey"
-TITLE="FOCUS Survey Auto Company Results"
+TITLE="FOCUS Survey Auto Company Attempts"
 COLUMNS=[("NCT ID","nctId"),("Ticker","ticker"),("Issuer","issuer"),
   ("Official Issuer Source Link","url"),("Release Title / Program","sourceTitle"),
   ("Source Publication Date (Discovery)","expectedPublicationDate"),
