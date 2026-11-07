@@ -77,3 +77,12 @@ test('exact TOP CYTK PK-guided dose evidence completes only the supported five-f
  assert.equal(trial.clinicalScoredFactors,5);assert.equal(trial.clinicalFullScore,45);
  assert.equal(trial.legacyThirtyMetricFullScore,null);assert.equal(trial.predictionEligibility,'ABSTAIN');
 });
+test('TOP-only addendum preserves older events and exposes an immutable score change after evidence review',async()=>{
+ const inc=require('../data/topOnlyHistoryIncrement20261107.json');assert.equal(inc.records.length,2);
+ for(const event of inc.records){assert.ok(ids.has(event.nctId));assert.equal(event.summary.nctId,event.nctId);assert.equal(event.factors.length,5);assert.ok(!history.records.some(x=>x.eventId===event.eventId));}
+ const r=await GET(new Request('http://localhost/api/top-only-completion?nctId=NCT06736574'));assert.equal(r.status,200);
+ const data=await r.json();const next=data.history.find(x=>x.eventType==='REVIEWED_NUMERICAL_SCORE_UPDATE');assert.ok(next);
+ assert.equal(next.change.previousClinicalOverall,null);assert.equal(next.change.newClinicalOverall,45);
+ assert.equal(next.change.previousGrade,null);assert.equal(next.change.newGrade,50);
+ assert.ok(data.history.some(x=>x.eventId!==next.eventId&&x.summary.clinicalScoredFactors===4));
+});
