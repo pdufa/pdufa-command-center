@@ -14,6 +14,7 @@ import PipelineSponsorReadout from "./PipelineSponsorReadout";
 import BatchRegistryExport from "./BatchRegistryExport";
 import PoolMasterSpreadsheet from "./PoolMasterSpreadsheet";
 import {type PoolPhaseSelection} from "../lib/pool-phase-options";
+import type {PoolSortSpec} from "../lib/pool-full-sort";
 
 type PoolItem = {id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string;marketCap?:number|null;capInRange?:boolean};
 type ReviewItem = {
@@ -51,19 +52,28 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
  const [offset,setOffset]=useState(0);
  const [selectedPhases,setSelectedPhases]=useState<PoolPhaseSelection>(null);
  const changePhases=(next:PoolPhaseSelection)=>{setSelectedPhases(next);setOffset(0);};
- const [page,setPage]=useState<Page|null>(null);
+ const [sort,setSort]=useState<PoolSortSpec|null>(null);
+ const changeSort=(next:PoolSortSpec|null)=>{setSort(next);setOffset(0);};
+ const [rawPage,setPage]=useState<Page|null>(null);
+ const [loadedRequestKey,setLoadedRequestKey]=useState("");
  const [error,setError]=useState("");
  const [loading,setLoading]=useState(true);
  const view=section==="pool"?"pool":reviewMode?"readout-review":"pipeline";
+ const requestKey=[view,offset,query,selectedPhases===null?"all":selectedPhases.join(","),
+  sort?sort.key+":"+sort.direction:"unsorted"].join("|");
+ const page=loadedRequestKey===requestKey?rawPage:null;
  useEffect(()=>{
    if(section==="pipeline"&&!reviewMode)return;
    const controller=new AbortController();
    let mounted=true;
-   setLoading(true);setError("");
+   setLoading(true);setError("");setPage(null);
    const params=new URLSearchParams({view,offset:String(offset),limit:String(LIMIT),...(section==="pool"?{recordKind:"trials"}:{})});
    if(query.trim())params.set("query",query.trim());
    if(section==="pool"&&selectedPhases!==null)params.set("stages",
     selectedPhases.length?selectedPhases.join(","):"none");
+   if(section==="pool"&&sort){
+    params.set("sortKey",sort.key);params.set("sortDir",sort.direction);
+   }
    void fetch("/api/scope-funnel?"+params.toString(),{cache:"no-store",signal:controller.signal})
      .then(async resp=>{
        if(!resp.ok)throw new Error(resp.status===401?"Sign in on the dashboard to view protected research data.":"Published POOL and Phase 3 census could not be jointly verified.");
@@ -75,12 +85,12 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
          result.offset!==offset || result.limit!==LIMIT ||
          result.rows.length>LIMIT || !result.caveat)
          throw new Error("Research reconciliation response failed validation.");
-       if(mounted)setPage(result);
+       if(mounted){setPage(result);setLoadedRequestKey(requestKey);}
      }).catch(err=>{
        if(mounted && !controller.signal.aborted){setPage(null);setError(err instanceof Error?err.message:"Research data unavailable");}
      }).finally(()=>{if(mounted)setLoading(false)});
    return ()=>{mounted=false;controller.abort()};
- },[section,reviewMode,view,offset,query,selectedPhases]);
+ },[section,reviewMode,view,offset,query,selectedPhases,sort,requestKey]);
  function applySearch(e:FormEvent<HTMLFormElement>) {
    e.preventDefault();setOffset(0);setQuery(queryInput);
  }
@@ -124,9 +134,9 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
      </p>}
      <PoolMasterSpreadsheet
        rows={page?.rows.filter((r):r is PoolItem=>!isReview(r))||[]}
-       loading={loading} error={error}
+       loading={loading||(!page&&!error)} error={error}
        selectedPhases={selectedPhases} onPhasesChange={changePhases}
-       stageCounts={page?.stageStats?.stages}/>
+       stageCounts={page?.stageStats?.stages} sort={sort} onSortChange={changeSort}/>
      {page&&<div className={styles.pagination}>
        <button type="button" disabled={offset===0||loading} onClick={()=>setOffset(Math.max(0,offset-LIMIT))}>Previous</button>
        <span>Page {Math.floor(offset/LIMIT)+1} of {Math.max(1,Math.ceil(page.total/LIMIT))}</span>

@@ -38,3 +38,24 @@ test("stage choices are fetched server-side before pagination, with explicit non
  assert.ok(workspace.includes('selectedPhases.length?selectedPhases.join(","):"none"'));
  assert.ok(workspace.includes('setSelectedPhases(next);setOffset(0)'));
 });
+
+test("Server-backed POOL sorting is applied before pagination and stale results cannot render",()=>{
+ const funnel=fs.readFileSync(path.join(__dirname,"../lib/pool-pipeline-funnel.ts"),"utf8");
+ const workspace=fs.readFileSync(path.join(__dirname,"../app/FunnelWorkspace.tsx"),"utf8");
+ const sorts=fs.readFileSync(path.join(__dirname,"../lib/pool-full-sort.ts"),"utf8");
+ assert.ok(funnel.includes('sortPoolUniverse(stageFiltered as PoolTrialRecord[],sortSpec)'));
+ assert.ok(funnel.includes('rows:ordered.slice(offset,offset+limit)'));
+ assert.ok(workspace.includes('params.set("sortKey",sort.key)'));
+ assert.ok(workspace.includes('params.set("sortDir",sort.direction)'));
+ assert.ok(workspace.includes('const page=loadedRequestKey===requestKey?rawPage:null;'));
+ assert.ok(workspace.includes('setLoadedRequestKey(requestKey)'));
+ assert.ok(!sorts.includes('"exchange"'));
+ assert.ok(!sorts.includes('"pdufa"'));
+ assert.ok(!sorts.includes('"designations"'));
+});
+test("View reset retains column ordering; only Reset Column Order restores ordering",()=>{
+ const master=fs.readFileSync(path.join(__dirname,"../app/PoolMasterSpreadsheet.tsx"),"utf8");
+ assert.ok(master.includes('return {...l,expanded:defaults.expanded,hiddenSegments:defaults.hiddenSegments,'));
+ assert.ok(master.includes('hiddenColumns:defaults.hiddenColumns};'));
+ assert.ok(master.includes('const resetColumnOrder=()=>'));
+});

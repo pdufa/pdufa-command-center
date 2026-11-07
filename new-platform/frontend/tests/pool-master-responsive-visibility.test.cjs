@@ -118,11 +118,11 @@ test("Phase checkboxes and Reset, sort buttons and circled info buttons are wire
  assert.ok(component.includes('Reset Phases'));
  assert.ok(component.includes('togglePoolPhase(selectedPhases,phase'));
  assert.ok(component.includes('onPhasesChange'));
- assert.ok(component.includes('className={css.sortButton} onClick={()=>updateSort(key)}'));
+ assert.ok(component.includes('onClick={()=>updateSort(key)}'));
  assert.ok(component.includes('aria-sort={sortOrder(c.key)}'));
  assert.ok(component.includes('className={css.infoButton} onClick={()=>showInfo(key)}'));
  assert.ok(component.includes('ⓘ'));
- assert.ok(component.includes('current 50-row page'));
+ assert.ok(component.includes('all matching POOL trials'));
  assert.ok(style.includes('.phaseChoices{'));
  assert.ok(style.includes('.infoPanel{'));
  assert.ok(style.includes('.sortButton,.infoButton{'));

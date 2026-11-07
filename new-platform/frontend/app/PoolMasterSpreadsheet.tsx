@@ -2,7 +2,7 @@
 
 import {useEffect,useMemo,useState,type DragEvent} from "react";
 import {POOL_PHASE_OPTIONS,togglePoolPhase,type PoolPhaseSelection,type PoolPhase} from "../lib/pool-phase-options";
-import {sortPoolPage,type PageSortDirection} from "../lib/pool-row-sorting";
+import {POOL_SORT_KEYS,type PoolSortSpec,type PoolSortKey} from "../lib/pool-full-sort";
 import snapshot from "../data/p3PostDataActive.json";
 import css from "./PoolMasterSpreadsheet.module.css";
 import {isGroupVisible,toggleColumnGroup} from "../lib/pool-column-visibility";
@@ -160,9 +160,10 @@ function contentFor(row:PoolMasterRow,key:Key):{text:string;url?:string}{
   case "reviewed":return{text:focus?snapshot.asOf:"Not assessed"};
  }
 }
-export default function PoolMasterSpreadsheet({rows,loading=false,error="",selectedPhases,onPhasesChange,stageCounts}:{rows:PoolMasterRow[];loading?:boolean;error?:string;
+export default function PoolMasterSpreadsheet({rows,loading=false,error="",selectedPhases,onPhasesChange,stageCounts,sort,onSortChange}:{rows:PoolMasterRow[];loading?:boolean;error?:string;
  selectedPhases:PoolPhaseSelection;onPhasesChange:(next:PoolPhaseSelection)=>void;
- stageCounts?:Record<string,{trials:number}>}){
+ stageCounts?:Record<string,{trials:number}>;
+ sort:PoolSortSpec|null;onSortChange:(next:PoolSortSpec|null)=>void}){
  const [view,setView]=useState<View>("desktop");
  const [hydrated,setHydrated]=useState(false);
  const [layouts,setLayouts]=useState<Record<View,Layout>>({
@@ -217,26 +218,15 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
  const [orderEditorOpen,setOrderEditorOpen]=useState(false);
  const [reorderNotice,setReorderNotice]=useState("");
  const [phaseOpen,setPhaseOpen]=useState(false);
- const [sort,setSort]=useState<{key:Key|"ticker"|"company"|"nct";direction:PageSortDirection}|null>(null);
  const [infoKey,setInfoKey]=useState<Key|"ticker"|"company"|"nct"|null>(null);
  const updatePhases=(selection:PoolPhaseSelection)=>onPhasesChange(selection);
  const updateSort=(key:Key|"ticker"|"company"|"nct")=>{
-  setSort(current=>current?.key!==key?{key,direction:"asc"}:
-   current.direction==="asc"?{key,direction:"desc"}:null);
+  if(!POOL_SORT_KEYS.includes(key as PoolSortKey))return;
+  onSortChange(sort?.key!==key?{key:key as PoolSortKey,direction:"asc"}:
+   sort.direction==="asc"?{key:key as PoolSortKey,direction:"desc"}:null);
  };
- const sortValue=(row:PoolMasterRow,key:Key|"ticker"|"company"|"nct"):string|number|null=>{
-  if(key==="ticker")return row.ticker;
-  if(key==="company")return row.company||null;
-  if(key==="nct")return nctOf(row)||null;
-  if(key==="cap"){
-   const nct=nctOf(row),focus=nct?focusByTrial.get(nct+"|"+row.ticker.toUpperCase()):undefined;
-   return focus?.marketCap??row.marketCap??null;
-  }
-  const text=contentFor(row,key).text;
-  return text;
- };
- const sortedRows=useMemo(()=>sort?sortPoolPage(rows,r=>sortValue(r,sort.key),sort.direction):rows,
-  [rows,sort]);
+ // Sorted server-side before pagination, retaining the published source row data.
+ const sortedRows=rows;
  const sortLabel=(key:Key|"ticker"|"company"|"nct")=>sort?.key!==key?"↕":sort.direction==="asc"?"↑":"↓";
  const sortOrder=(key:Key|"ticker"|"company"|"nct")=>sort?.key!==key?"none":sort.direction==="asc"?"ascending":"descending";
  const showInfo=(key:Key|"ticker"|"company"|"nct")=>setInfoKey(previous=>previous===key?null:key);
@@ -289,9 +279,10 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
  const renderHeaderControls=(key:Key|"ticker"|"company"|"nct",label:string)=><span className={css.headerContents}>
   <span className={css.headerLabel}>{label}</span>
   <span className={css.headerButtons}>
-   <button type="button" className={css.sortButton} onClick={()=>updateSort(key)}
-    aria-label={"Sort "+label+" on current page; "+(sort?.key===key?sort.direction:"unsorted")}
-    title="Sort current page: ascending → descending → original">{sortLabel(key)}</button>
+   {POOL_SORT_KEYS.includes(key as PoolSortKey)&&<button type="button" className={css.sortButton}
+    onClick={()=>updateSort(key)}
+    aria-label={"Sort "+label+" across all POOL trials; "+(sort?.key===key?sort.direction:"unsorted")}
+    title="Sort all matching POOL trials: ascending → descending → original">{sortLabel(key)}</button>}
    <button type="button" className={css.infoButton} onClick={()=>showInfo(key)}
     aria-label={"Information about "+label} aria-expanded={infoKey===key}
     aria-controls="pool-column-information" title={"Information: "+label}>ⓘ</button>
@@ -431,14 +422,14 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
   </div>
   <div className={css.summary} role="status">Showing 3 identity columns + {visible.length} of 29 optional columns.
    {" "}Swipe horizontally for additional fields. {reorderNotice}
-   {sort&&" Sorted by "+(sort.key in IDENTITY_INFO?sort.key:COLUMN_LOOKUP.get(sort.key as Key)?.label)+" ("+sort.direction+"), current page only."}
+   {sort&&" Sorted by "+(sort.key in IDENTITY_INFO?sort.key:COLUMN_LOOKUP.get(sort.key as Key)?.label)+" ("+sort.direction+"), all matching POOL trials."}
   </div>
   {infoKey!==null&&<aside id="pool-column-information" className={css.infoPanel} role="note">
    <div><strong>ⓘ {infoKey in IDENTITY_INFO?infoKey==="nct"?"NCT ID":infoKey==="ticker"?"Ticker":"Company":COLUMN_LOOKUP.get(infoKey as Key)?.label}</strong>
     <p>{infoText}</p></div>
    <button type="button" onClick={()=>setInfoKey(null)} aria-label="Close column information">Close</button>
   </aside>}
-  <p className={css.sortScope}>Sort arrows (↕) reorder only the current 50-row page; use another tap for descending and a third to restore original order. Phase checkboxes filter the full POOL before pagination.</p>
+  <p className={css.sortScope}>Sort arrows (↕) sort all matching POOL trials before pagination; use another tap for descending and a third to restore original order. Columns without a sortable source value show only an information button. Phase checkboxes filter the full POOL.</p>
   <div className={css.scroll} role="region" tabIndex={0} aria-label="Scrollable POOL master trial spreadsheet">
    <table className={css.table}>
     <thead><tr>
