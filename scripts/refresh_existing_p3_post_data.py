@@ -25,6 +25,7 @@ from auto_promote_p3_post_data import (
     CAPS, CANDIDATES, NCT, SHEET_ID, SHEET_NAME, TICKER,
     iso_day, link_ok, load_csv, sheets_values,
 )
+from p3_market_cap_secondary import SOURCE as BACKUP_SOURCE, lookup_missing_primary
 
 ROOT = Path(__file__).resolve().parents[1]
 AUDIT = ROOT / "reports/p3_existing_row_refresh_latest.json"
@@ -149,14 +150,18 @@ def curated_fda(catalog, nct, ticker, cutoff, review_date):
     return None, "FDA_NO_NEW_EXACT_NCT_REVIEWED_EVENT"
 
 
-def build_plan(rows, market_rows, catalog, registry, cutoff, checked_at):
-    """Pure, testable plan. registry maps NCT -> JSON payload or exception."""
+def build_plan(rows, market_rows, catalog, registry, cutoff, checked_at,
+               backup_caps=None, backup_errors=None):
+    """Pure plan: exact NCT -> registry; secondary caps only for unavailable primary."""
+    backup_caps = backup_caps or {}
+    backup_errors = backup_errors or {}
     indexed = validate_grid(rows)
     market = cap_index(market_rows)
     data = []
     report = []
     counts = {"trials":len(indexed),"registryChecked":0,"capUpdated":0,
-              "resultsUpdated":0,"fdaUpdated":0,"rowsChanged":0}
+              "backupCapRowsUpdated":0,"resultsUpdated":0,"fdaUpdated":0,
+              "rowsChanged":0}
     today = cutoff.isoformat()
     if catalog.get("schemaVersion") != "pdufa-curated-phase3-announcements-v1":
         raise ValueError("Reviewed FDA catalog schema changed")
@@ -164,13 +169,42 @@ def build_plan(rows, market_rows, catalog, registry, cutoff, checked_at):
         updates = {}
         review = []
         cap, issue = cap_evidence(market.get(ticker),cutoff)
+        backup_used = False
+        # Never mask a VERIFIED Nasdaq out-of-range result with a secondary quote.
+        can_fallback = issue in {"MARKET_CAP_NOT_IN_CURRENT_LEDGER",
+                                 "MARKET_CAP_NOT_VERIFIED", "MARKET_CAP_STALE"}
+        if can_fallback and ticker in backup_caps:
+            candidate = backup_caps[ticker]
+            expected_url = BACKUP_SOURCE.format(ticker=ticker.lower())
+            try:
+                dated = date.fromisoformat(str(candidate[1]))
+                saved = date.fromisoformat(str(val(row,24)))
+                if (candidate[2] == expected_url and
+                        isinstance(candidate[0],int) and
+                        300_000_000 <= candidate[0] <= 10_000_000_000 and
+                        cutoff - timedelta(days=4) <= dated <= cutoff):
+                    if dated < saved:
+                        review.append("BACKUP_MARKET_CAP_OLDER_THAN_SAVED")
+                    else:
+                        cap, issue = candidate, None
+                        backup_used = True
+                else:
+                    review.append("BACKUP_MARKET_CAP_SOURCE_INVALID")
+            except (TypeError, ValueError, IndexError):
+                review.append("BACKUP_MARKET_CAP_SOURCE_INVALID")
         if issue:
             review.append(issue)
+            if ticker in backup_errors:
+                review.append("BACKUP_" + backup_errors[ticker])
         else:
+            changed_cap = False
             for index, new in ((23,cap[0]),(24,cap[1]),(27,cap[2])):
                 if val(row,index) != new:
                     updates[index] = new
+                    changed_cap = True
                     if index==23: counts["capUpdated"] += 1
+            if changed_cap and backup_used:
+                counts["backupCapRowsUpdated"] += 1
         study = registry.get(nct)
         if isinstance(study, Exception):
             review.append("CTGOV_UNAVAILABLE_" + type(study).__name__)
@@ -232,9 +266,13 @@ def build_plan(rows, market_rows, catalog, registry, cutoff, checked_at):
                              "majorDimension":"ROWS","values":[[value]]})
         report.append({"nct":nct,"ticker":ticker,"row":row_no,
                        "updatedColumns":[a1_col(k) for k in sorted(updates)],
+                       "marketCapSourceKind":"SECONDARY_DATED_PUBLISHER_QUOTE" if backup_used
+                         else ("NASDAQ_LEDGER" if not issue else "PRESERVED_NO_VERIFIED_UPDATE"),
                        "review":sorted(set(review))})
     return data, {"asOf":checked_at,"counts":counts,"records":report,
-                  "protectedColumns":"A:C,K:U","source":"Official ClinicalTrials.gov + overnight Nasdaq cap ledger + dated curated FDA evidence"}
+                  "protectedColumns":"A:C,K:U",
+                  "source":"Official ClinicalTrials.gov + Nasdaq cap ledger + dated Stock Analysis fallback + reviewed FDA evidence",
+                  "secondaryLimitations":"Dated publisher quote, rounded to source precision; never a verified exchange-timestamped tick"}
 
 
 def a1_col(zero_index):
@@ -284,7 +322,21 @@ def main():
     with CANDIDATES.open(encoding="utf-8") as f:
         catalog=json.load(f)
     registries=get_registry(indexed)
-    data, report=build_plan(before,load_csv(CAPS),catalog,registries,cutoff,checked_at)
+    market_rows = load_csv(CAPS)
+    market_by_ticker = cap_index(market_rows)
+    missing = {ticker for _, ticker, _ in indexed.values()
+               if cap_evidence(market_by_ticker.get(ticker),cutoff)[1] in {
+                   "MARKET_CAP_NOT_IN_CURRENT_LEDGER", "MARKET_CAP_NOT_VERIFIED",
+                   "MARKET_CAP_STALE"}}
+    backup_caps, backup_errors = lookup_missing_primary(missing,cutoff)
+    data, report=build_plan(before,market_rows,catalog,registries,cutoff,checked_at,
+                            backup_caps=backup_caps,backup_errors=backup_errors)
+    report["secondaryMarketCapCheck"]={
+        "attemptedTickers":sorted(missing),
+        "resolvedTickers":sorted(backup_caps),
+        "failures":backup_errors,
+        "sourcePrecision":"SOURCE_QUOTED_ROUNDED_NOT_EXCHANGE_TIMESTAMPED"
+    }
     # Recheck the entire destination before any write. We do not modify A-C or K-U.
     if sheets_values(auth,"A3:AB600")!=before:
         raise RuntimeError("Google Sheet modified during refresh; no updates written")
@@ -317,7 +369,8 @@ def main():
     AUDIT.parent.mkdir(parents=True,exist_ok=True)
     AUDIT.write_text(json.dumps(report,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
     print(json.dumps({"asOf":report["asOf"],"counts":report["counts"],
-                      "writes":report["writes"],"reviewTrialCount":sum(bool(r["review"]) for r in report["records"]),
+                      "writes":report["writes"],"secondaryMarketCapCheck":report["secondaryMarketCapCheck"],
+                      "reviewTrialCount":sum(bool(r["review"]) for r in report["records"]),
                       "poolModified":False,"raasHistoryModified":False},indent=2))
 
 
