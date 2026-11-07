@@ -357,6 +357,23 @@
       "advantages": []
     },
     {
+      "nctId": "NCT05244304",
+      "ticker": "BLTE",
+      "drug": "Tinlarebant",
+      "indication": "Stargardt Disease 1",
+      "facts": {
+        "magnitude": {
+          "value": "Phase 3 DRAGON NCT05244304: company reports tinlarebant versus placebo reduced growth rate of atrophic retinal lesions measured by DDAF imaging by 35.7%, described as statistically significant. Exact p, 95% CI, follow-up contrast and lesion denominator not supplied in Aug 11, 2026 source.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://belitebio.gcs-web.com/news-releases/news-release-details/belite-bio-announces-us-food-and-drug-administration-acceptance",
+          "sourceDate": "2026-08-11",
+          "method": "Company's Aug 11, 2026 NDA acceptance/priority review release explicitly attributes retinal lesion-growth result to Phase 3 DRAGON; exact NCT05244304 registry matched Tinlarebant/Stargardt Disease 1. This is a reported relative lesion growth effect not independently validated effect or evidence of FDA approval; confidence LOW because the release omits uncertainty and underlying estimates.",
+          "confidence": "LOW"
+        }
+      },
+      "advantages": []
+    },
+    {
       "nctId": "NCT05507203",
       "ticker": "ABVX",
       "drug": "ABX464",
@@ -538,6 +555,56 @@
       "advantages": []
     },
     {
+      "nctId": "NCT06087276",
+      "ticker": "PRAX",
+      "drug": "60 mg ulixacaltamide",
+      "indication": "Essential Tremor",
+      "facts": {
+        "magnitude": {
+          "value": "Essential3 NCT06087276 Study 1, Week-8 mADL11 mean change: ulixacaltamide −4.3 points (modified ITT n=199) versus placebo −1.7 (n=233), company-reported p<0.0001. Difference in group changes approximately −2.6 points; no contrast CI stated in release.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
+          "sourceDate": "2025-10-16",
+          "method": "Source-checked Praxis Oct 16, 2025 Essential3 press release explicitly citing NCT06087276 and Study1/Study2 within single NCT. Verified prespecified primary endpoint mean changes and mITT denominators; calculation −4.3−(−1.7)=−2.6 is arithmetic only, without independent variance or minimal meaningful difference.",
+          "confidence": "MODERATE"
+        },
+        "responseRemission": {
+          "value": "Essential3 NCT06087276 Study 2 randomized withdrawal: maintenance of mADL11 response after 8-week run-in was 55% for patients continuing ulixacaltamide (40/arm) vs 33% switched to placebo (40/arm); odds ratio 2.7 (95% CI 1.06–6.92), p=0.0369.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
+          "sourceDate": "2025-10-16",
+          "method": "Source-reviewed issuer's Study 2 prespecified withdrawal response analysis, exact single NCT06087276 program. Response is in previously stabilized run-in responders, not broad first-use population; no permanent remission claim or FDA approval inference.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT06343779",
+      "ticker": "PHVS",
+      "drug": "Deucrictibant",
+      "indication": "Hereditary Angioedema",
+      "facts": {
+        "timeToResponse": {
+          "value": "RAPIDe-3 (NCT06343779), on-demand attack treatment: deucrictibant IR 20 mg median PGI-C onset of symptom relief 1.28 hours versus >12 hours placebo; p<0.0001. Median end of progression 17.47 versus 228.67 minutes; p<0.0001.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-positive-topline-data-rapide-3-pivotal-study",
+          "sourceDate": "2025-12-03",
+          "method": "Source review of Pharvaris 2025-12-03 pivotal RAPIDe-3 release naming exact NCT and drug. Registered Phase 3 on-demand cross-over program; time-to-relief and end-of-progression median estimates, comparator and p values quoted as company reported. Full time-to-event confidence intervals/censoring not provided in release.",
+          "confidence": "MODERATE"
+        },
+        "clinicalBenefit": {
+          "value": "RAPIDe-3 NCT06343779: median complete HAE attack symptom resolution 11.95 hours with oral deucrictibant IR vs >24 hours placebo (p<0.0001). Trial enrolled 134 participants; source also reports 93.2% of drug-treated attacks required no rescue medication.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-positive-topline-data-rapide-3-pivotal-study",
+          "sourceDate": "2025-12-03",
+          "method": "Reconciled issuer trial-specific RAPIDe-3 HAE on-demand symptom endpoint and study size with exact ClinicalTrials.gov NCT. Describes reported outcome, not superiority over approved active treatments; censoring, comparable denominator and clinical relevance review remain.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
       "nctId": "NCT06411379",
       "ticker": "MLTX",
       "drug": "Sonelokimab",
@@ -616,6 +683,31 @@
           "sourceUrl": "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
           "sourceDate": "2026-09-22",
           "method": "Crosschecked exact EMBARQ trial ID against official ClinicalTrials.gov protocol and issuer's two-trial, dose-stratified September 22, 2026 endpoint table. Verified that the issuer reported these measurements, NOT independently validated trial efficacy, regulatory probability, longitudinal durability or safety advantage. Week 24 proportions are not proof of individual durable response.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT06669754",
+      "ticker": "PHVS",
+      "drug": "Deucrictibant",
+      "indication": "Hereditary Angioedema (HAE)",
+      "facts": {
+        "magnitude": {
+          "value": "CHAPTER-3 NCT06669754, deucrictibant XR 40mg once daily versus placebo for HAE prophylaxis: company-reported 83% relative reduction in mean monthly attack rate across all HAE types, p<0.0001, over 24 weeks (55 active/30 placebo). In 80 HAE types 1/2 participants, 87% relative reduction reported; CI not supplied.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-positive-topline-data-chapter-3-pivotal?trk=article-ssr-frontend-pulse_little-text-block",
+          "sourceDate": "2026-09-08",
+          "method": "Source-checked Sept 8, 2026 Pharvaris CHAPTER-3 release explicitly identifying NCT06669754; registry drug and indication match. The 83% comparative reduction is relative, not an absolute attack difference; no source CI/attack rates, so rating and independent efficacy appraisal are withheld.",
+          "confidence": "MODERATE"
+        },
+        "clinicalBenefit": {
+          "value": "CHAPTER-3 Phase 3 prophylaxis: primary monthly HAE attack-rate endpoint reportedly met, 83% lower with deucrictibant XR 40mg daily than placebo at 24 weeks (p<0.0001), 85 randomized (55/30). Relative reduction 87% among 80 HAE1/2 subgroup participants; no CI stated.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-positive-topline-data-chapter-3-pivotal?trk=article-ssr-frontend-pulse_little-text-block",
+          "sourceDate": "2026-09-08",
+          "method": "Issuer-reported exact CHAPTER-3 NCT06669754 primary outcome and subgroup split from Sept 8, 2026 release; no independent clinical benefit scoring or FDA determination. Study evaluates chronic prevention, not RAPIDe-3 rescue capsule.",
           "confidence": "MODERATE"
         }
       },
