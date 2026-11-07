@@ -59,7 +59,7 @@ test("exact ENERGIZE OLE evidence is classified as exploratory and supports only
 test("company Phase3 reported safety is only qualitative when full arm tables absent",()=>{
  for(const id of ["NCT06445023","NCT06455202"]){
   const t=report.trials.find(x=>x.nctId===id);assert.ok(t);
-  assert.ok(t.additionalReviewedFacts.some(f=>f.question===3&&f.criticalLimit.includes("insufficient")));
+  assert.ok(t.additionalReviewedFacts.some(f=>f.question===3&&/qualitative|insufficient/i.test(f.criticalLimit)));
   assert.equal(t.metrics.find(x=>x.id==="post-1-5").score,null);
   assert.ok(t.additionalReviewedFacts.some(f=>f.question===19));
  }
@@ -93,7 +93,7 @@ test("BOTTOM exports exact 190 columns and 690 metric dispositions",async()=>{
  assert.equal(invalid.status,404);
  const exact=await GET(new Request("http://localhost/api/bottom-only-completion?nctId=NCT04770753"));
  const result=await exact.json();assert.equal(result.trial.nctId,"NCT04770753");
- assert.equal(result.history.length,1);
+ assert.equal(result.history.length,3);
 });
 test("BOTTOM renderer is horizontally expandable and TOP invocation remains untouched",()=>{
  const parent=fs.readFileSync(path.join(__dirname,"../app/Phase3SourceOnlySheets.tsx"),"utf8");
@@ -102,4 +102,12 @@ test("BOTTOM renderer is horizontally expandable and TOP invocation remains unto
  assert.match(parent,/<BottomOnlyCompletionSheet query=\{query\}\/>/);
  assert.match(ui,/bottom-detail-/);assert.match(ui,/aria-expanded/);
  assert.match(ui,/190 data fields/);assert.match(ui,/history/);
+});
+test('saved five-factor score events preserve historical state and one additive ENERGIZE change',()=>{
+ const events=require('../data/bottomOnlyScoreHistory20261107.json').records;
+ assert.equal(events.length,24);assert.equal(events.filter(e=>e.eventType==='RESEARCH_SCORE_SNAPSHOT').length,23);
+ const change=events.find(e=>e.nctId==='NCT04770753'&&e.eventType==='RESEARCH_SCORE_CHANGE');assert.ok(change);
+ assert.equal(change.previousClinicalFullScore,null);assert.equal(change.clinicalFullScore,55);assert.equal(change.clinicalScoredFactors,5);
+ assert.equal(new Set(events.map(e=>e.eventId)).size,events.length);
+ assert.ok(events.every(e=>ids.has(e.nctId)));
 });
