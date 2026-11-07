@@ -8,8 +8,8 @@ const top=require("../data/raas-retrospective-top-cases.json");
 const calibrations=require("../data/raas-approved-calibrations.json");
 const reviewed=require("../data/raas-historical-cases.json");
 const legacy=require("../data/raas-fda-three-way-accuracy-site-snapshot.json");
-test("TOP accuracy button is directly below TOP-RAAS header and BOTTOM header stays unchanged",()=>{
- assert.match(source,/<th scope="col" title="Proposed phase-specific risk-adjusted appreciation score; grade not yet validated">\{bucket==="pre"\?<><span>TOP-RAAS<\/span><TopRaasAccuracyButton\/><\/>:<span>BOTTOM-RAAS<\/span>\}<\/th>/);
+test("TOP accuracy button is directly below TOP-RAAS header and FOCUS header stays distinct",()=>{
+ assert.match(source,/<th scope="col" title="Proposed phase-specific risk-adjusted appreciation score; grade not yet validated">\{bucket==="pre"\?<><span>TOP-RAAS<\/span><TopRaasAccuracyButton\/><\/>:<span>FOCUS-RAAS<\/span>\}<\/th>/);
  assert.equal(source.split("<TopRaasAccuracyButton/>").length-1,1);
  assert.match(source,/data-raas-top-survey-accuracy="UNVERIFIED"/);
  assert.match(source,/data-raas-accuracy-scope="TOP_ONLY_NOT_LEGACY_COMBINED"/);

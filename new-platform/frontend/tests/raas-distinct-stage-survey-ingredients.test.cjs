@@ -30,12 +30,12 @@ test("active stage survey shows exactly five clinical specifications, preserving
  assert.equal(sheet.split("<StageSurveyIngredients bucket={bucket}/>").length-1,2);
  assert.match(sheet,/data-raas-stage-survey-ingredients=\{bucket\}/);
  assert.match(sheet,/TOP · before Phase 3 results/);
- assert.match(sheet,/BOTTOM · after Phase 3 results/);
+ assert.match(sheet,/FOCUS · after Phase 3 results/);
  assert.match(sheet,/f\.requiredEvidence/);
  assert.match(sheet,/f\.scoreRule/);
  assert.match(sheet,/f\.criticalRisk/);
  assert.match(sheet,/TOP Surveys/);
- assert.match(sheet,/BOTTOM Surveys/);
+ assert.match(sheet,/FOCUS Surveys/);
 });
 
 test("five clinical sections expand horizontally while historical general survey remains distinct",()=>{

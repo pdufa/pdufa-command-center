@@ -89,7 +89,7 @@ test("TOP and BOTTOM sorting resets independently to the default Ticker A–Z",(
  const reset=/const resetSorting=\(\)=>\{\s*setSort\("ticker"\);\s*setDesc\(false\);\s*\};/;
  assert.match(src,reset);
  assert.match(src,/onClick=\{resetSorting\} disabled=\{sort==="ticker"&&!desc\}/);
- assert.match(src,/aria-label=\{pre\?"Reset TOP spreadsheet sorting to Ticker A to Z":"Reset BOTTOM spreadsheet sorting to Ticker A to Z"\}/);
+ assert.match(src,/aria-label=\{pre\?"Reset TOP spreadsheet sorting to Ticker A to Z":"Reset FOCUS spreadsheet sorting to Ticker A to Z"\}/);
  assert.equal(src.split('↺ Reset Sorting').length-1,1);
  // A separate Spreadsheet instance holds a distinct sort/direction pair for each bucket.
  assert.match(src,/<Spreadsheet bucket="pre"/);
