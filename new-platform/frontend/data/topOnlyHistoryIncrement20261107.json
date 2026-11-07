@@ -97,18 +97,13 @@
         }
       ],
       "change": {
-        "previousVerifiedQuestions": [
-          4,
-          19,
-          28
-        ],
-        "newVerifiedQuestions": [
-          4,
-          19,
-          28
-        ],
         "scoreChanged": false,
-        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1841387/000119312526386561/d738484dex991.htm"
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1841387/000119312526386561/d738484dex991.htm",
+        "newlyVerifiedQuestions": [
+          4,
+          19,
+          28
+        ]
       }
     },
     {
