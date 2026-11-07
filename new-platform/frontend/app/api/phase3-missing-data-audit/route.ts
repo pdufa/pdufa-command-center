@@ -1,6 +1,7 @@
 import discoveryAvenues from "../../../data/phase3DiscoveryAvenues20261106.json";
 import agiosEvidence from "../../../data/agiosPhase3Evidence20261106.json";
 import ionisEvidence from "../../../data/ionisPhase3Evidence20261106.json";
+import sixReadoutEvidence from "../../../data/phase3SixNewReadoutFacts20261106.json";
 import {activePhase3Cohorts} from "../../../lib/phase3-active-cohorts";
 import {activeOfficialRegistryRecord,activeOfficialRegistryIntegrity} from "../../../lib/phase3-active-official-registry";
 import {phase3PeerReviewedFact,phase3PeerEvidenceIntegrity,phase3RegistryBinaryFact} from "../../../lib/phase3-source-fact-enrichment";
@@ -22,6 +23,7 @@ export const dynamic="force-dynamic";
 const endpointByNct=new Map(adjudications.records.map(x=>[x.nctId,x] as const));
 const agiosFacts=new Map(agiosEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
 const ionisFacts=new Map(ionisEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
+const sixFacts=new Map(sixReadoutEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
 const investorByNct=new Map(investorRelationsEvidence.records.map(x=>[x.nctId,x] as const));
 const registryByNct=new Map(registryCrosswalk.records.map(x=>[x.nctId,x] as const));
 const preDataByNct=new Map(preData.trials.map(x=>[x.nctId,x] as const));
@@ -55,6 +57,7 @@ function statusFor(
  if(researched)return researched.classification;
  if(agiosFacts.has(r.nctId+"#"+q.number))return "SOURCE_FACT_ONLY";
  if(ionisFacts.has(r.nctId+"#"+q.number))return "SOURCE_FACT_ONLY";
+ if(sixFacts.has(r.nctId+"#"+q.number))return "SOURCE_FACT_ONLY";
  if(phase3PeerReviewedFact(r.nctId,q.number))return "SOURCE_FACT_ONLY";
  const ir=investorByNct.get(r.nctId);
  if(q.number===30&&ir?.regulatoryEvidenceStatus&&ir.regulatoryEvidenceUrl)return "SOURCE_FACT_ONLY";
@@ -124,6 +127,7 @@ export async function GET(request:Request){
     registryCrosswalk.records.length!==762||registryByNct.size!==762||
     agiosEvidence.trials.length!==9||agiosFacts.size!==agiosEvidence.facts.length||
     ionisEvidence.trials.length!==12||ionisFacts.size!==ionisEvidence.facts.length||
+    sixReadoutEvidence.facts.length!==26||sixFacts.size!==26||
     (!activeOfficialRegistryIntegrity(new Set([...activePhase3Cohorts.pre,...activePhase3Cohorts.post].map(r=>r.nctId)))||
     !phase3PeerEvidenceIntegrity(new Set([...activePhase3Cohorts.pre,...activePhase3Cohorts.post].map(r=>r.nctId))))){
    return Response.json({error:"The research snapshot failed a count/identity check"},{status:503});
