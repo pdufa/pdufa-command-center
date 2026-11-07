@@ -21,6 +21,11 @@ test("MAIN status page reports dated release proof without promoting old install
   assert.match(html,/November 7, 2026/);
   assert.match(html,/87654a48/);
   assert.match(html,/Production deployment: READY/);
+  assert.match(html,/Verified production runtime smoke/);
+  assert.match(html,/42394008611/);
+  assert.match(html,/2,698 of 11,644/);
+  assert.match(html,/<strong>not<\/strong> 2,698 completed/);
+  assert.match(html,/not.*complete technical acceptance/);
   assert.match(html,/1 of 31/);
   assert.match(html,/Current 31-gate scope · POOL \/ FOCUS \/ TOOLS/);
   assert.match(html,/pool-focus\.exact-handoff/);

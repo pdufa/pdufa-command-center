@@ -65,7 +65,7 @@ export default function MainStatus(){
       POOL is the complete research inventory; FOCUS is the screened post-Phase-3 population.
       Retired research groups remain outside the active workflow; archival records are preserved separately.</p>
     <section style={{...card,margin:"18px 0"}} aria-label="Dated release verification">
-      <h2 style={{marginTop:0}}>Latest release evidence · {release.date}</h2>
+      <h2 style={{marginTop:0}}>Verified release snapshot · {release.date}</h2>
       <p><strong>Production deployment: READY.</strong> The associated main-branch commit is{" "}
         <code>{release.commit.slice(0,8)}</code>. On that commit, the Command Center CI
         (including backend regressions, Next.js typecheck/tests/build, backup integrity,
@@ -79,6 +79,25 @@ export default function MainStatus(){
         <a href={release.wt} target="_blank" rel="noopener noreferrer">WT UI checks</a>
         <a href={release.deployment} target="_blank" rel="noopener noreferrer">Production deployment</a>
       </div>
+    </section>
+    <section style={{...card,margin:"16px 0"}} aria-label="Authenticated production runtime smoke evidence">
+      <h2 style={{marginTop:0}}>Verified production runtime smoke · November 7, 2026</h2>
+      <p><strong>PASS — live production checks.</strong> The separately executed installation smoke
+        passed public page checks, anonymous API isolation, normal dashboard login,
+        backend and PostgreSQL health, POOL versus historical Phase 3 queue reconciliation,
+        and independent TOOLS Phase / FDA designation intersection counts.</p>
+      <p>The all-phase $300M–$10B dated market-cap screen reconciled
+        <strong> 2,698 of 11,644</strong> source clinical trial records:
+        115 lacked verified cap data, 8,830 were outside the cap range, and 1 trial
+        was excluded by the listing screen. These are <strong>not</strong> 2,698 completed
+        Phase 3 programs or a certified FOCUS population. The original-source
+        issuer listing, licensing rights, pivotal readout and FDA application dates
+        still require independent eligibility review.</p>
+      <p style={fine}>This is a time-specific read-only runtime probe and not
+        complete technical acceptance, a passed backup restore, a new trial promotion,
+        or validated FDA prediction accuracy.</p>
+      <a href="https://github.com/pdufa/pdufa-command-center/actions/runs/42394008611"
+        target="_blank" rel="noopener noreferrer">Inspect successful production smoke run and exact log evidence</a>
     </section>
     <div style={grid} aria-label="Separate evidence gates">
       <Status name="MAIN · technical acceptance"
