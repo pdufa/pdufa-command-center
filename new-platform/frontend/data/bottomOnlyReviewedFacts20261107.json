@@ -299,6 +299,177 @@
       "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38048786/",
       "evidence": "IMerge grade 3-4 TEAEs 107/118 (91%) imetelstat vs 28/59 (47%) placebo; neutropenia 68% vs 3%, thrombocytopenia 62% vs 8%.",
       "criticalLimit": "High hematologic toxicity burden must be explicitly evaluated despite primary efficacy success."
+    },
+    {
+      "nctId": "NCT04768972",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-09-22",
+      "sourceUrl": "https://ionispharmaceuticalsinc.gcs-web.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+      "evidence": "FUSION NCT04768972: sponsor reports primary joint rank of survival, rescue and ALSFRS-R change to day 505 statistically significant for ulefnersen versus placebo (p=0.0005).",
+      "criticalLimit": "Complex composite primary; full component effects, subgroup confidence intervals and sensitivity analyses needed before numerical clinical rating."
+    },
+    {
+      "nctId": "NCT04768972",
+      "question": 3,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-09-22",
+      "sourceUrl": "https://ionispharmaceuticalsinc.gcs-web.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+      "evidence": "FUSION sponsor describes most adverse events as mild or moderate and treatment as favorably tolerated.",
+      "criticalLimit": "No full arm-level AE/SAE and discontinuation table is available in this topline description; safety grade remains missing."
+    },
+    {
+      "nctId": "NCT04849741",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-09-03",
+      "sourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+      "evidence": "FDA cites randomized NCT04849741 with 49 patients age 2 and older supporting zilganersen: improved walking speed at 61 weeks among assessable participants aged at least five, and improvement on pediatric gross-motor scales among ages 2–4.",
+      "criticalLimit": "The age groups use different clinical endpoints; youngest under-2 efficacy relies on pharmacokinetic extrapolation, not concurrent randomized efficacy."
+    },
+    {
+      "nctId": "NCT04849741",
+      "question": 3,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-09-03",
+      "sourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+      "evidence": "FDA lists vomiting, back pain, cough, headache and post-lumbar-puncture syndrome as common side effects and notes aseptic meningitis risk.",
+      "criticalLimit": "FDA label warning should be evaluated; no generic safety success based solely on approval."
+    },
+    {
+      "nctId": "NCT04849741",
+      "question": 28,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-09-03",
+      "sourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+      "evidence": "FDA approved Zanvastro (zilganersen) for Alexander disease on September 3, 2026, with NCT04849741 among supporting studies.",
+      "criticalLimit": "Confirmed current FDA regulatory outcome, not an FDA approval probability for another drug."
+    },
+    {
+      "nctId": "NCT05392114",
+      "question": 4,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-03",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+      "evidence": "OASISplus NCT05392114 extension: 83 patients received donidalorsen Q4W or Q8W; 75/83 (90.4%) completed year one. Mean attack rates fell 94% and 95% from parent OASIS-HAE baseline under open-label extension.",
+      "criticalLimit": "Open-label continuation and selected rollover participants are not independent randomized replication; parent trial NCT differs."
+    },
+    {
+      "nctId": "NCT05392114",
+      "question": 3,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-03",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+      "evidence": "At one-year OASISplus, 22/83 (27%) patients reported treatment-related adverse events; none serious; injection-site reactions most frequent.",
+      "criticalLimit": "Open-label extension; cannot infer placebo-controlled long-term comparative risk."
+    },
+    {
+      "nctId": "NCT05210790",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-10",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42868322/",
+      "evidence": "VERIFY NCT05210790: 113/147 (77%) rusfertide versus 48/146 (33%) placebo achieved no-phlebotomy-eligibility clinical response in weeks 20–32, p<0.0001.",
+      "criticalLimit": "Current randomized result; interpret composite response definition and intercurrent events before assigning research rating."
+    },
+    {
+      "nctId": "NCT05210790",
+      "question": 2,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-10",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42868322/",
+      "evidence": "VERIFY patient-relevant effects: mean phlebotomies 0.5 versus 1.8 over double-blind observation; hematocrit below 45% in 63% versus 14%; PROMIS fatigue improved vs placebo (p=0.0252).",
+      "criticalLimit": "These are secondary endpoints and patient-reported outcomes; active treatment and background care context matter."
+    },
+    {
+      "nctId": "NCT05210790",
+      "question": 14,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-10",
+      "sourceUrl": "https://ascopubs.org/doi/full/10.1200/JCO-26-00992",
+      "evidence": "VERIFY publication describes fixed-sequence multiplicity control across primary/key secondaries; delta-adjusted multiple imputation sensitivity analyses confirmed robustness.",
+      "criticalLimit": "Published design and sensitivity narrative are evidence, but numerical score requires verifying the exact prespecified model, missingness and clinical effect thresholds."
+    },
+    {
+      "nctId": "NCT05774756",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-07-08",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42418774/",
+      "evidence": "TRANSCEND NCT05774756 randomized 120 participants: at Week 52 least-squares BMI change -16.5% with setmelanotide vs +3.3% placebo, p<0.001.",
+      "criticalLimit": "BMI change is observed; age-mixed groups and clinical risks must be considered for benefit rating."
+    },
+    {
+      "nctId": "NCT05774756",
+      "question": 2,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-07-08",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42418774/",
+      "evidence": "TRANSCEND hunger score change -2.73 setmelanotide vs -1.45 placebo, p=0.009, in eligible participants at least 12 years old.",
+      "criticalLimit": "Patient-reported symptom benefit differs by age and subgroup; clinical meaningfulness must be assessed."
+    },
+    {
+      "nctId": "NCT05774756",
+      "question": 3,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-07-08",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42418774/",
+      "evidence": "TRANSCEND any adverse events 100% on setmelanotide vs 90% placebo; serious adverse events 28% vs 8%, with skin hyperpigmentation, nausea, vomiting and headache commonly reported.",
+      "criticalLimit": "Safety imbalance should count in overall research assessment; not automatically outweighed by positive BMI endpoint."
+    },
+    {
+      "nctId": "NCT04544293",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2024-06-26",
+      "sourceUrl": "https://investors.savarapharma.com/news/news-details/2024/Savara-Announces-Molgramostim-Nebulizer-Solution-Molgramostim-Achieved-Statistical-Significance-for-Primary-Endpoint-and-Multiple-Secondary-Endpoints-in-IMPALA-2-a-Pivotal-Phase-3-Clinical-Trial-in-Autoimmune-Pulmonary-Alveolar--06-26-2024/default.aspx",
+      "evidence": "IMPALA-2 NCT04544293: sponsor reports statistically significant Week-24 DLCO percent predicted improvement for inhaled molgramostim versus placebo, sustained at Week 48.",
+      "criticalLimit": "Issuer topline does not substitute for the precise adjusted between-arm effect estimate, confidence interval and SAP."
+    },
+    {
+      "nctId": "NCT04544293",
+      "question": 2,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2024-06-26",
+      "sourceUrl": "https://investors.savarapharma.com/news/news-details/2024/Savara-Announces-Molgramostim-Nebulizer-Solution-Molgramostim-Achieved-Statistical-Significance-for-Primary-Endpoint-and-Multiple-Secondary-Endpoints-in-IMPALA-2-a-Pivotal-Phase-3-Clinical-Trial-in-Autoimmune-Pulmonary-Alveolar--06-26-2024/default.aspx",
+      "evidence": "IMPALA-2 sponsor reports significant Week-24 St. George's Respiratory Questionnaire total score and nominally significant activity and treadmill exercise outcomes.",
+      "criticalLimit": "Patient-reported and functional outcomes must be distinguished from nominal secondary p-values and controlled multiplicity."
+    },
+    {
+      "nctId": "NCT05243550",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-04",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41880645/",
+      "evidence": "ENVISION NCT05243550 single-arm Phase 3 in recurrent LG-IR-NMIBC: at three months 191/240 (80%; 95% CI 74–85) achieved complete response to UGN-102.",
+      "criticalLimit": "Single-arm design; do not attribute randomized superiority or mix this study with controlled ATLAS."
+    },
+    {
+      "nctId": "NCT05243550",
+      "question": 4,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-04",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41880645/",
+      "evidence": "Among ENVISION 3-month complete responders, estimated probability of remaining event-free 24 months after CR was 72% (95% CI 64–79).",
+      "criticalLimit": "Responder-only time-to-event estimate with loss to follow-up and selection; not a controlled durability comparison."
+    },
+    {
+      "nctId": "NCT04716231",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-03",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41196369/",
+      "evidence": "ORIGIN3 prespecified interim NCT04716231: 203 patients; Week-36 proteinuria reduction 45.7% atacicept vs 6.8% placebo, geometric mean between-arm difference 41.8 percentage points (95% CI 28.9–52.3), p<0.001.",
+      "criticalLimit": "Prespecified interim surrogate proteinuria result; final kidney function and clinical outcome data remain separate."
+    },
+    {
+      "nctId": "NCT04716231",
+      "question": 3,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-03",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41196369/",
+      "evidence": "ORIGIN3 interim adverse events reported in 59.3% atacicept versus 50.0% placebo; most mild/moderate.",
+      "criticalLimit": "Interim safety observation does not establish all long-term infection and renal outcomes; no numerical safety grade inferred."
     }
   ]
 }
