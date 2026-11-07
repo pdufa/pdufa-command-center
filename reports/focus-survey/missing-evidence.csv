@@ -157,7 +157,6 @@ NCT05811247,APMD,Apnimed,2,Unmet Medical Need,standardOfCare,Current Standard of
 NCT05811247,APMD,Apnimed,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,11,No source-validated ingredient answer,,,0
 NCT05811247,APMD,Apnimed,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,11,No source-validated ingredient answer,,,0
 NCT05811247,APMD,Apnimed,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,11,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05811247,registry.reportedOutcomeMeasures,1
-NCT05811247,APMD,Apnimed,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,11,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05811247,registry.reportedOutcomeMeasures,1
 NCT05811247,APMD,Apnimed,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,11,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05811247,registry.reportedOutcomeMeasures,1
 NCT05811247,APMD,Apnimed,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,11,No source-validated ingredient answer,,,0
 NCT05811247,APMD,Apnimed,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,11,No source-validated ingredient answer,,,0
@@ -195,7 +194,6 @@ NCT05813275,APMD,Apnimed,2,Unmet Medical Need,standardOfCare,Current Standard of
 NCT05813275,APMD,Apnimed,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,14,No source-validated ingredient answer,,,0
 NCT05813275,APMD,Apnimed,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,14,No source-validated ingredient answer,,,0
 NCT05813275,APMD,Apnimed,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,14,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05813275,registry.reportedOutcomeMeasures,1
-NCT05813275,APMD,Apnimed,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,14,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05813275,registry.reportedOutcomeMeasures,1
 NCT05813275,APMD,Apnimed,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,14,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05813275,registry.reportedOutcomeMeasures,1
 NCT05813275,APMD,Apnimed,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,14,No source-validated ingredient answer,,,0
 NCT05813275,APMD,Apnimed,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,14,No source-validated ingredient answer,,,0
@@ -955,7 +953,6 @@ NCT04544293,SVRA,Savara Inc.,2,Unmet Medical Need,standardOfCare,Current Standar
 NCT04544293,SVRA,Savara Inc.,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,4,No source-validated ingredient answer,,,0
 NCT04544293,SVRA,Savara Inc.,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,4,No source-validated ingredient answer,,,0
 NCT04544293,SVRA,Savara Inc.,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,4,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04544293,registry.reportedOutcomeMeasures,14
-NCT04544293,SVRA,Savara Inc.,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,4,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04544293,registry.reportedOutcomeMeasures,14
 NCT04544293,SVRA,Savara Inc.,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,4,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04544293,registry.reportedOutcomeMeasures,14
 NCT04544293,SVRA,Savara Inc.,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,4,No source-validated ingredient answer,,,0
 NCT04544293,SVRA,Savara Inc.,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,4,No source-validated ingredient answer,,,0

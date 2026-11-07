@@ -5148,20 +5148,20 @@
       "drugIndicationIdentityStatus": "CANDIDATE_FROM_REGISTRY_CONFIRM_PRODUCT_RIGHTS",
       "ingredientId": "magnitude",
       "ingredientName": "Magnitude of Clinical Improvement",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "missingEvidenceRequirement": "Matched effect sizes, units, follow-up and confidence intervals.",
       "nctId": "NCT05811247",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 0,
       "recommendedSource": "https://clinicaltrials.gov/study/NCT05811247",
       "registryIndications": [
         "OSA"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "PRIMARY_SOURCE_INTERPRETATION_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "AD109 versus placebo, primary AHI change over 6 months (treatment-policy estimand): LS mean difference -4.08 events/hour; 95% CI -6.14 to -2.03; p<0.001.",
       "sourcePacketHash": "d19e3d1f41f88d0095af458e8cb2e6cde860e73d82a6e96c428db961ef34ed3a",
       "sourceUrls": [
         "https://clinicaltrials.gov/study/NCT05811247"
@@ -6378,20 +6378,20 @@
       "drugIndicationIdentityStatus": "CANDIDATE_FROM_REGISTRY_CONFIRM_PRODUCT_RIGHTS",
       "ingredientId": "magnitude",
       "ingredientName": "Magnitude of Clinical Improvement",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "missingEvidenceRequirement": "Matched effect sizes, units, follow-up and confidence intervals.",
       "nctId": "NCT05813275",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 0,
       "recommendedSource": "https://clinicaltrials.gov/study/NCT05813275",
       "registryIndications": [
         "OSA"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "PRIMARY_SOURCE_INTERPRETATION_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "AD109 versus placebo, primary AHI change over 6 months (treatment-policy estimand): LS mean difference -3.99 events/hour; 95% CI -6.40 to -1.59; p=0.001.",
       "sourcePacketHash": "1bf76916d0cb26cc86a0e734895f8b44ebbda053842265dc064002b70d7665fa",
       "sourceUrls": [
         "https://clinicaltrials.gov/study/NCT05813275"
@@ -32022,20 +32022,20 @@
       "drugIndicationIdentityStatus": "CANDIDATE_FROM_REGISTRY_CONFIRM_PRODUCT_RIGHTS",
       "ingredientId": "magnitude",
       "ingredientName": "Magnitude of Clinical Improvement",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "missingEvidenceRequirement": "Matched effect sizes, units, follow-up and confidence intervals.",
       "nctId": "NCT04544293",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 0,
       "recommendedSource": "https://clinicaltrials.gov/study/NCT04544293",
       "registryIndications": [
         "Autoimmune Pulmonary Alveolar Proteinosis"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "PRIMARY_SOURCE_INTERPRETATION_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "Molgramostim versus placebo, primary change in hemoglobin-adjusted percent-predicted DLCO at Week 24: net mean difference +6.0 percentage points; 95% CI 2.5 to 9.4; p=0.0007.",
       "sourcePacketHash": "40e2047783b271e5cd52508b2194a6b622c956d8a74abdde4a52ff3aa96a4c42",
       "sourceUrls": [
         "https://clinicaltrials.gov/study/NCT04544293"

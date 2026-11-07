@@ -2992,7 +2992,7 @@
       "ingredientName": "Magnitude of Clinical Improvement",
       "nctId": "NCT05811247",
       "publicationLeads": 11,
-      "reason": "Source lead needs clinical review",
+      "reason": null,
       "registryLeads": [
         {
           "count": 1,
@@ -3003,10 +3003,10 @@
           "url": "https://clinicaltrials.gov/study/NCT05811247"
         }
       ],
-      "reviewedSourceDate": null,
-      "reviewedSourceUrl": null,
-      "reviewedValue": null,
-      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "reviewedSourceDate": "2026-11-03",
+      "reviewedSourceUrl": "https://clinicaltrials.gov/study/NCT05811247",
+      "reviewedValue": "AD109 versus placebo, primary AHI change over 6 months (treatment-policy estimand): LS mean difference -4.08 events/hour; 95% CI -6.14 to -2.03; p<0.001.",
+      "status": "VERIFIED",
       "surveyName": "Clinical Benefit",
       "surveyNumber": 3,
       "ticker": "APMD"
@@ -3701,7 +3701,7 @@
       "ingredientName": "Magnitude of Clinical Improvement",
       "nctId": "NCT05813275",
       "publicationLeads": 14,
-      "reason": "Source lead needs clinical review",
+      "reason": null,
       "registryLeads": [
         {
           "count": 1,
@@ -3712,10 +3712,10 @@
           "url": "https://clinicaltrials.gov/study/NCT05813275"
         }
       ],
-      "reviewedSourceDate": null,
-      "reviewedSourceUrl": null,
-      "reviewedValue": null,
-      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "reviewedSourceDate": "2026-09-11",
+      "reviewedSourceUrl": "https://clinicaltrials.gov/study/NCT05813275",
+      "reviewedValue": "AD109 versus placebo, primary AHI change over 6 months (treatment-policy estimand): LS mean difference -3.99 events/hour; 95% CI -6.40 to -1.59; p=0.001.",
+      "status": "VERIFIED",
       "surveyName": "Clinical Benefit",
       "surveyNumber": 3,
       "ticker": "APMD"
@@ -17197,7 +17197,7 @@
       "ingredientName": "Magnitude of Clinical Improvement",
       "nctId": "NCT04544293",
       "publicationLeads": 4,
-      "reason": "Source lead needs clinical review",
+      "reason": null,
       "registryLeads": [
         {
           "count": 14,
@@ -17208,10 +17208,10 @@
           "url": "https://clinicaltrials.gov/study/NCT04544293"
         }
       ],
-      "reviewedSourceDate": null,
-      "reviewedSourceUrl": null,
-      "reviewedValue": null,
-      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "reviewedSourceDate": "2025-08-07",
+      "reviewedSourceUrl": "https://clinicaltrials.gov/study/NCT04544293",
+      "reviewedValue": "Molgramostim versus placebo, primary change in hemoglobin-adjusted percent-predicted DLCO at Week 24: net mean difference +6.0 percentage points; 95% CI 2.5 to 9.4; p=0.0007.",
+      "status": "VERIFIED",
       "surveyName": "Clinical Benefit",
       "surveyNumber": 3,
       "ticker": "SVRA"

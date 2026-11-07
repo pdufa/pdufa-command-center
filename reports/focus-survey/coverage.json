@@ -17,12 +17,12 @@
       "verified": 0
     },
     {
-      "capturedNeedsReview": 42,
+      "capturedNeedsReview": 39,
       "missing": 132,
       "name": "Clinical Benefit",
       "slots": 174,
       "surveyNumber": 3,
-      "verified": 0
+      "verified": 3
     },
     {
       "capturedNeedsReview": 0,
@@ -199,22 +199,22 @@
       "verified": 0
     },
     {
-      "capturedNeedsReview": 7,
+      "capturedNeedsReview": 6,
       "literatureLeads": 11,
       "missing": 31,
       "nctId": "NCT05811247",
       "registryRetrieved": true,
       "ticker": "APMD",
-      "verified": 0
+      "verified": 1
     },
     {
-      "capturedNeedsReview": 7,
+      "capturedNeedsReview": 6,
       "literatureLeads": 14,
       "missing": 31,
       "nctId": "NCT05813275",
       "registryRetrieved": true,
       "ticker": "APMD",
-      "verified": 0
+      "verified": 1
     },
     {
       "capturedNeedsReview": 2,
@@ -388,13 +388,13 @@
       "verified": 0
     },
     {
-      "capturedNeedsReview": 7,
+      "capturedNeedsReview": 6,
       "literatureLeads": 4,
       "missing": 31,
       "nctId": "NCT04544293",
       "registryRetrieved": true,
       "ticker": "SVRA",
-      "verified": 0
+      "verified": 1
     },
     {
       "capturedNeedsReview": 8,
@@ -425,10 +425,10 @@
     }
   ],
   "focusTrials": 29,
-  "generatedAt": "2026-11-07T19:37:30+00:00",
+  "generatedAt": "2026-11-07T19:45:05+00:00",
   "googleSheetsSync": "SUCCESS",
   "ingredientSlots": 1102,
-  "leadCapturePercent": 11.52,
+  "leadCapturePercent": 11.25,
   "literatureLeads": 333,
   "schemaVersion": 1,
   "sourceRegistryTrials": 29,
@@ -437,12 +437,12 @@
     "MISSING": 975,
     "MODELED": 0,
     "NOT_APPLICABLE": 0,
-    "SOURCE_CAPTURED_NEEDS_REVIEW": 127,
+    "SOURCE_CAPTURED_NEEDS_REVIEW": 124,
     "SOURCE_UNAVAILABLE": 0,
-    "VERIFIED": 0
+    "VERIFIED": 3
   },
   "surveyCategories": 20,
   "surveyIngredients": 38,
-  "verifiedPercent": 0.0,
+  "verifiedPercent": 0.27,
   "warning": "Registry and literature leads are not reviewed ingredient findings. 38 slots per trial does not mean 38 verified assessments."
 }

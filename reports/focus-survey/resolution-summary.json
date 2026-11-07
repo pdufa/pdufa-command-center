@@ -22,10 +22,10 @@
       "researchGaps": 112,
       "slots": 174,
       "sourceContext": 62,
-      "sourceInterpretationRequired": 42,
+      "sourceInterpretationRequired": 39,
       "survey": "Clinical Benefit",
       "surveyNumber": 3,
-      "verified": 0
+      "verified": 3
     },
     {
       "researchGaps": 29,
@@ -220,7 +220,7 @@
       "registryPointers": 12,
       "slots": 38,
       "ticker": "APMD",
-      "verified": 0
+      "verified": 1
     },
     {
       "nctId": "NCT05813275",
@@ -228,7 +228,7 @@
       "registryPointers": 12,
       "slots": 38,
       "ticker": "APMD",
-      "verified": 0
+      "verified": 1
     },
     {
       "nctId": "NCT05059223",
@@ -388,7 +388,7 @@
       "registryPointers": 12,
       "slots": 38,
       "ticker": "SVRA",
-      "verified": 0
+      "verified": 1
     },
     {
       "nctId": "NCT06331299",
@@ -419,8 +419,9 @@
   "dispositions": {
     "ADDITIONAL_PRIMARY_RESEARCH_REQUIRED": 528,
     "MODELING_INPUTS_UNAVAILABLE": 290,
-    "PRIMARY_SOURCE_INTERPRETATION_REQUIRED": 255,
-    "PUBLICATION_CONTENT_REVIEW_REQUIRED": 29
+    "PRIMARY_SOURCE_INTERPRETATION_REQUIRED": 252,
+    "PUBLICATION_CONTENT_REVIEW_REQUIRED": 29,
+    "REVIEWED_ANSWER_PRESENT": 3
   },
   "ingredients": 38,
   "researchDispositionCoveragePercent": 100.0,
@@ -429,7 +430,7 @@
   "sourceContextSlots": 284,
   "surveys": 20,
   "trials": 29,
-  "verifiedSurveyAnswers": 0,
-  "verifiedSurveyPercent": 0.0,
+  "verifiedSurveyAnswers": 3,
+  "verifiedSurveyPercent": 0.27,
   "warning": "100% research disposition coverage does NOT mean 100% verified evidence, graded surveys, or validated RAAS."
 }
