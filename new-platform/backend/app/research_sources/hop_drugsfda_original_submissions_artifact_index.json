@@ -1,0 +1,52 @@
+{
+  "schema_version": 1,
+  "status": "ACTUAL_FDA_APPROVED_REGISTRY_ORIGINAL_SPINE_QUARANTINED",
+  "source_export_date": "2026-10-23",
+  "retrieved_on": "2026-10-25",
+  "research_cutoff": "2026-10-25",
+  "source_collection_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40224730350",
+  "source_collection_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40224730350/artifacts/12611090768",
+  "artifact_retention_days": 30,
+  "github_artifact_zip_sha256": "58f9197c4d040fbf21f2bbf4edf223318b46c4df354a2a1efc95a844cad502c0",
+  "github_artifact_json_sha256": "adb24d7921d56bc3824b57e785164a32287efc69a9d3fe9b940da97f6c65f5b2",
+  "fda_source_archive_sha256_as_reported_not_rehashed": "d218e3d6ced00a6d117612529faa1eafa223ee65668a69f8139b5cd35054b3de",
+  "approved_registry_application_records": 29416,
+  "application_type_counts": {
+    "ANDA": 23023,
+    "BLA": 485,
+    "NDA": 5908
+  },
+  "published_registry_submission_entries": 188890,
+  "original_nda_bla_submission_entries": 6032,
+  "original_nda_bla_submission_entries_by_type": {
+    "BLA": 503,
+    "NDA": 5529
+  },
+  "distinct_nda_bla_applications_with_original_submission": 5972,
+  "applications_with_multiple_original_submissions": 58,
+  "raw_original_submission_status_codes_not_outcomes": {
+    "AP": 5904,
+    "MISSING": 1,
+    "TA": 127
+  },
+  "source_data_warning_counts": {
+    "MISSING_ORIGINAL_SUBMISSION_RAW_STATUS": 1,
+    "NONSTANDARD_APPLICATION_NUMBER_LENGTH": 2
+  },
+  "independently_adjudicated_review_cycles": 0,
+  "complete_original_nda_bla_denominator_verified": false,
+  "unapproved_applications_absent_from_registry_possible": true,
+  "model_eligible_records": 0,
+  "approval_rate": null,
+  "prediction_probability": null,
+  "predictive_accuracy": null,
+  "readiness": "REVIEW_REQUIRED",
+  "limitations": [
+    "Registry is approval-centric; these are original NDA/BLA submission metadata, not an unbiased population of FDA review-cycle decisions.",
+    "Raw AP/TA/CR status codes are not independently adjudicated FDA outcome labels.",
+    "Submission number does not define a review cycle; date does not prove original FDA action day.",
+    "The downloaded GitHub Actions JSON was independently inspected locally; FDA source ZIP was not re-downloaded or rehashed in this step.",
+    "Unreleased CRLs and never-approved original applications may be absent; no full approval/nonapproval denominator is established.",
+    "Two historical NDA application identifiers (without original submissions) use nonstandard five-digit numbering; they remain in source counts and are explicitly flagged without adding FDA decisions."
+  ]
+}

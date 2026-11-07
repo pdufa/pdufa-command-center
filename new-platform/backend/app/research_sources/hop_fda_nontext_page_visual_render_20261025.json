@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "status": "FDA_NONEXTRACTABLE_PDF_PAGES_RENDERED_PRIVATELY_NOT_REVIEWED",
+  "research_cutoff": "2026-10-25",
+  "source_research_workflow_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40262315333",
+  "source_aggregate_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40262315333/artifacts/12625061538",
+  "source_pdf_count": 16,
+  "source_pages_examined_for_text": 100,
+  "source_prior_sha256_verified_pdfs": 16,
+  "visual_render_batches": [
+    {
+      "offset": 0,
+      "pdf_count": 8,
+      "no_text_page_count": 9,
+      "private_png_pages_rendered": 9,
+      "render_failures": 0,
+      "selected_full_pdf_hashes_sha256": "32b1cc9ab8dea34e120e79505299bd4f65c6a13765183133e8d6fe99caa528f9"
+    },
+    {
+      "offset": 8,
+      "pdf_count": 8,
+      "no_text_page_count": 10,
+      "private_png_pages_rendered": 10,
+      "render_failures": 0,
+      "selected_full_pdf_hashes_sha256": "fd012a8ed7ceb7a85a5f4bfe9c7a8cc4a886563ab733bcc06d932da66658bf59"
+    }
+  ],
+  "total_no_extractable_text_pages": 19,
+  "total_private_png_rendered": 19,
+  "render_failures": 0,
+  "private_page_image_hash_and_page_mapping_not_exported": true,
+  "private_pngs_are_ephemeral_runner_files": true,
+  "durable_authenticated_human_review_storage_ready": false,
+  "manual_visual_review_completed_pages": 0,
+  "source_page_verified_original_fda_action_count": 0,
+  "independently_adjudicated_original_fda_review_cycles": 0,
+  "complete_nda_bla_historical_decision_denominator_verified": false,
+  "model_eligible_records": 0,
+  "approval_rate": null,
+  "prediction_probability": null,
+  "predictive_accuracy": null,
+  "readiness": "REVIEW_REQUIRED",
+  "note": "Actual source-pinned PDF bytes rendered 19 pages without extractable text into private per-page PNG files. Private images were not uploaded and are ephemeral; no human page content review, OCR, FDA action identity adjudication, historical outcome label, or scientific model training clearance occurred."
+}
