@@ -59,8 +59,8 @@ class TestExternalPrimaryFacts(unittest.TestCase):
     self.assertEqual(f["sourceDate"],expect["date"])
     self.assertEqual(f["status"],"VERIFIED")
     self.assertLessEqual(len(f["value"]),500)
-    self.assertIn("No regulatory approval".lower().split()[0],f["method"].lower()
-                  if "no regulatory" in f["method"].lower() else "no")
+    self.assertTrue(any(token in f["method"].lower() for token in
+                        ("approval","regulator")))
     for val in values:
      self.assertIn(val,f["value"],nct+"/"+ingredient+" missing "+val)
     self.assertTrue("NCT" in f["method"] or "RINGSIDE" in f["method"])
