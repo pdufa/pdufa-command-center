@@ -1,32 +1,15 @@
 {
   "mode": "daily",
-  "started_at": "2026-11-06T04:49:48.898542+00:00",
+  "started_at": "2026-11-07T04:21:04.041293+00:00",
   "registry_companies": 717,
-  "pages": 4,
-  "studies_checked": 3997,
-  "matched_posted_results": 103,
-  "new_records": 2,
-  "new_record_details": [
-    {
-      "ticker": "GILD",
-      "drug": "B/F/TAF | Bictegravir/Lenacapavir (BIC/LEN) FDC | Lenacapavir | Placebo to match B/F/TAF | Placebo to match BIC/LEN FDC | Placebo to match Lenacapavir",
-      "nct_id": "NCT06333808",
-      "results_posted_at": "2026-11-05",
-      "source_url": "https://clinicaltrials.gov/study/NCT06333808",
-      "verification_status": "DRUG_IDENTITY_REVIEW"
-    },
-    {
-      "ticker": "INCY",
-      "drug": "Placebo | Povorcitinib",
-      "nct_id": "NCT05620836",
-      "results_posted_at": "2026-11-05",
-      "source_url": "https://clinicaltrials.gov/study/NCT05620836",
-      "verification_status": "DRUG_IDENTITY_REVIEW"
-    }
-  ],
+  "pages": 5,
+  "studies_checked": 4037,
+  "matched_posted_results": 104,
+  "new_records": 0,
+  "new_record_details": [],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-11-06T04:49:59.022557+00:00",
+  "finished_at": "2026-11-07T04:21:12.979385+00:00",
   "stored_results": 2499,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
