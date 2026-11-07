@@ -1,0 +1,27 @@
+{
+  "schemaVersion": 1,
+  "scope": "BOTTOM_ONLY_EXPLICIT_POSTDATA_METRIC_REVIEWS",
+  "sourceAsOf": "2026-11-07",
+  "records": [
+    {
+      "nctId": "NCT04770753",
+      "ticker": "AGIO",
+      "drug": "mitapivat",
+      "indication": "non-transfusion-dependent thalassemia",
+      "stage": "post",
+      "metricId": "post-1-4",
+      "finding": "MIXED_EVIDENCE",
+      "assessedAt": "2026-11-07",
+      "sourceDate": "2026-10-06",
+      "sourceUrl": "https://onlinelibrary.wiley.com/doi/full/10.1111/bjh.70838",
+      "benchmarkSourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/",
+      "benchmarkId": "ENERGIZE original randomized endpoint versus 2026 open-label hemoglobin durability evidence",
+      "benchmarkContext": "Randomized 24-week ENERGIZE NCT04770753 produced hemoglobin response 55/130 (42%) mitapivat versus 1/64 (2%) placebo, 41 percentage point adjusted difference, 95% CI 32–50. Later open-label extension is a distinct post-hoc, uncontrolled and selected survivor cohort, not an independent pivotal replicate.",
+      "observedResult": "Conference abstract O33 with exact NCT04770753: 182 entered OLE, 121 continuing mitapivat, 61 crossover; among 55 original randomized responders mean Hb response duration 17.9 (SD3.6) weeks within double-blind period versus 43.6 (SD24.2) weeks cumulatively through OLE. Seventy-two of 121 (59.5%) originally active-treated achieved an OLE Hb response and some lasted up to 93.3 weeks.",
+      "uncertaintyReview": "OLE lacked placebo comparator, enrollment selected DB completers, includes post-hoc responder classification, different follow-up exposure (median 71 weeks active-active vs 44 weeks placebo-active) and potential informative dropout. Longer period is encouraging for persistence but uncertain for causal replication.",
+      "criticalRiskReview": "Do not label open-label OLE as independent Phase3 replication; cannot claim durable controlled superiority after crossover, full survival benefit, or FDA probability based on this one result.",
+      "reviewerMethod": "AI-assisted exact-NCT conference abstract review of 2026 O33 and comparison to 2025 peer-reviewed primary randomized ENERGIZE trial; a provisional 50/100 MIXED_EVIDENCE research band reflects observed exploratory durability with unresolved causal replication. No independent human adjudication or approval probability.",
+      "independentReview": "AI_SOURCE_CROSSCHECKED"
+    }
+  ]
+}
