@@ -12,6 +12,7 @@ import PipelineFourViews from "./PipelineFourViews";
 import LiveRegistryReview from "./LiveRegistryReview";
 import PipelineSponsorReadout from "./PipelineSponsorReadout";
 import BatchRegistryExport from "./BatchRegistryExport";
+import PoolMasterSpreadsheet from "./PoolMasterSpreadsheet";
 
 type PoolItem = {id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string;marketCap?:number|null;capInRange?:boolean};
 type ReviewItem = {
@@ -139,7 +140,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
        <p className={styles.muted} role="status">Showing {first}–{last} of {page.total.toLocaleString()} records in this view.</p>
        {page.total===0 && <p>No qualifying research rows found in this selected view. A zero row count does not establish zero eligible products.</p>}
        {section==="pipeline"&&<><p className={styles.muted}>Timeline columns count Pacific calendar days from the verified public Phase 3 readout release to today and to the FDA PDUFA target. Research ends at PDUFA − 3. Unverified dates never become numerical countdowns.</p><p className={styles.muted}>Competitive columns are source-gated. A blank assessment is neither zero nor evidence of failure. Expand each cell for its reason, exact purpose and required verification.</p><CompetitiveColumnPurposes /></>}
-       <div className={styles.scroll}><table className={styles.table}>
+       {section==="pool"?<PoolMasterSpreadsheet rows={page.rows.filter((r):r is PoolItem=>!isReview(r))} />:<div className={styles.scroll}><table className={styles.table}>
          <thead><tr>
            {section==="pool"?
              ["Source ID","Ticker","Company","Drug","Indication","Recorded stage","Cap source value","Record type"].map(k=><th key={k}>{k}</th>):
@@ -172,7 +173,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
              <td>{display(r.stage)}</td><td>{typeof r.marketCap==="number"?`$${r.marketCap.toLocaleString()}`:"Not verified"}</td>
              <td>{r.id.startsWith("TRIAL|")?"Trial source record":r.id.startsWith("APPLICATION|")?"Regulatory record":r.id.startsWith("RESULT|")?"Result record":"Other source record"}</td>
            </tr>)}</tbody>
-       </table></div>
+       </table></div>}
        <div className={styles.pagination}>
          <button type="button" disabled={offset===0||loading} onClick={()=>setOffset(Math.max(0,offset-LIMIT))}>Previous</button>
          <span>Page {Math.floor(offset/LIMIT)+1} of {Math.max(1,Math.ceil(page.total/LIMIT))}</span>
