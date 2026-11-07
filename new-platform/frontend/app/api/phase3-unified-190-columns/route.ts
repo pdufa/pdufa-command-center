@@ -5,6 +5,7 @@ import {activeOfficialRegistryRecord,activeOfficialRegistryIntegrity,ACTIVE_OFFI
 import {phase3PeerReviewedFact,phase3PeerEvidenceIntegrity,phase3RegistryBinaryFact} from "../../../lib/phase3-source-fact-enrichment";
 import agiosEvidence from "../../../data/agiosPhase3Evidence20261106.json";
 import ionisEvidence from "../../../data/ionisPhase3Evidence20261106.json";
+import sixReadoutEvidence from "../../../data/phase3SixNewReadoutFacts20261106.json";
 import {loadLivePhase3Registry} from "../phase3-live-registry-backfill/route";
 import registryCrosswalk from "../../../data/phase3RegistryDrugComparatorCrosswalk20261106.json";
 import endpointAdjudications from "../../../data/phase3EndpointAdjudications20261105.json";
@@ -19,6 +20,7 @@ const ledger=activePhase3Cohorts.snapshot;
 const agiosFacts=new Map(agiosEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
 const ionisFacts=new Map(ionisEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
 const sixVerified=new Map(NEW_VERIFIED_READOUTS.map(r=>[r.nctId,r] as const));
+const sixFacts=new Map(sixReadoutEvidence.facts.map(f=>[f.nctId+"#"+f.question,f] as const));
 
 /** One Phase 3 trial per exact NCT; predictions never count as observed PASS/FAIL. */
 const baseHeaders = [
@@ -100,6 +102,10 @@ export async function GET(request:Request){
     ionisEvidence.trials.some(t=>!(t.cohort==="PRE_DATA"?preIds:postIds).has(t.nctId))||
     ionisEvidence.facts.some(f=>!ionisEvidence.trials.some(t=>t.nctId===f.nctId)||
       f.question<1||f.question>30||f.score!==null||!f.sourceUrl.startsWith("https://"))||
+    sixReadoutEvidence.facts.length!==26||sixFacts.size!==26||
+    sixReadoutEvidence.facts.some(f=>!sixVerified.has(f.nctId)||!postIds.has(f.nctId)||
+      f.question<1||f.question>30||f.score!==null||!f.sourceUrl.startsWith("https://")||
+      f.status!=="SOURCE_FACT_ONLY"||f.sourceDate>"2026-11-06")||
     agiosEvidence.trials.some(t=>!(t.cohort==="PRE_DATA"?preIds:postIds).has(t.nctId))||
     agiosEvidence.facts.some(f=>!agiosEvidence.trials.some(t=>t.nctId===f.nctId)||
       f.question<1||f.question>30||f.score!==null||!f.sourceUrl.startsWith("https://"))){
@@ -192,6 +198,11 @@ export async function GET(request:Request){
    if(ionisFact)return [ionisFact.status,"","",
     ionisFact.evidence+" | Dated evidence: "+ionisFact.sourceDate+
     " | Source fact, not a prospective efficacy or RAAS score",ionisFact.sourceUrl];
+   const sixFact=sixFacts.get(r.nctId+"#"+q.number);
+   if(sixFact)return [sixFact.status,"","",
+    sixFact.evidence+" | Dated source "+sixFact.sourceDate+
+    " | Observed fact, not prospective score or FDA approval claim",
+    sixFact.sourceUrl];
    const reviewedPaper=phase3PeerReviewedFact(r.nctId,q.number);
    if(reviewedPaper)return [reviewedPaper.status,"","",
     reviewedPaper.evidence+" | Published: "+reviewedPaper.sourceDate+
