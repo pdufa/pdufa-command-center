@@ -10,9 +10,6 @@ import json
 import os
 import re
 from urllib.parse import quote
-import requests
-from google.oauth2 import service_account
-import google.auth.transport.requests
 
 SPREADSHEET_ID = "1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU"
 API = "https://sheets.googleapis.com/v4/spreadsheets/" + SPREADSHEET_ID
@@ -35,16 +32,16 @@ def table_data(flat, report):
         raise ValueError("DUPLICATED_NCT_INGREDIENT")
     if report.get("ingredientSlots") != len(flat) or report.get("surveyIngredients") != 38:
         raise ValueError("FOCUS_SURVEY_COVERAGE_MISMATCH")
-    evidence = [[r.get(k) or "" for k in
+    evidence = [[r.get(k) if r.get(k) is not None else "" for k in
        ("nctId", "ticker", "company", "surveyNumber", "surveyName", "ingredientId",
         "ingredientName", "status", "reviewedValue", "reviewedSourceUrl",
         "reviewedSourceDate", "publicationLeads", "reason", "registryLeadUrl",
         "registryLeadPointer", "registryLeadCount")] for r in flat]
-    coverage = [[r.get(k) or "" for k in
+    coverage = [[r.get(k) if r.get(k) is not None else "" for k in
        ("surveyNumber", "name", "slots", "verified", "capturedNeedsReview", "missing")]
        for r in report["bySurvey"]]
     gaps = [row for row in evidence if row[7] not in ("VERIFIED", "NOT_APPLICABLE")]
-    source = [[r.get(k) or "" for k in
+    source = [[r.get(k) if r.get(k) is not None else "" for k in
        ("nctId", "ticker", "registryRetrieved", "literatureLeads", "verified",
         "capturedNeedsReview", "missing")] for r in report["byTrial"]]
     return [
@@ -55,6 +52,9 @@ def table_data(flat, report):
     ]
 
 def sync(flat, report):
+    import requests
+    from google.oauth2 import service_account
+    import google.auth.transport.requests
     secret = os.environ.get("GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON")
     if not secret:
         raise RuntimeError("Google Sheets credentials unavailable; preserved existing workbook")
@@ -76,9 +76,10 @@ def sync(flat, report):
     for title, header, _ in tables:
         if title not in current:
             continue
-        target = quote("'" + title.replace("'", "''") + "'!A1", safe="!'")
+        end_col = chr(ord("A") + len(header) - 1)
+        target = quote("'" + title.replace("'", "''") + "'!A1:" + end_col + "1", safe="!':")
         value = request("GET", API + "/values/" + target).get("values", [])
-        if not value or value[0] != [header[0]]:
+        if not value or value[0] != header:
             raise RuntimeError("Refusing to replace non-collector-owned tab: " + title)
     changes = []
     for title, header, body in tables:
