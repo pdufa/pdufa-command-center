@@ -52,6 +52,13 @@ def table_data(flat, report):
     ]
 
 def sync(flat, report):
+    """Existing four collector-owned FOCUS survey tabs."""
+    if report.get("ingredientSlots") != len(flat):
+        raise ValueError("FOCUS_SURVEY_COVERAGE_MISMATCH")
+    return sync_tables(table_data(flat, report))
+
+def sync_tables(tables):
+    """Write only table-specific automation-owned tabs after header checks."""
     import requests
     from google.oauth2 import service_account
     import google.auth.transport.requests
@@ -69,7 +76,10 @@ def sync(flat, report):
         response = session.request(method, url, timeout=45, **kwargs)
         response.raise_for_status()
         return response.json() if response.content else {}
-    tables = table_data(flat, report)
+    if not tables or len({name for name,_,_ in tables}) != len(tables):
+        raise ValueError("DUPLICATE_OR_EMPTY_AUTOMATION_TABLES")
+    if any(not name.startswith("FOCUS Survey Auto ") for name,_,_ in tables):
+        raise ValueError("REFUSING_NON_AUTOMATION_SHEET")
     meta = request("GET", API, params={"fields": "sheets(properties(sheetId,title,gridProperties)),spreadsheetId"})
     current = {s["properties"]["title"]: s["properties"] for s in meta.get("sheets", [])}
     # Check ALL existing headings BEFORE changing any tab.
@@ -109,16 +119,23 @@ def sync(flat, report):
     body = []
     for title, header, rows in tables:
         a1 = "'" + title.replace("'", "''") + "'!A1"
-        body.append({"range": a1, "majorDimension": "ROWS", "values": [header] + rows})
+        # A shorter refresh must not leave previous evidence as stale-looking live rows.
+        # Include blank tail rows in the same values:batchUpdate request.
+        previous_capacity = current.get(title, {}).get("gridProperties", {}).get("rowCount", 0)
+        blanks = max(0, previous_capacity - len(rows) - 1)
+        fresh_values = [header] + rows + [[""] * len(header) for _ in range(blanks)]
+        body.append({"range": a1, "majorDimension": "ROWS", "values": fresh_values})
     request("POST", API + "/values:batchUpdate", json={
         "valueInputOption": "RAW", "data": body})
-    # Verify first, final and header lines before reporting success.
+    # Read back full populated column including prior tail to catch stale records.
     for title, header, rows in tables:
-        cell = quote("'" + title + "'!A1:A" + str(len(rows) + 1), safe="!':")
+        previous_capacity = current.get(title, {}).get("gridProperties", {}).get("rowCount", 0)
+        readback_rows = max(previous_capacity, len(rows) + 1)
+        cell = quote("'" + title + "'!A1:A" + str(readback_rows), safe="!':")
         returned = request("GET", API + "/values/" + cell).get("values", [])
         expected = [header[0]] + [str(r[0]) for r in rows]
         values = [str(r[0]) if r else "" for r in returned]
         if values != expected:
             raise RuntimeError("FOCUS_SURVEY_SHEETS_READBACK_MISMATCH: " + title)
     return {"status": "SUCCESS", "tabs": [s[0] for s in tables],
-            "slotsWritten": len(flat)}
+            "rowsWritten": sum(len(x[2]) for x in tables)}
