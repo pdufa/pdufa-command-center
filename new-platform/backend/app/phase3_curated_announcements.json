@@ -19,6 +19,98 @@
         "event_date": "2026-05-28",
         "pdufa_target_date": "2026-11-30"
       }
+    },
+    "APPLICATION|CLDX|BARZOLOVOLIMAB_CSU_EMBARQ_CSU1": {
+      "nctId": "NCT06445023",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "reviewedOn": "2026-11-07",
+      "reviewerMethod": "PRIMARY_PUBLIC_ISSUER_DISCLOSURE",
+      "phase3_results": {
+        "review_status": "VERIFIED",
+        "source_url": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+        "published_at": "2026-09-22",
+        "event_date": "2026-09-22"
+      },
+      "regulatory_path": {
+        "stage": "PLANNED",
+        "application_type": "BLA",
+        "review_status": "VERIFIED",
+        "source_url": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-reports-third-quarter-financial-results-and-provides",
+        "published_at": "2026-11-05",
+        "event_date": "2026-11-05",
+        "planned_filing_period": "2027"
+      },
+      "clinicalRiskNote": "Company-reported topline Phase 3 results; not an FDA-reviewed efficacy conclusion."
+    },
+    "APPLICATION|CLDX|BARZOLOVOLIMAB_CSU_EMBARQ_CSU2": {
+      "nctId": "NCT06455202",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria",
+      "reviewedOn": "2026-11-07",
+      "reviewerMethod": "PRIMARY_PUBLIC_ISSUER_DISCLOSURE",
+      "phase3_results": {
+        "review_status": "VERIFIED",
+        "source_url": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+        "published_at": "2026-09-22",
+        "event_date": "2026-09-22"
+      },
+      "regulatory_path": {
+        "stage": "PLANNED",
+        "application_type": "BLA",
+        "review_status": "VERIFIED",
+        "source_url": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-reports-third-quarter-financial-results-and-provides",
+        "published_at": "2026-11-05",
+        "event_date": "2026-11-05",
+        "planned_filing_period": "2027"
+      },
+      "clinicalRiskNote": "Company-reported topline Phase 3 results; not an FDA-reviewed efficacy conclusion."
+    },
+    "APPLICATION|MLTX|SONELOKIMAB_HS_VELA1": {
+      "nctId": "NCT06411899",
+      "drug": "sonelokimab",
+      "indication": "hidradenitis suppurativa",
+      "reviewedOn": "2026-11-07",
+      "reviewerMethod": "PRIMARY_PUBLIC_ISSUER_DISCLOSURE",
+      "phase3_results": {
+        "review_status": "VERIFIED",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm",
+        "published_at": "2025-09-28",
+        "event_date": "2025-09-28"
+      },
+      "regulatory_path": {
+        "stage": "SUBMITTED",
+        "application_type": "BLA",
+        "review_status": "VERIFIED",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1821586/000182158626000013/moonlake-pressreleasexq320.htm",
+        "published_at": "2026-11-04",
+        "event_date": "2026-09-30",
+        "submitted_on": "2026-09-30"
+      },
+      "clinicalRiskNote": ""
+    },
+    "APPLICATION|MLTX|SONELOKIMAB_HS_VELA2": {
+      "nctId": "NCT06411379",
+      "drug": "sonelokimab",
+      "indication": "hidradenitis suppurativa",
+      "reviewedOn": "2026-11-07",
+      "reviewerMethod": "PRIMARY_PUBLIC_ISSUER_DISCLOSURE",
+      "phase3_results": {
+        "review_status": "VERIFIED",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm",
+        "published_at": "2025-09-28",
+        "event_date": "2025-09-28"
+      },
+      "regulatory_path": {
+        "stage": "SUBMITTED",
+        "application_type": "BLA",
+        "review_status": "VERIFIED",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1821586/000182158626000013/moonlake-pressreleasexq320.htm",
+        "published_at": "2026-11-04",
+        "event_date": "2026-09-30",
+        "submitted_on": "2026-09-30"
+      },
+      "clinicalRiskNote": "VELA-2 missed the prespecified composite Week-16 primary endpoint (HiSCR75, p=0.053); retain as clinical risk, not an automatic failure or score."
     }
   }
 }
