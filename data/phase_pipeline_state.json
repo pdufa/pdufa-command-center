@@ -1,28 +1,28 @@
 {
-  "started_at": "2026-11-06T04:48:53.579079+00:00",
+  "started_at": "2026-11-07T04:20:12.013787+00:00",
   "status": "COMPLETE WITH WARNINGS",
   "registry_companies": 717,
-  "scope": "Industry Phase 2/3 records updated since 2024-11-06",
+  "scope": "Industry Phase 2/3 records updated since 2024-11-07",
   "source_max_age_days": 180,
-  "studies_scanned": 15554,
-  "matched_trials": 3711,
+  "studies_scanned": 15557,
+  "matched_trials": 3715,
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
   "new_master_programs": [
     {
-      "ticker": "SGMT",
-      "drug": "Denifanstat",
-      "nct_id": "NCT07863193"
+      "ticker": "ARQT",
+      "drug": "Roflumilast Cream 0.3%",
+      "nct_id": "NCT07916480"
     }
   ],
-  "finished_at": "2026-11-06T04:49:25.920921+00:00",
-  "stored_trials": 7412,
-  "phase2_programs": 1024,
-  "master_programs": 136,
-  "review_trials": 3084,
+  "finished_at": "2026-11-07T04:20:40.711178+00:00",
+  "stored_trials": 7417,
+  "phase2_programs": 1049,
+  "master_programs": 137,
+  "review_trials": 3085,
   "market_cap_verified_tickers": 417,
   "market_cap_listing_excluded_tickers": 1,
-  "market_cap_source_unavailable": 1,
-  "market_cap_recent_cache_retained": 0
+  "market_cap_source_unavailable": 230,
+  "market_cap_recent_cache_retained": 228
 }
