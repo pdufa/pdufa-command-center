@@ -454,6 +454,8 @@ def main(argv=None):
         records = [r for r in records if r["nct"] == args.nct]
         if not records:
             parser.error("NCT not present in current FOCUS roster")
+        if args.write_sheets:
+            parser.error("Use --all before writing FOCUS survey research tabs")
     if args.report:
         output = OUTPUT / "coverage.json"
         print(output.read_text(encoding="utf-8") if output.exists() else
@@ -491,6 +493,30 @@ def main(argv=None):
                   "literature=", len(packet["literatureLeads"]), flush=True)
     slots = build_slots(records, groups, packets, load_reviewed())
     report = coverage(slots, records, packets)
+    if args.nct:
+        if args.write_sheets:
+            parser.error("Single-trial pilot must not overwrite full FOCUS survey tabs")
+        atomic_json(OUTPUT / "pilot" / (args.nct + ".json"),
+                    {"packet": packets[args.nct], "slots": slots, "coverage": report})
+        print(json.dumps({"pilot": args.nct, "slots": len(slots),
+                          "registryFetched": bool(packets[args.nct]["registry"])}))
+        return 0
+    # History is append-only by content fingerprint, not by run timestamp.
+    history_path = OUTPUT / "source-history.json"
+    try:
+        history = load(history_path) if history_path.exists() else {"schemaVersion": 1, "changes": []}
+        if history.get("schemaVersion") != 1 or not isinstance(history.get("changes"), list):
+            raise ValueError("SOURCE_HISTORY_INVALID")
+        for nct, packet in packets.items():
+            if not any(x.get("nctId") == nct and x.get("packetHash") == packet["packetHash"]
+                       for x in history["changes"]):
+                history["changes"].append({"nctId": nct, "ticker": packet["ticker"],
+                  "packetHash": packet["packetHash"], "registrySourceHash": packet.get("registrySourceHash"),
+                  "retrievedAt": packet["retrievedAt"], "registryCaptured": bool(packet["registry"]),
+                  "literatureLeads": len(packet["literatureLeads"])})
+        atomic_json(history_path, history)
+    except (OSError, ValueError, TypeError) as exc:
+        raise RuntimeError("Source history could not be safely reconciled: " + str(exc)) from exc
     flat = save_reports(records, slots, packets, report)
     if args.write_sheets:
         from sync_focus_survey_evidence_to_sheets import sync
