@@ -10,13 +10,13 @@
   "missingActiveFactorGrades": 90,
   "completeClinicalScores": 2,
   "completeThirtyMetricScores": 0,
-  "sourceBackedQuestionItems": 436,
+  "sourceBackedQuestionItems": 443,
   "totalQuestionItems": 690,
-  "unresolvedQuestionItems": 254,
-  "additionalReviewedSourceFacts": 11,
+  "unresolvedQuestionItems": 247,
+  "additionalReviewedSourceFacts": 52,
   "additionalProvisionalGrades": 1,
   "gradedCoveragePercent": 21.7,
-  "sourceCoveragePercent": 63.2,
+  "sourceCoveragePercent": 64.2,
   "notValidatedFdaProbability": true,
   "perTrial": [
     {
@@ -49,7 +49,7 @@
     {
       "nctId": "NCT05031780",
       "ticker": "AGIO",
-      "readoutOutcome": "PRIMARY_ENDPOINT_MET",
+      "readoutOutcome": "MIXED_COPRIMARY_RESULTS",
       "factorsScored": 0,
       "clinicalScore": null,
       "evidenceQuestionsCovered": 19,
@@ -88,8 +88,8 @@
       "readoutOutcome": "NO_BINARY_PASS_FAIL",
       "factorsScored": 0,
       "clinicalScore": null,
-      "evidenceQuestionsCovered": 23,
-      "sourceGaps": 7
+      "evidenceQuestionsCovered": 24,
+      "sourceGaps": 6
     },
     {
       "nctId": "NCT06445023",
@@ -133,8 +133,8 @@
       "readoutOutcome": "PRIMARY_ENDPOINT_MET",
       "factorsScored": 5,
       "clinicalScore": 45,
-      "evidenceQuestionsCovered": 14,
-      "sourceGaps": 16
+      "evidenceQuestionsCovered": 15,
+      "sourceGaps": 15
     },
     {
       "nctId": "NCT02598661",
@@ -160,8 +160,8 @@
       "readoutOutcome": "NO_BINARY_PASS_FAIL",
       "factorsScored": 0,
       "clinicalScore": null,
-      "evidenceQuestionsCovered": 16,
-      "sourceGaps": 14
+      "evidenceQuestionsCovered": 17,
+      "sourceGaps": 13
     },
     {
       "nctId": "NCT05392114",
@@ -169,8 +169,8 @@
       "readoutOutcome": "NO_BINARY_PASS_FAIL",
       "factorsScored": 0,
       "clinicalScore": null,
-      "evidenceQuestionsCovered": 20,
-      "sourceGaps": 10
+      "evidenceQuestionsCovered": 21,
+      "sourceGaps": 9
     },
     {
       "nctId": "NCT06641076",
@@ -187,8 +187,8 @@
       "readoutOutcome": "PRIMARY_ENDPOINT_MET",
       "factorsScored": 0,
       "clinicalScore": null,
-      "evidenceQuestionsCovered": 21,
-      "sourceGaps": 9
+      "evidenceQuestionsCovered": 22,
+      "sourceGaps": 8
     },
     {
       "nctId": "NCT05774756",
@@ -205,8 +205,8 @@
       "readoutOutcome": "PRIMARY_ENDPOINT_MET",
       "factorsScored": 0,
       "clinicalScore": null,
-      "evidenceQuestionsCovered": 24,
-      "sourceGaps": 6
+      "evidenceQuestionsCovered": 25,
+      "sourceGaps": 5
     },
     {
       "nctId": "NCT05243550",
@@ -214,8 +214,8 @@
       "readoutOutcome": "NO_BINARY_PASS_FAIL",
       "factorsScored": 0,
       "clinicalScore": null,
-      "evidenceQuestionsCovered": 23,
-      "sourceGaps": 7
+      "evidenceQuestionsCovered": 24,
+      "sourceGaps": 6
     },
     {
       "nctId": "NCT04716231",
