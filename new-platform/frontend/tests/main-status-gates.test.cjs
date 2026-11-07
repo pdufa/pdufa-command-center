@@ -27,7 +27,13 @@ test("MAIN status page reports dated release proof without promoting old install
   assert.match(html,/<strong>not<\/strong> 2,698 completed/);
   assert.match(html,/not.*complete technical acceptance/);
   assert.match(html,/1 of 31/);
-  assert.match(html,/Current 31-gate scope · POOL \/ FOCUS \/ TOOLS/);
+  assert.match(html,/Current 31-gate scope · final FOCUS trials only/);
+  assert.match(html,/Final trial acceptance · 29 FOCUS trials only/);
+  assert.match(html,/29 unique NCTs/);
+  assert.match(html,/203 trial-specific evidence checks/);
+  assert.match(html,/0 independently verified/);
+  assert.match(html,/only trial records/);
+  assert.doesNotMatch(html,/Current 31-gate scope · POOL \/ FOCUS \/ TOOLS/);
   assert.match(html,/pool-focus\.exact-handoff/);
   assert.match(html,/focus\.current-eligibility/);
   assert.match(html,/focus\.nightly-sync/);
