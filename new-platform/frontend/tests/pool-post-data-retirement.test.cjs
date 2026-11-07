@@ -20,14 +20,14 @@ test("active site navigation lists only POOL, P3 POST-DATA and POOL tools",()=>{
  assert.match(tools,/href="\/p3-post-data"/);
 });
 
-test("P3 POST-DATA static screenshot snapshot has 25 unique in-range NCT records with source links",()=>{
+test("P3 POST-DATA allows any positive number of unique qualified NCT records with source links",()=>{
  const page=source("app/p3-post-data/page.tsx");
  const snapshot=JSON.parse(source("data/p3PostDataActive.json"));
  assert.equal(snapshot.schemaVersion,1);
  const records=snapshot.records;
  assert.match(page,/import snapshot from/);
- assert.equal(records.length,25);
- assert.equal(new Set(records.map(t=>t.nct)).size,25);
+ assert.ok(records.length>0);
+ assert.equal(new Set(records.map(t=>t.nct)).size,records.length);
  for(const t of records){
   assert.match(t.nct,/^NCT\d{8}$/);
   assert.ok(Number.isFinite(t.marketCap) && t.marketCap>=300_000_000 && t.marketCap<=10_000_000_000,t.nct);

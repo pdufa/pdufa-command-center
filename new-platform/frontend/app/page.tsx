@@ -5,7 +5,7 @@ import Link from "next/link";
 type AuthState="checking"|"login"|"ready"|"unavailable";
 const active=[
  {href:"/pool",title:"POOL — Master Trial Universe",desc:"The original complete source inventory. No subset replaces or deletes master trial records."},
- {href:"/p3-post-data",title:"P3 POST-DATA — 25 Candidate Trials",desc:"Public Phase 3 results, $300M–$10B issuer market cap and an active FDA/PDUFA filing or decision path."},
+ {href:"/p3-post-data",title:"P3 POST-DATA — Eligible Phase 3 Results",desc:"Public Phase 3 results, $300M–$10B issuer market cap and an active FDA/PDUFA filing or decision path."},
 ];
 
 export default function Home(){
