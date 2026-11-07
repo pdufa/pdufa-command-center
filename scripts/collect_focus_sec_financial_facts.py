@@ -58,7 +58,7 @@ def sec_get(url,max_bytes=11_000_000):
  for attempt in range(3):
   try:
    req=Request(url,headers={"User-Agent":user_agent(),
-      "Accept":"application/json","Accept-Encoding":"gzip, deflate"})
+      "Accept":"application/json"})
    with urlopen(req,timeout=25) as r:
     if r.geturl()!=url or r.status!=200 or "json" not in r.headers.get("Content-Type","").lower():
      raise ValueError("SEC_INVALID_RESPONSE_OR_REDIRECT")
