@@ -30,9 +30,11 @@ def rows(cols,data):
  return [[("; ".join(map(str,v)) if isinstance(v,list) else
             (v if v is not None else "")) for _,k in cols for v in [obj.get(k)]]
              for obj in data]
-def tables():
- research=json.loads((OUT/"additional-indication-research.json").read_text(encoding="utf-8"))
- summary=json.loads((OUT/"additional-indication-coverage.json").read_text(encoding="utf-8"))
+def tables(research=None,summary=None):
+ if research is None:
+  research=json.loads((OUT/"additional-indication-research.json").read_text(encoding="utf-8"))
+ if summary is None:
+  summary=json.loads((OUT/"additional-indication-coverage.json").read_text(encoding="utf-8"))
  lead=research.get("candidates",[])
  coverage=research.get("byTrial",[])
  if research.get("schemaVersion")!=1 or summary.get("schemaVersion")!=1 or \
