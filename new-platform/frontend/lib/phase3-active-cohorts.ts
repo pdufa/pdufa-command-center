@@ -122,7 +122,9 @@ function reconcile():{
     classificationVerified:true,readoutEvidenceType:newReadout.evidenceType,
     readoutSourceDate:newReadout.evidenceDate,readoutEvidenceUrl:newReadout.evidenceUrl,
     readoutOutcome:newReadout.outcome,drug:newReadout.drug,
-    ...(r.nctId==="NCT04849741"?{fdaApplicationStatus:"FDA_APPROVED_HISTORICAL"}:{})};
+    ...(r.nctId==="NCT04849741"?{fdaApplicationStatus:"FDA_APPROVED_HISTORICAL"}:{}),
+    ...(r.nctId==="NCT05208047"?{fdaApplicationStatus:"FDA_NDA_ACCEPTED_PRIORITY_REVIEW",
+     fdaReviewType:"PRIORITY_REVIEW",pdufaGoalDate:"2026-11-30"}:{})};
   }
   const matched=matchedIssuer(r.nctId);
   assert(matched,"PROMOTION_SOURCE_"+r.nctId);
