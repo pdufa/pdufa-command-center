@@ -11,6 +11,9 @@ on:
       - 'scripts/triage_focus_survey_evidence.py'
       - 'scripts/sync_focus_survey_triage_to_sheets.py'
       - 'tests/test_focus_survey_triage.py'
+      - 'scripts/resolve_focus_survey_ingredients.py'
+      - 'scripts/sync_focus_survey_resolution_to_sheets.py'
+      - 'tests/test_focus_survey_resolution.py'
       - 'data/phase3_benefit_survey_catalog.json'
   push:
     branches: [main]
@@ -21,6 +24,8 @@ on:
       - 'data/phase3_benefit_survey_catalog.json'
       - 'scripts/triage_focus_survey_evidence.py'
       - 'scripts/sync_focus_survey_triage_to_sheets.py'
+      - 'scripts/resolve_focus_survey_ingredients.py'
+      - 'scripts/sync_focus_survey_resolution_to_sheets.py'
   schedule:
     - cron: '45 15 * * *'
 
@@ -42,11 +47,13 @@ jobs:
           python-version: '3.12'
       - name: Confirm Python syntax
         run: |
-          python -m py_compile scripts/collect_focus_survey_evidence.py scripts/sync_focus_survey_evidence_to_sheets.py scripts/triage_focus_survey_evidence.py scripts/sync_focus_survey_triage_to_sheets.py
+          python -m py_compile scripts/collect_focus_survey_evidence.py scripts/sync_focus_survey_evidence_to_sheets.py scripts/triage_focus_survey_evidence.py scripts/sync_focus_survey_triage_to_sheets.py scripts/resolve_focus_survey_ingredients.py scripts/sync_focus_survey_resolution_to_sheets.py
       - name: Test 29-trial roster, 20-survey taxonomy and data safety
         run: python -m unittest discover -s tests -p 'test_focus_survey_collection.py' -v
       - name: Verify review triage, denominators and literature identity
         run: python -m unittest discover -s tests -p 'test_focus_survey_triage.py' -v
+      - name: Validate full 1102 ingredient research dispositions
+        run: python -m unittest discover -s tests -p 'test_focus_survey_resolution.py' -v
       - name: Dry-run and verify canonical ingredient slots
         run: python scripts/collect_focus_survey_evidence.py --dry-run
 
@@ -69,6 +76,8 @@ jobs:
         run: python scripts/collect_focus_survey_evidence.py --all
       - name: Produce exact-NCT registry fact and publication triage reports
         run: python scripts/triage_focus_survey_evidence.py
+      - name: Prepare full ingredient-by-ingredient evidence disposition worklist
+        run: python scripts/resolve_focus_survey_ingredients.py
       - name: Validate collection completeness and evidence counts before Sheets
         id: validate
         run: |
@@ -107,6 +116,11 @@ jobs:
         env:
           GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
         run: python scripts/sync_focus_survey_triage_to_sheets.py
+      - name: Sync complete research dispositions to independent FOCUS survey tables
+        if: steps.validate.outcome == 'success'
+        env:
+          GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
+        run: python scripts/sync_focus_survey_resolution_to_sheets.py
       - name: Archive collection results even when public sources or Sheets are blocked
         if: always()
         uses: actions/upload-artifact@v4
