@@ -1,5 +1,57 @@
 {
   "schemaVersion": 1,
-  "sourceAsOf": null,
-  "records": []
+  "sourceAsOf": "2026-11-07",
+  "records": [
+    {
+      "nctId": "NCT05811247",
+      "ticker": "APMD",
+      "drug": "AD109",
+      "indication": "OSA",
+      "facts": {
+        "magnitude": {
+          "value": "AD109 versus placebo, primary AHI change over 6 months (treatment-policy estimand): LS mean difference -4.08 events/hour; 95% CI -6.14 to -2.03; p<0.001.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05811247",
+          "sourceDate": "2026-11-03",
+          "method": "Independent check of the exact ClinicalTrials.gov NCT05811247 posted primary endpoint analysis table: comparator, group IDs OG000/OG001, 6-month timeframe, least-squares difference, 95% limits, reported p value. Source fact only; not clinical meaningfulness, FDA approval, or RAAS probability.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT05813275",
+      "ticker": "APMD",
+      "drug": "AD109",
+      "indication": "OSA",
+      "facts": {
+        "magnitude": {
+          "value": "AD109 versus placebo, primary AHI change over 6 months (treatment-policy estimand): LS mean difference -3.99 events/hour; 95% CI -6.40 to -1.59; p=0.001.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05813275",
+          "sourceDate": "2026-09-11",
+          "method": "Independent check of the exact ClinicalTrials.gov NCT05813275 posted primary endpoint analysis table: comparator, group IDs OG000/OG001, 6-month timeframe, least-squares difference, 95% limits, reported p value. Source fact only; not clinical meaningfulness, FDA approval, or RAAS probability.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT04544293",
+      "ticker": "SVRA",
+      "drug": "Molgramostim",
+      "indication": "Autoimmune Pulmonary Alveolar Proteinosis",
+      "facts": {
+        "magnitude": {
+          "value": "Molgramostim versus placebo, primary change in hemoglobin-adjusted percent-predicted DLCO at Week 24: net mean difference +6.0 percentage points; 95% CI 2.5 to 9.4; p=0.0007.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT04544293",
+          "sourceDate": "2025-08-07",
+          "method": "Independent check of the exact ClinicalTrials.gov NCT04544293 posted primary endpoint analysis table: molgramostim/placebo contrast, Week 24, mean difference, CI, and p value. Describes a reported pulmonary function endpoint only; not established clinical meaningfulness, FDA approval, or RAAS probability.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    }
+  ]
 }
