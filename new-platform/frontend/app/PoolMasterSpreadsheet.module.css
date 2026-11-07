@@ -65,11 +65,12 @@
 .thDrag{font-weight:800;color:#367457}
 @media(max-width:640px){.columnOptions{max-height:340px}.columnOption{gap:5px}.columnCheck{min-width:100px}.moveTo{max-width:170px}}
 
-/* Three distinct top-level controls. Visibility colors are independent; reset is purple. */
-.actions{align-items:stretch}
+/* Three equal-width buttons fill one 100% row on phones, tablets and PCs. */
+.actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%;gap:8px;align-items:stretch}
 .actions .groupButton,.actions .resetOrder{
  display:inline-flex;flex-direction:column;align-items:center;justify-content:center;
- gap:4px;min-width:150px;min-height:58px;text-align:center;
+ box-sizing:border-box;gap:4px;min-width:0;width:100%;min-height:58px;
+ text-align:center;overflow-wrap:anywhere;
  text-transform:uppercase;letter-spacing:.02em;line-height:1.25;
 }
 .actions .groupButton small,.actions .resetOrder small{
@@ -83,7 +84,9 @@
  background:#54318a!important;color:#fff!important;border-color:#452372!important;
 }
 @media(max-width:640px){
- .actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}
- .actions .groupButton,.actions .resetOrder{min-width:0;width:100%}
- .actions .resetOrder{grid-column:1/-1}
+ .actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+ .actions .groupButton,.actions .resetOrder{
+  min-width:0;width:100%;padding:8px 4px;font-size:clamp(10px,2.7vw,12px)
+ }
+ .actions .groupButton small,.actions .resetOrder small{font-size:10px}
 }

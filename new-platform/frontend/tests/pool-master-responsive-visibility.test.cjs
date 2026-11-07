@@ -96,3 +96,10 @@ test("top action labels are Clinical & Dates, Qualification & FOCUS, and Column 
  assert.match(style,/\.actions button\[data-visibility="visible"\]/);
  assert.match(style,/\.actions button\[data-visibility="hidden"\]/);
 });
+
+test("all three POOL toolbar buttons occupy one 100% row at equal 33.3% widths on every viewport",()=>{
+ assert.match(style,/\.actions\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\);width:100%/);
+ assert.match(style,/@media\(max-width:640px\)\{\s*\.actions\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+ assert.match(style,/\.actions \.groupButton,\.actions \.resetOrder\{[\s\S]*?min-width:0;width:100%/);
+ assert.doesNotMatch(style,/\.actions \.resetOrder\{grid-column:1\/-1\}/);
+});
