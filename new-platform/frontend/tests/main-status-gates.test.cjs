@@ -22,6 +22,11 @@ test("MAIN status page reports dated release proof without promoting old install
   assert.match(html,/87654a48/);
   assert.match(html,/Production deployment: READY/);
   assert.match(html,/1 of 31/);
+  assert.match(html,/31-gate audit · exact evidence and blockers/);
+  assert.match(html,/core-platform\.deployment/);
+  assert.match(html,/final-acceptance\.evidence/);
+  assert.match(html,/30 not yet verified/);
+  assert.match(html,/retired GEM JR/);
   assert.match(html,/2026-10-26/);
   assert.match(html,/Still open/);
   assert.match(html,/Not certified/);

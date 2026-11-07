@@ -77,6 +77,34 @@ export default function MainStatus(){
         treated as today's POOL/FOCUS membership policy.</p>
       <Link href="/installation-audit">Inspect dated installation gates and protected SCIENCE / OUTCOME checks</Link>
     </section>
+    <section style={{...card,marginTop:16}} aria-label="All 31 historical MAIN acceptance gates">
+      <h2 style={{marginTop:0}}>31-gate audit · exact evidence and blockers</h2>
+      <p style={fine}>These are the individually recorded gates from the October 26 baseline, not 31 new certifications.
+        “Code present”, “Preview READY” and “Partial” do not count as verified.
+        The retired GEM JR / GEM / WT entry is preserved as history, not reactivated.</p>
+      {checked ? <details>
+        <summary style={{cursor:"pointer",fontWeight:700}}>
+          View all {MAIN_DAILY_EVIDENCE.total} gates · {MAIN_DAILY_EVIDENCE.verified} verified,
+          {" "}{MAIN_DAILY_EVIDENCE.total-MAIN_DAILY_EVIDENCE.verified} not yet verified
+        </summary>
+        <div style={{overflowX:"auto",marginTop:12}}>
+          <table style={{width:"100%",borderCollapse:"collapse",fontSize:13,minWidth:600}}>
+            <thead><tr>
+              <th scope="col" style={{textAlign:"left",padding:9,borderBottom:"2px solid #bdcdc4"}}>Gate</th>
+              <th scope="col" style={{textAlign:"left",padding:9,borderBottom:"2px solid #bdcdc4"}}>Audit state</th>
+              <th scope="col" style={{textAlign:"left",padding:9,borderBottom:"2px solid #bdcdc4"}}>Evidence gap / finding</th>
+            </tr></thead>
+            <tbody>{MAIN_DAILY_EVIDENCE.observations.map((gate,index)=><tr key={gate.id} style={{background:index%2?"#f7faf8":"#fff"}}>
+              <th scope="row" style={{textAlign:"left",padding:9,borderBottom:"1px solid #e3ebe7",verticalAlign:"top"}}>{gate.id}</th>
+              <td style={{padding:9,borderBottom:"1px solid #e3ebe7",verticalAlign:"top",whiteSpace:"nowrap"}}>{gate.status}</td>
+              <td style={{padding:9,borderBottom:"1px solid #e3ebe7",verticalAlign:"top"}}>{gate.note}{" "}
+                <a href={gate.evidenceUri} target="_blank" rel="noopener noreferrer">Source</a>
+              </td>
+            </tr>)}</tbody>
+          </table>
+        </div>
+      </details> : <p role="alert">No verified gate roster is available.</p>}
+    </section>
     <section style={{...card,marginTop:16}} aria-label="Next verified work">
       <h2 style={{marginTop:0}}>Next MAIN acceptance step</h2>
       <p>Verify the authenticated deployed POOL → FOCUS handoff against exact trial,
