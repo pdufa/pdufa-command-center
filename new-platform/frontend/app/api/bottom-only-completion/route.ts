@@ -1,5 +1,6 @@
 import {bottomOnlyReport,bottomOnlySummary} from "../../../lib/bottom-only-completion";
 import originalHistory from "../../../data/bottomOnlyResearchHistory20261107.json";
+import scoreHistory from "../../../data/bottomOnlyScoreHistory20261107.json";
 export const dynamic="force-dynamic";
 export const maxDuration=60;
 const safe=(v:unknown)=>{
@@ -30,7 +31,7 @@ export async function GET(request:Request){
   ],"bottom-only-reviewed-facts.csv");
   const {trials:all,headers,...summary}=report;
   return Response.json({...summary,rows:trials.map(bottomOnlySummary),
-   ...(id?{trial:trials[0],history:originalHistory.records.filter(h=>h.nctId===id)}:{}),
+   ...(id?{trial:trials[0],history:[...originalHistory.records,...scoreHistory.records].filter(h=>h.nctId===id)}:{}),
    notes:[
     "190/190 accounted means observed/verified facts or explicit missing/undisclosed states, NOT 190 independently verified facts.",
     "30 metric dispositions do not mean 30 numerical grades: only the five original active clinical factors contribute to post-data clinical research scores.",
