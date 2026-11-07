@@ -194,6 +194,31 @@
       "advantages": []
     },
     {
+      "nctId": "NCT04716231",
+      "ticker": "VERA",
+      "drug": "Atacicept",
+      "indication": "IgA Nephropathy",
+      "facts": {
+        "magnitude": {
+          "value": "ORIGIN 3 final efficacy: atacicept versus placebo, Week 52 eGFR change difference +5.6 mL/min/1.73 m² (95% CI 3.7–7.5; p<0.0001); 104-week annualized eGFR slope difference +5.0 mL/min/1.73 m²/year (95% CI 3.6–6.5; p<0.0001).",
+          "status": "VERIFIED",
+          "sourceUrl": "https://veratherapeutics.gcs-web.com/news-releases/news-release-details/vera-therapeutics-announces-trutaknatm-atacicept-vymj-stabilized",
+          "sourceDate": "2026-09-15",
+          "method": "Registry-confirmed ORIGIN 3 NCT04716231 / atacicept / IgA nephropathy and issuer September 15, 2026 final efficacy table. Verified report of comparator, 52- and 104-week effect sizes and 95% intervals; not independent clinical or full regulatory adjudication.",
+          "confidence": "MODERATE"
+        },
+        "clinicalBenefit": {
+          "value": "ORIGIN 3 through 104 weeks: composite kidney disease progression events 11 with atacicept versus 38 with placebo, HR 0.24 (95% CI 0.12–0.48; p<0.0001), issuer reported. This is kidney progression, not an overall-survival endpoint.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://veratherapeutics.gcs-web.com/news-releases/news-release-details/vera-therapeutics-announces-trutaknatm-atacicept-vymj-stabilized",
+          "sourceDate": "2026-09-15",
+          "method": "Matched ORIGIN 3 protocol NCT04716231 and September 15 issuer final report. Transcribed prespecified composite endpoint event counts and hazard ratio; full component, censoring and clinical-important-difference review remain.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
       "nctId": "NCT04871282",
       "ticker": "IMNM",
       "drug": "AL102",
@@ -213,6 +238,14 @@
           "sourceUrl": "https://investors.immunome.com/immunome-announces-detailed-phase-3-ringside-data-for-varegacestat-in-adults-with-progressing-desmoid-tumors-at-the-2026-asco-annual-meeting/",
           "sourceDate": "2026-05-30",
           "method": "Source-review of Immunome's May 30, 2026 Phase 3 RINGSIDE ASCO presentation summary: explicitly identifies NCT04871282, 156 randomized patients, AL102 renamed varegacestat, placebo-controlled central-review PFS/RECIST endpoints and numeric estimates; registry intervention AL102 and indication desmoid tumor independently match. Company-reported result, not independent regulator adjudication or FDA approval; full PFS censoring/event tables are not in this source.",
+          "confidence": "MODERATE"
+        },
+        "responseRemission": {
+          "value": "RINGSIDE Phase 3 confirmed objective response (RECIST v1.1), varegacestat (formerly AL102) 56% versus placebo 9%, p<0.0001, as assessed by blinded independent central review; issuer reported.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://investors.immunome.com/immunome-presents-additional-clinical-data-for-varegacestat-in-desmoid-tumors-at-esmo-2026/",
+          "sourceDate": "2026-10-26",
+          "method": "Explicit company Oct 26 Phase 3 RINGSIDE NCT04871282 trial identity, confirmed ORR in centrally reviewed trial. Supplement to earlier independently linked AL102 intervention; no active-comparator superiority or FDA approval inferred.",
           "confidence": "MODERATE"
         }
       },
@@ -467,6 +500,90 @@
           "sourceDate": "2026-08-28",
           "method": "Cross-check of peer-reviewed NEJM ACACIA-HCM trial (PubMed PMID 42663312, published August 28, 2026) explicitly naming NCT06081894 and aficamten versus placebo, primary Week-36 KCCQ-CSS and pVO2 least-squares differences with 95% confidence intervals and 517 randomized. Safety signal reviewed alongside efficacy. No regulatory approval, RAAS or price inference. Reported endpoints do not alone prove clinically important benefit or favorable safety.",
           "confidence": "HIGH"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT06411379",
+      "ticker": "MLTX",
+      "drug": "Sonelokimab",
+      "indication": "Hidradenitis Suppurativa",
+      "facts": {
+        "responseRemission": {
+          "value": "VELA-2 Week 16 HiSCR75: prespecified composite-strategy PRIMARY endpoint DID NOT reach significance (placebo-adjusted ~9 percentage points; p=0.053). Treatment-policy alternative: 35.9% (sonelokimab 120mg, n=276) versus 25.6% placebo (n=141), p=0.033.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-immunotherapeutics-reports-week-16-results-vela-phase-3",
+          "sourceDate": "2025-09-28",
+          "method": "Crosschecked MoonLake Sept 28 2025 primary HiSCR75 release with 2026 issuer VELA trial identity mapping (VELA-1 NCT06411899; VELA-2 NCT06411379) and ClinicalTrials.gov trial interventions. Composite strategy is the prespecified primary, treatment-policy is alternative; no unreported CI inferred. This is source verification, not FDA approval or RAAS score. It would be incorrect to call VELA-2's prespecified primary significant.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT06411899",
+      "ticker": "MLTX",
+      "drug": "Sonelokimab",
+      "indication": "Hidradenitis Suppurativa",
+      "facts": {
+        "responseRemission": {
+          "value": "VELA-1 Week 16 HiSCR75: prespecified composite-strategy primary endpoint placebo-adjusted ~17 percentage points (p<0.001); treatment-policy alternative 34.8% (sonelokimab 120mg, n=283) versus 17.5% placebo (n=138), p<0.001.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-immunotherapeutics-reports-week-16-results-vela-phase-3",
+          "sourceDate": "2025-09-28",
+          "method": "Crosschecked MoonLake Sept 28 2025 primary HiSCR75 release with 2026 issuer VELA trial identity mapping (VELA-1 NCT06411899; VELA-2 NCT06411379) and ClinicalTrials.gov trial interventions. Composite strategy is the prespecified primary, treatment-policy is alternative; no unreported CI inferred. This is source verification, not FDA approval or RAAS score.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT06445023",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "Chronic Spontaneous Urticaria",
+      "facts": {
+        "magnitude": {
+          "value": "EMBARQ-CSU1, Week 12 UAS7 LS mean change: barzolvolimab 150 mg Q4W -20.2 (SE 0.64); 300 mg Q8W -20.5 (SE 0.65); placebo -10.7 (SE 0.65). Issuer reports p<0.00001 for each active arm vs placebo.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Crosschecked exact EMBARQ trial ID against official ClinicalTrials.gov protocol and issuer's two-trial, dose-stratified September 22, 2026 endpoint table. Verified that the issuer reported these measurements, NOT independently validated trial efficacy, regulatory probability, longitudinal durability or safety advantage.",
+          "confidence": "MODERATE"
+        },
+        "responseRemission": {
+          "value": "EMBARQ-CSU1 UAS7=0 complete response: Week 12 42.4% (150 mg Q4W) and 42.1% (300 mg Q8W), versus 9.3% placebo; Week 24 49.0% and 45.1%, versus 15.4% placebo. Issuer reports p<0.00001 for both dose arms at both visits.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Crosschecked exact EMBARQ trial ID against official ClinicalTrials.gov protocol and issuer's two-trial, dose-stratified September 22, 2026 endpoint table. Verified that the issuer reported these measurements, NOT independently validated trial efficacy, regulatory probability, longitudinal durability or safety advantage. Week 24 proportions are not proof of individual durable response.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT06455202",
+      "ticker": "CLDX",
+      "drug": "barzolvolimab",
+      "indication": "Chronic Spontaneous Urticaria",
+      "facts": {
+        "magnitude": {
+          "value": "EMBARQ-CSU2, Week 12 UAS7 LS mean change: barzolvolimab 150 mg Q4W -20.2 (SE 0.63); 300 mg Q8W -19.7 (SE 0.64); placebo -11.4 (SE 0.64). Issuer reports p<0.00001 for each active arm vs placebo.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Crosschecked exact EMBARQ trial ID against official ClinicalTrials.gov protocol and issuer's two-trial, dose-stratified September 22, 2026 endpoint table. Verified that the issuer reported these measurements, NOT independently validated trial efficacy, regulatory probability, longitudinal durability or safety advantage.",
+          "confidence": "MODERATE"
+        },
+        "responseRemission": {
+          "value": "EMBARQ-CSU2 UAS7=0 complete response: Week 12 45.7% (150 mg Q4W) and 44.0% (300 mg Q8W), versus 12.6% placebo; Week 24 54.0% and 48.4%, versus 17.6% placebo. Issuer reports p<0.00001 for both dose arms at both visits.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+          "sourceDate": "2026-09-22",
+          "method": "Crosschecked exact EMBARQ trial ID against official ClinicalTrials.gov protocol and issuer's two-trial, dose-stratified September 22, 2026 endpoint table. Verified that the issuer reported these measurements, NOT independently validated trial efficacy, regulatory probability, longitudinal durability or safety advantage. Week 24 proportions are not proof of individual durable response.",
+          "confidence": "MODERATE"
         }
       },
       "advantages": []
