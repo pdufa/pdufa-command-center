@@ -7,6 +7,7 @@
  * Pending checks must NOT be represented as eligible, approved or trade-ready.
  */
 import { parsePhase3CensusCsv, type Phase3CensusRows, type Phase3CensusTrial } from "./phase3-census-rows";
+import {sortPoolUniverse,type PoolSortSpec} from "./pool-full-sort";
 import { parsePhase3CensusSourceDirectory, sourcesForPhase3Trial, type Phase3CensusSourceDirectory } from "./phase3-census-sources";
 import { exactProgramTimeline, type TimelineDates, type TimelineSourceFields } from "./pipeline-timeline";
 
@@ -175,7 +176,7 @@ export function poolStageStatistics(rows:PoolTrialRecord[]){
   return {total:rows.length,trials,standaloneResults,regulatoryEvents,groups,stages};
 }
 export type ScopeView="pool"|"pipeline"|"readout-review"|"census-review";
-export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limit:number,query:string,stageGroup:PoolStageGroup="all",stageFilter:string="",recordKind:PoolRecordKind="all",selectedStages:readonly string[]=[],designationTrialIds:ReadonlySet<string>|null=null,requireToolSelection=false){
+export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limit:number,query:string,stageGroup:PoolStageGroup="all",stageFilter:string="",recordKind:PoolRecordKind="all",selectedStages:readonly string[]=[],designationTrialIds:ReadonlySet<string>|null=null,requireToolSelection=false,sortSpec:PoolSortSpec|null=null){
   const q=query.trim().toLowerCase();
   const matches=(item:PoolTrialRecord|PostPhase3Review)=>[
     item.ticker,item.company,item.drug,item.indication,
@@ -201,9 +202,11 @@ export function funnelPage(funnel:FunnelResult,view:ScopeView,offset:number,limi
         return !stageFilter || normalizedStage===stageFilter;
       })
     :searched;
-  return {view,overview:funnel.overview,stageStats,stageGroup,stageFilter,recordKind,total:stageFiltered.length,offset,limit,
-    rows:stageFiltered.slice(offset,offset+limit),
-    nextOffset:offset+limit<stageFiltered.length?offset+limit:null,
+  const ordered=view==="pool"&&sortSpec
+    ?sortPoolUniverse(stageFiltered as PoolTrialRecord[],sortSpec):stageFiltered;
+  return {view,overview:funnel.overview,stageStats,stageGroup,stageFilter,recordKind,total:ordered.length,offset,limit,
+    rows:ordered.slice(offset,offset+limit),
+    nextOffset:offset+limit<ordered.length?offset+limit:null,
     qualifiedProgramCount:null,
     caveat:"Research reconciliation only; no independently verified current $300M–$10B post-Phase 3 program count. All historical candidates remain NEEDS REVIEW."};
 }

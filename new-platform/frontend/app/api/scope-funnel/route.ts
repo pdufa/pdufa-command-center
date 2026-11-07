@@ -1,4 +1,6 @@
 import { createHash } from "node:crypto";
+import {POOL_SORT_KEYS,type PoolSortKey} from "../../../lib/pool-full-sort";
+import type {PageSortDirection} from "../../../lib/pool-row-sorting";
 import { NextRequest, NextResponse } from "next/server";
 import { readFile } from "node:fs/promises";
 import { join } from "node:path";
@@ -172,6 +174,8 @@ export async function GET(req:NextRequest) {
   const query=params.get("query")||"";
   const format=params.get("format")||"json";
   const stageGroup=params.get("stageGroup")||"all";
+  const sortKey=params.get("sortKey")||"";
+  const sortDir=params.get("sortDir")||"";
   const stage=params.get("stage")||"";
   const recordKind=params.get("recordKind")||"all";
   const stagesParam=params.get("stages")||"";
@@ -186,6 +190,10 @@ export async function GET(req:NextRequest) {
   if(!["pool","pipeline","readout-review","census-review"].includes(view)
      || !/^(0|[1-9]\d{0,7})$/.test(offset)
      || !(/^(?:[1-9]|[1-4]\d|50)$/.test(limit) || (view==="pipeline" && /^(?:[1-9]\d?|1\d\d|200|500)$/.test(limit)))
+     || (sortKey!=="" && !(POOL_SORT_KEYS as readonly string[]).includes(sortKey))
+     || (!!sortKey && !["asc","desc"].includes(sortDir))
+     || (!sortKey && !!sortDir)
+     || (!!sortKey && (view!=="pool" || toolMode || recordKind!=="trials"))
      || query.length>100 || !["json","csv"].includes(format) || (format==="csv" && view!=="census-review" && !(view==="pool" && toolMode))
      || !["all",...Object.keys(POOL_STAGE_GROUPS)].includes(stageGroup)
      || (stage && !(POOL_STAGES as readonly string[]).includes(stage))
@@ -315,7 +323,8 @@ export async function GET(req:NextRequest) {
       }});
     }
     const initialPage=funnelPage(data,view as ScopeView,Number(offset),Number(limit),query,
-      stageGroup as PoolStageGroup,stage,recordKind as PoolRecordKind,selectedStages,designationMatches,toolMode);
+      stageGroup as PoolStageGroup,stage,recordKind as PoolRecordKind,selectedStages,designationMatches,toolMode,
+      sortKey?{key:sortKey as PoolSortKey,direction:sortDir as PageSortDirection}:null);
     const page=emptyStageSelection?{...initialPage,rows:[],total:0,nextOffset:null}:initialPage;
     const stageSelectors=toolMode?selectedStages.map(label=>({
       label,trials:data.poolRows.filter(row=>isPoolTrial(row)&&normalizePoolStage(row.stage)===label).length
