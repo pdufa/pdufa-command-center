@@ -1,0 +1,15 @@
+{
+  "base": "http://localhost:3000",
+  "activeRows": 29,
+  "exactResearchMatches": 5,
+  "testedClinicalCards": 25,
+  "historyVerified": true,
+  "apiParityVerified": true,
+  "activeFilteringVerified": true,
+  "retiredEndpointStill404": true,
+  "mobileHorizontalExpansion": {
+    "client": 312,
+    "scroll": 1500
+  },
+  "pageErrors": []
+}

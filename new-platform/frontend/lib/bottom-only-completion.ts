@@ -12,7 +12,7 @@ import supplement from "../data/raas-clinical-five-reviewed-increment.json";
 import {RAAS_METRIC_CATALOG} from "./raas-metric-specs";
 import {clinicalFiveDefinitions,ACTIVE_RAAS_VERSION} from "./raas-clinical-five";
 import {fullReviewedTrialCandidate,parseReviewedMetricFeed} from "./raas-reviewed-full-score";
-export const BOTTOM_ONLY_VERSION="BOTTOM_ONLY_POST_READOUT_20261107_V1";
+export const BOTTOM_ONLY_VERSION="BOTTOM_ONLY_POST_READOUT_20261107_V2";
 const asOf="2026-11-07";
 const activeIds=new Set(["post-1-1","post-1-2","post-1-3","post-1-4","post-1-5"]);
 /** Source questions relevant to each of the five approved post-data clinical factors. */
@@ -25,7 +25,17 @@ const factorQuestions:Readonly<Record<string,readonly number[]>>={
 };
 const matrixByNct=new Map(matrix.rows.map(r=>[r[0],r]));
 const endpointByNct=new Map(endpointAdjudications.records.map(r=>[r.nctId,r]));
+// Keep the full raw registry payload at runtime without propagating tens of
+// thousands of inferred result-cell types into every client component.
+type BottomRegistryReview={nctId:string;sourceHash:string;phase:string[];
+ identity:{nctId:string;[key:string]:unknown};[key:string]:unknown};
+const registryReviewByNct=new Map((reviewedFacts.registryReviews as unknown as BottomRegistryReview[]).map(r=>[r.nctId,r]));
 const allReviews=[...originalGrades.records,...supplement.records,...gradeIncrement.records];
+const dispositions=new Map(gradeIncrement.factorReviewDispositions.map(r=>[r.nctId+"|"+r.metricId,r]));
+export function bottomSourceReviewIsCurrent(nctId:string,sourceHash:string|undefined){
+ const accepted=(gradeIncrement.evidenceReviewHashes as Record<string,string>)[nctId];
+ return !!accepted&&!!sourceHash&&accepted===sourceHash;
+}
 const feed=parseReviewedMetricFeed({schemaVersion:1,scope:"RAAS_EXPLICIT_METRIC_REVIEWS_RESEARCH_ONLY",sourceAsOf:asOf,records:allReviews});
 const isUrl=(s:string|null|undefined):s is string=>typeof s==="string"&&/^https:\/\/[^ ]+/.test(s);
 const missing=(s:string|null|undefined)=>s===null||s===undefined||!s.trim()||
@@ -40,7 +50,7 @@ const tagQuestion=(raw:string,hasSource:boolean,hasAdded:boolean)=>{
 };
 export function bottomOnlyReport(){
  const ids=new Set(baseline.records.map(r=>r.nctId));
- if(ids.size!==23||matrix.headers.length!==190||matrix.rows.length!==ids.size||
+ if(ids.size!==baseline.records.length||matrix.headers.length!==190||matrix.rows.length!==ids.size||
   matrix.rows.some(r=>r.length!==190||!ids.has(r[0]))||
   baseline.records.some(r=>r.cohort!=="POST_DATA")||
   reviewedFacts.records.some(r=>!ids.has(r.nctId)||r.question<1||r.question>30||!isUrl(r.sourceUrl))||
@@ -53,6 +63,8 @@ export function bottomOnlyReport(){
   const observedOutcome=row.readoutOutcome!=="NOT_INDEPENDENTLY_REVIEWED"&&row.readoutOutcome!=="UNDETERMINED"?row.readoutOutcome:(savedEndpoint?.endpointOutcome??row.readoutOutcome);
   const readoutUrl=savedEndpoint?.evidenceUrl??row.readoutEvidenceUrl;
   const trialFacts=reviewedFacts.records.filter(f=>f.nctId===row.nctId);
+  const registryReview=registryReviewByNct.get(row.nctId);
+  const sourceReviewCurrent=bottomSourceReviewIsCurrent(row.nctId,registryReview?.sourceHash);
   const seenFacts=new Set<string>();
   if(trialFacts.some(f=>{const key=f.question+"|"+f.sourceUrl;const duplicate=seenFacts.has(key);seenFacts.add(key);return duplicate;}))
    throw Error("BOTTOM_REPEATED_SOURCE_FACT:"+row.nctId);
@@ -60,11 +72,12 @@ export function bottomOnlyReport(){
   const programs=new Map(reviewedProgram.map(r=>[JSON.stringify([r.drug.trim().toLowerCase(),r.indication.trim().toLowerCase()]),r]));
   const program=programs.size===1?[...programs.values()][0]:null;
   const graded=program?fullReviewedTrialCandidate({nctId:row.nctId,ticker:row.ticker,drug:program.drug,indication:program.indication},"post",true,feed):null;
-  const byMetric=new Map(graded?.grades.map(g=>[g.metricId,g])??[]);
+  const byMetric=new Map(sourceReviewCurrent?graded?.grades.map(g=>[g.metricId,g])??[]:[]);
   const scoreSource=graded?allReviews.filter(g=>g.nctId===row.nctId&&g.ticker===row.ticker&&g.stage==="post"&&g.drug.toLowerCase()===program!.drug.toLowerCase()&&g.indication.toLowerCase()===program!.indication.toLowerCase()):[];
   const rawByMetric=new Map(scoreSource.map(g=>[g.metricId,g]));
   const factors=clinicalFiveDefinitions("post").map(m=>{
    const grade=byMetric.get(m.id),source=rawByMetric.get(m.id);
+   const disposition=dispositions.get(row.nctId+"|"+m.id);
    const related=new Set(factorQuestions[m.id]??[]);
    const addedEvidence=trialFacts.filter(f=>related.has(f.question)).map(f=>({
     question:f.question,sourceUrl:f.sourceUrl,sourceDate:f.sourceDate,
@@ -88,13 +101,16 @@ export function bottomOnlyReport(){
     sourceDate:grade?.sourceDate??null,assessedAt:grade?.assessedAt??null,
     observedResult:source?.observedResult??null,benchmarkContext:source?.benchmarkContext??null,
     uncertaintyReview:source?.uncertaintyReview??null,criticalRiskReview:source?.criticalRiskReview??null,
-    evidenceState:grade?"SOURCE_REVIEWED_PROVISIONAL_GRADE":"MISSING_RUBRIC_READY_EVIDENCE"};
+    evidenceState:grade?"SOURCE_REVIEWED_PROVISIONAL_GRADE":!sourceReviewCurrent?"SOURCE_CHANGED_REVIEW_REQUIRED":disposition?.state??"MISSING_EVIDENCE",
+    blocker:grade?null:!sourceReviewCurrent?"Registry evidence changed since the explicit review; previous grades remain in history pending source-change adjudication.":disposition?.blocker??"MISSING_EVIDENCE: factor has not received an explicit review disposition.",
+    reviewDisposition:disposition??null};
   });
   const clinicalScoredFactors=factors.filter(f=>f.grade!==null).length;
   const clinicalFullScore=clinicalScoredFactors===5?
    Math.round(factors.reduce((acc,f)=>acc+(f.grade??0),0)/5*10)/10:null;
   const metrics=RAAS_METRIC_CATALOG.post.flatMap(category=>category.metrics.map(m=>{
    const grade=byMetric.get(m.id),raw=rawByMetric.get(m.id),active=activeIds.has(m.id);
+   const factor=factors.find(f=>f.id===m.id);
    return {id:m.id,name:m.name,definition:m.requiredEvidence,scoreRule:m.scoreRule,criticalRisk:m.criticalRisk,
     category:category.name,originalWeightPercent:category.weight/5,activeClinicalWeightPercent:active?20:0,
     activeInClinicalModel:active,score:grade?.score??null,finding:grade?.finding??null,
@@ -102,14 +118,16 @@ export function bottomOnlyReport(){
     sourceDate:grade?.sourceDate??null,assessedAt:grade?.assessedAt??null,
     observedResult:raw?.observedResult??null,benchmarkContext:raw?.benchmarkContext??null,
     uncertaintyReview:raw?.uncertaintyReview??null,criticalRiskReview:raw?.criticalRiskReview??null,
-    state:grade?"SOURCE_REVIEWED_PROVISIONAL_GRADE":active?"UNSCORED_EVIDENCE_REVIEW_REQUIRED":"ARCHIVED_NOT_ACTIVE",
-    blocker:grade?null:active?"Requires dated exact-program observed results, a relevant benchmark, uncertainty and an explicit rubric grade; readout existence or positive p-value is not sufficient.":"Not active in the approved five-factor clinical model."};
+    state:grade?"SOURCE_REVIEWED_PROVISIONAL_GRADE":active?factor?.evidenceState??"MISSING_EVIDENCE":"ARCHIVED_NOT_ACTIVE",
+    blocker:grade?null:active?factor?.blocker??"Missing explicit review disposition.":"Not active in the approved five-factor clinical model."};
   }));
   const values=[...original];
   const questions=Array.from({length:30},(_,i)=>{
    const offset=40+5*i,originalStatus=original[offset],sourceUrl=original[offset+4];
    const added=trialFacts.find(f=>f.question===i+1);
-   const fromSaved=isUrl(sourceUrl)&&originalStatus!=="UNSCORED";
+   // An SEC search link or research task is a source lead, not a finding.
+   const leadOnly=/source leads awaiting|outcome not independently adjudicated|verified prior trial NCT, statistical effect and p-value/i.test(original[offset+3]);
+   const fromSaved=isUrl(sourceUrl)&&originalStatus!=="UNSCORED"&&!leadOnly;
    const state=tagQuestion(originalStatus,fromSaved,Boolean(added));
    if(added&&!fromSaved){values[offset]=added.classification;if(!original[offset+3].trim())values[offset+3]=added.evidence+" | Limit: "+added.criticalLimit;if(!original[offset+4].trim())values[offset+4]=added.sourceUrl;}
    return {number:i+1,state,originalStatus,
@@ -117,6 +135,10 @@ export function bottomOnlyReport(){
     criticalLimit:added?.criticalLimit??null,
     sourceUrl:added?.sourceUrl??(isUrl(sourceUrl)?sourceUrl:null),
     sourceDate:added?.sourceDate??null,
+    evidenceStatus:added||fromSaved?"VERIFIED":"MISSING_EVIDENCE",
+    reviewStatus:added||fromSaved?"DOCUMENTED_SOURCE_OBSERVATION":"REVIEWED_SOURCE_PACKET_NO_SUPPORTED_QUESTION_FACT",
+    disclosureLimit:added||fromSaved?null:"No sufficient question-specific observation in the retrieved registry, issuer and publication packet. This is not proof no public source exists; further targeted source research may resolve it.",
+    sourceObservations:trialFacts.filter(f=>f.question===i+1),
     isScored:!missing(original[offset+2])&&Number.isFinite(Number(original[offset+2])),
     requiresFurtherReview:state==="MISSING_SOURCE_REVIEW"||
       state==="HISTORICAL_PREDICTION_NOT_POSTDATA_GRADE"};
@@ -132,21 +154,28 @@ export function bottomOnlyReport(){
    let state=absent?"MISSING_OR_UNSCORED":q?.state??"PRESERVED_FIELD";
    if(sub===1||sub===2)state=absent?"UNSCORED_OR_NOT_APPLICABLE":"PRESERVED_HISTORICAL_PREDICTION";
    if(sub===4)state=isUrl(value)?"SOURCE_URL_PRESENT":"SOURCE_URL_MISSING";
+   const archivedPrediction=sub===1||sub===2;
+   const sourceBacked=!!q&&["OBSERVED_PHASE3_ENDPOINT","PUBLIC_READOUT_DOCUMENTED","SOURCED_UNGRADED_FACT","VERIFIED_ADDITIONAL_SOURCE_FACT"].includes(q.state);
+   const registryIdentityField=[0,5,12,13,18,27,28].includes(index);
+   const evidenceStatus=archivedPrediction?"NOT_APPLICABLE":
+    absent?(sub===4?"MISSING_EVIDENCE":"NOT_REPORTED"):
+    sourceBacked||registryIdentityField?"VERIFIED":"MISSING_EVIDENCE";
    return {column:index+1,name:matrix.headers[index],value:absent?null:value,
     exportValue:absent?(value.trim()?value:(sub===1||sub===2?"N/A_UNSCORED":"MISSING_OR_UNDISCLOSED")):value,
     state,sourceUrl:available?sourceUrl:null,sourceDate:q?.sourceDate??row.readoutSourceDate??null,
     sourceScope:q?"EXACT_NCT_QUESTION_SOURCE_OR_REVIEW":"PRESERVED_ORIGINAL_COHORT_CLASSIFICATION",
-    evidenceVerified:!!q&&["OBSERVED_PHASE3_ENDPOINT","PUBLIC_READOUT_DOCUMENTED","SOURCED_UNGRADED_FACT","VERIFIED_ADDITIONAL_SOURCE_FACT"].includes(q.state),
+    evidenceVerified:evidenceStatus==="VERIFIED",evidenceStatus,
+    evidenceStatusNote:archivedPrediction?"Archived forecast/subjective-score column; retained verbatim, excluded from active clinical evidence denominator.":"Verified means a traceable source observation, not proof of efficacy or an independently validated claim.",
     note:absent?"Value absent from dated original source or no numeric grade; no imputation.":q?.criticalLimit??"Original source text retained; provenance is recorded separately."};
   });
   const blockers=[
-   ...factors.filter(f=>f.grade===null).map(f=>f.id+": "+f.name+" requires "+f.requiredEvidence),
+   ...factors.filter(f=>f.grade===null).map(f=>f.id+": "+f.evidenceState+": "+f.blocker),
    ...questions.filter(q=>q.state==="MISSING_SOURCE_REVIEW").map(q=>"Q"+q.number+": missing reviewed exact-NCT source fact (may be not yet disclosed).")
   ];
   const observedOutcomes=new Set(["PRIMARY_ENDPOINT_MET","PRIMARY_ENDPOINT_NOT_MET","MIXED_COPRIMARY_RESULTS","NO_BINARY_PASS_FAIL"]);
   const publicReadoutVerified=isUrl(readoutUrl)&&
     (observedOutcomes.has(observedOutcome)||row.evidenceBasis==="REGISTRY_RESULTS_POSTED"||row.evidenceBasis==="ISSUER_READOUT"||row.evidenceBasis==="FDA_APPROVAL_SUPPORTING_TRIAL"||row.evidenceBasis==="PEER_REVIEWED_RESULTS");
-  return {nctId:row.nctId,ticker:row.ticker,company:row.company,drug:row.drug??row.registeredInterventions,
+  return {nctId:row.nctId,ticker:row.ticker,company:row.company,drug:program?.drug??row.drug??row.registeredInterventions,
    indication:row.indication,status:row.registryStatus,cohort:"BOTTOM",phase:"PHASE3",classification:row.classificationCode,
    readoutOutcome:observedOutcome,readoutSourceDate:row.readoutSourceDate,readoutEvidenceUrl:readoutUrl,
    readoutEvidenceBasis:row.evidenceBasis,readoutVerified:publicReadoutVerified,
@@ -155,6 +184,9 @@ export function bottomOnlyReport(){
    clinicalFactors:factors,clinicalScoredFactors,clinicalFullScore,clinicalModel:ACTIVE_RAAS_VERSION,
    legacyThirtyMetricFullScore:graded?.fullResearchScore??null,
    additionalReviewedFacts:trialFacts,
+   registryReview:registryReview??null,sourceReviewCurrent,
+   researchReviewStatus:"ALL_FIVE_FACTORS_REVIEWED",
+   nonMissingFieldCount:fields.filter(f=>f.value!==null).length,
    sourceBackedQuestions:questions.filter(q=>!q.requiresFurtherReview).length,
    evidenceCompletenessPercent:Math.round(questions.filter(q=>!q.requiresFurtherReview).length/30*1000)/10,
    blockers,sourceGaps:questions.filter(q=>q.requiresFurtherReview).length,

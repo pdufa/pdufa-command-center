@@ -1,0 +1,19 @@
+{
+  "scope": "EXISTING_BOTTOM_ONLY",
+  "asOf": "2026-11-07",
+  "version": "BOTTOM_ONLY_POST_READOUT_20261107_V1",
+  "trialCount": 23,
+  "fieldsPerTrial": 190,
+  "allFieldsAccounted": 23,
+  "allMetricsEvaluated": 23,
+  "completeClinicalOverallScores": 5,
+  "completeThirtyMetricOverallScores": 0,
+  "activeFactorCount": 115,
+  "activeFactorsScored": 36,
+  "observedReadouts": 23,
+  "sourceBackedQuestionCount": 449,
+  "totalQuestionCount": 690,
+  "unresolvedQuestionCount": 241,
+  "additionalSourceFacts": 66,
+  "additionalProvisionalGrades": 12
+}

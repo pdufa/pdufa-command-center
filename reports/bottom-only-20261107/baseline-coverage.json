@@ -1,0 +1,22 @@
+{
+  "scope": "EXISTING_BOTTOM_ONLY",
+  "asOf": "2026-11-07",
+  "trialCount": 23,
+  "totalCells": 4370,
+  "allFieldsAccounted": 23,
+  "allMetricDispositions": 690,
+  "activeFactors": 115,
+  "activeFactorsGraded": 25,
+  "missingActiveFactorGrades": 90,
+  "completeClinicalScores": 2,
+  "completeThirtyMetricScores": 0,
+  "sourceBackedQuestionItems": 443,
+  "totalQuestionItems": 690,
+  "unresolvedQuestionItems": 247,
+  "additionalReviewedSourceFacts": 52,
+  "additionalProvisionalGrades": 1,
+  "gradedCoveragePercent": 21.7,
+  "sourceCoveragePercent": 64.2,
+  "notValidatedFdaProbability": true,
+  "note": "Updated research totals from live BOTTOM-only preview on PR #884, 23 trials, 52 additional facts; individual trial coverage lives in /api/bottom-only-completion and is not static."
+}

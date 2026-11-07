@@ -1,0 +1,78 @@
+{
+  "asOf": "2026-11-07",
+  "frontendTests": {
+    "passed": 1272,
+    "failed": 0,
+    "command": "node --test --test-concurrency=6 tests/*.test.cjs",
+    "status": 0
+  },
+  "pythonTests": {
+    "passed": 9,
+    "failed": 0,
+    "command": "python -m unittest discover -s tests -p 'test_bottom*.py' -v"
+  },
+  "productionBuild": {
+    "command": "npm run build",
+    "status": 0
+  },
+  "browserLocal": {
+    "base": "http://localhost:3000",
+    "activeRows": 29,
+    "exactResearchMatches": 5,
+    "testedClinicalCards": 25,
+    "historyVerified": true,
+    "apiParityVerified": true,
+    "activeFilteringVerified": true,
+    "retiredEndpointStill404": true,
+    "mobileHorizontalExpansion": {
+      "client": 312,
+      "scroll": 1500
+    },
+    "pageErrors": []
+  },
+  "preservation": {
+    "bottomOnlyReviewedFacts20261107.json": {
+      "originalRecordsPreserved": 66,
+      "currentRecords": 350
+    },
+    "bottomOnlyReviewedGradeIncrement20261107.json": {
+      "originalRecordsPreserved": 12,
+      "currentRecords": 74
+    },
+    "bottomOnlyScoreHistory20261107.json": {
+      "originalRecordsPreserved": 27,
+      "currentRecords": 79
+    },
+    "bottomOnlyBaseline20261107.json": {
+      "byteIdentical": true,
+      "sha256": "45ccf8fd94446536d8272ef575a2b31202500821a96d3152a5c8f4f2c357170e"
+    },
+    "bottomOnly190Baseline20261107.json": {
+      "byteIdentical": true,
+      "sha256": "4d26a6c7af444f5081d7b40530dc0c51c36f373ae8a0c5071267af3d61adaa58"
+    },
+    "raas-reviewed-metric-assessments.json": {
+      "byteIdentical": true,
+      "sha256": "db91894cd9f34dbbf4424097fdac8e7a8e6a16f5fec71e95b40cbc8171576159"
+    },
+    "raas-clinical-five-reviewed-increment.json": {
+      "byteIdentical": true,
+      "sha256": "3e9b708b0b9f64dc7fef9460faf2c4f10ead356d5ae8741a05e1b145360db874"
+    },
+    "p3PostDataActive.json": {
+      "byteIdentical": true,
+      "sha256": "ac9a72ff8594992f402e57890704f1c0adc16a23b4cc504518e33d89c631dc53"
+    }
+  },
+  "sheets": {
+    "verified": true,
+    "valueCellsWritten": 18,
+    "cellsCompared": 843,
+    "activeRows": 29,
+    "exactNctMatches": 5
+  },
+  "deployment": {
+    "status": "NOT_YET_DEPLOYED"
+  },
+  "recalculationIdempotent": true
+}

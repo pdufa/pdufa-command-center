@@ -1,0 +1,921 @@
+[
+  {
+    "nctId": "NCT05535946",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05535946",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05535946",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05535946-registry.json",
+    "sha256": "ea492b1488f4265fb516ef9b8aa9eb6ade0f6b6969b06c9ab4538149581248ca",
+    "retrievedAt": "2026-11-07T06:04:04.056162+00:00"
+  },
+  {
+    "nctId": "NCT05535946",
+    "url": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial/",
+    "finalUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial/",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05535946-source-0.html",
+    "sha256": "83e7246e574adb8a7dfd66e59d8942beabd22f5febdd08d0d35d5d3d801ec6c4",
+    "retrievedAt": "2026-11-07T06:04:04.688104+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05535946",
+    "url": "https://ir.abivax.com/node/12341/html",
+    "finalUrl": "https://ir.abivax.com/node/12341/html",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05535946-source-1.html",
+    "sha256": "86d53c7068d8122eb09092b2eda0016f6c4239a63b35eaf268645f6b8231f486",
+    "retrievedAt": "2026-11-07T06:04:04.208099+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05535946",
+    "url": "https://ir.abivax.com/static-files/99de1b8a-f695-4e75-a38f-9d970eb52d52",
+    "finalUrl": "https://ir.abivax.com/static-files/99de1b8a-f695-4e75-a38f-9d970eb52d52",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05535946-source-2.html",
+    "sha256": "bfee5c897e0753166efcbf122a03a061cc87eaa1ca8122182e65f8ffb2cf68f3",
+    "retrievedAt": "2026-11-07T06:04:04.439428+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04770753",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04770753",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04770753",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04770753-registry.json",
+    "sha256": "e8133c0fbaa1c8bfef5e33df6498ec43c4ac21ce5c14da7f7d927dab782803cd",
+    "retrievedAt": "2026-11-07T06:04:04.105718+00:00"
+  },
+  {
+    "nctId": "NCT04770753",
+    "url": "https://clinicaltrials.gov/study/NCT04770753",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT04770753",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04770753-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:04:04.116162+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04770753",
+    "url": "https://onlinelibrary.wiley.com/doi/full/10.1111/bjh.70838",
+    "error": "HTTP Error 403: Forbidden",
+    "retrievedAt": "2026-11-07T06:04:04.334484+00:00"
+  },
+  {
+    "nctId": "NCT04770753",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/40544857/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT04770753-source-2.html",
+    "sha256": "b7a73b21a285c37033417dd03eb597b7994c9e071c33d57cc5bb0fca8ebe6324",
+    "retrievedAt": "2026-11-07T06:04:04.305454+00:00",
+    "contentReview": "PubMed interstitial received; indexed publication abstract retrieved separately via Europe PMC. HTTP status is not evidence verification.",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04770779",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04770779",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04770779",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04770779-registry.json",
+    "sha256": "eb6181a1520352f388c3b006bde71c5149ec3a7bea108f0a9333b48aae4a2dee",
+    "retrievedAt": "2026-11-07T06:04:04.346161+00:00"
+  },
+  {
+    "nctId": "NCT04770779",
+    "url": "https://clinicaltrials.gov/study/NCT04770779",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT04770779",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04770779-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:04:04.420265+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04770779",
+    "url": "https://onlinelibrary.wiley.com/doi/10.1002/ajh.70472",
+    "error": "HTTP Error 403: Forbidden",
+    "retrievedAt": "2026-11-07T06:04:04.497920+00:00"
+  },
+  {
+    "nctId": "NCT04770779",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42721980/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT04770779-source-2.html",
+    "sha256": "f1616ea7f4763fabb65e1f7535c39f3758d6503dff4984774bcf866e8d631923",
+    "retrievedAt": "2026-11-07T06:04:04.561705+00:00",
+    "contentReview": "PubMed interstitial received; indexed publication abstract retrieved separately via Europe PMC. HTTP status is not evidence verification.",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05031780",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05031780",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05031780",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05031780-registry.json",
+    "sha256": "e4b447fb4e007785a61864df1fb756b402b7149d8302fe10283b58864504fad3",
+    "retrievedAt": "2026-11-07T06:04:04.543732+00:00"
+  },
+  {
+    "nctId": "NCT05031780",
+    "url": "https://investor.agios.com/news-releases/news-release-details/agios-announces-topline-results-rise-phase-3-trial-mitapivat",
+    "finalUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-topline-results-rise-phase-3-trial-mitapivat",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05031780-source-0.html",
+    "sha256": "61e6171c17c0bac35afc3cda1ead47b55b1117d9eddc5abc0805716167e48dd5",
+    "retrievedAt": "2026-11-07T06:04:04.865868+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05031780",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42913682/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/42913682/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05031780-source-1.html",
+    "sha256": "81b229d8d9d431811df9b940987f1c26fcbd1749f9ffb2db3b7122b3f7932ec7",
+    "retrievedAt": "2026-11-07T06:04:04.656840+00:00",
+    "contentReview": "PubMed interstitial received; indexed publication abstract retrieved separately via Europe PMC. HTTP status is not evidence verification.",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05144256",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05144256",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05144256",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05144256-registry.json",
+    "sha256": "639bcdcb66412be8a472e833bc99a5d4f3063c999e27a0c61c6a161b131ede16",
+    "retrievedAt": "2026-11-07T06:04:04.643143+00:00"
+  },
+  {
+    "nctId": "NCT05144256",
+    "url": "https://investor.agios.com/news-releases/news-release-details/agios-announces-results-phase-3-activate-kidst-study-mitapivat",
+    "finalUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-results-phase-3-activate-kidst-study-mitapivat",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05144256-source-0.html",
+    "sha256": "273ac2cd946ec3edc623145826d9f0ac921e0c9205ec20818f8e66f64cec01ae",
+    "retrievedAt": "2026-11-07T06:04:04.707280+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05175105",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05175105",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05175105",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05175105-registry.json",
+    "sha256": "56d883a770f43cb2ea1db582699da6b9c3ebb2069704b6636d8b5922d3451037",
+    "retrievedAt": "2026-11-07T06:04:04.715651+00:00"
+  },
+  {
+    "nctId": "NCT05175105",
+    "url": "https://investor.agios.com/news-releases/news-release-details/agios-phase-3-activate-kids-study-mitapivat-children-pyruvate",
+    "finalUrl": "https://investor.agios.com/news-releases/news-release-details/agios-phase-3-activate-kids-study-mitapivat-children-pyruvate",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05175105-source-0.html",
+    "sha256": "8a0714147cc9c75c9785a1c8ef119a8e6bed6e84778c32f981ee5bb2e066e219",
+    "retrievedAt": "2026-11-07T06:04:04.938689+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06747468",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06747468",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06747468",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06747468-registry.json",
+    "sha256": "6013f8e722e2cfa23fbb6e588854b524ee49cda17feca1c54988f6b3f0a04c25",
+    "retrievedAt": "2026-11-07T06:04:04.820318+00:00"
+  },
+  {
+    "nctId": "NCT06747468",
+    "url": "https://amylyx.gcs-web.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-positive-topline-results-0",
+    "finalUrl": "https://amylyx.gcs-web.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-positive-topline-results-0",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06747468-source-0.html",
+    "sha256": "63bad3cb9544c466a8f9aedf20629c4146119061fb9de67f26a0a464325e77b4",
+    "retrievedAt": "2026-11-07T06:04:05.045699+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06747468",
+    "url": "https://investors.amylyx.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-positive-topline-results-0",
+    "finalUrl": "https://investors.amylyx.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-positive-topline-results-0",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06747468-source-1.html",
+    "sha256": "33bd8c0b5ac71db748e1b6c10bb932844b4c258bcd675637dd50e71df301891c",
+    "retrievedAt": "2026-11-07T06:04:04.892615+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05453968",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05453968",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05453968",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05453968-registry.json",
+    "sha256": "5ccc4fdb7494d2db534558e366a286f630eb43f690d007bf61071b107bd6d6e6",
+    "retrievedAt": "2026-11-07T06:04:04.936125+00:00"
+  },
+  {
+    "nctId": "NCT05453968",
+    "url": "https://clinicaltrials.gov/study/NCT05453968",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05453968",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05453968-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:04:04.992560+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05453968",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/40716738/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/40716738/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05453968-source-1.html",
+    "sha256": "d03f5b46192ae79d769932d414de475b8f952f97ce6739a329de84eb26bb0943",
+    "retrievedAt": "2026-11-07T06:04:05.065044+00:00",
+    "contentReview": "PubMed interstitial received; indexed publication abstract retrieved separately via Europe PMC. HTTP status is not evidence verification.",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06445023",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06445023",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06445023",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06445023-registry.json",
+    "sha256": "f2de318cc50902ec9e8dd7e0ce153670208d483a42d74b73938f8ba2f640ccf1",
+    "retrievedAt": "2026-11-07T06:04:05.295041+00:00"
+  },
+  {
+    "nctId": "NCT06445023",
+    "url": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+    "finalUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06445023-source-0.html",
+    "sha256": "865bd1a74b2602d7b8223ff07540ff45f45afd867d10e5bcc185c5274dcae330",
+    "retrievedAt": "2026-11-07T06:04:05.504624+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06445023",
+    "url": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm",
+    "finalUrl": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06445023-source-1.html",
+    "sha256": "80cce53dab44acfd249cb9aae440f6e659446654f61329c07920ace6bbc01e90",
+    "retrievedAt": "2026-11-07T06:04:05.614929+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06455202",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06455202",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06455202",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06455202-registry.json",
+    "sha256": "e5e57d160b8db26d2586472baf38a17da331c76b9fed108b7b59fbbe52bc254a",
+    "retrievedAt": "2026-11-07T06:04:05.374918+00:00"
+  },
+  {
+    "nctId": "NCT06455202",
+    "url": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+    "finalUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06455202-source-0.html",
+    "sha256": "865bd1a74b2602d7b8223ff07540ff45f45afd867d10e5bcc185c5274dcae330",
+    "retrievedAt": "2026-11-07T06:04:05.502768+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06455202",
+    "url": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm",
+    "finalUrl": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06455202-source-1.html",
+    "sha256": "80cce53dab44acfd249cb9aae440f6e659446654f61329c07920ace6bbc01e90",
+    "retrievedAt": "2026-11-07T06:04:05.649875+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05711940",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05711940",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05711940",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05711940-registry.json",
+    "sha256": "bc67cc9af96d6252ce3ed270f2ab373e04d2c7514d5df54b98e4961e669be339",
+    "retrievedAt": "2026-11-07T06:04:05.507462+00:00"
+  },
+  {
+    "nctId": "NCT05711940",
+    "url": "https://ir.compasspathways.com/News--Events-/news/news-details/2026/Compass-Pathways-Successfully-Achieves-Primary-Endpoint-in-Second-Phase-3-Trial-Evaluating-COMP360-Psilocybin-for-Treatment-Resistant-Depression/",
+    "finalUrl": "https://ir.compasspathways.com/News--Events-/news/news-details/2026/Compass-Pathways-Successfully-Achieves-Primary-Endpoint-in-Second-Phase-3-Trial-Evaluating-COMP360-Psilocybin-for-Treatment-Resistant-Depression/",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05711940-source-0.html",
+    "sha256": "a28c124873924212ebb4491906c6094bf040571f43bee65216d2fc34f92489f9",
+    "retrievedAt": "2026-11-07T06:04:05.809408+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05257408",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05257408",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05257408",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05257408-registry.json",
+    "sha256": "f54e006839e80ac21f382eaec8131d6844f93d8fc6226920052a7c9034dd4965",
+    "retrievedAt": "2026-11-07T06:04:05.811455+00:00"
+  },
+  {
+    "nctId": "NCT05257408",
+    "url": "https://clinicaltrials.gov/study/NCT05257408",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05257408",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05257408-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:04:05.709132+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05257408",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/41974149/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/41974149/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05257408-source-1.html",
+    "sha256": "38bc0d3cc92643728084e870d24622e493be2502f956320a1d50ea305fa9a8a5",
+    "retrievedAt": "2026-11-07T06:04:05.802365+00:00",
+    "contentReview": "PubMed interstitial received; indexed publication abstract retrieved separately via Europe PMC. HTTP status is not evidence verification.",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05257408",
+    "url": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or",
+    "finalUrl": "https://www.fda.gov/drugs/cancer-approvals/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05257408-source-2.html",
+    "sha256": "39a1efa7913db944b8ed0a8eac0402aea2849aa322ce6528b5aff99626daac76",
+    "retrievedAt": "2026-11-07T06:04:06.394830+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06081894",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06081894",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06081894",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06081894-registry.json",
+    "sha256": "833e4c6edc5a686f138835cb7094de691f74cfae679c23987081c16d43015b56",
+    "retrievedAt": "2026-11-07T06:04:05.852125+00:00"
+  },
+  {
+    "nctId": "NCT06081894",
+    "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Topline-Results-from-ACACIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-with-Non-Obstructive-Hypertrophic-Cardiomyopathy/default.aspx",
+    "finalUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Topline-Results-from-ACACIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-with-Non-Obstructive-Hypertrophic-Cardiomyopathy/default.aspx",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06081894-source-0.html",
+    "sha256": "3638bd29489d13e0dfe5452087bc40bcacb17deb66d729b702ae12af2090aaf0",
+    "retrievedAt": "2026-11-07T06:04:06.110655+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06081894",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42663312/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/42663312/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT06081894-source-1.html",
+    "sha256": "ab3fc6fe4c825bc90a33f53e5a70ef8ad64c18781837c30b52710e51a9de4b6d",
+    "retrievedAt": "2026-11-07T06:04:06.027634+00:00",
+    "contentReview": "PubMed interstitial received; indexed publication abstract retrieved separately via Europe PMC. HTTP status is not evidence verification.",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT02598661",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT02598661",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02598661",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT02598661-registry.json",
+    "sha256": "2ceba1d16678cc20b34b9876d52fc7e181a1b5a90ed502edda14d2d3eb755af6",
+    "retrievedAt": "2026-11-07T06:04:06.177880+00:00"
+  },
+  {
+    "nctId": "NCT02598661",
+    "url": "https://clinicaltrials.gov/study/NCT02598661",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT02598661",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT02598661-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:04:06.041775+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT02598661",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/38048786/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/38048786/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT02598661-source-1.html",
+    "sha256": "86b0a60c98b9ef2ea38f1a4794ca5ab3814f59d71f71240e41e118f8280c16de",
+    "retrievedAt": "2026-11-07T06:04:06.047570+00:00",
+    "contentReview": "PubMed interstitial received; indexed publication abstract retrieved separately via Europe PMC. HTTP status is not evidence verification.",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04768972",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04768972",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04768972",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04768972-registry.json",
+    "sha256": "d3f85ebf2597dea47f3f8cda3c372a4478e49551b2daabae33c257bdb9ea82ad",
+    "retrievedAt": "2026-11-07T06:04:06.183445+00:00"
+  },
+  {
+    "nctId": "NCT04768972",
+    "url": "https://ionispharmaceuticalsinc.gcs-web.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+    "finalUrl": "https://ionispharmaceuticalsinc.gcs-web.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04768972-source-0.html",
+    "sha256": "1f86905a5a6e2e43883524c8fbf16cc004d11d5658d724e50c8dee127c74af9c",
+    "retrievedAt": "2026-11-07T06:04:06.194452+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04768972",
+    "url": "https://ir.ionis.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+    "finalUrl": "https://ir.ionis.com/news-releases/news-release-details/ionis-announces-positive-topline-results-phase-3-fusion-study",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04768972-source-1.html",
+    "sha256": "fc38445651530b57f11470ed81c9310dba2250be97408f448d10fb4195f63500",
+    "retrievedAt": "2026-11-07T06:04:06.354516+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04849741",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04849741",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04849741",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04849741-registry.json",
+    "sha256": "a3fb792312434d2a2d743f954571e5a77f4f64e38fdd035bc674da8f1a694f97",
+    "retrievedAt": "2026-11-07T06:04:06.315312+00:00"
+  },
+  {
+    "nctId": "NCT04849741",
+    "url": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+    "finalUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-drug-treat-alexander-disease",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04849741-source-0.html",
+    "sha256": "8235f57f80324a89dcec5c3f7ae7cd8036bb954b61314910b3b723c412d9ec92",
+    "retrievedAt": "2026-11-07T06:04:06.589288+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05392114",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05392114",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05392114",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05392114-registry.json",
+    "sha256": "b95a3db71a68f4f96858983245aad7442738bd0ead16cdbe118557bf86838438",
+    "retrievedAt": "2026-11-07T06:04:06.376192+00:00"
+  },
+  {
+    "nctId": "NCT05392114",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/41767175/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05392114-source-0.html",
+    "sha256": "a119497acc007a1c7671c8afc5abf63088f67fc592a3b513d3e74dc14de973ae",
+    "retrievedAt": "2026-11-07T06:04:06.404619+00:00",
+    "contentReview": "PubMed interstitial received; indexed publication abstract retrieved separately via Europe PMC. HTTP status is not evidence verification.",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06641076",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT06641076",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06641076",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06641076-registry.json",
+    "sha256": "e405d8cb1b46a53d15f6d6594988cbe0554a334d7a6abfdd519600464f7c1091",
+    "retrievedAt": "2026-11-07T06:04:06.537531+00:00"
+  },
+  {
+    "nctId": "NCT06641076",
+    "url": "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+    "finalUrl": "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT06641076-source-0.html",
+    "sha256": "abb2cac0b79dff93539ac2ae284762ca574802fc71e9d24aba9b6f04d8c5f9a7",
+    "retrievedAt": "2026-11-07T06:04:06.711431+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05210790",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05210790",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05210790",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05210790-registry.json",
+    "sha256": "7889a327ac6b6dc495cbe13b40f70e04d7dec6736634a429d0e65a824410cccf",
+    "retrievedAt": "2026-11-07T06:04:06.621046+00:00"
+  },
+  {
+    "nctId": "NCT05210790",
+    "url": "https://ascopubs.org/doi/full/10.1200/JCO-26-00992",
+    "error": "HTTP Error 403: Forbidden",
+    "retrievedAt": "2026-11-07T06:04:06.629692+00:00"
+  },
+  {
+    "nctId": "NCT05210790",
+    "url": "https://clinicaltrials.gov/study/NCT05210790",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05210790",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05210790-source-1.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:04:06.629329+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05210790",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42868322/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/42868322/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05210790-source-2.html",
+    "sha256": "4b97d9fae1eef65d469d9afbcd70614f250b873a7ef8897d86c646e538e6af29",
+    "retrievedAt": "2026-11-07T06:04:06.691963+00:00",
+    "contentReview": "PubMed interstitial received; indexed publication abstract retrieved separately via Europe PMC. HTTP status is not evidence verification.",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05774756",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05774756",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05774756",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05774756-registry.json",
+    "sha256": "ba122ce7849fb4a2ac7ecf8e014237f140bc1ab7129a6bc995e0df4e09e3f42c",
+    "retrievedAt": "2026-11-07T06:04:06.816705+00:00"
+  },
+  {
+    "nctId": "NCT05774756",
+    "url": "https://clinicaltrials.gov/study/NCT05774756",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05774756",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05774756-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:04:06.853715+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05774756",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/42418774/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/42418774/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05774756-source-1.html",
+    "sha256": "7c01f35a190ffc6bbb7d1233c6e6f5e7c3bcb82f08dcd4e72fdb40f0af237f61",
+    "retrievedAt": "2026-11-07T06:04:06.966382+00:00",
+    "contentReview": "PubMed interstitial received; indexed publication abstract retrieved separately via Europe PMC. HTTP status is not evidence verification.",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04544293",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04544293",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04544293",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04544293-registry.json",
+    "sha256": "f09a874416bf6573a8893106b2f97a87853ba449076499e445c48cf1e05ff297",
+    "retrievedAt": "2026-11-07T06:04:06.964186+00:00"
+  },
+  {
+    "nctId": "NCT04544293",
+    "url": "https://clinicaltrials.gov/study/NCT04544293",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT04544293",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04544293-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:04:06.916097+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04544293",
+    "url": "https://investors.savarapharma.com/news/news-details/2024/Savara-Announces-Molgramostim-Nebulizer-Solution-Molgramostim-Achieved-Statistical-Significance-for-Primary-Endpoint-and-Multiple-Secondary-Endpoints-in-IMPALA-2-a-Pivotal-Phase-3-Clinical-Trial-in-Autoimmune-Pulmonary-Alveolar--06-26-2024/default.aspx",
+    "finalUrl": "https://investors.savarapharma.com/news/news-details/2024/Savara-Announces-Molgramostim-Nebulizer-Solution-Molgramostim-Achieved-Statistical-Significance-for-Primary-Endpoint-and-Multiple-Secondary-Endpoints-in-IMPALA-2-a-Pivotal-Phase-3-Clinical-Trial-in-Autoimmune-Pulmonary-Alveolar--06-26-2024/default.aspx",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04544293-source-1.html",
+    "sha256": "20e65632e4df11d19d50059b7a1bd185714a2ebbcebdf75d9574defa07403105",
+    "retrievedAt": "2026-11-07T06:04:07.520112+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05243550",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT05243550",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05243550",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05243550-registry.json",
+    "sha256": "ff2c6acea249c15234d6f1d4b7d174de50b282e8f96e0f00ad00e4cabf4f91e4",
+    "retrievedAt": "2026-11-07T06:04:07.028988+00:00"
+  },
+  {
+    "nctId": "NCT05243550",
+    "url": "https://clinicaltrials.gov/study/NCT05243550",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT05243550",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT05243550-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:04:07.102930+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05243550",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/41880645/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/41880645/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT05243550-source-1.html",
+    "sha256": "f40d1fbc4cd7cd566d8d8708a74555335d459864b0bdf42da373778ee0ed4e77",
+    "retrievedAt": "2026-11-07T06:04:07.099685+00:00",
+    "contentReview": "PubMed interstitial received; indexed publication abstract retrieved separately via Europe PMC. HTTP status is not evidence verification.",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04716231",
+    "url": "https://clinicaltrials.gov/api/v2/studies/NCT04716231",
+    "finalUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04716231",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04716231-registry.json",
+    "sha256": "ca4d91a3523f7a6cd6e0df780fe7a30da714264a48ce46179f81d1e202058bfb",
+    "retrievedAt": "2026-11-07T06:04:07.131307+00:00"
+  },
+  {
+    "nctId": "NCT04716231",
+    "url": "https://clinicaltrials.gov/study/NCT04716231",
+    "finalUrl": "https://clinicaltrials.gov/study/NCT04716231",
+    "status": 200,
+    "path": "reports/bottom-only-20261107/sources/NCT04716231-source-0.html",
+    "sha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+    "retrievedAt": "2026-11-07T06:04:07.297117+00:00",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04716231",
+    "url": "https://pubmed.ncbi.nlm.nih.gov/41196369/",
+    "finalUrl": "https://pubmed.ncbi.nlm.nih.gov/41196369/",
+    "status": 203,
+    "path": "reports/bottom-only-20261107/sources/NCT04716231-source-1.html",
+    "sha256": "22d739db9a429954516e786885271c3c9ed974e9992acb186bdb1f2dfe60d16e",
+    "retrievedAt": "2026-11-07T06:04:07.297916+00:00",
+    "contentReview": "PubMed interstitial received; indexed publication abstract retrieved separately via Europe PMC. HTTP status is not evidence verification.",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04849741",
+    "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220210Orig1s000lbl.pdf",
+    "status": 200,
+    "retrievedAt": "2026-11-07",
+    "path": "reports/bottom-only-20261107/sources/NCT04849741-label.pdf",
+    "sha256": "25734f6fd281f53bdf9fc7a0999805641f46a9301dd5f62d1de1f7e47475d5a0",
+    "discoveredVia": "https://api.fda.gov/drug/drugsfda.json?search=products.brand_name:ZANVASTRO&limit=1"
+  },
+  {
+    "nctId": "NCT05210790",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2842868322%29",
+    "path": "reports/bottom-only-20261107/sources/NCT05210790-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "fa470033414cfced409322d8f951b446e779e8f33c8e65d05071da713ee9c200",
+    "searchResults": 1,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(42868322)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05175105",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05175105",
+    "path": "reports/bottom-only-20261107/sources/NCT05175105-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "b3458e7ef178d6dca8bb43ca375b3e02ce6b8a7ad74d6d534b528e6d1b5955a5",
+    "searchResults": 4,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "NCT05175105",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT02598661",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2833108243%20OR%2038048786%20OR%2041135032%20OR%2041568521%29",
+    "path": "reports/bottom-only-20261107/sources/NCT02598661-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "ad8951189deeea5d2cf14efe0ec7530cdc62898e72fed080d22c0ba7b0789c11",
+    "searchResults": 4,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(33108243 OR 38048786 OR 41135032 OR 41568521)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04768972",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2835246398%29",
+    "path": "reports/bottom-only-20261107/sources/NCT04768972-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "f9b0a5580ec1a102f28164ecf12f857f360c5246430b628a90e27fe7232a1b4a",
+    "searchResults": 1,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(35246398)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04770753",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2840544857%29",
+    "path": "reports/bottom-only-20261107/sources/NCT04770753-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "3562002dc980e0f5b3be4e104e7a24a54a7303d148bb60e7da5d99a8ade3a07f",
+    "searchResults": 1,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(40544857)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05392114",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2840673861%20OR%2041767175%29",
+    "path": "reports/bottom-only-20261107/sources/NCT05392114-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "7b0f7dc5617e64addb6286951bb933a05b4721b21f5504f72bb0c8fe56d45c5c",
+    "searchResults": 2,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(40673861 OR 41767175)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05144256",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05144256",
+    "path": "reports/bottom-only-20261107/sources/NCT05144256-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "bb44bdf156947fc4a309da496d123558e1fcccffa9137d51948c7b203e33fe4f",
+    "searchResults": 6,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "NCT05144256",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05453968",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2840716738%29",
+    "path": "reports/bottom-only-20261107/sources/NCT05453968-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "34f1d2bf0c0d0d6693c18f4f77fc15f92f66704f65abb8082eec3265ac8eef82",
+    "searchResults": 1,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(40716738)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06455202",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06455202",
+    "path": "reports/bottom-only-20261107/sources/NCT06455202-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "7080c022408faeece4894d8c90b7abfeb65d800929f770a3aa240933b499439a",
+    "searchResults": 9,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "NCT06455202",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04849741",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04849741",
+    "path": "reports/bottom-only-20261107/sources/NCT04849741-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "a5824e4ddaa99219de66990466037d0f03fd39818a4e0f04a06ed75d8a9e1ede",
+    "searchResults": 20,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "NCT04849741",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06747468",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06747468",
+    "path": "reports/bottom-only-20261107/sources/NCT06747468-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "88a2100d312af04db6cd58f530a8773291a65b330ab860307424eb6706900d15",
+    "searchResults": 2,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "NCT06747468",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05031780",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2837254256%20OR%2037934880%20OR%2039644907%20OR%2041809202%20OR%2042913682%29",
+    "path": "reports/bottom-only-20261107/sources/NCT05031780-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "36ad665c98b0a919cb0381e8ead5fda3d6c513bd45898aa00a4978582bbd02f3",
+    "searchResults": 5,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(37254256 OR 37934880 OR 39644907 OR 41809202 OR 42913682)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05774756",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2842418774%20OR%2042528856%20OR%2042821228%29",
+    "path": "reports/bottom-only-20261107/sources/NCT05774756-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "ecb6b67949fb609196966819a826e007f8d27de46235fec444853da78a026990",
+    "searchResults": 3,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(42418774 OR 42528856 OR 42821228)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05243550",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2839446087%20OR%2040048558%20OR%2041880645%29",
+    "path": "reports/bottom-only-20261107/sources/NCT05243550-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "d33774888c70e81da3948d10e73d3a1505f3485fc720a2773c92238911c5fba1",
+    "searchResults": 3,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(39446087 OR 40048558 OR 41880645)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06081894",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2842663111%20OR%2042663312%20OR%2042667274%29",
+    "path": "reports/bottom-only-20261107/sources/NCT06081894-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "7a06d3760a585c5478f9271e5f1aa05909f7de23eb85fe3b8ee127604d64b839",
+    "searchResults": 3,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(42663111 OR 42663312 OR 42667274)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05257408",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2837364223%20OR%2039032926%20OR%2040473448%20OR%2041974149%29",
+    "path": "reports/bottom-only-20261107/sources/NCT05257408-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "0b1c090958c08ccde5b623977e0d1d0ea38f96775aa21345dca5bd1b3f70bd5e",
+    "searchResults": 4,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(37364223 OR 39032926 OR 40473448 OR 41974149)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05535946",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05535946",
+    "path": "reports/bottom-only-20261107/sources/NCT05535946-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "c4931e39e119d070ac7eb9c864edacd52bd6f098da3e3adbad2b0ed1e1d820e0",
+    "searchResults": 11,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "NCT05535946",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04770779",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2842721980%29",
+    "path": "reports/bottom-only-20261107/sources/NCT04770779-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "0090d44fe6596f54097c2a2b9efbf4db54e29daa31b3b03429b8f1a0604731cb",
+    "searchResults": 1,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(42721980)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06445023",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06445023",
+    "path": "reports/bottom-only-20261107/sources/NCT06445023-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "931fe5ca86271d8438c65abce3968ac06ed4494275f2a29522f47af8409d5755",
+    "searchResults": 7,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "NCT06445023",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04544293",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2840834301%29",
+    "path": "reports/bottom-only-20261107/sources/NCT04544293-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "9e998881c64b4406db4ea712d1faabd2e5bbc433a28788dd441071abb72dacce",
+    "searchResults": 1,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(40834301)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT04716231",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=EXT_ID%3A%2839462308%20OR%2041196369%20OR%2041620980%20OR%2041661687%20OR%2042911181%29",
+    "path": "reports/bottom-only-20261107/sources/NCT04716231-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "54bb8a3fe3ec352030c2b944411fc88fb66204661f436facd7e457632741f18c",
+    "searchResults": 5,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "EXT_ID:(39462308 OR 41196369 OR 41620980 OR 41661687 OR 42911181)",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT05711940",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05711940",
+    "path": "reports/bottom-only-20261107/sources/NCT05711940-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "8bddb7e6a61f4400659086aa000040597ac728030f452059bd67abb8da556f08",
+    "searchResults": 8,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "NCT05711940",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  },
+  {
+    "nctId": "NCT06641076",
+    "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06641076",
+    "path": "reports/bottom-only-20261107/sources/NCT06641076-publications.json",
+    "retrievedAt": "2026-11-07",
+    "sha256": "c4df8fdc76c4054a1838dc0374c98b45a64998b9d38bad16b2e9c65c1f7f9403",
+    "searchResults": 4,
+    "contentReview": "Indexed abstracts reviewed where exact NCT matched; unrelated review articles are leads, not trial evidence. Query used registry/source PMIDs when available.",
+    "query": "NCT06641076",
+    "snapshotAvailability": "LOCAL_RETRIEVAL_CAPTURE; source URL and digest retained; publication bibliography in sources/publication-index.json"
+  }
+]

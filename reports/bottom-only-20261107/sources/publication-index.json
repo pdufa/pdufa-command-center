@@ -1,0 +1,1306 @@
+[
+  {
+    "nctId": "NCT05210790",
+    "hitCount": 1,
+    "publications": [
+      {
+        "id": "42868322",
+        "source": "MED",
+        "title": "VERIFY: A Phase III Trial of Rusfertide Versus Placebo in Phlebotomy-Dependent Patients With Polycythemia Vera Receiving Standard-of-Care Therapy.",
+        "authorString": "Kuykendall AT, Bankar A, Pettit KM, Shatzel J, Lucchesi A, Garc\u00eda-Guti\u00e9rrez V, Mayer J, Yacoub A, Gill H, Sasca D, Scandura JM, Kremyanskaya M, Ross DM, Palandri F, Fox ML, Vannucchi AM, Haque T, Koschmieder S, Kiladjian JJ, Oyuela P, Dinh P, Xiao J, Valone FH, Gupta S, Khanna S, Molina A, Pemmaraju N, VERIFY Investigators.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-10-13",
+        "doi": "10.1200/jco-26-00992",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT05175105",
+    "hitCount": 4,
+    "publications": [
+      {
+        "id": "PMC9429391",
+        "source": "PMC",
+        "title": "P1547: ACTIVATE-KIDS: MITAPIVAT IN CHILDREN WITH PYRUVATE KINASE DEFICIENCY WHO ARE NOT REGULARLY TRANSFUSED",
+        "authorString": "Grace R, Tyler P, Little M, Kosinski P, Beynon V.",
+        "journalTitle": null,
+        "firstPublicationDate": "2022-06-01",
+        "doi": null,
+        "pmcid": "PMC9429391",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "PMC9429520",
+        "source": "PMC",
+        "title": "PB2247: PHARMACOKINETIC MODELING AND SIMULATION TO SUPPORT MITAPIVAT DOSE SELECTION USED IN PEDIATRIC PHASE III STUDIES",
+        "authorString": "Yin O, Baron K, Mondick J, Little M, Tyler P, Beynon V.",
+        "journalTitle": null,
+        "firstPublicationDate": "2022-06-01",
+        "doi": null,
+        "pmcid": "PMC9429520",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "36935283",
+        "source": "MED",
+        "title": "Updates and advances in pyruvate kinase deficiency.",
+        "authorString": "Luke N, Hillier K, Al-Samkari H, Grace RF.",
+        "journalTitle": null,
+        "firstPublicationDate": "2023-03-17",
+        "doi": "10.1016/j.molmed.2023.02.005",
+        "pmcid": "PMC11088755",
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "PMC9429973",
+        "source": "PMC",
+        "title": "Abstract Book for the 27th Congress of the European Hematology Association",
+        "authorString": null,
+        "journalTitle": null,
+        "firstPublicationDate": "2022-06-01",
+        "doi": null,
+        "pmcid": "PMC9429973",
+        "isOpenAccess": "Y"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT02598661",
+    "hitCount": 4,
+    "publications": [
+      {
+        "id": "41568521",
+        "source": "MED",
+        "title": "Imetelstat improves patient-reported outcomes and quality of life in lower-risk myelodysplastic syndromes: results from the phase III IMerge study.",
+        "authorString": "Sekeres MA, Zeidan AM, Santini V, Komrokji RS, Fenaux P, Savona MR, Madanat YF, Valc\u00e1rcel D, Regnault A, Creel K, Sun L, Wan Y, Navada S, Berry T, Feller F, Platzbecker U, D\u00edez-Campelo M, Oliva EN.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-01-22",
+        "doi": "10.3324/haematol.2025.288956",
+        "pmcid": "PMC13317827",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41135032",
+        "source": "MED",
+        "title": "US Food and Drug Administration Approval Summary: Imetelstat for Selected Patients With Low- to Intermediate-1 Risk Myelodysplastic Syndromes With Transfusion-Dependent Anemia.",
+        "authorString": "Kim N, Pulte ED, Ehrlich LA, Ionan AC, Haupert S, Vallejo J, Green F, Zheng N, Wang Y, Liu J, Blanco JG, Dorff SE, Booth B, Choe M, Gehrke B, Bhatnagar V, Theoret M, Pazdur R, De Claro RA, Norsworthy KJ.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-10-24",
+        "doi": "10.1200/jco-25-01369",
+        "pmcid": "PMC12614338",
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "38048786",
+        "source": "MED",
+        "title": "Imetelstat in patients with lower-risk myelodysplastic syndromes who have relapsed or are refractory to erythropoiesis-stimulating agents (IMerge): a multinational, randomised, double-blind, placebo-controlled, phase 3 trial.",
+        "authorString": "Platzbecker U, Santini V, Fenaux P, Sekeres MA, Savona MR, Madanat YF, D\u00edez-Campelo M, Valc\u00e1rcel D, Illmer T, Jon\u00e1\u0161ov\u00e1 A, B\u011blohl\u00e1vkov\u00e1 P, Sherman LJ, Berry T, Dougherty S, Shah S, Xia Q, Sun L, Wan Y, Huang F, Ikin A, Navada S, Feller F, Komrokji RS, Zeidan AM.",
+        "journalTitle": null,
+        "firstPublicationDate": "2023-12-01",
+        "doi": "10.1016/s0140-6736(23)01724-5",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "33108243",
+        "source": "MED",
+        "title": "Imetelstat Achieves Meaningful and Durable Transfusion Independence in High Transfusion-Burden Patients With Lower-Risk Myelodysplastic Syndromes in a Phase II Study.",
+        "authorString": "Steensma DP, Fenaux P, Van Eygen K, Raza A, Santini V, Germing U, Font P, Diez-Campelo M, Thepot S, Vellenga E, Patnaik MM, Jang JH, Varsos H, Bussolari J, Rose E, Sherman L, Sun L, Wan Y, Dougherty S, Huang F, Feller F, Rizo A, Platzbecker U.",
+        "journalTitle": null,
+        "firstPublicationDate": "2020-10-27",
+        "doi": "10.1200/jco.20.01895",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT04768972",
+    "hitCount": 1,
+    "publications": [
+      {
+        "id": "35246398",
+        "source": "MED",
+        "title": "InFUSing antisense oligonucleotides for treating ALS.",
+        "authorString": "Codron P, Cassereau J, Vourc'h P.",
+        "journalTitle": null,
+        "firstPublicationDate": "2022-03-01",
+        "doi": "10.1016/j.molmed.2022.02.006",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT04770753",
+    "hitCount": 1,
+    "publications": [
+      {
+        "id": "40544857",
+        "source": "MED",
+        "title": "Mitapivat in adults with non-transfusion-dependent \u03b1-thalassaemia or \u03b2-thalassaemia (ENERGIZE): a phase 3, international, randomised, double-blind, placebo-controlled trial.",
+        "authorString": "Taher AT, Al-Samkari H, Aydinok Y, Besser M, Boscoe AN, Dahlin JL, De Luna G, Estepp JH, Gheuens S, Gilroy KS, Glenth\u00f8j A, Sim Goh A, Iyer V, Kattamis A, Loggetto SR, Morris S, Musallam KM, Osman K, Ricchi P, Salido-Fi\u00e9rrez E, Sheth S, Tai F, Tevich H, Uhlig K, Urbstonaitis R, Viprakasit V, Cappellini MD, Kuo KHM, ENERGIZE investigators.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-06-19",
+        "doi": "10.1016/s0140-6736(25)00635-x",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT05392114",
+    "hitCount": 2,
+    "publications": [
+      {
+        "id": "41767175",
+        "source": "MED",
+        "title": "Donidalorsen for Long-Term Prophylaxis of Hereditary Angioedema Attacks: Results from the OASISplus Open-Label Extension Cohort at Year 1.",
+        "authorString": "Lumry WR, Tachdjian R, Craig T, Karakaya G, Gelincik A, Stobiecki M, Jacobs JS, Gokmen NM, Reshef A, Manning ME, Grammatikos A, Giardino F, Guilarte M, Baptist AP, Bordone L, Newman KB, Treadwell S, Lin T, Yarlas A, Riedl MA, Cohn DM.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-02-23",
+        "doi": "10.2147/jaa.s592079",
+        "pmcid": "PMC12948764",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "40673861",
+        "source": "MED",
+        "title": "Donidalorsen Treatment of Hereditary Angioedema in Patients Previously on Long-Term Prophylaxis.",
+        "authorString": "Riedl MA, Bernstein JA, Jacobs JS, Craig T, Banerji A, Perego F, Lumry WR, Wedner HJ, Gierer S, Manning ME, Bordone L, Treadwell S, Lin T, Newman KB, Yarlas A, Cohn DM.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-07-17",
+        "doi": "10.1016/j.jaip.2025.06.018",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT05144256",
+    "hitCount": 6,
+    "publications": [
+      {
+        "id": "PMC9431207",
+        "source": "PMC",
+        "title": "P1546: ACTIVATE-KIDST: MITAPIVAT IN CHILDREN WITH PYRUVATE KINASE DEFICIENCY WHO ARE REGULARLY TRANSFUSED",
+        "authorString": "Grace R, Tyler P, Little M, Kosinski P, Beynon V.",
+        "journalTitle": null,
+        "firstPublicationDate": "2022-06-01",
+        "doi": null,
+        "pmcid": "PMC9431207",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "PMC9429520",
+        "source": "PMC",
+        "title": "PB2247: PHARMACOKINETIC MODELING AND SIMULATION TO SUPPORT MITAPIVAT DOSE SELECTION USED IN PEDIATRIC PHASE III STUDIES",
+        "authorString": "Yin O, Baron K, Mondick J, Little M, Tyler P, Beynon V.",
+        "journalTitle": null,
+        "firstPublicationDate": "2022-06-01",
+        "doi": null,
+        "pmcid": "PMC9429520",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "36935283",
+        "source": "MED",
+        "title": "Updates and advances in pyruvate kinase deficiency.",
+        "authorString": "Luke N, Hillier K, Al-Samkari H, Grace RF.",
+        "journalTitle": null,
+        "firstPublicationDate": "2023-03-17",
+        "doi": "10.1016/j.molmed.2023.02.005",
+        "pmcid": "PMC11088755",
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "37934880",
+        "source": "MED",
+        "title": "One-year safety and efficacy of mitapivat in sickle cell disease: follow-up results of a phase 2, open-label study.",
+        "authorString": "van Dijk MJ, Rab MAE, van Oirschot BA, Bos J, Derichs C, Rijneveld AW, Cnossen MH, Nur E, Biemond BJ, Bartels M, Jans JJM, van Solinge WW, Schutgens REG, van Wijk R, van Beers EJ.",
+        "journalTitle": null,
+        "firstPublicationDate": "2023-12-01",
+        "doi": "10.1182/bloodadvances.2023011477",
+        "pmcid": "PMC10761354",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "34987744",
+        "source": "MED",
+        "title": "Mitapivat, a novel pyruvate kinase activator, for the treatment of hereditary hemolytic anemias.",
+        "authorString": "Al-Samkari H, van Beers EJ.",
+        "journalTitle": null,
+        "firstPublicationDate": "2021-12-21",
+        "doi": "10.1177/20406207211066070",
+        "pmcid": "PMC8721383",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "PMC9429973",
+        "source": "PMC",
+        "title": "Abstract Book for the 27th Congress of the European Hematology Association",
+        "authorString": null,
+        "journalTitle": null,
+        "firstPublicationDate": "2022-06-01",
+        "doi": null,
+        "pmcid": "PMC9429973",
+        "isOpenAccess": "Y"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT05453968",
+    "hitCount": 1,
+    "publications": [
+      {
+        "id": "40716738",
+        "source": "MED",
+        "title": "Oral berotralstat for hereditary angioedema prophylaxis in patients aged 2 to &lt;12 years: APeX-P interim results.",
+        "authorString": "Bernatoniene J, Bourgoin-Heck M, Cancian M, Yang W, Hagin D, Pagnier A, Stobiecki M, Kinaciyan T, Phillips-Angles E, Gayet S, Bara NA, Hunter J, Mateescu E, DeSpirito M, Johnston D, Long D, Iocca H, Petroni D, Ayg\u00f6ren-P\u00fcrs\u00fcn E.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-07-25",
+        "doi": "10.1016/j.anai.2025.07.012",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT06455202",
+    "hitCount": 9,
+    "publications": [
+      {
+        "id": "42496854",
+        "source": "MED",
+        "title": "Shared Mechanistic Pathways in Bullous Pemphigoid, Chronic Spontaneous Urticaria, Prurigo Nodularis, and Chronic Prurigo of Unknown Origin: Implications for Targeted Therapies.",
+        "authorString": "Schmidt E, Puga MF, Kim BS, Simpson EL.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-07-24",
+        "doi": "10.1007/s40257-026-01052-z",
+        "pmcid": "PMC13578021",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41270830",
+        "source": "MED",
+        "title": "Emerging IgE and non-IgE targeted therapies for chronic urticaria.",
+        "authorString": "Chhiba KD, Saini SS.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-11-19",
+        "doi": "10.1016/j.anai.2025.11.008",
+        "pmcid": "PMC12874352",
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "42776801",
+        "source": "MED",
+        "title": "Targeted Therapy for Antihistamine-Refractory Chronic Spontaneous Urticaria: A Critical Narrative Review and an Evidence-Graded Approach to Agent Selection.",
+        "authorString": "Guarino L, Rizzuto G, Coppolelli V, Scipione A, Scattone M, Gargano L, Scribani Rossi P, Del Duca E, Dattola A, Pellacani G, Nistic\u00f2 S, Chello C.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-09-17",
+        "doi": "10.3390/antib15050088",
+        "pmcid": "PMC13600177",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41654334",
+        "source": "MED",
+        "title": "Systemic Treatments for Chronic Spontaneous Urticaria: Anti-IgE and Beyond.",
+        "authorString": "Hsu FI, Bernstein JA, Chhiba KD, Saini SS.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-02-01",
+        "doi": "10.1016/j.jaip.2025.11.038",
+        "pmcid": "PMC13138726",
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "41044830",
+        "source": "MED",
+        "title": "An Overview of Chronic Spontaneous Urticaria: Diagnosis, Management, and Treatment.",
+        "authorString": "Tbakhi B, Ware K, Park HS, Bernstein JS, Bernstein JA.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-09-01",
+        "doi": "10.4168/aair.2025.17.5.531",
+        "pmcid": "PMC12511800",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "40074986",
+        "source": "MED",
+        "title": "Update on the Treatment of Chronic Spontaneous Urticaria.",
+        "authorString": "Kolkhir P, Fok JS, Kocat\u00fcrk E, Li PH, Okas TL, Marcelino J, Metz M.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-03-12",
+        "doi": "10.1007/s40265-025-02170-4",
+        "pmcid": "PMC11946961",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "39598410",
+        "source": "MED",
+        "title": "Therapies for Chronic Spontaneous Urticaria: Present and Future Developments.",
+        "authorString": "Asero R, Calzari P, Vaienti S, Cugno M.",
+        "journalTitle": null,
+        "firstPublicationDate": "2024-11-07",
+        "doi": "10.3390/ph17111499",
+        "pmcid": "PMC11597230",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "42729864",
+        "source": "MED",
+        "title": "Structure and function of therapeutic antibodies approved by the US FDA in 2025.",
+        "authorString": "Strohl WR.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-05-28",
+        "doi": "10.1093/abt/tbag027",
+        "pmcid": "PMC13563191",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41831428",
+        "source": "MED",
+        "title": "From neuroimmune circuits to targeted therapy of chronic pruritus.",
+        "authorString": "Ramcke T, Kaplan DH.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-01-29",
+        "doi": "10.1016/j.pharmr.2026.100121",
+        "pmcid": "PMC13084607",
+        "isOpenAccess": "Y"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT04849741",
+    "hitCount": 20,
+    "publications": [
+      {
+        "id": "42734724",
+        "source": "MED",
+        "title": "Astrocytes in Neurodegeneration: Spatial States, Crosstalk, and Emerging Therapies.",
+        "authorString": "Steger L, Rothhammer V, Zunke F.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-09-14",
+        "doi": "10.1007/s12035-026-06142-x",
+        "pmcid": "PMC13574736",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "39643430",
+        "source": "MED",
+        "title": "Analysis of GFAP variants in UK Biobank suggests underdiagnosis or incomplete penetrance of adult-onset Alexander disease.",
+        "authorString": "Gagliardi D, Wade C, Tucci A, Houlden H, Chataway J, Barkhof F, Lynch DS.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-07-16",
+        "doi": "10.1136/jnnp-2024-335089",
+        "pmcid": "PMC12322464",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "40520824",
+        "source": "MED",
+        "title": "Genotype-Phenotype Association for 14 &lt;i&gt;GFAP&lt;/i&gt; Variants in Alexander Disease.",
+        "authorString": "Messing A, Waldman AT, Bolt DM.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-06-05",
+        "doi": "10.1212/nxg.0000000000200270",
+        "pmcid": "PMC12166557",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41671914",
+        "source": "MED",
+        "title": "A novel patient-Centered approach to clinical trial readiness in rare diseases: Application in Aicardi-Gouti\u00e8res Syndrome (AGS).",
+        "authorString": "Sevagamoorthy A, Gavazzi F, Tashnim Z, Hong P, Vaia Y, Lee-Kirsch MA, Eleftheriou D, Beerepoot S, Hully M, Berry Kravis EM, Ventola P, Raspa M, Wheeler A, DeMauro SB, Glanzman AM, Townsend E, Duong T, Cusack S, Harrington AT, Pierce S, Fitzgerald M, Fazzi E, Galli J, Orcesi S, Tonduti D, Wassmer E, Cordova D, Adang LA, Butts C, Vanderver A.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-02-08",
+        "doi": "10.1016/j.ymgme.2026.109765",
+        "pmcid": "PMC13162174",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41095996",
+        "source": "MED",
+        "title": "Description of the Hamburg Alexander Leukodystrophy Cohort-Insights into Practical Classification and the Care Situation.",
+        "authorString": "Kokaly N, Guerreiro H, Bredow J, Dreha-Kulaczewski S, Ohlenbusch A, K\u00f6hler W, Reinhardt T, Sch\u00f6n G, Volk AE, Sigel H, Bley A.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-09-29",
+        "doi": "10.3390/jcm14196918",
+        "pmcid": "PMC12524457",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41024483",
+        "source": "MED",
+        "title": "Growth Differentiation Factor 15 Elevation in the Central Nervous System Is Associated With Failure to Thrive in Alexander Disease.",
+        "authorString": "Hagemann TL, Sonsalla MM, Luzinski C, Zacahua F, Harris DA, Lamming DW, Messing A.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-09-29",
+        "doi": "10.1002/acn3.70209",
+        "pmcid": "PMC12790171",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "39237961",
+        "source": "MED",
+        "title": "Anything is better than nothing': exploring attitudes towards novel therapies in leukodystrophy clinical trials.",
+        "authorString": "Wilson E, Leventer R, Cunningham C, de Silva MG, Hodgson J, Uebergang E.",
+        "journalTitle": null,
+        "firstPublicationDate": "2024-09-05",
+        "doi": "10.1186/s13023-024-03320-9",
+        "pmcid": "PMC11378604",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "38558318",
+        "source": "MED",
+        "title": "Plasma concentrations of glial fibrillary acidic protein, neurofilament light, and tau in Alexander disease.",
+        "authorString": "Ashton NJ, Di Molfetta G, Tan K, Blennow K, Zetterberg H, Messing A.",
+        "journalTitle": null,
+        "firstPublicationDate": "2024-04-01",
+        "doi": "10.1007/s10072-024-07495-8",
+        "pmcid": "PMC11305938",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "42076098",
+        "source": "MED",
+        "title": "Antisense Oligonucleotides: Technological Advances, Clinical Progress, and Expanding Therapeutic Frontiers.",
+        "authorString": "Xu L, Zhang H, Jiang B, Jiang Y, Lu H.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-04-04",
+        "doi": "10.3390/pharmaceutics18040446",
+        "pmcid": "PMC13118739",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "40836959",
+        "source": "MED",
+        "title": "Stem cell and gene therapies for leukodystrophies.",
+        "authorString": "Lin W, Zhang M, Zheng S, Lian Q.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-07-31",
+        "doi": "10.1016/j.omtm.2025.101527",
+        "pmcid": "PMC12361609",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "39653607",
+        "source": "MED",
+        "title": "Evolution of antisense oligonucleotides: navigating nucleic acid chemistry and delivery challenges.",
+        "authorString": "Ruchi R, Raman GM, Kumar V, Bahal R.",
+        "journalTitle": null,
+        "firstPublicationDate": "2024-12-17",
+        "doi": "10.1080/17460441.2024.2440095",
+        "pmcid": "PMC11823135",
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "42032208",
+        "source": "MED",
+        "title": "Curing the brain: in search for new astrocyte-specific therapies.",
+        "authorString": "Verkhratsky A, Lee CJ, Chun H, G\u00f6ritz C, Harkany T, Lee JH, Lee S, Lindskog M, Koh W, Mulder J, Nam MH, Ottersen OP, Pekna M, Pekny M, P\u0119kowska A, Ryu H, Sohn CH, Tretiakov EO, Untiet V, Viney TJ, Youn W, Yi C, Zorec R, Yun M, Cheong E, Nordberg A.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-04-24",
+        "doi": "10.1038/s12276-026-01712-4",
+        "pmcid": "PMC13144692",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "39276676",
+        "source": "MED",
+        "title": "Gene therapy for the leukodystrophies: From preclinical animal studies to clinical trials.",
+        "authorString": "Metovic J, Li Y, Gong Y, Eichler F.",
+        "journalTitle": null,
+        "firstPublicationDate": "2024-07-01",
+        "doi": "10.1016/j.neurot.2024.e00443",
+        "pmcid": "PMC11418141",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41349291",
+        "source": "MED",
+        "title": "Genotype-phenotype correlations of GFAP variants in type I Alexander disease subtypes.",
+        "authorString": "Bachetti T, Vaia Y, Grossi A, Rosamilia F, Bertini E, Nicita F, Bellitto D, Eichler F, Bernard G, Nagy A, Zerem A, Heidari M, Tavasoli AR, Moroni I, Ceccherini I, Tonduti D, AxD Type I Study Group.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-11-30",
+        "doi": "10.1016/j.ymgme.2025.109689",
+        "pmcid": "PMC13684854",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "37662844",
+        "source": "MED",
+        "title": "Nucleic acid-based therapeutics for the treatment of central nervous system disorders.",
+        "authorString": "McCartan R, Khorkova O, Volmar CH, Wahlestedt C.",
+        "journalTitle": null,
+        "firstPublicationDate": "2023-08-16",
+        "doi": "10.3389/fgene.2023.1250276",
+        "pmcid": "PMC10468602",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "36365206",
+        "source": "MED",
+        "title": "Antisense Oligonucleotide Therapy for the Nervous System: From Bench to Bedside with Emphasis on Pediatric Neurology.",
+        "authorString": "Amanat M, Nemeth CL, Fine AS, Leung DG, Fatemi A.",
+        "journalTitle": null,
+        "firstPublicationDate": "2022-11-05",
+        "doi": "10.3390/pharmaceutics14112389",
+        "pmcid": "PMC9695718",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41315317",
+        "source": "MED",
+        "title": "A scoping review of stem cell models of leukodystrophies: advances in understanding pathophysiological mechanisms.",
+        "authorString": "Chapleau A, Perrier S, Durcan TM, Bernard G.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-11-28",
+        "doi": "10.1038/s41525-025-00533-0",
+        "pmcid": "PMC12663344",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "36015334",
+        "source": "MED",
+        "title": "Towards Personalized Allele-Specific Antisense Oligonucleotide Therapies for Toxic Gain-of-Function Neurodegenerative Diseases.",
+        "authorString": "Helm J, Sch\u00f6ls L, Hauser S.",
+        "journalTitle": null,
+        "firstPublicationDate": "2022-08-16",
+        "doi": "10.3390/pharmaceutics14081708",
+        "pmcid": "PMC9416334",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "35482908",
+        "source": "MED",
+        "title": "Clinical advances of RNA therapeutics for treatment of neurological and neuromuscular diseases.",
+        "authorString": "Holm A, Hansen SN, Klitgaard H, Kauppinen S.",
+        "journalTitle": null,
+        "firstPublicationDate": "2021-12-31",
+        "doi": "10.1080/15476286.2022.2066334",
+        "pmcid": "PMC9067473",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "39609384",
+        "source": "MED",
+        "title": "Nucleic acid drugs: recent progress and future perspectives.",
+        "authorString": "Sun X, Setrerrahmane S, Li C, Hu J, Xu H.",
+        "journalTitle": null,
+        "firstPublicationDate": "2024-11-29",
+        "doi": "10.1038/s41392-024-02035-4",
+        "pmcid": "PMC11604671",
+        "isOpenAccess": "Y"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT06747468",
+    "hitCount": 2,
+    "publications": [
+      {
+        "id": "41810556",
+        "source": "MED",
+        "title": "Acarbose or Canagliflozin vs. Placebo to Ameliorate Post-Bariatric Hypoglycaemia: The Clinical Outcomes of the HypoBar I Randomised Clinical Trial.",
+        "authorString": "Lobato CB, Winding CT, Bojsen-M\u00f8ller KN, Hartmann B, Martinussen C, Veedfald S, Holst JJ, Madsbad S, J\u00f8rgensen NB, Dirksen C.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-03-11",
+        "doi": "10.1111/dom.70611",
+        "pmcid": "PMC13071188",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41126373",
+        "source": "MED",
+        "title": "Managing post-bariatric hypoglycemia: a systematic review of pharmacological therapies.",
+        "authorString": "Sridharan K, Sivaramakrishnan G.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-10-22",
+        "doi": "10.1186/s13098-025-01988-y",
+        "pmcid": "PMC12542482",
+        "isOpenAccess": "Y"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT05031780",
+    "hitCount": 5,
+    "publications": [
+      {
+        "id": "42913682",
+        "source": "MED",
+        "title": "Efficacy and safety of mitapivat in patients with sickle cell disease (RISE UP): a phase 3, double-blind, global, randomised, placebo-controlled trial.",
+        "authorString": "Andemariam B, Kuo KHM, Algahtani FH, Al Kindi S, Ataga KI, Bartolucci P, Campbell A, Colombatti R, Glaros AK, Hafraoui K, Idowu M, Jacob SA, Lobo CLC, Nnodu OE, Otieno L, Smith WR, Thein SL, van Beers EJ, Gheuens S, Hensley B, Oluyadi A, Osman K, Pathan A, Patil S, Song T, Yates AM, Zaidi AU, Minniti C, Abboud MR, RISE UP Investigators.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-10-01",
+        "doi": "10.1016/s0140-6736(26)01480-7",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "41809202",
+        "source": "MED",
+        "title": "Long-term mitapivat treatment is safe and efficacious in patients with sickle cell disease.",
+        "authorString": "Conrey A, Asomaning N, Frey I, Charles RP, Lovins D, Xu JZ, Mendez-Marti S, Le K, Kruah B, Li Q, Dunkelberger E, Cellmer T, Yates A, Wind-Rotolo M, Huston C, Jeffries N, Eaton WA, Thein SL.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-09-11",
+        "doi": "10.1016/j.brci.2025.100014",
+        "pmcid": "PMC12970942",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "39644907",
+        "source": "MED",
+        "title": "Safety and efficacy of mitapivat in sickle cell disease (RISE UP): results from the phase 2 portion of a global, double-blind, randomised, placebo-controlled trial.",
+        "authorString": "Idowu M, Otieno L, Dumitriu B, Lobo CLC, Thein SL, Andemariam B, Nnodu OE, Inati A, Glaros AK, Bartolucci P, Colombatti R, Taher AT, Abboud MR, Darbari D, Ataga KI, Antmen AB, Kuo KHM, de Souza Medina S, Oluyadi A, Iyer V, Morris S, Yates AM, Shao H, Patil S, Urbstonaitis R, Zaidi AU, Gheuens S, Smith WR.",
+        "journalTitle": null,
+        "firstPublicationDate": "2024-12-04",
+        "doi": "10.1016/s2352-3026(24)00319-3",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "37934880",
+        "source": "MED",
+        "title": "One-year safety and efficacy of mitapivat in sickle cell disease: follow-up results of a phase 2, open-label study.",
+        "authorString": "van Dijk MJ, Rab MAE, van Oirschot BA, Bos J, Derichs C, Rijneveld AW, Cnossen MH, Nur E, Biemond BJ, Bartels M, Jans JJM, van Solinge WW, Schutgens REG, van Wijk R, van Beers EJ.",
+        "journalTitle": null,
+        "firstPublicationDate": "2023-12-01",
+        "doi": "10.1182/bloodadvances.2023011477",
+        "pmcid": "PMC10761354",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "37254256",
+        "source": "MED",
+        "title": "Emerging Therapies and Advances in Sickle Cell Disease with a Focus on Renal Manifestations.",
+        "authorString": "Obadina M, Obadina M, Wilson S, Derebail VK, Little J.",
+        "journalTitle": null,
+        "firstPublicationDate": "2023-05-31",
+        "doi": "10.34067/kid.0000000000000162",
+        "pmcid": "PMC10371301",
+        "isOpenAccess": "Y"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT05774756",
+    "hitCount": 3,
+    "publications": [
+      {
+        "id": "42821228",
+        "source": "MED",
+        "title": "Measuring Hunger Severity in Rare MC4R Pathway Diseases: Development and Psychometric Evaluation of the Most Hunger Item.",
+        "authorString": "Cl\u00e9ment K, Roth CL, K\u00fchnen P, Haqq AM, Mallya UG, Ervin C, Norcross L, Bhargava S, Argente J, Miller JL.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-10-01",
+        "doi": "10.1007/s12325-026-03741-x",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "42528856",
+        "source": "MED",
+        "title": "Quality of life improvements with setmelanotide treatment in acquired hypothalamic obesity: TRANSCEND trial interview results from US participants.",
+        "authorString": "Roth CL, Phillips SA, McCormack SE, Ode KL, Kelsey MM, Liu J, Ervin C, Mallya UG, Norcross L, Miller JL.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-07-15",
+        "doi": "10.3389/fnbeh.2026.1830070",
+        "pmcid": "PMC13415934",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "42418774",
+        "source": "MED",
+        "title": "Setmelanotide for the Treatment of Acquired Hypothalamic Obesity.",
+        "authorString": "Miller JL, van Santen HM, Phillips SA, Hamilton J, Aberle J, Sathyapalan T, Mohamed Z, McCormack SE, Shoemaker AH, Kelsey MM, Ghalib L, Stalla G, Thaker VV, Habiby R, Ode KL, Wabitsch M, Dattani M, Abuzzahab MJ, Abdullatif H, Morgan R, Stefater-Richards M, Aroda VR, Friedrich C, Han JC, Ono H, Nagasaki K, Tanaka T, Isojima T, Arima H, Scimia C, Yuan G, M\u00fcller HL, Roth CL, TRANSCEND Trial Group.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-07-01",
+        "doi": "10.1056/nejmoa2512275",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT05243550",
+    "hitCount": 3,
+    "publications": [
+      {
+        "id": "41880645",
+        "source": "MED",
+        "title": "UGN-102 for Recurrent Low-Grade Intermediate-Risk Nonmuscle-Invasive Bladder Cancer: 24-Month Duration of Response Results From the Phase 3 ENVISION Trial.",
+        "authorString": "Prasad SM, Shishkov D, Mihaylov NV, Genov P, Terzi V, Kates M, Huang WC, Louie MJ, Burger B, Meads A, Schoenberg M.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-03-25",
+        "doi": "10.1097/ju.0000000000005041",
+        "pmcid": "PMC13361955",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "40048558",
+        "source": "MED",
+        "title": "Perceived Impact on Patient Routines/Responsibilities for Surgery and a Nonsurgical Primary Treatment Option in Recurrent Low-Grade Intermediate-Risk Nonmuscle-Invasive Bladder Cancer: Findings From the ENVISION Phase 3 Trial.",
+        "authorString": "Stover AM, Mueller D, Carda-Auten J, Hilton A, Tsurutis V, Smith AB.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-03-06",
+        "doi": "10.1097/ju.0000000000004511",
+        "pmcid": "PMC12708022",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "39446087",
+        "source": "MED",
+        "title": "Primary Chemoablation of Recurrent Low-Grade Intermediate-Risk Nonmuscle-Invasive Bladder Cancer With UGN-102: A Single-Arm, Open-Label, Phase 3 Trial (ENVISION).",
+        "authorString": "Prasad SM, Shishkov D, Mihaylov NV, Khuskivadze A, Genov P, Terzi V, Kates M, Huang WC, Louie MJ, Raju S, Burger B, Meads A, Schoenberg M.",
+        "journalTitle": null,
+        "firstPublicationDate": "2024-10-24",
+        "doi": "10.1097/ju.0000000000004296",
+        "pmcid": "PMC12708048",
+        "isOpenAccess": "Y"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT06081894",
+    "hitCount": 3,
+    "publications": [
+      {
+        "id": "42667274",
+        "source": "MED",
+        "title": "Effect of Aficamten on Cardiac Structure and Function in Patients With Symptomatic Nonobstructive Hypertrophic Cardiomyopathy.",
+        "authorString": "Hegde SM, Wang X, Bhatia A, Pe\u00f1a-Pe\u00f1a ML, Sherrid MV, Figueiredo EL, Arad M, Barriales-Villa R, Choudhury L, Claggett BL, Coats CJ, de Barros Correia E, Costabel JP, Elliott PM, Silva Enciso JE, Garcia-Pavia P, Ge J, Ho CY, Lakdawala NK, Lewis GD, Maron MS, Martinez MW, Masri A, Maurer MS, Michels M, Mitter SS, Pino Moreno JE, Nagy V, Olivotto I, Owens AT, Poulsen SH, Rader F, Rowin EJ, Ruda M, Schulze PC, Sikand N, Spertus JA, Zhao X, Divanji PH, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Salazar-Mendiguch\u00eda J, Wohltman A, Zhuo S, Solomon SD, ACACIA-HCM Investigators.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-08-29",
+        "doi": "10.1161/circulationaha.126.082343",
+        "pmcid": "PMC13674599",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "42663111",
+        "source": "MED",
+        "title": "Global Efficacy of Aficamten in Nonobstructive Hypertrophic Cardiomyopathy: Results From ACACIA-HCM.",
+        "authorString": "Maron MS, Masri A, Bhatia A, Pe\u00f1a-Pe\u00f1a ML, Sherrid MV, Figueiredo EL, Arad M, Choudhury L, Claggett BL, Coats CJ, de Barros Correia E, Costabel JP, Elliott PM, Silva Enciso JE, Ge J, Ho CY, Kulac I, Lewis GD, Martinez MW, Maurer MS, Michels M, Mitter SS, Pino Moreno JE, Olivotto I, Owens AT, Poulsen SH, Rader F, Rowin EJ, Schulze PC, Sepp R, Sikand N, Solomon SD, Spertus JA, Zhao X, Divanji PH, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Salazar-Mendiguch\u00eda J, Wohltman A, Zhuo S, Barriales-Villa R, ACACIA-HCM Investigators.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-08-28",
+        "doi": "10.1161/circulationaha.126.082026",
+        "pmcid": "PMC13674601",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "42663312",
+        "source": "MED",
+        "title": "Aficamten for Symptomatic Nonobstructive Hypertrophic Cardiomyopathy.",
+        "authorString": "Masri A, Maron MS, Bhatia A, Pe\u00f1a-Pe\u00f1a ML, Sherrid MV, Figueiredo EL, Arad M, Barriales-Villa R, Choudhury L, Claggett BL, Coats CJ, Correia EB, Costabel JP, Elliott PM, Silva Enciso JE, Garcia-Pavia P, Ge J, Hegde SM, Lewis GD, Lopes RD, Martinez MW, Maurer MS, Miao ZM, Michels M, Mitter SS, Pino Moreno JE, Olivotto I, Owens AT, Poulsen SH, Rader F, Rowin EJ, Schulze PC, Sepp R, Sikand N, Solomon SD, Spertus JA, Teale C, Zhao X, Divanji PH, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Salazar-Mendiguch\u00eda J, Wohltman A, Zhuo S, Ho CY, ACACIA-HCM Investigators.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-08-28",
+        "doi": "10.1056/nejmoa2603021",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT05257408",
+    "hitCount": 4,
+    "publications": [
+      {
+        "id": "41974149",
+        "source": "MED",
+        "title": "Overall survival with relacorilant and nab-paclitaxel in patients with platinum-resistant ovarian cancer (ROSELLA): a phase 3 randomised controlled trial.",
+        "authorString": "Lorusso D, Gladieff L, O'Malley DM, Kim JW, Garbaos G, Fagotti A, Gilbert L, Mileshkin L, Quesada S, Hopp E, Lee YJ, Oaknin A, Scaranti M, Kim BG, Clamp A, Prillaman C, Diakos C, Bagam\u00e9ri A, Leiser AL, Salutari V, Monk BJ, Follana P, McClung E, Carbone V, Slomovitz B, Giudice E, Cannizzaro MC, Gavoille L, Devaux A, Scollo P, Scandurra G, Cassani C, Artioli G, Van Gorp T, Santaballa A, Dreiling LK, Kesner-Hays A, Tudor IC, Jubb AM, Colombo N, Olawaiye AB.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-04-10",
+        "doi": "10.1016/s0140-6736(26)00462-9",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "40473448",
+        "source": "MED",
+        "title": "Relacorilant and nab-paclitaxel in patients with platinum-resistant ovarian cancer (ROSELLA): an open-label, randomised, controlled, phase 3 trial.",
+        "authorString": "Olawaiye AB, Gladieff L, O'Malley DM, Kim JW, Garbaos G, Salutari V, Gilbert L, Mileshkin L, Devaux A, Hopp E, Lee YJ, Oaknin A, Scaranti M, Kim BG, Colombo N, McCollum ME, Diakos C, Clamp A, Leiser AL, Bal\u00e1zs B, Monk BJ, Scandurra G, McClung E, Kaczmarek E, Slomovitz B, De La Cueva H, de Carvalho Calabrich AF, Cassani C, You B, Van Gorp T, Churruca C, Caruso G, Nicum S, Bagam\u00e9ri A, Artioli G, Bodnar L, Kang S, Vergote I, Kesner-Hays A, Pashova HI, Pai SG, Tudor IC, Jubb AM, Lorusso D.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-06-02",
+        "doi": "10.1016/s0140-6736(25)01040-2",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "39032926",
+        "source": "MED",
+        "title": "Clinical Trial Protocol for ROSELLA: a phase 3 study of relacorilant in combination with nab-paclitaxel versus nab-paclitaxel monotherapy in advanced platinum-resistant ovarian cancer.",
+        "authorString": "Olawaiye AB, Kim JW, Bagameri A, Bishop E, Chudecka-G\u0142az A, Devaux A, Gladieff L, Gordinier ME, Korach J, McCollum ME, Mileshkin L, Monk BJ, Nicum S, Nogueira-Rodrigues A, Oaknin A, O'Malley DM, Orlando M, Dreiling L, Tudor IC, Lorusso D.",
+        "journalTitle": null,
+        "firstPublicationDate": "2024-07-01",
+        "doi": "10.3802/jgo.2024.35.e111",
+        "pmcid": "PMC11262895",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "37364223",
+        "source": "MED",
+        "title": "Relacorilant + Nab-Paclitaxel in Patients With Recurrent, Platinum-Resistant Ovarian Cancer: A Three-Arm, Randomized, Controlled, Open-Label Phase II Study.",
+        "authorString": "Colombo N, Van Gorp T, Matulonis UA, Oaknin A, Grisham RN, Fleming GF, Olawaiye AB, Nguyen DD, Greenstein AE, Custodio JM, Pashova HI, Tudor IC, Lorusso D.",
+        "journalTitle": null,
+        "firstPublicationDate": "2023-06-26",
+        "doi": "10.1200/jco.22.02624",
+        "pmcid": "PMC10602497",
+        "isOpenAccess": "Y"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT05535946",
+    "hitCount": 11,
+    "publications": [
+      {
+        "id": "40417999",
+        "source": "MED",
+        "title": "Obefazimod in patients with moderate-to-severely active ulcerative colitis: efficacy and safety analysis from the 96-week open-label maintenance phase 2b study.",
+        "authorString": "Vermeire S, Nitcheu J, Gineste P, Flatres A, Santo J, Scherrer D, Peyrin-Biroulet L, Dulai PS, Danese S, Dubinsky M, Tilg H, Siegmund B, Hisamatsu T, Shan K, Rabbat CJ, Sands BE.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-05-01",
+        "doi": "10.1093/ecco-jcc/jjaf074",
+        "pmcid": "PMC12124117",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "38213631",
+        "source": "MED",
+        "title": "Clinical Trial Design in Ulcerative Colitis: Interpreting Evolving Endpoints Based on Post Hoc Analyses of the Vedolizumab Phase 3 Trials GEMINI 1 and VISIBLE 1.",
+        "authorString": "Sandborn WJ, Sands BE, Uddin S, Qasim Khan RM, Sagar Mukherjee R.",
+        "journalTitle": null,
+        "firstPublicationDate": "2023-12-18",
+        "doi": "10.1093/crocol/otad076",
+        "pmcid": "PMC10782208",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41683952",
+        "source": "MED",
+        "title": "Advances in the Treatment of Ulcerative Colitis-From Conventional Therapies to Targeted Biologics and Small Molecules.",
+        "authorString": "Wilk A, Paw\u0142owski M, Balcerczak E, Jele\u0144 A, Mirowski M, Szmajda-Krygier D.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-02-04",
+        "doi": "10.3390/ijms27031534",
+        "pmcid": "PMC12897911",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "37443765",
+        "source": "MED",
+        "title": "Novel Small Molecules in IBD: Current State and Future Perspectives.",
+        "authorString": "Jefremow A, Neurath MF.",
+        "journalTitle": null,
+        "firstPublicationDate": "2023-06-27",
+        "doi": "10.3390/cells12131730",
+        "pmcid": "PMC10341073",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "40006003",
+        "source": "MED",
+        "title": "Drug Development in Inflammatory Bowel Diseases: What Is Next?",
+        "authorString": "Petronio L, Dal Buono A, Gabbiadini R, Migliorisi G, Privitera G, Ferraris M, Loy L, Bezzio C, Armuzzi A.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-01-30",
+        "doi": "10.3390/ph18020190",
+        "pmcid": "PMC11858795",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "42609442",
+        "source": "MED",
+        "title": "Inflammatory Bowel Disease: Mechanisms and Therapeutic Advances.",
+        "authorString": "Papait A, Cargnoni A, Scaldaferri F, Lopetuso L, Silini AR, Parolini O.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-08-16",
+        "doi": "10.1002/mco2.70914",
+        "pmcid": "PMC13478575",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "42595931",
+        "source": "MED",
+        "title": "Novel Agents on the Therapeutic Horizon For Paediatric Inflammatory Bowel Diseases: An Analysis of Clinical Trials Registries.",
+        "authorString": "Gupte D, Suthar NR, MacDonald JK, Le J, Colman RJ, Feagan BG, Cheng C, Hanzel J, Ma C, Jairath V, Crowley E.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-08-13",
+        "doi": "10.1007/s40272-026-00766-1",
+        "pmcid": "PMC13624012",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41822012",
+        "source": "MED",
+        "title": "Advancing therapeutic frontiers: a pipeline of novel drugs for UC management.",
+        "authorString": "Bertin L, Massano A, Redavid C, Scarpa M, Ruffolo C, Angriman I, Buda A, Zingone F, Barberio B, Savarino EV.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-01-30",
+        "doi": "10.3389/fgstr.2026.1747118",
+        "pmcid": "PMC12952356",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "36573890",
+        "source": "MED",
+        "title": "ABX464 (Obefazimod) Upregulates miR-124 to Reduce Proinflammatory Markers in Inflammatory Bowel Diseases.",
+        "authorString": "Apolit C, Campos N, Vautrin A, Begon-Pescia C, Lapasset L, Scherrer D, Gineste P, Ehrlich H, Garcel A, Santo J, Tazi J.",
+        "journalTitle": null,
+        "firstPublicationDate": "2023-04-01",
+        "doi": "10.14309/ctg.0000000000000560",
+        "pmcid": "PMC10132720",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "39944001",
+        "source": "MED",
+        "title": "Horizon scanning: new and future therapies in the management of inflammatory bowel disease.",
+        "authorString": "Kumar A, Smith PJ.",
+        "journalTitle": null,
+        "firstPublicationDate": "2023-09-01",
+        "doi": "10.1136/egastro-2023-100012",
+        "pmcid": "PMC11731077",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "37609124",
+        "source": "MED",
+        "title": "Emerging Therapies for Ulcerative Colitis: Updates from Recent Clinical Trials.",
+        "authorString": "AlAmeel T, AlMutairdi A, Al-Bawardy B.",
+        "journalTitle": null,
+        "firstPublicationDate": "2023-08-17",
+        "doi": "10.2147/ceg.s375969",
+        "pmcid": "PMC10441644",
+        "isOpenAccess": "Y"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT04770779",
+    "hitCount": 1,
+    "publications": [
+      {
+        "id": "42721980",
+        "source": "MED",
+        "title": "Efficacy and safety of mitapivat in adults with transfusion-dependent \u03b1-thalassaemia or \u03b2-thalassaemia (ENERGIZE-T): a double-blind, randomised, multicentre, placebo-controlled, phase 3 trial.",
+        "authorString": "Cappellini MD, Sheth S, Taher A, Al-Samkari H, Antmen AB, Beneitez D, Cannas G, Coates T, Czapla L, Dahlin JL, Estepp JH, Feenstra E, Georgiev P, Gheuens S, Price GM, Glenth\u00f8j A, Musallam KM, Osman K, Porter JB, Shao H, Uhlig K, van Beers EJ, Viprakasit V, Kuo KHM, Kattamis A, ENERGIZE-T Investigators.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-09-01",
+        "doi": "10.1016/s0140-6736(26)00874-3",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT06445023",
+    "hitCount": 7,
+    "publications": [
+      {
+        "id": "41270830",
+        "source": "MED",
+        "title": "Emerging IgE and non-IgE targeted therapies for chronic urticaria.",
+        "authorString": "Chhiba KD, Saini SS.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-11-19",
+        "doi": "10.1016/j.anai.2025.11.008",
+        "pmcid": "PMC12874352",
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "42776801",
+        "source": "MED",
+        "title": "Targeted Therapy for Antihistamine-Refractory Chronic Spontaneous Urticaria: A Critical Narrative Review and an Evidence-Graded Approach to Agent Selection.",
+        "authorString": "Guarino L, Rizzuto G, Coppolelli V, Scipione A, Scattone M, Gargano L, Scribani Rossi P, Del Duca E, Dattola A, Pellacani G, Nistic\u00f2 S, Chello C.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-09-17",
+        "doi": "10.3390/antib15050088",
+        "pmcid": "PMC13600177",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "42496854",
+        "source": "MED",
+        "title": "Shared Mechanistic Pathways in Bullous Pemphigoid, Chronic Spontaneous Urticaria, Prurigo Nodularis, and Chronic Prurigo of Unknown Origin: Implications for Targeted Therapies.",
+        "authorString": "Schmidt E, Puga MF, Kim BS, Simpson EL.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-07-24",
+        "doi": "10.1007/s40257-026-01052-z",
+        "pmcid": "PMC13578021",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41654334",
+        "source": "MED",
+        "title": "Systemic Treatments for Chronic Spontaneous Urticaria: Anti-IgE and Beyond.",
+        "authorString": "Hsu FI, Bernstein JA, Chhiba KD, Saini SS.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-02-01",
+        "doi": "10.1016/j.jaip.2025.11.038",
+        "pmcid": "PMC13138726",
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "41044830",
+        "source": "MED",
+        "title": "An Overview of Chronic Spontaneous Urticaria: Diagnosis, Management, and Treatment.",
+        "authorString": "Tbakhi B, Ware K, Park HS, Bernstein JS, Bernstein JA.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-09-01",
+        "doi": "10.4168/aair.2025.17.5.531",
+        "pmcid": "PMC12511800",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "40074986",
+        "source": "MED",
+        "title": "Update on the Treatment of Chronic Spontaneous Urticaria.",
+        "authorString": "Kolkhir P, Fok JS, Kocat\u00fcrk E, Li PH, Okas TL, Marcelino J, Metz M.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-03-12",
+        "doi": "10.1007/s40265-025-02170-4",
+        "pmcid": "PMC11946961",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "39598410",
+        "source": "MED",
+        "title": "Therapies for Chronic Spontaneous Urticaria: Present and Future Developments.",
+        "authorString": "Asero R, Calzari P, Vaienti S, Cugno M.",
+        "journalTitle": null,
+        "firstPublicationDate": "2024-11-07",
+        "doi": "10.3390/ph17111499",
+        "pmcid": "PMC11597230",
+        "isOpenAccess": "Y"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT04544293",
+    "hitCount": 1,
+    "publications": [
+      {
+        "id": "40834301",
+        "source": "MED",
+        "title": "Phase 3 Trial of Inhaled Molgramostim in Autoimmune Pulmonary Alveolar Proteinosis.",
+        "authorString": "Trapnell BC, Inoue Y, Bonella F, Wang T, McCarthy C, Arai T, Akasaka K, Mariani F, Mogulkoc N, Song JW, Baba T, Jouneau S, Numakura T, \u00d6cal N, Mihaltan F, Ataya A, Bendstrup E, Campo I, Carey B, Arena R, Robinson B, Fleming R, Wasfi Y, Pratt R, IMPALA-2 Trial Investigators.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-08-01",
+        "doi": "10.1056/nejmoa2410542",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT04716231",
+    "hitCount": 5,
+    "publications": [
+      {
+        "id": "42911181",
+        "source": "MED",
+        "title": "Atacicept in IgA Nephropathy - Phase 3 Trial Final Efficacy Analysis.",
+        "authorString": "Barratt J, Brenner RM, Barbour SJ, Campbell KN, Doan T, Eren N, Floege J, Fordyce MW, Jha V, Khawaja Z, Kim BS, Liew A, Maes B, Pal A, Pecoits-Filho R, Phoon RKS, Rizk DV, Suzuki H, Tesa\u0159 V, Trimarchi H, Wei X, Yu L, Zhang H, Lafayette R, ORIGIN Phase 3 Trial Investigators.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-10-22",
+        "doi": "10.1056/nejmoa2610103",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "41661687",
+        "source": "MED",
+        "title": "The Oxford Classification Should Remain the Gold Standard for Classification of IgA Nephropathy: CON.",
+        "authorString": "Howie AJ, Lalayiannis AD.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-02-09",
+        "doi": "10.34067/kid.0000001083",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "41620980",
+        "source": "MED",
+        "title": "A plain language summary: long-term safety and effectiveness of atacicept in individuals with IgA nephropathy.",
+        "authorString": "Barratt J, Chen K, Lafayette R.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-12-01",
+        "doi": "10.1080/03007995.2026.2615321",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "41196369",
+        "source": "MED",
+        "title": "A Phase 3 Trial of Atacicept in Patients with IgA Nephropathy.",
+        "authorString": "Lafayette R, Barbour SJ, Brenner RM, Campbell KN, Doan T, Eren N, Floege J, Jha V, Kim BS, Liew A, Maes B, Pal A, Pecoits-Filho R, Phoon RKS, Rizk DV, Suzuki H, Tesa\u0159 V, Trimarchi H, Wei X, Zhang H, Barratt J, ORIGIN Phase 3 Trial Investigators.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-11-06",
+        "doi": "10.1056/nejmoa2510198",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "39462308",
+        "source": "MED",
+        "title": "Long-Term Results from an Open-Label Extension Study of Atacicept for the Treatment of IgA Nephropathy.",
+        "authorString": "Barratt J, Barbour SJ, Brenner RM, Cooper K, Wei X, Eren N, Floege J, Jha V, Kim SG, Maes B, Phoon RKS, Singh H, Tesa\u0159 V, Lafayette R, ORIGIN Phase 2b Investigators.",
+        "journalTitle": null,
+        "firstPublicationDate": "2024-10-26",
+        "doi": "10.1681/asn.0000000541",
+        "pmcid": "PMC7616790",
+        "isOpenAccess": "Y"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT05711940",
+    "hitCount": 8,
+    "publications": [
+      {
+        "id": "42658027",
+        "source": "MED",
+        "title": "AMCP Market Insights: Optimizing managed care approaches to treatment-resistant depression.",
+        "authorString": "Flavin B, Small G, Dragovich C, Dragovich C, Haumschild R, Richardson T, Shannon MH.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-09-01",
+        "doi": "10.18553/jmcp.2026.32.9-a.s1",
+        "pmcid": "PMC13520776",
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "40032306",
+        "source": "MED",
+        "title": "Psychedelic-assisted therapy: An overview for the internist.",
+        "authorString": "Barnett BS, Mauney EE, King F.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-03-03",
+        "doi": "10.3949/ccjm.92a.24032",
+        "pmcid": null,
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "40933206",
+        "source": "MED",
+        "title": "Overview and Specificity of Psilocybin Use in the Treatment of Mental Disorders: &lt;i&gt;A Scientometric Analysis&lt;/i&gt;.",
+        "authorString": "Fernandes-Nascimento MH, Viana-Ferreira K, Negr\u00e3o AB.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-08-28",
+        "doi": "10.1089/psymed.2024.0031",
+        "pmcid": "PMC12419158",
+        "isOpenAccess": "N"
+      },
+      {
+        "id": "42653026",
+        "source": "MED",
+        "title": "Psychedelic Safety and Clinical Outcomes Across Exposure Patterns: A Structured Narrative Review.",
+        "authorString": "K\u00e9ri S.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-08-14",
+        "doi": "10.3390/life16081338",
+        "pmcid": "PMC13514442",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "40564972",
+        "source": "MED",
+        "title": "Unveiling GABA and Serotonin Interactions During Neurodevelopment to Re-Open Adult Critical Periods for Neuropsychiatric Disorders.",
+        "authorString": "Beretta E, Cuboni G, Deidda G.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-06-09",
+        "doi": "10.3390/ijms26125508",
+        "pmcid": "PMC12192930",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "40972137",
+        "source": "MED",
+        "title": "Psilocybin-assisted group psychotherapy and mindfulness-based stress reduction for frontline healthcare provider COVID-19-related depression and burnout: A randomized controlled trial.",
+        "authorString": "Lewis BR, Hendrick J, Byrne K, Odette M, Wu C, Garland EL.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-09-19",
+        "doi": "10.1371/journal.pmed.1004519",
+        "pmcid": "PMC12459851",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "40002494",
+        "source": "MED",
+        "title": "Emerging Medications for Treatment-Resistant Depression: A Review with Perspective on Mechanisms and Challenges.",
+        "authorString": "Lucido MJ, Dunlop BW.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-02-06",
+        "doi": "10.3390/brainsci15020161",
+        "pmcid": "PMC11853532",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "40282849",
+        "source": "MED",
+        "title": "Pharmacological Monotherapy for Depressive Disorders: Current and Future-A Narrative Review.",
+        "authorString": "Gao K, Oruc EB, Koparal B.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-03-21",
+        "doi": "10.3390/medicina61040558",
+        "pmcid": "PMC12028769",
+        "isOpenAccess": "Y"
+      }
+    ]
+  },
+  {
+    "nctId": "NCT06641076",
+    "hitCount": 4,
+    "publications": [
+      {
+        "id": "41648061",
+        "source": "MED",
+        "title": "The Pathophysiological Significance of Dual Inhibition of IL-17A and IL-17F in Psoriatic Arthritis and Axial Spondyloarthritis.",
+        "authorString": "Katsouli O, Lainis V, Goules AV, Vlachoyiannopoulos PG.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-01-08",
+        "doi": "10.31138/mjr.020925.aar",
+        "pmcid": "PMC12869329",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "41053449",
+        "source": "MED",
+        "title": "Sonelokimab, an IL-17A/IL-17F-inhibiting nanobody for active psoriatic arthritis: a randomized, placebo-controlled phase 2 trial.",
+        "authorString": "McInnes IB, Coates LC, Mease PJ, Ogdie A, Kavanaugh A, Eder L, Schett G, Kivitz A, McGonagle D, Brennan N, Godwood A, Cullen E, Reich K, Ritchlin CT, Merola JF.",
+        "journalTitle": null,
+        "firstPublicationDate": "2025-10-06",
+        "doi": "10.1038/s41591-025-03971-6",
+        "pmcid": "PMC12705426",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "42568824",
+        "source": "MED",
+        "title": "Interleukin-17 in disease pathogenesis and therapy: recent advances in targeted drug design and medicinal chemistry.",
+        "authorString": "Wen J, Liu F, Zhang L, Lu L, Liang S, Du S.",
+        "journalTitle": null,
+        "firstPublicationDate": "2026-07-15",
+        "doi": "10.3389/fphar.2026.1836187",
+        "pmcid": "PMC13448234",
+        "isOpenAccess": "Y"
+      },
+      {
+        "id": "39711140",
+        "source": "MED",
+        "title": "Antibodies to watch in 2025.",
+        "authorString": "Crescioli S, Kaplon H, Wang L, Visweswaraiah J, Kapoor V, Reichert JM.",
+        "journalTitle": null,
+        "firstPublicationDate": "2024-12-22",
+        "doi": "10.1080/19420862.2024.2443538",
+        "pmcid": "PMC12952251",
+        "isOpenAccess": "Y"
+      }
+    ]
+  }
+]

@@ -1,5 +1,7 @@
 import type {Metadata} from "next";
 import Link from "next/link";
+import {bottomOnlyReport} from "../../lib/bottom-only-completion";
+import {BottomClinicalRating} from "../BottomOnlyCompletionSheet";
 import snapshot from "../../data/p3PostDataActive.json";
 import researchHistory from "../../data/bottomOnlyResearchHistory20261107.json";
 import scoreHistory from "../../data/bottomOnlyScoreHistory20261107.json";
@@ -11,6 +13,7 @@ export const metadata:Metadata={
 const source="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit#gid=202611061";
 /** Snapshot of the user's source-of-truth Google Sheet. Historical 762-trial cohorts are not active listings. */
 const trials=snapshot.records;
+const researchByNct=new Map(bottomOnlyReport().trials.map(t=>[t.nctId,t]));
 const savedEvents=[...researchHistory.records,...scoreHistory.records];
 
 export default function P3PostDataPage(){
@@ -23,14 +26,15 @@ export default function P3PostDataPage(){
   <p style={{fontSize:13}}>Saved RAAS research and scoring history stays attached to the exact NCT, where available. Missing history is not a zero score.</p>
   <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:780,fontSize:14}}>
-    <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>RAAS history</th></tr></thead>
-    <tbody>{trials.map((t,i)=>{const history=savedEvents.filter(h=>h.nctId===t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
+    <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>Clinical research rating</th><th style={{padding:10}}>RAAS history</th></tr></thead>
+    <tbody>{trials.map((t,i)=>{const history=savedEvents.filter(h=>h.nctId===t.nct);const research=researchByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
       <td style={{padding:10,fontWeight:700}}>{t.ticker}</td>
       <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a></td>
       <td style={{padding:10}}>{t.company}</td>
       <td style={{padding:10,textAlign:"right"}}>{(t.marketCap/1e9).toFixed(2)}</td>
       <td style={{padding:10}}>{t.fdaStatus}</td>
       <td style={{padding:10,whiteSpace:"nowrap"}}><a href={t.resultsUrl} target="_blank" rel="noopener noreferrer">Phase 3</a>{" · "}<a href={t.regulatoryUrl} target="_blank" rel="noopener noreferrer">FDA path</a></td>
+      <td style={{padding:10,minWidth:180}}>{research?<BottomClinicalRating nctId={t.nct} score={research.clinicalFullScore} graded={research.clinicalScoredFactors}/>:<span>No exact-trial clinical review yet</span>}</td>
       <td style={{padding:10,minWidth:180}}>{history.length?<details><summary style={{cursor:"pointer"}}>{history.length} saved record{history.length===1?"":"s"}</summary>{history.map(h=><div key={h.eventId} style={{borderTop:"1px solid #dbe9de",padding:"8px 0",fontSize:12}}><strong>{h.recordedAt} · {h.eventType}</strong>{("clinicalFullScore" in h)&&<p>Clinical rating: {typeof h.clinicalFullScore==="number"?h.clinicalFullScore.toFixed(1)+" / 100":"Not fully scored"}</p>}<p>{h.note}</p></div>)}</details>:<span style={{color:"#687b6a",fontSize:12}}>No saved rating yet</span>}</td>
     </tr>;})}</tbody>
    </table>
