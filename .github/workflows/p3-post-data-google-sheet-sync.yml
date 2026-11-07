@@ -10,6 +10,8 @@ on:
       - 'scripts/p3_market_cap_secondary.py'
       - 'new-platform/backend/app/phase3_curated_announcements.json'
       - 'data/post_phase3_discoveries.csv'
+      - 'new-platform/backend/app/phase3_curated_announcements.json'
+      - 'scripts/sync_p3_post_data_from_google_sheet.py'
   workflow_run:
     workflows: ['PDUFA Overnight Sequential Scans']
     types: [completed]
@@ -39,6 +41,8 @@ jobs:
       - run: python -m pip install google-auth requests beautifulsoup4
       - name: Run offline source and deduplication safety tests
         run: python -m unittest discover -s tests -p 'test_p3_auto_promotion.py' -v
+      - name: Confirm planned/submitted/accepted/PDUFA stage classifications
+        run: python -m unittest discover -s tests -p 'test_p3_regulatory_stage_rules.py' -v
       - name: Automatically append exact-NCT, verified POOL to P3 POST-DATA matches
         env:
           GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}

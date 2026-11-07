@@ -23,7 +23,7 @@ import requests
 
 from auto_promote_p3_post_data import (
     CAPS, CANDIDATES, NCT, SHEET_ID, SHEET_NAME, TICKER,
-    iso_day, link_ok, load_csv, sheets_values,
+    iso_day, link_ok, load_csv, sheets_values, classify_regulatory_path,
 )
 from p3_market_cap_secondary import SOURCE as BACKUP_SOURCE, lookup_missing_primary
 
@@ -31,7 +31,7 @@ ROOT = Path(__file__).resolve().parents[1]
 AUDIT = ROOT / "reports/p3_existing_row_refresh_latest.json"
 CTGOV = "https://clinicaltrials.gov/api/v2/studies/"
 SHEETS_API = f"https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}/values:batchUpdate"
-MAX_TRIALS = 597
+MAX_TRIALS = None  # Candidate population has no arbitrary count cap
 MAX_CAP_AGE = timedelta(days=3)
 # A-C trial identity; K-U scoring, study history, human research notes are never written.
 # FDA source changes require specifically reviewed new regulatory evidence.
@@ -51,7 +51,7 @@ def val(row, idx):
 
 
 def validate_grid(rows):
-    if not rows or len(rows) < 2 or len(rows) - 1 > MAX_TRIALS:
+    if not rows or len(rows) < 2:
         raise ValueError("Existing P3 grid empty or exceeds protected row limit")
     for index, title in HEADERS.items():
         if val(rows[0], index) != title:
@@ -128,26 +128,17 @@ def curated_fda(catalog, nct, ticker, cutoff, review_date):
     for event_key, event in catalog.get("cases", {}).items():
         if not event_key.startswith("APPLICATION|" + ticker + "|") or event.get("nctId") != nct:
             continue
-        gate = event.get("pdufa_assignment") or {}
         reviewed = iso_day(event.get("reviewedOn"), cutoff)
-        published = iso_day(gate.get("published_at"), cutoff)
-        occurred = iso_day(gate.get("event_date"), cutoff)
-        target = gate.get("pdufa_target_date")
-        try:
-            target_day = date.fromisoformat(target)
-        except (TypeError, ValueError):
-            target_day = None
-        if (event.get("reviewerMethod") != "PRIMARY_PUBLIC_ISSUER_DISCLOSURE"
-                or gate.get("review_status") != "VERIFIED"
-                or not reviewed or not published or not occurred
-                or reviewed < published or not target_day or target_day < cutoff
-                or not link_ok(gate.get("source_url"))):
+        if event.get("reviewerMethod") != "PRIMARY_PUBLIC_ISSUER_DISCLOSURE":
             return None, "FDA_EVIDENCE_NOT_CURRENT_VERIFIED"
+        classification, issue = classify_regulatory_path(event, cutoff, reviewed)
+        if issue:
+            return None, issue
         previous = iso_day(str(review_date), cutoff)
         if previous and reviewed <= previous:
             return None, "FDA_CURATED_EVIDENCE_NOT_NEWER_THAN_SHEET"
-        return (target_day.isoformat(),gate["source_url"],reviewed.isoformat()), None
-    return None, "FDA_NO_NEW_EXACT_NCT_REVIEWED_EVENT"
+        return (classification["display"],classification["source"],classification["asOf"]), None
+    return None, "NO_NEW_FDA_EVENT"
 
 
 def build_plan(rows, market_rows, catalog, registry, cutoff, checked_at,
@@ -247,7 +238,7 @@ def build_plan(rows, market_rows, catalog, registry, cutoff, checked_at,
                     updates[idx]=value
             if any(k in updates for k in (25,21,22)):
                 counts["fdaUpdated"]+=1
-        elif fda_issue and fda_issue != "FDA_CURATED_EVIDENCE_NOT_NEWER_THAN_SHEET":
+        elif fda_issue and fda_issue not in {"FDA_CURATED_EVIDENCE_NOT_NEWER_THAN_SHEET", "NO_NEW_FDA_EVENT"}:
             review.append(fda_issue)
         # A date that has elapsed is not evidence of approval/CRL.
         try:
@@ -315,7 +306,7 @@ def api_auth():
 
 def main():
     auth=api_auth()
-    before=sheets_values(auth,"A3:AB600")
+    before=sheets_values(auth,"A3:AB")
     indexed=validate_grid(before)
     checked_at=datetime.now(timezone.utc).isoformat(timespec="seconds")
     cutoff=datetime.now(timezone.utc).date()
@@ -338,14 +329,14 @@ def main():
         "sourcePrecision":"SOURCE_QUOTED_ROUNDED_NOT_EXCHANGE_TIMESTAMPED"
     }
     # Recheck the entire destination before any write. We do not modify A-C or K-U.
-    if sheets_values(auth,"A3:AB600")!=before:
+    if sheets_values(auth,"A3:AB")!=before:
         raise RuntimeError("Google Sheet modified during refresh; no updates written")
     if data:
         response=requests.post(SHEETS_API,headers=auth,
             json={"valueInputOption":"RAW","data":data,"includeValuesInResponse":False},
             timeout=60)
         response.raise_for_status()
-        updated=sheets_values(auth,"A3:AB600")
+        updated=sheets_values(auth,"A3:AB")
         after=validate_grid(updated)
         if set(indexed)!=set(after):
             raise RuntimeError("Candidate identity changed during refresh")

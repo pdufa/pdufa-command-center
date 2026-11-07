@@ -83,6 +83,63 @@ def registry_phase3(nct):
     return status.get("overallStatus", "UNKNOWN")
 
 
+
+def classify_regulatory_path(item, cutoff, reviewed):
+    """Four evidence-backed stages; a planned filing is never an accepted NDA/BLA."""
+    p = item.get("regulatory_path") or item.get("pdufa_assignment") or {}
+    stage = p.get("stage") or ("PDUFA_ASSIGNED" if item.get("pdufa_assignment") else "")
+    app = p.get("application_type") or ("NDA" if item.get("pdufa_assignment") else "")
+    published, occurred = iso_day(p.get("published_at"), cutoff), iso_day(p.get("event_date"), cutoff)
+    if (stage not in {"PLANNED", "SUBMITTED", "ACCEPTED", "PDUFA_ASSIGNED"}
+            or app not in {"BLA","NDA","sBLA","sNDA"} or not reviewed
+            or not published or not occurred or occurred > published or reviewed < published
+            or p.get("review_status") != "VERIFIED" or not link_ok(p.get("source_url"))):
+        return None,"NO_CURRENT_VERIFIED_FDA_PATH"
+    if stage == "PLANNED":
+        period = str(p.get("planned_filing_period",""))
+        if (not re.fullmatch(r"(?:Q[1-4] )?20[0-9]{2}",period)
+                or int(period[-4:]) < cutoff.year or p.get("pdufa_target_date")):
+            return None,"PLANNED_FILING_NOT_CURRENT_OR_FALSE_PDUFA"
+        status,display=f"POST-P3 / {app} filing planned",f"{app} filing planned {period}; PDUFA not assigned"
+    elif stage == "SUBMITTED":
+        submission=iso_day(p.get("submitted_on"),cutoff)
+        if not submission or submission > published or p.get("pdufa_target_date"):
+            return None,"SUBMISSION_NOT_VERIFIED_OR_FALSE_PDUFA"
+        status,display=f"FDA {app} submitted / acceptance pending",f"{app} submitted {submission.isoformat()}; FDA acceptance pending"
+    elif stage == "ACCEPTED":
+        accepted=iso_day(p.get("accepted_on"),cutoff)
+        if not accepted or accepted > published or p.get("pdufa_target_date"):
+            return None,"ACCEPTANCE_NOT_VERIFIED_OR_FALSE_PDUFA"
+        status,display=f"FDA {app} accepted for review",f"{app} accepted {accepted.isoformat()}; PDUFA date pending"
+    else:
+        try:
+            target=date.fromisoformat(p.get("pdufa_target_date",""))
+        except (ValueError,TypeError):
+            target=None
+        if not target or target < cutoff:
+            return None,"NO_CURRENT_VERIFIED_FDA_PDUFA_PATH"
+        status,display=f"FDA {app} review / PDUFA active",target.isoformat()
+    return {"stage":stage,"status":status,"display":display,
+            "source":p["source_url"],"asOf":reviewed.isoformat()},None
+
+
+def master_pool_identity(rows):
+    """Fetch exact ticker/NCT pairs from the canonical 11k+ Google POOL."""
+    if not rows or rows[0][:3] != ["ticker","company","nct_id"]:
+        raise ValueError("Master POOL header changed or unavailable")
+    result={}
+    for row in rows[1:]:
+        if len(row)<3 or not TICKER.fullmatch(str(row[0])) or not NCT.fullmatch(str(row[2])):
+            raise ValueError("Invalid canonical POOL source row")
+        nct,ticker=str(row[2]),str(row[0])
+        if nct in result:
+            raise ValueError("Duplicate master POOL NCT: "+nct)
+        result[nct]=ticker
+    if not result:
+        raise ValueError("Master POOL empty; promotion must fail, not silently reject all")
+    return result
+
+
 def evaluate(catalog, caps, census, pool_ids, existing, cutoff, phase3_check=registry_phase3):
     if (catalog.get("schemaVersion") != "pdufa-curated-phase3-announcements-v1"
             or not isinstance(catalog.get("cases"), dict)):
@@ -105,7 +162,7 @@ def evaluate(catalog, caps, census, pool_ids, existing, cutoff, phase3_check=reg
             continue
         if identity.get(nct) != ticker:
             issues.append("NOT_IN_PHASE3_CENSUS_WITH_EXACT_TICKER")
-        if nct not in pool_ids:
+        if nct not in pool_ids or (isinstance(pool_ids,dict) and pool_ids.get(nct)!=ticker):
             issues.append("NOT_IN_MASTER_POOL")
         cap = market.get(ticker, {})
         try:
@@ -120,28 +177,22 @@ def evaluate(catalog, caps, census, pool_ids, existing, cutoff, phase3_check=reg
             issues.append("CAP_NOT_CURRENT_VERIFIED_300M_10B")
             value = None
         result = item.get("phase3_results") or {}
-        fda = item.get("pdufa_assignment") or {}
-        reviewed = iso_day(item.get("reviewedOn"), cutoff)
-        result_published = iso_day(result.get("published_at"), cutoff)
-        fda_published = iso_day(fda.get("published_at"), cutoff)
-        result_event = iso_day(result.get("event_date"), cutoff)
-        fda_event = iso_day(fda.get("event_date"), cutoff)
-        if (item.get("reviewerMethod") != "PRIMARY_PUBLIC_ISSUER_DISCLOSURE"
+        reviewed=iso_day(item.get("reviewedOn"),cutoff)
+        result_published=iso_day(result.get("published_at"),cutoff)
+        result_event=iso_day(result.get("event_date"),cutoff)
+        if (item.get("reviewerMethod")!="PRIMARY_PUBLIC_ISSUER_DISCLOSURE"
                 or not reviewed or not result_published or not result_event
-                or result.get("review_status") != "VERIFIED"
-                or not link_ok(result.get("source_url"))
-                or (reviewed and result_published and reviewed < result_published)):
+                or result_event>result_published or reviewed<result_published
+                or result.get("review_status")!="VERIFIED"
+                or not link_ok(result.get("source_url"))):
             issues.append("PHASE3_PUBLIC_RESULTS_NOT_REVIEWED")
-        try:
-            target = date.fromisoformat(fda.get("pdufa_target_date", ""))
-        except (ValueError, TypeError):
-            target = None
-        if (not fda_published or not fda_event
-                or fda.get("review_status") != "VERIFIED"
-                or not link_ok(fda.get("source_url"))
-                or not reviewed or (reviewed and fda_published and reviewed < fda_published)
-                or not target or target < cutoff):
-            issues.append("NO_CURRENT_VERIFIED_FDA_PDUFA_PATH")
+        regulatory,path_issue=classify_regulatory_path(item,cutoff,reviewed)
+        if path_issue:
+            issues.append(path_issue)
+        if item.get("regulatory_path") and not (
+                str(item.get("drug","")).strip() and
+                str(item.get("indication","")).strip()):
+            issues.append("PROGRAM_DRUG_INDICATION_UNVERIFIED")
         if issues:
             review.append({"nct": nct, "ticker": ticker, "reasons": sorted(set(issues))})
             continue
@@ -154,17 +205,22 @@ def evaluate(catalog, caps, census, pool_ids, existing, cutoff, phase3_check=reg
             continue
         now = datetime.now(timezone.utc).isoformat()
         day = cutoff.isoformat()
-        description = ("Verified issuer Phase 3 public results and FDA accepted NDA/PDUFA "
-                       "for exact-NCT program " + key)
+        description = (
+            f"Public Phase 3 results for {item.get('drug','issuer candidate')} / "
+            f"{item.get('indication','stated indication')}; "
+            f"{regulatory['display']}. Trial {nct}. "
+            f"{item.get('clinicalRiskNote','')}"
+        ).strip()
         row = [""] * 28
-        fields = {0:ticker, 1:nct, 2:next(r.get("company", "") for r in census if r.get("nct_id")==nct),
+        fields = {0:ticker, 1:nct,
+                  2:next(r.get("company","") for r in census if r.get("nct_id")==nct),
                   3:status, 4:"YES - company/SEC/journal", 5:result_event.isoformat(),
                   6:"https://clinicaltrials.gov/study/" + nct, 7:day, 8:now,
                   9:"PRIMARY_PUBLIC_ISSUER_DISCLOSURE", 10:"P3 automatic verified-source intake",
-                  11:"0", 13:"30", 14:"0", 16:"NOT YET SCORED", 17:day,
-                  18:"Open RAAS (search NCT)", 19:"FDA NDA review active",
-                  20:description, 21:fda["source_url"], 22:day, 23:int(value),
-                  24:check_day.isoformat(), 25:target.isoformat(),
+                  11:0, 13:30, 14:0, 16:"NOT YET SCORED", 17:day,
+                  18:"Open RAAS (search NCT)", 19:regulatory["status"],
+                  20:description, 21:regulatory["source"], 22:regulatory["asOf"],
+                  23:int(value), 24:check_day.isoformat(), 25:regulatory["display"],
                   26:result["source_url"], 27:cap["market_cap_source"]}
         for index, cell in fields.items():
             row[index] = cell
@@ -177,8 +233,8 @@ def evaluate(catalog, caps, census, pool_ids, existing, cutoff, phase3_check=reg
     return additions, review
 
 
-def sheets_values(auth, range_name):
-    url = API + quote(f"'{SHEET_NAME}'!{range_name}", safe="!':")
+def sheets_values(auth, range_name, sheet_name=SHEET_NAME):
+    url = API + quote(f"'{sheet_name}'!{range_name}", safe="!':")
     response = requests.get(url, headers=auth, params={"valueRenderOption":"UNFORMATTED_VALUE"}, timeout=60)
     response.raise_for_status()
     return response.json().get("values", [])
@@ -192,7 +248,7 @@ def main():
         json.loads(secret), scopes=["https://www.googleapis.com/auth/spreadsheets"])
     credentials.refresh(google.auth.transport.requests.Request())
     auth = {"Authorization":"Bearer " + credentials.token}
-    current = sheets_values(auth, "A3:AB600")
+    current = sheets_values(auth, "A3:AB")
     if not current or current[0][:3] != ["Ticker", "NCT ID", "Company"]:
         raise ValueError("Canonical P3 source headers changed; refusing to append")
     if any(not row or not row[1] for row in current[1:]):
@@ -202,25 +258,25 @@ def main():
         raise ValueError("Source spreadsheet has duplicate NCTs; refusing to append")
     with CANDIDATES.open(encoding="utf-8") as f:
         catalog = json.load(f)
-    with POOL.open(encoding="utf-8-sig", newline="") as f:
-        pool_ids = {r.get("nct_id") for r in csv.DictReader(f) if NCT.fullmatch(r.get("nct_id") or "")}
+    pool_ids=master_pool_identity(sheets_values(auth,"A1:C","Master Trials (Published)"))
     cutoff = datetime.now(timezone.utc).date()
     additions, review = evaluate(catalog, load_csv(CAPS), load_csv(CENSUS), pool_ids,
                                  set(existing_ids), cutoff)
     # Recheck the destination immediately before the write. Never overwrite existing rows.
-    if sheets_values(auth, "A3:AB600") != current:
+    if sheets_values(auth, "A3:AB") != current:
         raise RuntimeError("Source spreadsheet changed mid-run; fail closed")
     if additions:
         first = 3 + len(current)
         last = first + len(additions)-1
-        if last > 600:
-            raise ValueError("P3 row capacity safety bound reached")
-        url = API + quote(f"'{SHEET_NAME}'!A{first}:AB{last}", safe="!':")
-        result = requests.put(url, headers=auth, params={"valueInputOption":"RAW"},
-                              json={"range":f"'{SHEET_NAME}'!A{first}:AB{last}",
-                                    "majorDimension":"ROWS",
-                                    "values":[a["values"] for a in additions]}, timeout=60)
+        url = API + quote(f"'{SHEET_NAME}'!A3:AB", safe="!:") + ":append"
+        result=requests.post(url,headers=auth,
+            params={"valueInputOption":"RAW","insertDataOption":"INSERT_ROWS"},
+            json={"majorDimension":"ROWS","values":[x["values"] for x in additions]},
+            timeout=60)
         result.raise_for_status()
+        reported=(result.json().get("updates") or {}).get("updatedRange","")
+        if not reported.split("!")[-1].startswith(f"A{first}:"):
+            raise RuntimeError("P3 append did not return expected range: "+reported)
         check = sheets_values(auth, f"A{first}:B{last}")
         expected = [[a["ticker"],a["nct"]] for a in additions]
         if check != expected:
