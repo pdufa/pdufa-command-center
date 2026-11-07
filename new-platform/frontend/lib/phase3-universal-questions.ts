@@ -86,6 +86,38 @@ export function sourceObservation(nctId:string,number:number):SourceObservation|
   }
   case 12:return p?.enrollment?.trim()?doc("Registry enrollment: "+p.enrollment+" ("+p.enrollmentType.toLowerCase()+")"):
    registry?.enrollment!==undefined?doc("Official registry enrollment: "+registry.enrollment):null;
+  case 16:{
+   // The earlier-stage crosswalk is a conservative source lead, not an independently
+   // adjudicated same-patient-population result or an efficacy grade.
+   const measured=prior.flatMap(study=>(study.registeredResults?.primary||[])
+    .filter(outcome=>!/adverse|safety|tolerability|treatment.emergent|serious events|clinical laboratory|vital signs|electrocardiogram|concomitant medication|physical examination abnormalities/i.test(outcome.title))
+    .map(outcome=>({nctId:study.nctId,title:outcome.title,
+     pValues:(outcome.analyses||[]).filter(a=>a.pValue!==null&&a.pValue!==undefined&&a.pValue!=="")
+       .map(a=>(a.pValueModifier||"")+"p="+a.pValue)}))));
+   if(!measured.length)return null;
+   const m=measured[0];
+   return doc("Earlier candidate same-drug and same-condition Phase 2 registry has posted "+
+    "an efficacy-oriented primary outcome: "+m.title+
+    (m.pValues.length?"; statistical test(s): "+m.pValues.slice(0,3).join(", "):"")+
+    ". Reported statistical tests are NOT effect-size estimates; actual treatment benefit, "+
+    "clinical importance, prior-study population matching, comparator and dosing need "+
+    "independent review. This is NOT a positive clinical verdict.",
+    "https://clinicaltrials.gov/study/"+m.nctId);
+  }
+  case 21:{
+   // Longer measured follow-up is relevant context but cannot establish sustained benefit.
+   const measured=prior.flatMap(study=>(study.registeredResults?.primary||[])
+    .filter(outcome=>!/adverse|safety|tolerability|treatment.emergent|serious events|clinical laboratory|vital signs|electrocardiogram|concomitant medication|physical examination abnormalities/i.test(outcome.title))
+    .filter(outcome=>/week\s*(?:2[4-9]|[3-9]\d|\d{3})\b|month\s*(?:[6-9]|\d{2})\b|\b(?:6|9|12|18|24)\s+months?\b/i.test(outcome.title+" "+outcome.timeFrame))
+    .map(outcome=>({nctId:study.nctId,title:outcome.title,timeFrame:outcome.timeFrame}))));
+   if(!measured.length)return null;
+   const m=measured[0];
+   return doc("An earlier candidate Phase 2 record has a publicly posted clinical "+
+    "outcome with extended follow-up: "+m.title+"; assessment time: "+m.timeFrame+
+    ". Recording a longer observation window does NOT prove that benefit was sustained, "+
+    "does not establish a controlled durability effect or justify a numerical rating.",
+    "https://clinicaltrials.gov/study/"+m.nctId);
+  }
   case 17:return registry?.secondaryOutcomes?.length?doc(
    "Registered secondary outcomes (presence only, NOT predicted efficacy): "+
    registry.secondaryOutcomes.slice(0,3).map(x=>x.measure).join("; ")):null;
