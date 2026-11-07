@@ -4,7 +4,7 @@
  */
 import batch from "../data/phase3PreDataBatch20261105.json";
 import officialResearchRaw from "../data/phase3PreDataOfficialResearch.json";
-type OfficialPrior={nctId:string;registeredResults?:{primary?:{title:string;analyses?:{pValue?:string|number|null;pValueModifier?:string}[]}[];seriousEventCount?:number}|null};
+type OfficialPrior={nctId:string;registeredResults?:{primary?:{title:string;timeFrame?:string;analyses?:{pValue?:string|number|null;pValueModifier?:string}[]}[];seriousEventCount?:number}|null};
 type OfficialRecord={nctId:string;sourceState:string;registry?:{primaryOutcomes?:{measure:string;timeFrame:string}[];secondaryOutcomes?:{measure:string;timeFrame:string}[];allocation?:string;masking?:string;enrollment?:number;status?:string;interventions?:{name:string;type:string}[];arms?:{label:string;type:string}[];hasResults?:boolean;resultsFirstPosted?:string};priorPhase2?:{matches:OfficialPrior[]}};
 const officialResearch=officialResearchRaw as unknown as {records:OfficialRecord[]};
 const officialByNct=new Map(officialResearch.records.map(r=>[r.nctId,r] as const));
@@ -108,8 +108,8 @@ export function sourceObservation(nctId:string,number:number):SourceObservation|
    // Longer measured follow-up is relevant context but cannot establish sustained benefit.
    const measured=prior.flatMap(study=>(study.registeredResults?.primary||[])
     .filter(outcome=>!/adverse|safety|tolerability|treatment.emergent|serious events|clinical laboratory|vital signs|electrocardiogram|concomitant medication|physical examination abnormalities/i.test(outcome.title))
-    .filter(outcome=>/week\s*(?:2[4-9]|[3-9]\d|\d{3})\b|month\s*(?:[6-9]|\d{2})\b|\b(?:6|9|12|18|24)\s+months?\b/i.test(outcome.title+" "+outcome.timeFrame))
-    .map(outcome=>({nctId:study.nctId,title:outcome.title,timeFrame:outcome.timeFrame})));
+    .filter(outcome=>/week\s*(?:2[4-9]|[3-9]\d|\d{3})\b|month\s*(?:[6-9]|\d{2})\b|\b(?:6|9|12|18|24)\s+months?\b/i.test(outcome.title+" "+(outcome.timeFrame||"")))
+    .map(outcome=>({nctId:study.nctId,title:outcome.title,timeFrame:outcome.timeFrame||""})));
    if(!measured.length)return null;
    const m=measured[0];
    return doc("An earlier candidate Phase 2 record has a publicly posted clinical "+
