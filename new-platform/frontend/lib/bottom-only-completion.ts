@@ -15,6 +15,14 @@ import {fullReviewedTrialCandidate,parseReviewedMetricFeed} from "./raas-reviewe
 export const BOTTOM_ONLY_VERSION="BOTTOM_ONLY_POST_READOUT_20261107_V1";
 const asOf="2026-11-07";
 const activeIds=new Set(["post-1-1","post-1-2","post-1-3","post-1-4","post-1-5"]);
+/** Source questions relevant to each of the five approved post-data clinical factors. */
+const factorQuestions:Readonly<Record<string,readonly number[]>>={
+ "post-1-1":[1,7,8,20,21,29],
+ "post-1-2":[2,6,17,18,20],
+ "post-1-3":[1,9,10,12,13,14,15,19],
+ "post-1-4":[4,16,20,24,29],
+ "post-1-5":[3,24,27]
+};
 const matrixByNct=new Map(matrix.rows.map(r=>[r[0],r]));
 const endpointByNct=new Map(endpointAdjudications.records.map(r=>[r.nctId,r]));
 const allReviews=[...originalGrades.records,...supplement.records,...gradeIncrement.records];
@@ -57,7 +65,25 @@ export function bottomOnlyReport(){
   const rawByMetric=new Map(scoreSource.map(g=>[g.metricId,g]));
   const factors=clinicalFiveDefinitions("post").map(m=>{
    const grade=byMetric.get(m.id),source=rawByMetric.get(m.id);
-   return {...m,grade:grade?.score??null,finding:grade?.finding??null,
+   const related=new Set(factorQuestions[m.id]??[]);
+   const addedEvidence=trialFacts.filter(f=>related.has(f.question)).map(f=>({
+    question:f.question,sourceUrl:f.sourceUrl,sourceDate:f.sourceDate,
+    evidence:f.evidence,classification:f.classification,
+    criticalLimit:f.criticalLimit,assessmentStatus:"DOCUMENTED_SOURCE_ONLY_NOT_A_NUMERICAL_GRADE"
+   }));
+   const originalEvidence=[...related].flatMap(question=>{
+    const offset=40+(question-1)*5,status=original[offset],evidence=original[offset+3],url=original[offset+4];
+    if(status==="UNSCORED"||status==="PREDICTED_PRE_READOUT"||!isUrl(url)||missing(evidence))return [];
+    return [{question,sourceUrl:url.split(" | ")[0],sourceDate:row.readoutSourceDate??null,
+     evidence:evidence.slice(0,1500),classification:status,
+     criticalLimit:"Saved source statement only; matched benchmark, uncertainty and analytical limitations require separate review.",
+     assessmentStatus:"PRESERVED_SOURCED_FACT_NOT_A_NUMERICAL_GRADE"}];
+   });
+   const evidencePack=[...addedEvidence,...originalEvidence];
+   const ratingReadiness=grade?"NUMERICAL_RESEARCH_GRADE_PRESENT":
+    evidencePack.length?"EVIDENCE_FOUND_SCIENTIFIC_GRADING_REQUIRED":"SOURCE_DISCOVERY_OR_DISCLOSURE_REQUIRED";
+   return {...m,reviewEvidence:evidencePack,reviewEvidenceCount:evidencePack.length,ratingReadiness,
+    grade:grade?.score??null,finding:grade?.finding??null,
     sourceUrl:grade?.sourceUrl??null,benchmarkSourceUrl:grade?.benchmarkSourceUrl??null,
     sourceDate:grade?.sourceDate??null,assessedAt:grade?.assessedAt??null,
     observedResult:source?.observedResult??null,benchmarkContext:source?.benchmarkContext??null,
