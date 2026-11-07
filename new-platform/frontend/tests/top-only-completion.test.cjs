@@ -70,3 +70,10 @@ test('SEC-hosted Candel facts fill previously missing TOP questions without crea
  assert.equal(trial.metrics.filter(m=>m.activeInClinicalModel).length,5);
  assert.equal(trial.metrics.filter(m=>m.activeInClinicalModel&&m.score!==null).length,trial.clinicalScoredFactors);
 });
+test('exact TOP CYTK PK-guided dose evidence completes only the supported five-factor provisional score',()=>{
+ const trial=report.trials.find(t=>t.nctId==='NCT06736574');assert.ok(trial);
+ const factor=trial.clinicalFactors.find(f=>f.id==='pre-1-3');assert.equal(factor.grade,50);
+ assert.equal(factor.sourceUrl,'https://pubmed.ncbi.nlm.nih.gov/27914656/');
+ assert.equal(trial.clinicalScoredFactors,5);assert.equal(trial.clinicalFullScore,45);
+ assert.equal(trial.legacyThirtyMetricFullScore,null);assert.equal(trial.predictionEligibility,'ABSTAIN');
+});
