@@ -59,7 +59,7 @@ test("nightly source changes are displayed per-NCT and link back to review workb
  assert.match(view,/Ticker/);
  assert.match(view,/Independent review needed/);
  assert.match(view,/Zero new events is/);
- assert.match(queue,/href="\/raas-evidence-changes"/);
+ assert.match(queue,/redirect\("\/p3-post-data"\)/);
  assert.match(review,/href="\/raas-evidence-changes"/);
  const pages=["app/raas-evidence-changes/page.tsx",
   "app/raas-evidence-backlog/page.tsx","app/raas-trial-review/page.tsx",
