@@ -35,7 +35,7 @@ function outcomeMeasurements(v:unknown):string|null{
  const result:string[]=[];
  for(const item of arr(v).slice(0,8)){
   const o=obj(item),groupNames=new Map(arr(o.groups).map(g=>{
-   const group=obj(g);return [str(group.id),clean(group.title,100)];
+   const group=obj(g);return [str(group.id),clean(group.title,100)] as const;
   }));
   const title=clean(o.title,150),unit=clean(o.unitOfMeasure,40);
   for(const cls of arr(o.classes)){
@@ -76,7 +76,7 @@ export function normalizePoolRegistryDetail(raw:unknown,nctId:string,retrievedAt
  const outcomes=obj(protocol.outcomesModule);
  const contacts=obj(protocol.contactsLocationsModule);
  const references=obj(protocol.referencesModule),documents=obj(protocol.documentSection);
- const dates=[["Start",status.startDateStruct],["Primary completion",status.primaryCompletionDateStruct],
+ const dates:[string,unknown][]=[["Start",status.startDateStruct],["Primary completion",status.primaryCompletionDateStruct],
   ["Study completion",status.completionDateStruct]].map(([name,entry])=>{
    const e=obj(entry),date=clean(e.date,40),kind=clean(e.type,40);
    return date?name+": "+date+(kind?" ("+kind+")":""):"";
@@ -100,7 +100,7 @@ export function normalizePoolRegistryDetail(raw:unknown,nctId:string,retrievedAt
   const d=obj(x),name=clean(d.label,80)||clean(d.type,80),url=clean(d.url,200);
   return [name,url].filter(Boolean).join(": ");
  });
- const labels=[
+ const labels:[string,unknown][]=[
   ["Type",design.studyType],["Allocation",designInfo.allocation],
   ["Intervention model",designInfo.interventionModel],["Masking",maskingInfo.masking],
   ["Purpose",designInfo.primaryPurpose]
