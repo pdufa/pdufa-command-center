@@ -1,6 +1,6 @@
 /** Source-backed POOL sorting performed before pagination. No inferred qualification. */
 import type {PoolTrialRecord} from "./pool-pipeline-funnel";
-import snapshot from "../data/p3PostDataActive.json";
+import * as snapshot from "../data/p3PostDataActive.json";
 import {sortPoolPage,type PageSortDirection} from "./pool-row-sorting";
 
 export const POOL_SORT_KEYS=[

@@ -10,7 +10,7 @@ test("POOL master controls render before source results and overview sections",(
  assert.match(workspace,/section==="pool"&&<section id="pool-master"/);
  assert.ok(workspace.indexOf('id="pool-master"')<workspace.indexOf('qualification rules:'.toUpperCase())||workspace.indexOf('id="pool-master"')<workspace.indexOf('Qualification rules:'));
  assert.match(workspace,/rows=\{page\?\.rows\.filter/);
- assert.match(workspace,/loading=\{loading\} error=\{error\}/);
+ assert.match(workspace,/loading=\{loading\|\|\(!page&&!error\)\} error=\{error\}/);
 });
 test("POOL displays unfiltered clinical trial records from all phases",()=>{
  assert.match(workspace,/recordKind:"trials"/);
