@@ -35,8 +35,9 @@ test("MAIN status page reports dated release proof without promoting old install
 test("MAIN is reachable without adding a new active population tab",()=>{
   const nav=fs.readFileSync(path.join(__dirname,"../app/GlobalNavigation.tsx"),"utf8");
   const home=fs.readFileSync(path.join(__dirname,"../app/page.tsx"),"utf8");
-  const links=[...nav.matchAll(/\\{label:"([^"]+)",href:"([^"]+)"\\}/g)].map(x=>[x[1],x[2]]);
-  assert.deepEqual(links,[["POOL","/pool"],["FOCUS","/focus"],["TOOLS","/tools"]]);
-  assert.match(home,/<Link href="\\/main">MAIN/);
+  for(const entry of ['{label:"POOL",href:"/pool"}','{label:"FOCUS",href:"/focus"}',
+    '{label:"TOOLS",href:"/tools"}']) assert.ok(nav.includes(entry),entry);
+  assert.equal(nav.split(' {label:"').length-1,3);
+  assert.ok(home.includes('<Link href="/main">MAIN'));
   assert.ok(!nav.includes('label:"GEM"')&&!nav.includes('label:"TOP"'));
 });
