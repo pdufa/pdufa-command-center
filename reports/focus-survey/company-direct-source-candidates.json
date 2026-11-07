@@ -1,0 +1,346 @@
+{
+  "records": [
+    {
+      "candidateDrugs": [
+        "Cytisinicline"
+      ],
+      "company": "Achieve Life Sciences",
+      "excerpt": "Achieve Life Sciences Receives Complete Response Letter from FDA for Cytisinicline NDA :: Achieve Life Sciences, Inc. (ACHV) Skip to main content Skip to section navigation Skip to footer Achieve Life Sciences Logo Home About Management Team Board of Directors Scientific Advisors Careers Products Phase 3 ORCA-3 Trial Phase 3 ORCA-2 Trial Phase 2 ORCA-1 Trial Phase 2 ORCA-V1 Trial Expanded Access Policy Resources Investors News Contact Search for: Press Releases Investors Investors Overview News & Events Overview Press Releases IR Calendar Presentations Email Alerts Company Information Overview Management Team Contacts Financial Information Overview Financial Results Stock Data Quote and Char",
+      "ingredientCandidates": [],
+      "nctId": "NCT04576949",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Smoking Cessation"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-07-01",
+      "sourceDetails": {
+        "contentSha256": "fed490a85318bbdda37878ee6cee6818f9603d2fb6b8e7a42745dcf2ade83bc3",
+        "exactNctMentionInFullPage": false,
+        "originalSourceUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
+        "seedContext": "Cytisinicline ORCA-2 program regulatory update",
+        "sourceChars": 9210,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "DRUG_MENTION_ONLY",
+      "sourceTitle": "Achieve Life Sciences Receives Complete Response Letter from FDA for Cytisinicline NDA :: Achieve Life Sciences, Inc. (ACHV)",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "ACHV"
+    },
+    {
+      "candidateDrugs": [
+        "Cytisinicline"
+      ],
+      "company": "Achieve Life Sciences",
+      "excerpt": "Achieve Life Sciences Receives Complete Response Letter from FDA for Cytisinicline NDA :: Achieve Life Sciences, Inc. (ACHV) Skip to main content Skip to section navigation Skip to footer Achieve Life Sciences Logo Home About Management Team Board of Directors Scientific Advisors Careers Products Phase 3 ORCA-3 Trial Phase 3 ORCA-2 Trial Phase 2 ORCA-1 Trial Phase 2 ORCA-V1 Trial Expanded Access Policy Resources Investors News Contact Search for: Press Releases Investors Investors Overview News & Events Overview Press Releases IR Calendar Presentations Email Alerts Company Information Overview Management Team Contacts Financial Information Overview Financial Results Stock Data Quote and Char",
+      "ingredientCandidates": [],
+      "nctId": "NCT05206370",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Smoking Cessation"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-07-01",
+      "sourceDetails": {
+        "contentSha256": "fed490a85318bbdda37878ee6cee6818f9603d2fb6b8e7a42745dcf2ade83bc3",
+        "exactNctMentionInFullPage": false,
+        "originalSourceUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
+        "seedContext": "Cytisinicline ORCA-3 program regulatory update",
+        "sourceChars": 9210,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "DRUG_MENTION_ONLY",
+      "sourceTitle": "Achieve Life Sciences Receives Complete Response Letter from FDA for Cytisinicline NDA :: Achieve Life Sciences, Inc. (ACHV)",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "ACHV"
+    },
+    {
+      "candidateDrugs": [
+        "AXS-12"
+      ],
+      "company": "Axsome Therapeutics, Inc.",
+      "excerpt": "e future of brain health. Current opportunities Press releases July 15, 2026 Axsome Therapeutics Announces FDA Acceptance of New Drug Application for AXS-12 for the Treatment of Cataplexy in Narcolepsy Download PDF FDA sets PDUFA target action date of May 1, 2027 NEW YORK, July 15, 2026 (GLOBE NEWSWIRE) -- Axsome Therapeutics, Inc. (NASDAQ: AXSM), a biopharmaceutical company leading a new era in the treatment of central nervous system (CNS) disorders, today announced that the U.S. Food and Drug Administration (FDA) has accepted for filing the Company’s New Drug Application (NDA) for AXS-12 (reboxetine) for the treatment of cataplexy in narcolepsy. The FDA has set a Prescription Drug User Fee",
+      "ingredientCandidates": [],
+      "nctId": "NCT05059223",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Narcolepsy",
+        "Cataplexy",
+        "Excessive Daytime Sleepiness"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-07-15",
+      "sourceDetails": {
+        "contentSha256": "8db5a907c20fd6684b964736f5f2fc036c79080a425ed651ad64a2199cb30fd9",
+        "exactNctMentionInFullPage": false,
+        "originalSourceUrl": "https://www.axsome.com/news/axsome-therapeutics-announces-fda-acceptance-of-new-drug-app-13191",
+        "seedContext": "AXS-12 narcolepsy NDA; program-level context, not endpoint results",
+        "sourceChars": 10596,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "ISSUER_OR_SOURCE_LEAD_ONLY",
+      "sourceTitle": "Corporate Site",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://www.axsome.com/news/axsome-therapeutics-announces-fda-acceptance-of-new-drug-app-13191",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "AXSM"
+    },
+    {
+      "candidateDrugs": [
+        "AXS-12"
+      ],
+      "company": "Axsome Therapeutics, Inc.",
+      "excerpt": "Build your career helping to advance the future of brain health. Current opportunities Press releases November 26, 2024 Axsome Therapeutics Announces AXS-12 Achieves Primary Endpoint in ENCORE Long-Term Phase 3 Trial in Narcolepsy Download PDF AXS-12 statistically significantly reduced the frequency of cataplexy attacks compared to placebo (p=0.017, primary endpoint) Statistically significant improvement in cognition compared to placebo (p=0.011, NSAQ) Statistically significant improvement in narcolepsy overall compared to placebo (p=0.024, PGI-C) Cataplexy response (≥50% improvement) achieved by 72% of patients at 1 month and 82% at 6 months Improvement in excessive daytime sleepiness (EDS)",
+      "ingredientCandidates": [],
+      "nctId": "NCT05113745",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Narcolepsy",
+        "Cataplexy",
+        "Excessive Daytime Sleepiness"
+      ],
+      "reviewed": false,
+      "sourceDate": "2024-11-26",
+      "sourceDetails": {
+        "contentSha256": "5c1a1fc42d56c01850bd3d238e51c5abbf8fbbbef412d16a272c48205a1e7f0d",
+        "exactNctMentionInFullPage": false,
+        "originalSourceUrl": "https://www.axsome.com/news/axsome-therapeutics-announces-axs-12-achieves-primary-endpoi-11721",
+        "seedContext": "AXS-12 ENCORE narcolepsy randomized withdrawal results",
+        "sourceChars": 24672,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "ISSUER_OR_SOURCE_LEAD_ONLY",
+      "sourceTitle": "Corporate Site",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://www.axsome.com/news/axsome-therapeutics-announces-axs-12-achieves-primary-endpoi-11721",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "AXSM"
+    },
+    {
+      "candidateDrugs": [
+        "Deramiocel"
+      ],
+      "company": "Capricor Therapeutics, Inc.",
+      "excerpt": "Capricor Therapeutics Announces Positive Topline Results from Pivotal Phase 3 HOPE-3 Study of Deramiocel in Duchenne Muscular Dystrophy :: Capricor Therapeutics, Inc. (CAPR) Skip to main content Skip to section navigation Skip to footer Home About Us Overview Leadership Board of Directors Scientific Advisors (DMD) Our Science Deramiocel (Biologic Medicine) Exosomes Technology Publications Strategic Partnerships Pipeline Pipeline Duchenne Muscular Dystrophy Overview Clinical Trials Investors Overview News & Events Company Info Financial Info Stock Data SEC Filings Governance Careers Contact Press Releases Investors Investors Overview News & Events Overview Press Releases In the News IR Calend",
+      "ingredientCandidates": [],
+      "nctId": "NCT05126758",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Muscular Dystrophies",
+        "Muscular Dystrophy, Duchenne",
+        "Muscular Disorders, Atrophic",
+        "Muscular Diseases",
+        "Neuromuscular Diseases",
+        "Genetic Diseases, X-Linked",
+        "Genetic Diseases, Inborn",
+        "Nervous System Diseases"
+      ],
+      "reviewed": false,
+      "sourceDate": "2025-12-01",
+      "sourceDetails": {
+        "contentSha256": "4466a922b44bc4507328a7caf720a8de022d5001cecbce087808f8e540dfaec3",
+        "exactNctMentionInFullPage": true,
+        "originalSourceUrl": "https://www.capricor.com/investors/news-events/press-releases/detail/331/capricor-therapeutics-announces-positive-topline-results",
+        "seedContext": "Deramiocel HOPE-3 Phase 3 efficacy and safety results",
+        "sourceChars": 14054,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "EXACT_NCT",
+      "sourceTitle": "Capricor Therapeutics Announces Positive Topline Results from Pivotal Phase 3 HOPE-3 Study of Deramiocel in Duchenne Muscular Dystrophy :: Capricor Therapeutics, Inc. (CAPR)",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://www.capricor.com/investors/news-events/press-releases/detail/331/capricor-therapeutics-announces-positive-topline-results",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "CAPR"
+    },
+    {
+      "candidateDrugs": [
+        "Aficamten (5 mg",
+        "10 mg",
+        "15 mg and 20 mg)",
+        "Placebo to match aficamten",
+        "Metoprolol succinate (50 mg"
+      ],
+      "company": "Cytokinetics",
+      "excerpt": "ten MYQORZO aficamten ) is a cardiac myosin inhibitor approved in the U.S., China, European Union and United Kingdom for the treatment of symptomatic obstructive hypertrophic cardiomyopathy (oHCM). In patients with oHCM, myosin inhibition with MYQORZO reduces cardiac contractility and consequently, left ventricular outflow tract (LVOT) obstruction. MYQORZO was engineered to achieve a predictable exposure response, rapid onset of action and reversibility. Aficamten is also under clinical investigation in CEDAR-HCM in a pediatric population with oHCM. Safety and efficacy of aficamten have not been established in a pediatric patient population. In addition, aficamten is being studied in FOREST-",
+      "ingredientCandidates": [],
+      "nctId": "NCT05767346",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Obstructive Hypertrophic Cardiomyopathy (oHCM)"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-08-29",
+      "sourceDetails": {
+        "contentSha256": "6e4836d35e24773b4665c53f8356297277239c52770b4c7222de02a5074f7647",
+        "exactNctMentionInFullPage": false,
+        "originalSourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Additional-Results-from-ACACIA-HCM-and-MAPLE-HCM-Presented-in-Late-Breaking-Clinical-Trial-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026/default.aspx",
+        "seedContext": "Aficamten MAPLE-HCM Phase 3 results versus metoprolol",
+        "sourceChars": 22338,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "ISSUER_OR_SOURCE_LEAD_ONLY",
+      "sourceTitle": "Cytokinetics, Incorporated - Cytokinetics Announces Additional Results from ACACIA-HCM and MAPLE-HCM Presented in Late Breaking Clinical Trial Session at the European Society of Cardiology (ESC) Congress 2026",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Additional-Results-from-ACACIA-HCM-and-MAPLE-HCM-Presented-in-Late-Breaking-Clinical-Trial-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026/default.aspx",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "CYTK"
+    },
+    {
+      "candidateDrugs": [
+        "Aficamten"
+      ],
+      "company": "Cytokinetics, Inc.",
+      "excerpt": "Cytokinetics, Incorporated - Cytokinetics Announces Positive Topline Results from ACACIA-HCM, the Pivotal Phase 3 Clinical Trial of Aficamten in Patients with Non-Obstructive Hypertrophic Cardiomyopathy Skip to main content Overview Press Releases Events & Presentations Stock Info Stock Quote Analyst Coverage Financials Annual Reports SEC Filings Governance Governance Documents Committee Composition Senior Management Board of Directors Resources Investor FAQs Investor Email Alerts Investor/Media Contacts press releases View All Press Releases Cytokinetics Announces Positive Topline Results from ACACIA-HCM, the Pivotal Phase 3 Clinical Trial of Aficamten in Patients with Non-Obstructive Hyper",
+      "ingredientCandidates": [],
+      "nctId": "NCT06081894",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Symptomatic Non-Obstructive Hypertrophic Cardiomyopathy"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-05-05",
+      "sourceDetails": {
+        "contentSha256": "d8e9cf99b572a827e59e8ea53a0c9a2c927ecebb5afd27c8c7720f2f17ec59b0",
+        "exactNctMentionInFullPage": false,
+        "originalSourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Topline-Results-from-ACACIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-with-Non-Obstructive-Hypertrophic-Cardiomyopathy/default.aspx",
+        "seedContext": "Aficamten ACACIA-HCM Phase 3 randomized trial",
+        "sourceChars": 19001,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "DRUG_MENTION_ONLY",
+      "sourceTitle": "Cytokinetics, Incorporated - Cytokinetics Announces Positive Topline Results from ACACIA-HCM, the Pivotal Phase 3 Clinical Trial of Aficamten in Patients with Non-Obstructive Hypertrophic Cardiomyopathy",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Topline-Results-from-ACACIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-with-Non-Obstructive-Hypertrophic-Cardiomyopathy/default.aspx",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "CYTK"
+    },
+    {
+      "candidateDrugs": [
+        "AL102"
+      ],
+      "company": "Immunome, Inc.",
+      "excerpt": "Immunome Presents Additional Clinical Data for Varegacestat in Desmoid Tumors at ESMO 2026 - Investor Relations Skip to main content Skip to footer Opens in a new tab Overview News Events & Presentations Events Presentations Stock Info Financials SEC Filings Governance Governance Documents Board of Directors Executive Management Committee Composition Resources Investor Email Alerts Investor Contacts Overview News Events & Presentations Events Presentations Stock Info Financials SEC Filings Governance Governance Documents Board of Directors Executive Management Committee Composition Resources Investor Email Alerts Investor Contacts Home 2022 Immunome Presents Additional Clinical Data for Vare",
+      "ingredientCandidates": [],
+      "nctId": "NCT04871282",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Desmoid",
+        "Desmoid Tumor"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-10-26T11:00:35+00:00",
+      "sourceDetails": {
+        "contentSha256": "cade8009e9242c662a54ac61296bd8a6dd6ca52fc3777f40b83e316a096f3146",
+        "exactNctMentionInFullPage": true,
+        "originalSourceUrl": "https://investors.immunome.com/immunome-presents-additional-clinical-data-for-varegacestat-in-desmoid-tumors-at-esmo-2026/",
+        "seedContext": "Varegacestat RINGSIDE Phase 3 clinical data",
+        "sourceChars": 11303,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "EXACT_NCT",
+      "sourceTitle": "Immunome Presents Additional Clinical Data for Varegacestat in Desmoid Tumors at ESMO 2026 - Investor Relations",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://investors.immunome.com/immunome-presents-additional-clinical-data-for-varegacestat-in-desmoid-tumors-at-esmo-2026/",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "IMNM"
+    },
+    {
+      "candidateDrugs": [
+        "lorundrostat Dose 1",
+        "lorundrostat Dose 2"
+      ],
+      "company": "Mineralys Therapeutics, Inc.",
+      "excerpt": "Mineralys Therapeutics Presents New Lorundrostat Data in Participants with Hypertension and Chronic Kidney Disease at ASN Kidney Week 2026 :: Mineralys Therapeutics, Inc. (MLYS) Skip to main content Skip to section navigation Skip to footer About Discover Mineralys Purpose & Values Our Team Science Lorundrostat Aldosterone Hypertension Cardio-Renal-Metabolic Syndrome Pipeline Investors Publications Medical Affairs Contact Us Careers & Culture Partnering Contact Form Menu About Discover Mineralys Purpose & Values Our Team Science Lorundrostat Aldosterone Hypertension Cardio-Renal-Metabolic Syndrome Pipeline Investors Publications Medical Affairs Contact Us Careers & Culture Partnering Contact",
+      "ingredientCandidates": [],
+      "nctId": "NCT06153693",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Hypertension"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-10-22",
+      "sourceDetails": {
+        "contentSha256": "caf6d63018b0ee8fa9b35cc78a1b59187a7b11e7eadc466db28d0920e4cc4545",
+        "exactNctMentionInFullPage": true,
+        "originalSourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/123/mineralys-therapeutics-presents-new-lorundrostat-data-in",
+        "seedContext": "Lorundrostat Launch-HTN Phase 3 CKD subgroup analysis",
+        "sourceChars": 13286,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "EXACT_NCT",
+      "sourceTitle": "Mineralys Therapeutics Presents New Lorundrostat Data in Participants with Hypertension and Chronic Kidney Disease at ASN Kidney Week 2026 :: Mineralys Therapeutics, Inc. (MLYS)",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/123/mineralys-therapeutics-presents-new-lorundrostat-data-in",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "MLYS"
+    },
+    {
+      "candidateDrugs": [
+        "SRP-4045",
+        "SRP-4053"
+      ],
+      "company": "Sarepta Therapeutics, Inc.",
+      "excerpt": "Deutsch English Français Italiano UK English United States English Social Links Twitter LinkedIn Instagram Facebook Main navigation Our Disease Areas Duchenne Muscular Dystrophy Limb-girdle Muscular Dystrophy Facioscapulohumeral muscular dystrophy Myotonic dystrophy type 1 Our Science siRNA RNA Platform Gene Therapy Manufacturing Strategic Partnerships Investigator-Initiated Studies Our Products & Pipeline Products Pipeline Clinical Trials Treatment Access About Us Leadership Patient Affairs Corporate Responsibility Grants & Giving Global Locations Contact Us Join Us Career Opportunities Toggle Menu Button Clinical Trials Conducting numerous clinical trials across several therapeutic areas B",
+      "ingredientCandidates": [],
+      "nctId": "NCT02500381",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Duchenne Muscular Dystrophy"
+      ],
+      "reviewed": false,
+      "sourceDate": "2025-11-18",
+      "sourceDetails": {
+        "contentSha256": "56c9f669358f66c54098ff0ebb63104f99302708dad6af96f20737e9acc64219",
+        "exactNctMentionInFullPage": true,
+        "originalSourceUrl": "https://www.sarepta.com/products-pipeline/clinical-trials",
+        "seedContext": "Sarepta official ESSENCE trial list NCT02500381; not a results disclosure",
+        "sourceChars": 26912,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "EXACT_NCT",
+      "sourceTitle": "Participate in a Clinical Trial | Sarepta Therapeutics",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://www.sarepta.com/products-pipeline/clinical-trials",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "SRPT"
+    },
+    {
+      "candidateDrugs": [
+        "Molgramostim",
+        "Molgramostim Open-label"
+      ],
+      "company": "Savara Inc.",
+      "excerpt": "Savara Inc. - Savara Announces Molgramostim Nebulizer Solution (Molgramostim) Achieved Statistical Significance for Primary Endpoint and Multiple Secondary Endpoints in IMPALA-2, a Pivotal Phase 3 Clinical Trial in Autoimmune Pulmonary Alveolar Proteinosis (aPAP) Skip to main content Overview News Events & Presentations Financials Quarterly Results Stock Quote SEC Filings Governance Resources Investor Email Alerts Investor Contacts Analyst Coverage News Details View All News Savara Announces Molgramostim Nebulizer Solution (Molgramostim) Achieved Statistical Significance for Primary Endpoint and Multiple Secondary Endpoints in IMPALA-2, a Pivotal Phase 3 Clinical Trial in Autoimmune Pulmonar",
+      "ingredientCandidates": [
+        "clinicalBenefit",
+        "magnitude"
+      ],
+      "nctId": "NCT04544293",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Autoimmune Pulmonary Alveolar Proteinosis"
+      ],
+      "reviewed": false,
+      "sourceDate": "2024-06-26",
+      "sourceDetails": {
+        "contentSha256": "138a621ab0c9d36c4b8e4d27eb49a211e368782a7251b9500a5b14efcf690952",
+        "exactNctMentionInFullPage": true,
+        "originalSourceUrl": "https://investors.savarapharma.com/news/news-details/2024/Savara-Announces-Molgramostim-Nebulizer-Solution-Molgramostim-Achieved-Statistical-Significance-for-Primary-Endpoint-and-Multiple-Secondary-Endpoints-in-IMPALA-2-a-Pivotal-Phase-3-Clinical-Trial-in-Autoimmune-Pulmonary-Alveolar--06-26-2024/default.aspx",
+        "seedContext": "Molgramostim IMPALA-2 phase 3 trial source explicitly NCT04544293",
+        "sourceChars": 15022,
+        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
+      },
+      "sourceMatch": "EXACT_NCT",
+      "sourceTitle": "Savara Inc. - Savara Announces Molgramostim Nebulizer Solution (Molgramostim) Achieved Statistical Significance for Primary Endpoint and Multiple Secondary Endpoints in IMPALA-2, a Pivotal Phase 3 Clinical Trial in Autoimmune Pulmonary Alve",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://investors.savarapharma.com/news/news-details/2024/Savara-Announces-Molgramostim-Nebulizer-Solution-Molgramostim-Achieved-Statistical-Significance-for-Primary-Endpoint-and-Multiple-Secondary-Endpoints-in-IMPALA-2-a-Pivotal-Phase-3-Clinical-Trial-in-Autoimmune-Pulmonary-Alveolar--06-26-2024/default.aspx",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "SVRA"
+    }
+  ],
+  "schemaVersion": 1
+}

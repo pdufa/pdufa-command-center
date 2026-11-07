@@ -10,36 +10,36 @@
       "verified": 0
     },
     {
-      "researchGaps": 29,
+      "researchGaps": 26,
       "slots": 87,
-      "sourceContext": 58,
+      "sourceContext": 61,
       "sourceInterpretationRequired": 58,
       "survey": "Unmet Medical Need",
       "surveyNumber": 2,
       "verified": 0
     },
     {
-      "researchGaps": 110,
+      "researchGaps": 88,
       "slots": 174,
-      "sourceContext": 62,
+      "sourceContext": 84,
       "sourceInterpretationRequired": 27,
       "survey": "Clinical Benefit",
       "surveyNumber": 3,
       "verified": 17
     },
     {
-      "researchGaps": 29,
+      "researchGaps": 28,
       "slots": 29,
-      "sourceContext": 0,
+      "sourceContext": 1,
       "sourceInterpretationRequired": 0,
       "survey": "Survival Benefit",
       "surveyNumber": 4,
       "verified": 0
     },
     {
-      "researchGaps": 26,
+      "researchGaps": 25,
       "slots": 29,
-      "sourceContext": 3,
+      "sourceContext": 4,
       "sourceInterpretationRequired": 2,
       "survey": "Quality-of-Life Improvement",
       "surveyNumber": 5,
@@ -64,9 +64,9 @@
       "verified": 0
     },
     {
-      "researchGaps": 53,
+      "researchGaps": 43,
       "slots": 87,
-      "sourceContext": 32,
+      "sourceContext": 42,
       "sourceInterpretationRequired": 24,
       "survey": "Safety Advantage",
       "surveyNumber": 8,
@@ -154,18 +154,18 @@
       "verified": 0
     },
     {
-      "researchGaps": 29,
+      "researchGaps": 26,
       "slots": 29,
-      "sourceContext": 0,
+      "sourceContext": 3,
       "sourceInterpretationRequired": 0,
       "survey": "Licensing and Partnership Value",
       "surveyNumber": 18,
       "verified": 0
     },
     {
-      "researchGaps": 29,
+      "researchGaps": 25,
       "slots": 29,
-      "sourceContext": 0,
+      "sourceContext": 4,
       "sourceInterpretationRequired": 0,
       "survey": "Company Valuation Impact",
       "surveyNumber": 19,
@@ -417,17 +417,19 @@
   ],
   "dispositionCount": 1102,
   "dispositions": {
-    "ADDITIONAL_PRIMARY_RESEARCH_REQUIRED": 524,
-    "MODELING_INPUTS_UNAVAILABLE": 290,
+    "ADDITIONAL_PRIMARY_RESEARCH_REQUIRED": 484,
+    "EXTERNAL_PRIMARY_SOURCE_CONTENT_REVIEW_REQUIRED": 44,
+    "MODELING_INPUTS_UNAVAILABLE": 286,
     "PRIMARY_SOURCE_INTERPRETATION_REQUIRED": 239,
     "PUBLICATION_CONTENT_REVIEW_REQUIRED": 29,
     "REVIEWED_ANSWER_PRESENT": 20
   },
+  "externalSourceMappedSlots": 100,
   "ingredients": 38,
   "researchDispositionCoveragePercent": 100.0,
   "schemaVersion": 1,
   "slots": 1102,
-  "sourceContextSlots": 284,
+  "sourceContextSlots": 328,
   "surveys": 20,
   "trials": 29,
   "verifiedSurveyAnswers": 20,
