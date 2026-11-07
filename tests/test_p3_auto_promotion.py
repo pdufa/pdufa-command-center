@@ -91,9 +91,10 @@ class PromotionTests(unittest.TestCase):
 
     def test_wrong_registry_phase_blocked(self):
         args=self.inputs()
-        with self.assertRaises(ValueError):
-            promote.evaluate(*args[:4],set(),args[4],
+        added, review = promote.evaluate(*args[:4], set(), args[4],
                              phase3_check=lambda _: (_ for _ in ()).throw(ValueError("PHASE2")))
+        self.assertEqual(added, [])
+        self.assertIn("CTGOV_PHASE3_CURRENT_SOURCE_UNAVAILABLE", review[0]["reasons"])
         
 if __name__ == "__main__":
     unittest.main()
