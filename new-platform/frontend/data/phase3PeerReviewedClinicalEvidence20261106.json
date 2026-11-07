@@ -187,6 +187,96 @@
       "status": "SOURCE_FACT_ONLY",
       "clinicalRating": null,
       "raasScore": null
+    },
+    {
+      "nctId": "NCT04716231",
+      "question": 20,
+      "sourceDate": "2026-10-22",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42911181/",
+      "evidence": "ORIGIN 3 final prespecified efficacy analysis in NCT04716231: at Week 52, mean eGFR change from baseline was -0.11 mL/min/1.73m2 for atacicept and -5.69 for placebo; between-arm difference 5.58 (95% CI 3.68 to 7.48; P<0.001). This is an observed randomized result, but a separate overall clinical-importance/RAAS grade is not inferred.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT04716231",
+      "question": 21,
+      "sourceDate": "2026-10-22",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42911181/",
+      "evidence": "Exact-NCT ORIGIN 3 reported annualized eGFR slope through Week 104 of -0.60 with atacicept versus -5.60 mL/min/1.73m2 per year with placebo, difference 5.00 (95% CI 3.55 to 6.45; P<0.001). Controlled 104-week observation is documented; no assumption is made beyond follow-up or about future trials.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT04716231",
+      "question": 23,
+      "sourceDate": "2026-10-22",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42911181/",
+      "evidence": "Exact-NCT ORIGIN 3 final report: adverse events were 160/214 (74.8%) on atacicept versus 167/214 (78.0%) on placebo; serious adverse events occurred in 7.0% versus 15.4%, respectively. Different safety event types and trial duration require interpretation; these counts are NOT a validated tolerability score.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05243550",
+      "question": 20,
+      "sourceDate": "2026-03-25",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41880645/",
+      "evidence": "ENVISION NCT05243550, a SINGLE-ARM Phase 3 UGN-102 study, reported complete response at Month 3 for 191/240 treated patients (80%; 95% CI 74-85%). No randomized comparator was included; the observed response must NOT be portrayed as placebo-adjusted efficacy, a clinical-importance grade or future approval probability.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05243550",
+      "question": 21,
+      "sourceDate": "2026-03-25",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41880645/",
+      "evidence": "ENVISION NCT05243550: among 191 patients with complete response at Month 3, estimated probability of remaining event-free 24 months after complete response was 72% (95% CI 64-79; Kaplan-Meier). This is a response-selected SINGLE-ARM group, not a randomized 24-month comparative treatment effect or evidence beyond follow-up.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05243550",
+      "question": 26,
+      "sourceDate": "2026-03-25",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41880645/",
+      "evidence": "ENVISION NCT05243550 trial enrolled 240 patients; 98% were White, 61% male, and 68% aged at least 65 years. The authors identified limited racial diversity as a study limitation. Demographics are observed site/population facts; generalizability to all intended users remains ungraded.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05453968",
+      "question": 3,
+      "sourceDate": "2025-07-25",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40716738/",
+      "evidence": "APeX-P NCT05453968 pediatric berotralstat open-label interim analysis (N=29): nasopharyngitis, upper respiratory infection and headache were common AEs; no reported drug-related grade 3/4 or serious AEs, deaths or AE-related discontinuations. The small uncontrolled cohort cannot establish comparative safety or a favorable risk score.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05453968",
+      "question": 20,
+      "sourceDate": "2025-07-25",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40716738/",
+      "evidence": "APeX-P NCT05453968: during the preceding standard-care period, median HAE attack rate was 0.96 per 4 weeks; median rates for successive 4-week intervals on open-label berotralstat were 0 through Week 48. This NONRANDOMIZED within-patient before/after comparison is a descriptive observation, NOT controlled efficacy or a clinical importance score.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
+    },
+    {
+      "nctId": "NCT05453968",
+      "question": 21,
+      "sourceDate": "2025-07-25",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40716738/",
+      "evidence": "APeX-P exact NCT open-label interim follow-up: at least 50% of analyzed children were attack-free in each individual 4-week interval through Week 48 on berotralstat (N=29 overall, variable exposure). Time-window evidence exists but a controlled long-term durability effect or calibrated RAAS score is NOT established.",
+      "status": "SOURCE_FACT_ONLY",
+      "clinicalRating": null,
+      "raasScore": null
     }
   ]
 }
