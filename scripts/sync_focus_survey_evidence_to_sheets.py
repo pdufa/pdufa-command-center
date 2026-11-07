@@ -52,6 +52,13 @@ def table_data(flat, report):
     ]
 
 def sync(flat, report):
+    """Existing four collector-owned FOCUS survey tabs."""
+    if report.get("ingredientSlots") != len(flat):
+        raise ValueError("FOCUS_SURVEY_COVERAGE_MISMATCH")
+    return sync_tables(table_data(flat, report))
+
+def sync_tables(tables):
+    """Write only table-specific automation-owned tabs after header checks."""
     import requests
     from google.oauth2 import service_account
     import google.auth.transport.requests
@@ -69,7 +76,10 @@ def sync(flat, report):
         response = session.request(method, url, timeout=45, **kwargs)
         response.raise_for_status()
         return response.json() if response.content else {}
-    tables = table_data(flat, report)
+    if not tables or len({name for name,_,_ in tables}) != len(tables):
+        raise ValueError("DUPLICATE_OR_EMPTY_AUTOMATION_TABLES")
+    if any(not name.startswith("FOCUS Survey Auto ") for name,_,_ in tables):
+        raise ValueError("REFUSING_NON_AUTOMATION_SHEET")
     meta = request("GET", API, params={"fields": "sheets(properties(sheetId,title,gridProperties)),spreadsheetId"})
     current = {s["properties"]["title"]: s["properties"] for s in meta.get("sheets", [])}
     # Check ALL existing headings BEFORE changing any tab.
@@ -121,4 +131,4 @@ def sync(flat, report):
         if values != expected:
             raise RuntimeError("FOCUS_SURVEY_SHEETS_READBACK_MISMATCH: " + title)
     return {"status": "SUCCESS", "tabs": [s[0] for s in tables],
-            "slotsWritten": len(flat)}
+            "rowsWritten": sum(len(x[2]) for x in tables)}
