@@ -1,5 +1,6 @@
 import {topOnlyReport,topOnlySummary} from "../../../lib/top-only-completion";
 import history from "../../../data/topOnlyResearchHistory20261107.json";
+import historyIncrement from "../../../data/topOnlyHistoryIncrement20261107.json";
 export const dynamic="force-dynamic";
 export const maxDuration=60;
 export async function GET(request:Request){
@@ -14,5 +15,5 @@ export async function GET(request:Request){
   return new Response('\uFEFF'+[headers,...rows.flatMap(t=>t.metrics.map(m=>[t.nctId,m.id,m.name,m.state,m.score,m.originalWeightPercent,m.activeClinicalWeightPercent,m.sourceUrl,m.benchmarkSourceUrl,m.assessedAt,m.blocker]))].map(r=>r.map(quote).join(',')).join('\r\n')+'\r\n',{headers:{"Content-Type":"text/csv; charset=utf-8","Cache-Control":"no-store"}});
  }
  const {trials,headers,...summary}=report;
- return Response.json({...summary,rows:rows.map(topOnlySummary),...(id?{trial:rows[0],history:history.records.filter(r=>r.nctId===id)}:{}),notes:["All190 fields accounted for means a sourced value or explicit missing/inapplicable/pending status, not190 verified facts.","Thirty metric dispositions are evaluated; the existing active clinical model uses five equal weights. A full30-metric score requires30 supported grades under the unchanged legacy formula.","No BOTTOM, Pipeline or other spreadsheet membership/data/formula/history is modified."]},{headers:{"Cache-Control":"no-store"}});
+ return Response.json({...summary,rows:rows.map(topOnlySummary),...(id?{trial:rows[0],history:[...history.records,...historyIncrement.records].filter(r=>r.nctId===id)}:{}),notes:["All190 fields accounted for means a sourced value or explicit missing/inapplicable/pending status, not190 verified facts.","Thirty metric dispositions are evaluated; the existing active clinical model uses five equal weights. A full30-metric score requires30 supported grades under the unchanged legacy formula.","No BOTTOM, Pipeline or other spreadsheet membership/data/formula/history is modified."]},{headers:{"Cache-Control":"no-store"}});
 }
