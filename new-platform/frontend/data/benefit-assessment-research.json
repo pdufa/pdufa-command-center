@@ -20,6 +20,150 @@
       "advantages": []
     },
     {
+      "nctId": "NCT04576949",
+      "ticker": "ACHV",
+      "drug": "Cytisinicline",
+      "indication": "Smoking Cessation",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "A randomized Phase 3 ORCA-2 trial (NCT04576949) measured continuous, biochemically confirmed tobacco abstinence against placebo plus behavioral support: Weeks 3–6 were 25.3% versus 4.4% for the 6-week regimen (OR 8.00, 95% CI 3.94–16.25; p<0.0001). This verifies a specific quitting outcome, not comparison with active cessation drugs.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT04576949",
+          "sourceDate": "2024-11-14",
+          "method": "Reviewed against exact ClinicalTrials.gov NCT04576949 result posted 2024-11-14, randomized placebo plus behavioral support primary continuous smoking abstinence at Weeks 3–6, original odds ratio 95% CI and p value; independently cross-checked against published JAMA ORCA Phase 3 RCT https://pubmed.ncbi.nlm.nih.gov/37432430/. Evidence for the specified endpoint only, not regulatory approval, RAAS score or superiority over active therapy.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "6b1b8c5532ac12fff8c0daaa83c02474c2b649719a0a4132bcc98f15c294fa1e",
+            "endpointTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "8.00",
+            "confidenceLower": "3.94",
+            "confidenceUpper": "16.25",
+            "crossReference": "https://pubmed.ncbi.nlm.nih.gov/37432430/"
+          }
+        },
+        "magnitude": {
+          "value": "For ORCA-2 NCT04576949, 6-week cytisinicline versus placebo on biochemically confirmed abstinence during Weeks 3–6 had reported odds ratio 8.00 (95% CI 3.94–16.25; p<0.0001), 25.3% versus 4.4%; the 12-week regimen during Weeks 9–12 had reported odds ratio 6.29 (95% CI 3.69–11.57; p<0.0001). Same placebo plus behavioral support context in each window.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT04576949",
+          "sourceDate": "2024-11-14",
+          "method": "Reviewed against exact ClinicalTrials.gov NCT04576949 result posted 2024-11-14, randomized placebo plus behavioral support primary continuous smoking abstinence at Weeks 3–6, original odds ratio 95% CI and p value; independently cross-checked against published JAMA ORCA Phase 3 RCT https://pubmed.ncbi.nlm.nih.gov/37432430/. Evidence for the specified endpoint only, not regulatory approval, RAAS score or superiority over active therapy.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "6b1b8c5532ac12fff8c0daaa83c02474c2b649719a0a4132bcc98f15c294fa1e",
+            "endpointTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "8.00",
+            "confidenceLower": "3.94",
+            "confidenceUpper": "16.25",
+            "crossReference": "https://pubmed.ncbi.nlm.nih.gov/37432430/"
+          }
+        },
+        "responseRemission": {
+          "value": "For the 6-week cytisinicline course plus behavioral support, biochemically confirmed continuous abstinence during Weeks 3–6 was 25.3%, versus 4.4% for placebo plus behavioral support; the 12-week course had 32.6% versus 7.0% during Weeks 9–12.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT04576949",
+          "sourceDate": "2024-11-14",
+          "method": "Reviewed against exact ClinicalTrials.gov NCT04576949 result posted 2024-11-14, randomized placebo plus behavioral support primary continuous smoking abstinence at Weeks 3–6, original odds ratio 95% CI and p value; independently cross-checked against published JAMA ORCA Phase 3 RCT https://pubmed.ncbi.nlm.nih.gov/37432430/. Evidence for the specified endpoint only, not regulatory approval, RAAS score or superiority over active therapy.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "6b1b8c5532ac12fff8c0daaa83c02474c2b649719a0a4132bcc98f15c294fa1e",
+            "endpointTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "8.00",
+            "confidenceLower": "3.94",
+            "confidenceUpper": "16.25",
+            "crossReference": "https://pubmed.ncbi.nlm.nih.gov/37432430/"
+          }
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT05206370",
+      "ticker": "ACHV",
+      "drug": "Cytisinicline",
+      "indication": "Smoking Cessation",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "Randomized Phase 3 ORCA-3 (NCT05206370) biochemically verified continuous tobacco abstinence during Weeks 3–6 was 14.8% with the 6-week cytisinicline regimen versus 6.0% with placebo (OR 2.85, 95% CI 1.475–5.617; p=0.0008), both with behavioral support. Does not prove benefit over currently approved active treatments.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05206370",
+          "sourceDate": "2026-01-14",
+          "method": "Reviewed against exact ClinicalTrials.gov NCT05206370 result posted 2026-01-14, randomized placebo plus behavioral support primary continuous smoking abstinence at Weeks 3–6, original odds ratio 95% CI and p value; independently cross-checked against published JAMA ORCA Phase 3 RCT https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/. Evidence for the specified endpoint only, not regulatory approval, RAAS score or superiority over active therapy.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "f82b6618c828bb9a6a5cbe90e90ee0bc8e2b367a3a5cc385e22146ec76661b0f",
+            "endpointTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "2.85",
+            "confidenceLower": "1.475",
+            "confidenceUpper": "5.617",
+            "crossReference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/"
+          }
+        },
+        "magnitude": {
+          "value": "ORCA-3 NCT05206370, biochemically confirmed continuous abstinence with 6-week cytisinicline versus placebo over Weeks 3–6: reported odds ratio 2.85 (95% CI 1.475–5.617; p=0.0008); observed 14.8% versus 6.0%. For the 12-week regimen over Weeks 9–12: odds ratio 4.40 (95% CI 2.566–7.343; p<0.0001); observed 30.3% versus 9.4%.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05206370",
+          "sourceDate": "2026-01-14",
+          "method": "Reviewed against exact ClinicalTrials.gov NCT05206370 result posted 2026-01-14, randomized placebo plus behavioral support primary continuous smoking abstinence at Weeks 3–6, original odds ratio 95% CI and p value; independently cross-checked against published JAMA ORCA Phase 3 RCT https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/. Evidence for the specified endpoint only, not regulatory approval, RAAS score or superiority over active therapy.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "f82b6618c828bb9a6a5cbe90e90ee0bc8e2b367a3a5cc385e22146ec76661b0f",
+            "endpointTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "2.85",
+            "confidenceLower": "1.475",
+            "confidenceUpper": "5.617",
+            "crossReference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/"
+          }
+        },
+        "responseRemission": {
+          "value": "ORCA-3 NCT05206370 biochemically verified continuous abstinence was 14.8% with the 6-week cytisinicline regimen versus 6.0% with placebo during Weeks 3–6; 30.3% versus 9.4% for the 12-week regimen during Weeks 9–12. Both arms also had behavioral support.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05206370",
+          "sourceDate": "2026-01-14",
+          "method": "Reviewed against exact ClinicalTrials.gov NCT05206370 result posted 2026-01-14, randomized placebo plus behavioral support primary continuous smoking abstinence at Weeks 3–6, original odds ratio 95% CI and p value; independently cross-checked against published JAMA ORCA Phase 3 RCT https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/. Evidence for the specified endpoint only, not regulatory approval, RAAS score or superiority over active therapy.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "f82b6618c828bb9a6a5cbe90e90ee0bc8e2b367a3a5cc385e22146ec76661b0f",
+            "endpointTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "2.85",
+            "confidenceLower": "1.475",
+            "confidenceUpper": "5.617",
+            "crossReference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/"
+          }
+        }
+      },
+      "advantages": []
+    },
+    {
       "nctId": "NCT05767346",
       "ticker": "CYTK",
       "drug": "Aficamten",
