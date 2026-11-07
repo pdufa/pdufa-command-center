@@ -2,6 +2,7 @@ import {populationGeographyFact,populationGeographyIntegrity,populationGeography
 import {irAssessment,irResearchIntegrity,requiresResearchStatus} from "../../../lib/phase3-ir-research";
 import {activePhase3Cohorts,IONIS_VERIFIED_READOUTS} from "../../../lib/phase3-active-cohorts";
 import {activeOfficialRegistryRecord,activeOfficialRegistryIntegrity,ACTIVE_OFFICIAL_REGISTRY_AS_OF} from "../../../lib/phase3-active-official-registry";
+import {phase3PeerReviewedFact,phase3PeerEvidenceIntegrity,phase3RegistryBinaryFact} from "../../../lib/phase3-source-fact-enrichment";
 import agiosEvidence from "../../../data/agiosPhase3Evidence20261106.json";
 import ionisEvidence from "../../../data/ionisPhase3Evidence20261106.json";
 import {loadLivePhase3Registry} from "../phase3-live-registry-backfill/route";
@@ -87,6 +88,7 @@ export async function GET(request:Request){
     new Set(ledger.rows.map(r=>r.nctId)).size!==762||
     PHASE3_ONLINE_TRIAL_COUNT!==762||registryByNct.size!==762||registryCrosswalk.records.length!==762||
     !activeOfficialRegistryIntegrity(new Set([...preIds,...postIds]))||
+    !phase3PeerEvidenceIntegrity(new Set([...preIds,...postIds]))||
     endpointByNct.size!==endpointAdjudications.records.length||
     !irResearchIntegrity(new Set(ledger.rows.map(r=>r.nctId)))||
     !populationGeographyIntegrity(new Set(ledger.rows.map(r=>r.nctId)))||
@@ -189,6 +191,11 @@ export async function GET(request:Request){
    if(ionisFact)return [ionisFact.status,"","",
     ionisFact.evidence+" | Dated evidence: "+ionisFact.sourceDate+
     " | Source fact, not a prospective efficacy or RAAS score",ionisFact.sourceUrl];
+   const reviewedPaper=phase3PeerReviewedFact(r.nctId,q.number);
+   if(reviewedPaper)return [reviewedPaper.status,"","",
+    reviewedPaper.evidence+" | Published: "+reviewedPaper.sourceDate+
+    " | Peer-reviewed/FDA observed clinical facts, not scored efficacy, safety or RAAS",
+    reviewedPaper.sourceUrl];
    // Issuer investor-relations statements are historical SOURCE FACTS, not subjective predictive scores.
    if(q.number===30&&investor?.regulatoryEvidenceStatus&&investor?.regulatoryEvidenceUrl)
     return ["SOURCE_FACT_ONLY","","",
@@ -284,6 +291,10 @@ export async function GET(request:Request){
      r.registrySourceUrl];
    const newlySourced=phase3OnlineSourceFact(r.nctId,q.number);
    if(newlySourced)return [newlySourced.status,"","",newlySourced.description,newlySourced.sourceUrl];
+   const negativeRegistryDocumentation=phase3RegistryBinaryFact(r.nctId,q.number);
+   if(negativeRegistryDocumentation)return [negativeRegistryDocumentation.status,"","",
+    negativeRegistryDocumentation.evidence+" | Official registry checked: "+
+    ACTIVE_OFFICIAL_REGISTRY_AS_OF,negativeRegistryDocumentation.sourceUrl];
    if([1,2,3,28,29,30].includes(q.number)){
     const leads=phase3OnlineReviewLeads(r.nctId);
     if(leads.summary)return ["UNSCORED","", "",
