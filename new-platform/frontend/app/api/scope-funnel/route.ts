@@ -175,7 +175,8 @@ export async function GET(req:NextRequest) {
   const stage=params.get("stage")||"";
   const recordKind=params.get("recordKind")||"all";
   const stagesParam=params.get("stages")||"";
-  const selectedStages=stagesParam?stagesParam.split(","):[];
+  const emptyStageSelection=stagesParam==="none";
+  const selectedStages=emptyStageSelection?[]:stagesParam?stagesParam.split(","):[];
   const toolsParam=params.get("tools")||"";
   const toolMode=toolsParam==="1";
   const inventoryParam=params.get("inventory")||"";
@@ -193,6 +194,7 @@ export async function GET(req:NextRequest) {
      || new Set(selectedStages).size!==selectedStages.length
      || selectedStages.some(selected=>!(POOL_STAGES as readonly string[]).includes(selected))
      || (selectedStages.length>0 && (stageGroup!=="all" || stage!==""))
+     || (emptyStageSelection && (view!=="pool" || toolMode || recordKind!=="trials"))
      || !["","1"].includes(toolsParam)
      || !["","1"].includes(inventoryParam)
      || (openingInventory && (!toolMode || selectedStages.length>0 || selectedDesignations.length>0 || !!query.trim() || format!=="json"))
@@ -312,8 +314,9 @@ export async function GET(req:NextRequest) {
         "X-PDUFA-Source-Version":datasetVersion,
       }});
     }
-    const page=funnelPage(data,view as ScopeView,Number(offset),Number(limit),query,
+    const initialPage=funnelPage(data,view as ScopeView,Number(offset),Number(limit),query,
       stageGroup as PoolStageGroup,stage,recordKind as PoolRecordKind,selectedStages,designationMatches,toolMode);
+    const page=emptyStageSelection?{...initialPage,rows:[],total:0,nextOffset:null}:initialPage;
     const stageSelectors=toolMode?selectedStages.map(label=>({
       label,trials:data.poolRows.filter(row=>isPoolTrial(row)&&normalizePoolStage(row.stage)===label).length
     })):[];

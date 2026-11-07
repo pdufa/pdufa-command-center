@@ -13,6 +13,7 @@ import LiveRegistryReview from "./LiveRegistryReview";
 import PipelineSponsorReadout from "./PipelineSponsorReadout";
 import BatchRegistryExport from "./BatchRegistryExport";
 import PoolMasterSpreadsheet from "./PoolMasterSpreadsheet";
+import {type PoolPhaseSelection} from "../lib/pool-phase-options";
 
 type PoolItem = {id:string;ticker:string;company?:string;drug?:string;indication?:string;stage?:string;marketCap?:number|null;capInRange?:boolean};
 type ReviewItem = {
@@ -33,6 +34,7 @@ type Overview = {
 type Page = {
  view:string;overview:Overview;total:number;offset:number;limit:number;
  rows:(PoolItem|ReviewItem)[];nextOffset:number|null;caveat:string;
+ stageStats?:{stages:Record<string,{trials:number}>};
 };
 const LIMIT=50;
 const isReview=(r:PoolItem|ReviewItem):r is ReviewItem => "poolStatus" in r;
@@ -47,6 +49,8 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
  const [queryInput,setQueryInput]=useState("");
  const [query,setQuery]=useState("");
  const [offset,setOffset]=useState(0);
+ const [selectedPhases,setSelectedPhases]=useState<PoolPhaseSelection>(null);
+ const changePhases=(next:PoolPhaseSelection)=>{setSelectedPhases(next);setOffset(0);};
  const [page,setPage]=useState<Page|null>(null);
  const [error,setError]=useState("");
  const [loading,setLoading]=useState(true);
@@ -58,6 +62,8 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
    setLoading(true);setError("");
    const params=new URLSearchParams({view,offset:String(offset),limit:String(LIMIT),...(section==="pool"?{recordKind:"trials"}:{})});
    if(query.trim())params.set("query",query.trim());
+   if(section==="pool"&&selectedPhases!==null)params.set("stages",
+    selectedPhases.length?selectedPhases.join(","):"none");
    void fetch("/api/scope-funnel?"+params.toString(),{cache:"no-store",signal:controller.signal})
      .then(async resp=>{
        if(!resp.ok)throw new Error(resp.status===401?"Sign in on the dashboard to view protected research data.":"Published POOL and Phase 3 census could not be jointly verified.");
@@ -74,7 +80,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
        if(mounted && !controller.signal.aborted){setPage(null);setError(err instanceof Error?err.message:"Research data unavailable");}
      }).finally(()=>{if(mounted)setLoading(false)});
    return ()=>{mounted=false;controller.abort()};
- },[section,reviewMode,view,offset,query]);
+ },[section,reviewMode,view,offset,query,selectedPhases]);
  function applySearch(e:FormEvent<HTMLFormElement>) {
    e.preventDefault();setOffset(0);setQuery(queryInput);
  }
@@ -98,7 +104,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
    </header>
    {section==="pool"&&<section id="pool-master" className={styles.panel} aria-label="POOL Master Spreadsheet" style={{margin:"14px 0 20px"}}>
      <div className={styles.headline}>
-       <h2>POOL Master Spreadsheet · All clinical phases</h2>
+       <h2>POOL Master Spreadsheet · {selectedPhases===null?"All clinical phases":"Selected stages"}</h2>
        <form onSubmit={applySearch} className={styles.search}>
          <input aria-label="Search all POOL trials by NCT, ticker, company, drug or indication"
            type="search" value={queryInput} onChange={event=>setQueryInput(event.target.value)}
@@ -114,11 +120,13 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
      {loading&&<p role="status">Loading published POOL trials. The column controls remain available.</p>}
      {!loading&&page&&<p className={styles.muted} role="status">
        Showing {first}–{last} of {page.total.toLocaleString()} clinical trials.
-       All recorded phases are included; no market-cap gate is applied.
+       {selectedPhases===null?"All recorded phases are included.":"Phase checkboxes are filtering the full POOL."} No market-cap gate is applied.
      </p>}
      <PoolMasterSpreadsheet
        rows={page?.rows.filter((r):r is PoolItem=>!isReview(r))||[]}
-       loading={loading} error={error}/>
+       loading={loading} error={error}
+       selectedPhases={selectedPhases} onPhasesChange={changePhases}
+       stageCounts={page?.stageStats?.stages}/>
      {page&&<div className={styles.pagination}>
        <button type="button" disabled={offset===0||loading} onClick={()=>setOffset(Math.max(0,offset-LIMIT))}>Previous</button>
        <span>Page {Math.floor(offset/LIMIT)+1} of {Math.max(1,Math.ceil(page.total/LIMIT))}</span>

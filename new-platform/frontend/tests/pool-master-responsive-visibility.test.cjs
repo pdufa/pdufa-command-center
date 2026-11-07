@@ -111,3 +111,19 @@ test("Three toolbar buttons remain equally wide on all screens",()=>{
  assert.ok(style.includes('.actions .groupButton,.actions .resetOrder{'));
  assert.ok(!style.includes('.actions .resetOrder{grid-column:1/-1}'));
 });
+
+test("Phase checkboxes and Reset, sort buttons and circled info buttons are wired into POOL",()=>{
+ assert.ok(component.includes('POOL_PHASE_OPTIONS.map(phase=>'));
+ assert.ok(component.includes('All Phases (show everything)'));
+ assert.ok(component.includes('Reset Phases'));
+ assert.ok(component.includes('togglePoolPhase(selectedPhases,phase'));
+ assert.ok(component.includes('onPhasesChange'));
+ assert.ok(component.includes('className={css.sortButton} onClick={()=>updateSort(key)}'));
+ assert.ok(component.includes('aria-sort={sortOrder(c.key)}'));
+ assert.ok(component.includes('className={css.infoButton} onClick={()=>showInfo(key)}'));
+ assert.ok(component.includes('ⓘ'));
+ assert.ok(component.includes('current 50-row page'));
+ assert.ok(style.includes('.phaseChoices{'));
+ assert.ok(style.includes('.infoPanel{'));
+ assert.ok(style.includes('.sortButton,.infoButton{'));
+});

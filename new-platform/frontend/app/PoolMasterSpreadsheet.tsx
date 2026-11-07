@@ -1,6 +1,8 @@
 "use client";
 
 import {useEffect,useMemo,useState,type DragEvent} from "react";
+import {POOL_PHASE_OPTIONS,togglePoolPhase,type PoolPhaseSelection,type PoolPhase} from "../lib/pool-phase-options";
+import {sortPoolPage,type PageSortDirection} from "../lib/pool-row-sorting";
 import snapshot from "../data/p3PostDataActive.json";
 import css from "./PoolMasterSpreadsheet.module.css";
 import {isGroupVisible,toggleColumnGroup} from "../lib/pool-column-visibility";
@@ -77,6 +79,38 @@ function recoverLayout(raw:string|null,view:View):Layout{
   };
  }catch{return defaultLayout(view);}
 }
+const COLUMN_INFO:Record<Key,string>={
+ "phase": "Clinical or regulatory stage recorded by the published POOL source. Use the Phase filter to select source stages.",
+ "status": "Trial recruitment or completion status, when provided by the source. A completed trial is not necessarily successful.",
+ "drug": "Drug, device, or intervention under study, as reported in the source record.",
+ "intervention": "Type of intervention (for example, drug or biological) if recorded.",
+ "route": "How the treatment is administered, if independently documented.",
+ "indication": "Condition or disease being studied; one trial may have multiple indicated conditions.",
+ "start": "Recorded study start date. This is not the date of first dosing unless the source specifies it.",
+ "primary": "Date when primary outcome collection ended or is expected to end.",
+ "complete": "Recorded or planned study completion date; distinct from a results announcement.",
+ "posted": "Date the study's results were posted to a public registry.",
+ "updated": "Latest modification timestamp supplied by the source registry.",
+ "source": "Link to the underlying ClinicalTrials.gov study when an exact NCT ID is known.",
+ "checked": "Timestamp when the source was most recently checked for this entry.",
+ "traded": "Whether the issuer is publicly traded. An unverified value is not a failure.",
+ "exchange": "Stock exchange on which the issuer trades; requires current listing evidence.",
+ "cap": "Market capitalization in US dollars, if a sourced value is available. Historic figures are not live quotations.",
+ "capDate": "As-of date for the sourced market-capitalization value; do not treat it as a live quote.",
+ "capQualified": "Whether a sourced market cap falls within $300 million to $10 billion. Historical values need rechecking.",
+ "phase3": "Whether published evidence establishes Phase 3 reached or entered.",
+ "publicResults": "Whether Phase 3 results are publicly available for the exact drug–indication program.",
+ "fdaPath": "Evidence of an active United States FDA approval pathway.",
+ "application": "Recorded stage of the FDA application, when independently documented.",
+ "pdufa": "Official FDA target decision date for the specific application, if verified.",
+ "designations": "FDA special designations linked to the exact program, when documented.",
+ "focusQualified": "Whether this exact NCT and issuer appear in the saved FOCUS roster. Absence is not a failed qualification.",
+ "reason": "Source-backed explanation for inclusion or pending eligibility checks.",
+ "evidence": "Links to evidence supporting the qualification assessment; missing links require review.",
+ "completeness": "Whether supporting evidence has been reviewed and how much remains missing.",
+ "reviewed": "Date of the most recent saved FOCUS eligibility review."
+};
+const IDENTITY_INFO={ticker:"Stock ticker reported in the POOL source. A ticker alone does not establish a current listing.",company:"Company name associated with the trial in the published POOL source.",nct:"ClinicalTrials.gov identifier (NCT ID) for the exact trial; opens the official study record."} as const;
 const known=(v:unknown)=>typeof v==="string"&&v.trim()?v:"Not verified";
 const formatCap=(n:number)=>n.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
 const focusByTrial=new Map(snapshot.records.map(r=>[r.nct+"|"+r.ticker.toUpperCase(),r]));
@@ -122,7 +156,9 @@ function contentFor(row:PoolMasterRow,key:Key):{text:string;url?:string}{
   case "reviewed":return{text:focus?snapshot.asOf:"Not assessed"};
  }
 }
-export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{rows:PoolMasterRow[];loading?:boolean;error?:string}){
+export default function PoolMasterSpreadsheet({rows,loading=false,error="",selectedPhases,onPhasesChange,stageCounts}:{rows:PoolMasterRow[];loading?:boolean;error?:string;
+ selectedPhases:PoolPhaseSelection;onPhasesChange:(next:PoolPhaseSelection)=>void;
+ stageCounts?:Record<string,{trials:number}>}){
  const [view,setView]=useState<View>("desktop");
  const [hydrated,setHydrated]=useState(false);
  const [layouts,setLayouts]=useState<Record<View,Layout>>({
@@ -172,6 +208,32 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
  const resetView=()=>edit(()=>defaultLayout(view));
  const [orderEditorOpen,setOrderEditorOpen]=useState(false);
  const [reorderNotice,setReorderNotice]=useState("");
+ const [phaseOpen,setPhaseOpen]=useState(false);
+ const [sort,setSort]=useState<{key:Key|"ticker"|"company"|"nct";direction:PageSortDirection}|null>(null);
+ const [infoKey,setInfoKey]=useState<Key|"ticker"|"company"|"nct"|null>(null);
+ const updatePhases=(selection:PoolPhaseSelection)=>onPhasesChange(selection);
+ const updateSort=(key:Key|"ticker"|"company"|"nct")=>{
+  setSort(current=>current?.key!==key?{key,direction:"asc"}:
+   current.direction==="asc"?{key,direction:"desc"}:null);
+ };
+ const sortValue=(row:PoolMasterRow,key:Key|"ticker"|"company"|"nct"):string|number|null=>{
+  if(key==="ticker")return row.ticker;
+  if(key==="company")return row.company||null;
+  if(key==="nct")return nctOf(row)||null;
+  if(key==="cap"){
+   const nct=nctOf(row),focus=nct?focusByTrial.get(nct+"|"+row.ticker.toUpperCase()):undefined;
+   return focus?.marketCap??row.marketCap??null;
+  }
+  const text=contentFor(row,key).text;
+  return text;
+ };
+ const sortedRows=useMemo(()=>sort?sortPoolPage(rows,r=>sortValue(r,sort.key),sort.direction):rows,
+  [rows,sort]);
+ const sortLabel=(key:Key|"ticker"|"company"|"nct")=>sort?.key!==key?"↕":sort.direction==="asc"?"↑":"↓";
+ const sortOrder=(key:Key|"ticker"|"company"|"nct")=>sort?.key!==key?"none":sort.direction==="asc"?"ascending":"descending";
+ const showInfo=(key:Key|"ticker"|"company"|"nct")=>setInfoKey(previous=>previous===key?null:key);
+ const infoText=infoKey===null?"":infoKey in IDENTITY_INFO
+  ?IDENTITY_INFO[infoKey as keyof typeof IDENTITY_INFO]:COLUMN_INFO[infoKey as Key];
  const resetColumnOrder=()=>{
   edit(l=>({...l,...normalizePoolColumnOrder(null,DEFAULT_COLUMNS_BY_SEGMENT,ALL_SEGMENTS)}));
   setReorderNotice("Column and segment order restored. Existing visibility settings were kept.");
@@ -216,6 +278,17 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
  };
  const findSegment=(key:Key)=>layout.segmentOrder.find(id=>layout.columnOrder[id].includes(key))||"";
 
+ const renderHeaderControls=(key:Key|"ticker"|"company"|"nct",label:string)=><span className={css.headerContents}>
+  <span className={css.headerLabel}>{label}</span>
+  <span className={css.headerButtons}>
+   <button type="button" className={css.sortButton} onClick={()=>updateSort(key)}
+    aria-label={"Sort "+label+" on current page; "+(sort?.key===key?sort.direction:"unsorted")}
+    title="Sort current page: ascending → descending → original">{sortLabel(key)}</button>
+   <button type="button" className={css.infoButton} onClick={()=>showInfo(key)}
+    aria-label={"Information about "+label} aria-expanded={infoKey===key}
+    aria-controls="pool-column-information" title={"Information: "+label}>ⓘ</button>
+  </span>
+ </span>;
  return <section aria-label="POOL Master Spreadsheet with responsive column visibility" data-pool-master="true" className={css.section}>
   <div className={css.top}>
    <div><h3>POOL Master · 32 columns</h3>
@@ -242,6 +315,33 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
     </button>
    </div>
   </div>
+  <div className={css.phaseToolbar} aria-label="POOL phase selection controls">
+   <button type="button" className={css.phaseButton} data-phase-active={selectedPhases===null?"all":"filtered"}
+    aria-expanded={phaseOpen} aria-controls="pool-phase-checklist"
+    onClick={()=>setPhaseOpen(open=>!open)}>
+    <span>PHASE</span><small>{selectedPhases===null?"All Phases":selectedPhases.length+" selected"} · {phaseOpen?"Close":"Select"}</small>
+   </button>
+   <button type="button" className={css.phaseReset} onClick={()=>updatePhases(null)}>
+    Reset Phases
+   </button>
+  </div>
+  {phaseOpen&&<fieldset id="pool-phase-checklist" className={css.phasePanel}>
+   <legend>Filter POOL trials by stage</legend>
+   <div className={css.phaseSelectActions}>
+    <label><input type="checkbox" checked={selectedPhases===null}
+     onChange={()=>updatePhases(null)}/> All Phases (show everything)</label>
+    <button type="button" className={css.phaseReset} onClick={()=>updatePhases(null)}>Reset</button>
+   </div>
+   <div className={css.phaseChoices}>
+    {POOL_PHASE_OPTIONS.map(phase=><label key={phase}>
+     <input type="checkbox" checked={selectedPhases===null||selectedPhases.includes(phase)}
+      onChange={()=>updatePhases(togglePoolPhase(selectedPhases,phase as PoolPhase))}/>
+     <span>{phase}</span>
+     {stageCounts?.[phase]&&<small>{stageCounts[phase].trials.toLocaleString()}</small>}
+    </label>)}
+   </div>
+   <p>Clinical phases and recorded regulatory stages are shown. Selections filter the complete published POOL before pagination.</p>
+  </fieldset>}
   <p className={css.viewport} data-viewport={view}>
    {view==="phone"?"Phone: data columns use 50% of viewport width; Ticker stays pinned.":
    "PC: data columns adapt from 180–260px; Ticker, Company, and NCT ID stay pinned."}
@@ -322,25 +422,34 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
    })}
   </div>
   <div className={css.summary} role="status">Showing 3 identity columns + {visible.length} of 29 optional columns.
-   {" "}Swipe horizontally for additional fields. {reorderNotice}</div>
+   {" "}Swipe horizontally for additional fields. {reorderNotice}
+   {sort&&" Sorted by "+(sort.key in IDENTITY_INFO?sort.key:COLUMN_LOOKUP.get(sort.key as Key)?.label)+" ("+sort.direction+"), current page only."}
+  </div>
+  {infoKey!==null&&<aside id="pool-column-information" className={css.infoPanel} role="note">
+   <div><strong>ⓘ {infoKey in IDENTITY_INFO?infoKey==="nct"?"NCT ID":infoKey==="ticker"?"Ticker":"Company":COLUMN_LOOKUP.get(infoKey as Key)?.label}</strong>
+    <p>{infoText}</p></div>
+   <button type="button" onClick={()=>setInfoKey(null)} aria-label="Close column information">Close</button>
+  </aside>
+  <p className={css.sortScope}>Sort arrows (↕) reorder only the current 50-row page; use another tap for descending and a third to restore original order. Phase checkboxes filter the full POOL before pagination.</p>
   <div className={css.scroll} role="region" tabIndex={0} aria-label="Scrollable POOL master trial spreadsheet">
    <table className={css.table}>
     <thead><tr>
-     <th scope="col" className={css.ticker}>Ticker</th>
-     <th scope="col" className={css.company}>Company</th>
-     <th scope="col" className={css.nct}>NCT ID</th>
-     {visible.map(c=><th scope="col" className={css.dataColumn} key={c.key}
+     <th scope="col" className={css.ticker} aria-sort={sortOrder("ticker")}>{renderHeaderControls("ticker","Ticker")}</th>
+     <th scope="col" className={css.company} aria-sort={sortOrder("company")}>{renderHeaderControls("company","Company")}</th>
+     <th scope="col" className={css.nct} aria-sort={sortOrder("nct")}>{renderHeaderControls("nct","NCT ID")}</th>
+     {visible.map(c=><th scope="col" className={css.dataColumn} key={c.key} aria-sort={sortOrder(c.key)}
       draggable={orderEditorOpen} title={orderEditorOpen?"Drag to move "+c.label:c.label}
       onDragStart={event=>dragStart(event,"column",c.key)}
       onDragOver={acceptDrag}
       onDrop={event=>dropOnColumn(event,findSegment(c.key),c.key)}>
-       {orderEditorOpen&&<span className={css.thDrag}>⠿</span>} {c.label}</th>)}
+       {orderEditorOpen&&<span className={css.thDrag}>⠿</span>}
+       {renderHeaderControls(c.key,c.label)}</th>)}
     </tr></thead>
-    <tbody>{rows.length===0&&<tr><td colSpan={3+visible.length} role="status">
+    <tbody>{sortedRows.length===0&&<tr><td colSpan={3+visible.length} role="status">
        {loading?"Loading clinical POOL records…":error?
         "No clinical records loaded. Sign in or retry when the source is available.":
         "No matching clinical trials on this page."}
-     </td></tr>}{rows.map(row=>{
+     </td></tr>}{sortedRows.map(row=>{
      const nct=nctOf(row);
      return <tr key={row.id}>
       <td className={css.ticker}>{known(row.ticker)}</td>

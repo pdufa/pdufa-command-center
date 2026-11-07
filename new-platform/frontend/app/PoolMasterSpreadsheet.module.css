@@ -114,3 +114,31 @@
 }
 .resetColumnAction:hover{background:#54318a}
 .resetColumnAction:focus-visible{outline:3px solid #7d54b7;outline-offset:2px}
+
+/* Phase selector: same independent show/hide green/red and purple reset palette. */
+.phaseToolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:stretch}
+.phaseButton,.phaseReset{border-radius:7px;border:1px solid;font:inherit;font-size:12px;font-weight:700;cursor:pointer;padding:9px 14px}
+.phaseButton{background:#145d48;color:#fff;border-color:#145d48;min-width:145px}
+.phaseButton[data-phase-active="filtered"]{background:#893e47;border-color:#893e47}
+.phaseButton span,.phaseButton small{display:block}.phaseButton small{margin-top:3px;font-size:11px;opacity:.9}
+.phaseReset{background:#6c42a5;color:#fff;border-color:#58328d}
+.phaseButton:focus-visible,.phaseReset:focus-visible,.sortButton:focus-visible,.infoButton:focus-visible,.infoPanel button:focus-visible{outline:3px solid #279873;outline-offset:2px}
+.phasePanel{border:1px solid #b3c9b9;border-radius:8px;padding:12px;min-width:0;background:#f9fcfa}
+.phasePanel legend{font-weight:750;font-size:13px;padding:0 6px}
+.phasePanel p{font-size:12px;color:#52695d;margin:8px 0 0}
+.phaseSelectActions{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.phaseSelectActions label{display:flex;align-items:center;gap:8px;font-weight:700;font-size:12px}
+.phaseChoices{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 12px}
+.phaseChoices label{display:flex;align-items:center;gap:6px;font-size:12px;min-width:0}
+.phaseChoices label small{margin-left:auto;color:#52695d;font-variant-numeric:tabular-nums}
+.phasePanel input{accent-color:#145d48;min-width:16px;min-height:16px}
+.headerContents{display:flex;align-items:flex-start;justify-content:space-between;gap:6px}
+.headerLabel{min-width:0;overflow-wrap:anywhere}
+.headerButtons{display:flex;gap:3px;flex-shrink:0;align-items:center}
+.sortButton,.infoButton{background:#fff;border:1px solid #aacaba;color:#185b43;border-radius:50%;width:23px;height:23px;display:inline-flex;align-items:center;justify-content:center;font:inherit;font-weight:800;font-size:14px;cursor:pointer;padding:0}
+.sortButton:hover,.infoButton:hover{background:#dceee2}
+.sortScope{font-size:11px;color:#536e5f;line-height:1.45;margin:0}
+.infoPanel{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px;border:1px solid #9fb7d7;background:#edf3fb;border-radius:8px;color:#213d61}
+.infoPanel strong{font-size:13px}.infoPanel p{margin:5px 0 0;font-size:12px;line-height:1.5}
+.infoPanel button{border:1px solid #9fb7d7;background:#fff;border-radius:6px;padding:7px 10px;color:#213d61;cursor:pointer}
+@media(max-width:640px){.phaseChoices{grid-template-columns:repeat(2,minmax(0,1fr))}.phaseToolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.phaseButton,.phaseReset{min-width:0}}
