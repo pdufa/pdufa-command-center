@@ -101,6 +101,204 @@
       "sourceUrl": "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
       "evidence": "MoonLake's IZAR-1 press release states blinded safety consistent with previous studies and no new safety signals. It does not provide complete matched serious-event and discontinuation tables for the studied dose.",
       "criticalLimit": "Qualitative source fact, insufficient to grade post-1-5 safety."
+    },
+    {
+      "nctId": "NCT05535946",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-06-01",
+      "sourceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial/",
+      "evidence": "ABTECT-Maintenance NCT05535946: Week-44 clinical remission rates 50.8% (25 mg, 98/193) and 51.3% (50 mg, 100/195) versus placebo 10.4% (20/192), both comparisons p<0.0001.",
+      "criticalLimit": "Sponsor topline; not a prospective prediction or complete FDA-grade trial review."
+    },
+    {
+      "nctId": "NCT05535946",
+      "question": 2,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-06-01",
+      "sourceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial/",
+      "evidence": "Sponsor reports endoscopic improvement 54.9% and 64.1% for 25 and 50 mg versus 12.5% placebo at Week 44.",
+      "criticalLimit": "Secondary results require multiplicity, missing-data and patient-important benefit review."
+    },
+    {
+      "nctId": "NCT05535946",
+      "question": 3,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-06-01",
+      "sourceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial/",
+      "evidence": "Sponsor reports no new safety signals among 580 participants in the Week-44 maintenance trial.",
+      "criticalLimit": "Qualitative safety statement without complete matched adverse-event tables does not justify numerical safety grade."
+    },
+    {
+      "nctId": "NCT04770753",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2025-07-05",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/",
+      "evidence": "ENERGIZE NCT04770753 randomized Phase 3: hemoglobin response 55/130 (42%) mitapivat vs 1/64 (2%) placebo, adjusted difference 41 percentage points (95% CI 32–50), p<0.0001.",
+      "criticalLimit": "Non-transfusion-dependent thalassemia trial; not separate ENERGIZE-T; no approval inferred."
+    },
+    {
+      "nctId": "NCT04770753",
+      "question": 3,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2025-07-05",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544857/",
+      "evidence": "ENERGIZE adverse events in 107/129 (83%) mitapivat versus 50/63 (79%) placebo; headache 22% versus 10%, initial insomnia 14% versus 5%; no deaths.",
+      "criticalLimit": "Complete severity and longer-term safety review needed."
+    },
+    {
+      "nctId": "NCT04770779",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-09-12",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/",
+      "evidence": "ENERGIZE-T transfusion reduction 52/171 (30%) mitapivat versus 11/87 (13%) placebo; adjusted difference 18 points (95% CI 8–27), p=0.0003.",
+      "criticalLimit": "Randomized 48-week result in transfusion-dependent adults; open-label extension is separate."
+    },
+    {
+      "nctId": "NCT05031780",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-10",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42913682/",
+      "evidence": "RISE UP NCT05031780 had mixed co-primary outcomes: hemoglobin response 56/138 (41%) vs 2/69 (3%), p<0.0001; annualized pain crises 2.6 vs 3.1, p=0.1213.",
+      "criticalLimit": "Pain-crisis co-primary did NOT reach significance; do not label the overall program an unqualified success."
+    },
+    {
+      "nctId": "NCT05031780",
+      "question": 3,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-10",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42913682/",
+      "evidence": "RISE UP serious adverse events 28/138 (20%) mitapivat versus 20/69 (29%) placebo; one and zero respectively judged treatment related.",
+      "criticalLimit": "SAE rates alone are not a complete benefit-risk score."
+    },
+    {
+      "nctId": "NCT05144256",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2024-08-01",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-results-phase-3-activate-kidst-study-mitapivat",
+      "evidence": "ACTIVATE-KidsT primary transfusion reduction was 28.1% mitapivat vs 11.8% placebo but prespecified Bayesian criterion not met with low/moderate adult-data borrowing.",
+      "criticalLimit": "Trial did not satisfy prespecified primary statistical criterion; descriptive response advantage alone does not reverse that."
+    },
+    {
+      "nctId": "NCT05175105",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2025-02-13",
+      "sourceUrl": "https://investor.agios.com/news-releases/news-release-details/agios-phase-3-activate-kids-study-mitapivat-children-pyruvate",
+      "evidence": "ACTIVATE-Kids NCT05175105 enrolled 30 children, 19 mitapivat and 11 placebo; sponsor reports primary hemoglobin endpoint met under Bayesian analyses using adult-data borrowing.",
+      "criticalLimit": "Small pediatric sample and borrowed adult information need explicit uncertainty assessment."
+    },
+    {
+      "nctId": "NCT06747468",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-08-18",
+      "sourceUrl": "https://amylyx.gcs-web.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-positive-topline-results-0",
+      "evidence": "LUCIDITY NCT06747468 randomized 78 participants; avexitide reduced Level 2/3 hypoglycemic event rate 55% relative to placebo, p=0.000003.",
+      "criticalLimit": "Sponsor topline; absolute event counts, confidence intervals, detailed SAP not yet independently adjudicated."
+    },
+    {
+      "nctId": "NCT06747468",
+      "question": 3,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-08-18",
+      "sourceUrl": "https://amylyx.gcs-web.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-positive-topline-results-0",
+      "evidence": "Sponsor reports most events mild/moderate, no drug-related SAEs; diarrhea and injection-site reactions among common adverse events.",
+      "criticalLimit": "No published matched severity/withdrawal table in cited announcement; numerical safety rating not automatic."
+    },
+    {
+      "nctId": "NCT05453968",
+      "question": 3,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2025-07",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40716738/",
+      "evidence": "Pediatric APeX-P berotralstat interim n=29: no drug-related Grade 3/4 or serious AEs, deaths, or AE-related discontinuations reported.",
+      "criticalLimit": "Small uncontrolled interim population; not a definitive long-term safety comparison."
+    },
+    {
+      "nctId": "NCT05453968",
+      "question": 4,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2025-07",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40716738/",
+      "evidence": "APeX-P reported pediatric PK median Tmax 3.9 hours, geometric mean Cmax 204 ng/mL and AUC0-last 915 ng·h/mL.",
+      "criticalLimit": "Observed drug exposure is not randomized demonstration of efficacy; primary PK endpoints may be non-binary."
+    },
+    {
+      "nctId": "NCT05711940",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-02-17",
+      "sourceUrl": "https://ir.compasspathways.com/News--Events-/news/news-details/2026/Compass-Pathways-Successfully-Achieves-Primary-Endpoint-in-Second-Phase-3-Trial-Evaluating-COMP360-Psilocybin-for-Treatment-Resistant-Depression/",
+      "evidence": "COMP006 (crosswalked to NCT05711940) reported Week-6 MADRS mean difference -3.8 points for two 25-mg COMP360 doses vs 1-mg comparator (95% CI -5.8 to -1.8), p<0.001.",
+      "criticalLimit": "Company report; comparator 1 mg not placebo, and crosswalk established by COMP006 registry study ID."
+    },
+    {
+      "nctId": "NCT05711940",
+      "question": 3,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-02-17",
+      "sourceUrl": "https://ir.compasspathways.com/News--Events-/news/news-details/2026/Compass-Pathways-Successfully-Achieves-Primary-Endpoint-in-Second-Phase-3-Trial-Evaluating-COMP360-Psilocybin-for-Treatment-Resistant-Depression/",
+      "evidence": "COMP006 sponsor report: six treatment-emergent SAEs in six 25-mg participants (2%); most TEAEs dosing-day, most resolved within one day.",
+      "criticalLimit": "Sponsor-reported safety; psychiatric and suicidality risks require careful full-population interpretation."
+    },
+    {
+      "nctId": "NCT05257408",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-03-25",
+      "sourceUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or",
+      "evidence": "FDA ROSELLA trial efficacy: PFS hazard ratio 0.70 (95% CI 0.54–0.91), median 6.5 vs 5.5 months, p=0.0076; OS hazard ratio 0.65 (95% CI 0.51–0.83), median 16.0 vs 11.9 months, p=0.0004.",
+      "criticalLimit": "FDA report confirms realized dual primary survival outcomes, not future prediction."
+    },
+    {
+      "nctId": "NCT05257408",
+      "question": 28,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-03-25",
+      "sourceUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or",
+      "evidence": "FDA approved relacorilant with nab-paclitaxel on March 25, 2026 based on ROSELLA NCT05257408 and other submitted evidence.",
+      "criticalLimit": "Specific FDA drug/indication approval is distinct from another trial’s approval or future forecast."
+    },
+    {
+      "nctId": "NCT06081894",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-09",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42663312/",
+      "evidence": "ACACIA-HCM Phase 3: KCCQ-CSS Week 36 difference 3.0 points (95% CI 0.5–5.5), p=0.02; peak oxygen uptake difference 0.67 mL/kg/min (95% CI 0.22–1.11), p=0.003.",
+      "criticalLimit": "Dual primary outcomes; magnitude of patient benefit must be assessed beyond statistical significance."
+    },
+    {
+      "nctId": "NCT06081894",
+      "question": 3,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2026-09",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42663312/",
+      "evidence": "ACACIA-HCM LVEF reductions to under 50% in 27/258 (10.5%) aficamten versus 2/259 (0.8%) placebo; serious AEs 52/258 (20.2%) versus 38/259 (14.7%).",
+      "criticalLimit": "Important safety counterweight to efficacy; do not infer absence of cardiomyopathy risk."
+    },
+    {
+      "nctId": "NCT02598661",
+      "question": 1,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2024-01-20",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38048786/",
+      "evidence": "IMerge Phase 3: at least 8-week RBC transfusion independence 47/118 (40%) on imetelstat versus 9/60 (15%) placebo (difference 25 points), p=0.0008.",
+      "criticalLimit": "Randomized trial includes subsequent extension/substudies; distinct phases must not be pooled."
+    },
+    {
+      "nctId": "NCT02598661",
+      "question": 3,
+      "classification": "REVIEWED_OBSERVED_POST_READOUT_FACT_NOT_AUTOMATIC_GRADE",
+      "sourceDate": "2024-01-20",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38048786/",
+      "evidence": "IMerge grade 3-4 TEAEs 107/118 (91%) imetelstat vs 28/59 (47%) placebo; neutropenia 68% vs 3%, thrombocytopenia 62% vs 8%.",
+      "criticalLimit": "High hematologic toxicity burden must be explicitly evaluated despite primary efficacy success."
     }
   ]
 }
