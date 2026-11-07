@@ -59,7 +59,7 @@ function Sheet({kind,rows,query,scores,scoreLoading,coverage,coverageLoading}:{k
   </header>
   <p style={{fontSize:13}}>Showing {shown.length} of {matched.length} matching records · {rows.length} total exact NCTs ·
    <a style={{marginLeft:7}} href={"/api/phase3-active-cohorts?view="+(pre?"pre":"post")+"&format=csv"}>Export this spreadsheet (CSV)</a> · <a href={"/api/phase3-unified-190-columns?cohort="+(pre?"pre":"post")}>190-column export</a></p>
-  <div role="region" tabIndex={0} aria-label={pre?"235 pre-data trial rows":"23 post-data trial rows"}
+  <div role="region" tabIndex={0} aria-label={pre?"229 pre-data trial rows":"29 post-data trial rows"}
    style={{overflowX:"auto",maxHeight:640,overflowY:"auto",border:"1px solid #d9e5de",borderRadius:8}}>
    <table style={{width:"100%",minWidth:1040,borderCollapse:"collapse",fontSize:13}}>
     <thead><tr>{["#","Ticker","NCT / registry","Company","Drug / therapy","Indication","Trial status",
@@ -130,7 +130,7 @@ function LegacyArchive({query}:{query:string}){
   <Phase3PreDataBatch query={query}/>
   {error&&<p role="alert">{error}</p>}
   {!data&&!error&&<p role="status">Loading historical issuer research…</p>}
-  {data&&<p>{data.unverified.length} historically unverified issuer-status records remain preserved outside the active 235/23 sheets.</p>}
+  {data&&<p>{data.unverified.length} historically unverified issuer-status records remain preserved outside the active 229/29 sheets.</p>}
   {data&&<CapScreenedTopPhase3Spreadsheet classification={data} query={query}/>}
  </div>;
 }
@@ -168,7 +168,7 @@ export default function Phase3SourceOnlySheets(){
    .then(async r=>{if(!r.ok)throw Error("190-field evidence audit unavailable");return await r.json() as CoveragePayload;})
    .then(d=>{
     if(d.totals.trials!==258||d.rows.length!==258||d.totals.expectedCells!==258*190||
-       d.totals.questionSlots!==258*30||d.totals.preTrials!==235||d.totals.postTrials!==23||
+       d.totals.questionSlots!==258*30||d.totals.preTrials!==229||d.totals.postTrials!==29||
        new Set(d.rows.map(r=>r.nctId)).size!==258)
       throw Error("190-field audit failed exact-NCT integrity check");
     if(!ctrl.signal.aborted){
@@ -184,17 +184,17 @@ export default function Phase3SourceOnlySheets(){
   .then(async r=>{if(!r.ok)throw Error("Active trial source reconciliation unavailable");return await r.json() as CohortPayload;})
   .then(d=>{
    if(d.totalPool!==762||d.activeTotal!==258||d.trialCount!==258||
-    d.counts.PRE_DATA!==235||d.counts.POST_DATA!==23||d.counts.HISTORICAL!==501||
+    d.counts.PRE_DATA!==229||d.counts.POST_DATA!==29||d.counts.HISTORICAL!==501||
     d.counts.VERIFY!==3||d.rows.length!==258||new Set(d.rows.map(r=>r.nctId)).size!==258||
-    d.rows.filter(r=>r.cohort==="PRE_DATA").length!==235||
-    d.rows.filter(r=>r.cohort==="POST_DATA").length!==23)
+    d.rows.filter(r=>r.cohort==="PRE_DATA").length!==229||
+    d.rows.filter(r=>r.cohort==="POST_DATA").length!==29)
     throw Error("Active Phase 3 spreadsheets failed count/identity verification");
    if(!ctrl.signal.aborted)setData(d);
   }).catch(e=>{if(!ctrl.signal.aborted&&e.name!=="AbortError")setError(e.message);});
   return()=>ctrl.abort();
  },[]);
  if(error)return <p role="alert">{error}. No misleading trial rows have been displayed.</p>;
- if(!data)return <p role="status">Loading the reconciled 235 Pre-Data and 23 Post-Data trials…</p>;
+ if(!data)return <p role="status">Loading the reconciled 229 Pre-Data and 29 Post-Data trials…</p>;
  const pre=data.rows.filter(r=>r.cohort==="PRE_DATA");
  const post=data.rows.filter(r=>r.cohort==="POST_DATA");
  return <section data-phase3-active-top-bottom="258" data-surveys-ratings-cancelled="true" style={{padding:"8px 0"}}>
@@ -202,9 +202,9 @@ export default function Phase3SourceOnlySheets(){
    <h2 style={{margin:"4px 0"}}>Active Phase 3 · TOP and BOTTOM spreadsheets</h2>
    <strong>{data.activeTotal} total active studies</strong>
   </div>
-  <p><strong>235 Pre-Data + 23 Post-Data = 258</strong>. These are active Phase 3 research classifications;
+  <p><strong>229 Pre-Data + 29 Post-Data = 258</strong>. These are active Phase 3 research classifications;
    the remaining {data.counts.HISTORICAL} closed and {data.counts.VERIFY} unverified-status trials do not appear in either active spreadsheet.</p>
-  <p><strong>Eight source-reconciled readouts are now classified Post-Data.</strong> Five issuer corrections and three newly sourced Ionis studies have been reconciled; prior records and score history remain preserved.</p>
+  <p><strong>Fourteen source-reconciled readouts are now classified Post-Data.</strong> Five earlier issuer corrections, three Ionis studies, and six additional dated issuer/peer-reviewed readouts (including two primary-endpoint failures) have been reconciled; prior records and score history remain preserved.</p>
   <p><a href="/api/phase3-unified-190-columns?cohort=active">Download all 258 trials (190-column CSV)</a> · <a href="/api/phase3-active-190-coverage?format=csv">Download per-trial evidence and score coverage (CSV)</a></p>
   <p><strong>Official live refresh (258 trials):</strong> <a href="/api/phase3-unified-190-columns?cohort=active&amp;live=1">Refresh all 258 NCTs from ClinicalTrials.gov and export 190 columns</a> · <a href="/api/phase3-active-190-coverage?format=csv&amp;live=1">Refresh source coverage and missing-score report</a>. The live refresh fails visibly if any exact-NCT registry record is unavailable; it never fills missing clinical scores with guesses.</p>
   <label style={{display:"block",margin:"12px 0"}}>Search both spreadsheets by ticker, NCT, company, drug, indication or status
