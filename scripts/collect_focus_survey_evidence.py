@@ -312,7 +312,17 @@ def reviewed_fact(record, row, packet, ingredient):
     # Require exact registered drug identity; an anchored registered formulation
     # suffix can be omitted from the display name (Aficamten (CK-...) -> Aficamten).
     # Do not use substring/ticker-only matching.
-    drug_match = any(drug == name or name.startswith(drug + " (") for name in interventions)
+    # Some ClinicalTrials.gov entries combine two intervention names in one
+    # registry field (e.g. "Deucrictibant, Placebo"). Accept only complete
+    # delimiter-separated drug tokens, never an arbitrary substring or a
+    # generic comparator, while retaining the original exact-field matching.
+    registry_names = set(interventions)
+    for name in interventions:
+        for token in name.split(","):
+            stripped = token.strip()
+            if stripped and stripped not in ("placebo", "matching placebo", "vehicle", "control"):
+                registry_names.add(stripped)
+    drug_match = any(drug == name or name.startswith(drug + " (") for name in registry_names)
     if not drug or not indication or not drug_match or indication not in indications:
         return None
     candidate = dict_of(r.get("facts")).get(ingredient)
