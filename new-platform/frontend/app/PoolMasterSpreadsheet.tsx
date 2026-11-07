@@ -96,7 +96,7 @@ const COLUMN_INFO:Record<Key,string>={
  "traded": "Whether the issuer is publicly traded. An unverified value is not a failure.",
  "exchange": "Stock exchange on which the issuer trades; requires current listing evidence.",
  "cap": "Market capitalization in US dollars, if a sourced value is available. Historic figures are not live quotations.",
- "capDate": "As-of date for the sourced market-capitalization value; do not treat it as a live quote.",
+ "capDate": "Quote as-of date, if independently recorded for the exact market-cap value. The FOCUS roster snapshot date is not the quote date.",
  "capQualified": "Whether a sourced market cap falls within $300 million to $10 billion. Historical values need rechecking.",
  "phase3": "Whether published evidence establishes Phase 3 reached or entered.",
  "publicResults": "Whether Phase 3 results are publicly available for the exact drug–indication program.",
@@ -114,6 +114,10 @@ const IDENTITY_INFO={ticker:"Stock ticker reported in the POOL source. A ticker 
 const known=(v:unknown)=>typeof v==="string"&&v.trim()?v:"Not verified";
 const formatCap=(n:number)=>n.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
 const focusByTrial=new Map(snapshot.records.map(r=>[r.nct+"|"+r.ticker.toUpperCase(),r]));
+const quoteDateFor=(focus:(typeof snapshot.records)[number])=>{
+ const date:unknown="marketCapAsOf" in focus?focus.marketCapAsOf:null;
+ return known(date);
+};
 const nctOf=(r:PoolMasterRow)=>{
  const value=r.nctId||(r.id.startsWith("TRIAL|")?r.id.slice(6):"");
  return /^NCT\d{8}$/.test(value)?value:"";
@@ -140,7 +144,7 @@ function contentFor(row:PoolMasterRow,key:Key):{text:string;url?:string}{
   case "traded":return{text:focus?"FOCUS issuer reviewed":"Not verified"};
   case "exchange":return{text:"Not verified"};
   case "cap":return{text:typeof cap==="number"&&Number.isFinite(cap)?formatCap(cap):"Not verified"};
-  case "capDate":return{text:focus?snapshot.asOf:known(row.capChecked)};
+  case "capDate":return{text:focus?quoteDateFor(focus):known(row.capChecked)};
   case "capQualified":return{text:focus?"Pass (FOCUS snapshot)":row.capInRange===true?"Historical in range — recheck":"Not verified"};
   case "phase3":return{text:focus||/Phase 3|PHASE3/i.test(row.stage||"")?"Recorded":"Not verified"};
   case "publicResults":return{text:focus?"Yes — source in FOCUS":row.phase3Source?"Source recorded — review":"Not verified"};
@@ -205,7 +209,11 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
  const qualificationVisible=isGroupVisible(layout,GROUP_QUALIFICATION,COLUMNS_BY_SEGMENT);
  const toggleClinical=()=>edit(l=>({...l,...toggleColumnGroup(l,GROUP_CLINICAL,l.columnOrder)}));
  const toggleQualification=()=>edit(l=>({...l,...toggleColumnGroup(l,GROUP_QUALIFICATION,l.columnOrder)}));
- const resetView=()=>edit(()=>defaultLayout(view));
+ const resetView=()=>edit(l=>{
+  const defaults=defaultLayout(view);
+  return {...l,expanded:defaults.expanded,hiddenSegments:defaults.hiddenSegments,
+   hiddenColumns:defaults.hiddenColumns};
+ });
  const [orderEditorOpen,setOrderEditorOpen]=useState(false);
  const [reorderNotice,setReorderNotice]=useState("");
  const [phaseOpen,setPhaseOpen]=useState(false);
@@ -329,7 +337,7 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
    <legend>Filter POOL trials by stage</legend>
    <div className={css.phaseSelectActions}>
     <label><input type="checkbox" checked={selectedPhases===null}
-     onChange={()=>updatePhases(null)}/> All Phases (show everything)</label>
+     onChange={()=>updatePhases(selectedPhases===null?[]:null)}/> All Phases (show everything)</label>
     <button type="button" className={css.phaseReset} onClick={()=>updatePhases(null)}>Reset</button>
    </div>
    <div className={css.phaseChoices}>
