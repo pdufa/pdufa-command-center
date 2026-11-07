@@ -16905,13 +16905,13 @@
       ],
       "ingredientId": "clinicalBenefit",
       "ingredientName": "Clinical Patient Benefit",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "linkedCompanyDisclosureSources": 1,
       "missingEvidenceRequirement": "Matched endpoints, effect size, comparator, follow-up and uncertainty, not a p-value alone.",
       "nctId": "NCT05208047",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "MISSING",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 0,
       "recommendedSource": "https://europepmc.org/article/MED/42690334",
       "registryIndications": [
@@ -16919,8 +16919,8 @@
         "Metastatic Cancer"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "EXTERNAL_PRIMARY_SOURCE_CONTENT_REVIEW_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "Company-reported randomized PEAK Phase 3 Part 2 in imatinib-resistant/intolerant GIST: bezuclastinib (CGT9486) plus sunitinib versus sunitinib alone yielded blinded-review median PFS 16.5 versus 9.2 months (HR 0.50; 95% CI 0.39–0.65; p<0.0001) and objective response 46% versus 26% (p<0.0001). Overall survival was immature. These are specific issuer-reported PFS and response results, not overall survival or regulatory confirmation.",
       "sourcePacketHash": "e89d8dc9bf974cee013077b16700b5de91e0664442484384a47f743cddd2c8c0",
       "sourceUrls": [
         "https://europepmc.org/article/MED/42690334"
@@ -16944,13 +16944,13 @@
       "externalPublicSourceTypes": [],
       "ingredientId": "magnitude",
       "ingredientName": "Magnitude of Clinical Improvement",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "linkedCompanyDisclosureSources": 1,
       "missingEvidenceRequirement": "Matched effect sizes, units, follow-up and confidence intervals.",
       "nctId": "NCT05208047",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "MISSING",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 0,
       "recommendedSource": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak",
       "registryIndications": [
@@ -16958,8 +16958,8 @@
         "Metastatic Cancer"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "ADDITIONAL_PRIMARY_RESEARCH_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "PEAK Phase 3 randomized Part 2 PFS (bezuclastinib/CGT9486 plus sunitinib versus sunitinib): blinded central-review median PFS 16.5 versus 9.2 months; HR 0.50 (95% CI 0.39–0.65; p<0.0001). Objective response 46% versus 26% (p<0.0001); no ORR confidence intervals in this initial issuer release.",
       "sourcePacketHash": "e89d8dc9bf974cee013077b16700b5de91e0664442484384a47f743cddd2c8c0",
       "sourceUrls": [],
       "supportingRegistryPointers": [],
@@ -17289,13 +17289,13 @@
       "externalPublicSourceTypes": [],
       "ingredientId": "headToHead",
       "ingredientName": "Head-to-Head Evidence",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "linkedCompanyDisclosureSources": 1,
       "missingEvidenceRequirement": "Randomized comparator details, predefined estimand, endpoints, results and uncertainty.",
       "nctId": "NCT05208047",
       "nextEvidenceStep": "FDA-labeled indication-matched competitors and same-line pivotal trial evidence",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "MISSING",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 0,
       "recommendedSource": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak",
       "registryIndications": [
@@ -17303,8 +17303,8 @@
         "Metastatic Cancer"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "ADDITIONAL_PRIMARY_RESEARCH_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "Direct randomized active-comparator PEAK Phase 3 Part 2: CGT9486/bezuclastinib plus sunitinib versus sunitinib monotherapy in imatinib-resistant/intolerant GIST. Primary blinded-review PFS HR 0.50 (95% CI 0.39–0.65; p<0.0001); median PFS 16.5 versus 9.2 months. This compares the combination with sunitinib only, not other drug classes; no mature overall-survival result.",
       "sourcePacketHash": "e89d8dc9bf974cee013077b16700b5de91e0664442484384a47f743cddd2c8c0",
       "sourceUrls": [],
       "supportingRegistryPointers": [],
@@ -18335,7 +18335,7 @@
         "Relacorilant"
       ],
       "drugIndicationIdentityStatus": "CANDIDATE_FROM_REGISTRY_CONFIRM_PRODUCT_RIGHTS",
-      "externalPublicSourceLeads": 1,
+      "externalPublicSourceLeads": 2,
       "externalPublicSourceTypes": [
         "LITERATURE"
       ],
@@ -18498,10 +18498,8 @@
         "Relacorilant"
       ],
       "drugIndicationIdentityStatus": "CANDIDATE_FROM_REGISTRY_CONFIRM_PRODUCT_RIGHTS",
-      "externalPublicSourceLeads": 1,
-      "externalPublicSourceTypes": [
-        "LITERATURE"
-      ],
+      "externalPublicSourceLeads": 0,
+      "externalPublicSourceTypes": [],
       "ingredientId": "responseRemission",
       "ingredientName": "Responder / Remission Advantage",
       "isSurveyAnswerVerified": true,
@@ -18904,7 +18902,7 @@
         "Relacorilant"
       ],
       "drugIndicationIdentityStatus": "CANDIDATE_FROM_REGISTRY_CONFIRM_PRODUCT_RIGHTS",
-      "externalPublicSourceLeads": 2,
+      "externalPublicSourceLeads": 3,
       "externalPublicSourceTypes": [
         "LITERATURE"
       ],
@@ -38037,13 +38035,13 @@
       ],
       "ingredientId": "clinicalBenefit",
       "ingredientName": "Clinical Patient Benefit",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "linkedCompanyDisclosureSources": 1,
       "missingEvidenceRequirement": "Matched endpoints, effect size, comparator, follow-up and uncertainty, not a p-value alone.",
       "nctId": "NCT04716231",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 2,
-      "priorEvidenceStatus": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 1,
       "recommendedSource": "https://clinicaltrials.gov/study/NCT04716231",
       "registryIndications": [
@@ -38051,8 +38049,8 @@
         "Berger Disease"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "PRIMARY_SOURCE_INTERPRETATION_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "Company-reported ORIGIN 3 final efficacy analysis, 428 patients: atacicept versus placebo showed Week-52 eGFR change −0.1 versus −5.7 mL/min/1.73m²; treatment difference +5.6 (95% CI 3.7–7.5; p<0.0001). Through 104 weeks, annualized eGFR slope difference +5.0 (95% CI 3.6–6.5), and composite kidney progression events 11 versus 38 (HR 0.24; 95% CI 0.12–0.48). These are company-reported confirmatory trial endpoints, not independently adjudicated full FDA approval.",
       "sourcePacketHash": "e2c335b532329595b4662a1f3999e7447481ec2de2107b86b5e9c7f203d82ee4",
       "sourceUrls": [
         "https://clinicaltrials.gov/study/NCT04716231",
@@ -38080,13 +38078,13 @@
       ],
       "ingredientId": "magnitude",
       "ingredientName": "Magnitude of Clinical Improvement",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "linkedCompanyDisclosureSources": 1,
       "missingEvidenceRequirement": "Matched effect sizes, units, follow-up and confidence intervals.",
       "nctId": "NCT04716231",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 1,
       "recommendedSource": "https://clinicaltrials.gov/study/NCT04716231",
       "registryIndications": [
@@ -38094,8 +38092,8 @@
         "Berger Disease"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "PRIMARY_SOURCE_INTERPRETATION_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "ORIGIN 3 (atacicept versus placebo), 428-patient final analysis: 52-week eGFR treatment effect +5.6 mL/min/1.73m² (95% CI 3.7–7.5; p<0.0001). Annualized 104-week eGFR slope difference +5.0 mL/min/1.73m²/year (95% CI 3.6–6.5; p<0.0001). Composite kidney progression 11 events versus 38, HR 0.24 (95% CI 0.12–0.48; p<0.0001). Company-reported; OS not established.",
       "sourcePacketHash": "e2c335b532329595b4662a1f3999e7447481ec2de2107b86b5e9c7f203d82ee4",
       "sourceUrls": [
         "https://clinicaltrials.gov/study/NCT04716231",

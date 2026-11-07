@@ -19,13 +19,13 @@
       "verified": 0
     },
     {
-      "researchGaps": 86,
+      "researchGaps": 85,
       "slots": 174,
       "sourceContext": 84,
-      "sourceInterpretationRequired": 27,
+      "sourceInterpretationRequired": 25,
       "survey": "Clinical Benefit",
       "surveyNumber": 3,
-      "verified": 21
+      "verified": 25
     },
     {
       "researchGaps": 28,
@@ -46,13 +46,13 @@
       "verified": 0
     },
     {
-      "researchGaps": 115,
+      "researchGaps": 114,
       "slots": 145,
       "sourceContext": 30,
       "sourceInterpretationRequired": 29,
       "survey": "Competitive Advantage",
       "surveyNumber": 6,
-      "verified": 1
+      "verified": 2
     },
     {
       "researchGaps": 0,
@@ -284,7 +284,7 @@
       "registryPointers": 6,
       "slots": 38,
       "ticker": "COGT",
-      "verified": 0
+      "verified": 3
     },
     {
       "nctId": "NCT03697109",
@@ -404,7 +404,7 @@
       "registryPointers": 12,
       "slots": 38,
       "ticker": "VERA",
-      "verified": 0
+      "verified": 2
     },
     {
       "nctId": "NCT05662241",
@@ -417,14 +417,14 @@
   ],
   "dispositionCount": 1102,
   "dispositions": {
-    "ADDITIONAL_PRIMARY_RESEARCH_REQUIRED": 482,
-    "EXTERNAL_PRIMARY_SOURCE_CONTENT_REVIEW_REQUIRED": 44,
+    "ADDITIONAL_PRIMARY_RESEARCH_REQUIRED": 480,
+    "EXTERNAL_PRIMARY_SOURCE_CONTENT_REVIEW_REQUIRED": 43,
     "MODELING_INPUTS_UNAVAILABLE": 286,
-    "PRIMARY_SOURCE_INTERPRETATION_REQUIRED": 239,
+    "PRIMARY_SOURCE_INTERPRETATION_REQUIRED": 237,
     "PUBLICATION_CONTENT_REVIEW_REQUIRED": 27,
-    "REVIEWED_ANSWER_PRESENT": 24
+    "REVIEWED_ANSWER_PRESENT": 29
   },
-  "externalSourceMappedSlots": 100,
+  "externalSourceMappedSlots": 99,
   "ingredients": 38,
   "researchDispositionCoveragePercent": 100.0,
   "schemaVersion": 1,
@@ -432,7 +432,7 @@
   "sourceContextSlots": 328,
   "surveys": 20,
   "trials": 29,
-  "verifiedSurveyAnswers": 24,
-  "verifiedSurveyPercent": 2.18,
+  "verifiedSurveyAnswers": 29,
+  "verifiedSurveyPercent": 2.63,
   "warning": "100% research disposition coverage does NOT mean 100% verified evidence, graded surveys, or validated RAAS."
 }

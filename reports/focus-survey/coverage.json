@@ -17,12 +17,12 @@
       "verified": 0
     },
     {
-      "capturedNeedsReview": 27,
-      "missing": 126,
+      "capturedNeedsReview": 25,
+      "missing": 124,
       "name": "Clinical Benefit",
       "slots": 174,
       "surveyNumber": 3,
-      "verified": 21
+      "verified": 25
     },
     {
       "capturedNeedsReview": 0,
@@ -42,11 +42,11 @@
     },
     {
       "capturedNeedsReview": 0,
-      "missing": 144,
+      "missing": 143,
       "name": "Competitive Advantage",
       "slots": 145,
       "surveyNumber": 6,
-      "verified": 1
+      "verified": 2
     },
     {
       "capturedNeedsReview": 58,
@@ -164,7 +164,7 @@
   "byTrial": [
     {
       "capturedNeedsReview": 7,
-      "literatureLeads": 16,
+      "literatureLeads": 0,
       "missing": 29,
       "nctId": "NCT05507203",
       "registryRetrieved": true,
@@ -273,11 +273,11 @@
     {
       "capturedNeedsReview": 2,
       "literatureLeads": 12,
-      "missing": 36,
+      "missing": 33,
       "nctId": "NCT05208047",
       "registryRetrieved": true,
       "ticker": "COGT",
-      "verified": 0
+      "verified": 3
     },
     {
       "capturedNeedsReview": 6,
@@ -317,7 +317,7 @@
     },
     {
       "capturedNeedsReview": 2,
-      "literatureLeads": 14,
+      "literatureLeads": 0,
       "missing": 34,
       "nctId": "NCT04871282",
       "registryRetrieved": true,
@@ -406,13 +406,13 @@
       "verified": 0
     },
     {
-      "capturedNeedsReview": 7,
+      "capturedNeedsReview": 5,
       "literatureLeads": 25,
       "missing": 31,
       "nctId": "NCT04716231",
       "registryRetrieved": true,
       "ticker": "VERA",
-      "verified": 0
+      "verified": 2
     },
     {
       "capturedNeedsReview": 2,
@@ -425,24 +425,24 @@
     }
   ],
   "focusTrials": 29,
-  "generatedAt": "2026-11-07T20:25:42+00:00",
+  "generatedAt": "2026-11-07T20:30:38+00:00",
   "googleSheetsSync": "SUCCESS",
   "ingredientSlots": 1102,
-  "leadCapturePercent": 10.07,
-  "literatureLeads": 333,
+  "leadCapturePercent": 9.89,
+  "literatureLeads": 303,
   "schemaVersion": 1,
   "sourceRegistryTrials": 29,
   "statuses": {
     "IDENTITY_REVIEW_REQUIRED": 0,
-    "MISSING": 967,
+    "MISSING": 964,
     "MODELED": 0,
     "NOT_APPLICABLE": 0,
-    "SOURCE_CAPTURED_NEEDS_REVIEW": 111,
+    "SOURCE_CAPTURED_NEEDS_REVIEW": 109,
     "SOURCE_UNAVAILABLE": 0,
-    "VERIFIED": 24
+    "VERIFIED": 29
   },
   "surveyCategories": 20,
   "surveyIngredients": 38,
-  "verifiedPercent": 2.18,
+  "verifiedPercent": 2.63,
   "warning": "Registry and literature leads are not reviewed ingredient findings. 38 slots per trial does not mean 38 verified assessments."
 }

@@ -269,6 +269,24 @@
       "registrySourceHash": "67c62c3e7c7a010423adb41403debb338416fcb587a20da72e98b94a47069ea1",
       "retrievedAt": "2026-11-07T19:58:22+00:00",
       "ticker": "MLYS"
+    },
+    {
+      "literatureLeads": 0,
+      "nctId": "NCT05507203",
+      "packetHash": "d36e521ffce957fdfff54474748670b1b657cc0cb59552aa0a6ba7fb4b38f0cf",
+      "registryCaptured": true,
+      "registrySourceHash": "0fcdc295a9ce70995cf87dea248fd30df9d3d208429f8bd5409877fef5eb6f1c",
+      "retrievedAt": "2026-11-07T20:27:37+00:00",
+      "ticker": "ABVX"
+    },
+    {
+      "literatureLeads": 0,
+      "nctId": "NCT04871282",
+      "packetHash": "8257c03e4d504d2e9726533e1dcc164e997ea16805a21d5c7f83583fd8b013fb",
+      "registryCaptured": true,
+      "registrySourceHash": "64bd485b9aa482a8e1dabf5940c0cb2d3d5ddfb09484ffa90b8735ac922967cc",
+      "retrievedAt": "2026-11-07T20:28:02+00:00",
+      "ticker": "IMNM"
     }
   ],
   "schemaVersion": 1

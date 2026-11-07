@@ -1,9 +1,9 @@
 {
   "companyIssuers": 20,
-  "errorCount": 20,
+  "errorCount": 22,
   "focusTrials": 29,
-  "generatedAt": "2026-11-07T20:25:40+00:00",
-  "newSourceLeads": 552,
+  "generatedAt": "2026-11-07T20:30:37+00:00",
+  "newSourceLeads": 540,
   "perTrial": [
     {
       "candidateIngredientIds": [
@@ -212,14 +212,13 @@
     {
       "candidateIngredientIds": [
         "clinicalBenefit",
-        "responseRemission",
         "safetyAdvantage"
       ],
       "nctId": "NCT03697109",
       "sourceCounts": {
-        "LITERATURE": 21
+        "LITERATURE": 16
       },
-      "strongSourceContext": 7,
+      "strongSourceContext": 3,
       "ticker": "CORT"
     },
     {
@@ -383,7 +382,7 @@
       ],
       "nctId": "NCT04544293",
       "sourceCounts": {
-        "LITERATURE": 17,
+        "LITERATURE": 10,
         "SEC": 1
       },
       "strongSourceContext": 8,
@@ -428,7 +427,7 @@
   "sourceCounts": {
     "COMPANY": 21,
     "FDA": 31,
-    "LITERATURE": 488,
+    "LITERATURE": 476,
     "SEC": 12
   },
   "sourceErrors": [
@@ -468,19 +467,9 @@
       "ticker": "COGT"
     },
     {
-      "error": "HTTP_403",
+      "error": "ValueError:PUBLIC_SOURCE_TOO_LARGE",
       "sourceType": "COMPANY",
-      "ticker": "ABVX"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "ABVX"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "ABVX"
+      "ticker": "ACHV"
     },
     {
       "error": "HTTP_403",
@@ -488,9 +477,19 @@
       "ticker": "MLTX"
     },
     {
-      "error": "ValueError:PUBLIC_SOURCE_TOO_LARGE",
+      "error": "HTTP_403",
       "sourceType": "COMPANY",
-      "ticker": "ACHV"
+      "ticker": "ABVX"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "ABVX"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "ABVX"
     },
     {
       "error": "HTTP_403",
@@ -508,6 +507,16 @@
       "ticker": "SRPT"
     },
     {
+      "error": "ValueError:PUBLIC_SOURCE_UNEXPECTED_RESPONSE",
+      "sourceType": "COMPANY",
+      "ticker": "IMNM"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "VERA"
+    },
+    {
       "error": "HTTP_403",
       "sourceType": "COMPANY",
       "ticker": "URGN"
@@ -518,19 +527,21 @@
       "ticker": "ZBIO"
     },
     {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "VERA"
-    },
-    {
-      "error": "ValueError:PUBLIC_SOURCE_UNEXPECTED_RESPONSE",
-      "sourceType": "COMPANY",
-      "ticker": "IMNM"
-    },
-    {
       "error": "URLError:<urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1011)>",
       "sourceType": "COMPANY",
       "ticker": "SVRA"
+    },
+    {
+      "error": "HTTP_503",
+      "mode": "DRUG_INDICATION",
+      "nctId": "NCT03697109",
+      "sourceType": "LITERATURE"
+    },
+    {
+      "error": "HTTP_503",
+      "mode": "DISEASE_CONTEXT",
+      "nctId": "NCT04544293",
+      "sourceType": "LITERATURE"
     }
   ],
   "sourceStatus": "RESEARCH_LEADS_ONLY_NOT_SURVEY_ANSWERS",
