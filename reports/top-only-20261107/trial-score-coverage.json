@@ -567,7 +567,7 @@
     "originalThirtyMetricOverall": null,
     "phase": "PHASE2 / PHASE3",
     "status": "ENROLLING_BY_INVITATION",
-    "sourceCompleteness": 55.2
+    "sourceCompleteness": 58.6
   },
   {
     "nctId": "NCT06412666",
@@ -577,7 +577,7 @@
     "originalThirtyMetricOverall": null,
     "phase": "PHASE2 / PHASE3",
     "status": "ACTIVE_NOT_RECRUITING",
-    "sourceCompleteness": 50
+    "sourceCompleteness": 54.2
   },
   {
     "nctId": "NCT06736574",
@@ -757,7 +757,7 @@
     "originalThirtyMetricOverall": null,
     "phase": "PHASE2 / PHASE3",
     "status": "ACTIVE_NOT_RECRUITING",
-    "sourceCompleteness": 51.7
+    "sourceCompleteness": 55.2
   },
   {
     "nctId": "NCT06745908",
@@ -807,7 +807,7 @@
     "originalThirtyMetricOverall": null,
     "phase": "PHASE2 / PHASE3",
     "status": "ACTIVE_NOT_RECRUITING",
-    "sourceCompleteness": 50
+    "sourceCompleteness": 64
   },
   {
     "nctId": "NCT06295731",
@@ -837,7 +837,7 @@
     "originalThirtyMetricOverall": null,
     "phase": "PHASE3",
     "status": "ACTIVE_NOT_RECRUITING",
-    "sourceCompleteness": 45.8
+    "sourceCompleteness": 50
   },
   {
     "nctId": "NCT05185843",
@@ -1147,7 +1147,7 @@
     "originalThirtyMetricOverall": null,
     "phase": "PHASE3",
     "status": "ACTIVE_NOT_RECRUITING",
-    "sourceCompleteness": 51.7
+    "sourceCompleteness": 69
   },
   {
     "nctId": "NCT04951219",
@@ -1847,7 +1847,7 @@
     "originalThirtyMetricOverall": null,
     "phase": "PHASE3",
     "status": "ACTIVE_NOT_RECRUITING",
-    "sourceCompleteness": 45.8
+    "sourceCompleteness": 50
   },
   {
     "nctId": "NCT07211958",

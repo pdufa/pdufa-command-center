@@ -24,7 +24,7 @@ test('facts do not create grades, full overalls require existing complete inputs
   const canonical=clinicalFiveForTrial({nctId:t.nctId,ticker:t.ticker,drug:p?.drug??t.drug,indication:p?.indication??t.indication},'pre',true);
   assert.equal(t.clinicalFullScore,canonical.researchScore);assert.equal(t.clinicalFullScore===null,t.clinicalScoredFactors!==5);
   assert.equal(t.metrics.reduce((n,m)=>n+m.activeClinicalWeightPercent,0),100);assert.ok(Math.abs(t.metrics.reduce((n,m)=>n+m.originalWeightPercent,0)-100)<1e-8);
-  for(const m of t.metrics){if(m.score!==null){assert.ok(m.sourceUrl&&m.benchmarkSourceUrl&&m.sourceDate&&m.assessedAt);}else assert.ok(m.blocker);}
+  for(const m of t.metrics){if(m.score!==null){assert.ok(m.sourceUrl&&m.benchmarkSourceUrl&&m.sourceDate&&m.assessedAt&&m.observedResult&&m.uncertaintyReview&&m.criticalRiskReview);}else assert.ok(m.blocker);}
   assert.equal(t.prospectivePrediction,null);assert.equal(t.predictionEligibility,'ABSTAIN');
  }assert.equal(report.completeThirtyMetricOverallScores,0);
 });
@@ -41,6 +41,11 @@ test('known Essential3 results stay component-specific, observational and inside
 test('every TOP trial and company received a recorded source search; document access failures remain explicit',()=>{
  for(const t of report.trials){assert.equal(t.sourceDiscovery.exactNctSearch.nctId,t.nctId);assert.equal(t.sourceDiscovery.companySearch.ticker,t.ticker);assert.match(t.sourceDiscovery.exactNctSearch.q,new RegExp(t.nctId));}
  assert.equal(report.exactNctSearches,ids.size);assert.equal(report.companiesSearched,new Set(base.records.map(r=>r.ticker)).size);assert.equal(report.documentsAttempted,report.documentsRetrieved+report.documentsBlocked);
+});
+test('Phase II dose-finding and conflicting or pooled publications never become current Phase III outcomes',()=>{
+ const t=report.trials.find(t=>t.nctId==='NCT04871282');assert.equal(t.knownPublicResults,false);assert.equal(t.prospectivePrediction,null);assert.match(t.additionalReviewedFacts.find(f=>f.question===5).evidence,/Phase II dose-finding/);assert.equal(t.questions[4].state,'VERIFIED');
+ const triage=require('../data/topOnlyPublicationTriage20261107.json').records;assert.equal(triage.find(p=>p.pmid==='42641848').state,'CONFLICTING_NCT_IN_ABSTRACT');assert.equal(triage.find(p=>p.pmid==='40285763').state,'POOLED_MULTI_TRIAL_FIGURES_NOT_ATTRIBUTED');
+ const forest=report.trials.find(t=>t.nctId==='NCT04848506');assert.ok(forest.publicationLeads.some(p=>p.classification==='CONFLICTING_NCT_IN_ABSTRACT'));assert.ok(!forest.additionalReviewedFacts.some(f=>f.sourceUrl.endsWith('/42641848/')));
 });
 test('new history contains only frozen TOP identities and unique append-only fingerprints',()=>{
  assert.equal(new Set(history.records.map(r=>r.eventId)).size,history.records.length);assert.deepEqual(new Set(history.records.map(r=>r.nctId)),ids);

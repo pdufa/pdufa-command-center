@@ -1,0 +1,592 @@
+{
+  "schemaVersion": 1,
+  "scope": "TOP_ONLY_PUBLICATION_TRIAGE_NOT_FULL_SCIENTIFIC_GRADES",
+  "records": [
+    {
+      "pmid": "27317986",
+      "nctIds": [
+        "NCT06111235"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27317986/",
+      "sourceDate": "2016-06-16",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "27331076",
+      "nctIds": [
+        "NCT02716246"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27331076/",
+      "sourceDate": "2016-06-08",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "29064732",
+      "nctIds": [
+        "NCT02716246"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29064732/",
+      "sourceDate": "2017-10-24",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "30561441",
+      "nctIds": [
+        "NCT07464145"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/30561441/",
+      "sourceDate": "2015-04-30",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "31048702",
+      "nctIds": [
+        "NCT06193889"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/31048702/",
+      "sourceDate": "2019-05-02",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "32884151",
+      "nctIds": [
+        "NCT02716246"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32884151/",
+      "sourceDate": "2020-09-03",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "33860116",
+      "nctIds": [
+        "NCT03900429"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33860116/",
+      "sourceDate": "2021-01-04",
+      "state": "PHASE_OR_SUBGROUP_SPECIFIC_FACT_REVIEWED",
+      "reason": "Only explicitly labeled precursor, extension, patient-report or subgroup facts accepted; no unsupported grade."
+    },
+    {
+      "pmid": "35510486",
+      "nctIds": [
+        "NCT04576156"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/35510486/",
+      "sourceDate": "2022-05-05",
+      "state": "DESIGN_PAPER_NOT_RELEASED_OUTCOME",
+      "reason": "Study design/rationale may be cited; publication is not evidence that the primary endpoint has occurred."
+    },
+    {
+      "pmid": "37468392",
+      "nctIds": [
+        "NCT07464145"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37468392/",
+      "sourceDate": "2023-07-18",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "37786277",
+      "nctIds": [
+        "NCT03900429",
+        "NCT04951219",
+        "NCT05500222"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37786277/",
+      "sourceDate": "2023-10-02",
+      "state": "DESIGN_PAPER_NOT_RELEASED_OUTCOME",
+      "reason": "Study design/rationale may be cited; publication is not evidence that the primary endpoint has occurred."
+    },
+    {
+      "pmid": "38171926",
+      "nctIds": [
+        "NCT05345171"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38171926/",
+      "sourceDate": "2024-01-03",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "38226931",
+      "nctIds": [
+        "NCT03022825"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38226931/",
+      "sourceDate": "2024-01-16",
+      "state": "PHASE_OR_SUBGROUP_SPECIFIC_FACT_REVIEWED",
+      "reason": "Only explicitly labeled precursor, extension, patient-report or subgroup facts accepted; no unsupported grade."
+    },
+    {
+      "pmid": "38254921",
+      "nctIds": [
+        "NCT05606614"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38254921/",
+      "sourceDate": "2023-12-24",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "38265030",
+      "nctIds": [
+        "NCT07464145"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38265030/",
+      "sourceDate": "2024-01-24",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "38324483",
+      "nctIds": [
+        "NCT03900429"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38324483/",
+      "sourceDate": null,
+      "state": "EXACT_TRIAL_PUBLIC_OBSERVATION_REVIEWED",
+      "reason": "Previously reviewed source-specific component facts retained; no retrospective forecast."
+    },
+    {
+      "pmid": "38723617",
+      "nctIds": [
+        "NCT05606614",
+        "NCT05898620"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38723617/",
+      "sourceDate": "2024-05-09",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "38953850",
+      "nctIds": [
+        "NCT03022825"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38953850/",
+      "sourceDate": "2024-07-02",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "39250515",
+      "nctIds": [
+        "NCT03900429"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39250515/",
+      "sourceDate": "2024-09-06",
+      "state": "PHASE_OR_SUBGROUP_SPECIFIC_FACT_REVIEWED",
+      "reason": "Only explicitly labeled precursor, extension, patient-report or subgroup facts accepted; no unsupported grade."
+    },
+    {
+      "pmid": "39375168",
+      "nctIds": [
+        "NCT06072781"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39375168/",
+      "sourceDate": "2025-04-19",
+      "state": "DESIGN_PAPER_NOT_RELEASED_OUTCOME",
+      "reason": "Study design/rationale may be cited; publication is not evidence that the primary endpoint has occurred."
+    },
+    {
+      "pmid": "39385046",
+      "nctIds": [
+        "NCT05881408"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39385046/",
+      "sourceDate": "2024-10-09",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "39477631",
+      "nctIds": [
+        "NCT04848506"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39477631/",
+      "sourceDate": null,
+      "state": "PHASE_OR_SUBGROUP_SPECIFIC_FACT_REVIEWED",
+      "reason": "Only explicitly labeled precursor, extension, patient-report or subgroup facts accepted; no unsupported grade."
+    },
+    {
+      "pmid": "39606837",
+      "nctIds": [
+        "NCT04229979"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39606837/",
+      "sourceDate": "2024-11-28",
+      "state": "DESIGN_PAPER_NOT_RELEASED_OUTCOME",
+      "reason": "Study design/rationale may be cited; publication is not evidence that the primary endpoint has occurred."
+    },
+    {
+      "pmid": "39796162",
+      "nctIds": [
+        "NCT03900429"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39796162/",
+      "sourceDate": "2025-01-01",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "39841424",
+      "nctIds": [
+        "NCT05303519"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39841424/",
+      "sourceDate": null,
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "40173263",
+      "nctIds": [
+        "NCT05898620"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40173263/",
+      "sourceDate": "2025-04-02",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "40285763",
+      "nctIds": [
+        "NCT04848506"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40285763/",
+      "sourceDate": "2025-04-02",
+      "state": "POOLED_MULTI_TRIAL_FIGURES_NOT_ATTRIBUTED",
+      "reason": "Three-study pooled analysis cannot supply individual FOREST-HCM numerical results without a specific crosswalk."
+    },
+    {
+      "pmid": "40333016",
+      "nctIds": [
+        "NCT05099770"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40333016/",
+      "sourceDate": "2025-05-07",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "40540987",
+      "nctIds": [
+        "NCT04848506"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40540987/",
+      "sourceDate": "2025-06-19",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "40544170",
+      "nctIds": [
+        "NCT06736574"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544170/",
+      "sourceDate": "2025-06-22",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "40644648",
+      "nctIds": [
+        "NCT06072781"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40644648/",
+      "sourceDate": "2025-07-11",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "40713231",
+      "nctIds": [
+        "NCT05130450"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40713231/",
+      "sourceDate": "2025-06-18",
+      "state": "PHASE_OR_SUBGROUP_SPECIFIC_FACT_REVIEWED",
+      "reason": "Only explicitly labeled precursor, extension, patient-report or subgroup facts accepted; no unsupported grade."
+    },
+    {
+      "pmid": "40802027",
+      "nctIds": [
+        "NCT02736656"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40802027/",
+      "sourceDate": "2025-08-13",
+      "state": "EXACT_TRIAL_PUBLIC_OBSERVATION_REVIEWED",
+      "reason": "Previously reviewed source-specific component facts retained; no retrospective forecast."
+    },
+    {
+      "pmid": "40866782",
+      "nctIds": [
+        "NCT06159673"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40866782/",
+      "sourceDate": "2025-08-27",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "40956664",
+      "nctIds": [
+        "NCT03022825"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40956664/",
+      "sourceDate": "2025-09-16",
+      "state": "EXACT_TRIAL_PUBLIC_OBSERVATION_REVIEWED",
+      "reason": "Previously reviewed source-specific component facts retained; no retrospective forecast."
+    },
+    {
+      "pmid": "41127972",
+      "nctIds": [
+        "NCT03900429"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41127972/",
+      "sourceDate": "2025-10-23",
+      "state": "PHASE_OR_SUBGROUP_SPECIFIC_FACT_REVIEWED",
+      "reason": "Only explicitly labeled precursor, extension, patient-report or subgroup facts accepted; no unsupported grade."
+    },
+    {
+      "pmid": "41194675",
+      "nctIds": [
+        "NCT06246513"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41194675/",
+      "sourceDate": "2025-11-06",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "41347307",
+      "nctIds": [
+        "NCT06412666"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41347307/",
+      "sourceDate": "2025-12-05",
+      "state": "DESIGN_PAPER_NOT_RELEASED_OUTCOME",
+      "reason": "Study design/rationale may be cited; publication is not evidence that the primary endpoint has occurred."
+    },
+    {
+      "pmid": "41384753",
+      "nctIds": [
+        "NCT06072781"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41384753/",
+      "sourceDate": "2025-12-12",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "41461598",
+      "nctIds": [
+        "NCT06016738"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41461598/",
+      "sourceDate": "2025-12-29",
+      "state": "DESIGN_PAPER_NOT_RELEASED_OUTCOME",
+      "reason": "Study design/rationale may be cited; publication is not evidence that the primary endpoint has occurred."
+    },
+    {
+      "pmid": "41481370",
+      "nctIds": [
+        "NCT05099770"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41481370/",
+      "sourceDate": "2026-01-02",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "41586499",
+      "nctIds": [
+        "NCT06903338",
+        "NCT07128550"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41586499/",
+      "sourceDate": "2026-01-26",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "41697690",
+      "nctIds": [
+        "NCT04130997"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41697690/",
+      "sourceDate": null,
+      "state": "EXACT_TRIAL_PUBLIC_OBSERVATION_REVIEWED",
+      "reason": "Previously reviewed source-specific component facts retained; no retrospective forecast."
+    },
+    {
+      "pmid": "41780565",
+      "nctIds": [
+        "NCT04848506"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41780565/",
+      "sourceDate": null,
+      "state": "EXACT_TRIAL_PUBLIC_OBSERVATION_REVIEWED",
+      "reason": "Previously reviewed source-specific component facts retained; no retrospective forecast."
+    },
+    {
+      "pmid": "41895606",
+      "nctIds": [
+        "NCT03900429"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41895606/",
+      "sourceDate": "2026-03-25",
+      "state": "PHASE_OR_SUBGROUP_SPECIFIC_FACT_REVIEWED",
+      "reason": "Only explicitly labeled precursor, extension, patient-report or subgroup facts accepted; no unsupported grade."
+    },
+    {
+      "pmid": "41917519",
+      "nctIds": [
+        "NCT03900429",
+        "NCT04951219"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41917519/",
+      "sourceDate": "2026-03-31",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "42003884",
+      "nctIds": [
+        "NCT05693142"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42003884/",
+      "sourceDate": "2026-03-12",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "42225101",
+      "nctIds": [
+        "NCT01436968"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42225101/",
+      "sourceDate": null,
+      "state": "EXACT_TRIAL_PUBLIC_OBSERVATION_REVIEWED",
+      "reason": "Previously reviewed source-specific component facts retained; no retrospective forecast."
+    },
+    {
+      "pmid": "42246926",
+      "nctIds": [
+        "NCT07011719"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42246926/",
+      "sourceDate": "2026-06-05",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "42294842",
+      "nctIds": [
+        "NCT06634420"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42294842/",
+      "sourceDate": "2026-06-13",
+      "state": "EXACT_TRIAL_PUBLIC_OBSERVATION_REVIEWED",
+      "reason": "Previously reviewed source-specific component facts retained; no retrospective forecast."
+    },
+    {
+      "pmid": "42470570",
+      "nctIds": [
+        "NCT05125809",
+        "NCT05768854"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42470570/",
+      "sourceDate": "2026-07-18",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "42508433",
+      "nctIds": [
+        "NCT04452591"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42508433/",
+      "sourceDate": null,
+      "state": "EXACT_TRIAL_PUBLIC_OBSERVATION_REVIEWED",
+      "reason": "Previously reviewed source-specific component facts retained; no retrospective forecast."
+    },
+    {
+      "pmid": "42544039",
+      "nctIds": [
+        "NCT04848506"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42544039/",
+      "sourceDate": null,
+      "state": "PHASE_OR_SUBGROUP_SPECIFIC_FACT_REVIEWED",
+      "reason": "Only explicitly labeled precursor, extension, patient-report or subgroup facts accepted; no unsupported grade."
+    },
+    {
+      "pmid": "42592935",
+      "nctIds": [
+        "NCT07001800"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42592935/",
+      "sourceDate": "2026-08-12",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "42615013",
+      "nctIds": [
+        "NCT07020819"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42615013/",
+      "sourceDate": "2026-08-17",
+      "state": "RELATED_OR_INDEXED_LEAD_NOT_CURRENT_TRIAL_RESULT",
+      "reason": "Bibliographic triage only: background, preclinical, earlier/other trial or uncertain linkage; exact current-study inference not supported."
+    },
+    {
+      "pmid": "42641848",
+      "nctIds": [
+        "NCT04848506"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42641848/",
+      "sourceDate": "2026-08-25",
+      "state": "CONFLICTING_NCT_IN_ABSTRACT",
+      "reason": "Abstract calls FOREST-HCM NCT04219826, while registration footer gives NCT04848506. Do not attribute the reported27-patient figures until reconciled."
+    },
+    {
+      "pmid": "42833311",
+      "nctIds": [
+        "NCT03900429"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42833311/",
+      "sourceDate": "2026-10-05",
+      "state": "PHASE_OR_SUBGROUP_SPECIFIC_FACT_REVIEWED",
+      "reason": "Only explicitly labeled precursor, extension, patient-report or subgroup facts accepted; no unsupported grade."
+    },
+    {
+      "pmid": "42848980",
+      "nctIds": [
+        "NCT04871282"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42848980/",
+      "sourceDate": "2026-10-08",
+      "state": "PHASE_OR_SUBGROUP_SPECIFIC_FACT_REVIEWED",
+      "reason": "Only explicitly labeled precursor, extension, patient-report or subgroup facts accepted; no unsupported grade."
+    },
+    {
+      "pmid": "42944976",
+      "nctIds": [
+        "NCT05967351"
+      ],
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42944976/",
+      "sourceDate": "2026-10-27",
+      "state": "PARENT_TRIAL_FOLLOWUP_REQUIRES_COHORT_CROSSWALK",
+      "reason": "EMBARK treated-subset follow-up references EXPEDITION; the full EXPEDITION population cannot inherit parent-trial figures."
+    }
+  ]
+}

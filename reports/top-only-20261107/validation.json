@@ -18,10 +18,10 @@
     "completeThirtyMetricOverallScores": 0,
     "withMissingSourceEvidence": 235,
     "sourceStateCounts": {
-      "VERIFIED": 2728,
-      "MISSING EXPECTED": 2579,
-      "UNVERIFIED": 383,
-      "PENDING": 1125,
+      "VERIFIED": 2742,
+      "MISSING EXPECTED": 2570,
+      "UNVERIFIED": 379,
+      "PENDING": 1124,
       "NOT YET EXPECTED": 235,
       "NOT APPLICABLE": 0,
       "CONFLICTING": 0
@@ -29,8 +29,8 @@
   },
   "csvRows": 235,
   "csvColumns": 190,
-  "frontendTestsPassed": 1326,
-  "topTestsPassed": 9,
+  "frontendTestsPassed": 1327,
+  "topTestsPassed": 10,
   "typecheck": "PASS",
   "build": "PASS",
   "browser": {
@@ -44,5 +44,7 @@
     "mobileDetailsWidth": 311,
     "noBodyOverflow": true,
     "pageErrors": []
-  }
+  },
+  "reviewedAdditionalSourceFacts": 30,
+  "publicationLeadsTriaged": 58
 }

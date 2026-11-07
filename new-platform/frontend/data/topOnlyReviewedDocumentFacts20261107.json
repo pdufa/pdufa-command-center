@@ -133,6 +133,204 @@
       "evidenceClassification": "DOCUMENTED_PUBLIC_READOUT_EXISTS",
       "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
       "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT04871282",
+      "question": 5,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42848980/",
+      "sourceDate": "2026-10-08",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "RINGSIDE publication reports the Phase II dose-finding portion of combined Phase II/III NCT04871282. Varegacestat(AL102)1.2mg daily was selected for Phase III after comparison with2mg and4mg intermittent dosing. These are precursor dose-selection findings, not Phase III success.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT04871282",
+      "question": 3,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42848980/",
+      "sourceDate": "2026-10-08",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "In RINGSIDE Phase II,42 participants(14 per dose) were enrolled;41(97.6%) reported treatment-related adverse events and9(21.4%) grade3 events; no serious or grade4/5 events were reported. This small dose-finding sample does not establish rare-event safety or final Phase III tolerability.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT04871282",
+      "question": 16,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42848980/",
+      "sourceDate": "2026-10-08",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "RINGSIDE Phase II week16 median tumor-volume reductions were51.91%,15.25% and9.50% for1.2mg daily,2mg intermittent and4mg intermittent, respectively. Confirmed response rates were35.7%,21.4%,21.4%. No placebo-controlled Phase III benefit is inferred.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT04871282",
+      "question": 21,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42848980/",
+      "sourceDate": "2026-10-08",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "In RINGSIDE Phase II extension,29 selected participants received1.2mg daily; median exposure102weeks, median best tumor-volume change\u221285.88%, confirmed response57.1%. These selected open-label precursor data do not answer the ongoing Phase III endpoint.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT06412666",
+      "question": 5,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41347307/",
+      "sourceDate": "2025-12-05",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "CEDAR-HCM design publication describes echocardiography-guided aficamten adjustment targeting Valsalva LVOT gradient below30mmHg while maintaining LVEF at least50%. This is a planned dose-adjustment algorithm, not evidence that pediatric efficacy or safety has been demonstrated.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT04229979",
+      "question": 4,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39606837/",
+      "sourceDate": "2024-11-28",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "REGAL design article identifies WT1 overexpression in leukemic blasts and relative absence in normal hematopoietic cells as the rationale for the multivalent WT1 vaccine galinpepimut-S. Biological rationale is distinguished from proven Phase III benefit.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT06016738",
+      "question": 4,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41461598/",
+      "sourceDate": "2025-12-29",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "OPERA-01 design paper describes palazestrant as an oral complete estrogen receptor antagonist/SERD acting on AF1 andAF2 transcriptional domains, including ESR1-mutated disease. Mechanistic claims are rationale, not a Phase III result.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT03900429",
+      "question": 5,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33860116/",
+      "sourceDate": "2021-01-04",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "Earlier resmetirom study NCT02912260 used80mg or100mg in a36-week open-label extension(n31); authors explicitly link these doses to MAESTRO-NASH NCT03900429. This supports a documented prior-dose crosswalk, not randomized Phase III efficacy.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT03900429",
+      "question": 16,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33860116/",
+      "sourceDate": "2021-01-04",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "In earlier NCT02912260 extension(n31), mean relative MRI-PDFF reduction was52.3%(SE4.4%,p<0.0001). This is a selected open-label precursor population; the effect must not be substituted for the current Phase III effect.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT03022825",
+      "question": 18,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38226931/",
+      "sourceDate": "2024-01-16",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "QUILT-3.032 patient-reported outcomes used EORTC Core30/NMIBC24. Physical-function/global-health means remained relatively stable in cohortA(n86) andB(n78); analyses were descriptive. Cohort-specific quality-of-life observations are not randomized proof of benefit.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT03900429",
+      "question": 18,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39250515/",
+      "sourceDate": "2024-09-06",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "MAESTRO-NASH HRQL analysis included966 participants(100mg323,80mg322,placebo321). Worry-domain changes were approximately+0.21 to+0.24. Broader improvements were described in histologic responders, including pooled active doses; this responder analysis is not an independent overall between-arm efficacy endpoint.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT04848506",
+      "question": 20,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39477631/",
+      "sourceDate": null,
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "In FOREST-HCM,64/136 patients on background standard-of-care therapy attempted withdrawal;59/64 met the study-defined success criterion(at least50% reduction in one medication). Investigator-selected treatment de-escalation is not randomized proof of superiority or participant-retention evidence.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT04848506",
+      "question": 3,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39477631/",
+      "sourceDate": null,
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "FOREST-HCM background-medication withdrawal analysis reports no serious adverse events attributed to withdrawal. This does not mean no serious adverse events occurred in the trial overall.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT05130450",
+      "question": 18,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40713231/",
+      "sourceDate": "2025-06-18",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "Qualitative interviews involved18 olezarsen open-label-extension participants;15 reported meaningful improvements. This selected, uncontrolled interview sample is NCT05130450 patient-experience evidence, not the parent BALANCE randomized efficacy result or an adjudicated primary endpoint.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT03900429",
+      "question": 19,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41127972/",
+      "sourceDate": "2025-10-23",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "MAESTRO-NASH reports subgroup observations by weight loss and background GLP-1/SGLT2 therapy. A100mg subgroup with at least5% weight loss had higher response proportions than those with less weight loss. Abstract-level prespecification/multiplicity is not established; this is not a validated predictive subgroup.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT03900429",
+      "question": 15,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41895606/",
+      "sourceDate": "2026-03-25",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "The MAESTRO-NASH qFibrosis secondary analysis explicitly reports nominal p-values and distinguishes prespecified assessments from post-hoc regional features. Nominal significance is not evidence of familywise multiplicity control or a new confirmatory primary endpoint.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT04848506",
+      "question": 21,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42544039/",
+      "sourceDate": null,
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "FOREST-HCM patient-reported-outcome follow-up included172 participants reaching48weeks by August31,2024. Mean KCCQ overall-summary change was+18.8(95%CI16.9\u201320.6). This uncontrolled extension observation supports reported durability, not randomized long-term comparative benefit.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT03900429",
+      "question": 19,
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42833311/",
+      "sourceDate": "2026-10-05",
+      "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
+      "evidence": "A prespecified MAESTRO-NASH genotype analysis included738 consenting genotyped participants. Authors report broadly similar effects across common risk genotypes, while explicitly stating that the study was not powered to detect small genotype effects. Absence of a detected interaction is not proof of equivalence.",
+      "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
+      "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
+      "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
     }
   ]
 }
