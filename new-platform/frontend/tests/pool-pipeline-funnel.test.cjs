@@ -100,10 +100,10 @@ test("navigation links and API views remain independent of historical GEM preset
  const nav=read("app/GlobalNavigation.tsx");
  const api=read("app/api/scope-funnel/route.ts");
  const ui=read("app/FunnelWorkspace.tsx");
- assert.doesNotMatch(nav,/label:"POOL",href:"\/pool"/);
+ assert.match(nav,/label:"POOL",href:"\/pool"/);
  assert.match(nav,/label:"TOOLS",href:"\/tools"/);
- assert.match(nav,/label:"PIPELINE",href:"\/pipeline"/);
- assert.match(nav,/label:"#1",href:"\/patient-population"/);
+ assert.match(nav,/label:"P3 POST-DATA",href:"\/p3-post-data"/);
+ assert.doesNotMatch(nav,/label:"#1",href:"\/patient-population"/);
  assert.match(api,/readFile\(join\(process.cwd\(\),"public","phase3-census-2026-10-26.csv"\)/);
  assert.match(api,/authConfigured\(\)/);
  assert.match(api,/fetchReadOnlyWithWarmRetry/);
