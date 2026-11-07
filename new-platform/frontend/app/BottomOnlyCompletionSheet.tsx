@@ -55,6 +55,8 @@ export default function BottomOnlyCompletionSheet({query}:{query:string}){
        <div className={css.rail}>{detail.clinicalFactors.map(f=><article key={f.id}><strong>{f.name}</strong><p>{show(f.grade)}</p><small>Weight 20% · {readable(f.evidenceState)}</small>
         <p><strong>Observed:</strong> {f.observedResult??"Rubric-ready assessment not completed"}</p><p><strong>Benchmark:</strong> {f.benchmarkContext??f.requiredEvidence}</p>
         <p><strong>Uncertainty:</strong> {f.uncertaintyReview??f.criticalRisk}</p><p>{f.criticalRiskReview}</p>
+        <p><strong>Evidence to assess:</strong> {f.reviewEvidenceCount} exact-trial source observations · {readable(f.ratingReadiness)}</p>
+        <details><summary>Expand source evidence for this factor ({f.reviewEvidenceCount})</summary>{f.reviewEvidence.map((x,i)=><article key={x.question+"-"+i}><strong>Q{x.question} · {readable(x.classification)}</strong><p>{x.evidence}</p><small>{x.criticalLimit}</small><p><a href={x.sourceUrl} target="_blank" rel="noopener noreferrer">Open source ({x.sourceDate??"date not established"})</a></p></article>)}</details>
         {f.sourceUrl&&<p><a href={f.sourceUrl} target="_blank" rel="noopener noreferrer">Reviewed evidence</a></p>}
         {f.benchmarkSourceUrl&&<p><a href={f.benchmarkSourceUrl} target="_blank" rel="noopener noreferrer">Comparison benchmark</a></p>}
        </article>)}</div>
