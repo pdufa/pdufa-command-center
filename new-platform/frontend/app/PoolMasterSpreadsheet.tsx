@@ -144,13 +144,30 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
  }));
  const visible=useMemo(()=>SEGMENTS.filter(s=>layout.expanded.includes(s.key)&&!layout.hiddenSegments.includes(s.key))
    .flatMap(s=>s.columns.filter(c=>!layout.hiddenColumns.includes(c.key))),[layout]);
+ const allShowing=visible.length===ALL_KEYS.length;
+ const allHidden=visible.length===0;
+ const preferred=defaultLayout(view);
+ const atPreferred=ALL_SEGMENTS.every(key=>layout.expanded.includes(key)===preferred.expanded.includes(key))
+  && layout.hiddenSegments.length===0 && layout.hiddenColumns.length===0;
+ const hideAllOptional=():Layout=>({expanded:[],hiddenSegments:[...ALL_SEGMENTS],hiddenColumns:[]});
+ // The two toolbar actions are reversible: All ↔ Hidden, and Preferred ↔ Hidden.
+ // Neither action hides the three identity columns or modifies the saved source.
+ const toggleAll=()=>edit(()=>allShowing?hideAllOptional():{
+  expanded:[...ALL_SEGMENTS],hiddenSegments:[],hiddenColumns:[]});
+ const togglePreferred=()=>edit(()=>atPreferred?hideAllOptional():defaultLayout(view));
  return <section aria-label="POOL Master Spreadsheet with responsive column visibility" data-pool-master="true" className={css.section}>
   <div className={css.top}>
    <div><h3>POOL Master · 32 columns</h3>
     <p>All stages stay in POOL. Hide or expand entire column segments, or choose individual columns. Hidden fields still participate in research and eligibility checks.</p></div>
    <div className={css.actions}>
-    <button type="button" onClick={()=>edit(()=>({expanded:[...ALL_SEGMENTS],hiddenSegments:[],hiddenColumns:[]}))}>Show all</button>
-    <button type="button" onClick={()=>edit(()=>defaultLayout(view))}>Reset {view==="phone"?"phone":"PC"} view</button>
+    <button type="button" data-visibility={allHidden?"hidden":allShowing?"all":"custom"}
+     aria-pressed={allShowing} onClick={toggleAll}>
+     {allShowing?"Hide All":"Show All"}
+    </button>
+    <button type="button" data-visibility={allHidden?"hidden":atPreferred?"default":"custom"}
+     aria-pressed={atPreferred} onClick={togglePreferred}>
+     {atPreferred?"Hide All":"Reset "+(view==="phone"?"Phone":"PC")+" View"}
+    </button>
    </div>
   </div>
   <p className={css.viewport} data-viewport={view}>
@@ -165,7 +182,7 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
     return <div key={s.key} className={css.segment} data-segment={s.key}>
      <div className={css.segmentHead}>
       <button type="button" className={css.segmentToggle} aria-expanded={!hidden&&expanded}
-       disabled={hidden} onClick={()=>switchIn("expanded",s.key)}>
+       aria-pressed={!hidden&&expanded} disabled={hidden} onClick={()=>switchIn("expanded",s.key)}>
        {expanded&&!hidden?"▾":"▸"} {s.label} <small>{active}/{s.columns.length}</small>
       </button>
       <button type="button" className={css.visibilityToggle} aria-pressed={hidden}

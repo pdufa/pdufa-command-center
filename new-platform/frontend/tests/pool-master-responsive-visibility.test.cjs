@@ -34,3 +34,17 @@ test("POOL Master component parses as valid TypeScript JSX",()=>{
  const source=ts.createSourceFile("PoolMasterSpreadsheet.tsx",component,ts.ScriptTarget.Latest,true,ts.ScriptKind.TSX);
  assert.deepEqual(source.parseDiagnostics.map(e=>ts.flattenDiagnosticMessageText(e.messageText,"; ")),[]);
 });
+
+test("both toolbar buttons toggle the optional POOL columns between shown and hidden",()=>{
+ assert.match(component,/const toggleAll=\(\)=>edit\(\(\)=>allShowing\?hideAllOptional\(\)/);
+ assert.match(component,/const togglePreferred=\(\)=>edit\(\(\)=>atPreferred\?hideAllOptional\(\):defaultLayout\(view\)\)/);
+ assert.match(component,/aria-pressed=\{allShowing\}/);
+ assert.match(component,/aria-pressed=\{atPreferred\}/);
+ assert.match(component,/allShowing\?"Hide All":"Show All"/);
+ assert.match(component,/atPreferred\?"Hide All":"Reset "/);
+ assert.match(component,/hiddenSegments:\[\.\.\.ALL_SEGMENTS\]/);
+ assert.match(style,/\.actions button\[data-visibility="hidden"\]/);
+ assert.match(style,/\.actions button\[data-visibility="all"\]/);
+ assert.match(style,/\.segmentToggle\[aria-pressed="true"\]/);
+ assert.match(style,/\.visibilityToggle\[aria-pressed="true"\]/);
+});

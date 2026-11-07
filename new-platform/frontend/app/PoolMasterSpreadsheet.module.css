@@ -34,3 +34,17 @@
  .table th,.table td{padding:9px 7px;font-size:12px}
  .visibilityToggle{white-space:nowrap}
 }
+
+/* Reversible visibility controls: blue-green means shown, burgundy means hidden. */
+.actions button,.segmentToggle,.visibilityToggle{transition:background-color .16s ease,color .16s ease,border-color .16s ease}
+.actions button[data-visibility="all"],
+.actions button[data-visibility="default"],
+.segmentToggle[aria-pressed="true"]{
+ background:#145d48;color:#fff;border-color:#145d48;
+}
+.actions button[data-visibility="hidden"],
+.visibilityToggle[aria-pressed="true"]{
+ background:#893e47;color:#fff;border-color:#893e47;
+}
+.segmentToggle[aria-pressed="true"] small{color:#e5fbef}
+.actions button:not(:disabled):active,.segment button:not(:disabled):active{filter:brightness(.91)}
