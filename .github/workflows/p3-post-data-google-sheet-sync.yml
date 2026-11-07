@@ -1,6 +1,16 @@
 name: P3 POST-DATA Google Sheets → Website snapshot
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/p3-post-data-google-sheet-sync.yml'
+      - 'scripts/auto_promote_p3_post_data.py'
+      - 'new-platform/backend/app/phase3_curated_announcements.json'
+      - 'data/post_phase3_discoveries.csv'
+  workflow_run:
+    workflows: ['PDUFA Overnight Sequential Scans']
+    types: [completed]
   schedule:
     - cron: '25 13 * * *'
 
@@ -13,6 +23,7 @@ concurrency:
 
 jobs:
   sync:
+    if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -24,6 +35,20 @@ jobs:
         with:
           python-version: '3.12'
       - run: python -m pip install google-auth requests
+      - name: Run offline source and deduplication safety tests
+        run: python -m unittest discover -s tests -p 'test_p3_auto_promotion.py' -v
+      - name: Automatically append exact-NCT, verified POOL to P3 POST-DATA matches
+        env:
+          GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
+        run: python scripts/auto_promote_p3_post_data.py
+      - name: Preserve automatic-promotion and manual-review evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: p3-post-data-auto-promotion-${{ github.run_id }}
+          path: reports/p3_auto_promotion_latest.json
+          if-no-files-found: warn
+          retention-days: 30
       - name: Validate and sync the canonical post-Phase-3 roster only
         env:
           GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
