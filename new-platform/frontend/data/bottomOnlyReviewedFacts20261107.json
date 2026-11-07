@@ -10863,7 +10863,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05535946",
       "sourceDate": "2026-07-07",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.857907+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "ea492b1488f4265fb516ef9b8aa9eb6ade0f6b6969b06c9ab4538149581248ca",
       "sourceHash": "b4d2cc7d22e8a18672189a17953d12abe4b2f341c1eee8757e338aeec12f35f4"
@@ -14226,7 +14226,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04770753",
       "sourceDate": "2026-10-30",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.860598+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "e8133c0fbaa1c8bfef5e33df6498ec43c4ac21ce5c14da7f7d927dab782803cd",
       "sourceHash": "30c8b7ad50a12bf2d4a18b84eb76629137e05d01779678addcd083568f6a92a8"
@@ -17849,7 +17849,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04770779",
       "sourceDate": "2026-10-28",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.863200+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "eb6181a1520352f388c3b006bde71c5149ec3a7bea108f0a9333b48aae4a2dee",
       "sourceHash": "96958d54f69af597c0ea2cf9e89221dc60136737640b488730df54c5fc16c5e4"
@@ -18212,7 +18212,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05031780",
       "sourceDate": "2026-10-26",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.863676+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "e4b447fb4e007785a61864df1fb756b402b7149d8302fe10283b58864504fad3",
       "sourceHash": "62cb4476e4f5f44797e742868d2cefab4dc84ec01d9833891840bf3aefb17eaf"
@@ -18487,7 +18487,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05144256",
       "sourceDate": "2026-10-28",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.864083+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "639bcdcb66412be8a472e833bc99a5d4f3063c999e27a0c61c6a161b131ede16",
       "sourceHash": "5b51a8dab5842388287076c87f16b6ab936f03f66c8051fa0d83786e531bb3ca"
@@ -18769,7 +18769,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05175105",
       "sourceDate": "2026-10-28",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.864445+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "56d883a770f43cb2ea1db582699da6b9c3ebb2069704b6636d8b5922d3451037",
       "sourceHash": "e2f316e23a8950a00d26f1416a22b4e39b6f3b333035cdf8f5263a033250d9b5"
@@ -18924,7 +18924,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06747468",
       "sourceDate": "2026-08-24",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.864789+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "6013f8e722e2cfa23fbb6e588854b524ee49cda17feca1c54988f6b3f0a04c25",
       "sourceHash": "32a82d9b521255adcc799d462706a9e82cb2e0cefebafab9480ebe1cf38ac242"
@@ -23541,7 +23541,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05453968",
       "sourceDate": "2026-02-25",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.868338+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "5ccc4fdb7494d2db534558e366a286f630eb43f690d007bf61071b107bd6d6e6",
       "sourceHash": "cab1e2c096ba42a2424335cd7774cf8ed6d73fbe8c44cb093135f8aec5a6ed89"
@@ -23749,7 +23749,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06445023",
       "sourceDate": "2026-03-25",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.868938+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "f2de318cc50902ec9e8dd7e0ce153670208d483a42d74b73938f8ba2f640ccf1",
       "sourceHash": "54d41a4dff08baa755bfe065ff28ef321e1c35f736c672897d86e79c3f75cd82"
@@ -23957,7 +23957,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06455202",
       "sourceDate": "2026-03-25",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.869561+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "e5e57d160b8db26d2586472baf38a17da331c76b9fed108b7b59fbbe52bc254a",
       "sourceHash": "e27a756a6881220369cff800f8cfd1b8572e441a696bdfb26705ef3f9601472c"
@@ -24113,7 +24113,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05711940",
       "sourceDate": "2026-08-10",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.869987+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "bc67cc9af96d6252ce3ed270f2ab373e04d2c7514d5df54b98e4961e669be339",
       "sourceHash": "18bee7b1e403b5a38c26bf08ea8d1a68cc72e78f44749a407f3e55ef3e92b1b9"
@@ -28291,7 +28291,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05257408",
       "sourceDate": "2026-09-25",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.873351+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "f54e006839e80ac21f382eaec8131d6844f93d8fc6226920052a7c9034dd4965",
       "sourceHash": "ef2c831ecb0245a598e70299a34c470a2aae95d815bcc65a7831bf2f5c548b80"
@@ -28481,7 +28481,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06081894",
       "sourceDate": "2026-09-22",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.873889+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "833e4c6edc5a686f138835cb7094de691f74cfae679c23987081c16d43015b56",
       "sourceHash": "fabe8007d4015dd7e03bf1fcec5f9efd871107aa4755a7383bea3892f8bbcf1c"
@@ -41950,7 +41950,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02598661",
       "sourceDate": "2026-07-17",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.884091+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "2ceba1d16678cc20b34b9876d52fc7e181a1b5a90ed502edda14d2d3eb755af6",
       "sourceHash": "48fe97f9cb2206f0169906531ec62e5ed8b4ad61612ec44adea666418926eef9"
@@ -42121,7 +42121,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04768972",
       "sourceDate": "2026-07-21",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.884489+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "d3f85ebf2597dea47f3f8cda3c372a4478e49551b2daabae33c257bdb9ea82ad",
       "sourceHash": "6dc9b26f91aaa4df601980972f136dd80573b1b25f90df7d7b36e47466f216e6"
@@ -42340,7 +42340,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04849741",
       "sourceDate": "2026-08-21",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.884857+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "a3fb792312434d2a2d743f954571e5a77f4f64e38fdd035bc674da8f1a694f97",
       "sourceHash": "ed5c08c75114218e27eda49cd217391929499188e4a51cd5824eadb915b613c5"
@@ -42489,7 +42489,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05392114",
       "sourceDate": "2025-12-12",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.885202+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "b95a3db71a68f4f96858983245aad7442738bd0ead16cdbe118557bf86838438",
       "sourceHash": "5f6590793366d7bd41fccad031ba5638b94f64962fa51c911cdd44b725e1000c"
@@ -42667,7 +42667,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06641076",
       "sourceDate": "2026-10-09",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.885646+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "e405d8cb1b46a53d15f6d6594988cbe0554a334d7a6abfdd519600464f7c1091",
       "sourceHash": "45338d51167afe15da8eed97d4002985368893a9226bbd06e1b41423136d456e"
@@ -45966,7 +45966,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05210790",
       "sourceDate": "2026-10-19",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.888114+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "7889a327ac6b6dc495cbe13b40f70e04d7dec6736634a429d0e65a824410cccf",
       "sourceHash": "c728bd03ae50e92ef4e9d9261e85fd663484f23bed3a3fe95969604f778d574b"
@@ -49677,7 +49677,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05774756",
       "sourceDate": "2026-08-10",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.890921+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "ba122ce7849fb4a2ac7ecf8e014237f140bc1ab7129a6bc995e0df4e09e3f42c",
       "sourceHash": "37422eb8dad486ded6a4ee35062ff0d0d07202c95fec8de19e14fb50fb8e2e4f"
@@ -52869,7 +52869,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04544293",
       "sourceDate": "2026-11-03",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.893463+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "f09a874416bf6573a8893106b2f97a87853ba449076499e445c48cf1e05ff297",
       "sourceHash": "9c2aff01e116e32b10857558f2c0684ee3048014b27a7f80f3e4b122c635fc40"
@@ -54923,7 +54923,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05243550",
       "sourceDate": "2026-05-11",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.895061+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "ff2c6acea249c15234d6f1d4b7d174de50b282e8f96e0f00ad00e4cabf4f91e4",
       "sourceHash": "db4dd0e6525f2182668de414df6429fb1c52e8b79ee2cb3e5a091d174da1e741"
@@ -56430,7 +56430,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04716231",
       "sourceDate": "2026-10-01",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.896099+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "ca4d91a3523f7a6cd6e0df780fe7a30da714264a48ce46179f81d1e202058bfb",
       "sourceHash": "33cadf8eb56875c123ae513703e6dc0f6fe5ad5c58ea5f7288d9953a87722143"
@@ -58568,7 +58568,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507203",
       "sourceDate": "2026-09-10",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.898563+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "5c72de31d4cb07f2651debecebde7f53a4fd3856789415492c65cc69bd950eeb",
       "sourceHash": "fda6e4ad9a8013bf1b1a589187df805b91266cfb17d13b98bbd582b72fae2336"
@@ -60613,7 +60613,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507216",
       "sourceDate": "2026-09-10",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.900410+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "24e798ad472136bd2a33548ec9519eab6faf4169f5f2ef65c8b972d560a55810",
       "sourceHash": "c7cb2284fc9b27651da4fcbae3d8af1bbcb3a70b8e62d21659b99cd7bba5d1e2"
@@ -63061,7 +63061,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04576949",
       "sourceDate": "2026-01-15",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.902277+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "81c7492947ddbbb6f49a8388e461cf286a931654ee1c619f800335af969bd47b",
       "sourceHash": "1695b48b4e1295e79a7d768efb2218c863170d0143210ec821f39e8c8079e4fe"
@@ -65586,7 +65586,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05206370",
       "sourceDate": "2026-01-14",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.904239+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "5cbf206a7ec9cd49c8fb823f2d5b12e542fec4e22da6a84a02d333ba3934f2ca",
       "sourceHash": "5c4477ef576479c77d4fdf94c7ca2b69e7a10389596a457e8c5cbd02dd32b346"
@@ -67107,7 +67107,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05811247",
       "sourceDate": "2026-11-03",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.905557+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "e53500a653f8ff8dffeb543c776f9ab4092c608f72b3894ab247f027a8ce202f",
       "sourceHash": "3e6feb780b17b20f15a235a4c3bfb94da7c468d4b9debe797ce6729659b28cb2"
@@ -68487,7 +68487,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05813275",
       "sourceDate": "2026-09-11",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.906837+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "c6e7d34dac397ad5798e0aaf38325ad16fe977ad66e4c8caee63e4129723c8ba",
       "sourceHash": "0edd11064e6e1b77613deee01c79f39843724372930d682c98c321e62f3faae3"
@@ -68628,7 +68628,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05059223",
       "sourceDate": "2026-05-28",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.907160+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "0a5dad958fae62e22217a36fcd93c994f12055c482e6ce4a5fbeecf1fc23d8f1",
       "sourceHash": "1f27f95ffbea8504a184eb3e5854155300bf226583f1408d6e9dcf5d40a501e7"
@@ -68772,7 +68772,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05113745",
       "sourceDate": "2025-11-13",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.907416+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "4db53262f3dc660796c806c61ce2c572e13f9a34b9192eb27c941b2756fc2f94",
       "sourceHash": "43a333791f29f6d5faac7d2950a9e8c2f114d5c1fbce3ab2e865cb3cd719f4fc"
@@ -68959,7 +68959,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05244304",
       "sourceDate": "2026-07-23",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.907692+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "e9721e28001f94edff89bfe3344f8437ecf44a783383876674503719dea56b59",
       "sourceHash": "3d4af4fe9121c5055e6206fc84a08ee1a98c92805d7d506e9df92239a3cbf0f8"
@@ -69158,7 +69158,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05126758",
       "sourceDate": "2026-08-28",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.908067+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "20d27667821d1a4e98bf931ba8e87ea45c266e223206adab669852fba5838ae8",
       "sourceHash": "79ca4ba792b4274fb440b9a6e6b636614d790e60872b895dc928110bd10c101a"
@@ -69499,7 +69499,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05208047",
       "sourceDate": "2026-06-16",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.908682+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "f9ed331b9dac371767bfd9bc2429d60974edebf2e4a3b364cbef243af812ef0e",
       "sourceHash": "8d4f5fefa0442160dd49466b9f823446f985c281e730cab4712835f2015d9655"
@@ -73929,7 +73929,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT03697109",
       "sourceDate": "2025-07-16",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.911685+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "602d10925e7480d5470e932725cfc100c589105e895ed7cff9912020ecd7137d",
       "sourceHash": "f74be753fea9a2ade4bd4ae24c31c87abedc24b953b5d144ef9b19b33028825a"
@@ -76769,7 +76769,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04308590",
       "sourceDate": "2025-09-04",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.913717+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "95589aee53172cca5e9b713bb523cb3175bec76769c49c3401cec65373eba38e",
       "sourceHash": "b959df6d4a2d33421450a11bb394b09491af5b2bea0cf0efc6b02fa48f94cc83"
@@ -78944,7 +78944,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05767346",
       "sourceDate": "2026-06-09",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.915455+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "4c662f0e888dc6ebcfb81772bfbe783bcf8cc91777a054513a806733e47c5953",
       "sourceHash": "c1ceea5d5d46a410b1e539e42024f046b70a297c946e1182e1afa48b339750fb"
@@ -79216,7 +79216,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04871282",
       "sourceDate": "2026-06-08",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.915882+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "995939ba534f7a9ba8027ae03920fd805fd277b4aed4c60654cbb3a8c4f00c08",
       "sourceHash": "c85e5caf278f2216a8b8bd80a70c59292d3aa8ca04c5590a133bd9f63660fc3d"
@@ -79390,7 +79390,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06411379",
       "sourceDate": "2026-06-08",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.916295+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "0bd8e1a37233d9b2de7b08cf58de99d396b1fb2b7baec4231df5202754fde932",
       "sourceHash": "c6a054c675c7c401d3674f26c91b93718c839326530d44ec0d4489834c4cef4f"
@@ -79569,7 +79569,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06411899",
       "sourceDate": "2026-08-12",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.916692+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "4323134b47b01a29a9140d018af125571855ef43f6bc56b1451ce6b8bc9e0790",
       "sourceHash": "de6d40df57c24715c7a4010432628057572b24d8d098f0742d1ff09b4946b408"
@@ -79752,7 +79752,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06153693",
       "sourceDate": "2026-05-01",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.917242+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "5d6307966b94db474eb75bc5cfbb3a1a448037cfffc46faab8c43e37a513afcb",
       "sourceHash": "2268b50987d38c0021a0d84de95fd1ffdcaceb62f22ef71c950a3cb78f5db448"
@@ -79940,7 +79940,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06343779",
       "sourceDate": "2025-11-21",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.917621+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "607c554eb0d5a9d62ada47787088bae17d12c5a1a5c4de2991cbb57a7521f55b",
       "sourceHash": "2078f666dfbb04a68ae070f8a0e05b28a3bab10a63291bdf880ca91c22cab8ec"
@@ -80144,7 +80144,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06669754",
       "sourceDate": "2026-11-06",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.917945+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "34a3dcce0b8466d01947c87b276b985b5a799f74decde4c0b0618c6df9185726",
       "sourceHash": "38d99e3f8160e3f1a82a5e98d61df4070cffc610e85f9cf1b69d344da6984edd"
@@ -80362,7 +80362,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06087276",
       "sourceDate": "2026-10-06",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.918437+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "2fa4d709951905e2a9d0ca4918c8ba77106be3639c5cb8454af47aa7333c9fe5",
       "sourceHash": "6f8a9572e422fafd94e34bf5d64331e5c8a3c98ebbe3b677461662b3dc753356"
@@ -80580,7 +80580,7 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT02500381",
       "sourceDate": "2025-11-18",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.918829+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "4b0584903dd165d3221205dcfb53375ade50e2d2713fb29f2b09fb3e1d0961cd",
       "sourceHash": "81b0347d979d7e82a5a7631a56335159c6c4b53710040face83dcc3949794576"
@@ -82329,7 +82329,7 @@
       },
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06331299",
       "sourceDate": "2026-10-22",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.920186+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "c0720bb9912e674113391713ecd591fe79e5a27030268f8d4f30cc3fbc4adbf9",
       "sourceHash": "31d6b6a65ebb65d13e7fb8d1762632e53f3159e0fc562645103a1892bc4552c2"
@@ -82480,14 +82480,13 @@
       "protocolAndSap": null,
       "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05662241",
       "sourceDate": "2026-02-04",
-      "retrievedAt": "2026-11-07",
+      "retrievedAt": "2026-11-07T07:24:32.920536+00:00",
       "missingResultsMeaning": "Registry results absence does not negate documented issuer/publication readout.",
       "rawSourceHash": "330b115f72b76996011a35f2750883aac9a553096a0f08c464a63b00f3cebb75",
       "sourceHash": "3ad3b49b631a20f197212ac986da5398d926bb63e1b14f00faa96ec1613b1c66"
     }
   ],
-  "publicationSearchHistory": [],
-  "publicationSearches": [
+  "publicationSearchHistory": [
     {
       "nctId": "NCT05535946",
       "query": "NCT05535946 OR (\"obefazimod\" AND (\"phase 3\" OR \"phase III\"))",
@@ -84935,6 +84934,2522 @@
         "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05662241+OR+%28%22obexelimab%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
       ],
       "retrievedAt": "2026-11-07T06:52:30.690382+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "42233621",
+          "source": "MED",
+          "title": "Obexelimab for the Treatment of IgG4-Related Disease.",
+          "authorString": "Della-Torre E, Baker MC, Zhang W, Perugino CA, Katz G, Tanaka Y, Khosroshahi A, Kleger A, Schleinitz N, Martinez-Valle F, Schulze-Koops H, Nakayamada S, Rebours V, Okazaki K, Dong L, Carruthers M, Chen LYC, Frulloni L, Meysami A, Takahashi H, Kawano M, Liu Y, Saeki T, Ebbo M, Alexander T, González García A, Karadag O, Maślińska M, Quinn SM, Poma A, Wells A, Greene TJ, Stone JH, Culver EL, INDIGO Trial Investigators.",
+          "firstPublicationDate": "2026-06-02",
+          "doi": "10.1056/nejmoa2601337",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1056/NEJMoa2601337"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42233621"
+        },
+        {
+          "id": "41840328",
+          "source": "MED",
+          "title": "Efficacy and Safety of Obexelimab to Treat IgG4-Related Disease: Protocol for a Global, Randomized, Placebo-Controlled Trial.",
+          "authorString": "Culver EL, Baker MC, Della-Torre E, Zhang W, Perugino CA, Wells A, Mamuye A, Quinn SM, Poma A, Greene TJ, Stone JH.",
+          "firstPublicationDate": "2026-03-16",
+          "doi": "10.1007/s40744-026-00835-4",
+          "pmcid": "PMC13198598",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1007/s40744-026-00835-4"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13198598"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13198598?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41840328"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 94,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    }
+  ],
+  "publicationSearches": [
+    {
+      "nctId": "NCT05535946",
+      "query": "NCT05535946 OR (\"obefazimod\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05535946+OR+%28%22obefazimod%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:34.727863+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 46,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT04770753",
+      "query": "NCT04770753 OR (\"mitapivat\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04770753+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04770753+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP8WW%2Byg1Mzg3NTI0Mg%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04770753+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPjhFeyg0ODgzODQ0NQ%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:24:37.579389+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "40544857",
+          "source": "MED",
+          "title": "Mitapivat in adults with non-transfusion-dependent α-thalassaemia or β-thalassaemia (ENERGIZE): a phase 3, international, randomised, double-blind, placebo-controlled trial.",
+          "authorString": "Taher AT, Al-Samkari H, Aydinok Y, Besser M, Boscoe AN, Dahlin JL, De Luna G, Estepp JH, Gheuens S, Gilroy KS, Glenthøj A, Sim Goh A, Iyer V, Kattamis A, Loggetto SR, Morris S, Musallam KM, Osman K, Ricchi P, Salido-Fiérrez E, Sheth S, Tai F, Tevich H, Uhlig K, Urbstonaitis R, Viprakasit V, Cappellini MD, Kuo KHM, ENERGIZE investigators.",
+          "firstPublicationDate": "2025-06-19",
+          "doi": "10.1016/s0140-6736(25)00635-x",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/S0140-6736(25)00635-X"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/40544857"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 152,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT04770779",
+      "query": "NCT04770779 OR (\"mitapivat\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04770779+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04770779+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP8WW%2Byg1Mzg3NTI0Mg%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04770779+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPjhFeyg0ODgzODQ0NQ%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:24:37.590629+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "42721980",
+          "source": "MED",
+          "title": "Efficacy and safety of mitapivat in adults with transfusion-dependent α-thalassaemia or β-thalassaemia (ENERGIZE-T): a double-blind, randomised, multicentre, placebo-controlled, phase 3 trial.",
+          "authorString": "Cappellini MD, Sheth S, Taher A, Al-Samkari H, Antmen AB, Beneitez D, Cannas G, Coates T, Czapla L, Dahlin JL, Estepp JH, Feenstra E, Georgiev P, Gheuens S, Price GM, Glenthøj A, Musallam KM, Osman K, Porter JB, Shao H, Uhlig K, van Beers EJ, Viprakasit V, Kuo KHM, Kattamis A, ENERGIZE-T Investigators.",
+          "firstPublicationDate": "2026-09-01",
+          "doi": "10.1016/s0140-6736(26)00874-3",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/S0140-6736(26)00874-3"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42721980"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 152,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05031780",
+      "query": "NCT05031780 OR (\"mitapivat\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05031780+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05031780+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP8yfdCg1MjEwOTczMw%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05031780+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPjhFeyg0ODgzODQ0NQ%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:24:37.592925+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "42913682",
+          "source": "MED",
+          "title": "Efficacy and safety of mitapivat in patients with sickle cell disease (RISE UP): a phase 3, double-blind, global, randomised, placebo-controlled trial.",
+          "authorString": "Andemariam B, Kuo KHM, Algahtani FH, Al Kindi S, Ataga KI, Bartolucci P, Campbell A, Colombatti R, Glaros AK, Hafraoui K, Idowu M, Jacob SA, Lobo CLC, Nnodu OE, Otieno L, Smith WR, Thein SL, van Beers EJ, Gheuens S, Hensley B, Oluyadi A, Osman K, Pathan A, Patil S, Song T, Yates AM, Zaidi AU, Minniti C, Abboud MR, RISE UP Investigators.",
+          "firstPublicationDate": "2026-10-01",
+          "doi": "10.1016/s0140-6736(26)01480-7",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/S0140-6736(26)01480-7"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42913682"
+        },
+        {
+          "id": "41809202",
+          "source": "MED",
+          "title": "Long-term mitapivat treatment is safe and efficacious in patients with sickle cell disease.",
+          "authorString": "Conrey A, Asomaning N, Frey I, Charles RP, Lovins D, Xu JZ, Mendez-Marti S, Le K, Kruah B, Li Q, Dunkelberger E, Cellmer T, Yates A, Wind-Rotolo M, Huston C, Jeffries N, Eaton WA, Thein SL.",
+          "firstPublicationDate": "2025-09-11",
+          "doi": "10.1016/j.brci.2025.100014",
+          "pmcid": "PMC12970942",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/j.brci.2025.100014"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12970942"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12970942?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41809202"
+        },
+        {
+          "id": "39644907",
+          "source": "MED",
+          "title": "Safety and efficacy of mitapivat in sickle cell disease (RISE UP): results from the phase 2 portion of a global, double-blind, randomised, placebo-controlled trial.",
+          "authorString": "Idowu M, Otieno L, Dumitriu B, Lobo CLC, Thein SL, Andemariam B, Nnodu OE, Inati A, Glaros AK, Bartolucci P, Colombatti R, Taher AT, Abboud MR, Darbari D, Ataga KI, Antmen AB, Kuo KHM, de Souza Medina S, Oluyadi A, Iyer V, Morris S, Yates AM, Shao H, Patil S, Urbstonaitis R, Zaidi AU, Gheuens S, Smith WR.",
+          "firstPublicationDate": "2024-12-04",
+          "doi": "10.1016/s2352-3026(24)00319-3",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/S2352-3026(24)00319-3"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/39644907"
+        },
+        {
+          "id": "37934880",
+          "source": "MED",
+          "title": "One-year safety and efficacy of mitapivat in sickle cell disease: follow-up results of a phase 2, open-label study.",
+          "authorString": "van Dijk MJ, Rab MAE, van Oirschot BA, Bos J, Derichs C, Rijneveld AW, Cnossen MH, Nur E, Biemond BJ, Bartels M, Jans JJM, van Solinge WW, Schutgens REG, van Wijk R, van Beers EJ.",
+          "firstPublicationDate": "2023-12-01",
+          "doi": "10.1182/bloodadvances.2023011477",
+          "pmcid": "PMC10761354",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1182/bloodadvances.2023011477"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC10761354"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC10761354?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/37934880"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 155,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05144256",
+      "query": "NCT05144256 OR (\"mitapivat\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05144256+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05144256+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP7vUUCg0NDA2NTYxOQ%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05144256+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPjhFeyg0ODgzODQ0NQ%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:24:37.494767+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 150,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05175105",
+      "query": "NCT05175105 OR (\"mitapivat\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05175105+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05175105+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP7vUUCg0NDA2NTYxOQ%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05175105+OR+%28%22mitapivat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPjhFeyg0ODgzODQ0NQ%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:24:38.041698+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 150,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT06747468",
+      "query": "NCT06747468 OR (\"avexitide\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06747468+OR+%28%22avexitide%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:38.631504+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 17,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05453968",
+      "query": "NCT05453968 OR (\"berotralstat\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05453968+OR+%28%22berotralstat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05453968+OR+%28%22berotralstat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP6HZtSg0NDQ1ODU0MA%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05453968+OR+%28%22berotralstat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPr1o4yg0NjYwNzExMQ%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:24:48.344055+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "40716738",
+          "source": "MED",
+          "title": "Oral berotralstat for hereditary angioedema prophylaxis in patients aged 2 to &lt;12 years: APeX-P interim results.",
+          "authorString": "Bernatoniene J, Bourgoin-Heck M, Cancian M, Yang W, Hagin D, Pagnier A, Stobiecki M, Kinaciyan T, Phillips-Angles E, Gayet S, Bara NA, Hunter J, Mateescu E, DeSpirito M, Johnston D, Long D, Iocca H, Petroni D, Aygören-Pürsün E.",
+          "firstPublicationDate": "2025-07-25",
+          "doi": "10.1016/j.anai.2025.07.012",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/j.anai.2025.07.012"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/40716738"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 131,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT06445023",
+      "query": "NCT06445023 OR (\"barzolvolimab\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06445023+OR+%28%22barzolvolimab%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:39.273529+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 80,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT06455202",
+      "query": "NCT06455202 OR (\"barzolvolimab\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06455202+OR+%28%22barzolvolimab%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:45.671219+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 81,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05711940",
+      "query": "NCT05711940 OR (\"COMP360\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05711940+OR+%28%22COMP360%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:46.503814+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 42,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05257408",
+      "query": "NCT05257408 OR (\"relacorilant\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05257408+OR+%28%22relacorilant%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05257408+OR+%28%22relacorilant%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP6eL6Cg0OTIyMDQ2MQ%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05257408+OR+%28%22relacorilant%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPna5yCgzOTk3MzA3NQ%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:24:42.890146+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "41974149",
+          "source": "MED",
+          "title": "Overall survival with relacorilant and nab-paclitaxel in patients with platinum-resistant ovarian cancer (ROSELLA): a phase 3 randomised controlled trial.",
+          "authorString": "Lorusso D, Gladieff L, O'Malley DM, Kim JW, Garbaos G, Fagotti A, Gilbert L, Mileshkin L, Quesada S, Hopp E, Lee YJ, Oaknin A, Scaranti M, Kim BG, Clamp A, Prillaman C, Diakos C, Bagaméri A, Leiser AL, Salutari V, Monk BJ, Follana P, McClung E, Carbone V, Slomovitz B, Giudice E, Cannizzaro MC, Gavoille L, Devaux A, Scollo P, Scandurra G, Cassani C, Artioli G, Van Gorp T, Santaballa A, Dreiling LK, Kesner-Hays A, Tudor IC, Jubb AM, Colombo N, Olawaiye AB.",
+          "firstPublicationDate": "2026-04-10",
+          "doi": "10.1016/s0140-6736(26)00462-9",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/S0140-6736(26)00462-9"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41974149"
+        },
+        {
+          "id": "40473448",
+          "source": "MED",
+          "title": "Relacorilant and nab-paclitaxel in patients with platinum-resistant ovarian cancer (ROSELLA): an open-label, randomised, controlled, phase 3 trial.",
+          "authorString": "Olawaiye AB, Gladieff L, O'Malley DM, Kim JW, Garbaos G, Salutari V, Gilbert L, Mileshkin L, Devaux A, Hopp E, Lee YJ, Oaknin A, Scaranti M, Kim BG, Colombo N, McCollum ME, Diakos C, Clamp A, Leiser AL, Balázs B, Monk BJ, Scandurra G, McClung E, Kaczmarek E, Slomovitz B, De La Cueva H, de Carvalho Calabrich AF, Cassani C, You B, Van Gorp T, Churruca C, Caruso G, Nicum S, Bagaméri A, Artioli G, Bodnar L, Kang S, Vergote I, Kesner-Hays A, Pashova HI, Pai SG, Tudor IC, Jubb AM, Lorusso D.",
+          "firstPublicationDate": "2025-06-02",
+          "doi": "10.1016/s0140-6736(25)01040-2",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/S0140-6736(25)01040-2"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/40473448"
+        },
+        {
+          "id": "39032926",
+          "source": "MED",
+          "title": "Clinical Trial Protocol for ROSELLA: a phase 3 study of relacorilant in combination with nab-paclitaxel versus nab-paclitaxel monotherapy in advanced platinum-resistant ovarian cancer.",
+          "authorString": "Olawaiye AB, Kim JW, Bagameri A, Bishop E, Chudecka-Głaz A, Devaux A, Gladieff L, Gordinier ME, Korach J, McCollum ME, Mileshkin L, Monk BJ, Nicum S, Nogueira-Rodrigues A, Oaknin A, O'Malley DM, Orlando M, Dreiling L, Tudor IC, Lorusso D.",
+          "firstPublicationDate": "2024-07-01",
+          "doi": "10.3802/jgo.2024.35.e111",
+          "pmcid": "PMC11262895",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.3802/jgo.2024.35.e111"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC11262895"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC11262895?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/39032926"
+        },
+        {
+          "id": "37364223",
+          "source": "MED",
+          "title": "Relacorilant + Nab-Paclitaxel in Patients With Recurrent, Platinum-Resistant Ovarian Cancer: A Three-Arm, Randomized, Controlled, Open-Label Phase II Study.",
+          "authorString": "Colombo N, Van Gorp T, Matulonis UA, Oaknin A, Grisham RN, Fleming GF, Olawaiye AB, Nguyen DD, Greenstein AE, Custodio JM, Pashova HI, Tudor IC, Lorusso D.",
+          "firstPublicationDate": "2023-06-26",
+          "doi": "10.1200/jco.22.02624",
+          "pmcid": "PMC10602497",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1200/JCO.22.02624"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC10602497"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC10602497?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/37364223"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 140,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT06081894",
+      "query": "NCT06081894 OR (\"aficamten\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06081894+OR+%28%22aficamten%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06081894+OR+%28%22aficamten%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIQCiyWCg1Mzk3MzMwMA%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06081894+OR+%28%22aficamten%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPr8xVig1MTc2NjA5Ng%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:24:44.280290+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "42663111",
+          "source": "MED",
+          "title": "Global Efficacy of Aficamten in Nonobstructive Hypertrophic Cardiomyopathy: Results From ACACIA-HCM.",
+          "authorString": "Maron MS, Masri A, Bhatia A, Peña-Peña ML, Sherrid MV, Figueiredo EL, Arad M, Choudhury L, Claggett BL, Coats CJ, de Barros Correia E, Costabel JP, Elliott PM, Silva Enciso JE, Ge J, Ho CY, Kulac I, Lewis GD, Martinez MW, Maurer MS, Michels M, Mitter SS, Pino Moreno JE, Olivotto I, Owens AT, Poulsen SH, Rader F, Rowin EJ, Schulze PC, Sepp R, Sikand N, Solomon SD, Spertus JA, Zhao X, Divanji PH, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Salazar-Mendiguchía J, Wohltman A, Zhuo S, Barriales-Villa R, ACACIA-HCM Investigators.",
+          "firstPublicationDate": "2026-08-28",
+          "doi": "10.1161/circulationaha.126.082026",
+          "pmcid": "PMC13674601",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1161/CIRCULATIONAHA.126.082026"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13674601"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13674601?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42663111"
+        },
+        {
+          "id": "42667274",
+          "source": "MED",
+          "title": "Effect of Aficamten on Cardiac Structure and Function in Patients With Symptomatic Nonobstructive Hypertrophic Cardiomyopathy.",
+          "authorString": "Hegde SM, Wang X, Bhatia A, Peña-Peña ML, Sherrid MV, Figueiredo EL, Arad M, Barriales-Villa R, Choudhury L, Claggett BL, Coats CJ, de Barros Correia E, Costabel JP, Elliott PM, Silva Enciso JE, Garcia-Pavia P, Ge J, Ho CY, Lakdawala NK, Lewis GD, Maron MS, Martinez MW, Masri A, Maurer MS, Michels M, Mitter SS, Pino Moreno JE, Nagy V, Olivotto I, Owens AT, Poulsen SH, Rader F, Rowin EJ, Ruda M, Schulze PC, Sikand N, Spertus JA, Zhao X, Divanji PH, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Salazar-Mendiguchía J, Wohltman A, Zhuo S, Solomon SD, ACACIA-HCM Investigators.",
+          "firstPublicationDate": "2026-08-29",
+          "doi": "10.1161/circulationaha.126.082343",
+          "pmcid": "PMC13674599",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1161/CIRCULATIONAHA.126.082343"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13674599"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13674599?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42667274"
+        },
+        {
+          "id": "42663312",
+          "source": "MED",
+          "title": "Aficamten for Symptomatic Nonobstructive Hypertrophic Cardiomyopathy.",
+          "authorString": "Masri A, Maron MS, Bhatia A, Peña-Peña ML, Sherrid MV, Figueiredo EL, Arad M, Barriales-Villa R, Choudhury L, Claggett BL, Coats CJ, Correia EB, Costabel JP, Elliott PM, Silva Enciso JE, Garcia-Pavia P, Ge J, Hegde SM, Lewis GD, Lopes RD, Martinez MW, Maurer MS, Miao ZM, Michels M, Mitter SS, Pino Moreno JE, Olivotto I, Owens AT, Poulsen SH, Rader F, Rowin EJ, Schulze PC, Sepp R, Sikand N, Solomon SD, Spertus JA, Teale C, Zhao X, Divanji PH, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Salazar-Mendiguchía J, Wohltman A, Zhuo S, Ho CY, ACACIA-HCM Investigators.",
+          "firstPublicationDate": "2026-08-28",
+          "doi": "10.1056/nejmoa2603021",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1056/NEJMoa2603021"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42663312"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 186,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT02598661",
+      "query": "NCT02598661 OR (\"imetelstat\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT02598661+OR+%28%22imetelstat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT02598661+OR+%28%22imetelstat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP%2Ftm6Cg0ODQ2OTAzMA%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT02598661+OR+%28%22imetelstat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP5nOnigzNzQyOTE4Mw%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT02598661+OR+%28%22imetelstat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPxn7CCg0MTI1NDM2Ng%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT02598661+OR+%28%22imetelstat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPjzLzigzMDQ0ODI5Mw%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT02598661+OR+%28%22imetelstat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPRbpxygyODUyOTQ4Ng%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:24:53.431843+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "41568521",
+          "source": "MED",
+          "title": "Imetelstat improves patient-reported outcomes and quality of life in lower-risk myelodysplastic syndromes: results from the phase III IMerge study.",
+          "authorString": "Sekeres MA, Zeidan AM, Santini V, Komrokji RS, Fenaux P, Savona MR, Madanat YF, Valcárcel D, Regnault A, Creel K, Sun L, Wan Y, Navada S, Berry T, Feller F, Platzbecker U, Díez-Campelo M, Oliva EN.",
+          "firstPublicationDate": "2026-01-22",
+          "doi": "10.3324/haematol.2025.288956",
+          "pmcid": "PMC13317827",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.3324/haematol.2025.288956"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13317827"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13317827?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41568521"
+        },
+        {
+          "id": "41390988",
+          "source": "MED",
+          "title": "No Effect of Immunogenicity on Pharmacokinetics, Efficacy, and Safety of the Oligonucleotide Telomerase Inhibitor Imetelstat in Lower-Risk Myelodysplastic Syndromes.",
+          "authorString": "Lennox AL, Huang F, González-Sales M, Wan Y, Sun L, Berry T, Feller F, Morcos PN.",
+          "firstPublicationDate": "2025-12-01",
+          "doi": "10.1111/cts.70431",
+          "pmcid": "PMC12702135",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1111/cts.70431"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12702135"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12702135?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41390988"
+        },
+        {
+          "id": "41526614",
+          "source": "MED",
+          "title": "Modulation of the clonal burden in patients with lower-risk myelodysplastic neoplasms treated with imetelstat.",
+          "authorString": "Santini V, Zeidan AM, Van Eygen K, Fenaux P, Germing U, Madanat YF, Raza A, Savona MR, Sekeres MA, Thépot S, Raddi MG, Boyer T, Sun L, Wan Y, Berry T, Xia Q, Huang F, Dougherty S, Navada S, Feller F, Komrokji RS, Platzbecker U.",
+          "firstPublicationDate": "2026-01-12",
+          "doi": "10.1038/s41375-025-02831-z",
+          "pmcid": "PMC12875879",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1038/s41375-025-02831-z"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12875879"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12875879?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41526614"
+        },
+        {
+          "id": "38048786",
+          "source": "MED",
+          "title": "Imetelstat in patients with lower-risk myelodysplastic syndromes who have relapsed or are refractory to erythropoiesis-stimulating agents (IMerge): a multinational, randomised, double-blind, placebo-controlled, phase 3 trial.",
+          "authorString": "Platzbecker U, Santini V, Fenaux P, Sekeres MA, Savona MR, Madanat YF, Díez-Campelo M, Valcárcel D, Illmer T, Jonášová A, Bělohlávková P, Sherman LJ, Berry T, Dougherty S, Shah S, Xia Q, Sun L, Wan Y, Huang F, Ikin A, Navada S, Feller F, Komrokji RS, Zeidan AM.",
+          "firstPublicationDate": "2023-12-01",
+          "doi": "10.1016/s0140-6736(23)01724-5",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/S0140-6736(23)01724-5"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/38048786"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 409,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT04768972",
+      "query": "NCT04768972 OR (\"ulefnersen\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04768972+OR+%28%22ulefnersen%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:52.484384+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 90,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT04849741",
+      "query": "NCT04849741 OR (\"zilganersen\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04849741+OR+%28%22zilganersen%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:46.923484+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 25,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05392114",
+      "query": "NCT05392114 OR (\"donidalorsen\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05392114+OR+%28%22donidalorsen%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:54.234265+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "41767175",
+          "source": "MED",
+          "title": "Donidalorsen for Long-Term Prophylaxis of Hereditary Angioedema Attacks: Results from the OASISplus Open-Label Extension Cohort at Year 1.",
+          "authorString": "Lumry WR, Tachdjian R, Craig T, Karakaya G, Gelincik A, Stobiecki M, Jacobs JS, Gokmen NM, Reshef A, Manning ME, Grammatikos A, Giardino F, Guilarte M, Baptist AP, Bordone L, Newman KB, Treadwell S, Lin T, Yarlas A, Riedl MA, Cohn DM.",
+          "firstPublicationDate": "2026-02-23",
+          "doi": "10.2147/jaa.s592079",
+          "pmcid": "PMC12948764",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.2147/JAA.S592079"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12948764"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12948764?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41767175"
+        },
+        {
+          "id": "40673861",
+          "source": "MED",
+          "title": "Donidalorsen Treatment of Hereditary Angioedema in Patients Previously on Long-Term Prophylaxis.",
+          "authorString": "Riedl MA, Bernstein JA, Jacobs JS, Craig T, Banerji A, Perego F, Lumry WR, Wedner HJ, Gierer S, Manning ME, Bordone L, Treadwell S, Lin T, Newman KB, Yarlas A, Cohn DM.",
+          "firstPublicationDate": "2025-07-17",
+          "doi": "10.1016/j.jaip.2025.06.018",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/j.jaip.2025.06.018"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/40673861"
+        },
+        {
+          "id": "41830315",
+          "source": "MED",
+          "title": "Switching Long-Term Prophylaxis to Donidalorsen for Hereditary Angioedema: 1-Year OASISplus Results.",
+          "authorString": "Riedl MA, Bernstein JA, Jacobs JS, Craig T, Lumry WR, Wedner HJ, Banerji A, Gierer S, Smith A, Manning ME, Perego F, Bordone L, Treadwell S, Lin T, Newman KB, Yarlas A, Cohn DM.",
+          "firstPublicationDate": "2026-03-14",
+          "doi": "10.1111/all.70294",
+          "pmcid": "PMC13466153",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1111/all.70294"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13466153"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13466153?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41830315"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 82,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT06641076",
+      "query": "NCT06641076 OR (\"sonelokimab\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06641076+OR+%28%22sonelokimab%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:48.711452+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 85,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05210790",
+      "query": "NCT05210790 OR (\"rusfertide\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05210790+OR+%28%22rusfertide%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:55.969239+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "36728649",
+          "source": "MED",
+          "title": "Hepcidin mimetics in polycythemia vera: resolving the irony of iron deficiency and erythrocytosis.",
+          "authorString": "Handa S, Ginzburg Y, Hoffman R, Kremyanskaya M.",
+          "firstPublicationDate": "2022-12-29",
+          "doi": "10.1097/moh.0000000000000747",
+          "pmcid": "PMC9908837",
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1097/MOH.0000000000000747"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC9908837"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC9908837?pdf=render"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1097/moh.0000000000000747"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/36728649"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 45,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05774756",
+      "query": "NCT05774756 OR (\"setmelanotide\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05774756+OR+%28%22setmelanotide%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05774756+OR+%28%22setmelanotide%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIQAk6LCg0NzI0MjQyNw%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05774756+OR+%28%22setmelanotide%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP5jP8Cg1MjQ1MjE4MQ%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05774756+OR+%28%22setmelanotide%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPwNQ5yg0MzI3MTI1OA%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05774756+OR+%28%22setmelanotide%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPT15Jyg1NDE1MjU3Mg%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:24:57.181930+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "42418774",
+          "source": "MED",
+          "title": "Setmelanotide for the Treatment of Acquired Hypothalamic Obesity.",
+          "authorString": "Miller JL, van Santen HM, Phillips SA, Hamilton J, Aberle J, Sathyapalan T, Mohamed Z, McCormack SE, Shoemaker AH, Kelsey MM, Ghalib L, Stalla G, Thaker VV, Habiby R, Ode KL, Wabitsch M, Dattani M, Abuzzahab MJ, Abdullatif H, Morgan R, Stefater-Richards M, Aroda VR, Friedrich C, Han JC, Ono H, Nagasaki K, Tanaka T, Isojima T, Arima H, Scimia C, Yuan G, Müller HL, Roth CL, TRANSCEND Trial Group.",
+          "firstPublicationDate": "2026-07-01",
+          "doi": "10.1056/nejmoa2512275",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1056/NEJMoa2512275"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42418774"
+        },
+        {
+          "id": "42821228",
+          "source": "MED",
+          "title": "Measuring Hunger Severity in Rare MC4R Pathway Diseases: Development and Psychometric Evaluation of the Most Hunger Item.",
+          "authorString": "Clément K, Roth CL, Kühnen P, Haqq AM, Mallya UG, Ervin C, Norcross L, Bhargava S, Argente J, Miller JL.",
+          "firstPublicationDate": "2026-10-01",
+          "doi": "10.1007/s12325-026-03741-x",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1007/s12325-026-03741-x"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42821228"
+        },
+        {
+          "id": "42528856",
+          "source": "MED",
+          "title": "Quality of life improvements with setmelanotide treatment in acquired hypothalamic obesity: TRANSCEND trial interview results from US participants.",
+          "authorString": "Roth CL, Phillips SA, McCormack SE, Ode KL, Kelsey MM, Liu J, Ervin C, Mallya UG, Norcross L, Miller JL.",
+          "firstPublicationDate": "2026-07-15",
+          "doi": "10.3389/fnbeh.2026.1830070",
+          "pmcid": "PMC13415934",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.3389/fnbeh.2026.1830070"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13415934"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13415934?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42528856"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 328,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT04544293",
+      "query": "NCT04544293 OR (\"molgramostim\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04544293+OR+%28%22molgramostim%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:54.387892+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "40834301",
+          "source": "MED",
+          "title": "Phase 3 Trial of Inhaled Molgramostim in Autoimmune Pulmonary Alveolar Proteinosis.",
+          "authorString": "Trapnell BC, Inoue Y, Bonella F, Wang T, McCarthy C, Arai T, Akasaka K, Mariani F, Mogulkoc N, Song JW, Baba T, Jouneau S, Numakura T, Öcal N, Mihaltan F, Ataya A, Bendstrup E, Campo I, Carey B, Arena R, Robinson B, Fleming R, Wasfi Y, Pratt R, IMPALA-2 Trial Investigators.",
+          "firstPublicationDate": "2025-08-01",
+          "doi": "10.1056/nejmoa2410542",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1056/NEJMoa2410542"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/40834301"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 80,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05243550",
+      "query": "NCT05243550 OR (\"UGN-102\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05243550+OR+%28%22UGN-102%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:54.915864+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "41880645",
+          "source": "MED",
+          "title": "UGN-102 for Recurrent Low-Grade Intermediate-Risk Nonmuscle-Invasive Bladder Cancer: 24-Month Duration of Response Results From the Phase 3 ENVISION Trial.",
+          "authorString": "Prasad SM, Shishkov D, Mihaylov NV, Genov P, Terzi V, Kates M, Huang WC, Louie MJ, Burger B, Meads A, Schoenberg M.",
+          "firstPublicationDate": "2026-03-25",
+          "doi": "10.1097/ju.0000000000005041",
+          "pmcid": "PMC13361955",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1097/JU.0000000000005041"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13361955"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13361955?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41880645"
+        },
+        {
+          "id": "40048558",
+          "source": "MED",
+          "title": "Perceived Impact on Patient Routines/Responsibilities for Surgery and a Nonsurgical Primary Treatment Option in Recurrent Low-Grade Intermediate-Risk Nonmuscle-Invasive Bladder Cancer: Findings From the ENVISION Phase 3 Trial.",
+          "authorString": "Stover AM, Mueller D, Carda-Auten J, Hilton A, Tsurutis V, Smith AB.",
+          "firstPublicationDate": "2025-03-06",
+          "doi": "10.1097/ju.0000000000004511",
+          "pmcid": "PMC12708022",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1097/JU.0000000000004511"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12708022"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12708022?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/40048558"
+        },
+        {
+          "id": "39446087",
+          "source": "MED",
+          "title": "Primary Chemoablation of Recurrent Low-Grade Intermediate-Risk Nonmuscle-Invasive Bladder Cancer With UGN-102: A Single-Arm, Open-Label, Phase 3 Trial (ENVISION).",
+          "authorString": "Prasad SM, Shishkov D, Mihaylov NV, Khuskivadze A, Genov P, Terzi V, Kates M, Huang WC, Louie MJ, Raju S, Burger B, Meads A, Schoenberg M.",
+          "firstPublicationDate": "2024-10-24",
+          "doi": "10.1097/ju.0000000000004296",
+          "pmcid": "PMC12708048",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1097/JU.0000000000004296"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12708048"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12708048?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/39446087"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 46,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT04716231",
+      "query": "NCT04716231 OR (\"atacicept\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04716231+OR+%28%22atacicept%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04716231+OR+%28%22atacicept%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIQAxzrig0ODg0NDc2OQ%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04716231+OR+%28%22atacicept%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP5uc9ig1MzQ0Mjk1MA%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04716231+OR+%28%22atacicept%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPz5WvCgzMzY2NTExOA%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04716231+OR+%28%22atacicept%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPwAH2yg0Mzk1MjQyOA%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04716231+OR+%28%22atacicept%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPmbCXCgzMjAyOTYxNg%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04716231+OR+%28%22atacicept%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPaD21CgzMTY2ODc3MQ%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:25:29.192769+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "42911181",
+          "source": "MED",
+          "title": "Atacicept in IgA Nephropathy - Phase 3 Trial Final Efficacy Analysis.",
+          "authorString": "Barratt J, Brenner RM, Barbour SJ, Campbell KN, Doan T, Eren N, Floege J, Fordyce MW, Jha V, Khawaja Z, Kim BS, Liew A, Maes B, Pal A, Pecoits-Filho R, Phoon RKS, Rizk DV, Suzuki H, Tesař V, Trimarchi H, Wei X, Yu L, Zhang H, Lafayette R, ORIGIN Phase 3 Trial Investigators.",
+          "firstPublicationDate": "2026-10-22",
+          "doi": "10.1056/nejmoa2610103",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1056/NEJMoa2610103"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42911181"
+        },
+        {
+          "id": "41196369",
+          "source": "MED",
+          "title": "A Phase 3 Trial of Atacicept in Patients with IgA Nephropathy.",
+          "authorString": "Lafayette R, Barbour SJ, Brenner RM, Campbell KN, Doan T, Eren N, Floege J, Jha V, Kim BS, Liew A, Maes B, Pal A, Pecoits-Filho R, Phoon RKS, Rizk DV, Suzuki H, Tesař V, Trimarchi H, Wei X, Zhang H, Barratt J, ORIGIN Phase 3 Trial Investigators.",
+          "firstPublicationDate": "2025-11-06",
+          "doi": "10.1056/nejmoa2510198",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1056/NEJMoa2510198"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41196369"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 527,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05507203",
+      "query": "NCT05507203 OR (\"obefazimod\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05507203+OR+%28%22obefazimod%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:55.634182+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 47,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05507216",
+      "query": "NCT05507216 OR (\"obefazimod\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05507216+OR+%28%22obefazimod%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:56.103450+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 46,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT04576949",
+      "query": "NCT04576949 OR (\"cytisinicline\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04576949+OR+%28%22cytisinicline%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:56.821947+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "40962497",
+          "source": "MED",
+          "title": "Cytisinicline for smoking cessation in individuals with self-reported COPD: a post hoc analysis of the ORCA-2 and ORCA-3 trials.",
+          "authorString": "Prochaska J, Rubinstein M, Perdok R, Blumenstein B, Jacobs C.",
+          "firstPublicationDate": "2026-01-15",
+          "doi": "10.1136/thorax-2025-223880",
+          "pmcid": "PMC12911654",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1136/thorax-2025-223880"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12911654"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12911654?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/40962497"
+        },
+        {
+          "id": "37432430",
+          "source": "MED",
+          "title": "Cytisinicline for Smoking Cessation: A Randomized Clinical Trial.",
+          "authorString": "Rigotti NA, Benowitz NL, Prochaska J, Leischow S, Nides M, Blumenstein B, Clarke A, Cain D, Jacobs C.",
+          "firstPublicationDate": "2023-07-01",
+          "doi": "10.1001/jama.2023.10042",
+          "pmcid": "PMC10336611",
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1001/jama.2023.10042"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC10336611"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1001/jama.2023.10042"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/37432430"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 18,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05206370",
+      "query": "NCT05206370 OR (\"cytisinicline\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05206370+OR+%28%22cytisinicline%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:57.021834+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "40962497",
+          "source": "MED",
+          "title": "Cytisinicline for smoking cessation in individuals with self-reported COPD: a post hoc analysis of the ORCA-2 and ORCA-3 trials.",
+          "authorString": "Prochaska J, Rubinstein M, Perdok R, Blumenstein B, Jacobs C.",
+          "firstPublicationDate": "2026-01-15",
+          "doi": "10.1136/thorax-2025-223880",
+          "pmcid": "PMC12911654",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1136/thorax-2025-223880"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12911654"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12911654?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/40962497"
+        },
+        {
+          "id": "40257755",
+          "source": "MED",
+          "title": "Cytisinicline for Smoking Cessation: The ORCA Phase 3 Replication Randomized Clinical Trial.",
+          "authorString": "Rigotti NA, Benowitz NL, Prochaska JJ, Rubinstein M, Clarke A, Blumenstein B, Cain DF, Jacobs C.",
+          "firstPublicationDate": "2025-06-01",
+          "doi": "10.1001/jamainternmed.2025.0628",
+          "pmcid": "PMC12012700",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Unpaywall",
+                "url": "https://jamanetwork.com/journals/jamainternalmedicine/articlepdf/2832701/jamainternal_rigotti_2025_oi_250013_1744835767.82539.pdf"
+              },
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1001/jamainternmed.2025.0628"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12012700"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/40257755"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 18,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05811247",
+      "query": "NCT05811247 OR (\"AD109\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05811247+OR+%28%22AD109%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:57.395187+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "41050845",
+          "source": "MED",
+          "title": "Aroxybutynin and atomoxetine (AD109) for the treatment of obstructive sleep apnea: Rationale, design and baseline characteristics of the phase 3 clinical trials.",
+          "authorString": "Taranto-Montemurro L, Patel SR, Strollo PJ, Cronin J, Yee J, Pho H, Werner A, Farkas R.",
+          "firstPublicationDate": "2025-08-17",
+          "doi": "10.1016/j.conctc.2025.101538",
+          "pmcid": "PMC12490522",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/j.conctc.2025.101538"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12490522"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12490522?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41050845"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 32,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05813275",
+      "query": "NCT05813275 OR (\"AD109\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05813275+OR+%28%22AD109%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:57.968688+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "42247851",
+          "source": "MED",
+          "title": "Content validity and clinically meaningful change on patient-reported outcome measures for use in obstructive sleep apnea.",
+          "authorString": "Ojile JM, Yu KS, Farkas R, Colwell HH, Mathias SD, Cronin J.",
+          "firstPublicationDate": "2026-05-29",
+          "doi": "10.1016/j.sleep.2026.109041",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/j.sleep.2026.109041"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42247851"
+        },
+        {
+          "id": "42148495",
+          "source": "MED",
+          "title": "Aroxybutynin and atomoxetine (AD109) for obstructive sleep apnea: a randomized phase 3 trial (SynAIRgy).",
+          "authorString": "Strollo PJ, Farkas R, Taranto-Montemurro L, Cronin J, Patel SR, SynAIRgy Investigators.",
+          "firstPublicationDate": "2026-07-01",
+          "doi": "10.1093/ajrccm/aamag215",
+          "pmcid": "PMC13318230",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1093/ajrccm/aamag215"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13318230"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13318230?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42148495"
+        },
+        {
+          "id": "41050845",
+          "source": "MED",
+          "title": "Aroxybutynin and atomoxetine (AD109) for the treatment of obstructive sleep apnea: Rationale, design and baseline characteristics of the phase 3 clinical trials.",
+          "authorString": "Taranto-Montemurro L, Patel SR, Strollo PJ, Cronin J, Yee J, Pho H, Werner A, Farkas R.",
+          "firstPublicationDate": "2025-08-17",
+          "doi": "10.1016/j.conctc.2025.101538",
+          "pmcid": "PMC12490522",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/j.conctc.2025.101538"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12490522"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12490522?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41050845"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 32,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05059223",
+      "query": "NCT05059223 OR (\"reboxetine\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05059223+OR+%28%22reboxetine%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05059223+OR+%28%22reboxetine%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPx5tNigzODgzNDc3NA%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05059223+OR+%28%22reboxetine%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPoCGgCgzNDgwNjQ5NA%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05059223+OR+%28%22reboxetine%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIO3hhZyg0MTY5ODk4OA%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:25:25.815497+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 269,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05113745",
+      "query": "NCT05113745 OR (\"reboxetine\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05113745+OR+%28%22reboxetine%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05113745+OR+%28%22reboxetine%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPx5tNigzODgzNDc3NA%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05113745+OR+%28%22reboxetine%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPoCGgCgzNDgwNjQ5NA%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05113745+OR+%28%22reboxetine%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIO3hhZyg0MTY5ODk4OA%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:25:17.043216+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 269,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05244304",
+      "query": "NCT05244304 OR (\"tinlarebant\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05244304+OR+%28%22tinlarebant%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:24:58.987068+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 41,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05126758",
+      "query": "NCT05126758 OR (\"deramiocel\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05126758+OR+%28%22deramiocel%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:25:05.464398+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "42526472",
+          "source": "MED",
+          "title": "Deramiocel heart-derived cellular therapy in advanced Duchenne muscular dystrophy (HOPE-3): a phase 3, randomised, double-blind, placebo-controlled trial.",
+          "authorString": "McDonald CM, Villa C, Soslow JH, Maharry K, Hogan N, Binks M, Berth KC, Elliott KA, Taylor M, Hor KN, Signorovich J, Henricson EK, Phan HC, Apkon S, Ghosh PS, Tian C, Veerapandiyan A, Ramos-Platt L, Gambetta K, Bernes SM, Varadhachary AS, Iannaccone ST, Laverty CG, Perlman SJ, Bass NE, Mosher K, Butterfield RJ, Mathews KD, Scharf RJ, Smith EC, Emerson JA, Mercuri E, Awadalla MS, Marbán L, Marbán E, HOPE-3 Investigators.",
+          "firstPublicationDate": "2026-07-29",
+          "doi": "10.1016/s0140-6736(26)01385-1",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/S0140-6736(26)01385-1"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42526472"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 19,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05208047",
+      "query": "NCT05208047 OR (\"bezuclastinib\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05208047+OR+%28%22bezuclastinib%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:25:00.519865+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 34,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT03697109",
+      "query": "NCT03697109 OR (\"relacorilant\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT03697109+OR+%28%22relacorilant%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT03697109+OR+%28%22relacorilant%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP6eL6Cg0OTIyMDQ2MQ%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT03697109+OR+%28%22relacorilant%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPna5yCgzOTk3MzA3NQ%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:25:10.314007+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "41730814",
+          "source": "MED",
+          "title": "Efficacy and safety of relacorilant for the treatment of patients with Cushing's syndrome (GRACE): a multicentre, phase 3, double-blind, placebo-controlled, randomised-withdrawal study.",
+          "authorString": "Pivonello R, Arnaldi G, Auchus RJ, Badiu C, Busch RS, Cannavò S, Dischinger U, Dobri GA, Donegan DM, Elenkova A, Fazeli PK, Feelders RA, Garcia-Centeno R, Gilis-Januszewska A, Hamidi O, Hannoush ZC, Kargi AY, Miller HJ, Ranetti AE, Recasens M, Reincke M, Rovner S, Salvatori R, Silverstein J, Stigliano A, Terzolo M, Wang C, Yuen KCJ, Kesner-Hays A, Hand AL, Tudor IC, Araque KA, Moraitis AG, GRACE Study Investigators.",
+          "firstPublicationDate": "2026-02-20",
+          "doi": "10.1016/s2213-8587(25)00362-6",
+          "pmcid": "PMC13220893",
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/S2213-8587(25)00362-6"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13220893"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13220893?pdf=render"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/s2213-8587(25)00362-6"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41730814"
+        },
+        {
+          "id": "PMC9627723",
+          "source": "PMC",
+          "title": "PMON165 Favorable Liver Safety Profile of the Selective Glucocorticoid Receptor Modulator Relacorilant in Healthy and Hepatically Impaired Adults and in Patients with Cushing Syndrome",
+          "authorString": null,
+          "firstPublicationDate": "2022-11-01",
+          "doi": null,
+          "pmcid": "PMC9627723",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "html",
+                "site": "PubMedCentral",
+                "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9627723/?tool=EBI"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "pdf",
+                "site": "PubMedCentral",
+                "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9627723/pdf/?tool=EBI"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC9627723"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC9627723?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/PMC/PMC9627723"
+        },
+        {
+          "id": "35058882",
+          "source": "MED",
+          "title": "Glucocorticoid Receptor Antagonism Upregulates Somatostatin Receptor Subtype 2 Expression in ACTH-Producing Neuroendocrine Tumors: New Insight Based on the Selective Glucocorticoid Receptor Modulator Relacorilant.",
+          "authorString": "Pivonello R, Munster PN, Terzolo M, Ferrigno R, Simeoli C, Puglisi S, Bali U, Moraitis AG.",
+          "firstPublicationDate": "2022-01-04",
+          "doi": "10.3389/fendo.2021.793262",
+          "pmcid": "PMC8764187",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.3389/fendo.2021.793262"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC8764187"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC8764187?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/35058882"
+        },
+        {
+          "id": "PMC7208039",
+          "source": "PMC",
+          "title": "MON-163 A Phase 3, Double-Blind, Randomized, Placebo-Controlled Study to Assess the Efficacy and Safety of a Selective Glucocorticoid Receptor Modulator, Relacorilant, in Patients with Autonomous Cortisol Secretion Due to Cortisol-Secreting Adrenal Adenoma(s)/Hyperplasia",
+          "authorString": "Auchus R, Grauer A, Moraitis A.",
+          "firstPublicationDate": "2020-05-08",
+          "doi": null,
+          "pmcid": "PMC7208039",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "html",
+                "site": "PubMedCentral",
+                "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7208039/?tool=EBI"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "pdf",
+                "site": "PubMedCentral",
+                "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC7208039/pdf/?tool=EBI"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC7208039"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC7208039?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/PMC/PMC7208039"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 140,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT04308590",
+      "query": "NCT04308590 OR (\"relacorilant\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04308590+OR+%28%22relacorilant%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04308590+OR+%28%22relacorilant%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP6VV1yg0MDA0MTk5OA%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04308590+OR+%28%22relacorilant%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPna5yCgzOTk3MzA3NQ%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:25:16.389161+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "PMC9627723",
+          "source": "PMC",
+          "title": "PMON165 Favorable Liver Safety Profile of the Selective Glucocorticoid Receptor Modulator Relacorilant in Healthy and Hepatically Impaired Adults and in Patients with Cushing Syndrome",
+          "authorString": null,
+          "firstPublicationDate": "2022-11-01",
+          "doi": null,
+          "pmcid": "PMC9627723",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "html",
+                "site": "PubMedCentral",
+                "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9627723/?tool=EBI"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "pdf",
+                "site": "PubMedCentral",
+                "url": "https://www.ncbi.nlm.nih.gov/pmc/articles/PMC9627723/pdf/?tool=EBI"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC9627723"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC9627723?pdf=render"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/PMC/PMC9627723"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 141,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05767346",
+      "query": "NCT05767346 OR (\"aficamten\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05767346+OR+%28%22aficamten%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05767346+OR+%28%22aficamten%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIQDDRLyg1MTQzNjA0Ng%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05767346+OR+%28%22aficamten%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPr8xVig1MTc2NjA5Ng%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:25:13.721959+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "42667283",
+          "source": "MED",
+          "title": "Efficacy of Aficamten vs Metoprolol According to Pretrial Beta-Blocker Treatment in Obstructive Hypertrophic Cardiomyopathy: Insights From MAPLE-HCM.",
+          "authorString": "Dominguez F, Barriales-Villa R, Claggett BL, Dybro A, Ge J, Lakdawala NK, Maron MS, Masri A, Merkely B, Miao ZM, Nair A, Nassif ME, Peña-Peña ML, Schulze PC, Wang A, Hegde SM, Lewis GD, Elliott P, Sohn R, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Berhane I, Wohltman A, Fifer MA, Garcia-Pavia P, MAPLE-HCM Investigators.",
+          "firstPublicationDate": "2026-08-29",
+          "doi": "10.1016/j.jchf.2026.103352",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/j.jchf.2026.103352"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42667283"
+        },
+        {
+          "id": "PPR1267883",
+          "source": "PPR",
+          "title": "The Threshold for a Clinically Meaningful Improvement in Cardiopulmonary Exercise Testing Measures for Patients With Symptomatic Obstructive Hypertrophic Cardiomyopathy",
+          "authorString": "Masri A, Lewis GD, Barriales-Villa R, Claggett BL, Coats CJ, Elliott P, Hagège A, Kulac IJ, Garcia-Pavia P, Fifer MA, Meder B, Olivotto I, Nassif MA, Lakdawala NK, Owens AT, Heitner SB, Jacoby DL, Sohn R, Kupfer S, Malik FI, Wohltman A, Maron MS.",
+          "firstPublicationDate": "2026-03-04",
+          "doi": "10.64898/2026.03.03.26347558",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.64898/2026.03.03.26347558"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/PPR/PPR1267883"
+        },
+        {
+          "id": "42307914",
+          "source": "MED",
+          "title": "Exercise Performance With Aficamten vs Metoprolol in Obstructive Hypertrophic Cardiomyopathy: The MAPLE-HCM Randomized Clinical Trial.",
+          "authorString": "Lewis GD, Garcia-Pavia P, Masri A, Merkely B, Nassif ME, Peña-Peña ML, Barriales-Villa R, Bilen O, Burroughs M, Claggett B, Costabel JP, de Barros Correia E, Dybro AM, Kulac IJ, Lakdawala NK, Mann A, Maron MS, McGinnis S, Nair A, Newlands C, Poulsen SH, Reant P, Schulze PC, Solomon SD, Wang A, Sohn R, Berhane I, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Wohltman A, Fifer MA, Elliott PM, MAPLE-HCM Investigators.",
+          "firstPublicationDate": "2026-08-01",
+          "doi": "10.1001/jamacardio.2026.1730",
+          "pmcid": "PMC13276672",
+          "isOpenAccess": "Y",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1001/jamacardio.2026.1730"
+              },
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC13276672"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42307914"
+        },
+        {
+          "id": "41348072",
+          "source": "MED",
+          "title": "Aficamten in Obstructive Hypertrophic Cardiomyopathy: A Multidomain, Patient-Level Analysis of the MAPLE-HCM Trial.",
+          "authorString": "Wang A, Garcia-Pavia P, Masri A, Merkely B, Nassif ME, Peña-Peña ML, Barriales-Villa R, Bilen O, Burroughs M, Claggett BL, Costabel JP, de Barros Correia E, Dybro A, Elliott P, Hegde SM, Kulac IJ, Lakdawala NK, Lewis GD, Mann A, Nair A, Poulsen SH, Reant P, Schulze PC, Solomon SD, Sohn R, Berhane I, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Wohltman A, Fifer MA, Maron MS, MAPLE-HCM Investigators.",
+          "firstPublicationDate": "2025-11-18",
+          "doi": "10.1016/j.jacc.2025.10.057",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/j.jacc.2025.10.057"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41348072"
+        },
+        {
+          "id": "41493295",
+          "source": "MED",
+          "title": "Effect of Aficamten vs Metoprolol on Patient-Reported Health Status in Obstructive Hypertrophic Cardiomyopathy.",
+          "authorString": "Nassif ME, Garcia-Pavia P, Masri A, Merkely B, Peña-Peña ML, Barriales-Villa R, Bilen O, Burroughs M, Claggett BL, Costabel JP, de Barros Correia E, Dybro AM, Elliott P, Lakdawala NK, Lewis GD, Mann A, Maron MS, Miao ZM, Nair A, Poulsen SH, Reant P, Schulze PC, Solomon SD, Wang A, Sohn R, Berhane I, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Wohltman A, Fifer MA, Spertus JA, MAPLE-HCM Investigators.",
+          "firstPublicationDate": "2025-11-18",
+          "doi": "10.1016/j.jacc.2025.10.059",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/j.jacc.2025.10.059"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/41493295"
+        },
+        {
+          "id": "39909646",
+          "source": "MED",
+          "title": "Aficamten vs Metoprolol for Obstructive Hypertrophic Cardiomyopathy: MAPLE-HCM Rationale, Study Design, and Baseline Characteristics.",
+          "authorString": "Garcia-Pavia P, Bilen O, Burroughs M, Costabel JP, de Barros Correia E, Dybro AM, Elliott P, Lakdawala NK, Mann A, Nair A, Nassif ME, Poulsen SH, Reant P, Schulze PC, Wang A, Berhane I, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Meng L, Sohn R, Wohltman A, Fifer MA, MAPLE-HCM Study Investigators.",
+          "firstPublicationDate": "2025-02-01",
+          "doi": "10.1016/j.jchf.2024.11.011",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Open access",
+                "availabilityCode": "OA",
+                "documentStyle": "doi",
+                "site": "Unpaywall",
+                "url": "https://doi.org/10.1016/j.jchf.2024.11.011"
+              },
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/j.jchf.2024.11.011"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/39909646"
+        },
+        {
+          "id": "40888697",
+          "source": "MED",
+          "title": "Aficamten or Metoprolol Monotherapy for Obstructive Hypertrophic Cardiomyopathy.",
+          "authorString": "Garcia-Pavia P, Maron MS, Masri A, Merkely B, Nassif ME, Peña-Peña ML, Barriales-Villa R, Bilen O, Burroughs M, Claggett B, Costabel JP, Correia EB, Dybro AM, Elliott P, Hegde SM, Lakdawala NK, Lewis GD, Mann A, Miao ZM, Nair A, Poulsen SH, Reant P, Schulze PC, Solomon SD, Wang A, Sohn R, Berhane I, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Wohltman A, Fifer MA, MAPLE-HCM Investigators.",
+          "firstPublicationDate": "2025-08-30",
+          "doi": "10.1056/nejmoa2504654",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1056/NEJMoa2504654"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/40888697"
+        },
+        {
+          "id": "42624353",
+          "source": "MED",
+          "title": "The Threshold for a Clinically Meaningful Improvement in Cardiopulmonary Exercise Testing Measures for Patients With Symptomatic Obstructive Hypertrophic Cardiomyopathy.",
+          "authorString": "Masri A, Lewis GD, Barriales-Villa R, Claggett BL, Coats CJ, Elliott P, Hagège A, Kulac IJ, Garcia-Pavia P, Fifer MA, Meder B, Olivotto I, Nassif MA, Lakdawala NK, Owens AT, Heitner SB, Jacoby DL, Sohn R, Kupfer S, Malik FI, Wohltman A, Maron MS.",
+          "firstPublicationDate": "2026-08-20",
+          "doi": "10.1016/j.cardfail.2026.08.011",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/j.cardfail.2026.08.011"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42624353"
+        },
+        {
+          "id": "PPR1267565",
+          "source": "PPR",
+          "title": "Aficamten in Patients With Obstructive Hypertrophic Cardiomyopathy: An Integrated Safety Analysis",
+          "authorString": "Masri A, Maron MS, Barriales-Villa R, Cooper RM, Elliott P, Fifer MA, Garcia-Pavia P, Owens AT, Solomon SD, Tower-Rader A, Dumitrescu C, Godown J, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Sohn R, Wei J, Saberi S.",
+          "firstPublicationDate": "2026-03-12",
+          "doi": "10.64898/2026.03.06.26347726",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.64898/2026.03.06.26347726"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/PPR/PPR1267565"
+        },
+        {
+          "id": "40932433",
+          "source": "MED",
+          "title": "Effect of Aficamten Compared With Metoprolol on Echocardiographic Measures in Symptomatic Obstructive Hypertrophic Cardiomyopathy: MAPLE-HCM.",
+          "authorString": "Hegde SM, Wang X, Garcia-Pavia P, Getchevski S, Masri A, Merkely B, Nassif ME, Peña-Peña ML, Barriales-Villa R, Bilen O, Burroughs M, Claggett B, Costabel JP, Correia EB, Dybro AM, Elliott P, Lakdawala NK, Mann A, Maron MS, Nair A, Poulsen SH, Reant P, Schulze PC, Wang A, Sohn R, Berhane I, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Wohltman A, Fifer MA, Solomon SD, MAPLE-HCM Investigators.",
+          "firstPublicationDate": "2025-08-27",
+          "doi": "10.1016/j.jacc.2025.08.022",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/j.jacc.2025.08.022"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/40932433"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 187,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT04871282",
+      "query": "NCT04871282 OR (\"varegacestat\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT04871282+OR+%28%22varegacestat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:25:14.858929+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 18,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT06411379",
+      "query": "NCT06411379 OR (\"sonelokimab\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06411379+OR+%28%22sonelokimab%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:25:16.241827+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 85,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT06411899",
+      "query": "NCT06411899 OR (\"sonelokimab\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06411899+OR+%28%22sonelokimab%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:25:17.585207+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 85,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT06153693",
+      "query": "NCT06153693 OR (\"lorundrostat\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06153693+OR+%28%22lorundrostat%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:25:18.259369+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "40587141",
+          "source": "MED",
+          "title": "Lorundrostat in Participants With Uncontrolled Hypertension and Treatment-Resistant Hypertension: The Launch-HTN Randomized Clinical Trial.",
+          "authorString": "Saxena M, Laffin L, Borghi C, Fernandez Fernandez B, Ghali JK, Kopjar B, Polu K, Roger SD, Slingsby BT, Strutz F, Vogt L, Weir MR, Rodman D, Launch-HTN Investigators.",
+          "firstPublicationDate": "2025-08-01",
+          "doi": "10.1001/jama.2025.9413",
+          "pmcid": "PMC12210145",
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1001/jama.2025.9413"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "html",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12210145"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "pdf",
+                "site": "Europe_PMC",
+                "url": "https://europepmc.org/articles/PMC12210145?pdf=render"
+              },
+              {
+                "availability": "Free",
+                "availabilityCode": "F",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1001/jama.2025.9413"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/40587141"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 84,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT06343779",
+      "query": "NCT06343779 OR (\"deucrictibant\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06343779+OR+%28%22deucrictibant%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:25:18.368856+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [
+        {
+          "id": "42849489",
+          "source": "MED",
+          "title": "Oral deucrictibant for on-demand treatment of hereditary angioedema attacks: a phase 3, multicentre, randomised, double-blind, placebo-controlled crossover trial.",
+          "authorString": "Riedl MA, Li PH, Adatia A, Cancian M, Stobiecki M, Valerieva A, Grumach AS, Lumry WR, Soteres DF, Brodszki N, Fili NL, Hakl R, Kang HR, Karakaya G, Kränke B, Li HH, Peter J, Recke A, Tachdjian R, Triggianese P, Zanichelli A, Anderson J, Aygören-Pürsün E, Craig TJ, Farkas H, Giardino F, Giavina-Bianchi P, Kim S, Kinaciyan T, Martinez-Saguer I, Perego F, Sitz KV, Staevska M, Wedner HJ, Zaragoza-Urdaz RH, Zwiener RD, Gelincik A, Arcoleo F, Arnaout R, Baptist AP, de Albuquerque Campos R, Dorr AD, Ferriani MPL, Fukunaga A, Gobert D, Gurugama P, Hide M, Hong DI, Inage E, Jacobs JS, Katelaris CH, Leeman L, Lleonart R, Magerl M, Manning ME, Mano S, Ooka S, Ramos CJ, Liu J, Zhu L, Mendivil J, Katbeh U, Giannattasio G, Crabbé R, Yu M, Lesage A, Lu P, Cohn DM.",
+          "firstPublicationDate": "2026-10-08",
+          "doi": "10.1016/s0140-6736(26)01296-1",
+          "pmcid": null,
+          "isOpenAccess": "N",
+          "fullTextUrlList": {
+            "fullTextUrl": [
+              {
+                "availability": "Subscription required",
+                "availabilityCode": "S",
+                "documentStyle": "doi",
+                "site": "DOI",
+                "url": "https://doi.org/10.1016/S0140-6736(26)01296-1"
+              }
+            ]
+          },
+          "exactNctInAbstract": true,
+          "sourceUrl": "https://europepmc.org/article/MED/42849489"
+        }
+      ],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 27,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT06669754",
+      "query": "NCT06669754 OR (\"deucrictibant\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06669754+OR+%28%22deucrictibant%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:25:27.522913+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 27,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT06087276",
+      "query": "NCT06087276 OR (\"ulixacaltamide\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06087276+OR+%28%22ulixacaltamide%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:25:19.146208+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 8,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT02500381",
+      "query": "NCT02500381 OR (\"casimersen\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT02500381+OR+%28%22casimersen%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT02500381+OR+%28%22casimersen%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIP6n7qCg0OTk2NDIyMg%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT02500381+OR+%28%22casimersen%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPyPZfSg1NDMzNzk0OQ%3D%3D",
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT02500381+OR+%28%22casimersen%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=AoIIPkFVtig0NzM1NjMxOA%3D%3D"
+      ],
+      "retrievedAt": "2026-11-07T07:25:24.476351+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 255,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT06331299",
+      "query": "NCT06331299 OR (\"UGN-103\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT06331299+OR+%28%22UGN-103%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:25:19.814449+00:00",
+      "state": "SEARCH_COMPLETED",
+      "bibliography": [],
+      "note": "A search hit is a lead, not an accepted clinical finding. Match exact NCT or explicit protocol/drug/indication crosswalk before grading.",
+      "totalHits": 2,
+      "otherHitsRetainedIn": "reports/bottom-only-20261107/publication-discovery-ledger.json"
+    },
+    {
+      "nctId": "NCT05662241",
+      "query": "NCT05662241 OR (\"obexelimab\" AND (\"phase 3\" OR \"phase III\"))",
+      "sourceUrls": [
+        "https://www.ebi.ac.uk/europepmc/webservices/rest/search?format=json&resultType=core&query=NCT05662241+OR+%28%22obexelimab%22+AND+%28%22phase+3%22+OR+%22phase+III%22%29%29&pageSize=100&cursorMark=%2A"
+      ],
+      "retrievedAt": "2026-11-07T07:25:21.554732+00:00",
       "state": "SEARCH_COMPLETED",
       "bibliography": [
         {
