@@ -93,7 +93,7 @@ export function sourceObservation(nctId:string,number:number):SourceObservation|
     .filter(outcome=>!/adverse|safety|tolerability|treatment.emergent|serious events|clinical laboratory|vital signs|electrocardiogram|concomitant medication|physical examination abnormalities/i.test(outcome.title))
     .map(outcome=>({nctId:study.nctId,title:outcome.title,
      pValues:(outcome.analyses||[]).filter(a=>a.pValue!==null&&a.pValue!==undefined&&a.pValue!=="")
-       .map(a=>(a.pValueModifier||"")+"p="+a.pValue)}));
+       .map(a=>(a.pValueModifier||"")+"p="+a.pValue)})));
    if(!measured.length)return null;
    const m=measured[0];
    return doc("Earlier candidate same-drug and same-condition Phase 2 registry has posted "+
@@ -109,7 +109,7 @@ export function sourceObservation(nctId:string,number:number):SourceObservation|
    const measured=prior.flatMap(study=>(study.registeredResults?.primary||[])
     .filter(outcome=>!/adverse|safety|tolerability|treatment.emergent|serious events|clinical laboratory|vital signs|electrocardiogram|concomitant medication|physical examination abnormalities/i.test(outcome.title))
     .filter(outcome=>/week\s*(?:2[4-9]|[3-9]\d|\d{3})\b|month\s*(?:[6-9]|\d{2})\b|\b(?:6|9|12|18|24)\s+months?\b/i.test(outcome.title+" "+outcome.timeFrame))
-    .map(outcome=>({nctId:study.nctId,title:outcome.title,timeFrame:outcome.timeFrame}));
+    .map(outcome=>({nctId:study.nctId,title:outcome.title,timeFrame:outcome.timeFrame})));
    if(!measured.length)return null;
    const m=measured[0];
    return doc("An earlier candidate Phase 2 record has a publicly posted clinical "+
