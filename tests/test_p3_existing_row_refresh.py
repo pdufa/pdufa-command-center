@@ -188,6 +188,7 @@ class ExistingRowRefreshTests(unittest.TestCase):
 
     def test_secondary_older_than_existing_preserves_current_market_cap(self):
         self.caps=[]
+        self.row[24]=self.today.isoformat()
         older=(self.today-timedelta(days=1)).isoformat()
         backup={"COGT":(523250000,older,
                         "https://stockanalysis.com/stocks/cogt/market-cap/")}
