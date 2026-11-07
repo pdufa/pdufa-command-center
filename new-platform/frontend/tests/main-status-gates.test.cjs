@@ -16,7 +16,7 @@ for(const extension of [".ts",".tsx"]){
 
 test("MAIN status page reports dated release proof without promoting old installation gates",()=>{
   const Page=require("../app/main/page.tsx").default;
-  const html=renderToStaticMarkup(React.createElement(Page));
+  const html=renderToStaticMarkup(React.createElement(Page)).split("<!-- -->").join("");
   assert.match(html,/MAIN · Technical status and prediction readiness/);
   assert.match(html,/November 7, 2026/);
   assert.match(html,/87654a48/);
