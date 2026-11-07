@@ -76,8 +76,8 @@ export function normalizePoolRegistryDetail(raw:unknown,nctId:string,retrievedAt
  const outcomes=obj(protocol.outcomesModule);
  const contacts=obj(protocol.contactsLocationsModule);
  const references=obj(protocol.referencesModule),documents=obj(protocol.documentSection);
- const dates:[string,unknown][]=[["Start",status.startDateStruct],["Primary completion",status.primaryCompletionDateStruct],
-  ["Study completion",status.completionDateStruct]].map(([name,entry])=>{
+ const dates=([["Start",status.startDateStruct],["Primary completion",status.primaryCompletionDateStruct],
+  ["Study completion",status.completionDateStruct]] as [string,unknown][]).map(([name,entry])=>{
    const e=obj(entry),date=clean(e.date,40),kind=clean(e.type,40);
    return date?name+": "+date+(kind?" ("+kind+")":""):"";
   });
@@ -100,11 +100,11 @@ export function normalizePoolRegistryDetail(raw:unknown,nctId:string,retrievedAt
   const d=obj(x),name=clean(d.label,80)||clean(d.type,80),url=clean(d.url,200);
   return [name,url].filter(Boolean).join(": ");
  });
- const labels:[string,unknown][]=[
+ const labels=([
   ["Type",design.studyType],["Allocation",designInfo.allocation],
   ["Intervention model",designInfo.interventionModel],["Masking",maskingInfo.masking],
   ["Purpose",designInfo.primaryPurpose]
- ].map(([label,v])=>{const value=clean(v,100);return value?label+": "+value:"";});
+ ] as [string,unknown][]).map(([label,v])=>{const value=clean(v,100);return value?label+": "+value:"";});
  const fields:Record<PoolDetailField,string|null>={
   studyTitle:clean(identity.officialTitle,350)||clean(identity.briefTitle,350)||null,
   leadSponsor:clean(obj(obj(protocol.sponsorCollaboratorsModule).leadSponsor).name,220)||null,
