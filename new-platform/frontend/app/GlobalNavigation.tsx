@@ -6,6 +6,7 @@ const links=[
  {label:"POOL",href:"/pool"},
  {label:"FOCUS",href:"/focus"},
  {label:"TOOLS",href:"/tools"},
+ {label:"MAIN",href:"/main"},
 ];
 
 export default function GlobalNavigation(){
