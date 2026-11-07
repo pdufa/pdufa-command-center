@@ -840,6 +840,24 @@ def read_alpaca_chart(program_id: str, range: str = "1Y"):
             **get_alpaca_bars(ticker, range)}
 
 
+@app.get("/api/alpaca-ticker/{ticker}", dependencies=[
+    Depends(require_internal_key),
+])
+def read_alpaca_ticker_chart(ticker: str, range: str = "6M"):
+    """Ticker-only, authenticated Alpaca chart. Never infer a PDUFA program.
+
+    Existing registered-program charts remain keyed by their immutable program ID.
+    This read-only endpoint does not require access to program/financial databases.
+    """
+    from .alpaca_market_chart import SYMBOL, get_alpaca_bars
+    symbol = ticker.strip().upper()
+    if not SYMBOL.fullmatch(symbol):
+        raise HTTPException(status_code=422, detail="Invalid stock ticker")
+    if range not in {"1M", "3M", "6M", "1Y", "ALL"}:
+        raise HTTPException(status_code=422, detail="Invalid Alpaca chart range")
+    return {"programId": None, **get_alpaca_bars(symbol, range)}
+
+
 @app.get("/api/review/investment-readiness/{program_id}", dependencies=[
     Depends(require_internal_key), Depends(require_storage),
 ])

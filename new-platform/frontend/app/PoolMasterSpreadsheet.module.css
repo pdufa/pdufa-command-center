@@ -19,16 +19,16 @@
 .table th,.table td{box-sizing:border-box;padding:10px;border-right:1px solid #dfe9e1;border-bottom:1px solid #dfe9e1;overflow-wrap:anywhere;vertical-align:top;text-align:left;background:white}
 .table th{background:#e9f3ec;position:sticky;top:0;z-index:2;font-weight:750}
 .table a{color:#136048;text-underline-offset:2px}
-.ticker{width:88px;min-width:88px;max-width:88px;position:sticky!important;left:0;z-index:3!important;background:#f1faf4!important;font-weight:700}
-.company{width:164px;min-width:164px;max-width:164px;position:sticky!important;left:88px;z-index:3!important;background:#f9fcfa!important}
-.nct{width:140px;min-width:140px;max-width:140px;position:sticky!important;left:252px;z-index:3!important;background:#f9fcfa!important;box-shadow:2px 0 4px #1d43350a}
+.ticker{width:106px;min-width:106px;max-width:106px;position:sticky!important;left:0;z-index:3!important;background:#f1faf4!important;font-weight:700}
+.company{width:164px;min-width:164px;max-width:164px;position:sticky!important;left:106px;z-index:3!important;background:#f9fcfa!important}
+.nct{width:140px;min-width:140px;max-width:140px;position:sticky!important;left:270px;z-index:3!important;background:#f9fcfa!important;box-shadow:2px 0 4px #1d43350a}
 .table thead .ticker,.table thead .company,.table thead .nct{z-index:5!important;background:#dceee2!important}
 .dataColumn{width:clamp(180px,18vw,260px);min-width:clamp(180px,18vw,260px);max-width:clamp(180px,18vw,260px)}
 @media (max-width:1100px){.segments{grid-template-columns:repeat(2,minmax(0,1fr))}.dataColumn{width:33vw;min-width:33vw;max-width:33vw}}
 @media (max-width:640px){
  .segments{grid-template-columns:minmax(0,1fr)}
  .top h3{font-size:16px}
- .ticker{width:72px;min-width:72px;max-width:72px;left:0}
+ .ticker{width:100px;min-width:100px;max-width:100px;left:0}
  .company,.nct{position:static!important;left:auto;width:50vw;min-width:50vw;max-width:50vw;box-shadow:none}
  .dataColumn{width:50vw;min-width:50vw;max-width:50vw}
  .table th,.table td{padding:9px 7px;font-size:12px}

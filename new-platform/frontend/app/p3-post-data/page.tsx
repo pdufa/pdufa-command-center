@@ -1,5 +1,6 @@
 import type {Metadata} from "next";
 import Link from "next/link";
+import TickerChartButton from "../TickerChartButton";
 import {bottomOnlyReport} from "../../lib/bottom-only-completion";
 import {BottomClinicalRating} from "../BottomOnlyCompletionSheet";
 import snapshot from "../../data/p3PostDataActive.json";
@@ -26,7 +27,7 @@ export default function P3PostDataPage(){
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:780,fontSize:14}}>
     <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>Clinical research rating</th><th style={{padding:10}}>RAAS history</th></tr></thead>
     <tbody>{trials.map((t,i)=>{const history=bottomTrialHistory(t.nct);const research=researchByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
-      <td style={{padding:10,fontWeight:700}}>{t.ticker}</td>
+      <td style={{padding:10,fontWeight:700}}><TickerChartButton ticker={t.ticker}/></td>
       <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a>{research&&<small style={{display:"block"}}>{research.drug}</small>}</td>
       <td style={{padding:10}}>{t.company}</td>
       <td style={{padding:10,textAlign:"right"}}>{(t.marketCap/1e9).toFixed(2)}</td>

@@ -4,7 +4,7 @@ import {chartStudiesForWtChecks,WT_CHART_NAMES,type WtChartStudy} from "../lib/w
 import PdufaChartIntelligence, {type PdufaVerifiedTargetOutcome,type RaasFrozenSnapshot} from "./PdufaChartIntelligence";
 type Bar={date:string;open:number;high:number;low:number;close:number;volume:number};
 export type FdaMilestone={date:string;label:string;chartLabel:string;detail:string;source?:string;planned?:boolean;custom?:boolean;id?:string;color?:string;visible?:boolean;edited?:boolean;originalDate?:string;category?:string};
-type Market={provider:string;programId:string;ticker:string;feed:string;coverage:string;status:string;bars:Bar[];asOf:string|null;message:string;researchOnly:boolean};
+type Market={provider:string;programId?:string|null;ticker:string;feed:string;coverage:string;status:string;bars:Bar[];asOf:string|null;message:string;researchOnly:boolean};
 type Range="1M"|"3M"|"6M"|"1Y"|"ALL";
 type ChartSeries=WtChartStudy|"ema10"|"ema20"|"ema50"|"macd";
 const DEFAULT_SERIES:readonly ChartSeries[]=["sma20","sma50","ema10","ema20","ema50","volume","rsi","macd","atr"];
@@ -249,7 +249,7 @@ export function StockPlot({bars,large,candle,visibleStudies,milestones=[],onMove
   {target&&<div className="alpaca-plot-tooltip">{target.date} | O {fixed(target.open)} H {fixed(target.high)} L {fixed(target.low)} C {fixed(target.close)} · Vol {short(target.volume)}</div>}</div>;
 }
 export default function AlpacaStockChart({programId,ticker,compact=false,wtIndicatorKeys,milestones=[],onMoveMilestone,pdufaIntelligence}:{
- programId:string;ticker:string;compact?:boolean;wtIndicatorKeys?:readonly string[];
+ programId?:string;ticker:string;compact?:boolean;wtIndicatorKeys?:readonly string[];
  milestones?:readonly FdaMilestone[];onMoveMilestone?:(id:string,date:string)=>void;
  pdufaIntelligence?:{enabledFeatures:readonly string[];officialEvents:readonly FdaMilestone[];
    verifiedTargetOutcome?:PdufaVerifiedTargetOutcome;raasSnapshot?:RaasFrozenSnapshot};
@@ -267,11 +267,11 @@ export default function AlpacaStockChart({programId,ticker,compact=false,wtIndic
    if(typeof IntersectionObserver==="undefined"){setVisible(true);return}
    const obs=new IntersectionObserver(x=>{if(x.some(y=>y.isIntersecting)){setVisible(true);obs.disconnect()}},{rootMargin:"200px 0px"});
    obs.observe(host);return()=>obs.disconnect()},[]);
- useEffect(()=>{if(!visible||!/^PDUFA-\d{6,}$/.test(programId))return;
+ useEffect(()=>{if(!visible || (programId ? !/^PDUFA-\d{6,}$/.test(programId) : !/^[A-Z][A-Z0-9.-]{0,12}$/.test(ticker)))return;
    const ctrl=new AbortController();setError("");setState(null);
-   fetch("/api/alpaca-chart/"+encodeURIComponent(programId)+"?range="+range,{cache:"no-store",signal:ctrl.signal})
+   fetch((programId ? "/api/alpaca-chart/"+encodeURIComponent(programId) : "/api/alpaca-ticker/"+encodeURIComponent(ticker))+"?range="+range,{cache:"no-store",signal:ctrl.signal})
     .then(async response=>{if(!response.ok)throw Error("Alpaca endpoint: HTTP "+response.status);return response.json() as Promise<Market>})
-    .then(d=>{if(ctrl.signal.aborted)return;if(d.provider!=="ALPACA"||d.programId!==programId||d.ticker!==ticker)throw Error("Provider or Program ID mismatch");setState(d)})
+    .then(d=>{if(ctrl.signal.aborted)return;if(d.provider!=="ALPACA"||d.ticker!==ticker||(programId&&d.programId!==programId))throw Error("Provider, ticker or Program ID mismatch");setState(d)})
     .catch(e=>{if(!ctrl.signal.aborted)setError(String(e))});
    return()=>ctrl.abort();
  },[visible,programId,ticker,range]);
@@ -289,7 +289,7 @@ export default function AlpacaStockChart({programId,ticker,compact=false,wtIndic
  const visibleReadouts=studyReadouts.filter(([key])=>!wtControlled||visibleStudies.has(key));
  return <section ref={surface} className="alpaca-stock-chart" aria-label={ticker+" chart from Alpaca"}>
   <header className="alpaca-header"><div><strong>{ticker} · ALPACA STOCK CHART</strong>
-     <small>{programId} · {state?.feed||"FEED PENDING"} · {state?.coverage||"Provider Alpaca only"}</small></div>
+     <small>{programId||"Ticker-only chart · exact program unlinked"} · {state?.feed||"FEED PENDING"} · {state?.coverage||"Provider Alpaca only"}</small></div>
    <div className="alpaca-buttons">
     {compact&&<button type="button" onClick={()=>setExpanded(v=>!v)}>{expanded?"HIDE FULL CHART":"FULL CHART"}</button>}
     <button type="button" onClick={()=>setCandle(v=>!v)}>{candle?"LINE":"CANDLES"}</button>
@@ -300,7 +300,7 @@ export default function AlpacaStockChart({programId,ticker,compact=false,wtIndic
   <div className="alpaca-range">{ranges.map(r=><button key={r} type="button" className={range===r?"active":""}
     aria-pressed={range===r} onClick={()=>setRange(r)}>{r}</button>)}
     <span>{latest?"Last Alpaca session "+latest.date+" | Close $"+fixed(latest.close):"Alpaca source awaiting verification"}</span></div>
-  {pdufaIntelligence&&<PdufaChartIntelligence
+  {pdufaIntelligence&&programId&&<PdufaChartIntelligence
     programId={programId} ticker={ticker} enabledFeatures={pdufaIntelligence.enabledFeatures}
     officialEvents={pdufaIntelligence.officialEvents} bars={all}
     marketStatus={state?.status} verifiedTargetOutcome={pdufaIntelligence.verifiedTargetOutcome}
