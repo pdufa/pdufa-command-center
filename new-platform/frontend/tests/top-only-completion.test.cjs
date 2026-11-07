@@ -62,3 +62,32 @@ test('TOP UI replacement leaves original POST sheet invocation and scoring modul
  const ui=fs.readFileSync(path.join(__dirname,'../app/Phase3SourceOnlySheets.tsx'),'utf8');assert.match(ui,/<TopOnlyCompletionSheet query=\{query\}\/>/);assert.match(ui,/<Sheet kind="POST_DATA" rows=\{post\} query=\{query\} scores=\{scores\} scoreLoading=\{scoreLoading\} coverage=\{coverage\} coverageLoading=\{coverageLoading\}\/>/);
  const model=fs.readFileSync(path.join(__dirname,'../lib/top-only-completion.ts'),'utf8');assert.doesNotMatch(model,/writeFile|sendTelegram|GEM_JR|streamlit|updatePipeline/);
 });
+test('SEC-hosted Candel facts fill previously missing TOP questions without creating grades',()=>{
+ const trial=report.trials.find(t=>t.nctId==='NCT01436968');assert.ok(trial);
+ for(const q of [4,19,28]){assert.equal(trial.questions[q-1].state,'VERIFIED');assert.ok(trial.additionalReviewedFacts.some(f=>f.question===q&&f.sourceUrl.startsWith('https://www.sec.gov/Archives/edgar/')));}
+ assert.equal(trial.worksheet,'TOP');assert.equal(trial.prospectivePrediction,null);
+ const canonical=require('../lib/raas-clinical-five.ts').clinicalFiveForTrial;
+ assert.equal(trial.metrics.filter(m=>m.activeInClinicalModel).length,5);
+ assert.equal(trial.metrics.filter(m=>m.activeInClinicalModel&&m.score!==null).length,trial.clinicalScoredFactors);
+});
+test('exact TOP CYTK PK-guided dose evidence completes only the supported five-factor provisional score',()=>{
+ const trial=report.trials.find(t=>t.nctId==='NCT06736574');assert.ok(trial);
+ const factor=trial.clinicalFactors.find(f=>f.id==='pre-1-3');assert.equal(factor.grade,50);
+ assert.equal(factor.sourceUrl,'https://pubmed.ncbi.nlm.nih.gov/27914656/');
+ assert.equal(trial.clinicalScoredFactors,5);assert.equal(trial.clinicalFullScore,45);
+ assert.equal(trial.legacyThirtyMetricFullScore,null);assert.equal(trial.predictionEligibility,'ABSTAIN');
+});
+test('TOP-only addendum preserves older events and exposes an immutable score change after evidence review',async()=>{
+ const inc=require('../data/topOnlyHistoryIncrement20261107.json');assert.equal(inc.records.length,2);
+ for(const event of inc.records){assert.ok(ids.has(event.nctId));assert.equal(event.summary.nctId,event.nctId);assert.equal(event.factors.length,5);assert.ok(!history.records.some(x=>x.eventId===event.eventId));}
+ const r=await GET(new Request('http://localhost/api/top-only-completion?nctId=NCT06736574'));assert.equal(r.status,200);
+ const data=await r.json();const next=data.history.find(x=>x.eventType==='REVIEWED_NUMERICAL_SCORE_UPDATE');assert.ok(next);
+ assert.equal(next.change.previousClinicalOverall,null);assert.equal(next.change.newClinicalOverall,45);
+ assert.equal(next.change.previousGrade,null);assert.equal(next.change.newGrade,50);
+ assert.ok(data.history.some(x=>x.eventId!==next.eventId&&x.summary.clinicalScoredFactors===4));
+});
+test('TOP horizontal expandable detail exposes retained and new score histories in-page',()=>{
+ const s=fs.readFileSync(path.join(__dirname,'../app/TopOnlyCompletionSheet.tsx'),'utf8');
+ assert.match(s,/TOP score and evidence history/);assert.match(s,/setDetailHistory/);
+ assert.match(s,/detailHistory\.length/);assert.match(s,/newClinicalOverall/);
+});

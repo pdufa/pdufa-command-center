@@ -1,0 +1,215 @@
+{
+  "schemaVersion": 1,
+  "scope": "TOP_ONLY_APPEND_ONLY_INCREMENT_LEAVES_ORIGINAL_HISTORY_UNCHANGED",
+  "records": [
+    {
+      "eventId": "TOP_ONLY_REVIEW_20261107_NCT01436968_CADL_SEC_THREE_FACTS",
+      "nctId": "NCT01436968",
+      "recordedAt": "2026-11-07T02:12:07.530Z",
+      "eventType": "REVIEWED_SOURCE_EVIDENCE_UPDATE",
+      "summary": {
+        "nctId": "NCT01436968",
+        "ticker": "CADL",
+        "company": "Candel Therapeutics, Inc.",
+        "drug": "Aglatimagene besadenovec + valacyclovir;Placebo + valacyclovir",
+        "indication": "Prostate Cancer",
+        "phase": "PHASE3",
+        "status": "ACTIVE_NOT_RECRUITING",
+        "fieldsAccounted": 190,
+        "metricsEvaluated": 30,
+        "clinicalFullScore": null,
+        "clinicalScoredFactors": 0,
+        "legacyThirtyMetricFullScore": null,
+        "sourceCompleteness": 65.5,
+        "hasMissingSourceEvidence": true,
+        "blockerCount": 15
+      },
+      "factors": [
+        {
+          "key": "efficacy",
+          "id": "pre-1-1",
+          "name": "Prior clinical efficacy",
+          "requiredEvidence": "Randomized Phase 1/2 report, control-arm data, effect sizes, confidence intervals, clinical relevance benchmarks.",
+          "scoreRule": "Higher if human benefit is larger, reliable, clinically meaningful and reproducible.",
+          "criticalRisk": "Bias, weak control, excessive dropout or exploratory-only positive signals.",
+          "grade": null,
+          "finding": null,
+          "sourceUrl": null,
+          "benchmarkSourceUrl": null,
+          "sourceDate": null,
+          "assessedAt": null
+        },
+        {
+          "key": "clinicalBenefit",
+          "id": "pre-1-5",
+          "name": "Expected patient benefit and counterevidence",
+          "requiredEvidence": "Negative/neutral trials, alternative explanations, baseline imbalance, placebo patterns and trial amendments.",
+          "scoreRule": "Higher if credible counterhypotheses are tested and the treatment effect remains defensible.",
+          "criticalRisk": "Plausible unaddressed explanation that could negate Phase 3 efficacy.",
+          "grade": null,
+          "finding": null,
+          "sourceUrl": null,
+          "benchmarkSourceUrl": null,
+          "sourceDate": null,
+          "assessedAt": null
+        },
+        {
+          "key": "statistics",
+          "id": "pre-1-2",
+          "name": "Trial design and statistical strength",
+          "requiredEvidence": "Pivotal protocol and statistical analysis plan, primary endpoint, comparator, power assumptions and sample size.",
+          "scoreRule": "Higher for adequate power under conservative effects, validated endpoint and prespecified analysis.",
+          "criticalRisk": "Endpoint mismatch, multiplicity or underpowered pivotal design.",
+          "grade": null,
+          "finding": null,
+          "sourceUrl": null,
+          "benchmarkSourceUrl": null,
+          "sourceDate": null,
+          "assessedAt": null
+        },
+        {
+          "key": "reproducibility",
+          "id": "pre-1-3",
+          "name": "Mechanism, dose and reproducibility",
+          "requiredEvidence": "Human PK/PD, exposure response, target engagement and supported pivotal-dose selection.",
+          "scoreRule": "Higher for mechanistic coherence at tolerable clinically attained drug exposure.",
+          "criticalRisk": "Unverified human target activity or dose-limiting toxicity.",
+          "grade": null,
+          "finding": null,
+          "sourceUrl": null,
+          "benchmarkSourceUrl": null,
+          "sourceDate": null,
+          "assessedAt": null
+        },
+        {
+          "key": "safety",
+          "id": "pre-1-4",
+          "name": "Safety and tolerability",
+          "requiredEvidence": "Earlier trial arm-level serious events, tolerability, discontinuation and independent efficacy replication.",
+          "scoreRule": "Higher for acceptable tolerability and consistent benefit across independent evidence.",
+          "criticalRisk": "Unresolved serious toxicity or nonreplicated signal.",
+          "grade": null,
+          "finding": null,
+          "sourceUrl": null,
+          "benchmarkSourceUrl": null,
+          "sourceDate": null,
+          "assessedAt": null
+        }
+      ],
+      "change": {
+        "scoreChanged": false,
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1841387/000119312526386561/d738484dex991.htm",
+        "newlyVerifiedQuestions": [
+          4,
+          19,
+          28
+        ]
+      }
+    },
+    {
+      "eventId": "TOP_ONLY_REVIEW_20261107_NCT06736574_CLINICAL_FIVE_45",
+      "nctId": "NCT06736574",
+      "recordedAt": "2026-11-07T02:12:07.532Z",
+      "eventType": "REVIEWED_NUMERICAL_SCORE_UPDATE",
+      "summary": {
+        "nctId": "NCT06736574",
+        "ticker": "CYTK",
+        "company": "Cytokinetics",
+        "drug": "Omecamtiv Mecarbil (OM);Placebo",
+        "indication": "Heart Failure;Heart Failure With Reduced Ejection Fraction",
+        "phase": "PHASE3",
+        "status": "RECRUITING",
+        "fieldsAccounted": 190,
+        "metricsEvaluated": 30,
+        "clinicalFullScore": 45,
+        "clinicalScoredFactors": 5,
+        "legacyThirtyMetricFullScore": null,
+        "sourceCompleteness": 50,
+        "hasMissingSourceEvidence": true,
+        "blockerCount": 12
+      },
+      "factors": [
+        {
+          "key": "efficacy",
+          "id": "pre-1-1",
+          "name": "Prior clinical efficacy",
+          "requiredEvidence": "Randomized Phase 1/2 report, control-arm data, effect sizes, confidence intervals, clinical relevance benchmarks.",
+          "scoreRule": "Higher if human benefit is larger, reliable, clinically meaningful and reproducible.",
+          "criticalRisk": "Bias, weak control, excessive dropout or exploratory-only positive signals.",
+          "grade": 50,
+          "finding": "MIXED_EVIDENCE",
+          "sourceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2025797",
+          "benchmarkSourceUrl": "https://pubmed.ncbi.nlm.nih.gov/34643642/",
+          "sourceDate": "2020-11-13",
+          "assessedAt": "2026-11-04"
+        },
+        {
+          "key": "clinicalBenefit",
+          "id": "pre-1-5",
+          "name": "Expected patient benefit and counterevidence",
+          "requiredEvidence": "Negative/neutral trials, alternative explanations, baseline imbalance, placebo patterns and trial amendments.",
+          "scoreRule": "Higher if credible counterhypotheses are tested and the treatment effect remains defensible.",
+          "criticalRisk": "Plausible unaddressed explanation that could negate Phase 3 efficacy.",
+          "grade": 25,
+          "finding": "BELOW_BENCHMARK",
+          "sourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2023/Cytokinetics-Receives-Complete-Response-Letter-From-FDA-for-New-Drug-Application-for-Omecamtiv-Mecarbil-02-28-2023/default.aspx",
+          "benchmarkSourceUrl": "https://www.fda.gov/regulatory-information/search-fda-guidance-documents/demonstrating-substantial-evidence-effectiveness-human-drug-and-biological-products",
+          "sourceDate": "2023-02-28",
+          "assessedAt": "2026-11-04"
+        },
+        {
+          "key": "statistics",
+          "id": "pre-1-2",
+          "name": "Trial design and statistical strength",
+          "requiredEvidence": "Pivotal protocol and statistical analysis plan, primary endpoint, comparator, power assumptions and sample size.",
+          "scoreRule": "Higher for adequate power under conservative effects, validated endpoint and prespecified analysis.",
+          "criticalRisk": "Endpoint mismatch, multiplicity or underpowered pivotal design.",
+          "grade": 50,
+          "finding": "MIXED_EVIDENCE",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT06736574",
+          "benchmarkSourceUrl": "https://dcri.org/comet-hf",
+          "sourceDate": "2026-10-13",
+          "assessedAt": "2026-11-04"
+        },
+        {
+          "key": "reproducibility",
+          "id": "pre-1-3",
+          "name": "Mechanism, dose and reproducibility",
+          "requiredEvidence": "Human PK/PD, exposure response, target engagement and supported pivotal-dose selection.",
+          "scoreRule": "Higher for mechanistic coherence at tolerable clinically attained drug exposure.",
+          "criticalRisk": "Unverified human target activity or dose-limiting toxicity.",
+          "grade": 50,
+          "finding": "MIXED_EVIDENCE",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27914656/",
+          "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT06736574",
+          "sourceDate": "2016-12-10",
+          "assessedAt": "2026-11-06"
+        },
+        {
+          "key": "safety",
+          "id": "pre-1-4",
+          "name": "Safety and tolerability",
+          "requiredEvidence": "Earlier trial arm-level serious events, tolerability, discontinuation and independent efficacy replication.",
+          "scoreRule": "Higher for acceptable tolerability and consistent benefit across independent evidence.",
+          "criticalRisk": "Unresolved serious toxicity or nonreplicated signal.",
+          "grade": 50,
+          "finding": "MIXED_EVIDENCE",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33185990/",
+          "benchmarkSourceUrl": "https://pubmed.ncbi.nlm.nih.gov/34643642/",
+          "sourceDate": "2020-11-13",
+          "assessedAt": "2026-11-04"
+        }
+      ],
+      "change": {
+        "metricId": "pre-1-3",
+        "previousGrade": null,
+        "newGrade": 50,
+        "previousClinicalOverall": null,
+        "newClinicalOverall": 45,
+        "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27914656/",
+        "benchmarkSourceUrl": "https://clinicaltrials.gov/study/NCT06736574",
+        "scoreType": "UNVALIDATED_FIVE_FACTOR_RESEARCH_SCORE_NOT_FDA_PROBABILITY"
+      }
+    }
+  ]
+}
