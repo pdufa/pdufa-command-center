@@ -119,12 +119,19 @@ def sync_tables(tables):
     body = []
     for title, header, rows in tables:
         a1 = "'" + title.replace("'", "''") + "'!A1"
-        body.append({"range": a1, "majorDimension": "ROWS", "values": [header] + rows})
+        # A shorter refresh must not leave previous evidence as stale-looking live rows.
+        # Include blank tail rows in the same values:batchUpdate request.
+        previous_capacity = current.get(title, {}).get("gridProperties", {}).get("rowCount", 0)
+        blanks = max(0, previous_capacity - len(rows) - 1)
+        fresh_values = [header] + rows + [[""] * len(header) for _ in range(blanks)]
+        body.append({"range": a1, "majorDimension": "ROWS", "values": fresh_values})
     request("POST", API + "/values:batchUpdate", json={
         "valueInputOption": "RAW", "data": body})
-    # Verify first, final and header lines before reporting success.
+    # Read back full populated column including prior tail to catch stale records.
     for title, header, rows in tables:
-        cell = quote("'" + title + "'!A1:A" + str(len(rows) + 1), safe="!':")
+        previous_capacity = current.get(title, {}).get("gridProperties", {}).get("rowCount", 0)
+        readback_rows = max(previous_capacity, len(rows) + 1)
+        cell = quote("'" + title + "'!A1:A" + str(readback_rows), safe="!':")
         returned = request("GET", API + "/values/" + cell).get("values", [])
         expected = [header[0]] + [str(r[0]) for r in rows]
         values = [str(r[0]) if r else "" for r in returned]
