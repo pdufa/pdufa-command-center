@@ -194,6 +194,31 @@
       "advantages": []
     },
     {
+      "nctId": "NCT04716231",
+      "ticker": "VERA",
+      "drug": "Atacicept",
+      "indication": "IgA Nephropathy",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "Company-reported ORIGIN 3 final efficacy analysis, 428 patients: atacicept versus placebo showed Week-52 eGFR change −0.1 versus −5.7 mL/min/1.73m²; treatment difference +5.6 (95% CI 3.7–7.5; p<0.0001). Through 104 weeks, annualized eGFR slope difference +5.0 (95% CI 3.6–6.5), and composite kidney progression events 11 versus 38 (HR 0.24; 95% CI 0.12–0.48). These are company-reported confirmatory trial endpoints, not independently adjudicated full FDA approval.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://veratherapeutics.gcs-web.com/news-releases/news-release-details/vera-therapeutics-announces-trutaknatm-atacicept-vymj-stabilized",
+          "sourceDate": "2026-09-15",
+          "method": "Cross-referenced official Vera Therapeutics Sept 15 2026 ORIGIN 3 final 428-patient efficacy analysis against exact ClinicalTrials.gov NCT04716231 titled ORIGIN 3 for atacicept in IgA nephropathy. Company-reported effect estimates with matched placebo comparator, prespecified Week-52 eGFR and 104-week eGFR slope/renal progression effect, confidence intervals and p values. The product has accelerated approval for proteinuria; reported longer-term kidney outcomes here are NOT independent FDA confirmation of full approval or a trading prediction.",
+          "confidence": "MODERATE"
+        },
+        "magnitude": {
+          "value": "ORIGIN 3 (atacicept versus placebo), 428-patient final analysis: 52-week eGFR treatment effect +5.6 mL/min/1.73m² (95% CI 3.7–7.5; p<0.0001). Annualized 104-week eGFR slope difference +5.0 mL/min/1.73m²/year (95% CI 3.6–6.5; p<0.0001). Composite kidney progression 11 events versus 38, HR 0.24 (95% CI 0.12–0.48; p<0.0001). Company-reported; OS not established.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://veratherapeutics.gcs-web.com/news-releases/news-release-details/vera-therapeutics-announces-trutaknatm-atacicept-vymj-stabilized",
+          "sourceDate": "2026-09-15",
+          "method": "Cross-referenced official Vera Therapeutics Sept 15 2026 ORIGIN 3 final 428-patient efficacy analysis against exact ClinicalTrials.gov NCT04716231 titled ORIGIN 3 for atacicept in IgA nephropathy. Company-reported effect estimates with matched placebo comparator, prespecified Week-52 eGFR and 104-week eGFR slope/renal progression effect, confidence intervals and p values. The product has accelerated approval for proteinuria; reported longer-term kidney outcomes here are NOT independent FDA confirmation of full approval or a trading prediction.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
       "nctId": "NCT04871282",
       "ticker": "IMNM",
       "drug": "AL102",
@@ -286,6 +311,39 @@
             "confidenceUpper": "5.617",
             "crossReference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/"
           }
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT05208047",
+      "ticker": "COGT",
+      "drug": "CGT9486",
+      "indication": "Advanced Gastrointestinal Stromal Tumors",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "Company-reported randomized PEAK Phase 3 Part 2 in imatinib-resistant/intolerant GIST: bezuclastinib (CGT9486) plus sunitinib versus sunitinib alone yielded blinded-review median PFS 16.5 versus 9.2 months (HR 0.50; 95% CI 0.39–0.65; p<0.0001) and objective response 46% versus 26% (p<0.0001). Overall survival was immature. These are specific issuer-reported PFS and response results, not overall survival or regulatory confirmation.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak",
+          "sourceDate": "2025-11-10",
+          "method": "Cross-referenced Cogent Nov 10 2025 official PEAK Phase 3 randomized Part 2 trial readout with exact ClinicalTrials.gov NCT05208047 (CGT9486 = bezuclastinib; sunitinib-controlled imatinib-resistant/intolerant GIST), plus ASCO indexed PEAK study description linking drug alias and NCT. Issuer-reported blinded central-review PFS HR, CI and median PFS; no independent FDA efficacy review, OS benefit, full safety superiority or RAAS projection.",
+          "confidence": "MODERATE"
+        },
+        "magnitude": {
+          "value": "PEAK Phase 3 randomized Part 2 PFS (bezuclastinib/CGT9486 plus sunitinib versus sunitinib): blinded central-review median PFS 16.5 versus 9.2 months; HR 0.50 (95% CI 0.39–0.65; p<0.0001). Objective response 46% versus 26% (p<0.0001); no ORR confidence intervals in this initial issuer release.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak",
+          "sourceDate": "2025-11-10",
+          "method": "Cross-referenced Cogent Nov 10 2025 official PEAK Phase 3 randomized Part 2 trial readout with exact ClinicalTrials.gov NCT05208047 (CGT9486 = bezuclastinib; sunitinib-controlled imatinib-resistant/intolerant GIST), plus ASCO indexed PEAK study description linking drug alias and NCT. Issuer-reported blinded central-review PFS HR, CI and median PFS; no independent FDA efficacy review, OS benefit, full safety superiority or RAAS projection.",
+          "confidence": "MODERATE"
+        },
+        "headToHead": {
+          "value": "Direct randomized active-comparator PEAK Phase 3 Part 2: CGT9486/bezuclastinib plus sunitinib versus sunitinib monotherapy in imatinib-resistant/intolerant GIST. Primary blinded-review PFS HR 0.50 (95% CI 0.39–0.65; p<0.0001); median PFS 16.5 versus 9.2 months. This compares the combination with sunitinib only, not other drug classes; no mature overall-survival result.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak",
+          "sourceDate": "2025-11-10",
+          "method": "Cross-referenced Cogent Nov 10 2025 official PEAK Phase 3 randomized Part 2 trial readout with exact ClinicalTrials.gov NCT05208047 (CGT9486 = bezuclastinib; sunitinib-controlled imatinib-resistant/intolerant GIST), plus ASCO indexed PEAK study description linking drug alias and NCT. Issuer-reported blinded central-review PFS HR, CI and median PFS; no independent FDA efficacy review, OS benefit, full safety superiority or RAAS projection.",
+          "confidence": "MODERATE"
         }
       },
       "advantages": []
