@@ -5,6 +5,7 @@ import {POOL_PHASE_OPTIONS,togglePoolPhase,type PoolPhaseSelection,type PoolPhas
 import {POOL_SORT_KEYS,type PoolSortSpec,type PoolSortKey} from "../lib/pool-full-sort";
 import snapshot from "../data/p3PostDataActive.json";
 import css from "./PoolMasterSpreadsheet.module.css";
+import TickerChartButton from "./TickerChartButton";
 import {isGroupVisible,toggleColumnGroup} from "../lib/pool-column-visibility";
 import {normalizePoolColumnOrder,reorderPoolSegment,stepPoolSegment,movePoolColumn,stepPoolColumn} from "../lib/pool-column-order";
 
@@ -451,7 +452,7 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
      </td></tr>}{sortedRows.map(row=>{
      const nct=nctOf(row);
      return <tr key={row.id}>
-      <td className={css.ticker}>{known(row.ticker)}</td>
+      <td className={css.ticker}><TickerChartButton ticker={row.ticker}/></td>
       <td className={css.company}>{known(row.company)}</td>
       <td className={css.nct}>{nct?
        <a href={"https://clinicaltrials.gov/study/"+nct} target="_blank" rel="noopener noreferrer">{nct}</a>:
