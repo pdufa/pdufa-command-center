@@ -105,7 +105,7 @@ test("BOTTOM renderer is horizontally expandable and TOP invocation remains unto
 });
 test('saved five-factor score events preserve historical state and one additive ENERGIZE change',()=>{
  const events=require('../data/bottomOnlyScoreHistory20261107.json').records;
- assert.equal(events.length,24);assert.equal(events.filter(e=>e.eventType==='RESEARCH_SCORE_SNAPSHOT').length,23);
+ assert.equal(events.length,25);assert.equal(events.filter(e=>e.eventType==='RESEARCH_SCORE_SNAPSHOT').length,23);
  const change=events.find(e=>e.nctId==='NCT04770753'&&e.eventType==='RESEARCH_SCORE_CHANGE');assert.ok(change);
  assert.equal(change.previousClinicalFullScore,null);assert.equal(change.clinicalFullScore,55);assert.equal(change.clinicalScoredFactors,5);
  assert.equal(new Set(events.map(e=>e.eventId)).size,events.length);
@@ -136,4 +136,31 @@ test("BOTTOM factor research export contains every exact trial and all 115 ratin
  for(const id of ids)assert.ok(csv.includes(id),"missing factor packet: "+id);
  const ui=fs.readFileSync(path.join(__dirname,"../app/BottomOnlyCompletionSheet.tsx"),"utf8");
  assert.match(ui,/rating-evidence/);assert.match(ui,/reviewEvidence\.map/);
+});
+
+test("BOTTOM ABVX readout gets five explicit post-readout clinical grades only, with historical score preserved",async()=>{
+ const t=report.trials.find(x=>x.nctId==="NCT05535946");assert.ok(t);
+ assert.equal(t.cohort,"BOTTOM");assert.equal(t.readoutOutcome,"PRIMARY_ENDPOINT_MET");
+ assert.equal(t.clinicalScoredFactors,5);assert.equal(t.clinicalFullScore,60);
+ assert.equal(t.legacyThirtyMetricFullScore,null);
+ const byId=new Map(t.metrics.map(m=>[m.id,m]));
+ assert.deepEqual(["post-1-1","post-1-2","post-1-3","post-1-4","post-1-5"].map(id=>byId.get(id)?.score),[75,75,50,50,50]);
+ for(const id of ["post-1-1","post-1-2","post-1-3","post-1-4","post-1-5"]){
+  const m=byId.get(id);assert.ok(m);
+  assert.ok(m.sourceUrl?.includes("ir.abivax.com/node/12341/html"));
+  assert.ok(m.benchmarkSourceUrl&&m.uncertaintyReview&&m.criticalRiskReview);
+ }
+ const saved=require("../data/bottomOnlyScoreHistory20261107.json").records.filter(h=>h.nctId===t.nctId);
+ assert.equal(saved.length,2);
+ assert.ok(saved.some(h=>h.eventType==="RESEARCH_SCORE_SNAPSHOT"&&h.clinicalScoredFactors===0&&h.clinicalFullScore===null));
+ assert.ok(saved.some(h=>h.eventType==="RESEARCH_SCORE_CHANGE"&&h.previousClinicalFullScore===null&&h.clinicalFullScore===60));
+ const live=await GET(new Request("http://localhost/api/bottom-only-completion?nctId="+t.nctId));
+ assert.equal(live.status,200);
+ const payload=await live.json();assert.equal(payload.trial.clinicalFullScore,60);
+ assert.equal(payload.history.length,3);
+ assert.ok(t.additionalReviewedFacts.some(f=>f.question===3&&f.sourceUrl.includes("ir.abivax.com/node/12341/html")));
+ assert.ok(t.additionalReviewedFacts.some(f=>f.question===16&&f.criticalLimit.includes("not independent maintenance")===false));
+ assert.equal(report.completeClinicalOverallScores,3);
+ assert.equal(report.activeFactorsScored,30);
+ assert.equal(report.completeThirtyMetricOverallScores,0);
 });
