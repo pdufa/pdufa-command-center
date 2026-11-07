@@ -37,7 +37,7 @@ class TestStatistics(unittest.TestCase):
   denoms=[x for x in rows if x["kind"]=="ANALYSIS_DENOMINATOR"]
   self.assertEqual(len(denoms),2)
   self.assertTrue(all(x["status"]=="REGISTRY_SOURCE_RETRIEVED_REVIEW_REQUIRED" for x in rows))
-  self.assertTrue(all("not an independently reviewed" in x["disclaimer"] for x in rows))
+  self.assertTrue(all("not an independently reviewed" in x["disclaimer"].lower() for x in rows))
  def test_no_posted_results_returns_empty(self):
   self.assertEqual(stats.extract("NCT12345678","EX",{
      "protocolSection":{"identificationModule":{"nctId":"NCT12345678"}}},
