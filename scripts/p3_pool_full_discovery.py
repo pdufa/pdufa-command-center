@@ -130,30 +130,46 @@ def fetch_registry_batches(ncts, get=requests.get, batch_size=BATCH_SIZE):
     indexed = {}
     chunks = [ncts[i:i + batch_size] for i in range(0, len(ncts), batch_size)]
     for index, chunk in enumerate(chunks, start=1):
-        params = {"filter.ids": ",".join(chunk), "pageSize": len(chunk),
+        params = {"filter.ids": ",".join(chunk), "pageSize": 1000,
                   "format": "json", "fields": FIELDS}
-        for attempt in range(3):
-            try:
-                response = get(API, params=params, timeout=65,
-                               headers={"User-Agent": "PDUFA-Candidate-Evidence-Audit/1.0"})
-                response.raise_for_status()
-                payload = response.json()
-                if not isinstance(payload.get("studies"), list) or payload.get("nextPageToken"):
-                    raise ValueError("Incomplete registry batch or unexpected pagination")
-                by_id = {}
-                for study in payload["studies"]:
-                    data = parse_study(study)
-                    nct = data["nct"]
-                    if nct not in chunk or nct in by_id:
-                        raise ValueError("Registry returned an unexpected or repeated exact NCT")
-                    by_id[nct] = data
-                indexed.update(by_id)
+        by_id = {}
+        token = None
+        seen_tokens = set()
+        for page_number in range(1, 11):
+            page_params = dict(params)
+            if token:
+                page_params["pageToken"] = token
+            for attempt in range(3):
+                try:
+                    response = get(API, params=page_params, timeout=65,
+                                   headers={"User-Agent": "PDUFA-Candidate-Evidence-Audit/1.0"})
+                    response.raise_for_status()
+                    payload = response.json()
+                    if not isinstance(payload.get("studies"), list):
+                        raise ValueError("Registry batch has no studies list")
+                    break
+                except (requests.RequestException, ValueError) as exc:
+                    if attempt == 2:
+                        raise RuntimeError("Registry batch " + str(index) + "/" +
+                                           str(len(chunks)) + ", page " + str(page_number) +
+                                           " could not be validated") from exc
+                    time.sleep(2 ** attempt)
+            for study in payload["studies"]:
+                data = parse_study(study)
+                nct = data["nct"]
+                if nct not in chunk or nct in by_id:
+                    raise ValueError("Registry returned an unexpected or duplicate NCT in batch " +
+                                     str(index) + ": " + str(nct))
+                by_id[nct] = data
+            token = payload.get("nextPageToken")
+            if not token:
                 break
-            except (requests.RequestException, ValueError) as exc:
-                if attempt == 2:
-                    raise RuntimeError("Registry batch " + str(index) + "/" +
-                                       str(len(chunks)) + " could not be validated") from exc
-                time.sleep(2 ** attempt)
+            if token in seen_tokens:
+                raise ValueError("Registry repeated a page token in batch " + str(index))
+            seen_tokens.add(token)
+        else:
+            raise RuntimeError("ClinicalTrials.gov pagination exceeded 10 pages for 60-NCT batch")
+        indexed.update(by_id)
         if index % 10 == 0 or index == len(chunks):
             print("Registry batches", index, "/", len(chunks), "studies returned", len(indexed), flush=True)
     return indexed, len(chunks)

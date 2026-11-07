@@ -81,6 +81,31 @@ class FullPoolTests(unittest.TestCase):
         self.assertEqual(summary["counts"]["REGISTRY_QUERIED"],2699)
         self.assertEqual(summary["counts"]["REGISTRY_BATCHES"],45)
         self.assertEqual(detail["count"],0)
+    def test_real_registry_pagination_is_followed_and_exact_nct_enforced(self):
+        observed=[]
+        class Paginated:
+            def __init__(self,study_rows,token=None):
+                self.records=study_rows
+                self.token=token
+            def raise_for_status(self):pass
+            def json(self):
+                payload={"studies":self.records}
+                if self.token:payload["nextPageToken"]=self.token
+                return payload
+        def get(url,params,timeout,headers):
+            observed.append(params.copy())
+            ids=params["filter.ids"].split(",")
+            if "pageToken" not in params:
+                return Paginated([study(ids[0])],"page-two")
+            self.assertEqual(params["pageToken"],"page-two")
+            return Paginated([study(ids[1])])
+        records,count=mod.fetch_registry_batches(["NCT00000001","NCT00000002"],
+                                                 get=get,batch_size=2)
+        self.assertEqual(count,1)
+        self.assertEqual(set(records),{"NCT00000001","NCT00000002"})
+        self.assertEqual(len(observed),2)
+        self.assertEqual(observed[0]["pageSize"],1000)
+
     def test_missing_registry_is_disclosed_not_a_false_negative(self):
         pool,p3,caps,leads,catalog,fn=fixtures()
         def get(url,params,timeout,headers):
