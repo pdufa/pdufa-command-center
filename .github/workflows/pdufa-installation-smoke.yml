@@ -208,8 +208,28 @@ jobs:
           zero=tools()
           screen=zero.get("pipelineResearch")
           assert isinstance(screen,dict) and isinstance(screen.get("screenedTrials"),int), "Purple dated Pipeline screen not established"
-          assert 0<screen["screenedTrials"]<=375, "Screened research subset outside dated completed-census bounds"
+          # TOOLS screens the dated $300M–$10B issuer-cap inventory across ALL
+          # clinical phases. It is not the separate 375-completed-study 2026
+          # Phase 3 census. Verify exact live denominator accounting instead
+          # of imposing the unrelated historical completion bound.
+          scope=zero.get("restrictedScope")
+          assert isinstance(scope,dict), "Missing independent dated market-cap scope"
+          assert scope.get("scope")=="DATED_300M_10B_ISSUER_MARKET_CAP_SCREEN", "Unexpected market-cap restriction"
+          assert scope.get("qualification")=="NOT_VERIFIED", "Market-cap screen cannot qualify a drug"
+          original=scope.get("originalPoolTrials")
+          screened=scope.get("screenedTrials")
+          excluded=[scope.get(key) for key in ("excludedIssuerTrials","unverifiedCapTrials","outsideCapTrials")]
+          assert isinstance(original,int) and original>0, "Master clinical NCT denominator missing"
+          assert isinstance(screened,int) and 0<screened<=original, "Invalid cap-screened trial population"
+          assert all(isinstance(value,int) and 0<=value<=original for value in excluded), "Invalid cap exclusion counts"
+          assert screened+sum(excluded)==original, "Market-cap screen lost or duplicated source trials"
+          assert screen["screenedTrials"]==screened, "TOOLS Pipeline card and restricted source disagree"
+          assert isinstance(scope.get("eligibleIssuers"),int) and 0<scope["eligibleIssuers"]<=screened, "Missing source-backed issuer count"
+          assert isinstance(scope.get("capAsOf"),str) and scope["capAsOf"], "Dated market-cap source missing"
           assert screen.get("qualification")=="NOT_VERIFIED", "Screened count must not be called qualified"
+          print("PASS: dated all-phase cap screen reconciles",screened,"of",original,
+                "clinical trials; unverified-cap",excluded[1],"out-of-band",excluded[2],
+                "unlisted",excluded[0],"; still NOT_VERIFIED")
           assert zero.get("total")==0, "Zero checked filters should yield zero trial matches"
           assert zero.get("stageStats",{}).get("trials")>0, "POOL source trial count missing"
           print("PASS: Purple Pipeline card has",screen["screenedTrials"],"exact matched completed Phase 3 research NCTs; not fully qualified")
