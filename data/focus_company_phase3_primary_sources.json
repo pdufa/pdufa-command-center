@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "description": "Direct official issuer source index for all 29 FOCUS NCTs. Exact trial-program match and content retrieval must be adjudicated; no automatic verified survey facts.",
+  "sources": [
+    {
+      "nctId": "NCT05507203",
+      "ticker": "ABVX",
+      "url": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week",
+      "publicationDate": "2025-07-22",
+      "programContext": "ABTECT Phase 3 induction studies (study 105/106)",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05507216",
+      "ticker": "ABVX",
+      "url": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week",
+      "publicationDate": "2025-07-22",
+      "programContext": "ABTECT Phase 3 induction studies (study 105/106)",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT04576949",
+      "ticker": "ACHV",
+      "url": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
+      "publicationDate": "2026-07-01",
+      "programContext": "Cytisinicline ORCA-2 program regulatory update",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05206370",
+      "ticker": "ACHV",
+      "url": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
+      "publicationDate": "2026-07-01",
+      "programContext": "Cytisinicline ORCA-3 program regulatory update",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05811247",
+      "ticker": "APMD",
+      "url": "https://ir.apnimed.com/news-releases/news-release-details/apnimed-announces-publication-its-phase-3-synairgy-trial-ad109",
+      "publicationDate": "2026-05-18",
+      "programContext": "AD109 SynAIRgy trial peer-reviewed publication announcement",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05813275",
+      "ticker": "APMD",
+      "url": "https://ir.apnimed.com/news-releases/news-release-details/apnimed-reports-second-quarter-2026-financial-results-and",
+      "publicationDate": "2026-09-08",
+      "programContext": "AD109 Phase 3 SynAIRgy/LunAIRo summary",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05244304",
+      "ticker": "BLTE",
+      "url": "https://belitebio.gcs-web.com/news-releases/news-release-details/belite-bio-reports-unaudited-second-quarter-2026-financial",
+      "publicationDate": "2026-08-12",
+      "programContext": "Tinlarebant DRAGON trial update",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT06445023",
+      "ticker": "CLDX",
+      "url": "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+      "publicationDate": "2026-09-22",
+      "programContext": "Barzolvolimab EMBARQ-CSU1 randomized Phase 3 results",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT06455202",
+      "ticker": "CLDX",
+      "url": "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+      "publicationDate": "2026-09-22",
+      "programContext": "Barzolvolimab EMBARQ-CSU2 randomized Phase 3 results",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT03697109",
+      "ticker": "CORT",
+      "url": "https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-5/",
+      "publicationDate": "2026-11-03",
+      "programContext": "Relacorilant Cushing syndrome program update",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT04308590",
+      "ticker": "CORT",
+      "url": "https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-5/",
+      "publicationDate": "2026-11-03",
+      "programContext": "Relacorilant Cushing syndrome program update",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT04871282",
+      "ticker": "IMNM",
+      "url": "https://investors.immunome.com/immunome-presents-additional-clinical-data-for-varegacestat-in-desmoid-tumors-at-esmo-2026/",
+      "publicationDate": "2026-10-26",
+      "programContext": "Varegacestat RINGSIDE Phase 3 clinical data",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT06411379",
+      "ticker": "MLTX",
+      "url": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-reports-third-quarter-2026-financial-results-and",
+      "publicationDate": "2026-11-04",
+      "programContext": "Sonelokimab VELA program primary and long-term outcomes",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT06411899",
+      "ticker": "MLTX",
+      "url": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-reports-third-quarter-2026-financial-results-and",
+      "publicationDate": "2026-11-04",
+      "programContext": "Sonelokimab VELA program primary and long-term outcomes",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT06153693",
+      "ticker": "MLYS",
+      "url": "https://ir.mineralystx.com/news-events/press-releases/detail/123/mineralys-therapeutics-presents-new-lorundrostat-data-in",
+      "publicationDate": "2026-10-22",
+      "programContext": "Lorundrostat Launch-HTN Phase 3 CKD subgroup analysis",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT06343779",
+      "ticker": "PHVS",
+      "url": "https://ir.pharvaris.com/news-releases/news-release-details/phase-3-study-results-highlighting-deucrictibants-rapid-and",
+      "publicationDate": "2026-10-01",
+      "programContext": "Deucrictibant RAPIDe-3 NCT-specific published results",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT06669754",
+      "ticker": "PHVS",
+      "url": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-positive-topline-data-chapter-3-pivotal",
+      "publicationDate": "2026-09-08",
+      "programContext": "Deucrictibant CHAPTER-3 NCT-specific topline results",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT06087276",
+      "ticker": "PRAX",
+      "url": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
+      "publicationDate": "2025-10-16",
+      "programContext": "Ulixacaltamide Essential3 Phase 3 program results",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT06331299",
+      "ticker": "URGN",
+      "url": "https://investors.urogen.com/news-releases/news-release-details/urogen-announces-fda-acceptance-new-drug-application-ugn-103",
+      "publicationDate": "2026-10-21",
+      "programContext": "UGN-103 UTOPIA Phase 3 data and NDA",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT04716231",
+      "ticker": "VERA",
+      "url": "https://veratherapeutics.gcs-web.com/news-releases/news-release-details/vera-therapeutics-announces-trutaknatm-atacicept-vymj-stabilized",
+      "publicationDate": "2026-09-15",
+      "programContext": "Atacicept ORIGIN 3 final efficacy analysis",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05662241",
+      "ticker": "ZBIO",
+      "url": "https://investors.zenasbio.com/news-releases/news-release-details/zenas-biopharma-reports-third-quarter-2026-financial-results-and",
+      "publicationDate": "2026-11-05",
+      "programContext": "Obexelimab INDIGO phase 3 and regulatory update",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05059223",
+      "ticker": "AXSM",
+      "url": "https://www.axsome.com/news/axsome-therapeutics-announces-fda-acceptance-of-new-drug-app-13191",
+      "publicationDate": "2026-07-15",
+      "programContext": "AXS-12 narcolepsy NDA; program-level context, not endpoint results",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05113745",
+      "ticker": "AXSM",
+      "url": "https://www.axsome.com/news/axsome-therapeutics-announces-axs-12-achieves-primary-endpoi-11721",
+      "publicationDate": "2024-11-26",
+      "programContext": "AXS-12 ENCORE narcolepsy randomized withdrawal results",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05126758",
+      "ticker": "CAPR",
+      "url": "https://www.capricor.com/investors/news-events/press-releases/detail/331/capricor-therapeutics-announces-positive-topline-results",
+      "publicationDate": "2025-12-01",
+      "programContext": "Deramiocel HOPE-3 Phase 3 efficacy and safety results",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05208047",
+      "ticker": "COGT",
+      "url": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak",
+      "publicationDate": "2025-11-10",
+      "programContext": "Bezuclastinib PEAK Phase 3 randomized active comparator GIST",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05767346",
+      "ticker": "CYTK",
+      "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Additional-Results-from-ACACIA-HCM-and-MAPLE-HCM-Presented-in-Late-Breaking-Clinical-Trial-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026/default.aspx",
+      "publicationDate": "2026-08-29",
+      "programContext": "Aficamten MAPLE-HCM Phase 3 results versus metoprolol",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT06081894",
+      "ticker": "CYTK",
+      "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Topline-Results-from-ACACIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-with-Non-Obstructive-Hypertrophic-Cardiomyopathy/default.aspx",
+      "publicationDate": "2026-05-05",
+      "programContext": "Aficamten ACACIA-HCM Phase 3 randomized trial",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT02500381",
+      "ticker": "SRPT",
+      "url": "https://www.sarepta.com/products-pipeline/clinical-trials",
+      "publicationDate": "2025-11-18",
+      "programContext": "Sarepta official ESSENCE trial list NCT02500381; not a results disclosure",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT04544293",
+      "ticker": "SVRA",
+      "url": "https://investors.savarapharma.com/news/news-details/2024/Savara-Announces-Molgramostim-Nebulizer-Solution-Molgramostim-Achieved-Statistical-Significance-for-Primary-Endpoint-and-Multiple-Secondary-Endpoints-in-IMPALA-2-a-Pivotal-Phase-3-Clinical-Trial-in-Autoimmune-Pulmonary-Alveolar--06-26-2024/default.aspx",
+      "publicationDate": "2024-06-26",
+      "programContext": "Molgramostim IMPALA-2 phase 3 trial source explicitly NCT04544293",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    }
+  ]
+}

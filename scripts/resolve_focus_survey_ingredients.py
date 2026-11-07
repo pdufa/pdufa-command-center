@@ -125,7 +125,7 @@ def find_review_context(ingredient,slot,reg,packet,pubs,clinical):
  relevant.sort(key=lambda x:0 if x["matchClass"]=="EXACT_NCT_LEAD" else 1)
  return pointers, observations, relevant[:3]
 
-def build(roster,catalog,slots,packets,review_observations,publications,previous_statuses=None):
+def build(roster,catalog,slots,packets,review_observations,publications,previous_statuses=None,external_sources=None,company_links=None):
  if len(catalog)!=20 or [g.get("rank") for g in catalog]!=list(range(1,21)):
   raise ValueError("CANONICAL_20_SURVEYS_INVALID")
  ingredients=[(g["rank"],g["name"],x["id"],x["label"],x.get("evidenceRequirement",""))
@@ -155,6 +155,30 @@ def build(roster,catalog,slots,packets,review_observations,publications,previous
  for obj in publications:
   if obj["nctId"] not in by_id:raise ValueError("OUTSIDE_ROSTER_PUBLICATION")
   by_pubs[obj["nctId"]].append(obj)
+ all_ingredient_ids={item[2] for item in ingredients}
+ by_external=defaultdict(list)
+ for obj in external_sources or []:
+  nct=obj.get("nctId")
+  if nct not in by_id or obj.get("ticker")!=by_id[nct]["ticker"]:
+   raise ValueError("EXTERNAL_FOCUS_SOURCE_IDENTITY_MISMATCH")
+  if obj.get("status")!="SOURCE_CAPTURED_NEEDS_REVIEW" or obj.get("reviewed") is not False or \
+     not str(obj.get("sourceUrl","")).startswith("https://"):
+   raise ValueError("EXTERNAL_SOURCE_NOT_PRIMARY_RESEARCH_LEAD")
+  if any(x not in all_ingredient_ids for x in obj.get("ingredientCandidates",[])):
+   raise ValueError("EXTERNAL_SOURCE_NONCANONICAL_INGREDIENT")
+  if obj.get("sourceType") not in ("COMPANY","LITERATURE","FDA","SEC"):
+   raise ValueError("EXTERNAL_SOURCE_TYPE_UNSUPPORTED")
+  if obj.get("sourceMatch") not in ("EXACT_NCT","DRUG_AND_INDICATION"):
+   continue
+  for ingredient in obj.get("ingredientCandidates",[]):
+   by_external[(nct,ingredient)].append(obj)
+ by_company_links=defaultdict(list)
+ for obj in company_links or []:
+  nct=obj.get("nctId")
+  if nct not in by_id or obj.get("ticker")!=by_id[nct]["ticker"]:
+   raise ValueError("DIRECT_ISSUER_LINK_IDENTITY_MISMATCH")
+  if obj.get("url") and str(obj["url"]).startswith("https://"):
+   by_company_links[nct].append(obj["url"])
  out=[]
  for row in roster:
   nct=row["nct"]
@@ -167,6 +191,12 @@ def build(roster,catalog,slots,packets,review_observations,publications,previous
     raise ValueError("MISSING_CANONICAL_INGREDIENT:"+nct+":"+id)
    pointers,observations,links=find_review_context(
     id,slot,reg,packet,by_pubs[nct],by_reviews[nct])
+   public_candidates=by_external[(nct,id)]
+   # The first URL is a citation/research lead, not an accepted score.
+   public_candidates=sorted(public_candidates,key=lambda x:
+     (0 if x.get("sourceMatch")=="EXACT_NCT" else 1,
+      0 if x.get("sourceType")=="COMPANY" else 1,
+      str(x.get("sourceUrl",""))))
    already_verified=slot.get("status")=="VERIFIED"
    if already_verified:
     if not slot.get("reviewedSourceUrl") or not slot.get("reviewedSourceDate"):
@@ -176,6 +206,8 @@ def build(roster,catalog,slots,packets,review_observations,publications,previous
     disposition="PRIMARY_SOURCE_INTERPRETATION_REQUIRED"
    elif links:
     disposition="PUBLICATION_CONTENT_REVIEW_REQUIRED"
+   elif public_candidates:
+    disposition="EXTERNAL_PRIMARY_SOURCE_CONTENT_REVIEW_REQUIRED"
    elif id in MODEL_DEPENDENT:
     disposition="MODELING_INPUTS_UNAVAILABLE"
    else:
@@ -184,9 +216,13 @@ def build(roster,catalog,slots,packets,review_observations,publications,previous
    official=CLINICAL_URL+nct
    if pointers: next_url=official
    elif links: next_url=links[0].get("url",PRIMARY[number])
+   elif public_candidates: next_url=public_candidates[0]["sourceUrl"]
+   elif number<=8 and by_company_links.get(nct):
+    next_url=by_company_links[nct][0]
    else: next_url=(official if PRIMARY[number]==CLINICAL_URL else PRIMARY[number])
    source_urls=[official] if pointers else []
    source_urls.extend(x.get("url") for x in links if x.get("url"))
+   source_urls.extend(x.get("sourceUrl") for x in public_candidates if x.get("sourceUrl"))
    source_urls=list(dict.fromkeys(source_urls))[:4]
    status=slot.get("status","MISSING")
    out.append({
@@ -200,6 +236,9 @@ def build(roster,catalog,slots,packets,review_observations,publications,previous
     "supportingRegistryPointers":pointers,
     "primaryObservationCount":len(observations),
     "publicationReviewLeads":len(links),
+    "externalPublicSourceLeads":len(public_candidates),
+    "externalPublicSourceTypes":list(dict.fromkeys(x.get("sourceType") for x in public_candidates)),
+    "linkedCompanyDisclosureSources":len(by_company_links.get(nct,[])),
     "sourceUrls":source_urls,
     "recommendedSource":next_url,
     "missingEvidenceRequirement":requirement,
@@ -221,7 +260,7 @@ def summary_of(rows,roster):
  for category in range(1,21):
   d=[r for r in rows if r["surveyNumber"]==category]
   by_survey.append({"surveyNumber":category,"survey":d[0]["surveyName"],
-    "slots":len(d),"sourceContext":sum(bool(x["supportingRegistryPointers"] or x["publicationReviewLeads"]) for x in d),
+    "slots":len(d),"sourceContext":sum(bool(x["supportingRegistryPointers"] or x["publicationReviewLeads"] or x.get("externalPublicSourceLeads")) for x in d),
     "sourceInterpretationRequired":sum(x["researchDisposition"]=="PRIMARY_SOURCE_INTERPRETATION_REQUIRED" for x in d),
     "verified":sum(x["isSurveyAnswerVerified"] for x in d),
     "researchGaps":sum(x["researchDisposition"] in
@@ -238,7 +277,8 @@ def summary_of(rows,roster):
   "researchDispositionCoveragePercent":round(100*sum(dispositions.values())/len(rows),2),
   "verifiedSurveyAnswers":verified,
   "verifiedSurveyPercent":round(100*verified/len(rows),2),
-  "sourceContextSlots":sum(bool(x["supportingRegistryPointers"] or x["publicationReviewLeads"]) for x in rows),
+  "sourceContextSlots":sum(bool(x["supportingRegistryPointers"] or x["publicationReviewLeads"] or x.get("externalPublicSourceLeads")) for x in rows),
+  "externalSourceMappedSlots":sum(bool(x.get("externalPublicSourceLeads")) for x in rows),
   "dispositions":dict(dispositions),"bySurvey":by_survey,"byTrial":by_trial,
   "warning":"100% research disposition coverage does NOT mean 100% verified evidence, graded surveys, or validated RAAS."}
 
@@ -250,13 +290,25 @@ def run():
  triage=load(OUT/"review-queue.json")["observations"]
  pubs=load(OUT/"publication-triage.json")["articles"]
  packets={row["nct"]:load(REGISTRY_PATH/(row["nct"]+".json")) for row in roster}
- items=build(roster,groups,slots,packets,triage,pubs)
+ # Five-source and direct-issuer company research must run BEFORE this audit.
+ external=[]
+ for filename in ("five-source-leads.json","company-direct-source-candidates.json"):
+  source_path=OUT/filename
+  # During code-review tests new collection artifacts do not exist yet;
+  # the deployment workflow always collects these before calculating gaps.
+  if source_path.exists():
+   external+=load(source_path).get("records",[])
+ index_path=OUT/"company-direct-source-ledger.json"
+ company_links=load(index_path).get("rows",[]) if index_path.exists() else []
+ items=build(roster,groups,slots,packets,triage,pubs,
+   external_sources=external,company_links=company_links)
  summary=summary_of(items,roster)
  save(OUT/"resolution-worklist.json",{"schemaVersion":1,"items":items})
  headers=["nctId","ticker","company","surveyNumber","surveyName","ingredientId",
           "ingredientName","priorEvidenceStatus","researchDisposition",
           "reviewedAnswer","registryIndications","drugCandidates","supportingRegistryPointers",
-          "primaryObservationCount","publicationReviewLeads","recommendedSource",
+          "primaryObservationCount","publicationReviewLeads","externalPublicSourceLeads",
+          "externalPublicSourceTypes","linkedCompanyDisclosureSources","recommendedSource",
           "missingEvidenceRequirement","nextEvidenceStep","requiresModelAssumptions",
           "applicability","isSurveyAnswerVerified","sourcePacketHash"]
  with (OUT/"resolution-worklist.csv").open("w",encoding="utf-8",newline="") as file:
