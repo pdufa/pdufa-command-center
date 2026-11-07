@@ -62,3 +62,11 @@ test('TOP UI replacement leaves original POST sheet invocation and scoring modul
  const ui=fs.readFileSync(path.join(__dirname,'../app/Phase3SourceOnlySheets.tsx'),'utf8');assert.match(ui,/<TopOnlyCompletionSheet query=\{query\}\/>/);assert.match(ui,/<Sheet kind="POST_DATA" rows=\{post\} query=\{query\} scores=\{scores\} scoreLoading=\{scoreLoading\} coverage=\{coverage\} coverageLoading=\{coverageLoading\}\/>/);
  const model=fs.readFileSync(path.join(__dirname,'../lib/top-only-completion.ts'),'utf8');assert.doesNotMatch(model,/writeFile|sendTelegram|GEM_JR|streamlit|updatePipeline/);
 });
+test('SEC-hosted Candel facts fill previously missing TOP questions without creating grades',()=>{
+ const trial=report.trials.find(t=>t.nctId==='NCT01436968');assert.ok(trial);
+ for(const q of [4,19,28]){assert.equal(trial.questions[q-1].state,'VERIFIED');assert.ok(trial.additionalReviewedFacts.some(f=>f.question===q&&f.sourceUrl.startsWith('https://www.sec.gov/Archives/edgar/')));}
+ assert.equal(trial.worksheet,'TOP');assert.equal(trial.prospectivePrediction,null);
+ const canonical=require('../lib/raas-clinical-five.ts').clinicalFiveForTrial;
+ assert.equal(trial.metrics.filter(m=>m.activeInClinicalModel).length,5);
+ assert.equal(trial.metrics.filter(m=>m.activeInClinicalModel&&m.score!==null).length,trial.clinicalScoredFactors);
+});
