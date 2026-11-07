@@ -587,6 +587,15 @@
       "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41974149/",
       "evidence": "Mature ROSELLA randomized observed overall survival extended by 4.1 median months versus active monotherapy control.",
       "criticalLimit": "No prospective prediction or generalization outside the trial's population."
+    },
+    {
+      "nctId": "NCT04770779",
+      "question": 16,
+      "classification": "PUBLISHED_48_WEEK_RESPONSE_NOT_YET_LONG_TERM_REPLICATION",
+      "sourceDate": "2026-09-12",
+      "sourceUrl": "https://onlinelibrary.wiley.com/doi/10.1002/ajh.70472",
+      "evidence": "ENERGIZE-T NCT04770779 used a 48-week randomized blinded period and a primary transfusion response defined in any consecutive 12-week interval. Its extension is open-label and planned up to five years. The 48-week endpoint is not proof each patient maintained response across 48 weeks.",
+      "criticalLimit": "Ongoing extension is not independent placebo-controlled replication; long-term individual response durability cannot be inferred from primary 12-week response window."
     }
   ]
 }
