@@ -1,0 +1,16 @@
+{
+  "counts": {
+    "ANALYSIS_DENOMINATOR": 160,
+    "ARITHMETIC_GROUP_DIFFERENCE_UNREVIEWED": 79,
+    "POSTED_STATISTICAL_ANALYSIS": 53,
+    "REPORTED_GROUP_OUTCOME": 232
+  },
+  "officialRegistryRetrieved": 29,
+  "postedResultTrials": 12,
+  "registryErrors": {},
+  "reviewedStatisticalFindings": 0,
+  "savedObservations": 524,
+  "schemaVersion": 1,
+  "trials": 29,
+  "warning": "No extracted source statistics have been independently validated; A−B arithmetic is only a descriptive draft."
+}
