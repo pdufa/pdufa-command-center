@@ -1,0 +1,435 @@
+{
+  "bySurvey": [
+    {
+      "researchGaps": 29,
+      "slots": 58,
+      "sourceContext": 29,
+      "sourceInterpretationRequired": 29,
+      "survey": "Patient Population",
+      "surveyNumber": 1,
+      "verified": 0
+    },
+    {
+      "researchGaps": 29,
+      "slots": 87,
+      "sourceContext": 58,
+      "sourceInterpretationRequired": 58,
+      "survey": "Unmet Medical Need",
+      "surveyNumber": 2,
+      "verified": 0
+    },
+    {
+      "researchGaps": 112,
+      "slots": 174,
+      "sourceContext": 62,
+      "sourceInterpretationRequired": 42,
+      "survey": "Clinical Benefit",
+      "surveyNumber": 3,
+      "verified": 0
+    },
+    {
+      "researchGaps": 29,
+      "slots": 29,
+      "sourceContext": 0,
+      "sourceInterpretationRequired": 0,
+      "survey": "Survival Benefit",
+      "surveyNumber": 4,
+      "verified": 0
+    },
+    {
+      "researchGaps": 26,
+      "slots": 29,
+      "sourceContext": 3,
+      "sourceInterpretationRequired": 2,
+      "survey": "Quality-of-Life Improvement",
+      "surveyNumber": 5,
+      "verified": 0
+    },
+    {
+      "researchGaps": 115,
+      "slots": 145,
+      "sourceContext": 30,
+      "sourceInterpretationRequired": 30,
+      "survey": "Competitive Advantage",
+      "surveyNumber": 6,
+      "verified": 0
+    },
+    {
+      "researchGaps": 0,
+      "slots": 58,
+      "sourceContext": 58,
+      "sourceInterpretationRequired": 58,
+      "survey": "Treatment Convenience",
+      "surveyNumber": 7,
+      "verified": 0
+    },
+    {
+      "researchGaps": 55,
+      "slots": 87,
+      "sourceContext": 32,
+      "sourceInterpretationRequired": 24,
+      "survey": "Safety Advantage",
+      "surveyNumber": 8,
+      "verified": 0
+    },
+    {
+      "researchGaps": 75,
+      "slots": 87,
+      "sourceContext": 12,
+      "sourceInterpretationRequired": 12,
+      "survey": "Healthcare Cost Savings",
+      "surveyNumber": 9,
+      "verified": 0
+    },
+    {
+      "researchGaps": 29,
+      "slots": 29,
+      "sourceContext": 0,
+      "sourceInterpretationRequired": 0,
+      "survey": "Insurance Coverage Potential",
+      "surveyNumber": 10,
+      "verified": 0
+    },
+    {
+      "researchGaps": 29,
+      "slots": 29,
+      "sourceContext": 0,
+      "sourceInterpretationRequired": 0,
+      "survey": "Expected Treatment Price",
+      "surveyNumber": 11,
+      "verified": 0
+    },
+    {
+      "researchGaps": 58,
+      "slots": 58,
+      "sourceContext": 0,
+      "sourceInterpretationRequired": 0,
+      "survey": "Market Penetration",
+      "surveyNumber": 12,
+      "verified": 0
+    },
+    {
+      "researchGaps": 29,
+      "slots": 29,
+      "sourceContext": 0,
+      "sourceInterpretationRequired": 0,
+      "survey": "International Patient Population",
+      "surveyNumber": 13,
+      "verified": 0
+    },
+    {
+      "researchGaps": 29,
+      "slots": 29,
+      "sourceContext": 0,
+      "sourceInterpretationRequired": 0,
+      "survey": "Additional Indications",
+      "surveyNumber": 14,
+      "verified": 0
+    },
+    {
+      "researchGaps": 29,
+      "slots": 29,
+      "sourceContext": 0,
+      "sourceInterpretationRequired": 0,
+      "survey": "Peak Annual Sales",
+      "surveyNumber": 15,
+      "verified": 0
+    },
+    {
+      "researchGaps": 29,
+      "slots": 29,
+      "sourceContext": 0,
+      "sourceInterpretationRequired": 0,
+      "survey": "Revenue Growth Potential",
+      "surveyNumber": 16,
+      "verified": 0
+    },
+    {
+      "researchGaps": 29,
+      "slots": 29,
+      "sourceContext": 0,
+      "sourceInterpretationRequired": 0,
+      "survey": "Patent and Exclusivity Value",
+      "surveyNumber": 17,
+      "verified": 0
+    },
+    {
+      "researchGaps": 29,
+      "slots": 29,
+      "sourceContext": 0,
+      "sourceInterpretationRequired": 0,
+      "survey": "Licensing and Partnership Value",
+      "surveyNumber": 18,
+      "verified": 0
+    },
+    {
+      "researchGaps": 29,
+      "slots": 29,
+      "sourceContext": 0,
+      "sourceInterpretationRequired": 0,
+      "survey": "Company Valuation Impact",
+      "surveyNumber": 19,
+      "verified": 0
+    },
+    {
+      "researchGaps": 29,
+      "slots": 29,
+      "sourceContext": 0,
+      "sourceInterpretationRequired": 0,
+      "survey": "Shareholder Upside and Risk",
+      "surveyNumber": 20,
+      "verified": 0
+    }
+  ],
+  "byTrial": [
+    {
+      "nctId": "NCT05507203",
+      "publicationLeads": 0,
+      "registryPointers": 13,
+      "slots": 38,
+      "ticker": "ABVX",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT05507216",
+      "publicationLeads": 0,
+      "registryPointers": 13,
+      "slots": 38,
+      "ticker": "ABVX",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT04576949",
+      "publicationLeads": 0,
+      "registryPointers": 13,
+      "slots": 38,
+      "ticker": "ACHV",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT05206370",
+      "publicationLeads": 0,
+      "registryPointers": 13,
+      "slots": 38,
+      "ticker": "ACHV",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT05811247",
+      "publicationLeads": 0,
+      "registryPointers": 12,
+      "slots": 38,
+      "ticker": "APMD",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT05813275",
+      "publicationLeads": 1,
+      "registryPointers": 12,
+      "slots": 38,
+      "ticker": "APMD",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT05059223",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "AXSM",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT05113745",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "AXSM",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT05244304",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "BLTE",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT05126758",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "CAPR",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT06445023",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "CLDX",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT06455202",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "CLDX",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT05208047",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "COGT",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT03697109",
+      "publicationLeads": 9,
+      "registryPointers": 14,
+      "slots": 38,
+      "ticker": "CORT",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT04308590",
+      "publicationLeads": 9,
+      "registryPointers": 12,
+      "slots": 38,
+      "ticker": "CORT",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT05767346",
+      "publicationLeads": 0,
+      "registryPointers": 14,
+      "slots": 38,
+      "ticker": "CYTK",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT06081894",
+      "publicationLeads": 9,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "CYTK",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT04871282",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "IMNM",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT06411379",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "MLTX",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT06411899",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "MLTX",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT06153693",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "MLYS",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT06343779",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "PHVS",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT06669754",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "PHVS",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT06087276",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "PRAX",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT02500381",
+      "publicationLeads": 0,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "SRPT",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT04544293",
+      "publicationLeads": 0,
+      "registryPointers": 12,
+      "slots": 38,
+      "ticker": "SVRA",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT06331299",
+      "publicationLeads": 0,
+      "registryPointers": 13,
+      "slots": 38,
+      "ticker": "URGN",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT04716231",
+      "publicationLeads": 6,
+      "registryPointers": 12,
+      "slots": 38,
+      "ticker": "VERA",
+      "verified": 0
+    },
+    {
+      "nctId": "NCT05662241",
+      "publicationLeads": 9,
+      "registryPointers": 6,
+      "slots": 38,
+      "ticker": "ZBIO",
+      "verified": 0
+    }
+  ],
+  "dispositionCount": 1102,
+  "dispositions": {
+    "ADDITIONAL_PRIMARY_RESEARCH_REQUIRED": 528,
+    "MODELING_INPUTS_UNAVAILABLE": 290,
+    "PRIMARY_SOURCE_INTERPRETATION_REQUIRED": 255,
+    "PUBLICATION_CONTENT_REVIEW_REQUIRED": 29
+  },
+  "ingredients": 38,
+  "researchDispositionCoveragePercent": 100.0,
+  "schemaVersion": 1,
+  "slots": 1102,
+  "sourceContextSlots": 284,
+  "surveys": 20,
+  "trials": 29,
+  "verifiedSurveyAnswers": 0,
+  "verifiedSurveyPercent": 0.0,
+  "warning": "100% research disposition coverage does NOT mean 100% verified evidence, graded surveys, or validated RAAS."
+}
