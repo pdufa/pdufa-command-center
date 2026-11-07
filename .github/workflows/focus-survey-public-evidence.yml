@@ -21,6 +21,8 @@ on:
       - 'scripts/sync_focus_sec_facts_to_sheets.py'
       - 'tests/test_focus_sec_financial_facts.py'
       - 'tests/test_focus_survey_reviewed_primary_facts.py'
+      - 'tests/test_focus_maple_review.py'
+      - 'tests/test_focus_orca_review.py'
       - 'new-platform/frontend/data/benefit-assessment-research.json'
       - 'data/phase3_benefit_survey_catalog.json'
   push:
@@ -73,6 +75,10 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_focus_sec_financial_facts.py' -v
       - name: Validate manually reviewed primary effect sources and identity
         run: python -m unittest discover -s tests -p 'test_focus_survey_reviewed_primary_facts.py' -v
+      - name: Confirm MAPLE-HCM clinical benefit and comparator evidence matches original source snapshot
+        run: python -m unittest discover -s tests -p 'test_focus_maple_review.py' -v
+      - name: Confirm both cytisinicline RCTs match exact primary endpoint statistical records
+        run: python -m unittest discover -s tests -p 'test_focus_orca_review.py' -v
       - name: Dry-run and verify canonical ingredient slots
         run: python scripts/collect_focus_survey_evidence.py --dry-run
 
