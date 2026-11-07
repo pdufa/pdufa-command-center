@@ -30,7 +30,7 @@
       "sourceUrl": "https://ir.geron.com/static-files/6b164d12-0852-4384-91d3-9cfb07905abc",
       "sourceDate": "2025-09",
       "retrievedAt": "2026-11-07T00:34:15.342625+00:00",
-      "evidence": "IMpactMF/MYF3001 poster describes stratification by intermediate-2 versus high DIPSS risk and baseline platelet strata (75 to below150 versus at least150 \u00d710^9/L). Prespecified strata do not establish subgroup efficacy.",
+      "evidence": "IMpactMF/MYF3001 poster describes stratification by intermediate-2 versus high DIPSS risk and baseline platelet strata (75 to below150 versus at least150 ×10^9/L). Prespecified strata do not establish subgroup efficacy.",
       "evidenceClassification": "DOCUMENTED_SOURCE_FACT",
       "identity": "Exact NCT present in source full text; individual named study/component checked against the registry",
       "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
@@ -173,7 +173,7 @@
       "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42848980/",
       "sourceDate": "2026-10-08",
       "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
-      "evidence": "In RINGSIDE Phase II extension,29 selected participants received1.2mg daily; median exposure102weeks, median best tumor-volume change\u221285.88%, confirmed response57.1%. These selected open-label precursor data do not answer the ongoing Phase III endpoint.",
+      "evidence": "In RINGSIDE Phase II extension,29 selected participants received1.2mg daily; median exposure102weeks, median best tumor-volume change−85.88%, confirmed response57.1%. These selected open-label precursor data do not answer the ongoing Phase III endpoint.",
       "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
       "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
       "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
@@ -316,7 +316,7 @@
       "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42544039/",
       "sourceDate": null,
       "retrievedAt": "2026-11-07T00:49:04.816096+00:00",
-      "evidence": "FOREST-HCM patient-reported-outcome follow-up included172 participants reaching48weeks by August31,2024. Mean KCCQ overall-summary change was+18.8(95%CI16.9\u201320.6). This uncontrolled extension observation supports reported durability, not randomized long-term comparative benefit.",
+      "evidence": "FOREST-HCM patient-reported-outcome follow-up included172 participants reaching48weeks by August31,2024. Mean KCCQ overall-summary change was+18.8(95%CI16.9–20.6). This uncontrolled extension observation supports reported durability, not randomized long-term comparative benefit.",
       "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
       "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
       "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
@@ -331,6 +331,39 @@
       "evidenceClassification": "DOCUMENTED_PHASE_APPROPRIATE_PUBLICATION_FACT",
       "identity": "Exact NCT in official PubMed metadata; abstract-specific component reviewed against registry",
       "confidence": "HIGH_FOR_SOURCE_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT01436968",
+      "question": 4,
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1841387/000119312526386561/d738484dex991.htm",
+      "sourceDate": "2026-09",
+      "retrievedAt": "2026-11-07T02:07:08.644Z",
+      "evidence": "Candel's September 2026 SEC-filed corporate presentation describes aglatimagene (CAN-2409) as a replication-defective adenoviral HSV-TK delivery system; valacyclovir activation and radiotherapy are proposed to promote tumor-cell injury and immune priming. This is issuer-described mechanistic rationale, not demonstrated target validation or a score.",
+      "evidenceClassification": "DOCUMENTED_SOURCE_FACT",
+      "identity": "Exact NCT01436968 on presentation's Phase 3 design slide; associated aglatimagene program statement and disclosure checked within same SEC-hosted exhibit",
+      "confidence": "HIGH_FOR_ISSUER_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT01436968",
+      "question": 19,
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1841387/000119312526386561/d738484dex991.htm",
+      "sourceDate": "2026-09",
+      "retrievedAt": "2026-11-07T02:07:08.644Z",
+      "evidence": "The SEC-filed September 2026 presentation explicitly labels ADT subgroup analyses exploratory/descriptive among 692 participants with ADT-use information. Some subgroup estimates have wide intervals (including high-risk/ADT HR 0.69, 95% CI 0.29–1.67). These descriptive figures are not confirmatory subgroup efficacy, a prospective forecast, or a numerical grade.",
+      "evidenceClassification": "DOCUMENTED_SOURCE_FACT",
+      "identity": "Exact NCT01436968 on presentation's Phase 3 design slide; associated aglatimagene program statement and disclosure checked within same SEC-hosted exhibit",
+      "confidence": "HIGH_FOR_ISSUER_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
+    },
+    {
+      "nctId": "NCT01436968",
+      "question": 28,
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1841387/000119312526386561/d738484dex991.htm",
+      "sourceDate": "2026-09",
+      "retrievedAt": "2026-11-07T02:07:08.644Z",
+      "evidence": "Candel's September 2026 SEC-filed presentation states that the disease-free survival endpoint had an FDA Special Protocol Assessment in 2019. This records only the issuer's stated regulatory characterization; no independent FDA document, current alignment, approval, or PDUFA date is inferred.",
+      "evidenceClassification": "DOCUMENTED_ISSUER_REGULATORY_CLAIM_NOT_FDA_VERIFIED",
+      "identity": "Exact NCT01436968 on presentation's Phase 3 design slide; associated aglatimagene program statement and disclosure checked within same SEC-hosted exhibit",
+      "confidence": "HIGH_FOR_ISSUER_STATEMENT_NOT_INDEPENDENT_SCIENTIFIC_GRADE"
     }
   ]
 }
