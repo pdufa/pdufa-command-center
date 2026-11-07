@@ -22,9 +22,10 @@ test("active site navigation lists only POOL, P3 POST-DATA and POOL tools",()=>{
 
 test("P3 POST-DATA static screenshot snapshot has 25 unique in-range NCT records with source links",()=>{
  const page=source("app/p3-post-data/page.tsx");
- const raw=page.match(/const trials=([\s\S]*?);\s*export default function P3PostDataPage/);
- assert.ok(raw,"Expected a static P3 POST-DATA record array");
- const records=JSON.parse(raw[1]);
+ const snapshot=JSON.parse(source("data/p3PostDataActive.json"));
+ assert.equal(snapshot.schemaVersion,1);
+ const records=snapshot.records;
+ assert.match(page,/import snapshot from/);
  assert.equal(records.length,25);
  assert.equal(new Set(records.map(t=>t.nct)).size,25);
  for(const t of records){
