@@ -45,8 +45,19 @@ class TestExternalPrimaryFacts(unittest.TestCase):
    self.assertEqual(r["ticker"],roster[nct]["ticker"])
    self.assertEqual(r["drug"],expect["drug"])
    self.assertEqual(r["indication"],expect["indication"])
-   self.assertEqual(set(r["facts"]),set(expect["expected"]))
+   self.assertTrue(set(expect["expected"]).issubset(set(r["facts"])))
+   self.assertEqual(set(r["facts"])-set(expect["expected"]),
+                    {"responseRemission"} if nct=="NCT04871282" else set())
    self.assertEqual(r.get("advantages"),[])
+   if nct=="NCT04871282":
+    response=r["facts"]["responseRemission"]
+    self.assertEqual(response["status"],"VERIFIED")
+    self.assertEqual(response["sourceDate"],"2026-10-26")
+    self.assertEqual(response["sourceUrl"],"https://investors.immunome.com/immunome-presents-additional-clinical-data-for-varegacestat-in-desmoid-tumors-at-esmo-2026/")
+    self.assertIn("56%",response["value"])
+    self.assertIn("9%",response["value"])
+    self.assertIn("NCT04871282",response["method"])
+
    packet=json.loads((PACKETS/(nct+".json")).read_text(encoding="utf-8"))
    reg=packet["registry"]
    self.assertEqual(packet["nctId"],nct)
