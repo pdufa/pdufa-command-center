@@ -17,8 +17,8 @@ test("258 active NCTs are unique, independently identifiable, and exclude the hi
  const rows=[...activePhase3Cohorts.pre,...activePhase3Cohorts.post];
  assert.equal(rows.length,258);
  assert.equal(new Set(rows.map(r=>r.nctId)).size,258);
- assert.equal(activePhase3Cohorts.pre.length,235);
- assert.equal(activePhase3Cohorts.post.length,23);
+ assert.equal(activePhase3Cohorts.pre.length,229);
+ assert.equal(activePhase3Cohorts.post.length,29);
 });
 test("live registry selection is exact-NCT scoped, with sourced eligibility, PRO, subgroup and site metadata",async()=>{
  const active=[...activePhase3Cohorts.pre,...activePhase3Cohorts.post];
