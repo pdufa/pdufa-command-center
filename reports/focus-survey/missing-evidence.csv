@@ -593,8 +593,6 @@ NCT06081894,CYTK,"Cytokinetics, Inc.",1,Patient Population,bestSubgroup,Best-Res
 NCT06081894,CYTK,"Cytokinetics, Inc.",2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT06081894,CYTK,"Cytokinetics, Inc.",2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT06081894,CYTK,"Cytokinetics, Inc.",2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,16,No source-validated ingredient answer,,,0
-NCT06081894,CYTK,"Cytokinetics, Inc.",3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,MISSING,,,,16,No source-validated ingredient answer,,,0
-NCT06081894,CYTK,"Cytokinetics, Inc.",3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT06081894,CYTK,"Cytokinetics, Inc.",3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT06081894,CYTK,"Cytokinetics, Inc.",3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT06081894,CYTK,"Cytokinetics, Inc.",3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,16,No source-validated ingredient answer,,,0
@@ -631,8 +629,6 @@ NCT04871282,IMNM,"Immunome, Inc.",1,Patient Population,bestSubgroup,Best-Respond
 NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,14,No source-validated ingredient answer,,,0
 NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,14,No source-validated ingredient answer,,,0
 NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,14,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,MISSING,,,,14,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,14,No source-validated ingredient answer,,,0
 NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,14,No source-validated ingredient answer,,,0
 NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,14,No source-validated ingredient answer,,,0
 NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,14,No source-validated ingredient answer,,,0

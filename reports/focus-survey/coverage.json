@@ -18,11 +18,11 @@
     },
     {
       "capturedNeedsReview": 27,
-      "missing": 130,
+      "missing": 126,
       "name": "Clinical Benefit",
       "slots": 174,
       "surveyNumber": 3,
-      "verified": 17
+      "verified": 21
     },
     {
       "capturedNeedsReview": 0,
@@ -309,20 +309,20 @@
     {
       "capturedNeedsReview": 2,
       "literatureLeads": 16,
-      "missing": 36,
+      "missing": 34,
       "nctId": "NCT06081894",
       "registryRetrieved": true,
       "ticker": "CYTK",
-      "verified": 0
+      "verified": 2
     },
     {
       "capturedNeedsReview": 2,
       "literatureLeads": 14,
-      "missing": 36,
+      "missing": 34,
       "nctId": "NCT04871282",
       "registryRetrieved": true,
       "ticker": "IMNM",
-      "verified": 0
+      "verified": 2
     },
     {
       "capturedNeedsReview": 2,
@@ -425,7 +425,7 @@
     }
   ],
   "focusTrials": 29,
-  "generatedAt": "2026-11-07T20:15:57+00:00",
+  "generatedAt": "2026-11-07T20:25:42+00:00",
   "googleSheetsSync": "SUCCESS",
   "ingredientSlots": 1102,
   "leadCapturePercent": 10.07,
@@ -434,15 +434,15 @@
   "sourceRegistryTrials": 29,
   "statuses": {
     "IDENTITY_REVIEW_REQUIRED": 0,
-    "MISSING": 971,
+    "MISSING": 967,
     "MODELED": 0,
     "NOT_APPLICABLE": 0,
     "SOURCE_CAPTURED_NEEDS_REVIEW": 111,
     "SOURCE_UNAVAILABLE": 0,
-    "VERIFIED": 20
+    "VERIFIED": 24
   },
   "surveyCategories": 20,
   "surveyIngredients": 38,
-  "verifiedPercent": 1.81,
+  "verifiedPercent": 2.18,
   "warning": "Registry and literature leads are not reviewed ingredient findings. 38 slots per trial does not mean 38 verified assessments."
 }

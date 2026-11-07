@@ -1,9 +1,9 @@
 {
   "companyIssuers": 20,
-  "errorCount": 19,
+  "errorCount": 20,
   "focusTrials": 29,
-  "generatedAt": "2026-11-07T20:15:55+00:00",
-  "newSourceLeads": 555,
+  "generatedAt": "2026-11-07T20:25:40+00:00",
+  "newSourceLeads": 552,
   "perTrial": [
     {
       "candidateIngredientIds": [
@@ -274,11 +274,10 @@
       "candidateIngredientIds": [],
       "nctId": "NCT04871282",
       "sourceCounts": {
-        "COMPANY": 3,
         "FDA": 1,
         "LITERATURE": 19
       },
-      "strongSourceContext": 1,
+      "strongSourceContext": 0,
       "ticker": "IMNM"
     },
     {
@@ -427,7 +426,7 @@
   ],
   "schemaVersion": 1,
   "sourceCounts": {
-    "COMPANY": 24,
+    "COMPANY": 21,
     "FDA": 31,
     "LITERATURE": 488,
     "SEC": 12
@@ -484,14 +483,14 @@
       "ticker": "ABVX"
     },
     {
-      "error": "ValueError:PUBLIC_SOURCE_TOO_LARGE",
-      "sourceType": "COMPANY",
-      "ticker": "ACHV"
-    },
-    {
       "error": "HTTP_403",
       "sourceType": "COMPANY",
       "ticker": "MLTX"
+    },
+    {
+      "error": "ValueError:PUBLIC_SOURCE_TOO_LARGE",
+      "sourceType": "COMPANY",
+      "ticker": "ACHV"
     },
     {
       "error": "HTTP_403",
@@ -516,12 +515,17 @@
     {
       "error": "HTTP_403",
       "sourceType": "COMPANY",
-      "ticker": "VERA"
+      "ticker": "ZBIO"
     },
     {
       "error": "HTTP_403",
       "sourceType": "COMPANY",
-      "ticker": "ZBIO"
+      "ticker": "VERA"
+    },
+    {
+      "error": "ValueError:PUBLIC_SOURCE_UNEXPECTED_RESPONSE",
+      "sourceType": "COMPANY",
+      "ticker": "IMNM"
     },
     {
       "error": "URLError:<urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1011)>",

@@ -1,7 +1,7 @@
 surveyNumber,name,slots,verified,capturedNeedsReview,missing
 1,Patient Population,58,0,0,58
 2,Unmet Medical Need,87,0,0,87
-3,Clinical Benefit,174,17,27,130
+3,Clinical Benefit,174,21,27,126
 4,Survival Benefit,29,0,0,29
 5,Quality-of-Life Improvement,29,0,2,27
 6,Competitive Advantage,145,1,0,144

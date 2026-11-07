@@ -220,36 +220,6 @@
     },
     {
       "candidateDrugs": [
-        "AL102"
-      ],
-      "company": "Immunome, Inc.",
-      "excerpt": "Immunome Presents Additional Clinical Data for Varegacestat in Desmoid Tumors at ESMO 2026 - Investor Relations Skip to main content Skip to footer Opens in a new tab Overview News Events & Presentations Events Presentations Stock Info Financials SEC Filings Governance Governance Documents Board of Directors Executive Management Committee Composition Resources Investor Email Alerts Investor Contacts Overview News Events & Presentations Events Presentations Stock Info Financials SEC Filings Governance Governance Documents Board of Directors Executive Management Committee Composition Resources Investor Email Alerts Investor Contacts Home 2022 Immunome Presents Additional Clinical Data for Vare",
-      "ingredientCandidates": [],
-      "nctId": "NCT04871282",
-      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
-      "registryIndications": [
-        "Desmoid",
-        "Desmoid Tumor"
-      ],
-      "reviewed": false,
-      "sourceDate": "2026-10-26T11:00:35+00:00",
-      "sourceDetails": {
-        "contentSha256": "cade8009e9242c662a54ac61296bd8a6dd6ca52fc3777f40b83e316a096f3146",
-        "exactNctMentionInFullPage": true,
-        "originalSourceUrl": "https://investors.immunome.com/immunome-presents-additional-clinical-data-for-varegacestat-in-desmoid-tumors-at-esmo-2026/",
-        "seedContext": "Varegacestat RINGSIDE Phase 3 clinical data",
-        "sourceChars": 11303,
-        "sourceDiscovery": "CURATED_ISSUER_PUBLIC_PHASE3_RELEASE"
-      },
-      "sourceMatch": "EXACT_NCT",
-      "sourceTitle": "Immunome Presents Additional Clinical Data for Varegacestat in Desmoid Tumors at ESMO 2026 - Investor Relations",
-      "sourceType": "COMPANY",
-      "sourceUrl": "https://investors.immunome.com/immunome-presents-additional-clinical-data-for-varegacestat-in-desmoid-tumors-at-esmo-2026/",
-      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
-      "ticker": "IMNM"
-    },
-    {
-      "candidateDrugs": [
         "lorundrostat Dose 1",
         "lorundrostat Dose 2"
       ],

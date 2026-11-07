@@ -1,19 +1,19 @@
 {
-  "blockedOrUnavailable": 18,
-  "capturedPages": 11,
+  "blockedOrUnavailable": 19,
+  "capturedPages": 10,
   "ledgerRows": 29,
   "matchCounts": {
     "DRUG_MENTION_ONLY": 3,
-    "EXACT_NCT": 5,
+    "EXACT_NCT": 4,
     "ISSUER_OR_SOURCE_LEAD_ONLY": 3,
-    "linkOnly": 18
+    "linkOnly": 19
   },
-  "matchedEvidenceCandidates": 5,
+  "matchedEvidenceCandidates": 4,
   "notice": "Source leads are unreviewed and link-only sources are NOT evidence.",
   "schemaVersion": 1,
   "selectedLinks": 29,
   "trials": 29,
-  "trialsWithCapturedDirectPage": 11,
+  "trialsWithCapturedDirectPage": 10,
   "trialsWithDirectLink": 29,
   "verifiedSurveyAnswersCreated": 0
 }
