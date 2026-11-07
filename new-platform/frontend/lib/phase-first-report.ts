@@ -16,6 +16,7 @@ import sinovacRegistry from "../data/sinovacPhaseFirstRegistry20261106.json";
 import sinovacEvidence from "../data/sinovacPhaseFirstEvidence20261106.json";
 import agiosEvidence from "../data/agiosPhase3Evidence20261106.json";
 import ionisEvidence from "../data/ionisPhase3Evidence20261106.json";
+import peerEvidence from "../data/phase3PeerReviewedClinicalEvidence20261106.json";
 
 const AS_OF="2026-11-06";
 const oldById=new Map(legacyAlks.records.map(r=>[r.nctId,r]));
@@ -110,6 +111,21 @@ export function phaseFirstContext(trial:PhaseTrial,alkermes:boolean):ClinicalCon
     url:fact.sourceUrl,date:fact.sourceDate,
     confidence:/^(https:\/\/www\.fda\.gov|https:\/\/ir\.ionis)/.test(fact.sourceUrl)?"HIGH":"MODERATE"};
   }
+ }
+ // Exact-NCT peer-reviewed/FDA outcomes are added to documentation requirements
+ // only. They never produce reviewed factor grades or approved RAAS probabilities.
+ for(const fact of peerEvidence.facts){
+  if(fact.nctId!==trial.trialId)continue;
+  const requirement=fact.question===20?"benefitRisk":
+   fact.question===21?"phase3Results":
+   fact.question===23?"safety":
+   fact.question===24?"tolerability":
+   fact.question===28?"fdaOutcome":null;
+  if(!requirement||additional[requirement])continue;
+  additional[requirement]={text:fact.evidence+
+   " Historical observed evidence only, not a numerical clinical or FDA prediction.",
+   url:fact.sourceUrl,date:fact.sourceDate,
+   confidence:fact.sourceUrl.includes("fda.gov")?"HIGH":"MODERATE"};
  }
  return {ticker,drug,indication,programId:program?.id??"REGISTRY_INTERVENTION:"+drug.toLowerCase(),
   pipelineRestriction:ticker==="SVA"?sinovacEvidence.eligibilityNote:null,
