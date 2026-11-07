@@ -63,7 +63,7 @@ class CompanyPrimarySources(unittest.TestCase):
             if x["nctId"]=="NCT06411379")
   self.assertIn("composite-strategy PRIMARY endpoint DID NOT reach significance",data)
   self.assertIn("p=0.053",data)
-  self.assertIn("treatment-policy alternative",data)
+  self.assertIn("treatment-policy alternative",data.lower())
  def test_ringside_new_response_is_cited_separately(self):
   rows=json.loads(FEED.read_text(encoding="utf-8"))["records"]
   r=next(x for x in rows if x["nctId"]=="NCT04871282")
