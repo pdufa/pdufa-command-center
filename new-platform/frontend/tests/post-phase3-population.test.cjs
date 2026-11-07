@@ -83,7 +83,7 @@ test("global #1 link and dedicated page retain source and unknown-estimate safeg
   const nav=read("app/GlobalNavigation.tsx");
   const page=read("app/patient-population/PatientPopulationTab.tsx");
   const route=read("app/patient-population/page.tsx");
-  assert.match(nav,/label:"#1",href:"\/patient-population"/);
+  assert.doesNotMatch(nav,/label:"#1",href:"\/patient-population"/);
   assert.match(route,/<PatientPopulationTab\s*\/>/);
   assert.match(page,/selectPostPhase3PopulationTrials/);
   assert.match(page,/parsePhase3CensusCsv/);

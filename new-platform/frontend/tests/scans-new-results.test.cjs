@@ -180,7 +180,7 @@ test("SCAN combines scan controls, RESULTS and GOAL while preserving source rout
  const nav=fs.readFileSync(require.resolve("../app/GlobalNavigation.tsx"),"utf8");
  const scans=fs.readFileSync(require.resolve("../app/scans/page.tsx"),"utf8");
  const results=fs.readFileSync(require.resolve("../app/results/page.tsx"),"utf8");
- assert.ok(nav.includes('label:"SCAN",href:"/scans"'));
+ assert.ok(nav.includes('label:"POOL",href:"/pool"') && nav.includes('label:"P3 POST-DATA",href:"/p3-post-data"'));
  assert.doesNotMatch(nav,/label:"RESULTS"|label:"GOAL"/);
  assert.doesNotMatch(nav,/GEM|streamlit/i);
  assert.match(scans,/PublishedScansPanel/);

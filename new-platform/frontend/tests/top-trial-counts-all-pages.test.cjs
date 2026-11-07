@@ -1,32 +1,41 @@
+"use strict";
 const {test}=require("node:test");
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const path=require("node:path");
 const read=name=>fs.readFileSync(path.join(__dirname,"../app",name),"utf8");
-test("production home uses native active POOL and Pipeline without legacy workbench",()=>{
+
+test("production home only surfaces the POOL and P3 POST-DATA trial lists",()=>{
  const home=read("page.tsx");
  const nav=read("GlobalNavigation.tsx");
- assert.doesNotMatch(home,/from "\.\/Workspace"|\bGemQualificationChecklist\b|streamlit\.app/i);
  assert.match(home,/href:"\/pool"/);
- assert.match(home,/href:"\/pipeline"/);
+ assert.match(home,/href:"\/p3-post-data"/);
+ assert.match(home,/\/api\/auth/);
+ assert.match(nav,/label:"POOL",href:"\/pool"/);
+ assert.match(nav,/label:"P3 POST-DATA",href:"\/p3-post-data"/);
  assert.match(nav,/label:"TOOLS",href:"\/tools"/);
- assert.match(nav,/label:"SCAN",href:"\/scans"/);
- for(const retired of ["POOL","RESULTS","GOAL","RESTRICTIONS"])
-  assert.ok(!nav.includes('label:"'+retired+'"'),retired+" should not be a top navigation link");
- assert.doesNotMatch(nav,/\bGEM[_ ]JR\b|\bGEM\b|streamlit/i);
+ assert.doesNotMatch(nav,/label:"(?:PIPELINE|SCAN|RESULTS|GOAL|GEM|TOP|BOTTOM|PREDICTIONS)"/);
+ assert.doesNotMatch(home,/streamlit\.app|GemQualificationChecklist|href:"\/raas-/);
 });
-test("every active site section has a native page",()=>{
- for(const file of ["pool/page.tsx","pipeline/page.tsx","tools/page.tsx","scans/page.tsx",
-    "results/page.tsx","goal/page.tsx","restrictions/page.tsx",
-    "predictions/page.tsx","patient-population/page.tsx"]){
+
+test("both active trial populations and their POOL controls have native routes",()=>{
+ for(const file of ["pool/page.tsx","p3-post-data/page.tsx","tools/page.tsx",
+    "api/scope-funnel/route.ts","api/auth/route.ts"]){
   assert.ok(read(file).length>0,file);
  }
+ const pool=read("pool/page.tsx"),tools=read("tools/page.tsx");
+ assert.match(pool,/FunnelWorkspace section="pool"/);
+ assert.match(tools,/PoolStageExplorer/);
+ assert.doesNotMatch(tools,/Phase3SourceOnlySheets|Phase3ReadoutSheets/);
 });
-test("standalone trial sheets show the Pipeline source total only",()=>{
- const page=read("trial/[nctId]/page.tsx");
- const trial=read("TrialWorkflowCounts.tsx");
- assert.match(page,/<TrialWorkflowCounts \/>/);
- assert.match(trial,/fetch\("\/api\/workspace\/summary"/);
- assert.match(trial,/href="\/pipeline"/);
- assert.doesNotMatch(trial,/fetch\("\/api\/program-watch-trade"/);
+
+test("P3 POST-DATA has verified candidate snapshot data and evidence",()=>{
+ const sheet=JSON.parse(fs.readFileSync(path.join(__dirname,"../data/p3PostDataActive.json"),"utf8"));
+ const page=read("p3-post-data/page.tsx");
+ assert.equal(sheet.schemaVersion,1);
+ assert.equal(sheet.records.length,25);
+ assert.equal(new Set(sheet.records.map(r=>r.nct)).size,25);
+ assert.ok(sheet.records.every(r=>r.marketCap>=300e6&&r.marketCap<=10e9&&
+  /^https:\/\//.test(r.resultsUrl)&&/^https:\/\//.test(r.regulatoryUrl)));
+ assert.match(page,/import snapshot from/);
 });
