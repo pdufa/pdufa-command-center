@@ -53,6 +53,23 @@ class FullPoolTests(unittest.TestCase):
         e,c=mod.cap_eligible(mod.validate_pool(p),caps,NOW.date())
         self.assertFalse(e)
         self.assertEqual(c["CAP_UNVERIFIED_OR_STALE"],3)
+    def test_strict_secondary_cap_includes_missing_but_cannot_hide_verified_outside_band(self):
+        pool,p3,caps,_,_,_=fixtures()
+        caps[0]["market_cap_checked_at"]="2026-10-01T00:00:00+00:00"
+        secondary={"COGT":(830000000,NOW.date().isoformat(),
+                    "https://stockanalysis.com/stocks/cogt/market-cap/"),
+                   "BIG":(740000000,NOW.date().isoformat(),
+                    "https://stockanalysis.com/stocks/big/market-cap/")}
+        eligible,counters=mod.cap_eligible(mod.validate_pool(pool),caps,NOW.date(),secondary)
+        self.assertEqual(len(eligible),3)
+        self.assertEqual(counters["CAP_OUT_OF_BAND"],1)
+        self.assertTrue(all(row["capSourceKind"]=="SECONDARY_DATED_ROUNDED_QUOTE"
+                            for row in eligible.values()))
+        secondary["COGT"]=(830000000,NOW.date().isoformat(),
+                            "https://forged.example.com/invalid")
+        eligible,_=mod.cap_eligible(mod.validate_pool(pool),caps,NOW.date(),secondary)
+        self.assertFalse(eligible)
+
     def test_posted_registry_is_not_fda_approval(self):
         pool,p3,caps,leads,catalog,fn=fixtures()
         summary,detail=mod.execute(pool,p3,caps,leads,catalog,registry_get=fn,checked_at=NOW)
