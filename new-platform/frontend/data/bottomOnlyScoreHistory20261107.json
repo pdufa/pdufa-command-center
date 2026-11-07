@@ -970,6 +970,45 @@
       ],
       "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
       "note": "Full five-factor research review based on observed FDA and mature Lancet clinical sources. Original zero-scored event preserved; no approval probability inferred."
+    },
+    {
+      "eventId": "BOTTOM_NCT04770779_20261107_REVIEWED_LONGITUDINAL_FACTOR",
+      "nctId": "NCT04770779",
+      "recordedAt": "2026-11-07",
+      "eventType": "RESEARCH_SCORE_CHANGE",
+      "previousClinicalFullScore": null,
+      "clinicalFullScore": 55,
+      "previousClinicalScoredFactors": 4,
+      "clinicalScoredFactors": 5,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "One provisional 48-week randomized-versus-long-term replication review completes five factors without imputing ongoing OLE results; original four-factor history preserved."
     }
   ]
 }
