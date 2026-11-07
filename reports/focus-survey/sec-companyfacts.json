@@ -1,0 +1,225 @@
+{
+  "issuers": [
+    {
+      "cik": "0001956827",
+      "directoryCompany": "Abivax S.A.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "ABVX"
+    },
+    {
+      "cik": "0000949858",
+      "directoryCompany": "ACHIEVE LIFE SCIENCES, INC.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "ACHV"
+    },
+    {
+      "cik": "0001745648",
+      "directoryCompany": "Apnimed, Inc.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "APMD"
+    },
+    {
+      "cik": "0001579428",
+      "directoryCompany": "Axsome Therapeutics, Inc.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "AXSM"
+    },
+    {
+      "cik": "0001889109",
+      "directoryCompany": "BELITE BIO, INC",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "BLTE"
+    },
+    {
+      "cik": "0001133869",
+      "directoryCompany": "CAPRICOR THERAPEUTICS, INC.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "CAPR"
+    },
+    {
+      "cik": "0000744218",
+      "directoryCompany": "Celldex Therapeutics, Inc.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "CLDX"
+    },
+    {
+      "cik": "0001622229",
+      "directoryCompany": "Cogent Biosciences, Inc.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "COGT"
+    },
+    {
+      "cik": "0001088856",
+      "directoryCompany": "CORCEPT THERAPEUTICS INC",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "CORT"
+    },
+    {
+      "cik": "0001061983",
+      "directoryCompany": "CYTOKINETICS INC",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "CYTK"
+    },
+    {
+      "cik": "0001472012",
+      "directoryCompany": "Immunome Inc.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "IMNM"
+    },
+    {
+      "cik": "0001821586",
+      "directoryCompany": "MoonLake Immunotherapeutics",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "MLTX"
+    },
+    {
+      "cik": "0001933414",
+      "directoryCompany": "Mineralys Therapeutics, Inc.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "MLYS"
+    },
+    {
+      "cik": "0001830487",
+      "directoryCompany": "Pharvaris N.V.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "PHVS"
+    },
+    {
+      "cik": "0001689548",
+      "directoryCompany": "Praxis Precision Medicines, Inc.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "PRAX"
+    },
+    {
+      "cik": "0000873303",
+      "directoryCompany": "Sarepta Therapeutics, Inc.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "SRPT"
+    },
+    {
+      "cik": "0001160308",
+      "directoryCompany": "Savara Inc",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "SVRA"
+    },
+    {
+      "cik": "0001668243",
+      "directoryCompany": "UroGen Pharma Ltd.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "URGN"
+    },
+    {
+      "cik": "0001831828",
+      "directoryCompany": "Vera Therapeutics, Inc.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "VERA"
+    },
+    {
+      "cik": "0001953926",
+      "directoryCompany": "Zenas BioPharma, Inc.",
+      "facts": [],
+      "filingLeads": [],
+      "issuerRightsVerified": false,
+      "sourceAsOf": "2026-11-07",
+      "sourceError": "RuntimeError:SEC_HTTP_403",
+      "status": "SEC_SOURCE_UNAVAILABLE",
+      "ticker": "ZBIO"
+    }
+  ],
+  "schemaVersion": 1
+}
