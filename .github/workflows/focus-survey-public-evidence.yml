@@ -102,9 +102,13 @@ jobs:
             reports/focus-survey/
           retention-days: 30
           if-no-files-found: warn
-      - name: Commit only non-score survey research reports
-        if: success()
+      - name: Preserve non-score survey research even if Sheets sync is blocked
+        if: always()
         run: |
+          if [ ! -d reports/focus-survey ]; then
+            echo "No validated collection files to preserve"
+            exit 0
+          fi
           git add reports/focus-survey
           if git diff --cached --quiet; then
             echo "No changed source captures"
