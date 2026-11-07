@@ -48,6 +48,34 @@ def validate(roster,seeds):
         seen.add(key)
     return items
 
+def expand_official_candidates(roster,seeds):
+    """Try distinct first-party roster sources even when the first issuer URL blocks.
+
+    These are *discovery references* supplied by the canonical FOCUS roster.
+    No archive or registry URL is relabelled as a company release; no sources
+    beyond three URLs per NCT. A failed direct URL never ends issuer research.
+    """
+    by_nct=defaultdict(list)
+    for item in seeds:by_nct[item["nctId"]].append(item)
+    for row in roster:
+        nct=row["nct"]
+        for field in ("resultsUrl","regulatoryUrl"):
+            url=row.get(field,"")
+            parsed=urlparse(url)
+            host=(parsed.hostname or "").lower()
+            if parsed.scheme!="https" or not host or host.endswith(".sec.gov") or                host in ("sec.gov","clinicaltrials.gov","www.clinicaltrials.gov") or                host.endswith(".clinicaltrials.gov") or not host.endswith((".com",".org",".net")):
+                continue
+            if any(x["url"]==url for x in by_nct[nct]):continue
+            if len(by_nct[nct])>=3:break
+            by_nct[nct].append({
+                "nctId":nct,"ticker":row["ticker"],"url":url,
+                "publicationDate":"",
+                "programContext":"Canonical FOCUS "+field+" (unverified official-source candidate)",
+                "reviewStatus":"PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"})
+    enriched=[record for row in roster for record in by_nct[row["nct"]]]
+    validate(roster,{"schemaVersion":1,"sources":enriched})
+    return enriched
+
 def fetch_once(url):
     doc,error=public.fetch(url,json_required=False,retries=1)
     if error:
@@ -145,7 +173,7 @@ def build(roster,seeds,packets,results):
 
 def run():
     roster=public.read(ROSTER)["records"]
-    seeds=validate(roster,public.read(SEEDS))
+    seeds=expand_official_candidates(roster,validate(roster,public.read(SEEDS)))
     packets={r["nct"]:public.read(PACKETS/(r["nct"]+".json")) for r in roster}
     urls=sorted({x["url"] for x in seeds})
     results={}
