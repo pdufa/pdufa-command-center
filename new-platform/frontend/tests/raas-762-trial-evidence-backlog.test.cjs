@@ -93,28 +93,15 @@ test("Source coverage is separate from independent review and every row retains 
   assert.ok(x.registeredPhases.length>0||x.registeredStatus);
  }
 });
-test("The new route and mobile filters link to existing RAAS workflows",async()=>{
- const client=read("app/raas-evidence-backlog/EvidenceBacklogClient.tsx");
+test("Retired 762-trial UI and API do not expose old active candidate sets",async()=>{
  const page=read("app/raas-evidence-backlog/page.tsx");
- const scan=read("app/raas-scan/page.tsx");
- const reviewQueue=read("app/raas-review-queue/page.tsx");
- for(const s of [scan,reviewQueue])assert.match(s,/raas-evidence-backlog/);
- for(const x of ["data-raas-research-backlog","Source availability","Provisional reviews",
-  "Export 762-trial evidence gaps","Previous 25","Next 25",
-  "data-raas-evidence-backlog-nct"])assert.ok(client.includes(x),x);
- assert.match(page,/762 saved Phase 3 research trial identifiers/);
- for(const [name,source] of [["page.tsx",page],["EvidenceBacklogClient.tsx",client]]){
-  const r=ts.transpileModule(source,{fileName:name,reportDiagnostics:true,
-   compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.ESNext,
-    jsx:ts.JsxEmit.ReactJSX}});
-  assert.deepEqual((r.diagnostics||[]).filter(d=>d.category===ts.DiagnosticCategory.Error),[]);
- }
+ assert.match(page,/redirect\("\/p3-post-data"\)/);
+ const archiveIndex=require("../public/raas-registry-evidence-index.json");
+ assert.ok(archiveIndex);
  const {GET}=require("../app/api/raas-evidence-backlog/route.ts");
  const res=GET();
- assert.equal(res.status,200);
- assert.match(res.headers.get("Content-Type"),/text\/csv/);
- const csv=await res.text();
- assert.match(csv,/NCT05208047/);
- assert.match(csv,/NCT07671911/);
- assert.equal(csv.split("\r\n").length-2,762);
+ assert.equal(res.status,410);
+ const data=await res.json();
+ assert.equal(data.error,"RETIRED_COHORT");
+ assert.equal(data.currentPage,"/p3-post-data");
 });
