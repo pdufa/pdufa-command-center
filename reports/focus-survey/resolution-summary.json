@@ -19,13 +19,13 @@
       "verified": 0
     },
     {
-      "researchGaps": 112,
+      "researchGaps": 110,
       "slots": 174,
       "sourceContext": 62,
-      "sourceInterpretationRequired": 39,
+      "sourceInterpretationRequired": 29,
       "survey": "Clinical Benefit",
       "surveyNumber": 3,
-      "verified": 3
+      "verified": 15
     },
     {
       "researchGaps": 29,
@@ -49,10 +49,10 @@
       "researchGaps": 115,
       "slots": 145,
       "sourceContext": 30,
-      "sourceInterpretationRequired": 30,
+      "sourceInterpretationRequired": 29,
       "survey": "Competitive Advantage",
       "surveyNumber": 6,
-      "verified": 0
+      "verified": 1
     },
     {
       "researchGaps": 0,
@@ -204,7 +204,7 @@
       "registryPointers": 13,
       "slots": 38,
       "ticker": "ACHV",
-      "verified": 0
+      "verified": 3
     },
     {
       "nctId": "NCT05206370",
@@ -212,7 +212,7 @@
       "registryPointers": 13,
       "slots": 38,
       "ticker": "ACHV",
-      "verified": 0
+      "verified": 3
     },
     {
       "nctId": "NCT05811247",
@@ -292,7 +292,7 @@
       "registryPointers": 14,
       "slots": 38,
       "ticker": "CORT",
-      "verified": 0
+      "verified": 3
     },
     {
       "nctId": "NCT04308590",
@@ -300,7 +300,7 @@
       "registryPointers": 12,
       "slots": 38,
       "ticker": "CORT",
-      "verified": 0
+      "verified": 1
     },
     {
       "nctId": "NCT05767346",
@@ -308,7 +308,7 @@
       "registryPointers": 14,
       "slots": 38,
       "ticker": "CYTK",
-      "verified": 0
+      "verified": 3
     },
     {
       "nctId": "NCT06081894",
@@ -417,11 +417,11 @@
   ],
   "dispositionCount": 1102,
   "dispositions": {
-    "ADDITIONAL_PRIMARY_RESEARCH_REQUIRED": 528,
+    "ADDITIONAL_PRIMARY_RESEARCH_REQUIRED": 526,
     "MODELING_INPUTS_UNAVAILABLE": 290,
-    "PRIMARY_SOURCE_INTERPRETATION_REQUIRED": 252,
+    "PRIMARY_SOURCE_INTERPRETATION_REQUIRED": 241,
     "PUBLICATION_CONTENT_REVIEW_REQUIRED": 29,
-    "REVIEWED_ANSWER_PRESENT": 3
+    "REVIEWED_ANSWER_PRESENT": 16
   },
   "ingredients": 38,
   "researchDispositionCoveragePercent": 100.0,
@@ -430,7 +430,7 @@
   "sourceContextSlots": 284,
   "surveys": 20,
   "trials": 29,
-  "verifiedSurveyAnswers": 3,
-  "verifiedSurveyPercent": 0.27,
+  "verifiedSurveyAnswers": 16,
+  "verifiedSurveyPercent": 1.45,
   "warning": "100% research disposition coverage does NOT mean 100% verified evidence, graded surveys, or validated RAAS."
 }

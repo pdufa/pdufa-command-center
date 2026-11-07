@@ -1,5 +1,5 @@
 {
-  "distinctTrialPublicationLeads": 333,
+  "distinctTrialPublicationLeads": 320,
   "ingredientSlots": 1102,
   "note": "Source facts and literature relevance candidates do not validate the 38 survey ingredients; existing evidence statuses unchanged.",
   "numericOutcomeMeasurements": 232,
@@ -231,7 +231,7 @@
       "nctId": "NCT06153693",
       "numericOutcomes": 0,
       "otherEventGroups": 0,
-      "publications": 13,
+      "publications": 0,
       "registeredArms": 3,
       "seriousEventGroups": 0,
       "ticker": "MLYS"
@@ -328,8 +328,8 @@
   "publicationCategories": {
     "DRUG_TITLE_LEAD": 39,
     "EXACT_NCT_LEAD": 9,
-    "INDICATION_CONTEXT_ONLY": 88,
-    "UNLINKED_SEARCH_LEAD": 197
+    "INDICATION_CONTEXT_ONLY": 80,
+    "UNLINKED_SEARCH_LEAD": 192
   },
   "registeredTreatmentArms": 82,
   "registryFactObservations": 370,

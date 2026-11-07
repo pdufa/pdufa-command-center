@@ -260,6 +260,15 @@
       "registrySourceHash": "e2c335b532329595b4662a1f3999e7447481ec2de2107b86b5e9c7f203d82ee4",
       "retrievedAt": "2026-11-07T19:05:30+00:00",
       "ticker": "VERA"
+    },
+    {
+      "literatureLeads": 0,
+      "nctId": "NCT06153693",
+      "packetHash": "76aa73a76c614841b5dc0817d02825d590f68729531aec7a41509ff40046dce3",
+      "registryCaptured": true,
+      "registrySourceHash": "67c62c3e7c7a010423adb41403debb338416fcb587a20da72e98b94a47069ea1",
+      "retrievedAt": "2026-11-07T19:58:22+00:00",
+      "ticker": "MLYS"
     }
   ],
   "schemaVersion": 1

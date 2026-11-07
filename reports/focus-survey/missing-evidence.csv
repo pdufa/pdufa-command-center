@@ -80,11 +80,8 @@ NCT04576949,ACHV,Achieve Life Sciences,1,Patient Population,bestSubgroup,Best-Re
 NCT04576949,ACHV,Achieve Life Sciences,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,3,No source-validated ingredient answer,,,0
 NCT04576949,ACHV,Achieve Life Sciences,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,3,No source-validated ingredient answer,,,0
 NCT04576949,ACHV,Achieve Life Sciences,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,3,No source-validated ingredient answer,,,0
-NCT04576949,ACHV,Achieve Life Sciences,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,3,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04576949,registry.reportedOutcomeMeasures,5
-NCT04576949,ACHV,Achieve Life Sciences,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,3,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04576949,registry.reportedOutcomeMeasures,5
 NCT04576949,ACHV,Achieve Life Sciences,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,3,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04576949,registry.reportedOutcomeMeasures,5
 NCT04576949,ACHV,Achieve Life Sciences,3,Clinical Benefit,durability,Durability of Treatment Effect,SOURCE_CAPTURED_NEEDS_REVIEW,,,,3,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04576949,registry.durabilityMeasures,1
-NCT04576949,ACHV,Achieve Life Sciences,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,3,No source-validated ingredient answer,,,0
 NCT04576949,ACHV,Achieve Life Sciences,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,3,No source-validated ingredient answer,,,0
 NCT04576949,ACHV,Achieve Life Sciences,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,3,No source-validated ingredient answer,,,0
 NCT04576949,ACHV,Achieve Life Sciences,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,3,No source-validated ingredient answer,,,0
@@ -118,11 +115,8 @@ NCT05206370,ACHV,Achieve Life Sciences,1,Patient Population,bestSubgroup,Best-Re
 NCT05206370,ACHV,Achieve Life Sciences,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,2,No source-validated ingredient answer,,,0
 NCT05206370,ACHV,Achieve Life Sciences,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,2,No source-validated ingredient answer,,,0
 NCT05206370,ACHV,Achieve Life Sciences,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,2,No source-validated ingredient answer,,,0
-NCT05206370,ACHV,Achieve Life Sciences,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,2,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05206370,registry.reportedOutcomeMeasures,5
-NCT05206370,ACHV,Achieve Life Sciences,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,2,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05206370,registry.reportedOutcomeMeasures,5
 NCT05206370,ACHV,Achieve Life Sciences,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,2,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05206370,registry.reportedOutcomeMeasures,5
 NCT05206370,ACHV,Achieve Life Sciences,3,Clinical Benefit,durability,Durability of Treatment Effect,SOURCE_CAPTURED_NEEDS_REVIEW,,,,2,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05206370,registry.durabilityMeasures,1
-NCT05206370,ACHV,Achieve Life Sciences,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,2,No source-validated ingredient answer,,,0
 NCT05206370,ACHV,Achieve Life Sciences,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,2,No source-validated ingredient answer,,,0
 NCT05206370,ACHV,Achieve Life Sciences,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,2,No source-validated ingredient answer,,,0
 NCT05206370,ACHV,Achieve Life Sciences,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,2,No source-validated ingredient answer,,,0
@@ -496,11 +490,8 @@ NCT03697109,CORT,Corcept Therapeutics,1,Patient Population,bestSubgroup,Best-Res
 NCT03697109,CORT,Corcept Therapeutics,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,24,No source-validated ingredient answer,,,0
 NCT03697109,CORT,Corcept Therapeutics,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,24,No source-validated ingredient answer,,,0
 NCT03697109,CORT,Corcept Therapeutics,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,24,No source-validated ingredient answer,,,0
-NCT03697109,CORT,Corcept Therapeutics,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,24,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT03697109,registry.reportedOutcomeMeasures,17
-NCT03697109,CORT,Corcept Therapeutics,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,24,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT03697109,registry.reportedOutcomeMeasures,17
 NCT03697109,CORT,Corcept Therapeutics,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,24,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT03697109,registry.reportedOutcomeMeasures,17
 NCT03697109,CORT,Corcept Therapeutics,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,24,No source-validated ingredient answer,,,0
-NCT03697109,CORT,Corcept Therapeutics,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,SOURCE_CAPTURED_NEEDS_REVIEW,,,,24,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT03697109,registry.responseMeasures,1
 NCT03697109,CORT,Corcept Therapeutics,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,24,No source-validated ingredient answer,,,0
 NCT03697109,CORT,Corcept Therapeutics,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,24,No source-validated ingredient answer,,,0
 NCT03697109,CORT,Corcept Therapeutics,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,24,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT03697109,registry.qualityOfLifeMeasures,1
@@ -535,7 +526,6 @@ NCT04308590,CORT,Corcept Therapeutics,2,Unmet Medical Need,standardOfCare,Curren
 NCT04308590,CORT,Corcept Therapeutics,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,19,No source-validated ingredient answer,,,0
 NCT04308590,CORT,Corcept Therapeutics,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,19,No source-validated ingredient answer,,,0
 NCT04308590,CORT,Corcept Therapeutics,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,19,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04308590,registry.reportedOutcomeMeasures,17
-NCT04308590,CORT,Corcept Therapeutics,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,19,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04308590,registry.reportedOutcomeMeasures,17
 NCT04308590,CORT,Corcept Therapeutics,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,19,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04308590,registry.reportedOutcomeMeasures,17
 NCT04308590,CORT,Corcept Therapeutics,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,19,No source-validated ingredient answer,,,0
 NCT04308590,CORT,Corcept Therapeutics,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,19,No source-validated ingredient answer,,,0
@@ -572,8 +562,6 @@ NCT05767346,CYTK,Cytokinetics,1,Patient Population,bestSubgroup,Best-Responding 
 NCT05767346,CYTK,Cytokinetics,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,22,No source-validated ingredient answer,,,0
 NCT05767346,CYTK,Cytokinetics,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,22,No source-validated ingredient answer,,,0
 NCT05767346,CYTK,Cytokinetics,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,22,No source-validated ingredient answer,,,0
-NCT05767346,CYTK,Cytokinetics,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,22,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05767346,registry.reportedOutcomeMeasures,7
-NCT05767346,CYTK,Cytokinetics,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,22,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05767346,registry.reportedOutcomeMeasures,7
 NCT05767346,CYTK,Cytokinetics,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,22,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05767346,registry.reportedOutcomeMeasures,7
 NCT05767346,CYTK,Cytokinetics,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,22,No source-validated ingredient answer,,,0
 NCT05767346,CYTK,Cytokinetics,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,22,No source-validated ingredient answer,,,0
@@ -582,7 +570,6 @@ NCT05767346,CYTK,Cytokinetics,4,Survival Benefit,survivalBenefit,Survival Benefi
 NCT05767346,CYTK,Cytokinetics,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,22,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05767346,registry.qualityOfLifeMeasures,1
 NCT05767346,CYTK,Cytokinetics,6,Competitive Advantage,closestCompetitor,Closest Competing Therapy,MISSING,,,,22,No source-validated ingredient answer,,,0
 NCT05767346,CYTK,Cytokinetics,6,Competitive Advantage,competitorCount,Number of Competitors,MISSING,,,,22,No source-validated ingredient answer,,,0
-NCT05767346,CYTK,Cytokinetics,6,Competitive Advantage,headToHead,Head-to-Head Evidence,SOURCE_CAPTURED_NEEDS_REVIEW,,,,22,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05767346,registry.activeComparatorResults,7
 NCT05767346,CYTK,Cytokinetics,6,Competitive Advantage,competitivePipelineThreat,Competitive Pipeline Threat,MISSING,,,,22,No source-validated ingredient answer,,,0
 NCT05767346,CYTK,Cytokinetics,6,Competitive Advantage,competitiveStrategy,Competitive Strategies,MISSING,,,,22,No source-validated ingredient answer,,,0
 NCT05767346,CYTK,Cytokinetics,7,Treatment Convenience,convenience,Treatment Convenience,SOURCE_CAPTURED_NEEDS_REVIEW,,,,22,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05767346,registry.treatmentArms,2
@@ -757,44 +744,44 @@ NCT06411899,MLTX,MoonLake Immunotherapeutics AG,17,Patent and Exclusivity Value,
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,18,Licensing and Partnership Value,licensingValue,Licensing and Partnership Economics,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,19,Company Valuation Impact,valuationImpact,Company Valuation Impact,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,20,Shareholder Upside and Risk,shareholderRisk,Shareholder Upside and Risk Scenarios,MISSING,,,,6,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",6,Competitive Advantage,closestCompetitor,Closest Competing Therapy,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",6,Competitive Advantage,competitorCount,Number of Competitors,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",6,Competitive Advantage,headToHead,Head-to-Head Evidence,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",6,Competitive Advantage,competitivePipelineThreat,Competitive Pipeline Threat,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",6,Competitive Advantage,competitiveStrategy,Competitive Strategies,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",7,Treatment Convenience,convenience,Treatment Convenience,SOURCE_CAPTURED_NEEDS_REVIEW,,,,13,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT06153693,registry.treatmentArms,3
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",7,Treatment Convenience,treatmentSequence,Place in Treatment Sequence,SOURCE_CAPTURED_NEEDS_REVIEW,,,,13,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT06153693,registry.treatmentArms,3
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",8,Safety Advantage,safetyAdvantage,Safety Advantage,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",8,Safety Advantage,seriousAes,Serious Adverse Event Difference,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",8,Safety Advantage,discontinuation,Treatment Discontinuation Difference,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",9,Healthcare Cost Savings,hospitalizationReduction,Hospitalization / Complication Reduction,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",9,Healthcare Cost Savings,costDifference,Treatment Cost Advantage,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",9,Healthcare Cost Savings,valuePerOutcome,Value per Clinical Outcome,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",10,Insurance Coverage Potential,payerAccess,Insurance / Access,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",11,Expected Treatment Price,treatmentPrice,Expected Treatment Price,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",12,Market Penetration,adoption,Projected Adoption,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",12,Market Penetration,switchingPool,Switching-Eligible Patient Pool,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",13,International Patient Population,internationalPatients,International Eligible Patients,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",14,Additional Indications,additionalIndications,Additional Indication Programs,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",15,Peak Annual Sales,peakAnnualSales,Peak Annual Sales Scenarios,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",16,Revenue Growth Potential,revenueGrowth,Revenue Growth Scenarios,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",17,Patent and Exclusivity Value,exclusivity,Commercial Exclusivity Advantage,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",18,Licensing and Partnership Value,licensingValue,Licensing and Partnership Economics,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",19,Company Valuation Impact,valuationImpact,Company Valuation Impact,MISSING,,,,13,No source-validated ingredient answer,,,0
-NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",20,Shareholder Upside and Risk,shareholderRisk,Shareholder Upside and Risk Scenarios,MISSING,,,,13,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",6,Competitive Advantage,closestCompetitor,Closest Competing Therapy,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",6,Competitive Advantage,competitorCount,Number of Competitors,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",6,Competitive Advantage,headToHead,Head-to-Head Evidence,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",6,Competitive Advantage,competitivePipelineThreat,Competitive Pipeline Threat,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",6,Competitive Advantage,competitiveStrategy,Competitive Strategies,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",7,Treatment Convenience,convenience,Treatment Convenience,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT06153693,registry.treatmentArms,3
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",7,Treatment Convenience,treatmentSequence,Place in Treatment Sequence,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT06153693,registry.treatmentArms,3
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",8,Safety Advantage,safetyAdvantage,Safety Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",8,Safety Advantage,seriousAes,Serious Adverse Event Difference,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",8,Safety Advantage,discontinuation,Treatment Discontinuation Difference,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",9,Healthcare Cost Savings,hospitalizationReduction,Hospitalization / Complication Reduction,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",9,Healthcare Cost Savings,costDifference,Treatment Cost Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",9,Healthcare Cost Savings,valuePerOutcome,Value per Clinical Outcome,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",10,Insurance Coverage Potential,payerAccess,Insurance / Access,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",11,Expected Treatment Price,treatmentPrice,Expected Treatment Price,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",12,Market Penetration,adoption,Projected Adoption,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",12,Market Penetration,switchingPool,Switching-Eligible Patient Pool,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",13,International Patient Population,internationalPatients,International Eligible Patients,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",14,Additional Indications,additionalIndications,Additional Indication Programs,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",15,Peak Annual Sales,peakAnnualSales,Peak Annual Sales Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",16,Revenue Growth Potential,revenueGrowth,Revenue Growth Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",17,Patent and Exclusivity Value,exclusivity,Commercial Exclusivity Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",18,Licensing and Partnership Value,licensingValue,Licensing and Partnership Economics,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",19,Company Valuation Impact,valuationImpact,Company Valuation Impact,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT06153693,MLYS,"Mineralys Therapeutics, Inc.",20,Shareholder Upside and Risk,shareholderRisk,Shareholder Upside and Risk Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
 NCT06343779,PHVS,Pharvaris N.V.,1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06343779,PHVS,Pharvaris N.V.,1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06343779,PHVS,Pharvaris N.V.,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,7,No source-validated ingredient answer,,,0
