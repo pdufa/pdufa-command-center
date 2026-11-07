@@ -1,0 +1,117 @@
+name: FOCUS Survey — Public Evidence Collection
+
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - '.github/workflows/focus-survey-public-evidence.yml'
+      - 'scripts/collect_focus_survey_evidence.py'
+      - 'scripts/sync_focus_survey_evidence_to_sheets.py'
+      - 'tests/test_focus_survey_collection.py'
+      - 'data/phase3_benefit_survey_catalog.json'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/focus-survey-public-evidence.yml'
+      - 'scripts/collect_focus_survey_evidence.py'
+      - 'scripts/sync_focus_survey_evidence_to_sheets.py'
+      - 'data/phase3_benefit_survey_catalog.json'
+  schedule:
+    - cron: '45 15 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: focus-survey-source-collector
+  cancel-in-progress: false
+
+jobs:
+  source-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Confirm Python syntax
+        run: |
+          python -m py_compile scripts/collect_focus_survey_evidence.py scripts/sync_focus_survey_evidence_to_sheets.py
+      - name: Test 29-trial roster, 20-survey taxonomy and data safety
+        run: python -m unittest discover -s tests -p 'test_focus_survey_collection.py' -v
+      - name: Dry-run and verify canonical ingredient slots
+        run: python scripts/collect_focus_survey_evidence.py --dry-run
+
+  collect:
+    needs: source-tests
+    if: github.event_name != 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install existing Google service-account dependencies
+        run: python -m pip install google-auth requests
+      - name: Collect source facts and indexed literature for exact current FOCUS NCTs
+        run: python scripts/collect_focus_survey_evidence.py --all
+      - name: Validate collection completeness and evidence counts before Sheets
+        id: validate
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          c=json.loads(Path('reports/focus-survey/coverage.json').read_text())
+          n=c['focusTrials']
+          print('FOCUS trials:',n,'survey slots:',c['ingredientSlots'])
+          print('Registry retrieved:',c['sourceRegistryTrials'],'literature leads:',c['literatureLeads'])
+          print('Verified:',c['statuses']['VERIFIED'],'unreviewed leads:',c['statuses']['SOURCE_CAPTURED_NEEDS_REVIEW'])
+          if not 20 <= n <= 100 or c['ingredientSlots']!=38*n:
+              raise SystemExit('Invalid FOCUS survey population; no spreadsheet write')
+          if c['sourceRegistryTrials'] != n:
+              print('Registry partial: Sheets write is blocked, source report remains available')
+              Path('reports/focus-survey/sheets-sync-blocked.txt').write_text(
+                  'Registry unavailable for one or more exact FOCUS NCTs. No Sheets changes.\n')
+              raise SystemExit('Source coverage gate not met; preserved existing Sheet')
+          PY
+      - name: Write only collector-owned FOCUS evidence tabs and read back
+        if: steps.validate.outcome == 'success'
+        env:
+          GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
+        run: |
+          python scripts/collect_focus_survey_evidence.py --all --resume --write-sheets
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          c=json.loads(Path('reports/focus-survey/coverage.json').read_text())
+          if c.get('googleSheetsSync') != 'SUCCESS':
+              raise SystemExit('FOCUS survey Sheet sync blocked: '+str(c.get('googleSheetsError','unknown')))
+          print('FOCUS survey data tabs updated and read back')
+          PY
+      - name: Archive collection results even when public sources or Sheets are blocked
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-survey-29-38-evidence-${{ github.run_id }}
+          path: |
+            reports/focus-survey/
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Commit only non-score survey research reports
+        if: success()
+        run: |
+          git add reports/focus-survey
+          if git diff --cached --quiet; then
+            echo "No changed source captures"
+          else
+            git config user.name "github-actions[bot]"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git commit -m "Refresh FOCUS public survey source leads and coverage [skip ci]"
+            git pull --rebase origin main
+            git push origin HEAD:main
+          fi
