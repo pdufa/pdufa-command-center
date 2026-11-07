@@ -35,6 +35,7 @@ on:
       - 'tests/test_focus_peak_origin3_review.py'
       - 'data/focus_company_phase3_primary_sources.json'
       - 'tests/test_focus_cldx_mltx_company_primary.py'
+      - 'tests/test_focus_phvs_prax_blte_review.py'
       - 'new-platform/frontend/data/benefit-assessment-research.json'
       - 'data/phase3_benefit_survey_catalog.json'
   push:
@@ -110,6 +111,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_focus_peak_origin3_review.py' -v
       - name: Cross-check issuer EMBARQ and VELA trial results, including failed primary
         run: python -m unittest discover -s tests -p 'test_focus_cldx_mltx_company_primary.py' -v
+      - name: Confirm RAPIDe-3 CHAPTER-3 Essential3 and DRAGON source review
+        run: python -m unittest discover -s tests -p 'test_focus_phvs_prax_blte_review.py' -v
       - name: Dry-run and verify canonical ingredient slots
         run: python scripts/collect_focus_survey_evidence.py --dry-run
 
