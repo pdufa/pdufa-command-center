@@ -420,6 +420,48 @@
         }
       },
       "advantages": []
+    },
+    {
+      "nctId": "NCT06343779",
+      "ticker": "PHVS",
+      "drug": "Deucrictibant",
+      "indication": "Hereditary Angioedema",
+      "facts": {
+        "timeToResponse": {
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-positive-topline-data-rapide-3-pivotal-study",
+          "sourceDate": "2025-12-03",
+          "confidence": "MODERATE",
+          "value": "RAPIDe-3 Phase 3: median time to onset of HAE attack symptom relief with oral deucrictibant IR 20 mg was 1.28 hours versus >12 hours with placebo (p<0.0001); issuer-reported primary endpoint. No 95% CI supplied in this topline release.",
+          "method": "Cross-check Pharvaris Dec 3, 2025 issuer Phase 3 topline (explicit NCT06343779) with ClinicalTrials.gov exact NCT and its listed deucrictibant/HAE product and indication. Primary endpoint is patient-reported onset of symptom relief during attacks, comparator placebo; p reported, CI not provided. Registry numeric results not posted; verified as an accurately reported issuer source fact, not independently replicated treatment effect, score or FDA probability."
+        },
+        "clinicalBenefit": {
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-positive-topline-data-rapide-3-pivotal-study",
+          "sourceDate": "2025-12-03",
+          "confidence": "MODERATE",
+          "value": "RAPIDe-3 reported placebo-controlled HAE attack symptom-relief primary outcome: deucrictibant IR median 1.28 hours vs >12 hours placebo (p<0.0001); secondary End of Progression 17.47 minutes vs 228.67 minutes placebo (p<0.0001). Company-reported primary clinical efficacy evidence, not independent benefit-risk determination.",
+          "method": "Primary issuer source identifies NCT06343779 exactly and compares the investigational drug versus placebo in the same acute HAE treatment setting. Both effect sizes and endpoint timing with p-values are disclosed; no confidence intervals in the topline summary. Independent Lancet publication announced Oct 8, 2026, but conclusion is limited to reported clinical observations, not validated magnitude score or approval outcome."
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT06669754",
+      "ticker": "PHVS",
+      "drug": "Deucrictibant",
+      "indication": "Hereditary Angioedema (HAE)",
+      "facts": {
+        "clinicalBenefit": {
+          "status": "VERIFIED",
+          "sourceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-positive-topline-data-chapter-3-pivotal",
+          "sourceDate": "2026-09-08",
+          "confidence": "MODERATE",
+          "value": "CHAPTER-3 Phase 3 prophylaxis, 24 weeks: issuer reported 83% relative HAE attack-rate reduction with deucrictibant XR once daily versus placebo (p<0.0001), 55 active and 30 placebo randomized. No 95% confidence interval provided in topline news release.",
+          "method": "Source identifies NCT06669754 exactly, prophylaxis indication, comparator, 24-week study and primary attack-rate reduction. Registry supports correct NCT, drug Deucrictibant and HAE indication but numeric registry results are not yet posted; this is verified only as an issuer-reported topline effect, not independently replicated efficacy, a comparative advantage score, or FDA probability."
+        }
+      },
+      "advantages": []
     }
   ]
 }
