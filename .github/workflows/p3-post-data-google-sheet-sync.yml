@@ -10,6 +10,8 @@ on:
       - 'scripts/p3_market_cap_secondary.py'
       - 'new-platform/backend/app/phase3_curated_announcements.json'
       - 'data/post_phase3_discoveries.csv'
+      - 'new-platform/backend/app/phase3_curated_announcements.json'
+      - 'scripts/sync_p3_post_data_from_google_sheet.py'
   workflow_run:
     workflows: ['PDUFA Overnight Sequential Scans']
     types: [completed]

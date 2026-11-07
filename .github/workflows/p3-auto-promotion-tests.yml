@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'scripts/auto_promote_p3_post_data.py'
+      - 'new-platform/backend/app/phase3_curated_announcements.json'
+      - 'data/post_phase3_discoveries.csv'
       - 'tests/test_p3_auto_promotion.py'
       - 'scripts/refresh_existing_p3_post_data.py'
       - 'scripts/p3_market_cap_secondary.py'
