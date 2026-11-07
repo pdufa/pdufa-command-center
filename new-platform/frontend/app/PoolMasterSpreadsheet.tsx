@@ -111,7 +111,7 @@ function contentFor(row:PoolMasterRow,key:Key):{text:string;url?:string}{
   case "reviewed":return{text:focus?snapshot.asOf:"Not assessed"};
  }
 }
-export default function PoolMasterSpreadsheet({rows}:{rows:PoolMasterRow[]}){
+export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{rows:PoolMasterRow[];loading?:boolean;error?:string}){
  const [view,setView]=useState<View>("desktop");
  const [hydrated,setHydrated]=useState(false);
  const [layouts,setLayouts]=useState<Record<View,Layout>>({
@@ -191,7 +191,11 @@ export default function PoolMasterSpreadsheet({rows}:{rows:PoolMasterRow[]}){
      <th scope="col" className={css.nct}>NCT ID</th>
      {visible.map(c=><th scope="col" className={css.dataColumn} key={c.key}>{c.label}</th>)}
     </tr></thead>
-    <tbody>{rows.map(row=>{
+    <tbody>{rows.length===0&&<tr><td colSpan={3+visible.length} role="status">
+       {loading?"Loading clinical POOL records…":error?
+        "No clinical records loaded. Sign in or retry when the source is available.":
+        "No matching clinical trials on this page."}
+     </td></tr>}{rows.map(row=>{
      const nct=nctOf(row);
      return <tr key={row.id}>
       <td className={css.ticker}>{known(row.ticker)}</td>

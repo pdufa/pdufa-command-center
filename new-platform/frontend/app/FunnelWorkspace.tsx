@@ -56,7 +56,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
    const controller=new AbortController();
    let mounted=true;
    setLoading(true);setError("");
-   const params=new URLSearchParams({view,offset:String(offset),limit:String(LIMIT)});
+   const params=new URLSearchParams({view,offset:String(offset),limit:String(LIMIT),...(section==="pool"?{recordKind:"trials"}:{})});
    if(query.trim())params.set("query",query.trim());
    void fetch("/api/scope-funnel?"+params.toString(),{cache:"no-store",signal:controller.signal})
      .then(async resp=>{
@@ -96,6 +96,36 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
        {section==="pipeline"&&<a href="/api/scope-funnel?view=census-review&format=csv" download>Export all 741 historical census candidates (CSV)</a>}
      </div>
    </header>
+   {section==="pool"&&<section id="pool-master" className={styles.panel} aria-label="POOL Master Spreadsheet" style={{margin:"14px 0 20px"}}>
+     <div className={styles.headline}>
+       <h2>POOL Master Spreadsheet · All clinical phases</h2>
+       <form onSubmit={applySearch} className={styles.search}>
+         <input aria-label="Search all POOL trials by NCT, ticker, company, drug or indication"
+           type="search" value={queryInput} onChange={event=>setQueryInput(event.target.value)}
+           placeholder="Search all POOL clinical trials" maxLength={100}/>
+         <button type="submit">Search</button>
+         <button type="button" onClick={()=>{setQuery("");setQueryInput("");setOffset(0)}}>Clear</button>
+       </form>
+     </div>
+     {error&&<p className={styles.error} role="alert">
+       {error} <Link href="/">Return to the dashboard to sign in</Link>.
+       Your source records and saved column preferences are unchanged.
+     </p>}
+     {loading&&<p role="status">Loading published POOL trials. The column controls remain available.</p>}
+     {!loading&&page&&<p className={styles.muted} role="status">
+       Showing {first}–{last} of {page.total.toLocaleString()} clinical trials.
+       All recorded phases are included; no market-cap gate is applied.
+     </p>}
+     <PoolMasterSpreadsheet
+       rows={page?.rows.filter((r):r is PoolItem=>!isReview(r))||[]}
+       loading={loading} error={error}/>
+     {page&&<div className={styles.pagination}>
+       <button type="button" disabled={offset===0||loading} onClick={()=>setOffset(Math.max(0,offset-LIMIT))}>Previous</button>
+       <span>Page {Math.floor(offset/LIMIT)+1} of {Math.max(1,Math.ceil(page.total/LIMIT))}</span>
+       <button type="button" disabled={page.nextOffset===null||loading}
+         onClick={()=>setOffset(page.nextOffset!)}>Next</button>
+     </div>}
+   </section>}
    {section==="pipeline"&&<BatchRegistryExport/>}
    <section className={styles.notice}>
      <strong>Qualification rules:</strong> U.S.-listed publicly traded issuer; current sourced market capitalization $300 million–$10 billion inclusive;
@@ -124,7 +154,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
        className={reviewMode?styles.selected:undefined}>Unmatched / verify final readout</button>
    </div>}
    {section==="pipeline"&&!reviewMode&&<PipelineFourViews />}
-   {(section==="pool"||reviewMode)&&<section className={styles.panel}>
+   {reviewMode&&<section className={styles.panel}>
      <div className={styles.headline}>
        <h2>{section==="pool"?"Preserved published POOL records":reviewMode?"Unresolved census research records":"Post–Phase 3 screening — awaiting qualification"}</h2>
        <form onSubmit={applySearch} className={styles.search}>
@@ -140,7 +170,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
        <p className={styles.muted} role="status">Showing {first}–{last} of {page.total.toLocaleString()} records in this view.</p>
        {page.total===0 && <p>No qualifying research rows found in this selected view. A zero row count does not establish zero eligible products.</p>}
        {section==="pipeline"&&<><p className={styles.muted}>Timeline columns count Pacific calendar days from the verified public Phase 3 readout release to today and to the FDA PDUFA target. Research ends at PDUFA − 3. Unverified dates never become numerical countdowns.</p><p className={styles.muted}>Competitive columns are source-gated. A blank assessment is neither zero nor evidence of failure. Expand each cell for its reason, exact purpose and required verification.</p><CompetitiveColumnPurposes /></>}
-       {section==="pool"?<PoolMasterSpreadsheet rows={page.rows.filter((r):r is PoolItem=>!isReview(r))} />:<div className={styles.scroll}><table className={styles.table}>
+       <div className={styles.scroll}><table className={styles.table}>
          <thead><tr>
            {["NCT","Ticker","Company","Drug","Indication"].map(k=><th key={k}>{k}</th>)}<PipelineTimelineHeaders /><CompetitiveAssessmentHeaders />{["Registry status","Cap at census","POOL match","Screening status","Current SOC cost ($/12 mo)","Proposed cost ($/12 mo)","Details"].map(k=><th key={k}>{k}</th>)}
          </tr></thead>
@@ -170,7 +200,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
              <td>{display(r.stage)}</td><td>{typeof r.marketCap==="number"?`$${r.marketCap.toLocaleString()}`:"Not verified"}</td>
              <td>{r.id.startsWith("TRIAL|")?"Trial source record":r.id.startsWith("APPLICATION|")?"Regulatory record":r.id.startsWith("RESULT|")?"Result record":"Other source record"}</td>
            </tr>)}</tbody>
-       </table></div>}
+       </table></div>
        <div className={styles.pagination}>
          <button type="button" disabled={offset===0||loading} onClick={()=>setOffset(Math.max(0,offset-LIMIT))}>Previous</button>
          <span>Page {Math.floor(offset/LIMIT)+1} of {Math.max(1,Math.ceil(page.total/LIMIT))}</span>
