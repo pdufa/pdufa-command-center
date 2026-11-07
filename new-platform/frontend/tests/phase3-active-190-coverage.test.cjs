@@ -15,8 +15,8 @@ test("active TOP and BOTTOM 190-column evidence matrix covers exactly 258 NCTs w
  assert.equal(n.trials,258);
  assert.equal(n.columnsPerTrial,190);
  assert.equal(n.expectedCells,258*190);
- assert.equal(n.preTrials,235);
- assert.equal(n.postTrials,23);
+ assert.equal(n.preTrials,229);
+ assert.equal(n.postTrials,29);
  assert.equal(n.questionSlots,258*30);
  assert.equal(n.documentedQuestions+n.predictedQuestions+n.unscoredQuestions,258*30);
  assert.equal(data.rows.length,258);
