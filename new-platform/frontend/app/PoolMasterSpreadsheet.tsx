@@ -219,6 +219,7 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
  const [orderEditorOpen,setOrderEditorOpen]=useState(false);
  const [reorderNotice,setReorderNotice]=useState("");
  const [phaseOpen,setPhaseOpen]=useState(false);
+ const [latestDownloadChoice,setLatestDownloadChoice]=useState<"registered"|"discovered"|null>(null);
  const [infoKey,setInfoKey]=useState<Key|"ticker"|"company"|"nct"|null>(null);
  const updatePhases=(selection:PoolPhaseSelection)=>onPhasesChange(selection);
  const updateSort=(key:Key|"ticker"|"company"|"nct")=>{
@@ -342,6 +343,25 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
    </div>
    <p>Clinical phases and recorded regulatory stages are shown. Selections filter the complete published POOL before pagination.</p>
   </fieldset>}
+  <div className={css.latestDownloadToolbar} role="group" aria-label="Latest-download trial highlighting">
+   <button type="button" className={css.registeredButton}
+    aria-pressed={latestDownloadChoice==="registered"}
+    onClick={()=>setLatestDownloadChoice(current=>current==="registered"?null:"registered")}>
+    <span>Newly Registered</span>
+    <small>{latestDownloadChoice==="registered"?"Selected":"Highlight"}</small>
+   </button>
+   <button type="button" className={css.discoveredButton}
+    aria-pressed={latestDownloadChoice==="discovered"}
+    onClick={()=>setLatestDownloadChoice(current=>current==="discovered"?null:"discovered")}>
+    <span>Newly Discovered</span>
+    <small>{latestDownloadChoice==="discovered"?"Selected":"Highlight"}</small>
+   </button>
+  </div>
+  {latestDownloadChoice!==null&&<p className={css.downloadPending} role="status">
+   {latestDownloadChoice==="registered"?"Newly Registered":"Newly Discovered"} is selected.
+   Verified previous-download comparison data is not yet available to this POOL view,
+   so trial rows are not classified or hidden. No records have been marked new.
+  </p>}
   <p className={css.viewport} data-viewport={view}>
    {view==="phone"?"Phone: data columns use 50% of viewport width; Ticker stays pinned.":
    "PC: data columns adapt from 180–260px; Ticker, Company, and NCT ID stay pinned."}

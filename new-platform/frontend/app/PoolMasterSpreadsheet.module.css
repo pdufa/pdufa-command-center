@@ -142,3 +142,20 @@
 .infoPanel strong{font-size:13px}.infoPanel p{margin:5px 0 0;font-size:12px;line-height:1.5}
 .infoPanel button{border:1px solid #9fb7d7;background:#fff;border-radius:6px;padding:7px 10px;color:#213d61;cursor:pointer}
 @media(max-width:640px){.phaseChoices{grid-template-columns:repeat(2,minmax(0,1fr))}.phaseToolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.phaseButton,.phaseReset{min-width:0}}
+
+/* Latest-download spotlight controls live directly below the Phase selector. */
+.latestDownloadToolbar{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
+.latestDownloadToolbar button{display:flex;flex-direction:column;justify-content:center;align-items:center;
+ gap:4px;min-width:0;width:100%;min-height:52px;padding:8px 9px;border-radius:8px;
+ font:inherit;font-size:12px;font-weight:750;text-transform:uppercase;letter-spacing:.015em;
+ cursor:pointer;line-height:1.25;box-sizing:border-box}
+.latestDownloadToolbar button small{font-size:10px;font-weight:650;text-transform:none;opacity:.93}
+.registeredButton{background:#fff5c9;color:#674806;border:1px solid #d4ae48}
+.discoveredButton{background:#e1ecff;color:#1a426e;border:1px solid #92b3e3}
+.registeredButton[aria-pressed="true"]{background:#d69b19;color:#201700;border:2px solid #704900;
+ box-shadow:0 0 0 2px rgba(214,155,25,.15)}
+.discoveredButton[aria-pressed="true"]{background:#2264ba;color:#fff;border:2px solid #153f86;
+ box-shadow:0 0 0 2px rgba(34,100,186,.15)}
+.latestDownloadToolbar button:focus-visible{outline:3px solid #279873;outline-offset:2px}
+.downloadPending{margin:0;border-left:3px solid #7d8c9b;padding:8px 10px;
+ background:#f3f6f9;color:#405466;font-size:12px;line-height:1.55}

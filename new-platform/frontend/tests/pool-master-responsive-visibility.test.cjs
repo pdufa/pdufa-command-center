@@ -127,3 +127,19 @@ test("Phase checkboxes and Reset, sort buttons and circled info buttons are wire
  assert.ok(style.includes('.infoPanel{'));
  assert.ok(style.includes('.sortButton,.infoButton{'));
 });
+
+test("latest download category buttons appear directly under Phase, highlight independently and do not invent trial classification",()=>{
+ const phase=component.indexOf('<div className={css.phaseToolbar}');
+ const choices=component.indexOf('<div className={css.latestDownloadToolbar}');
+ const view=component.indexOf('<p className={css.viewport}');
+ assert.ok(phase>=0&&choices>phase&&view>choices);
+ assert.ok(component.includes('<span>Newly Registered</span>'));
+ assert.ok(component.includes('<span>Newly Discovered</span>'));
+ assert.ok(component.includes('aria-pressed={latestDownloadChoice==="registered"}'));
+ assert.ok(component.includes('aria-pressed={latestDownloadChoice==="discovered"}'));
+ assert.ok(component.includes('setLatestDownloadChoice(current=>current==="registered"?null:"registered")'));
+ assert.ok(component.includes('setLatestDownloadChoice(current=>current==="discovered"?null:"discovered")'));
+ assert.ok(component.includes('trial rows are not classified or hidden'));
+ assert.ok(style.includes('.registeredButton[aria-pressed="true"]'));
+ assert.ok(style.includes('.discoveredButton[aria-pressed="true"]'));
+});
