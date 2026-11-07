@@ -128,3 +128,12 @@ test("every BOTTOM trial has five traceable rating-input packets without fabrica
   assert.ok(trial.clinicalFactors.find(f=>f.id==="post-1-1")?.reviewEvidenceCount>0);
  }
 });
+test("BOTTOM factor research export contains every exact trial and all 115 rating packets",async()=>{
+ const response=await GET(new Request("http://localhost/api/bottom-only-completion?format=rating-evidence"));
+ assert.equal(response.status,200);
+ const csv=await response.text();assert.match(csv,/Factor ID/);assert.match(csv,/Rating readiness/);
+ const lines=csv.split(/\r?\n/).filter(Boolean);assert.ok(lines.length>=116);
+ for(const id of ids)assert.ok(csv.includes(id),"missing factor packet: "+id);
+ const ui=fs.readFileSync(path.join(__dirname,"../app/BottomOnlyCompletionSheet.tsx"),"utf8");
+ assert.match(ui,/rating-evidence/);assert.match(ui,/reviewEvidence\.map/);
+});
