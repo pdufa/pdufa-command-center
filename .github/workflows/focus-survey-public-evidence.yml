@@ -28,6 +28,10 @@ on:
       - 'scripts/collect_focus_five_public_sources.py'
       - 'scripts/sync_focus_five_sources_to_sheets.py'
       - 'tests/test_focus_five_public_sources.py'
+      - 'scripts/collect_focus_direct_company_releases.py'
+      - 'scripts/sync_focus_direct_company_to_sheets.py'
+      - 'tests/test_focus_direct_company_releases.py'
+      - 'data/focus_company_phase3_primary_sources.json'
       - 'new-platform/frontend/data/benefit-assessment-research.json'
       - 'data/phase3_benefit_survey_catalog.json'
   push:
@@ -48,6 +52,9 @@ on:
       - 'new-platform/frontend/data/benefit-assessment-research.json'
       - 'scripts/collect_focus_five_public_sources.py'
       - 'scripts/sync_focus_five_sources_to_sheets.py'
+      - 'scripts/collect_focus_direct_company_releases.py'
+      - 'scripts/sync_focus_direct_company_to_sheets.py'
+      - 'data/focus_company_phase3_primary_sources.json'
   schedule:
     - cron: '45 15 * * *'
 
@@ -69,7 +76,7 @@ jobs:
           python-version: '3.12'
       - name: Confirm Python syntax
         run: |
-          python -m py_compile scripts/collect_focus_survey_evidence.py scripts/sync_focus_survey_evidence_to_sheets.py scripts/triage_focus_survey_evidence.py scripts/sync_focus_survey_triage_to_sheets.py scripts/resolve_focus_survey_ingredients.py scripts/sync_focus_survey_resolution_to_sheets.py scripts/collect_focus_survey_statistics.py scripts/sync_focus_survey_statistics_to_sheets.py scripts/collect_focus_sec_financial_facts.py scripts/sync_focus_sec_facts_to_sheets.py scripts/collect_focus_five_public_sources.py scripts/sync_focus_five_sources_to_sheets.py
+          python -m py_compile scripts/collect_focus_survey_evidence.py scripts/sync_focus_survey_evidence_to_sheets.py scripts/triage_focus_survey_evidence.py scripts/sync_focus_survey_triage_to_sheets.py scripts/resolve_focus_survey_ingredients.py scripts/sync_focus_survey_resolution_to_sheets.py scripts/collect_focus_survey_statistics.py scripts/sync_focus_survey_statistics_to_sheets.py scripts/collect_focus_sec_financial_facts.py scripts/sync_focus_sec_facts_to_sheets.py scripts/collect_focus_five_public_sources.py scripts/sync_focus_five_sources_to_sheets.py scripts/collect_focus_direct_company_releases.py scripts/sync_focus_direct_company_to_sheets.py
       - name: Test 29-trial roster, 20-survey taxonomy and data safety
         run: python -m unittest discover -s tests -p 'test_focus_survey_collection.py' -v
       - name: Verify review triage, denominators and literature identity
@@ -92,6 +99,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_focus_five_public_sources.py' -v
       - name: Verify ABVX ABTECT trial-specific issuer remission and AE discontinuation evidence
         run: python -m unittest discover -s tests -p 'test_focus_abtect_review.py' -v
+      - name: Validate official issuer results links for all 29 current FOCUS NCTs
+        run: python -m unittest discover -s tests -p 'test_focus_direct_company_releases.py' -v
       - name: Dry-run and verify canonical ingredient slots
         run: python scripts/collect_focus_survey_evidence.py --dry-run
 
@@ -114,14 +123,16 @@ jobs:
         run: python scripts/collect_focus_survey_evidence.py --all
       - name: Produce exact-NCT registry fact and publication triage reports
         run: python scripts/triage_focus_survey_evidence.py
-      - name: Prepare full ingredient-by-ingredient evidence disposition worklist
-        run: python scripts/resolve_focus_survey_ingredients.py
       - name: Collect posted exact-NCT statistical results and denominators
         run: python scripts/collect_focus_survey_statistics.py
       - name: Collect source-only SEC issuer financial facts and filing pointers
         run: python scripts/collect_focus_sec_financial_facts.py
       - name: Enrich all trials with company websites, FDA, PubMed and SEC research leads
         run: python scripts/collect_focus_five_public_sources.py
+      - name: Fetch curated official Phase 3 company results pages for each exact FOCUS trial
+        run: python scripts/collect_focus_direct_company_releases.py
+      - name: Prepare complete ingredient worklist using registry, publications and issuer statements
+        run: python scripts/resolve_focus_survey_ingredients.py
       - name: Validate collection completeness and evidence counts before Sheets
         id: validate
         run: |
@@ -180,6 +191,11 @@ jobs:
         env:
           GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
         run: python scripts/sync_focus_five_sources_to_sheets.py
+      - name: Publish all 29 direct official company results links and retrieval status
+        if: steps.validate.outcome == 'success'
+        env:
+          GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
+        run: python scripts/sync_focus_direct_company_to_sheets.py
       - name: Archive collection results even when public sources or Sheets are blocked
         if: always()
         uses: actions/upload-artifact@v4
