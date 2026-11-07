@@ -39,15 +39,8 @@ def main():
         result = session.post(url, json={}, timeout=45)
         result.raise_for_status()
 
-    path = Path("data/pdufa_candidates.csv")
-    if not path.is_file():
-        raise SystemExit("Published candidate file missing; refusing to erase existing spreadsheet")
-    candidates = list(csv.DictReader(io.StringIO(path.read_text(encoding="utf-8-sig"))))
-    if not candidates:
-        raise SystemExit("Published candidate file empty; refusing to erase existing spreadsheet")
-    values = [FIELDS] + [[row.get(field, "") for field in FIELDS] for row in candidates]
-    clear("'Published Candidates'!A2:P")
-    put("'Published Candidates'!A1", values)
+    # Retired duplicate Published Candidates tab: keep audit, FDA outcomes,
+    # Phase 3 milestones and approved sales without regenerating a candidate list.
 
     audit_path = Path("data/nightly_scan_report.json")
     if audit_path.is_file():
@@ -223,7 +216,7 @@ def main():
                 json={"values": additions}, timeout=45)
             response.raise_for_status()
         print(f"Curated sales disclosure rows appended: {len(additions)}; no inferred product allocations")
-    print(f"Published Candidates synced: {len(candidates)} rows. Full Pipeline/GEM data is not included in this snapshot.")
+    print("Scan, FDA outcomes, Phase 3 milestones and sales history synced; no retired candidate tabs written.")
 
 
 if __name__ == "__main__":
