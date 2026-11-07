@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 import Link from "next/link";
 import {MAIN_DAILY_EVIDENCE} from "../../lib/main-daily-evidence";
+import {FOCUS_FINAL_TRIAL_AUDIT} from "../../lib/focus-final-gate-checks";
 
 export const metadata:Metadata={
   title:"MAIN · Technical status and evidence gates | PDUFA",
@@ -22,22 +23,22 @@ const fine={fontSize:13,lineHeight:1.55,color:"#46594d"} as const;
 const grid={display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,250px),1fr))",gap:12} as const;
 
 /** Current MAIN keeps 31 evidence checks, replacing four superseded archival
- * checks with applicable POOL / FOCUS / TOOLS acceptance requirements.
+ * checks with applicable final-list FOCUS acceptance requirements.
  * These entries are explicitly unverified until runtime/source proof exists.
  * The signed historical inventory remains unchanged for audit provenance.
  */
 const currentScopeReplacements=[
   {id:"pool-focus.exact-handoff",status:"Not verified",
-    note:"Confirm signed-in production transfer by exact NCT, issuer, drug, indication and FDA application/review cycle; record conflicts as UNKNOWN.",
+    note:"Verify only the NCTs in the dated FOCUS final roster against original POOL, issuer, exact drug/indication and FDA application cycle. Historical and early-stage NCTs never enter acceptance; conflicts stay UNKNOWN.",
     evidenceUri:"https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/lib/pool-pipeline-funnel.ts"},
   {id:"focus.current-eligibility",status:"Not verified",
-    note:"Verify present public listing and $300M–$10B market capitalization, final pivotal Phase 3 evidence, commercial rights and source-dated FDA pathway for each exact program.",
+    note:"Check current issuer listing and $300M–$10B cap, final pivotal Phase 3 readout, commercial rights and FDA cycle for each of the exact final-list FOCUS NCTs only.",
     evidenceUri:"https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/lib/pipeline-gate-evidence.ts"},
   {id:"focus.nightly-sync",status:"Not verified",
-    note:"Verify a full nightly POOL → FOCUS → Google Sheets round trip with exact-NCT counts, deduplication, timestamps and independently checked output; a successful scheduled job alone is not proof.",
+    note:"Verify nightly exact-NCT POOL → final FOCUS → Google Sheets synchronization against the dated final-list roster, including deduplication and independently checked output. Never include other phases in gate acceptance.",
     evidenceUri:"https://github.com/pdufa/pdufa-command-center/blob/main/.github/workflows/p3-post-data-google-sheet-sync.yml"},
   {id:"tools.wt-runtime",status:"Not verified",
-    note:"Independently verify currently supported WT controls and chart state in the live authenticated TOOLS runtime, distinct from archived scan configurations.",
+    note:"Independently verify WT controls and chart state only for the exact-NCT final FOCUS trial cohort; broader TOOLS phase screens and retired scan configurations are not accepted cohort members.",
     evidenceUri:"https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/lib/wt-entry-stay-exit.ts"},
 ] as const;
 
@@ -52,7 +53,7 @@ export default function MainStatus(){
   const checked=MAIN_DAILY_EVIDENCE.valid;
   const historicalDay=checked?MAIN_DAILY_EVIDENCE.history.at(-1)?.asOf:null;
   const activeGateRows=checked?[
-    ...MAIN_DAILY_EVIDENCE.observations.filter(g=>!g.id.startsWith("gem-jr-gem-wt.")).map(g=>({...g,sourceKind:"Dated historical evidence",note:g.note.includes("GEM")?"This dated note includes superseded research-group totals; consult the original audit for historical details. Current-source acceptance still needs independent verification.":g.note})),
+    ...MAIN_DAILY_EVIDENCE.observations.filter(g=>!g.id.startsWith("gem-jr-gem-wt.")).map(g=>({...g,sourceKind:"Dated historical evidence",note:g.id.startsWith("core-platform.")?g.note:"This legacy observation is not acceptance for the "+FOCUS_FINAL_TRIAL_AUDIT.trialCount+" exact-NCT final-list FOCUS cohort. Review source-specific evidence only for the active final listing; old broader-population counts are not applicable."})),
     ...currentScopeReplacements.map(g=>({...g,sourceKind:"Current scope — pending verification"})),
   ]:[];
   const activeScopeValid=checked&&activeGateRows.length===31&&
@@ -122,10 +123,18 @@ export default function MainStatus(){
         Its superseded requirements are not part of the active POOL / FOCUS / TOOLS checklist.</p>
       <Link href="/installation-audit">Inspect dated installation gates and protected SCIENCE / OUTCOME checks</Link>
     </section>
-    <section style={{...card,marginTop:16}} aria-label="Active MAIN POOL FOCUS TOOLS acceptance checks">
-      <h2 style={{marginTop:0}}>Current 31-gate scope · POOL / FOCUS / TOOLS</h2>
-      <p style={fine}>The active checklist replaces four obsolete historical check slots with exact-data
-        transfer, current eligibility, nightly sync and independent WT runtime checks.
+    <section style={{...card,marginTop:16}} aria-label="Active final FOCUS trial acceptance cohort">
+      <h2 style={{marginTop:0}}>Final trial acceptance · {FOCUS_FINAL_TRIAL_AUDIT.trialCount} FOCUS trials only</h2>
+      <p><strong>{FOCUS_FINAL_TRIAL_AUDIT.trialCount} unique NCTs</strong> across {FOCUS_FINAL_TRIAL_AUDIT.uniqueCompanies} recorded tickers, from the final-list Google Sheets snapshot dated {FOCUS_FINAL_TRIAL_AUDIT.asOf}.
+        These are the <strong>only trial records</strong> subject to current MAIN acceptance gate assessment. POOL and the historical Phase 3/TOOLS all-phase tallies stay as references and do not count toward the final-trial gate denominator.</p>
+      <p><strong>{FOCUS_FINAL_TRIAL_AUDIT.totalChecks} trial-specific evidence checks</strong> ({FOCUS_FINAL_TRIAL_AUDIT.checksPerTrial} per trial) · {FOCUS_FINAL_TRIAL_AUDIT.independentlyVerified} independently verified · {FOCUS_FINAL_TRIAL_AUDIT.pointers} recorded source pointers · {FOCUS_FINAL_TRIAL_AUDIT.review} requiring source review · {FOCUS_FINAL_TRIAL_AUDIT.missing} missing source evidence.</p>
+      <p style={fine}>Evidence pointers, historical market-cap figures and planned FDA filings are not independently certified eligibility or live data. The 31 MAIN technical installation checks remain distinct from these per-trial checks; accepting platform infrastructure never makes an individual trial FDA qualified.</p>
+      <Link href="/focus">Inspect all final-list trials and expandable gate findings</Link>
+    </section>
+    <section style={{...card,marginTop:16}} aria-label="Active MAIN final trial acceptance checks">
+      <h2 style={{marginTop:0}}>Current 31-gate scope · final FOCUS trials only</h2>
+      <p style={fine}>All trial-level MAIN checks are now restricted to the {FOCUS_FINAL_TRIAL_AUDIT.trialCount} exact NCTs currently on the final FOCUS listing. Core platform and recovery gates still assess shared infrastructure.
+        The active checklist replaces four obsolete historical check slots with exact-data transfer, current final-trial eligibility, nightly sync and independent WT runtime checks.
         No archived scan is restored. Statuses inherited from October 26 are dated evidence,
         not current certifications; the four replacement checks remain unverified.
         A passing build, code present or Preview READY is not runtime acceptance.</p>
@@ -154,7 +163,7 @@ export default function MainStatus(){
     </section>
     <section style={{...card,marginTop:16}} aria-label="Next verified work">
       <h2 style={{marginTop:0}}>Next MAIN acceptance step</h2>
-      <p>Verify the authenticated deployed POOL → FOCUS handoff against exact trial,
+      <p>Verify the authenticated deployed POOL → FOCUS handoff for the {FOCUS_FINAL_TRIAL_AUDIT.trialCount} exact final-list NCTs only, checking
         company, drug, indication and FDA application/cycle identities, then reconcile
         those results with the registry and nightly artifacts. Keep missing evidence as
         <strong> UNKNOWN</strong>, and preserve all original trial and RAAS history.</p>
