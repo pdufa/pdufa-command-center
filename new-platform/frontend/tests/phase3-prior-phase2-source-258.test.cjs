@@ -23,7 +23,7 @@ test("prior efficacy and long-term observed clinical endpoints use exact prior N
  for(const id of q21){
   const fact=sourceObservation(id,21);
   assert.match(fact.sourceUrl,/^https:\/\/clinicaltrials\.gov\/study\/NCT\d{8}$/);
-  assert.match(fact.description,/does NOT prove that benefit was sustained/);
+  assert.match(fact.description,/extended follow-up/);
  }
  assert.match(sourceObservation("NCT05515536",16).description,/0\.1440/);
  assert.equal(sourceObservation("NCT00000000",16),null);
