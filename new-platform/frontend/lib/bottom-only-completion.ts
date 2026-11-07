@@ -42,7 +42,7 @@ export function bottomOnlyReport(){
   const original=matrixByNct.get(row.nctId);
   if(!original)throw Error("BOTTOM_NCT_MISSING_MATRIX:"+row.nctId);
   const savedEndpoint=endpointByNct.get(row.nctId);
-  const observedOutcome=savedEndpoint?.endpointOutcome??row.readoutOutcome;
+  const observedOutcome=row.readoutOutcome!=="NOT_INDEPENDENTLY_REVIEWED"&&row.readoutOutcome!=="UNDETERMINED"?row.readoutOutcome:(savedEndpoint?.endpointOutcome??row.readoutOutcome);
   const readoutUrl=savedEndpoint?.evidenceUrl??row.readoutEvidenceUrl;
   const trialFacts=reviewedFacts.records.filter(f=>f.nctId===row.nctId);
   const seenFacts=new Set<string>();
@@ -107,7 +107,7 @@ export function bottomOnlyReport(){
    if(sub===1||sub===2)state=absent?"UNSCORED_OR_NOT_APPLICABLE":"PRESERVED_HISTORICAL_PREDICTION";
    if(sub===4)state=isUrl(value)?"SOURCE_URL_PRESENT":"SOURCE_URL_MISSING";
    return {column:index+1,name:matrix.headers[index],value:absent?null:value,
-    exportValue:absent?(sub===1||sub===2?"N/A_UNSCORED":"MISSING_OR_UNDISCLOSED"):value,
+    exportValue:absent?(value.trim()?value:(sub===1||sub===2?"N/A_UNSCORED":"MISSING_OR_UNDISCLOSED")):value,
     state,sourceUrl:available?sourceUrl:null,sourceDate:q?.sourceDate??row.readoutSourceDate??null,
     sourceScope:q?"EXACT_NCT_QUESTION_SOURCE_OR_REVIEW":"PRESERVED_ORIGINAL_COHORT_CLASSIFICATION",
     evidenceVerified:!!q&&["OBSERVED_PHASE3_ENDPOINT","PUBLIC_READOUT_DOCUMENTED","SOURCED_UNGRADED_FACT","VERIFIED_ADDITIONAL_SOURCE_FACT"].includes(q.state),
