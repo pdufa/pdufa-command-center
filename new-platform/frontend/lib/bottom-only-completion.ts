@@ -105,7 +105,7 @@ export function bottomOnlyReport(){
    const available=typeof sourceUrl==="string"&&isUrl(sourceUrl);
    let state=absent?"MISSING_OR_UNSCORED":q?.state??"PRESERVED_FIELD";
    if(sub===1||sub===2)state=absent?"UNSCORED_OR_NOT_APPLICABLE":"PRESERVED_HISTORICAL_PREDICTION";
-   if(sub===4)state=available?"SOURCE_URL_PRESENT":"SOURCE_URL_MISSING";
+   if(sub===4)state=isUrl(value)?"SOURCE_URL_PRESENT":"SOURCE_URL_MISSING";
    return {column:index+1,name:matrix.headers[index],value:absent?null:value,
     exportValue:absent?(sub===1||sub===2?"N/A_UNSCORED":"MISSING_OR_UNDISCLOSED"):value,
     state,sourceUrl:available?sourceUrl:null,sourceDate:q?.sourceDate??row.readoutSourceDate??null,
