@@ -15,9 +15,11 @@ FACT_HEADER=["Ticker","CIK","SEC Issuer","Identity / Source Status",
  "SEC Fact API","Status","Product Rights Verified"]
 FILING_HEADER=["Ticker","CIK","SEC Issuer","Filing Type","Filing Date",
  "Official SEC Filing Document","Document Review Status","Product Rights Verified"]
-def tables():
- payload=json.loads((OUT/"sec-companyfacts.json").read_text(encoding="utf-8"))
- summary=json.loads((OUT/"sec-companyfacts-summary.json").read_text(encoding="utf-8"))
+def tables(payload=None,summary=None):
+ if payload is None:
+  payload=json.loads((OUT/"sec-companyfacts.json").read_text(encoding="utf-8"))
+ if summary is None:
+  summary=json.loads((OUT/"sec-companyfacts-summary.json").read_text(encoding="utf-8"))
  issuers=payload.get("issuers",[])
  if payload.get("schemaVersion")!=1 or summary.get("schemaVersion")!=1 or \
     not 10<=summary.get("issuerCount",0)<=100 or len(issuers)!=summary["issuerCount"] or \
