@@ -20,6 +20,8 @@ on:
       - 'scripts/collect_focus_sec_financial_facts.py'
       - 'scripts/sync_focus_sec_facts_to_sheets.py'
       - 'tests/test_focus_sec_financial_facts.py'
+      - 'tests/test_focus_survey_reviewed_primary_facts.py'
+      - 'new-platform/frontend/data/benefit-assessment-research.json'
       - 'data/phase3_benefit_survey_catalog.json'
   push:
     branches: [main]
@@ -36,6 +38,7 @@ on:
       - 'scripts/sync_focus_survey_statistics_to_sheets.py'
       - 'scripts/collect_focus_sec_financial_facts.py'
       - 'scripts/sync_focus_sec_facts_to_sheets.py'
+      - 'new-platform/frontend/data/benefit-assessment-research.json'
   schedule:
     - cron: '45 15 * * *'
 
@@ -68,6 +71,8 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_focus_survey_statistics.py' -v
       - name: Test SEC issuer mapping and point-in-time public financial evidence
         run: python -m unittest discover -s tests -p 'test_focus_sec_financial_facts.py' -v
+      - name: Validate manually reviewed primary effect sources and identity
+        run: python -m unittest discover -s tests -p 'test_focus_survey_reviewed_primary_facts.py' -v
       - name: Dry-run and verify canonical ingredient slots
         run: python scripts/collect_focus_survey_evidence.py --dry-run
 
