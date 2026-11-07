@@ -3,6 +3,108 @@
   "sourceAsOf": "2026-11-07",
   "records": [
     {
+      "nctId": "NCT03697109",
+      "ticker": "CORT",
+      "drug": "Relacorilant",
+      "indication": "Cushing Syndrome",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "GRACE Phase 3 randomized-withdrawal responders with baseline hypertension: participants continuing relacorilant were less likely to lose hypertension response over 12-week withdrawal than participants switched to placebo (11/21 [52%] versus 19/22 [86%]; OR 0.17, 95% CI 0.04–0.77; p=0.0215). This supports maintenance of prior response only in the preselected responder population, not efficacy in all screened patients.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT03697109",
+          "sourceDate": "2025-04-24",
+          "method": "Exact NCT NCT03697109 posted ClinicalTrials.gov primary statistical analysis at sourceDate 2025-04-24, prespecified comparator, timeframe, least-squares/odds ratio and 95% interval; independently cross-checked against public original https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/. Null and selected-responder outcomes are explicitly qualified. No approval, company valuation, or RAAS inference.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "10f6e8da28ce26cb0d7030e49d47e37da405990fb1b59da51de82f15fdd16feb",
+            "endpointTitle": "Number of Patients With Loss of Response With Respect to Hypertension During the RW Phase.",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "0.17",
+            "confidenceLower": "0.04",
+            "confidenceUpper": "0.77",
+            "crossReference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/"
+          }
+        },
+        "magnitude": {
+          "value": "In GRACE randomized-withdrawal hypertension responders, loss of hypertension response at Week 12 of withdrawal was 11/21 (52%) continuing relacorilant versus 19/22 (86%) switched to placebo, odds ratio 0.17 (95% CI 0.04–0.77; p=0.0215). No claim about all Cushing syndrome patients.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT03697109",
+          "sourceDate": "2025-04-24",
+          "method": "Exact NCT NCT03697109 posted ClinicalTrials.gov primary statistical analysis at sourceDate 2025-04-24, prespecified comparator, timeframe, least-squares/odds ratio and 95% interval; independently cross-checked against public original https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/. Null and selected-responder outcomes are explicitly qualified. No approval, company valuation, or RAAS inference.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "10f6e8da28ce26cb0d7030e49d47e37da405990fb1b59da51de82f15fdd16feb",
+            "endpointTitle": "Number of Patients With Loss of Response With Respect to Hypertension During the RW Phase.",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "0.17",
+            "confidenceLower": "0.04",
+            "confidenceUpper": "0.77",
+            "crossReference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/"
+          }
+        },
+        "responseRemission": {
+          "value": "GRACE randomized-withdrawal hypertension maintenance: 11 of 21 (52%) relacorilant versus 19 of 22 (86%) placebo participants lost prespecified hypertension response over 12 weeks. Placebo patients had higher loss-of-response; selection was restricted to open-label initial responders. Not a de novo responder rate.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT03697109",
+          "sourceDate": "2025-04-24",
+          "method": "Exact NCT NCT03697109 posted ClinicalTrials.gov primary statistical analysis at sourceDate 2025-04-24, prespecified comparator, timeframe, least-squares/odds ratio and 95% interval; independently cross-checked against public original https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/. Null and selected-responder outcomes are explicitly qualified. No approval, company valuation, or RAAS inference.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "10f6e8da28ce26cb0d7030e49d47e37da405990fb1b59da51de82f15fdd16feb",
+            "endpointTitle": "Number of Patients With Loss of Response With Respect to Hypertension During the RW Phase.",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "0.17",
+            "confidenceLower": "0.04",
+            "confidenceUpper": "0.77",
+            "crossReference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/"
+          }
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT04308590",
+      "ticker": "CORT",
+      "drug": "Relacorilant",
+      "indication": "Hypercortisolism",
+      "facts": {
+        "magnitude": {
+          "value": "GRADIENT Phase 3: mean change in 24-hour ambulatory systolic blood pressure at Week 22 versus placebo, reported least-squares mean difference -2.67 mm Hg (95% CI -9.096 to +3.766; p=0.4160). The primary blood-pressure group contrast was NOT statistically significant; this is a verified neutral result, not evidence of superiority.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT04308590",
+          "sourceDate": "2025-08-03",
+          "method": "Exact NCT NCT04308590 posted ClinicalTrials.gov primary statistical analysis at sourceDate 2025-08-03, prespecified comparator, timeframe, least-squares/odds ratio and 95% interval; independently cross-checked against public original https://www.clinicaltrialsregister.eu/ctr-search/trial/2019-004956-12/results. Null and selected-responder outcomes are explicitly qualified. No approval, company valuation, or RAAS inference.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "8a6f4f60e7edfe4635e02ba0c2f78c891cc6385fc57402429d934a2b96e7fa81",
+            "endpointTitle": "Change in Average 24-hour SBP",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Least squares mean difference",
+            "observedValue": "-2.67",
+            "confidenceLower": "-9.096",
+            "confidenceUpper": "3.766",
+            "crossReference": "https://www.clinicaltrialsregister.eu/ctr-search/trial/2019-004956-12/results"
+          }
+        }
+      },
+      "advantages": []
+    },
+    {
       "nctId": "NCT04544293",
       "ticker": "SVRA",
       "drug": "Molgramostim",
