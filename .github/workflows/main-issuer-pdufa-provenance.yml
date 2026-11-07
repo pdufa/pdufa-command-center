@@ -1,0 +1,31 @@
+name: MAIN issuer PDUFA event provenance and expiry audit
+on:
+  pull_request:
+    paths:
+      - 'scripts/audit_phase3_issuer_pdufa_event_provenance.py'
+      - 'tests/test_phase3_issuer_pdufa_event_provenance.py'
+      - '.github/workflows/main-issuer-pdufa-provenance.yml'
+      - 'data/research_issuer_rights_claims_cytk_2026-10-26.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  event-provenance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Test date expiry, source attribution and no FDA promotion
+        run: python3 -m unittest discover -s tests -p 'test_phase3_issuer_pdufa_event_provenance.py' -v
+      - name: Build event-level issuer reported PDUFA audit
+        run: python3 scripts/audit_phase3_issuer_pdufa_event_provenance.py "$RUNNER_TEMP/issuer_reported_pdufa_provenance.json"
+      - name: Archive exact application and indication-level evidence status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase3-issuer-pdufa-event-provenance
+          path: ${{ runner.temp }}/issuer_reported_pdufa_provenance.json
+          if-no-files-found: error
+          retention-days: 7
