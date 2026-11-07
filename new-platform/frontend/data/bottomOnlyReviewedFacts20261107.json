@@ -470,6 +470,78 @@
       "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41196369/",
       "evidence": "ORIGIN3 interim adverse events reported in 59.3% atacicept versus 50.0% placebo; most mild/moderate.",
       "criticalLimit": "Interim safety observation does not establish all long-term infection and renal outcomes; no numerical safety grade inferred."
+    },
+    {
+      "nctId": "NCT05535946",
+      "question": 3,
+      "classification": "SEC_REPORTED_OBSERVED_POST_READOUT_SAFETY_TABLE",
+      "sourceDate": "2026-06-02",
+      "sourceUrl": "https://ir.abivax.com/node/12341/html",
+      "evidence": "ABTECT-Maintenance 580 participants, placebo/25mg/50mg: any TEAE 50.0%/58.0%/71.8%; serious TEAE 4.2%/2.6%/5.6%; treatment discontinuation due to AE 6.8%/2.6%/4.6%; deaths zero in all arms.",
+      "criticalLimit": "Issuer SEC exhibit; dose-dependent TEAE frequency and rare cancers require complete adjudicated safety report. No automatic FDA risk verdict."
+    },
+    {
+      "nctId": "NCT05535946",
+      "question": 14,
+      "classification": "SEC_REPORTED_STATISTICAL_METHOD_FACT",
+      "sourceDate": "2026-06-02",
+      "sourceUrl": "https://ir.abivax.com/node/12341/html",
+      "evidence": "Reported adjusted placebo contrasts for Week-44 primary remission used Mantel-Haenszel weights across stratification factors including baseline remission, induction dose and oral corticosteroid use; both active doses p<0.0001.",
+      "criticalLimit": "Complete SAP, confidence intervals, full missing-data sensitivity and multiplicity review were not included in this SEC summary."
+    },
+    {
+      "nctId": "NCT05535946",
+      "question": 16,
+      "classification": "PRIOR_INDEPENDENT_PHASE3_INDUCTION_RESULTS_NOT_MAINTENANCE_REPLICATION",
+      "sourceDate": "2025-07-22",
+      "sourceUrl": "https://ir.abivax.com/static-files/99de1b8a-f695-4e75-a38f-9d970eb52d52",
+      "evidence": "ABTECT-1 and ABTECT-2 are distinct Phase 3 randomized induction studies with 50mg Week-8 clinical remission versus placebo 21.7% vs 2.5% (ABTECT-1) and 19.8% vs 6.3% (ABTECT-2), significant in both; 25mg did not meet the primary in ABTECT-2 (11.3% vs 6.3%, p=0.1034).",
+      "criticalLimit": "Induction populations and Week-8 endpoint differ from BOTTOM maintenance Week-44 randomized responder-trial design; not independent maintenance replication."
+    },
+    {
+      "nctId": "NCT05535946",
+      "question": 17,
+      "classification": "SEC_REPORTED_POST_READOUT_SECONDARY_ENDPOINTS",
+      "sourceDate": "2026-06-02",
+      "sourceUrl": "https://ir.abivax.com/node/12341/html",
+      "evidence": "Week-44 endoscopic remission (placebo/25mg/50mg) 9.9%/41.5%/47.7%, histologic-endoscopic improvement (HEMI) 10.4%/50.3%/57.4%, corticosteroid-free remission 9.9%/45.1%/47.7%, reported p<0.0001.",
+      "criticalLimit": "Complete hierarchy, multiplicity and independent patient-level validation are not available from this topline filing alone."
+    },
+    {
+      "nctId": "NCT05535946",
+      "question": 20,
+      "classification": "SEC_REPORTED_PHASE3_OBSERVED_EFFECT_SIZE",
+      "sourceDate": "2026-06-02",
+      "sourceUrl": "https://ir.abivax.com/node/12341/html",
+      "evidence": "Reported placebo-adjusted Week-44 remission effect of obefazimod 25mg was +39.3 percentage points and 50mg +40.3 points, clinical remission 50.8% and 51.3% versus 10.4% placebo.",
+      "criticalLimit": "Source is company SEC-hosted summary; no standalone, independent final CSR or full confidence interval for both differences established."
+    },
+    {
+      "nctId": "NCT05535946",
+      "question": 24,
+      "classification": "SEC_REPORTED_POST_READOUT_DISPOSITION_AND_SAFETY",
+      "sourceDate": "2026-06-02",
+      "sourceUrl": "https://ir.abivax.com/node/12341/html",
+      "evidence": "Drug discontinuations due to treatment-emergent adverse events in the 44-week randomized maintenance trial: placebo 13/192 (6.8%), 25mg 5/193 (2.6%), 50mg 9/195 (4.6%).",
+      "criticalLimit": "Treatment-discontinuation-from-AE is not complete trial attrition or all-cause missingness; full disposition and imputation remain unreviewed."
+    },
+    {
+      "nctId": "NCT05535946",
+      "question": 27,
+      "classification": "SEC_REPORTED_PHASE3_COMPARATOR_FACT",
+      "sourceDate": "2026-06-02",
+      "sourceUrl": "https://ir.abivax.com/node/12341/html",
+      "evidence": "After two Phase 3 induction trials, 580 clinical responders were randomized to 25mg obefazimod (n193), 50mg (n195) or placebo (n192) for 44-week maintenance; original source identifies placebo and responder re-randomization.",
+      "criticalLimit": "The maintenance placebo is a withdrawal/re-randomization control among responders, not an unselected UC population or head-to-head active-drug comparison."
+    },
+    {
+      "nctId": "NCT05535946",
+      "question": 12,
+      "classification": "SEC_REPORTED_POST_READOUT_SAMPLE_AND_STRATIFICATION",
+      "sourceDate": "2026-06-02",
+      "sourceUrl": "https://ir.abivax.com/node/12341/html",
+      "evidence": "580 previously induction-responsive ulcerative-colitis participants were re-randomized in ABTECT-Maintenance to placebo n192, obefazimod 25mg n193, 50mg n195; stratification adjusted remission at baseline, induction treatment and baseline oral corticosteroid use.",
+      "criticalLimit": "Reported group sizes and stratification do not alone prove prospective power assumptions, final SAP adequacy or missing-data robustness."
     }
   ]
 }
