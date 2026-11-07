@@ -309,13 +309,26 @@ def reviewed_fact(record, row, packet, ingredient):
         return None
     drug = str(r.get("drug", "")).strip().lower()
     indication = str(r.get("indication", "")).strip().lower()
-    if not drug or not indication or drug not in interventions or indication not in indications:
+    # Require exact registered drug identity; an anchored registered formulation
+    # suffix can be omitted from the display name (Aficamten (CK-...) -> Aficamten).
+    # Do not use substring/ticker-only matching.
+    drug_match = any(drug == name or name.startswith(drug + " (") for name in interventions)
+    if not drug or not indication or not drug_match or indication not in indications:
         return None
     candidate = dict_of(r.get("facts")).get(ingredient)
     if not isinstance(candidate, dict) or candidate.get("status") not in ("VERIFIED", "MODELED"):
         return None
     if not candidate.get("sourceUrl") or not candidate.get("sourceDate") or not candidate.get("method"):
         return None
+    witness = candidate.get("sourceWitness")
+    if witness is not None:
+        if not isinstance(witness, dict) or not witness.get("registrySourceHash") or \
+           witness.get("registrySourceHash") != packet.get("registrySourceHash"):
+            return None
+        # Source hash ties a human-reviewed comparison to the exact registry
+        # snapshot. A subsequent source revision sends it back for review.
+        if witness.get("endpointTitle") not in [o.get("title") for o in registry.get("reportedOutcomeMeasures", [])]:
+            return None
     return candidate
 
 def build_slots(records, groups, packets, reviewed):
