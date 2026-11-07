@@ -1,6 +1,13 @@
 name: P3 POST-DATA Google Sheets → Website snapshot
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/p3-post-data-google-sheet-sync.yml'
+      - 'scripts/auto_promote_p3_post_data.py'
+      - 'new-platform/backend/app/phase3_curated_announcements.json'
+      - 'data/post_phase3_discoveries.csv'
   workflow_run:
     workflows: ['PDUFA Overnight Sequential Scans']
     types: [completed]
