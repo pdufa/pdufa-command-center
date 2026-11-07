@@ -27,7 +27,12 @@ test("258 official records explicitly document absence of comparator-coded arms 
 });
 test("peer-reviewed and FDA facts are source-only, exact-NCT and preserve observed mixed results",()=>{
  const ids=new Set([...activePhase3Cohorts.pre,...activePhase3Cohorts.post].map(r=>r.nctId));
- assert.equal(PHASE3_PEER_FACT_COUNT,18);
+ assert.equal(PHASE3_PEER_FACT_COUNT,27);
+ assert.match(phase3PeerReviewedFact("NCT04716231",21).evidence,/Week 104/);
+ assert.match(phase3PeerReviewedFact("NCT05243550",20).evidence,/SINGLE-ARM/);
+ assert.match(phase3PeerReviewedFact("NCT05243550",26).evidence,/98%/);
+ assert.match(phase3PeerReviewedFact("NCT05453968",20).evidence,/NONRANDOMIZED/);
+ assert.equal(phase3PeerReviewedFact("NCT05453968",3).raasScore,null);
  assert.ok(phase3PeerEvidenceIntegrity(ids));
  const rise=phase3PeerReviewedFact("NCT05031780",20);
  assert.match(rise.evidence,/0\.1213/);
