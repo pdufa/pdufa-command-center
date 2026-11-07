@@ -194,6 +194,31 @@
       "advantages": []
     },
     {
+      "nctId": "NCT04871282",
+      "ticker": "IMNM",
+      "drug": "AL102",
+      "indication": "Desmoid Tumor",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "Phase 3 RINGSIDE company-reported blinded independent central review: varegacestat (formerly AL102) versus placebo improved progression-free survival (HR 0.16; 95% CI 0.071–0.375; p<0.0001) in progressing desmoid tumors. Confirmed RECIST 1.1 ORR 56% versus 9% (p<0.0001) and Week-12 worst-pain change difference −2.42 points (SE 0.37; p<0.0001). 156 patients randomized. This verifies reported PFS, response and pain endpoints, not overall survival or FDA approval.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://investors.immunome.com/immunome-announces-detailed-phase-3-ringside-data-for-varegacestat-in-adults-with-progressing-desmoid-tumors-at-the-2026-asco-annual-meeting/",
+          "sourceDate": "2026-05-30",
+          "method": "Source-review of Immunome's May 30, 2026 Phase 3 RINGSIDE ASCO presentation summary: explicitly identifies NCT04871282, 156 randomized patients, AL102 renamed varegacestat, placebo-controlled central-review PFS/RECIST endpoints and numeric estimates; registry intervention AL102 and indication desmoid tumor independently match. Company-reported result, not independent regulator adjudication or FDA approval; full PFS censoring/event tables are not in this source.",
+          "confidence": "MODERATE"
+        },
+        "magnitude": {
+          "value": "Phase 3 RINGSIDE company-reported primary PFS: varegacestat (AL102) versus placebo hazard ratio 0.16 (95% CI 0.071–0.375; p<0.0001) for progression/death. Confirmed objective response by RECIST 1.1: 56% versus 9% (p<0.0001). Absolute PFS rates/events and censoring are not established by this source.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://investors.immunome.com/immunome-announces-detailed-phase-3-ringside-data-for-varegacestat-in-adults-with-progressing-desmoid-tumors-at-the-2026-asco-annual-meeting/",
+          "sourceDate": "2026-05-30",
+          "method": "Source-review of Immunome's May 30, 2026 Phase 3 RINGSIDE ASCO presentation summary: explicitly identifies NCT04871282, 156 randomized patients, AL102 renamed varegacestat, placebo-controlled central-review PFS/RECIST endpoints and numeric estimates; registry intervention AL102 and indication desmoid tumor independently match. Company-reported result, not independent regulator adjudication or FDA approval; full PFS censoring/event tables are not in this source.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
       "nctId": "NCT05206370",
       "ticker": "ACHV",
       "drug": "Cytisinicline",
@@ -417,6 +442,31 @@
           "sourceDate": "2026-09-11",
           "method": "Independent check of the exact ClinicalTrials.gov NCT05813275 posted primary endpoint analysis table: comparator, group IDs OG000/OG001, 6-month timeframe, least-squares difference, 95% limits, reported p value. Source fact only; not clinical meaningfulness, FDA approval, or RAAS probability.",
           "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT06081894",
+      "ticker": "CYTK",
+      "drug": "Aficamten",
+      "indication": "Symptomatic Non-Obstructive Hypertrophic Cardiomyopathy",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "Peer-reviewed Phase 3 ACACIA-HCM (517 randomized) at Week 36: aficamten versus placebo increased peak oxygen uptake by least-squares mean difference +0.67 mL/kg/min (95% CI 0.22–1.11; p=0.003) and KCCQ clinical summary score by +3.0 points (95% CI 0.5–5.5; p≈0.02). Important counterevidence: LVEF <50% in 27/258 (10.5%) versus 2/259 (0.8%) and serious adverse events in 52/258 (20.2%) versus 38/259 (14.7%). These are reported trial outcomes, not an approval or net safety advantage.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42663312/",
+          "sourceDate": "2026-08-28",
+          "method": "Cross-check of peer-reviewed NEJM ACACIA-HCM trial (PubMed PMID 42663312, published August 28, 2026) explicitly naming NCT06081894 and aficamten versus placebo, primary Week-36 KCCQ-CSS and pVO2 least-squares differences with 95% confidence intervals and 517 randomized. Safety signal reviewed alongside efficacy. No regulatory approval, RAAS or price inference. Reported endpoints do not alone prove clinically important benefit or favorable safety.",
+          "confidence": "HIGH"
+        },
+        "magnitude": {
+          "value": "ACACIA-HCM two Week-36 co-primary effects versus placebo: KCCQ-CSS difference +3.0 points (95% CI 0.5–5.5; NEJM p≈0.02); peak VO2 difference +0.67 mL/kg/min (95% CI 0.22–1.11; p=0.003). Peer-reviewed Phase 3 randomized, 258 aficamten versus 259 placebo. KCCQ clinical importance and missing-data impacts require separate assessment.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42663312/",
+          "sourceDate": "2026-08-28",
+          "method": "Cross-check of peer-reviewed NEJM ACACIA-HCM trial (PubMed PMID 42663312, published August 28, 2026) explicitly naming NCT06081894 and aficamten versus placebo, primary Week-36 KCCQ-CSS and pVO2 least-squares differences with 95% confidence intervals and 517 randomized. Safety signal reviewed alongside efficacy. No regulatory approval, RAAS or price inference. Reported endpoints do not alone prove clinically important benefit or favorable safety.",
+          "confidence": "HIGH"
         }
       },
       "advantages": []
