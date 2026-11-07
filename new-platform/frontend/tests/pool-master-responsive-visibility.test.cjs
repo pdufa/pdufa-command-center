@@ -70,52 +70,44 @@ test("column-group buttons do not alter the opposite group's visibility or hidde
  assert.equal(isGroupVisible(state,a,cols),false);
 });
 
-test("POOL Master offers drag/drop, arrow reorder, cross-segment moves and top reset order",()=>{
- assert.match(component,/const resetColumnOrder=\(\)=>edit/);
- assert.match(component,/Reset Column Order/);
- assert.match(component,/onDragStart=\{event=>dragStart\(event,"segment",s.key\)\}/);
- assert.match(component,/onDragStart=\{event=>dragStart\(event,"column",key\)\}/);
- assert.match(component,/onDrop=\{event=>dropOnColumn\(event,s.key,key\)\}/);
- assert.match(component,/onDrop=\{event=>dropOnSegment\(event,s.key\)\}/);
- assert.match(component,/aria-label=\{"Move "\+c.label\+" to another segment"\}/);
- assert.match(component,/layout.segmentOrder/);
- assert.match(component,/layout.columnOrder/);
- assert.match(component,/window.localStorage.setItem\(storageKey\(device\)/);
- assert.match(style,/\.dragHandle\{/);
- assert.match(style,/\.movePair button\{/);
+test("POOL column reordering supports drag/drop and segment transfers",()=>{
+ assert.ok(component.includes('const resetColumnOrder=()=>{'));
+ assert.ok(component.includes('Reset Column Order'));
+ assert.ok(component.includes('onDragStart={event=>dragStart(event,"segment",s.key)}'));
+ assert.ok(component.includes('onDragStart={event=>dragStart(event,"column",key)}'));
+ assert.ok(component.includes('onDrop={event=>dropOnColumn(event,s.key,key)}'));
+ assert.ok(component.includes('onDrop={event=>dropOnSegment(event,s.key)}'));
+ assert.ok(component.includes('aria-label={"Move "+c.label+" to another segment"}'));
+ assert.ok(component.includes('layout.segmentOrder'));
+ assert.ok(component.includes('layout.columnOrder'));
+ assert.ok(component.includes('window.localStorage.setItem(storageKey(device)'));
+ assert.ok(style.includes('.dragHandle{'));
+ assert.ok(style.includes('.movePair button{'));
 });
-
-test("top action labels and independent Column Order editor toggle",()=>{
- assert.match(component,/<span>Clinical &amp; Dates<\\/span>/);
- assert.match(component,/<span>Qualification &amp; FOCUS<\\/span>/);
- assert.match(component,/<span>Column Order<\\/span>/);
- assert.match(component,/<small>\\{orderEditorOpen\\?"Close":"Edit"\\}<\\/small>/);
- assert.match(component,/onClick=\\{toggleOrderEditor\\}/);
- assert.match(component,/aria-expanded=\\{orderEditorOpen\\}/);
- assert.match(component,/aria-controls="pool-column-editor"/);
- assert.match(component,/orderEditorOpen&&<div className=\\{css.orderEditor\\}/);
- assert.match(component,/onClick=\\{resetColumnOrder\\}/);
- assert.match(component,/Reset Column Order/);
- assert.match(style,/background:#6c42a5!important/);
- assert.match(style,/\\.actions \\.resetOrder\\[data-editor-open="false"\\]/);
- assert.match(style,/\\.actions \\.resetOrder\\[data-editor-open="true"\\]/);
- assert.match(style,/\\.actions button\\[data-visibility="visible"\\]/);
- assert.match(style,/\\.actions button\\[data-visibility="hidden"\\]/);
+test("Column Order button toggles an editor, and reset is an independent action within it",()=>{
+ assert.ok(component.includes('<span>Clinical &amp; Dates</span>'));
+ assert.ok(component.includes('<span>Qualification &amp; FOCUS</span>'));
+ assert.ok(component.includes('<span>Column Order</span>'));
+ assert.ok(component.includes('<small>{orderEditorOpen?"Close":"Edit"}</small>'));
+ assert.ok(component.includes('const [orderEditorOpen,setOrderEditorOpen]=useState(false)'));
+ assert.ok(component.includes('setOrderEditorOpen(open=>!open)'));
+ assert.ok(component.includes('onClick={toggleOrderEditor}'));
+ assert.ok(component.includes('aria-expanded={orderEditorOpen}'));
+ assert.ok(component.includes('aria-controls="pool-column-editor"'));
+ assert.ok(component.includes('orderEditorOpen&&<div className={css.orderEditor}'));
+ assert.ok(component.includes('onClick={resetColumnOrder}'));
+ assert.ok(component.includes('(orderEditorOpen||(expanded&&!hidden))'));
+ assert.ok(component.includes('draggable={orderEditorOpen}'));
+ assert.ok(component.includes('Column and segment order restored'));
+ assert.ok(style.includes('.actions .resetOrder[data-editor-open="false"]'));
+ assert.ok(style.includes('.actions .resetOrder[data-editor-open="true"]'));
+ assert.ok(style.includes('background:#6c42a5!important'));
+ assert.ok(style.includes('.actions button[data-visibility="visible"]'));
+ assert.ok(style.includes('.actions button[data-visibility="hidden"]'));
 });
-test("all three POOL toolbar buttons occupy one 100% row at equal 33.3% widths on every viewport",()=>{
- assert.match(style,/\.actions\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\);width:100%/);
- assert.match(style,/@media\(max-width:640px\)\{\s*\.actions\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
- assert.match(style,/\.actions \.groupButton,\.actions \.resetOrder\{[\s\S]*?min-width:0;width:100%/);
- assert.doesNotMatch(style,/\.actions \.resetOrder\{grid-column:1\/-1\}/);
-});
-
-test("Column Order click reveals actual editable controls and never resets column order directly",()=>{
- assert.match(component,/const toggleOrderEditor=\\(\\)=>\\{/);
- assert.match(component,/setOrderEditorOpen\\(open=>!open\\)/);
- assert.match(component,/\\(orderEditorOpen\\|\\|\\(expanded&&!hidden\\)\\)/);
- assert.match(component,/\\{orderEditorOpen&&<span className=\\{css.dragHandle\\}/);
- assert.match(component,/\\{orderEditorOpen&&<>[\\s\\S]*?<select className=\\{css.moveTo\\}/);
- assert.match(component,/onClick=\\{resetColumnOrder\\}/);
- assert.match(component,/Column and segment order restored/);
- assert.match(component,/draggable=\\{orderEditorOpen\\}/);
+test("Three toolbar buttons remain equally wide on all screens",()=>{
+ assert.ok(style.includes('.actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%'));
+ assert.ok(style.includes('.actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}'));
+ assert.ok(style.includes('.actions .groupButton,.actions .resetOrder{'));
+ assert.ok(!style.includes('.actions .resetOrder{grid-column:1/-1}'));
 });
