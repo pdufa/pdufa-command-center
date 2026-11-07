@@ -231,7 +231,9 @@ def company_page(url,context):
          doc.meta.get("article:modified_time") or None)
     pub=safe(pub,30) if pub else None
     result=match_level_and_record(context,"COMPANY",url,title,plain,pub,
-                                   {"host":parsed.hostname})
+                                   {"host":parsed.hostname,
+                                    "nctMentions":sorted(set(re.findall(r"NCT[0-9]{8}",plain,re.I)))[:100],
+                                    "contentSha256":hashlib.sha256(plain.encode("utf8")).hexdigest()})
     links=[]
     base=parsed.hostname.removeprefix("www.")
     for href,caption in doc.links:
@@ -247,29 +249,37 @@ def company_page(url,context):
     return result,list(dict.fromkeys(links))[:12],None
 
 def issuer_company_sources(rows,contexts):
-    # One company crawl per ticker, shared without pretending that a company
-    # article addresses each sibling NCT unless the source text actually does.
-    reports={}
-    for ticker in sorted({r["ticker"] for r in rows}):
+    # One company crawl per ticker. Keep issuer pages separate from exact NCT
+    # identity. Moderate concurrency across different official hosts.
+    def one_company(ticker):
         first=next(r for r in rows if r["ticker"]==ticker)
         original=first.get("regulatoryUrl","")
         orig_host=urlparse(original).hostname or ""
         seed=original if orig_host not in ("www.sec.gov","sec.gov","data.sec.gov") else ISSUER_URLS.get(ticker)
         if not seed:
-            reports[ticker]={"pages":[],"errors":["COMPANY_URL_NOT_RESOLVED"],"seed":None}
-            continue
+            return ticker,{"pages":[],"errors":["COMPANY_URL_NOT_RESOLVED"],"seed":None}
         ctx=contexts[first["nct"]]
         page,links,error=company_page(seed,ctx)
         pages=[page] if page else []
         errors=[error] if error else []
-        # Inspect a small number of official URLs likely to contain pivotal
-        # trial readouts or signed material disclosures.
+        # Restrict to issuer's site; avoid unbounded crawling.
         for link in links[:3]:
             if link==seed:continue
             item,_,err=company_page(link,ctx)
             if item:pages.append(item)
             if err:errors.append(safe(err,120))
-        reports[ticker]={"pages":pages,"errors":errors,"seed":seed}
+        return ticker,{"pages":pages,"errors":errors,"seed":seed}
+    reports={}
+    with ThreadPoolExecutor(max_workers=4) as pool:
+        futures={pool.submit(one_company,ticker):ticker for ticker in
+                 sorted({r["ticker"] for r in rows})}
+        for future in as_completed(futures):
+            ticker=futures[future]
+            try:
+                key,report=future.result()
+                reports[key]=report
+            except Exception as exc:
+                reports[ticker]={"pages":[],"errors":[type(exc).__name__+":"+safe(str(exc),140)],"seed":None}
     return reports
 
 def affiliate_records(company_reports,contexts,rows):
@@ -282,7 +292,10 @@ def affiliate_records(company_reports,contexts,rows):
             clone["nctId"]=context["nct"]
             clone["candidateDrugs"]=context["drugs"]
             clone["registryIndications"]=context["indications"]
-            clone["sourceMatch"]=matches(context,clone["sourceTitle"],clone["excerpt"])
+            clone["sourceMatch"]=(
+                "EXACT_NCT" if context["nct"] in
+                  clone.get("sourceDetails",{}).get("nctMentions",[])
+                else matches(context,clone["sourceTitle"],clone["excerpt"]))
             if clone["sourceMatch"]=="ISSUER_OR_SOURCE_LEAD_ONLY":
                 # issuer-only lead; keep for audit but never promote to data slot.
                 clone["ingredientCandidates"]=[]
