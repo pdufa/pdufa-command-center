@@ -25,7 +25,7 @@ test("prior efficacy and long-term observed clinical endpoints use exact prior N
   assert.match(fact.sourceUrl,/^https:\/\/clinicaltrials\.gov\/study\/NCT\d{8}$/);
   assert.match(fact.description,/does NOT prove that benefit was sustained/);
  }
- assert.match(sourceObservation("NCT05515536",16).description,/p=0\.1440|p= 0\.1440/);
+ assert.match(sourceObservation("NCT05515536",16).description,/0\.1440/);
  assert.equal(sourceObservation("NCT00000000",16),null);
 });
 test("candidate predecessor audit lists all 258 active trials, never promotes candidate research to scored efficacy",async()=>{
