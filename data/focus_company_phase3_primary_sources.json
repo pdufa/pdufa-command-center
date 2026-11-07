@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "description": "Known official issuer-owned Phase 3/relevant program source links. Links alone are NOT independently verified 20x38 survey answers. An issuer-program page may cover several NCT studies; exact trial matching must be confirmed from page text.",
+  "description": "Direct official issuer source index for all 29 FOCUS NCTs. Exact trial-program match and content retrieval must be adjudicated; no automatic verified survey facts.",
   "sources": [
     {
       "nctId": "NCT05507203",
@@ -168,6 +168,70 @@
       "url": "https://investors.zenasbio.com/news-releases/news-release-details/zenas-biopharma-reports-third-quarter-2026-financial-results-and",
       "publicationDate": "2026-11-05",
       "programContext": "Obexelimab INDIGO phase 3 and regulatory update",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05059223",
+      "ticker": "AXSM",
+      "url": "https://www.axsome.com/news/axsome-therapeutics-announces-fda-acceptance-of-new-drug-app-13191",
+      "publicationDate": "2026-07-15",
+      "programContext": "AXS-12 narcolepsy NDA; program-level context, not endpoint results",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05113745",
+      "ticker": "AXSM",
+      "url": "https://www.axsome.com/news/axsome-therapeutics-announces-axs-12-achieves-primary-endpoi-11721",
+      "publicationDate": "2024-11-26",
+      "programContext": "AXS-12 ENCORE narcolepsy randomized withdrawal results",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05126758",
+      "ticker": "CAPR",
+      "url": "https://www.capricor.com/investors/news-events/press-releases/detail/331/capricor-therapeutics-announces-positive-topline-results",
+      "publicationDate": "2025-12-01",
+      "programContext": "Deramiocel HOPE-3 Phase 3 efficacy and safety results",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05208047",
+      "ticker": "COGT",
+      "url": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak",
+      "publicationDate": "2025-11-10",
+      "programContext": "Bezuclastinib PEAK Phase 3 randomized active comparator GIST",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT05767346",
+      "ticker": "CYTK",
+      "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Additional-Results-from-ACACIA-HCM-and-MAPLE-HCM-Presented-in-Late-Breaking-Clinical-Trial-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026/default.aspx",
+      "publicationDate": "2026-08-29",
+      "programContext": "Aficamten MAPLE-HCM Phase 3 results versus metoprolol",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT06081894",
+      "ticker": "CYTK",
+      "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Topline-Results-from-ACACIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-with-Non-Obstructive-Hypertrophic-Cardiomyopathy/default.aspx",
+      "publicationDate": "2026-05-05",
+      "programContext": "Aficamten ACACIA-HCM Phase 3 randomized trial",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT02500381",
+      "ticker": "SRPT",
+      "url": "https://www.sarepta.com/products-pipeline/clinical-trials",
+      "publicationDate": "2025-11-18",
+      "programContext": "Sarepta official ESSENCE trial list NCT02500381; not a results disclosure",
+      "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
+    },
+    {
+      "nctId": "NCT04544293",
+      "ticker": "SVRA",
+      "url": "https://investors.savarapharma.com/news/news-details/2024/Savara-Announces-Molgramostim-Nebulizer-Solution-Molgramostim-Achieved-Statistical-Significance-for-Primary-Endpoint-and-Multiple-Secondary-Endpoints-in-IMPALA-2-a-Pivotal-Phase-3-Clinical-Trial-in-Autoimmune-Pulmonary-Alveolar--06-26-2024/default.aspx",
+      "publicationDate": "2024-06-26",
+      "programContext": "Molgramostim IMPALA-2 phase 3 trial source explicitly NCT04544293",
       "reviewStatus": "PUBLIC_ISSUER_SOURCE_DISCOVERY_ONLY"
     }
   ]
