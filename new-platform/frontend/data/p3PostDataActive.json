@@ -95,6 +95,24 @@
       "regulatoryUrl": "https://www.capricor.com/investors/sec-filings/all-sec-filings/content/0001104659-26-100071/capr-20260824xex99d1.htm"
     },
     {
+      "ticker": "CLDX",
+      "nct": "NCT06445023",
+      "company": "Celldex Therapeutics",
+      "marketCap": 2345677121,
+      "fdaStatus": "BLA filing planned 2027; PDUFA not assigned",
+      "resultsUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+      "regulatoryUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-reports-third-quarter-financial-results-and-provides"
+    },
+    {
+      "ticker": "CLDX",
+      "nct": "NCT06455202",
+      "company": "Celldex Therapeutics",
+      "marketCap": 2345677121,
+      "fdaStatus": "BLA filing planned 2027; PDUFA not assigned",
+      "resultsUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+      "regulatoryUrl": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-reports-third-quarter-financial-results-and-provides"
+    },
+    {
       "ticker": "COGT",
       "nct": "NCT05208047",
       "company": "Cogent Biosciences, Inc.",
@@ -147,6 +165,24 @@
       "fdaStatus": "2027-04-28",
       "resultsUrl": "https://investors.immunome.com/immunome-announces-detailed-phase-3-ringside-data-for-varegacestat-in-adults-with-progressing-desmoid-tumors-at-the-2026-asco-annual-meeting/",
       "regulatoryUrl": "https://investors.immunome.com/immunome-announces-u-s-fda-acceptance-of-new-drug-application-for-varegacestat-for-the-treatment-of-adults-with-desmoid-tumors/"
+    },
+    {
+      "ticker": "MLTX",
+      "nct": "NCT06411379",
+      "company": "MoonLake Immunotherapeutics AG",
+      "marketCap": 919577731,
+      "fdaStatus": "BLA submitted 2026-09-30; FDA acceptance pending",
+      "resultsUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm",
+      "regulatoryUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000182158626000013/moonlake-pressreleasexq320.htm"
+    },
+    {
+      "ticker": "MLTX",
+      "nct": "NCT06411899",
+      "company": "MoonLake Immunotherapeutics AG",
+      "marketCap": 919577731,
+      "fdaStatus": "BLA submitted 2026-09-30; FDA acceptance pending",
+      "resultsUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm",
+      "regulatoryUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000182158626000013/moonlake-pressreleasexq320.htm"
     },
     {
       "ticker": "MLYS",
