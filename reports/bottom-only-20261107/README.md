@@ -24,3 +24,7 @@ Read `bottom-missing-clinical-factors.csv` for 90 precise scoring tasks, and `bo
 - `/raas-top-bottom` — BOTTOM with horizontally expandable ingredients and history; TOP is unchanged.
 
 Successful software tests show the implementation works, not that publicly undisclosed or future clinical data exist. The active five-factor scores are provisional research ratings, not validated FDA/PDUFA or investment probabilities.
+
+## Continued rating-source research
+
+The 52 reviewed exact-NCT findings include randomized primary efficacy, serious-adverse-event outcomes, peer-reviewed long-term follow-up, and FDA adjudicated approvals where applicable. The source findings do not automatically create scores. Each five-factor card now expands to its mapped source-evidence packet. The 90 yet-unscored factors still need metric-specific benchmarks, statistical and safety adjudication, or information that is not publicly disclosed. The 247 question gaps are not necessarily 247 missing publicly available scientific data items: some universal questions are inapplicable, pending or not disclosed. Ratings must distinguish source coverage from scientific strength and never assign scores by default.
