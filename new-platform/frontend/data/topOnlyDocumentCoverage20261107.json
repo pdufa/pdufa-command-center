@@ -1,0 +1,3399 @@
+{
+  "schemaVersion": 1,
+  "scope": "TOP_ONLY_DOCUMENT_RETRIEVAL_NO_AUTOMATIC_SCIENTIFIC_GRADES",
+  "records": [
+    {
+      "url": "https://acadia.com/en-us/pdf/healthcare-professionals/scientific-publications/congress-materials/ACP204_ADP_AAIC_2025_006_Biomarker_Pos_Dirks.pdf",
+      "title": "Plasma Biomarker Characterization of Alzheimer\u2019s Disease Psychosis in Study ACP-204-006",
+      "candidateTopNcts": [
+        "NCT06159673"
+      ],
+      "retrievedAt": "2026-11-07T00:34:09.738360+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ac17b6f262a9f7002f7096d57d6132728c330023aab437191ad9d3dd93b2e7c1",
+      "httpStatus": 200,
+      "finalUrl": "https://acadia.com/en-us/pdf/healthcare-professionals/scientific-publications/congress-materials/ACP204_ADP_AAIC_2025_006_Biomarker_Pos_Dirks.pdf",
+      "bytes": 186173,
+      "sha256": "98e5ba1378c4c617200dfd6b9198a7cedd9e8f4fa717fd69d5e4f3600671b373",
+      "exactTopNcts": [
+        "NCT06159673"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.acadia.com/files/doc_presentations/2026/Jan/13/Acadia-JPM-Presentation-2026_For-Portal-Upload-01-10-26.pdf",
+      "title": "J.P. Morgan Healthcare Conference",
+      "candidateTopNcts": [
+        "NCT06159673"
+      ],
+      "retrievedAt": "2026-11-07T00:34:09.739089+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "bf08c84ce2ce9641c0566c0a716003c68f39f6bc1ac26b20d1d39f43dea55351",
+      "httpStatus": 200,
+      "finalUrl": "https://s21.q4cdn.com/549553000/files/doc_presentations/2026/Jan/13/Acadia-JPM-Presentation-2026_For-Portal-Upload-01-10-26.pdf",
+      "bytes": 5800005,
+      "sha256": "dc3fe570125963c187d1a2cc0a96b02fcf3990472f021a7c1291a435256ebd22",
+      "exactTopNcts": [
+        "NCT06159673"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://s21.q4cdn.com/549553000/files/doc_presentations/2026/Jan/13/Acadia-JPM-Presentation-2026_For-Portal-Upload-01-10-26.pdf",
+      "title": "Remlifanserin (ACP-204): RADIANT Phase 2/Phase 3 Trial in ADP",
+      "candidateTopNcts": [
+        "NCT06159673"
+      ],
+      "retrievedAt": "2026-11-07T00:34:09.739515+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "48d8c0cf67020cda03339e991534e954066d9b6b588ec551a908e41789558735",
+      "httpStatus": 200,
+      "finalUrl": "https://s21.q4cdn.com/549553000/files/doc_presentations/2026/Jan/13/Acadia-JPM-Presentation-2026_For-Portal-Upload-01-10-26.pdf",
+      "bytes": 5800005,
+      "sha256": "dc3fe570125963c187d1a2cc0a96b02fcf3990472f021a7c1291a435256ebd22",
+      "exactTopNcts": [
+        "NCT06159673"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://acadia.com/en-us/pdf/healthcare-professionals/scientific-publications/congress-materials/AAGP_2025_ACP-204_Study_Design_Poster_15_FINAL.pdf",
+      "title": "# Study Design of Phase 2/3, Double-Blind, Placebo-Controlled, Multicenter Trials Investigating the Efficacy and Safety of ACP-204, a Novel 5-HT\u2082A Inverse Agonist/Antagonist, in Alzheimer\u2019s Disease Psychosis",
+      "candidateTopNcts": [
+        "NCT06194799"
+      ],
+      "retrievedAt": "2026-11-07T00:34:09.739916+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "fb29adf3813d8835de5a4a176061d07211cbf812718d329ed0550813fe7b4339",
+      "httpStatus": 200,
+      "finalUrl": "https://acadia.com/en-us/pdf/healthcare-professionals/scientific-publications/congress-materials/AAGP_2025_ACP-204_Study_Design_Poster_15_FINAL.pdf",
+      "bytes": 281850,
+      "sha256": "4e8bdc8a5c50c0b556ed436ce30aa7c6f985517cf0a797901afdae81378833e3",
+      "exactTopNcts": [
+        "NCT06159673",
+        "NCT06194799"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investor.agios.com/news-releases/news-release-details/agios-highlight-strength-and-differentiation-rare-hematology",
+      "title": "Agios to Highlight Strength and Differentiation of Rare Hematology Portfolio with New Clinical Data for Mitapivat in Sickle Cell Disease and AG-236 in Polycythemia Vera at ASH 2026 \u2013 Agios Pharmaceuticals, Inc.",
+      "candidateTopNcts": [
+        "NCT07859423"
+      ],
+      "retrievedAt": "2026-11-07T00:34:09.740331+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "fca28f565231cee77e9e216e9c16e34c8422b1e848097888ba504e496ac1d172",
+      "httpStatus": 200,
+      "finalUrl": "https://investor.agios.com/news-releases/news-release-details/agios-highlight-strength-and-differentiation-rare-hematology",
+      "bytes": 112402,
+      "sha256": "cd14808fd9d4f9f2a22eeae800753ab1da7f86773ebadcf3b7f90950aa80813f",
+      "exactTopNcts": [
+        "NCT07859423"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://agiospharmaceuticalsinc.gcs-web.com/news-releases/news-release-details/agios-highlight-strength-and-differentiation-rare-hematology",
+      "title": "Agios to Highlight Strength and Differentiation of Rare Hematology Portfolio with New Clinical Data for Mitapivat in Sickle Cell Disease and AG-236 in Polycythemia Vera at ASH 2026 \u2013 Agios Pharmaceuticals, Inc.",
+      "candidateTopNcts": [
+        "NCT07859423"
+      ],
+      "retrievedAt": "2026-11-07T00:34:09.740786+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "1d3955865c8dd2043c686e41701be5c910cac283633a25d7aa985b23ec272988",
+      "httpStatus": 200,
+      "finalUrl": "https://agiospharmaceuticalsinc.gcs-web.com/news-releases/news-release-details/agios-highlight-strength-and-differentiation-rare-hematology",
+      "bytes": 112504,
+      "sha256": "0b6ad6227cbcfaf6cc869b94dabc203b5278ccdee7cf6643237e454d416e1366",
+      "exactTopNcts": [
+        "NCT07859423"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investor.alkermes.com/news-releases/news-release-details/alkermes-presents-detailed-positive-results-vibrance-2-phase-2",
+      "title": "Alkermes Presents Detailed Positive Results From Vibrance-2 Phase 2 Study of Alixorexton in Adults With Narcolepsy Type 2 at SLEEP 2026 | Alkermes plc",
+      "candidateTopNcts": [
+        "NCT07455383"
+      ],
+      "retrievedAt": "2026-11-07T00:34:10.015513+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "fabe6df06b6356d14a0d0da212d0534390ef61a2d96685df942a11111c749d0b",
+      "httpStatus": 200,
+      "finalUrl": "https://investor.alkermes.com/news-releases/news-release-details/alkermes-presents-detailed-positive-results-vibrance-2-phase-2",
+      "bytes": 50152,
+      "sha256": "b00da24af067e942ae88c4ef938bcb1bff29b8bf0b3ff470801e7292d3dbf413",
+      "exactTopNcts": [
+        "NCT07455383",
+        "NCT07502443",
+        "NCT07540897"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.alumis.com/news-releases/news-release-details/alumis-announces-new-phase-3-data-demonstrating-envudeucitinib",
+      "title": "Alumis Announces New Phase 3 Data Demonstrating Envudeucitinib Rapidly and Durably Improved Psoriasis Burden Across Scalp, Itch, and Quality of Life Measures | Alumis Inc.",
+      "candidateTopNcts": [
+        "NCT06846541"
+      ],
+      "retrievedAt": "2026-11-07T00:34:10.050023+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "0dc4cdc6b4da3ee8d97442c4621abb2d1283733625d72fea373441e31dfc2c26",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.alumis.com/news-releases/news-release-details/alumis-announces-new-phase-3-data-demonstrating-envudeucitinib",
+      "bytes": 60635,
+      "sha256": "e00a6b3c054a749969b1d6cbac1878a34b97d848323f347c3132224526495f4b",
+      "exactTopNcts": [
+        "NCT06846541"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.alumis.com/news-releases/news-release-details/envudeucitinib-long-term-data-positioned-set-new-standard-plaque",
+      "title": "Envudeucitinib Long-term Data Positioned to Set a New Standard for Plaque Psoriasis Treatment, Delivering Highest Reported PASI 100 Skin Clearance Among Oral Therapies | Alumis Inc.",
+      "candidateTopNcts": [
+        "NCT06846541"
+      ],
+      "retrievedAt": "2026-11-07T00:34:10.118222+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "08b738c3e88ce9318af6253f4cef223f984d027dd1a1a161055dbf9c3be49894",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.alumis.com/news-releases/news-release-details/envudeucitinib-long-term-data-positioned-set-new-standard-plaque",
+      "bytes": 59163,
+      "sha256": "d49d68462d085a242de9b7fea9b0098cbfefe81ebe2f514046af99a7a52e773e",
+      "exactTopNcts": [
+        "NCT06846541"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.alumis.com/static-files/d753e9e4-0f0a-4e35-bb7a-e5a984bae2e2",
+      "title": "Form 8-K for Alumis INC filed 03/30/2026",
+      "candidateTopNcts": [
+        "NCT06846541"
+      ],
+      "retrievedAt": "2026-11-07T00:34:10.205081+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "e40bcf67c9f728b1e9312541e92ee142ed698976e9635bed6a435b6d38aae6a0",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.alumis.com/static-files/d753e9e4-0f0a-4e35-bb7a-e5a984bae2e2",
+      "bytes": 4126360,
+      "sha256": "c6e96b6483725c5daf2d336c54bc2b9990ca5061a80f016e6d04b8885a2d2206",
+      "exactTopNcts": [
+        "NCT06846541"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.annexonbio.com/news-releases/news-release-details/annexon-present-patient-baseline-characteristics-vonaprument",
+      "title": "Annexon to Present Patient Baseline Characteristics from Vonaprument Phase 3 ARCHER II Pivotal Trial for Geographic Atrophy at The Retina Society 59th Annual Scientific Meeting | Annexon Inc.",
+      "candidateTopNcts": [
+        "NCT06510816"
+      ],
+      "retrievedAt": "2026-11-07T00:34:10.321515+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "703b1f931a0657fb9f72d2336962dffb30d138d5d6e5b305da12d49c7e8a7744",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.annexonbio.com/news-releases/news-release-details/annexon-present-patient-baseline-characteristics-vonaprument",
+      "bytes": 39846,
+      "sha256": "b2dbf9d5a60973bc2cc0cbf15ac8a240752f8b3eced08bc65d407991e71668f9",
+      "exactTopNcts": [
+        "NCT06510816"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.ardelyx.com/static-files/c7dbc807-a5f9-43cb-84bb-dd48702af607",
+      "title": "Delivering Novel Medicines to Patients",
+      "candidateTopNcts": [
+        "NCT07382167"
+      ],
+      "retrievedAt": "2026-11-07T00:34:10.469849+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "0dc52d7136246cf702c4c69718fe4587d91d1a2643c54f2a57ac64419c91fdb1",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ardelyx.com/static-files/c7dbc807-a5f9-43cb-84bb-dd48702af607",
+      "bytes": 2992487,
+      "sha256": "e43c0f7d58959d18c9de347dfd7d18d5ddee5f86043aec59e727331575554760",
+      "exactTopNcts": [
+        "NCT07382167"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.ardelyx.com/static-files/4f5b5b11-2b25-4ae3-be57-7164e893c33e",
+      "title": "Delivering Novel Medicines to Patients",
+      "candidateTopNcts": [
+        "NCT07382167"
+      ],
+      "retrievedAt": "2026-11-07T00:34:10.501463+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "365df9445517dcbb5182fb9721811ae9e665ac4f3f94f73b8e38cd023bea4178",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ardelyx.com/static-files/4f5b5b11-2b25-4ae3-be57-7164e893c33e",
+      "bytes": 3193419,
+      "sha256": "835370ef86408499543b0c1779b91d2b8bda87c6764c1d2f9fb1defffa1181db",
+      "exactTopNcts": [
+        "NCT07382167"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.ardelyx.com/node/15171/html",
+      "title": "SEC Filing | Ardelyx",
+      "candidateTopNcts": [
+        "NCT07382167"
+      ],
+      "retrievedAt": "2026-11-07T00:34:10.707466+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "5b6c0b7d6ea762a2ff4bd03c3ed6a9b8eb78e7ff813193c8ce2c09c16006bee7",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ardelyx.com/node/15171/html",
+      "bytes": 162488,
+      "sha256": "5fac1d83535718ac441fa6c7bd0a1ea5400acd15b503deff8fc873d0310a4ef3",
+      "exactTopNcts": [
+        "NCT07382167"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.ardelyx.com/static-files/a928f818-2b8f-4365-b977-5b55bbee5512",
+      "title": "UNITED STATES",
+      "candidateTopNcts": [
+        "NCT07382167"
+      ],
+      "retrievedAt": "2026-11-07T00:34:10.815292+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "423cdb3443645ce9fdc7b09ee5614322889a37204839ac460ddf018f139047df",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ardelyx.com/static-files/a928f818-2b8f-4365-b977-5b55bbee5512",
+      "bytes": 2766849,
+      "sha256": "86562fb02e5f8285d1df90b07867835b51003119b1b76c5420e6b81a6b6fb56c",
+      "exactTopNcts": [
+        "NCT07382167"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://arrowheadpharma.com/en-us/science-and-innovation/clinical-trials",
+      "title": "Clinical Trials, Science & Innovation | Arrowhead Pharmaceuticals, Inc.",
+      "candidateTopNcts": [
+        "NCT06880770"
+      ],
+      "retrievedAt": "2026-11-07T00:34:10.967759+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "e2995516566bfdcc56a5ed17723bb2c83dc2afe8bc91710ce83b98f1b0949efa",
+      "httpStatus": 200,
+      "finalUrl": "https://arrowheadpharma.com/en-us/science-and-innovation/clinical-trials",
+      "bytes": 568408,
+      "sha256": "211e34a087748a4e17c077a9f054d5859ca91de5c3d2a4497c87b70858c1ba4a",
+      "exactTopNcts": [
+        "NCT06880770",
+        "NCT07037771",
+        "NCT07473843"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://onthepen.com/pipeline/zodasiran",
+      "title": "Zodasiran \u2014 Pipeline Tracker | On The Pen",
+      "candidateTopNcts": [
+        "NCT07473843"
+      ],
+      "retrievedAt": "2026-11-07T00:34:11.000507+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "a06ea534156a55f337b202d9185d109f439bf9de7c69d3c47eedf7dc311c9151",
+      "httpStatus": 200,
+      "finalUrl": "https://onthepen.com/pipeline/zodasiran",
+      "bytes": 23897,
+      "sha256": "71c21467e2191f70d805dbd7828c7299c57b51e41c46a0872ae249fc9eee8b87",
+      "exactTopNcts": [
+        "NCT07037771",
+        "NCT07473843"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.arrowheadpharma.com/node/21236/pdf",
+      "title": "Arrowhead Pharmaceuticals Completes Enrollment in Global Phase 3 YOSEMITE Study of Zodasiran for the Treatment of Homozygous Familial Hypercholesterolemia",
+      "candidateTopNcts": [
+        "NCT07037771"
+      ],
+      "retrievedAt": "2026-11-07T00:34:11.105706+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "55eb17aafefade55bd95bba7146e37005b7ca2afc0fc4cb6483844736548c5a6",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.arrowheadpharma.com/node/21236/pdf",
+      "bytes": 217156,
+      "sha256": "1d0a1f7c9f6323d904bd322a680c5cd0462009260188e5fa7a056c60c5b4f81e",
+      "exactTopNcts": [
+        "NCT07037771"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://onthepen.com/pipeline/plozasiran",
+      "title": "Plozasiran \u2014 Pipeline Tracker | On The Pen",
+      "candidateTopNcts": [
+        "NCT06880770"
+      ],
+      "retrievedAt": "2026-11-07T00:34:11.188311+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "2b904801b82a98dd0fcdb0c2eebd2a24866a8f2f0ab9d69cce37b9ac30b93719",
+      "httpStatus": 200,
+      "finalUrl": "https://onthepen.com/pipeline/plozasiran",
+      "bytes": 29705,
+      "sha256": "1705e1b26bed9c6ca7e3bd11c4f48e34f2aca17489b056030d0bc1298247b284",
+      "exactTopNcts": [
+        "NCT06822790",
+        "NCT06880770"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.arrowheadpharma.com/node/20156/pdf",
+      "title": "Arrowhead Pharmaceuticals Initiates Phase 3 YOSEMITE Study of Investigational Zodasiran for the Treatment of Homozygous Familial Hypercholesterolemia",
+      "candidateTopNcts": [
+        "NCT07037771"
+      ],
+      "retrievedAt": "2026-11-07T00:34:11.321423+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "72918bd95f3de34fb9df84eefc41a7f3ec79f5e50d9978cbf11f3cbbb65fb780",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.arrowheadpharma.com/node/20156/pdf",
+      "bytes": 216250,
+      "sha256": "1c09aa8878ffd450bfcfce648974052873c74d9f489128527460838f5a35bcfe",
+      "exactTopNcts": [
+        "NCT07037771"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.aurabiosciences.com/static-files/183b0032-1112-43be-ac9c-09e16d0a4032",
+      "title": "Form 8-K for Aura Biosciences INC filed 05/11/2026",
+      "candidateTopNcts": [
+        "NCT06007690"
+      ],
+      "retrievedAt": "2026-11-07T00:34:11.517121+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "c322e12e666e9bd4a385fdb37bf91c8657c2ff14ba5db05c8485e2b0dbc66c74",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.aurabiosciences.com/static-files/183b0032-1112-43be-ac9c-09e16d0a4032",
+      "bytes": 18010192,
+      "sha256": "ee90e2230d68d43e7971a0942035b611b364abe2f07c4f9fcfdb977391e6ae82",
+      "exactTopNcts": [
+        "NCT06007690"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.aurabiosciences.com/static-files/8d1d1a34-b957-4742-bba7-5211cc89b9c3",
+      "title": "Form 8-K for Aura Biosciences INC filed 03/30/2026",
+      "candidateTopNcts": [
+        "NCT06007690"
+      ],
+      "retrievedAt": "2026-11-07T00:34:11.639003+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "132023083e85cbcc7678e18f7fab6ac2c03050e741b63a8ff4260aa16c590beb",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.aurabiosciences.com/static-files/8d1d1a34-b957-4742-bba7-5211cc89b9c3",
+      "bytes": 17979000,
+      "sha256": "162c08f62e596ab2bb95f0de430dea07f5e51fc0790a1357c8245d2ea7b719a7",
+      "exactTopNcts": [
+        "NCT06007690"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.arrivent.com/static-files/c40b400a-7cf2-4a24-aacf-8112027b2163",
+      "title": "A Late-Stage Company With a Global",
+      "candidateTopNcts": [
+        "NCT07185997"
+      ],
+      "retrievedAt": "2026-11-07T00:34:11.639403+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "fdf4182d72f384ac02d64806cb596a7d620792b041bfd0f6363d0e4993bbadf6",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://ir.aurabiosciences.com/static-files/3178366f-482f-4192-bb8e-bf1130ad683f",
+      "title": "Form 10-Q for Aura Biosciences INC filed 08/08/2024",
+      "candidateTopNcts": [
+        "NCT06007690"
+      ],
+      "retrievedAt": "2026-11-07T00:34:11.837150+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "c93b7ad88c9a31ff0b7aadbf93d9d0c801e7bc27fe3b0e395ed7deec28c235f8",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.aurabiosciences.com/static-files/3178366f-482f-4192-bb8e-bf1130ad683f",
+      "bytes": 1363507,
+      "sha256": "d219061e59ceb97c93b1d6064017e1c1bd6aa05683dc5a0cdd85746c27a39d5d",
+      "exactTopNcts": [
+        "NCT06007690"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.marketscreener.com/news/aura-biosciences-corporate-presentation-march-2026-ce7e51d9d88cf324",
+      "title": "Aura Biosciences : Corporate Presentation March 2026 | MarketScreener",
+      "candidateTopNcts": [
+        "NCT06007690"
+      ],
+      "retrievedAt": "2026-11-07T00:34:11.908795+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "6984012602e79387c453940b774c90731c6ef6eb19ef578b71ed3e544480364f",
+      "httpStatus": 200,
+      "finalUrl": "https://www.marketscreener.com/news/aura-biosciences-corporate-presentation-march-2026-ce7e51d9d88cf324",
+      "bytes": 340099,
+      "sha256": "4606811943b936e59ca9815762bd1bca7d00f29707445440bace92863b6ed6ff",
+      "exactTopNcts": [
+        "NCT06007690"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.arrivent.com/news-releases/news-release-details/arrivent-biopharma-reports-second-quarter-2026-financial-results",
+      "title": "ArriVent BioPharma Reports Second Quarter 2026 Financial Results - ArriVent Biopharma",
+      "candidateTopNcts": [
+        "NCT07185997"
+      ],
+      "retrievedAt": "2026-11-07T00:34:11.945711+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "4ba994c3e50b84d75f7fe807e134a8cbe7729059cc3ff8086bb80541bc7b41b7",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.arrivent.com/news-releases/news-release-details/arrivent-biopharma-reports-second-quarter-2026-financial-results",
+      "bytes": 97043,
+      "sha256": "1187a74a590680806d68ba4b08dcdd6f0bdc4a1f9f2fbf4d8fb92f0c116938c8",
+      "exactTopNcts": [
+        "NCT05607550",
+        "NCT07185997"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/08/12/3344063/0/en/atea-pharmaceuticals-reports-second-quarter-2026-financial-results-and-provides-business-update.html",
+      "title": "Atea Pharmaceuticals Reports Second Quarter 2026 Financial Results and Provides Business Update",
+      "candidateTopNcts": [
+        "NCT07037277"
+      ],
+      "retrievedAt": "2026-11-07T00:34:12.506315+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ab075a4010543cd234178fcd1bd63974275d170f913ca92d42f7961bf4935b30",
+      "httpStatus": 200,
+      "finalUrl": "https://www.globenewswire.com/news-release/2026/08/12/3344063/0/en/atea-pharmaceuticals-reports-second-quarter-2026-financial-results-and-provides-business-update.html",
+      "bytes": 121764,
+      "sha256": "95a89e88b1b243d9dd1706eda4c5c5b25ca40821b2d0aec63f4cd5aeb15d74fd",
+      "exactTopNcts": [
+        "NCT07037277"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.globenewswire.com/fr/news-release/2026/10/06/3375447/0/en/arrivent-announces-program-update-from-the-phase-3-furvent-trial-of-firmonertinib-in-first-line-egfr-exon-20-insertion-mutant-nsclc.html",
+      "title": "ArriVent Announces Program Update from the Phase 3 FURVENT Trial of Firmonertinib in First-Line EGFR Exon 20 Insertion Mutant NSCLC",
+      "candidateTopNcts": [
+        "NCT05607550"
+      ],
+      "retrievedAt": "2026-11-07T00:34:12.607090+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "989211aa79bd330a3cf43073587f7839a286016868633673e8dc645bd7a5e140",
+      "httpStatus": 200,
+      "finalUrl": "https://www.globenewswire.com/fr/news-release/2026/10/06/3375447/0/en/arrivent-announces-program-update-from-the-phase-3-furvent-trial-of-firmonertinib-in-first-line-egfr-exon-20-insertion-mutant-nsclc.html",
+      "bytes": 55209,
+      "sha256": "2d9f1cf9445222986e0f9226543c2cdaa6f5dc93cdb2f58175cf46ab3cbc9609",
+      "exactTopNcts": [
+        "NCT05607550",
+        "NCT07185997"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.biocryst.com/science/research-and-development/",
+      "title": "Research & Development | BioCryst\u00ae",
+      "candidateTopNcts": [
+        "NCT04933721"
+      ],
+      "retrievedAt": "2026-11-07T00:34:12.858525+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "6589162a6581569df7ec66bdbcaa8ab91dbcb02a5ea62b4e21abe5c0e55e41bf",
+      "httpStatus": 200,
+      "finalUrl": "https://www.biocryst.com/science/research-and-development/",
+      "bytes": 80840,
+      "sha256": "7c760a9b580531c39e5fc482ed233fcdc2ac323bfed168e094e9e62ff3fa7065",
+      "exactTopNcts": [
+        "NCT04933721"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.candeltx.com/static-files/baec4eb5-6eb4-4534-b452-ab06c2762812",
+      "title": "Body Slide Example 01",
+      "candidateTopNcts": [
+        "NCT01436968"
+      ],
+      "retrievedAt": "2026-11-07T00:34:12.938842+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "b4663a512ed10e4fa1e228e53d57c72ee0d3f067844a0587378702319ae8fdc9",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.candeltx.com/static-files/baec4eb5-6eb4-4534-b452-ab06c2762812",
+      "bytes": 4705683,
+      "sha256": "1cbc82df0d3b913b430e7e44bd6cf9be7c321e5dc76d15f5f10b22f7e586a2fe",
+      "exactTopNcts": [
+        "NCT01436968"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://candeltx.com/wp-content/uploads/news/R%26D_Day_Candel_Therapeutics.pdf",
+      "title": "Fully accrued phase 3 clinical trial of CAN-2409 in patients with prostate cancer (newly diagnosed, intermediate/high risk)",
+      "candidateTopNcts": [
+        "NCT01436968"
+      ],
+      "retrievedAt": "2026-11-07T00:34:13.090892+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "dc895f56edb9c988d68d9b016286998919130a86f94d8c97b934e62c196dee1a",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://ir.candeltx.com/static-files/a5e53128-5256-4d4a-97ee-0ef1044b57d1",
+      "title": "Tipping the balance in favor of the",
+      "candidateTopNcts": [
+        "NCT01436968"
+      ],
+      "retrievedAt": "2026-11-07T00:34:13.144536+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "ebc51567bdd24aa0036de4bf1772b5b0beb4f9a158f30de57b3fe3e78f7e993c",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://www.candeltx.com/wp-content/uploads/news/R%26D_Day_Candel_Therapeutics.pdf",
+      "title": "Research & Development Day",
+      "candidateTopNcts": [
+        "NCT01436968"
+      ],
+      "retrievedAt": "2026-11-07T00:34:13.160847+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "3ffa11bb3246719c23fbf3a05070e6bfe92622290f57e7f9726bee0714a90898",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://ir.candeltx.com/news-releases/news-release-details/candel-therapeutics-announces-integrated-clinical-and-biomarker",
+      "title": "Candel Therapeutics Announces Integrated Clinical and Biomarker Data That Showed Durable Local and Systemic Immune Activation after Aglatimagene Besadenovec in Intermediate-Risk Localized Prostate Cancer | Candel Therapeutics, Inc.",
+      "candidateTopNcts": [
+        "NCT01436968"
+      ],
+      "retrievedAt": "2026-11-07T00:34:13.245109+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "f795c88cad060d168e2a82316f82fa035c70038cec3272abc276ec6598c577fe",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.candeltx.com/news-releases/news-release-details/candel-therapeutics-announces-integrated-clinical-and-biomarker",
+      "bytes": 44748,
+      "sha256": "594b23aa534d8f93131ea05247d0f99a14a18be43f933aa9c93b1cf7971ea24f",
+      "exactTopNcts": [
+        "NCT01436968"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.candeltx.com/static-files/f4cabb49-0ff3-425a-8922-f0a883fe1739",
+      "title": "PowerPoint Presentation",
+      "candidateTopNcts": [
+        "NCT01436968"
+      ],
+      "retrievedAt": "2026-11-07T00:34:13.373283+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "5bd948b70a49834c33116cbeee31bf2689b6e397d5205273e0def3a22ab1959d",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.candeltx.com/static-files/f4cabb49-0ff3-425a-8922-f0a883fe1739",
+      "bytes": 2040936,
+      "sha256": "a9d170771b5583762f266e7fd8416554dbe974bd2a2d4b29b843f7af24f35554",
+      "exactTopNcts": [
+        "NCT01436968"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.candeltx.com/news-releases/news-release-details/candel-therapeutics-announces-new-data-showing-sustained-immune",
+      "title": "Candel Therapeutics Announces New Data Showing Sustained Immune Remodeling More Than Two Years After Aglatimagene Besadenovec Treatment in Localized Prostate Cancer at ASTRO 2026 | Candel Therapeutics, Inc.",
+      "candidateTopNcts": [
+        "NCT01436968"
+      ],
+      "retrievedAt": "2026-11-07T00:34:13.528391+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "1d3a6322c12c6a538f3942594b8a69b498d1f657480f2de7575299709256035e",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.candeltx.com/news-releases/news-release-details/candel-therapeutics-announces-new-data-showing-sustained-immune",
+      "bytes": 41636,
+      "sha256": "24576eb3fccd427efc1b018437f7c482c17bbfb1a04ac1c7de343866de0498aa",
+      "exactTopNcts": [
+        "NCT01436968"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.candeltx.com/news-releases/news-release-details/candel-therapeutics-presents-phase-3-clinical-trial-can-2409",
+      "title": "Candel Therapeutics Presents Phase 3 Clinical Trial of CAN-2409 in Localized Prostate Cancer at ASTRO 2025 | Candel Therapeutics, Inc.",
+      "candidateTopNcts": [
+        "NCT01436968"
+      ],
+      "retrievedAt": "2026-11-07T00:34:13.666937+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ee200f526bce1962721671ae83def3de497e58c04161053799e957113bc3042a",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.candeltx.com/news-releases/news-release-details/candel-therapeutics-presents-phase-3-clinical-trial-can-2409",
+      "bytes": 39779,
+      "sha256": "a16f0b820194bd75f9c61f36194073d8ee5207b7eb0c113e9547be8a7693097e",
+      "exactTopNcts": [
+        "NCT01436968"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.candeltx.com/news-releases/news-release-details/candel-therapeutics-announces-publication-lancet-oncology",
+      "title": "Candel Therapeutics Announces Publication in The Lancet Oncology of Pivotal Phase 3 Data Demonstrating Significant Improvement in Disease-Free Survival with Aglatimagene Besadenovec (CAN-2409) in Localized Prostate Cancer | Candel Therapeutics, Inc.",
+      "candidateTopNcts": [
+        "NCT01436968"
+      ],
+      "retrievedAt": "2026-11-07T00:34:13.739024+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "0a64affa90f1445a69786e5de5904887253ae4e6f6f6e5776b0ebbb85a7a02f8",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.candeltx.com/news-releases/news-release-details/candel-therapeutics-announces-publication-lancet-oncology",
+      "bytes": 44033,
+      "sha256": "cd341caa9ad5ebc223be893b2e55f6d87b485cfae8eba0aaab0bd3889d6af809",
+      "exactTopNcts": [
+        "NCT01436968"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://candeltx.gcs-web.com/static-files/11ecdf05-7207-4c48-b991-e8537bc29410",
+      "title": "Form 8-K for Candel Therapeutics INC filed 12/06/2022",
+      "candidateTopNcts": [
+        "NCT01436968"
+      ],
+      "retrievedAt": "2026-11-07T00:34:13.790542+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "9f2cf48b6d1c53b17bfff93adf24f48b87ed66314bf88212889e7a3261ac8a7b",
+      "httpStatus": 200,
+      "finalUrl": "https://candeltx.gcs-web.com/static-files/11ecdf05-7207-4c48-b991-e8537bc29410",
+      "bytes": 25802262,
+      "sha256": "fb2202d6378b20569695934fa1f0322af122aecfca881e90531dac4017bac195",
+      "exactTopNcts": [
+        "NCT01436968"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.candeltx.com/news-releases/news-release-details/candel-therapeutics-presents-phase-3-clinical-trial-can-2409/",
+      "title": "Candel Therapeutics Presents Phase 3 Clinical Trial of CAN-2409 in Localized Prostate Cancer at ASTRO 2025 | Candel Therapeutics, Inc.",
+      "candidateTopNcts": [
+        "NCT01436968"
+      ],
+      "retrievedAt": "2026-11-07T00:34:13.855562+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "71bad66d0107e3b13ef2b300a962cce9bbb7fad0b185951ba13ad5fdd3206461",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.candeltx.com/news-releases/news-release-details/candel-therapeutics-presents-phase-3-clinical-trial-can-2409/",
+      "bytes": 39779,
+      "sha256": "a16f0b820194bd75f9c61f36194073d8ee5207b7eb0c113e9547be8a7693097e",
+      "exactTopNcts": [
+        "NCT01436968"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://candeltx.gcs-web.com/news-releases/news-release-details/candel-therapeutics-reports-second-quarter-2026-financial",
+      "title": "Candel Therapeutics Reports Second Quarter 2026 Financial Results and Recent Corporate Highlights | Candel Therapeutics, Inc.",
+      "candidateTopNcts": [
+        "NCT07660094"
+      ],
+      "retrievedAt": "2026-11-07T00:34:13.878533+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "fccedb4d5ad506ef1523a29e80e71da698bad58e143ebd56e048bed657567ada",
+      "httpStatus": 200,
+      "finalUrl": "https://candeltx.gcs-web.com/news-releases/news-release-details/candel-therapeutics-reports-second-quarter-2026-financial",
+      "bytes": 91521,
+      "sha256": "038d1f86538d05be2beb6d55671becaaa1e829eea91a4b6b365f4ba646ec528e",
+      "exactTopNcts": [
+        "NCT07660094"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.cgoncology.com/static-files/a404b282-fd8d-4869-b83e-3bbeda191403",
+      "title": "Form 8-K for CG Oncology INC filed 09/09/2025",
+      "candidateTopNcts": [
+        "NCT04452591"
+      ],
+      "retrievedAt": "2026-11-07T00:34:13.932427+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "a90df9e02b37c4f1db250345086101672d050402fc7920e53b4f53925d92470b",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.cgoncology.com/static-files/a404b282-fd8d-4869-b83e-3bbeda191403",
+      "bytes": 14286160,
+      "sha256": "26def76834901705a600e98b8edac2189af2d20396a4522fc4e26364e3c38604",
+      "exactTopNcts": [
+        "NCT04452591"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://rss.globenewswire.com/news-release/2026/06/30/3319644/0/en/candel-therapeutics-announces-initiation-of-global-pivotal-phase-3-aurora-trial-evaluating-aglatimagene-besadenovec-can-2409-in-advanced-non-small-cell-lung-cancer-patients-with-in.html",
+      "title": "Candel Therapeutics Announces Initiation of Global Pivotal Phase 3 AURORA Trial Evaluating Aglatimagene Besadenovec (CAN-2409) in Advanced Non-Small Cell Lung Cancer Patients with Inadequate Response to Immune Checkpoint Inhibitors",
+      "candidateTopNcts": [
+        "NCT07660094"
+      ],
+      "retrievedAt": "2026-11-07T00:34:14.009562+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "420bef77d961be664757cdf394d0696b1de35f188f097212d824d898538775e8",
+      "httpStatus": 200,
+      "finalUrl": "https://rss.globenewswire.com/news-release/2026/06/30/3319644/0/en/candel-therapeutics-announces-initiation-of-global-pivotal-phase-3-aurora-trial-evaluating-aglatimagene-besadenovec-can-2409-in-advanced-non-small-cell-lung-cancer-patients-with-in.html",
+      "bytes": 85505,
+      "sha256": "cd241e2a9d4fe30efed99d3b2787f9ca5479bc81ad1832199970433041176857",
+      "exactTopNcts": [
+        "NCT07660094"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.cgoncology.com/node/8141/html",
+      "title": "SEC Filing | CG Oncology",
+      "candidateTopNcts": [
+        "NCT04452591"
+      ],
+      "retrievedAt": "2026-11-07T00:34:14.075803+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "b67121b5ff875a5cad7e6a4280f3572dc34087128b507ca6de0a3e71081c2fc5",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.cgoncology.com/node/8141/html",
+      "bytes": 154209,
+      "sha256": "b2b0e040fc400331e486cec113a3073cf7cb29f135032867e8f4f00ee496e58d",
+      "exactTopNcts": [
+        "NCT04452591"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investor.corvuspharma.com/news-releases/news-release-details/corvus-pharmaceuticals-provides-business-update-and-reports-29",
+      "title": "Corvus Pharmaceuticals Provides Business Update and Reports Third Quarter 2026 Financial Results | Corvus Pharmaceuticals",
+      "candidateTopNcts": [
+        "NCT06561048"
+      ],
+      "retrievedAt": "2026-11-07T00:34:14.141868+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "a8a49e9110d81acad2086108742ea630c0e4d206ffa60e8c55c758c617a58488",
+      "httpStatus": 200,
+      "finalUrl": "https://investor.corvuspharma.com/news-releases/news-release-details/corvus-pharmaceuticals-provides-business-update-and-reports-29",
+      "bytes": 90185,
+      "sha256": "ae9e777277cde8eb13dfeb5121dd51fd1a2df8c4bf0c094daf982ca96cf0f084",
+      "exactTopNcts": [
+        "NCT06561048"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.globenewswire.com/de/news-release/2026/11/05/3396993/0/en/corvus-pharmaceuticals-provides-business-update-and-reports-third-quarter-2026-financial-results.html",
+      "title": "Corvus Pharmaceuticals Provides Business Update and Reports Third Quarter 2026 Financial Results",
+      "candidateTopNcts": [
+        "NCT06561048"
+      ],
+      "retrievedAt": "2026-11-07T00:34:14.320976+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "33ab1aca8e7cb6ffc551fcba1b071bae5a86fed4f6f0ab590c0092c4f18f89a5",
+      "httpStatus": 200,
+      "finalUrl": "https://www.globenewswire.com/de/news-release/2026/11/05/3396993/0/en/corvus-pharmaceuticals-provides-business-update-and-reports-third-quarter-2026-financial-results.html",
+      "bytes": 99894,
+      "sha256": "be7db2af132b68c9bdac00082802a559ddb87c4338f2773f36474c48b9489f80",
+      "exactTopNcts": [
+        "NCT06561048"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investor.corvuspharma.com/news-releases/news-release-details/corvus-pharmaceuticals-provides-business-update-and-reports-28",
+      "title": "Corvus Pharmaceuticals Provides Business Update and Reports Second Quarter 2026 Financial Results | Corvus Pharmaceuticals",
+      "candidateTopNcts": [
+        "NCT06561048"
+      ],
+      "retrievedAt": "2026-11-07T00:34:14.377043+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "3e1dda32e63ce126fa61a2d939e0f9000cf87d7e42ce1cfa814aebeda28d0a07",
+      "httpStatus": 200,
+      "finalUrl": "https://investor.corvuspharma.com/news-releases/news-release-details/corvus-pharmaceuticals-provides-business-update-and-reports-28",
+      "bytes": 84261,
+      "sha256": "8837414531eebb22056183134ac9ea5077e7b7bde69f59dcbd86169c561eb788",
+      "exactTopNcts": [
+        "NCT06561048"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.celldex.com/news-releases/news-release-details/celldex-initiates-global-registrational-phase-3-program",
+      "title": "Celldex Initiates Global Registrational Phase 3 Program of Barzolvolimab in Cold Urticaria and Symptomatic Dermographism - Celldex Therapeutics",
+      "candidateTopNcts": [
+        "NCT07266402"
+      ],
+      "retrievedAt": "2026-11-07T00:34:14.699885+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "c4fd9f4e85c870a7f3650e06bb46cf43475474bf5fa4851919bc73c592b8b599",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.celldex.com/news-releases/news-release-details/celldex-initiates-global-registrational-phase-3-program",
+      "bytes": 42574,
+      "sha256": "6429b1eb0787ab0efe7cec9f57ae8dd25bcc1e2c70aafa02ae692ca0226b1dd7",
+      "exactTopNcts": [
+        "NCT07266402"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://corvuspharma.gcs-web.com/news-releases/news-release-details/corvus-pharmaceuticals-announces-publication-blood-final-phase-1",
+      "title": "Corvus Pharmaceuticals Announces Publication in Blood of Final Phase 1 Data from the Soquelitinib Phase 1/1b T Cell Lymphoma Trial | Corvus Pharmaceuticals",
+      "candidateTopNcts": [
+        "NCT06561048"
+      ],
+      "retrievedAt": "2026-11-07T00:34:14.797985+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "09bd70bfe2d94062ba37091cc8ab3305b43e2220da63d6f31ca0931d83a38bd6",
+      "httpStatus": 200,
+      "finalUrl": "https://corvuspharma.gcs-web.com/news-releases/news-release-details/corvus-pharmaceuticals-announces-publication-blood-final-phase-1",
+      "bytes": 40592,
+      "sha256": "8f178cefc8abd9ca2a4f6ac0c8c39a3ff264e591ac5470b2ce31e08688f6ba14",
+      "exactTopNcts": [
+        "NCT06561048"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.diamedica.com/investors/financial-reports/sec-filings/content/0001437749-26-010342/0001437749-26-010342.pdf",
+      "title": "10-K - 03/30/2026 - DiaMedica Therapeutics, Inc.",
+      "candidateTopNcts": [
+        "NCT05065216"
+      ],
+      "retrievedAt": "2026-11-07T00:34:14.957648+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "5b61764acfcca9c2b297ef816f9b2e47b0c07bbdb966ac1f89822214c172fcc1",
+      "httpStatus": 200,
+      "finalUrl": "https://www.diamedica.com/investors/financial-reports/sec-filings/content/0001437749-26-010342/0001437749-26-010342.pdf",
+      "bytes": 5166963,
+      "sha256": "8abc07ba72dbfa09e15337762c3cf0c191d96b5b2013d298ca2a551b59f2cc9c",
+      "exactTopNcts": [
+        "NCT05065216"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.diamedica.com/investors/press-releases/detail/1733/diamedica-therapeutics-reports-second-quarter-2026",
+      "title": "DiaMedica Therapeutics Reports Second Quarter 2026 Financial Results and Provides Business Highlights :: DiaMedica Therapeutics, Inc. (DMAC)",
+      "candidateTopNcts": [
+        "NCT05065216"
+      ],
+      "retrievedAt": "2026-11-07T00:34:15.162199+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "e4e556e83fe66310bc3fbd90a711d85e825bcfff40e32b5d77cd1f5df14930eb",
+      "httpStatus": 200,
+      "finalUrl": "https://www.diamedica.com/investors/press-releases/detail/1733/diamedica-therapeutics-reports-second-quarter-2026",
+      "bytes": 185563,
+      "sha256": "be64892fb6deb94b97e5c169106be37c264f19a50dda9314f5d741b9464a9639",
+      "exactTopNcts": [
+        "NCT05065216"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1714899/000171489923000064/fy22denaliannualreport.pdf",
+      "title": "FY22 DENALI GLOSSY ANNUAL REPORT.pdf",
+      "candidateTopNcts": [
+        "NCT05371613"
+      ],
+      "retrievedAt": "2026-11-07T00:34:15.200505+00:00",
+      "state": "RETRIEVED_NO_EXACT_NCT_REQUIRES_CROSSWALK",
+      "cacheKey": "987fa49f9b24055efe806302548732ae9a064b48c2c7053c569aa593d6732143",
+      "httpStatus": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1714899/000171489923000064/fy22denaliannualreport.pdf",
+      "bytes": 13066506,
+      "sha256": "8a1cb6e07f3a42c0b69f42dcfb349788ac5b7c745ae58847c14bf2126bd50147",
+      "exactTopNcts": [],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.immunitybio.com/static-files/ae830ec4-9266-47dc-a10c-9e9b1e24433a",
+      "title": "Form 8-K for Immunitybio INC filed 05/05/2025",
+      "candidateTopNcts": [
+        "NCT03022825"
+      ],
+      "retrievedAt": "2026-11-07T00:34:15.233916+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ae0d99fdc0958990c56d9c1fbd6b24f5a095618c007b43366343cfb5b5ebee68",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.immunitybio.com/static-files/ae830ec4-9266-47dc-a10c-9e9b1e24433a",
+      "bytes": 324343,
+      "sha256": "31db47297bf18a8c6ede9fd918441f3fc8be5c5c4cb30dbf6577a6796993c5d1",
+      "exactTopNcts": [
+        "NCT03022825"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://s201.q4cdn.com/710325604/files/doc_presentations/2025/Jun/13/Geron-Corporate-Deck-June-2025-FINAL.pdf",
+      "title": "PowerPoint Presentation",
+      "candidateTopNcts": [
+        "NCT04576156"
+      ],
+      "retrievedAt": "2026-11-07T00:34:15.259103+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "e4b64c5bcd45ededd880504510dc8c29c9f05c9590d27b3e91d38626cf6fad47",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://ir.geron.com/static-files/6b164d12-0852-4384-91d3-9cfb07905abc",
+      "title": "PowerPoint Presentation",
+      "candidateTopNcts": [
+        "NCT04576156"
+      ],
+      "retrievedAt": "2026-11-07T00:34:15.342625+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "fee054f903c901abb5b708a4f18a4d9b0393ef277dacf58910b8480bc9edb645",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.geron.com/static-files/6b164d12-0852-4384-91d3-9cfb07905abc",
+      "bytes": 276581,
+      "sha256": "d9fa2a230b04c56723d933e93db62bef8192ceb5504f5e69da6ccfec3d48028d",
+      "exactTopNcts": [
+        "NCT04576156"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://s201.q4cdn.com/710325604/files/doc_presentations/2025/Aug/07/Geron-Corporate-Deck-Aug-2025-v7.pdf",
+      "title": "Our mission is to change lives by",
+      "candidateTopNcts": [
+        "NCT04576156"
+      ],
+      "retrievedAt": "2026-11-07T00:34:15.547626+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "c19088df00836d0e70bfd180ac7f7dd9149c966a29ba584921335b8e779d0d40",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://s201.q4cdn.com/710325604/files/doc_news/Publications/2022/12.1/fon-2022-0235.pdf",
+      "title": "Clinical Trial Protocol",
+      "candidateTopNcts": [
+        "NCT04576156"
+      ],
+      "retrievedAt": "2026-11-07T00:34:15.614247+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "b22026b5240805f04a96cb1e152103f1dcbf9af04a412e666f35166d6479b05a",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://ir.immunitybio.com/node/9196",
+      "title": "ImmunityBio Announces Primary Endpoint Met in a Second Indication in Bladder Cancer Trial with 57% Disease-Free Survival in Patients with BCG Unresponsive Papillary Disease - ImmunityBio, Inc.",
+      "candidateTopNcts": [
+        "NCT03022825"
+      ],
+      "retrievedAt": "2026-11-07T00:34:15.671749+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "36c35149bc3b1f8863331641a8e419da12bd370fcaf555d71689240f3e1a9328",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.immunitybio.com/node/9196",
+      "bytes": 53389,
+      "sha256": "20d20aefd01ff0c2de07afc08948dc3eb7917ceb98854a81bd870205bb7b781d",
+      "exactTopNcts": [
+        "NCT03022825"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.immunitybio.com/node/10101",
+      "title": "ImmunityBio Quality-of-Life Study in BCG-Unresponsive Bladder Cancer Trial Indicates Improved Physical Function in the 71% Complete Responders Suggesting a Favorable Risk-Benefit Ratio for N-803 Plus BCG - ImmunityBio, Inc.",
+      "candidateTopNcts": [
+        "NCT03022825"
+      ],
+      "retrievedAt": "2026-11-07T00:34:15.802068+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "6880d9fd2e6f0b88f26bad6154cd2f53fee5da3391ff0dfccdbe13a7a94a05c6",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.immunitybio.com/node/10101",
+      "bytes": 50442,
+      "sha256": "7b29f1d94918913feea6874e2856b3d4da9ce6bf528c78cfbb5274c3dffd9838",
+      "exactTopNcts": [
+        "NCT03022825"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://immunitybio.com/pipeline/",
+      "title": "Immunotherapy Clinical Trials Pipeline - ImmunityBio",
+      "candidateTopNcts": [
+        "NCT03022825"
+      ],
+      "retrievedAt": "2026-11-07T00:34:15.894566+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "14d148d6778458c2ec578e09019fb0fdc8d44766b97660b36d5a615c2d1077fe",
+      "httpStatus": 200,
+      "finalUrl": "https://immunitybio.com/pipeline/",
+      "bytes": 120744,
+      "sha256": "6d3ccf8ce54ca2123165e95947e9ac494d55fb2b768e10fc3af1b9ec385c69ad",
+      "exactTopNcts": [
+        "NCT03022825",
+        "NCT06745908"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.immunitybio.com/node/9066",
+      "title": "ImmunityBio Announces Oral Presentation of Phase 2/3 Clinical Trial Results of Patients with BCG-Unresponsive Bladder Cancer Carcinoma at the Upcoming American Urological Association\u2019s Annual Meeting - ImmunityBio, Inc.",
+      "candidateTopNcts": [
+        "NCT03022825"
+      ],
+      "retrievedAt": "2026-11-07T00:34:16.001722+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "1a40261f4959201635a2d8f1203dbd993c8294d7c0418777563493e506063c6a",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.immunitybio.com/node/9066",
+      "bytes": 44578,
+      "sha256": "272d27f82e13ff67388f524f0f34426b9357668fdb8855696ff990be216776a4",
+      "exactTopNcts": [
+        "NCT03022825"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.immunitybio.com/news-releases/news-release-details/immunitybio-quality-life-study-bcg-unresponsive-bladder-cancer",
+      "title": "ImmunityBio Quality-of-Life Study in BCG-Unresponsive Bladder Cancer Trial Indicates Improved Physical Function in the 71% Complete Responders Suggesting a Favorable Risk-Benefit Ratio for N-803 Plus BCG - ImmunityBio, Inc.",
+      "candidateTopNcts": [
+        "NCT03022825"
+      ],
+      "retrievedAt": "2026-11-07T00:34:16.114997+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "6a63c3dfc976cdb9815517ad6229fcabcceca7e47e59efefbeee5ba6fd8c8c81",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.immunitybio.com/news-releases/news-release-details/immunitybio-quality-life-study-bcg-unresponsive-bladder-cancer",
+      "bytes": 50442,
+      "sha256": "7b29f1d94918913feea6874e2856b3d4da9ce6bf528c78cfbb5274c3dffd9838",
+      "exactTopNcts": [
+        "NCT03022825"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1326110/000119312521182190/d155914dex991.htm",
+      "title": "EX-99.1",
+      "candidateTopNcts": [
+        "NCT03022825"
+      ],
+      "retrievedAt": "2026-11-07T00:34:16.227901+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "1524a4cbcb13404be1643f98caa444ee93442f325be627ce516d136ff17574fe",
+      "httpStatus": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1326110/000119312521182190/d155914dex991.htm",
+      "bytes": 52954,
+      "sha256": "75ce83f34d5c6bcac1ffd946137b300440640baf9a1ab1b11b06e15d610ad79a",
+      "exactTopNcts": [
+        "NCT03022825"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.immunitybio.com/news-releases/news-release-details/immunitybio-announces-biological-license-application",
+      "title": "ImmunityBio Announces Biological License Application Resubmission for N-803 in BCG-Unresponsive Non-Muscle-Invasive Bladder Cancer Carcinoma-In-Situ - ImmunityBio, Inc.",
+      "candidateTopNcts": [
+        "NCT03022825"
+      ],
+      "retrievedAt": "2026-11-07T00:34:16.320195+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "bc733c8876b49a7d0d65e6d1563b4af1456f07f5ffd9ea543f03143cabbbd74e",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.immunitybio.com/news-releases/news-release-details/immunitybio-announces-biological-license-application",
+      "bytes": 50166,
+      "sha256": "628bfe03b5eb6c9cf5c70d2e5d502d2fbbeb454cc5471a28bdb7cb8490d2f2ea",
+      "exactTopNcts": [
+        "NCT03022825"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://filecache.investorroom.com/mr5ir_ideayabio/578/20260120_IDEAYA_Investor-Corporate_Presentation-January_2026_vF.pdf",
+      "title": "IDEAYA Biosciences",
+      "candidateTopNcts": [
+        "NCT07015190"
+      ],
+      "retrievedAt": "2026-11-07T00:34:16.426366+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "5070896283d68c9b0aef3a69ced17b1bbe7d5607d62e60da13bd44702e067a3a",
+      "httpStatus": 200,
+      "finalUrl": "https://filecache.investorroom.com/mr5ir_ideayabio/578/20260120_IDEAYA_Investor-Corporate_Presentation-January_2026_vF.pdf",
+      "bytes": 3092857,
+      "sha256": "a1cac78268d88393384615c22a46a93f2b60f9da0f215bdec10c0b15d6d6acb5",
+      "exactTopNcts": [
+        "NCT05987332",
+        "NCT07015190"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://filecache.investorroom.com/mr5ir_ideayabio/583/20260217_IDEAYA_Corporate_Deck_Feb_2026_vF.pdf",
+      "title": "IDEAYA Biosciences",
+      "candidateTopNcts": [
+        "NCT05987332"
+      ],
+      "retrievedAt": "2026-11-07T00:34:16.447877+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "86b4cf87af5e85dd571d10000f12f970f1b2d92aa353bba0682b529369012a68",
+      "httpStatus": 200,
+      "finalUrl": "https://filecache.investorroom.com/mr5ir_ideayabio/583/20260217_IDEAYA_Corporate_Deck_Feb_2026_vF.pdf",
+      "bytes": 3092657,
+      "sha256": "63ed3bc835179dadac302b329c140986a718d3452cfe18385ef841fee5bc9607",
+      "exactTopNcts": [
+        "NCT05987332",
+        "NCT07015190"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.ideayabio.com/2024-08-06-IDEAYA-Biosciences%2C-Inc-Reports-Second-Quarter-2024-Financial-Results-and-Provides-Business-Update",
+      "title": "IDEAYA Biosciences, Inc. Reports Second Quarter 2024 Financial Results and Provides Business Update - Aug 6, 2024",
+      "candidateTopNcts": [
+        "NCT05987332"
+      ],
+      "retrievedAt": "2026-11-07T00:34:16.524383+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "eace55f7986013bdf8d04b789fb87dae719a3baf953115c97a806ec599de902f",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ideayabio.com/2024-08-06-IDEAYA-Biosciences,-Inc-Reports-Second-Quarter-2024-Financial-Results-and-Provides-Business-Update",
+      "bytes": 176630,
+      "sha256": "293a213b4e6d3d0b1faf557477532876d0fc90858c12c46d939d406e97fc839e",
+      "exactTopNcts": [
+        "NCT05987332"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.ideayabio.com/2024-05-07-IDEAYA-Biosciences%2C-Inc-Reports-First-Quarter-2024-Financial-Results-and-Provides-Business-Update",
+      "title": "IDEAYA Biosciences, Inc. Reports First Quarter 2024 Financial Results and Provides Business Update - May 7, 2024",
+      "candidateTopNcts": [
+        "NCT05987332"
+      ],
+      "retrievedAt": "2026-11-07T00:34:16.543118+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "415b03df41fd7480c4edd59223b007035463832367198005cf7e06e13f90231e",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ideayabio.com/2024-05-07-IDEAYA-Biosciences,-Inc-Reports-First-Quarter-2024-Financial-Results-and-Provides-Business-Update",
+      "bytes": 153514,
+      "sha256": "c0818283d884f132b7f01f64aabc83404a76261b7fd948aa36c6e24af4b4ff85",
+      "exactTopNcts": [
+        "NCT05987332"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/2007919/000200791924000031/inhibrxbioinvestordeckau.htm",
+      "title": "inhibrxbioinvestordeckau",
+      "candidateTopNcts": [
+        "NCT06295731"
+      ],
+      "retrievedAt": "2026-11-07T00:34:16.579226+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "8934cd7c228c00fbc0198c21d101af9d6aefaab773f13d0e3ae1a855f95c58b3",
+      "httpStatus": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/2007919/000200791924000031/inhibrxbioinvestordeckau.htm",
+      "bytes": 33417,
+      "sha256": "8d9488291a132db4d049b284aa81d44d21ac4de10e8a8eb7efee1a22a962e2ff",
+      "exactTopNcts": [
+        "NCT06295731"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.ionis.com/static-files/fc480051-cf74-4439-b17e-6b6fdbc3fe68",
+      "title": "Corporate Presentation",
+      "candidateTopNcts": [
+        "NCT06914609"
+      ],
+      "retrievedAt": "2026-11-07T00:34:16.634184+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "4612c2d23f6b9e7ae4aa855a0c82b4ec87c0615440317b6f894745a5d4b26b3f",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ionis.com/static-files/fc480051-cf74-4439-b17e-6b6fdbc3fe68",
+      "bytes": 2301177,
+      "sha256": "03395e545ae6436a3d87ecd45e59ffa128f5f48db7e094d060fffb844d5f7cd0",
+      "exactTopNcts": [
+        "NCT06914609"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.iovance.com/static-files/5a1232a2-2137-47d1-92bd-a98cb15aa721",
+      "title": "Corporate Overview",
+      "candidateTopNcts": [
+        "NCT05727904"
+      ],
+      "retrievedAt": "2026-11-07T00:34:16.814452+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "45e1f15b5aa40b6d4d5c15316dd4781880651d19b8beeddc40b8a6a9b3e56998",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://ir.iovance.com/static-files/5c22aa14-6117-40e5-9f95-a22c6981f0e6",
+      "title": "PowerPoint Presentation",
+      "candidateTopNcts": [
+        "NCT05727904"
+      ],
+      "retrievedAt": "2026-11-07T00:34:16.883573+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "9a8b7466fed85bc47977e1cf37ea8b02d9d31eb78a6b8f3459293f75d9dddfad",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://ir.iovance.com/static-files/a829b645-572a-407d-8a9c-325a07d6e3f3",
+      "title": "| Corporate Overview",
+      "candidateTopNcts": [
+        "NCT05727904"
+      ],
+      "retrievedAt": "2026-11-07T00:34:16.914552+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "c244cc2abb0be8a6a02de2e165aedf8130d64552de7544f097bde9144a2d3e8c",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://investors.kiniksa.com/static-files/72b525d2-8704-49a9-8cc0-709997c4b2a6",
+      "title": "PowerPoint Presentation",
+      "candidateTopNcts": [
+        "NCT07010159"
+      ],
+      "retrievedAt": "2026-11-07T00:34:17.095731+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ca606beb6d3f46074e8ad7fa49e41a20f7640e4cf97ff7c7b6521830f15d8fcb",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.kiniksa.com/static-files/72b525d2-8704-49a9-8cc0-709997c4b2a6",
+      "bytes": 1189850,
+      "sha256": "abe5652a35841cd691579960781c9df59dd351c2f706669d65013b661118bb6d",
+      "exactTopNcts": [
+        "NCT07010159"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.kiniksa.com/static-files/4bcfa5c6-68f2-4b6f-bab8-d7d46174c294",
+      "title": "PowerPoint Presentation",
+      "candidateTopNcts": [
+        "NCT07010159"
+      ],
+      "retrievedAt": "2026-11-07T00:34:17.211728+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "e9c2e1c3ab55163310ccc75d69a50cfcc5f4684d6eae6f40f4142e5562154daa",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.kiniksa.com/static-files/4bcfa5c6-68f2-4b6f-bab8-d7d46174c294",
+      "bytes": 1175764,
+      "sha256": "c6ce483a30fa7eb349ab1b4ad53ffe13f2b4acfd6de9cb5e667e0913206d6430",
+      "exactTopNcts": [
+        "NCT07010159"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://kodiak.gcs-web.com/news-releases/news-release-details/kodiak-sciences-announces-positive-topline-results-glow2-second",
+      "title": "Kodiak Sciences Announces Positive Topline Results in GLOW2, the Second Phase 3 Study in Diabetic Retinopathy, Demonstrating Superiority of Zenkuda\u2122 (tarcocimab tedromer) Over Sham | Kodiak Sciences Inc.",
+      "candidateTopNcts": [
+        "NCT06556368"
+      ],
+      "retrievedAt": "2026-11-07T00:34:17.499862+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "07b559b43a21921b9b9ea9c2cb3f11c48521d4bad28e6f326fdcbe358b5f4b7d",
+      "httpStatus": 200,
+      "finalUrl": "https://kodiak.gcs-web.com/news-releases/news-release-details/kodiak-sciences-announces-positive-topline-results-glow2-second",
+      "bytes": 66351,
+      "sha256": "7d0a7e2c583c2c8827f83d09b0fec66664ec90e67e79e565eb493b286705cdc5",
+      "exactTopNcts": [
+        "NCT06556368"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.kodiak.com/news-releases/news-release-details/kodiak-sciences-announces-recent-business-highlights-and-3",
+      "title": "Kodiak Sciences Announces Recent Business Highlights and Second Quarter 2026 Financial Results | Kodiak Sciences Inc.",
+      "candidateTopNcts": [
+        "NCT06556368"
+      ],
+      "retrievedAt": "2026-11-07T00:34:17.664750+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "fbc994291f68b57f0ee867734ab54156c5647003711693bcbe36d53460944717",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.kodiak.com/news-releases/news-release-details/kodiak-sciences-announces-recent-business-highlights-and-3",
+      "bytes": 132071,
+      "sha256": "6ff8b4a195b14892a2e0a29af90e023a75849e5dc14bc9214110fedae4648ad4",
+      "exactTopNcts": [
+        "NCT06556368"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.kodiak.com/news-releases/news-release-details/kodiak-sciences-announces-positive-topline-results-glow2-second",
+      "title": "Kodiak Sciences Announces Positive Topline Results in GLOW2, the Second Phase 3 Study in Diabetic Retinopathy, Demonstrating Superiority of Zenkuda\u2122 (tarcocimab tedromer) Over Sham | Kodiak Sciences Inc.",
+      "candidateTopNcts": [
+        "NCT06556368"
+      ],
+      "retrievedAt": "2026-11-07T00:34:17.721410+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "81975fe4d678cfce000b875623c23309054fa9bf3f408559dfc5501b6d378d39",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.kodiak.com/news-releases/news-release-details/kodiak-sciences-announces-positive-topline-results-glow2-second",
+      "bytes": 66336,
+      "sha256": "fe3912c5c1674cecaf919736f12ca1819ff920825e161de177dcb234d4a4da61",
+      "exactTopNcts": [
+        "NCT06556368"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.kodiak.com/static-files/579ed216-f770-426f-b0d6-dfab81e6af82",
+      "title": "THE OPHTHALMOLOGY MEDICINES COMPANY",
+      "candidateTopNcts": [
+        "NCT06556368"
+      ],
+      "retrievedAt": "2026-11-07T00:34:17.736745+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "b3cb332c3db9d148ae0065da11860a3951a67c70b84781c38b3c8b5317aa32ca",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://kodiak.gcs-web.com/static-files/006a17a8-344c-4e46-b32f-ec7f8ae8d51b",
+      "title": "Kodiak Sciences Announces Positive Topline Results in GLOW2, the Second Phase 3",
+      "candidateTopNcts": [
+        "NCT06556368"
+      ],
+      "retrievedAt": "2026-11-07T00:34:17.840238+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "dd0527056e28fbf0aaea61baa09cd3eb1b69b7755773b7f79af2be7d27985998",
+      "httpStatus": 200,
+      "finalUrl": "https://kodiak.gcs-web.com/static-files/006a17a8-344c-4e46-b32f-ec7f8ae8d51b",
+      "bytes": 3591347,
+      "sha256": "ef2b8d18172d4781b3e8351477b96545dcc0b5b93583df30cd64deccda638453",
+      "exactTopNcts": [
+        "NCT06556368"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://krystalbio.gcs-web.com/news-releases/news-release-details/krystal-biotech-announces-third-quarter-2026-financial-and",
+      "title": "Krystal Biotech Announces Third Quarter 2026 Financial and Operating Results | Krystal Biotech, Inc.",
+      "candidateTopNcts": [
+        "NCT07016750"
+      ],
+      "retrievedAt": "2026-11-07T00:34:17.845099+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "d4845ba454ada0ddad88e98c48e440c6273306d4c8feeeab2e293962ad2b7433",
+      "httpStatus": 200,
+      "finalUrl": "https://krystalbio.gcs-web.com/news-releases/news-release-details/krystal-biotech-announces-third-quarter-2026-financial-and",
+      "bytes": 125879,
+      "sha256": "26ea80e77f370205f412f213f0dd53ce72afb598d59ac605616fe773de25f395",
+      "exactTopNcts": [
+        "NCT07016750"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.kodiak.com/news-releases/news-release-details/kodiak-sciences-announces-first-patients-enrolled-global-phase-3",
+      "title": "Kodiak Sciences Announces First Patients Enrolled in Global Phase 3 ALTO trial of KSI-501 in Patients with Diabetic Macular Edema | Kodiak Sciences Inc.",
+      "candidateTopNcts": [
+        "NCT07734844"
+      ],
+      "retrievedAt": "2026-11-07T00:34:18.018117+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "7a2ca572000573df712a36bea376763feed87a1986112dc89dfe9e09575cd549",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.kodiak.com/news-releases/news-release-details/kodiak-sciences-announces-first-patients-enrolled-global-phase-3",
+      "bytes": 46582,
+      "sha256": "f6ebba8e473ba72454a5cce3ac0e1ca436e49bf608cf8cfcc775a67a6c57c602",
+      "exactTopNcts": [
+        "NCT07734844"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.krystalbio.com/static-files/e160ac57-13c5-45d9-a637-fe09fb408bc5",
+      "title": "Form 8-K for Krystal Biotech INC filed 11/02/2026",
+      "candidateTopNcts": [
+        "NCT07016750"
+      ],
+      "retrievedAt": "2026-11-07T00:34:18.125391+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "a018d7e0b6e1fb59eba4d1a570930e2bc8ea186fc8b27da3f6138d5181d69e38",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.krystalbio.com/static-files/e160ac57-13c5-45d9-a637-fe09fb408bc5",
+      "bytes": 288772,
+      "sha256": "45d8f2c60643c08ef92361cd13c9ca38373b48de287f8668d396f0a78e2c2402",
+      "exactTopNcts": [
+        "NCT07016750"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://kodiak.gcs-web.com/news-releases/news-release-details/kodiak-sciences-announces-first-patients-enrolled-global-phase-3/",
+      "title": "Kodiak Sciences Announces First Patients Enrolled in Global Phase 3 ALTO trial of KSI-501 in Patients with Diabetic Macular Edema | Kodiak Sciences Inc.",
+      "candidateTopNcts": [
+        "NCT07734844"
+      ],
+      "retrievedAt": "2026-11-07T00:34:18.202134+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "8b432ce2b872ffc2282b2b3b9a5133f13dc96a9833c25d7edf4ecc7f831289de",
+      "httpStatus": 200,
+      "finalUrl": "https://kodiak.gcs-web.com/news-releases/news-release-details/kodiak-sciences-announces-first-patients-enrolled-global-phase-3/",
+      "bytes": 47610,
+      "sha256": "d562eeca3aa83fd38a49afa13e088f36290ef523a51e0e879fa1301b025bda67",
+      "exactTopNcts": [
+        "NCT07734844"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.krystalbio.com/node/11581/pdf",
+      "title": "Krystal Biotech Announces Third Quarter 2026 Financial and Operating Results",
+      "candidateTopNcts": [
+        "NCT07016750"
+      ],
+      "retrievedAt": "2026-11-07T00:34:18.278840+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "8972f387684e53807d8a3a2e08cddae2e11beb5405f7e4d0266ae5d0fe7d48d6",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.krystalbio.com/node/11581/pdf",
+      "bytes": 65468,
+      "sha256": "ff7b3281bc1db1a17e45aab64924e18c6bd734489075da155edf9419326cf1c3",
+      "exactTopNcts": [
+        "NCT07016750"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://krystalbio.gcs-web.com/static-files/6f330545-7205-484b-8ac9-c3d6fdb3c618",
+      "title": "Form 10-Q for Krystal Biotech INC filed 11/02/2026",
+      "candidateTopNcts": [
+        "NCT07016750"
+      ],
+      "retrievedAt": "2026-11-07T00:34:18.404410+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "d5cd2a93236e1e8445151d3e5b28b745add097444eca2d6179e12633e05f75ca",
+      "httpStatus": 200,
+      "finalUrl": "https://krystalbio.gcs-web.com/static-files/6f330545-7205-484b-8ac9-c3d6fdb3c618",
+      "bytes": 561544,
+      "sha256": "8b23f1d73356d6889e361f0af1b6f6aa899abab5808a71ee7aeceddf77eb346f",
+      "exactTopNcts": [
+        "NCT07016750"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.krystalbio.com/static-files/a4c43637-e945-415b-87cd-40ab1e2cac86",
+      "title": "Form 10-Q for Krystal Biotech INC filed 08/03/2026",
+      "candidateTopNcts": [
+        "NCT07016750"
+      ],
+      "retrievedAt": "2026-11-07T00:34:18.477080+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "3550a2a3ac3d5f97a023ed74b16a992e92f62fa91d9a6e1507186d973bf9a7b1",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.krystalbio.com/static-files/a4c43637-e945-415b-87cd-40ab1e2cac86",
+      "bytes": 529429,
+      "sha256": "c58f36e804ab5a0c67ed0ed8f45e5fe7aa9c76dc8f97db5c94d55216389cf9d2",
+      "exactTopNcts": [
+        "NCT07016750"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://krystalbio.gcs-web.com/static-files/152dad36-e6a0-4ffe-9b7c-b1d490318eb1",
+      "title": "Form ARS for Krystal Biotech INC filed 04/03/2026",
+      "candidateTopNcts": [
+        "NCT07016750"
+      ],
+      "retrievedAt": "2026-11-07T00:34:18.579170+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ab6b945ecd5e2ab46dea425215545b16a7394ef284d0ae3b7be4d7b5443a7b19",
+      "httpStatus": 200,
+      "finalUrl": "https://krystalbio.gcs-web.com/static-files/152dad36-e6a0-4ffe-9b7c-b1d490318eb1",
+      "bytes": 35637640,
+      "sha256": "e141ee06a059e57b2642276f8f1376322347100fd1865c86203c7c150e385d6c",
+      "exactTopNcts": [
+        "NCT07016750"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://krystalbio.gcs-web.com/static-files/0201d076-8b37-4137-b6f5-bb044e903d58",
+      "title": "Form 10-Q for Krystal Biotech INC filed 05/04/2026",
+      "candidateTopNcts": [
+        "NCT07016750"
+      ],
+      "retrievedAt": "2026-11-07T00:34:18.711514+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "bb870587272d62491ce5953ad4fcd206cf5ecdd4731be207ba6c9c683bb607a2",
+      "httpStatus": 200,
+      "finalUrl": "https://krystalbio.gcs-web.com/static-files/0201d076-8b37-4137-b6f5-bb044e903d58",
+      "bytes": 3204107,
+      "sha256": "6adb6ec32b32d19c5ffa87de3ba1c1fc6ba027de69c7265ec86ff6a2d636e148",
+      "exactTopNcts": [
+        "NCT07016750"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.krystalbio.com/news-releases/news-release-details/krystal-biotech-announces-first-quarter-2026-financial-and",
+      "title": "Krystal Biotech Announces First Quarter 2026 Financial and Operating Results | Krystal Biotech, Inc.",
+      "candidateTopNcts": [
+        "NCT07016750"
+      ],
+      "retrievedAt": "2026-11-07T00:34:19.011342+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "057797372e3b818d6d3a19cb28ad5638af6f29bb0be8ce40c2f8b698728e919b",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.krystalbio.com/news-releases/news-release-details/krystal-biotech-announces-first-quarter-2026-financial-and",
+      "bytes": 86463,
+      "sha256": "511b90a45e73e2474d9e83ad3d077940a1bc633f44010136249e8e0e8b46116b",
+      "exactTopNcts": [
+        "NCT07016750"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.krystalbio.com/news-releases/news-release-details/krystal-biotech-announces-fourth-quarter-and-full-year-2025",
+      "title": "Krystal Biotech Announces Fourth Quarter and Full Year 2025 Financial and Operating Results | Krystal Biotech, Inc.",
+      "candidateTopNcts": [
+        "NCT07016750"
+      ],
+      "retrievedAt": "2026-11-07T00:34:19.100011+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "183aa642eb617a231f7ac5b3b8f0901915c533b9bf628fd30ea2c3483f8e16c5",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.krystalbio.com/news-releases/news-release-details/krystal-biotech-announces-fourth-quarter-and-full-year-2025",
+      "bytes": 124308,
+      "sha256": "55efb2a9a5af2d2bbfbb0779356fd98ecd227c33ac18366aa89bb73ba071da4d",
+      "exactTopNcts": [
+        "NCT07016750"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.kodiak.com/news-releases/news-release-details/kodiak-sciences-announces-recent-business-highlights-and-third-0",
+      "title": "Kodiak Sciences Announces Recent Business Highlights and Third Quarter 2025 Financial Results | Kodiak Sciences Inc.",
+      "candidateTopNcts": [
+        "NCT06990399",
+        "NCT06996080"
+      ],
+      "retrievedAt": "2026-11-07T00:34:19.171265+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "19600981e70ac5cbc4ecdafe078ced6d1f1214c41c95beb8d9a864c0a1b5ffae",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.kodiak.com/news-releases/news-release-details/kodiak-sciences-announces-recent-business-highlights-and-third-0",
+      "bytes": 158704,
+      "sha256": "baf5c59cc1b5aa9b4c2b70c53e8519ebe80c758b9fcf1bf8b1b1f2ba09f32616",
+      "exactTopNcts": [
+        "NCT06556368",
+        "NCT06990399",
+        "NCT06996080"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://kodiak.gcs-web.com/news-releases/news-release-details/kodiak-sciences-announces-recent-business-highlights-and-third-0",
+      "title": "Kodiak Sciences Announces Recent Business Highlights and Third Quarter 2025 Financial Results | Kodiak Sciences Inc.",
+      "candidateTopNcts": [
+        "NCT06990399",
+        "NCT06996080"
+      ],
+      "retrievedAt": "2026-11-07T00:34:19.190322+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "08bae61bffc3656ac064fc02cc8e52ed1c901c924d89358a3f595d1f5c551367",
+      "httpStatus": 200,
+      "finalUrl": "https://kodiak.gcs-web.com/news-releases/news-release-details/kodiak-sciences-announces-recent-business-highlights-and-third-0",
+      "bytes": 158719,
+      "sha256": "eecf1153d3a0b6fda18ce81230121036415e4bfe4edf8c4b6f4b88b4db7c1e18",
+      "exactTopNcts": [
+        "NCT06556368",
+        "NCT06990399",
+        "NCT06996080"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.kodiak.com/news-releases/news-release-details/new-data-kodiaks-ksi-101-apex-study-reinforce-its-clinically",
+      "title": "New data for Kodiak's KSI-101 from the APEX study reinforce its clinically meaningful vision gains and rapid retinal drying in macular edema secondary to inflammation (MESI) | Kodiak Sciences Inc.",
+      "candidateTopNcts": [
+        "NCT06990399",
+        "NCT06996080"
+      ],
+      "retrievedAt": "2026-11-07T00:34:19.202133+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "22b299f2afdb74c7a022a7afe1d218ab33709b56fb077a19aa5d695f1ccff595",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.kodiak.com/news-releases/news-release-details/new-data-kodiaks-ksi-101-apex-study-reinforce-its-clinically",
+      "bytes": 60150,
+      "sha256": "5205c7e8394089823055f1ff43f96997a19b3acf7f691d0ca782e1173b8b5b7c",
+      "exactTopNcts": [
+        "NCT06990399",
+        "NCT06996080"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://kuraoncology.com/pipeline/",
+      "title": "Pipeline | Kura Oncology",
+      "candidateTopNcts": [
+        "NCT07007312"
+      ],
+      "retrievedAt": "2026-11-07T00:34:19.358910+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "52d1f5c8501dd551ef5b28aea6ffd1ca9f565fc967b91a246438f193919ebc33",
+      "httpStatus": 200,
+      "finalUrl": "https://kuraoncology.com/pipeline/",
+      "bytes": 255939,
+      "sha256": "3b857b68a12b34f9aa58bbd19f03724330f461c93062ed39555194e2a78c3ea8",
+      "exactTopNcts": [
+        "NCT07007312"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.kuraoncology.com/news-releases/news-release-details/kura-oncology-receives-30-million-development-milestone-payment",
+      "title": "Kura Oncology Receives $30 Million Development Milestone Payment in Ziftomenib AML Program with Kyowa Kirin | Kura Oncology, Inc.",
+      "candidateTopNcts": [
+        "NCT07007312"
+      ],
+      "retrievedAt": "2026-11-07T00:34:19.369874+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "e620fccea1a602ec5259de9ab0f399f69b4515cef6b5a669b7aeae4f4458b394",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.kuraoncology.com/news-releases/news-release-details/kura-oncology-receives-30-million-development-milestone-payment",
+      "bytes": 96667,
+      "sha256": "a3ab56d7c1f3f90379b3111c88e11e594418b59680f9cff60660ff2e4377e57d",
+      "exactTopNcts": [
+        "NCT07007312"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.kuraoncology.com/node/12831",
+      "title": "Kura Oncology and Kyowa Kirin Announce First Patient Dosed in Pivotal Phase 3 KOMET-017 Trial of Ziftomenib for Frontline Acute Myeloid Leukemia (AML) | Kura Oncology, Inc.",
+      "candidateTopNcts": [
+        "NCT07007312"
+      ],
+      "retrievedAt": "2026-11-07T00:34:19.559875+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "b00cc0093c2eab4569c0d66ec9db358d731651e1158c0ff477171dcb172e8a3b",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.kuraoncology.com/node/12831",
+      "bytes": 103320,
+      "sha256": "8cf15abe86d82a216376b84d43de2954e97b13f0fcb006ea62b898f2b7447c88",
+      "exactTopNcts": [
+        "NCT07007312"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.kuraoncology.com/static-files/c3e5630e-058a-4ffa-ab99-066c75e08593",
+      "title": "ZIFTOMENIB",
+      "candidateTopNcts": [
+        "NCT07007312"
+      ],
+      "retrievedAt": "2026-11-07T00:34:19.622233+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ada9931bb896c4d312f031b9a84d04303bcd6c6dd915f438a7f9d2c8edf121b3",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.kuraoncology.com/static-files/c3e5630e-058a-4ffa-ab99-066c75e08593",
+      "bytes": 1737725,
+      "sha256": "e55694d5e1b05ae0c789c2ef0da708c1ad1c8577f98a5b72f5344490e0c4ca2f",
+      "exactTopNcts": [
+        "NCT07007312"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://kuraoncology.com/pipeline/pipeline-v3/",
+      "title": "Pipeline v3 | Kura Oncology",
+      "candidateTopNcts": [
+        "NCT07007312"
+      ],
+      "retrievedAt": "2026-11-07T00:34:19.728062+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "87f0638f6a41ebea068e50c61b95439dd3495e0994202a2305e1a4f131babe55",
+      "httpStatus": 200,
+      "finalUrl": "https://kuraoncology.com/pipeline/pipeline-v3/",
+      "bytes": 209842,
+      "sha256": "56754c81f55f5a4cd6fc51ef7e442d7148c030ce766cfad1133f37928b165064",
+      "exactTopNcts": [
+        "NCT07007312"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://veradermics.gcs-web.com/news-releases/news-release-details/veradermics-hold-conference-call-discuss-topline-results-phase-3",
+      "title": "Veradermics to Hold Conference Call to Discuss Topline Results from Phase 3 \u2018304\u2019 Clinical Trial of VDPHL01 in Males with Mild-to-Moderate Pattern Hair Loss | Sun, 10/18/2026 - 18:00",
+      "candidateTopNcts": [
+        "NCT07146022"
+      ],
+      "retrievedAt": "2026-11-07T00:34:19.809756+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "e938e550dc8b9ddab667a3b2d57b6d1bb65d358fb00050cea38d147c74a502ec",
+      "httpStatus": 200,
+      "finalUrl": "https://veradermics.gcs-web.com/news-releases/news-release-details/veradermics-hold-conference-call-discuss-topline-results-phase-3",
+      "bytes": 62665,
+      "sha256": "cef7b726f5c2f2db2a0bea62af299534466d865dcc2d5165e03f687f30ab2d54",
+      "exactTopNcts": [
+        "NCT06724614",
+        "NCT06972264",
+        "NCT07146022"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://veradermics.gcs-web.com/news-releases/news-release-details/veradermics-oral-vdphl01-achieved-early-consistent-and-robust-0",
+      "title": "Veradermics\u2019 Oral VDPHL01 Achieved Early, Consistent, and Robust Hair Growth in Positive Phase 3 \u2018304\u2019 Clinical Trial in Male Pattern Hair Loss | Mon, 10/19/2026 - 07:00",
+      "candidateTopNcts": [
+        "NCT06972264"
+      ],
+      "retrievedAt": "2026-11-07T00:34:19.899372+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "b15e56c1e9db122ab2be4dc69d8a22dd66d6a72fa95e693a006571bc5eccbd92",
+      "httpStatus": 200,
+      "finalUrl": "https://veradermics.gcs-web.com/news-releases/news-release-details/veradermics-oral-vdphl01-achieved-early-consistent-and-robust-0",
+      "bytes": 87068,
+      "sha256": "e19eb942a022729cb4ec8929621605b1a566d95fb5992afcaaef84f3983f8bff",
+      "exactTopNcts": [
+        "NCT06724614",
+        "NCT06972264",
+        "NCT07146022"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1062822/000106282226000117/exh101-herculesloanandse.htm",
+      "title": "exh101-herculesloanandse",
+      "candidateTopNcts": [
+        "NCT06481891"
+      ],
+      "retrievedAt": "2026-11-07T00:34:20.016088+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "201fc549cb8f6026e80cce42acf45d9e963112b17e869a806d3a263da59258f2",
+      "httpStatus": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1062822/000106282226000117/exh101-herculesloanandse.htm",
+      "bytes": 287793,
+      "sha256": "d4f83f9d418b37883cdd15191d9fb2845f9795eb5ab617e8c052102486e2fcc7",
+      "exactTopNcts": [
+        "NCT06481891"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.mbxbio.com/news-releases/news-release-details/mbx-biosciences-announces-first-patient-dosed-pivotal-phase-3",
+      "title": "MBX Biosciences Announces First Patient Dosed in Pivotal Phase 3 oPTimize Trial of Once-Weekly Canvuparatide in Adults with Hypoparathyroidism - MBX Bio",
+      "candidateTopNcts": [
+        "NCT07699471"
+      ],
+      "retrievedAt": "2026-11-07T00:34:20.258169+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "53fb80a85a90216b03f83c25af0796d7fd76f831b9ddc8579966d3d690d63879",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.mbxbio.com/news-releases/news-release-details/mbx-biosciences-announces-first-patient-dosed-pivotal-phase-3",
+      "bytes": 47447,
+      "sha256": "72f22c6229ea364602eb3dc5622614d9bf489ea635737695585747b816f46a4c",
+      "exactTopNcts": [
+        "NCT07699471"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://mbxbio.gcs-web.com/news-releases/news-release-details/mbx-biosciences-announces-first-patient-dosed-pivotal-phase-3",
+      "title": "MBX Biosciences Announces First Patient Dosed in Pivotal Phase 3 oPTimize Trial of Once-Weekly Canvuparatide in Adults with Hypoparathyroidism - MBX Bio",
+      "candidateTopNcts": [
+        "NCT07699471"
+      ],
+      "retrievedAt": "2026-11-07T00:34:20.287501+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "c1146d41ddfb67576f46bf3b50bcec910a8ad8115050680f85a0f205d64dc301",
+      "httpStatus": 200,
+      "finalUrl": "https://mbxbio.gcs-web.com/news-releases/news-release-details/mbx-biosciences-announces-first-patient-dosed-pivotal-phase-3",
+      "bytes": 47441,
+      "sha256": "9817024daf155217c48d3011c18244952486c0a43d20555a3b454fb7a3e57821",
+      "exactTopNcts": [
+        "NCT07699471"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.madrigalpharma.com/static-files/a476bba2-a11e-4d3d-937e-e5c49ffe938a",
+      "title": "Form PRE 14A for Madrigal Pharmaceuticals INC filed 04/21/2023",
+      "candidateTopNcts": [
+        "NCT05500222"
+      ],
+      "retrievedAt": "2026-11-07T00:34:20.302038+00:00",
+      "state": "RETRIEVED_NO_EXACT_NCT_REQUIRES_CROSSWALK",
+      "cacheKey": "b01613bfd5e147118123d7d45e6f8b2c0387dbe28d3a32771b465a5f2569346c",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.madrigalpharma.com/static-files/a476bba2-a11e-4d3d-937e-e5c49ffe938a",
+      "bytes": 1954771,
+      "sha256": "0e7ac5943cda4a07c78c4747290fcc945fd525088fb3b5cd19d5c80f8219b263",
+      "exactTopNcts": [],
+      "sourceDate": null
+    },
+    {
+      "url": "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-reports-third-quarter-2026-financial-results-and",
+      "title": "MoonLake Reports Third Quarter 2026 Financial Results and Provides a Business Update | MoonLake Immunotherapeutics",
+      "candidateTopNcts": [
+        "NCT07007637"
+      ],
+      "retrievedAt": "2026-11-07T00:34:20.306732+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "0f43a6ff815d2cc48247631645d7f550c9e2424476794affdc3eda3d53d3e877",
+      "httpStatus": 200,
+      "finalUrl": "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-reports-third-quarter-2026-financial-results-and",
+      "bytes": 114138,
+      "sha256": "b90cac26f2330fa7d0399d94c6768c17636ac567738eb2958704643ca2f0bcd0",
+      "exactTopNcts": [
+        "NCT06641089",
+        "NCT06768671",
+        "NCT07007637"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.moonlaketx.com/static-files/e9d9abbe-5172-444f-a586-2e5dea6c0d0e",
+      "title": "Form 10-Q for Moonlake Immunotherapeutics filed 05/11/2026",
+      "candidateTopNcts": [
+        "NCT06641089"
+      ],
+      "retrievedAt": "2026-11-07T00:34:20.381913+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ff5d471a8e3f00b4d7b94250fb97a8d42594eaee26a114de9ab7a1d765ab14e1",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.moonlaketx.com/static-files/e9d9abbe-5172-444f-a586-2e5dea6c0d0e",
+      "bytes": 26497351,
+      "sha256": "ef94bcdf3999182da923faf0157fc57a6ab8050b4884d177c325a8c4b854b585",
+      "exactTopNcts": [
+        "NCT06641089"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://eadv.org/wp-content/uploads/scientific-abstracts/EADV-congress-2025/Biologics-immunotherapy-targeted-therapy.pdf",
+      "title": "Materials & Methods: IZAR-2 (NCT06641089) is a 52-week multinational, randomized, double-blind, placebocontrolled, parallel-group Phase 3 clinical trial of the Nanobody sonelokimab in patients with active PsA and previous inadequate response or intolerance to 1 or 2 biologic TNFi. An estimated 600 adult patients with a confirmed diagnosis of PsA per CASPAR criteria, active disease (68 tender joint count \u22653 and 66 swollen joint count \u22653), currently active or dermatologist-confirmed historical PsO, and inadequate response or intolerance to 1 or 2 biologic TNFi will be enrolled. Patients will be randomized 1:1:1:1 to receive sonelokimab 60mg or 120mg Q4W WI (induction doses at W0, 2, 4, and 6), placebo to W16, or risankizumab given at the approved PsA dose (active reference arm; Figure). The primary outcome is ACR50 vs. placebo at W16, with key secondary outcomes (all vs. placebo) including the proportion of patients achieving ACR20, PASI 90, MDA, as well as change from baseline in the Health Assessment Questionnaire-Disability Index and Short Form-36 Physical Component Summary at W16. Risankizumab, an approved IL-23 p19i therapy commonly used in PsA after prior inadequate response to TNFi, will be the active reference arm. A key secondary endpoint will compare ACR50 responses at W16 with sonelokimab vs. risankizumab to provide additional insights into treatment choice after the failure of TNFi therapies in this population. After W16, patients receiving placebo will switch to sonelokimab 120mg Q4W WI (induction dosing to W24) until the end of treatment at W52. The IZAR-2 trial is ongoing and actively recruiting at sites across Europe and North America.",
+      "candidateTopNcts": [
+        "NCT06641089"
+      ],
+      "retrievedAt": "2026-11-07T00:34:20.581474+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "bce471d97d5c7319b1c4ba95ca9e0b4490c020db500aca484e6c2f70a24ca86f",
+      "httpStatus": 200,
+      "finalUrl": "https://eadv.org/wp-content/uploads/scientific-abstracts/EADV-congress-2025/Biologics-immunotherapy-targeted-therapy.pdf",
+      "bytes": 14470167,
+      "sha256": "3fbfffb4938ad685ce5b7d715fc5ba9f1b81ebb66b897d6f9e33ee8ff26dc546",
+      "exactTopNcts": [
+        "NCT06641089"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.moonlaketx.com/static-files/74ff7b55-a4cd-469d-a7e0-9c9503ee61c3",
+      "title": "Form 8-K for Moonlake Immunotherapeutics filed 04/03/2025",
+      "candidateTopNcts": [
+        "NCT06641089"
+      ],
+      "retrievedAt": "2026-11-07T00:34:20.629221+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "b4aeadca6102017b0467ebbea1b069b2db28f4f862cd125cc3caae7ce168e490",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.moonlaketx.com/static-files/74ff7b55-a4cd-469d-a7e0-9c9503ee61c3",
+      "bytes": 227685,
+      "sha256": "44f8544717e7efe0e5ff700b0cdfa53eeec7ea9ef64c6f3ce8a22b94daabce6a",
+      "exactTopNcts": [
+        "NCT06641089",
+        "NCT06768671"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.moonlaketx.com/static-files/1aff5d80-ce48-43f2-a9fc-4667f8101ee1",
+      "title": "Form 10-Q for Moonlake Immunotherapeutics filed 05/12/2025",
+      "candidateTopNcts": [
+        "NCT06641089"
+      ],
+      "retrievedAt": "2026-11-07T00:34:21.000444+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "5e4703f533b6c9c254f28d2f1da2d1d6860a6b9f63c5612efabc3dd0ebf9011f",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.moonlaketx.com/static-files/1aff5d80-ce48-43f2-a9fc-4667f8101ee1",
+      "bytes": 1433236,
+      "sha256": "339af45e004577928a5896a55111af367315605e36f0a701bf48990eb1382d29",
+      "exactTopNcts": [
+        "NCT06641089"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://moonlaketx.com/pipeline/",
+      "title": "Pipeline | Moonlake TX Immunotherapeutics",
+      "candidateTopNcts": [
+        "NCT06641089"
+      ],
+      "retrievedAt": "2026-11-07T00:34:21.236566+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "67152dfc295ecf79432c716f98acac7e954cdf378c51e73b1dc5ab8f153fbced",
+      "httpStatus": 200,
+      "finalUrl": "https://moonlaketx.com/pipeline",
+      "bytes": 128036,
+      "sha256": "f92d6601b8e8bd62526c6e7e95710879c3d3e8294899522ba9abfdce369fd92b",
+      "exactTopNcts": [
+        "NCT06641089",
+        "NCT06768671"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-immunotherapeutics-announces-positive-outcome-type-b",
+      "title": "MoonLake Immunotherapeutics Announces Positive Outcome from Type B Meeting with U.S. FDA and Announces Investor Day | MoonLake Immunotherapeutics",
+      "candidateTopNcts": [
+        "NCT06641089"
+      ],
+      "retrievedAt": "2026-11-07T00:34:21.249495+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "a370c50c2f911457b9824d7dbf701020c3a0ca7b28458a478ffccb810fbd4ac7",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-immunotherapeutics-announces-positive-outcome-type-b",
+      "bytes": 74815,
+      "sha256": "116f2419ef8fa514930aaada419069ffe52771aab92a53fb26d2c87aa735c2e1",
+      "exactTopNcts": [
+        "NCT06641089",
+        "NCT06768671"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.moonlaketx.com/static-files/51eb2e7f-82b7-4455-8786-3d50254e41e7",
+      "title": "PowerPoint Presentation",
+      "candidateTopNcts": [
+        "NCT06768671"
+      ],
+      "retrievedAt": "2026-11-07T00:34:21.371293+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "4311ab6908fe500fd1260647d91a9a36d587c1df25ab23755d0d5e4ccd7712e7",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.moonlaketx.com/static-files/51eb2e7f-82b7-4455-8786-3d50254e41e7",
+      "bytes": 591079,
+      "sha256": "1a53663d1b189fcba9aaa851b27e118d5b78f67183950db719e0d7bf2c2e138d",
+      "exactTopNcts": [
+        "NCT06768671",
+        "NCT07007637"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.moonlaketx.com/node/9081/pdf",
+      "title": "MoonLake Announces Positive Topline Results from its Phase 2 Clinical Trial of Sonelokimab in Axial Spondyloarthritis and Reports 2025 Financial Results",
+      "candidateTopNcts": [
+        "NCT06641089"
+      ],
+      "retrievedAt": "2026-11-07T00:34:21.621872+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "fde071b122a49cc2ac673fad53b6e1cedaa0b8dab6e757d684952dc747b37cae",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.moonlaketx.com/node/9081/pdf",
+      "bytes": 173019,
+      "sha256": "9df947c08e8444b5a7b8aabccc144b65b396621c4a4cb6f12f01d12cd1454805",
+      "exactTopNcts": [
+        "NCT06641089",
+        "NCT06768671"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.neurogene.com/static-files/59dfc4ce-9e6d-40aa-89f2-ee471d3cb3a4",
+      "title": "PowerPoint Presentation",
+      "candidateTopNcts": [
+        "NCT05898620"
+      ],
+      "retrievedAt": "2026-11-07T00:34:21.710586+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "f8391a7d72d6302a042c9c8963ca4099c3c0ef1b76354dd088eb6b5171e75091",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.neurogene.com/static-files/59dfc4ce-9e6d-40aa-89f2-ee471d3cb3a4",
+      "bytes": 340446,
+      "sha256": "35d778c189808db9e4f4fe7aeb411fc4887b97dac1ccf65e57f3e99c79361cbe",
+      "exactTopNcts": [
+        "NCT05898620"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.neurogene.com/static-files/dd268330-bb41-47e0-942a-b4ac7a4cf8ca",
+      "title": "PowerPoint Presentation",
+      "candidateTopNcts": [
+        "NCT05898620"
+      ],
+      "retrievedAt": "2026-11-07T00:34:21.999009+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "847005a7e0be1d34d52153f2565718c872155e5db28a250c0eb4f127162e1df5",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.neurogene.com/static-files/dd268330-bb41-47e0-942a-b4ac7a4cf8ca",
+      "bytes": 396513,
+      "sha256": "7596753c469ea9520c03697073f15af9d6d508a604c8257269727ca97f56dcf6",
+      "exactTopNcts": [
+        "NCT05898620"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.mineralystx.com/news-events/press-releases/detail/116/mineralys-therapeutics-transform-htn-open-label",
+      "title": "Mineralys Therapeutics\u2019 Transform-HTN Open-Label Extension Trial Data Selected for Late-Breaking Presentation at American Heart Association Scientific Sessions 2026 :: Mineralys Therapeutics, Inc. (MLYS)",
+      "candidateTopNcts": [
+        "NCT05968430"
+      ],
+      "retrievedAt": "2026-11-07T00:34:22.035110+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "702c7dbb2e9b9aac86c64f865584c13e2de0247db8c3fe58ed06cc86e2ff270e",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/116/mineralys-therapeutics-transform-htn-open-label",
+      "bytes": 48763,
+      "sha256": "e3b91a61224d9b8eed2686b153d708a46f0ad2669a48abd033ba680454f2d98d",
+      "exactTopNcts": [
+        "NCT05968430"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.intelliatx.com/static-files/a57908a6-aaca-404d-9072-32471cd3d41e",
+      "title": "Corporate Overview_May2026_FINAL",
+      "candidateTopNcts": [
+        "NCT06672237"
+      ],
+      "retrievedAt": "2026-11-07T00:34:22.281804+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "ec8a4d018ed86a2ceb95c8e23f494c26456c1776170807a1d2ded8c85f9ae298",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://ir.intelliatx.com/news-releases/news-release-details/intellia-therapeutics-completes-enrollment-phase-3-magnitude-2",
+      "title": "Intellia Therapeutics Completes Enrollment in Phase 3 MAGNITUDE-2 Trial of Nexiguran Ziclumeran (Nex-z) for Patients with Hereditary Transthyretin Amyloidosis with Polyneuropathy (ATTRv-PN) - Intellia Therapeutics",
+      "candidateTopNcts": [
+        "NCT06672237"
+      ],
+      "retrievedAt": "2026-11-07T00:34:22.429086+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "89bedda490263a65288103482e252816f1f5e52346a2094af8990981dfc878ba",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.intelliatx.com/news-releases/news-release-details/intellia-therapeutics-completes-enrollment-phase-3-magnitude-2",
+      "bytes": 43420,
+      "sha256": "e8999d6030353e673bf1076b3395fe7f593f08a05ceaa8e8e2d299a2f88f6498",
+      "exactTopNcts": [
+        "NCT06128629",
+        "NCT06672237"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.nurixtx.com/news-releases/news-release-details/nurix-therapeutics-present-new-and-updated-data-ongoing-phase",
+      "title": "Nurix Therapeutics to Present New and Updated Data from Ongoing Phase 1a/1b Trial of Bexobrutideg (NX-5948) in Relapsed/Refractory CLL/SLL at the 68th ASH Annual Meeting and Exposition | Nurix Therapeutics, Inc.",
+      "candidateTopNcts": [
+        "NCT07516093"
+      ],
+      "retrievedAt": "2026-11-07T00:34:22.504239+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "cfdbec51433bd5f62ee7028dfa6d25bbefc9fc19b493c49f7fb3cc2ff76710fe",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.nurixtx.com/news-releases/news-release-details/nurix-therapeutics-present-new-and-updated-data-ongoing-phase",
+      "bytes": 104235,
+      "sha256": "4d2185e6fb69645a494106ff3baf868d48a7052172fcbcf477c5fbbb606020ec",
+      "exactTopNcts": [
+        "NCT07516093"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.nurixtx.com/news-releases/news-release-details/nurix-therapeutics-reports-third-quarter-2026-financial-results",
+      "title": "Nurix Therapeutics Reports Third Quarter 2026 Financial Results and Provides Corporate Update | Nurix Therapeutics, Inc.",
+      "candidateTopNcts": [
+        "NCT07516093"
+      ],
+      "retrievedAt": "2026-11-07T00:34:22.721323+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "a41fb815013dd7ca288c7c60cf325095afd02fa98bc10ee122cb22a830f296ef",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.nurixtx.com/news-releases/news-release-details/nurix-therapeutics-reports-third-quarter-2026-financial-results",
+      "bytes": 175004,
+      "sha256": "d316d06d272b4cbc5979d30e647f000a45e02b3028e593fd4324a896b127f092",
+      "exactTopNcts": [
+        "NCT07516093"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://intelliatherapeutics.gcs-web.com/news-releases/news-release-details/intellia-therapeutics-completes-enrollment-phase-3-magnitude-2",
+      "title": "Intellia Therapeutics Completes Enrollment in Phase 3 MAGNITUDE-2 Trial of Nexiguran Ziclumeran (Nex-z) for Patients with Hereditary Transthyretin Amyloidosis with Polyneuropathy (ATTRv-PN) - Intellia Therapeutics",
+      "candidateTopNcts": [
+        "NCT06128629"
+      ],
+      "retrievedAt": "2026-11-07T00:34:22.815087+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "8bc83628dcb654bb2b85fa27d0225e62b1682e8a5cfe2aacd9e5dd2c4eecd786",
+      "httpStatus": 200,
+      "finalUrl": "https://intelliatherapeutics.gcs-web.com/news-releases/news-release-details/intellia-therapeutics-completes-enrollment-phase-3-magnitude-2",
+      "bytes": 43480,
+      "sha256": "e5e4d8c80c4dee1a420780777f2df89b7476f4d25a592c478e38d9086b4daa92",
+      "exactTopNcts": [
+        "NCT06128629",
+        "NCT06672237"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://nurixtx.gcs-web.com/news-releases/news-release-details/nurix-therapeutics-announces-first-patient-enrolled",
+      "title": "Nurix Therapeutics Announces First Patient Enrolled in Registrational Phase 3 DAYBreak CLL-306 Trial of Bexobrutideg in Relapsed/Refractory Chronic Lymphocytic Leukemia/Small Lymphocytic Lymphoma | Nurix Therapeutics, Inc.",
+      "candidateTopNcts": [
+        "NCT07516093"
+      ],
+      "retrievedAt": "2026-11-07T00:34:22.901870+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "702a6100de14cfc0b38b022d385f61a3e7c88de95a9d8199a172d0e619c429ae",
+      "httpStatus": 200,
+      "finalUrl": "https://nurixtx.gcs-web.com/news-releases/news-release-details/nurix-therapeutics-announces-first-patient-enrolled",
+      "bytes": 104802,
+      "sha256": "bb4d8d32671c6d6a3f137e0dfd78781c9a80c7f635d620dc2000e1d587efd539",
+      "exactTopNcts": [
+        "NCT07516093"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.intelliatx.com/news-releases/news-release-details/intellia-announces-first-clinical-evidence-ongoing-phase-1-study",
+      "title": "Intellia Announces First Clinical Evidence from Ongoing Phase 1 Study that Nexiguran Ziclumeran (nex-z), an In Vivo CRISPR/Cas9-Based Gene Editing Therapy, May Favorably Impact Disease Progression in Transthyretin (ATTR) Amyloidosis - Intellia Therapeutics",
+      "candidateTopNcts": [
+        "NCT06128629"
+      ],
+      "retrievedAt": "2026-11-07T00:34:22.922593+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "89d6d01fdfb0fefae8455255bb4a3bc8aa848130c0acd3136fcf8b01a3cde8ec",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.intelliatx.com/news-releases/news-release-details/intellia-announces-first-clinical-evidence-ongoing-phase-1-study",
+      "bytes": 61509,
+      "sha256": "3ac5e5246b5b1d80551c5020aac5d55af3a50a58ef367ec7efa7fa763dcb6910",
+      "exactTopNcts": [
+        "NCT06128629",
+        "NCT06672237"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.intelliatx.com/node/12521",
+      "title": "Intellia Therapeutics Announces FDA Lift of Clinical Hold on MAGNITUDE Phase 3 Clinical Trial in ATTR-CM - Intellia Therapeutics",
+      "candidateTopNcts": [
+        "NCT06128629"
+      ],
+      "retrievedAt": "2026-11-07T00:34:22.979109+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "c4be24c45e7084d059eb10b76527e47ecee7631f61e9627a3bc89f5cddaddc1b",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.intelliatx.com/node/12521",
+      "bytes": 42959,
+      "sha256": "5cb3af4daf438c9480ddb138b658f95b4018891769e2159f6271299cb33e712a",
+      "exactTopNcts": [
+        "NCT06128629",
+        "NCT06672237"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.intelliatx.com/news-releases/news-release-details/intellia-therapeutics-announces-positive-three-year-data-phase-1",
+      "title": "Intellia Therapeutics Announces Positive Three-Year Data from Phase 1 Trial of Lonvoguran Ziclumeran (lonvo-z) in Patients with Hereditary Angioedema (HAE) at the European Academy of Allergy and Clinical Immunology Congress - Intellia Therapeutics",
+      "candidateTopNcts": [
+        "NCT06634420"
+      ],
+      "retrievedAt": "2026-11-07T00:34:23.043848+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "dcdebf3b98e90767b516c842f0df4928258ce7f02e6fce4588d52bacc7c358a3",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.intelliatx.com/news-releases/news-release-details/intellia-therapeutics-announces-positive-three-year-data-phase-1",
+      "bytes": 47228,
+      "sha256": "74133f58d26bcf29a490b52f4019fa0905d6c45c1df801e9f318d7798d57f3b7",
+      "exactTopNcts": [
+        "NCT06634420"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.intelliatx.com/node/12436/html",
+      "title": "Intellia Therapeutics - SEC Filing",
+      "candidateTopNcts": [
+        "NCT06672237"
+      ],
+      "retrievedAt": "2026-11-07T00:34:23.306202+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "d9c47776b3d6617e5403104a56963a23b15a55fc84498cad18e987f9ba32727a",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.intelliatx.com/node/12436/html",
+      "bytes": 53628,
+      "sha256": "3d44b5ad7232f9ac5bbb570a50e187b173a389d51c69ea7f84444279a5b7d160",
+      "exactTopNcts": [
+        "NCT06672237"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.nuvationbio.com/news/news-details/2026/Nuvation-Bio-Announces-Pivotal-Global-Phase-3-SIGMA-Trial-G203-for-Safusidenib-in-IDH1-Mutant-Glioma/default.aspx",
+      "title": "Nuvation Bio Inc. - Nuvation Bio Announces Pivotal Global Phase 3 SIGMA Trial (G203) for Safusidenib in IDH1-Mutant Glioma",
+      "candidateTopNcts": [
+        "NCT05303519"
+      ],
+      "retrievedAt": "2026-11-07T00:34:23.372947+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "5d3e83348abc87a2f2d78dc9f5777b32d381c79c393add4b66a8f7d3c24977c8",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.nuvationbio.com/news/news-details/2026/Nuvation-Bio-Announces-Pivotal-Global-Phase-3-SIGMA-Trial-G203-for-Safusidenib-in-IDH1-Mutant-Glioma/default.aspx",
+      "bytes": 74096,
+      "sha256": "e49ba35bf51fb0a664cc7e9de1a5b2d0b71abef5e8223adab6f9b8d374a9a48d",
+      "exactTopNcts": [
+        "NCT05303519"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.nuvationbio.com/news/news-details/2025/Nuvation-Bio-Enrolls-First-Patient-in-Global-Randomized-Study-of-Safusidenib-for-Maintenance-Treatment-of-High-Grade-IDH1-Mutant-Glioma/default.aspx",
+      "title": "Nuvation Bio Inc. - Nuvation Bio Enrolls First Patient in Global, Randomized Study of Safusidenib for Maintenance Treatment of High-Grade IDH1-Mutant Glioma",
+      "candidateTopNcts": [
+        "NCT05303519"
+      ],
+      "retrievedAt": "2026-11-07T00:34:23.388733+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ad197da5f88001b45faa443162677ddbe969f08722a8bcc727ce7dabf3b6d1cc",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.nuvationbio.com/news/news-details/2025/Nuvation-Bio-Enrolls-First-Patient-in-Global-Randomized-Study-of-Safusidenib-for-Maintenance-Treatment-of-High-Grade-IDH1-Mutant-Glioma/default.aspx",
+      "bytes": 73760,
+      "sha256": "627c2cf12e57e2f551655a0d60b9ff6014ec5f54c81bdf3efda2b511b3803985",
+      "exactTopNcts": [
+        "NCT05303519"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.nuvationbio.com/news/news-details/2026/Nuvation-Bio-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx",
+      "title": "Nuvation Bio Inc. - Nuvation Bio Reports Second Quarter 2026 Financial Results and Provides Business Update",
+      "candidateTopNcts": [
+        "NCT06564324"
+      ],
+      "retrievedAt": "2026-11-07T00:34:23.463129+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "f7b89d9e92ed42a6d844c48be36dc4641a49824313da60a792f5afc57430aa98",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.nuvationbio.com/news/news-details/2026/Nuvation-Bio-Reports-Second-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx",
+      "bytes": 155659,
+      "sha256": "f3a6ef2796839eb4ef4a908bfac67732e637d92952cef7651aa1122aaad955f1",
+      "exactTopNcts": [
+        "NCT06564324",
+        "NCT07154706",
+        "NCT07712757"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.nuvationbio.com/news/news-details/2026/Nuvation-Bio-Announces-Positive-Updated-Phase-2-Data-and-Expansion-of-Safusidenib-Clinical-Program-with-Two-New-Studies-to-Explore-Broad-Spectrum-of-IDH1-Mutant-Glioma/default.aspx",
+      "title": "Nuvation Bio Inc. - Nuvation Bio Announces Positive Updated Phase 2 Data and Expansion of Safusidenib Clinical Program with Two New Studies to Explore Broad Spectrum of IDH1-Mutant Glioma",
+      "candidateTopNcts": [
+        "NCT07712757"
+      ],
+      "retrievedAt": "2026-11-07T00:34:23.486271+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "039d42497dba35fbf0e32e34b8b5768ead9d90e124bb17ed990b8bffdf64164a",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.nuvationbio.com/news/news-details/2026/Nuvation-Bio-Announces-Positive-Updated-Phase-2-Data-and-Expansion-of-Safusidenib-Clinical-Program-with-Two-New-Studies-to-Explore-Broad-Spectrum-of-IDH1-Mutant-Glioma/default.aspx",
+      "bytes": 79521,
+      "sha256": "91a2996455ef28dd85b199aca6dd38d30a2ee58007bcd7f464415b7e1d3f4d0c",
+      "exactTopNcts": [
+        "NCT07712757"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.nuvationbio.com/news/news-details/2026/Nuvation-Bio-Reports-First-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx",
+      "title": "Nuvation Bio Inc. - Nuvation Bio Reports First Quarter 2026 Financial Results and Provides Business Update",
+      "candidateTopNcts": [
+        "NCT07154706"
+      ],
+      "retrievedAt": "2026-11-07T00:34:23.580535+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "a64b08af0ddfc160240091b1fa071ab89883c1a2dece1040898206be8ad6f95a",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.nuvationbio.com/news/news-details/2026/Nuvation-Bio-Reports-First-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx",
+      "bytes": 140100,
+      "sha256": "6a8129656e929db645ac10e7316546f31baa83bdac2ba66e7d73115b12d9a441",
+      "exactTopNcts": [
+        "NCT06564324",
+        "NCT07154706"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.ocutx.com/static-files/fe0d066d-995a-4278-92c8-394c2a68386b",
+      "title": "Form 8-K for Ocular Therapeutix INC filed 05/05/2026",
+      "candidateTopNcts": [
+        "NCT07516132"
+      ],
+      "retrievedAt": "2026-11-07T00:34:23.726501+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "3eb73b9409acd426856820f9332be46cd2e6c981926b174f3ab144784bd6617c",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.ocutx.com/static-files/fe0d066d-995a-4278-92c8-394c2a68386b",
+      "bytes": 245447,
+      "sha256": "d2e0d05e999a621add16b8cf0bd62cea87308a5236eac0206c4ecc3be71a0441",
+      "exactTopNcts": [
+        "NCT06223958",
+        "NCT06495918",
+        "NCT07235085",
+        "NCT07516132"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/02/17/3239086/0/en/ocular-therapeutix-reports-positive-results-from-landmark-sol-1-phase-3-superiority-trial-in-wet-amd.html",
+      "title": "Ocular Therapeutix\u2122 Reports Positive Results from Landmark SOL-1 Phase 3 Superiority Trial in Wet AMD",
+      "candidateTopNcts": [
+        "NCT06495918"
+      ],
+      "retrievedAt": "2026-11-07T00:34:23.744446+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "97c7d386add63f56aa964951073a9549d2049f6f0ac0b845c383be32e56a9025",
+      "httpStatus": 200,
+      "finalUrl": "https://www.globenewswire.com/news-release/2026/02/17/3239086/0/en/ocular-therapeutix-reports-positive-results-from-landmark-sol-1-phase-3-superiority-trial-in-wet-amd.html",
+      "bytes": 107466,
+      "sha256": "590a42779dd5999076f07859344bcd6f883f9ca0a4725eb05bcf346a32ec057d",
+      "exactTopNcts": [
+        "NCT06223958",
+        "NCT06495918"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.ocutx.com/static-files/9a2366eb-bf3f-45d8-b6f4-8aad4928c536",
+      "title": "Ocular Therapeutix",
+      "candidateTopNcts": [
+        "NCT06223958"
+      ],
+      "retrievedAt": "2026-11-07T00:34:23.746837+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "ee151b90bea834982881e4997fd3fac52c4dc633c12e8041b6fa45b571964544",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://investors.ocutx.com/node/13751/pdf",
+      "title": "Ocular Therapeutix\u2122 Reports First Quarter 2025 Results and Business Highlights",
+      "candidateTopNcts": [
+        "NCT06495918"
+      ],
+      "retrievedAt": "2026-11-07T00:34:23.879742+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "b69a69c5b75492f278a2c1d519de045ced366f578d19826328cccf6b079f6b67",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.ocutx.com/node/13751/pdf",
+      "bytes": 320364,
+      "sha256": "aafd6b305e42e10929f8182d63c53d4d235f418f8c31c56e12d8eb78ddedcaf2",
+      "exactTopNcts": [
+        "NCT06223958",
+        "NCT06495918"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.ocutx.com/static-files/4fe53892-4280-4267-a014-5657dbde95ef",
+      "title": "Form 8-K for Ocular Therapeutix INC filed 08/05/2025",
+      "candidateTopNcts": [
+        "NCT06495918"
+      ],
+      "retrievedAt": "2026-11-07T00:34:23.953142+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "1682ab0a48ad0fe29e46995c8a1a97d3ce5be863ef4734d05e5926c8bafc5127",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.ocutx.com/static-files/4fe53892-4280-4267-a014-5657dbde95ef",
+      "bytes": 244378,
+      "sha256": "abb6a29517910e84e10cd77c0905eaa23047512a2ae7e6cd6783d42206471b1c",
+      "exactTopNcts": [
+        "NCT06223958",
+        "NCT06495918"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.ocutx.com/static-files/b50f131e-7aec-47cb-82d8-c3780a9817c7",
+      "title": "Form 8-K for Ocular Therapeutix INC filed 03/03/2025",
+      "candidateTopNcts": [
+        "NCT06495918"
+      ],
+      "retrievedAt": "2026-11-07T00:34:24.120505+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "e42e8b1f5d77d71f8d8548ea84b105b027acf3f46254fe79a87e36c1f0506173",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.ocutx.com/static-files/b50f131e-7aec-47cb-82d8-c3780a9817c7",
+      "bytes": 236101,
+      "sha256": "ab63e9ae440678115edede64ad8002c51c22066afa41c6c25e472e5e7ca8a591",
+      "exactTopNcts": [
+        "NCT06223958",
+        "NCT06495918"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/05/05/3287510/0/en/Ocular-Therapeutix-Reports-First-Quarter-2026-Financial-Results-and-Business-Highlights.html",
+      "title": "Ocular Therapeutix\u2122 Reports First Quarter 2026 Financial Results and Business Highlights",
+      "candidateTopNcts": [
+        "NCT06495918"
+      ],
+      "retrievedAt": "2026-11-07T00:34:24.295081+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "9ed9a2a4f5343f34fd0ed4d9f70c8d04c0a4de7eff58eb3093d36db266a1bebb",
+      "httpStatus": 200,
+      "finalUrl": "https://www.globenewswire.com/news-release/2026/05/05/3287510/0/en/Ocular-Therapeutix-Reports-First-Quarter-2026-Financial-Results-and-Business-Highlights.html",
+      "bytes": 150484,
+      "sha256": "b3f4d59661b82b8d9efe731f73d02344a7fe71fef4b2b91b8c9b5857a3c9c31d",
+      "exactTopNcts": [
+        "NCT06223958",
+        "NCT06495918",
+        "NCT07235085",
+        "NCT07516132"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.vaxcyte.com/node/11701/pdf",
+      "title": "Vaxcyte Completes Enrollment of OPUS-1 and OPUS-2 Phase 3 Trials Evaluating VAX-31 for the Prevention of Invasive Pneumococcal Disease and Pneumonia in Adults",
+      "candidateTopNcts": [
+        "NCT07365826"
+      ],
+      "retrievedAt": "2026-11-07T00:34:24.453629+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "785c9cf515d4962ae31746867ae0d9759e4b07c5f1263ce12f92eef53da6940f",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.vaxcyte.com/node/11701/pdf",
+      "bytes": 152138,
+      "sha256": "f8a6b42bd98faaf8c7eadb35c058f58006ce3fee76882732f880de990c00877d",
+      "exactTopNcts": [
+        "NCT07365826"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.vaxcyte.com/news-releases/news-release-details/vaxcyte-completes-enrollment-opus-1-and-opus-2-phase-3-trials/",
+      "title": "Vaxcyte Completes Enrollment of OPUS-1 and OPUS-2 Phase 3 Trials Evaluating VAX-31 for the Prevention of Invasive Pneumococcal Disease and Pneumonia in Adults - Vaxcyte, Inc.",
+      "candidateTopNcts": [
+        "NCT07365826"
+      ],
+      "retrievedAt": "2026-11-07T00:34:24.562387+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "b13f17b774d98f0c974ad3a1f7047d78934d4df027796c0153427e55f75ee08d",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.vaxcyte.com/news-releases/news-release-details/vaxcyte-completes-enrollment-opus-1-and-opus-2-phase-3-trials/",
+      "bytes": 67393,
+      "sha256": "636bd3a9a1131f0c9d7ba2bc66309cffee358c6aaf302a8ed1072fbe071d5500",
+      "exactTopNcts": [
+        "NCT07365826"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.praxismedicines.com/static-files/5a39fd6e-9f22-450d-8f3e-7857f5260ee5",
+      "title": "Form 8-K for Praxis Precision Medicines INC filed 10/21/2025",
+      "candidateTopNcts": [
+        "NCT05818553"
+      ],
+      "retrievedAt": "2026-11-07T00:34:24.620425+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ddfc7f28c10cb699ab8e2c37d1f6c1478615388e986c63d87de2c145cd175597",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.praxismedicines.com/static-files/5a39fd6e-9f22-450d-8f3e-7857f5260ee5",
+      "bytes": 6705082,
+      "sha256": "07e76750b54efcd22b9e886a2973462edbea4eabbc2a87258c0fecd898465b07",
+      "exactTopNcts": [
+        "NCT05818553"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.praxismedicines.com/static-files/9e87e964-ab44-48df-9870-1553b639f479",
+      "title": "PowerPoint Presentation",
+      "candidateTopNcts": [
+        "NCT05818553"
+      ],
+      "retrievedAt": "2026-11-07T00:34:24.687711+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "3da121cbc59437d0bf72bd4c083256fceb897f4a29aa789d1e2938383a4331d3",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.praxismedicines.com/static-files/9e87e964-ab44-48df-9870-1553b639f479",
+      "bytes": 2244243,
+      "sha256": "cae263ff35ad39f9537e43f99b397538c6ebc0dc23c3cb886d56150defc20be1",
+      "exactTopNcts": [
+        "NCT05818553"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.phathompharma.com/news-releases/news-release-details/phathom-pharmaceuticals-announces-initiation-registrational",
+      "title": "Phathom Pharmaceuticals Announces Initiation of Registrational Phase 3 Study of VOQUEZNA\u00ae (vonoprazan) for As-Needed Treatment of Non-Erosive GERD | Phathom Pharmaceuticals, Inc.",
+      "candidateTopNcts": [
+        "NCT07752407"
+      ],
+      "retrievedAt": "2026-11-07T00:34:24.895750+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "65a65f2b51d0bd0209a28c158c363aa76d0821711805e6073fb53672c22ffc1c",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.phathompharma.com/news-releases/news-release-details/phathom-pharmaceuticals-announces-initiation-registrational",
+      "bytes": 55008,
+      "sha256": "38b85ba5e13f7b8237ae9161681a510fa89b0e9e6d1c9cf1df074c50d7e53f0a",
+      "exactTopNcts": [
+        "NCT07752407"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.praxismedicines.com/static-files/81c13da3-a1d6-4b3b-b37c-8eb716a78971",
+      "title": "Form 8-K for Praxis Precision Medicines INC filed 10/16/2025",
+      "candidateTopNcts": [
+        "NCT06087276"
+      ],
+      "retrievedAt": "2026-11-07T00:34:24.917905+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ac90c7b5f16b36755233be561bc61de8f093a84b8e4dc9d16751abd1118afa18",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.praxismedicines.com/static-files/81c13da3-a1d6-4b3b-b37c-8eb716a78971",
+      "bytes": 3149187,
+      "sha256": "d22c6a5ddc0d136d9fd2d9189cbf8532c5f10d619730d4c5d30635fbf83e4a9d",
+      "exactTopNcts": [
+        "NCT06087276"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
+      "title": "Praxis Precision Medicines Announces Positive Topline Results from Two Pivotal Phase 3 Studies of Ulixacaltamide HCl in the Essential3 Program for Essential Tremor - Praxis Precision Medicines, Inc.",
+      "candidateTopNcts": [
+        "NCT06087276"
+      ],
+      "retrievedAt": "2026-11-07T00:34:25.180272+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "23ac1eee793c19c7db755e440415e23db8d22d438c379c39197d921b5bc710cc",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
+      "bytes": 93284,
+      "sha256": "980e440aae65e6d671ed1b469d9b563d2cf58dcdc466b3bd5e835db606c83536",
+      "exactTopNcts": [
+        "NCT06087276"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.praxismedicines.com/node/10676/pdf",
+      "title": "Praxis Precision Medicines Announces Positive Topline Results from Two Pivotal Phase 3 Studies of Ulixacaltamide HCl in the Essential3 Program for Essential Tremor",
+      "candidateTopNcts": [
+        "NCT06087276"
+      ],
+      "retrievedAt": "2026-11-07T00:34:25.204996+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ef8ae2d86d5c7dd6b2b416b967ee41964d42a48c44a816d9d602a5d14d3563b1",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.praxismedicines.com/node/10676/pdf",
+      "bytes": 312008,
+      "sha256": "7998b2b4d3acaf1bae85360beb916afd4a56c1ea1e43665d05cab441fe4ee923",
+      "exactTopNcts": [
+        "NCT06087276"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954824000086/praxiscorporatedeckaugus.htm",
+      "title": "praxiscorporatedeckaugus",
+      "candidateTopNcts": [
+        "NCT06087276"
+      ],
+      "retrievedAt": "2026-11-07T00:34:25.423762+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ca87840e1c893f774e2512010baccab8d920e1fa6ef5748094bfbc6bcdff3242",
+      "httpStatus": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1689548/000168954824000086/praxiscorporatedeckaugus.htm",
+      "bytes": 37332,
+      "sha256": "950003928ef82ba080396ed03f0c6f89ecf32b7c25791dbc4745d34fff92706e",
+      "exactTopNcts": [
+        "NCT06087276"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.prokidney.com/node/7246/pdf",
+      "title": "ProKidney Receives Allowance from the UK Medicines and Healthcare Products Regulatory Agency (MHRA) for proact 1 (REGEN-006) and EMA Scientific Advice on Phase 3 Protocols of REACT for Diabetic Chronic Kidney Disease",
+      "candidateTopNcts": [
+        "NCT05099770"
+      ],
+      "retrievedAt": "2026-11-07T00:34:25.519069+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "8292a226bae4031425fa66a3862aec1fa7b983ebc1aa0c7289081f8114d7e296",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.prokidney.com/node/7246/pdf",
+      "bytes": 162281,
+      "sha256": "08a84435136411c1d01369a63ba8fe1cba0199503e561a5ba2d986085dce90a4",
+      "exactTopNcts": [
+        "NCT05099770"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1377121/000110465925041224/tm254470d2_ars.pdf",
+      "title": "Untitled-8.indd",
+      "candidateTopNcts": [
+        "NCT06033586"
+      ],
+      "retrievedAt": "2026-11-07T00:34:25.561480+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "a2e48455a3a90f723727bfc00a85cb9bdf58f73810aa2632e77780cefc71a8e8",
+      "httpStatus": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1377121/000110465925041224/tm254470d2_ars.pdf",
+      "bytes": 14708842,
+      "sha256": "e63507f5ceeb8ecdda1c60f598f73f0149894cea595ec5932c7d09e36f7fbf8e",
+      "exactTopNcts": [
+        "NCT06033586"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.sec.gov/Archives/edgar/data/1377121/000155837025001317/ptgx-20241231x10k.htm",
+      "title": "PROTAGONIST THERAPEUTICS,\u00a0INC._December 31, 2024",
+      "candidateTopNcts": [
+        "NCT06033586"
+      ],
+      "retrievedAt": "2026-11-07T00:34:25.632995+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "5f009fc0ec6a400ed151515497249efa95030cf44b1d4ffe5c05b9ba09b88680",
+      "httpStatus": 200,
+      "finalUrl": "https://www.sec.gov/Archives/edgar/data/1377121/000155837025001317/ptgx-20241231x10k.htm",
+      "bytes": 2711659,
+      "sha256": "f0718e326b9c0ce373e807833caa0cc8b66d5ae12e8532a06fa0113e9ce9eeca",
+      "exactTopNcts": [
+        "NCT06033586"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.ultragenyx.com/node/18341/pdf",
+      "title": "Ultragenyx Announces Positive Longer-Term Data Demonstrating Treatment with UX111 Gene Therapy Results in Sustained, Significant Reductions in CSF-HS and Continued Meaningful Improvements in Clinical Function Across Multiple Developmental Domains in Children with Sanfilippo Syndrome (MPS IIIA)",
+      "candidateTopNcts": [
+        "NCT02716246"
+      ],
+      "retrievedAt": "2026-11-07T00:34:25.731453+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "5e0543ab371884345a54cb583a8854a25eeddfbc60a1836cde52eb6e9cf88b1d",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ultragenyx.com/node/18341/pdf",
+      "bytes": 276776,
+      "sha256": "62a18c8ad8120bdde37b52e2464d9f1900b597e48f893f68da4922b48d543111",
+      "exactTopNcts": [
+        "NCT02716246",
+        "NCT04360265"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.ultragenyx.com/news-releases/news-release-details/ultragenyx-announces-positive-longer-term-data-demonstrating",
+      "title": "Ultragenyx Announces Positive Longer-Term Data Demonstrating Treatment with UX111 Gene Therapy Results in Sustained, Significant Reductions in CSF-HS and Continued Meaningful Improvements in Clinical Function Across Multiple Developmental Domains in Children with Sanfilippo Syndrome (MPS IIIA)\u2014Ultragenyx Pharmaceutical Inc.",
+      "candidateTopNcts": [
+        "NCT04360265"
+      ],
+      "retrievedAt": "2026-11-07T00:34:25.942460+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "c48e75024b485e0ec393d00c621f107362b7e62a9c4257c48ee157b4ba56f629",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ultragenyx.com/news-releases/news-release-details/ultragenyx-announces-positive-longer-term-data-demonstrating",
+      "bytes": 96695,
+      "sha256": "8efc82f42d471de6ce05bf4f09540d1824bfb0da2841afb574becd49c5fd8e15",
+      "exactTopNcts": [
+        "NCT02716246",
+        "NCT04360265"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.ultragenyx.com/static-files/0d748746-edb7-43b3-8d7a-3e18f2ce3ee6",
+      "title": "UNITED STATES",
+      "candidateTopNcts": [
+        "NCT05125809"
+      ],
+      "retrievedAt": "2026-11-07T00:34:26.007203+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "a0132b29b330e4908da8ff736f10c17bf1e6c4b81c134daf834df828bc6dc8f8",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.ultragenyx.com/static-files/0d748746-edb7-43b3-8d7a-3e18f2ce3ee6",
+      "bytes": 100259,
+      "sha256": "f984efc43754d808ffe89c8d7a275f776c0b08b304b5c89ef81e5c632a88401a",
+      "exactTopNcts": [
+        "NCT05125809"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.solidbio.com/news-releases/news-release-details/solid-biosciences-reports-third-quarter-2026-financial-results",
+      "title": "Solid Biosciences Reports Third Quarter 2026 Financial Results and Provides Business Updates \u2022 Solid Biosciences Inc.",
+      "candidateTopNcts": [
+        "NCT07160634"
+      ],
+      "retrievedAt": "2026-11-07T00:34:26.148807+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "0c5576756625620cb6301cc0af748f56d269df9f1bd1758bd8f538ac6adc194e",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.solidbio.com/news-releases/news-release-details/solid-biosciences-reports-third-quarter-2026-financial-results",
+      "bytes": 113393,
+      "sha256": "78ef50bf9d203aee258de6bca1026858e4a36aeaa6e9db0250ff5171689f00e3",
+      "exactTopNcts": [
+        "NCT07160634"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.globenewswire.com/news-release/2026/10/09/3377993/0/en/sagimet-to-present-positive-full-52-week-results-from-license-partner-ascletis-phase-3-open-label-extension-clinical-trial-of-denifanstat-in-acne-and-mechanistic-data-at-the-2026-f.html",
+      "title": "Sagimet To Present Positive Full 52-Week Results from",
+      "candidateTopNcts": [
+        "NCT07863193"
+      ],
+      "retrievedAt": "2026-11-07T00:34:26.282042+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "1cf3ea0c23860fb8cea0a006adafd4bd8447db5328529dc64f3789baaa69bc37",
+      "httpStatus": 200,
+      "finalUrl": "https://www.globenewswire.com/news-release/2026/10/09/3377993/0/en/sagimet-to-present-positive-full-52-week-results-from-license-partner-ascletis-phase-3-open-label-extension-clinical-trial-of-denifanstat-in-acne-and-mechanistic-data-at-the-2026-f.html",
+      "bytes": 88677,
+      "sha256": "1c6ad08b974cfc0bed176e27266a5d69590ef3032b4099811232a7b110b02a62",
+      "exactTopNcts": [
+        "NCT07863193"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://solidbio.gcs-web.com/news-releases/news-release-details/solid-biosciences-reports-third-quarter-2026-financial-results",
+      "title": "Solid Biosciences Reports Third Quarter 2026 Financial Results and Provides Business Updates \u2022 Solid Biosciences Inc.",
+      "candidateTopNcts": [
+        "NCT07160634"
+      ],
+      "retrievedAt": "2026-11-07T00:34:26.470975+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "afe726726416828747eed114302674579a29a6d39e39a6688045a58355773923",
+      "httpStatus": 200,
+      "finalUrl": "https://solidbio.gcs-web.com/news-releases/news-release-details/solid-biosciences-reports-third-quarter-2026-financial-results",
+      "bytes": 113385,
+      "sha256": "d478fe300518015332675dc85cf9d4c963dacdabda5a1a2f1b8cf5323ff0febd",
+      "exactTopNcts": [
+        "NCT07160634"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.marketscreener.com/news/sagimet-biosciences-inc-doses-first-patient-in-aurora-phase-3-u-s-clinical-trial-of-denifanstat-fo-ce785cded88cf622",
+      "title": "Sagimet Biosciences Inc. Doses First Patient In AURORA Phase 3 U.S. Clinical Trial Of Denifanstat For Moderate To Severe Acne | MarketScreener",
+      "candidateTopNcts": [
+        "NCT07863193"
+      ],
+      "retrievedAt": "2026-11-07T00:34:26.584287+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "93960ba0e93e63cb41b021526f2088c838dd3bf2545fcdf0cb54d7aa63ff0565",
+      "httpStatus": 200,
+      "finalUrl": "https://www.marketscreener.com/news/sagimet-biosciences-inc-doses-first-patient-in-aurora-phase-3-u-s-clinical-trial-of-denifanstat-fo-ce785cded88cf622",
+      "bytes": 274529,
+      "sha256": "e642f032f618fa200a1da47d2c09f17f6e075513b6324c578b45c710f04668ea",
+      "exactTopNcts": [
+        "NCT07863193"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.biopharmawatch.com/news/SGMT/sagimet-biosciences-aurora-phase-3-trial-denifanstat-acne",
+      "title": "Sagimet Advances Denifanstat in Phase 3 Acne Trial - SGMT",
+      "candidateTopNcts": [
+        "NCT07863193"
+      ],
+      "retrievedAt": "2026-11-07T00:34:26.671942+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "f05fa3d0d0daab16bf23f8e4e7b6c5832b954bec6b3f1d885c455f3fcad1a018",
+      "httpStatus": 200,
+      "finalUrl": "https://www.biopharmawatch.com/news/SGMT/sagimet-biosciences-aurora-phase-3-trial-denifanstat-acne",
+      "bytes": 234751,
+      "sha256": "795d4e9242c6af14c53d571e496703eb31d275eee5aa4911c6c10af86b8cf524",
+      "exactTopNcts": [
+        "NCT07863193"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.stocktitan.net/news/SGMT/sagimet-biosciences-announces-first-patient-dosed-in-aurora-phase-3-6e0gb1883138.html",
+      "title": "Sagimet doses first patient in Phase 3 acne trial | SGMT Stock News",
+      "candidateTopNcts": [
+        "NCT07863193"
+      ],
+      "retrievedAt": "2026-11-07T00:34:26.721027+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "d657a59a9b386875b23c2282adc835a874d82b25f31d0138d44471ff6e56780e",
+      "httpStatus": 200,
+      "finalUrl": "https://www.stocktitan.net/news/SGMT/sagimet-biosciences-announces-first-patient-dosed-in-aurora-phase-3-6e0gb1883138.html",
+      "bytes": 156181,
+      "sha256": "051cfaa64cde8e5e7fe8c1f7f5ad631ac827904f636d1f26e27b2a68d66f20d9",
+      "exactTopNcts": [
+        "NCT07863193"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.sellaslifesciences.com/news/News-Details/2025/SELLAS-Life-Sciences-Announces-Independent-Data-Monitoring-Committee-Periodic-Review-and-Positive-Recommendation-to-Continue-Pivotal-Phase-3-REGAL-Trial-of-GPS-in-AML-Without-Modification/default.aspx",
+      "title": "SELLAS Life Sciences Announces Independent Data Monitoring Committee Periodic Review and Positive Recommendation to Continue Pivotal Phase 3 REGAL Trial of GPS in AML Without Modification, Sellas Life Sciences",
+      "candidateTopNcts": [
+        "NCT04229979"
+      ],
+      "retrievedAt": "2026-11-07T00:34:26.839083+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "8610b29ed6e720372ad1d825b51715f3205619ed413a3cec1531d3bd7ae783c6",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.sellaslifesciences.com/news/News-Details/2025/SELLAS-Life-Sciences-Announces-Independent-Data-Monitoring-Committee-Periodic-Review-and-Positive-Recommendation-to-Continue-Pivotal-Phase-3-REGAL-Trial-of-GPS-in-AML-Without-Modification/default.aspx",
+      "bytes": 82799,
+      "sha256": "19fb20252402f067fa9c5bb4832bae56f3f8d2143417a07d21f0151479c0a944",
+      "exactTopNcts": [
+        "NCT04229979"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://stoketherapeutics.gcs-web.com/news-releases/news-release-details/stoke-therapeutics-announces-third-quarter-2026-financial",
+      "title": "Stoke Therapeutics Announces Third Quarter 2026 Financial Results and Provides Business Updates - Stoke Therapeutics",
+      "candidateTopNcts": [
+        "NCT06872125"
+      ],
+      "retrievedAt": "2026-11-07T00:34:27.149587+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "cff988c6721a8cdb12ff6ab24f4d82e7e32842d74898af4ca2ebd84de45a3236",
+      "httpStatus": 200,
+      "finalUrl": "https://stoketherapeutics.gcs-web.com/news-releases/news-release-details/stoke-therapeutics-announces-third-quarter-2026-financial",
+      "bytes": 164227,
+      "sha256": "db5689d66222f770c8c75844195da6e4948cd3ba1d879748d66b1c8d13538c43",
+      "exactTopNcts": [
+        "NCT06872125"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investorrelations.sarepta.com/static-files/7969484a-52c5-4c8b-834a-8cab736bfa1a",
+      "title": "Muscle MRI Outcomes in Patients with Duchenne",
+      "candidateTopNcts": [
+        "NCT05967351"
+      ],
+      "retrievedAt": "2026-11-07T00:34:27.186975+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "d81708f28e266552a99808bcc269f91a5a57c65146a969ab7f0de2899e1755d2",
+      "httpStatus": 200,
+      "finalUrl": "https://investorrelations.sarepta.com/static-files/7969484a-52c5-4c8b-834a-8cab736bfa1a",
+      "bytes": 2832521,
+      "sha256": "04d7dee42832fb36c892216cb06621b8bb897c11255cb0a07ae9fa5739be9a83",
+      "exactTopNcts": [
+        "NCT05967351"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investor.stoketherapeutics.com/news-releases/news-release-details/stoke-therapeutics-announces-third-quarter-2026-financial",
+      "title": "Stoke Therapeutics Announces Third Quarter 2026 Financial Results and Provides Business Updates - Stoke Therapeutics",
+      "candidateTopNcts": [
+        "NCT06872125"
+      ],
+      "retrievedAt": "2026-11-07T00:34:27.212841+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "89e5b6b084865c4867a3635cd281c9335e124684dada017b9c4e327da3f3242d",
+      "httpStatus": 200,
+      "finalUrl": "https://investor.stoketherapeutics.com/news-releases/news-release-details/stoke-therapeutics-announces-third-quarter-2026-financial",
+      "bytes": 163215,
+      "sha256": "751b638e4fca31f256e6149a7f838637b990ea4473a69b8622349900c49ba849",
+      "exactTopNcts": [
+        "NCT06872125"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investor.stoketherapeutics.com/static-files/c8aef00c-5121-483d-a10d-f169663c24e7",
+      "title": "Form 8-K for Stoke Therapeutics INC filed 12/05/2025",
+      "candidateTopNcts": [
+        "NCT06872125"
+      ],
+      "retrievedAt": "2026-11-07T00:34:27.338243+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "36a16506bd7afe1f3d474e5d76798f8ddde0af13aa251ad81691058e04a2d533",
+      "httpStatus": 200,
+      "finalUrl": "https://investor.stoketherapeutics.com/static-files/c8aef00c-5121-483d-a10d-f169663c24e7",
+      "bytes": 187562,
+      "sha256": "e7ef24284b49cc9b7fd89741bc11a2a271b9479af6a297785ea0d4f56efc5c3b",
+      "exactTopNcts": [
+        "NCT06872125"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investor.stoketherapeutics.com/news-releases/news-release-details/stoke-therapeutics-announces-first-quarter-2026-financial",
+      "title": "Stoke Therapeutics Announces First Quarter 2026 Financial Results and Provides Business Updates - Stoke Therapeutics",
+      "candidateTopNcts": [
+        "NCT06872125"
+      ],
+      "retrievedAt": "2026-11-07T00:34:27.680226+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "829aba9f69b42683d24d3c4418868c48967e83ac1f8e8168a3db26d5d2ccf6b7",
+      "httpStatus": 200,
+      "finalUrl": "https://investor.stoketherapeutics.com/news-releases/news-release-details/stoke-therapeutics-announces-first-quarter-2026-financial",
+      "bytes": 132860,
+      "sha256": "34809735a62ef7c2ef4effd37dacf09e86be459ce6e693a74c6c53d1c68d6c2d",
+      "exactTopNcts": [
+        "NCT06872125"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investor.stoketherapeutics.com/node/11156/ixbrl-viewer",
+      "title": "0001193125-26-289409 | 8-K | iXBRL Viewer | Stoke Therapeutics INC",
+      "candidateTopNcts": [
+        "NCT06872125"
+      ],
+      "retrievedAt": "2026-11-07T00:34:27.911345+00:00",
+      "state": "RETRIEVED_NO_EXACT_NCT_REQUIRES_CROSSWALK",
+      "cacheKey": "6df7cc7961bd26442f44fad2ddd737016fb73cac2e92e71dbf9e4e3e8213a9f0",
+      "httpStatus": 200,
+      "finalUrl": "https://investor.stoketherapeutics.com/node/11156/ixbrl-viewer",
+      "bytes": 62997,
+      "sha256": "551a446be300aec407ad9773fdd398b817682d1fdd8b65d6015332113107074b",
+      "exactTopNcts": [],
+      "sourceDate": null
+    },
+    {
+      "url": "https://vaccinedatanavigator.org/pipeline/ctgov-experimental-vaccine-sinovac-biotech-co-ltd.html",
+      "title": "experimental vaccine (Meningococcal disease Vaccine) \u2014 Pipeline & Regulatory Status",
+      "candidateTopNcts": [
+        "NCT07505810"
+      ],
+      "retrievedAt": "2026-11-07T00:34:27.979256+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "be303f12ccd7ce0d30b654f389391cdd4061b8d5338787aee7fbb4a9347f5ec8",
+      "httpStatus": 200,
+      "finalUrl": "https://vaccinedatanavigator.org/pipeline/ctgov-experimental-vaccine-sinovac-biotech-co-ltd.html",
+      "bytes": 39821,
+      "sha256": "e79c87dcfb57adada7a8a23a29031504f7309b0c0f1bccdcc9ef0a7167a1460a",
+      "exactTopNcts": [
+        "NCT07505810",
+        "NCT07505823",
+        "NCT07505836",
+        "NCT07505888"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://ir.tayshagtx.com/static-files/094002d1-c9db-40f7-9727-302c852ea4e4",
+      "title": "Corporate Presentation",
+      "candidateTopNcts": [
+        "NCT05606614"
+      ],
+      "retrievedAt": "2026-11-07T00:34:28.024689+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "644056a15badac22da50f1bd14fee290c8a573b56c37ba10a18fee77e2d92244",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://ir.tayshagtx.com/static-files/fba25829-34f6-4b8d-9e20-43b78406e16c",
+      "title": "PowerPoint Presentation",
+      "candidateTopNcts": [
+        "NCT05606614"
+      ],
+      "retrievedAt": "2026-11-07T00:34:28.063923+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "25ce12b1af8daa1d91e8ce6ab67926dd5d911f95cea24a7fdd6bb8dd7b245a5b",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://ir.tayshagtx.com/static-files/c6b3c030-299a-432b-b854-d9dce38f3ade",
+      "title": "Form 8-K for Taysha Gene Therapies INC filed 06/18/2024",
+      "candidateTopNcts": [
+        "NCT05606614"
+      ],
+      "retrievedAt": "2026-11-07T00:34:28.097126+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "67d530135ad6d391d80ddc647422e96cab0286301fcbf24e51876c9145a337ce",
+      "httpStatus": 200,
+      "finalUrl": "https://ir.tayshagtx.com/static-files/c6b3c030-299a-432b-b854-d9dce38f3ade",
+      "bytes": 3298147,
+      "sha256": "3e0f806484d198824e11cd928cb11a96f15b35b2d1a8138a2c65559da0722d06",
+      "exactTopNcts": [
+        "NCT05606614"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://s205.q4cdn.com/270034868/files/doc_presentation/2026/TVTX-Corporate-Overview-January-2026_1-12-26_FINAL.pdf",
+      "title": "Travere Therapeutics Corporate Update - August 2024",
+      "candidateTopNcts": [
+        "NCT06247085"
+      ],
+      "retrievedAt": "2026-11-07T00:34:28.332867+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "59e1021ddca7c81cd6a7baeb1a81361bfa0470ddadd8f770f30deb7d68ab3ed3",
+      "httpStatus": 200,
+      "finalUrl": "https://s205.q4cdn.com/270034868/files/doc_presentation/2026/TVTX-Corporate-Overview-January-2026_1-12-26_FINAL.pdf",
+      "bytes": 3228884,
+      "sha256": "ee32257c5dc79f2b5f39e84bd106f775c7920cb5641e5495e80676807491018a",
+      "exactTopNcts": [
+        "NCT06247085"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://s205.q4cdn.com/270034868/files/doc_earnings/2026/q1/presentation/Corporate-Overview-Q1-2026.pdf",
+      "title": "Travere Therapeutics",
+      "candidateTopNcts": [
+        "NCT06247085"
+      ],
+      "retrievedAt": "2026-11-07T00:34:28.512218+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "6d6f4efe6ce4551507c1a9eedb07787a3fdc2b0a92e2958fb8687eebccd1e3be",
+      "httpStatus": 200,
+      "finalUrl": "https://s205.q4cdn.com/270034868/files/doc_earnings/2026/q1/presentation/Corporate-Overview-Q1-2026.pdf",
+      "bytes": 3461828,
+      "sha256": "5b6ce5aa1fbaf374db6d75b9b4d78d261cdb557ec258056864df554db742da6f",
+      "exactTopNcts": [
+        "NCT06247085"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://s205.q4cdn.com/270034868/files/doc_presentation/2025/TVTX-Corporate-Overview-May-2025_FINAL_5-1-25.pdf",
+      "title": "Travere Therapeutics Corporate Update - August 2024",
+      "candidateTopNcts": [
+        "NCT06247085"
+      ],
+      "retrievedAt": "2026-11-07T00:34:28.830446+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "d0b81daed85c7071e3d4575547d2b338f70f49f232f782dfcde98bc665cc268a",
+      "httpStatus": 200,
+      "finalUrl": "https://s205.q4cdn.com/270034868/files/doc_presentation/2025/TVTX-Corporate-Overview-May-2025_FINAL_5-1-25.pdf",
+      "bytes": 2506576,
+      "sha256": "8861537a899181c752af6b17a719d042e05bf6a8dc51c1be93df1e5a2b505268",
+      "exactTopNcts": [
+        "NCT06247085"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://s205.q4cdn.com/270034868/files/doc_presentation/2025/09/16/TVTX-Corporate-Overview-September-2025_9-16-25.pdf",
+      "title": "Travere Therapeutics Corporate Update - August 2024",
+      "candidateTopNcts": [
+        "NCT06247085"
+      ],
+      "retrievedAt": "2026-11-07T00:34:28.977850+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "9064799b9808773da6bbde3e83b10e577b5c6e8ea40dcb38a4577f01febfd0b8",
+      "httpStatus": 200,
+      "finalUrl": "https://s205.q4cdn.com/270034868/files/doc_presentation/2025/09/16/TVTX-Corporate-Overview-September-2025_9-16-25.pdf",
+      "bytes": 2662186,
+      "sha256": "01504852d5037efd804fd300914ef67e633bf5915fad50fd2cabf487901e3be9",
+      "exactTopNcts": [
+        "NCT06247085"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://s203.q4cdn.com/628578897/files/doc_presentations/2026/Feb/23/Vir-Bio-Corporate-Overview-Feb-2026.pdf",
+      "title": "Corporate Overview Presentation",
+      "candidateTopNcts": [
+        "NCT06903338",
+        "NCT07128550"
+      ],
+      "retrievedAt": "2026-11-07T00:34:28.999571+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "ef21a5588b2ca8f979df51c450ff42e341fb92e158fbca0ffd3002c744595e13",
+      "httpStatus": 200,
+      "finalUrl": "https://s203.q4cdn.com/628578897/files/doc_presentations/2026/Feb/23/Vir-Bio-Corporate-Overview-Feb-2026.pdf",
+      "bytes": 5992864,
+      "sha256": "4827bdc6fda966bc6e16b6e3ce2dff94b47f4fd5a1ed3bcd0b55a463c7851da9",
+      "exactTopNcts": [
+        "NCT06903338",
+        "NCT07128550"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://s203.q4cdn.com/628578897/files/doc_presentations/2026/Feb/23/Vir-Bio-Corporate-Overview-Presentation-Feb-2026.pdf",
+      "title": "Corporate Overview Presentation",
+      "candidateTopNcts": [
+        "NCT06903338",
+        "NCT07128550"
+      ],
+      "retrievedAt": "2026-11-07T00:34:29.250732+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "1a9ef78010b261663443b6427c677ee08b2e8c497eeb87a34c629ac1f229c4d6",
+      "httpStatus": 200,
+      "finalUrl": "https://s203.q4cdn.com/628578897/files/doc_presentations/2026/Feb/23/Vir-Bio-Corporate-Overview-Presentation-Feb-2026.pdf",
+      "bytes": 5995503,
+      "sha256": "0547d73ab238cc8e54fa5c3ac0c11233d28be5cf034233ec725173dc457ae8b0",
+      "exactTopNcts": [
+        "NCT06903338",
+        "NCT07128550"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://s203.q4cdn.com/628578897/files/doc_financials/2025/q4/c919463b-ed55-49ff-af33-e66ee83c5d39.pdf",
+      "title": "0001628280-26-010749",
+      "candidateTopNcts": [
+        "NCT06903338"
+      ],
+      "retrievedAt": "2026-11-07T00:34:29.300826+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "41eaade9cda5990ebcd9006ff5257686dc1d6120836ffa1002ed608c297528c3",
+      "httpStatus": 200,
+      "finalUrl": "https://s203.q4cdn.com/628578897/files/doc_financials/2025/q4/c919463b-ed55-49ff-af33-e66ee83c5d39.pdf",
+      "bytes": 9473843,
+      "sha256": "e877c8f0a0c89aae76e8fad56311ddd88975ec32b36d49fc454216013b82e4a0",
+      "exactTopNcts": [
+        "NCT06903338",
+        "NCT07128550"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://s203.q4cdn.com/628578897/files/doc_financials/2026/q1/Vir-Bio-Corporate-Overview-May-2026.pdf",
+      "title": "Corporate Overview Presentation",
+      "candidateTopNcts": [
+        "NCT06903338",
+        "NCT07128550"
+      ],
+      "retrievedAt": "2026-11-07T00:34:29.475034+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "bb57a42a686fa81423ad280a773560452f60dc480808417b8e2666772061e672",
+      "httpStatus": 200,
+      "finalUrl": "https://s203.q4cdn.com/628578897/files/doc_financials/2026/q1/Vir-Bio-Corporate-Overview-May-2026.pdf",
+      "bytes": 6060971,
+      "sha256": "88fb8acceca3d2a5a81e9adf010c1bb2660c499f01827dee431d56d9f3a097f6",
+      "exactTopNcts": [
+        "NCT06903338",
+        "NCT06907290",
+        "NCT07128550"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.vir.bio/news/news-details/2026/Vir-Biotechnology-Provides-Updates-on-Chronic-Hepatitis-Delta-and-Oncology-Programs-and-Upcoming-2026-Clinical-Milestones/default.aspx",
+      "title": "Vir Biotechnology, Inc. - Vir Biotechnology Provides Updates on Chronic Hepatitis Delta and Oncology Programs and Upcoming 2026 Clinical Milestones",
+      "candidateTopNcts": [
+        "NCT07128550"
+      ],
+      "retrievedAt": "2026-11-07T00:34:29.618481+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "6d2e3a84fa8a35735235fa63545aadc86cc4ed1a36c5e8a50314cb562e459e08",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.vir.bio/news/news-details/2026/Vir-Biotechnology-Provides-Updates-on-Chronic-Hepatitis-Delta-and-Oncology-Programs-and-Upcoming-2026-Clinical-Milestones/default.aspx",
+      "bytes": 87841,
+      "sha256": "ff5ecd5f5c017568228c8d3f7bb22daf7dd7722e90004f3ca66b2bdb46c8cd8b",
+      "exactTopNcts": [
+        "NCT06903338",
+        "NCT07128550"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://www.bariatricpal.com/news/medications/viking-posts-two-phase-three-oral-vk2735-obesity-trials",
+      "title": "Viking posts two Phase 3 trials of oral VK2735 for weight management - Weight-loss medications - BariatricPal",
+      "candidateTopNcts": [
+        "NCT07868835"
+      ],
+      "retrievedAt": "2026-11-07T00:34:30.112987+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "b936cb1248228544abc01169af2388b8084bc29dce3f2c94026f966ec8ae7b6e",
+      "httpStatus": 200,
+      "finalUrl": "https://www.bariatricpal.com/news/medications/viking-posts-two-phase-three-oral-vk2735-obesity-trials",
+      "bytes": 329897,
+      "sha256": "8174661bc54f881ca65c9fb37c7f942aa3333378286089f8d1f52eefedbfeab0",
+      "exactTopNcts": [
+        "NCT07868835",
+        "NCT07868939"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investor.xenon-pharma.com/static-files/ae18f735-b1c1-44a8-a941-a69ea153d0fa",
+      "title": "Investor Presentation",
+      "candidateTopNcts": [
+        "NCT07172516",
+        "NCT07217860"
+      ],
+      "retrievedAt": "2026-11-07T00:34:30.575449+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "4b0f285fd7acfcef95506cdf07d0db97e343220d51f6d43728e123c89848cfee",
+      "httpStatus": 200,
+      "finalUrl": "https://investor.xenon-pharma.com/static-files/ae18f735-b1c1-44a8-a941-a69ea153d0fa",
+      "bytes": 2016014,
+      "sha256": "6c8caef370d0f52816fdce2dcfd06f93929f814586973d93da7635ab8db632c7",
+      "exactTopNcts": [
+        "NCT05667142",
+        "NCT05716100",
+        "NCT05718817",
+        "NCT06775379",
+        "NCT06922110",
+        "NCT07076407",
+        "NCT07172516",
+        "NCT07217860"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investor.verastem.com/static-files/87694ada-35bf-45e6-8ea1-518fd739b820",
+      "title": "Form 8-K for Verastem INC filed 03/04/2026",
+      "candidateTopNcts": [
+        "NCT06072781"
+      ],
+      "retrievedAt": "2026-11-07T00:34:30.701503+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "aca8c1cf9a22cad30623bcbb445a250a6e46197465e10741c4750ac53e411ab1",
+      "httpStatus": 200,
+      "finalUrl": "https://investor.verastem.com/static-files/87694ada-35bf-45e6-8ea1-518fd739b820",
+      "bytes": 5095480,
+      "sha256": "5fab155e204fb4303960722f7babf14153ada26c7873eea1b9f0e4b6c890e047",
+      "exactTopNcts": [
+        "NCT06072781"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investor.xenon-pharma.com/static-files/73c89a7e-4ae9-4006-9d68-e0a549845ced",
+      "title": "Azetukalner, a Novel, Potent Kv7 Channel Opener: Updates From the Ongoing Clinical Development Program in Major Depressive Disorder",
+      "candidateTopNcts": [
+        "NCT06775379",
+        "NCT07076407"
+      ],
+      "retrievedAt": "2026-11-07T00:34:30.874220+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "1b5cb3ec4cc116f2872f1ba953c4658d0a8df5340890ad4112547dd26950f077",
+      "httpStatus": 200,
+      "finalUrl": "https://investor.xenon-pharma.com/static-files/73c89a7e-4ae9-4006-9d68-e0a549845ced",
+      "bytes": 562992,
+      "sha256": "c17461bbb436bb7645f7c61cfb2078a462e9639fec9479c74cdc91200fcb5173",
+      "exactTopNcts": [
+        "NCT06775379",
+        "NCT07076407"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.x4pharma.com/news-releases/news-release-details/x4-pharmaceuticals-reports-fourth-quarter-and-full-year-2024/",
+      "title": "X4 Pharmaceuticals Reports Fourth Quarter and Full Year 2024 Financial Results and Provides Corporate Update | X4 Pharmaceuticals, Inc.",
+      "candidateTopNcts": [
+        "NCT06056297"
+      ],
+      "retrievedAt": "2026-11-07T00:34:31.098996+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "8c7d198a64a1e57634e8c5d707d123b4e5db0e8bd527743c3467486d918d1fe4",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.x4pharma.com/news-releases/news-release-details/x4-pharmaceuticals-reports-fourth-quarter-and-full-year-2024/",
+      "bytes": 108387,
+      "sha256": "210d8ddeadb1768729abd1fe7ba64542541b55680e1ad5f99c26c98710f3673e",
+      "exactTopNcts": [
+        "NCT06056297"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.x4pharma.com/static-files/aa023c5f-03ac-4ef3-add9-6b4cb85179be",
+      "title": "Mavorixafor, an Oral CXCR4 Antagonist, Allows for Granulocyte-Colony Stimulating Factor",
+      "candidateTopNcts": [
+        "NCT06056297"
+      ],
+      "retrievedAt": "2026-11-07T00:34:31.165690+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "2ace9934d5a259b5df42c0f4c5ef5cbec3027c67df575f0f23550451830027ab",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.x4pharma.com/static-files/aa023c5f-03ac-4ef3-add9-6b4cb85179be",
+      "bytes": 843494,
+      "sha256": "10fd27410748c055deef8b1f696d8b157c8c8c8556453bb8dd592e2864e968a8",
+      "exactTopNcts": [
+        "NCT06056297"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.x4pharma.com/news-releases/news-release-details/x4-pharmaceuticals-announces-positive-results-completed-six",
+      "title": "X4 Pharmaceuticals Announces Positive Results from Completed Six-Month Phase 2 Trial of Mavorixafor in Chronic Neutropenia (CN) | X4 Pharmaceuticals, Inc.",
+      "candidateTopNcts": [
+        "NCT06056297"
+      ],
+      "retrievedAt": "2026-11-07T00:34:31.217721+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "9f30e780bffcefaa356e7fa51e1cb729c5d909032479b19f18cf377c17de5a5c",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.x4pharma.com/news-releases/news-release-details/x4-pharmaceuticals-announces-positive-results-completed-six",
+      "bytes": 43118,
+      "sha256": "7cb8ce9d0663c77a4bc79a48fc6e4d293c1d723fa23cd7a8fd8d80453524603e",
+      "exactTopNcts": [
+        "NCT06056297"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.x4pharma.com/static-files/cf5b6482-5ac7-4df2-bf32-a65ef38b3ffd",
+      "title": "Presentation Title 1",
+      "candidateTopNcts": [
+        "NCT06056297"
+      ],
+      "retrievedAt": "2026-11-07T00:34:31.554998+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "1d1372f48f9c63b845c7b2892baf96a9a894dae201c602745642a5c4f5046da1",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.x4pharma.com/static-files/cf5b6482-5ac7-4df2-bf32-a65ef38b3ffd",
+      "bytes": 1179607,
+      "sha256": "3538587b5f255cc0e72da0c35291f134cf28de5766ac9bcabf503fce03b9a025",
+      "exactTopNcts": [
+        "NCT06056297"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.x4pharma.com/node/11626/pdf",
+      "title": "X4 Pharmaceuticals Reports Fourth Quarter and Full Year 2024 Financial Results and Provides Corporate Update",
+      "candidateTopNcts": [
+        "NCT06056297"
+      ],
+      "retrievedAt": "2026-11-07T00:34:31.564727+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "24a94a323b24a07712b7fecff99948494f6a29b5b0c2d764e150495eea0e9bce",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.x4pharma.com/node/11626/pdf",
+      "bytes": 66838,
+      "sha256": "a9e3d1237f89da14939e90262cec6455bfaeb89dd0b74dd37710abcd35be6db5",
+      "exactTopNcts": [
+        "NCT06056297"
+      ],
+      "sourceDate": null
+    },
+    {
+      "url": "https://investors.x4pharma.com/static-files/ed2f4b6e-8181-4472-a7b1-d1eb3a6a2896",
+      "title": "November 2024",
+      "candidateTopNcts": [
+        "NCT06056297"
+      ],
+      "retrievedAt": "2026-11-07T00:34:31.692843+00:00",
+      "state": "SOURCE_BLOCKED",
+      "cacheKey": "7f1f066755fcf369a605a5d957080661f92c888c0dc40248159c7342a43b2112",
+      "blocker": "HTTP Error 404: Not Found"
+    },
+    {
+      "url": "https://investors.x4pharma.com/static-files/83f8e347-7078-4eb1-a4f0-5f2930cca960",
+      "title": "Evaluating the Safety and Efficacy of Mavorixafor, an Oral CXCR4 Antagonist, in Participants with Primary Chronic",
+      "candidateTopNcts": [
+        "NCT06056297"
+      ],
+      "retrievedAt": "2026-11-07T00:34:31.725348+00:00",
+      "state": "RETRIEVED_TEXT_EXACT_NCT_PRESENT_NOT_AUTOMATIC_FACT",
+      "cacheKey": "8cbfb65c412b556e272a6fb6be8e14704e4c6b83536e0f76853efadf571a342e",
+      "httpStatus": 200,
+      "finalUrl": "https://investors.x4pharma.com/static-files/83f8e347-7078-4eb1-a4f0-5f2930cca960",
+      "bytes": 747106,
+      "sha256": "d52645f50de15af49f01ac91ebf6cfbd56a89505c95ed835fef70c040f6e2226",
+      "exactTopNcts": [
+        "NCT06056297"
+      ],
+      "sourceDate": null
+    }
+  ]
+}

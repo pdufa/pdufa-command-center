@@ -1,0 +1,1383 @@
+{
+  "schemaVersion": 1,
+  "scope": "TOP_ONLY_PREVIOUSLY_RETRIEVED_OFFICIAL_PUBMED_METADATA_NOT_AUTOMATIC_SCORES",
+  "retrievedAt": "2026-11-06T22:18:28.073244+00:00",
+  "records": [
+    {
+      "pmid": "27317986",
+      "title": "Diagnosis and Treatment of Non-Muscle Invasive Bladder Cancer: AUA/SUO Guideline.",
+      "abstract": "Although associated with an overall favorable survival rate, the heterogeneity of non-muscle invasive bladder cancer (NMIBC) affects patients' rates of recurrence and progression. Risk stratification should influence evaluation, treatment and surveillance. This guideline attempts to provide a clinical framework for the management of NMIBC. A systematic review utilized research from the Agency for Healthcare Research and Quality (AHRQ) and additional supplementation by\u00a0the authors and consultant methodologists. Evidence-based statements were\u00a0based on body of evidence strength Grade A, B, or C and were designated as\u00a0Strong, Moderate, and Conditional Recommendations with additional statements presented in the form of Clinical Principles or Expert Opinions.(1) RESULTS: A risk-stratified approach categorizes patients into broad groups of low-, intermediate-, and high-risk. Importantly, the evaluation and treatment algorithm takes into account tumor characteristics and uniquely considers a patient's response to therapy. The 38 statements vary in level of evidence, but none include Grade A evidence, and many were Grade C. The intensity and scope of care for NMIBC should focus on patient, disease, and treatment response characteristics. This guideline attempts to improve a clinician's ability to evaluate and treat each patient, but higher quality\u00a0evidence in future trials will be essential to improve level of care for these\u00a0patients.",
+      "publicationDate": "2016-06-16",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27317986/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [],
+      "savedIndexNctLeads": [
+        "NCT06111235"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Systematic Review"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT06111235"
+      ]
+    },
+    {
+      "pmid": "27331076",
+      "title": "Functional correction of neurological and somatic disorders at later stages of disease in MPS IIIA mice by systemic scAAV9-hSGSH gene delivery.",
+      "abstract": "The reversibility of neuropathic lysosomal storage diseases, including MPS IIIA, is a major goal in therapeutic development, due to typically late diagnoses and a large population of untreated patients. We used self-complementary adeno-associated virus (scAAV) serotype 9 vector expressing human N-sulfoglucosamine sulfohydrolase (SGSH) to test the efficacy of treatment at later stages of the disease. We treated MPS IIIA mice at 1, 2, 3, 6, and 9 months of age with an intravenous injection of scAAV9-U1a-hSGSH vector, leading to restoration of SGSH activity and reduction of glycosaminoglycans (GAG) throughout the central nervous system (CNS) and somatic tissues at a dose of 5E12 vg/kg. Treatment up to 3 months age improved learning ability in the Morris water maze at 7.5 months, and lifespan was normalized. In mice treated at 6 months age, behavioral performance was impaired at 7.5 months, but did not decline further when retested at 12 months, and lifespan was increased, but not normalized. Treatment at 9 months did not increase life-span, though the GAG storage pathology in the CNS was improved. The study suggests that there is potential for gene therapy intervention in MPS IIIA at intermediate stages of the disease, and extends the clinical relevance of our systemic scAAV9-hSGSH gene delivery approach.",
+      "publicationDate": "2016-06-08",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/27331076/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [],
+      "savedIndexNctLeads": [
+        "NCT02716246"
+      ],
+      "publicationTypes": [
+        "Journal Article"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT02716246"
+      ]
+    },
+    {
+      "pmid": "29064732",
+      "title": "Differential Prevalence of Antibodies Against Adeno-Associated Virus in Healthy Children and Patients with Mucopolysaccharidosis III: Perspective for AAV-Mediated Gene Therapy.",
+      "abstract": "Recombinant adeno-associated virus (AAV) vectors are promising gene therapy tools. However, pre-existing antibodies (Abs) to many useful AAV serotypes pose a critical challenge for the translation of gene therapies. As part of AAV gene therapy program for treating mucopolysaccharidosis (MPS) III patients, the seroprevalence profiles of AAV1-9 and rh74 were investigated in MPS IIIA/IIIB patients and in healthy children. Using enzyme-linked immunosorbent assay for \u03b1AAV-IgG, significantly higher seroprevalence was observed for AAV1 and AAVrh74 in 2- to 7-year-old MPS III patients than in healthy controls. Seroprevalence for the majority of tested AAV serotypes appears to peak before 8 years of age in MPS III subjects, with the exception of increases in \u03b1AAV8 and \u03b1AAV9 Abs in 8- to 19-year-old MPS IIIA patients. In contrast, significant increases in seroprevalence were observed for virtually all tested AAV serotypes in 8- to 15-year-old healthy children compared to 2- to 7-year-olds. Co-prevalence and Ab level correlation results followed the previously established divergence-based clade positions of AAV1-9. Interestingly, the individuals positive for \u03b1AAVrh74-Abs showed the lowest co-prevalence with Abs for AAV1-9 (22-40%). However, all or nearly all (77-100%) of subjects who were seropositive for any of serotypes 1-9 were also positive for \u03b1AAVrh74-IgG. Notably, the majority (78%) of \u03b1AAV seropositive individuals were also Ab-positive for one to five of the tested AAV serotypes, mostly with low levels of \u03b1AAV-Abs (1:50-100), while a minority (22%) were seropositive for six or more AAV serotypes, mostly with high levels of \u03b1AAV-IgG for multiple serotypes. In general, the highest IgG levels were reactive to AAV2, AAV3, and AAVrh74. The data illustrate the complex seroprevalence profiles of AAV1-9 and rh74 in MPS patients and healthy children, indicating the potential association of AAV seroprevalence with age and disease conditions. The broad co-prevalence of Abs for different AAV serotypes reinforces the challenge of pre-existing \u03b1AAV-Abs for translating AAV gene therapy to clinical applications, regardless of the vector serotype.",
+      "publicationDate": "2017-10-24",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/29064732/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [],
+      "savedIndexNctLeads": [
+        "NCT02716246"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Research Support, N.I.H., Extramural",
+        "Research Support, Non-U.S. Gov't"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT02716246"
+      ]
+    },
+    {
+      "pmid": "30561441",
+      "title": "Sequential Intravesical Gemcitabine and Docetaxel for the Salvage Treatment of Non-Muscle Invasive Bladder Cancer.",
+      "abstract": "Bacillus Calmette-Guerin (BCG) is the most effective intravesical therapy for non-muscle invasive bladder cancer (NMIBC), but patients can fail or supply shortages can develop. For BCG failures, radical cystectomy is recommended. However, in patients who desire bladder preservation or are poor surgical candidates, alternative salvage intravesical therapies should be explored. To determine whether dual sequential intravesical gemcitabine and docetaxel is effective in treating NMIBC. We evaluated our initial experience with 45 patients treated with intravesical gemcitabine and docetaxel between June 2009 and May 2014. Patients were treated with 6 weekly instillations of gemcitabine (1 gram of gemcitabine in 50\u200aml of sterile water) followed immediately by docetaxel (37.5\u200amg of docetaxel in 50\u200amL of saline). Treatment success was defined as no bladder cancer recurrence and no cystectomy. Intention-to-treat analysis was performed using the Kaplan Meier method. Forty-five patients received treatment with a median overall follow-up of 15 months. Median follow up for treatment success was 6 months in all patients and 13 months for responders. Five patients were unable to tolerate a full induction course. Treatment success was 66% at first surveillance, 54% at 1 year, and 34% at 2 years after initiating induction. Ten patients received cystectomy (median of 5.6 months from starting induction) with no positive margins or lymph nodes on final pathology. Sequential dual intravesical gemcitabine and docetaxel can salvage some patients in a challenging NMIBC cohort.",
+      "publicationDate": "2015-04-30",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/30561441/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [],
+      "savedIndexNctLeads": [
+        "NCT07464145"
+      ],
+      "publicationTypes": [
+        "Journal Article"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT07464145"
+      ]
+    },
+    {
+      "pmid": "31048702",
+      "title": "Myasthenia gravis.",
+      "abstract": "Myasthenia gravis (MG) is an autoimmune disease caused by antibodies against the acetylcholine receptor (AChR), muscle-specific kinase (MuSK) or other AChR-related proteins in the postsynaptic muscle membrane. Localized or general muscle weakness is the predominant symptom and is induced by the antibodies. Patients are grouped according to the presence of antibodies, symptoms, age at onset and thymus pathology. Diagnosis is straightforward in most patients with typical symptoms and a positive antibody test, although a detailed clinical and neurophysiological examination is important in antibody-negative patients. MG therapy should be ambitious and aim for clinical remission or only mild symptoms with near-normal function and quality of life. Treatment should be based on MG subgroup and includes symptomatic treatment using acetylcholinesterase inhibitors, thymectomy and immunotherapy. Intravenous immunoglobulin and plasma exchange are fast-acting treatments used for disease exacerbations, and intensive care is necessary during exacerbations with respiratory failure. Comorbidity is frequent, particularly in elderly patients. Active physical training should be encouraged.",
+      "publicationDate": "2019-05-02",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/31048702/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [],
+      "savedIndexNctLeads": [
+        "NCT06193889"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Review"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT06193889"
+      ]
+    },
+    {
+      "pmid": "32884151",
+      "title": "Therapeutic benefit after intracranial gene therapy delivered during the symptomatic stage in a feline model of Sandhoff disease.",
+      "abstract": "Sandhoff disease (SD) is an autosomal recessive lysosomal storage disease caused by defects in the \u03b2-subunit of \u03b2-N-acetylhexosaminidase (Hex), the enzyme that catabolizes GM2 ganglioside. Hex deficiency causes neuronal storage of GM2 and related glycoconjugates, resulting in progressive neurodegeneration and death, typically in infancy. No effective treatment exists for human patients. Adeno-associated virus (AAV) gene therapy led to improved clinical outcome and survival of SD cats treated before the onset of disease symptoms. Most human patients are diagnosed after clinical disease onset, so it is imperative to test AAV-gene therapy in symptomatic SD cats to provide a realistic indication of therapeutic benefits that can be expected in humans. In this study, AAVrh8 vectors injected into the thalamus and deep cerebellar nuclei of symptomatic SD cats resulted in widespread central nervous system enzyme distribution, although a substantial burden of storage material remained. Cats treated in the early symptomatic phase showed delayed disease progression and a significant survival increase versus untreated cats. Treatment was less effective when administered later in the disease course, although therapeutic benefit was still possible. Results are encouraging for the treatment of human patients and provide support for the development AAV-gene therapy for human SD.",
+      "publicationDate": "2020-09-03",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/32884151/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT02716246"
+      ],
+      "savedIndexNctLeads": [
+        "NCT02716246"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Research Support, N.I.H., Extramural",
+        "Research Support, Non-U.S. Gov't"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT02716246"
+      ]
+    },
+    {
+      "pmid": "33860116",
+      "title": "Effects of Resmetirom on Noninvasive Endpoints in a 36-Week Phase 2 Active Treatment Extension Study in Patients With NASH.",
+      "abstract": "Resmetirom (MGL-3196), a selective thyroid hormone receptor-\u03b2 agonist, was evaluated in a 36-week paired liver biopsy study (NCT02912260) in adults with biopsy-confirmed nonalcoholic steatohepatitis (NASH). The primary endpoint was relative liver fat reduction as assessed by MRI-proton density fat fraction (MRI-PDFF), and secondary endpoints included histopathology. Subsequently, a 36-week active treatment open-label extension (OLE) study was conducted in 31 consenting patients (including 14 former placebo patients) with persistently mild to markedly elevated liver enzymes at the end of the main study. In patients treated with resmetirom (80 or 100\u00a0mg orally per day), MRI-PDFF reduction at OLE week 36 was -11.1% (1.5%) mean reduction (standard error [SE];  P \u00a0<\u00a00.0001) and -52.3% (4.4%) mean relative reduction,  P \u00a0<\u00a00.0001. Low-density lipoprotein (LDL) cholesterol (-26.1% [4.5%],  P \u00a0<\u00a00.0001), apolipoprotein B (-23.8% [3.0%],  P \u00a0<\u00a00.0001), and triglycerides (-19.6% [5.4%],  P \u00a0=\u00a00.0012; -46.1 [14.5] mg/dL,  P \u00a0=\u00a00.0031) were reduced from baseline. Markers of fibrosis were reduced, including liver stiffness assessed by transient elastography (-2.1 [0.8] mean kilopascals [SE],  P \u00a0=\u00a00.015) and N-terminal type III collagen pro-peptide (PRO-C3) (-9.8 [2.3] ng/mL,  P \u00a0=\u00a00.0004 (baseline\u00a0\u2265\u00a010\u00a0ng/mL). In the main and OLE studies, PRO-C3/C3M (matrix metalloproteinase-degraded C3), a marker of net fibrosis formation, was reduced in resmetirom-treated patients (-0.76 [-1.27, -0.24],  P \u00a0=\u00a00.0044 and -0.68,  P \u00a0<\u00a00.0001, respectively). Resmetirom was well tolerated, with few, nonserious adverse events.  Conclusion:  The results of this 36-week OLE study support the efficacy and safety of resmetirom at daily doses of 80 mg and 100\u00a0mg, used in the ongoing phase 3 NASH study, MAESTRO-NASH (NCT03900429). The OLE study demonstrates a potential for noninvasive assessments to monitor the response to resmetirom from an individual patient with NASH.",
+      "publicationDate": "2021-01-04",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/33860116/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT03900429"
+      ],
+      "savedIndexNctLeads": [
+        "NCT03900429"
+      ],
+      "publicationTypes": [
+        "Clinical Trial, Phase III",
+        "Journal Article",
+        "Multicenter Study",
+        "Randomized Controlled Trial",
+        "Research Support, Non-U.S. Gov't"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT03900429"
+      ]
+    },
+    {
+      "pmid": "35510486",
+      "title": "Imetelstat in intermediate-2 or high-risk myelofibrosis refractory to JAK inhibitor: IMpactMF phase III study design.",
+      "abstract": "Imetelstat, a first-in-class telomerase inhibitor, demonstrated meaningful clinical benefit including a robust symptom response rate and potential overall survival benefit in IMbark, a phase II study in intermediate-2 or high-risk myelofibrosis (MF) patients who have relapsed after or are refractory to JAK inhibitors. We describe the rationale and design for the phase III trial, IMpactMF (NCT04576156), an open-label evaluation of imetelstat versus best available therapy, excluding JAK inhibitors, in MF patients refractory to JAK inhibitor. Imetelstat 9.4\u00a0mg/kg is administered as an intravenous infusion every 21\u00a0days. Primary objective is to assess overall survival. Secondary objectives include symptom and spleen responses, progression-free survival, clinical response assessment, bone marrow fibrosis reduction, safety and pharmacokinetics. Biomarker, cytogenetics and mutation analyses will be performed. Imetelstat is a new type of treatment being studied in patients with myelofibrosis (MF). Encouraging clinical benefits were seen in a phase II clinical trial of imetelstat in higher risk MF. This article discusses the ongoing phase III trial, called IMpactMF. IMpactMF is comparing imetelstat to best available therapy (BAT) in MF patients not responding to a specific type of treatment, a JAK inhibitor. Imetelstat is an intravenous infusion, given every 21\u00a0days. This study will determine if patients who receive imetelstat live longer than patients who are given BAT. It will also collect information on additional outcomes, including safety. Trial Registration Number: NCT04576156 (ClinicalTrials.gov).",
+      "publicationDate": "2022-05-05",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/35510486/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT04576156"
+      ],
+      "savedIndexNctLeads": [
+        "NCT04576156"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Review"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT04576156"
+      ]
+    },
+    {
+      "pmid": "37468392",
+      "title": "Sequential Intravesical Gemcitabine and Docetaxel is an Alternative to Bacillus Calmette-Gu\u00e9rin for the Treatment of Intermediate-risk Non-muscle-invasive Bladder Cancer.",
+      "abstract": "Adjuvant treatment with either chemotherapy or bacillus Calmette-Gu\u00e9rin (BCG) is recommended for patients with intermediate-risk (IR) non-muscle-invasive bladder cancer (NMIBC). In this multi-institutional retrospective review, we evaluated oncological outcomes for 182 patients with IR-NMIBC treated with BCG (n\u00a0=\u00a0100) or intravesical sequential gemcitabine and docetaxel (Gem/Doce; n\u00a0=\u00a082). Median follow-up was 48.6 mo (interquartile range 24.9-70.9). No patient had a previous diagnosis of high-grade disease. Recurrence rates were similar in the two treatment groups (hazard ratio [HR] 1.06, 95% confidence interval [CI] 0.65-1.73; p\u00a0=\u00a00.8). Results were consistent after adjusting for International Bladder Cancer Group (IBCG) risk subgroups, use of single-instillation postoperative chemotherapy, use of blue light cystoscopy, and receipt of maintenance therapy (HR 0.88, 95% CI 0.47-1.64; p\u00a0=\u00a00.7). Similarly, there was no difference in the rate of stage/grade progression between the treatment groups (HR 0.66, 95% CI 0.21-2.12; p\u00a0=\u00a00.5). Rates of progression to muscle-invasive disease/metastasis (2.2%) and cancer-specific mortality (1.7%) were low in the cohort. Our results support the use of Gem/Doce as an alternative to BCG in patients with IR-NMIBC. PATIENT SUMMARY: We compared cancer control outcomes for two different treatments for intermediate-risk non-muscle-invasive bladder cancer. Our results show that a chemotherapy combination of docetaxel and gemcitabine is as effective as the BCG (bacillus Calmette-Gu\u00e9rin) treatment traditionally used for this type of bladder cancer.",
+      "publicationDate": "2023-07-18",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37468392/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [],
+      "savedIndexNctLeads": [
+        "NCT07464145"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Multicenter Study",
+        "Research Support, Non-U.S. Gov't"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT07464145"
+      ]
+    },
+    {
+      "pmid": "37786277",
+      "title": "Design of the phase 3 MAESTRO clinical program to evaluate resmetirom for the treatment of nonalcoholic steatohepatitis.",
+      "abstract": "Non-alcoholic steatohepatitis (NASH) is a progressive form of non-alcoholic fatty liver disease (NAFLD) associated with steatosis, hepatocellular injury, inflammation and fibrosis. In a Phase 2 trial in adults with NASH (NCT02912260), resmetirom, an orally administered, liver-targeted thyroid hormone receptor-\u03b2 selective agonist, significantly reduced hepatic fat (via imaging) and resolved NASH without worsening fibrosis (via liver biopsy) in a significant number of patients compared with placebo. To present the design of the Phase 3 MAESTRO clinical programme evaluating resmetirom for treatment of NASH (MAESTRO-NAFLD-1 [NCT04197479], MAESTRO-NAFLD-OLE [NCT04951219], MAESTRO-NASH [NCT03900429], MAESTRO-NASH-OUTCOMES [NCT05500222]). MAESTRO-NASH is a pivotal serial biopsy trial in up to 2000 adults with biopsy-confirmed at-risk NASH. Patients are randomised to a once-daily oral placebo, 80\u2009mg resmetirom, or 100\u2009mg resmetirom. Liver biopsies are conducted at screening, week 52 and month 54. MAESTRO-NAFLD-1 is a 52-week safety trial in ~1400 adults with NAFLD/presumed NASH (based on non-invasive testing); ~700 patients from MAESTRO-NAFLD-1 are enrolled in MAESTRO-NAFLD-OLE, a 52-week active treatment extension to further evaluate safety. MAESTRO-NASH-OUTCOMES is enrolling 700 adults with well-compensated NASH cirrhosis to evaluate the potential for resmetirom to slow progression to hepatic decompensation events. Non-invasive tests (biomarkers, imaging) are assessed longitudinally throughout, in addition to validated patient-reported outcomes. The MAESTRO clinical programme was designed in conjunction with regulatory authorities to support approval of resmetirom for treatment of NASH. The surrogate endpoints, based on week 52 liver biopsy, serum biomarkers and imaging, are confirmed by long-term clinical liver-related outcomes in MAESTRO-NASH (month 54) and MAESTRO-NASH-OUTCOMES (time to event).",
+      "publicationDate": "2023-10-02",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37786277/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT03900429",
+        "NCT04951219",
+        "NCT05500222"
+      ],
+      "savedIndexNctLeads": [
+        "NCT03900429",
+        "NCT04951219",
+        "NCT05500222"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Research Support, Non-U.S. Gov't",
+        "Clinical Trial Protocol"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT03900429",
+        "NCT04951219",
+        "NCT05500222"
+      ]
+    },
+    {
+      "pmid": "38171926",
+      "title": "Liver-directed gene therapy for inherited metabolic diseases.",
+      "abstract": "Gene therapy clinical trials are rapidly expanding for inherited metabolic liver diseases whilst two gene therapy products have now been approved for liver based monogenic disorders. Liver-directed gene therapy has recently become an option for treatment of haemophilias and is likely to become one of the favoured therapeutic strategies for inherited metabolic liver diseases in the near future. In this review, we present the different gene therapy vectors and strategies for liver-targeting, including gene editing. We highlight the current development of viral and nonviral gene therapy for a number of inherited metabolic liver diseases including urea cycle defects, organic acidaemias, Crigler-Najjar disease, Wilson disease, glycogen storage disease Type Ia, phenylketonuria and maple syrup urine disease. We describe the main limitations and open questions for further gene therapy development: immunogenicity, inflammatory response, genotoxicity, gene therapy administration in a fibrotic liver. The follow-up of a constantly growing number of gene therapy treated patients allows better understanding of its benefits and limitations and provides strategies to design safer and more efficacious treatments. Undoubtedly, liver-targeting gene therapy offers a promising avenue for innovative therapies with an unprecedented potential to address the unmet needs of patients suffering from inherited metabolic diseases.",
+      "publicationDate": "2024-01-03",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38171926/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT05345171"
+      ],
+      "savedIndexNctLeads": [
+        "NCT05345171"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Review"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT05345171"
+      ]
+    },
+    {
+      "pmid": "38226931",
+      "title": "Quality of Life in the Phase 2/3 Trial of N-803 Plus Bacillus Calmette-Gu\u00e9rin in Bacillus Calmette-Gu\u00e9rin\u2012Unresponsive Nonmuscle-Invasive Bladder Cancer.",
+      "abstract": "In the phase 2/3 study QUILT-3.032 (NCT03022825), the ability of the IL-15R\u03b1Fc superagonist N-803 (nogapendekin alfa inbakicept) plus bacillus Calmette-Gu\u00e9rin (BCG) to elicit durable complete responses in patients with BCG-unresponsive nonmuscle-invasive bladder cancer (NMIBC) was demonstrated. As a secondary end point, patient-reported outcomes (PROs) were assessed. Both cohort A patients with carcinoma in situ with or without Ta/T1 disease and cohort B patients with high-grade Ta/T1 papillary disease who received N-803 plus BCG therapy completed the EORTC (European Organization for Research and Treatment of Cancer) Core 30 and Quality of Life NMIBC-Specific 24 questionnaires at baseline and months 6, 12, 18, and 24 on study. Scores were analyzed using descriptive statistics, and multivariable analyses were performed to identify baseline variables associated with PROs. On study, mean physical function (PF) and global health (GH) scores remained relatively stable from baseline for cohorts A (n = 86) and B (n = 78). At month 6, cohort A patients with a complete response reported higher PF scores than those without ( P  = .0659); at month 12, > 3 as compared with \u2264 3 prior transurethral resections of bladder tumor was associated ( P  = .0729) with lower GH scores. In cohort B, baseline disease type was associated ( P  = .0738) with PF and race was significantly associated ( P  = .0478) with GH at month 6. NMIBC-Specific 24 summary scores also remained stable on study for both cohorts. The overall stability of PROs scores, taken together with the efficacy findings, indicates a favorable risk-benefit ratio and quality of life following N-803 plus BCG.",
+      "publicationDate": "2024-01-16",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38226931/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT03022825"
+      ],
+      "savedIndexNctLeads": [
+        "NCT03022825"
+      ],
+      "publicationTypes": [
+        "Clinical Trial, Phase II",
+        "Clinical Trial, Phase III",
+        "Journal Article",
+        "Multicenter Study"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT03022825"
+      ]
+    },
+    {
+      "pmid": "38254921",
+      "title": "The Efficacy of a Human-Ready mini MECP2  Gene Therapy in a Pre-Clinical Model of Rett Syndrome.",
+      "abstract": "Inactivating mutations and the duplication of methyl-CpG binding protein 2 (MeCP2), respectively, mediate Rett syndrome (RTT) and  MECP2  duplication syndrome. These disorders underscore the conceptual dose-dependent risk posed by  MECP2  gene therapy for mosaic RTT patients. Recently, a miRNA-Responsive Autoregulatory Element (miRARE) mitigated the dose-dependent toxicity posed by self-complementary adeno-associated viral vector serotype 9 (AAV9) mini MECP2  gene therapy (scAAV9/mini MECP2-myc ) in mice. Here, we report an efficacy assessment for the human-ready version of this regulated gene therapy (TSHA-102) in male  Mecp2 -/ y  knockout (KO) mice after intracerebroventricular (ICV) administration at postnatal day 2 (P2) and after intrathecal (IT) administration at P7, P14 (\u00b1immunosuppression), and P28 (\u00b1immunosuppression). We also report qPCR studies on KO mice treated at P7-P35; protein analyses in KO mice treated at P38; and a survival safety study in female adult  Mecp2 -/+  mice. In KO mice, TSHA-102 improved respiration, weight, and survival across multiple doses and treatment ages. TSHA-102 significantly improved the front average stance and swing times relative to the front average stride time after P14 administration of the highest dose for that treatment age. Viral genomic DNA and mini MECP2  mRNA were present in the CNS. MiniMeCP2 protein expression was higher in the KO spinal cord compared to the brain. In female mice, TSHA-102 permitted survivals that were similar to those of vehicle-treated controls. In all, these pivotal data helped to support the regulatory approval to initiate a clinical trial for TSHA-102 in RTT patients (clinical trial identifier number NCT05606614).",
+      "publicationDate": "2023-12-24",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38254921/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT05606614"
+      ],
+      "savedIndexNctLeads": [
+        "NCT05606614"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Research Support, Non-U.S. Gov't",
+        "Research Support, N.I.H., Extramural"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT05606614"
+      ]
+    },
+    {
+      "pmid": "38265030",
+      "title": "Diagnosis and Treatment of Non-Muscle Invasive Bladder Cancer: AUA/SUO Guideline: 2024 Amendment.",
+      "abstract": "The purpose of this American Urological Association (AUA)/Society of Urologic Oncology (SUO) guideline amendment is to provide a useful reference on the effective evidence-based treatment strategies for non-muscle invasive bladder cancer (NMIBC). In 2023, the NMIBC guideline was updated through the AUA amendment process in which newly published literature is reviewed and integrated into previously published guidelines in an effort to maintain currency. The amendment allowed for the incorporation of additional literature released since the previous 2020 amendment. The updated search gathered literature from July 2019 to May 2023. This review identified 1918 abstracts, of which 75 met inclusion criteria.When sufficient evidence existed, the body of evidence was assigned a strength rating of A (high), B (moderate), or C (low) in support of Strong, Moderate, or Conditional Recommendations. In the absence of sufficient evidence, additional information is provided as Clinical Principles and Expert Opinions. Updates were made to statements on variant histologies, urine markers after diagnosis of bladder cancer, intravesical therapy, BCG maintenance, enhanced cystoscopy, and future directions. Further revisions were made to the methodology and reference sections as appropriate. This guideline seeks to improve clinicians' ability to evaluate and treat patients with NMIBC based on currently available evidence. Future studies will be essential to further support or refine these statements to improve patient care.",
+      "publicationDate": "2024-01-24",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38265030/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [],
+      "savedIndexNctLeads": [
+        "NCT07464145"
+      ],
+      "publicationTypes": [
+        "Review",
+        "Journal Article",
+        "Practice Guideline"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT07464145"
+      ]
+    },
+    {
+      "pmid": "38324483",
+      "title": "A Phase 3, Randomized, Controlled Trial of Resmetirom in NASH with Liver Fibrosis.",
+      "abstract": "Nonalcoholic steatohepatitis (NASH) is a progressive liver disease with no approved treatment. Resmetirom is an oral, liver-directed, thyroid hormone receptor beta-selective agonist in development for the treatment of NASH with liver fibrosis. We are conducting an ongoing phase 3 trial involving adults with biopsy-confirmed NASH and a fibrosis stage of F1B, F2, or F3 (stages range from F0 [no fibrosis] to F4 [cirrhosis]). Patients were randomly assigned in a 1:1:1 ratio to receive once-daily resmetirom at a dose of 80 mg or 100 mg or placebo. The two primary end points at week 52 were NASH resolution (including a reduction in the nonalcoholic fatty liver disease [NAFLD] activity score by \u22652 points; scores range from 0 to 8, with higher scores indicating more severe disease) with no worsening of fibrosis, and an improvement (reduction) in fibrosis by at least one stage with no worsening of the NAFLD activity score. Overall, 966 patients formed the primary analysis population (322 in the 80-mg resmetirom group, 323 in the 100-mg resmetirom group, and 321 in the placebo group). NASH resolution with no worsening of fibrosis was achieved in 25.9% of the patients in the 80-mg resmetirom group and 29.9% of those in the 100-mg resmetirom group, as compared with 9.7% of those in the placebo group (P<0.001 for both comparisons with placebo). Fibrosis improvement by at least one stage with no worsening of the NAFLD activity score was achieved in 24.2% of the patients in the 80-mg resmetirom group and 25.9% of those in the 100-mg resmetirom group, as compared with 14.2% of those in the placebo group (P<0.001 for both comparisons with placebo). The change in low-density lipoprotein cholesterol levels from baseline to week 24 was -13.6% in the 80-mg resmetirom group and -16.3% in the 100-mg resmetirom group, as compared with 0.1% in the placebo group (P<0.001 for both comparisons with placebo). Diarrhea and nausea were more frequent with resmetirom than with placebo. The incidence of serious adverse events was similar across trial groups: 10.9% in the 80-mg resmetirom group, 12.7% in the 100-mg resmetirom group, and 11.5% in the placebo group. Both the 80-mg dose and the 100-mg dose of resmetirom were superior to placebo with respect to NASH resolution and improvement in liver fibrosis by at least one stage. (Funded by Madrigal Pharmaceuticals; MAESTRO-NASH ClinicalTrials.gov number, NCT03900429.).",
+      "publicationDate": null,
+      "publicationDateKind": "NOT_PRECISELY_VERIFIED",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38324483/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT03900429"
+      ],
+      "savedIndexNctLeads": [
+        "NCT03900429"
+      ],
+      "publicationTypes": [
+        "Clinical Trial, Phase III",
+        "Comparative Study",
+        "Journal Article",
+        "Randomized Controlled Trial"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT03900429"
+      ]
+    },
+    {
+      "pmid": "38723617",
+      "title": "Preclinical Milestones in MECP2 Gene Transfer for Treating Rett Syndrome.",
+      "abstract": "Rett syndrome (RTT) is a neurodevelopmental disorder caused by mutations in the transcriptional regulator methyl-CpG-binding protein 2 (MeCP2). After gene transfer in mice, exogenous MeCP2 expression must be regulated to avoid dose-dependent toxicity. The preclinical gene therapy literature for treating RTT illustrates a duly diligent progression that begins with proof-of-concept studies and advances toward the development of safer, regulated MECP2 viral genome designs. This design progression was partly achieved through international collaborative studies. In 2023, clinicians administered investigational gene therapies for RTT to patients a decade after the first preclinical gene therapy publications for RTT (clinical trial numbers NCT05606614 and NCT05898620). As clinicians take on a more prominent role in MECP2 gene therapy research, preclinical researchers may continue to test more nuanced hypotheses regarding the safety, efficacy, and mechanism of MECP2 gene transfer. This review summarizes the history of preclinical MECP2 gene transfer for treating RTT and acknowledges major contributions among colleagues in the field. The first clinical injections are a shared milestone. Rett syndrome (RTT) is a neurodevelopmental disorder caused by mutations in the transcriptional regulator methyl-CpG-binding protein 2 (MeCP2). After gene transfer in mice, exogenous MeCP2 expression must be regulated to avoid dose-dependent toxicity. The preclinical gene therapy literature for treating RTT illustrates a duly diligent progression that begins with proof-of-concept studies and advances toward the development of safer, regulated MECP2 viral genome designs. This design progression was partly achieved through international collaborative studies. In 2023, clinicians administered investigational gene therapies for RTT to patients a decade after the first preclinical gene therapy publications for RTT (clinical trial numbers NCT05606614 and NCT05898620). As clinicians take on a more prominent role in MECP2 gene therapy research, preclinical researchers may continue to test more nuanced hypotheses regarding the safety, efficacy, and mechanism of MECP2 gene transfer. This review summarizes the history of preclinical MECP2 gene transfer for treating RTT and acknowledges major contributions among colleagues in the field. The first clinical injections are a shared milestone.",
+      "publicationDate": "2024-05-09",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38723617/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT05606614",
+        "NCT05898620"
+      ],
+      "savedIndexNctLeads": [
+        "NCT05606614",
+        "NCT05898620"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Review"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT05606614",
+        "NCT05898620"
+      ]
+    },
+    {
+      "pmid": "38953850",
+      "title": "N-803 Plus BCG Treatment for BCG-Na\u00efve or -Unresponsive Non-Muscle Invasive Bladder Cancer: A Plain Language Review.",
+      "abstract": "This is a summary of two studies that looked at the safety and effectiveness of a potential new treatment, N-803 (Anktiva), in combination with a standard treatment bacillus Calmette-Guerin (BCG) for people with  non-muscle invasive bladder cancer (NMIBC) .One study was a Phase 1b study that tested increasing doses of N-803 in combination with the same dose of BCG in people with NMIBC who had never received BCG previously (BCG-naive). The other study is a  Phase 2/3 study  of N-803 and BCG in people with NMIBC whose cancer wasn't eliminated by BCG alone (BCGunresponsive). In the Phase 1b study, the nine participants were split into three groups of 3 participants who received a dose of 100, 200, or 400\u00a0\u03bcg N-803 along with a standard 50\u00a0mg dose of BCG. In the Phase 2/3 study, one group (cohort A) of participants with carcinoma in situ (CIS) disease and another group (cohort B) with papillary disease were treated with 400\u00a0\u03bcg N-803 plus 50\u00a0mg BCG. There was also a cohort C that received only 400\u00a0\u03bcg N-803. Treatments were delivered directly into the bladder once a week for 6\u00a0weeks in a row. N-803 plus BCG eliminated NMIBC in all nine BCG-naive participants and the effects were long-lasting, with participants remaining NMIBC-free for a range of 8.3 to 9.2\u00a0years.As reported in 2022, cancer was eliminated in 58 of 82 (71%) participants with BCG-unresponsive CIS disease and the effect was also long-lasting. Importantly, approximately 90% of the successfully treated participants avoided surgical removal of the bladder. In cohort B participants with papillary disease, 40 of 72 (55.4%) were cancer-free 12\u00a0months after treatment. N-803 used alone was only effective in 2 of 10 participants. In both studies, the combination of N-803 and BCG was found to be associated with very few adverse events.Based on results from the Phase 2/3 study, the U.S. Food and Drug Association (FDA) approved the use of N-803 plus BCG for the treatment of BCG-unresponsive bladder CIS with or without Ta/T1 papillary disease. Clinical Trial Registration:  NCT02138734 (Phase 1b study), NCT03022825 (Phase 2/3 study). Addition of the IL-15 superagonist N-803 to BCG therapy produces a high rate of success in eliminating non-muscle invasive bladder cancer in both BCG-naive and BCG-unresponsive patients, with long-lasting effects that allow patients to avoid surgical removal of the bladder.",
+      "publicationDate": "2024-07-02",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/38953850/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT03022825"
+      ],
+      "savedIndexNctLeads": [
+        "NCT03022825"
+      ],
+      "publicationTypes": [
+        "Patient Education Handout"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT03022825"
+      ]
+    },
+    {
+      "pmid": "39250515",
+      "title": "Health-related quality of life (HRQL) assessments in a 52-week, double-blind, randomized, placebo-controlled phase III study of resmetirom (MGL-3196) in patients with metabolic dysfunction-associated steatohepatitis (MASH) and fibrosis.",
+      "abstract": "Resmetirom, liver-directed thyroid-hormone receptor-\u03b2 agonist, received approval for metabolic dysfunction-associated steatohepatitis (MASH) treatment. We assessed health-related quality of life (HRQL) in patients with MASH treated with resmetirom. Patients with MASH/NASH without cirrhosis and with confirmed/suspected fibrosis were enrolled in a 54-month double-blind randomized placebo-controlled phase III clinical trial with serial biopsy assessments at baseline and week 52 (MAESTRO-NASH, NCT03900429). HRQL was assessed using Chronic Liver Disease Questionnaire-NASH (CLDQ-NAFLD) and Liver Disease Quality of Life (LDQOL). Baseline HRQL score changes by treatment group (resmetirom 80\u00a0mg, resmetirom 100\u00a0mg, or placebo) and histological response (improvement of fibrosis without worsening of NAFLD activity score or resolution of MASH/NASH without worsening of fibrosis) were compared after 52 weeks. Included were 966 intention-to-treat patients: 323 received resmetirom 100\u00a0mg, 322 resmetirom 80\u00a0mg, and 321 placebo. By weeks 24 and 52, patients receiving 80 or 100\u00a0mg resmetirom experienced HRQL improvement in CLDQ-NAFLD Worry domain (mean +0.21 to +0.24, p < 0.05). At week 52, subjects who met histologic endpoints after treatment with resmetirom (100\u00a0mg and 80\u00a0mg pooled) experienced HRQL improvement in CLDQ-NAFLD Worry +0.46 (41% met minimal clinically important difference [MCID]), LDQOL domains: Role Emotional +3.0 (28% met MCID), Health Distress +8.1 (38% MCID), Stigma +3.5 (39% MCID), and total LDQOL +2.2 (35% MCID) (all p < 0.05). Similar improvements were noted in histologic responders from 100\u00a0mg or 80\u00a0mg resmetirom groups when separated-no improvements in placebo or nonresponders. Baseline F3 histologic responders had similar/more pronounced HRQL improvements. Patients with MASH/NASH with fibrosis improvement or the resolution of MASH with resmetirom experienced clinically meaningful and statistically significant HRQL improvements.",
+      "publicationDate": "2024-09-06",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39250515/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT03900429"
+      ],
+      "savedIndexNctLeads": [
+        "NCT03900429"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Randomized Controlled Trial",
+        "Clinical Trial, Phase III",
+        "Research Support, Non-U.S. Gov't"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT03900429"
+      ]
+    },
+    {
+      "pmid": "39375168",
+      "title": "GOG-3097/ENGOT-ov81/GTG-UK/RAMP 301: a phase 3, randomized trial evaluating avutometinib plus defactinib compared with investigator's choice of treatment in patients with recurrent low grade serous ovarian cancer.",
+      "abstract": "There are no approved treatments specifically for low grade serous ovarian cancer; current standard of care treatment options are limited in efficacy and tolerability. The combination of avutometinib with defactinib has demonstrated efficacy and a consistent safety profile in two clinical trials in recurrent low grade serous ovarian cancer, and a lower discontinuation rate due to adverse events compared with historical rates for standard of care. To compare the progression-free survival of the combination of avutometinib with defactinib versus investigator's choice of treatment in patients with recurrent low grade serous ovarian cancer. Combination treatment with avutometinib-defactinib will significantly improve progression-free survival compared with investigator's choice of treatment in patients with recurrent low grade serous ovarian cancer. GOG-3097/ENGOT-ov81/GTG-UK/RAMP 301 is a phase 3, randomized, international, open-label study designed to compare avutometinib with defactinib versus investigator's choice of treatment in patients with recurrent low grade serous ovarian cancer who have progressed on a previous platinum-based therapy. On confirmation of disease progression using a blinded independent central review, patients on the investigator's choice of treatment arm may cross over to the avutometinib-defactinib arm. Patients must have recurrent low grade serous ovarian cancer (KRAS mutant or wild-type) and have documented progression (radiographic or clinical) or recurrence of low grade serous ovarian cancer after at least one platinum-based chemotherapy regimen. Unlimited additional previous lines of therapy are allowed, including previous MEK/RAF inhibitor. Patients will be excluded if they have co-existing high grade ovarian cancer or had previous treatment with avutometinib, defactinib, or any other FAK inhibitor. Progression-free survival according to Response Evaluation Criteria in Solid Tumors (RECIST) version 1.1, blinded-independent central review. Approximately 270 patients will be randomized in a 1:1 fashion to either the combination avutometinib with defactinib arm (n\u223c135) or the investigator's choice of treatment arm (n\u223c135). The estimated primary completion date of RAMP 301 is 2028, and the estimated study completion date is 2031. ClinicalTrials.gov NCT06072781.",
+      "publicationDate": "2025-04-19",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39375168/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT06072781"
+      ],
+      "savedIndexNctLeads": [
+        "NCT06072781"
+      ],
+      "publicationTypes": [
+        "Clinical Trial Protocol",
+        "Journal Article",
+        "Research Support, N.I.H., Extramural"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT06072781"
+      ]
+    },
+    {
+      "pmid": "39385046",
+      "title": "AAV gene therapy for Duchenne muscular dystrophy: the EMBARK phase 3 randomized trial.",
+      "abstract": "Duchenne muscular dystrophy (DMD) is a rare, X-linked neuromuscular disease caused by pathogenic variants in the DMD gene that result in the absence of functional dystrophin, beginning at birth and leading to progressive impaired motor function, loss of ambulation and life-threatening cardiorespiratory complications. Delandistrogene moxeparvovec, an adeno-associated rh74-viral vector-based gene therapy, addresses absent functional dystrophin in DMD. Here the phase 3 EMBARK study aimed to assess the efficacy and safety of delandistrogene moxeparvovec in patients with DMD. Ambulatory males with DMD, \u22654\u2009years to <8\u2009years of age, were randomized and stratified by age group and North Star Ambulatory Assessment (NSAA) score to single-administration intravenous delandistrogene moxeparvovec (1.33\u2009\u00d7\u200910 14  vector genomes per kilogram; n\u2009=\u200963) or placebo (n\u2009=\u200962). At week 52, the primary endpoint, change from baseline in NSAA score, was not met (least squares mean 2.57 (delandistrogene moxeparvovec) versus 1.92 (placebo) points; between-group difference, 0.65; 95% confidence interval (CI), -0.45, 1.74; P\u2009=\u20090.2441). Secondary efficacy endpoints included mean micro-dystrophin expression at week 12: 34.29% (treated) versus 0.00% (placebo). Other secondary efficacy endpoints at week 52 (between-group differences (95% CI)) included: Time to Rise (-0.64 (-1.06, -0.23)), 10-meter Walk/Run (-0.42 (-0.71, -0.13)), stride velocity 95th centile (0.10 (0.00, 0.19)), 100-meter Walk/Run (-3.29 (-8.28, 1.70)), time to ascend 4 steps (-0.36 (-0.71, -0.01)), PROMIS Mobility and Upper Extremity (0.05 (-0.08, 0.19); -0.04 (-0.24, 0.17)) and number of NSAA skills gained/improved (0.19 (-0.67, 1.06)). In total, 674 adverse events were recorded with delandistrogene moxeparvovec and 514 with placebo. There were no deaths, discontinuations or clinically significant complement-mediated adverse events; 7 patients (11.1%) experienced 10 treatment-related serious adverse events. Delandistrogene moxeparvovec did not lead to a significant improvement in NSAA score at week 52. Some of the secondary endpoints numerically favored treatment, although no statistical significance can be claimed. Safety was manageable and consistent with previous delandistrogene moxeparvovec trials. ClinicalTrials.gov: NCT05096221.",
+      "publicationDate": "2024-10-09",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39385046/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT05881408"
+      ],
+      "savedIndexNctLeads": [
+        "NCT05881408"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Randomized Controlled Trial",
+        "Clinical Trial, Phase III",
+        "Multicenter Study",
+        "Research Support, Non-U.S. Gov't"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT05881408"
+      ]
+    },
+    {
+      "pmid": "39477631",
+      "title": "Standard-of-Care Medication Withdrawal in Patients With Obstructive Hypertrophic Cardiomyopathy Receiving Aficamten in FOREST-HCM.",
+      "abstract": "Standard-of-care (SoC) medications for the treatment of obstructive hypertrophic cardiomyopathy (oHCM) are recommended as first-line therapy despite the lack of evidence from controlled clinical trials and well known off-target side effects. We describe the impact of SoC therapy downtitration and withdrawal in patients already receiving aficamten in FOREST-HCM (Follow-Up, Open-Label, Research Evaluation of Sustained Treatment with Aficamten in Hypertrophic Cardiomyopathy; NCT04848506). Patients receiving SoC therapy (beta-blocker, nondihydropyridine calcium-channel blocker, and/or disopyramide) were eligible for protocol-guided SoC downtitration and withdrawal at the discretion of the investigator and after achieving a stable dose of aficamten for\u00a0\u22654\u00a0weeks. Successful SoC withdrawal was defined as at least a 50% dose-reduction in\u00a0\u22651 medication. Adverse events (AEs) were prospectively evaluated 1 to 2\u00a0weeks after any SoC withdrawal. Of 145 patients with oHCM who were followed for at least 24\u00a0weeks (mean age 60.5 \u00b1 13.2 years; 44.8% female; 42% NYHA functional class III), 136 (93.8%) were receiving\u00a0\u22651 SoC therapy; of those, 64 (47%) had an attempt at withdrawal, with 59 (92.2%) successful. Thirty-eight (64.4%) patients completely discontinued\u00a0\u22651 medication, and 27 (45.8%) achieved aficamten monotherapy with 2 later restarting a SoC medication. There were no significant differences in baseline characteristics on day 1 in FOREST-HCM in those with a SoC-withdrawal vs no-withdrawal attempt. In patients who underwent successful SoC therapy withdrawal, NYHA functional class improved by\u00a0\u22651 class in 79.2% from baseline, Kansas City Cardiomyopathy Questionnaire-Clinical Summary Score improved to 83.0 \u00b1 15.8 points, and resting and Valsalva left ventricular outflow tract gradient improved to 14.3 \u00b1 10.9 and 32.9 \u00b1 21.4\u00a0mm\u00a0Hg, respectively. N-terminal pro-B-type natriuretic peptide levels improved to a median of 220.0 pg/mL (Q1-Q3: 102.0-554.0.0 pg/mL) and high-sensitivity troponin I improved to a median of 6.0\u00a0ng/L (Q1-Q3:3.5-10.7\u00a0ng/L). Downtitration and withdrawal of SoC therapy did not impact these results (all P values for change were >0.05), and these changes were similar in patients who did not undergo SoC therapy withdrawal. There were no serious AEs attributed to SoC withdrawal and treatment emergent AEs were similar between groups. In FOREST-HCM, one-half of the patients with oHCM attempted downtitration and withdrawal of SoC\u00a0medications while receiving aficamten treatment, with infrequent instances of resumption of SoC. Stopping and dose reduction of SoC medications were well tolerated with no adverse consequences in clinical measures of efficacy (Follow-Up, Open-Label, Research Evaluation of Sustained Treatment with Aficamten in Hypertrophic Cardiomyopathy [FOREST-HCM]; NCT04848506).",
+      "publicationDate": null,
+      "publicationDateKind": "NOT_PRECISELY_VERIFIED",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39477631/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT04848506"
+      ],
+      "savedIndexNctLeads": [
+        "NCT04848506"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Multicenter Study"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT04848506"
+      ]
+    },
+    {
+      "pmid": "39606837",
+      "title": "REGAL: galinpepimut-S vs. best available therapy as maintenance therapy for acute myeloid leukemia in second remission.",
+      "abstract": "Patients with relapsed or refractory (r/r) acute myeloid leukemia (AML) have very poor long-term outcomes. Allogeneic stem cell transplantation (allo-SCT) can potentially cure some of these patients who are able to achieve a second or greater remission with salvage chemotherapy. Unfortunately, several barriers exist to transplantation and not all patients with r/r AML are able to proceed to allo-SCT. Therefore, novel therapies to decrease the risk of relapse in these patients are urgently needed. Wilms tumor 1 (WT1) protein has emerged as an encouraging vaccine target in AML due to its overexpression in leukemic blast cells and near absence in normal hematopoietic cells. Maintenance therapy with galinpepimut-S, a multivalent heteroclitic WT1 peptide vaccine, holds promise in early phase trials, in patients with AML by inducing a strong innate immune response against the WT1 antigen, leading to the design of this international, open-label, randomized clinical trial, named REGAL. Clinical trial registration: https://clinicaltrials.gov/study/NCT04229979. The clinical trial identifier is NCT04229979. Maintenance therapy in acute myeloid leukemia The REGAL trial is testing a new drug called galinpepimut-S (GPS), as a maintenance therapy, in patients with a blood cancer called acute myeloid leukemia (AML) who are in remission. Patients in remission do not have any evidence of leukemia, and the goal of the maintenance therapy would be to prevent the leukemia from coming back. The leukemia always has a chance of coming back, even if patients are in remission. Patients whose leukemia comes back have very poor outcomes as it highlights the aggressive nature of the leukemia. If these patients can get into remission again, they need to proceed to a bone marrow transplant from a healthy donor to have a chance at the best long-term outcomes. Unfortunately, many patients are not able to proceed to transplant due to various reasons. If a patient is not able to proceed to transplant, the outcomes are very poor. Currently, there is no approved therapy for such patients with AML. We are investigating a new vaccine to try to help these patients. This vaccine is called GPS. It has already been investigated as maintenance therapy in patients with AML in early phase trials with promising results. Now GPS is being investigated in a larger trial called the REGAL trial. If the REGAL trial results are positive, it will provide a new treatment option for these patients.",
+      "publicationDate": "2024-11-28",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39606837/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT04229979"
+      ],
+      "savedIndexNctLeads": [
+        "NCT04229979"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Clinical Trial Protocol"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT04229979"
+      ]
+    },
+    {
+      "pmid": "39796162",
+      "title": "NAFLD and NAFLD Related HCC: Emerging Treatments and Clinical Trials.",
+      "abstract": "Nonalcoholic fatty liver disease (NAFLD), recently renamed metabolic-associated fatty liver disease (MAFLD), is the most prevalent liver disease worldwide. It is associated with an increased risk of developing hepatocellular carcinoma (HCC) in the background of cirrhosis or without cirrhosis. The prevalence of NAFLD-related HCC is increasing all over the globe, and HCC surveillance in NAFLD cases is not that common. In the present review, we attempt to summarize promising treatments and clinical trials focused on NAFLD, nonalcoholic steatohepatitis (NASH), and HCC in the past five to seven years. We categorized the trials based on the type of intervention. Most of the trials are still running, with only a few completed and with conclusive results. In clinical trial NCT03942822, 25 mg/day of milled chia seeds improved NAFLD condition. Completed trial NCT03524365 concluded that Rouxen-Y gastric bypass (RYGB) or sleeve gastrectomy (SG) results in histological resolution of NASH without worsening of fibrosis, while NCT04677101 validated sensitivity/accuracy of blood biomarkers in predicting NASH and fibrosis stage. Moreover, trials with empagliflozin (NCT05694923), curcuvail (NCT06256926), and obeticholic acid (NCT03439254) were completed but did not provide conclusive results. However, trial NCT03900429 reported effective improvement in fibrosis by at least one stage, without worsening of NAFLD activity score (NAS), as well as improvement in lipid profile of the NASH patients by 80 or 100 mg MGL-3196 (resmetirom). Funded by Madrigal Pharmaceuticals, Rezdiffra (resmetirom), used in the clinical trial NCT03900429, is the first FDA-approved drug for the treatment of NAFLD/NASH.",
+      "publicationDate": "2025-01-01",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39796162/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT03900429"
+      ],
+      "savedIndexNctLeads": [
+        "NCT03900429"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Review"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT03900429"
+      ]
+    },
+    {
+      "pmid": "39841424",
+      "title": "Management of Low-Grade Gliomas.",
+      "abstract": "The term \"low-grade glioma\" historically refers to adult diffuse gliomas that exhibit a less aggressive course than the more common high-grade gliomas. In the current molecular era, \"low-grade\" refers to World Health Organization central nervous system grade 2 gliomas almost always with an isocitrate dehydrogenase (IDH) mutation (astrocytomas and oligodendrogliomas). The term \"lower-grade gliomas\" has emerged encompassing grades 2 and 3 IDH-mutant astrocytomas and oligodendrogliomas, to acknowledge that histological grade is not as important a prognostic factor as molecular features, and distinguishing them from grade 4 glioblastomas, which lack an IDH mutation. These grades 2 and 3 IDH-mutant tumors are characterized by indolent growth but are ultimately incurable in most cases, presenting significant management challenges. Physicians must carefully weigh all available evidence to balance improvements in survival from new treatments against treatment toxicities. This review summarizes the evidence guiding the treatment of these patients.",
+      "publicationDate": null,
+      "publicationDateKind": "NOT_PRECISELY_VERIFIED",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/39841424/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT05303519"
+      ],
+      "savedIndexNctLeads": [
+        "NCT05303519"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Review"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT05303519"
+      ]
+    },
+    {
+      "pmid": "40173263",
+      "title": "Self-regulating gene therapy ameliorates phenotypes and overcomes gene dosage sensitivity in a mouse model of Rett syndrome.",
+      "abstract": "Conventional methods of gene transfer lead to inconsistent transgene expression within cells. This variability can be problematic, particularly in conditions like Rett syndrome (RTT), a neurological disorder caused by mutations in the  MECP2  (methyl-CpG binding protein 2) gene, because overexpression of  MECP2  can also cause adverse effects. To address these challenges, we devised a gene regulation system called Expression Attenuation via Construct Tuning (EXACT), which uses a self-contained, microRNA-based feed-forward loop that not only ensures more consistent transgene expression but also protects against excessive expression. Through cell-based screening assays, we demonstrated the ability of the EXACT circuit to modulate the expression of full-length human MeCP2. Compared with a conventional construct, an EXACT- MECP2  construct exhibited a narrower range of cellular protein abundance. Furthermore, the degree of regulation by the EXACT circuit increased with higher transgene doses in vitro and in wild-type mice and mice modeling RTT. On the basis of cellular and in vivo testing, we identified an optimal configuration for the adeno-associated virus serotype 9 (AAV9) construct for self-regulated  MECP2  gene therapy, designated NGN-401. Delivery of NGN-401 to neonatal male  Mecp2 -/y  hemizygous mice via intracerebroventricular injection resulted in prolonged survival and amelioration of RTT-like phenotypes compared with vehicle-treated animals. NGN-401 was also well tolerated by female  Mecp2 +/-  mice and healthy juvenile nonhuman primates, in contrast with a conventional construct, which caused toxicity. The results from these studies underpin a first-in-human pediatric trial of NGN-401 in RTT (ClinicalTrials.gov, NCT05898620).",
+      "publicationDate": "2025-04-02",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40173263/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=27317986%2C27331076%2C29064732%2C30561441%2C31048702%2C32884151%2C33108243%2C33860116%2C35246398%2C35510486%2C36728649%2C37254256%2C37364223%2C37468392%2C37786277%2C37934880%2C38048786%2C38171926%2C38226931%2C38254921%2C38265030%2C38299639%2C38324483%2C38723617%2C38953850%2C39032926%2C39250515%2C39375168%2C39385046%2C39446087%2C39462308%2C39477631%2C39547253%2C39606837%2C39644907%2C39796162%2C39841424%2C40032306%2C40048558%2C40173263&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT05898620"
+      ],
+      "savedIndexNctLeads": [
+        "NCT05898620"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Research Support, Non-U.S. Gov't"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT05898620"
+      ]
+    },
+    {
+      "pmid": "40285763",
+      "title": "Concomitant Aficamten and Disopyramide in Symptomatic Obstructive Hypertrophic Cardiomyopathy.",
+      "abstract": "Disopyramide, used in obstructive hypertrophic cardiomyopathy (oHCM) for its negative inotropic properties mediated by its reduction in cytosolic calcium, has been recommended for decades as an option to relieve resistant obstruction. Aficamten is a selective cardiac myosin inhibitor that reduces hypercontractility directly by reducing myosin-actin interaction. This study aims to investigate the safety and efficacy of concomitant use and withdrawal of disopyramide in patients with symptomatic oHCM receiving aficamten. Patients with oHCM enrolled in REDWOOD-HCM Cohort 3 (open-label), SEQUOIA-HCM (placebo-controlled), and FOREST-HCM (open-label) were analyzed. The authors identified 4 groups, each with patients symptomatic despite background therapy with disopyramide who received: 1) disopyramide plus aficamten and subsequent aficamten withdrawal per protocol (Diso-Afi Withdrawal); 2) disopyramide plus placebo (Diso-Pbo); 3) aficamten plus disopyramide with subsequent disopyramide withdrawal (Afi-Diso Withdrawal); and 4) continued both disopyramide and aficamten (Diso+Afi Continuous). Assessments were performed at baseline, after aficamten or placebo add-on therapy, and after washout (except at week 24 for Diso+Afi Continuous group). Overall, 50 unique patients from 3 trials enrolled, resulting in 93 subjects (segments) across 4 groups: Diso-Afi Withdrawal (n = 29), Diso-Pbo (n = 20), Afi-Diso Withdrawal (n = 17), and Diso+Afi Continuous (n = 27); mean disopyramide dose was 331 \u00b1 146 mg/d. The addition of aficamten to disopyramide alleviated left ventricular outflow tract (LVOT) obstruction (resting: change [\u0394] in least squares mean -27.0 \u00b1 3.6, Valsalva: \u0394 least squares mean -39.2 \u00b1 5.0, both P < 0.0001), symptoms (\u22651 NYHA functional class improvement: 77.8% [95% CI: 61.0-94.5]; P < 0.0001; Kansas City Cardiomyopathy Questionnaire-Clinical Summary Score: 12.3 \u00b1 3.3 [P < 0.001]), and reduced N-terminal pro-B-type natriuretic peptide ratio: 0.35 [95% CI: 0.26-0.48]; P < 0.0001, and there was no significant change with placebo. Withdrawal of aficamten while on disopyramide resulted in return of LVOT obstruction, worsening of symptoms, and increase in NT-proBNP to baseline values. Conversely, withdrawal of disopyramide while on aficamten did not impact efficacy. There were no safety events associated with aficamten or disopyramide withdrawal, and no episodes of atrial fibrillation after disopyramide withdrawal. In this cohort of patients with symptomatic oHCM with persistent LVOT obstruction, combination therapy with aficamten and disopyramide was safe and well tolerated but did not enhance clinical efficacy vs aficamten alone. For such oHCM patients, aficamten treatment may be considered with an option to discontinue disopyramide. (Dose-finding Study to Evaluate the Safety, Tolerability, PK, and PD of CK-3773274 in Adults With HCM [REDWOOD-HCM]; NCT04219826) (Aficamten vs Placebo in Adults With Symptomatic Obstructive Hypertrophic Cardiomyopathy [SEQUOIA-HCM]; NCT05186818) (Open-label Extension Study to Evaluate the Long-term Safety and Tolerability of Aficamten in Adults With HCM [FOREST-HCM]; NCT04848506).",
+      "publicationDate": "2025-04-02",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40285763/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT04848506"
+      ],
+      "savedIndexNctLeads": [
+        "NCT04848506"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Randomized Controlled Trial",
+        "Research Support, Non-U.S. Gov't"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT04848506"
+      ]
+    },
+    {
+      "pmid": "40333016",
+      "title": "Fortifying the Diabetic Kidney Disease Treatment Armamentarium: Multitarget Senotherapeutic and Regenerative Strategies.",
+      "abstract": "",
+      "publicationDate": "2025-05-07",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40333016/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT05099770"
+      ],
+      "savedIndexNctLeads": [
+        "NCT05099770"
+      ],
+      "publicationTypes": [
+        "Journal Article"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT05099770"
+      ]
+    },
+    {
+      "pmid": "40540987",
+      "title": "Aficamten Treatment for Symptomatic Obstructive Hypertrophic Cardiomyopathy: 48-Week Results From FOREST-HCM.",
+      "abstract": "Long-term safety and efficacy data for aficamten in symptomatic obstructive hypertrophic cardiomyopathy are needed. This study aims to evaluate 48-week experience from the ongoing FOREST-HCM (A Follow-Up, Open-Label, Research Evaluation of Sustained Treatment With Aficamten [CK-3773274] in Hypertrophic Cardiomyopathy) study. Obstructive hypertrophic cardiomyopathy participants in an aficamten study (REDWOOD-HCM [Dose-finding Study to Evaluate the Safety, Tolerability, PK, and PD of CK-3773274 in Adults With HCM; NCT04219826]; SEQUOIA-HCM [Aficamten vs Placebo in Adults With Symptomatic Obstructive Hypertrophic Cardiomyopathy; NCT05186818]) could enroll in this phase 2/3, open-label, extension study. Participants received aficamten 5 mg once daily titrated \u226420 mg based on site-read echocardiographic assessments of Valsalva left ventricular outflow tract gradient and left ventricular ejection fraction. From May 2021 to October 2023, 213 participants enrolled; 46 participants with 48 weeks of follow-up were evaluated (mean age: 59.7 years; female: n = 26 [56.5%]). There were rapid, substantial, and sustained reductions in mean resting (-40 \u00b1 34 mm Hg) and Valsalva peak left ventricular outflow tract gradient (-53 \u00b1 39 mm Hg) from baseline to week 48. A total of 82% experienced \u22651 NYHA functional class improvement; 31% experienced a 20-point improvement in Kansas City Cardiomyopathy Questionnaire-Clinical Summary score. There were substantial reductions (mean change) in maximum left ventricular wall thickness (-1.2 \u00b1 1.6 mm; P < 0.0001), left atrial volume index (-3.5 \u00b1 6.6 mL/m 2 ; P = 0.0008), lateral E/e' (-2.2 \u00b1 6.1; P = 0.02), and cardiac biomarkers (P \u2264 0.0031). Aficamten was well tolerated with 2 (4.3%) asymptomatic and transient instances of left ventricular ejection fraction <50% (range: 47%-49%), neither resulting in drug discontinuation, and no new-onset atrial fibrillation. Aficamten treatment over 48 weeks was well tolerated and associated with substantial and durable relief of obstruction and symptom burden, lower cardiac biomarker levels, and cardiac phenotypic changes, which may indicate favorable cardiac remodeling. (A Follow-Up, Open-Label, Research Evaluation of Sustained Treatment With Aficamten [CK-3773274] in Hypertrophic Cardiomyopathy [FOREST-HCM]; NCT04848506).",
+      "publicationDate": "2025-06-19",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40540987/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT04848506"
+      ],
+      "savedIndexNctLeads": [
+        "NCT04848506"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Clinical Trial, Phase III",
+        "Clinical Trial, Phase II",
+        "Multicenter Study",
+        "Randomized Controlled Trial",
+        "Research Support, Non-U.S. Gov't"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT04848506"
+      ]
+    },
+    {
+      "pmid": "40544170",
+      "title": "Mechano-energetic uncoupling in heart failure.",
+      "abstract": "Heart failure (HF) is a major global and life-threatening disease. Despite advances in therapies, the prevalence of HF is increasing owing to an ageing population and the pervasive pandemic of obesity and metabolic disorders, which have transformed the pathophysiology of HF. Changes in cardiac energy metabolism and the related energy deficit crucially contribute to the severity and type of HF. Furthermore, perturbations in excitation-contraction coupling, mitochondrial function and oxidative stress are characteristic features of HF. In this Review, we focus on the close interaction between cardiac mechanics and mitochondrial energetics, and decipher how this mechano-energetic coupling is disturbed in various acquired and hereditary forms of HF. In HF with reduced ejection fraction, defects in excitation-contraction coupling are key drivers of mechano-energetic uncoupling, whereas in HF with preserved ejection fraction, increased preload and afterload imposed by obesity, hypertension and age-dependent vascular stiffness increase mechanical workload, which is insufficiently matched by mitochondrial tricarboxylic acid cycle activity and ATP supply. In both scenarios, oxidative stress results from depletion of the antioxidative capacity and contributes to maladaptive cardiac remodelling and dysfunction. Several established and emerging treatments for HF target this mechano-energetic uncoupling, and a greater understanding of the underlying mechanisms will open new therapeutic opportunities to alleviate the burden of HF.",
+      "publicationDate": "2025-06-22",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40544170/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT06736574"
+      ],
+      "savedIndexNctLeads": [
+        "NCT06736574"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Review"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT06736574"
+      ]
+    },
+    {
+      "pmid": "40644648",
+      "title": "Efficacy and Safety of Avutometinib \u00b1 Defactinib in Recurrent Low-Grade Serous Ovarian Cancer: Primary Analysis of ENGOT-OV60/GOG-3052/RAMP 201.",
+      "abstract": "This study evaluated the efficacy and safety of avutometinib (rapidly accelerated fibrosarcoma/mitogen-activated extracellular signal-regulated kinase [MEK] clamp) alone or in combination with defactinib (focal adhesion kinase inhibitor) in patients with recurrent low-grade serous ovarian cancer (LGSOC). In this phase II, open-label study, patients with recurrent, measurable LGSOC after \u22651 line of platinum chemotherapy were stratified by tumor Kirsten rat sarcoma virus homolog ( KRAS ) mutation status and randomly assigned to oral avutometinib 4.0 mg two times per week monotherapy or avutometinib 3.2 mg two times per week in combination with oral defactinib 200 mg two times per day. The combination was selected as the go-forward regimen for expansion. The primary end point was objective response rate (ORR) by blinded independent central review. A total of 115 patients received the go-forward combination regimen. Patients had a median of 3 (range, 1-9) prior lines of therapy, including hormonal (86%), bevacizumab (51%), and MEK inhibitor (22%). Confirmed ORR was 31% (95% CI, 23% to 41%) with a median duration of response of 31.1 months (95% CI, 14.8 to 31.1). ORR was 44% in  KRAS- mutant and 17% in  KRAS  wild-type cohorts. The median progression-free survival was 12.9 months (95% CI, 10.9 to 20.2) overall and 22.0 months (95% CI, 11.1 to 36.6) and 12.8 months (95% CI, 7.4 to 18.4) in  KRAS- mutant and wild-type cohorts, respectively. The most frequent grade \u22653 treatment-related adverse events (AEs) were elevated creatine phosphokinase (24%), diarrhea (8%), and anemia (5%). Ten percent of patients discontinued because of AEs. The efficacy and safety profile of avutometinib in combination with defactinib support this combination as a potential standard of care for recurrent LGSOC. A randomized phase 3 study of avutometinib and defactinib versus investigator's choice of therapy for women with recurrent LGSOC is currently enrolling (RAMP301; ClinicalTrials.gov identifier: NCT06072781).",
+      "publicationDate": "2025-07-11",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40644648/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT06072781"
+      ],
+      "savedIndexNctLeads": [
+        "NCT06072781"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Clinical Trial, Phase II",
+        "Randomized Controlled Trial",
+        "Multicenter Study",
+        "Research Support, Non-U.S. Gov't",
+        "Research Support, N.I.H., Extramural"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT06072781"
+      ]
+    },
+    {
+      "pmid": "40713231",
+      "title": "Patient experience with familial chylomicronemia syndrome before and after olezarsen treatment: Qualitative interviews with clinical trial participants.",
+      "abstract": "Familial chylomicronemia syndrome (FCS), a rare genetic disorder, markedly increases plasma triglycerides and the risk of acute pancreatitis. FCS symptoms can profoundly impact patients' quality of life. To explore the FCS patient experience during olezarsen treatment, including perceptions of meaningful changes in FCS symptoms and impacts. Patients with FCS continuing olezarsen treatment in an open-label extension (OLE) (NCT05130450) of the randomized, placebo-controlled phase 3 Balance study (NCT04568434) participated in 1-hour qualitative interviews. Thematic analysis was conducted. Among 18 OLE participants who completed interviews (55.6% female; mean age, 43.5 years), 17 reported a history of pancreatitis, including 14 with pancreatitis events within 10 years prior to enrollment in the Balance study (13/14 requiring hospitalization). All participants reported having experienced FCS-related symptoms before trial enrollment (most commonly, abdominal pain [94.4%], physical fatigue [66.7%], diarrhea [55.6%], vomiting [50.0%], nausea [33.3%], and difficulty thinking [27.8%]) and impacts (most commonly, dietary restrictions [100%], mood/emotions [94.4%], hospitalizations [77.8%], and social activities [77.8%]). Fifteen of 18 participants (83.3%) reported improvements with olezarsen treatment, including reductions in FCS-related symptoms (abdominal pain [n = 14/17; 82.4%], physical fatigue [n = 7/12; 58.3%], diarrhea [n = 6/10; 60.0%], vomiting [n = 7/8; 87.5%], nausea [n = 3/5; 60.0%], and difficulty thinking [n = 3/5; 60.0%]) and impacts (relationships [n = 6/7; 85.7.0%], hospital admittances [n = 11/14; 78.6%], finances [n = 3/4; 75.0%], and mood/emotions [n = 12/17; 70.6%]). Most participants (15/18; 83.3%) reported meaningful improvements and indicated they were satisfied with olezarsen treatment. Results of this qualitative study underscore the significant burden of FCS and support the effectiveness of olezarsen from the patient perspective.",
+      "publicationDate": "2025-06-18",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40713231/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT05130450"
+      ],
+      "savedIndexNctLeads": [
+        "NCT05130450"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Randomized Controlled Trial",
+        "Clinical Trial, Phase III",
+        "Research Support, Non-U.S. Gov't"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT05130450"
+      ]
+    },
+    {
+      "pmid": "40802027",
+      "title": "Viloxazine Extended-Release Capsules in Children and Adolescents with Attention-Deficit/Hyperactivity Disorder: Results of a Long-Term, Phase 3, Open-Label Extension Trial.",
+      "abstract": "Viloxazine ER (extended-release capsules; Qelbree \u00ae ) is a nonstimulant medication that has been approved by the United States Food and Drug Administration (FDA) for treatment of pediatric and adult attention-deficit/hyperactivity disorder (ADHD). This phase 3, open-label extension (OLE) trial evaluated the long-term safety and efficacy of viloxazine ER in children and adolescents with ADHD. Participants completing the phase 2 or one of the four phase 3 double-blind, placebo-controlled clinical trials were eligible for the OLE trial. Upon entering the OLE, double-blind treatment was discontinued and participants were administered viloxazine ER 100 mg/day (children, aged 6-11 years) or 200 mg/day, (adolescents, aged 12-18 years), with dosage titration as needed over a 12-week dose-optimization period (up to 400 mg/day [children] or 600 mg/day [adolescents]). Participants then entered a maintenance period that continued through US FDA-approval (up to 72 months). Safety (primary objective) was assessed relative to OLE baseline using adverse event (AE), clinical laboratory tests, vital sign, ECG, and Columbia Suicide Severity-Rating Scale (C-SSRS) monitoring. Efficacy was assessed relative to double-blind baseline using the ADHD Rating Scale (ADHD-RS-IV/5) and the Clinical Global Impression-Improvement (CGI-I) scale. Study visits for these assessments occurred every ~ 3 months throughout maintenance treatment. Participants (N = 1100) included 646 children and 454 adolescents (66.5% male/33.5% female). Median (range) exposure to viloxazine ER in the OLE was 260 (1-1896) days, and the median modal (most frequently used) viloxazine ER doses were 300 mg/day for children and 400 mg/day for adolescents. AEs included (\u2265 5% incidence) nasopharyngitis (9.7%), somnolence (9.5%), headache (8.9%), decreased appetite (6.0%), and fatigue (5.7%). AEs were mostly mild or moderate in severity (3.9% reported any severe AE); AEs led to discontinuation in 8.2% of participants. The mean \u00b1 SD changes from double-blind baseline in ADHD-RS IV/5 total score were -24.3 \u00b1 12.0 at Month 3, -26.1 \u00b1 11.5 at Month 12, and -22.4 \u00b1 13.6 at participants' last OLE study visit. The results of this large-scale safety trial support the long-term use of viloxazine ER as a generally well-tolerated and effective treatment option for pediatric ADHD. No new safety concerns emerged, and efficacy results suggest the potential for continued improvement over that seen during double-blind treatment. Clinicaltrials.gov identifier: NCT02736656.",
+      "publicationDate": "2025-08-13",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40802027/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT02736656"
+      ],
+      "savedIndexNctLeads": [
+        "NCT02736656"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Clinical Trial, Phase III",
+        "Randomized Controlled Trial",
+        "Multicenter Study",
+        "Research Support, Non-U.S. Gov't"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT02736656"
+      ]
+    },
+    {
+      "pmid": "40866782",
+      "title": "Comorbidities and comorbidity burden in patients with neurocognitive disorders: findings from the MEMORA Cohort Study.",
+      "abstract": "This study aimed to compare comorbidities' prevalence and the comorbidity burden as measured by comorbidity indices according to the stages and the etiological diagnoses of neurocognitive disorders (NCD). This study aimed also to examine how comorbidities and comorbidity indices were associated with both stages and etiologies of NCD. This is a cross-sectional study including participants from the MEMORA real-life cohort, aged\u2009\u2265\u200960\u00a0years. Patients had to be in either MCI or dementia stage, with the following etiological diagnoses of NCD: AD, VD (vascular dementia), mixed dementia (MD), dementia with Lewy bodies, frontotemporal dementia and Parkinson's disease. Three comorbidity indices were used to measure comorbidity burden: the Charlson comorbidity index, the multimorbidity-weighted index (MWI) and the health-related quality of life comorbidity index (HRQOL-CI). Prevalence of comorbidities involved in the calculation of at least one comorbidity index were reported. The associations between comorbidities/comorbidity indices and groups were assessed using binary and multinomial logistic regressions. Overall, 3470 patients (66.9% dementia; 50.9% AD) were included. The most frequent comorbidities were hypertension (50.2%), depression (28.0%) and hypercholesterolemia (22.6%). The MWI and the HRQOL-CI were associated with increased odds of dementia (vs. MCI). Upon stratifying population according to the etiological diagnoses of NCD, the highest mean of the three comorbidity indices were found in patients with VD and MD. Comorbidities and comorbidity burden vary according to the stage and etiological diagnoses of NCD. Future studies should consider the stage and the etiological diagnoses, when studying the effect of the comorbidity burden on the progression of NCD.",
+      "publicationDate": "2025-08-27",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40866782/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT06159673"
+      ],
+      "savedIndexNctLeads": [
+        "NCT06159673"
+      ],
+      "publicationTypes": [
+        "Journal Article"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT06159673"
+      ]
+    },
+    {
+      "pmid": "40956664",
+      "title": "Prolonged Progression-Free Survival, Disease-Free Survival, and Cystectomy Avoidance With IL-15 Receptor Lymphocyte-Stimulating Agent NAI Plus Bacillus Calmette-Gu\u00e9rin in Bacillus Calmette-Gu\u00e9rin-Unresponsive Papillary-Only Nonmuscle-Invasive Bladder Cancer.",
+      "abstract": "In QUILT-3.032, the efficacy of interleukin-15 receptor agonist, nogapendekin alfa inbakicept (NAI), in combination with bacillus Calmette-Gu\u00e9rin (BCG) for BCG-unresponsive high-grade papillary-only nonmuscle-invasive bladder cancer was assessed. In this study, we report the 36-month follow-up among participants with BCG-unresponsive papillary disease (cohort B). NCT03022825 is an open-label, multicenter study of patients with BCG-unresponsive high-grade Ta/T1 papillary nonmuscle-invasive bladder cancer who received 400 \u03bcg NAI plus 50 mg BCG intravesically weekly for 6 consecutive weeks. The primary end point is disease-free survival (DFS) at 12 months. Progression-free survival (PFS), disease-specific survival (DSS), and cystectomy avoidance were assessed. Treatment-related adverse events were assessed. At July 15, 2024, data cutoff, the DFS rates at 12, 24, and 36 months were 58.2% (95% CI: 46.6, 68.2), 52.1% (95% CI: 40.3, 62.7), and 38.2% (95% CI: 25.6, 50.6), respectively. The PFS rates at 12 and 36 months were 94.9% (95% CI: 86.9, 98.0) and 83.1% (95% CI: 69.5, 91.0). The DSS rates at 12 and 36 months were 98.7% (95% CI: 91.4, 99.8) and 96.0% (95% CI: 88.2, 98.7). The median DSS has not been reached. Cystectomy avoidance rates at 12 and 36 months were 92.2% (95% CI: 83.4, 96.4) and 81.8% (95% CI: 68.1, 90.1), with median time to cystectomy not reached. Most treatment-related adverse events were grade 1 to 2 (61%) with 3% grade 3 and no grade 4 to 5. The 12-month and 36-month DFS, PFS, DSS, and cystectomy avoidance rates demonstrate the effectiveness and safety of NAI plus BCG in the management of BCG-unresponsive papillary disease. ClinicalTrials.gov Identifier: NCT03022825.",
+      "publicationDate": "2025-09-16",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40956664/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT03022825"
+      ],
+      "savedIndexNctLeads": [
+        "NCT03022825"
+      ],
+      "publicationTypes": [
+        "Clinical Trial, Phase II",
+        "Clinical Trial, Phase III",
+        "Journal Article",
+        "Multicenter Study"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT03022825"
+      ]
+    },
+    {
+      "pmid": "41127972",
+      "title": "Effects of Resmetirom on Metabolic-Dysfunction Associated Steatohepatitis in Patients With Weight Loss and/or Diabetes Taking Glucagon-Like Peptide-1 Receptor Agonists and Other Diabetes Therapies: A Secondary Analysis of the MAESTRO-NASH Trial.",
+      "abstract": "MAESTRO-NASH, a randomised, double-blind, placebo-controlled, 54-month phase 3 trial evaluating the efficacy of resmetirom in patients with biopsy-confirmed metabolic-dysfunction associated steatohepatitis (MASH) and liver fibrosis achieved primary endpoints of MASH resolution with no worsening of fibrosis, and \u2265\u20091-stage improvement in fibrosis with no worsening of MASH at 52-weeks. The effects of resmetirom (80 or 100\u2009mg) versus placebo were evaluated on Week 52 histological and biomarker endpoints in relation to background treatment with sodium-glucose cotransporter 2 inhibitors (SGLT2i), GLP-1 receptor agonists (GLP-1 RA), and/or \u2265\u20095% weight loss at Week 52. At baseline, 13%-17% of patients (all with type 2 diabetes mellitus [T2DM]) were on stable GLP-1 RA or SGLT2i therapy. Changes in liver histology, MRI-proton density fat fraction (MRI-PDFF), and liver stiffness were examined after 52\u2009weeks of treatment. No weight loss above baseline occurred with GLP-1 RA or SGLT2i therapy. SGLT2 and GLP-1 RA treated patients showed similar rates of MASH resolution and fibrosis improvement in combination with resmetirom as patients not on these therapies. Resmetirom-treated patients (100\u2009mg) with weight loss (\u2265\u20095%) compared with those with weight loss <\u20095% had higher rates of MASH resolution (56.6% vs. 33.8%), fibrosis improvement (40.6% vs. 31.5%), MRI-PDFF reduction (-69% vs. -46%), and liver stiffness reduction after 52\u2009weeks of treatment (-4.6\u2009kPa vs. -2.3\u2009kPa). The efficacy of resmetirom on multiple MASH endpoints was not impacted by background SGLT2i or GLP-1 RA treatment. Weight loss (\u2265\u20095%) enhanced the efficacy of resmetirom. MAESTRO-NASH ClinicalTrials.gov number, NCT03900429.",
+      "publicationDate": "2025-10-23",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41127972/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT03900429"
+      ],
+      "savedIndexNctLeads": [
+        "NCT03900429"
+      ],
+      "publicationTypes": [
+        "Clinical Trial, Phase III",
+        "Journal Article",
+        "Multicenter Study",
+        "Randomized Controlled Trial"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT03900429"
+      ]
+    },
+    {
+      "pmid": "41194675",
+      "title": "Pharmacokinetic and Pharmacodynamic Evaluation of Bidridistrogene Xeboparvovec in an Aged Murine Model of Limb-Girdle Muscular Dystrophy Type 2E/R4.",
+      "abstract": "Limb-girdle muscular dystrophy type 2E/R4 (LGMD2E/R4) is an ultra-rare autosomal recessive disorder caused by mutations in  SGCB , the gene that encodes for \u03b2-sarcoglycan (SGCB), a component of the dystrophin-associated protein complex that stabilizes muscle fibers during contractions. Bidridistrogene xeboparvovec is an investigational adeno-associated virus-mediated gene transfer therapy designed to deliver a codon-optimized, full-length human  SGCB  and induce targeted expression of functional human SGCB protein. Interim safety and efficacy data from a clinical trial in patients with LGDM2E/R4 aged 4-15 years (NCT03652259) support further clinical development of bidridistrogene xeboparvovec. However, less is known about the effects of this agent in patients with more advanced LGMD2E/R4, who on average are older and heavier, which prompted their inclusion in studies VOYAGENE (NCT05876780, phase 1) and EMERGENE (NCT06246513, phase 3). In the preclinical study presented here, we delivered bidridistrogene xeboparvovec (0.185 \u00d7 10 13  vg/kg, 0.37 \u00d7 10 13  vg/kg, 0.74 \u00d7 10 13  vg/kg, 1.85 \u00d7 10 13  vg/kg, or 7.4 \u00d7 10 13  vg/kg) to  Sgcb -/- mice aged 27-42 weeks ( n  = 4 per dose) with age-matched saline-treated  Sgcb-/-  and C57BL/6J mice used as controls. Approximately 12 weeks after administration, we observed SGCB expression and found evidence of reduction in muscle fibrosis, reduction in muscle damage, and restoration of muscle force. Overall, a dose-dependent increase in vector exposure across tissue types was observed, with a nonlinear, exposure-dependent increase in both SGCB expression and functional improvement that reached saturation at 7.4 \u00d7 10 13  vg/kg. Pharmacokinetic and pharmacodynamic analyses demonstrated a robust relationship between vector biodistribution, SGCB expression, and muscle force, further supporting clinical development of bidridistrogene xeboparvovec at the highest dose (7.4 \u00d7 10 13  vg/kg), across a broad LGMD2E/R4 population and regardless of disease progression.",
+      "publicationDate": "2025-11-06",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41194675/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT06246513"
+      ],
+      "savedIndexNctLeads": [
+        "NCT06246513"
+      ],
+      "publicationTypes": [
+        "Journal Article"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT06246513"
+      ]
+    },
+    {
+      "pmid": "41347307",
+      "title": "Efficacy and Safety of Aficamten in Children and Adolescents With Obstructive Hypertrophic Cardiomyopathy: Study Design and Rationale of CEDAR-HCM.",
+      "abstract": "Hypertrophic cardiomyopathy (HCM) is an important cause of morbidity and mortality in children, but treatment options are limited. Aficamten, a next-in-class cardiac myosin inhibitor, directly targets the hypercontractility underlying HCM. Aficamten improved exercise capacity, health status, and symptoms in adults with obstructive HCM in the pivotal, phase 3 SEQUOIA-HCM trial (Safety, Efficacy, and Quantitative Understanding of Obstruction Impact of Aficamten in HCM; NCT05186818). CEDAR-HCM (Clinical Evaluation of dosing With Aficamten to Reduce Obstruction in Pediatric Population With HCM) is an international, multicenter, randomized, double-blind, placebo-controlled trial followed by an open-label extension to evaluate the efficacy, safety, and pharmacokinetics of aficamten in pediatric participants with symptomatic obstructive HCM. The trial will enroll \u224855 adolescents (12 to <18 years) and subsequently expand to include at least 10 children (6 to <12 years) with nonsyndromic obstructive HCM, left ventricular ejection fraction \u226560%, Valsalva left ventricular outflow tract gradient \u226550 mm\u2009Hg, and New York Heart Association functional class \u2265II. Participants will be randomized 2:1 to aficamten or placebo in addition to standard of care therapy or as monotherapy, with echocardiogram-guided dose adjustments targeting a Valsalva left ventricular outflow tract gradient <30 mm\u2009Hg while maintaining left ventricular ejection fraction \u226550%. The primary end point is the change in Valsalva left ventricular outflow tract gradient from baseline to week 12. Secondary end points include change in resting left ventricular outflow tract gradient, cardiac biomarkers, New York Heart Association functional class, and assessment of pharmacokinetics. After completing the 12-week randomized period, eligible participants will continue into a long-term open-label extension. The trial is currently enrolling. Results of CEDAR-HCM will provide insight into the safety and efficacy of aficamten in adolescents and in children as young as 6 years of age. URL: https://www.clinicaltrials.gov; Unique identifier: NCT06412666.",
+      "publicationDate": "2025-12-05",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41347307/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT06412666"
+      ],
+      "savedIndexNctLeads": [
+        "NCT06412666"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Clinical Trial Protocol"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT06412666"
+      ]
+    },
+    {
+      "pmid": "41384753",
+      "title": "The combination of avutometinib and defactinib in treating recurrent low-grade serous ovarian cancer: a plain language summary of the Phase II clinical trial ENGOT-OV60/GOG-3052/RAMP 201.",
+      "abstract": "What is this summary about? This plain language summary describes the results of the ENGOT-OV60/ GOG-3052/RAMP 201 clinical study, which were published in 2025. The Phase II study evaluated treatments for patients with a rare type of ovarian cancer, low-grade serous ovarian cancer (LGSOC). The study specifically involved those whose cancer came back or persisted, despite already having surgery and previous chemotherapy. Researchers investigated the effect of avutometinib on its own and in combination with defactinib to see which treatment would be more effective and to determine if both treatments were safe. They also investigated the combination of a lower dose of avutometinib with defactinib. All trial participants were tested for a specific  KRAS   genetic mutation  (non-hereditary, also called somatic). The main goal of the study was to determine the confirmed objective response rate of each treatment. This is the percentage of patients whose cancer shrinks by at least 30% after treatment and maintains this shrinkage for at least 2 months. The study also closely monitored for any adverse events associated with each treatment and looked at other measures of treatment effectiveness. What were the results? The percentage of patients with an objective response was 31% in the combination treatment group and 17% in the avutometinib-only group. Amongst patients receiving the combination, the  objective response rate  was 44% in the group of participants with a  KRAS  mutation and 17% in the group without a  KRAS  mutation. The lower dose of avutometinib used in combination with defactinib was not as effective as the standard dose.In the standard dose combination treatment group, most  adverse events  were not severe (categorized as grade 1 or 2 on a scale of 0 to 5) and were managed with  dose holds  or  dose reductions . The most frequent adverse events reported were nausea, increased  creatine phosphokinase (CPK) , diarrhea,  peripheral edema , and rash. A total of 10% of participants discontinued treatment due to adverse events. What do the results mean? The results of the study support using the combination of avutometinib and defactinib as a treatment option for women with recurrent LGSOC. Clinical trial number : NCT06072781.",
+      "publicationDate": "2025-12-12",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41384753/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT06072781"
+      ],
+      "savedIndexNctLeads": [
+        "NCT06072781"
+      ],
+      "publicationTypes": [
+        "Journal Article"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT06072781"
+      ]
+    },
+    {
+      "pmid": "41461598",
+      "title": "OPERA-01: a phase III study of palazestrant for ER+, HER2- advanced breast cancer after CDK4/6 inhibitor therapy.",
+      "abstract": "Endocrine therapy (ET) resistance is a major concern when treating estrogen receptor-positive (ER+) human epidermal growth factor receptor 2-negative (HER2-) breast cancer. A combination of cyclin-dependent kinase 4/6 inhibitors (CDK4/6i) and ET is the current first-line standard of care (SOC) for patients with ER+, HER2- advanced breast cancer. Despite the benefits of ET plus a CDK4/6i, disease progression due to endocrine resistance remains a significant challenge. More effective ETs that can overcome resistance are needed to improve clinical outcomes and maintain quality of life by delaying chemotherapy. Palazestrant is a novel oral, complete estrogen receptor antagonist (CERAN) and selective estrogen receptor degrader (SERD) that blocks both transcriptional activation function domains, AF1 and AF2, resulting in complete inhibition of ER-driven transcription, regardless of estrogen receptor 1 ( ESR1 ) mutation status. As monotherapy, palazestrant showed tolerable safety, favorable pharmacokinetics, and antitumor efficacy in heavily pretreated patients during phase I/II studies. OPERA-01 (NCT06016738) is a phase III study designed to evaluate the safety and efficacy of palazestrant monotherapy compared to SOC ET in patients with ER+, HER2- locally advanced or metastatic breast cancer, regardless of  ESR1  mutation status, whose disease advanced following treatment with at least one ET in combination with a CDK4/6i. Clinical Trial Registration:  Clinicaltrials.gov NCT06016738. Registered 17 August 2023. The most common type of breast cancer (BC) is estrogen receptor-positive (ER+; responds to estrogen) and human epidermal growth factor receptor 2-negative (HER2\u2013; does not overproduce HER2 protein). Because estrogen promotes the growth of ER+, HER2\u2013 BCs, endocrine therapy (ET) that reduces the amount or the effect of estrogen is typically used to treat this BC subtype. ET is often combined with another class of medications called cyclin-dependent kinase 4/6 inhibitors (CDK4/6i) to treat ER+, HER2\u2013 advanced BC. Unfortunately, this combination eventually stops working due to mutations that develop in genes, including the estrogen receptor gene ( ESR1 ), which allow cancers to grow without estrogen. Patients whose tumors develop mutations must then switch to a different ET to control their disease. Thus, there is a need for new ETs that are safe and can overcome ET resistance, thereby helping tumors remain under control which allows patients to maintain their quality of life by delaying the need for chemotherapy. Palazestrant is a new oral ET taken once daily that may be effective against tumors with or without a mutation in  ESR1 . Clinical studies showed that palazestrant was safe in people with ER+, HER2\u2013 BCs. To better understand how well palazestrant works, the ongoing OPERA\u201101 study is comparing the effects of palazestrant to standard-of-care ETs in patients with ER+, HER2\u2013 locally advanced or metastatic BC, with or without a mutation in  ESR1 , whose cancer is no longer under control after treatment with at least one ET in combination with a CDK4/6i.",
+      "publicationDate": "2025-12-29",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41461598/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT06016738"
+      ],
+      "savedIndexNctLeads": [
+        "NCT06016738"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Clinical Trial Protocol"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT06016738"
+      ]
+    },
+    {
+      "pmid": "41481370",
+      "title": "A Randomized Clinical Trial of Kidney Autologous Cell Therapy in Diabetic Kidney Disease.",
+      "abstract": "Bilateral kidney injections with rilparencel was associated with a 78% improvement in the annual eGFR decline in kidney function. There were no serious adverse events related to rilparencel therapy. The interventional procedures were well tolerated and had an acceptable safety profile. Despite new treatments to delay disease progression in patients with diabetes and CKD, many patients continue to lose kidney function and progress to kidney failure. Additional therapeutic strategies, perhaps targeting multiple deleterious pathways, are necessary to preserve kidney function in patients with advanced CKD. A multicenter, randomized, phase 2 clinical trial (NCT05018416) assessed rilparencel (an autologous cell therapy composed of cells obtained by kidney biopsy), in participants with diabetes and estimated glomerular filtration rate (eGFR) 20\u201350 ml/min per 1.73 m 2 . Participants were randomized 1:1 to two cohorts. Cohort 1 received two rilparencel injections percutaneously into the kidney cortex, 3 months apart, one in each kidney. Cohort 2 received one injection and a second injection only upon a sustained decline in eGFR or increase in urinary albumin creatinine ratio. Participants were followed up to 18 months after their last injection. The primary efficacy end point was change in eGFR slope from the preinjection period to the period after the last injection. The primary safety end point was the percentage of participants with procedure or rilparencel-related treatment emergent adverse events (TEAEs). Fifty-three participants were randomized and 49 received at least one injection. In Cohort 1, annual eGFR slope (ml/min per 1.73 m 2 /year) in the preinjection period was -5.84 (SEM 1.07) versus \u22121.27 (SEM 1.36) in the period after the last injection (difference 4.57 [95% confidence interval, 1.95 to 7.18]). In Cohort 2, annual eGFR slope in the pre-injection period was \u22123.40 (SEM 0.81) versus \u22121.71 (SEM 1.04) in the period after the last injection (difference 1.70 [95% confidence interval, \u22120.24 to 3.63]). No interactions were observed across multiple predefined baseline subgroups. Of 87 injections, procedure-related TEAEs occurred in 16 participants and rilparencel-related TEAEs occurred in six participants. No product-related serious adverse events and no procedure-related or product-related deaths were reported. Bilateral kidney injection of rilparencel may preserve kidney function with an acceptable safety profile. A multicenter, phase 3, randomized, sham-controlled study is ongoing.",
+      "publicationDate": "2026-01-02",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41481370/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT05099770"
+      ],
+      "savedIndexNctLeads": [
+        "NCT05099770"
+      ],
+      "publicationTypes": [
+        "Journal Article"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT05099770"
+      ]
+    },
+    {
+      "pmid": "41586499",
+      "title": "Combination therapy with tobevibart and elebsiran potently reduces hepatitis B virus surface antigen levels in preclinical  in vivo  models.",
+      "abstract": "RNA interference (RNAi) therapeutics targeting hepatitis B virus (HBV) RNAs and monoclonal antibodies (mAbs) targeting HBV surface antigen (HBsAg) represent potential strategies for enabling functional cure in chronic HBV patients. Tobevibart (VIR-3434) is an investigational, Fc-engineered human mAb that targets HBsAg with pan-genotypic neutralizing activity. Elebsiran (VIR-2218) is an investigational small interfering RNA targeting a conserved region of the HBV genome. The  in vitro  antiviral activity of elebsiran was assessed in HBV-infected primary human hepatocytes and hepatoma cells and showed potent inhibition of viral markers HBeAg (EC 50  of 2.5 nM and 53.7 pM, respectively) and HBsAg (EC 50  of 1.4 nM and 66.5 pM, respectively). Tobevibart and elebsiran activity  in vivo  was determined using two well-established HBV mouse models: AAV-HBV transduced C57BL/6 mice and human liver-chimeric mice. Mice were treated with a monotherapy or a combination of muHBC34 (the murinized parental mAb of tobevibart) and elebsiran at different doses. In both models, the mouse surrogate of tobevibart or elebsiran monotherapy was effective in reducing blood HBsAg levels. Combined treatment improved suppression of HBsAg (maximum mean reductions of 2.81 log in the AAV-HBV model and 2.51 log in human liver-chimeric mice) and HBV DNA over monotherapy. Tobevibart and elebsiran have been tested in clinical trials for the treatment of chronic hepatitis B and chronic hepatitis Delta.",
+      "publicationDate": "2026-01-26",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41586499/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT06903338",
+        "NCT07128550"
+      ],
+      "savedIndexNctLeads": [
+        "NCT06903338",
+        "NCT07128550"
+      ],
+      "publicationTypes": [
+        "Journal Article"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT06903338",
+        "NCT07128550"
+      ]
+    },
+    {
+      "pmid": "41697690",
+      "title": "Five Years of Ublituximab in Multiple Sclerosis: ULTIMATE I and II Open-Label Extension Study.",
+      "abstract": "In the 2-year Study to Assess the Efficacy and Safety of Ublituximab in Participants With Relapsing Forms of Multiple Sclerosis (ULTIMATE) I and II randomized clinical studies, disease activity was significantly reduced with ublituximab vs teriflunomide in participants with relapsing multiple sclerosis (RMS). To evaluate long-term ublituximab clinical efficacy and safety. The 2-year, multicenter, randomized, active-controlled, double-blind period (DBP) of the ULTIMATE I and II phase 3 studies occurred September 2017 to November 2020. Enrollment in the ongoing ULTIMATE open-label extension (OLE) study began November 2019; data cutoff for this analysis was January 1, 2024. ULTIMATE OLE participants continued ublituximab (UBL-UBL) or switched from teriflunomide to ublituximab (TER-UBL). Efficacy (annualized relapse rate [ARR], 24-week confirmed disability progression [CDP24], and 24-week confirmed disability improvement [CDI24]) and safety were key outcomes. Of 985 adults with RMS who completed ULTIMATE I and II, 851 enrolled in the ULTIMATE OLE and were included in the analysis. On DBP completion, more than 85% of participants (UBL-UBL, 422 of 494; TER-UBL, 429 of 491) entered the OLE, of whom more than 70% (UBL-UBL, 297 of 422; TER-UBL, 327 of 429) continued taking ublituximab at year 5 (OLE year 3) at data cutoff, making up the analysis population (mean [SD] age, 38.5 [9.7] years; 532 female [62.5%]). TER-UBL participants experienced a 58.4% ARR reduction at 1 year after the switch (0.182 vs 0.076; rate ratio, 0.42; 95% CI, 0.29-0.60; P\u2009<\u2009.001), and ARR continued to decrease to 0.048 (year 4) and 0.045 (year 5). UBL-UBL participants had further ARR reductions after the DBP (0.053, 0.032, and 0.020 for years 3, 4, and 5, respectively). At year 5, CDP24 was 8.0% in UBL-UBL participants vs 14.3% in TER-UBL participants (P\u2009=\u2009.01), and CDI24 was 17.0% in UBL-UBL participants vs 12.2% in TER-UBL participants (P\u2009=\u2009.02). Adverse events were consistent with the established safety profile from pivotal trials, with exposure-adjusted incidence rates per 100 participant-years of serious infections (excluding COVID events) of 2.10 (UBL-UBL) and 2.58 (TER-UBL). On average, immunoglobulin levels remained above the lower limit of normal, and no significant differences in serious infection rates were observed regardless of immunoglobulin level. Results reveal that sustained clinical benefits were observed with 5 years of ublituximab treatment: ARR in year 5 showed 1 relapse per 50 participant-years of ublituximab treatment and 92% of UBL-UBL participants remained free from CDP24. Results confirm long-term ublituximab benefits and early initiation of high-efficacy treatment. ClinicalTrials.gov Identifier: NCT04130997.",
+      "publicationDate": null,
+      "publicationDateKind": "NOT_PRECISELY_VERIFIED",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41697690/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT04130997"
+      ],
+      "savedIndexNctLeads": [
+        "NCT04130997"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Randomized Controlled Trial",
+        "Multicenter Study",
+        "Clinical Trial, Phase II"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT04130997"
+      ]
+    },
+    {
+      "pmid": "41780565",
+      "title": "Aficamten in symptomatic obstructive hypertrophic cardiomyopathy: the FOREST-HCM long-term study.",
+      "abstract": "Aficamten is a next-in-class, oral selective cardiac myosin inhibitor that ameliorates hypercontractility in hypertrophic cardiomyopathy (HCM). This study assessed the safety and efficacy of extended aficamten treatment in symptomatic obstructive HCM (oHCM). Patients completing a parent aficamten study were eligible to enrol in FOREST-HCM (NCT04848506), an open-label study evaluating long-term aficamten treatment. Patients with oHCM (N = 296; mean age \u00b1SD 61 \u00b1 12.3 years, 44.3% female) enrolled between May 2021 and August 2024. Cumulative exposure was 352 patient-years; median follow-up 51.6 (IQR 41.5, 70.8) weeks. At Weeks 12 and 96, aficamten reduced Valsalva left ventricular outflow tract gradient by 56 \u00b1 43 and 62 \u00b1 33 mmHg from baseline (both P < 0.0001), with minimal reduction in left ventricular ejection fraction (LVEF) (-3% \u00b1 6% and -5% \u00b1 5%); 69% and 93% of participants had at least one NYHA class improvement; Kansas City Cardiomyopathy Questionnaire-Clinical Summary Score improved by 15 \u00b1 16 and 16 \u00b1 16 points. Treatment-emergent serious adverse events (TESAEs) occurred in 36 (12.2%) patients; no deaths, heart failure, or events considered related to aficamten were reported. One (0.3%) patient terminated therapy due to a TESAE (ischemic colitis). LVEF<50% occurred in 10 (3.4%) patients [exposure-adjusted incidence rate (EAIR): 2.9 per 100 patient-years] with 2 having non-serious mild/moderate dyspnoea. No treatment interruptions for LVEF<50%, and no events of LVEF<40% occurred. New-onset atrial fibrillation occurred in seven (2.4%) patients (EAIR 2.0 per 100 patient-years). Extended aficamten treatment in patients with symptomatic oHCM yielded early and sustained hemodynamic and clinical responses with low incidences of new-onset atrial fibrillation and LVEF<50%.",
+      "publicationDate": null,
+      "publicationDateKind": "NOT_PRECISELY_VERIFIED",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41780565/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT04848506"
+      ],
+      "savedIndexNctLeads": [
+        "NCT04848506"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Multicenter Study"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT04848506"
+      ]
+    },
+    {
+      "pmid": "41895606",
+      "title": "Quantitative regression of qFibrosis with resmetirom: Exploratory histologic endpoints from the MAESTRO-NASH phase III clinical trial.",
+      "abstract": "Resmetirom, a thyroid hormone beta (THR-\u03b2) agonist, has been shown to improve metabolic dysfunction-associated steatohepatitis (MASH) and fibrosis in patients with non-cirrhotic MASH in a phase III serial liver biopsy study. In the phase III MAESTRO-NASH trial, the impact of resmetirom compared with placebo on histologic fibrosis features was evaluated using artificial intelligence (AI)-based digital pathology (qFibrosis). qFibrosis was a secondary analysis of liver biopsies from 966 patients with biopsy-confirmed MASH and fibrosis stages F1B, F2, or F3 enrolled in the multicenter, double-blind, placebo-controlled, phase III MAESTRO-NASH trial. Biopsies from baseline and week 52 were assessed using second harmonic generation (SHG) and two-photon excitation fluorescence microscopy. Pre-specified assessments by treatment group included qFibrosis continuous values (qFC), categorical stages (qFS), and qSteatosis. Post hoc analyses evaluated regional qFibrosis features and 30 clinical outcome-associated qFibrosis features, including correlations of these features with pathologist-assessed fibrosis improvement and non-invasive tests. Resmetirom 80 mg and 100 mg resulted in qFS improvement (\u22651-stage decrease) in 24.4% and 22.3% more patients than placebo, respectively, and reduced qFS worsening (\u22651-stage increase) relative to placebo (nominal p \u22640.001 for both doses). Mean placebo-corrected reductions in qFC were -0.95 (95% CI -1.22 to -0.69) and -1.08 (95% CI -1.34 to -0.81) for the 80 mg and 100 mg doses, respectively. Six of the 30 clinical outcome-associated qFibrosis features, primarily from the portal tract and Zone 2 regions, showed the strongest positive correlations with pathologist-assessed fibrosis stage and biomarkers, including liver stiffness measures. Individual fibrosis features in the portal region and chicken wire fibrosis showed the greatest reductions with resmetirom treatment. Resmetirom treatment led to significant improvements in qFC, qFS, and individual collagen features associated with fibrosis progression. These digital pathology findings support the antifibrotic efficacy of resmetirom and demonstrate the potential of AI-based quantification to help define the fibrogenic response in MASH. This study provides the first evidence from a pivotal phase III trial that AI-based digital pathology, including qFibrosis and region-specific collagen features, can sensitively detect the antifibrotic effects of resmetirom in MASH beyond conventional ordinal staging. These continuous metrics offer deeper insight into the pathophysiological mechanisms underlying fibrosis progression and reversal in MASLD, including early matrix remodeling, while enabling more granular, reproducible, and biologically plausible analyses. The ability to quantify spatially distinct patterns of collagen remodeling - particularly in the portal tract and Zone 2 regions - may refine understanding of treatment-related antifibrotic effects in MASH and help clarify how such changes may reduce progression to cirrhosis and improve clinical outcomes. NCT03900429.",
+      "publicationDate": "2026-03-25",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41895606/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT03900429"
+      ],
+      "savedIndexNctLeads": [
+        "NCT03900429"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Clinical Trial, Phase III",
+        "Multicenter Study",
+        "Randomized Controlled Trial"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT03900429"
+      ]
+    },
+    {
+      "pmid": "41917519",
+      "title": "Efficacy of tirzepatide, lanifibranor, and resmetirom in metabolic dysfunction-associated steatotic liver disease: a meta-analysis of high-quality randomized controlled trials.",
+      "abstract": "Metabolic dysfunction-associated steatotic liver disease (MASLD) is a highly prevalent condition and a leading cause of chronic liver disease worldwide. Several pharmacological agents are currently used in its clinical management. This meta-analysis assesses the comparative efficacy and safety profiles of three novel therapeutic agents-tirzepatide (a dual GIP/GLP-1 receptor agonist), lanifibranor (a pan-PPAR agonist), and resmetirom (a thyroid hormone receptor-\u03b2 agonist)-in patients with MASLD/MASH.We systematically searched PubMed, Scopus, Web of Science, the Cochrane Library, and Embase from inception to December 31, 2024. Eligible randomized controlled trials (RCTs) were those that enrolled adults with MASLD/MASH and compared tirzepatide, lanifibranor, or resmetirom with placebo. Non-randomized trials, animal studies, trials using only imaging or biomarkers for diagnosis, studies without a placebo arm, and those including subjects aged\u2009<\u200918\u00a0years were excluded. Methodological quality was assessed using the Cochrane Risk of Bias 2.0 tool. Data synthesis was performed using RevMan 5.3. The protocol was registered with PROSPERO (CRD 42025637054). Five placebo-controlled trials met the inclusion criteria: one for tirzepatide (NCT04166773), one for lanifibranor (NCT04849728), and three for resmetirom (NCT03900429, NCT04197479, NCT04951219). The analysis included 2497 individuals (1112 [45%] male, mean age 55.6\u00a0years [SD 11.6], mean BMI 35.3\u00a0kg/m 2  [SD 6.3], and 1385 [55%] with diabetes). All agents led to MASH resolution without worsening of fibrosis in a proportion of patients, with significant effects observed for tirzepatide and resmetirom. Tirzepatide (mean difference [MD] -\u00a034.90% [95% CI: -\u00a053.31 to -\u00a016.49]) and resmetirom (MD -\u00a031.45% [95% CI: -\u00a035.93 to -\u00a026.97]) significantly reduced hepatic steatosis as assessed by magnetic resonance imaging-proton density fat fraction (MRI-PDFF). Tirzepatide significantly reduced serum aminotransferase levels (ALT: MD -\u00a030.90%, p\u2009<\u20090.00001; AST: MD -\u00a020.71%, p\u2009<\u20090.00001). Although lanifibranor demonstrated improvements in lipid profiles (HDL-C\u2009+\u20099.87%, triglycerides -\u00a026.90%), it did not achieve a statistically significant improvement in fibrosis (OR 1.26, p\u2009=\u20090.08). Gastrointestinal adverse events were frequently reported across all treatment arms. Tirzepatide and resmetirom significantly improved MASH resolution without worsening of fibrosis and reduced hepatic steatosis. All three agents lowered serum aminotransferase levels, while lanifibranor and resmetirom improved lipid profiles. Gastrointestinal adverse events were common, which may affect tolerability. Due to the limited number of trials for tirzepatide and lanifibranor, further large-scale studies are warranted to confirm their role in MASLD/MASH management.",
+      "publicationDate": "2026-03-31",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41917519/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=40285763%2C40333016%2C40473448%2C40493692%2C40540987%2C40544170%2C40544857%2C40644648%2C40673861%2C40713231%2C40716738%2C40802027%2C40834301%2C40866782%2C40956664%2C40972137%2C41127972%2C41135032%2C41194675%2C41196369%2C41347307%2C41384753%2C41390988%2C41461598%2C41481370%2C41526614%2C41568521%2C41586499%2C41620980%2C41661214%2C41661687%2C41697690%2C41767175%2C41780565%2C41809202%2C41810556%2C41830315%2C41880645%2C41895606%2C41917519&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT03900429",
+        "NCT04951219"
+      ],
+      "savedIndexNctLeads": [
+        "NCT03900429",
+        "NCT04951219"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Meta-Analysis",
+        "Systematic Review"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT03900429",
+        "NCT04951219"
+      ]
+    },
+    {
+      "pmid": "42003884",
+      "title": "AAV-mediated gene transfer of a novel microdystrophin ameliorates pathology and enhances muscle function in a mouse model of DMD.",
+      "abstract": "Use of adeno-associated virus (AAV)-mediated transfer of functional microdystrophins to address Duchenne muscular dystrophy (DMD) has been established. RGX-202, an AAV8 vector encoding a novel, optimized human microdystrophin with an extended C-terminal domain, expressed under the Spc5-12 muscle-specific promoter, was evaluated for tolerability and efficacy in dystrophin-deficient  mdx  mouse in 12- and 26-week studies at vector doses ranging from 3 \u00d7 10 13  to 5 \u00d7 10 14  gc/kg. A single intravenous administration of RGX-202 was well tolerated and led to robust, dose-dependent expression of microdystrophin in skeletal and cardiac muscles at 12 weeks, which persisted to 26 weeks post-administration. Increased microdystrophin was associated with recruitment of the dystrophin-associated protein complex to the sarcolemma, particularly at doses \u22651 \u00d7 10 14  gc/kg. Histologic and magnetic resonance imaging examinations revealed marked and sustained suppression of dystrophic pathology in all RGX-202-treated mice. Functionally, gains were observed in the  in vitro  specific force of extensor digitorum longus muscle,  in vivo  grip strength, and the rescue of treadmill and gait deficits. These findings provide preclinical evidence for the therapeutic efficacy of RGX-202 at a minimum effective dose (MED) of 1 \u00d7 10 14  gc/kg in the murine DMD model. This MED served as the starting dose for the RGX-202 clinical study (NCT05693142), which has currently completed phase III enrollment.",
+      "publicationDate": "2026-03-12",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42003884/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=41974149%2C42003884%2C42225101%2C42246926%2C42294842%2C42418774%2C42470570%2C42508433%2C42528856%2C42544039%2C42592935%2C42615013%2C42641848%2C42661432%2C42663111%2C42663312%2C42667274%2C42721980%2C42821228%2C42833311%2C42848980%2C42911181%2C42913682%2C42944976&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT05693142"
+      ],
+      "savedIndexNctLeads": [
+        "NCT05693142"
+      ],
+      "publicationTypes": [
+        "Journal Article"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT05693142"
+      ]
+    },
+    {
+      "pmid": "42225101",
+      "title": "Aglatimagene besadenovec (CAN-2409) with radiotherapy for patients with localised prostate cancer: a phase 3, multicentre, randomised, double-blind, placebo-controlled trial.",
+      "abstract": "About 30% of men with localised prostate cancer undergoing radiotherapy with curative intent have disease recurrence associated with progression-related symptoms and substantial toxicity of salvage therapies. Previous studies with aglatimagene besadenovec (CAN-2409, hereafter referred to as aglatimagene) showed synergy with radiation and immune-mediated cytotoxicity in patients with prostate cancer. We aimed to assess whether addition of aglatimagene plus prodrug (valacyclovir) to standard-of-care external beam radiation therapy (EBRT) could improve disease-free survival in this population. We conducted a phase 3, randomised, double-blind, placebo-controlled trial at 51 medical centres (26 community and 25 institutional or military) across the USA and Puerto Rico in patients with intermediate or high-risk prostate cancer. Patients aged at least 18 years who were planning to undergo EBRT and with an Eastern Cooperative Oncology Group score of 0-2 were eligible. Patients were randomly assigned (2:1) via central block-randomisation to receive either three courses of intraprostatic aglatimagene (5\u2008\u00d7\u200810 11  viral particles) plus valacyclovir or placebo plus valacyclovir, with randomisation stratified by risk category and androgen deprivation therapy (ADT) use. Patients received standard-of-care EBRT (78 Gy in 2 Gy fractions) or hypofractionated EBRT (60 Gy in 3 Gy fractions or 70 Gy in 2\u00b75 Gy fractions) with optional ADT. The primary endpoint was disease-free survival, defined as time-from-randomisation to prostate cancer recurrence or death in the intent-to-treat population (all randomly assigned patients). Safety was assessed in all individuals who received at least one injection. The trial is registered at ClinicalTrials.gov, NCT01436968, and long-term follow-up is ongoing. Between Feb 21, 2012, and Sept 9, 2021, 745 men (591 [79%] White, 121 [16%] Black) were randomly assigned to receive aglatimagene plus valacyclovir (n=496) or placebo plus valacyclovir (n=249). After a median follow-up of 50\u00b73 months (IQR 35\u00b72-63\u00b73), median disease-free survival was not reached (95% CI 121\u00b778 to not reached) in the aglatimagene plus valacyclovir group versus 86\u00b71 (IQR 29\u00b77-143\u00b70) months in the placebo plus valacyclovir group (hazard ratio 0\u00b770, 95% CI 0\u00b752-0\u00b794; p=0\u00b7016). Treatment-emergent adverse events (TEAEs) of grade 3 or worse occurred in 40 (8%) of 479 patients in the aglatimagene group and 17 (7%)of 232 patients in the placebo group. The most common TEAE of grade 3 or worse was acute kidney injury in both the aglatimagene group (nine [2%] of 479 patients) and the placebo group (four [2%] of 232 patients). Serious adverse events occurred in 28 (6%) of 479 patients in the aglatimagene group and 17 (7%) of 232 in the placebo group. Treatment-related serious adverse events occurred in eight (2%) patients in the aglatimagene group (four acute kidney injury, two pyrexia, and one each influenza-like symptoms and urinary retention) and five (2%) in the placebo group (four acute kidney injury, and one each increased creatinine levels and skin rash; one patient reported two serious adverse events). No treatment-related deaths were reported. Aglatimagene plus valacyclovir was associated with longer disease-free survival than placebo plus valacyclovir when added to standard of radiotherapy for the treatment of localised prostate cancer, offering a meaningful benefit without increasing clinically significant toxicity. Candel Therapeutics and US National Institutes of Health.",
+      "publicationDate": null,
+      "publicationDateKind": "NOT_PRECISELY_VERIFIED",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42225101/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=41974149%2C42003884%2C42225101%2C42246926%2C42294842%2C42418774%2C42470570%2C42508433%2C42528856%2C42544039%2C42592935%2C42615013%2C42641848%2C42661432%2C42663111%2C42663312%2C42667274%2C42721980%2C42821228%2C42833311%2C42848980%2C42911181%2C42913682%2C42944976&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT01436968"
+      ],
+      "savedIndexNctLeads": [
+        "NCT01436968"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Randomized Controlled Trial",
+        "Clinical Trial, Phase III",
+        "Multicenter Study"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT01436968"
+      ]
+    },
+    {
+      "pmid": "42246926",
+      "title": "Discovery of Casdatifan, Part II: A Potent and Orally Bioavailable Inhibitor of Hypoxia Inducible Factor-2\u03b1.",
+      "abstract": "Hypoxia-inducible factor 2\u03b1 (HIF-2\u03b1) is recognized as a key oncogenic driver in clear cell renal cell carcinoma (ccRCC), the most prevalent type of kidney cancer. Here, we describe the discovery of a highly potent and selective tetralin-based HIF-2\u03b1 inhibitor, casdatifan ( 61 ), originating from previously identified tetrahydroquinolines reported in the Part 1 companion manuscript. Casdatifan demonstrates a potentially best-in-class clinical profile. In a healthy volunteer study (NCT05117554), casdatifan exhibited a favorable pharmacokinetic profile, with an approximate 24-h half-life suitable for once-daily oral administration. Casdatifan has shown promising clinical activity in the ARC-20 ccRCC platform study, both as monotherapy and in combination with the VEGFR tyrosine kinase inhibitor (TKI) cabozantinib. Currently, casdatifan is being evaluated in a Phase 3 trial in combination with cabozantinib (NCT07011719) in patients with advanced ccRCC.",
+      "publicationDate": "2026-06-05",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42246926/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=41974149%2C42003884%2C42225101%2C42246926%2C42294842%2C42418774%2C42470570%2C42508433%2C42528856%2C42544039%2C42592935%2C42615013%2C42641848%2C42661432%2C42663111%2C42663312%2C42667274%2C42721980%2C42821228%2C42833311%2C42848980%2C42911181%2C42913682%2C42944976&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT07011719"
+      ],
+      "savedIndexNctLeads": [
+        "NCT07011719"
+      ],
+      "publicationTypes": [
+        "Journal Article"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT07011719"
+      ]
+    },
+    {
+      "pmid": "42294842",
+      "title": "Lonvoguran Ziclumeran - In Vivo CRISPR Gene Editing in Hereditary Angioedema.",
+      "abstract": "Hereditary angioedema is a rare and potentially life-threatening genetic condition characterized by recurrent and debilitating swelling attacks. Lonvoguran ziclumeran (lonvo-z) - an investigational, in vivo gene-editing treatment based on clustered regularly interspaced short palindromic repeats (CRISPR) - is being developed as a single-dose treatment for hereditary angioedema. In a phase 3, double-blind trial, we randomly assigned, in a 2:1 ratio, patients who were 16 years of age or older and had hereditary angioedema with C1 inhibitor deficiency to receive a single intravenous infusion of lonvo-z (at a dose of 50 mg) or placebo. The primary end point was the number of investigator-confirmed hereditary angioedema attacks per month (the monthly attack rate) from week 5 through week 28 after infusion. A total of 80 patients underwent randomization; 52 were assigned to receive lonvo-z and 28 to receive placebo. As of February 10, 2026, the median duration of follow-up was 7.5 months (range, 4.9 to 12.8). The least-squares mean monthly attack rate from weeks 5 through 28 was 0.26 (95% confidence interval [CI], 0.15 to 0.45) in the lonvo-z group and 2.10 (95% CI, 1.55 to 2.86) in the placebo group (relative difference, -87%; 95% CI, -93 to -78; P<0.001). Adverse events that occurred during or after infusion of lonvo-z or placebo were reported in 92% and 86% of the patients in the lonvo-z and placebo groups, respectively, from day 1 through week 28. Among the adverse events that occurred during or after infusion and more often in the lonvo-z group than in the placebo group, the most common (occurring in >10% of the patients in the lonvo-z group) included infusion-related reaction, headache, fatigue, back pain, and upper respiratory tract infection. No serious or grade 3 or higher adverse events were reported in the lonvo-z group. Among patients with hereditary angioedema, a single intravenous infusion of lonvo-z resulted in a significantly lower rate of hereditary angioedema attacks than placebo. (Funded by Intellia Therapeutics; HAELO ClinicalTrials.gov number, NCT06634420.).",
+      "publicationDate": "2026-06-13",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42294842/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=41974149%2C42003884%2C42225101%2C42246926%2C42294842%2C42418774%2C42470570%2C42508433%2C42528856%2C42544039%2C42592935%2C42615013%2C42641848%2C42661432%2C42663111%2C42663312%2C42667274%2C42721980%2C42821228%2C42833311%2C42848980%2C42911181%2C42913682%2C42944976&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT06634420"
+      ],
+      "savedIndexNctLeads": [
+        "NCT06634420"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Randomized Controlled Trial",
+        "Clinical Trial, Phase III",
+        "Multicenter Study"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT06634420"
+      ]
+    },
+    {
+      "pmid": "42470570",
+      "title": "Romosozumab in postmenopausal women with classical Osteogenesis imperfecta.",
+      "abstract": "This study explored whether Romosozumab, an anti-sclerostin antibody, can improve bone quality in women with Osteogenesis imperfecta. After 12 months, spinal areal bone mineral density increased, showing a beneficial treatment effect, although changes in hip bone density and bone structure were less pronounced than in women with severe osteoporosis. Osteogenesis imperfecta (OI) is the most common hereditary bone disorder, characterized by increased bone fragility and impaired bone quality, but pharmacological treatment is limited. Ongoing clinical trials investigate monoclonal anti-sclerostin antibodies for OI patients, offering new hope for reducing bone fragility by increasing bone mass. Postmenopausal women with either OI (n\u2009=\u20095) or severe osteoporosis (OPO, n\u2009=\u200910) receiving Romosozumab monthly (210\u00a0mg\u00a0s.c.) for 12\u00a0months were analyzed retrospectively. Clinical assessments were performed at baseline, after 6\u00a0months, and after 12\u00a0months. Bone mass and structure were evaluated at baseline and after 12\u00a0months of treatment. In addition, serum and urine markers of bone turnover were analyzed at each time point. The mean age of the participants was 53.6\u2009\u00b1\u20098.9\u00a0years for OI patients and 57.2\u2009\u00b1\u20095.8\u00a0years for OPO patients (p\u2009=\u20090.444). After 12\u00a0months of Romosozumab treatment, spinal aBMD and osteocalcin increased significantly in OI patients, indicating an anabolic response. HR-pQCT analysis revealed no statistically significant microstructural changes in patients with OI, although trends and moderate effect sizes suggested potential improvements. In patients with OPO, we observed a more pronounced response of bone turnover markers with greater aBMD gains at both the spine and femur, as well as significant improvements in bone microstructure, particularly at the tibia. Romosozumab treatment in postmenopausal women with OI resulted in a significant increase in spinal aBMD, though the effect on hip aBMD and peripheral bone microstructure was limited in contrast to postmenopausal osteoporosis.",
+      "publicationDate": "2026-07-18",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42470570/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=41974149%2C42003884%2C42225101%2C42246926%2C42294842%2C42418774%2C42470570%2C42508433%2C42528856%2C42544039%2C42592935%2C42615013%2C42641848%2C42661432%2C42663111%2C42663312%2C42667274%2C42721980%2C42821228%2C42833311%2C42848980%2C42911181%2C42913682%2C42944976&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT05125809",
+        "NCT05768854"
+      ],
+      "savedIndexNctLeads": [
+        "NCT05125809",
+        "NCT05768854"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Research Support, Non-U.S. Gov't"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT05125809",
+        "NCT05768854"
+      ]
+    },
+    {
+      "pmid": "42508433",
+      "title": "Intravesical cretostimogene grenadenorepvec oncolytic immunotherapy in high-risk, BCG-unresponsive, non-muscle-invasive bladder cancer with carcinoma in situ (BOND-003 Cohort C): a single-arm, phase 3 trial.",
+      "abstract": "There are few bladder-sparing treatment options for high-risk, BCG-unresponsive, non-muscle-invasive bladder cancer that are effective and have a manageable adverse event profile. Cretostimogene grenadenorepvec (hereafter, cretostimogene) is an oncolytic immunotherapy with dual mechanisms of action-it replicates in and lyses cancer cells with retinoblastoma-E2F pathway alterations and amplifies the immune response. We evaluated the response and safety/tolerability of cretostimogene in patients with high-risk, BCG-unresponsive, non-muscle-invasive bladder cancer. BOND-003 Cohort C is a single-arm, international, phase 3 study done in 41 centres (community practices and academic centres) located in North America, Asia, and Australia. Sites were selected through a study team-led qualification process that evaluated feasibility, protocol alignment, operational capabilities, and regulatory readiness, as applicable. We enrolled patients aged at least 18 years with Eastern Cooperative Oncology Group performance status of 0-2 and pathologically confirmed, high-risk, BCG-unresponsive, non-muscle-invasive bladder cancer with carcinoma in situ, with or without resected high-grade Ta or T1 disease. Patients received intravesical cretostimogene (1\u2008\u00d7\u200810 12  viral particles per 0\u00b78 mL per week) as 6-week induction followed by maintenance; re-induction was permitted for persistent disease at 3 months. The primary endpoint was centrally confirmed complete response at any time in patients who received at least one dose of cretostimogene and completed the 3-month assessment; safety was assessed in those who received at least one dose of cretostimogene. This trial is registered with ClinicalTrials.gov (NCT04452591) and is ongoing. Between Oct 9, 2020, and Aug 3, 2023, 165 patients were assessed for eligibility; 115 patients were enrolled in the study and 112 received cretostimogene. 83 (74%) were male and 29 (26%) were female; median age was 74\u00b70 years (IQR 68\u00b75-79\u00b75). As of June 23, 2025, after a median follow-up of 25\u00b78 months (IQR 22\u00b71-33\u00b71), complete response at any time was observed in 83 (75% [95% CI 66\u00b73-83\u00b72]) of 110 patients. 71 (63%) of 112 patients had at least one treatment-related adverse event, the most common being bladder spasm in 28 (25%) patients, pollakiuria in 25 (22%) patients, and micturition urgency in 23 (21%) patients; there were no grade 3 or 4 treatment-related adverse events and no treatment-related discontinuations or deaths. Two (2%) patients had serious treatment-related adverse events (one non-infective cystitis and one urinary bladder haemorrhage, both grade 2). Cretostimogene showed clinically meaningful anti-tumour response, with an adverse event profile characterised predominantly by low-grade, transient events. Cretostimogene shows promise as an innovative bladder-sparing treatment for high-risk, BCG-unresponsive, non-muscle-invasive bladder cancer with carcinoma in situ. CG Oncology.",
+      "publicationDate": null,
+      "publicationDateKind": "NOT_PRECISELY_VERIFIED",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42508433/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=41974149%2C42003884%2C42225101%2C42246926%2C42294842%2C42418774%2C42470570%2C42508433%2C42528856%2C42544039%2C42592935%2C42615013%2C42641848%2C42661432%2C42663111%2C42663312%2C42667274%2C42721980%2C42821228%2C42833311%2C42848980%2C42911181%2C42913682%2C42944976&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT04452591"
+      ],
+      "savedIndexNctLeads": [
+        "NCT04452591"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Clinical Trial, Phase III",
+        "Multicenter Study"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT04452591"
+      ]
+    },
+    {
+      "pmid": "42544039",
+      "title": "Long-term impact of aficamten on patient-reported outcome measures in obstructive hypertrophic cardiomyopathy: results from FOREST-HCM.",
+      "abstract": "Treatment with aficamten in patients with obstructive hypertrophic cardiomyopathy (oHCM) led to significant improvements in patient-reported outcomes (PROs) in the pivotal SEQUOIA-HCM trial over 24 weeks, but its longer-term impact has not been described. The aim of this study was to describe the long-term effects of aficamten across multiple PROs in FOREST-HCM, an open-label extension study. Participants with oHCM completing an aficamten trial were offered enrolment in FOREST-HCM. The Kansas City Cardiomyopathy Questionnaire (KCCQ), Seattle Angina Questionnaire 7-item, EuroQol Five-Dimensional Questionnaire index, and visual analogue scale were administered at baseline and at weeks 12, 24, 36, and 48. Associations among PROs and clinical markers of oHCM severity were assessed with Spearman correlation coefficients. A total of 172 participants (mean age 60.4 [SD \u00b1 13.1] years; 45.3% female) completed \u226548 weeks of follow-up as of 31 August 2024, and were included. Significant improvements in all PROs were observed by week 12 and sustained through week 48. At 48 weeks, mean Kansas City Cardiomyopathy Questionnaire-Overall Summary Score improved by 18.8 (16.9-20.6) points, (P < .001), with the largest gains in the KCCQ Quality of Life domain (25.8 points [23.2-28.5; P < .001]). Seattle Angina Questionnaire 7-item -Summary Scores increased by 17.2 (15.1-19.4; P < .001), and EuroQol Five-Dimensional Questionnaire index and visual analogue scale scores improved by 0.11 and 12.7 points, respectively (P < .001). Improvements in PROs were significantly correlated with important clinical measures of oHCM. Aficamten resulted in sustained improvements across multiple health status dimensions, which also correlated with clinical markers of oHCM severity. NCT04848506.",
+      "publicationDate": null,
+      "publicationDateKind": "NOT_PRECISELY_VERIFIED",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42544039/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=41974149%2C42003884%2C42225101%2C42246926%2C42294842%2C42418774%2C42470570%2C42508433%2C42528856%2C42544039%2C42592935%2C42615013%2C42641848%2C42661432%2C42663111%2C42663312%2C42667274%2C42721980%2C42821228%2C42833311%2C42848980%2C42911181%2C42913682%2C42944976&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT04848506"
+      ],
+      "savedIndexNctLeads": [
+        "NCT04848506"
+      ],
+      "publicationTypes": [
+        "Clinical Trial, Phase II",
+        "Clinical Trial, Phase III",
+        "Journal Article",
+        "Multicenter Study",
+        "Randomized Controlled Trial"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT04848506"
+      ]
+    },
+    {
+      "pmid": "42592935",
+      "title": "Lipids and lipoproteins in calcific aortic valve disease.",
+      "abstract": "Lipids and lipoproteins have established roles in calcific atherosclerosis, but there is less awareness of their role in calcific aortic valve disease (CAVD). Clinical studies link CAVD with severe hypercholesterolemia, and genetic studies consistently link it with lipoprotein little (a) [Lp(a)], a major carrier of oxidized phospholipids. Given the remarkable similarities between calcific atherosclerotic plaques and calcific aortic valves, lipids are incriminated. Hence, lipid-lowering therapies used for atherosclerosis have been tested in CAVD, but results have been inexplicably disappointing. New evidence for the importance of lipids, despite failure of lipid-lowering, and new concepts in diagnostic and therapeutic approaches are discussed. Evidence supports a key role of Lp(a) levels in CAVD. Potential diagnostic advances include pH-sensitive-fluorescence probes for visualizing lipid droplets in valves and identification of natural antibodies to modified LDL that associate inversely with CAVD. Potential therapeutic advances include Lp(a) lowering, SGLT2 inhibition, and reactivation of soluble guanylate cyclase. Trial outcomes currently remain mixed. Recent studies clarify the mechanisms by which lipids, lipoproteins, and Lp(a) contribute to CAVD. New potential diagnostic techniques include screening for natural antibodies and visualizing lipid deposits. New therapeutic agents include oligonucleotides and nanoparticles. New clinical trials are underway.",
+      "publicationDate": "2026-08-12",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42592935/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=41974149%2C42003884%2C42225101%2C42246926%2C42294842%2C42418774%2C42470570%2C42508433%2C42528856%2C42544039%2C42592935%2C42615013%2C42641848%2C42661432%2C42663111%2C42663312%2C42667274%2C42721980%2C42821228%2C42833311%2C42848980%2C42911181%2C42913682%2C42944976&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT07001800"
+      ],
+      "savedIndexNctLeads": [
+        "NCT07001800"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Review"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT07001800"
+      ]
+    },
+    {
+      "pmid": "42615013",
+      "title": "A Generational Approach to Neurology Education: Engaging Generation Z Learners.",
+      "abstract": "Neurophobia remains a persistent barrier in neurology education because learners often struggle to connect neuroanatomy, localization, examination findings, and clinical reasoning. At the same time, Generation Z learners now comprise much of undergraduate and graduate medical education and have trained in an environment shaped by ubiquitous mobile technology, short-form media, rapid information retrieval, and heightened attention to feedback, well-being, and belonging. This review synthesizes literature on neurophobia, Gen Z learner preferences, cognitive load, active learning, simulation, multimedia instruction, social media, artificial intelligence (AI), and recent  Neurology\u00ae Education  scholarship. It argues for a generationally informed, not generationally deterministic, approach: many recommended strategies predate Gen Z and benefit learners across age groups, but they are especially relevant to the current technologic and cultural learning environment. Practical strategies include selective flipped classrooms, microlearning with spaced retrieval, simulation and deliberate practice, coaching-oriented feedback, curated social media resources, supervised AI use, and psychologically safe teaching cultures. A critical, theory-grounded approach can help neurology educators preserve rigor while making the path into neurologic reasoning clearer.",
+      "publicationDate": "2026-08-17",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42615013/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=41974149%2C42003884%2C42225101%2C42246926%2C42294842%2C42418774%2C42470570%2C42508433%2C42528856%2C42544039%2C42592935%2C42615013%2C42641848%2C42661432%2C42663111%2C42663312%2C42667274%2C42721980%2C42821228%2C42833311%2C42848980%2C42911181%2C42913682%2C42944976&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT07020819"
+      ],
+      "savedIndexNctLeads": [
+        "NCT07020819"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Review"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT07020819"
+      ]
+    },
+    {
+      "pmid": "42641848",
+      "title": "Aficamten is associated with improvements in cardiac mechanics in obstructive hypertrophic cardiomyopathy: Results from FOREST-HCM.",
+      "abstract": "Aficamten is a next-in-class, selective cardiac myosin inhibitor (CMI) that relieves left ventricular outflow tract (LVOT) obstruction in obstructive hypertrophic cardiomyopathy (oHCM) by addressing underlying myocardial hypercontractility. The long-term impact of aficamten on myocardial mechanics as measured by global longitudinal strain (GLS) is unknown. FOREST-HCM (NCT04219826) is an ongoing open-label extension trial for eligible patients with HCM who completed a parent study of aficamten. Here we report echocardiographic parameters (LVOT gradient and myocardial GLS) obtained from baseline up to week 48 from oHCM patients (N\u00a0=\u00a027) included in the FOREST-HCM study. From baseline to 38\u00a0\u00b1\u00a04.8\u00a0weeks, aficamten reduced LVOT gradients at rest (mean difference\u00a0-\u00a032.7\u00a0\u00b1\u00a024\u00a0mmHg, p\u00a0<\u00a00.0001 vs. baseline) and with Valsalva (mean difference\u00a0-\u00a062.44\u00a0\u00b1\u00a034.5\u00a0mmHg, p\u00a0<\u00a00.0001 vs. baseline). Compared to baseline, strain analysis revealed similar GLS at week 12 (-13.9\u00a0\u00b1\u00a03.2 vs. -14.3\u00a0\u00b1\u00a03.0, p\u00a0=\u00a00.316) but a significant improvement at weeks 36-48 (-13.9\u00a0\u00b1\u00a03.2 vs. -15.1\u00a0\u00b1\u00a02.7, p\u00a0=\u00a00.0093). These improvements were only seen in patients who achieved a hemodynamic response (resting LVOT-G\u00a0<\u00a030\u00a0mmHg, n\u00a0=\u00a024, p\u00a0=\u00a00.0009; or complete response with rest <30\u00a0mmHg and Valsalva <50\u00a0mmHg, n\u00a0=\u00a021, p\u00a0=\u00a00.0023). Aficamten therapy improves myocardial mechanics after long-term treatment, which may indicate functional myocardial improvement incremental to relief of outflow obstruction. The potential mechanisms underlying this improvement warrant further investigation. https://clinicaltrials.gov/study/NCT04848506; Clinical trial identifier: NCT04848506.",
+      "publicationDate": "2026-08-25",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42641848/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=41974149%2C42003884%2C42225101%2C42246926%2C42294842%2C42418774%2C42470570%2C42508433%2C42528856%2C42544039%2C42592935%2C42615013%2C42641848%2C42661432%2C42663111%2C42663312%2C42667274%2C42721980%2C42821228%2C42833311%2C42848980%2C42911181%2C42913682%2C42944976&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT04848506"
+      ],
+      "savedIndexNctLeads": [
+        "NCT04848506"
+      ],
+      "publicationTypes": [
+        "Journal Article"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT04848506"
+      ]
+    },
+    {
+      "pmid": "42833311",
+      "title": "Effects of MASH risk genotypes on resmetirom efficacy in patients with MASH and fibrosis.",
+      "abstract": "Resmetirom, a thyroid hormone receptor beta agonist, improves metabolic dysfunction-associated steatohepatitis (MASH) and liver fibrosis in patients with non-cirrhotic MASH. Risk genotypes of PNPLA3, HSD17B13, TM6SF2, MTARC1, MBOAT7, and SERPINA1 have been associated with altered susceptibility to metabolic dysfunction-associated steatotic liver disease (MASLD), MASH, fibrosis, cirrhosis, and/or hepatocellular carcinoma. We evaluated the impact of MASLD risk genotypes on baseline characteristics and the response to resmetirom vs. placebo with respect to MASH, fibrosis, MRI-proton density fat fraction (MRI-PDFF), and other biomarkers. Testing the effects of MASLD risk genotypes or combinations of high-risk alleles on liver biopsy, MRI-PDFF, and biomarker responses to resmetirom was a pre-specified analysis in 738 patients enrolled in the MAESTRO-NASH phase III trial who consented to DNA collection, were genotyped for all genes, and had liver biopsies at baseline and Week 52. At baseline, patients with high-risk genotypes of PNPLA3 or HSD17B13 had a lower frequency of metabolic risk factors, including type 2 diabetes mellitus and hypertension, than patients with low-risk genotypes. Interaction analyses and efficacy assessments indicated that resmetirom had similar positive effects on MASH resolution, fibrosis improvement on liver biopsy, MRI-PDFF response, and biomarkers at Week 52 in MAESTRO-NASH patients with high-risk genotypes of PNPLA3, HSD17B13, TM6SF2, MTARC1, and MBOAT7, either individually or as part of a composite genetic risk score. These effects were independent of sex, Hispanic ethnicity, and metabolic risk factors. Due to the limited sample size, the study was not powered to detect small effects of risk genotypes on resmetirom efficacy. Resmetirom's effects on MASH, liver fibrosis, MRI-PDFF, and MASH biomarkers in the MAESTRO-NASH trial were not significantly impacted by the presence of common MASH risk genotypes. This suggests that resmetirom's mchanism of action is not affected by hepatic defects conferred by prominent MASH genetic risk pathways. Resmetirom has recently been approved for the treatment of metabolic dysfunction-associated steatohepatitis (MASH). It leads to MASH resolution and improvement of fibrosis in patients with non-cirrhotic MASH. Patients with MASH have higher prevalence of certain genetic variants which can be associated with more severe disease. In this study we evaluated the relationship between the presence of select MASH risk genotypes (e.g. PNPLA3, TM6SF2, or HSD17B13) or the combined total of MASH genetic risk alleles on the response to resmetirom and placebo in 738 patients with non-cirrhotic MASH with serial liver biopsies at baseline and week 52. Within the limitation of study sample size, resmetirom's benefits on MASH resolution, fibrosis improvement and hepatic steatosis were independent of the presence of MASH genetic risk genotypes either alone or in combination. NCT03900429.",
+      "publicationDate": "2026-10-05",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42833311/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=41974149%2C42003884%2C42225101%2C42246926%2C42294842%2C42418774%2C42470570%2C42508433%2C42528856%2C42544039%2C42592935%2C42615013%2C42641848%2C42661432%2C42663111%2C42663312%2C42667274%2C42721980%2C42821228%2C42833311%2C42848980%2C42911181%2C42913682%2C42944976&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT03900429"
+      ],
+      "savedIndexNctLeads": [
+        "NCT03900429"
+      ],
+      "publicationTypes": [
+        "Journal Article"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT03900429"
+      ]
+    },
+    {
+      "pmid": "42848980",
+      "title": "RINGSIDE Phase II Study of Varegacestat for Treatment of Desmoid Tumors: A Randomized Dose-Finding Clinical Trial.",
+      "abstract": "Desmoid tumors (DTs) are rare, often locally aggressive, connective tissue neoplasms with limited effective treatment options. We evaluated the safety and efficacy of varegacestat, an oral gamma-secretase inhibitor. RINGSIDE phase II was an open-label, randomized, dose-finding trial of varegacestat in adults with histologically confirmed DT and disease progression. Participants were randomly assigned 1:1:1 to oral varegacestat 1.2-mg once-daily, 2-mg intermittent (once daily for 2 consecutive days with 5 consecutive days off), or 4-mg intermittent dose. The primary end point was safety. The secondary end point was change in tumor volume from baseline to week 16 per blinded independent central review. At the study end, participants who entered the open-label extension received the selected phase III dose (1.2 mg once daily). In total, 42 participants enrolled in the randomized trial (14 per dose arm). Median varegacestat exposure was 50.5 (range, 3.0-76.0) weeks. Forty-one (97.6%) participants reported treatment-related adverse events (AEs), of which 9 (21.4%) reported grade 3 AEs and none reported serious AEs. There were no grade 4/5 events. The median tumor volume reduction at week 16 was -51.91% for the 1.2-mg once-daily dose, -15.25% for the 2-mg intermittent dose and -9.50% for the 4-mg intermittent dose. The confirmed objective response rate (ORR) was 35.7%, 21.4%, and 21.4%, respectively. Among 29 (69%) participants who entered the open-label extension and received 1.2 mg once daily (median exposure, 102.0 [range, 3.0-169.0] weeks), the median best percent tumor volume change was -85.88% and the confirmed ORR increased to 57.1%. Varegacestat demonstrated clinically meaningful DT volume reduction and ORR with a manageable safety profile across dose regimens. The largest responses were seen with the 1.2-mg once-daily dose, which was selected for the RINGSIDE phase III trial.",
+      "publicationDate": "2026-10-08",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42848980/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=41974149%2C42003884%2C42225101%2C42246926%2C42294842%2C42418774%2C42470570%2C42508433%2C42528856%2C42544039%2C42592935%2C42615013%2C42641848%2C42661432%2C42663111%2C42663312%2C42667274%2C42721980%2C42821228%2C42833311%2C42848980%2C42911181%2C42913682%2C42944976&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT04871282"
+      ],
+      "savedIndexNctLeads": [
+        "NCT04871282"
+      ],
+      "publicationTypes": [
+        "Journal Article",
+        "Clinical Trial, Phase II",
+        "Randomized Controlled Trial",
+        "Multicenter Study"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT04871282"
+      ]
+    },
+    {
+      "pmid": "42944976",
+      "title": "Three-Year Follow-Up of Delandistrogene Moxeparvovec in Duchenne Muscular Dystrophy: Long-Term Phase 3 EMBARK Trial Results.",
+      "abstract": "Delandistrogene moxeparvovec, an adeno-associated virus vector-based gene therapy, delivers an optimized micro-dystrophin transgene to address dystrophin deficiency in Duchenne muscular dystrophy (DMD). EMBARK was a phase 3, randomized, double-blind, placebo-controlled, two-part crossover study evaluating the safety and effectiveness of delandistrogene moxeparvovec in patients with DMD who are ambulatory aged \u2265\u00a04 to < 8\u00a0years. After completion of the EMBARK study at 2\u00a0years, patients had the option to enroll into the long-term follow-up open-label EXPEDITION study. Three-year functional outcomes from patients treated with delandistrogene moxeparvovec in EMBARK part 1 (single intravenous dose 1.33\u00a0\u00d7\u00a010 14  vg/kg; n = 64) were compared with a matched propensity score weighted external control (EC) cohort (n = 143) derived from randomized controlled clinical trials (patients treated with placebo only) and natural history datasets. Mixed-effects models for repeated measures accounted for missing data and estimated changes from baseline and between-cohort differences. All P values are nominal. At 3\u00a0years post-infusion, patients treated in part 1 of EMBARK (aged 7-10\u00a0years at 3\u00a0years) suggested sustained and statistically significant differences versus the matched EC cohort in change from baseline in North Star Ambulatory Assessment total score (between-cohort least-squares mean difference, 4.39 points; P = 0.0002), Time to Rise (-\u20096.05\u00a0s; P < 0.0001), and 10-m Walk/Run (-\u20092.70\u00a0s; P = 0.0039), suggesting durable slowing of disease progression. No new safety signals were identified through year 3, with no emerging cardiac safety concerns as the left ventricular ejection fraction remained above the normal threshold of 55% in this population over 3\u00a0years. There were no treatment-related deaths or discontinuations due to adverse events during follow-up. The 3-year follow-up of patients with DMD who are ambulatory treated in EMBARK part 1 compared with external comparators suggests durable functional benefit and a consistent safety profile following treatment with delandistrogene moxeparvovec, which may indicate long-term disease trajectory modification and increasing divergence from natural history over time.\u00a0Graphical abstract available for this article. EMBARK: NCT05096221; EXPEDITION: NCT05967351.",
+      "publicationDate": "2026-10-27",
+      "publicationDateKind": "ELECTRONIC_PUBLICATION",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42944976/",
+      "metadataUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=41974149%2C42003884%2C42225101%2C42246926%2C42294842%2C42418774%2C42470570%2C42508433%2C42528856%2C42544039%2C42592935%2C42615013%2C42641848%2C42661432%2C42663111%2C42663312%2C42667274%2C42721980%2C42821228%2C42833311%2C42848980%2C42911181%2C42913682%2C42944976&retmode=xml",
+      "exactNctsInMetadata": [
+        "NCT05967351"
+      ],
+      "savedIndexNctLeads": [
+        "NCT05967351"
+      ],
+      "publicationTypes": [
+        "Journal Article"
+      ],
+      "classification": "UNVERIFIED_RESULT_INTERPRETATION_LEAD_NOT_SCORE",
+      "topNcts": [
+        "NCT05967351"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,28 @@
+{
+  "scope": "EXISTING_TOP_ONLY",
+  "asOf": "2026-11-07",
+  "version": "TOP_ONLY_190_ACCOUNTABILITY_20261107_V1",
+  "trialCount": 235,
+  "fieldsPerTrial": 190,
+  "companiesSearched": 108,
+  "exactNctSearches": 235,
+  "documentsAttempted": 191,
+  "documentsRetrieved": 175,
+  "documentsBlocked": 16,
+  "documentsRecoveredViaFallback": 2,
+  "unresolvedDocumentBlocks": 14,
+  "allFieldsAccounted": 235,
+  "allMetricsEvaluated": 235,
+  "completeClinicalOverallScores": 6,
+  "completeThirtyMetricOverallScores": 0,
+  "withMissingSourceEvidence": 235,
+  "sourceStateCounts": {
+    "VERIFIED": 2742,
+    "MISSING EXPECTED": 2570,
+    "UNVERIFIED": 379,
+    "PENDING": 1124,
+    "NOT YET EXPECTED": 235,
+    "NOT APPLICABLE": 0,
+    "CONFLICTING": 0
+  }
+}
