@@ -892,6 +892,123 @@
       ],
       "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
       "note": "One new source-reviewed exploratory open-label durability grade; no original grade/history overwritten."
+    },
+    {
+      "eventId": "BOTTOM_NCT05535946_20261107_POSTDATA_FIVE_FACTOR_SOURCE_REVIEW",
+      "nctId": "NCT05535946",
+      "recordedAt": "2026-11-07",
+      "eventType": "RESEARCH_SCORE_CHANGE",
+      "previousClinicalFullScore": null,
+      "clinicalFullScore": 60,
+      "previousClinicalScoredFactors": 0,
+      "clinicalScoredFactors": 5,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "sourceUrl": "https://ir.abivax.com/node/12341/html"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "sourceUrl": "https://ir.abivax.com/node/12341/html"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "sourceUrl": "https://ir.abivax.com/node/12341/html"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "sourceUrl": "https://ir.abivax.com/node/12341/html"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "sourceUrl": "https://ir.abivax.com/node/12341/html"
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "First explicit complete BOTTOM ABVX five-factor clinical research score after dated arm-specific efficacy, safety, design and replicated program source review. Archived 2026-11-06 unscored history unchanged. SEC evidence is issuer-reported and not independently adjudicated."
+    },
+    {
+      "eventId": "BOTTOM_NCT05257408_20261107_FDA_LANCET_REVIEWED_FIVE",
+      "nctId": "NCT05257408",
+      "recordedAt": "2026-11-07",
+      "eventType": "RESEARCH_SCORE_CHANGE",
+      "previousClinicalFullScore": null,
+      "clinicalFullScore": 65,
+      "previousClinicalScoredFactors": 0,
+      "clinicalScoredFactors": 5,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": 75,
+          "sourceUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41974149/"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 75,
+          "sourceUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41974149/"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "sourceUrl": "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-relacorilant-nab-paclitaxel-platinum-resistant-epithelial-ovarian-fallopian-tube-or"
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "Full five-factor research review based on observed FDA and mature Lancet clinical sources. Original zero-scored event preserved; no approval probability inferred."
+    },
+    {
+      "eventId": "BOTTOM_NCT04770779_20261107_REVIEWED_LONGITUDINAL_FACTOR",
+      "nctId": "NCT04770779",
+      "recordedAt": "2026-11-07",
+      "eventType": "RESEARCH_SCORE_CHANGE",
+      "previousClinicalFullScore": null,
+      "clinicalFullScore": 55,
+      "previousClinicalScoredFactors": 4,
+      "clinicalScoredFactors": 5,
+      "metricGrades": [
+        {
+          "id": "post-1-1",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        },
+        {
+          "id": "post-1-2",
+          "grade": 75,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        },
+        {
+          "id": "post-1-3",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        },
+        {
+          "id": "post-1-4",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        },
+        {
+          "id": "post-1-5",
+          "grade": 50,
+          "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42721980/"
+        }
+      ],
+      "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+      "note": "One provisional 48-week randomized-versus-long-term replication review completes five factors without imputing ongoing OLE results; original four-factor history preserved."
     }
   ]
 }
