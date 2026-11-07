@@ -22,8 +22,11 @@ class TestResolution(unittest.TestCase):
   self.assertEqual(len(roster),29)
   self.assertEqual(len(matrix),1102)
   self.assertEqual(summary["researchDispositionCoveragePercent"],100.0)
-  self.assertEqual(summary["verifiedSurveyAnswers"],0)
-  self.assertEqual(summary["verifiedSurveyPercent"],0.0)
+  existing_verified={(item["nctId"],item["ingredientId"]) for item in slots
+    if item["status"]=="VERIFIED"}
+  self.assertEqual(summary["verifiedSurveyAnswers"],len(existing_verified))
+  self.assertEqual(summary["verifiedSurveyPercent"],
+      round(100*len(existing_verified)/1102,2))
   self.assertEqual(sum(summary["dispositions"].values()),1102)
   self.assertEqual(len(summary["bySurvey"]),20)
   self.assertEqual(len(summary["byTrial"]),29)
@@ -32,7 +35,8 @@ class TestResolution(unittest.TestCase):
   self.assertTrue(all(x["nextEvidenceStep"] for x in matrix))
   self.assertTrue(all(x["recommendedSource"].startswith("https://") for x in matrix))
   self.assertTrue(all(x["sourcePacketHash"] for x in matrix))
-  self.assertTrue(all(x["isSurveyAnswerVerified"]==False for x in matrix))
+  self.assertTrue(all(x["isSurveyAnswerVerified"] ==
+      ((x["nctId"],x["ingredientId"]) in existing_verified) for x in matrix))
   self.assertEqual(len({(x["nctId"],x["ingredientId"]) for x in matrix}),1102)
   self.assertTrue(any(x["researchDisposition"]=="PRIMARY_SOURCE_INTERPRETATION_REQUIRED"
        for x in matrix))

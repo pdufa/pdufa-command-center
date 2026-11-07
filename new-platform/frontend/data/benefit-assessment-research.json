@@ -3,6 +3,341 @@
   "sourceAsOf": "2026-11-07",
   "records": [
     {
+      "nctId": "NCT03697109",
+      "ticker": "CORT",
+      "drug": "Relacorilant",
+      "indication": "Cushing Syndrome",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "GRACE Phase 3 randomized-withdrawal responders with baseline hypertension: participants continuing relacorilant were less likely to lose hypertension response over 12-week withdrawal than participants switched to placebo (11/21 [52%] versus 19/22 [86%]; OR 0.17, 95% CI 0.04–0.77; p=0.0215). This supports maintenance of prior response only in the preselected responder population, not efficacy in all screened patients.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT03697109",
+          "sourceDate": "2025-04-24",
+          "method": "Exact NCT NCT03697109 posted ClinicalTrials.gov primary statistical analysis at sourceDate 2025-04-24, prespecified comparator, timeframe, least-squares/odds ratio and 95% interval; independently cross-checked against public original https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/. Null and selected-responder outcomes are explicitly qualified. No approval, company valuation, or RAAS inference.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "10f6e8da28ce26cb0d7030e49d47e37da405990fb1b59da51de82f15fdd16feb",
+            "endpointTitle": "Number of Patients With Loss of Response With Respect to Hypertension During the RW Phase.",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "0.17",
+            "confidenceLower": "0.04",
+            "confidenceUpper": "0.77",
+            "crossReference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/"
+          }
+        },
+        "magnitude": {
+          "value": "In GRACE randomized-withdrawal hypertension responders, loss of hypertension response at Week 12 of withdrawal was 11/21 (52%) continuing relacorilant versus 19/22 (86%) switched to placebo, odds ratio 0.17 (95% CI 0.04–0.77; p=0.0215). No claim about all Cushing syndrome patients.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT03697109",
+          "sourceDate": "2025-04-24",
+          "method": "Exact NCT NCT03697109 posted ClinicalTrials.gov primary statistical analysis at sourceDate 2025-04-24, prespecified comparator, timeframe, least-squares/odds ratio and 95% interval; independently cross-checked against public original https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/. Null and selected-responder outcomes are explicitly qualified. No approval, company valuation, or RAAS inference.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "10f6e8da28ce26cb0d7030e49d47e37da405990fb1b59da51de82f15fdd16feb",
+            "endpointTitle": "Number of Patients With Loss of Response With Respect to Hypertension During the RW Phase.",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "0.17",
+            "confidenceLower": "0.04",
+            "confidenceUpper": "0.77",
+            "crossReference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/"
+          }
+        },
+        "responseRemission": {
+          "value": "GRACE randomized-withdrawal hypertension maintenance: 11 of 21 (52%) relacorilant versus 19 of 22 (86%) placebo participants lost prespecified hypertension response over 12 weeks. Placebo patients had higher loss-of-response; selection was restricted to open-label initial responders. Not a de novo responder rate.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT03697109",
+          "sourceDate": "2025-04-24",
+          "method": "Exact NCT NCT03697109 posted ClinicalTrials.gov primary statistical analysis at sourceDate 2025-04-24, prespecified comparator, timeframe, least-squares/odds ratio and 95% interval; independently cross-checked against public original https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/. Null and selected-responder outcomes are explicitly qualified. No approval, company valuation, or RAAS inference.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "10f6e8da28ce26cb0d7030e49d47e37da405990fb1b59da51de82f15fdd16feb",
+            "endpointTitle": "Number of Patients With Loss of Response With Respect to Hypertension During the RW Phase.",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "0.17",
+            "confidenceLower": "0.04",
+            "confidenceUpper": "0.77",
+            "crossReference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/"
+          }
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT04308590",
+      "ticker": "CORT",
+      "drug": "Relacorilant",
+      "indication": "Hypercortisolism",
+      "facts": {
+        "magnitude": {
+          "value": "GRADIENT Phase 3: mean change in 24-hour ambulatory systolic blood pressure at Week 22 versus placebo, reported least-squares mean difference -2.67 mm Hg (95% CI -9.096 to +3.766; p=0.4160). The primary blood-pressure group contrast was NOT statistically significant; this is a verified neutral result, not evidence of superiority.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT04308590",
+          "sourceDate": "2025-08-03",
+          "method": "Exact NCT NCT04308590 posted ClinicalTrials.gov primary statistical analysis at sourceDate 2025-08-03, prespecified comparator, timeframe, least-squares/odds ratio and 95% interval; independently cross-checked against public original https://www.clinicaltrialsregister.eu/ctr-search/trial/2019-004956-12/results. Null and selected-responder outcomes are explicitly qualified. No approval, company valuation, or RAAS inference.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "8a6f4f60e7edfe4635e02ba0c2f78c891cc6385fc57402429d934a2b96e7fa81",
+            "endpointTitle": "Change in Average 24-hour SBP",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Least squares mean difference",
+            "observedValue": "-2.67",
+            "confidenceLower": "-9.096",
+            "confidenceUpper": "3.766",
+            "crossReference": "https://www.clinicaltrialsregister.eu/ctr-search/trial/2019-004956-12/results"
+          }
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT04544293",
+      "ticker": "SVRA",
+      "drug": "Molgramostim",
+      "indication": "Autoimmune Pulmonary Alveolar Proteinosis",
+      "facts": {
+        "magnitude": {
+          "value": "Molgramostim versus placebo, primary change in hemoglobin-adjusted percent-predicted DLCO at Week 24: net mean difference +6.0 percentage points; 95% CI 2.5 to 9.4; p=0.0007.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT04544293",
+          "sourceDate": "2025-08-07",
+          "method": "Independent check of the exact ClinicalTrials.gov NCT04544293 posted primary endpoint analysis table: molgramostim/placebo contrast, Week 24, mean difference, CI, and p value. Describes a reported pulmonary function endpoint only; not established clinical meaningfulness, FDA approval, or RAAS probability.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT04576949",
+      "ticker": "ACHV",
+      "drug": "Cytisinicline",
+      "indication": "Smoking Cessation",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "A randomized Phase 3 ORCA-2 trial (NCT04576949) measured continuous, biochemically confirmed tobacco abstinence against placebo plus behavioral support: Weeks 3–6 were 25.3% versus 4.4% for the 6-week regimen (OR 8.00, 95% CI 3.94–16.25; p<0.0001). This verifies a specific quitting outcome, not comparison with active cessation drugs.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT04576949",
+          "sourceDate": "2024-11-14",
+          "method": "Reviewed against exact ClinicalTrials.gov NCT04576949 result posted 2024-11-14, randomized placebo plus behavioral support primary continuous smoking abstinence at Weeks 3–6, original odds ratio 95% CI and p value; independently cross-checked against published JAMA ORCA Phase 3 RCT https://pubmed.ncbi.nlm.nih.gov/37432430/. Evidence for the specified endpoint only, not regulatory approval, RAAS score or superiority over active therapy.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "6b1b8c5532ac12fff8c0daaa83c02474c2b649719a0a4132bcc98f15c294fa1e",
+            "endpointTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "8.00",
+            "confidenceLower": "3.94",
+            "confidenceUpper": "16.25",
+            "crossReference": "https://pubmed.ncbi.nlm.nih.gov/37432430/"
+          }
+        },
+        "magnitude": {
+          "value": "For ORCA-2 NCT04576949, 6-week cytisinicline versus placebo on biochemically confirmed abstinence during Weeks 3–6 had reported odds ratio 8.00 (95% CI 3.94–16.25; p<0.0001), 25.3% versus 4.4%; the 12-week regimen during Weeks 9–12 had reported odds ratio 6.29 (95% CI 3.69–11.57; p<0.0001). Same placebo plus behavioral support context in each window.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT04576949",
+          "sourceDate": "2024-11-14",
+          "method": "Reviewed against exact ClinicalTrials.gov NCT04576949 result posted 2024-11-14, randomized placebo plus behavioral support primary continuous smoking abstinence at Weeks 3–6, original odds ratio 95% CI and p value; independently cross-checked against published JAMA ORCA Phase 3 RCT https://pubmed.ncbi.nlm.nih.gov/37432430/. Evidence for the specified endpoint only, not regulatory approval, RAAS score or superiority over active therapy.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "6b1b8c5532ac12fff8c0daaa83c02474c2b649719a0a4132bcc98f15c294fa1e",
+            "endpointTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "8.00",
+            "confidenceLower": "3.94",
+            "confidenceUpper": "16.25",
+            "crossReference": "https://pubmed.ncbi.nlm.nih.gov/37432430/"
+          }
+        },
+        "responseRemission": {
+          "value": "For the 6-week cytisinicline course plus behavioral support, biochemically confirmed continuous abstinence during Weeks 3–6 was 25.3%, versus 4.4% for placebo plus behavioral support; the 12-week course had 32.6% versus 7.0% during Weeks 9–12.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT04576949",
+          "sourceDate": "2024-11-14",
+          "method": "Reviewed against exact ClinicalTrials.gov NCT04576949 result posted 2024-11-14, randomized placebo plus behavioral support primary continuous smoking abstinence at Weeks 3–6, original odds ratio 95% CI and p value; independently cross-checked against published JAMA ORCA Phase 3 RCT https://pubmed.ncbi.nlm.nih.gov/37432430/. Evidence for the specified endpoint only, not regulatory approval, RAAS score or superiority over active therapy.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "6b1b8c5532ac12fff8c0daaa83c02474c2b649719a0a4132bcc98f15c294fa1e",
+            "endpointTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "8.00",
+            "confidenceLower": "3.94",
+            "confidenceUpper": "16.25",
+            "crossReference": "https://pubmed.ncbi.nlm.nih.gov/37432430/"
+          }
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT05206370",
+      "ticker": "ACHV",
+      "drug": "Cytisinicline",
+      "indication": "Smoking Cessation",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "Randomized Phase 3 ORCA-3 (NCT05206370) biochemically verified continuous tobacco abstinence during Weeks 3–6 was 14.8% with the 6-week cytisinicline regimen versus 6.0% with placebo (OR 2.85, 95% CI 1.475–5.617; p=0.0008), both with behavioral support. Does not prove benefit over currently approved active treatments.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05206370",
+          "sourceDate": "2026-01-14",
+          "method": "Reviewed against exact ClinicalTrials.gov NCT05206370 result posted 2026-01-14, randomized placebo plus behavioral support primary continuous smoking abstinence at Weeks 3–6, original odds ratio 95% CI and p value; independently cross-checked against published JAMA ORCA Phase 3 RCT https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/. Evidence for the specified endpoint only, not regulatory approval, RAAS score or superiority over active therapy.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "f82b6618c828bb9a6a5cbe90e90ee0bc8e2b367a3a5cc385e22146ec76661b0f",
+            "endpointTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "2.85",
+            "confidenceLower": "1.475",
+            "confidenceUpper": "5.617",
+            "crossReference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/"
+          }
+        },
+        "magnitude": {
+          "value": "ORCA-3 NCT05206370, biochemically confirmed continuous abstinence with 6-week cytisinicline versus placebo over Weeks 3–6: reported odds ratio 2.85 (95% CI 1.475–5.617; p=0.0008); observed 14.8% versus 6.0%. For the 12-week regimen over Weeks 9–12: odds ratio 4.40 (95% CI 2.566–7.343; p<0.0001); observed 30.3% versus 9.4%.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05206370",
+          "sourceDate": "2026-01-14",
+          "method": "Reviewed against exact ClinicalTrials.gov NCT05206370 result posted 2026-01-14, randomized placebo plus behavioral support primary continuous smoking abstinence at Weeks 3–6, original odds ratio 95% CI and p value; independently cross-checked against published JAMA ORCA Phase 3 RCT https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/. Evidence for the specified endpoint only, not regulatory approval, RAAS score or superiority over active therapy.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "f82b6618c828bb9a6a5cbe90e90ee0bc8e2b367a3a5cc385e22146ec76661b0f",
+            "endpointTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "2.85",
+            "confidenceLower": "1.475",
+            "confidenceUpper": "5.617",
+            "crossReference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/"
+          }
+        },
+        "responseRemission": {
+          "value": "ORCA-3 NCT05206370 biochemically verified continuous abstinence was 14.8% with the 6-week cytisinicline regimen versus 6.0% with placebo during Weeks 3–6; 30.3% versus 9.4% for the 12-week regimen during Weeks 9–12. Both arms also had behavioral support.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05206370",
+          "sourceDate": "2026-01-14",
+          "method": "Reviewed against exact ClinicalTrials.gov NCT05206370 result posted 2026-01-14, randomized placebo plus behavioral support primary continuous smoking abstinence at Weeks 3–6, original odds ratio 95% CI and p value; independently cross-checked against published JAMA ORCA Phase 3 RCT https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/. Evidence for the specified endpoint only, not regulatory approval, RAAS score or superiority over active therapy.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "f82b6618c828bb9a6a5cbe90e90ee0bc8e2b367a3a5cc385e22146ec76661b0f",
+            "endpointTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Odds Ratio (OR)",
+            "observedValue": "2.85",
+            "confidenceLower": "1.475",
+            "confidenceUpper": "5.617",
+            "crossReference": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/"
+          }
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT05767346",
+      "ticker": "CYTK",
+      "drug": "Aficamten",
+      "indication": "Obstructive Hypertrophic Cardiomyopathy (oHCM)",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "In randomized Phase 3 MAPLE-HCM, aficamten increased peak oxygen uptake versus metoprolol at Week 24 by a least-squares mean between-group difference of +2.30 mL/kg/min (95% CI +1.52 to +3.07; p<0.0001). This verifies the trial's exercise-capacity endpoint result, not approval probability or superiority to all possible therapies.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05767346",
+          "sourceDate": "2026-06-09",
+          "method": "Exact NCT05767346 registry results (primary pVO2 Week 24, prespecified randomized aficamten vs metoprolol arms, least-squares difference and 95% CI), independently cross-checked against peer-reviewed NEJM MAPLE-HCM trial 10.1056/NEJMoa2504654 / PubMed PMID 40888697. Restricted to the reported endpoint; not FDA approval, all-comparator superiority, or RAAS prediction.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "e6c4c93cbccc4ddd93a112dc3bb125c77865c148ede0cdc468006a428cabb21e",
+            "endpointTitle": "Change in Peak Oxygen Uptake (pVO2) by Cardiopulmonary Exercise Testing (CPET)",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Least Squares Mean Difference",
+            "observedValue": "2.30",
+            "confidenceLower": "1.52",
+            "confidenceUpper": "3.07",
+            "crossReference": "https://pubmed.ncbi.nlm.nih.gov/40888697/"
+          }
+        },
+        "magnitude": {
+          "value": "Aficamten versus metoprolol, Phase 3 primary change from baseline in pVO2 at Week 24: least-squares mean difference +2.30 mL/kg/min (95% CI +1.52 to +3.07; p<0.0001). A matched active-comparator effect estimate, not a forecast.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05767346",
+          "sourceDate": "2026-06-09",
+          "method": "Exact NCT05767346 registry results (primary pVO2 Week 24, prespecified randomized aficamten vs metoprolol arms, least-squares difference and 95% CI), independently cross-checked against peer-reviewed NEJM MAPLE-HCM trial 10.1056/NEJMoa2504654 / PubMed PMID 40888697. Restricted to the reported endpoint; not FDA approval, all-comparator superiority, or RAAS prediction.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "e6c4c93cbccc4ddd93a112dc3bb125c77865c148ede0cdc468006a428cabb21e",
+            "endpointTitle": "Change in Peak Oxygen Uptake (pVO2) by Cardiopulmonary Exercise Testing (CPET)",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Least Squares Mean Difference",
+            "observedValue": "2.30",
+            "confidenceLower": "1.52",
+            "confidenceUpper": "3.07",
+            "crossReference": "https://pubmed.ncbi.nlm.nih.gov/40888697/"
+          }
+        },
+        "headToHead": {
+          "value": "Direct randomized active-comparator evidence: aficamten versus metoprolol succinate in MAPLE-HCM (NCT05767346), with prespecified Week-24 pVO2 primary endpoint favoring aficamten by +2.30 mL/kg/min (95% CI +1.52 to +3.07; p<0.0001). Does not establish superiority over other competing classes.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05767346",
+          "sourceDate": "2026-06-09",
+          "method": "Exact NCT05767346 registry results (primary pVO2 Week 24, prespecified randomized aficamten vs metoprolol arms, least-squares difference and 95% CI), independently cross-checked against peer-reviewed NEJM MAPLE-HCM trial 10.1056/NEJMoa2504654 / PubMed PMID 40888697. Restricted to the reported endpoint; not FDA approval, all-comparator superiority, or RAAS prediction.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "e6c4c93cbccc4ddd93a112dc3bb125c77865c148ede0cdc468006a428cabb21e",
+            "endpointTitle": "Change in Peak Oxygen Uptake (pVO2) by Cardiopulmonary Exercise Testing (CPET)",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Least Squares Mean Difference",
+            "observedValue": "2.30",
+            "confidenceLower": "1.52",
+            "confidenceUpper": "3.07",
+            "crossReference": "https://pubmed.ncbi.nlm.nih.gov/40888697/"
+          }
+        }
+      },
+      "advantages": []
+    },
+    {
       "nctId": "NCT05811247",
       "ticker": "APMD",
       "drug": "AD109",
@@ -31,23 +366,6 @@
           "sourceUrl": "https://clinicaltrials.gov/study/NCT05813275",
           "sourceDate": "2026-09-11",
           "method": "Independent check of the exact ClinicalTrials.gov NCT05813275 posted primary endpoint analysis table: comparator, group IDs OG000/OG001, 6-month timeframe, least-squares difference, 95% limits, reported p value. Source fact only; not clinical meaningfulness, FDA approval, or RAAS probability.",
-          "confidence": "MODERATE"
-        }
-      },
-      "advantages": []
-    },
-    {
-      "nctId": "NCT04544293",
-      "ticker": "SVRA",
-      "drug": "Molgramostim",
-      "indication": "Autoimmune Pulmonary Alveolar Proteinosis",
-      "facts": {
-        "magnitude": {
-          "value": "Molgramostim versus placebo, primary change in hemoglobin-adjusted percent-predicted DLCO at Week 24: net mean difference +6.0 percentage points; 95% CI 2.5 to 9.4; p=0.0007.",
-          "status": "VERIFIED",
-          "sourceUrl": "https://clinicaltrials.gov/study/NCT04544293",
-          "sourceDate": "2025-08-07",
-          "method": "Independent check of the exact ClinicalTrials.gov NCT04544293 posted primary endpoint analysis table: molgramostim/placebo contrast, Week 24, mean difference, CI, and p value. Describes a reported pulmonary function endpoint only; not established clinical meaningfulness, FDA approval, or RAAS probability.",
           "confidence": "MODERATE"
         }
       },
