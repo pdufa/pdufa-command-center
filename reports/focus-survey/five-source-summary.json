@@ -1,9 +1,9 @@
 {
   "companyIssuers": 20,
-  "errorCount": 22,
+  "errorCount": 19,
   "focusTrials": 29,
-  "generatedAt": "2026-11-07T20:30:37+00:00",
-  "newSourceLeads": 540,
+  "generatedAt": "2026-11-07T20:35:08+00:00",
+  "newSourceLeads": 555,
   "perTrial": [
     {
       "candidateIngredientIds": [
@@ -212,13 +212,14 @@
     {
       "candidateIngredientIds": [
         "clinicalBenefit",
+        "responseRemission",
         "safetyAdvantage"
       ],
       "nctId": "NCT03697109",
       "sourceCounts": {
-        "LITERATURE": 16
+        "LITERATURE": 21
       },
-      "strongSourceContext": 3,
+      "strongSourceContext": 7,
       "ticker": "CORT"
     },
     {
@@ -273,10 +274,11 @@
       "candidateIngredientIds": [],
       "nctId": "NCT04871282",
       "sourceCounts": {
+        "COMPANY": 3,
         "FDA": 1,
         "LITERATURE": 19
       },
-      "strongSourceContext": 0,
+      "strongSourceContext": 1,
       "ticker": "IMNM"
     },
     {
@@ -382,7 +384,7 @@
       ],
       "nctId": "NCT04544293",
       "sourceCounts": {
-        "LITERATURE": 10,
+        "LITERATURE": 17,
         "SEC": 1
       },
       "strongSourceContext": 8,
@@ -425,9 +427,9 @@
   ],
   "schemaVersion": 1,
   "sourceCounts": {
-    "COMPANY": 21,
+    "COMPANY": 24,
     "FDA": 31,
-    "LITERATURE": 476,
+    "LITERATURE": 488,
     "SEC": 12
   },
   "sourceErrors": [
@@ -467,6 +469,21 @@
       "ticker": "COGT"
     },
     {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "ABVX"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "ABVX"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "ABVX"
+    },
+    {
       "error": "ValueError:PUBLIC_SOURCE_TOO_LARGE",
       "sourceType": "COMPANY",
       "ticker": "ACHV"
@@ -479,27 +496,7 @@
     {
       "error": "HTTP_403",
       "sourceType": "COMPANY",
-      "ticker": "ABVX"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "ABVX"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "ABVX"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
       "ticker": "PRAX"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "PHVS"
     },
     {
       "error": "HTTP_403",
@@ -507,9 +504,9 @@
       "ticker": "SRPT"
     },
     {
-      "error": "ValueError:PUBLIC_SOURCE_UNEXPECTED_RESPONSE",
+      "error": "HTTP_403",
       "sourceType": "COMPANY",
-      "ticker": "IMNM"
+      "ticker": "PHVS"
     },
     {
       "error": "HTTP_403",
@@ -530,18 +527,6 @@
       "error": "URLError:<urlopen error [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:1011)>",
       "sourceType": "COMPANY",
       "ticker": "SVRA"
-    },
-    {
-      "error": "HTTP_503",
-      "mode": "DRUG_INDICATION",
-      "nctId": "NCT03697109",
-      "sourceType": "LITERATURE"
-    },
-    {
-      "error": "HTTP_503",
-      "mode": "DISEASE_CONTEXT",
-      "nctId": "NCT04544293",
-      "sourceType": "LITERATURE"
     }
   ],
   "sourceStatus": "RESEARCH_LEADS_ONLY_NOT_SURVEY_ANSWERS",

@@ -1,17 +1,17 @@
 {
-  "distinctTrialPublicationLeads": 303,
+  "distinctTrialPublicationLeads": 333,
   "ingredientSlots": 1102,
   "note": "Source facts and literature relevance candidates do not validate the 38 survey ingredients; existing evidence statuses unchanged.",
   "numericOutcomeMeasurements": 232,
   "otherEventGroupObservations": 28,
   "perTrial": [
     {
-      "drugTitleLeads": 0,
+      "drugTitleLeads": 1,
       "exactNctPublications": 0,
       "nctId": "NCT05507203",
       "numericOutcomes": 12,
       "otherEventGroups": 3,
-      "publications": 0,
+      "publications": 16,
       "registeredArms": 3,
       "seriousEventGroups": 3,
       "ticker": "ABVX"
@@ -198,7 +198,7 @@
       "nctId": "NCT04871282",
       "numericOutcomes": 0,
       "otherEventGroups": 0,
-      "publications": 0,
+      "publications": 14,
       "registeredArms": 6,
       "seriousEventGroups": 0,
       "ticker": "IMNM"
@@ -326,10 +326,10 @@
     }
   ],
   "publicationCategories": {
-    "DRUG_TITLE_LEAD": 38,
+    "DRUG_TITLE_LEAD": 39,
     "EXACT_NCT_LEAD": 9,
-    "INDICATION_CONTEXT_ONLY": 77,
-    "UNLINKED_SEARCH_LEAD": 179
+    "INDICATION_CONTEXT_ONLY": 88,
+    "UNLINKED_SEARCH_LEAD": 197
   },
   "registeredTreatmentArms": 82,
   "registryFactObservations": 370,

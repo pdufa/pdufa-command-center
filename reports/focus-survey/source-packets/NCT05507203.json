@@ -1,8 +1,153 @@
 {
   "company": "Abivax S.A.",
-  "literatureLeads": [],
+  "literatureLeads": [
+    {
+      "doi": "10.1093/ecco-jcc/jjaf074",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-05-01",
+      "title": "Obefazimod in patients with moderate-to-severely active ulcerative colitis: efficacy and safety analysis from the 96-week open-label maintenance phase 2b study.",
+      "url": "https://europepmc.org/article/MED/40417999"
+    },
+    {
+      "doi": "10.1002/ueg2.12731",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-12-19",
+      "title": "Evolution of Eligibility Criteria in Inflammatory Bowel Disease Clinical Trials: A Clinical Trial Databank Analysis.",
+      "url": "https://europepmc.org/article/MED/39698868"
+    },
+    {
+      "doi": "10.3390/ijms27031534",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-02-04",
+      "title": "Advances in the Treatment of Ulcerative Colitis-From Conventional Therapies to Targeted Biologics and Small Molecules.",
+      "url": "https://europepmc.org/article/MED/41683952"
+    },
+    {
+      "doi": "10.3390/jcm14051536",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-02-25",
+      "title": "Paradigm Shift in Inflammatory Bowel Disease Management: Precision Medicine, Artificial Intelligence, and Emerging Therapies.",
+      "url": "https://europepmc.org/article/MED/40095460"
+    },
+    {
+      "doi": "10.3390/cells12131730",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-06-27",
+      "title": "Novel Small Molecules in IBD: Current State and Future Perspectives.",
+      "url": "https://europepmc.org/article/MED/37443765"
+    },
+    {
+      "doi": "10.3390/pharmaceutics17111502",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-11-20",
+      "title": "Nanoparticles Used for the Delivery of RNAi-Based Therapeutics.",
+      "url": "https://europepmc.org/article/MED/41304838"
+    },
+    {
+      "doi": "10.1002/mco2.70914",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-08-16",
+      "title": "Inflammatory Bowel Disease: Mechanisms and Therapeutic Advances.",
+      "url": "https://europepmc.org/article/MED/42609442"
+    },
+    {
+      "doi": "10.3390/ph18020190",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-01-30",
+      "title": "Drug Development in Inflammatory Bowel Diseases: What Is Next?",
+      "url": "https://europepmc.org/article/MED/40006003"
+    },
+    {
+      "doi": "10.1002/ueg2.70130",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-11-03",
+      "title": "Late-breaking trials in IBD.",
+      "url": "https://europepmc.org/article/MED/41178467"
+    },
+    {
+      "doi": "10.1007/s40272-026-00766-1",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-08-13",
+      "title": "Novel Agents on the Therapeutic Horizon For Paediatric Inflammatory Bowel Diseases: An Analysis of Clinical Trials Registries.",
+      "url": "https://europepmc.org/article/MED/42595931"
+    },
+    {
+      "doi": "10.3389/fgstr.2026.1747118",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-01-30",
+      "title": "Advancing therapeutic frontiers: a pipeline of novel drugs for UC management.",
+      "url": "https://europepmc.org/article/MED/41822012"
+    },
+    {
+      "doi": "10.14309/ctg.0000000000000560",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-04-01",
+      "title": "ABX464 (Obefazimod) Upregulates miR-124 to Reduce Proinflammatory Markers in Inflammatory Bowel Diseases.",
+      "url": "https://europepmc.org/article/MED/36573890"
+    },
+    {
+      "doi": "10.3390/ijms242316593",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-11-22",
+      "title": "A Journey to Reach the Ovary Using Next-Generation Technologies.",
+      "url": "https://europepmc.org/article/MED/38068916"
+    },
+    {
+      "doi": "10.1136/egastro-2023-100012",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-09-01",
+      "title": "Horizon scanning: new and future therapies in the management of inflammatory bowel disease.",
+      "url": "https://europepmc.org/article/MED/39944001"
+    },
+    {
+      "doi": "10.2147/ceg.s375969",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-08-17",
+      "title": "Emerging Therapies for Ulcerative Colitis: Updates from Recent Clinical Trials.",
+      "url": "https://europepmc.org/article/MED/37609124"
+    },
+    {
+      "doi": "10.3390/bioengineering10080892",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-07-27",
+      "title": "Overview of miR-106a Regulatory Roles: from Cancer to Aging.",
+      "url": "https://europepmc.org/article/MED/37627777"
+    }
+  ],
   "nctId": "NCT05507203",
-  "packetHash": "d36e521ffce957fdfff54474748670b1b657cc0cb59552aa0a6ba7fb4b38f0cf",
+  "packetHash": "21c1548900196957a0069efde3936815748a331d873aba241dd97df421a31c86",
   "registry": {
     "activeComparatorResults": [],
     "adverseEventGroups": [
@@ -367,9 +512,7 @@
   "registryUrl": "https://clinicaltrials.gov/study/NCT05507203",
   "regulatorySourceLead": "https://www.abivax.com/pipeline/",
   "reportedFdaStatus": "NDA Q4 2026 planned",
-  "retrievedAt": "2026-11-07T20:27:37+00:00",
-  "sourceErrors": {
-    "literature": "HTTPError: HTTP Error 503:"
-  },
+  "retrievedAt": "2026-11-07T20:33:06+00:00",
+  "sourceErrors": {},
   "ticker": "ABVX"
 }

@@ -1,8 +1,135 @@
 {
   "company": "Immunome, Inc.",
-  "literatureLeads": [],
+  "literatureLeads": [
+    {
+      "doi": "10.1158/1078-0432.ccr-25-3128",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-06-01",
+      "title": "Phase III Trial of Pegylated Liposomal Doxorubicin for Patients with Advanced and Refractory Desmoid Tumors.",
+      "url": "https://europepmc.org/article/MED/41504634"
+    },
+    {
+      "doi": "10.1016/j.xjidi.2026.100482",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-05-05",
+      "title": "Distinct and shared effects of individual γ-secretase inhibitors on human keratinocytes.",
+      "url": "https://europepmc.org/article/MED/42291619"
+    },
+    {
+      "doi": "10.2147/cmar.s362694",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-06-07",
+      "title": "Capturing Patient Voice to Improve Outcomes That Matter to Patients with Desmoid Tumor.",
+      "url": "https://europepmc.org/article/MED/38863992"
+    },
+    {
+      "doi": "10.3390/cancers17213470",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-10-29",
+      "title": "Desmoid Tumors-Experience from a Referral Center, Part 1: Multidisciplinary Review and Practical Recommendations.",
+      "url": "https://europepmc.org/article/MED/41228263"
+    },
+    {
+      "doi": "10.1007/s11864-024-01177-5",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-01-25",
+      "title": "Desmoid Tumors: Current Perspective and Treatment.",
+      "url": "https://europepmc.org/article/MED/38270798"
+    },
+    {
+      "doi": "10.1007/s12325-023-02592-0",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-07-12",
+      "title": "Desmoid Tumors: A Comprehensive Review.",
+      "url": "https://europepmc.org/article/MED/37436594"
+    },
+    {
+      "doi": "10.1038/s41698-022-00308-1",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2022-09-06",
+      "title": "Molecular pathogenesis of desmoid tumor and the role of γ-secretase inhibition.",
+      "url": "https://europepmc.org/article/MED/36068332"
+    },
+    {
+      "doi": "10.1002/cncr.34332",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2022-06-07",
+      "title": "Evolving strategies for management of desmoid tumor.",
+      "url": "https://europepmc.org/article/MED/35670122"
+    },
+    {
+      "doi": "10.3390/curroncol28050312",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2021-09-21",
+      "title": "Activity of the Gamma Secretase Inhibitor AL101 in Desmoid Tumors: A Case Report of 2 Adult Cases.",
+      "url": "https://europepmc.org/article/MED/34590610"
+    },
+    {
+      "doi": "10.1016/j.tips.2023.09.011",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2023-10-25",
+      "title": "New tricks for an old pathway: emerging Notch-based biotechnologies and therapeutics.",
+      "url": "https://europepmc.org/article/MED/37891017"
+    },
+    {
+      "doi": "10.3389/fonc.2023.1122508",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-03-09",
+      "title": "Targeted therapies for the treatment of soft tissue sarcoma.",
+      "url": "https://europepmc.org/article/MED/36969064"
+    },
+    {
+      "doi": "10.3390/cancers17010010",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-12-24",
+      "title": "Novel Therapeutics in Soft Tissue Sarcoma.",
+      "url": "https://europepmc.org/article/MED/39796641"
+    },
+    {
+      "doi": "10.3390/cancers15184563",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-09-14",
+      "title": "Modulation of Notch Signaling by Small-Molecular Compounds and Its Potential in Anticancer Studies.",
+      "url": "https://europepmc.org/article/MED/37760535"
+    },
+    {
+      "doi": "10.3390/ijms22136707",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2021-06-23",
+      "title": "Regulation of ADAM10 by the TspanC8 Family of Tetraspanins and Their Therapeutic Potential.",
+      "url": "https://europepmc.org/article/MED/34201472"
+    }
+  ],
   "nctId": "NCT04871282",
-  "packetHash": "8257c03e4d504d2e9726533e1dcc164e997ea16805a21d5c7f83583fd8b013fb",
+  "packetHash": "a444fc885df7cae83c1bcc61d3d2b8e38a9f82e676e9d9aff167b402cd16ab2b",
   "registry": {
     "activeComparatorResults": [],
     "adverseEventGroups": [],
@@ -129,9 +256,7 @@
   "registryUrl": "https://clinicaltrials.gov/study/NCT04871282",
   "regulatorySourceLead": "https://investors.immunome.com/immunome-announces-u-s-fda-acceptance-of-new-drug-application-for-varegacestat-for-the-treatment-of-adults-with-desmoid-tumors/",
   "reportedFdaStatus": "2027-04-28",
-  "retrievedAt": "2026-11-07T20:28:02+00:00",
-  "sourceErrors": {
-    "literature": "HTTPError: HTTP Error 503:"
-  },
+  "retrievedAt": "2026-11-07T20:33:24+00:00",
+  "sourceErrors": {},
   "ticker": "IMNM"
 }

@@ -14158,21 +14158,21 @@
       ],
       "ingredientId": "magnitude",
       "ingredientName": "Magnitude of Clinical Improvement",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "linkedCompanyDisclosureSources": 1,
       "missingEvidenceRequirement": "Matched effect sizes, units, follow-up and confidence intervals.",
       "nctId": "NCT06445023",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "MISSING",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 0,
       "recommendedSource": "https://europepmc.org/article/MED/41747871",
       "registryIndications": [
         "Chronic Spontaneous Urticaria"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "EXTERNAL_PRIMARY_SOURCE_CONTENT_REVIEW_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "EMBARQ-CSU1, Week 12 UAS7 LS mean change: barzolvolimab 150 mg Q4W -20.2 (SE 0.64); 300 mg Q8W -20.5 (SE 0.65); placebo -10.7 (SE 0.65). Issuer reports p<0.00001 for each active arm vs placebo.",
       "sourcePacketHash": "21bc1f8fde0b3c0c46c6fa648c2cccc16dd0b60bcb91432f5278b0393678028f",
       "sourceUrls": [
         "https://europepmc.org/article/MED/41747871"
@@ -14267,21 +14267,21 @@
       ],
       "ingredientId": "responseRemission",
       "ingredientName": "Responder / Remission Advantage",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "linkedCompanyDisclosureSources": 1,
       "missingEvidenceRequirement": "Same responder definition, denominator and follow-up time.",
       "nctId": "NCT06445023",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "MISSING",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 0,
       "recommendedSource": "https://europepmc.org/article/MED/40074986",
       "registryIndications": [
         "Chronic Spontaneous Urticaria"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "EXTERNAL_PRIMARY_SOURCE_CONTENT_REVIEW_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "EMBARQ-CSU1 UAS7=0 complete response: Week 12 42.4% (150 mg Q4W) and 42.1% (300 mg Q8W), versus 9.3% placebo; Week 24 49.0% and 45.1%, versus 15.4% placebo. Issuer reports p<0.00001 for both dose arms at both visits.",
       "sourcePacketHash": "21bc1f8fde0b3c0c46c6fa648c2cccc16dd0b60bcb91432f5278b0393678028f",
       "sourceUrls": [
         "https://europepmc.org/article/MED/40074986",
@@ -15546,21 +15546,21 @@
       ],
       "ingredientId": "magnitude",
       "ingredientName": "Magnitude of Clinical Improvement",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "linkedCompanyDisclosureSources": 1,
       "missingEvidenceRequirement": "Matched effect sizes, units, follow-up and confidence intervals.",
       "nctId": "NCT06455202",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "MISSING",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 0,
       "recommendedSource": "https://europepmc.org/article/MED/41747871",
       "registryIndications": [
         "Chronic Spontaneous Urticaria"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "EXTERNAL_PRIMARY_SOURCE_CONTENT_REVIEW_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "EMBARQ-CSU2, Week 12 UAS7 LS mean change: barzolvolimab 150 mg Q4W -20.2 (SE 0.63); 300 mg Q8W -19.7 (SE 0.64); placebo -11.4 (SE 0.64). Issuer reports p<0.00001 for each active arm vs placebo.",
       "sourcePacketHash": "78750593652e13b66ddf221371c8697b1bcbc29473d8c3872a4b406d4591c4d8",
       "sourceUrls": [
         "https://europepmc.org/article/MED/41747871"
@@ -15655,21 +15655,21 @@
       ],
       "ingredientId": "responseRemission",
       "ingredientName": "Responder / Remission Advantage",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "linkedCompanyDisclosureSources": 1,
       "missingEvidenceRequirement": "Same responder definition, denominator and follow-up time.",
       "nctId": "NCT06455202",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "MISSING",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 0,
       "recommendedSource": "https://europepmc.org/article/MED/40074986",
       "registryIndications": [
         "Chronic Spontaneous Urticaria"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "EXTERNAL_PRIMARY_SOURCE_CONTENT_REVIEW_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "EMBARQ-CSU2 UAS7=0 complete response: Week 12 45.7% (150 mg Q4W) and 44.0% (300 mg Q8W), versus 12.6% placebo; Week 24 54.0% and 48.4%, versus 17.6% placebo. Issuer reports p<0.00001 for both dose arms at both visits.",
       "sourcePacketHash": "78750593652e13b66ddf221371c8697b1bcbc29473d8c3872a4b406d4591c4d8",
       "sourceUrls": [
         "https://europepmc.org/article/MED/40074986",
@@ -18335,7 +18335,7 @@
         "Relacorilant"
       ],
       "drugIndicationIdentityStatus": "CANDIDATE_FROM_REGISTRY_CONFIRM_PRODUCT_RIGHTS",
-      "externalPublicSourceLeads": 2,
+      "externalPublicSourceLeads": 1,
       "externalPublicSourceTypes": [
         "LITERATURE"
       ],
@@ -18498,8 +18498,10 @@
         "Relacorilant"
       ],
       "drugIndicationIdentityStatus": "CANDIDATE_FROM_REGISTRY_CONFIRM_PRODUCT_RIGHTS",
-      "externalPublicSourceLeads": 0,
-      "externalPublicSourceTypes": [],
+      "externalPublicSourceLeads": 1,
+      "externalPublicSourceTypes": [
+        "LITERATURE"
+      ],
       "ingredientId": "responseRemission",
       "ingredientName": "Responder / Remission Advantage",
       "isSurveyAnswerVerified": true,
@@ -18902,7 +18904,7 @@
         "Relacorilant"
       ],
       "drugIndicationIdentityStatus": "CANDIDATE_FROM_REGISTRY_CONFIRM_PRODUCT_RIGHTS",
-      "externalPublicSourceLeads": 3,
+      "externalPublicSourceLeads": 2,
       "externalPublicSourceTypes": [
         "LITERATURE"
       ],
@@ -24097,13 +24099,13 @@
       "externalPublicSourceTypes": [],
       "ingredientId": "responseRemission",
       "ingredientName": "Responder / Remission Advantage",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "linkedCompanyDisclosureSources": 1,
       "missingEvidenceRequirement": "Same responder definition, denominator and follow-up time.",
       "nctId": "NCT04871282",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "MISSING",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 0,
       "recommendedSource": "https://investors.immunome.com/immunome-presents-additional-clinical-data-for-varegacestat-in-desmoid-tumors-at-esmo-2026/",
       "registryIndications": [
@@ -24111,8 +24113,8 @@
         "Desmoid Tumor"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "ADDITIONAL_PRIMARY_RESEARCH_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "RINGSIDE Phase 3 confirmed objective response (RECIST v1.1), varegacestat (formerly AL102) 56% versus placebo 9%, p<0.0001, as assessed by blinded independent central review; issuer reported.",
       "sourcePacketHash": "64bd485b9aa482a8e1dabf5940c0cb2d3d5ddfb09484ffa90b8735ac922967cc",
       "sourceUrls": [],
       "supportingRegistryPointers": [],
@@ -25459,21 +25461,21 @@
       ],
       "ingredientId": "responseRemission",
       "ingredientName": "Responder / Remission Advantage",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "linkedCompanyDisclosureSources": 1,
       "missingEvidenceRequirement": "Same responder definition, denominator and follow-up time.",
       "nctId": "NCT06411379",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "MISSING",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 0,
       "recommendedSource": "https://europepmc.org/article/MED/42822776",
       "registryIndications": [
         "Hidradenitis Suppurativa"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "EXTERNAL_PRIMARY_SOURCE_CONTENT_REVIEW_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "VELA-2 Week 16 HiSCR75: prespecified composite-strategy PRIMARY endpoint DID NOT reach significance (placebo-adjusted ~9 percentage points; p=0.053). Treatment-policy alternative: 35.9% (sonelokimab 120mg, n=276) versus 25.6% placebo (n=141), p=0.033.",
       "sourcePacketHash": "416155bc34ae8af822b5c4b7527e51c1843585eb05b642c009975e9871e983dd",
       "sourceUrls": [
         "https://europepmc.org/article/MED/42822776"
@@ -26799,21 +26801,21 @@
       ],
       "ingredientId": "responseRemission",
       "ingredientName": "Responder / Remission Advantage",
-      "isSurveyAnswerVerified": false,
+      "isSurveyAnswerVerified": true,
       "linkedCompanyDisclosureSources": 1,
       "missingEvidenceRequirement": "Same responder definition, denominator and follow-up time.",
       "nctId": "NCT06411899",
       "nextEvidenceStep": "Exact trial primary endpoints, aligned comparator, absolute treatment effect, precision",
       "primaryObservationCount": 0,
-      "priorEvidenceStatus": "MISSING",
+      "priorEvidenceStatus": "VERIFIED",
       "publicationReviewLeads": 0,
       "recommendedSource": "https://europepmc.org/article/MED/42822776",
       "registryIndications": [
         "Hidradenitis Suppurativa"
       ],
       "requiresModelAssumptions": false,
-      "researchDisposition": "EXTERNAL_PRIMARY_SOURCE_CONTENT_REVIEW_REQUIRED",
-      "reviewedAnswer": null,
+      "researchDisposition": "REVIEWED_ANSWER_PRESENT",
+      "reviewedAnswer": "VELA-1 Week 16 HiSCR75: prespecified composite-strategy primary endpoint placebo-adjusted ~17 percentage points (p<0.001); treatment-policy alternative 34.8% (sonelokimab 120mg, n=283) versus 17.5% placebo (n=138), p<0.001.",
       "sourcePacketHash": "b7fdd0590eb3fd8c2f3a1ec3a4d87711abce1c0d8e46605f0afa09c0b4d21241",
       "sourceUrls": [
         "https://europepmc.org/article/MED/42822776"

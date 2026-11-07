@@ -1,42 +1,42 @@
 nctId,ticker,company,surveyNumber,surveyName,ingredientId,ingredientName,status,reviewedValue,reviewedSourceUrl,reviewedSourceDate,publicationLeads,reason,registryLeadUrl,registryLeadPointer,registryLeadCount
-NCT05507203,ABVX,Abivax S.A.,1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
-NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
-NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
-NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,VERIFIED,"ABTECT-1 Phase 3 induction, Week 8 clinical remission (modified Mayo): obefazimod/ABX464 50 mg 69/318 (21.7%) versus placebo 4/158 (2.5%). Issuer-reported placebo-adjusted difference +19.3 percentage points; p<0.0001. This is a source-checked trial endpoint observation, not an approval probability.",https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week/,2025-07-22,0,,https://clinicaltrials.gov/study/NCT05507203,registry.responseMeasures,2
-NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,closestCompetitor,Closest Competing Therapy,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,competitorCount,Number of Competitors,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,headToHead,Head-to-Head Evidence,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,competitivePipelineThreat,Competitive Pipeline Threat,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,competitiveStrategy,Competitive Strategies,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,7,Treatment Convenience,convenience,Treatment Convenience,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.treatmentArms,3
-NCT05507203,ABVX,Abivax S.A.,7,Treatment Convenience,treatmentSequence,Place in Treatment Sequence,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.treatmentArms,3
-NCT05507203,ABVX,Abivax S.A.,8,Safety Advantage,safetyAdvantage,Safety Advantage,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.adverseEventGroups,3
-NCT05507203,ABVX,Abivax S.A.,8,Safety Advantage,seriousAes,Serious Adverse Event Difference,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.seriousEventGroups,3
-NCT05507203,ABVX,Abivax S.A.,8,Safety Advantage,discontinuation,Treatment Discontinuation Difference,VERIFIED,ABTECT-1 Week 8 induction treatment-emergent adverse events leading to study-drug discontinuation: ABX464 50 mg 17/318 (5.3%) versus placebo 6/158 (3.8%). Crude study-specific proportions; not a causal or exposure-adjusted safety advantage.,https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week/,2025-07-22,0,,,,0
-NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,hospitalizationReduction,Hospitalization / Complication Reduction,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,costDifference,Treatment Cost Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,valuePerOutcome,Value per Clinical Outcome,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,10,Insurance Coverage Potential,payerAccess,Insurance / Access,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,11,Expected Treatment Price,treatmentPrice,Expected Treatment Price,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,12,Market Penetration,adoption,Projected Adoption,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,12,Market Penetration,switchingPool,Switching-Eligible Patient Pool,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,13,International Patient Population,internationalPatients,International Eligible Patients,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,14,Additional Indications,additionalIndications,Additional Indication Programs,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,15,Peak Annual Sales,peakAnnualSales,Peak Annual Sales Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,16,Revenue Growth Potential,revenueGrowth,Revenue Growth Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,17,Patent and Exclusivity Value,exclusivity,Commercial Exclusivity Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,18,Licensing and Partnership Value,licensingValue,Licensing and Partnership Economics,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,19,Company Valuation Impact,valuationImpact,Company Valuation Impact,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,20,Shareholder Upside and Risk,shareholderRisk,Shareholder Upside and Risk Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
+NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
+NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
+NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,VERIFIED,"ABTECT-1 Phase 3 induction, Week 8 clinical remission (modified Mayo): obefazimod/ABX464 50 mg 69/318 (21.7%) versus placebo 4/158 (2.5%). Issuer-reported placebo-adjusted difference +19.3 percentage points; p<0.0001. This is a source-checked trial endpoint observation, not an approval probability.",https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week/,2025-07-22,16,,https://clinicaltrials.gov/study/NCT05507203,registry.responseMeasures,2
+NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,closestCompetitor,Closest Competing Therapy,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,competitorCount,Number of Competitors,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,headToHead,Head-to-Head Evidence,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,competitivePipelineThreat,Competitive Pipeline Threat,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,competitiveStrategy,Competitive Strategies,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,7,Treatment Convenience,convenience,Treatment Convenience,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.treatmentArms,3
+NCT05507203,ABVX,Abivax S.A.,7,Treatment Convenience,treatmentSequence,Place in Treatment Sequence,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.treatmentArms,3
+NCT05507203,ABVX,Abivax S.A.,8,Safety Advantage,safetyAdvantage,Safety Advantage,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.adverseEventGroups,3
+NCT05507203,ABVX,Abivax S.A.,8,Safety Advantage,seriousAes,Serious Adverse Event Difference,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.seriousEventGroups,3
+NCT05507203,ABVX,Abivax S.A.,8,Safety Advantage,discontinuation,Treatment Discontinuation Difference,VERIFIED,ABTECT-1 Week 8 induction treatment-emergent adverse events leading to study-drug discontinuation: ABX464 50 mg 17/318 (5.3%) versus placebo 6/158 (3.8%). Crude study-specific proportions; not a causal or exposure-adjusted safety advantage.,https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week/,2025-07-22,16,,,,0
+NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,hospitalizationReduction,Hospitalization / Complication Reduction,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,costDifference,Treatment Cost Advantage,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,valuePerOutcome,Value per Clinical Outcome,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,10,Insurance Coverage Potential,payerAccess,Insurance / Access,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,11,Expected Treatment Price,treatmentPrice,Expected Treatment Price,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,12,Market Penetration,adoption,Projected Adoption,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,12,Market Penetration,switchingPool,Switching-Eligible Patient Pool,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,13,International Patient Population,internationalPatients,International Eligible Patients,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,14,Additional Indications,additionalIndications,Additional Indication Programs,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,15,Peak Annual Sales,peakAnnualSales,Peak Annual Sales Scenarios,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,16,Revenue Growth Potential,revenueGrowth,Revenue Growth Scenarios,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,17,Patent and Exclusivity Value,exclusivity,Commercial Exclusivity Advantage,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,18,Licensing and Partnership Value,licensingValue,Licensing and Partnership Economics,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,19,Company Valuation Impact,valuationImpact,Company Valuation Impact,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,20,Shareholder Upside and Risk,shareholderRisk,Shareholder Upside and Risk Scenarios,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507216,ABVX,Abivax S.A.,1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507216,ABVX,Abivax S.A.,1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507216,ABVX,Abivax S.A.,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,16,No source-validated ingredient answer,,,0
@@ -385,10 +385,10 @@ NCT06445023,CLDX,Celldex Therapeutics,2,Unmet Medical Need,standardOfCare,Curren
 NCT06445023,CLDX,Celldex Therapeutics,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06445023,CLDX,Celldex Therapeutics,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,MISSING,,,,7,No source-validated ingredient answer,,,0
-NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,7,No source-validated ingredient answer,,,0
+NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,VERIFIED,"EMBARQ-CSU1, Week 12 UAS7 LS mean change: barzolvolimab 150 mg Q4W -20.2 (SE 0.64); 300 mg Q8W -20.5 (SE 0.65); placebo -10.7 (SE 0.65). Issuer reports p<0.00001 for each active arm vs placebo.",https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and,2026-09-22,7,,,,0
 NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,7,No source-validated ingredient answer,,,0
-NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,7,No source-validated ingredient answer,,,0
+NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,VERIFIED,"EMBARQ-CSU1 UAS7=0 complete response: Week 12 42.4% (150 mg Q4W) and 42.1% (300 mg Q8W), versus 9.3% placebo; Week 24 49.0% and 45.1%, versus 15.4% placebo. Issuer reports p<0.00001 for both dose arms at both visits.",https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and,2026-09-22,7,,,,0
 NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06445023,CLDX,Celldex Therapeutics,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06445023,CLDX,Celldex Therapeutics,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,7,No source-validated ingredient answer,,,0
@@ -423,10 +423,10 @@ NCT06455202,CLDX,Celldex Therapeutics,2,Unmet Medical Need,standardOfCare,Curren
 NCT06455202,CLDX,Celldex Therapeutics,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,9,No source-validated ingredient answer,,,0
 NCT06455202,CLDX,Celldex Therapeutics,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,9,No source-validated ingredient answer,,,0
 NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,MISSING,,,,9,No source-validated ingredient answer,,,0
-NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,9,No source-validated ingredient answer,,,0
+NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,VERIFIED,"EMBARQ-CSU2, Week 12 UAS7 LS mean change: barzolvolimab 150 mg Q4W -20.2 (SE 0.63); 300 mg Q8W -19.7 (SE 0.64); placebo -11.4 (SE 0.64). Issuer reports p<0.00001 for each active arm vs placebo.",https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and,2026-09-22,9,,,,0
 NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,9,No source-validated ingredient answer,,,0
 NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,9,No source-validated ingredient answer,,,0
-NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,9,No source-validated ingredient answer,,,0
+NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,VERIFIED,"EMBARQ-CSU2 UAS7=0 complete response: Week 12 45.7% (150 mg Q4W) and 44.0% (300 mg Q8W), versus 12.6% placebo; Week 24 54.0% and 48.4%, versus 17.6% placebo. Issuer reports p<0.00001 for both dose arms at both visits.",https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and,2026-09-22,9,,,,0
 NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,9,No source-validated ingredient answer,,,0
 NCT06455202,CLDX,Celldex Therapeutics,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,9,No source-validated ingredient answer,,,0
 NCT06455202,CLDX,Celldex Therapeutics,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,9,No source-validated ingredient answer,,,0
@@ -645,44 +645,44 @@ NCT06081894,CYTK,"Cytokinetics, Inc.",17,Patent and Exclusivity Value,exclusivit
 NCT06081894,CYTK,"Cytokinetics, Inc.",18,Licensing and Partnership Value,licensingValue,Licensing and Partnership Economics,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT06081894,CYTK,"Cytokinetics, Inc.",19,Company Valuation Impact,valuationImpact,Company Valuation Impact,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT06081894,CYTK,"Cytokinetics, Inc.",20,Shareholder Upside and Risk,shareholderRisk,Shareholder Upside and Risk Scenarios,MISSING,,,,16,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,VERIFIED,"Phase 3 RINGSIDE company-reported blinded independent central review: varegacestat (formerly AL102) versus placebo improved progression-free survival (HR 0.16; 95% CI 0.071–0.375; p<0.0001) in progressing desmoid tumors. Confirmed RECIST 1.1 ORR 56% versus 9% (p<0.0001) and Week-12 worst-pain change difference −2.42 points (SE 0.37; p<0.0001). 156 patients randomized. This verifies reported PFS, response and pain endpoints, not overall survival or FDA approval.",https://investors.immunome.com/immunome-announces-detailed-phase-3-ringside-data-for-varegacestat-in-adults-with-progressing-desmoid-tumors-at-the-2026-asco-annual-meeting/,2026-05-30,0,,,,0
-NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,VERIFIED,Phase 3 RINGSIDE company-reported primary PFS: varegacestat (AL102) versus placebo hazard ratio 0.16 (95% CI 0.071–0.375; p<0.0001) for progression/death. Confirmed objective response by RECIST 1.1: 56% versus 9% (p<0.0001). Absolute PFS rates/events and censoring are not established by this source.,https://investors.immunome.com/immunome-announces-detailed-phase-3-ringside-data-for-varegacestat-in-adults-with-progressing-desmoid-tumors-at-the-2026-asco-annual-meeting/,2026-05-30,0,,,,0
-NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,closestCompetitor,Closest Competing Therapy,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,competitorCount,Number of Competitors,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,headToHead,Head-to-Head Evidence,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,competitivePipelineThreat,Competitive Pipeline Threat,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,competitiveStrategy,Competitive Strategies,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",7,Treatment Convenience,convenience,Treatment Convenience,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04871282,registry.treatmentArms,6
-NCT04871282,IMNM,"Immunome, Inc.",7,Treatment Convenience,treatmentSequence,Place in Treatment Sequence,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04871282,registry.treatmentArms,6
-NCT04871282,IMNM,"Immunome, Inc.",8,Safety Advantage,safetyAdvantage,Safety Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",8,Safety Advantage,seriousAes,Serious Adverse Event Difference,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",8,Safety Advantage,discontinuation,Treatment Discontinuation Difference,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",9,Healthcare Cost Savings,hospitalizationReduction,Hospitalization / Complication Reduction,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",9,Healthcare Cost Savings,costDifference,Treatment Cost Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",9,Healthcare Cost Savings,valuePerOutcome,Value per Clinical Outcome,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",10,Insurance Coverage Potential,payerAccess,Insurance / Access,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",11,Expected Treatment Price,treatmentPrice,Expected Treatment Price,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",12,Market Penetration,adoption,Projected Adoption,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",12,Market Penetration,switchingPool,Switching-Eligible Patient Pool,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",13,International Patient Population,internationalPatients,International Eligible Patients,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",14,Additional Indications,additionalIndications,Additional Indication Programs,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",15,Peak Annual Sales,peakAnnualSales,Peak Annual Sales Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",16,Revenue Growth Potential,revenueGrowth,Revenue Growth Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",17,Patent and Exclusivity Value,exclusivity,Commercial Exclusivity Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",18,Licensing and Partnership Value,licensingValue,Licensing and Partnership Economics,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",19,Company Valuation Impact,valuationImpact,Company Valuation Impact,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",20,Shareholder Upside and Risk,shareholderRisk,Shareholder Upside and Risk Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,VERIFIED,"Phase 3 RINGSIDE company-reported blinded independent central review: varegacestat (formerly AL102) versus placebo improved progression-free survival (HR 0.16; 95% CI 0.071–0.375; p<0.0001) in progressing desmoid tumors. Confirmed RECIST 1.1 ORR 56% versus 9% (p<0.0001) and Week-12 worst-pain change difference −2.42 points (SE 0.37; p<0.0001). 156 patients randomized. This verifies reported PFS, response and pain endpoints, not overall survival or FDA approval.",https://investors.immunome.com/immunome-announces-detailed-phase-3-ringside-data-for-varegacestat-in-adults-with-progressing-desmoid-tumors-at-the-2026-asco-annual-meeting/,2026-05-30,14,,,,0
+NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,VERIFIED,Phase 3 RINGSIDE company-reported primary PFS: varegacestat (AL102) versus placebo hazard ratio 0.16 (95% CI 0.071–0.375; p<0.0001) for progression/death. Confirmed objective response by RECIST 1.1: 56% versus 9% (p<0.0001). Absolute PFS rates/events and censoring are not established by this source.,https://investors.immunome.com/immunome-announces-detailed-phase-3-ringside-data-for-varegacestat-in-adults-with-progressing-desmoid-tumors-at-the-2026-asco-annual-meeting/,2026-05-30,14,,,,0
+NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,responseRemission,Responder / Remission Advantage,VERIFIED,"RINGSIDE Phase 3 confirmed objective response (RECIST v1.1), varegacestat (formerly AL102) 56% versus placebo 9%, p<0.0001, as assessed by blinded independent central review; issuer reported.",https://investors.immunome.com/immunome-presents-additional-clinical-data-for-varegacestat-in-desmoid-tumors-at-esmo-2026/,2026-10-26,14,,,,0
+NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,closestCompetitor,Closest Competing Therapy,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,competitorCount,Number of Competitors,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,headToHead,Head-to-Head Evidence,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,competitivePipelineThreat,Competitive Pipeline Threat,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,competitiveStrategy,Competitive Strategies,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",7,Treatment Convenience,convenience,Treatment Convenience,SOURCE_CAPTURED_NEEDS_REVIEW,,,,14,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04871282,registry.treatmentArms,6
+NCT04871282,IMNM,"Immunome, Inc.",7,Treatment Convenience,treatmentSequence,Place in Treatment Sequence,SOURCE_CAPTURED_NEEDS_REVIEW,,,,14,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04871282,registry.treatmentArms,6
+NCT04871282,IMNM,"Immunome, Inc.",8,Safety Advantage,safetyAdvantage,Safety Advantage,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",8,Safety Advantage,seriousAes,Serious Adverse Event Difference,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",8,Safety Advantage,discontinuation,Treatment Discontinuation Difference,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",9,Healthcare Cost Savings,hospitalizationReduction,Hospitalization / Complication Reduction,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",9,Healthcare Cost Savings,costDifference,Treatment Cost Advantage,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",9,Healthcare Cost Savings,valuePerOutcome,Value per Clinical Outcome,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",10,Insurance Coverage Potential,payerAccess,Insurance / Access,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",11,Expected Treatment Price,treatmentPrice,Expected Treatment Price,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",12,Market Penetration,adoption,Projected Adoption,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",12,Market Penetration,switchingPool,Switching-Eligible Patient Pool,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",13,International Patient Population,internationalPatients,International Eligible Patients,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",14,Additional Indications,additionalIndications,Additional Indication Programs,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",15,Peak Annual Sales,peakAnnualSales,Peak Annual Sales Scenarios,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",16,Revenue Growth Potential,revenueGrowth,Revenue Growth Scenarios,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",17,Patent and Exclusivity Value,exclusivity,Commercial Exclusivity Advantage,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",18,Licensing and Partnership Value,licensingValue,Licensing and Partnership Economics,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",19,Company Valuation Impact,valuationImpact,Company Valuation Impact,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",20,Shareholder Upside and Risk,shareholderRisk,Shareholder Upside and Risk Scenarios,MISSING,,,,14,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,6,No source-validated ingredient answer,,,0
@@ -692,7 +692,7 @@ NCT06411379,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,clinicalBenef
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,6,No source-validated ingredient answer,,,0
-NCT06411379,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,6,No source-validated ingredient answer,,,0
+NCT06411379,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,VERIFIED,"VELA-2 Week 16 HiSCR75: prespecified composite-strategy PRIMARY endpoint DID NOT reach significance (placebo-adjusted ~9 percentage points; p=0.053). Treatment-policy alternative: 35.9% (sonelokimab 120mg, n=276) versus 25.6% placebo (n=141), p=0.033.",https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-immunotherapeutics-reports-week-16-results-vela-phase-3,2025-09-28,6,,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,6,No source-validated ingredient answer,,,0
@@ -730,7 +730,7 @@ NCT06411899,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,clinicalBenef
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,6,No source-validated ingredient answer,,,0
-NCT06411899,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,6,No source-validated ingredient answer,,,0
+NCT06411899,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,VERIFIED,"VELA-1 Week 16 HiSCR75: prespecified composite-strategy primary endpoint placebo-adjusted ~17 percentage points (p<0.001); treatment-policy alternative 34.8% (sonelokimab 120mg, n=283) versus 17.5% placebo (n=138), p<0.001.",https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-immunotherapeutics-reports-week-16-results-vela-phase-3,2025-09-28,6,,,,0
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,6,No source-validated ingredient answer,,,0

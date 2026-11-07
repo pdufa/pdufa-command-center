@@ -1,40 +1,40 @@
 nctId,ticker,company,surveyNumber,surveyName,ingredientId,ingredientName,status,reviewedValue,reviewedSourceUrl,reviewedSourceDate,publicationLeads,reason,registryLeadUrl,registryLeadPointer,registryLeadCount
-NCT05507203,ABVX,Abivax S.A.,1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
-NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
-NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
-NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,closestCompetitor,Closest Competing Therapy,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,competitorCount,Number of Competitors,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,headToHead,Head-to-Head Evidence,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,competitivePipelineThreat,Competitive Pipeline Threat,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,competitiveStrategy,Competitive Strategies,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,7,Treatment Convenience,convenience,Treatment Convenience,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.treatmentArms,3
-NCT05507203,ABVX,Abivax S.A.,7,Treatment Convenience,treatmentSequence,Place in Treatment Sequence,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.treatmentArms,3
-NCT05507203,ABVX,Abivax S.A.,8,Safety Advantage,safetyAdvantage,Safety Advantage,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.adverseEventGroups,3
-NCT05507203,ABVX,Abivax S.A.,8,Safety Advantage,seriousAes,Serious Adverse Event Difference,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.seriousEventGroups,3
-NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,hospitalizationReduction,Hospitalization / Complication Reduction,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,costDifference,Treatment Cost Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,valuePerOutcome,Value per Clinical Outcome,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,10,Insurance Coverage Potential,payerAccess,Insurance / Access,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,11,Expected Treatment Price,treatmentPrice,Expected Treatment Price,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,12,Market Penetration,adoption,Projected Adoption,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,12,Market Penetration,switchingPool,Switching-Eligible Patient Pool,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,13,International Patient Population,internationalPatients,International Eligible Patients,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,14,Additional Indications,additionalIndications,Additional Indication Programs,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,15,Peak Annual Sales,peakAnnualSales,Peak Annual Sales Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,16,Revenue Growth Potential,revenueGrowth,Revenue Growth Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,17,Patent and Exclusivity Value,exclusivity,Commercial Exclusivity Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,18,Licensing and Partnership Value,licensingValue,Licensing and Partnership Economics,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,19,Company Valuation Impact,valuationImpact,Company Valuation Impact,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT05507203,ABVX,Abivax S.A.,20,Shareholder Upside and Risk,shareholderRisk,Shareholder Upside and Risk Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
+NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
+NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.reportedOutcomeMeasures,4
+NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,closestCompetitor,Closest Competing Therapy,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,competitorCount,Number of Competitors,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,headToHead,Head-to-Head Evidence,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,competitivePipelineThreat,Competitive Pipeline Threat,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,6,Competitive Advantage,competitiveStrategy,Competitive Strategies,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,7,Treatment Convenience,convenience,Treatment Convenience,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.treatmentArms,3
+NCT05507203,ABVX,Abivax S.A.,7,Treatment Convenience,treatmentSequence,Place in Treatment Sequence,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.treatmentArms,3
+NCT05507203,ABVX,Abivax S.A.,8,Safety Advantage,safetyAdvantage,Safety Advantage,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.adverseEventGroups,3
+NCT05507203,ABVX,Abivax S.A.,8,Safety Advantage,seriousAes,Serious Adverse Event Difference,SOURCE_CAPTURED_NEEDS_REVIEW,,,,16,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT05507203,registry.seriousEventGroups,3
+NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,hospitalizationReduction,Hospitalization / Complication Reduction,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,costDifference,Treatment Cost Advantage,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,9,Healthcare Cost Savings,valuePerOutcome,Value per Clinical Outcome,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,10,Insurance Coverage Potential,payerAccess,Insurance / Access,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,11,Expected Treatment Price,treatmentPrice,Expected Treatment Price,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,12,Market Penetration,adoption,Projected Adoption,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,12,Market Penetration,switchingPool,Switching-Eligible Patient Pool,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,13,International Patient Population,internationalPatients,International Eligible Patients,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,14,Additional Indications,additionalIndications,Additional Indication Programs,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,15,Peak Annual Sales,peakAnnualSales,Peak Annual Sales Scenarios,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,16,Revenue Growth Potential,revenueGrowth,Revenue Growth Scenarios,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,17,Patent and Exclusivity Value,exclusivity,Commercial Exclusivity Advantage,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,18,Licensing and Partnership Value,licensingValue,Licensing and Partnership Economics,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,19,Company Valuation Impact,valuationImpact,Company Valuation Impact,MISSING,,,,16,No source-validated ingredient answer,,,0
+NCT05507203,ABVX,Abivax S.A.,20,Shareholder Upside and Risk,shareholderRisk,Shareholder Upside and Risk Scenarios,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507216,ABVX,Abivax S.A.,1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507216,ABVX,Abivax S.A.,1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT05507216,ABVX,Abivax S.A.,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,16,No source-validated ingredient answer,,,0
@@ -373,10 +373,8 @@ NCT06445023,CLDX,Celldex Therapeutics,2,Unmet Medical Need,standardOfCare,Curren
 NCT06445023,CLDX,Celldex Therapeutics,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06445023,CLDX,Celldex Therapeutics,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,MISSING,,,,7,No source-validated ingredient answer,,,0
-NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,7,No source-validated ingredient answer,,,0
-NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06445023,CLDX,Celldex Therapeutics,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06445023,CLDX,Celldex Therapeutics,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,7,No source-validated ingredient answer,,,0
 NCT06445023,CLDX,Celldex Therapeutics,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,7,No source-validated ingredient answer,,,0
@@ -411,10 +409,8 @@ NCT06455202,CLDX,Celldex Therapeutics,2,Unmet Medical Need,standardOfCare,Curren
 NCT06455202,CLDX,Celldex Therapeutics,2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,9,No source-validated ingredient answer,,,0
 NCT06455202,CLDX,Celldex Therapeutics,2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,9,No source-validated ingredient answer,,,0
 NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,clinicalBenefit,Clinical Patient Benefit,MISSING,,,,9,No source-validated ingredient answer,,,0
-NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,9,No source-validated ingredient answer,,,0
 NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,9,No source-validated ingredient answer,,,0
 NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,9,No source-validated ingredient answer,,,0
-NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,9,No source-validated ingredient answer,,,0
 NCT06455202,CLDX,Celldex Therapeutics,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,9,No source-validated ingredient answer,,,0
 NCT06455202,CLDX,Celldex Therapeutics,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,9,No source-validated ingredient answer,,,0
 NCT06455202,CLDX,Celldex Therapeutics,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,9,No source-validated ingredient answer,,,0
@@ -621,42 +617,41 @@ NCT06081894,CYTK,"Cytokinetics, Inc.",17,Patent and Exclusivity Value,exclusivit
 NCT06081894,CYTK,"Cytokinetics, Inc.",18,Licensing and Partnership Value,licensingValue,Licensing and Partnership Economics,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT06081894,CYTK,"Cytokinetics, Inc.",19,Company Valuation Impact,valuationImpact,Company Valuation Impact,MISSING,,,,16,No source-validated ingredient answer,,,0
 NCT06081894,CYTK,"Cytokinetics, Inc.",20,Shareholder Upside and Risk,shareholderRisk,Shareholder Upside and Risk Scenarios,MISSING,,,,16,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,closestCompetitor,Closest Competing Therapy,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,competitorCount,Number of Competitors,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,headToHead,Head-to-Head Evidence,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,competitivePipelineThreat,Competitive Pipeline Threat,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,competitiveStrategy,Competitive Strategies,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",7,Treatment Convenience,convenience,Treatment Convenience,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04871282,registry.treatmentArms,6
-NCT04871282,IMNM,"Immunome, Inc.",7,Treatment Convenience,treatmentSequence,Place in Treatment Sequence,SOURCE_CAPTURED_NEEDS_REVIEW,,,,0,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04871282,registry.treatmentArms,6
-NCT04871282,IMNM,"Immunome, Inc.",8,Safety Advantage,safetyAdvantage,Safety Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",8,Safety Advantage,seriousAes,Serious Adverse Event Difference,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",8,Safety Advantage,discontinuation,Treatment Discontinuation Difference,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",9,Healthcare Cost Savings,hospitalizationReduction,Hospitalization / Complication Reduction,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",9,Healthcare Cost Savings,costDifference,Treatment Cost Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",9,Healthcare Cost Savings,valuePerOutcome,Value per Clinical Outcome,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",10,Insurance Coverage Potential,payerAccess,Insurance / Access,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",11,Expected Treatment Price,treatmentPrice,Expected Treatment Price,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",12,Market Penetration,adoption,Projected Adoption,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",12,Market Penetration,switchingPool,Switching-Eligible Patient Pool,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",13,International Patient Population,internationalPatients,International Eligible Patients,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",14,Additional Indications,additionalIndications,Additional Indication Programs,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",15,Peak Annual Sales,peakAnnualSales,Peak Annual Sales Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",16,Revenue Growth Potential,revenueGrowth,Revenue Growth Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",17,Patent and Exclusivity Value,exclusivity,Commercial Exclusivity Advantage,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",18,Licensing and Partnership Value,licensingValue,Licensing and Partnership Economics,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",19,Company Valuation Impact,valuationImpact,Company Valuation Impact,MISSING,,,,0,No source-validated ingredient answer,,,0
-NCT04871282,IMNM,"Immunome, Inc.",20,Shareholder Upside and Risk,shareholderRisk,Shareholder Upside and Risk Scenarios,MISSING,,,,0,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,unmetNeed,Unmet Medical Need,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",2,Unmet Medical Need,treatmentResistantBenefit,Treatment-Resistant Patient Advantage,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,closestCompetitor,Closest Competing Therapy,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,competitorCount,Number of Competitors,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,headToHead,Head-to-Head Evidence,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,competitivePipelineThreat,Competitive Pipeline Threat,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",6,Competitive Advantage,competitiveStrategy,Competitive Strategies,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",7,Treatment Convenience,convenience,Treatment Convenience,SOURCE_CAPTURED_NEEDS_REVIEW,,,,14,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04871282,registry.treatmentArms,6
+NCT04871282,IMNM,"Immunome, Inc.",7,Treatment Convenience,treatmentSequence,Place in Treatment Sequence,SOURCE_CAPTURED_NEEDS_REVIEW,,,,14,Source lead needs clinical review,https://clinicaltrials.gov/study/NCT04871282,registry.treatmentArms,6
+NCT04871282,IMNM,"Immunome, Inc.",8,Safety Advantage,safetyAdvantage,Safety Advantage,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",8,Safety Advantage,seriousAes,Serious Adverse Event Difference,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",8,Safety Advantage,discontinuation,Treatment Discontinuation Difference,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",9,Healthcare Cost Savings,hospitalizationReduction,Hospitalization / Complication Reduction,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",9,Healthcare Cost Savings,costDifference,Treatment Cost Advantage,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",9,Healthcare Cost Savings,valuePerOutcome,Value per Clinical Outcome,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",10,Insurance Coverage Potential,payerAccess,Insurance / Access,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",11,Expected Treatment Price,treatmentPrice,Expected Treatment Price,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",12,Market Penetration,adoption,Projected Adoption,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",12,Market Penetration,switchingPool,Switching-Eligible Patient Pool,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",13,International Patient Population,internationalPatients,International Eligible Patients,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",14,Additional Indications,additionalIndications,Additional Indication Programs,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",15,Peak Annual Sales,peakAnnualSales,Peak Annual Sales Scenarios,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",16,Revenue Growth Potential,revenueGrowth,Revenue Growth Scenarios,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",17,Patent and Exclusivity Value,exclusivity,Commercial Exclusivity Advantage,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",18,Licensing and Partnership Value,licensingValue,Licensing and Partnership Economics,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",19,Company Valuation Impact,valuationImpact,Company Valuation Impact,MISSING,,,,14,No source-validated ingredient answer,,,0
+NCT04871282,IMNM,"Immunome, Inc.",20,Shareholder Upside and Risk,shareholderRisk,Shareholder Upside and Risk Scenarios,MISSING,,,,14,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,1,Patient Population,eligibleUsPatients,Eligible U.S. Patients,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,1,Patient Population,bestSubgroup,Best-Responding Patient Subgroup,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,2,Unmet Medical Need,standardOfCare,Current Standard of Care,MISSING,,,,6,No source-validated ingredient answer,,,0
@@ -666,7 +661,6 @@ NCT06411379,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,clinicalBenef
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,6,No source-validated ingredient answer,,,0
-NCT06411379,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411379,MLTX,MoonLake Immunotherapeutics AG,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,6,No source-validated ingredient answer,,,0
@@ -704,7 +698,6 @@ NCT06411899,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,clinicalBenef
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,magnitude,Magnitude of Clinical Improvement,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,meaningfulBenefit,Clinically Meaningful Benefit,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,durability,Durability of Treatment Effect,MISSING,,,,6,No source-validated ingredient answer,,,0
-NCT06411899,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,responseRemission,Responder / Remission Advantage,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,3,Clinical Benefit,timeToResponse,Time to Treatment Response,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,4,Survival Benefit,survivalBenefit,Survival Benefit Evidence,MISSING,,,,6,No source-validated ingredient answer,,,0
 NCT06411899,MLTX,MoonLake Immunotherapeutics AG,5,Quality-of-Life Improvement,qualityOfLife,Quality-of-Life Improvement,MISSING,,,,6,No source-validated ingredient answer,,,0

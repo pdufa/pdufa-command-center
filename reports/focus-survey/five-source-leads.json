@@ -608,6 +608,64 @@
         "Relacorilant"
       ],
       "company": "Corcept Therapeutics",
+      "excerpt": "Objective To assess the effect of relacorilant, a selective glucocorticoid receptor modulator under investigation for the treatment of patients with endogenous hypercortisolism (Cushing syndrome [CS]), on the heart rate-corrected QT interval (QTc). Methods Three clinical studies of relacorilant were included: (1) a first-in-human, randomized, placebo-controlled, ascending-dose (up to 500 mg of relacorilant) study in healthy volunteers; (2) a phase 1 placebo- and positive-controlled thorough QTc (TQT) study of 400 and 800 mg of relacorilant in healthy volunteers; and (3) a phase 2, open-label study of up to 400 mg of relacorilant administered daily for up to 16 weeks in patients with CS. Elec",
+      "ingredientCandidates": [],
+      "nctId": "NCT03697109",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Cushing Syndrome"
+      ],
+      "reviewed": false,
+      "sourceDate": "2023-10-05",
+      "sourceDetails": {
+        "abstractAvailable": true,
+        "doi": "10.1016/j.eprac.2023.09.011",
+        "indexedSource": "MED",
+        "openAccess": false,
+        "searchMode": "DRUG_INDICATION"
+      },
+      "sourceMatch": "DRUG_AND_INDICATION",
+      "sourceTitle": "Relacorilant, a Selective Glucocorticoid Receptor Modulator in Development for the Treatment of Patients With Cushing Syndrome, Does Not Cause Prolongation of the Cardiac QT Interval.",
+      "sourceType": "LITERATURE",
+      "sourceUrl": "https://europepmc.org/article/MED/37805100",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "CORT"
+    },
+    {
+      "candidateDrugs": [
+        "Relacorilant"
+      ],
+      "company": "Corcept Therapeutics",
+      "excerpt": "Purpose Glucocorticoid-mediated hypercoagulability can persist in patients with endogenous Cushing syndrome (CS) after curative surgery and may transiently worsen early postoperatively. These studies aimed to characterize coagulation markers at baseline in patients with CS and the impact of relacorilant or remission post-surgery in an open-label, phase 2 study (NCT02804750) and a retrospective, longitudinal, surgical cohort study. Methods In the relacorilant study, 34 patients received relacorilant (100-200 mg/day for up to 12 weeks or 250-400 mg/day for up to 16 weeks) and had postbaseline data. Coagulation markers were assessed before and during treatment. In the surgical study, conducted ",
+      "ingredientCandidates": [
+        "responseRemission"
+      ],
+      "nctId": "NCT03697109",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Cushing Syndrome"
+      ],
+      "reviewed": false,
+      "sourceDate": "2024-09-21",
+      "sourceDetails": {
+        "abstractAvailable": true,
+        "doi": "10.1007/s40618-024-02468-2",
+        "indexedSource": "MED",
+        "openAccess": true,
+        "searchMode": "DRUG_INDICATION"
+      },
+      "sourceMatch": "DRUG_AND_INDICATION",
+      "sourceTitle": "Relacorilant or surgery improved hemostatic markers in Cushing syndrome.",
+      "sourceType": "LITERATURE",
+      "sourceUrl": "https://europepmc.org/article/MED/39305441",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "CORT"
+    },
+    {
+      "candidateDrugs": [
+        "Relacorilant"
+      ],
+      "company": "Corcept Therapeutics",
       "excerpt": "ll cycle regulation, cell signalling and epigenetics are now under investigation. Levoketoconazole and osilodrostat are novel steroid inhibitors, and relacorilant overcomes the adverse effects of mifepristone. Adrenal ACTH receptor blockage and immunotherapy could also play a role.",
       "ingredientCandidates": [],
       "nctId": "NCT03697109",
@@ -681,12 +739,40 @@
         "doi": "10.1016/s2213-8587(25)00362-6",
         "indexedSource": "MED",
         "openAccess": false,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
-      "sourceMatch": "EXACT_NCT",
+      "sourceMatch": "DRUG_MENTION_ONLY",
       "sourceTitle": "Efficacy and safety of relacorilant for the treatment of patients with Cushing's syndrome (GRACE): a multicentre, phase 3, double-blind, placebo-controlled, randomised-withdrawal study.",
       "sourceType": "LITERATURE",
       "sourceUrl": "https://europepmc.org/article/MED/41730814",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "CORT"
+    },
+    {
+      "candidateDrugs": [
+        "Relacorilant"
+      ],
+      "company": "Corcept Therapeutics",
+      "excerpt": "Relacorilant (LIFYORLI ™ ) is a non-steroidal, selective glucocorticoid receptor II (GR II) antagonist being developed by Corcept Therapeutics for the treatment of various solid tumours (including ovarian cancer, fallopian tube cancer, peritoneal cancer, pancreatic cancer and prostate cancer) and Cushing syndrome. Relacorilant received its first approval in the USA on 25 March 2026 for use in combination with nab-paclitaxel for the treatment of adults with platinum-resistant epithelial ovarian, fallopian tube or primary peritoneal cancer who have received 1-3 prior systemic treatment regimens, at least one of which included bevacizumab. This article summarizes the milestones in the developme",
+      "ingredientCandidates": [],
+      "nctId": "NCT03697109",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Cushing Syndrome"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-06-23",
+      "sourceDetails": {
+        "abstractAvailable": true,
+        "doi": "10.1007/s40265-026-02351-9",
+        "indexedSource": "MED",
+        "openAccess": false,
+        "searchMode": "DRUG_INDICATION"
+      },
+      "sourceMatch": "DRUG_AND_INDICATION",
+      "sourceTitle": "Relacorilant: First Approval.",
+      "sourceType": "LITERATURE",
+      "sourceUrl": "https://europepmc.org/article/MED/42334771",
       "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
       "ticker": "CORT"
     },
@@ -789,6 +875,62 @@
         "Cushing Syndrome"
       ],
       "reviewed": false,
+      "sourceDate": "2023-10-05",
+      "sourceDetails": {
+        "abstractAvailable": false,
+        "doi": null,
+        "indexedSource": "PMC",
+        "openAccess": true,
+        "searchMode": "DRUG_INDICATION"
+      },
+      "sourceMatch": "DRUG_AND_INDICATION",
+      "sourceTitle": "THU035 Impact Of Surgery Or Medical Treatment With The Selective Glucocorticoid Receptor Modulator Relacorilant On Hypercoagulopathy In Patients With Cushing Syndrome",
+      "sourceType": "LITERATURE",
+      "sourceUrl": "https://europepmc.org/article/PMC/PMC10554415",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "CORT"
+    },
+    {
+      "candidateDrugs": [
+        "Relacorilant"
+      ],
+      "company": "Corcept Therapeutics",
+      "excerpt": "",
+      "ingredientCandidates": [],
+      "nctId": "NCT03697109",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Cushing Syndrome"
+      ],
+      "reviewed": false,
+      "sourceDate": "2024-10-05",
+      "sourceDetails": {
+        "abstractAvailable": false,
+        "doi": null,
+        "indexedSource": "PMC",
+        "openAccess": true,
+        "searchMode": "DRUG_INDICATION"
+      },
+      "sourceMatch": "DRUG_AND_INDICATION",
+      "sourceTitle": "9323 Open-label Results From Grace, A Phase 3 Double-blind, Randomized-withdrawal Study Of The Selective Glucocorticoid Receptor Modulator Relacorilant For The Treatment Of Endogenous Hypercortisolism (Cushing Syndrome)",
+      "sourceType": "LITERATURE",
+      "sourceUrl": "https://europepmc.org/article/PMC/PMC11455256",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "CORT"
+    },
+    {
+      "candidateDrugs": [
+        "Relacorilant"
+      ],
+      "company": "Corcept Therapeutics",
+      "excerpt": "",
+      "ingredientCandidates": [],
+      "nctId": "NCT03697109",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Cushing Syndrome"
+      ],
+      "reviewed": false,
       "sourceDate": "2025-01-01",
       "sourceDetails": {
         "abstractAvailable": false,
@@ -823,7 +965,7 @@
         "doi": null,
         "indexedSource": "PMC",
         "openAccess": true,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "DRUG_MENTION_ONLY",
       "sourceTitle": "OR12-05 Effects of Relacorilant on Body Weight and Body Composition in Patients With Endogenous Hypercortisolism in the Phase 3 GRACE and GRADIENT Studies",
@@ -1058,7 +1200,7 @@
         "doi": null,
         "indexedSource": "PMC",
         "openAccess": true,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "EXACT_NCT",
       "sourceTitle": "PMON165 Favorable Liver Safety Profile of the Selective Glucocorticoid Receptor Modulator Relacorilant in Healthy and Hepatically Impaired Adults and in Patients with Cushing Syndrome",
@@ -1944,7 +2086,7 @@
         "doi": "10.1007/s40265-025-02228-3",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "DRUG_INDICATION"
+        "searchMode": "DISEASE_CONTEXT"
       },
       "sourceMatch": "DRUG_AND_INDICATION",
       "sourceTitle": "Pharmacotherapy for Autoimmune Pulmonary Alveolar Proteinosis.",
@@ -1994,6 +2136,35 @@
         "Molgramostim Open-label"
       ],
       "company": "Savara Inc.",
+      "excerpt": "Chemotherapeutic agents or regular doses of Rituximab may represent a potential therapeutic option for refractory cases of autoimmune pulmonary alveolar proteinosis.",
+      "ingredientCandidates": [],
+      "nctId": "NCT04544293",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Autoimmune Pulmonary Alveolar Proteinosis"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-02-17",
+      "sourceDetails": {
+        "abstractAvailable": true,
+        "doi": "10.1002/ccr3.72040",
+        "indexedSource": "MED",
+        "openAccess": true,
+        "searchMode": "DISEASE_CONTEXT"
+      },
+      "sourceMatch": "INDICATION_CONTEXT_ONLY",
+      "sourceTitle": "A Case of Autoimmune Pulmonary Alveolar Proteinosis.",
+      "sourceType": "LITERATURE",
+      "sourceUrl": "https://europepmc.org/article/MED/41716453",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "SVRA"
+    },
+    {
+      "candidateDrugs": [
+        "Molgramostim",
+        "Molgramostim Open-label"
+      ],
+      "company": "Savara Inc.",
       "excerpt": "BACKGROUND: Autoimmune pulmonary alveolar proteinosis (aPAP) is a rare interstitial lung disease characterized by surfactant accumulation within alveoli due to impaired clearance or GM-CSF signaling defect. Whole lung lavage (WLL) removes accumulated surfactant but is invasive and does not correct macrophages dysfunction. Recombinant GM-CSF (molgramostim or sargramostim) aims to restore macrophage activity¸ enhance gas exchange and reduce dependence on WLL. OBJECTIVE: This systematic review and meta-analysis evaluated the efficacy of recombinant human GM-CSF (molgramostim or sargramostim) compared with placebo in patients with aPAP. METHOD: Following PRISMA guidelines, PubMed, Cochrane CENTR",
       "ingredientCandidates": [
         "clinicalBenefit"
@@ -2025,6 +2196,122 @@
         "Molgramostim Open-label"
       ],
       "company": "Savara Inc.",
+      "excerpt": "Autoimmune pulmonary alveolar proteinosis (aPAP) is a rare lung disease caused by autoantibodies targeting granulocyte-macrophage colony-stimulating factor (GM-CSF). Although serum GM-CSF autoantibody levels are markedly increased in aPAP patients, total antibody titer does not correlate with disease severity. Here, we characterize 186 monoclonal anti-GM-CSF autoantibodies derived from GM-CSF-specific B cells in 28 aPAP patients with varying disease severity, including three longitudinal cohorts, to determine whether epitope specificity and affinity of the autoantibodies contribute to disease pathophysiology. We classify these antibodies into two groups based on their epitopes: class 1 (targ",
+      "ingredientCandidates": [],
+      "nctId": "NCT04544293",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Autoimmune Pulmonary Alveolar Proteinosis"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-06-26",
+      "sourceDetails": {
+        "abstractAvailable": true,
+        "doi": "10.1038/s41467-026-74717-2",
+        "indexedSource": "MED",
+        "openAccess": true,
+        "searchMode": "DISEASE_CONTEXT"
+      },
+      "sourceMatch": "INDICATION_CONTEXT_ONLY",
+      "sourceTitle": "Affinity- and epitope-dependent pathogenicity of GM-CSF autoantibodies in patients with autoimmune pulmonary alveolar proteinosis.",
+      "sourceType": "LITERATURE",
+      "sourceUrl": "https://europepmc.org/article/MED/42362542",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "SVRA"
+    },
+    {
+      "candidateDrugs": [
+        "Molgramostim",
+        "Molgramostim Open-label"
+      ],
+      "company": "Savara Inc.",
+      "excerpt": "Autoimmune pulmonary alveolar proteinosis (aPAP) is a rare, diffuse lung disease characterized by surfactant accumulation in the alveoli, leading to impaired gas exchange and progressive respiratory insufficiency. It is caused by neutralizing autoantibodies against granulocyte-macrophage colony-stimulating factor (GM-CSF), which disrupts the GM-CSF signaling required for alveolar macrophage maturation and surfactant clearance. Whole-lung lavage (WLL), the standard treatment for aPAP, improves oxygenation by removing accumulated surfactants, but is invasive and often must be repeated. An improved understanding of disease pathogenesis has shifted therapy toward restoring GM-CSF signaling, rath",
+      "ingredientCandidates": [],
+      "nctId": "NCT04544293",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Autoimmune Pulmonary Alveolar Proteinosis"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-07-16",
+      "sourceDetails": {
+        "abstractAvailable": true,
+        "doi": "10.1016/j.resinv.2026.101486",
+        "indexedSource": "MED",
+        "openAccess": false,
+        "searchMode": "DISEASE_CONTEXT"
+      },
+      "sourceMatch": "INDICATION_CONTEXT_ONLY",
+      "sourceTitle": "Inhaled granulocyte-macrophage colony-stimulating factor for autoimmune pulmonary alveolar proteinosis: From pathogenesis to clinical practice.",
+      "sourceType": "LITERATURE",
+      "sourceUrl": "https://europepmc.org/article/MED/42462405",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "SVRA"
+    },
+    {
+      "candidateDrugs": [
+        "Molgramostim",
+        "Molgramostim Open-label"
+      ],
+      "company": "Savara Inc.",
+      "excerpt": "Background Autoimmune pulmonary alveolar proteinosis (APAP) is caused by impaired surfactant clearance due to neutralizing autoantibodies against granulocyte-macrophage colony-stimulating factor. Although whole-lung lavage and inhaled granulocyte-macrophage colony-stimulating factor therapy are established treatment options, pulmonary fibrosis is increasingly recognized as a clinically relevant complication in a subset of patients with APAP. However, the clinical behavior of APAP-associated fibrosing lung disease and the role of antifibrotic therapy remain unclear. Case presentation A 54-year-old man with a 15-year history of APAP was referred to our institution. High-resolution computed tom",
+      "ingredientCandidates": [],
+      "nctId": "NCT04544293",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Autoimmune Pulmonary Alveolar Proteinosis"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-07-31",
+      "sourceDetails": {
+        "abstractAvailable": true,
+        "doi": "10.1155/crpu/8073947",
+        "indexedSource": "MED",
+        "openAccess": true,
+        "searchMode": "DISEASE_CONTEXT"
+      },
+      "sourceMatch": "INDICATION_CONTEXT_ONLY",
+      "sourceTitle": "Progressive Fibrosing Lung Disease Treated With Nintedanib in a Patient With Long-Standing Autoimmune Pulmonary Alveolar Proteinosis: A Case Report.",
+      "sourceType": "LITERATURE",
+      "sourceUrl": "https://europepmc.org/article/MED/42542704",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "SVRA"
+    },
+    {
+      "candidateDrugs": [
+        "Molgramostim",
+        "Molgramostim Open-label"
+      ],
+      "company": "Savara Inc.",
+      "excerpt": "aPAP may not be lifelong: in three long-term cases, anti-GM-CSF autoantibodies peaked early then declined with exponential kinetics, disappearing after 7-16 years, suggesting eventual immune quiescence via attrition of long-lived plasma cells https://bit.ly/4n2m9No.",
+      "ingredientCandidates": [],
+      "nctId": "NCT04544293",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Autoimmune Pulmonary Alveolar Proteinosis"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-09-21",
+      "sourceDetails": {
+        "abstractAvailable": true,
+        "doi": "10.1183/23120541.00345-2026",
+        "indexedSource": "MED",
+        "openAccess": true,
+        "searchMode": "DISEASE_CONTEXT"
+      },
+      "sourceMatch": "INDICATION_CONTEXT_ONLY",
+      "sourceTitle": "Autoimmune pulmonary alveolar proteinosis may not be invariably lifelong: exponential decay of anti-granulocyte-macrophage colony-stimulating factor autoantibodies over more than a decade.",
+      "sourceType": "LITERATURE",
+      "sourceUrl": "https://europepmc.org/article/MED/42769796",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "SVRA"
+    },
+    {
+      "candidateDrugs": [
+        "Molgramostim",
+        "Molgramostim Open-label"
+      ],
+      "company": "Savara Inc.",
       "excerpt": "",
       "ingredientCandidates": [],
       "nctId": "NCT04544293",
@@ -2045,6 +2332,64 @@
       "sourceTitle": "Molgramostim improves exercise distance and duration in autoimmune pulmonary alveolar proteinosis: exploratory IMPALA-2 trial data.",
       "sourceType": "LITERATURE",
       "sourceUrl": "https://europepmc.org/article/MED/42770839",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "SVRA"
+    },
+    {
+      "candidateDrugs": [
+        "Molgramostim",
+        "Molgramostim Open-label"
+      ],
+      "company": "Savara Inc.",
+      "excerpt": "Autoimmune pulmonary alveolar proteinosis (aPAP) can be difficult to diagnose in the absence of typical imaging findings and when bronchoscopy is impractical. A 40-year-old man with an intellectual disability was initially suspected to have bird-related hypersensitivity pneumonitis based on feather duvet exposure, positive bird antigen-specific IgG, and diffuse ground-glass opacities. Progression despite corticosteroid treatment and markedly elevated anti-granulocyte-macrophage colony-stimulating factor (GM-CSF) autoantibodies and KL-6 suggested aPAP. Inhaled sargramostim was administered using a pediatric soft mask with caregiver assistance because inspiratory synchronization was challengin",
+      "ingredientCandidates": [],
+      "nctId": "NCT04544293",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Autoimmune Pulmonary Alveolar Proteinosis"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-10-22",
+      "sourceDetails": {
+        "abstractAvailable": true,
+        "doi": "10.2169/internalmedicine.8088-26",
+        "indexedSource": "MED",
+        "openAccess": false,
+        "searchMode": "DISEASE_CONTEXT"
+      },
+      "sourceMatch": "INDICATION_CONTEXT_ONLY",
+      "sourceTitle": "Successful Inhaled Sargramostim Therapy for Autoimmune Pulmonary Alveolar Proteinosis in a Patient with an Intellectual Disability: A Caregiver-Assisted Approach.",
+      "sourceType": "LITERATURE",
+      "sourceUrl": "https://europepmc.org/article/MED/42907390",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "SVRA"
+    },
+    {
+      "candidateDrugs": [
+        "Molgramostim",
+        "Molgramostim Open-label"
+      ],
+      "company": "Savara Inc.",
+      "excerpt": "",
+      "ingredientCandidates": [],
+      "nctId": "NCT04544293",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Autoimmune Pulmonary Alveolar Proteinosis"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-10-01",
+      "sourceDetails": {
+        "abstractAvailable": false,
+        "doi": null,
+        "indexedSource": "PMC",
+        "openAccess": true,
+        "searchMode": "DISEASE_CONTEXT"
+      },
+      "sourceMatch": "INDICATION_CONTEXT_ONLY",
+      "sourceTitle": "A diagnostic dilemma: autoimmune pulmonary alveolar Proteinosis unmasked by vaping-induced lung injury",
+      "sourceType": "LITERATURE",
+      "sourceUrl": "https://europepmc.org/article/PMC/PMC13637815",
       "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
       "ticker": "SVRA"
     },
@@ -3343,6 +3688,89 @@
       "sourceUrl": "https://europepmc.org/article/PPR/PPR1355828",
       "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
       "ticker": "VERA"
+    },
+    {
+      "candidateDrugs": [
+        "AL102"
+      ],
+      "company": "Immunome, Inc.",
+      "excerpt": "READ MORE October 30, 2026 Immunome Announces EMA Validation of Marketing Authorization Application for Varegacestat for the Treatment of Adults with Desmoid Tumors READ MORE October 26, 2026 Immunome Presents Additional Clinical Data for Varegacestat in Desmoid Tumors at ESMO 2026 READ MORE October 6, 2026 Immunome Reports Inducement Grants Under Nasdaq Listing Rule 5635(c)(4) READ MORE September 30, 2026 Immunome Announces IND Clearance for IM-1340, a Potential First-in-Class Antibody-Drug Conjugate for the Treatment of Solid Tumors READ MORE September 8, 2026 Immunome Reports Inducement Grants Under Nasdaq Listing Rule 5635(c)(4) READ MORE September 2, 2026 Immunome to Present at the H.C.",
+      "ingredientCandidates": [],
+      "nctId": "NCT04871282",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Desmoid",
+        "Desmoid Tumor"
+      ],
+      "reviewed": false,
+      "sourceDate": null,
+      "sourceDetails": {
+        "contentSha256": "27e19778ef87102531d730c87fc1cb4c092e147d5c9d331f4df0c45a674c178f",
+        "host": "investors.immunome.com",
+        "nctMentions": []
+      },
+      "sourceMatch": "INDICATION_CONTEXT_ONLY",
+      "sourceTitle": "Investor Relations - Immunome Inc.",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://investors.immunome.com/",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "IMNM"
+    },
+    {
+      "candidateDrugs": [
+        "AL102"
+      ],
+      "company": "Immunome, Inc.",
+      "excerpt": "Immunome Announces U.S. FDA Acceptance of New Drug Application for Varegacestat for the Treatment of Adults with Desmoid Tumors - Investor Relations Skip to main content Skip to footer Opens in a new tab Overview News Events & Presentations Events Presentations Stock Info Financials SEC Filings Governance Governance Documents Board of Directors Executive Management Committee Composition Resources Investor Email Alerts Investor Contacts Overview News Events & Presentations Events Presentations Stock Info Financials SEC Filings Governance Governance Documents Board of Directors Executive Management Committee Composition Resources Investor Email Alerts Investor Contacts Home 2022 Immunome Annou",
+      "ingredientCandidates": [],
+      "nctId": "NCT04871282",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Desmoid",
+        "Desmoid Tumor"
+      ],
+      "reviewed": false,
+      "sourceDate": "2026-07-08T11:30:33+00:00",
+      "sourceDetails": {
+        "contentSha256": "022a07dd7f7e45419cc96f05e7417f7d8fd733a4bfa6200222c653cadf753747",
+        "host": "investors.immunome.com",
+        "nctMentions": [
+          "NCT04871282"
+        ]
+      },
+      "sourceMatch": "EXACT_NCT",
+      "sourceTitle": "Immunome Announces U.S. FDA Acceptance of New Drug Application for Varegacestat for the Treatment of Adults with Desmoid Tumors - Investor Relations",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://investors.immunome.com/immunome-announces-u-s-fda-acceptance-of-new-drug-application-for-varegacestat-for-the-treatment-of-adults-with-desmoid-tumors/",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "IMNM"
+    },
+    {
+      "candidateDrugs": [
+        "AL102"
+      ],
+      "company": "Immunome, Inc.",
+      "excerpt": "onference October 30, 2026 Immunome Announces EMA Validation of Marketing Authorization Application for Varegacestat for the Treatment of Adults with Desmoid Tumors October 26, 2026 Immunome Presents Additional Clinical Data for Varegacestat in Desmoid Tumors at ESMO 2026 October 6, 2026 Immunome Reports Inducement Grants Under Nasdaq Listing Rule 5635(c)(4) September 30, 2026 Immunome Announces IND Clearance for IM-1340, a Potential First-in-Class Antibody-Drug Conjugate for the Treatment of Solid Tumors September 8, 2026 Immunome Reports Inducement Grants Under Nasdaq Listing Rule 5635(c)(4) September 2, 2026 Immunome to Present at the H.C. Wainwright 28th Annual Global Investment Conferen",
+      "ingredientCandidates": [],
+      "nctId": "NCT04871282",
+      "notice": "Candidate evidence for human review; no approval, pricing, sales or RAAS claim is established.",
+      "registryIndications": [
+        "Desmoid",
+        "Desmoid Tumor"
+      ],
+      "reviewed": false,
+      "sourceDate": null,
+      "sourceDetails": {
+        "contentSha256": "6b90e734860ba8fae7a1213184d0907a78b997c03f718ac4e9fdb2680b01977c",
+        "host": "investors.immunome.com",
+        "nctMentions": []
+      },
+      "sourceMatch": "INDICATION_CONTEXT_ONLY",
+      "sourceTitle": "News - Investor Relations",
+      "sourceType": "COMPANY",
+      "sourceUrl": "https://investors.immunome.com/news-releases/",
+      "status": "SOURCE_CAPTURED_NEEDS_REVIEW",
+      "ticker": "IMNM"
     },
     {
       "candidateDrugs": [
@@ -13461,7 +13889,7 @@
         "doi": "10.1016/s0140-6736(26)01855-6",
         "indexedSource": "MED",
         "openAccess": false,
-        "searchMode": "DISEASE_CONTEXT"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "DRUG_AND_INDICATION",
       "sourceTitle": "Deucrictibant: a novel oral on-demand treatment for hereditary angioedema.",
