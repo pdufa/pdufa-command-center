@@ -26,6 +26,30 @@ STATUS="SAME_DRUG_DIFFERENT_CONDITION_RESEARCH_LEAD_RIGHTS_UNCONFIRMED"
 
 def norm(s):
     return " ".join(re.findall(r"[a-z0-9]+",str(s or "").lower()))
+
+def canonical_condition(s):
+    """Collapse obvious disease acronyms without equating disease subtypes."""
+    key=norm(s)
+    return {
+        "osa":"obstructive sleep apnea",
+        "sleep apnea obstructive":"obstructive sleep apnea",
+        "obstructive sleep apnoea":"obstructive sleep apnea",
+        "ohcm":"obstructive hypertrophic cardiomyopathy",
+        "hae":"hereditary angioedema",
+        "uc":"ulcerative colitis",
+    }.get(key,key)
+
+def population_only_condition(s):
+    """Healthy-volunteer pharmacology is not an additional therapeutic indication."""
+    key=norm(s)
+    if not key:return True
+    return bool(re.fullmatch(
+        r"(?:normal )?healthy(?: human)?(?: adult| subject| participant| volunteer| person| men| women| male| female| population| control| individual| individual subjects| adult subjects| adult volunteers| male volunteers| female volunteers| adult participants| volunteers| subjects| participants| people| individuals| males| females)*s?",
+        key)) or key in ("health volunteers","healthy volunteers","healthy subject",
+                        "healthy subjects","healthy controls","healthy population",
+                        "normal volunteers","normal healthy volunteers",
+                        "healthy participants","healthy adult volunteers"))
+
 def short(s,maxlen=230):
     return " ".join(str(s or "").split())[:maxlen]
 
@@ -122,7 +146,8 @@ def build_index(roster,packets,search_results):
     for row in roster:
         packet=packets[row["nct"]]
         drug=primary_drug(packet["registry"])
-        current_conditions=set(filter(None,(norm(x) for x in packet["registry"].get("indications",[]))))
+        current_conditions=set(filter(None,(canonical_condition(x) for x in packet["registry"].get("indications",[])
+                                                   if not population_only_condition(x))))
         if not drug:
             coverage.append({"nctId":row["nct"],"ticker":row["ticker"],
                "drugCandidate":"","searchStatus":"DRUG_IDENTITY_UNRESOLVED",
@@ -141,7 +166,8 @@ def build_index(roster,packets,search_results):
             candidate=study_match(drug,raw)
             if not candidate or candidate["nctId"]==row["nct"]:
                 continue
-            diff=[c for c in candidate["conditions"] if norm(c) not in current_conditions]
+            diff=[c for c in candidate["conditions"]
+                  if not population_only_condition(c) and canonical_condition(c) not in current_conditions]
             if not diff or candidate["nctId"] in found_ncts:
                 continue
             found_ncts.add(candidate["nctId"])
@@ -157,7 +183,7 @@ def build_index(roster,packets,search_results):
                 "searchTruncated":bool(response["scanTruncated"]),
                 "evidenceStatus":STATUS,
                 "nextStep":"Independently reconcile same drug/formulation, different indication, sponsor, territorial rights, and program phase before survey validation.",
-                "warning":"Different registry condition strings may reflect synonyms, not truly distinct indications."})
+                "warning":"Different registry condition strings may still be synonyms, subtypes, or alternative eligibility labels; healthy-volunteer studies are excluded."})
         coverage.append({"nctId":row["nct"],"ticker":row["ticker"],
             "drugCandidate":drug,"searchStatus":"PARTIAL_SEARCH" if response["scanTruncated"] else "SEARCHED",
             "candidateOtherIndicationTrials":len(found_ncts),
