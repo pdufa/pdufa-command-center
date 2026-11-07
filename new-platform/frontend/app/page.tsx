@@ -8,6 +8,7 @@ import NctLiveStream from "./NctLiveStream";
 type AuthState="checking"|"login"|"ready"|"unavailable";
 const links=[
   {href:"/pool",title:"POOL — Master Trial Universe",desc:"The unrestricted published trial and regulatory-record universe. No eligibility gate deletes POOL records."},
+  {href:"/p3-post-data",title:"P3 POST-DATA — 25 FDA/PDUFA Trials",desc:"Publicly released Phase 3 results, $300M–$10B company market cap, and an ongoing FDA filing or PDUFA decision."},
   {href:"/pipeline",title:"PIPELINE — Post–Phase 3 Screening",desc:"Public issuer, $300M–$10B market cap and verified final pivotal Phase 3 evidence. Unverified items remain in review."},
   {href:"/charts",title:"CHARTS — Alpaca & FDA Overlays",desc:"Saved Watch/Trade programs automatically supply their exact tickers and Program IDs; independently choose FDA chart markers and features."},
   {href:"/patient-population",title:"#1 — Patient Population",desc:"Source-linked research and evidence completeness for the first commercial-benefit assessment."},
