@@ -86,3 +86,8 @@ test('TOP-only addendum preserves older events and exposes an immutable score ch
  assert.equal(next.change.previousGrade,null);assert.equal(next.change.newGrade,50);
  assert.ok(data.history.some(x=>x.eventId!==next.eventId&&x.summary.clinicalScoredFactors===4));
 });
+test('TOP horizontal expandable detail exposes retained and new score histories in-page',()=>{
+ const s=fs.readFileSync(path.join(__dirname,'../app/TopOnlyCompletionSheet.tsx'),'utf8');
+ assert.match(s,/TOP score and evidence history/);assert.match(s,/setDetailHistory/);
+ assert.match(s,/detailHistory\.length/);assert.match(s,/newClinicalOverall/);
+});
