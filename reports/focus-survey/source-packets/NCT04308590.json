@@ -1,0 +1,838 @@
+{
+  "company": "Corcept Therapeutics",
+  "literatureLeads": [
+    {
+      "doi": "",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-01-01",
+      "title": "SUN-463 Efficacy and Safety of Relacorilant in Individuals With Adrenal Hypercortisolism: Results From the Phase 3 GRACE and GRADIENT Studies",
+      "url": "https://europepmc.org/article/PMC/PMC12546145"
+    },
+    {
+      "doi": "",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-01-01",
+      "title": "OR12-05 Effects of Relacorilant on Body Weight and Body Composition in Patients With Endogenous Hypercortisolism in the Phase 3 GRACE and GRADIENT Studies",
+      "url": "https://europepmc.org/article/PMC/PMC12545732"
+    },
+    {
+      "doi": "",
+      "exactNctInAbstract": true,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2022-11-01",
+      "title": "PMON165 Favorable Liver Safety Profile of the Selective Glucocorticoid Receptor Modulator Relacorilant in Healthy and Hepatically Impaired Adults and in Patients with Cushing Syndrome",
+      "url": "https://europepmc.org/article/PMC/PMC9627723"
+    },
+    {
+      "doi": "10.1016/s2213-8587(25)00362-6",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2026-02-20",
+      "title": "Efficacy and safety of relacorilant for the treatment of patients with Cushing's syndrome (GRACE): a multicentre, phase 3, double-blind, placebo-controlled, randomised-withdrawal study.",
+      "url": "https://europepmc.org/article/MED/41730814"
+    },
+    {
+      "doi": "10.17925/ee.2024.20.2.3",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-04-08",
+      "title": "New Trends in Treating Cushing's Disease.",
+      "url": "https://europepmc.org/article/MED/39526050"
+    },
+    {
+      "doi": "10.1007/s40618-024-02468-2",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-09-21",
+      "title": "Relacorilant or surgery improved hemostatic markers in Cushing syndrome.",
+      "url": "https://europepmc.org/article/MED/39305441"
+    },
+    {
+      "doi": "10.3389/fendo.2023.1174119",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-04-17",
+      "title": "Medical treatment of Cushing's disease with concurrent diabetes mellitus.",
+      "url": "https://europepmc.org/article/MED/37139336"
+    },
+    {
+      "doi": "10.1016/j.aace.2021.07.001",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2021-07-12",
+      "title": "Biochemical and Radiological Changes in Liver Steatosis Following Mifepristone Treatment in Patients With Hypercortisolism.",
+      "url": "https://europepmc.org/article/MED/35097198"
+    },
+    {
+      "doi": "10.3390/ijms23126469",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2022-06-09",
+      "title": "The Role of Glucocorticoid Receptor in the Pathophysiology of Pituitary Corticotroph Adenomas.",
+      "url": "https://europepmc.org/article/MED/35742910"
+    },
+    {
+      "doi": "10.11817/j.issn.1672-7347.2024.240306",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-07-01",
+      "title": "Advances in pharmacological treatment of Cushing<b>'</b>s disease.",
+      "url": "https://europepmc.org/article/MED/39788490"
+    },
+    {
+      "doi": "10.3389/fendo.2022.913253",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2022-08-05",
+      "title": "Cushing´s syndrome due to bilateral adrenal cortical disease: Bilateral macronodular adrenal cortical disease and bilateral micronodular adrenal cortical disease.",
+      "url": "https://europepmc.org/article/MED/35992106"
+    },
+    {
+      "doi": "10.1016/j.jcte.2021.100256",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2021-03-01",
+      "title": "Evaluation of FKBP5 as a cortisol activity biomarker in patients with ACTH-dependent Cushing syndrome.",
+      "url": "https://europepmc.org/article/MED/34258233"
+    },
+    {
+      "doi": "10.1158/1078-0432.ccr-21-4363",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2022-08-01",
+      "title": "Overcoming Taxane Resistance: Preclinical and Phase 1 Studies of Relacorilant, a Selective Glucocorticoid Receptor Modulator, with Nab-Paclitaxel in Solid Tumors.",
+      "url": "https://europepmc.org/article/MED/35583817"
+    },
+    {
+      "doi": "10.3389/fendo.2021.793262",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2022-01-04",
+      "title": "Glucocorticoid Receptor Antagonism Upregulates Somatostatin Receptor Subtype 2 Expression in ACTH-Producing Neuroendocrine Tumors: New Insight Based on the Selective Glucocorticoid Receptor Modulator Relacorilant.",
+      "url": "https://europepmc.org/article/MED/35058882"
+    },
+    {
+      "doi": "10.3390/ijms222111521",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2021-10-26",
+      "title": "Management and Medical Therapy of Mild Hypercortisolism.",
+      "url": "https://europepmc.org/article/MED/34768949"
+    },
+    {
+      "doi": "10.18632/oncotarget.27989",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2021-06-22",
+      "title": "Glucocorticoid receptor antagonism promotes apoptosis in solid tumor cells.",
+      "url": "https://europepmc.org/article/MED/34194622"
+    },
+    {
+      "doi": "10.1016/j.trsl.2023.01.002",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-01-12",
+      "title": "Genetically engineered human pituitary corticotroph tumor organoids exhibit divergent responses to glucocorticoid receptor modulators.",
+      "url": "https://europepmc.org/article/MED/36640905"
+    },
+    {
+      "doi": "10.3389/fendo.2021.662865",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2021-07-14",
+      "title": "Relacorilant, a Selective Glucocorticoid Receptor Modulator, Induces Clinical Improvements in Patients With Cushing Syndrome: Results From A Prospective, Open-Label Phase 2 Study.",
+      "url": "https://europepmc.org/article/MED/34335465"
+    },
+    {
+      "doi": "10.1038/s41392-025-02270-3",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-07-28",
+      "title": "Nuclear receptors in health and disease: signaling pathways, biological functions and pharmaceutical interventions.",
+      "url": "https://europepmc.org/article/MED/40717128"
+    }
+  ],
+  "nctId": "NCT04308590",
+  "packetHash": "840c4e3276647b9b15290881d812820cf44d323b07d2b0b8b381c4d0f6a0aaea",
+  "registry": {
+    "activeComparatorResults": [],
+    "adverseEventGroups": [
+      {
+        "id": "EG000",
+        "otherAffected": 65,
+        "otherAtRisk": 68,
+        "seriousAffected": 15,
+        "seriousAtRisk": 68,
+        "title": "Relacorilant"
+      },
+      {
+        "id": "EG001",
+        "otherAffected": 60,
+        "otherAtRisk": 69,
+        "seriousAffected": 4,
+        "seriousAtRisk": 69,
+        "title": "Placebo"
+      }
+    ],
+    "durabilityMeasures": [],
+    "eligibilityCriteria": "Inclusion Criteria: * Shows lack of cortisol suppression on dexamethasone suppression test * Suppressed or low early-morning adrenocorticotropic hormone (ACTH) levels * A radiologically confirmed adrenal lesion * Has IGT or DM * Has uncontrolled HTN Exclusion Criteria: * Has severe, uncontrolled HTN * Has poorly controlled DM * Has DM Type 1 * Has significantly abnormal liver test results or severe renal insufficiency * Has uncontrolled, clinically significant hypothyroidism or hyperthyroidism",
+    "enrollment": {
+      "count": 137,
+      "type": "ACTUAL"
+    },
+    "indications": [
+      "Hypercortisolism"
+    ],
+    "interventions": [
+      {
+        "name": "Relacorilant",
+        "type": "DRUG"
+      },
+      {
+        "name": "Placebo",
+        "type": "OTHER"
+      }
+    ],
+    "leadSponsor": "Corcept Therapeutics",
+    "milestones": {
+      "completionDateStruct": {
+        "date": "2024-09-19",
+        "type": "ACTUAL"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2024-09-19",
+        "type": "ACTUAL"
+      },
+      "resultsFirstPostDateStruct": {
+        "date": "2025-08-03",
+        "type": "ACTUAL"
+      },
+      "startDateStruct": {
+        "date": "2020-07-27",
+        "type": "ACTUAL"
+      }
+    },
+    "outcomeDefinitions": [
+      "Change in Average 24-hour SBP",
+      "Number of Patients With 1 or More Treatment-emergent Adverse Events (TEAEs) as Graded by CTCAE v5.0.",
+      "Change in Area Under the Concentration-time Curve of Blood Glucose (AUCglucose)",
+      "Change in Average Diastolic Blood Pressure (DBP)",
+      "Change in Average Heart Rate (HR)",
+      "Change in Average Daytime and Nighttime SBP",
+      "Change in Hemoglobin HbA1c for Patients With HbA1c ≥5.7% at Baseline",
+      "Change in HbA1c for Patients With HbA1c ≥6.5% at Baseline",
+      "Number of Patients With DM Who Achieved 2-hour oGTT Glucose <140 mg/dL",
+      "Number of Patients With IGT Who Achieved 2-hour oGTT Glucose <140 mg/dL",
+      "Number of Patients With Any Dose Decrease in Antihypertensive Medication",
+      "Number of Patients With Any Dose Decrease in Diabetes Medication",
+      "Number of Patients With Any Dose Increase or Switch in Antihypertensive Medication",
+      "Number of Patients With Any Dose Increase or Switch in Diabetes Medication",
+      "Number of Patients With HbA1c ≥6.5% at Baseline Who Achieved HbA1c <6.5%",
+      "Number of Patients With Normalization of the 24-hour Average SBP (<130 mm Hg)",
+      "Number of Patients With a Reduction in 24-hour Average SBP by ≥5 mm Hg"
+    ],
+    "qualityOfLifeMeasures": [],
+    "registryStatus": "COMPLETED",
+    "reportedOutcomeMeasures": [
+      {
+        "description": "Blood pressure was measured by 24-hour ABPM. The 24-hour average SBP is reported.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "-5.56"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "-2.89"
+          }
+        ],
+        "timeFrame": "Baseline and Week 22",
+        "title": "Change in Average 24-hour SBP",
+        "unit": "mm Hg"
+      },
+      {
+        "description": "",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "67"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "60"
+          }
+        ],
+        "timeFrame": "Baseline and up to Week 26",
+        "title": "Number of Patients With 1 or More Treatment-emergent Adverse Events (TEAEs) as Graded by CTCAE v5.0.",
+        "unit": "Participants"
+      },
+      {
+        "description": "AUCglucose was calculated based on results of the plasma 2-hour oGTT.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "-1.566"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "1.008"
+          }
+        ],
+        "timeFrame": "Before and at time intervals up to 2 hours post glucose drink at Baseline and Week 22",
+        "title": "Change in Area Under the Concentration-time Curve of Blood Glucose (AUCglucose)",
+        "unit": "hours x mmol/L"
+      },
+      {
+        "description": "Blood pressure was measured by 24-hour ABPM. Daytime average DBP was measured from 06:00 to 21:59. Nighttime average DBP was measure from 22:00 to 05:59.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "-3.3"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "-1.4"
+          },
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "-3.1"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "-1.0"
+          },
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "-3.0"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "-0.6"
+          }
+        ],
+        "timeFrame": "Baseline and Week 22",
+        "title": "Change in Average Diastolic Blood Pressure (DBP)",
+        "unit": "mm Hg"
+      },
+      {
+        "description": "Heart rate was measured by 24-hour ABPM. Daytime average HR was measured from 06:00 to 21:59. Nighttime average HR was measure from 22:00 to 05:59.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "2.0"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "-2.0"
+          },
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "1.7"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "-1.5"
+          },
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "2.2"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "-2.7"
+          }
+        ],
+        "timeFrame": "Baseline and Week 22",
+        "title": "Change in Average Heart Rate (HR)",
+        "unit": "Beats per minute"
+      },
+      {
+        "description": "Blood pressure was measured by 24-hour ABPM. Daytime average SBP was measured from 06:00 to 21:59. Nighttime average SBP was measure from 22:00 to 05:59.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "-4.5"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "-2.5"
+          },
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "-4.6"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "-3.0"
+          }
+        ],
+        "timeFrame": "Baseline and Week 22",
+        "title": "Change in Average Daytime and Nighttime SBP",
+        "unit": "mm Hg"
+      },
+      {
+        "description": "",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "-0.29"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "0.00"
+          }
+        ],
+        "timeFrame": "Baseline and Week 22",
+        "title": "Change in Hemoglobin HbA1c for Patients With HbA1c ≥5.7% at Baseline",
+        "unit": "Percentage"
+      },
+      {
+        "description": "",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "-0.57"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "-0.19"
+          }
+        ],
+        "timeFrame": "Baseline and Week 22",
+        "title": "Change in HbA1c for Patients With HbA1c ≥6.5% at Baseline",
+        "unit": "Percentage"
+      },
+      {
+        "description": "Glucose was measured using the 2 hour timepoint of the 2-hour oGTT.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "1"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "0"
+          }
+        ],
+        "timeFrame": "2 hours post glucose drink at Week 22",
+        "title": "Number of Patients With DM Who Achieved 2-hour oGTT Glucose <140 mg/dL",
+        "unit": "Participants"
+      },
+      {
+        "description": "Glucose was measured using the 2 hour timepoint of the 2-hour oGTT.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "6"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "7"
+          }
+        ],
+        "timeFrame": "2 hours post glucose drink at Week 22",
+        "title": "Number of Patients With IGT Who Achieved 2-hour oGTT Glucose <140 mg/dL",
+        "unit": "Participants"
+      },
+      {
+        "description": "",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "7"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "5"
+          }
+        ],
+        "timeFrame": "Baseline and Week 22",
+        "title": "Number of Patients With Any Dose Decrease in Antihypertensive Medication",
+        "unit": "Participants"
+      },
+      {
+        "description": "",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "0"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "0"
+          }
+        ],
+        "timeFrame": "Baseline and Week 22",
+        "title": "Number of Patients With Any Dose Decrease in Diabetes Medication",
+        "unit": "Participants"
+      },
+      {
+        "description": "",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "1"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "5"
+          }
+        ],
+        "timeFrame": "Baseline and Week 22",
+        "title": "Number of Patients With Any Dose Increase or Switch in Antihypertensive Medication",
+        "unit": "Participants"
+      },
+      {
+        "description": "",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "4"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "3"
+          }
+        ],
+        "timeFrame": "Baseline and Week 22",
+        "title": "Number of Patients With Any Dose Increase or Switch in Diabetes Medication",
+        "unit": "Participants"
+      },
+      {
+        "description": "",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "3"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "4"
+          }
+        ],
+        "timeFrame": "Baseline and Week 22",
+        "title": "Number of Patients With HbA1c ≥6.5% at Baseline Who Achieved HbA1c <6.5%",
+        "unit": "Participants"
+      },
+      {
+        "description": "Blood pressure was measured by 24-hour ABPM Test. Reported is the number of patients with HTN at Baseline who achieved SBP \\<130 mm Hg at Week 22.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "9"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "13"
+          }
+        ],
+        "timeFrame": "Baseline and Week 22",
+        "title": "Number of Patients With Normalization of the 24-hour Average SBP (<130 mm Hg)",
+        "unit": "Participants"
+      },
+      {
+        "description": "Blood pressure was measured by 24-hour ABPM. Reported is the number of patients with HTN at Baseline who achieved at least a 5 mm Hg reduction in 24-hour average SBP at Week 22.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Relacorilant"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "10"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "13"
+          }
+        ],
+        "timeFrame": "Baseline and Week 22",
+        "title": "Number of Patients With a Reduction in 24-hour Average SBP by ≥5 mm Hg",
+        "unit": "Participants"
+      }
+    ],
+    "reportedWithdrawals": [],
+    "responseMeasures": [],
+    "seriousEventGroups": [
+      {
+        "id": "EG000",
+        "otherAffected": 65,
+        "otherAtRisk": 68,
+        "seriousAffected": 15,
+        "seriousAtRisk": 68,
+        "title": "Relacorilant"
+      },
+      {
+        "id": "EG001",
+        "otherAffected": 60,
+        "otherAtRisk": 69,
+        "seriousAffected": 4,
+        "seriousAtRisk": 69,
+        "title": "Placebo"
+      }
+    ],
+    "sourceUpdated": "2025-09-04",
+    "subgroupOutcomes": [],
+    "survivalMeasures": [],
+    "timeToResponseMeasures": [],
+    "title": "Glucocorticoid Receptor Antagonism in the Treatment of Hypercortisolism in Patients With Cortisol-Secreting Adrenal Adenomas or Hyperplasia (GRADIENT): A Phase 3, Randomized, Double-Blind, Placebo-Controlled Study of the Efficacy and Safety of Relacorilant",
+    "treatmentArms": [
+      {
+        "description": "Patients will receive relacorilant increased sequentially from 100 mg once daily to a maximum dose of 400 mg once daily.",
+        "interventionNames": [
+          "Drug: Relacorilant",
+          "Other: Placebo"
+        ],
+        "label": "Relacorilant",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Patients will receive placebo matched to study drug once daily.",
+        "interventionNames": [
+          "Other: Placebo"
+        ],
+        "label": "Placebo",
+        "type": "PLACEBO_COMPARATOR"
+      }
+    ],
+    "whyStopped": ""
+  },
+  "registrySourceHash": "8a6f4f60e7edfe4635e02ba0c2f78c891cc6385fc57402429d934a2b96e7fa81",
+  "registryUrl": "https://clinicaltrials.gov/study/NCT04308590",
+  "regulatorySourceLead": "https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-5",
+  "reportedFdaStatus": "2026-12-17",
+  "retrievedAt": "2026-11-07T19:05:26+00:00",
+  "sourceErrors": {},
+  "ticker": "CORT"
+}

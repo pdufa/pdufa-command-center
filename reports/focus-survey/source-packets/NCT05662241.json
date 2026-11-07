@@ -1,0 +1,194 @@
+{
+  "company": "Zenas BioPharma, Inc.",
+  "literatureLeads": [
+    {
+      "doi": "10.1056/nejmoa2601337",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2026-06-02",
+      "title": "Obexelimab for the Treatment of IgG4-Related Disease.",
+      "url": "https://europepmc.org/article/MED/42233621"
+    },
+    {
+      "doi": "10.1007/s40744-026-00835-4",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-03-16",
+      "title": "Efficacy and Safety of Obexelimab to Treat IgG4-Related Disease: Protocol for a Global, Randomized, Placebo-Controlled Trial.",
+      "url": "https://europepmc.org/article/MED/41840328"
+    },
+    {
+      "doi": "10.3390/jcm14196774",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-09-25",
+      "title": "New Developments in the Treatment of IgG4-Related Disease: A Comprehensive Clinical Approach.",
+      "url": "https://europepmc.org/article/MED/41095851"
+    },
+    {
+      "doi": "10.1016/j.ekir.2026.106630",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-06-02",
+      "title": "IgG4-Related Kidney Disease and IgG4-Related Retroperitoneal Fibrosis: An Update on Diagnosis and Treatment.",
+      "url": "https://europepmc.org/article/MED/42440422"
+    },
+    {
+      "doi": "10.1097/cm9.0000000000003990",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-04-09",
+      "title": "Pathogenesis exploration of lgG4-related disease: From the traditional central dogma and its remodeling perspective.",
+      "url": "https://europepmc.org/article/MED/41956965"
+    },
+    {
+      "doi": "10.3390/biomedicines12122839",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-12-13",
+      "title": "The Differential Complement, Fc and Chemokine Receptor Expression of B Cells in IgG4-Related Pancreatobiliary Disease and Primary Sclerosing Cholangitis and Its Relevance for Targeting B Cell Pathways in Disease.",
+      "url": "https://europepmc.org/article/MED/39767745"
+    },
+    {
+      "doi": "10.1111/all.16686",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-08-11",
+      "title": "IgG4-Related Disease: Emerging Roles of Novel Genetic Variants, Immune Cell Subsets and Therapeutic Targets.",
+      "url": "https://europepmc.org/article/MED/40785550"
+    },
+    {
+      "doi": "10.1186/s42358-024-00374-y",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-05-03",
+      "title": "IgG4-related disease-rare but you should not forget it.",
+      "url": "https://europepmc.org/article/MED/38702764"
+    },
+    {
+      "doi": "10.3389/fimmu.2023.1215216",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-07-28",
+      "title": "Rituximab resistance in ITP and beyond.",
+      "url": "https://europepmc.org/article/MED/37575230"
+    },
+    {
+      "doi": "10.1093/rap/rkae020",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-04-10",
+      "title": "Current and future advances in practice: IgG4-related disease.",
+      "url": "https://europepmc.org/article/MED/38601138"
+    },
+    {
+      "doi": "10.3389/fimmu.2023.1111366",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-02-21",
+      "title": "Heterogeneity of antibody-secreting cells infiltrating autoimmune tissues.",
+      "url": "https://europepmc.org/article/MED/36895558"
+    },
+    {
+      "doi": "10.1080/19420862.2026.2614669",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-01-21",
+      "title": "Antibodies to watch in 2026.",
+      "url": "https://europepmc.org/article/MED/41560619"
+    }
+  ],
+  "nctId": "NCT05662241",
+  "packetHash": "03f1b17bac5d8067fc418481157261217a8769d6cb3b9e971792a8805386c5b3",
+  "registry": {
+    "activeComparatorResults": [],
+    "adverseEventGroups": [],
+    "durabilityMeasures": [],
+    "eligibilityCriteria": "Inclusion Criteria: 1. Males and females, ≥ 18 years of age 2. Clinical diagnosis of IgG4-RD 3. Patients must meet the 2019 ACR/EULAR Classification Criteria for IgG4-RD 4. Patients must have active IgG4-RD signs/symptoms (i.e., flare) that require the initiation of GC therapy or the increase in background long-term GC therapy 5. Other inclusion criteria apply Exclusion Criteria: 1. Has disease in only 1 organ system whose primary manifestation is fibrosis 2. Has received prednisone equivalent given orally at a dose greater than 60 mg/day within the 4 weeks prior to screening or during screening 3. Has received a non-biologic, disease-modifying anti-rheumatological drug or immunosuppressive agent other than GCs within the 2 weeks prior to screening 4. Has received an investigational treatment or direct medical intervention on another clinical study within 12 weeks or \\< 5 half-lives of the investigational treatment, whichever is shorter, prior to screening 5. Has received live vaccine or live therapeutic infectious agent within the 2 weeks prior to screening 6. Active tuberculosis or high risk for tuberculosis; hepatitis C infection in absence of curative treatment; evidence of hepatitis B infection 7. Use of B cell depleting or targeting agents within 6 months of randomization 8. Other exclusion criteria apply",
+    "enrollment": {
+      "count": 194,
+      "type": "ACTUAL"
+    },
+    "indications": [
+      "IgG4 Related Disease"
+    ],
+    "interventions": [
+      {
+        "name": "Obexelimab",
+        "type": "DRUG"
+      },
+      {
+        "name": "Placebo",
+        "type": "OTHER"
+      }
+    ],
+    "leadSponsor": "Zenas BioPharma (USA), LLC",
+    "milestones": {
+      "completionDateStruct": {
+        "date": "2029-02-15",
+        "type": "ESTIMATED"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2025-11-13",
+        "type": "ACTUAL"
+      },
+      "resultsFirstPostDateStruct": {},
+      "startDateStruct": {
+        "date": "2023-01-09",
+        "type": "ACTUAL"
+      }
+    },
+    "outcomeDefinitions": [
+      "Primary outcome measure"
+    ],
+    "qualityOfLifeMeasures": [],
+    "registryStatus": "ACTIVE_NOT_RECRUITING",
+    "reportedOutcomeMeasures": [],
+    "reportedWithdrawals": [],
+    "responseMeasures": [],
+    "seriousEventGroups": [],
+    "sourceUpdated": "2026-02-04",
+    "subgroupOutcomes": [],
+    "survivalMeasures": [],
+    "timeToResponseMeasures": [],
+    "title": "A Phase 3, Multicenter, Randomized, Double-blind, Placebo-controlled Study to Evaluate the Efficacy and Safety of Obexelimab in Patients With IgG4-Related Disease (INDIGO)",
+    "treatmentArms": [
+      {
+        "description": "Obexelimab administered as an SC injection.",
+        "interventionNames": [
+          "Drug: Obexelimab"
+        ],
+        "label": "ZB012",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Placebo administered as an SC injection.",
+        "interventionNames": [
+          "Other: Placebo"
+        ],
+        "label": "Placebo",
+        "type": "PLACEBO_COMPARATOR"
+      }
+    ],
+    "whyStopped": ""
+  },
+  "registrySourceHash": "f9180f64aaba25c2c17551dfd8e80a2c80c701552f0a536be3fdcf0cc3ab2a97",
+  "registryUrl": "https://clinicaltrials.gov/study/NCT05662241",
+  "regulatorySourceLead": "https://zenasbio.gcs-web.com/news-releases/news-release-details/zenas-biopharma-reports-third-quarter-2026-financial-results-and",
+  "reportedFdaStatus": "2027-05-27",
+  "retrievedAt": "2026-11-07T19:05:30+00:00",
+  "sourceErrors": {},
+  "ticker": "ZBIO"
+}

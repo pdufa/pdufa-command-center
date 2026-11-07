@@ -1,0 +1,193 @@
+{
+  "company": "Celldex Therapeutics",
+  "literatureLeads": [
+    {
+      "doi": "10.1007/s40257-026-01052-z",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-07-24",
+      "title": "Shared Mechanistic Pathways in Bullous Pemphigoid, Chronic Spontaneous Urticaria, Prurigo Nodularis, and Chronic Prurigo of Unknown Origin: Implications for Targeted Therapies.",
+      "url": "https://europepmc.org/article/MED/42496854"
+    },
+    {
+      "doi": "10.1016/j.anai.2025.11.008",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2025-11-19",
+      "title": "Emerging IgE and non-IgE targeted therapies for chronic urticaria.",
+      "url": "https://europepmc.org/article/MED/41270830"
+    },
+    {
+      "doi": "10.3390/antib15050088",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-09-17",
+      "title": "Targeted Therapy for Antihistamine-Refractory Chronic Spontaneous Urticaria: A Critical Narrative Review and an Evidence-Graded Approach to Agent Selection.",
+      "url": "https://europepmc.org/article/MED/42776801"
+    },
+    {
+      "doi": "10.1016/j.jaip.2025.11.038",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2026-02-01",
+      "title": "Systemic Treatments for Chronic Spontaneous Urticaria: Anti-IgE and Beyond.",
+      "url": "https://europepmc.org/article/MED/41654334"
+    },
+    {
+      "doi": "10.4168/aair.2025.17.5.531",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-09-01",
+      "title": "An Overview of Chronic Spontaneous Urticaria: Diagnosis, Management, and Treatment.",
+      "url": "https://europepmc.org/article/MED/41044830"
+    },
+    {
+      "doi": "10.1007/s40265-025-02170-4",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-03-12",
+      "title": "Update on the Treatment of Chronic Spontaneous Urticaria.",
+      "url": "https://europepmc.org/article/MED/40074986"
+    },
+    {
+      "doi": "10.3390/ph17111499",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-11-07",
+      "title": "Therapies for Chronic Spontaneous Urticaria: Present and Future Developments.",
+      "url": "https://europepmc.org/article/MED/39598410"
+    },
+    {
+      "doi": "10.1093/abt/tbag027",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-05-28",
+      "title": "Structure and function of therapeutic antibodies approved by the US FDA in 2025.",
+      "url": "https://europepmc.org/article/MED/42729864"
+    },
+    {
+      "doi": "10.1016/j.pharmr.2026.100121",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-01-29",
+      "title": "From neuroimmune circuits to targeted therapy of chronic pruritus.",
+      "url": "https://europepmc.org/article/MED/41831428"
+    }
+  ],
+  "nctId": "NCT06455202",
+  "packetHash": "ce41c094efbfbad031d47bc687577a1d3c74570c317c972b75c13d1a94ec524f",
+  "registry": {
+    "activeComparatorResults": [],
+    "adverseEventGroups": [],
+    "durabilityMeasures": [],
+    "eligibilityCriteria": "Key Inclusion Criteria: 1. Males and females, \\>/= 18 years of age. 2. Chronic spontaneous urticaria (CSU) \\>/= 6 months prior to Screening (Visit 1). 3. CSU despite the use of a stable regimen of second generation non-sedating H1-antihistamine as defined by: 1. The presence of hives for \\>/= 6 weeks at any time prior to Visit 1 despite the use of non-sedating H1-antihistamines. 2. Must be on a stable regimen of second generation non-sedating H1-antihistamine for \\>/= 4 weeks prior to study treatment. 3. UAS7 of \\>/= 16 and ISS7 of \\>/= 8 during the 7 days prior to study treatment. 4. Normal blood counts and liver function tests. 5. Both males and females of child-bearing potential must agree to use highly effective contraceptives during the study and for 150 days after treatment. 6. Willing and able to complete a daily symptom electronic diary and comply with study visits. 7. Participants with and without prior biologic experience are eligible. Key Exclusion Criteria: 1. Women who are pregnant or nursing. 2. Chronic urticaria whose predominant manifestation is due to CIndU. 3. Other diseases associated with urticaria. 4. Active pruritic skin condition in addition to CSU. 5. Medical condition that would cause additional risk or interfere with study procedures. 6. Known HIV, hepatitis B or hepatitis C infection. 7. Vaccination of a live vaccine within 30 days prior to Screening (Visit 1) (subjects must agree to avoid live vaccinations during the study). Inactivated vaccines ar",
+    "enrollment": {
+      "count": 976,
+      "type": "ACTUAL"
+    },
+    "indications": [
+      "Chronic Spontaneous Urticaria"
+    ],
+    "interventions": [
+      {
+        "name": "barzolvolimab",
+        "type": "BIOLOGICAL"
+      },
+      {
+        "name": "Matching placebo",
+        "type": "BIOLOGICAL"
+      }
+    ],
+    "leadSponsor": "Celldex Therapeutics",
+    "milestones": {
+      "completionDateStruct": {
+        "date": "2027-04",
+        "type": "ESTIMATED"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2026-10",
+        "type": "ESTIMATED"
+      },
+      "resultsFirstPostDateStruct": {},
+      "startDateStruct": {
+        "date": "2024-07-19",
+        "type": "ACTUAL"
+      }
+    },
+    "outcomeDefinitions": [
+      "Mean change from baseline to Week 12 of UAS7 (Urticaria Activity Score)",
+      "Mean change from baseline to Week 12 of ISS7 (Itch Severity Score)",
+      "Mean change from baseline to Week 12 of HSS7 (Hives Severity Score)",
+      "Percentage of patients with UAS7=0 at Week 12",
+      "Percentage of participants with UAS7 ≤ 6 at Week 12",
+      "Percentage of participants with AAS7 > 0 at baseline with AAS7 = 0 at Week 12",
+      "Mean change from baseline in UAS7 in participants refractory to omalizumab treatment at Week 12",
+      "Proportion of participants with UAS7 = 0 in participants refractory to omalizumab treatment at Week 12",
+      "Incidence of Treatment-Emergent Adverse Events"
+    ],
+    "qualityOfLifeMeasures": [],
+    "registryStatus": "ACTIVE_NOT_RECRUITING",
+    "reportedOutcomeMeasures": [],
+    "reportedWithdrawals": [],
+    "responseMeasures": [],
+    "seriousEventGroups": [],
+    "sourceUpdated": "2026-03-25",
+    "subgroupOutcomes": [],
+    "survivalMeasures": [],
+    "timeToResponseMeasures": [],
+    "title": "A Phase 3 Randomized, Double-Blind, Placebo-Controlled Study to Assess the Efficacy and Safety of Barzolvolimab in Patients With Chronic Spontaneous Urticaria Who Remain Symptomatic Despite H1 Antihistamine Treatment (EMBARQ-CSU2)",
+    "treatmentArms": [
+      {
+        "description": "barzolvolimab given once as a 300 mg subcutaneous injection followed by 150 mg administered every 4 weeks for 52 weeks",
+        "interventionNames": [
+          "Biological: barzolvolimab"
+        ],
+        "label": "barzolvolimab 150 mg",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "barzolvolimab given once as a 450 mg subcutaneous injection followed by 300 mg administered every 8 weeks for 52 weeks",
+        "interventionNames": [
+          "Biological: barzolvolimab"
+        ],
+        "label": "barzolvolimab 300 mg",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Placebo injection subcutaneous every 4 weeks for 24 weeks and then barzolvolimab 300 mg followed by 150 mg administered every 4 weeks for 28 weeks.",
+        "interventionNames": [
+          "Biological: barzolvolimab",
+          "Biological: Matching placebo"
+        ],
+        "label": "Placebo then barzolvolimab 150 mg",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Placebo injection subcutaneous every 4 weeks for 24 weeks and then barzolvolimab 450 mg followed by 300 mg administered every 8 weeks for 28 weeks.",
+        "interventionNames": [
+          "Biological: barzolvolimab",
+          "Biological: Matching placebo"
+        ],
+        "label": "Placebo then barzolvolimab 300 mg",
+        "type": "EXPERIMENTAL"
+      }
+    ],
+    "whyStopped": ""
+  },
+  "registrySourceHash": "78750593652e13b66ddf221371c8697b1bcbc29473d8c3872a4b406d4591c4d8",
+  "registryUrl": "https://clinicaltrials.gov/study/NCT06455202",
+  "regulatorySourceLead": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-reports-third-quarter-financial-results-and-provides",
+  "reportedFdaStatus": "BLA filing planned 2027; PDUFA not assigned",
+  "retrievedAt": "2026-11-07T19:05:25+00:00",
+  "sourceErrors": {},
+  "ticker": "CLDX"
+}

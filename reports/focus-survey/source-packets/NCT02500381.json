@@ -1,0 +1,332 @@
+{
+  "company": "Sarepta Therapeutics, Inc.",
+  "literatureLeads": [
+    {
+      "doi": "10.1080/15476286.2026.2689117",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-06-21",
+      "title": "FDA-approved antisense oligonucleotide therapies for duchenne muscular dystrophy: current status and future outlook.",
+      "url": "https://europepmc.org/article/MED/42324661"
+    },
+    {
+      "doi": "10.3390/genes17070826",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-07-20",
+      "title": "Recalibrating Therapeutic Priorities for Duchenne Muscular Dystrophy: A Critical Synthesis of Approved and Emerging Strategies Through the Lens of an Underrepresented Population.",
+      "url": "https://europepmc.org/article/MED/42510866"
+    },
+    {
+      "doi": "10.1001/jama.2024.2776",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2024-04-01",
+      "title": "Spending on Targeted Therapies for Duchenne Muscular Dystrophy.",
+      "url": "https://europepmc.org/article/MED/38466271"
+    },
+    {
+      "doi": "10.1016/j.ymthe.2025.04.038",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2025-04-30",
+      "title": "Clinical applications of exon-skipping antisense oligonucleotides in neuromuscular diseases.",
+      "url": "https://europepmc.org/article/MED/40308063"
+    },
+    {
+      "doi": "10.3390/ijms27062755",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-03-18",
+      "title": "RNA Therapeutics for Duchenne Muscular Dystrophy: Exon Skipping, RNA Editing, and Translational Insights from Genome-Edited Microminipig Models.",
+      "url": "https://europepmc.org/article/MED/41898615"
+    },
+    {
+      "doi": "10.3390/genes16070777",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-06-30",
+      "title": "Brogidirsen and Exon 44 Skipping for Duchenne Muscular Dystrophy: Advances and Challenges in RNA-Based Therapy.",
+      "url": "https://europepmc.org/article/MED/40725431"
+    },
+    {
+      "doi": "10.3390/pharmaceutics18040446",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-04-04",
+      "title": "Antisense Oligonucleotides: Technological Advances, Clinical Progress, and Expanding Therapeutic Frontiers.",
+      "url": "https://europepmc.org/article/MED/42076098"
+    },
+    {
+      "doi": "10.3390/genes13071241",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2022-07-14",
+      "title": "Current Outline of Exon Skipping Trials in Duchenne Muscular Dystrophy.",
+      "url": "https://europepmc.org/article/MED/35886024"
+    },
+    {
+      "doi": "10.3390/genes17050533",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-04-30",
+      "title": "Current and Emerging Therapeutic Strategies for the Treatment of Duchenne Muscular Dystrophy.",
+      "url": "https://europepmc.org/article/MED/42194990"
+    },
+    {
+      "doi": "10.1001/jamanetworkopen.2023.53094",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-01-02",
+      "title": "Characteristics of Patients Receiving Novel Muscular Dystrophy Drugs in Trials vs Routine Care.",
+      "url": "https://europepmc.org/article/MED/38265797"
+    },
+    {
+      "doi": "10.4103/aian.aian_727_20",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2021-04-16",
+      "title": "What Percentage of Patients with Duchene Muscular Dystrophy are Potentially Treatable with Gene Therapies?",
+      "url": "https://europepmc.org/article/MED/34728964"
+    },
+    {
+      "doi": "10.1016/j.cotox.2022.100373",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2022-10-21",
+      "title": "Nephrotoxicity of marketed antisense oligonucleotide drugs.",
+      "url": "https://europepmc.org/article/MED/37193356"
+    },
+    {
+      "doi": "10.3389/fgeed.2022.863651",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2022-05-10",
+      "title": "Development of Therapeutic RNA Manipulation for Muscular Dystrophy.",
+      "url": "https://europepmc.org/article/MED/35620642"
+    },
+    {
+      "doi": "10.3390/biomedicines12040912",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-04-20",
+      "title": "Casimersen (AMONDYS 45™): An Antisense Oligonucleotide for Duchenne Muscular Dystrophy.",
+      "url": "https://europepmc.org/article/MED/38672266"
+    },
+    {
+      "doi": "10.3390/ijms27136086",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-07-07",
+      "title": "Are RNA Therapies a Solid Foundation or a Frontier Yet to Be Conquered?",
+      "url": "https://europepmc.org/article/MED/42450354"
+    },
+    {
+      "doi": "10.1016/j.omtn.2024.102228",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-05-24",
+      "title": "Deletion of miR-146a enhances therapeutic protein restoration in model of dystrophin exon skipping.",
+      "url": "https://europepmc.org/article/MED/38975000"
+    },
+    {
+      "doi": "10.1177/17562864231182934",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-07-03",
+      "title": "Cardiac therapies for Duchenne muscular dystrophy.",
+      "url": "https://europepmc.org/article/MED/37425427"
+    },
+    {
+      "doi": "10.4103/1673-5374.385285",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-05-01",
+      "title": "Antisense therapy: a potential breakthrough in the treatment of neurodegenerative diseases.",
+      "url": "https://europepmc.org/article/MED/37862205"
+    },
+    {
+      "doi": "10.3390/biomedicines11030830",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-03-09",
+      "title": "A Brief Review of Duchenne Muscular Dystrophy Treatment Options, with an Emphasis on Two Novel Strategies.",
+      "url": "https://europepmc.org/article/MED/36979809"
+    },
+    {
+      "doi": "10.1089/nat.2020.0845",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2020-02-11",
+      "title": "The 10th Oligonucleotide Therapy Approved: Golodirsen for Duchenne Muscular Dystrophy.",
+      "url": "https://europepmc.org/article/MED/32043902"
+    },
+    {
+      "doi": "",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-10-07",
+      "title": "From molecular correction to functional rescue: delivery, tissue state, and immunobiology as the principal constraints on dystrophin-restoring therapy in Duchenne muscular dystrophy",
+      "url": "https://europepmc.org/article/PMC/PMC13638376"
+    },
+    {
+      "doi": "10.1089/nat.2021.0043",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2021-11-17",
+      "title": "Long-Term Safety and Efficacy Data of Golodirsen in Ambulatory Patients with Duchenne Muscular Dystrophy Amenable to Exon 53 Skipping: A First-in-human, Multicenter, Two-Part, Open-Label, Phase 1/2 Trial.",
+      "url": "https://europepmc.org/article/MED/34788571"
+    },
+    {
+      "doi": "10.1038/s41419-022-05075-2",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2022-07-23",
+      "title": "RNA-based therapeutics: an overview and prospectus.",
+      "url": "https://europepmc.org/article/MED/35871216"
+    },
+    {
+      "doi": "10.3389/fmed.2022.859930",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2022-03-28",
+      "title": "Therapeutic Strategies for Dystrophin Replacement in Duchenne Muscular Dystrophy.",
+      "url": "https://europepmc.org/article/MED/35419381"
+    },
+    {
+      "doi": "10.1016/j.omtn.2023.07.029",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-07-27",
+      "title": "Targeting Duchenne muscular dystrophy by skipping DMD exon 45 with base editors.",
+      "url": "https://europepmc.org/article/MED/37637209"
+    }
+  ],
+  "nctId": "NCT02500381",
+  "packetHash": "423737bfc36b461d72d13f38ee45aa4e7f63ad0875a64d008be2f76e664f7051",
+  "registry": {
+    "activeComparatorResults": [],
+    "adverseEventGroups": [],
+    "durabilityMeasures": [],
+    "eligibilityCriteria": "Inclusion Criteria: * Genotypically confirmed DMD, with genetic deletion amenable to exon 45 or exon 53 skipping * Stable dose of oral corticosteroids for at least 24 weeks prior to Week 1, and the dose is expected to remain constant throughout the study (except for modifications to accommodate changes in weight). * Intact right and left biceps brachii muscles or 2 alternative upper arm muscle groups * Mean 6MWT ≥300 meters and ≤450 meters * Stable pulmonary function: forced vital capacity (FVC) ≥50% predicted Exclusion Criteria: * Treatment with gene therapy at any time * Previous treatment with SMT C1100 within 1 week prior to Week 1 and previous treatment with PRO045 (BMN 045), PRO053 (BMN 053), or PRO051 (BMN 051) within 24 weeks prior to Week 1 * Current or previous treatment with any other experimental treatment within 12 weeks prior to Week 1 * Major surgery within 3 months prior to Week 1 * Presence of other clinically significant illness * Other inclusion/exclusion criteria may apply.",
+    "enrollment": {
+      "count": 228,
+      "type": "ACTUAL"
+    },
+    "indications": [
+      "Duchenne Muscular Dystrophy"
+    ],
+    "interventions": [
+      {
+        "name": "SRP-4045",
+        "type": "DRUG"
+      },
+      {
+        "name": "SRP-4053",
+        "type": "DRUG"
+      },
+      {
+        "name": "Placebo",
+        "type": "DRUG"
+      }
+    ],
+    "leadSponsor": "Sarepta Therapeutics, Inc.",
+    "milestones": {
+      "completionDateStruct": {
+        "date": "2025-10-16",
+        "type": "ACTUAL"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2024-11-12",
+        "type": "ACTUAL"
+      },
+      "resultsFirstPostDateStruct": {},
+      "startDateStruct": {
+        "date": "2016-09-28",
+        "type": "ACTUAL"
+      }
+    },
+    "outcomeDefinitions": [
+      "Change From Baseline in the 4-Step Ascend Velocity at Week 96",
+      "Change from Baseline in the Total Distance Walked During 6MWT at Week 96",
+      "Change from Baseline in Rise from Floor Velocity at Week 96",
+      "Change From Baseline in the 4-Step Ascend Velocity at Week 144",
+      "Change From Baseline in Total Distance Walked During the 10-meter walk/run (10-MWR) Velocity",
+      "Change From Baseline in the North Star Ambulatory Assessment (NSAA) Total Score at Week 96",
+      "Change from Baseline in Dystrophin Protein Levels Determined by Western Blot at Weeks 48 or 96",
+      "Change from Baseline in Dystrophin Intensity Levels Determined by Immunohistochemistry (IHC) at Weeks 48 or 96"
+    ],
+    "qualityOfLifeMeasures": [],
+    "registryStatus": "COMPLETED",
+    "reportedOutcomeMeasures": [],
+    "reportedWithdrawals": [],
+    "responseMeasures": [],
+    "seriousEventGroups": [],
+    "sourceUpdated": "2025-11-18",
+    "subgroupOutcomes": [],
+    "survivalMeasures": [],
+    "timeToResponseMeasures": [],
+    "title": "A Double-Blind, Placebo-Controlled, Multi-Center Study With an Open-Label Extension to Evaluate the Efficacy and Safety of SRP-4045 and SRP-4053 in Patients With Duchenne Muscular Dystrophy",
+    "treatmentArms": [
+      {
+        "description": "Participants amenable to exon 45 skipping will receive SRP-4045 IV infusions, weekly, at 30 mg/kg for up to 96 weeks in the double-blinded period. This will be followed by an open-label extension period in which all participants will receive open-label active treatment of SRP-4045 at 30 mg/kg/week IV infusions for 48 weeks (up to Week 144 in the study).",
+        "interventionNames": [
+          "Drug: SRP-4045"
+        ],
+        "label": "SRP-4045",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Participants amenable to exon 53 skipping will receive SRP-4053 IV infusions, weekly, at 30 mg/kg for up to 96 weeks in the double-blinded period. This will be followed by an open-label extension period in which all participants will receive open-label active treatment of SRP-4053 at 30 mg/kg/week IV infusions for 48 weeks (up to Week 144 in the study).",
+        "interventionNames": [
+          "Drug: SRP-4053"
+        ],
+        "label": "SRP-4053",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Participants amenable to exon 45 or 53 skipping will receive SRP-4045 or SRP-4053 placebo-matching IV infusions, weekly, at 30 mg/kg for up to 96 weeks in the double-blinded period. This will be followed by an open-label extension period in which all participants will receive open-label active treatment of SRP-4045 or SRP-4053 at 30 mg/kg/week IV infusions for 48 weeks (up to Week 144 in the study).",
+        "interventionNames": [
+          "Drug: SRP-4045",
+          "Drug: SRP-4053",
+          "Drug: Placebo"
+        ],
+        "label": "Placebo followed by SRP-4045 or SRP-4053",
+        "type": "PLACEBO_COMPARATOR"
+      }
+    ],
+    "whyStopped": ""
+  },
+  "registrySourceHash": "ba44dc31faf8f447876bba8ac48d5c9f27603cc92c912667c1cfe9ab515ee7fb",
+  "registryUrl": "https://clinicaltrials.gov/study/NCT02500381",
+  "regulatorySourceLead": "https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-announces-fda-acceptance-sndas-amondys-45r-and-vyondys",
+  "reportedFdaStatus": "2027-02-28",
+  "retrievedAt": "2026-11-07T19:05:29+00:00",
+  "sourceErrors": {},
+  "ticker": "SRPT"
+}

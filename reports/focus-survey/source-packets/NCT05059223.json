@@ -1,0 +1,87 @@
+{
+  "company": "Axsome Therapeutics, Inc.",
+  "literatureLeads": [],
+  "nctId": "NCT05059223",
+  "packetHash": "eb84de1f2ede9079f68b3e1a83f11f24486b78b8c9291a7c584e4f7c8dd231aa",
+  "registry": {
+    "activeComparatorResults": [],
+    "adverseEventGroups": [],
+    "durabilityMeasures": [],
+    "eligibilityCriteria": "Inclusion Criteria: * Male or female subjects between 15 and 75 years of age, inclusive * Primary diagnosis of narcolepsy with cataplexy * Willing and able to comply with the study requirements Exclusion Criteria: * Other clinically significant conditions potentially causing EDS * Clinically significant psychiatric disorders",
+    "enrollment": {
+      "count": 90,
+      "type": "ACTUAL"
+    },
+    "indications": [
+      "Narcolepsy",
+      "Cataplexy",
+      "Excessive Daytime Sleepiness"
+    ],
+    "interventions": [
+      {
+        "name": "AXS-12 (reboxetine)",
+        "type": "DRUG"
+      },
+      {
+        "name": "Placebo",
+        "type": "DRUG"
+      }
+    ],
+    "leadSponsor": "Axsome Therapeutics, Inc.",
+    "milestones": {
+      "completionDateStruct": {
+        "date": "2024-03-15",
+        "type": "ACTUAL"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2024-03-15",
+        "type": "ACTUAL"
+      },
+      "resultsFirstPostDateStruct": {},
+      "startDateStruct": {
+        "date": "2021-09-15",
+        "type": "ACTUAL"
+      }
+    },
+    "outcomeDefinitions": [
+      "Frequency of cataplexy attacks"
+    ],
+    "qualityOfLifeMeasures": [],
+    "registryStatus": "COMPLETED",
+    "reportedOutcomeMeasures": [],
+    "reportedWithdrawals": [],
+    "responseMeasures": [],
+    "seriousEventGroups": [],
+    "sourceUpdated": "2026-05-28",
+    "subgroupOutcomes": [],
+    "survivalMeasures": [],
+    "timeToResponseMeasures": [],
+    "title": "A Randomized, Double-Blind, Placebo-Controlled, Multi- Center Study to Assess the Efficacy and Safety of AXS-12 in the Treatment of Cataplexy and Excessive Daytime Sleepiness in Subjects With Narcolepsy",
+    "treatmentArms": [
+      {
+        "description": "Up to 5 weeks",
+        "interventionNames": [
+          "Drug: AXS-12 (reboxetine)"
+        ],
+        "label": "AXS-12 (reboxetine)",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Up to 5 weeks",
+        "interventionNames": [
+          "Drug: Placebo"
+        ],
+        "label": "Placebo",
+        "type": "PLACEBO_COMPARATOR"
+      }
+    ],
+    "whyStopped": ""
+  },
+  "registrySourceHash": "8222c44c75bd92a949ee005ffa5f3bfc1cb380b25408eab58191a36b64cf56c9",
+  "registryUrl": "https://clinicaltrials.gov/study/NCT05059223",
+  "regulatorySourceLead": "https://www.axsome.com/news/axsome-therapeutics-announces-fda-acceptance-of-new-drug-app-13191",
+  "reportedFdaStatus": "2027-05-01",
+  "retrievedAt": "2026-11-07T19:05:23+00:00",
+  "sourceErrors": {},
+  "ticker": "AXSM"
+}

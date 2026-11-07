@@ -1,0 +1,518 @@
+{
+  "company": "Abivax S.A.",
+  "literatureLeads": [
+    {
+      "doi": "10.1093/ecco-jcc/jjaf074",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-05-01",
+      "title": "Obefazimod in patients with moderate-to-severely active ulcerative colitis: efficacy and safety analysis from the 96-week open-label maintenance phase 2b study.",
+      "url": "https://europepmc.org/article/MED/40417999"
+    },
+    {
+      "doi": "10.1002/ueg2.12731",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-12-19",
+      "title": "Evolution of Eligibility Criteria in Inflammatory Bowel Disease Clinical Trials: A Clinical Trial Databank Analysis.",
+      "url": "https://europepmc.org/article/MED/39698868"
+    },
+    {
+      "doi": "10.3390/ijms27031534",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-02-04",
+      "title": "Advances in the Treatment of Ulcerative Colitis-From Conventional Therapies to Targeted Biologics and Small Molecules.",
+      "url": "https://europepmc.org/article/MED/41683952"
+    },
+    {
+      "doi": "10.3390/jcm14051536",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-02-25",
+      "title": "Paradigm Shift in Inflammatory Bowel Disease Management: Precision Medicine, Artificial Intelligence, and Emerging Therapies.",
+      "url": "https://europepmc.org/article/MED/40095460"
+    },
+    {
+      "doi": "10.3390/cells12131730",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-06-27",
+      "title": "Novel Small Molecules in IBD: Current State and Future Perspectives.",
+      "url": "https://europepmc.org/article/MED/37443765"
+    },
+    {
+      "doi": "10.3390/pharmaceutics17111502",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-11-20",
+      "title": "Nanoparticles Used for the Delivery of RNAi-Based Therapeutics.",
+      "url": "https://europepmc.org/article/MED/41304838"
+    },
+    {
+      "doi": "10.1002/mco2.70914",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-08-16",
+      "title": "Inflammatory Bowel Disease: Mechanisms and Therapeutic Advances.",
+      "url": "https://europepmc.org/article/MED/42609442"
+    },
+    {
+      "doi": "10.3390/ph18020190",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-01-30",
+      "title": "Drug Development in Inflammatory Bowel Diseases: What Is Next?",
+      "url": "https://europepmc.org/article/MED/40006003"
+    },
+    {
+      "doi": "10.1002/ueg2.70130",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-11-03",
+      "title": "Late-breaking trials in IBD.",
+      "url": "https://europepmc.org/article/MED/41178467"
+    },
+    {
+      "doi": "10.1007/s40272-026-00766-1",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-08-13",
+      "title": "Novel Agents on the Therapeutic Horizon For Paediatric Inflammatory Bowel Diseases: An Analysis of Clinical Trials Registries.",
+      "url": "https://europepmc.org/article/MED/42595931"
+    },
+    {
+      "doi": "10.3389/fgstr.2026.1747118",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-01-30",
+      "title": "Advancing therapeutic frontiers: a pipeline of novel drugs for UC management.",
+      "url": "https://europepmc.org/article/MED/41822012"
+    },
+    {
+      "doi": "10.14309/ctg.0000000000000560",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-04-01",
+      "title": "ABX464 (Obefazimod) Upregulates miR-124 to Reduce Proinflammatory Markers in Inflammatory Bowel Diseases.",
+      "url": "https://europepmc.org/article/MED/36573890"
+    },
+    {
+      "doi": "10.3390/ijms242316593",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-11-22",
+      "title": "A Journey to Reach the Ovary Using Next-Generation Technologies.",
+      "url": "https://europepmc.org/article/MED/38068916"
+    },
+    {
+      "doi": "10.1136/egastro-2023-100012",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-09-01",
+      "title": "Horizon scanning: new and future therapies in the management of inflammatory bowel disease.",
+      "url": "https://europepmc.org/article/MED/39944001"
+    },
+    {
+      "doi": "10.2147/ceg.s375969",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-08-17",
+      "title": "Emerging Therapies for Ulcerative Colitis: Updates from Recent Clinical Trials.",
+      "url": "https://europepmc.org/article/MED/37609124"
+    },
+    {
+      "doi": "10.3390/bioengineering10080892",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-07-27",
+      "title": "Overview of miR-106a Regulatory Roles: from Cancer to Aging.",
+      "url": "https://europepmc.org/article/MED/37627777"
+    }
+  ],
+  "nctId": "NCT05507203",
+  "packetHash": "21c1548900196957a0069efde3936815748a331d873aba241dd97df421a31c86",
+  "registry": {
+    "activeComparatorResults": [],
+    "adverseEventGroups": [
+      {
+        "id": "EG000",
+        "otherAffected": 90,
+        "otherAtRisk": 318,
+        "seriousAffected": 14,
+        "seriousAtRisk": 318,
+        "title": "ABX464 50mg"
+      },
+      {
+        "id": "EG001",
+        "otherAffected": 34,
+        "otherAtRisk": 160,
+        "seriousAffected": 1,
+        "seriousAtRisk": 160,
+        "title": "ABX464 25mg"
+      },
+      {
+        "id": "EG002",
+        "otherAffected": 28,
+        "otherAtRisk": 158,
+        "seriousAffected": 3,
+        "seriousAtRisk": 158,
+        "title": "Placebo"
+      }
+    ],
+    "durabilityMeasures": [],
+    "eligibilityCriteria": "Inclusion Criteria: * Men or women at least 16 years old; Adolescent subjects will only be enrolled if approved by the country regulatory/health authority. If these approvals have not been granted, only subjects ≥ 18 years old will be enrolled. To be eligible, adolescent subjects must weight ≥ 40 kg and meet the definition of Tanner Stage 5 at the screening visit. * Subjects must understand, sign and date the written voluntary informed consent form at the visit prior to any protocol-specific procedures. For under-aged subjects, national requirements regarding consent should also be met. * Documented diagnosis of UC confirmed by endoscopy and histology. Should endoscopy/histology results not be available at screening, results from endoscopies or biopsies taken at screening may be used. * Active disease defined by modified Mayo score (MMS) ≥ 5 with rectal bleeding subscore (RBS) ≥ 1 and endoscopy subscore (MES) of 2 or 3 (confirmed by central reader). * Subjects with documented inadequate response (defined as lack of response or loss of response or intolerance) to at least one of the following treatments: corticosteroids, immunosuppressant, biologic or biosimilar therapies, S1P receptor modulators and/or JAK inhibitors and/or new drugs approved during the study (note: failure to only 5-ASA or sulfasalazine is not accepted). * Women of childbearing potential (WOCBP) subjects and male subjects with WOCBP partner must agree to comply with the contraception requirements described i",
+    "enrollment": {
+      "count": 639,
+      "type": "ACTUAL"
+    },
+    "indications": [
+      "Ulcerative Colitis"
+    ],
+    "interventions": [
+      {
+        "name": "ABX464",
+        "type": "DRUG"
+      },
+      {
+        "name": "Placebo",
+        "type": "DRUG"
+      }
+    ],
+    "leadSponsor": "Abivax S.A.",
+    "milestones": {
+      "completionDateStruct": {
+        "date": "2025-06-25",
+        "type": "ACTUAL"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2025-06-24",
+        "type": "ACTUAL"
+      },
+      "resultsFirstPostDateStruct": {
+        "date": "2026-09-10",
+        "type": "ACTUAL"
+      },
+      "startDateStruct": {
+        "date": "2022-11-16",
+        "type": "ACTUAL"
+      }
+    },
+    "outcomeDefinitions": [
+      "Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8",
+      "Proportion of Subjects Who Achieve Endoscopic Improvement at Week 8",
+      "Proportion of Subjects Who Achieve Clinical Response Per MMS at Week 8",
+      "Proportion of Subjects With HEMI Per Geboes at Week 8"
+    ],
+    "qualityOfLifeMeasures": [],
+    "registryStatus": "COMPLETED",
+    "reportedOutcomeMeasures": [
+      {
+        "description": "To compare the efficacy of ABX464 versus placebo on clinical remission. Clinical remission is defined as stool frequency subscore (SFS) = 0 or 1 and rectal bleeding subscore (RBS) = 0, and Mayo Endoscopic Score (MES) = 0 or 1 (MES of 1 modified to exclude friability).",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "ABX464 50mg"
+          },
+          {
+            "id": "OG001",
+            "title": "ABX464 25mg"
+          },
+          {
+            "id": "OG002",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "69"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "38"
+          },
+          {
+            "groupId": "OG002",
+            "spread": "",
+            "value": "4"
+          }
+        ],
+        "timeFrame": "8 weeks",
+        "title": "Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8",
+        "unit": "Participants"
+      },
+      {
+        "description": "To compare the efficacy of ABX464 versus placebo on endoscopic improvement. Endoscopic improvement is defined as Mayo Endoscopic Score (MES) = 0 or 1 (MES of 1 modified to exclude friability).",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "ABX464 50mg"
+          },
+          {
+            "id": "OG001",
+            "title": "ABX464 25mg"
+          },
+          {
+            "id": "OG002",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "106"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "60"
+          },
+          {
+            "groupId": "OG002",
+            "spread": "",
+            "value": "9"
+          }
+        ],
+        "timeFrame": "8 weeks",
+        "title": "Proportion of Subjects Who Achieve Endoscopic Improvement at Week 8",
+        "unit": "Participants"
+      },
+      {
+        "description": "To compare the efficacy of ABX464 versus placebo on clinical response as per Modified Mayo Score (MMS). MMS is the Modified Mayo Score. Modified Mayo score is a composite measure of ulcerative disease activity consisting of three components: stool frequency, rectal bleeding and endoscopic subscores. Each component is scored from 0 (normal or inactive disease) to 3 (severe activity). The total range score ranges from 0 to 9, with higher scores indicating more severe disease activity. Clinical Res",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "ABX464 50mg"
+          },
+          {
+            "id": "OG001",
+            "title": "ABX464 25mg"
+          },
+          {
+            "id": "OG002",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "194"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "105"
+          },
+          {
+            "groupId": "OG002",
+            "spread": "",
+            "value": "45"
+          }
+        ],
+        "timeFrame": "8 weeks",
+        "title": "Proportion of Subjects Who Achieve Clinical Response Per MMS at Week 8",
+        "unit": "Participants"
+      },
+      {
+        "description": "To compare the efficacy of ABX464 versus placebo on histologic-endoscopic mucosal improvement (HEMI). HEMI is defined as endoscopic improvement associated with histologic improvement per Geboes score.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "ABX464 50mg"
+          },
+          {
+            "id": "OG001",
+            "title": "ABX464 25mg"
+          },
+          {
+            "id": "OG002",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "73"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "38"
+          },
+          {
+            "groupId": "OG002",
+            "spread": "",
+            "value": "5"
+          }
+        ],
+        "timeFrame": "8 weeks",
+        "title": "Proportion of Subjects With HEMI Per Geboes at Week 8",
+        "unit": "Participants"
+      }
+    ],
+    "reportedWithdrawals": [],
+    "responseMeasures": [
+      {
+        "description": "To compare the efficacy of ABX464 versus placebo on clinical remission. Clinical remission is defined as stool frequency subscore (SFS) = 0 or 1 and rectal bleeding subscore (RBS) = 0, and Mayo Endoscopic Score (MES) = 0 or 1 (MES of 1 modified to exclude friability).",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "ABX464 50mg"
+          },
+          {
+            "id": "OG001",
+            "title": "ABX464 25mg"
+          },
+          {
+            "id": "OG002",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "69"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "38"
+          },
+          {
+            "groupId": "OG002",
+            "spread": "",
+            "value": "4"
+          }
+        ],
+        "timeFrame": "8 weeks",
+        "title": "Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8",
+        "unit": "Participants"
+      },
+      {
+        "description": "To compare the efficacy of ABX464 versus placebo on clinical response as per Modified Mayo Score (MMS). MMS is the Modified Mayo Score. Modified Mayo score is a composite measure of ulcerative disease activity consisting of three components: stool frequency, rectal bleeding and endoscopic subscores. Each component is scored from 0 (normal or inactive disease) to 3 (severe activity). The total range score ranges from 0 to 9, with higher scores indicating more severe disease activity. Clinical Res",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "ABX464 50mg"
+          },
+          {
+            "id": "OG001",
+            "title": "ABX464 25mg"
+          },
+          {
+            "id": "OG002",
+            "title": "Placebo"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "194"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "105"
+          },
+          {
+            "groupId": "OG002",
+            "spread": "",
+            "value": "45"
+          }
+        ],
+        "timeFrame": "8 weeks",
+        "title": "Proportion of Subjects Who Achieve Clinical Response Per MMS at Week 8",
+        "unit": "Participants"
+      }
+    ],
+    "seriousEventGroups": [
+      {
+        "id": "EG000",
+        "otherAffected": 90,
+        "otherAtRisk": 318,
+        "seriousAffected": 14,
+        "seriousAtRisk": 318,
+        "title": "ABX464 50mg"
+      },
+      {
+        "id": "EG001",
+        "otherAffected": 34,
+        "otherAtRisk": 160,
+        "seriousAffected": 1,
+        "seriousAtRisk": 160,
+        "title": "ABX464 25mg"
+      },
+      {
+        "id": "EG002",
+        "otherAffected": 28,
+        "otherAtRisk": 158,
+        "seriousAffected": 3,
+        "seriousAtRisk": 158,
+        "title": "Placebo"
+      }
+    ],
+    "sourceUpdated": "2026-09-10",
+    "subgroupOutcomes": [],
+    "survivalMeasures": [],
+    "timeToResponseMeasures": [],
+    "title": "A Randomized, Double-blind, Placebo-controlled, Multicenter Phase III Study to Evaluate the Efficacy and Safety of ABX464 Once Daily for Induction Treatment in Subjects With Moderately to Severely Active Ulcerative Colitis",
+    "treatmentArms": [
+      {
+        "description": "Subjects will be orally dosed daily in a fed condition ideally at the same time in the morning) for 8 weeks",
+        "interventionNames": [
+          "Drug: ABX464"
+        ],
+        "label": "ABX464 50mg",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Subjects will be orally dosed daily in a fed condition ideally at the same time in the morning) for 8 weeks",
+        "interventionNames": [
+          "Drug: ABX464"
+        ],
+        "label": "ABX464 25mg",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Subjects will be orally dosed daily in a fed condition ideally at the same time in the morning) for 8 weeks",
+        "interventionNames": [
+          "Drug: Placebo"
+        ],
+        "label": "Placebo",
+        "type": "PLACEBO_COMPARATOR"
+      }
+    ],
+    "whyStopped": ""
+  },
+  "registrySourceHash": "0fcdc295a9ce70995cf87dea248fd30df9d3d208429f8bd5409877fef5eb6f1c",
+  "registryUrl": "https://clinicaltrials.gov/study/NCT05507203",
+  "regulatorySourceLead": "https://www.abivax.com/pipeline/",
+  "reportedFdaStatus": "NDA Q4 2026 planned",
+  "retrievedAt": "2026-11-07T19:05:21+00:00",
+  "sourceErrors": {},
+  "ticker": "ABVX"
+}

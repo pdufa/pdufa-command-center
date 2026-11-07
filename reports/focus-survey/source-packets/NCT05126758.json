@@ -1,0 +1,220 @@
+{
+  "company": "Capricor Therapeutics, Inc.",
+  "literatureLeads": [
+    {
+      "doi": "10.1016/s0140-6736(26)01385-1",
+      "exactNctInAbstract": true,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2026-07-29",
+      "title": "Deramiocel heart-derived cellular therapy in advanced Duchenne muscular dystrophy (HOPE-3): a phase 3, randomised, double-blind, placebo-controlled trial.",
+      "url": "https://europepmc.org/article/MED/42526472"
+    },
+    {
+      "doi": "10.1186/s13395-025-00394-2",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-09-09",
+      "title": "Fighting for every beat: cardiac therapies in Duchenne muscular dystrophy.",
+      "url": "https://europepmc.org/article/MED/40922015"
+    },
+    {
+      "doi": "10.1016/j.addr.2026.115859",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2026-03-21",
+      "title": "Progress on cell therapy for skeletal muscle disorders.",
+      "url": "https://europepmc.org/article/MED/41871765"
+    },
+    {
+      "doi": "10.1016/j.stemcr.2025.102468",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-03-20",
+      "title": "Long-term preservation of muscle function and structure by repeated administration of cardiosphere-derived cells in mdx mice.",
+      "url": "https://europepmc.org/article/MED/40118057"
+    },
+    {
+      "doi": "10.1172/jci179262",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-03-25",
+      "title": "Long noncoding RNA BCYRN1 promotes cardioprotection by enhancing human and murine regulatory T cell dynamics.",
+      "url": "https://europepmc.org/article/MED/40131367"
+    },
+    {
+      "doi": "10.3389/fphar.2026.1848964",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-07-31",
+      "title": "Extracellular vesicles in heart failure: bridging pathogenic insights, diagnostic utility, and therapeutic applications.",
+      "url": "https://europepmc.org/article/MED/42601955"
+    },
+    {
+      "doi": "10.1007/s00018-025-05904-5",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-10-11",
+      "title": "Cell therapy for Duchenne muscular dystrophy: promises, challenges, and controversies.",
+      "url": "https://europepmc.org/article/MED/41074937"
+    },
+    {
+      "doi": "10.1177/17562864231182934",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-07-03",
+      "title": "Cardiac therapies for Duchenne muscular dystrophy.",
+      "url": "https://europepmc.org/article/MED/37425427"
+    },
+    {
+      "doi": "10.1038/s44321-024-00049-7",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-03-06",
+      "title": "Generalizable anchor aptamer strategy for loading nucleic acid therapeutics on exosomes.",
+      "url": "https://europepmc.org/article/MED/38448545"
+    },
+    {
+      "doi": "10.3389/fphar.2022.950651",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2022-07-22",
+      "title": "Drug development progress in duchenne muscular dystrophy.",
+      "url": "https://europepmc.org/article/MED/35935842"
+    },
+    {
+      "doi": "10.3390/ijms26167972",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-08-18",
+      "title": "Integrative Approaches to Myopathies and Muscular Dystrophies: Molecular Mechanisms, Diagnostics, and Future Therapies.",
+      "url": "https://europepmc.org/article/MED/40869293"
+    },
+    {
+      "doi": "10.3389/fcell.2025.1640275",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-09-03",
+      "title": "Stem/progenitor cell-based therapy for Duchenne muscular dystrophy.",
+      "url": "https://europepmc.org/article/MED/40970088"
+    },
+    {
+      "doi": "10.1007/s00018-024-05229-9",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-04-28",
+      "title": "Molecular mechanisms and therapeutic strategies for neuromuscular diseases.",
+      "url": "https://europepmc.org/article/MED/38678519"
+    }
+  ],
+  "nctId": "NCT05126758",
+  "packetHash": "e9e480cf667f553272e5bedabe9e7f2b71ab3b1a89e85739b4a07395616fd8b9",
+  "registry": {
+    "activeComparatorResults": [],
+    "adverseEventGroups": [],
+    "durabilityMeasures": [],
+    "eligibilityCriteria": "Inclusion Criteria: 1. Male subjects at least 10 years of age at time of consent who are willing and able to provide informed consent to participate in the trial if ≥ 18 years of age or assent with parental or guardian informed consent if \\< 18 years of age. If a third-party caregiver is involved, they must provide informed consent. 2. Diagnosis of DMD based on clinical and phenotypic manifestations consistent with DMD (e.g., family history of DMD, elevated creatine kinase, dystrophin muscle biopsy, calf pseudohypertrophy, history of Gowers' sign, and gait impairment before 7 years of age) as confirmed by the Investigator. 3. Confirmatory genetic testing performed to have reached a diagnosis of DMD at any time in the past or currently performed at a Clinical Laboratory Improvement Amendments (CLIA)-certified laboratory or equivalent. 4. Performance of the Upper Limb test (PUL) entry item scores 2-6 and total PUL score less than or equal to 40. For Cohort A only: enrollment of patients with PUL entry score 6, Exon 44 skipping amenable, and/or Exon 3 through 7 deletions will be capped at no more than 10% of the total study population (approximately 6 patients with these characteristics). 5. Reduced ability to walk/run (if ambulatory): subjects must take more than 10 seconds for the 10-meter walk/run (i.e., velocity \\< 1 meter/second). 6. If non-ambulatory, loss of independent ambulation between 10th and 18th year birthday (standing unassisted or ability to take, at most, severa",
+    "enrollment": {
+      "count": 106,
+      "type": "ACTUAL"
+    },
+    "indications": [
+      "Muscular Dystrophies",
+      "Muscular Dystrophy, Duchenne",
+      "Muscular Disorders, Atrophic",
+      "Muscular Diseases",
+      "Neuromuscular Diseases",
+      "Genetic Diseases, X-Linked",
+      "Genetic Diseases, Inborn",
+      "Nervous System Diseases"
+    ],
+    "interventions": [
+      {
+        "name": "Deramiocel (CAP-1002)",
+        "type": "BIOLOGICAL"
+      },
+      {
+        "name": "Placebo",
+        "type": "BIOLOGICAL"
+      }
+    ],
+    "leadSponsor": "Capricor Inc.",
+    "milestones": {
+      "completionDateStruct": {
+        "date": "2027-03",
+        "type": "ESTIMATED"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2025-06-18",
+        "type": "ACTUAL"
+      },
+      "resultsFirstPostDateStruct": {},
+      "startDateStruct": {
+        "date": "2022-06-22",
+        "type": "ACTUAL"
+      }
+    },
+    "outcomeDefinitions": [
+      "Change in the upper limb function",
+      "Change in cardiac muscle function and structure by assessment of left ventricular ejection fraction",
+      "Change in mid-level (elbow) upper limb function",
+      "Change in Global Statistical Test (Total GST) combining upper limb function, cardiac muscle function, and patient reported measure of disease severity",
+      "Change in the number of segments of myocardial scarring (Cohort B only)",
+      "Change in cardiac muscle function and structure by assessment of left ventricular end-systolic volume",
+      "Change in cardiac muscle function and structure by assessment of left ventricular ejection fraction in subjects with documented cardiomyopathy",
+      "Change in a global statistical test (Cardiac GST) combining assessments of cardiac muscle function and structure",
+      "Change in percentage of myocardial scarring (Cohort B only)",
+      "Change in hand-to-mouth function in the context of functional eating",
+      "Changes in cardiac inflammation biomarker, creatine kinase MB isoenzyme [CK-MB]"
+    ],
+    "qualityOfLifeMeasures": [],
+    "registryStatus": "ACTIVE_NOT_RECRUITING",
+    "reportedOutcomeMeasures": [],
+    "reportedWithdrawals": [],
+    "responseMeasures": [],
+    "seriousEventGroups": [],
+    "sourceUpdated": "2026-08-28",
+    "subgroupOutcomes": [],
+    "survivalMeasures": [],
+    "timeToResponseMeasures": [],
+    "title": "A Phase 3, Randomized, Double-Blind, Placebo-Controlled Trial Evaluating the Efficacy and Safety of Human Allogeneic Cardiosphere-Derived Cells for the Treatment of Duchenne Muscular Dystrophy",
+    "treatmentArms": [
+      {
+        "description": "Cohort A: Approximatetly 29 subjects will receive deramiocel (CAP-1002A) active treatment consisting of 150 million cardiosphere-derived cells (CDCs) via intravenous infusion every 3 months Cohort B: Approximately 22 participants will receive deramiocel (CAP-1002B) active treatment consisting of 150 million cardiosphere-derived cells (CDCs) via intravenous infusion every 3 months Open-Label Extension: After completion of the double-blind, placebo-controlled phase, subjects will receive deramioce",
+        "interventionNames": [
+          "Biological: Deramiocel (CAP-1002)"
+        ],
+        "label": "Deramiocel (CAP-1002)",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Cohort A: Approximately 29 subjects will receive a Placebo solution via intravenous infusion every 3 months Cohort B: Approximately 22 participants will receive a Placebo solution via intravenous infusion every 3 months",
+        "interventionNames": [
+          "Biological: Placebo"
+        ],
+        "label": "Placebo",
+        "type": "PLACEBO_COMPARATOR"
+      }
+    ],
+    "whyStopped": ""
+  },
+  "registrySourceHash": "28d9664c188bed243eac50aa6d3c843cdabe76972a6e4dcfea405a87bcf6e0bd",
+  "registryUrl": "https://clinicaltrials.gov/study/NCT05126758",
+  "regulatorySourceLead": "https://www.capricor.com/investors/sec-filings/all-sec-filings/content/0001104659-26-100071/capr-20260824xex99d1.htm",
+  "reportedFdaStatus": "2026-11-22",
+  "retrievedAt": "2026-11-07T19:05:24+00:00",
+  "sourceErrors": {},
+  "ticker": "CAPR"
+}

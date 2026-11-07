@@ -1,0 +1,317 @@
+{
+  "company": "Belite Bio, Inc.",
+  "literatureLeads": [
+    {
+      "doi": "10.1097/icu.0000000000001213",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-03-19",
+      "title": "Nutritional supplements: current evidence for retinitis pigmentosa and Stargardt disease.",
+      "url": "https://europepmc.org/article/MED/41861379"
+    },
+    {
+      "doi": "10.1167/tvst.14.12.23",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-12-01",
+      "title": "Characterization of the Subclinical Perilesional Zone in the Macula of Early-Stage ABCA4 Disease.",
+      "url": "https://europepmc.org/article/MED/41533864"
+    },
+    {
+      "doi": "10.3390/genes17040392",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-03-30",
+      "title": "Gene-Agnostic Therapeutic Strategies for Inherited Retinal Diseases: Neuroprotection and Immunomodulation.",
+      "url": "https://europepmc.org/article/MED/42074510"
+    },
+    {
+      "doi": "10.1101/2024.07.15.24310387",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-07-15",
+      "title": "Heart-retina time analysis using electrocardiogram-coupled time-resolved dynamic optical coherence tomography",
+      "url": "https://europepmc.org/article/PPR/PPR881598"
+    },
+    {
+      "doi": "10.1007/s40123-026-01407-z",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-06-04",
+      "title": "Update on the Management of ABCA4 Retinopathy (Stargardt Disease).",
+      "url": "https://europepmc.org/article/MED/42240816"
+    },
+    {
+      "doi": "10.1016/j.xops.2026.101080",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-01-20",
+      "title": "Automated Quantification of Decreased Fundus Autofluorescence in Stargardt Disease Using &lt;i&gt;Starguage&lt;/i&gt;: Validation against Manual Grading Standards.",
+      "url": "https://europepmc.org/article/MED/41847073"
+    },
+    {
+      "doi": "10.3390/ijms26147006",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-07-21",
+      "title": "Stargardt's Disease: Molecular Pathogenesis and Current Therapeutic Landscape.",
+      "url": "https://europepmc.org/article/MED/40725253"
+    },
+    {
+      "doi": "10.1007/s00417-025-06884-9",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-07-11",
+      "title": "ABCA4-associated disease in childhood and adolescence- a phenotype study.",
+      "url": "https://europepmc.org/article/MED/40643605"
+    },
+    {
+      "doi": "10.1016/j.xops.2024.100581",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-07-20",
+      "title": "Censoring the Floor Effect in Long-Term Stargardt Disease Microperimetry Data Produces a Faster Rate of Decline.",
+      "url": "https://europepmc.org/article/MED/39280350"
+    },
+    {
+      "doi": "10.1167/tvst.13.12.28",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-12-01",
+      "title": "Inherited Retinal Degenerations and Non-Neovascular Age-Related Macular Degeneration: Progress and Unmet Needs.",
+      "url": "https://europepmc.org/article/MED/39688851"
+    },
+    {
+      "doi": "10.1007/s00417-024-06659-8",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-10-12",
+      "title": "Retinal oxygen metabolic function in choroideremia and retinitis pigmentosa.",
+      "url": "https://europepmc.org/article/MED/39394491"
+    },
+    {
+      "doi": "10.1016/j.xops.2024.100543",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-05-31",
+      "title": "Deep Learning-Based Clustering of OCT Images for Biomarker Discovery in Age-Related Macular Degeneration (PINNACLE Study Report 4).",
+      "url": "https://europepmc.org/article/MED/39139544"
+    },
+    {
+      "doi": "10.1167/tvst.14.9.26",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-09-01",
+      "title": "Stargardt's Connected Research Network Inaugural Meeting: Landscape Review and Horizon Scanning of Stargardt Disease.",
+      "url": "https://europepmc.org/article/MED/40960229"
+    },
+    {
+      "doi": "10.3390/jcm14020614",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-01-18",
+      "title": "Advancing Insights into Pediatric Macular Diseases: A Comprehensive Review.",
+      "url": "https://europepmc.org/article/MED/39860622"
+    },
+    {
+      "doi": "10.1038/s41598-024-84417-w",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-01-02",
+      "title": "Heart-retina time analysis using electrocardiogram-coupled time-resolved dynamic optical coherence tomography.",
+      "url": "https://europepmc.org/article/MED/39748081"
+    },
+    {
+      "doi": "10.3390/jcm12196229",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-09-27",
+      "title": "Updates on Emerging Interventions for Autosomal Recessive <i>ABCA4</i>-Associated Stargardt Disease.",
+      "url": "https://europepmc.org/article/MED/37834872"
+    },
+    {
+      "doi": "10.1186/s13578-024-01272-y",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-07-26",
+      "title": "The ABCs of Stargardt disease: the latest advances in precision medicine.",
+      "url": "https://europepmc.org/article/MED/39060921"
+    },
+    {
+      "doi": "10.1016/j.pharmthera.2025.108902",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2025-06-21",
+      "title": "Retinoid dynamics in vision: from visual cycle biology to retina disease treatments.",
+      "url": "https://europepmc.org/article/MED/40550364"
+    },
+    {
+      "doi": "10.3390/ijms25168859",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-08-14",
+      "title": "Emerging Therapeutic Approaches and Genetic Insights in Stargardt Disease: A Comprehensive Review.",
+      "url": "https://europepmc.org/article/MED/39201545"
+    },
+    {
+      "doi": "10.1021/acschembio.3c00402",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2023-09-15",
+      "title": "Discovery of Nonretinoid Inhibitors of CRBP1: Structural and Dynamic Insights for Ligand-Binding Mechanisms.",
+      "url": "https://europepmc.org/article/MED/37713257"
+    },
+    {
+      "doi": "10.1186/s12967-023-04406-x",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-08-16",
+      "title": "Stargardt disease-associated in-frame ABCA4 exon 17 skipping results in significant ABCA4 function.",
+      "url": "https://europepmc.org/article/MED/37587475"
+    },
+    {
+      "doi": "10.3390/jcm13185512",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-09-18",
+      "title": "Update on Clinical Trial Endpoints in Gene Therapy Trials for Inherited Retinal Diseases.",
+      "url": "https://europepmc.org/article/MED/39336999"
+    },
+    {
+      "doi": "10.1136/bjo-2022-323071",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-03-20",
+      "title": "Stargardt macular dystrophy and therapeutic approaches.",
+      "url": "https://europepmc.org/article/MED/37940365"
+    },
+    {
+      "doi": "10.1016/j.oret.2023.06.007",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-06-17",
+      "title": "CERKL-Associated Retinal Dystrophy: Genetics, Phenotype, and Natural History.",
+      "url": "https://europepmc.org/article/MED/37331655"
+    },
+    {
+      "doi": "10.3390/biology11091338",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2022-09-10",
+      "title": "Drug Discovery Strategies for Inherited Retinal Degenerations.",
+      "url": "https://europepmc.org/article/MED/36138817"
+    }
+  ],
+  "nctId": "NCT05244304",
+  "packetHash": "b76a0c630e42e892f060f70bdf994dc1315b5c91c26c18e9149c4ca9c45ea322",
+  "registry": {
+    "activeComparatorResults": [],
+    "adverseEventGroups": [],
+    "durabilityMeasures": [],
+    "eligibilityCriteria": "Inclusion Criteria: * Male or female subjects 12 to 20 years old, inclusive. * Subject must have clinically diagnosed STGD1 (Stargardt disease 1) with at least 1 mutation identified in the ABCA4 gene. * Subject must have a defined aggregate atrophic lesion size within 3 disc areas (7.62 mm2), as imaged by FAF in the study eye Subjects must have a BCVA of 20/200 or better for the study eye based on ETDRS letter score * Subject and their parent(s) or legal guardian are willing to provide their consent on an Institutional Review Board (IRB)/Independent Ethics Committee (IEC)/Human Research Ethics Committee (HREC)-approved informed consent form (ICF) prior to participating in any study-related procedures. * Subject agrees to comply with all protocol requirements. Exclusion Criteria: * Any ocular disease other than Stargardt (STGD1) at baseline that, in the opinion of the investigator, would complicate assessment of a treatment effect. * History of ocular surgery in the study eye in the last 3 months. * Investigational drug use of any kind in the last 3 months or within 5 half-lives of the investigational drug, whichever is shorter. * Any prior gene therapy. * Vitamin A (retinol) deficiency as defined as a retinol serum level less than 20 mcg/dL (=0.7 μmol/L).",
+    "enrollment": {
+      "count": 104,
+      "type": "ACTUAL"
+    },
+    "indications": [
+      "Stargardt Disease 1"
+    ],
+    "interventions": [
+      {
+        "name": "Tinlarebant",
+        "type": "DRUG"
+      },
+      {
+        "name": "Placebo",
+        "type": "DRUG"
+      }
+    ],
+    "leadSponsor": "Belite Bio, Inc",
+    "milestones": {
+      "completionDateStruct": {
+        "date": "2025-09-11",
+        "type": "ACTUAL"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2025-08-04",
+        "type": "ACTUAL"
+      },
+      "resultsFirstPostDateStruct": {},
+      "startDateStruct": {
+        "date": "2022-03-28",
+        "type": "ACTUAL"
+      }
+    },
+    "outcomeDefinitions": [
+      "To measure change in atrophic lesion size (definitely decreased autofluorescence, DDAF) by fundus autofluorescence (FAF) photography from baseline",
+      "To measure the change in retinal thickness assessed by spectral-domain optical coherence tomography (SD-OCT) from baseline",
+      "To measure the change in retinal morphology assessed by spectral-domain optical coherence tomography (SD-OCT) from baseline",
+      "To measure change in BCVA (Best Corrected Visual Acuity) score measured by the EDTRS method from baseline",
+      "To measure change in plasma concentration of RBP4 levels (μM) from baseline",
+      "The correlation between change in plasma RBP4 level and the rate of lesion size growth (definitely decreased autofluorescence, DDAF) by fundus autofluorescence (FAF) photography from baseline",
+      "To assess the systemic and ocular safety and tolerability of tinlarebant"
+    ],
+    "qualityOfLifeMeasures": [],
+    "registryStatus": "COMPLETED",
+    "reportedOutcomeMeasures": [],
+    "reportedWithdrawals": [],
+    "responseMeasures": [],
+    "seriousEventGroups": [],
+    "sourceUpdated": "2026-07-23",
+    "subgroupOutcomes": [],
+    "survivalMeasures": [],
+    "timeToResponseMeasures": [],
+    "title": "Phase 3, Multicenter, Randomized, Double-Masked, Placebo-Controlled Study to Evaluate the Safety and Efficacy of Tinlarebant in the Treatment of Stargardt Disease in Adolescent Subjects",
+    "treatmentArms": [
+      {
+        "description": "5 mg tablet taken orally once a day",
+        "interventionNames": [
+          "Drug: Tinlarebant"
+        ],
+        "label": "Tinlarebant",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Placebo tablets for tinlarebant 5 mg are prepared similarly but use microcrystalline cellulose, NF, in place of the active drug substance and will be identical in size and appearance.",
+        "interventionNames": [
+          "Drug: Placebo"
+        ],
+        "label": "Placebo",
+        "type": "PLACEBO_COMPARATOR"
+      }
+    ],
+    "whyStopped": ""
+  },
+  "registrySourceHash": "485cd80af76d88808445c291dd35d8b514495d5bb75498dd151ad68b56b3f999",
+  "registryUrl": "https://clinicaltrials.gov/study/NCT05244304",
+  "regulatorySourceLead": "https://belitebio.gcs-web.com/news-releases/news-release-details/belite-bio-reports-unaudited-second-quarter-2026-financial",
+  "reportedFdaStatus": "2027-02-12",
+  "retrievedAt": "2026-11-07T19:05:24+00:00",
+  "sourceErrors": {},
+  "ticker": "BLTE"
+}

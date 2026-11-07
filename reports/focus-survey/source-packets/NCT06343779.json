@@ -1,0 +1,169 @@
+{
+  "company": "Pharvaris N.V.",
+  "literatureLeads": [
+    {
+      "doi": "10.1016/s0140-6736(26)01296-1",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2026-10-08",
+      "title": "Oral deucrictibant for on-demand treatment of hereditary angioedema attacks: a phase 3, multicentre, randomised, double-blind, placebo-controlled crossover trial.",
+      "url": "https://europepmc.org/article/MED/42849489"
+    },
+    {
+      "doi": "10.3389/fimmu.2026.1810851",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-05-14",
+      "title": "Angioedema due to acquired C1 inhibitor deficiency: patient experience, conceptual disease model, and assessment of patient-reported outcome measures.",
+      "url": "https://europepmc.org/article/MED/42220494"
+    },
+    {
+      "doi": "10.1007/s12325-025-03382-6",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-10-11",
+      "title": "Therapeutic Advances in Hereditary Angioedema: A Focus on Present and Future Options.",
+      "url": "https://europepmc.org/article/MED/41075106"
+    },
+    {
+      "doi": "10.1093/cei/uxag043",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-01-01",
+      "title": "Hereditary angioedema: on-demand treatment and long-term prophylaxis-a global reality.",
+      "url": "https://europepmc.org/article/MED/42500915"
+    },
+    {
+      "doi": "10.1111/all.70207",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-01-30",
+      "title": "International Guideline on the Diagnosis and Management of Pediatric Patients With Hereditary Angioedema.",
+      "url": "https://europepmc.org/article/MED/41618059"
+    },
+    {
+      "doi": "10.1007/s12016-025-09132-4",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-03-02",
+      "title": "Assessing Patient-Reported Outcomes in Acute Attacks of Hereditary Angioedema: Insights from a Mixed Methods Study of Participants Receiving Standard-of-Care Treatments in a Real-World Setting.",
+      "url": "https://europepmc.org/article/MED/41770408"
+    },
+    {
+      "doi": "10.1002/clt2.12391",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-09-01",
+      "title": "Advent of oral medications for the treatment of hereditary angioedema.",
+      "url": "https://europepmc.org/article/MED/39331535"
+    }
+  ],
+  "nctId": "NCT06343779",
+  "packetHash": "56e78abc0245e4112fc5e8f05edf0c463be19192d3526e9b94c4f826664133b8",
+  "registry": {
+    "activeComparatorResults": [],
+    "adverseEventGroups": [],
+    "durabilityMeasures": [],
+    "eligibilityCriteria": "Inclusion Criteria: 1. Provision of written informed consent/assent. 2. Male or female, aged ≥12 to ≤75 years at the time of providing written informed consent/assent. 3. Diagnosis of HAE-1/2/3. 4. History of at least 2 HAE attacks in the last 3 months before screening. 5. Experience with using standard-of-care treatment to effectively manage on-demand treatment for HAE attacks. 6. Participants on long-term prophylactic therapy with plasma-derived C1-INH (danazol, anti-fibrinolytics, berotralstat, or lanadelumab) must be on a stable dose and regimen and intend to remain on the same dose for 6 months before screening and the duration of the study. OR, Participant has stopped using plasma-derived C1-INH (danazol, anti-fibrinolytics, berotralstat) at least 2 weeks or lanadelumab at least 10 weeks before screening. 7. Capable of recording, without assistance, electronic HAE diary and ePRO data using an electronic device. 8. For adolescent participants aged ≥12 and \\<18 years of age: body weight ≥40 kg. 9. Female participants of childbearing potential must agree to the protocol specified pregnancy testing and contraception methods. Exclusion Criteria: 1. Any female who is pregnant, plans to become pregnant, or is breastfeeding. 2. Any diagnosis of angioedema other than HAE. 3. Any clinically significant comorbidity or systemic dysfunction that would interfere with the participant's safety or ability to participate in the study. 4. Use of attenuated androgens for short-term prophyl",
+    "enrollment": {
+      "count": 134,
+      "type": "ACTUAL"
+    },
+    "indications": [
+      "Hereditary Angioedema",
+      "Hereditary Angioedema Type I",
+      "Hereditary Angioedema Type II",
+      "Hereditary Angioedema Types I and II",
+      "Hereditary Angioedema Attack",
+      "Hereditary Angioedema With C1 Esterase Inhibitor Deficiency",
+      "Hereditary Angioedema - Type 1",
+      "Hereditary Angioedema - Type 2",
+      "C1 Esterase Inhibitor [C1-INH] Deficiency",
+      "C1 Esterase Inhibitor Deficiency",
+      "C1 Esterase Inhibitor, Deficiency of",
+      "C1 Inhibitor Deficiency",
+      "Hereditary Angioedema - Type 3",
+      "Hereditary Angioedema Type III"
+    ],
+    "interventions": [
+      {
+        "name": "Deucrictibant, Placebo",
+        "type": "DRUG"
+      }
+    ],
+    "leadSponsor": "Pharvaris Netherlands B.V.",
+    "milestones": {
+      "completionDateStruct": {
+        "date": "2025-10-17",
+        "type": "ACTUAL"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2025-10-17",
+        "type": "ACTUAL"
+      },
+      "resultsFirstPostDateStruct": {},
+      "startDateStruct": {
+        "date": "2024-02-26",
+        "type": "ACTUAL"
+      }
+    },
+    "outcomeDefinitions": [
+      "Time to onset of symptom relief, defined as Patient Global Impression of Change (PGI-C) rating of at least \"a little better\" for 2 consecutive timepoints within 12 hours post-treatment.",
+      "Proportion of study drug-treated attacks achieving PGI-C rating of at least \"a little better\" at 4 hours post-treatment.",
+      "Time to substantial symptom relief, defined as achieving PGI-C rating of at least \"better\" for 2 consecutive timepoints within 12 hours post-treatment.",
+      "Time to substantial symptom relief by Patient Global Impression of Severity (PGI-S).",
+      "Time to complete symptom resolution, defined as achieving PGI-S rating of \"none\" within 48 hours post-treatment.",
+      "Time to End of Progression (EoP) in attack symptoms within 12 hours.",
+      "Proportion of study drug-treated attacks requiring rescue medication within 24 hours post-treatment.",
+      "Proportion of attacks achieving symptom resolution.",
+      "Time to substantial symptom relief by Angioedema Symptom Rating Scale (AMRA).",
+      "Time to almost complete or complete symptom relief by AMRA.",
+      "Proportion of study drug-treated attacks reaching almost complete or complete symptom relief by AMRA.",
+      "Time to EoP in attack symptoms within 12 hours."
+    ],
+    "qualityOfLifeMeasures": [],
+    "registryStatus": "COMPLETED",
+    "reportedOutcomeMeasures": [],
+    "reportedWithdrawals": [],
+    "responseMeasures": [],
+    "seriousEventGroups": [],
+    "sourceUpdated": "2025-11-21",
+    "subgroupOutcomes": [],
+    "survivalMeasures": [],
+    "timeToResponseMeasures": [],
+    "title": "A Phase 3, Randomized, Double-blind, Placebo-controlled, Cross-over Study of Oral Deucrictibant Soft Capsule for On-Demand Treatment of Attacks in Adolescents and Adults With Hereditary Angioedema",
+    "treatmentArms": [
+      {
+        "description": "Deucrictibant administered for first HAE attack, placebo administered for second HAE attack.",
+        "interventionNames": [
+          "Drug: Deucrictibant, Placebo"
+        ],
+        "label": "Arm 1",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Placebo administered for first HAE attack, deucrictibant administered for second HAE attack.",
+        "interventionNames": [
+          "Drug: Deucrictibant, Placebo"
+        ],
+        "label": "Arm 2",
+        "type": "EXPERIMENTAL"
+      }
+    ],
+    "whyStopped": ""
+  },
+  "registrySourceHash": "066e2a00952eefe872ad38eb3c99f86b94f5ae908ecf3e08c553c97488a76996",
+  "registryUrl": "https://clinicaltrials.gov/study/NCT06343779",
+  "regulatorySourceLead": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-fda-acceptance-new-drug-application",
+  "reportedFdaStatus": "2027-04-23",
+  "retrievedAt": "2026-11-07T19:05:28+00:00",
+  "sourceErrors": {},
+  "ticker": "PHVS"
+}

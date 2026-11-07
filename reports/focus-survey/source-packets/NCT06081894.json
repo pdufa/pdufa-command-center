@@ -1,0 +1,236 @@
+{
+  "company": "Cytokinetics, Inc.",
+  "literatureLeads": [
+    {
+      "doi": "10.1161/circulationaha.126.082026",
+      "exactNctInAbstract": true,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-08-28",
+      "title": "Global Efficacy of Aficamten in Nonobstructive Hypertrophic Cardiomyopathy: Results From ACACIA-HCM.",
+      "url": "https://europepmc.org/article/MED/42663111"
+    },
+    {
+      "doi": "10.1056/nejmoa2603021",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2026-08-28",
+      "title": "Aficamten for Symptomatic Nonobstructive Hypertrophic Cardiomyopathy.",
+      "url": "https://europepmc.org/article/MED/42663312"
+    },
+    {
+      "doi": "10.1161/circulationaha.126.082343",
+      "exactNctInAbstract": true,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-08-29",
+      "title": "Effect of Aficamten on Cardiac Structure and Function in Patients With Symptomatic Nonobstructive Hypertrophic Cardiomyopathy.",
+      "url": "https://europepmc.org/article/MED/42667274"
+    },
+    {
+      "doi": "10.1093/ehjcr/ytaf229",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-05-08",
+      "title": "Efficacy of mavacamten in patients with hypertrophic cardiomyopathy and mid-ventricular obstruction: case series.",
+      "url": "https://europepmc.org/article/MED/40395679"
+    },
+    {
+      "doi": "10.2147/dddt.s637138",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-10-21",
+      "title": "Physiologically Based Pharmacokinetic Modeling to Predict Drug-Drug Interactions of Aficamten in the Chinese Population.",
+      "url": "https://europepmc.org/article/MED/42928782"
+    },
+    {
+      "doi": "10.1001/jamacardio.2026.1730",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-08-01",
+      "title": "Exercise Performance With Aficamten vs Metoprolol in Obstructive Hypertrophic Cardiomyopathy: The MAPLE-HCM Randomized Clinical Trial.",
+      "url": "https://europepmc.org/article/MED/42307914"
+    },
+    {
+      "doi": "10.15420/cfr.2025.08",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-11-03",
+      "title": "Emerging Pharmacological and Invasive Therapies for Hypertrophic Cardiomyopathy with Obstructive Physiology.",
+      "url": "https://europepmc.org/article/MED/41234531"
+    },
+    {
+      "doi": "10.1161/circheartfailure.125.013418",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-12-05",
+      "title": "Efficacy and Safety of Aficamten in Children and Adolescents With Obstructive Hypertrophic Cardiomyopathy: Study Design and Rationale of CEDAR-HCM.",
+      "url": "https://europepmc.org/article/MED/41347307"
+    },
+    {
+      "doi": "10.3390/jcm14124228",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-06-13",
+      "title": "Hypertrophic Cardiomyopathy and Phenocopies: New Therapies for Old Diseases-Current Evidence and Future Perspectives.",
+      "url": "https://europepmc.org/article/MED/40565972"
+    },
+    {
+      "doi": "10.1186/s44348-025-00052-7",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-07-07",
+      "title": "Cardiac myosin inhibitors in hypertrophic cardiomyopathy.",
+      "url": "https://europepmc.org/article/MED/40624601"
+    },
+    {
+      "doi": "10.1016/j.jacadv.2024.101235",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-09-01",
+      "title": "Long-Term Outcomes of Patients With Apical Hypertrophic Cardiomyopathy Utilizing a New Risk Score.",
+      "url": "https://europepmc.org/article/MED/39512540"
+    },
+    {
+      "doi": "10.1016/j.jacc.2024.08.014",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-09-01",
+      "title": "Effect of Aficamten on Health Status Outcomes in Obstructive Hypertrophic Cardiomyopathy: Results From SEQUOIA-HCM.",
+      "url": "https://europepmc.org/article/MED/39217569"
+    },
+    {
+      "doi": "10.3390/ijms26199347",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-09-24",
+      "title": "Cardiac Myosin Inhibitors in Hypertrophic Cardiomyopathy: From Sarcomere to Clinic.",
+      "url": "https://europepmc.org/article/MED/41096616"
+    },
+    {
+      "doi": "10.1161/jaha.124.038758",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-03-07",
+      "title": "Safety and Efficacy of Mavacamten and Aficamten in Patients With Hypertrophic Cardiomyopathy.",
+      "url": "https://europepmc.org/article/MED/40055855"
+    },
+    {
+      "doi": "10.1093/ehjcvp/pvaf012",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-05-01",
+      "title": "New pharmacological agents and novel cardiovascular pharmacotherapy strategies in 2024.",
+      "url": "https://europepmc.org/article/MED/40058879"
+    },
+    {
+      "doi": "10.1093/ehjcvp/pvae013",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2024-05-01",
+      "title": "New pharmacological agents and novel cardiovascular pharmacotherapy strategies in 2023.",
+      "url": "https://europepmc.org/article/MED/38379024"
+    }
+  ],
+  "nctId": "NCT06081894",
+  "packetHash": "97e6136193068529da5dd8cb632730508fe7fea3484b6b02542bb22ab6ff4236",
+  "registry": {
+    "activeComparatorResults": [],
+    "adverseEventGroups": [],
+    "durabilityMeasures": [],
+    "eligibilityCriteria": "Inclusion Criteria: * Between 18-85 years of age * Body mass index \\< 40 kg/m2 * Diagnosed with nHCM and has a screening echocardiogram with the following: * End-diastolic left ventricular (LV) wall thickness: * ≥ 15 mm in one or more myocardial segments OR * ≥ 13 mm in one or more wall segments and a known disease-causing gene mutation or positive family history of HCM AND * Resting LVOT-G \\< 30 mmHg AND Valsalva LVOT-G \\< 50 mmHg AND * LVEF ≥ 60% * Participants with a history of intracavitary obstruction are eligible. * NYHA class II or III * Respiratory exchange ratio of ≥ 1.00 at screening by cardiopulmonary exercise testing (CPET) and predicted peak oxygen uptake (pVO2) ≤ 90% for age and sex * KCCQ-CSS score of ≤ 85 * NT-proBNP of: * NT-pro BNP ≥ 300 pg/mL or NT-proBNP ≥ 900 pg/mL if in atrial fibrillation or atrial flutter OR * For Black participants, an NT-pro BNP ≥ 225 pg/mL or NT-proBNP ≥ 675 pg/mL if in atrial fibrillation or atrial flutter Exclusion Criteria: * Significant valvular heart disease (per Investigator judgment) * Moderate or severe valvular aortic stenosis or fixed subaortic obstruction * Moderate or severe mitral regurgitation * Known or suspected infiltrative, genetic or storage disorder causing cardiac hypertrophy that mimics nHCM (eg, Noonan syndrome, Fabry disease, amyloidosis) * Known current unrevascularized coronary artery stenosis of ≥ 70% or documented history of myocardial infarction. * History of LV systolic dysfunction (LVEF \\< 45%) or stre",
+    "enrollment": {
+      "count": 500,
+      "type": "ESTIMATED"
+    },
+    "indications": [
+      "Symptomatic Non-Obstructive Hypertrophic Cardiomyopathy"
+    ],
+    "interventions": [
+      {
+        "name": "Aficamten",
+        "type": "DRUG"
+      },
+      {
+        "name": "Placebo",
+        "type": "DRUG"
+      }
+    ],
+    "leadSponsor": "Cytokinetics",
+    "milestones": {
+      "completionDateStruct": {
+        "date": "2026-11",
+        "type": "ESTIMATED"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2026-08-31",
+        "type": "ACTUAL"
+      },
+      "resultsFirstPostDateStruct": {},
+      "startDateStruct": {
+        "date": "2023-08-31",
+        "type": "ACTUAL"
+      }
+    },
+    "outcomeDefinitions": [
+      "Change in Kansas City Cardiomyopathy Questionnaire - Clinical Summary Score (KCCQ-CSS)",
+      "Change in pVO2",
+      "Change in composite of two Z-scores of CPET parameters (pVO2 and VE/VCO2 slope)",
+      "Proportion of participants with ≥ 1 class improvement in New York Heart Association (NYHA) Functional Class",
+      "Change in N-terminal prohormone brain natriuretic peptide (NT-proBNP)",
+      "Change in Left Atrial Volume Index (LAVI) in participants without atrial fibrillation or flutter at baseline on ECG",
+      "Time to first cardiovascular (CV) event"
+    ],
+    "qualityOfLifeMeasures": [],
+    "registryStatus": "ACTIVE_NOT_RECRUITING",
+    "reportedOutcomeMeasures": [],
+    "reportedWithdrawals": [],
+    "responseMeasures": [],
+    "seriousEventGroups": [],
+    "sourceUpdated": "2026-09-22",
+    "subgroupOutcomes": [],
+    "survivalMeasures": [],
+    "timeToResponseMeasures": [],
+    "title": "A Phase 3, Multi-Center, Randomized, Double-Blind Trial to Evaluate the Efficacy and Safety of Aficamten Compared to Placebo in Adults With Symptomatic Non-Obstructive Hypertrophic Cardiomyopathy",
+    "treatmentArms": [
+      {
+        "description": "Participants in this arm will receive a single daily oral dose of 5 mg, 10 mg, 15 mg, or 20 mg of aficamten with dose levels guided by echocardiography assessments, for up to 72 weeks.",
+        "interventionNames": [
+          "Drug: Aficamten"
+        ],
+        "label": "Aficamten",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Participants in this arm will receive placebo, for up to 72 weeks.",
+        "interventionNames": [
+          "Drug: Placebo"
+        ],
+        "label": "Placebo",
+        "type": "PLACEBO_COMPARATOR"
+      }
+    ],
+    "whyStopped": ""
+  },
+  "registrySourceHash": "137b4b14c3092cb0af2fa8e844e1fcdfbd4907f3a8fc03613b9e354c6780385d",
+  "registryUrl": "https://clinicaltrials.gov/study/NCT06081894",
+  "regulatorySourceLead": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447198/cytk-ex99_1.htm",
+  "reportedFdaStatus": "sNDA filing Q4 2026 planned",
+  "retrievedAt": "2026-11-07T19:05:26+00:00",
+  "sourceErrors": {},
+  "ticker": "CYTK"
+}

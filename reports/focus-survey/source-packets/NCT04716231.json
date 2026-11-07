@@ -1,0 +1,378 @@
+{
+  "company": "Vera Therapeutics, Inc.",
+  "literatureLeads": [
+    {
+      "doi": "10.1056/nejmoa2610103",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2026-10-22",
+      "title": "Atacicept in IgA Nephropathy - Phase 3 Trial Final Efficacy Analysis.",
+      "url": "https://europepmc.org/article/MED/42911181"
+    },
+    {
+      "doi": "10.1097/bor.0000000000001171",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-06-13",
+      "title": "Update on IgA nephropathy: implications for treatment in IgA vasculitis: a guide for rheumatologists.",
+      "url": "https://europepmc.org/article/MED/42281333"
+    },
+    {
+      "doi": "10.23876/j.krcp.26.090",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-07-03",
+      "title": "Evolving therapeutic landscape of immunoglobulin A nephropathy: targeted immune pathways and novel therapies.",
+      "url": "https://europepmc.org/article/MED/42415613"
+    },
+    {
+      "doi": "10.1056/nejmoa2510198",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2025-11-06",
+      "title": "A Phase 3 Trial of Atacicept in Patients with IgA Nephropathy.",
+      "url": "https://europepmc.org/article/MED/41196369"
+    },
+    {
+      "doi": "10.5527/wjn.v15.i1.116620",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-03-01",
+      "title": "Five-year follow-up sustained remission with rituximab in a patient with focal segmental glomerulosclerosis: A case report.",
+      "url": "https://europepmc.org/article/MED/41884251"
+    },
+    {
+      "doi": "10.1053/j.ajkd.2025.09.029",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2026-03-05",
+      "title": "The Roles of A Proliferation-Inducing Ligand (APRIL) and B-Cell Activating Factor (BAFF) in IgA Nephropathy.",
+      "url": "https://europepmc.org/article/MED/41794353"
+    },
+    {
+      "doi": "10.1093/ckj/sfag003",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-01-12",
+      "title": "Microscopic hematuria in IgA nephropathy: a biomarker of disease activity.",
+      "url": "https://europepmc.org/article/MED/41704425"
+    },
+    {
+      "doi": "10.1186/s12882-025-04689-w",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-12-16",
+      "title": "Efficacy and safety of BAFF/APRIL dual antagonists in IgA nephropathy: a systematic review and meta-analysis of randomized controlled trials.",
+      "url": "https://europepmc.org/article/MED/41402784"
+    },
+    {
+      "doi": "10.3389/fphar.2025.1559593",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-07-30",
+      "title": "Opportunities and challenges in the treatment of IgA nephropathy.",
+      "url": "https://europepmc.org/article/MED/40808688"
+    },
+    {
+      "doi": "10.1002/agm2.12370",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-01-20",
+      "title": "A novel agent targeting APRIL: A new hope for elderly patients of IgA nephropathy.",
+      "url": "https://europepmc.org/article/MED/39949470"
+    },
+    {
+      "doi": "10.1093/ckj/sfaf322",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-11-24",
+      "title": "Targeting B cells in IgA nephropathy: from pathogenic insight to therapeutic horizon.",
+      "url": "https://europepmc.org/article/MED/41393859"
+    },
+    {
+      "doi": "10.1681/asn.0000000551",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": false,
+      "publicationDate": "2024-10-26",
+      "title": "From Despair to Promise: The Dawn of Novel Treatment in IgA Nephropathy.",
+      "url": "https://europepmc.org/article/MED/39465604"
+    },
+    {
+      "doi": "10.3390/cells15030240",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-01-26",
+      "title": "Advances in Novel Biologics Targeting BAFF/APRIL in the Treatment of IgA Nephropathy.",
+      "url": "https://europepmc.org/article/MED/41677607"
+    },
+    {
+      "doi": "10.3389/fmed.2026.1965501",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-10-08",
+      "title": "The BAFF/APRIL system in autoimmune nephropathy: from pathogenesis to targeted biologic therapies.",
+      "url": "https://europepmc.org/article/MED/42923552"
+    },
+    {
+      "doi": "10.3390/ijms262010070",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-10-16",
+      "title": "CAR-T Cell Therapy for Autoimmune Kidney Diseases: Where Do We Stand Now?",
+      "url": "https://europepmc.org/article/MED/41155362"
+    },
+    {
+      "doi": "10.1016/j.xkme.2025.101078",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-08-05",
+      "title": "IgA Nephropathy: An Overview of the Clinical Trials.",
+      "url": "https://europepmc.org/article/MED/41050133"
+    },
+    {
+      "doi": "10.3390/jcm14124045",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-06-07",
+      "title": "Treating IgA Nephropathy: Looking at the Future Without Forgetting the Past.",
+      "url": "https://europepmc.org/article/MED/40565795"
+    },
+    {
+      "doi": "10.1016/j.kisu.2026.01.001",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-07-20",
+      "title": "IgA nephropathy management: what does the future hold?",
+      "url": "https://europepmc.org/article/MED/42483540"
+    },
+    {
+      "doi": "10.1093/ckj/sfaf261",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-08-12",
+      "title": "Telitacicept versus mycophenolate mofetil in IgA nephropathy: a real-world comparative study of efficacy, renal outcomes and safety.",
+      "url": "https://europepmc.org/article/MED/40927377"
+    },
+    {
+      "doi": "",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-08-21",
+      "title": "Targeting the B-Cell Activating Factor and a Proliferation-Inducing Ligand Pathway in IgAN: From Disease Pathogenesis to Clinical Trial Evidence",
+      "url": "https://europepmc.org/article/PMC/PMC13638788"
+    },
+    {
+      "doi": "10.3390/ijms251910340",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-09-26",
+      "title": "New Insights and Future Perspectives of APRIL in IgA Nephropathy.",
+      "url": "https://europepmc.org/article/MED/39408691"
+    },
+    {
+      "doi": "10.1186/s40001-023-01320-2",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2023-09-22",
+      "title": "Role of telitacicept in the treatment of IgA nephropathy.",
+      "url": "https://europepmc.org/article/MED/37737205"
+    },
+    {
+      "doi": "10.1681/asn.0000000541",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-10-26",
+      "title": "Long-Term Results from an Open-Label Extension Study of Atacicept for the Treatment of IgA Nephropathy.",
+      "url": "https://europepmc.org/article/MED/39462308"
+    },
+    {
+      "doi": "10.3390/life14080930",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-07-25",
+      "title": "Navigating Adult-Onset IgA Vasculitis-Associated Nephritis.",
+      "url": "https://europepmc.org/article/MED/39202674"
+    },
+    {
+      "doi": "10.5527/wjn.v13.i4.98709",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2024-12-01",
+      "title": "What is new in the pathogenesis and treatment of IgA glomerulonephritis.",
+      "url": "https://europepmc.org/article/MED/39723359"
+    }
+  ],
+  "nctId": "NCT04716231",
+  "packetHash": "7952dabf018b67a5914bbae23260129e539a3fedd3f8624a4536c53f05bff5c0",
+  "registry": {
+    "activeComparatorResults": [],
+    "adverseEventGroups": [
+      {
+        "id": "EG000",
+        "otherAffected": 81,
+        "otherAtRisk": 214,
+        "seriousAffected": 1,
+        "seriousAtRisk": 214,
+        "title": "Atacicept Dose 150mg"
+      },
+      {
+        "id": "EG001",
+        "otherAffected": 34,
+        "otherAtRisk": 214,
+        "seriousAffected": 11,
+        "seriousAtRisk": 214,
+        "title": "Placebo to Match Atacicept (Part C/D)"
+      }
+    ],
+    "durabilityMeasures": [],
+    "eligibilityCriteria": "Key Inclusion Criteria: * Must have the ability to understand and sign a written informed consent form * Male or female of ≥18 years of age * Total urine protein excretion ≥1.0 g per 24-hour or urine protein to creatinine ratio (UPCR) ≥1.0 mg/mg based on a 24-hour urine sample during the Screening Period * Diagnosis of IgAN as demonstrated by renal biopsy conducted within 10 years * eGFR ≥ 30 mL/min/1.73 m2, as per the Chronic Kidney Disease Epidemiology Collaboration (CKD-EPI) equation. * On a stable prescribed regimen of RAASi for at least 12 weeks that is at the maximum labeled or tolerated dose at Screening * Systolic blood pressure ≤150 mmHg and diastolic blood pressure ≤90 mmHg Key Exclusion Criteria: * IgAN secondary to another condition (e.g., liver cirrhosis), or other causes of mesangial IgA deposition including IgA vasculitis (i.e., Henoch-Schonlein purpura), systemic lupus erythematosus (SLE), dermatitis herpetiformis, ankylosing spondylitis * Total urine protein excretion ≥ 5g per 24-hour or urine protein to creatinine ratio (UPCR) ≥ 5 mg/mg based on a 24-hour urine sample during the Screening Period * Evidence of rapidly progressive glomerulonephritis (loss of ≥ 50% of eGFR within 3 months of screening) * Evidence of nephrotic syndrome within 6 months of screening (serum albumin \\<30g/L in association with UPCR \\>3.5 mg/mg * Renal or other organ transplantation prior to, or expected during the study * Concomitant chronic renal disease in addition to IgAN * Uncon",
+    "enrollment": {
+      "count": 428,
+      "type": "ACTUAL"
+    },
+    "indications": [
+      "IgA Nephropathy",
+      "Berger Disease"
+    ],
+    "interventions": [
+      {
+        "name": "Atacicept",
+        "type": "BIOLOGICAL"
+      },
+      {
+        "name": "Placebo to match Atacicept",
+        "type": "OTHER"
+      }
+    ],
+    "leadSponsor": "Vera Therapeutics, Inc.",
+    "milestones": {
+      "completionDateStruct": {
+        "date": "2028-07",
+        "type": "ESTIMATED"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2025-05-15",
+        "type": "ACTUAL"
+      },
+      "resultsFirstPostDateStruct": {
+        "date": "2026-10-01",
+        "type": "ACTUAL"
+      },
+      "startDateStruct": {
+        "date": "2023-06-29",
+        "type": "ACTUAL"
+      }
+    },
+    "outcomeDefinitions": [
+      "Percentage Change From Baseline in Urine Protein to Creatinine Ratio (UPCR)"
+    ],
+    "qualityOfLifeMeasures": [],
+    "registryStatus": "ACTIVE_NOT_RECRUITING",
+    "reportedOutcomeMeasures": [
+      {
+        "description": "Percentage reduction in UPCR was obtained from geometric mean ratios. The natural log-transformed ratio of UPCR to its baseline value was analyzed using a Mixed Model for Repeated Measures (MMRM), adjusted by baseline variables specified in the Statistical Analysis Plan (SAP), including data from baseline up to Week 36 during the Double-Blind period.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Atacicept Dose 150mg"
+          },
+          {
+            "id": "OG001",
+            "title": "Placebo to Match Atacicept (Part C/D)"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "-46"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "-7"
+          }
+        ],
+        "timeFrame": "36 Weeks",
+        "title": "Percentage Change From Baseline in Urine Protein to Creatinine Ratio (UPCR)",
+        "unit": "mean UPCR percent Change at Week 36"
+      }
+    ],
+    "reportedWithdrawals": [],
+    "responseMeasures": [],
+    "seriousEventGroups": [
+      {
+        "id": "EG000",
+        "otherAffected": 81,
+        "otherAtRisk": 214,
+        "seriousAffected": 1,
+        "seriousAtRisk": 214,
+        "title": "Atacicept Dose 150mg"
+      },
+      {
+        "id": "EG001",
+        "otherAffected": 34,
+        "otherAtRisk": 214,
+        "seriousAffected": 11,
+        "seriousAtRisk": 214,
+        "title": "Placebo to Match Atacicept (Part C/D)"
+      }
+    ],
+    "sourceUpdated": "2026-10-01",
+    "subgroupOutcomes": [],
+    "survivalMeasures": [],
+    "timeToResponseMeasures": [],
+    "title": "A Phase 2b/3, Multi-part, Randomized, Double-Blinded, Placebo-Controlled Study to Evaluate the Efficacy and Safety of Atacicept in Subjects With IgA Nephropathy (IgAN)",
+    "treatmentArms": [
+      {
+        "description": "Atacicept 150mg once weekly subcutaneous (SC) injections",
+        "interventionNames": [
+          "Biological: Atacicept"
+        ],
+        "label": "Atacicept Dose 150mg",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Placebo to match Atacicept once weekly subcutaneous (SC) injection",
+        "interventionNames": [
+          "Other: Placebo to match Atacicept"
+        ],
+        "label": "Placebo to match Atacicept (Part C/D)",
+        "type": "PLACEBO_COMPARATOR"
+      }
+    ],
+    "whyStopped": ""
+  },
+  "registrySourceHash": "e2c335b532329595b4662a1f3999e7447481ec2de2107b86b5e9c7f203d82ee4",
+  "registryUrl": "https://clinicaltrials.gov/study/NCT04716231",
+  "regulatorySourceLead": "https://veratherapeutics.gcs-web.com/news-releases/news-release-details/vera-therapeutics-provides-business-update-and-reports-third-3",
+  "reportedFdaStatus": "sBLA submitted 2026-11-03; PDUFA pending",
+  "retrievedAt": "2026-11-07T19:05:30+00:00",
+  "sourceErrors": {},
+  "ticker": "VERA"
+}

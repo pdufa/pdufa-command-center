@@ -1,0 +1,146 @@
+{
+  "company": "Pharvaris N.V.",
+  "literatureLeads": [
+    {
+      "doi": "10.3389/fimmu.2026.1810851",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-05-14",
+      "title": "Angioedema due to acquired C1 inhibitor deficiency: patient experience, conceptual disease model, and assessment of patient-reported outcome measures.",
+      "url": "https://europepmc.org/article/MED/42220494"
+    },
+    {
+      "doi": "10.1007/s12325-025-03382-6",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-10-11",
+      "title": "Therapeutic Advances in Hereditary Angioedema: A Focus on Present and Future Options.",
+      "url": "https://europepmc.org/article/MED/41075106"
+    },
+    {
+      "doi": "10.1093/cei/uxag043",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-01-01",
+      "title": "Hereditary angioedema: on-demand treatment and long-term prophylaxis-a global reality.",
+      "url": "https://europepmc.org/article/MED/42500915"
+    },
+    {
+      "doi": "10.1111/all.70207",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-01-30",
+      "title": "International Guideline on the Diagnosis and Management of Pediatric Patients With Hereditary Angioedema.",
+      "url": "https://europepmc.org/article/MED/41618059"
+    },
+    {
+      "doi": "10.1186/s13223-025-00992-1",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-01-03",
+      "title": "Abstracts of the 14th C1-inhibitor Deficiency and Angioedema Workshop.",
+      "url": "https://europepmc.org/article/MED/41484981"
+    }
+  ],
+  "nctId": "NCT06669754",
+  "packetHash": "36f8878e9dd97bc00ef3bfe482348ff1947987d6850644625f1acbd113e96865",
+  "registry": {
+    "activeComparatorResults": [],
+    "adverseEventGroups": [],
+    "durabilityMeasures": [],
+    "eligibilityCriteria": "Inclusion Criteria: 1. Provision of written informed consent/assent. 2. Male or female, aged ≥12 years at the time of providing written informed consent/assent. 3. Diagnosis of hereditary angioedema (HAE) 4. History of at least 3 HAE attacks within the 3 consecutive months prior to Screening Visit 5. Predefined number of attacks during the Screening Period 6. Reliable access and ability to use standard of care on-demand treatments to effectively manage acute HAE attacks. 7. Willing and able to adhere to all protocol requirements, including eDiary and ePRO data recording. 8. Female participants of childbearing potential must agree to the protocol specified pregnancy testing and contraception methods. Exclusion Criteria: 1. Any diagnosis of angioedema other than HAE 2. Participation in a clinical study with any other investigational drug within the last 30 days or within 5 half-lives of the investigational drug at Screening (whichever is longer) 3. Has received prior prophylactic treatment with deucrictibant 4. Exposure to ACE inhibitors or any estrogen-containing medications with systemic absorption within 4 weeks of Screening 5. Prior gene therapy for any indication at any time 6. Use of prophylactic treatment for HAE within 2 weeks of Screening for C1INH, oral kallikrein inhibitors, or anti-fibrinolytics; within 4 weeks of Screening for attenuated androgens; within 5 half-lives of Screening for monoclonal antibodies, or within 7 days of Screening for short-term prophylaxis 7",
+    "enrollment": {
+      "count": 85,
+      "type": "ACTUAL"
+    },
+    "indications": [
+      "Hereditary Angioedema (HAE)"
+    ],
+    "interventions": [
+      {
+        "name": "Deucrictibant",
+        "type": "DRUG"
+      },
+      {
+        "name": "Placebo",
+        "type": "DRUG"
+      }
+    ],
+    "leadSponsor": "Pharvaris Netherlands B.V.",
+    "milestones": {
+      "completionDateStruct": {
+        "date": "2026-07-21",
+        "type": "ACTUAL"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2026-07-21",
+        "type": "ACTUAL"
+      },
+      "resultsFirstPostDateStruct": {},
+      "startDateStruct": {
+        "date": "2024-12-01",
+        "type": "ACTUAL"
+      }
+    },
+    "outcomeDefinitions": [
+      "Time-normalized (per 4 weeks) number of Investigator-confirmed HAE attacks during the 24-week Treatment Period",
+      "Time-normalized number of Investigator-confirmed HAE attacks treated with on-demand medication during the 24-week Treatment Period",
+      "Time-normalized number of Investigator-confirmed moderate or severe HAE attacks during the 24-week Treatment Period",
+      "Time-normalized number of Investigator-confirmed severe HAE attacks during the 24-week Treatment Period",
+      "Proportion of participants achieving ≥50% reduction in HAE attack rate relative to baseline during the 24-week Treatment Period",
+      "Proportion of participants achieving ≥70% reduction in HAE attack rate relative to baseline during the 24-week Treatment Period",
+      "Proportion of participants achieving ≥90% reduction in HAE attack rate relative to baseline during the 24-week Treatment Period",
+      "Proportion of participants that are HAE attack-free during the 24-week Treatment Period",
+      "Proportion of time without angioedema symptoms during the 24-week Treatment Period",
+      "Incidence of treatment-emergent adverse events (TEAEs), serious adverse events (SAEs), adverse events of special interest (AESIs), and TEAEs leading to study drug discontinuation",
+      "Pharmacokinetics [PK]: Deucrictibant plasma concentration time profiles",
+      "Patient reported outcome: Angioedema Quality of Life (AE-QoL) questionnaire",
+      "Patient reported outcome: Patient Global Assessment of Change (PGA-Change)",
+      "Patient reported outcome: Angioedema Control Test 4-week version (AECT-4wk)",
+      "Patient reported outcome: Work Productivity and Activity Impairment Questionnaire - Specific Health Problem (WPAI-SHP)",
+      "Patient reported outcome: Abbreviated Treatment Satisfaction Questionnaire for Medication (TSQM-9)"
+    ],
+    "qualityOfLifeMeasures": [],
+    "registryStatus": "COMPLETED",
+    "reportedOutcomeMeasures": [],
+    "reportedWithdrawals": [],
+    "responseMeasures": [],
+    "seriousEventGroups": [],
+    "sourceUpdated": "2026-11-06",
+    "subgroupOutcomes": [],
+    "survivalMeasures": [],
+    "timeToResponseMeasures": [],
+    "title": "A Phase 3, Randomized, Double-blind, Placebo-controlled Study to Evaluate the Efficacy and Safety of Orally Administered Deucrictibant Extended-Release Tablet for Prophylaxis Against Angioedema Attacks in Adolescents and Adults With Hereditary Angioedema",
+    "treatmentArms": [
+      {
+        "description": "Deucrictibant 40mg extended-release tablet by mouth once daily",
+        "interventionNames": [
+          "Drug: Deucrictibant"
+        ],
+        "label": "Active",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "Placebo 1 tablet by mouth once daily",
+        "interventionNames": [
+          "Drug: Placebo"
+        ],
+        "label": "Placebo",
+        "type": "EXPERIMENTAL"
+      }
+    ],
+    "whyStopped": ""
+  },
+  "registrySourceHash": "14f4772a1769c1dd75b74f2566ca74a271901d8bf7183a60c1a7345eafdc6d1d",
+  "registryUrl": "https://clinicaltrials.gov/study/NCT06669754",
+  "regulatorySourceLead": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm",
+  "reportedFdaStatus": "NDA planned 1H 2027",
+  "retrievedAt": "2026-11-07T19:05:28+00:00",
+  "sourceErrors": {},
+  "ticker": "PHVS"
+}

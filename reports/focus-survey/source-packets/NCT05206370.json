@@ -1,0 +1,347 @@
+{
+  "company": "Achieve Life Sciences",
+  "literatureLeads": [
+    {
+      "doi": "10.1136/thorax-2025-223880",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2026-01-15",
+      "title": "Cytisinicline for smoking cessation in individuals with self-reported COPD: a post hoc analysis of the ORCA-2 and ORCA-3 trials.",
+      "url": "https://europepmc.org/article/MED/40962497"
+    },
+    {
+      "doi": "10.1001/jamainternmed.2025.0628",
+      "exactNctInAbstract": false,
+      "exactNctInTitle": false,
+      "isOpenAccess": true,
+      "publicationDate": "2025-06-01",
+      "title": "Cytisinicline for Smoking Cessation: The ORCA Phase 3 Replication Randomized Clinical Trial.",
+      "url": "https://europepmc.org/article/MED/40257755"
+    }
+  ],
+  "nctId": "NCT05206370",
+  "packetHash": "0a0a02d0ad676cf2163dd0587c39a387e72d7f58a04aac75806948e2dff11c6d",
+  "registry": {
+    "activeComparatorResults": [],
+    "adverseEventGroups": [
+      {
+        "id": "EG000",
+        "otherAffected": 110,
+        "otherAtRisk": 262,
+        "seriousAffected": 8,
+        "seriousAtRisk": 262,
+        "title": "Placebo + Behavioral Support"
+      },
+      {
+        "id": "EG001",
+        "otherAffected": 132,
+        "otherAtRisk": 263,
+        "seriousAffected": 8,
+        "seriousAtRisk": 263,
+        "title": "6-Week Cytisinicline + 6-Week Placebo + Behavioral Support"
+      },
+      {
+        "id": "EG002",
+        "otherAffected": 137,
+        "otherAtRisk": 260,
+        "seriousAffected": 8,
+        "seriousAtRisk": 260,
+        "title": "12-Week Cytisinicline + Behavioral Support"
+      }
+    ],
+    "durabilityMeasures": [
+      {
+        "description": "Relapse is defined as participant reported resuming smoking or an expired CO measure ≥ 10 ppm. Relapse is defined as a participant having met one of the following: not being abstinent from Weeks 3 to 6; not being abstinent at the Week 12 visit; not being abstinent or not self-reporting abstinence during the Week 16 to Week 24 follow-up period. (During the follow-up period \\[Weeks 16 to 24\\], up to a total of 5 cigarettes could have been smoked.)",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "6-Week Cytisinicline + 6-Week Placebo + Behavioral Support"
+          },
+          {
+            "id": "OG001",
+            "title": "12-Week Cytisinicline + Behavioral Support"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "8.7"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "10.6"
+          }
+        ],
+        "timeFrame": "Week 24",
+        "title": "Percentage of Participants Taking Cytisinicline Who Are Relapse-Free at Week 24",
+        "unit": "percentage of participants"
+      }
+    ],
+    "eligibilityCriteria": "Inclusion Criteria: 1. Male or female subjects, age ≥ 18 years. 2. Current daily cigarette smokers (averaging at least 10 cigarettes per day upon completing a 7-day screening smoking diary) and who intend to quit smoking. 3. Expired air carbon monoxide (CO) ≥ 10 ppm. 4. Failed at least one previous attempt to stop smoking with or without therapeutic support. 5. Willing to initiate study treatment on the day after randomization and set a quit date within 5-7 days of starting treatment. 6. Willing to actively participate in the study's smoking cessation behavioral support provided throughout the study. 7. Able to fully understand all study requirements, willing to participate, and comply with dosing schedule. 8. Sign the Informed Consent Form. Exclusion Criteria: 1. More than 1 study participant in same household during the 12-week treatment period. 2. Previous cytisinicline treatment in a prior clinical study or any other cytisine usage. 3. Known hypersensitivity to cytisinicline or any of the excipients. 4. Positive urinary drugs of abuse screen, determined within 28 days before the first dose of cytisinicline. 5. Clinically significant abnormal serum chemistry or hematology values within 28 days of randomization (ie, requiring treatment or monitoring). 6. Clinically significant abnormalities in 12-lead ECG determined after minimum of 5 minutes in supine position within 28 days of randomization (ie, requiring treatment or further assessment). 7. Recent history (within 3 month",
+    "enrollment": {
+      "count": 792,
+      "type": "ACTUAL"
+    },
+    "indications": [
+      "Smoking Cessation"
+    ],
+    "interventions": [
+      {
+        "name": "Cytisinicline",
+        "type": "DRUG"
+      },
+      {
+        "name": "Placebo",
+        "type": "DRUG"
+      },
+      {
+        "name": "Behavioral support",
+        "type": "BEHAVIORAL"
+      }
+    ],
+    "leadSponsor": "Achieve Life Sciences",
+    "milestones": {
+      "completionDateStruct": {
+        "date": "2023-03-21",
+        "type": "ACTUAL"
+      },
+      "primaryCompletionDateStruct": {
+        "date": "2023-03-21",
+        "type": "ACTUAL"
+      },
+      "resultsFirstPostDateStruct": {
+        "date": "2026-01-14",
+        "type": "ACTUAL"
+      },
+      "startDateStruct": {
+        "date": "2022-01-20",
+        "type": "ACTUAL"
+      }
+    },
+    "outcomeDefinitions": [
+      "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+      "Percentage of Participants With Smoking Abstinence From Weeks 9 to Week 12",
+      "Percentage of Participants With Continuous Smoking Abstinence From Week 3 to Week 24",
+      "Percentage of Participants With Continuous Smoking Abstinence From Week 9 to Week 24",
+      "Percentage of Participants Taking Cytisinicline Who Are Relapse-Free at Week 24"
+    ],
+    "qualityOfLifeMeasures": [],
+    "registryStatus": "COMPLETED",
+    "reportedOutcomeMeasures": [
+      {
+        "description": "Smoking abstinence as verified by weekly expired carbon monoxide (CO) measurements ≤ 10 parts per million (ppm).",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Placebo + Behavioral Support"
+          },
+          {
+            "id": "OG001",
+            "title": "6-Week Cytisinicline + 6-Week Placebo + Behavioral Support"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "6.0"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "14.8"
+          }
+        ],
+        "timeFrame": "Weeks 3 to 6",
+        "title": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+        "unit": "percentage of participants"
+      },
+      {
+        "description": "Smoking abstinence as verified by weekly expired CO measurements ≤ 10 ppm.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Placebo + Behavioral Support"
+          },
+          {
+            "id": "OG001",
+            "title": "12-Week Cytisinicline + Behavioral Support"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "9.4"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "30.3"
+          }
+        ],
+        "timeFrame": "Weeks 9 to 12",
+        "title": "Percentage of Participants With Smoking Abstinence From Weeks 9 to Week 12",
+        "unit": "percentage of participants"
+      },
+      {
+        "description": "Smoking abstinence as verified by expired CO measurements ≤ 10 ppm. Measurements were weekly from Week 3 to Week 12 and monthly from Week 12 to Week 24.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Placebo + Behavioral Support"
+          },
+          {
+            "id": "OG001",
+            "title": "6-Week Cytisinicline + 6-Week Placebo + Behavioral Support"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "1.1"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "6.8"
+          }
+        ],
+        "timeFrame": "Week 3 to Week 24",
+        "title": "Percentage of Participants With Continuous Smoking Abstinence From Week 3 to Week 24",
+        "unit": "percentage of participants"
+      },
+      {
+        "description": "Smoking abstinence as verified by expired CO measurements ≤ 10 ppm. Measurements were weekly from Week 9 to Week 12 and monthly from Week 12 to Week 24.",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "Placebo + Behavioral Support"
+          },
+          {
+            "id": "OG001",
+            "title": "Cytisinicline + Behavioral Support"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "4.2"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "20.5"
+          }
+        ],
+        "timeFrame": "Week 9 to Week 24",
+        "title": "Percentage of Participants With Continuous Smoking Abstinence From Week 9 to Week 24",
+        "unit": "percentage of participants"
+      },
+      {
+        "description": "Relapse is defined as participant reported resuming smoking or an expired CO measure ≥ 10 ppm. Relapse is defined as a participant having met one of the following: not being abstinent from Weeks 3 to 6; not being abstinent at the Week 12 visit; not being abstinent or not self-reporting abstinence during the Week 16 to Week 24 follow-up period. (During the follow-up period \\[Weeks 16 to 24\\], up to a total of 5 cigarettes could have been smoked.)",
+        "groups": [
+          {
+            "id": "OG000",
+            "title": "6-Week Cytisinicline + 6-Week Placebo + Behavioral Support"
+          },
+          {
+            "id": "OG001",
+            "title": "12-Week Cytisinicline + Behavioral Support"
+          }
+        ],
+        "measurements": [
+          {
+            "groupId": "OG000",
+            "spread": "",
+            "value": "8.7"
+          },
+          {
+            "groupId": "OG001",
+            "spread": "",
+            "value": "10.6"
+          }
+        ],
+        "timeFrame": "Week 24",
+        "title": "Percentage of Participants Taking Cytisinicline Who Are Relapse-Free at Week 24",
+        "unit": "percentage of participants"
+      }
+    ],
+    "reportedWithdrawals": [],
+    "responseMeasures": [],
+    "seriousEventGroups": [
+      {
+        "id": "EG000",
+        "otherAffected": 110,
+        "otherAtRisk": 262,
+        "seriousAffected": 8,
+        "seriousAtRisk": 262,
+        "title": "Placebo + Behavioral Support"
+      },
+      {
+        "id": "EG001",
+        "otherAffected": 132,
+        "otherAtRisk": 263,
+        "seriousAffected": 8,
+        "seriousAtRisk": 263,
+        "title": "6-Week Cytisinicline + 6-Week Placebo + Behavioral Support"
+      },
+      {
+        "id": "EG002",
+        "otherAffected": 137,
+        "otherAtRisk": 260,
+        "seriousAffected": 8,
+        "seriousAtRisk": 260,
+        "title": "12-Week Cytisinicline + Behavioral Support"
+      }
+    ],
+    "sourceUpdated": "2026-01-14",
+    "subgroupOutcomes": [],
+    "survivalMeasures": [],
+    "timeToResponseMeasures": [],
+    "title": "A Second Multicenter, Double-blind, Randomized, Placebo-controlled Phase 3 Trial Evaluating the Efficacy and Safety of Cytisinicline in Adult Smokers",
+    "treatmentArms": [
+      {
+        "description": "One placebo tablet orally (PO) three times daily (TID) for 12 weeks plus behavioral support",
+        "interventionNames": [
+          "Drug: Placebo",
+          "Behavioral: Behavioral support"
+        ],
+        "label": "Placebo + Behavioral Support",
+        "type": "PLACEBO_COMPARATOR"
+      },
+      {
+        "description": "One cytisinicline tablet PO TID for 6 weeks followed by one placebo tablet PO TID for 6 weeks plus behavioral support",
+        "interventionNames": [
+          "Drug: Cytisinicline",
+          "Drug: Placebo",
+          "Behavioral: Behavioral support"
+        ],
+        "label": "6-Week Cytisinicline + 6-Week Placebo + Behavioral Support",
+        "type": "EXPERIMENTAL"
+      },
+      {
+        "description": "One cytisinicline tablet PO TID for 12 weeks plus behavioral support",
+        "interventionNames": [
+          "Drug: Cytisinicline",
+          "Behavioral: Behavioral support"
+        ],
+        "label": "12-Week Cytisinicline + Behavioral Support",
+        "type": "EXPERIMENTAL"
+      }
+    ],
+    "whyStopped": ""
+  },
+  "registrySourceHash": "f82b6618c828bb9a6a5cbe90e90ee0bc8e2b367a3a5cc385e22146ec76661b0f",
+  "registryUrl": "https://clinicaltrials.gov/study/NCT05206370",
+  "regulatorySourceLead": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-344624/achv-20260630.htm",
+  "reportedFdaStatus": "NDA resubmission Q4 2026 planned",
+  "retrievedAt": "2026-11-07T19:05:22+00:00",
+  "sourceErrors": {},
+  "ticker": "ACHV"
+}

@@ -1,0 +1,448 @@
+{
+  "bySurvey": [
+    {
+      "capturedNeedsReview": 0,
+      "missing": 58,
+      "name": "Patient Population",
+      "slots": 58,
+      "surveyNumber": 1,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 87,
+      "name": "Unmet Medical Need",
+      "slots": 87,
+      "surveyNumber": 2,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 42,
+      "missing": 132,
+      "name": "Clinical Benefit",
+      "slots": 174,
+      "surveyNumber": 3,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 29,
+      "name": "Survival Benefit",
+      "slots": 29,
+      "surveyNumber": 4,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "missing": 27,
+      "name": "Quality-of-Life Improvement",
+      "slots": 29,
+      "surveyNumber": 5,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 1,
+      "missing": 144,
+      "name": "Competitive Advantage",
+      "slots": 145,
+      "surveyNumber": 6,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 58,
+      "missing": 0,
+      "name": "Treatment Convenience",
+      "slots": 58,
+      "surveyNumber": 7,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 24,
+      "missing": 63,
+      "name": "Safety Advantage",
+      "slots": 87,
+      "surveyNumber": 8,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 87,
+      "name": "Healthcare Cost Savings",
+      "slots": 87,
+      "surveyNumber": 9,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 29,
+      "name": "Insurance Coverage Potential",
+      "slots": 29,
+      "surveyNumber": 10,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 29,
+      "name": "Expected Treatment Price",
+      "slots": 29,
+      "surveyNumber": 11,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 58,
+      "name": "Market Penetration",
+      "slots": 58,
+      "surveyNumber": 12,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 29,
+      "name": "International Patient Population",
+      "slots": 29,
+      "surveyNumber": 13,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 29,
+      "name": "Additional Indications",
+      "slots": 29,
+      "surveyNumber": 14,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 29,
+      "name": "Peak Annual Sales",
+      "slots": 29,
+      "surveyNumber": 15,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 29,
+      "name": "Revenue Growth Potential",
+      "slots": 29,
+      "surveyNumber": 16,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 29,
+      "name": "Patent and Exclusivity Value",
+      "slots": 29,
+      "surveyNumber": 17,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 29,
+      "name": "Licensing and Partnership Value",
+      "slots": 29,
+      "surveyNumber": 18,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 29,
+      "name": "Company Valuation Impact",
+      "slots": 29,
+      "surveyNumber": 19,
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 0,
+      "missing": 29,
+      "name": "Shareholder Upside and Risk",
+      "slots": 29,
+      "surveyNumber": 20,
+      "verified": 0
+    }
+  ],
+  "byTrial": [
+    {
+      "capturedNeedsReview": 8,
+      "literatureLeads": 16,
+      "missing": 30,
+      "nctId": "NCT05507203",
+      "registryRetrieved": true,
+      "ticker": "ABVX",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 8,
+      "literatureLeads": 16,
+      "missing": 30,
+      "nctId": "NCT05507216",
+      "registryRetrieved": true,
+      "ticker": "ABVX",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 8,
+      "literatureLeads": 3,
+      "missing": 30,
+      "nctId": "NCT04576949",
+      "registryRetrieved": true,
+      "ticker": "ACHV",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 8,
+      "literatureLeads": 2,
+      "missing": 30,
+      "nctId": "NCT05206370",
+      "registryRetrieved": true,
+      "ticker": "ACHV",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 7,
+      "literatureLeads": 11,
+      "missing": 31,
+      "nctId": "NCT05811247",
+      "registryRetrieved": true,
+      "ticker": "APMD",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 7,
+      "literatureLeads": 14,
+      "missing": 31,
+      "nctId": "NCT05813275",
+      "registryRetrieved": true,
+      "ticker": "APMD",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 0,
+      "missing": 36,
+      "nctId": "NCT05059223",
+      "registryRetrieved": true,
+      "ticker": "AXSM",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 0,
+      "missing": 36,
+      "nctId": "NCT05113745",
+      "registryRetrieved": true,
+      "ticker": "AXSM",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 25,
+      "missing": 36,
+      "nctId": "NCT05244304",
+      "registryRetrieved": true,
+      "ticker": "BLTE",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 13,
+      "missing": 36,
+      "nctId": "NCT05126758",
+      "registryRetrieved": true,
+      "ticker": "CAPR",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 7,
+      "missing": 36,
+      "nctId": "NCT06445023",
+      "registryRetrieved": true,
+      "ticker": "CLDX",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 9,
+      "missing": 36,
+      "nctId": "NCT06455202",
+      "registryRetrieved": true,
+      "ticker": "CLDX",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 12,
+      "missing": 36,
+      "nctId": "NCT05208047",
+      "registryRetrieved": true,
+      "ticker": "COGT",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 9,
+      "literatureLeads": 24,
+      "missing": 29,
+      "nctId": "NCT03697109",
+      "registryRetrieved": true,
+      "ticker": "CORT",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 7,
+      "literatureLeads": 19,
+      "missing": 31,
+      "nctId": "NCT04308590",
+      "registryRetrieved": true,
+      "ticker": "CORT",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 9,
+      "literatureLeads": 22,
+      "missing": 29,
+      "nctId": "NCT05767346",
+      "registryRetrieved": true,
+      "ticker": "CYTK",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 16,
+      "missing": 36,
+      "nctId": "NCT06081894",
+      "registryRetrieved": true,
+      "ticker": "CYTK",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 14,
+      "missing": 36,
+      "nctId": "NCT04871282",
+      "registryRetrieved": true,
+      "ticker": "IMNM",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 6,
+      "missing": 36,
+      "nctId": "NCT06411379",
+      "registryRetrieved": true,
+      "ticker": "MLTX",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 6,
+      "missing": 36,
+      "nctId": "NCT06411899",
+      "registryRetrieved": true,
+      "ticker": "MLTX",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 13,
+      "missing": 36,
+      "nctId": "NCT06153693",
+      "registryRetrieved": true,
+      "ticker": "MLYS",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 7,
+      "missing": 36,
+      "nctId": "NCT06343779",
+      "registryRetrieved": true,
+      "ticker": "PHVS",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 5,
+      "missing": 36,
+      "nctId": "NCT06669754",
+      "registryRetrieved": true,
+      "ticker": "PHVS",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 5,
+      "missing": 36,
+      "nctId": "NCT06087276",
+      "registryRetrieved": true,
+      "ticker": "PRAX",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 25,
+      "missing": 36,
+      "nctId": "NCT02500381",
+      "registryRetrieved": true,
+      "ticker": "SRPT",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 7,
+      "literatureLeads": 4,
+      "missing": 31,
+      "nctId": "NCT04544293",
+      "registryRetrieved": true,
+      "ticker": "SVRA",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 8,
+      "literatureLeads": 2,
+      "missing": 30,
+      "nctId": "NCT06331299",
+      "registryRetrieved": true,
+      "ticker": "URGN",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 7,
+      "literatureLeads": 25,
+      "missing": 31,
+      "nctId": "NCT04716231",
+      "registryRetrieved": true,
+      "ticker": "VERA",
+      "verified": 0
+    },
+    {
+      "capturedNeedsReview": 2,
+      "literatureLeads": 12,
+      "missing": 36,
+      "nctId": "NCT05662241",
+      "registryRetrieved": true,
+      "ticker": "ZBIO",
+      "verified": 0
+    }
+  ],
+  "focusTrials": 29,
+  "generatedAt": "2026-11-07T19:05:32+00:00",
+  "googleSheetsSync": "SUCCESS",
+  "ingredientSlots": 1102,
+  "leadCapturePercent": 11.52,
+  "literatureLeads": 333,
+  "schemaVersion": 1,
+  "sourceRegistryTrials": 29,
+  "statuses": {
+    "IDENTITY_REVIEW_REQUIRED": 0,
+    "MISSING": 975,
+    "MODELED": 0,
+    "NOT_APPLICABLE": 0,
+    "SOURCE_CAPTURED_NEEDS_REVIEW": 127,
+    "SOURCE_UNAVAILABLE": 0,
+    "VERIFIED": 0
+  },
+  "surveyCategories": 20,
+  "surveyIngredients": 38,
+  "verifiedPercent": 0.0,
+  "warning": "Registry and literature leads are not reviewed ingredient findings. 38 slots per trial does not mean 38 verified assessments."
+}
