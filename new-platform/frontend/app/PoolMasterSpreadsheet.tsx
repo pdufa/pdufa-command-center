@@ -6,6 +6,7 @@ import {POOL_SORT_KEYS,type PoolSortSpec,type PoolSortKey} from "../lib/pool-ful
 import snapshot from "../data/p3PostDataActive.json";
 import css from "./PoolMasterSpreadsheet.module.css";
 import TickerChartButton from "./TickerChartButton";
+import {POOL_DETAIL_FIELDS,type PoolDetailField,type PoolRegistryDetail} from "../lib/pool-registry-details";
 import {isGroupVisible,toggleColumnGroup} from "../lib/pool-column-visibility";
 import {normalizePoolColumnOrder,reorderPoolSegment,stepPoolSegment,movePoolColumn,stepPoolColumn} from "../lib/pool-column-order";
 
@@ -17,7 +18,7 @@ export type PoolMasterRow={
  marketCap?:number|null;capInRange?:boolean;capChecked?:string;capSource?:string;
  phase3Date?:string;phase3Source?:string;nctId?:string;
 };
-type Key="phase"|"status"|"drug"|"intervention"|"route"|"indication"
+type Key=PoolDetailField|"phase"|"status"|"drug"|"intervention"|"route"|"indication"
  |"start"|"primary"|"complete"|"posted"|"updated"|"source"|"checked"
  |"traded"|"exchange"|"cap"|"capDate"|"capQualified"|"phase3"|"publicResults"
  |"fdaPath"|"application"|"pdufa"|"designations"
@@ -31,12 +32,22 @@ const SEGMENTS:readonly Segment[]=[
  {key:"clinical",label:"Clinical Information",columns:[
   {key:"phase",label:"Clinical phase"},{key:"status",label:"Trial status"},
   {key:"drug",label:"Drug / intervention"},{key:"intervention",label:"Intervention type"},
-  {key:"route",label:"Administration route"},{key:"indication",label:"Indication / disease"}]},
+  {key:"route",label:"Administration route"},{key:"indication",label:"Indication / disease"},
+  {key:"studyTitle",label:"Official study title"},{key:"leadSponsor",label:"Lead study sponsor"},
+  {key:"studyDesign",label:"Registered trial design"},{key:"treatmentArms",label:"Arms / comparator"},
+  {key:"enrollment",label:"Recorded enrollment"},{key:"eligibility",label:"Patient eligibility criteria"},
+  {key:"primaryEndpoints",label:"Primary endpoints"},{key:"secondaryEndpoints",label:"Secondary endpoints"},
+  {key:"reportedResults",label:"Published numeric outcome results"},
+  {key:"safetyResults",label:"Reported adverse-event counts"},
+  {key:"studyLocations",label:"Trial locations / countries"}]},
  {key:"dates",label:"Dates & Sources",columns:[
   {key:"start",label:"Trial start date"},{key:"primary",label:"Primary completion"},
   {key:"complete",label:"Study completion"},{key:"posted",label:"Results posted"},
   {key:"updated",label:"Source updated"},{key:"source",label:"Source URL"},
-  {key:"checked",label:"Last checked"}]},
+  {key:"checked",label:"Last checked"},
+  {key:"milestoneDateTypes",label:"Actual / estimated milestone dates"},
+  {key:"terminationReason",label:"Termination / suspension reason"},
+  {key:"documentsPublications",label:"Protocols / publications"}]},
  {key:"qualifiers",label:"Qualification",columns:[
   {key:"traded",label:"Publicly traded?"},{key:"exchange",label:"Stock exchange"},
   {key:"cap",label:"Market cap (USD)"},{key:"capDate",label:"Market cap as-of"},
@@ -109,7 +120,21 @@ const COLUMN_INFO:Record<Key,string>={
  "reason": "Source-backed explanation for inclusion or pending eligibility checks.",
  "evidence": "Links to evidence supporting the qualification assessment; missing links require review.",
  "completeness": "Whether supporting evidence has been reviewed and how much remains missing.",
- "reviewed": "Date of the most recent saved FOCUS eligibility review."
+ "reviewed": "Date of the most recent saved FOCUS eligibility review.",
+ "studyTitle": "Official registered title from the live ClinicalTrials.gov record. Use Load registry details for this NCT.",
+ "leadSponsor": "Lead sponsor recorded in the live registry; not automatically the commercial rights holder.",
+ "studyDesign": "Study type, allocation, intervention model, masking and registered purpose.",
+ "treatmentArms": "Registered treatment and comparator arms; not a clinical effect estimate.",
+ "enrollment": "Recorded actual or anticipated enrollment with the registry-reported type.",
+ "eligibility": "Published trial inclusion and exclusion criteria, as source text.",
+ "primaryEndpoints": "Prespecified primary endpoints and their time frames, not a pass/fail verdict.",
+ "secondaryEndpoints": "Prespecified secondary endpoints and their time frames.",
+ "reportedResults": "Only numeric group-level measurements actually posted in the official results module. Missing data are not zero.",
+ "safetyResults": "Published adverse event group counts and denominators, if posted. No inferred safety ranking.",
+ "studyLocations": "Registered site cities, states and countries as reported by the source.",
+ "milestoneDateTypes": "Start and completion dates with the registry ACTUAL / ESTIMATED designation.",
+ "terminationReason": "Registry-provided reason for termination or suspension when applicable.",
+ "documentsPublications": "Source-reported publications and attached protocols / study documents."
 };
 const IDENTITY_INFO={ticker:"Stock ticker reported in the POOL source. A ticker alone does not establish a current listing.",company:"Company name associated with the trial in the published POOL source.",nct:"ClinicalTrials.gov identifier (NCT ID) for the exact trial; opens the official study record."} as const;
 const known=(v:unknown)=>typeof v==="string"&&v.trim()?v:"Not verified";
@@ -123,11 +148,16 @@ const nctOf=(r:PoolMasterRow)=>{
  const value=r.nctId||(r.id.startsWith("TRIAL|")?r.id.slice(6):"");
  return /^NCT\d{8}$/.test(value)?value:"";
 };
-function contentFor(row:PoolMasterRow,key:Key):{text:string;url?:string}{
+function contentFor(row:PoolMasterRow,key:Key,details:PoolRegistryDetail|null):{text:string;url?:string}{
  const nct=nctOf(row);
  const focus=nct?focusByTrial.get(nct+"|"+row.ticker.toUpperCase()):undefined;
  const cap=focus?.marketCap??row.marketCap;
  const sourceUrl=row.sourceUrl||(nct?"https://clinicaltrials.gov/study/"+nct:undefined);
+ if(POOL_DETAIL_FIELDS.includes(key as PoolDetailField)){
+   if(!details||details.nctId!==nct)return{text:"Load registry details using the NCT button"};
+   const value=details.fields[key as PoolDetailField];
+   return{text:value||"Not reported in this registry record"};
+ }
  switch(key){
   case "phase":return{text:known(row.stage)};
   case "status":return{text:known(row.status)};
@@ -160,6 +190,7 @@ function contentFor(row:PoolMasterRow,key:Key):{text:string;url?:string}{
   case "completeness":return{text:focus?"FOCUS source links recorded; full evidence not assessed":"Not assessed"};
   case "reviewed":return{text:focus?snapshot.asOf:"Not assessed"};
  }
+ return{text:"Not reported"};
 }
 export default function PoolMasterSpreadsheet({rows,loading=false,error="",selectedPhases,onPhasesChange,stageCounts,sort,onSortChange}:{rows:PoolMasterRow[];loading?:boolean;error?:string;
  selectedPhases:PoolPhaseSelection;onPhasesChange:(next:PoolPhaseSelection)=>void;
@@ -219,6 +250,24 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
  const [orderEditorOpen,setOrderEditorOpen]=useState(false);
  const [reorderNotice,setReorderNotice]=useState("");
  const [phaseOpen,setPhaseOpen]=useState(false);
+ const [registryByNct,setRegistryByNct]=useState<Record<string,PoolRegistryDetail>>({});
+ const [registryBusy,setRegistryBusy]=useState<Record<string,boolean>>({});
+ const [registryError,setRegistryError]=useState<Record<string,string>>({});
+ const loadRegistry=async(nct:string)=>{
+  if(!/^NCT\d{8}$/.test(nct)||registryBusy[nct])return;
+  setRegistryBusy(p=>({...p,[nct]:true}));
+  setRegistryError(p=>({...p,[nct]:""}));
+  try{
+   const response=await fetch("/api/pool-registry-details?nct="+encodeURIComponent(nct),{cache:"no-store"});
+   if(!response.ok)throw Error(response.status===401?"Sign in to view source details.":"Official registry lookup unavailable.");
+   const result:PoolRegistryDetail=await response.json() as PoolRegistryDetail;
+   if(result.nctId!==nct||result.sourceUrl!=="https://clinicaltrials.gov/study/"+nct||
+      result.total!==14||!result.fields)throw Error("Registry trial identity mismatch.");
+   setRegistryByNct(p=>({...p,[nct]:result}));
+  }catch(e){
+   setRegistryError(p=>({...p,[nct]:e instanceof Error?e.message:"Registry lookup unavailable."}));
+  }finally{setRegistryBusy(p=>({...p,[nct]:false}));}
+ };
  const [latestDownloadChoice,setLatestDownloadChoice]=useState<"registered"|"discovered"|null>(null);
  const [infoKey,setInfoKey]=useState<Key|"ticker"|"company"|"nct"|null>(null);
  const updatePhases=(selection:PoolPhaseSelection)=>onPhasesChange(selection);
@@ -292,8 +341,8 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
  </span>;
  return <section aria-label="POOL Master Spreadsheet with responsive column visibility" data-pool-master="true" className={css.section}>
   <div className={css.top}>
-   <div><h3>POOL Master · 32 columns</h3>
-    <p>All stages stay in POOL. Drag segment handles or column headings to reorder, or use move arrows on phone. Choose a segment to transfer a column. These changes affect display only.</p></div>
+   <div><h3>POOL Master · {3+ALL_KEYS.length} columns</h3>
+    <p>All phases stay in POOL. Four existing expandable segments now include 14 additional official-registry data fields. Select Load registry details beside an NCT to retrieve its source facts on demand; absent results remain unreported. Drag segments or headings to reorder; display changes never modify source records.</p></div>
    <div className={css.actions} aria-label="Independent POOL column group visibility">
     <button type="button" className={css.groupButton} data-visibility={clinicalVisible?"visible":"hidden"}
      aria-pressed={clinicalVisible} onClick={toggleClinical}
@@ -441,7 +490,7 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
     </div>;
    })}
   </div>
-  <div className={css.summary} role="status">Showing 3 identity columns + {visible.length} of 29 optional columns.
+  <div className={css.summary} role="status">Showing 3 identity columns + {visible.length} of {ALL_KEYS.length} optional columns.
    {" "}Swipe horizontally for additional fields. {reorderNotice}
    {sort&&" Sorted by "+(sort.key in IDENTITY_INFO?sort.key:COLUMN_LOOKUP.get(sort.key as Key)?.label)+" ("+sort.direction+"), all matching POOL trials."}
   </div>
@@ -476,9 +525,17 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
       <td className={css.company}>{known(row.company)}</td>
       <td className={css.nct}>{nct?
        <a href={"https://clinicaltrials.gov/study/"+nct} target="_blank" rel="noopener noreferrer">{nct}</a>:
-       <span title={row.id}>Non-trial record</span>}</td>
+       <span title={row.id}>Non-trial record</span>}
+       {nct&&<div className={css.registryAction}>
+        <button type="button" disabled={!!registryBusy[nct]} onClick={()=>void loadRegistry(nct)}
+         aria-label={"Load official registry details for "+nct}>
+         {registryBusy[nct]?"Loading registry…":registryByNct[nct]?"Refresh registry details":"Load registry details"}
+        </button>
+        {registryByNct[nct]&&<small>Registry: {registryByNct[nct].available}/14 fields · {registryByNct[nct].retrievedAt.slice(0,10)}</small>}
+        {registryError[nct]&&<small role="alert">{registryError[nct]}</small>}
+       </div>}</td>
       {visible.map(c=>{
-       const data=contentFor(row,c.key);
+       const data=contentFor(row,c.key,nct?registryByNct[nct]??null:null);
        return <td className={css.dataColumn} key={c.key}>{data.url?
         <a href={data.url} target="_blank" rel="noopener noreferrer">{data.text}</a>:data.text}</td>;
       })}
@@ -486,6 +543,6 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
     })}</tbody>
    </table>
   </div>
-  <p className={css.foot}>Qualification fields are sourced only when evidence is available. Not on the saved FOCUS roster does not mean a trial failed eligibility. POOL remains unrestricted; this is the current paginated source view, not a full export.</p>
+  <p className={css.foot}>New registry fields are fetched on demand from ClinicalTrials.gov and shown read-only in this web view; they are not yet stored in the 16-column Google Sheet. Missing fields are not assumed zero or scored. Qualification fields are sourced only when evidence is available. Not on the saved FOCUS roster does not mean a trial failed eligibility. POOL remains unrestricted; this is the current paginated source view, not a full export.</p>
  </section>;
 }
