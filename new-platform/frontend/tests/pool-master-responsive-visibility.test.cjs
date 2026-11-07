@@ -35,16 +35,37 @@ test("POOL Master component parses as valid TypeScript JSX",()=>{
  assert.deepEqual(source.parseDiagnostics.map(e=>ts.flattenDiagnosticMessageText(e.messageText,"; ")),[]);
 });
 
-test("both toolbar buttons toggle the optional POOL columns between shown and hidden",()=>{
- assert.match(component,/const toggleAll=\(\)=>edit\(\(\)=>allShowing\?hideAllOptional\(\)/);
- assert.match(component,/const togglePreferred=\(\)=>edit\(\(\)=>atPreferred\?hideAllOptional\(\):defaultLayout\(view\)\)/);
- assert.match(component,/aria-pressed=\{allShowing\}/);
- assert.match(component,/aria-pressed=\{atPreferred\}/);
- assert.match(component,/allShowing\?"Hide All":"Show All"/);
- assert.match(component,/atPreferred\?"Hide All":"Reset "/);
- assert.match(component,/hiddenSegments:\[\.\.\.ALL_SEGMENTS\]/);
+
+test("two main POOL buttons have separate segment-group handlers and pressed colors",()=>{
+ assert.match(component,/const toggleClinical=\(\)=>edit\(l=>toggleColumnGroup\(l,GROUP_CLINICAL,COLUMNS_BY_SEGMENT\)\)/);
+ assert.match(component,/const toggleQualification=\(\)=>edit\(l=>toggleColumnGroup\(l,GROUP_QUALIFICATION,COLUMNS_BY_SEGMENT\)\)/);
+ assert.match(component,/aria-pressed=\{clinicalVisible\} onClick=\{toggleClinical\}/);
+ assert.match(component,/aria-pressed=\{qualificationVisible\} onClick=\{toggleQualification\}/);
+ assert.match(component,/clinicalVisible\?"Hide All":"Show All"/);
+ assert.match(component,/qualificationVisible\?"Hide All":"Show All"/);
+ assert.match(style,/\.actions button\[data-visibility="visible"\]/);
  assert.match(style,/\.actions button\[data-visibility="hidden"\]/);
- assert.match(style,/\.actions button\[data-visibility="all"\]/);
- assert.match(style,/\.segmentToggle\[aria-pressed="true"\]/);
- assert.match(style,/\.visibilityToggle\[aria-pressed="true"\]/);
+ assert.match(component,/onClick=\{resetView\}/);
+});
+test("column-group buttons do not alter the opposite group's visibility or hidden-column preferences",()=>{
+ const {toggleColumnGroup,isGroupVisible}=require("../lib/pool-column-visibility.ts");
+ const cols={clinical:["phase","status"],dates:["start"],
+  qualifiers:["cap"],focus:["membership"]};
+ const a=["clinical","dates"],b=["qualifiers","focus"];
+ let state={expanded:["qualifiers","focus"],hiddenSegments:[],hiddenColumns:["status"]};
+ assert.equal(isGroupVisible(state,a,cols),false);
+ assert.equal(isGroupVisible(state,b,cols),true);
+ state=toggleColumnGroup(state,a,cols);
+ assert.equal(isGroupVisible(state,a,cols),true);
+ assert.equal(isGroupVisible(state,b,cols),true);
+ assert.equal(state.hiddenColumns.includes("status"),false);
+ state=toggleColumnGroup(state,b,cols);
+ assert.equal(isGroupVisible(state,a,cols),true);
+ assert.equal(isGroupVisible(state,b,cols),false);
+ state=toggleColumnGroup(state,a,cols);
+ assert.equal(isGroupVisible(state,a,cols),false);
+ assert.equal(isGroupVisible(state,b,cols),false);
+ state=toggleColumnGroup(state,b,cols);
+ assert.equal(isGroupVisible(state,b,cols),true);
+ assert.equal(isGroupVisible(state,a,cols),false);
 });

@@ -3,6 +3,7 @@
 import {useEffect,useMemo,useState} from "react";
 import snapshot from "../data/p3PostDataActive.json";
 import css from "./PoolMasterSpreadsheet.module.css";
+import {isGroupVisible,toggleColumnGroup} from "../lib/pool-column-visibility";
 
 export type PoolMasterRow={
  id:string;ticker:string;company?:string;drug?:string;indication?:string;
@@ -46,6 +47,11 @@ const SEGMENTS:readonly Segment[]=[
 ];
 const ALL_KEYS=SEGMENTS.flatMap(s=>s.columns.map(c=>c.key));
 const ALL_SEGMENTS=SEGMENTS.map(s=>s.key);
+const GROUP_CLINICAL=["clinical","dates"] as const;
+const GROUP_QUALIFICATION=["qualifiers","focus"] as const;
+const COLUMNS_BY_SEGMENT:Record<string,readonly Key[]>=Object.fromEntries(
+ SEGMENTS.map(s=>[s.key,s.columns.map(c=>c.key)]));
+
 const storageKey=(view:View)=>"pdufa:pool-column-layout:v1:"+view;
 const defaultLayout=(view:View):Layout=>({
  expanded:view==="phone"?["focus"]:["qualifiers","focus"],
@@ -144,29 +150,23 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
  }));
  const visible=useMemo(()=>SEGMENTS.filter(s=>layout.expanded.includes(s.key)&&!layout.hiddenSegments.includes(s.key))
    .flatMap(s=>s.columns.filter(c=>!layout.hiddenColumns.includes(c.key))),[layout]);
- const allShowing=visible.length===ALL_KEYS.length;
- const allHidden=visible.length===0;
- const preferred=defaultLayout(view);
- const atPreferred=ALL_SEGMENTS.every(key=>layout.expanded.includes(key)===preferred.expanded.includes(key))
-  && layout.hiddenSegments.length===0 && layout.hiddenColumns.length===0;
- const hideAllOptional=():Layout=>({expanded:[],hiddenSegments:[...ALL_SEGMENTS],hiddenColumns:[]});
- // The two toolbar actions are reversible: All ↔ Hidden, and Preferred ↔ Hidden.
- // Neither action hides the three identity columns or modifies the saved source.
- const toggleAll=()=>edit(()=>allShowing?hideAllOptional():{
-  expanded:[...ALL_SEGMENTS],hiddenSegments:[],hiddenColumns:[]});
- const togglePreferred=()=>edit(()=>atPreferred?hideAllOptional():defaultLayout(view));
+ const clinicalVisible=isGroupVisible(layout,GROUP_CLINICAL,COLUMNS_BY_SEGMENT);
+ const qualificationVisible=isGroupVisible(layout,GROUP_QUALIFICATION,COLUMNS_BY_SEGMENT);
+ const toggleClinical=()=>edit(l=>toggleColumnGroup(l,GROUP_CLINICAL,COLUMNS_BY_SEGMENT));
+ const toggleQualification=()=>edit(l=>toggleColumnGroup(l,GROUP_QUALIFICATION,COLUMNS_BY_SEGMENT));
+ const resetView=()=>edit(()=>defaultLayout(view));
  return <section aria-label="POOL Master Spreadsheet with responsive column visibility" data-pool-master="true" className={css.section}>
   <div className={css.top}>
    <div><h3>POOL Master · 32 columns</h3>
     <p>All stages stay in POOL. Hide or expand entire column segments, or choose individual columns. Hidden fields still participate in research and eligibility checks.</p></div>
-   <div className={css.actions}>
-    <button type="button" data-visibility={allHidden?"hidden":allShowing?"all":"custom"}
-     aria-pressed={allShowing} onClick={toggleAll}>
-     {allShowing?"Hide All":"Show All"}
+   <div className={css.actions} aria-label="Independent POOL column group visibility">
+    <button type="button" data-visibility={clinicalVisible?"visible":"hidden"}
+     aria-pressed={clinicalVisible} onClick={toggleClinical}>
+     {clinicalVisible?"Hide All":"Show All"} · Clinical + Dates
     </button>
-    <button type="button" data-visibility={allHidden?"hidden":atPreferred?"default":"custom"}
-     aria-pressed={atPreferred} onClick={togglePreferred}>
-     {atPreferred?"Hide All":"Reset "+(view==="phone"?"Phone":"PC")+" View"}
+    <button type="button" data-visibility={qualificationVisible?"visible":"hidden"}
+     aria-pressed={qualificationVisible} onClick={toggleQualification}>
+     {qualificationVisible?"Hide All":"Show All"} · Qualification + FOCUS
     </button>
    </div>
   </div>
@@ -174,6 +174,7 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
    {view==="phone"?"Phone: data columns use 50% of viewport width; Ticker stays pinned.":
    "PC: data columns adapt from 180–260px; Ticker, Company, and NCT ID stay pinned."}
    {" "}Layouts are saved separately on this device.
+   {" "}<button className={css.resetLink} type="button" onClick={resetView}>Reset {view==="phone"?"Phone":"PC"} View</button>
   </p>
   <div className={css.segments} role="group" aria-label="POOL column segments">
    {SEGMENTS.map(s=>{

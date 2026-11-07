@@ -35,16 +35,15 @@
  .visibilityToggle{white-space:nowrap}
 }
 
-/* Reversible visibility controls: blue-green means shown, burgundy means hidden. */
+/* Independent group toggles: color is based only on their own visible columns. */
 .actions button,.segmentToggle,.visibilityToggle{transition:background-color .16s ease,color .16s ease,border-color .16s ease}
-.actions button[data-visibility="all"],
-.actions button[data-visibility="default"],
-.segmentToggle[aria-pressed="true"]{
+.actions button[data-visibility="visible"],.segmentToggle[aria-pressed="true"]{
  background:#145d48;color:#fff;border-color:#145d48;
 }
-.actions button[data-visibility="hidden"],
-.visibilityToggle[aria-pressed="true"]{
+.actions button[data-visibility="hidden"],.visibilityToggle[aria-pressed="true"]{
  background:#893e47;color:#fff;border-color:#893e47;
 }
 .segmentToggle[aria-pressed="true"] small{color:#e5fbef}
 .actions button:not(:disabled):active,.segment button:not(:disabled):active{filter:brightness(.91)}
+.resetLink{border:0;background:transparent;color:#175a42;text-decoration:underline;padding:0 2px;font:inherit;font-weight:700;cursor:pointer}
+.resetLink:focus-visible{outline:3px solid #279873;outline-offset:2px}
