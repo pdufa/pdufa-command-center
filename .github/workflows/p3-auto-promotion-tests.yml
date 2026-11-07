@@ -4,6 +4,8 @@ on:
     paths:
       - 'scripts/auto_promote_p3_post_data.py'
       - 'tests/test_p3_auto_promotion.py'
+      - 'scripts/refresh_existing_p3_post_data.py'
+      - 'tests/test_p3_existing_row_refresh.py'
       - '.github/workflows/p3-post-data-google-sheet-sync.yml'
       - '.github/workflows/p3-auto-promotion-tests.yml'
   push:
@@ -26,4 +28,6 @@ jobs:
       - name: Install only public test dependencies
         run: python -m pip install requests google-auth
       - name: Verify eligibility gates, exact-NCT dedupe and fail-closed review
-        run: python -m unittest discover -s tests -p 'test_p3_auto_promotion.py' -v
+        run: |
+          python -m unittest discover -s tests -p 'test_p3_auto_promotion.py' -v
+          python -m unittest discover -s tests -p 'test_p3_existing_row_refresh.py' -v

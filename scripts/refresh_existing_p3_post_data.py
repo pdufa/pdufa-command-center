@@ -1,0 +1,325 @@
+#!/usr/bin/env python3
+"""Source-gated daily refresh of EXISTING P3 POST-DATA Google Sheets trial rows.
+
+Updates only supported source columns. Never overwrites exact trial identity,
+RAAS scoring, human research notes or historical trial evidence. Fail closed
+on stale/missing sources and record each skipped field in an audit.
+"""
+from __future__ import annotations
+
+import csv
+import json
+import math
+import os
+import re
+from concurrent.futures import ThreadPoolExecutor, as_completed
+from datetime import date, datetime, timedelta, timezone
+from pathlib import Path
+from urllib.parse import quote
+
+import google.auth.transport.requests
+from google.oauth2 import service_account
+import requests
+
+from auto_promote_p3_post_data import (
+    CAPS, CANDIDATES, NCT, SHEET_ID, SHEET_NAME, TICKER,
+    iso_day, link_ok, load_csv, sheets_values,
+)
+
+ROOT = Path(__file__).resolve().parents[1]
+AUDIT = ROOT / "reports/p3_existing_row_refresh_latest.json"
+CTGOV = "https://clinicaltrials.gov/api/v2/studies/"
+SHEETS_API = f"https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}/values:batchUpdate"
+MAX_TRIALS = 597
+MAX_CAP_AGE = timedelta(days=3)
+# A-C trial identity; K-U scoring, study history, human research notes are never written.
+# FDA source changes require specifically reviewed new regulatory evidence.
+EDITABLE = frozenset((3, 4, 5, 6, 7, 8, 9, 21, 22, 23, 24, 25, 26, 27))
+IMMUTABLE = frozenset((0, 1, 2, *range(10, 21)))
+HEADERS = {0:"Ticker", 1:"NCT ID", 2:"Company", 3:"Registry Status",
+           4:"Phase 3 Results Public?", 5:"Results Publication / Announcement Date",
+           6:"Registry Source", 7:"Snapshot Date", 8:"Checked UTC",
+           9:"Classification Basis", 21:"Issuer/FDA Evidence URL",
+           22:"Review As-Of", 23:"Market Cap USD", 24:"Cap As-of",
+           25:"PDUFA / FDA Filing", 26:"Public Phase 3 Results Source",
+           27:"Market Cap Source"}
+
+
+def val(row, idx):
+    return row[idx] if idx < len(row) else ""
+
+
+def validate_grid(rows):
+    if not rows or len(rows) < 2 or len(rows) - 1 > MAX_TRIALS:
+        raise ValueError("Existing P3 grid empty or exceeds protected row limit")
+    for index, title in HEADERS.items():
+        if val(rows[0], index) != title:
+            raise ValueError(f"Header changed in P3 column {index+1}: {title}")
+    indexed = {}
+    for row_no, row in enumerate(rows[1:], start=4):
+        ticker, nct = str(val(row, 0)).strip(), str(val(row, 1)).strip()
+        if not TICKER.fullmatch(ticker) or not NCT.fullmatch(nct):
+            raise ValueError("Blank or invalid exact trial identity on row " + str(row_no))
+        if nct in indexed:
+            raise ValueError("Duplicate NCT before refresh: " + nct)
+        if not str(val(row, 2)).strip():
+            raise ValueError("Company identity missing on row " + str(row_no))
+        indexed[nct] = (row_no, ticker, row)
+    return indexed
+
+
+def cap_index(rows):
+    index = {}
+    for item in rows:
+        ticker = str(item.get("ticker") or "").upper().strip()
+        if not ticker or ticker in index:
+            raise ValueError("Duplicate/blank Nasdaq market-cap ticker")
+        index[ticker] = item
+    return index
+
+
+def cap_evidence(record, cutoff):
+    if not record:
+        return None, "MARKET_CAP_NOT_IN_CURRENT_LEDGER"
+    try:
+        cap = float(record["market_cap"])
+        stamp = datetime.fromisoformat(record["market_cap_checked_at"].replace("Z","+00:00"))
+        if not math.isfinite(cap) or stamp.tzinfo is None:
+            raise ValueError("Invalid market-cap observation")
+        cap_day = stamp.astimezone(timezone.utc).date()
+    except (KeyError, TypeError, ValueError, OverflowError):
+        return None, "MARKET_CAP_NOT_VERIFIED"
+    if record.get("market_cap_status") != "VERIFIED" or not link_ok(record.get("market_cap_source")):
+        return None, "MARKET_CAP_NOT_VERIFIED"
+    if cap_day > cutoff or cutoff - cap_day > MAX_CAP_AGE:
+        return None, "MARKET_CAP_STALE"
+    if not 300_000_000 <= cap <= 10_000_000_000:
+        return None, "MARKET_CAP_OUTSIDE_ACTIVE_RANGE"
+    return (int(cap), cap_day.isoformat(), record["market_cap_source"]), None
+
+
+def official_study(study, nct, cutoff):
+    if not isinstance(study, dict):
+        raise ValueError("Invalid official trial response")
+    protocol = study.get("protocolSection") or {}
+    id_module = protocol.get("identificationModule") or {}
+    design = protocol.get("designModule") or {}
+    status = protocol.get("statusModule") or {}
+    if id_module.get("nctId") != nct or "PHASE3" not in design.get("phases", []):
+        raise ValueError("Official registry NCT or Phase 3 identity mismatch")
+    overall = status.get("overallStatus")
+    if not isinstance(overall, str) or not re.fullmatch(r"[A-Z_]{3,45}", overall):
+        raise ValueError("Missing current official trial status")
+    posted = status.get("resultsFirstPostDateStruct")
+    posted_date = None
+    if posted:
+        day = iso_day(posted.get("date"), cutoff)
+        if not day:
+            raise ValueError("Invalid/future official registry results-first-post date")
+        if study.get("resultsSection") is None:
+            raise ValueError("Registry results posted but results section missing")
+        posted_date = day.isoformat()
+    return overall, posted_date
+
+
+def curated_fda(catalog, nct, ticker, cutoff, review_date):
+    """Only apply an evidence-dated *newer* reviewed PDUFA date to this exact NCT."""
+    for event_key, event in catalog.get("cases", {}).items():
+        if not event_key.startswith("APPLICATION|" + ticker + "|") or event.get("nctId") != nct:
+            continue
+        gate = event.get("pdufa_assignment") or {}
+        reviewed = iso_day(event.get("reviewedOn"), cutoff)
+        published = iso_day(gate.get("published_at"), cutoff)
+        occurred = iso_day(gate.get("event_date"), cutoff)
+        target = gate.get("pdufa_target_date")
+        try:
+            target_day = date.fromisoformat(target)
+        except (TypeError, ValueError):
+            target_day = None
+        if (event.get("reviewerMethod") != "PRIMARY_PUBLIC_ISSUER_DISCLOSURE"
+                or gate.get("review_status") != "VERIFIED"
+                or not reviewed or not published or not occurred
+                or reviewed < published or not target_day or target_day < cutoff
+                or not link_ok(gate.get("source_url"))):
+            return None, "FDA_EVIDENCE_NOT_CURRENT_VERIFIED"
+        previous = iso_day(str(review_date), cutoff)
+        if previous and reviewed <= previous:
+            return None, "FDA_CURATED_EVIDENCE_NOT_NEWER_THAN_SHEET"
+        return (target_day.isoformat(),gate["source_url"],reviewed.isoformat()), None
+    return None, "FDA_NO_NEW_EXACT_NCT_REVIEWED_EVENT"
+
+
+def build_plan(rows, market_rows, catalog, registry, cutoff, checked_at):
+    """Pure, testable plan. registry maps NCT -> JSON payload or exception."""
+    indexed = validate_grid(rows)
+    market = cap_index(market_rows)
+    data = []
+    report = []
+    counts = {"trials":len(indexed),"registryChecked":0,"capUpdated":0,
+              "resultsUpdated":0,"fdaUpdated":0,"rowsChanged":0}
+    today = cutoff.isoformat()
+    if catalog.get("schemaVersion") != "pdufa-curated-phase3-announcements-v1":
+        raise ValueError("Reviewed FDA catalog schema changed")
+    for nct, (row_no,ticker,row) in indexed.items():
+        updates = {}
+        review = []
+        cap, issue = cap_evidence(market.get(ticker),cutoff)
+        if issue:
+            review.append(issue)
+        else:
+            for index, new in ((23,cap[0]),(24,cap[1]),(27,cap[2])):
+                if val(row,index) != new:
+                    updates[index] = new
+                    if index==23: counts["capUpdated"] += 1
+        study = registry.get(nct)
+        if isinstance(study, Exception):
+            review.append("CTGOV_UNAVAILABLE_" + type(study).__name__)
+        else:
+            try:
+                overall, first_posted = official_study(study,nct,cutoff)
+                counts["registryChecked"] += 1
+                if val(row,3) != overall:
+                    updates[3] = overall
+                # A fetched official trial may have an independently verified
+                # posting. NEVER downgrade a company/SEC/journal-public readout.
+                current_flag = str(val(row,4)).upper()
+                current_basis = str(val(row,9))
+                source = "https://clinicaltrials.gov/study/" + nct
+                if first_posted:
+                    if not current_flag.startswith("YES"):
+                        for idx, value in ((4,"YES"),(5,first_posted),
+                                           (6,source),(9,"CLINICALTRIALS_GOV_RESULTS_POSTING_NOT_ISSUER_ANNOUNCEMENT"),
+                                           (26,source)):
+                            if val(row,idx)!=value:
+                                updates[idx]=value
+                        counts["resultsUpdated"] += 1
+                    elif current_basis == "CLINICALTRIALS_GOV_RESULTS_POSTING_NOT_ISSUER_ANNOUNCEMENT":
+                        for idx,value in ((5,first_posted),(6,source),(26,source)):
+                            if val(row,idx)!=value:
+                                updates[idx]=value
+                                if idx==5: counts["resultsUpdated"] += 1
+                elif current_basis == "CLINICALTRIALS_GOV_RESULTS_POSTING_NOT_ISSUER_ANNOUNCEMENT" and current_flag.startswith("YES"):
+                    review.append("PREVIOUS_REGISTRY_RESULTS_NOT_RECONFIRMED")
+                # H/I refer only to successfully refreshed source observation.
+                for idx,value in ((7,today),(8,checked_at)):
+                    if val(row,idx)!=value:
+                        updates[idx]=value
+            except (ValueError, AttributeError, TypeError) as exc:
+                review.append("CTGOV_IDENTITY_OR_RESULTS_NEEDS_REVIEW_" + type(exc).__name__)
+        fda, fda_issue = curated_fda(catalog,nct,ticker,cutoff,val(row,22))
+        if fda:
+            for idx,value in ((25,fda[0]),(21,fda[1]),(22,fda[2])):
+                if val(row,idx)!=value:
+                    updates[idx]=value
+            if any(k in updates for k in (25,21,22)):
+                counts["fdaUpdated"]+=1
+        elif fda_issue and fda_issue != "FDA_CURATED_EVIDENCE_NOT_NEWER_THAN_SHEET":
+            review.append(fda_issue)
+        # A date that has elapsed is not evidence of approval/CRL.
+        try:
+            previous_fda_date = date.fromisoformat(str(val(row,25)))
+            if previous_fda_date < cutoff and not fda:
+                review.append("PAST_FDA_TARGET_OUTCOME_REQUIRES_VERIFICATION")
+        except ValueError:
+            pass
+        if any(index not in EDITABLE or index in IMMUTABLE for index in updates):
+            raise AssertionError("Attempt to overwrite immutable trial/RAAS cells")
+        if updates:
+            counts["rowsChanged"] += 1
+            for idx, value in sorted(updates.items()):
+                column = a1_col(idx)
+                data.append({"range":f"'{SHEET_NAME}'!{column}{row_no}",
+                             "majorDimension":"ROWS","values":[[value]]})
+        report.append({"nct":nct,"ticker":ticker,"row":row_no,
+                       "updatedColumns":[a1_col(k) for k in sorted(updates)],
+                       "review":sorted(set(review))})
+    return data, {"asOf":checked_at,"counts":counts,"records":report,
+                  "protectedColumns":"A:C,K:U","source":"Official ClinicalTrials.gov + overnight Nasdaq cap ledger + dated curated FDA evidence"}
+
+
+def a1_col(zero_index):
+    n=zero_index+1
+    s=""
+    while n:
+        n,r=divmod(n-1,26)
+        s=chr(65+r)+s
+    return s
+
+
+def ctgov_get(nct):
+    try:
+        response=requests.get(CTGOV+nct,timeout=40,headers={"Accept":"application/json",
+                                                             "User-Agent":"PDUFAExistingTrialRefresh/1.0"})
+        response.raise_for_status()
+        return response.json()
+    except (requests.RequestException, ValueError) as exc:
+        return exc
+
+
+def get_registry(ncts):
+    output={}
+    with ThreadPoolExecutor(max_workers=5) as pool:
+        futures={pool.submit(ctgov_get,nct):nct for nct in ncts}
+        for future in as_completed(futures):
+            output[futures[future]]=future.result()
+    return output
+
+
+def api_auth():
+    secret=os.environ.get("GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON","")
+    if not secret:
+        raise RuntimeError("Google Sheets credential missing")
+    creds=service_account.Credentials.from_service_account_info(
+        json.loads(secret),scopes=["https://www.googleapis.com/auth/spreadsheets"])
+    creds.refresh(google.auth.transport.requests.Request())
+    return {"Authorization":"Bearer "+creds.token}
+
+
+def main():
+    auth=api_auth()
+    before=sheets_values(auth,"A3:AB600")
+    indexed=validate_grid(before)
+    checked_at=datetime.now(timezone.utc).isoformat(timespec="seconds")
+    cutoff=datetime.now(timezone.utc).date()
+    with CANDIDATES.open(encoding="utf-8") as f:
+        catalog=json.load(f)
+    registries=get_registry(indexed)
+    data, report=build_plan(before,load_csv(CAPS),catalog,registries,cutoff,checked_at)
+    # Recheck the entire destination before any write. We do not modify A-C or K-U.
+    if sheets_values(auth,"A3:AB600")!=before:
+        raise RuntimeError("Google Sheet modified during refresh; no updates written")
+    if data:
+        response=requests.post(SHEETS_API,headers=auth,
+            json={"valueInputOption":"RAW","data":data,"includeValuesInResponse":False},
+            timeout=60)
+        response.raise_for_status()
+        updated=sheets_values(auth,"A3:AB600")
+        after=validate_grid(updated)
+        if set(indexed)!=set(after):
+            raise RuntimeError("Candidate identity changed during refresh")
+        for nct,(row_no,ticker,row) in indexed.items():
+            new_row=after[nct][2]
+            if new_row[:3]!=row[:3] or any(val(new_row,k)!=val(row,k) for k in IMMUTABLE):
+                raise RuntimeError("Protected trial identity/RAAS/history changed: "+nct)
+        for item in data:
+            cell=item["range"].split("!")[-1]
+            match=re.fullmatch(r"([A-Z]+)(\d+)",cell)
+            idx=0
+            for c in match.group(1):
+                idx=idx*26+(ord(c)-64)
+            idx-=1
+            record=updated[int(match.group(2))-3]
+            if val(record,idx)!=item["values"][0][0]:
+                raise RuntimeError("Updated value not confirmed in "+cell)
+    report["writes"]=len(data)
+    report["poolModified"]=False
+    report["raasHistoryModified"]=False
+    AUDIT.parent.mkdir(parents=True,exist_ok=True)
+    AUDIT.write_text(json.dumps(report,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
+    print(json.dumps({"asOf":report["asOf"],"counts":report["counts"],
+                      "writes":report["writes"],"reviewTrialCount":sum(bool(r["review"]) for r in report["records"]),
+                      "poolModified":False,"raasHistoryModified":False},indent=2))
+
+
+if __name__=="__main__":
+    main()
