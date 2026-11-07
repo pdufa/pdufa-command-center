@@ -3,6 +3,95 @@
   "sourceAsOf": "2026-11-07",
   "records": [
     {
+      "nctId": "NCT04544293",
+      "ticker": "SVRA",
+      "drug": "Molgramostim",
+      "indication": "Autoimmune Pulmonary Alveolar Proteinosis",
+      "facts": {
+        "magnitude": {
+          "value": "Molgramostim versus placebo, primary change in hemoglobin-adjusted percent-predicted DLCO at Week 24: net mean difference +6.0 percentage points; 95% CI 2.5 to 9.4; p=0.0007.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT04544293",
+          "sourceDate": "2025-08-07",
+          "method": "Independent check of the exact ClinicalTrials.gov NCT04544293 posted primary endpoint analysis table: molgramostim/placebo contrast, Week 24, mean difference, CI, and p value. Describes a reported pulmonary function endpoint only; not established clinical meaningfulness, FDA approval, or RAAS probability.",
+          "confidence": "MODERATE"
+        }
+      },
+      "advantages": []
+    },
+    {
+      "nctId": "NCT05767346",
+      "ticker": "CYTK",
+      "drug": "Aficamten",
+      "indication": "Obstructive Hypertrophic Cardiomyopathy (oHCM)",
+      "facts": {
+        "clinicalBenefit": {
+          "value": "In randomized Phase 3 MAPLE-HCM, aficamten increased peak oxygen uptake versus metoprolol at Week 24 by a least-squares mean between-group difference of +2.30 mL/kg/min (95% CI +1.52 to +3.07; p<0.0001). This verifies the trial's exercise-capacity endpoint result, not approval probability or superiority to all possible therapies.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05767346",
+          "sourceDate": "2026-06-09",
+          "method": "Exact NCT05767346 registry results (primary pVO2 Week 24, prespecified randomized aficamten vs metoprolol arms, least-squares difference and 95% CI), independently cross-checked against peer-reviewed NEJM MAPLE-HCM trial 10.1056/NEJMoa2504654 / PubMed PMID 40888697. Restricted to the reported endpoint; not FDA approval, all-comparator superiority, or RAAS prediction.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "e6c4c93cbccc4ddd93a112dc3bb125c77865c148ede0cdc468006a428cabb21e",
+            "endpointTitle": "Change in Peak Oxygen Uptake (pVO2) by Cardiopulmonary Exercise Testing (CPET)",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Least Squares Mean Difference",
+            "observedValue": "2.30",
+            "confidenceLower": "1.52",
+            "confidenceUpper": "3.07",
+            "crossReference": "https://pubmed.ncbi.nlm.nih.gov/40888697/"
+          }
+        },
+        "magnitude": {
+          "value": "Aficamten versus metoprolol, Phase 3 primary change from baseline in pVO2 at Week 24: least-squares mean difference +2.30 mL/kg/min (95% CI +1.52 to +3.07; p<0.0001). A matched active-comparator effect estimate, not a forecast.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05767346",
+          "sourceDate": "2026-06-09",
+          "method": "Exact NCT05767346 registry results (primary pVO2 Week 24, prespecified randomized aficamten vs metoprolol arms, least-squares difference and 95% CI), independently cross-checked against peer-reviewed NEJM MAPLE-HCM trial 10.1056/NEJMoa2504654 / PubMed PMID 40888697. Restricted to the reported endpoint; not FDA approval, all-comparator superiority, or RAAS prediction.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "e6c4c93cbccc4ddd93a112dc3bb125c77865c148ede0cdc468006a428cabb21e",
+            "endpointTitle": "Change in Peak Oxygen Uptake (pVO2) by Cardiopulmonary Exercise Testing (CPET)",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Least Squares Mean Difference",
+            "observedValue": "2.30",
+            "confidenceLower": "1.52",
+            "confidenceUpper": "3.07",
+            "crossReference": "https://pubmed.ncbi.nlm.nih.gov/40888697/"
+          }
+        },
+        "headToHead": {
+          "value": "Direct randomized active-comparator evidence: aficamten versus metoprolol succinate in MAPLE-HCM (NCT05767346), with prespecified Week-24 pVO2 primary endpoint favoring aficamten by +2.30 mL/kg/min (95% CI +1.52 to +3.07; p<0.0001). Does not establish superiority over other competing classes.",
+          "status": "VERIFIED",
+          "sourceUrl": "https://clinicaltrials.gov/study/NCT05767346",
+          "sourceDate": "2026-06-09",
+          "method": "Exact NCT05767346 registry results (primary pVO2 Week 24, prespecified randomized aficamten vs metoprolol arms, least-squares difference and 95% CI), independently cross-checked against peer-reviewed NEJM MAPLE-HCM trial 10.1056/NEJMoa2504654 / PubMed PMID 40888697. Restricted to the reported endpoint; not FDA approval, all-comparator superiority, or RAAS prediction.",
+          "confidence": "HIGH",
+          "sourceWitness": {
+            "registrySourceHash": "e6c4c93cbccc4ddd93a112dc3bb125c77865c148ede0cdc468006a428cabb21e",
+            "endpointTitle": "Change in Peak Oxygen Uptake (pVO2) by Cardiopulmonary Exercise Testing (CPET)",
+            "groupIds": [
+              "OG000",
+              "OG001"
+            ],
+            "statisticalParameter": "Least Squares Mean Difference",
+            "observedValue": "2.30",
+            "confidenceLower": "1.52",
+            "confidenceUpper": "3.07",
+            "crossReference": "https://pubmed.ncbi.nlm.nih.gov/40888697/"
+          }
+        }
+      },
+      "advantages": []
+    },
+    {
       "nctId": "NCT05811247",
       "ticker": "APMD",
       "drug": "AD109",
@@ -31,23 +120,6 @@
           "sourceUrl": "https://clinicaltrials.gov/study/NCT05813275",
           "sourceDate": "2026-09-11",
           "method": "Independent check of the exact ClinicalTrials.gov NCT05813275 posted primary endpoint analysis table: comparator, group IDs OG000/OG001, 6-month timeframe, least-squares difference, 95% limits, reported p value. Source fact only; not clinical meaningfulness, FDA approval, or RAAS probability.",
-          "confidence": "MODERATE"
-        }
-      },
-      "advantages": []
-    },
-    {
-      "nctId": "NCT04544293",
-      "ticker": "SVRA",
-      "drug": "Molgramostim",
-      "indication": "Autoimmune Pulmonary Alveolar Proteinosis",
-      "facts": {
-        "magnitude": {
-          "value": "Molgramostim versus placebo, primary change in hemoglobin-adjusted percent-predicted DLCO at Week 24: net mean difference +6.0 percentage points; 95% CI 2.5 to 9.4; p=0.0007.",
-          "status": "VERIFIED",
-          "sourceUrl": "https://clinicaltrials.gov/study/NCT04544293",
-          "sourceDate": "2025-08-07",
-          "method": "Independent check of the exact ClinicalTrials.gov NCT04544293 posted primary endpoint analysis table: molgramostim/placebo contrast, Week 24, mean difference, CI, and p value. Describes a reported pulmonary function endpoint only; not established clinical meaningfulness, FDA approval, or RAAS probability.",
           "confidence": "MODERATE"
         }
       },
