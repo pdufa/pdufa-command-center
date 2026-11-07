@@ -3,6 +3,7 @@ import agiosEvidence from "../../../data/agiosPhase3Evidence20261106.json";
 import ionisEvidence from "../../../data/ionisPhase3Evidence20261106.json";
 import {activePhase3Cohorts} from "../../../lib/phase3-active-cohorts";
 import {activeOfficialRegistryRecord,activeOfficialRegistryIntegrity} from "../../../lib/phase3-active-official-registry";
+import {phase3PeerReviewedFact,phase3PeerEvidenceIntegrity,phase3RegistryBinaryFact} from "../../../lib/phase3-source-fact-enrichment";
 import companySearchLog from "../../../data/phase3CompanyWebsiteSearchLog20261106.json";
 import {populationGeographyFact,populationGeographyIntegrity,populationGeographyRecords} from "../../../lib/phase3-population-geography";
 import {irAssessment,irResearchIntegrity,isObservedStatus,isSourceFactStatus,requiresResearchStatus,investorRelationsCoverage} from "../../../lib/phase3-ir-research";
@@ -54,6 +55,7 @@ function statusFor(
  if(researched)return researched.classification;
  if(agiosFacts.has(r.nctId+"#"+q.number))return "SOURCE_FACT_ONLY";
  if(ionisFacts.has(r.nctId+"#"+q.number))return "SOURCE_FACT_ONLY";
+ if(phase3PeerReviewedFact(r.nctId,q.number))return "SOURCE_FACT_ONLY";
  const ir=investorByNct.get(r.nctId);
  if(q.number===30&&ir?.regulatoryEvidenceStatus&&ir.regulatoryEvidenceUrl)return "SOURCE_FACT_ONLY";
  if(ir?.companyUrl){
@@ -93,6 +95,7 @@ function statusFor(
  if(q.number===25&&r.registrySourceUrl)return "SOURCE_FACT_ONLY";
  if(q.number===27&&/\bplacebo\b/i.test(r.registeredInterventions||""))return "SOURCE_FACT_ONLY";
  if(phase3OnlineSourceFact(r.nctId,q.number))return "SOURCE_FACT_ONLY";
+ if(phase3RegistryBinaryFact(r.nctId,q.number))return "SOURCE_FACT_ONLY";
  return "UNSCORED";
 }
 const counts=(statuses:string[])=>({
@@ -121,7 +124,8 @@ export async function GET(request:Request){
     registryCrosswalk.records.length!==762||registryByNct.size!==762||
     agiosEvidence.trials.length!==9||agiosFacts.size!==agiosEvidence.facts.length||
     ionisEvidence.trials.length!==12||ionisFacts.size!==ionisEvidence.facts.length||
-    !activeOfficialRegistryIntegrity(new Set([...activePhase3Cohorts.pre,...activePhase3Cohorts.post].map(r=>r.nctId)))){
+    (!activeOfficialRegistryIntegrity(new Set([...activePhase3Cohorts.pre,...activePhase3Cohorts.post].map(r=>r.nctId)))||
+    !phase3PeerEvidenceIntegrity(new Set([...activePhase3Cohorts.pre,...activePhase3Cohorts.post].map(r=>r.nctId))))){
    return Response.json({error:"The research snapshot failed a count/identity check"},{status:503});
  }
  const perQuestion:QuestionAudit[]=UNIVERSAL_PHASE3_QUESTIONS.map((q,i)=>({
