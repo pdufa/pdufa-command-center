@@ -105,7 +105,7 @@ test("BOTTOM renderer is horizontally expandable and TOP invocation remains unto
 });
 test('saved five-factor score events preserve historical state and one additive ENERGIZE change',()=>{
  const events=require('../data/bottomOnlyScoreHistory20261107.json').records;
- assert.equal(events.length,25);assert.equal(events.filter(e=>e.eventType==='RESEARCH_SCORE_SNAPSHOT').length,23);
+ assert.equal(events.length,26);assert.equal(events.filter(e=>e.eventType==='RESEARCH_SCORE_SNAPSHOT').length,23);
  const change=events.find(e=>e.nctId==='NCT04770753'&&e.eventType==='RESEARCH_SCORE_CHANGE');assert.ok(change);
  assert.equal(change.previousClinicalFullScore,null);assert.equal(change.clinicalFullScore,55);assert.equal(change.clinicalScoredFactors,5);
  assert.equal(new Set(events.map(e=>e.eventId)).size,events.length);
@@ -160,7 +160,26 @@ test("BOTTOM ABVX readout gets five explicit post-readout clinical grades only, 
  assert.equal(payload.history.length,3);
  assert.ok(t.additionalReviewedFacts.some(f=>f.question===3&&f.sourceUrl.includes("ir.abivax.com/node/12341/html")));
  assert.ok(t.additionalReviewedFacts.some(f=>f.question===16&&f.criticalLimit.includes("not independent maintenance")));
- assert.equal(report.completeClinicalOverallScores,3);
- assert.equal(report.activeFactorsScored,30);
+ assert.equal(report.completeClinicalOverallScores,4);
+ assert.equal(report.activeFactorsScored,35);
  assert.equal(report.completeThirtyMetricOverallScores,0);
+});
+
+test("ROSELLA FDA-reviewed observed survival supports exactly five CORT research grades, not FDA probability",async()=>{
+ const t=report.trials.find(x=>x.nctId==="NCT05257408");assert.ok(t);
+ assert.equal(t.cohort,"BOTTOM");assert.equal(t.clinicalFullScore,65);
+ assert.equal(t.clinicalScoredFactors,5);
+ const ids=["post-1-1","post-1-2","post-1-3","post-1-4","post-1-5"];
+ assert.deepEqual(ids.map(id=>t.metrics.find(m=>m.id===id)?.score),[75,75,75,50,50]);
+ for(const id of ids){const m=t.metrics.find(x=>x.id===id);assert.ok(m?.sourceUrl&&m?.benchmarkSourceUrl&&m?.observedResult&&m?.criticalRiskReview);}
+ assert.equal(t.legacyThirtyMetricFullScore,null);
+ const events=require("../data/bottomOnlyScoreHistory20261107.json").records.filter(x=>x.nctId===t.nctId);
+ assert.equal(events.length,2);
+ assert.ok(events.some(x=>x.eventType==="RESEARCH_SCORE_SNAPSHOT"&&x.clinicalFullScore===null));
+ assert.ok(events.some(x=>x.eventType==="RESEARCH_SCORE_CHANGE"&&x.clinicalFullScore===65));
+ const res=await GET(new Request("http://localhost/api/bottom-only-completion?nctId="+t.nctId));
+ assert.equal(res.status,200);const payload=await res.json();
+ assert.equal(payload.trial.clinicalFullScore,65);assert.equal(payload.history.length,3);
+ assert.equal(report.activeFactorsScored,35);
+ assert.equal(report.completeClinicalOverallScores,4);
 });
