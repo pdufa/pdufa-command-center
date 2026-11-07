@@ -2055,9 +2055,9 @@
         "doi": "10.1056/nejmoa2410542",
         "indexedSource": "MED",
         "openAccess": false,
-        "searchMode": "DRUG_INDICATION"
+        "searchMode": "TRIAL"
       },
-      "sourceMatch": "DRUG_AND_INDICATION",
+      "sourceMatch": "EXACT_NCT",
       "sourceTitle": "Phase 3 Trial of Inhaled Molgramostim in Autoimmune Pulmonary Alveolar Proteinosis.",
       "sourceType": "LITERATURE",
       "sourceUrl": "https://europepmc.org/article/MED/40834301",
@@ -2121,7 +2121,7 @@
         "doi": "10.1136/bmjresp-2024-002832",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "DRUG_INDICATION"
+        "searchMode": "TRIAL"
       },
       "sourceMatch": "DRUG_AND_INDICATION",
       "sourceTitle": "Pharmacokinetics and pharmacodynamics of inhaled molgramostim in healthy people.",
@@ -2548,9 +2548,9 @@
         "doi": "10.1136/thorax-2025-223880",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "DRUG_INDICATION"
+        "searchMode": "TRIAL"
       },
-      "sourceMatch": "DRUG_AND_INDICATION",
+      "sourceMatch": "EXACT_NCT",
       "sourceTitle": "Cytisinicline for smoking cessation in individuals with self-reported COPD: a post hoc analysis of the ORCA-2 and ORCA-3 trials.",
       "sourceType": "LITERATURE",
       "sourceUrl": "https://europepmc.org/article/MED/40962497",
@@ -3075,9 +3075,9 @@
         "doi": "10.1056/nejmoa2510198",
         "indexedSource": "MED",
         "openAccess": false,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
-      "sourceMatch": "EXACT_NCT",
+      "sourceMatch": "DRUG_AND_INDICATION",
       "sourceTitle": "A Phase 3 Trial of Atacicept in Patients with IgA Nephropathy.",
       "sourceType": "LITERATURE",
       "sourceUrl": "https://europepmc.org/article/MED/41196369",
@@ -3473,9 +3473,9 @@
         "doi": "10.1056/nejmoa2610103",
         "indexedSource": "MED",
         "openAccess": false,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
-      "sourceMatch": "EXACT_NCT",
+      "sourceMatch": "DRUG_AND_INDICATION",
       "sourceTitle": "Atacicept in IgA Nephropathy - Phase 3 Trial Final Efficacy Analysis.",
       "sourceType": "LITERATURE",
       "sourceUrl": "https://europepmc.org/article/MED/42911181",
@@ -3925,7 +3925,7 @@
         "doi": "10.1038/s41698-022-00308-1",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "TRIAL"
+        "searchMode": "DRUG_INDICATION"
       },
       "sourceMatch": "INDICATION_CONTEXT_ONLY",
       "sourceTitle": "Molecular pathogenesis of desmoid tumor and the role of γ-secretase inhibition.",
@@ -14735,7 +14735,7 @@
         "doi": "10.1007/s40259-024-00687-w",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "DRUG_INDICATION"
+        "searchMode": "TRIAL"
       },
       "sourceMatch": "INDICATION_CONTEXT_ONLY",
       "sourceTitle": "Interleukin-17 Inhibitors in the Treatment of Hidradenitis Suppurativa.",
@@ -14765,7 +14765,7 @@
         "doi": "10.1080/19420862.2024.2443538",
         "indexedSource": "MED",
         "openAccess": true,
-        "searchMode": "DRUG_INDICATION"
+        "searchMode": "TRIAL"
       },
       "sourceMatch": "ISSUER_OR_SOURCE_LEAD_ONLY",
       "sourceTitle": "Antibodies to watch in 2025.",

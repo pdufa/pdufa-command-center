@@ -2948,8 +2948,8 @@
       "sourceUrls": [
         "https://clinicaltrials.gov/study/NCT04576949",
         "https://europepmc.org/article/MED/37432430",
-        "https://europepmc.org/article/MED/40257755",
-        "https://europepmc.org/article/MED/40962497"
+        "https://europepmc.org/article/MED/40962497",
+        "https://europepmc.org/article/MED/40257755"
       ],
       "supportingRegistryPointers": [
         "registry.reportedOutcomeMeasures"
@@ -3499,8 +3499,8 @@
       "sourceUrls": [
         "https://clinicaltrials.gov/study/NCT04576949",
         "https://europepmc.org/article/MED/37432430",
-        "https://europepmc.org/article/MED/40257755",
-        "https://europepmc.org/article/MED/40962497"
+        "https://europepmc.org/article/MED/40962497",
+        "https://europepmc.org/article/MED/40257755"
       ],
       "supportingRegistryPointers": [
         "registry.adverseEventGroups"
@@ -38635,9 +38635,9 @@
       "sourcePacketHash": "e2c335b532329595b4662a1f3999e7447481ec2de2107b86b5e9c7f203d82ee4",
       "sourceUrls": [
         "https://clinicaltrials.gov/study/NCT04716231",
-        "https://europepmc.org/article/MED/42911181",
         "https://europepmc.org/article/MED/41620980",
-        "https://europepmc.org/article/MED/42710874"
+        "https://europepmc.org/article/MED/42710874",
+        "https://europepmc.org/article/MED/42911181"
       ],
       "supportingRegistryPointers": [
         "registry.adverseEventGroups"

@@ -2,7 +2,7 @@
   "companyIssuers": 20,
   "errorCount": 19,
   "focusTrials": 29,
-  "generatedAt": "2026-11-07T21:29:53+00:00",
+  "generatedAt": "2026-11-07T21:33:01+00:00",
   "newSourceLeads": 555,
   "perTrial": [
     {
@@ -451,22 +451,22 @@
     {
       "error": "HTTP_403",
       "sourceType": "COMPANY",
+      "ticker": "COGT"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "COGT"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "COGT"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
       "ticker": "CORT"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "COGT"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "COGT"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "COGT"
     },
     {
       "error": "ValueError:PUBLIC_SOURCE_TOO_LARGE",
@@ -476,22 +476,22 @@
     {
       "error": "HTTP_403",
       "sourceType": "COMPANY",
+      "ticker": "ABVX"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "ABVX"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
+      "ticker": "ABVX"
+    },
+    {
+      "error": "HTTP_403",
+      "sourceType": "COMPANY",
       "ticker": "MLTX"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "ABVX"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "ABVX"
-    },
-    {
-      "error": "HTTP_403",
-      "sourceType": "COMPANY",
-      "ticker": "ABVX"
     },
     {
       "error": "HTTP_403",
@@ -511,12 +511,12 @@
     {
       "error": "HTTP_403",
       "sourceType": "COMPANY",
-      "ticker": "VERA"
+      "ticker": "URGN"
     },
     {
       "error": "HTTP_403",
       "sourceType": "COMPANY",
-      "ticker": "URGN"
+      "ticker": "VERA"
     },
     {
       "error": "HTTP_403",
