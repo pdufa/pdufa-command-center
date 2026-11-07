@@ -65,6 +65,28 @@ class TestAdditionalIndications(unittest.TestCase):
   # Production requires >=20 distinct trials; pilot must be blocked from Sheets.
   with self.assertRaisesRegex(ValueError,"INVALID_ADDITIONAL_INDICATION_RESEARCH_UNIVERSE"):
    sheet.tables({"schemaVersion":1,"candidates":results,"byTrial":coverage},summary)
+ def test_population_only_trials_are_not_new_therapeutic_indications(self):
+  for phrase in ("Healthy Volunteers","Healthy Adults","Healthy Subjects",
+                 "Health Volunteers","Healthy Male Volunteers","Normal Healthy Volunteers"):
+   self.assertTrue(ind.population_only_condition(phrase),phrase)
+  self.assertFalse(ind.population_only_condition("Rheumatoid Arthritis"))
+  self.assertFalse(ind.population_only_condition("Obstructive Sleep Apnea"))
+  self.assertEqual(ind.canonical_condition("OSA"),"obstructive sleep apnea")
+  self.assertEqual(ind.canonical_condition("Hereditary Angioedema Type II"),
+                   "hereditary angioedema type ii")
+  roster=[{"nct":"NCT12345678","ticker":"TEST","company":"Company A"}]
+  packets={"NCT12345678":{"registry":{"indications":["OSA"],
+             "interventions":[{"name":"AD109","type":"DRUG"}]}}}
+  sample=[
+    study("NCT12345679","AD109",["Healthy Volunteers"]),
+    study("NCT12345680","AD109",["Obstructive Sleep Apnea"]),
+    study("NCT12345681","AD109",["Rheumatoid Arthritis"]),
+  ]
+  found,coverage=ind.build_index(roster,packets,{
+   "ad109":{"studies":sample,"queryCount":len(sample),"scanTruncated":False}})
+  self.assertEqual(len(found),1)
+  self.assertEqual(found[0]["otherNct"],"NCT12345681")
+  self.assertEqual(coverage[0]["candidateOtherIndicationTrials"],1)
  def test_source_unavailable_not_conflated_with_no_trials(self):
   roster=[{"nct":"NCT12345678","ticker":"TEST","company":"Company A"}]
   packets={"NCT12345678":{"registry":{"indications":["Condition A"],
