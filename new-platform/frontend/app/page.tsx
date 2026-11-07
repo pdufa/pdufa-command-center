@@ -43,6 +43,10 @@ export default function Home(){
      <strong style={{display:"block",marginBottom:8}}>{x.title}</strong><small style={{lineHeight:1.5,color:"#436454"}}>{x.desc}</small>
     </Link>)}
    </div>
+   <p style={{fontSize:13,lineHeight:1.55,marginTop:8}}>
+    <Link href="/main">MAIN · Technical status and evidence gates</Link>
+    {" "}— a read-only operating status view, not another trial population.
+   </p>
   </>}
  </main>;
 }
