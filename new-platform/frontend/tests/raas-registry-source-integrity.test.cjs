@@ -133,9 +133,10 @@ test("all-trial page exposes clinical integrity filter and exact NCT source pack
  assert.equal(out.approvedRaasScore,null);
  assert.equal(GET(new Request(rootUrl+"?nctId=NCT00308737&ticker=COGT")).status,404);
  assert.equal(GET(new Request(rootUrl+"?nctId=bad&ticker=MNKD")).status,400);
- const {GET:exportCSV}=require("../app/api/raas-evidence-backlog/route.ts");
- const csv=(await exportCSV().text());
- assert.equal(csv.split("\r\n").length-2,762);
- assert.ok(csv.includes("sourceIntegrityIssueCodes"));
- assert.ok(csv.includes("NONPOSITIVE_REPORTED_RATIO"));
+ const {GET:retiredExport}=require("../app/api/raas-evidence-backlog/route.ts");
+ const res=retiredExport();
+ assert.equal(res.status,410);
+ const retired=await res.json();
+ assert.equal(retired.error,"RETIRED_COHORT");
+ assert.equal(retired.currentPage,"/p3-post-data");
 });
