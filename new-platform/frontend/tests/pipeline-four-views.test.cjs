@@ -73,7 +73,8 @@ test("all four options render as real selectable controls and share a single res
  assert.ok(source.includes("same recorded indication"));
  const wrapper=fs.readFileSync(path.join(__dirname,"../app/FunnelWorkspace.tsx"),"utf8");
  assert.ok(wrapper.includes('<PipelineFourViews />'));
- assert.ok(wrapper.includes('section==="pool"||reviewMode'));
+ assert.ok(wrapper.includes('reviewMode&&<section className={styles.panel}>'));
+ assert.ok(wrapper.includes('section==="pool"&&<section id="pool-master"'));
  const api=fs.readFileSync(path.join(__dirname,"../app/api/scope-funnel/route.ts"),"utf8");
  assert.ok(api.includes("datasetVersion"));
  assert.ok(api.includes("createHash"));

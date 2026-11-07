@@ -10,7 +10,7 @@ const style=fs.readFileSync(path.join(root,"app/PoolMasterSpreadsheet.module.css
 const workspace=fs.readFileSync(path.join(root,"app/FunnelWorkspace.tsx"),"utf8");
 test("POOL master uses the existing paginated source, not a restricted stage-only filter",()=>{
  assert.match(workspace,/view=section==="pool"\?"pool"/);
- assert.match(workspace,/PoolMasterSpreadsheet rows=\{page\.rows/);
+ assert.match(workspace,/<PoolMasterSpreadsheet[\s\S]*?rows=\{page\?\.rows\.filter/);
  assert.match(component,/FOCUS gates not established for this record/);
 });
 test("32 columns are segmented, all source rows preserved, and separate viewport layouts retained",()=>{
