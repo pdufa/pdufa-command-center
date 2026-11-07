@@ -85,21 +85,37 @@ test("POOL Master offers drag/drop, arrow reorder, cross-segment moves and top r
  assert.match(style,/\.movePair button\{/);
 });
 
-test("top action labels are Clinical & Dates, Qualification & FOCUS, and Column Order with separate purple reset",()=>{
- assert.match(component,/<span>Clinical &amp; Dates<\/span>/);
- assert.match(component,/<span>Qualification &amp; FOCUS<\/span>/);
- assert.match(component,/<span>Column Order<\/span>/);
- assert.match(component,/<small>Reset<\/small>/);
- assert.match(component,/aria-label="Reset Column Order"/);
- assert.match(style,/\.actions \.resetOrder\{/);
+test("top action labels and independent Column Order editor toggle",()=>{
+ assert.match(component,/<span>Clinical &amp; Dates<\\/span>/);
+ assert.match(component,/<span>Qualification &amp; FOCUS<\\/span>/);
+ assert.match(component,/<span>Column Order<\\/span>/);
+ assert.match(component,/<small>\\{orderEditorOpen\\?"Close":"Edit"\\}<\\/small>/);
+ assert.match(component,/onClick=\\{toggleOrderEditor\\}/);
+ assert.match(component,/aria-expanded=\\{orderEditorOpen\\}/);
+ assert.match(component,/aria-controls="pool-column-editor"/);
+ assert.match(component,/orderEditorOpen&&<div className=\\{css.orderEditor\\}/);
+ assert.match(component,/onClick=\\{resetColumnOrder\\}/);
+ assert.match(component,/Reset Column Order/);
  assert.match(style,/background:#6c42a5!important/);
- assert.match(style,/\.actions button\[data-visibility="visible"\]/);
- assert.match(style,/\.actions button\[data-visibility="hidden"\]/);
+ assert.match(style,/\\.actions \\.resetOrder\\[data-editor-open="false"\\]/);
+ assert.match(style,/\\.actions \\.resetOrder\\[data-editor-open="true"\\]/);
+ assert.match(style,/\\.actions button\\[data-visibility="visible"\\]/);
+ assert.match(style,/\\.actions button\\[data-visibility="hidden"\\]/);
 });
-
 test("all three POOL toolbar buttons occupy one 100% row at equal 33.3% widths on every viewport",()=>{
  assert.match(style,/\.actions\{display:grid;grid-template-columns:repeat\(3,minmax\(0,1fr\)\);width:100%/);
  assert.match(style,/@media\(max-width:640px\)\{\s*\.actions\{grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
  assert.match(style,/\.actions \.groupButton,\.actions \.resetOrder\{[\s\S]*?min-width:0;width:100%/);
  assert.doesNotMatch(style,/\.actions \.resetOrder\{grid-column:1\/-1\}/);
+});
+
+test("Column Order click reveals actual editable controls and never resets column order directly",()=>{
+ assert.match(component,/const toggleOrderEditor=\\(\\)=>\\{/);
+ assert.match(component,/setOrderEditorOpen\\(open=>!open\\)/);
+ assert.match(component,/\\(orderEditorOpen\\|\\|\\(expanded&&!hidden\\)\\)/);
+ assert.match(component,/\\{orderEditorOpen&&<span className=\\{css.dragHandle\\}/);
+ assert.match(component,/\\{orderEditorOpen&&<>[\\s\\S]*?<select className=\\{css.moveTo\\}/);
+ assert.match(component,/onClick=\\{resetColumnOrder\\}/);
+ assert.match(component,/Column and segment order restored/);
+ assert.match(component,/draggable=\\{orderEditorOpen\\}/);
 });

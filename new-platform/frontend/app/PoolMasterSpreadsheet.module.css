@@ -90,3 +90,27 @@
  }
  .actions .groupButton small,.actions .resetOrder small{font-size:10px}
 }
+
+/* Column Order is a distinct third toggle: light purple closed, dark purple open. */
+.actions .resetOrder[data-editor-open="false"]{
+ background:#ebe1f8!important;color:#4e2b7a!important;border-color:#b89bd8!important;
+}
+.actions .resetOrder[data-editor-open="false"]:hover{
+ background:#e2d2f5!important;color:#4e2b7a!important;
+}
+.actions .resetOrder[data-editor-open="true"]{
+ background:#6c42a5!important;color:#fff!important;border-color:#58328d!important;
+}
+.orderEditor{
+ border:1px solid #b89bd8;background:#f7f2fc;border-radius:9px;
+ padding:12px;color:#382555;display:flex;flex-direction:column;gap:8px;
+}
+.orderEditorHeading{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.orderEditorHeading strong{font-size:14px}
+.orderEditor p{font-size:12px;line-height:1.5;margin:5px 0 0}
+.resetColumnAction{
+ background:#6c42a5;color:white;border:1px solid #58328d;border-radius:7px;
+ padding:10px 12px;font:inherit;font-size:12px;font-weight:700;cursor:pointer;
+}
+.resetColumnAction:hover{background:#54318a}
+.resetColumnAction:focus-visible{outline:3px solid #7d54b7;outline-offset:2px}

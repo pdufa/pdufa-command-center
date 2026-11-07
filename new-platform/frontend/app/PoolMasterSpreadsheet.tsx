@@ -170,8 +170,16 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
  const toggleClinical=()=>edit(l=>({...l,...toggleColumnGroup(l,GROUP_CLINICAL,l.columnOrder)}));
  const toggleQualification=()=>edit(l=>({...l,...toggleColumnGroup(l,GROUP_QUALIFICATION,l.columnOrder)}));
  const resetView=()=>edit(()=>defaultLayout(view));
- const resetColumnOrder=()=>edit(l=>({...l,...normalizePoolColumnOrder(null,DEFAULT_COLUMNS_BY_SEGMENT,ALL_SEGMENTS)}));
+ const [orderEditorOpen,setOrderEditorOpen]=useState(false);
  const [reorderNotice,setReorderNotice]=useState("");
+ const resetColumnOrder=()=>{
+  edit(l=>({...l,...normalizePoolColumnOrder(null,DEFAULT_COLUMNS_BY_SEGMENT,ALL_SEGMENTS)}));
+  setReorderNotice("Column and segment order restored. Existing visibility settings were kept.");
+ };
+ const toggleOrderEditor=()=>{
+  setOrderEditorOpen(open=>!open);
+  setReorderNotice("");
+ };
  const shiftSegment=(id:string,direction:-1|1)=>edit(l=>({...l,...stepPoolSegment(l,id,direction)}));
  const shiftColumn=(key:Key,direction:-1|1)=>edit(l=>({...l,...stepPoolColumn(l,key,direction)}));
  const transferColumn=(key:Key,target:string)=>edit(l=>{
@@ -225,10 +233,12 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
      <span>Qualification &amp; FOCUS</span>
      <small>{qualificationVisible?"Hide All":"Show All"}</small>
     </button>
-    <button type="button" className={css.resetOrder} onClick={resetColumnOrder}
-     aria-label="Reset Column Order" title="Restore the original column and segment order">
+    <button type="button" className={css.resetOrder} data-editor-open={orderEditorOpen?"true":"false"}
+     onClick={toggleOrderEditor} aria-pressed={orderEditorOpen} aria-expanded={orderEditorOpen}
+     aria-controls="pool-column-editor" aria-label={"Column Order — "+(orderEditorOpen?"Close":"Open")+" editor"}
+     title={orderEditorOpen?"Close column ordering controls":"Open column ordering controls"}>
      <span>Column Order</span>
-     <small>Reset</small>
+     <small>{orderEditorOpen?"Close":"Edit"}</small>
     </button>
    </div>
   </div>
@@ -238,7 +248,24 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
    {" "}Layouts are saved separately on this device.
    {" "}<button className={css.resetLink} type="button" onClick={resetView}>Reset {view==="phone"?"Phone":"PC"} View</button>
   </p>
-  <p className={css.reorderHint}>Reorder segments with the drag handle or left/right arrows. Reorder columns with the handles or arrows; use the dropdown to move them between segments.</p>
+  {orderEditorOpen&&<div className={css.orderEditor} id="pool-column-editor" role="region"
+   aria-label="Column order editing controls">
+   <div className={css.orderEditorHeading}>
+    <div>
+     <strong>Column ordering is enabled</strong>
+     <p>Move segments or individual columns with the arrows, drag handles, or destination dropdowns.
+      Columns and segments open below for editing, including currently hidden ones.</p>
+    </div>
+    <button type="button" className={css.resetColumnAction} onClick={resetColumnOrder}>
+     Reset Column Order
+    </button>
+   </div>
+   <p>Changes save automatically for this device’s {view==="phone"?"phone":"PC"} view. Reset restores the
+    original column arrangement without changing hidden columns.</p>
+  </div>}
+  <p className={css.reorderHint}>{orderEditorOpen
+   ?"Use the arrows or drag handles below to change order; the spreadsheet updates immediately."
+   :"Tap Column Order above to show ordering controls. The button opens an editor; it does not automatically rearrange your columns."}</p>
   <div className={css.segments} role="group" aria-label="POOL column segments">
    {orderedSegments.map((s,segmentIndex)=>{
     const hidden=layout.hiddenSegments.includes(s.key),expanded=layout.expanded.includes(s.key);
@@ -247,14 +274,16 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
     return <div key={s.key} className={css.segment} data-segment={s.key}
      onDragOver={acceptDrag} onDrop={event=>dropOnSegment(event,s.key)}>
      <div className={css.segmentHead}>
-      <span className={css.dragHandle} draggable="true" title="Drag to reorder segment"
-       onDragStart={event=>dragStart(event,"segment",s.key)}>⠿</span>
-      <div className={css.movePair} role="group" aria-label={"Reorder "+s.label+" segment"}>
-       <button type="button" aria-label={"Move "+s.label+" segment left"} disabled={segmentIndex===0}
-        onClick={()=>shiftSegment(s.key,-1)}>←</button>
-       <button type="button" aria-label={"Move "+s.label+" segment right"} disabled={segmentIndex===orderedSegments.length-1}
-        onClick={()=>shiftSegment(s.key,1)}>→</button>
-      </div>
+      {orderEditorOpen&&<>
+       <span className={css.dragHandle} draggable="true" title="Drag to reorder segment"
+        onDragStart={event=>dragStart(event,"segment",s.key)}>⠿</span>
+       <div className={css.movePair} role="group" aria-label={"Reorder "+s.label+" segment"}>
+        <button type="button" aria-label={"Move "+s.label+" segment left"} disabled={segmentIndex===0}
+         onClick={()=>shiftSegment(s.key,-1)}>←</button>
+        <button type="button" aria-label={"Move "+s.label+" segment right"} disabled={segmentIndex===orderedSegments.length-1}
+         onClick={()=>shiftSegment(s.key,1)}>→</button>
+       </div>
+      </>}
       <button type="button" className={css.segmentToggle} aria-expanded={!hidden&&expanded}
        aria-pressed={!hidden&&expanded} disabled={hidden} onClick={()=>switchIn("expanded",s.key)}>
        {expanded&&!hidden?"▾":"▸"} {s.label} <small>{active}/{columns.length}</small>
@@ -262,28 +291,30 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
       <button type="button" className={css.visibilityToggle} aria-pressed={hidden}
        onClick={()=>switchIn("hiddenSegments",s.key)}>{hidden?"Restore":"Hide segment"}</button>
      </div>
-     {expanded&&!hidden&&<div className={css.columnOptions}>
+     {(orderEditorOpen||(expanded&&!hidden))&&<div className={css.columnOptions}>
       {columns.map((key,columnIndex)=>{
        const c=COLUMN_LOOKUP.get(key)!;
        return <div className={css.columnOption} key={key}
         onDragOver={acceptDrag} onDrop={event=>dropOnColumn(event,s.key,key)}>
-        <span className={css.dragHandle} draggable="true" title={"Drag "+c.label+" to reorder"}
-         onDragStart={event=>dragStart(event,"column",key)}>⠿</span>
+        {orderEditorOpen&&<span className={css.dragHandle} draggable="true" title={"Drag "+c.label+" to reorder"}
+         onDragStart={event=>dragStart(event,"column",key)}>⠿</span>}
         <label className={css.columnCheck}>
          <input type="checkbox" checked={!layout.hiddenColumns.includes(key)}
           onChange={()=>switchIn("hiddenColumns",key)}/>
          <span>{c.label}</span>
         </label>
-        <div className={css.movePair} role="group" aria-label={"Reorder "+c.label}>
-         <button type="button" aria-label={"Move "+c.label+" left"} disabled={columnIndex===0}
-          onClick={()=>shiftColumn(key,-1)}>←</button>
-         <button type="button" aria-label={"Move "+c.label+" right"} disabled={columnIndex===columns.length-1}
-          onClick={()=>shiftColumn(key,1)}>→</button>
-        </div>
-        <select className={css.moveTo} aria-label={"Move "+c.label+" to another segment"}
-         value={s.key} onChange={event=>transferColumn(key,event.target.value)}>
-         {orderedSegments.map(segment=><option key={segment.key} value={segment.key}>{segment.label}</option>)}
-        </select>
+        {orderEditorOpen&&<>
+         <div className={css.movePair} role="group" aria-label={"Reorder "+c.label}>
+          <button type="button" aria-label={"Move "+c.label+" left"} disabled={columnIndex===0}
+           onClick={()=>shiftColumn(key,-1)}>←</button>
+          <button type="button" aria-label={"Move "+c.label+" right"} disabled={columnIndex===columns.length-1}
+           onClick={()=>shiftColumn(key,1)}>→</button>
+         </div>
+         <select className={css.moveTo} aria-label={"Move "+c.label+" to another segment"}
+          value={s.key} onChange={event=>transferColumn(key,event.target.value)}>
+          {orderedSegments.map(segment=><option key={segment.key} value={segment.key}>{segment.label}</option>)}
+         </select>
+        </>}
        </div>;
       })}
      </div>}
@@ -299,11 +330,11 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error=""}:{row
      <th scope="col" className={css.company}>Company</th>
      <th scope="col" className={css.nct}>NCT ID</th>
      {visible.map(c=><th scope="col" className={css.dataColumn} key={c.key}
-      draggable="true" title={"Drag to move "+c.label}
+      draggable={orderEditorOpen} title={orderEditorOpen?"Drag to move "+c.label:c.label}
       onDragStart={event=>dragStart(event,"column",c.key)}
       onDragOver={acceptDrag}
       onDrop={event=>dropOnColumn(event,findSegment(c.key),c.key)}>
-       <span className={css.thDrag}>⠿</span> {c.label}</th>)}
+       {orderEditorOpen&&<span className={css.thDrag}>⠿</span>} {c.label}</th>)}
     </tr></thead>
     <tbody>{rows.length===0&&<tr><td colSpan={3+visible.length} role="status">
        {loading?"Loading clinical POOL records…":error?
