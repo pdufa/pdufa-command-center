@@ -146,7 +146,9 @@ export default function MainStatus(){
       <p style={fine}>Evidence pointers, historical market-cap figures and planned FDA filings are not independently certified eligibility or live data. The 7 active MAIN technical installation checks remain distinct from these per-trial checks; accepting platform infrastructure never makes an individual trial FDA qualified.</p>
       <Link href="/focus">Inspect all final-list trials and expandable gate findings</Link>
     </section>
-    <details style={{marginTop:16}} aria-label="Archived superseded 31-gate MAIN evidence">\n      <summary style={{cursor:"pointer",fontSize:13}}>Archived October 2026 31-gate acceptance record (not active)</summary>\n    <section style={{...card,marginTop:16}} aria-label="Historical MAIN acceptance inventory">
+    <details style={{marginTop:16}} aria-label="Archived superseded 31-gate MAIN evidence">
+      <summary style={{cursor:"pointer",fontSize:13}}>Archived October 2026 31-gate acceptance record (not active)</summary>
+    <section style={{...card,marginTop:16}} aria-label="Historical MAIN acceptance inventory">
       <h2 style={{marginTop:0}}>Original historical acceptance baseline</h2>
       {checked?<p><strong>{MAIN_DAILY_EVIDENCE.verified} of {MAIN_DAILY_EVIDENCE.total}</strong>
         {" "}historical technical gates verified ·
@@ -158,7 +160,8 @@ export default function MainStatus(){
         The full 31-gate record is archived and is not the current MAIN checklist.</p>
       <Link href="/installation-audit">Open archived 31-gate evidence and the separate scientific/outcome audits</Link>
     </section>
-    </details>\n    <section style={{...card,marginTop:16}} aria-label="Next verified work">
+    </details>
+    <section style={{...card,marginTop:16}} aria-label="Next verified work">
       <h2 style={{marginTop:0}}>Next MAIN acceptance step</h2>
       <p>Verify the authenticated deployed POOL → FOCUS handoff for the {FOCUS_FINAL_TRIAL_AUDIT.trialCount} exact final-list NCTs only, checking
         company, drug, indication and FDA application/cycle identities, then reconcile
