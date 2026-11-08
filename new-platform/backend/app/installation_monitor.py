@@ -43,7 +43,7 @@ def collect(engine, *, storage_ready, require_postgres=True):
                     else "BLOCKED",
                     "kind": engine.dialect.name,
                     "postgresRequired": bool(require_postgres)},
-        "services": {},
+        "services": {}, "sourceSnapshots": {},
         "scans": {}, "research": {},
         "alerts": {"telegramConfigured": configured(),
                    "monitorWorkerEnabled": os.getenv("PDUFA_INSTALL_MONITOR_ENABLED","").lower()
@@ -52,6 +52,16 @@ def collect(engine, *, storage_ready, require_postgres=True):
             "missing": ["FDA", "SEC EDGAR", "PubMed/peer-reviewed publications",
                         "company disclosures", "external production scan scheduler"]},
     }
+    # Package-file evidence is independently checkable even with a blocked DB.
+    # This is source identity/coverage verification, never FDA approval status.
+    try:
+        from .medical_continuous import application_roster_status
+        out["sourceSnapshots"]["applications"] = application_roster_status()
+    except Exception as exc:
+        LOG.warning("Medical application source map invalid type=%s", type(exc).__name__)
+        out["sourceSnapshots"]["applications"] = {
+            "state":"INVALID", "detail":"Packaged source-linked application identity map failed validation"
+        }
     if out["storage"]["state"]!="READY":
         out["errors"].append("Persistent PostgreSQL is not connected or unavailable")
         for name in ("phase3Ingestion","nctStream"):
