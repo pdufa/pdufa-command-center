@@ -943,7 +943,7 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED","").lower() in ("true","1","yes")
         and os.getenv("PDUFA_MEDICAL_REGISTRY_RECONCILE_ENABLED","").lower() in ("true","1","yes")):
     from .medical_registry_reconciliation import install_routes as install_registry_reconcile_routes
     install_registry_reconcile_routes(app, lambda: ENGINE,
-                                      require_medical_internal_key,
+                                      require_medical_review_read_key,
                                       require_medical_registry_reconcile_storage)
 
 # The review queue gives evidence work priorities, never a medical/FDA score.
@@ -956,7 +956,7 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED","").lower() in ("true","1","yes")
         and os.getenv("PDUFA_MEDICAL_PRIMARY_REVIEW_QUEUE_ENABLED","").lower() in ("true","1","yes")):
     from .medical_primary_evidence_queue import install_routes as install_primary_review_queue_routes
     install_primary_review_queue_routes(app, lambda: ENGINE,
-                                        require_medical_internal_key,
+                                        require_medical_review_read_key,
                                         require_medical_primary_review_queue_storage)
 
 @app.get("/api/internal/medical-canary-preflight", dependencies=[Depends(require_medical_internal_key)])
