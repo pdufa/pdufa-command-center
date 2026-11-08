@@ -1,5 +1,6 @@
 import Link from "next/link";
-import type {Metadata,CSSProperties} from "react";
+import type {Metadata} from "next";
+import type {CSSProperties} from "react";
 import focus from "../../../data/p3PostDataActive.json";
 import {reconcileRegistryBatch,type RegistryBatchAudit} from "../../../lib/medical-intelligence-preview";
 import {findingsForNct,REVIEW_AS_OF} from "../../../lib/medical-intelligence-reviewed-findings";
