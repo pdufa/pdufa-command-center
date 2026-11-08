@@ -132,6 +132,15 @@ export default async function AllPhaseSpecialistPage({searchParams}:{searchParam
        })}
      </div>
    </section>
+   <section style={{...card,marginTop:16}}>
+     <h2 style={{fontSize:19,margin:"0 0 8px"}}>Phase-specific investigation priority · all 800 tests</h2>
+     <p style={{fontSize:13,lineHeight:1.65}}>The same 800 methods stay available at every clinical phase. The priority list puts the phase-relevant science first, while retaining future-phase investigations at lower urgency. <strong>Priority is not a clinical evidence grade or an actual observed risk.</strong></p>
+     <p style={{fontSize:13,fontWeight:740,marginBottom:0}}>
+       <Link href={"/medical-intelligence-preview/specialist-review/all-phases/priority?nct="+encodeURIComponent(selectedNct)+(selectedProfileId?"&specialty="+encodeURIComponent(selectedProfileId):"")}>
+         Inspect all 800 tests ranked by current phase · Critical to Low
+       </Link>
+     </p>
+   </section>
    <p style={{fontSize:13,marginTop:17}}>
      <Link href="/medical-intelligence-preview/specialist-review">Existing FDA application specialty dossiers</Link>
      {" · "}<Link href="/medical-intelligence-preview/master-depth">40 assessments × 20 investigations</Link>
