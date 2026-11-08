@@ -37,4 +37,8 @@ test("persistent operations are protected by session and same-origin write", () 
   assert.match(proxy, /Saved medical research run not found/);
   assert.match(proxy, /Persistent medical stage backend route is not deployed/);
   assert.match(proxy, /missingRun \? 404/);
+  assert.match(proxy, /missingDatabase/);
+  assert.match(proxy, /databaseUnavailable/);
+  assert.match(proxy, /PostgreSQL database connection is not configured/);
+  assert.match(control, /const raw: unknown = await response.json\(\)\.catch/);
 });
