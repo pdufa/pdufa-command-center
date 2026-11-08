@@ -46,7 +46,7 @@ def _credentials() -> dict:
             raise HTTPException(503, "Medical reviewer role is not configured")
         for identity, key in principals.items():
             if (not isinstance(identity, str) or not ID_PATTERN.fullmatch(identity)
-                    or not isinstance(key, str) or len(key) < 32
+                    or not isinstance(key, str) or len(key) < 32 or not key.isascii()
                     or identity in all_ids or key in all_secrets):
                 raise HTTPException(503, "Medical reviewer configuration is invalid")
             all_ids.add(identity)
@@ -58,7 +58,7 @@ def _authenticate(identity: str | None, secret: str | None, role: str) -> str:
     if not _on():
         raise HTTPException(503, "Medical reviewer writes are disabled")
     data = _credentials()
-    if (not identity or not secret or role not in ROLES
+    if (not identity or not secret or not secret.isascii() or role not in ROLES
             or identity not in data[role]
             or not secrets.compare_digest(data[role][identity], secret)):
         raise HTTPException(401, "Reviewer authorization required")

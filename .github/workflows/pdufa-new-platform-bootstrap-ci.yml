@@ -15,6 +15,11 @@ on:
         required: true
         default: false
         type: boolean
+      verify_medical_preview:
+        description: 'Read-only signed-in medical preview verification using the existing dashboard test secret'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -57,6 +62,20 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+
+  authenticated-medical-preview:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.verify_medical_preview && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108' }}
+    needs: [permanent-retirement, backend, frontend]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify signed-in read-only matrix and unchanged history
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+        run: python new-platform/backend/scripts/verify_medical_preview.py
 
   # Pushes run mandatory checks, but only a manual workflow dispatch may
   # deploy the exact SHA to the fixed isolated medical-preview service.

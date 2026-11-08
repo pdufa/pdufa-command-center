@@ -375,6 +375,17 @@ def require_writes_enabled() -> None:
         raise HTTPException(status_code=503, detail="Checklist writes paused for database migration")
 
 
+def require_medical_reviewer_writes() -> None:
+    # Feature flags and reviewer credentials alone cannot authorize another
+    # Render service. No local/test bypass belongs on the deployed write gate.
+    if os.getenv("RENDER_SERVICE_ID", "") != "srv-dbntrkpsrm7s73aec3lg":
+        raise HTTPException(
+            status_code=503,
+            detail="Independent reviewer writes require the isolated medical preview service",
+        )
+    require_writes_enabled()
+
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Log only storage readiness, never the database URL or credentials.
@@ -950,7 +961,7 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes
     from .medical_reviewer_submission import install_routes as install_medical_reviewer_intake
     install_medical_reviewer_intake(app, lambda: ENGINE,
                                    require_medical_assessment_storage,
-                                   require_writes_enabled)
+                                   require_medical_reviewer_writes)
 
 # Phase-aware review is separately opt-in and uses ONLY authenticated GETs.
 def require_medical_phase_matrix_storage() -> None:
