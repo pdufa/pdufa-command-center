@@ -5,7 +5,6 @@ import {usePathname} from "next/navigation";
 const links=[
  {label:"POOL",href:"/pool"},
  {label:"FOCUS",href:"/focus"},
- {label:"MONITOR",href:"/precision-monitor"},
  {label:"TOOLS",href:"/tools"},
 ];
 
@@ -14,5 +13,6 @@ export default function GlobalNavigation(){
  return <nav aria-label="Site navigation" style={{position:"sticky",top:0,zIndex:1000,background:"#10233a",color:"#fff",borderBottom:"2px solid #16a085",padding:"9px 12px",display:"flex",gap:8,alignItems:"center",overflowX:"auto",whiteSpace:"nowrap",WebkitOverflowScrolling:"touch"}}>
   <strong style={{marginRight:12,fontSize:13,flexShrink:0}}>PDUFA</strong>
   {links.map(link=><Link key={link.label} href={link.href} aria-current={pathname===link.href?"page":undefined} style={{color:"#fff",textDecoration:"none",fontSize:12,fontWeight:700,padding:"8px 10px",border:"1px solid #45627b",borderRadius:6,flexShrink:0}}>{link.label}</Link>)}
+  <Link href="/precision-monitor" aria-current={pathname==="/precision-monitor"?"page":undefined} style={{color:"#fff",textDecoration:"none",fontSize:12,fontWeight:700,padding:"8px 10px",border:"1px solid #45627b",borderRadius:6,flexShrink:0}}>MONITOR</Link>
  </nav>;
 }
