@@ -6,6 +6,7 @@ on:
       - 'new-platform/frontend/app/precision-monitoring/**'
       - 'new-platform/frontend/app/main/**'
       - 'new-platform/frontend/lib/main-install-progress.ts'
+      - 'new-platform/frontend/app/api/main/installation-progress/route.ts'
       - '.github/workflows/precision-monitoring-production-smoke.yml'
   workflow_dispatch:
 
@@ -38,13 +39,16 @@ jobs:
         run: |
           set -euo pipefail
           url="https://pdufa-new-dashboard.vercel.app/api/main/installation-progress"
-          status="$(curl -sSL --max-time 12 -o /tmp/precision-monitor-anon.json -w '%{http_code}' "$url")"
-          if [ "$status" != "401" ]; then
-            echo "::error::Telemetry boundary expected HTTP 401, got HTTP $status"
-            exit 1
-          fi
-          if ! grep -q 'Sign in required' /tmp/precision-monitor-anon.json; then
-            echo "::error::Unauthorized telemetry response contract changed"
-            exit 1
-          fi
-          echo "VERIFIED_ANONYMOUS_API=401"
+          # Newly deployed functions can take a moment longer than the page
+          # alias to propagate. Require the exact deny response before success.
+          status="not checked"
+          for attempt in $(seq 1 12); do
+            status="$(curl -sSL --max-time 12 -o /tmp/precision-monitor-anon.json -w '%{http_code}' "$url")"
+            if [ "$status" = "401" ] && grep -q 'Sign in required' /tmp/precision-monitor-anon.json; then
+              echo "VERIFIED_ANONYMOUS_API=401"
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Telemetry boundary never returned authenticated-denial contract; final HTTP $status"
+          exit 1
