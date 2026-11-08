@@ -1,59 +1,43 @@
 # MAIN PDUFA — Analyze Now installation and pilot acceptance
 
-**Priority:** Complete/verify Analyze Now before further advanced-analysis work.
-**Location:** existing FOCUS trial rows (`/focus`), read-only cross-stage lookup (`/analyze-now?nct=NCT...`), authenticated `/api/analyze-now` proxy, isolated Render medical backend.
-**Production status:** Draft preview only. No RAAS/survey dependencies restored, no POOL/FOCUS sheet writes, no production merge, no generated FDA probabilities.
+**Priority:** Complete and verify Analyze Now before further advanced medical installations.
+**Deployment:** Existing isolated MAIN preview branch and backend only, unmerged.
+**Active architecture:** POOL → FOCUS → 12-stage independent source worker → evidence-gated FDA outcomes → independent certainty reliability.
 
-## Architecture — one worker, one history
+## One independent worker and exact-NCT history
 
-1. `medical_continuous.py` provides the existing durable 12-source-stage worker, restart and stop/resume behavior. Analyze Now calls it with an exact NCT rather than duplicating a pipeline.
-2. `medical_on_demand.py` records request provenance by `run_id`, but all completed research goes into the **existing** append-only `medical_prediction_revisions` table as `analyzeNow`. This is the same trial keyed history across spreadsheet moves.
-3. The initial analysis (with archive score, three abstaining outcomes, reliability status and date) is stored **when the request is made** in `medical_analyze_requests.initial_report`. Failed and interrupted runs remain in NCT history instead of disappearing.
-4. `focus_legacy_score_snapshot.json` is an optional, read-only backend mirror from existing historical RAAS and clinical-five research. The medical source worker does not require RAAS or surveys. The snapshot is **dated 2026-11-07**, not a live recalculation or newly issued RAAS score.
-5. ClinicalTrials.gov exact-NCT change monitoring can request a new source-run revision; newly operational components are fingerprinted by the same existing source watcher. Both are opt-in, PostgreSQL-dependent and canary-gated until rollout.
-6. `/api/analyze-now` is signed-in, same-origin, exact-NCT-only for POST with UUID idempotency, no-store for GET; GET history remains accessible by NCT even after the trial exits FOCUS.
-7. MAIN installation monitor reports live canary saved status and activation flags from database records, not page presence.
+1. `medical_continuous.py` is the only research worker. Analyze Now starts it for one eligible exact NCT, records each of the 12 source stages and supports restart, stop and resume.
+2. `medical_on_demand.py` records the initial dated, source-only report on request. A completed run writes its result to the existing append-only `medical_prediction_revisions` table, preserving the full NCT history across spreadsheet movements. Failed and pending initial reports are retained.
+3. The active report uses **only collected trial identity, clinical, scientific, regulatory and CMC evidence**. It contains stage dispositions, source URL pointers, missing original documents and independently assessed review readiness. It never imports historical scoring archives or computes a numeric medical grade from them.
+4. FDA approval, Complete Response Letter, and review-delay outcomes remain separate **ABSTAIN** decisions with `probability=null` unless independently validated historical calibration and complete current-cycle adjudication are proven. Certainty is separately `NOT_VALIDATED` with `rating=null`.
+5. The source-change watcher checks exact ClinicalTrials.gov NCT evidence. Operational-component changes use a versioned fingerprint. Both are opt-in, database-dependent and canary-gated; FDA/SEC/publication change coverage is not yet comprehensive.
+6. `/api/analyze-now` requires user session, exact NCT and a same-origin UUID request. Historical GET accepts an exact NCT even after a trial exits FOCUS, but no further work can start for an ineligible trial.
+7. Retired historical scoring and archived trial observations are retained as **read-only evidence records**, never loaded in the active Analyze Now worker. See repository `AGENTS.md` and the permanent retired-architecture audit.
 
-## Pilot and score provenance
+## Canary acceptance sequence
 
-**Canary:** `NCT06081894`, a current FOCUS NCT.
+**Canary:** `NCT06081894`; FOCUS candidate listed in the dated 2026-11-07 snapshot.
 
-| Field | Dated archive status |
-| --- | --- |
-| Full 30-metric RAAS overall score | Not available (null); no validated score is calculated |
-| Five-factor clinical research grade | **45/100**, with 5 graded factors, archived 2026-11-07 |
-| Historical source pointers | Published trial research and issuer releases from the historical archive; not independent regulatory adjudication |
-| Scientific source stage analysis | Available only after a real 12-stage worker run |
-| Approval, CRL and review-delay probabilities | Separate **ABSTAIN**, null |
-| Independent certainty | **NOT_VALIDATED**, null |
-| Missing data | Individual source gaps, full multidisciplinary statistical/CMC review, complete RAAS and independent calibration |
+- [x] One-click control is present on each of the 29 FOCUS rows.
+- [x] Only the canary button is enabled before real validation; the same restriction applies to registry and component-change reruns.
+- [x] Backend and frontend code use the original worker and immutable revision tables rather than duplicating source jobs.
+- [x] Separate approval, CRL, review-delay abstentions; independent null certainty; original source pointers and missing evidence.
+- [x] Retired scoring input dependency removed from the active source report, component signature and UI.
+- [x] Dedicated regression tests defined for canary, failed-run retention, source changes, NCT moves, idempotency and all-29 rollout simulation.
+- [ ] Green QA on the exact latest commit, including permanent retirement guard.
+- [ ] Preview Postgres configured and `/health` returns `storage_ready=true`.
+- [ ] Real canary POST and all 12 saved stage documents verified in persistent PostgreSQL.
+- [ ] Source links, missing information, three abstaining outcome fields and null certainty confirmed by reading the live saved report and immutable history.
+- [ ] Stop/resume and restart recovery confirmed against the same persistent database.
+- [ ] Only then enable the other 28 eligible trials by setting `PDUFA_ANALYZE_NOW_ALL_ENABLED=true` on both Render and preview-branch Vercel.
+- [ ] Validate automated reanalysis after actual new evidence or newly operational components; no fabricated rerun claims.
 
-This archived clinical **45/100 is not RAAS 30-metric, an FDA forecast, or a reliability percentage**.
+## Credentials and deployment boundaries
 
-## Acceptance gates — one real canary before 29-trial activation
+Preview service: https://dashboard.render.com/web/srv-dbntrkpsrm7s73aec3lg
 
-- [x] Source-code integration of per-row Analyze Now UI, authenticated proxy and one underlying worker.
-- [x] Read-only historical clinical-five / RAAS mirror, dated source evidence and abstention safeguards.
-- [x] Store initial request report and immutable completed research revision by exact NCT, with failed-run history.
-- [x] Fail-closed, pilot-only UI and backend gates; all 29 FOCUS rows display the control but 28 remain disabled.
-- [x] Dedicated regression test suite defined for pilot, score provenance, two revisions, moves, duplicate requests, failure retention and simulation of all 29 after gate.
-- [ ] **Dedicated regression suite green on current exact SHA**; inspect GitHub Actions results before calling tests passed.
-- [ ] **Preview PostgreSQL connected and `/health` reporting `storage_ready: true`.** Backend is live but currently reports `postgres_required: true` and `persistent database ready: false`.
-- [ ] **Real operator POST** for `NCT06081894` returns a persisted exact-NCT run in the backend; verify full original source fetch and all 12 stage dispositions.
-- [ ] **Read GET and history** to verify 45/100 research score where archived, null full RAAS score, three abstaining FDA outcomes, null certainty, dated original-source links, source gaps, and the same run after reload.
-- [ ] **Restart/stop/resume and source update** produce immutable source revisions without overwriting the old record.
-- [ ] **Enable all 29** only after the pilot above is evidenced; configure `PDUFA_ANALYZE_NOW_ALL_ENABLED=true` on both backend Render and branch-scoped preview Vercel, redeploy and verify 29 actual enabled buttons and exact-NCT authorizations. Do not enable this flag as a workaround for missing PostgreSQL.
-- [ ] After confirmed live pilot, consider enabling `PDUFA_MEDICAL_AUTO_WATCH=true` for six-hour source and component monitoring; this covers ClinicalTrials.gov and explicitly enabled components, **not** comprehensive FDA, SEC, sponsor or PubMed changes.
+Preview database: https://dashboard.render.com/d/dpg-dbnts20u01pc73do32qg-a
 
-## Commands and sources
+The internal `DATABASE_URL` must be copied in Render's own dashboard into its isolated service environment. **Do not paste credentials into chat, logs, documentation or commits.** The free preview database expires December 8, 2026.
 
-- Frontend: `npm run typecheck`; `node --test tests/medical-analyze-now.test.cjs`.
-- Backend: `PYTHONPATH=new-platform/backend python -m pytest -q new-platform/backend/tests/test_medical_on_demand.py`.
-- CI workflow: `Deep Medical Intelligence Preview QA` includes these checks.
-- Project: `pdufa/pdufa-command-center`; draft PR #928; feature branch `feature/deep-medical-intelligence-preview-20261107`.
-- Separate preview Render backend: `https://dashboard.render.com/web/srv-dbntrkpsrm7s73aec3lg`.
-- Separate preview Render Postgres: `https://dashboard.render.com/d/dpg-dbnts20u01pc73do32qg-a`. Free trial expiration 2026-12-08.
-
-**Secure connection step:** In Render database → Connect → copy *Internal Database URL*, then service → Environment → set `DATABASE_URL`, save/deploy. Never paste credentials into chat or commit them. This connector currently cannot retrieve the internal URL; do not fabricate a connection.
-
-**No claimed operational readiness until real saved pilot and external evidence checks pass.**
+No production merge, no POOL/FOCUS Google Sheet mutation, no unvalidated numerical prediction and no claim that a source check equals a completed multidisciplinary medical assessment.
