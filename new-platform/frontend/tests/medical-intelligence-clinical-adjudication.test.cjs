@@ -20,17 +20,17 @@ function load(name){
 const {APPLICATION_CYCLES}=load("medical-intelligence-applications");
 const {ADJUDICATION_CASES,ADJUDICATION_AS_OF,INVESTIGATION_PRIORITIES,adjudicationForCycle,getAdjudicationCase,adverseEventAbsoluteDifference}=load("medical-intelligence-clinical-adjudication");
 test("Exact application and NCT identity, source authorship, and dates checked for all deep issue comparisons",()=>{
- assert.equal(ADJUDICATION_CASES.length,11);
+ assert.equal(ADJUDICATION_CASES.length,23);
  assert.equal(ADJUDICATION_AS_OF,"2026-11-07");
- assert.equal(new Set(ADJUDICATION_CASES.map(x=>x.id)).size,11);
+ assert.equal(new Set(ADJUDICATION_CASES.map(x=>x.id)).size,23);
  const caseCycles=new Set(ADJUDICATION_CASES.map(x=>x.cycleId));
- assert.equal(caseCycles.size,11);
+ assert.equal(caseCycles.size,23);
  for(const c of ADJUDICATION_CASES){
    const app=APPLICATION_CYCLES.find(a=>a.id===c.cycleId);
    assert.ok(app,"Unknown application "+c.cycleId);
    assert.ok(app.ncts.includes(c.nct),"Foreign NCT "+c.nct);
    assert.equal(c.researchDate,ADJUDICATION_AS_OF);
-   assert.equal(c.verdict,"UNRESOLVED_REQUIRES_INDEPENDENT_ADJUDICATION");
+   assert.equal(c.verdict,c.cycleId==="cytk-aficamten-ohcm"?"ALREADY_APPROVED_NO_PENDING_FIRST_APPROVAL":"UNRESOLVED_REQUIRES_INDEPENDENT_ADJUDICATION");
    assert.equal(c.timing,"NO_NEW_TIMING_EVENT_PROVEN");
    assert.ok(c.sources.length>=3);
    assert.ok(c.sources.some(x=>x.role==="FAVORABLE"));
@@ -39,7 +39,7 @@ test("Exact application and NCT identity, source authorship, and dates checked f
    assert.ok(c.bestCase.length>60);
    assert.ok(c.whatWouldResolve.length>=4);
    for(const claim of c.sources){
-     assert.ok(app.ncts.includes(claim.trial),"Foreign NCT "+claim.trial+" for "+c.cycleId);
+     assert.ok(app.ncts.includes(claim.trial)||claim.scope==="RELATED_EXTERNAL_TRIAL","Unattributed external NCT "+claim.trial+" for "+c.cycleId);
      assert.match(claim.url,/^https:\/\//);
      assert.ok(claim.date<=ADJUDICATION_AS_OF,"Future evidence not allowed: "+claim.id);
      assert.match(claim.date,/^20\d\d-\d\d-\d\d$/);
