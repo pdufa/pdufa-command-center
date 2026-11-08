@@ -104,3 +104,93 @@ export function rankTrialAssessments(
   });
   return rows;
 }
+
+/**
+ * Phase-end baseline: record what the drug actually demonstrated by the latest
+ * VERIFIED completed phase, even if the current phase has already begun.
+ *
+ * A registry phase label is not proof that a preceding phase was completed or
+ * that its readout is published. No prior phase evidence -> no grades.
+ */
+export type CurrentTrialPhase = {
+  nct: string;
+  phase: TrialPhase;
+  status: "ONGOING" | "COMPLETED" | "UNKNOWN";
+};
+export type CompletedPhaseEvidence = {
+  /** Source trial may differ from current NCT; exact program+indication linkage must be verified. */
+  sourceNct: string;
+  completedPhase: Exclude<TrialPhase,"UNKNOWN">;
+  phaseCompletedOn: string;
+  readoutDate: string;
+  sourceUrls: readonly string[];
+  exactDrugAndIndicationMatchVerified: boolean;
+  finalOrPrimaryPhaseResultsVerified: boolean;
+};
+export type PhaseEndTestReview = AssessmentTestReview & {
+  /** This original result is attributed to the completed phase, not the new phase. */
+  sourcePublishedOn: string;
+  phaseEndResultVerified: boolean;
+};
+export type PhaseEndRankingResult = {
+  basis: "LAST_COMPLETED_PHASE" | "NO_VERIFIED_PHASE_END";
+  currentNct: string;
+  currentPhase: TrialPhase;
+  completedPhase: TrialPhase | null;
+  completedPhaseNct: string | null;
+  phaseEndDate: string | null;
+  readoutDate: string | null;
+  assessments: AssessmentRanking[];
+};
+const PHASE_ORDER: Record<TrialPhase,number> = {
+  EARLY_PHASE1: 1, PHASE1: 2, PHASE2: 3, PHASE3: 4, PHASE4: 5, UNKNOWN: 0,
+};
+const ISO_DAY = /^\d{4}-\d{2}-\d{2}$/;
+function validDay(day: string): boolean {
+  if(!ISO_DAY.test(day)) return false;
+  const date = new Date(day+"T00:00:00.000Z");
+  return !Number.isNaN(date.getTime()) && date.toISOString().slice(0,10) === day;
+}
+export function rankAtLastCompletedPhase(
+  assessments: readonly AssessmentDescriptor[],
+  current: CurrentTrialPhase,
+  last: CompletedPhaseEvidence | null,
+  reviews: readonly PhaseEndTestReview[],
+): PhaseEndRankingResult {
+  const blank = () => rankTrialAssessments(assessments,current.nct,current.phase,[]);
+  if (!/^NCT\d{8}$/.test(current.nct) || !Object.hasOwn(PHASE_ORDER,current.phase))
+    throw Error("Current phase requires an exact NCT and supported phase");
+  if (current.status!=="ONGOING" && current.status!=="COMPLETED" && current.status!=="UNKNOWN")
+    throw Error("Current trial completion status is invalid");
+  if(!last) {
+    if(reviews.length) throw Error("Cannot grade without verified prior-phase results");
+    return {basis:"NO_VERIFIED_PHASE_END",currentNct:current.nct,currentPhase:current.phase,
+      completedPhase:null,completedPhaseNct:null,phaseEndDate:null,readoutDate:null,assessments:blank()};
+  }
+  if(!/^NCT\d{8}$/.test(last.sourceNct) || !Object.hasOwn(PHASE_ORDER,last.completedPhase) ||
+     !PHASE_ORDER[last.completedPhase] || !PHASE_ORDER[current.phase])
+    throw Error("Exact source NCT and verified phase are required");
+  const phaseDelta=PHASE_ORDER[current.phase]-PHASE_ORDER[last.completedPhase];
+  if(phaseDelta<0 || (phaseDelta===0 && current.status!=="COMPLETED"))
+    throw Error("Phase-end baseline cannot use an unfinished current phase or later phase");
+  if(!last.exactDrugAndIndicationMatchVerified || !last.finalOrPrimaryPhaseResultsVerified)
+    throw Error("Prior-phase drug, indication, and actual results must be verified");
+  if(!validDay(last.phaseCompletedOn) || !validDay(last.readoutDate) || last.readoutDate<last.phaseCompletedOn)
+    throw Error("Phase completion and published readout require valid, ordered dates");
+  if(!last.sourceUrls.length || last.sourceUrls.some(url=>!/^https:\/\/[^/]+/.test(url)))
+    throw Error("Phase-end baseline requires exact original-source links");
+  const validated: AssessmentTestReview[]=reviews.map(r=>{
+    if(r.nct!==last.sourceNct || r.phase!==last.completedPhase)
+      throw Error("Test grade must use the exact completed-phase source trial");
+    if(!validDay(r.sourcePublishedOn) || r.sourcePublishedOn<last.phaseCompletedOn ||
+       r.sourcePublishedOn>r.recordedAt)
+      throw Error("Test grade needs a dated phase-end source available when reviewed");
+    if(r.disposition==="SCORED" && !r.phaseEndResultVerified)
+      throw Error("A current-phase or speculative signal cannot be graded as prior-phase outcome");
+    return r;
+  });
+  const scored=rankTrialAssessments(assessments,last.sourceNct,last.completedPhase,validated);
+  return {basis:"LAST_COMPLETED_PHASE",currentNct:current.nct,currentPhase:current.phase,
+    completedPhase:last.completedPhase,completedPhaseNct:last.sourceNct,
+    phaseEndDate:last.phaseCompletedOn,readoutDate:last.readoutDate,assessments:scored};
+}
