@@ -37,6 +37,7 @@ export type EventTestGrade = AssessmentTestReview & {
   sourcePublishedOn: string;
 };
 export type CurrentPhaseRisk = {
+  riskId: string;
   nct: string;
   phase: TrialPhase;
   milestoneId: string;
@@ -105,6 +106,7 @@ export type CurrentPhaseSnapshot={
   phase:TrialPhase;
   latestVerifiedMilestone:PhaseMilestone|null;
   currentScores:AssessmentRanking[];
+  latestEventScores:AssessmentRanking[];
   activeRisks:CurrentPhaseRisk[];
   resolvedRisks:CurrentPhaseRisk[];
   watchlist:readonly PhaseRiskPrompt[];
@@ -113,9 +115,10 @@ export type CurrentPhaseSnapshot={
 };
 
 /**
- * Scores are sourced ONLY from the most recent verified milestone in the current
- * phase; they are not an estimate of the entire phase, last completed phase or FDA odds.
- * A protocol/enrollment event may rate execution but never efficacy.
+ * Current-phase scores preserve the latest VERIFIED result for each test across
+ * current-phase milestones, with a separate latest-event rating. Earlier-phase
+ * baselines remain separate. No output is an FDA approval probability.
+ * An enrollment event can update trial execution, never efficacy.
  */
 export function assessLatestPhaseActivity(
   descriptors:readonly AssessmentDescriptor[],
@@ -140,7 +143,8 @@ export function assessLatestPhaseActivity(
   const verified=milestones.filter(e=>e.verified).sort((a,b)=>
     b.occurredOn.localeCompare(a.occurredOn)||b.publishedOn.localeCompare(a.publishedOn)||a.id.localeCompare(b.id));
   const latest=verified[0]||null;
-  const reviewed:AssessmentTestReview[]=[];
+  const latestEventReviews:AssessmentTestReview[]=[];
+  const latestReviewByTest=new Map<string,{event:PhaseMilestone,review:AssessmentTestReview}>();
   for(const review of reviews){
     const event=milestones.find(e=>e.id===review.milestoneId);
     if(!event||review.nct!==nct||review.phase!==phase)
@@ -154,27 +158,41 @@ export function assessLatestPhaseActivity(
       if(!review.evidenceUrls.some(url=>event.sourceUrls.includes(url)))
         throw Error("Test rating must cite the actual milestone source");
     }
-    if(event.id===latest?.id) reviewed.push(review);
+    if(event.id===latest?.id) latestEventReviews.push(review);
+    const key=review.assessmentId+":"+review.level;
+    const previous=latestReviewByTest.get(key);
+    if(!previous ||
+      event.occurredOn>previous.event.occurredOn ||
+      (event.occurredOn===previous.event.occurredOn&&event.publishedOn>previous.event.publishedOn) ||
+      (event.occurredOn===previous.event.occurredOn&&event.publishedOn===previous.event.publishedOn&&
+        review.recordedAt>previous.review.recordedAt))
+      latestReviewByTest.set(key,{event,review});
   }
-  const currentScores=rankTrialAssessments(descriptors,nct,phase,reviewed);
-  const observed:CurrentPhaseRisk[]=[];
+  const currentScores=rankTrialAssessments(descriptors,nct,phase,
+    [...latestReviewByTest.values()].map(x=>x.review));
+  const latestEventScores=rankTrialAssessments(descriptors,nct,phase,latestEventReviews);
+  const risksById=new Map<string,{event:PhaseMilestone,risk:CurrentPhaseRisk}>();
   for(const risk of riskFindings){
     const event=milestones.find(e=>e.id===risk.milestoneId);
     if(!event||!event.verified||risk.nct!==nct||risk.phase!==phase||
-       !Object.hasOwn(SEVERITY,risk.level)||!["OPEN","RESOLVED"].includes(risk.state)||
+       !risk.riskId?.trim()||!Object.hasOwn(SEVERITY,risk.level)||!["OPEN","RESOLVED"].includes(risk.state)||
        !risk.finding.trim()||!sourceLinks(risk.evidenceUrls)||
        !risk.evidenceUrls.some(url=>event.sourceUrls.includes(url)))
       throw Error("Risk finding requires verified current-phase evidence and exact event attribution");
-    observed.push(risk);
+    const previous=risksById.get(risk.riskId);
+    if(!previous||event.occurredOn>previous.event.occurredOn||
+       (event.occurredOn===previous.event.occurredOn&&event.publishedOn>previous.event.publishedOn))
+      risksById.set(risk.riskId,{event,risk});
   }
+  const observed=[...risksById.values()].map(x=>x.risk);
   const activeRisks=observed.filter(r=>r.state==="OPEN").sort((a,b)=>SEVERITY[b.level]-SEVERITY[a.level]||a.domain.localeCompare(b.domain));
   const resolvedRisks=observed.filter(r=>r.state==="RESOLVED");
   return {
-    nct,phase,latestVerifiedMilestone:latest,currentScores,activeRisks,resolvedRisks,
+    nct,phase,latestVerifiedMilestone:latest,currentScores,latestEventScores,activeRisks,resolvedRisks,
     watchlist:PHASE_RISK_WATCHLIST[phase],
     unverifiedEventCount:milestones.length-verified.length,
     note:latest
-      ? "Latest verified activity only. Grade coverage is provisional until each applicable test has been reviewed; risks are evidence-specific, not approval probabilities."
+      ? "Current-phase score carries forward the latest verified result per test; the newest milestone has its own rating. Risk severity is evidence-based, not an approval probability."
       : "No independently verified current-phase milestone available. All scientific grades and observed risks remain unassigned."
   };
 }
