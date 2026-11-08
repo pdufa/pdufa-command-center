@@ -22,7 +22,7 @@ MAX_DOC = 25_000_000
 USER_AGENT = "PDUFA-MAIN-open-source-research/1.0 (single trial, public protocol; no credential)"
 UUID = re.compile(r"^[A-Za-z0-9-]{16,80}$")
 
-def request(url: str, max_bytes: int, accept: str) -> tuple[bytes, dict]:
+def request(url: str, max_bytes: int, accept: str, expected_host: str = "euclinicaltrials.eu") -> tuple[bytes, dict]:
     req = urllib.request.Request(url, headers={
         "User-Agent": USER_AGENT,
         "Accept": accept,
@@ -37,7 +37,9 @@ def request(url: str, max_bytes: int, accept: str) -> tuple[bytes, dict]:
         raise ValueError("SOURCE_TOO_LARGE")
     if code != 200:
         raise ValueError(f"HTTP_{code}")
-    if not final_url.startswith("https://euclinicaltrials.eu/"):
+    from urllib.parse import urlsplit
+    location = urlsplit(final_url)
+    if location.scheme != "https" or location.hostname != expected_host or location.username or location.password:
         raise ValueError("UNEXPECTED_REDIRECT_DOMAIN")
     return raw, {"http_status": code, "content_type": mime, "returned_url": final_url}
 
@@ -76,13 +78,20 @@ def run() -> dict:
         raise ValueError("UNEXPECTED_DOCUMENT_FORMAT")
     data, doc_response = request(f"{ROOT}/documents/{TRIAL}/{identifier}/download",
                                  MAX_DOC, "application/pdf,application/octet-stream")
+    if "application/json" in str(doc_response.get("content_type", "")):
+        from urllib.parse import urlsplit
+        handoff = json.loads(data)
+        if not isinstance(handoff, dict) or not isinstance(handoff.get("url"), str):
+            raise ValueError("CTIS_DOCUMENT_HANDOFF_MISSING_URL")
+        signed = handoff["url"]
+        parsed = urlsplit(signed)
+        trusted_host = "ctis-publication-engine-doc-storage-prod.s3.eu-central-1.amazonaws.com"
+        if parsed.scheme != "https" or parsed.hostname != trusted_host or parsed.username or parsed.password:
+            raise ValueError("CTIS_DOCUMENT_HANDOFF_UNTRUSTED_HOST")
+        # The presigned S3 URL is ephemeral and never logged, stored, or emitted as evidence.
+        data, doc_response = request(signed, MAX_DOC, "application/pdf,application/octet-stream",
+                                     expected_host=trusted_host)
     if not data.startswith(b"%PDF-"):
-        if "application/json" in str(doc_response.get("content_type", "")):
-            body = json.loads(data)
-            if isinstance(body, dict) and isinstance(body.get("url"), str):
-                from urllib.parse import urlsplit
-                uri = urlsplit(body["url"])
-                raise ValueError("CTIS_SIGNED_DOCUMENT_LINK_HOST_" + str(uri.hostname)[:120])
         mime = str(doc_response.get("content_type", ""))[:64].replace(" ", "_")
         magic = data[:12].hex()
         raise ValueError(f"DOCUMENT_NOT_PDF_mime={mime}_magic={magic}_bytes={len(data)}")
