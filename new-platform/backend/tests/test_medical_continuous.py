@@ -9,6 +9,44 @@ from app import medical_continuous as medical
 NCT = "NCT00000001"
 
 
+
+def test_packaged_application_context_reconciles_all_focus_ncts():
+    """Research context is source-linked but never treated as FDA-confirmed."""
+    import json
+    from pathlib import Path
+    base=Path(medical.__file__).resolve().parent
+    snapshot=json.loads((base/"data"/"focus_application_snapshot.json").read_text(encoding="utf-8"))
+    original=(Path(__file__).resolve().parents[2]/
+              "frontend"/"lib"/"medical-intelligence-applications.ts").read_text(encoding="utf-8")
+    raw=original.split("export const APPLICATION_CYCLES:",1)[1].split("=[",1)[1].split("] as const;",1)[0]
+    published=json.loads("["+raw+"]")
+    assert snapshot["schemaVersion"]==1
+    assert snapshot["asOf"]=="2026-11-07"
+    assert snapshot["sourceVerifiedByFda"] is False
+    assert len(published)==23
+    rows=snapshot["records"]
+    assert len(rows)==29
+    assert {r["nct"] for r in rows}==set(medical.roster())
+    by_id={r["nct"]:r for r in rows}
+    for study in published:
+        for nct in study["ncts"]:
+            assert any(a["cycleId"]==study["id"] and
+                       a["indication"]==study["indication"] and
+                       a["sourceUrl"]==study["sourceUrl"]
+                       for a in by_id[nct]["candidateApplications"])
+    assert all(row["designations"]==[] for row in rows)
+    assert all(row["candidateApplications"] for row in rows)
+    multi=medical.program_record("NCT02500381")
+    assert len(multi["candidateApplications"])==2
+    assert multi["indication"]==""
+    assert multi["drug"]==""
+    capr=medical.program_record("NCT05126758")
+    assert capr["indication"]=="Duchenne muscular dystrophy"
+    assert capr["drug"]=="Deramiocel"
+    assert capr["designations"]==[]
+
+
+
 def test_packaged_focus_roster_matches_frontend_snapshot():
     # Render builds with Docker context new-platform/backend, so the runtime
     # cannot read its sibling frontend/data directory.
