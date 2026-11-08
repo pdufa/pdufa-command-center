@@ -24,7 +24,7 @@ jobs:
       - name: Install backend requirements
         run: pip install -r new-platform/backend/requirements.txt
       - name: Assert isolated canary branch
-        run: test "$"+String.fromCharCode(123)+"GITHUB_REF_NAME}" = "feature/predictions-durable-medical-canary-20261108"
+        run: test "${GITHUB_REF_NAME}" = "feature/predictions-durable-medical-canary-20261108"
       - name: Test durable source-audit idempotency and forbidden grade writes
         env:
           PYTHONPATH: new-platform/backend
