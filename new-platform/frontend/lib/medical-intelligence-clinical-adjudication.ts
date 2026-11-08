@@ -4,7 +4,8 @@
  * Current dated research snapshot: November 7, 2026.
  */
 import {APPLICATION_CYCLES} from "./medical-intelligence-applications";
-export type ClaimSourceType="FDA_REVIEWER"|"FDA_DOCUMENTED_APPLICANT_ANALYSIS"|"SPONSOR_TRIAL_DATA"|"SPONSOR_REPORT_OF_FDA_COMMUNICATION"|"SPONSOR_STATUS"|"PEER_REVIEWED_TRIAL";
+import {ADDITIONAL_ADJUDICATION_CASES} from "./medical-intelligence-clinical-adjudication-extra";
+export type ClaimSourceType="FDA_REVIEWER"|"FDA_ACTION_LETTER"|"FDA_DOCUMENTED_APPLICANT_ANALYSIS"|"SEC_SPONSOR_FILING"|"SPONSOR_TRIAL_DATA"|"SPONSOR_REPORT_OF_FDA_COMMUNICATION"|"SPONSOR_STATUS"|"PEER_REVIEWED_TRIAL";
 export type EvidenceRole="FAVORABLE"|"CHALLENGING"|"CONTEXT";
 export type AdjudicationClaim={
  id:string;role:EvidenceRole;type:ClaimSourceType;date:string;title:string;url:string;
@@ -12,8 +13,8 @@ export type AdjudicationClaim={
 };
 export type AdjudicationCase={
  id:string;cycleId:string;nct:string;specialty:string;title:string;
- mode:"ANALYSIS_CONFLICT"|"BENEFIT_RISK_DISCORDANCE";
- category:"EFFICACY_STATISTICS"|"SAFETY_AND_PATIENT_BENEFIT";
+ mode:"ANALYSIS_CONFLICT"|"BENEFIT_RISK_DISCORDANCE"|"REGULATORY_OBJECTION";
+ category:"EFFICACY_STATISTICS"|"SAFETY_AND_PATIENT_BENEFIT"|"CMC_AND_FACILITY";
  researchDate:string;regulatoryQuestion:string;clinicalQuestion:string;
  verdict:"UNRESOLVED_REQUIRES_INDEPENDENT_ADJUDICATION";
  timing:"NO_NEW_TIMING_EVENT_PROVEN";
@@ -21,7 +22,7 @@ export type AdjudicationCase={
  clinicalSynthesis:string;whyItCouldFail:string;bestCase:string;
  whatWouldResolve:readonly string[];sourceInterpretation:string;
 };
-export const ADJUDICATION_CASES:readonly AdjudicationCase[]=[
+const ORIGINAL_ADJUDICATION_CASES:readonly AdjudicationCase[]=[
   {
     "id": "capr-hope3-analysis",
     "cycleId": "capr-deramiocel",
@@ -244,6 +245,7 @@ export const ADJUDICATION_CASES:readonly AdjudicationCase[]=[
     "sourceInterpretation": "The clinical publication establishes positive respiratory physiological effects and a tolerability tradeoff; it does not establish a current FDA safety objection."
   }
 ] as const;
+export const ADJUDICATION_CASES:readonly AdjudicationCase[]=[...ORIGINAL_ADJUDICATION_CASES,...ADDITIONAL_ADJUDICATION_CASES];
 export function adjudicationForCycle(cycleId:string):AdjudicationCase[]{
  return ADJUDICATION_CASES.filter(x=>x.cycleId===cycleId);
 }
