@@ -41,6 +41,7 @@ jobs:
           python - <<'PY'
           from app.main import app
           paths={getattr(r,"path",None):set(getattr(r,"methods",[]) or ()) for r in app.routes}
+          print("ACTUAL ROUTES:", sorted((p, sorted(methods)) for p,methods in paths.items() if p and ("medical-method" in p or "medical-scientific" in p or "medical-phase" in p)))
           assert "GET" in paths["/api/internal/medical-method-audit/{nct}/latest"]
           assert "POST" in paths["/api/internal/medical-method-audit/{nct}/runs"]
           print("PASS: isolated route imports and exact source audit GET/POST defined")
