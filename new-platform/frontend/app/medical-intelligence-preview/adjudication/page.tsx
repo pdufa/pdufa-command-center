@@ -16,7 +16,8 @@ const card={padding:16,border:"1px solid "+line,borderRadius:12,background:"#fff
 const small={fontSize:13,lineHeight:1.6,color:muted} as const;
 const dateRange=(d:string|null)=>d||"No confirmed current goal";
 function Claim({claim}:{claim:AdjudicationClaim}){
- const label=claim.type==="FDA_ACTION_LETTER"?"Direct FDA action / CRL":
+ const label=claim.type==="FDA_PUBLIC_APPROVAL"?"FDA official existing approval":
+  claim.type==="FDA_ACTION_LETTER"?"Direct FDA action / CRL":
   claim.type==="SEC_SPONSOR_FILING"?"SEC-filed sponsor evidence":
   claim.type==="FDA_REVIEWER"?"FDA reviewer analysis":
   claim.type==="FDA_DOCUMENTED_APPLICANT_ANALYSIS"?"Applicant model recorded in FDA document":
@@ -27,7 +28,7 @@ function Claim({claim}:{claim:AdjudicationClaim}){
    <div style={{fontSize:12,fontWeight:750,color:claim.role==="CHALLENGING"?red:green}}>
      {claim.role==="CHALLENGING"?"Evidence challenging the favorable interpretation":claim.role==="FAVORABLE"?"Evidence favoring the treatment claim":"Context requiring independent verification"}
    </div>
-   <div style={{fontSize:12,color:muted,marginTop:4}}>{label} · {claim.date} · {claim.trial}</div>
+   <div style={{fontSize:12,color:muted,marginTop:4}}>{label} · {claim.date} · {claim.trial}{claim.scope==="RELATED_EXTERNAL_TRIAL"?" · linked companion/previous trial":""}</div>
    <h4 style={{margin:"7px 0 5px",fontSize:15}}>{claim.measure}</h4>
    <p style={{fontSize:14,fontWeight:650,lineHeight:1.5,margin:"5px 0"}}>{claim.result}</p>
    <p style={{...small,margin:"7px 0"}}><strong>Interpretive restriction:</strong> {claim.limits}</p>
@@ -39,7 +40,7 @@ function Case({item}:{item:AdjudicationCase}){
  return <article id={item.id} style={{...card,marginTop:14}}>
    <div style={{color:green,fontSize:12,letterSpacing:0.6,fontWeight:750}}>DETAILED SOURCE ADJUDICATION · {item.mode.replace(/_/g," ")}</div>
    <h2 style={{fontSize:21,margin:"6px 0"}}>{cycle?.ticker} · {item.title}</h2>
-   <p style={{...small,margin:"3px 0 12px"}}>{item.specialty} · {item.nct} · Review as of {item.researchDate} · Current FDA disposition: <strong>indeterminate</strong></p>
+   <p style={{...small,margin:"3px 0 12px"}}>{item.specialty} · {item.nct} · Review as of {item.researchDate} · Application status: <strong>{item.verdict==="ALREADY_APPROVED_NO_PENDING_FIRST_APPROVAL"?"FDA-approved indication; no pending initial oHCM decision":"Deep adjudication unresolved"}</strong></p>
    <div style={{padding:13,background:"#f1f7f2",borderRadius:9,lineHeight:1.6,fontSize:14}}>
      <p style={{margin:"0 0 9px"}}><strong>Clinical specialist question:</strong> {item.clinicalQuestion}</p>
      <p style={{margin:0}}><strong>FDA reviewer question:</strong> {item.regulatoryQuestion}</p>
@@ -61,7 +62,7 @@ function Case({item}:{item:AdjudicationCase}){
      </ol>
    </details>
    <p style={{fontSize:12,color:muted,marginBottom:0,marginTop:12}}>
-      No final CRL or approval judgment is produced by this case. No new PDUFA timing event has been established here. <Link href={"/medical-intelligence-preview/specialist-review?cycle="+item.cycleId}>Full disease-specialist dossier</Link> · <Link href={"/medical-intelligence-preview/applications/"+item.cycleId}>FDA application brief</Link>.
+      {item.verdict==="ALREADY_APPROVED_NO_PENDING_FIRST_APPROVAL"?"FDA already approved this specific indication, and no new initial approval event is pending.":"No new CRL or approval judgment is produced by this case."} No new PDUFA timing event has been established here. <Link href={"/medical-intelligence-preview/specialist-review?cycle="+item.cycleId}>Full disease-specialist dossier</Link> · <Link href={"/medical-intelligence-preview/applications/"+item.cycleId}>FDA application brief</Link>.
    </p>
  </article>;
 }
@@ -72,16 +73,18 @@ export default async function AdjudicationDesk({searchParams}:{searchParams:Prom
  const visibleCases=selectedCycle==="all"?ADJUDICATION_CASES:ADJUDICATION_CASES.filter(c=>c.cycleId===selectedCycle);
  const published=ADJUDICATION_CASES.reduce((n,c)=>n+c.sources.length,0);
  const worked=new Set(ADJUDICATION_CASES.map(x=>x.cycleId)).size;
+ const unresolved=ADJUDICATION_CASES.filter(c=>c.verdict==="UNRESOLVED_REQUIRES_INDEPENDENT_ADJUDICATION").length;
  const discontinuation=adverseEventAbsoluteDifference(69,325,10,319);
  return <main style={{maxWidth:1370,margin:"24px auto",padding:"0 16px 50px",fontFamily:"system-ui,sans-serif",color:ink}}>
    <div style={{color:green,fontSize:12,fontWeight:750,letterSpacing:1}}>FOCUS → CLINICAL SPECIALIST → INDEPENDENT FDA EVIDENCE</div>
    <h1 style={{fontSize:"clamp(1.7rem,4vw,2.5rem)",margin:"8px 0 5px"}}>Independent clinical evidence adjudication</h1>
-   <p style={{maxWidth:1070,lineHeight:1.6}}>Original statistical, clinical and regulatory evidence is examined side by side. Each case challenges an apparent success or failure with the strongest opposing evidence, separates FDA reviewer records from sponsor claims, and specifies what source information could change the conclusion. This is <strong>in-progress research, not a licensed specialist opinion or a predictive rating</strong>.</p>
+   <p style={{maxWidth:1070,lineHeight:1.6}}>Original statistical, clinical and regulatory evidence is examined side by side. Each case challenges an apparent success or failure with the strongest opposing evidence, separates FDA reviewer records from sponsor claims, and specifies what source information could change the conclusion. This is <strong>in-progress research, not a completed licensed specialist opinion or a predictive rating</strong>. An already-approved indication is displayed as approved, never as an unresolved initial action.</p>
    <p style={{...small,marginTop:4}}>Dated research snapshot: {ADJUDICATION_AS_OF}. A sponsor filing, an advisory package, a peer-reviewed clinical report and a final FDA regulatory decision are different kinds of evidence.</p>
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(175px,1fr))",gap:10,marginTop:16}}>
      {[
        ["FDA application cycles tracked",APPLICATION_CYCLES.length],
-       ["Open detailed adjudication cases",ADJUDICATION_CASES.length],
+       ["Source-adjudicated application dossiers",ADJUDICATION_CASES.length],
+       ["Undergoing further adjudication",unresolved],
        ["Cycles with new detailed comparisons",worked],
        ["Individually documented evidence claims",published],
        ["Completed regulatory forecasts",0]
