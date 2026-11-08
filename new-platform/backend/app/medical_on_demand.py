@@ -139,6 +139,9 @@ def start_now(engine,nct,request_key,*,submit=True,trigger="MANUAL"):
     """One Analyze Now invocation. Reuses any active research job, never clones it."""
     from . import medical_continuous as core
     core.check_nct(nct)  # only currently eligible roster is startable
+    if trigger=="MANUAL" and os.getenv("PDUFA_ANALYZE_NOW_ALL_ENABLED","").lower() not in ("1","true","yes") and \
+       nct!=os.getenv("PDUFA_ANALYZE_NOW_CANARY_NCT","NCT06081894"):
+        raise ValueError("Analyze Now wider rollout is gated until a verified database-backed canary")
     saved=core.create(engine,nct,request_key,submit=False)
     with engine.begin() as c:
         origin=c.execute(text("SELECT request_key FROM medical_continuous_runs WHERE run_id=:run"),
