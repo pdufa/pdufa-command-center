@@ -387,8 +387,11 @@ def worker(engine, run_id, *, step=process_stage):
 def start(engine):
     initialize(engine)
     with engine.connect() as c:
+        # The dated FOCUS roster currently has 29 NCTs. A hard 25-run cap left
+        # the remaining jobs stranded after a service restart. The worker pool
+        # bounds concurrency; enqueue every unfinished durable run instead.
         ids = list(c.execute(text("""SELECT run_id FROM medical_continuous_runs
-            WHERE status IN ('PENDING','RUNNING') ORDER BY created_at LIMIT 25""")).scalars())
+            WHERE status IN ('PENDING','RUNNING') ORDER BY created_at,run_id""")).scalars())
     for run_id in ids:
         _POOL.submit(worker, engine, run_id)
 
