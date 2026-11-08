@@ -4,6 +4,7 @@ import DailySystemProgress from "./DailySystemProgress";
 import InstallationProgressChart from "./InstallationProgressChart";
 import InstallationLiveNavigator from "./InstallationLiveNavigator";
 import MasterBuildProgress from "./MasterBuildProgress";
+import styles from "./InstallationAuditTheme.module.css";
 import { PHASE3_CENSUS_SNAPSHOT, auditPhase3CensusSnapshot } from "../../lib/phase3-census-snapshot";
 import { isAccepted, summarizeInstallationAudit, mainTechnicalAcceptance } from "../../lib/installation-audit-summary";
 import { FDA_REVIEW_WORKLIST_SNAPSHOT, auditFDAReviewWorklist } from "../../lib/fda-review-worklist-snapshot";
@@ -48,13 +49,13 @@ const checks: Check[] = [
 ];
 
 const tone: Record<Gate, string> = {
-  "Code present": "#166534",
-  "Preview READY": "#166534",
-  "Partial": "#92400e",
-  "Not verified": "#9f1239",
-  "Not audited": "#64748b",
-  "Not applicable": "#64748b",
-  "Verified": "#166534",
+  "Code present": "#6af8cf",
+  "Preview READY": "#6af8cf",
+  "Partial": "#ffdc97",
+  "Not verified": "#ffb4a6",
+  "Not audited": "#c1dfe2",
+  "Not applicable": "#c1dfe2",
+  "Verified": "#6af8cf",
 };
 
 function GateCell({ value }: { value: Gate }) {
@@ -66,7 +67,7 @@ export default function InstallationAudit() {
   const technical = mainTechnicalAcceptance(checks);
   const fdaWorklist = auditFDAReviewWorklist(FDA_REVIEW_WORKLIST_SNAPSHOT);
   const phase3Census = auditPhase3CensusSnapshot(PHASE3_CENSUS_SNAPSHOT);
-  return <main style={{maxWidth:1420,margin:"0 auto",padding:"28px 18px",fontFamily:"system-ui,sans-serif",color:"#17212b"}}>
+  return <main className={styles.auditPage} style={{maxWidth:1420,margin:"0 auto",minHeight:"100vh",padding:"28px 18px",fontFamily:"system-ui,sans-serif",color:"#e7f9fc",background:"radial-gradient(circle at 100% 0,#175364,transparent 35%),linear-gradient(135deg,#071824,#0b3543)"}}>
     <p><Link href="/">← Dashboard</Link></p>
     <h1>System installation & evidence tracker</h1>
     <InstallationLiveNavigator />
@@ -77,7 +78,7 @@ export default function InstallationAudit() {
     {technical.open.length > 0 ? <details><summary>Remaining MAIN technical components</summary><ul>{technical.open.map(component=><li key={component}>{component}</li>)}</ul></details> : null}
     <p><strong>Latest saved RESULTS:</strong> October 25, 2026 · PARTIAL · <a href="https://github.com/pdufa/pdufa-command-center/actions/runs/40263199452" target="_blank" rel="noopener noreferrer">run 40263199452</a> · 11,598 tracked clinical records (not Pipeline qualified) · 0 tracked records changed . Qualified Pipeline and FDA special-designation totals remain unknown. The scan-note summary reports 995/1121 verified, 21 unresolved, 93 unavailable and 10 not applicable; <strong>two conflicted checks are omitted from that short note</strong> but separately recorded in the same-run source audit.</p>
     <p><strong>Same-run source reconciliation (October 25, 2026 night):</strong> 995/1121 verified, 21 unresolved, 2 conflicted, 93 unavailable and 10 not applicable: <strong>995 + 21 + 2 + 93 + 10 = 1,121</strong>. <a href={sourceAudit}>Saved source report</a> · <strong>PARTIAL</strong> because required SEC and FINANCIAL verification is still missing. The source report explicitly accounts for the two conflicts that the shorter nightly scan note does not list. Clinical inventory totals do not establish Pipeline eligibility, complete regulatory source coverage or validated scientific predictions.</p>
-    <section aria-label="Dated corporate-action source exceptions" style={{margin:"18px 0",padding:"14px 16px",border:"1px solid #cbd5e1",borderRadius:8,background:"#f8fafc"}}>
+    <section aria-label="Dated corporate-action source exceptions" style={{margin:"18px 0",padding:"14px 16px",border:"1px solid #39717b",borderRadius:8,background:"#0b3040"}}>
       <h2>Company-identity exceptions — source research, October 26</h2>
       <p><strong>2 recorded SEC FILINGS_INVENTORY conflicts remain OPEN.</strong> Nasdaq exchange notices identify corporate actions relevant to the original saved ticker-to-CIK registry. These dated notices help explain stale identity records; they do not substitute for a fresh SEC submissions check, validate an unrelated drug program, or automatically change Pipeline eligibility.</p>
       <ul>
@@ -86,26 +87,26 @@ export default function InstallationAudit() {
       </ul>
       <p><strong>Hold:</strong> current ticker validity and public-company eligibility remain unverified for these saved identities. Current issuer identities and original source evidence remain subject to independent verification. Retired classifications are not eligibility gates. No new listing, trade approval or source verification is inferred.</p>
     </section>
-    <section aria-label="Phase 3 market-cap research census, not qualified Pipeline" style={{margin:"22px 0",border:"1px solid #cbd5e1",borderRadius:10,padding:"16px 18px",background:"#f8fafc"}}>
+    <section aria-label="Phase 3 market-cap research census, not qualified Pipeline" style={{margin:"22px 0",border:"1px solid #39717b",borderRadius:10,padding:"16px 18px",background:"#0b3040"}}>
       <h2>Phase 3 company / market-cap census — research snapshot only</h2>
       <p><strong>Source dated October 26, 2026 at 12:21 UTC (5:21 AM Pacific).</strong>
         {" "}This exact-lead-sponsor registry census applies the $300M–$10B market-cap range
         to Phase 3 industry-sponsored trials across all years. It is a conservative
         lower bound, <strong>NOT the qualified Pipeline candidate total</strong>.</p>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(165px,1fr))",gap:12,margin:"15px 0"}}>
-        <div style={{padding:12,border:"1px solid #e2e8f0",borderRadius:7,background:"#fff"}}>
+        <div style={{padding:12,border:"1px solid #39717b",borderRadius:7,background:"#0a2c3b"}}>
           <strong style={{fontSize:24,display:"block"}}>{phase3Census.industryPhase3Examined.toLocaleString("en-US")}</strong>
           <span>Phase 3 industry trial records examined</span>
         </div>
-        <div style={{padding:12,border:"1px solid #e2e8f0",borderRadius:7,background:"#fff"}}>
+        <div style={{padding:12,border:"1px solid #39717b",borderRadius:7,background:"#0a2c3b"}}>
           <strong style={{fontSize:24,display:"block"}}>{phase3Census.matchedPhase3Trials.toLocaleString("en-US")}</strong>
           <span>Exact-lead-sponsor Phase 3 trials matched to $300M–$10B companies</span>
         </div>
-        <div style={{padding:12,border:"1px solid #e2e8f0",borderRadius:7,background:"#fff"}}>
+        <div style={{padding:12,border:"1px solid #39717b",borderRadius:7,background:"#0a2c3b"}}>
           <strong style={{fontSize:24,display:"block"}}>{phase3Census.matchedCompanies.toLocaleString("en-US")}</strong>
           <span>Companies with matching trials</span>
         </div>
-        <div style={{padding:12,border:"1px solid #e2e8f0",borderRadius:7,background:"#fff"}}>
+        <div style={{padding:12,border:"1px solid #39717b",borderRadius:7,background:"#0a2c3b"}}>
           <strong style={{fontSize:24,display:"block"}}>{phase3Census.unavailableMarketCapTickers.toLocaleString("en-US")}</strong>
           <span>Company tickers with market-cap data unavailable</span>
         </div>
@@ -133,7 +134,7 @@ export default function InstallationAudit() {
       <p><strong>{total.accepted} / {total.sections} sections fully accepted · {total.sections - total.accepted} remain open.</strong> Full acceptance requires runtime verification and applicable evidence verification, not only installed code or a READY build.</p>
       <p><strong>Individual status gates:</strong> {total.independentlyVerified} independently verified · {total.implementationSignals} code/deployment signals · {total.partial} partial · {total.unverified} not verified/audited · {total.excluded} not applicable. Denominator: {total.gates} applicable gates. These gate counts do not measure percentage of engineering hours remaining.</p>
       <p><strong>Important:</strong> OUTCOME source connection verified on October 25, 2026 at 6:37 PM Pacific: the authenticated production evidence request returned HTTP 200 from the dedicated HOP service. This verifies read-only source access, not FDA decision validity. OUTCOME prediction validation remains blocked: 0 independently verified review-cycle outcomes, an incomplete approval/nonapproval decision denominator, and no established time-forward calibration. FDA approval probabilities remain unavailable; missing SCIENCE-40 evidence cannot be counted as complete. <a href={audit} target="_blank" rel="noopener noreferrer">See current acceptance record</a>.</p>
-      {groups.map(group => <details key={group.name} open={group.name === "Core Platform"} style={{border:"1px solid #cbd5e1",borderRadius:8,margin:"12px 0",background:"#fff"}}>
+      {groups.map(group => <details key={group.name} open={group.name === "Core Platform"} style={{border:"1px solid #39717b",borderRadius:8,margin:"12px 0",background:"#0a2c3b"}}>
         <summary style={{padding:"14px 16px",cursor:"pointer",fontWeight:700}}>
           {group.name} — {group.totals.accepted}/{group.totals.sections} accepted; {group.totals.sections - group.totals.accepted} open
           <span style={{fontSize:12,fontWeight:400,display:"block",marginTop:4}}>
@@ -142,39 +143,39 @@ export default function InstallationAudit() {
         </summary>
         <div style={{overflowX:"auto",padding:"0 12px 12px"}}>
           <table style={{width:"100%",minWidth:1170,borderCollapse:"collapse",fontSize:13}}>
-            <thead><tr>{["Component","Acceptance","Requirement","Code","Deployment","Runtime","Evidence","Blocker / remaining work","Last checked","Source"].map(x=><th key={x} scope="col" style={{textAlign:"left",padding:9,borderBottom:"2px solid #94a3b8",background:"#f1f5f9",whiteSpace:"nowrap"}}>{x}</th>)}</tr></thead>
-            <tbody>{checks.filter(item => group.items.some(member => member.component === item.component)).map((item,i)=><tr key={item.component} style={{background:i%2?"#f8fafc":"white"}}>
-              <th scope="row" style={{textAlign:"left",padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",minWidth:135}}>{item.component === "GEM JR / GEM / WT" ? "Archived stage evidence" : item.component}</th>
-              <td style={{padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",fontWeight:700,color:isAccepted(item)?"#166534":"#92400e"}}>{isAccepted(item)?"ACCEPTED":"OPEN"}</td>
-              <td style={{padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",minWidth:205}}>{item.requirement}</td>
-              {[item.code,item.deployment,item.runtime,item.evidence].map((gate,k)=><td key={k} style={{padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top"}}><GateCell value={gate}/></td>)}
-              <td style={{padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",minWidth:270}}>{item.blocker}</td>
-              <td style={{padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top",minWidth:135}}>{item.lastVerified}</td>
-              <td style={{padding:9,borderBottom:"1px solid #e2e8f0",verticalAlign:"top"}}><a href={item.source} target="_blank" rel="noopener noreferrer">{item.sourceLabel}</a></td>
+            <thead><tr>{["Component","Acceptance","Requirement","Code","Deployment","Runtime","Evidence","Blocker / remaining work","Last checked","Source"].map(x=><th key={x} scope="col" style={{textAlign:"left",padding:9,borderBottom:"2px solid #5aa9ae",background:"#123e4b",whiteSpace:"nowrap"}}>{x}</th>)}</tr></thead>
+            <tbody>{checks.filter(item => group.items.some(member => member.component === item.component)).map((item,i)=><tr key={item.component} style={{background:i%2?"#102f3a":"#0b2a38"}}>
+              <th scope="row" style={{textAlign:"left",padding:9,borderBottom:"1px solid #315f69",verticalAlign:"top",minWidth:135}}>{item.component === "GEM JR / GEM / WT" ? "Archived stage evidence" : item.component}</th>
+              <td style={{padding:9,borderBottom:"1px solid #315f69",verticalAlign:"top",fontWeight:700,color:isAccepted(item)?"#6af8cf":"#ffdc97"}}>{isAccepted(item)?"ACCEPTED":"OPEN"}</td>
+              <td style={{padding:9,borderBottom:"1px solid #315f69",verticalAlign:"top",minWidth:205}}>{item.requirement}</td>
+              {[item.code,item.deployment,item.runtime,item.evidence].map((gate,k)=><td key={k} style={{padding:9,borderBottom:"1px solid #315f69",verticalAlign:"top"}}><GateCell value={gate}/></td>)}
+              <td style={{padding:9,borderBottom:"1px solid #315f69",verticalAlign:"top",minWidth:270}}>{item.blocker}</td>
+              <td style={{padding:9,borderBottom:"1px solid #315f69",verticalAlign:"top",minWidth:135}}>{item.lastVerified}</td>
+              <td style={{padding:9,borderBottom:"1px solid #315f69",verticalAlign:"top"}}><a href={item.source} target="_blank" rel="noopener noreferrer">{item.sourceLabel}</a></td>
             </tr>)}</tbody>
           </table>
         </div>
       </details>)}
     </section>
-    <details style={{margin:"22px 0",padding:14,border:"1px solid #cbd5e1",borderRadius:9}}>
+    <details style={{margin:"22px 0",padding:14,border:"1px solid #39717b",borderRadius:9}}>
       <summary style={{fontWeight:700,cursor:"pointer"}}>Full master installation task inventory · expandable verification records</summary>
       <MasterBuildProgress />
     </details>
     <DailySystemProgress />
     <ScientificOutcomeLive />
-    <section aria-labelledby="fda-research-worklist" style={{margin:"26px 0",padding:"18px",border:"1px solid #cbd5e1",borderRadius:9,background:"#f8fafc"}}>
+    <section aria-labelledby="fda-research-worklist" style={{margin:"26px 0",padding:"18px",border:"1px solid #39717b",borderRadius:9,background:"#0b3040"}}>
       <h2 id="fda-research-worklist">OUTCOME historical FDA source readiness — research only</h2>
       <p><strong>Research snapshot: October 25, 2026.</strong> The following values are from a separate quarantined FDA research workflow, not the live OUTCOME API, verified FDA decisions or current production model data.</p>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:12,margin:"14px 0"}}>
-        <div style={{padding:12,background:"white",border:"1px solid #e2e8f0",borderRadius:7}}>
+        <div style={{padding:12,background:"#0a2c3b",border:"1px solid #39717b",borderRadius:7}}>
           <strong style={{display:"block",fontSize:24}}>{fdaWorklist.pendingLetterReferences}</strong>
           <span>Published-letter references awaiting source identity resolution</span>
         </div>
-        <div style={{padding:12,background:"white",border:"1px solid #e2e8f0",borderRadius:7}}>
+        <div style={{padding:12,background:"#0a2c3b",border:"1px solid #39717b",borderRadius:7}}>
           <strong style={{display:"block",fontSize:24}}>{fdaWorklist.searchPackets}</strong>
           <span>Prepared research packets (not FDA decisions)</span>
         </div>
-        <div style={{padding:12,background:"white",border:"1px solid #e2e8f0",borderRadius:7}}>
+        <div style={{padding:12,background:"#0a2c3b",border:"1px solid #39717b",borderRadius:7}}>
           <strong style={{display:"block",fontSize:24}}>{fdaWorklist.independentlyVerifiedReviewCycles}</strong>
           <span>Independently verified review-cycle decisions</span>
         </div>

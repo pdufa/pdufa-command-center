@@ -6,10 +6,10 @@ import { AUDIT_BASELINE, compareAuditToBaseline } from "../../lib/installation-a
  * Positive-looking code or deployment signals NEVER become accepted tasks.
  */
 const segments = [
-  { key: "independentlyVerified", label: "Independently verified gate", color: "#166534" },
-  { key: "implementationSignals", label: "Code/deployment evidence only", color: "#2563eb" },
-  { key: "partial", label: "Partially verified", color: "#d97706" },
-  { key: "unverified", label: "Not verified or not audited", color: "#64748b" },
+  { key: "independentlyVerified", label: "Independently verified gate", color: "#6af8cf" },
+  { key: "implementationSignals", label: "Code/deployment evidence only", color: "#5ab7ff" },
+  { key: "partial", label: "Partially verified", color: "#ffdc97" },
+  { key: "unverified", label: "Not verified or not audited", color: "#a6cbd2" },
 ] as const;
 
 type Counts = Pick<AuditTotals, "gates" | "independentlyVerified" | "implementationSignals" | "partial" | "unverified">;
@@ -18,8 +18,8 @@ function EvidenceBar({counts, name, height = 18}: {counts: Counts; name: string;
   const denominator = counts.gates;
   const accessible = segments.map(item => item.label + ": " + counts[item.key] + " of " + denominator).join("; ");
   return <div role="img" aria-label={name + " — " + accessible} style={{
-    width:"100%", height, background:"#e2e8f0", borderRadius:6, display:"flex", overflow:"hidden",
-    border:"1px solid #cbd5e1",
+    width:"100%", height, background:"#163744", borderRadius:6, display:"flex", overflow:"hidden",
+    border:"1px solid #39717b",
   }}>
     {segments.map(item => counts[item.key] > 0 && <div key={item.key} style={{
       width: (100 * counts[item.key] / denominator) + "%",
@@ -39,7 +39,7 @@ export default function InstallationProgressChart({groups, total}: {
 }) {
   const change = compareAuditToBaseline(groups, total);
   return <section aria-labelledby="acceptance-chart-heading" style={{
-    border:"1px solid #cbd5e1", borderRadius:12, background:"#f8fafc",
+    border:"1px solid #39717b", borderRadius:12, background:"#0b3040",
     padding:"18px", margin:"18px 0",
   }}>
     <h3 id="acceptance-chart-heading" style={{margin:"0 0 10px"}}>Completed and remaining — evidence-based progress chart</h3>
@@ -49,15 +49,15 @@ export default function InstallationProgressChart({groups, total}: {
       A requirement is accepted only after its runtime and applicable evidence gates are verified.
     </p>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,230px),1fr))",gap:10,marginBottom:16}}>
-      <div style={{padding:12,borderRadius:8,border:"1px solid #cbd5e1",background:"#fff"}}>
+      <div style={{padding:12,borderRadius:8,border:"1px solid #39717b",background:"#0a2c3b"}}>
         <strong style={{fontSize:24,display:"block"}}>{countLine(total.accepted,total.sections)}</strong>
         <span>Fully accepted sections</span>
       </div>
-      <div style={{padding:12,borderRadius:8,border:"1px solid #cbd5e1",background:"#fff"}}>
+      <div style={{padding:12,borderRadius:8,border:"1px solid #39717b",background:"#0a2c3b"}}>
         <strong style={{fontSize:24,display:"block"}}>{countLine(total.sections-total.accepted,total.sections)}</strong>
         <span>Sections still open</span>
       </div>
-      <div style={{padding:12,borderRadius:8,border:"1px solid #cbd5e1",background:"#fff"}}>
+      <div style={{padding:12,borderRadius:8,border:"1px solid #39717b",background:"#0a2c3b"}}>
         <strong style={{fontSize:24,display:"block"}}>{countLine(total.independentlyVerified,total.gates)}</strong>
         <span>Independently verified individual gates</span>
       </div>
@@ -72,7 +72,7 @@ export default function InstallationProgressChart({groups, total}: {
     </div>
     <h4 style={{margin:"0 0 12px"}}>Progress by system — denominators kept separate</h4>
     <div style={{display:"grid",gap:14}}>
-      {groups.map(group => <div key={group.name} style={{padding:12,background:"#fff",borderRadius:8,border:"1px solid #d5dce4"}}>
+      {groups.map(group => <div key={group.name} style={{padding:12,background:"#0a2c3b",borderRadius:8,border:"1px solid #39717b"}}>
         <div style={{display:"flex",flexWrap:"wrap",justifyContent:"space-between",gap:"4px 12px",marginBottom:7}}>
           <strong>{group.name}</strong>
           <span style={{fontSize:13}}>{countLine(group.totals.accepted,group.totals.sections)} sections accepted · {countLine(group.totals.sections-group.totals.accepted,group.totals.sections)} open</span>
@@ -108,7 +108,7 @@ export default function InstallationProgressChart({groups, total}: {
       The requirement scope or denominators changed, so a comparison with the prior checklist is withheld.
       Review the underlying requirements before interpreting any apparent percentage difference.
     </p>}
-    <p style={{margin:"17px 0 0",fontSize:13,color:"#475569"}}>
+    <p style={{margin:"17px 0 0",fontSize:13,color:"#c1dfe2"}}>
       <strong>Accuracy note:</strong> All current bars recalculate from the 15 dated checklist rows directly below.
       A blue segment means supporting code or a deployed build, <em>not</em> a completed scientific or runtime requirement.
       Grey means not yet verified/audited, <em>not</em> proven absent. One evidence gate is not applicable and excluded.
