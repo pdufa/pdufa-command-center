@@ -1,0 +1,100 @@
+{
+  "schema": "MAIN_ACACIA_CROSS_TRIAL_SOURCE_GATE_V1",
+  "auditDate": "2026-11-08",
+  "revision": 10,
+  "nct": "NCT06081894",
+  "expected": {
+    "protocolCode": "CY 6033",
+    "trial": "ACACIA-HCM",
+    "indication": "NONOBSTRUCTIVE_HCM",
+    "phase": 3
+  },
+  "documents": [
+    {
+      "id": "EU-CTIS-CY6033-AM04",
+      "url": "https://euclinicaltrials.eu/ctis-public/view/2023-505797-15-00?lang=en",
+      "protocolCode": "CY 6033",
+      "trial": "ACACIA-HCM",
+      "indication": "NONOBSTRUCTIVE_HCM",
+      "documentKind": "PHASE_3_PROTOCOL",
+      "eligibility": "CORRECT_TRIAL_SOURCE",
+      "retrieved": true,
+      "containsFinalLockedSap": false,
+      "sha256": "853ffd80a547df8a7b813b8985c7116dd6168a640f18521f61b95cf33a8ca5f8"
+    },
+    {
+      "id": "PUBLIC-CY6031-SSAP",
+      "url": "https://openaccess.sgul.ac.uk/id/eprint/117845/4/hoi240049supp2_prod_1730392582.19884.pdf",
+      "protocolCode": "CY 6031",
+      "trial": "SEQUOIA-HCM",
+      "indication": "OBSTRUCTIVE_HCM",
+      "documentKind": "SUPPLEMENTAL_STATISTICAL_ANALYSIS_PLAN",
+      "eligibility": "EXCLUDED_WRONG_TRIAL",
+      "retrieved": false,
+      "containsFinalLockedSap": false,
+      "sha256": null,
+      "explanation": "Publicly indexed cover page names CY 6031 and obstructive HCM; this is NOT ACACIA-HCM's CY 6033 final SAP. Web page text verified but screenshot visual access unavailable."
+    }
+  ],
+  "observedSafety": [
+    {
+      "id": "RESPONDER_INT",
+      "role": "PUBLISHED_RESPONDER_ANALYSIS",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674601/",
+      "measure": "PROTOCOL_INTERRUPT_LOW_LVEF",
+      "reportedAficamtenCount": 14,
+      "reportedAficamtenPercent": 2.7,
+      "reportedPlaceboCount": 1,
+      "reportedPlaceboPercent": 0.8,
+      "consistency": "DISCORDANT_WITH_RANDOMIZED_DENOMINATORS"
+    },
+    {
+      "id": "ECHO_INT",
+      "role": "PUBLISHED_ECHOCARDIOGRAPHIC_ANALYSIS",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674599/",
+      "measure": "TREATMENT_INTERRUPT_DUE_TO_LOW_LVEF",
+      "reportedAficamtenCount": 7,
+      "reportedAficamtenPercent": 2.7,
+      "reportedPlaceboCount": null,
+      "reportedPlaceboPercent": null,
+      "consistency": "MATCHES_AFICAMTEN_RANDOMIZED_DENOMINATOR"
+    },
+    {
+      "id": "CORE_LVEF_LT40_COMMENTARY",
+      "role": "SECONDARY_COMMENTARY_NOT_INDEPENDENT_ADJUDICATION",
+      "url": "https://opensourcecardiology.org/doi/osc.2026.0037",
+      "measure": "CORE_LAB_LVEF_LT40",
+      "reportedAficamtenCount": null,
+      "reportedAficamtenPercent": 5.4,
+      "reportedPlaceboCount": null,
+      "reportedPlaceboPercent": 0.4,
+      "consistency": "POSSIBLE_DISTINCT_CORE_VS_SITE_READ_ENDPOINT"
+    }
+  ],
+  "arithmetic": {
+    "aficamtenRandomized": 258,
+    "placeboRandomized": 259,
+    "count14RatePct": 5.4,
+    "count7RatePct": 2.7,
+    "placeboCount1RatePct": 0.4
+  },
+  "interpretation": "DIFFERENT_SOURCE_DEFINITIONS_POSSIBLE_NOT_ADJUDICATED",
+  "resolvedQuestions": 0,
+  "unresolvedQuestions": 7,
+  "pending": [
+    "FINAL_LOCKED_CY6033_SAP",
+    "CLINICAL_SAFETY_EVENT_AND_EXPOSURE_DEFINITIONS",
+    "SOURCE_ORIGINAL_INTERRUPTION_NUMERATOR_AND_DENOMINATOR",
+    "DATE_AND_EFFECTIVE_STATUS_OF_PROTOCOL_AMENDMENTS",
+    "INDEPENDENT_REVIEWER_PHASE_AND_METHOD_SIGNOFF"
+  ],
+  "phaseVerified": false,
+  "clinicallyGradedMethodCount": 0,
+  "independentlySignedReviews": 0,
+  "fdaPredictions": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "certainty": "NOT_VALIDATED"
+}
