@@ -153,7 +153,8 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
                       ", " + method.method + ": " + (record?.status ?? "NOT_LOADED") +
                       ", grade " + (record?.grade === null || !record ? "not scored" : record.grade + " out of 5")}
                     onClick={() => {
-                      const section = document.getElementById("scientific-assessment-" + assessment.assessmentIndex);
+                      const section = document.getElementById(assessment.assessmentIndex === 1 ? "first-scientific-assessment" :
+                        "scientific-assessment-" + assessment.assessmentIndex);
                       if (section instanceof HTMLDetailsElement) section.open = true;
                       const item = document.getElementById("scientific-method-" +
                         assessment.assessmentIndex + "-" + method.methodIndex);
@@ -191,8 +192,7 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
       {catalog.assessments.map((assessment, i) => {
         const row = review.assessments[i], detail = details[assessment.assessmentIndex];
         return <details key={assessment.assessmentIndex} ref={i===0?firstAssessment:undefined}
-          id={i===0?"first-scientific-assessment":undefined}
-          id={"scientific-assessment-" + assessment.assessmentIndex}
+          id={i===0 ? "first-scientific-assessment" : "scientific-assessment-" + assessment.assessmentIndex}
           style={{...panel,scrollMarginTop:90}} onToggle={event => {if (event.currentTarget.open) void loadAssessment(assessment.assessmentIndex);}}> 
           <summary><strong>Layer {assessment.layerId} · {assessment.assessmentId} {assessment.label}</strong> · {row.status} · {row.reviewedMethods} scored / 20 · {row.scoreOutOf100 === null ? "Unscored" : row.scoreOutOf100 + " / 100 evidence strength"}</summary>
           <p>{assessment.objective}</p>
