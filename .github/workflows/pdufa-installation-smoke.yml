@@ -83,9 +83,14 @@ jobs:
           content_type,body=fetch("/api/installation-audit/live-task-evidence",5000000)
           if "application/json" not in content_type: raise AssertionError("Audit API is not JSON")
           payload=json.loads(body)
-          assert payload.get("taskCount")==546, "Task inventory mismatch"
-          assert len(payload.get("tasks",{}))==546, "Missing task evidence"
-          assert sum(payload.get("counts",{}).values())==546, "Status count mismatch"
+          active=payload.get("taskCount")
+          retired=payload.get("historicalTaskCount")
+          assert isinstance(active,int) and 0<active<=546, "Active installation inventory missing"
+          assert isinstance(retired,int) and retired>=0 and active+retired==546, "Historical task ledger changed"
+          assert len(payload.get("tasks",{}))==active, "Active task evidence mismatch"
+          assert sum(payload.get("counts",{}).values())==active, "Active status count mismatch"
+          print("PASS: live active tasks",active,"with",retired,
+                "retired archival requirements and unchanged 546-item master ledger")
           assert payload.get("verifiedCount")==payload["counts"].get("Verified",0), "Verified count mismatch"
           assert payload.get("automatedAcceptanceCoverage")==0, "Connectivity must not falsely certify acceptance"
           required={"dashboard","scanHealth","backendDatabase","predictionSafety","scienceReadiness","statisticalConsistency"}

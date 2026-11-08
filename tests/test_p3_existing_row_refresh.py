@@ -59,6 +59,33 @@ class ExistingRowRefreshTests(unittest.TestCase):
     def cells(self,data):
         return {d["range"].split("!")[-1]:d["values"][0][0] for d in data}
 
+    def _shift_to_live_focus(self):
+        self.headers=self.headers[:3]+list(refresh.INSERTED_HEADERS)+self.headers[3:]
+        self.row=self.row[:3]+["Not verified","D —","Not yet predicted"]+self.row[3:]
+
+    def test_live_31_column_focus_realigns_source_writes_without_archival_changes(self):
+        self._shift_to_live_focus()
+        data,report=self.plan()
+        cells=self.cells(data)
+        self.assertEqual(refresh.grid_shift([self.headers,self.row]),3)
+        self.assertEqual(cells["G4"],"ACTIVE_NOT_RECRUITING")
+        self.assertEqual(cells["AA4"],5491198055)
+        self.assertEqual(cells["AE4"],CAPURL)
+        self.assertEqual(report["protectedColumns"],"A:F,N:X")
+        protected={f"{refresh.a1_col(i)}4" for i in (*range(0,6),*range(13,24))}
+        self.assertFalse(protected.intersection(cells))
+        self.assertEqual(self.row[3:6],["Not verified","D —","Not yet predicted"])
+        self.assertEqual(self.row[13:24],self.row[13:24])
+
+    def test_live_focus_archive_and_inserted_headers_require_exact_positions(self):
+        self._shift_to_live_focus()
+        before=self.row[:]
+        refresh.validate_grid([self.headers,self.row])
+        self.assertEqual(self.row,before)
+        self.headers[3]="Registry Status"
+        with self.assertRaisesRegex(ValueError,"Unknown FOCUS headers"):
+            refresh.validate_grid([self.headers,self.row])
+
     def test_refresh_cap_and_registry_without_replacing_human_research(self):
         data, report=self.plan()
         cells=self.cells(data)

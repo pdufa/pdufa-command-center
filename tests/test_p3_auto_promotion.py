@@ -55,6 +55,51 @@ class PromotionTests(unittest.TestCase):
         self.assertEqual(added[0]["values"][23],5491198055)
         self.assertEqual(self.run_check(args,existing={NCT})[0],[])
 
+    def test_31_column_destination_preserves_protected_history_and_source_positions(self):
+        args=self.inputs()
+        accepted,_=self.run_check(args)
+        self.assertEqual(len(accepted),1)
+        original=accepted[0]["values"]
+        live=promote.physical_append_row(original,3)
+        self.assertEqual(len(live),31)
+        self.assertEqual(live[:3],original[:3])
+        self.assertEqual(live[3:6],["Not verified","","Not yet predicted"])
+        self.assertEqual(live[6],original[3])
+        self.assertEqual(live[7],"YES - company/SEC/journal")
+        self.assertEqual(live[26],5491198055)
+        self.assertEqual(live[29],P3)
+        self.assertEqual(live[30],CAP)
+        self.assertEqual(live[13:24],original[10:21])
+        self.assertEqual(live[13:22],[""]*9)
+        rejected=original[:]
+        rejected[10]="Provisional grade attempted"
+        with self.assertRaisesRegex(ValueError,"retired research archive"):
+            promote.physical_append_row(rejected,3)
+        from importlib import util
+        syncpath=PATH.parent/"sync_p3_post_data_from_google_sheet.py"
+        spec=util.spec_from_file_location("focus_live_sync",syncpath)
+        sync=util.module_from_spec(spec)
+        spec.loader.exec_module(sync)
+        recovered=sync.extract([live])
+        self.assertEqual(len(recovered),1)
+        self.assertEqual(recovered[0]["nct"],NCT)
+        self.assertEqual(recovered[0]["marketCap"],5491198055)
+        self.assertEqual(recovered[0]["regulatoryUrl"],FDA)
+        self.assertEqual(recovered[0]["resultsUrl"],P3)
+
+    def test_unknown_sheet_layout_cannot_append(self):
+        header=[""]*31
+        header[:3]=["Ticker","NCT ID","Company"]
+        header[3:6]=list(promote.LIVE_FOCUS_INSERTS)
+        header[6]="Registry Status"
+        header[26]="Market Cap USD"
+        self.assertEqual(promote.focus_layout(header),3)
+        header[26]="Wrong"
+        with self.assertRaises(ValueError):
+            promote.focus_layout(header)
+        with self.assertRaises(ValueError):
+            promote.physical_append_row([""]*27,3)
+
     def test_no_results_documentation_no_promotion(self):
         args=self.inputs()
         args[0]["cases"]["APPLICATION|COGT|BEZUCLASTINIB_GIST"]["phase3_results"]["review_status"]="NEEDS_REVIEW"

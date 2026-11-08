@@ -33,6 +33,29 @@ NCT = re.compile(r"NCT[0-9]{8}\Z")
 TICKER = re.compile(r"[A-Z][A-Z0-9.]{0,9}\Z")
 
 
+# Canonical FOCUS sheet inserted three source-only columns at D:F.
+LIVE_FOCUS_INSERTS=("FDA Special Designations","D · P · p-value",
+                    "Intelligence Prediction At (Pacific)")
+
+def focus_layout(headers):
+    if headers[3:6]==list(LIVE_FOCUS_INSERTS):
+        if len(headers)<31 or headers[6]!="Registry Status" or headers[26]!="Market Cap USD":
+            raise ValueError("Unrecognized 31-column FOCUS destination")
+        return 3
+    if len(headers)>23 and headers[3]=="Registry Status" and headers[23]=="Market Cap USD":
+        return 0
+    raise ValueError("Unrecognized FOCUS layout; refuse append")
+
+
+def physical_append_row(logical, shift):
+    if len(logical)!=28 or shift not in (0,3):
+        raise ValueError("Candidate append schema is invalid")
+    # The nine archived research/rubric cells are blank for new NCTs.
+    if any(str(logical[i]).strip() for i in range(10,19)):
+        raise ValueError("New record attempts to initialize retired research archive")
+    return logical[:3]+["Not verified","","Not yet predicted"]+logical[3:] if shift else logical
+
+
 def link_ok(link):
     if not isinstance(link, str):
         return False
@@ -216,7 +239,7 @@ def evaluate(catalog, caps, census, pool_ids, existing, cutoff, phase3_check=reg
                   2:next(r.get("company","") for r in census if r.get("nct_id")==nct),
                   3:status, 4:"YES - company/SEC/journal", 5:result_event.isoformat(),
                   6:"https://clinicaltrials.gov/study/" + nct, 7:day, 8:now,
-                  9:"PRIMARY_PUBLIC_ISSUER_DISCLOSURE", 10:"P3 automatic verified-source intake",
+                  9:"PRIMARY_PUBLIC_ISSUER_DISCLOSURE",
                   # Legacy rating columns 11..18 intentionally remain blank.
                   # New source rows must never initialize retired scores or controls.
                   19:regulatory["status"],
@@ -249,9 +272,10 @@ def main():
         json.loads(secret), scopes=["https://www.googleapis.com/auth/spreadsheets"])
     credentials.refresh(google.auth.transport.requests.Request())
     auth = {"Authorization":"Bearer " + credentials.token}
-    current = sheets_values(auth, "A3:AB")
+    current = sheets_values(auth, "A3:AE")
     if not current or current[0][:3] != ["Ticker", "NCT ID", "Company"]:
         raise ValueError("Canonical P3 source headers changed; refusing to append")
+    shift = focus_layout(current[0])
     if any(not row or not row[1] for row in current[1:]):
         raise ValueError("Noncontiguous/empty NCT row: refuse to overwrite")
     existing_ids = [str(row[1]) for row in current[1:]]
@@ -264,15 +288,16 @@ def main():
     additions, review = evaluate(catalog, load_csv(CAPS), load_csv(CENSUS), pool_ids,
                                  set(existing_ids), cutoff)
     # Recheck the destination immediately before the write. Never overwrite existing rows.
-    if sheets_values(auth, "A3:AB") != current:
+    if sheets_values(auth, "A3:AE") != current:
         raise RuntimeError("Source spreadsheet changed mid-run; fail closed")
     if additions:
         first = 3 + len(current)
         last = first + len(additions)-1
-        url = API + quote(f"{SHEET_NAME}!A3:AB", safe="!:") + ":append"
+        end="AE" if shift else "AB"
+        url = API + quote(f"{SHEET_NAME}!A3:{end}", safe="!:") + ":append"
         result=requests.post(url,headers=auth,
             params={"valueInputOption":"RAW","insertDataOption":"INSERT_ROWS"},
-            json={"majorDimension":"ROWS","values":[x["values"] for x in additions]},
+            json={"majorDimension":"ROWS","values":[physical_append_row(x["values"],shift) for x in additions]},
             timeout=60)
         result.raise_for_status()
         reported=(result.json().get("updates") or {}).get("updatedRange","")

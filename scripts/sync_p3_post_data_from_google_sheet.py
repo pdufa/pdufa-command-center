@@ -17,7 +17,7 @@ import requests
 
 SPREADSHEET_ID = "1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU"
 SOURCE_URL = f"https://docs.google.com/spreadsheets/d/{SPREADSHEET_ID}/edit#gid=202611061"
-RANGE = "FOCUS!A4:AB"
+RANGE = "FOCUS!A4:AE"
 TARGET = Path("new-platform/frontend/data/p3PostDataActive.json")
 
 
@@ -34,26 +34,30 @@ def extract(rows):
     for row in rows:
         if len(row) < 2 or not str(row[1]).strip():
             continue
-        fields = list(row) + [""] * max(0, 28 - len(row))
+        # Physical FOCUS columns D:F are newer source/prediction display
+        # fields; all original source columns after C moved three places.
+        if len(row)<31:
+            raise ValueError("FOCUS candidate row incomplete for 31-column schema")
+        fields = list(row)
         ticker, nct, company = (str(fields[i]).strip() for i in (0, 1, 2))
         if not re.fullmatch(r"NCT[0-9]{8}", nct) or nct in seen:
             raise ValueError("Invalid or duplicate candidate NCT ID: " + nct)
         if not re.fullmatch(r"[A-Z][A-Z0-9.]{0,9}", ticker):
             raise ValueError("Invalid ticker " + ticker)
-        cap = fields[23]
+        cap = fields[26]
         if isinstance(cap, bool) or not isinstance(cap, (int, float)) or not 300_000_000 <= cap <= 10_000_000_000:
             raise ValueError("Unverified/out-of-range market cap for " + nct)
-        if not str(fields[4]).strip().upper().startswith("YES"):
+        if not str(fields[7]).strip().upper().startswith("YES"):
             raise ValueError("Phase 3 results not marked publicly posted: " + nct)
-        if not company or not str(fields[19]).strip() or not str(fields[25]).strip():
+        if not company or not str(fields[22]).strip() or not str(fields[28]).strip():
             raise ValueError("Missing company or ongoing FDA application path: " + nct)
-        if not https_url(fields[21]) or not https_url(fields[26]):
+        if not https_url(fields[24]) or not https_url(fields[29]):
             raise ValueError("Missing valid results and FDA evidence URLs: " + nct)
         seen.add(nct)
         trials.append({
             "ticker": ticker, "nct": nct, "company": company, "marketCap": int(cap),
-            "fdaStatus": str(fields[25]).strip(), "resultsUrl": fields[26],
-            "regulatoryUrl": fields[21],
+            "fdaStatus": str(fields[28]).strip(), "resultsUrl": fields[29],
+            "regulatoryUrl": fields[24],
         })
     if not trials:
         raise ValueError("P3 POST-DATA candidate table is empty")
@@ -73,6 +77,17 @@ def main():
     response = requests.get(url, headers={"Authorization": "Bearer " + creds.token},
                             params={"valueRenderOption": "UNFORMATTED_VALUE"}, timeout=60)
     response.raise_for_status()
+    # Fail closed if the published Sheet's physical headers change. The
+    # downstream JSON never derives from retired archive columns.
+    header_url=f"https://sheets.googleapis.com/v4/spreadsheets/{SPREADSHEET_ID}/values/FOCUS!A3:AE3"
+    header_response=requests.get(header_url,headers={"Authorization":"Bearer "+creds.token},
+                         params={"valueRenderOption":"UNFORMATTED_VALUE"},timeout=60)
+    header_response.raise_for_status()
+    headers=(header_response.json().get("values") or [[]])[0]
+    expected=["Ticker","NCT ID","Company","FDA Special Designations",
+       "D · P · p-value","Intelligence Prediction At (Pacific)","Registry Status"]
+    if headers[:7]!=expected or len(headers)<31 or headers[26]!="Market Cap USD":
+        raise ValueError("FOCUS source schema changed; preserve existing website roster")
     rows = response.json().get("values")
     if not isinstance(rows, list):
         raise ValueError("Missing P3 POST-DATA source rows")
