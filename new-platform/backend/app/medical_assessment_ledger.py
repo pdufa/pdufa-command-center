@@ -251,7 +251,7 @@ def record_verified_phase(engine, *, nct: str, run_id: str, phase: str,
         if phase not in details.get("phases", []):
             raise ValueError("Verified phase must match the saved original registry phase")
         source_url = _url(details.get("source", ""))
-        if "clinicaltrials.gov" not in (urlparse(source_url).hostname or "").lower():
+        if (urlparse(source_url).hostname or "").lower() not in ("clinicaltrials.gov", "www.clinicaltrials.gov"):
             raise ValueError("Phase confirmation requires the original registry source")
         previous = c.execute(text("""SELECT phase_event_id FROM medical_assessment_phase_events
             WHERE nct_id=:nct ORDER BY created_at DESC,phase_event_id DESC LIMIT 1"""),
