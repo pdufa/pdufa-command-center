@@ -33,7 +33,11 @@ test("Backend and stage worker fail closed until explicit isolated PostgreSQL op
   assert.match(backend,/PDUFA_MEDICAL_PREVIEW_ENABLED/);
   assert.ok(backend.includes('DATABASE_URL.startswith("postgresql+psycopg://")'));
   assert.match(backend,/medical_canary_preflight/);
-  assert.match(backend,/install_analyze_now_routes/);
+  assert.match(backend,/def require_medical_pilot_storage\(\)/);
+  assert.match(backend,/REQUIRE_POSTGRES and DATABASE_URL\.startswith/);
+  assert.match(backend,/getattr\(app\.state, "medical_canary_initialized", False\)/);
+  assert.match(backend,/install_analyze_now_routes\(app, lambda: ENGINE, require_internal_key, require_medical_pilot_storage\)/);
+  assert.match(backend,/install_medical_continuous_routes\(app, lambda: ENGINE, require_internal_key, require_medical_pilot_storage\)/);
   assert.match(source,/core\.create\(engine,nct,request_key,submit=False\)/);
   assert.match(source,/"APPROVAL","CRL","REVIEW_DELAY"/);
   assert.match(source,/"ABSTAIN"/);
