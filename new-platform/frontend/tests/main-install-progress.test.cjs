@@ -88,7 +88,9 @@ test("MAIN monitor UI is protected, refreshing, expandable, and does not alter a
  assert.match(api,/PDUFA_GITHUB_READ_TOKEN/);
  assert.match(api,/head_sha/);
  assert.match(api,/event=schedule/);
- assert.match(nav,/label:"MAIN",href:"\/main"/);
+ const home=fs.readFileSync(path.join(__dirname,"../app/page.tsx"),"utf8");
+ assert.match(home,/href="\/main"/);
+ assert.doesNotMatch(nav,/label:"MAIN",href:"\/main"/);
  assert.doesNotMatch(component,/<button[^>]+(?:sendMessage|startScan|placeOrder)/);
 });
 
