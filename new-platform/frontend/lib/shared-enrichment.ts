@@ -58,9 +58,12 @@ export function enrichmentDetail(index: EnrichmentIndex, shard: EnrichmentShard,
     result.value = cell[0]; result.status = cell[1]; result.observedAt = cell[3]; result.retrievedAt = cell[4]; result.note = cell[5];
     try { const u = new URL(source); if (u.protocol === "https:" && !u.username && !u.password) result.sourceUrl = source; } catch { /* An unsourced saved value remains review-only. */ }
     const checkedAge = age(cell[4], today), observedAge = cell[3] ? age(cell[3], today) : 0;
-    if (READY.has(result.status)) {
+    // A previously stale saved observation with a future/invalid date must
+    // be marked REVIEW, not silently retained as normal source staleness.
+    // Missing/conflicting cells remain missing/conflicting; no new score inferred.
+    if (READY.has(result.status) || result.status === "STALE") {
       if (!result.sourceUrl || checkedAge === null || checkedAge < 0 || observedAge !== null && observedAge < 0) result.status = "REVIEW";
-      else if (checkedAge > field.maxAgeDays) result.status = "STALE";
+      else if (READY.has(result.status) && checkedAge > field.maxAgeDays) result.status = "STALE";
     }
     return result;
   });
