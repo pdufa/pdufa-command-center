@@ -1,0 +1,45 @@
+name: Isolated 800-source audit canary checks
+on:
+  push:
+    branches: [feature/predictions-durable-medical-canary-20261108]
+    paths: [.github/workflows/isolated-medical-800-audit-ci.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  medical-source-audit:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout isolated canary source without stored credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Install backend requirements
+        run: pip install -r new-platform/backend/requirements.txt
+      - name: Test durable source-audit idempotency and forbidden grade writes
+        env:
+          PYTHONPATH: new-platform/backend
+        run: pytest -q new-platform/backend/tests/test_medical_method_audit_worker.py
+      - name: Import route with isolated preview feature gates on and check route ordering
+        env:
+          PYTHONPATH: new-platform/backend
+          PDUFA_MEDICAL_PREVIEW_ENABLED: 'true'
+          PDUFA_MEDICAL_ASSESSMENT_LEDGER_ENABLED: 'true'
+          PDUFA_MEDICAL_PHASE_MATRIX_ENABLED: 'true'
+          PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_ENABLED: 'true'
+          PDUFA_MEDICAL_METHOD_AUDIT_ENABLED: 'true'
+        run: |
+          python - <<'PY'
+          from app.main import app
+          paths={getattr(r,"path",None):set(getattr(r,"methods",[]) or ()) for r in app.routes}
+          assert "GET" in paths["/api/internal/medical-method-audit/{nct}/latest"]
+          assert "POST" in paths["/api/internal/medical-method-audit/{nct}/runs"]
+          print("PASS: isolated route imports and exact source audit GET/POST defined")
+          PY
