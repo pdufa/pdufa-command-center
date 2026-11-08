@@ -584,6 +584,14 @@ async def lifespan(app: FastAPI):
             logging.getLogger(__name__).error("PDUFA_PHASE3_STARTUP_FAILED error_type=%s", type(exc).__name__)
         from .nct_live_stream import start as start_nct_live_stream
         start_nct_live_stream(ENGINE)
+        # Isolated, opt-in medical canary: never create analysis tables in production by default.
+        if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+                and DATABASE_URL.startswith("postgresql+psycopg://")):
+            try:
+                from .medical_continuous import start as start_medical_continuous
+                start_medical_continuous(ENGINE)
+            except Exception as exc:
+                logging.getLogger(__name__).error("PDUFA_MEDICAL_CANARY_INIT_FAILED error_type=%s", type(exc).__name__)
     yield
 
 
@@ -592,6 +600,29 @@ from .reconciliation_review import ReviewPackage
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 from .nct_live_stream import install_routes as install_nct_stream_routes
 install_nct_stream_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+
+# Routes and live database writes are explicitly gated to the isolated preview environment.
+if os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes"):
+    from .medical_continuous import install_routes as install_medical_continuous_routes
+    from .medical_on_demand import install_routes as install_analyze_now_routes
+    install_medical_continuous_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+    install_analyze_now_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+
+@app.get("/api/internal/medical-canary-preflight", dependencies=[Depends(require_internal_key)])
+def medical_canary_preflight():
+    """Read-only preview gate: this does not launch analysis, assign scores, or expose secrets."""
+    configured = os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+    durable = bool(_DB_STATE["available"] and DATABASE_URL.startswith("postgresql+psycopg://"))
+    return {
+        "enabled": configured,
+        "persistentStorageReady": durable,
+        "canaryNct": os.getenv("PDUFA_ANALYZE_NOW_CANARY_NCT", "NCT06081894"),
+        "sourceWorkerReady": configured and durable,
+        "fdaPredictionStatus": "ABSTAIN",
+        "certaintyStatus": "NOT_VALIDATED",
+        "numericalPredictionAvailable": False,
+    }
+
 from .phase3_catalog import install_routes as install_phase3_catalog_routes
 from .phase3_ingestion import install_routes as install_phase3_ingestion_routes
 install_phase3_catalog_routes(app, lambda: ENGINE, require_internal_key, require_storage)
