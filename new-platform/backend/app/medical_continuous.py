@@ -46,7 +46,7 @@ _POOL = ThreadPoolExecutor(max_workers=2, thread_name_prefix="medical-stages")
 _IN_PROCESS = threading.RLock()
 ROOT = Path(__file__).resolve().parents[2]
 FOCUS = Path(__file__).resolve().parent / "data" / "focus_snapshot.json"
-DESIGNATIONS = ROOT / "frontend" / "data" / "focusFdaDesignations.json"
+APPLICATIONS = Path(__file__).resolve().parent / "data" / "focus_application_snapshot.json"
 
 
 def now():
@@ -217,10 +217,24 @@ def pm_search(term):
 
 
 def program_record(nct):
+    """Dated source-linked application context; not FDA-confirmed status.
+
+    The Docker image intentionally carries its own exact-NCT snapshot.
+    A shared study supporting multiple indications must not silently inherit
+    the drug/indication from an arbitrary application.
+    """
+    check_nct(nct)
     try:
-        data = json.loads(DESIGNATIONS.read_text(encoding="utf-8"))
-        return next((r for r in data.get("records", []) if r.get("nct") == nct), None)
-    except (OSError, ValueError):
+        data = json.loads(APPLICATIONS.read_text(encoding="utf-8"))
+        if data.get("schemaVersion") != 1 or data.get("asOf") != "2026-11-07":
+            return None
+        row = next((r for r in data.get("records", []) if r.get("nct") == nct), None)
+        if not row or not row.get("candidateApplications"):
+            return None
+        if not isinstance(row.get("designations"), list):
+            return None
+        return row
+    except (OSError, ValueError, TypeError):
         return None
 
 
