@@ -4,6 +4,10 @@ import type {CSSProperties} from "react";
 import focus from "../../../data/p3PostDataActive.json";
 import {SCIENTIFIC_LEVELS,SCIENTIFIC_LAYERS,DEEP_ASSESSMENTS,DEPTH_SLOT_COUNT,THERAPEUTIC_STRATEGY_QUESTIONS,getDepthSlot,FDA_GUIDANCE_SOURCES} from "../../../lib/medical-intelligence-master-depth";
 import {applicationsForNct} from "../../../lib/medical-intelligence-applications";
+import {getRegistryPhases} from "../../../lib/medical-intelligence-registry-phase";
+import {rankAtLastCompletedPhase,PHASE_REVIEW_STANDARD,TEST_GRADE_RUBRIC} from "../../../lib/medical-intelligence-assessment-rankings";
+import {assessLatestPhaseActivity} from "../../../lib/medical-intelligence-phase-snapshot";
+import {rankScientificInvestigations} from "../../../lib/medical-intelligence-phase-priority";
 import {MEDICAL_CASES,caseForCycle,researchForSlot,caprSapComparisonSummary,CAPR_FDA_PUL_SAP_COMPARISONS,cogtLiverSafetyDifference} from "../../../lib/medical-intelligence-md-casebook";
 
 export const metadata:Metadata={
@@ -23,12 +27,32 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
  const query=await searchParams;
  const nct=focus.records.find(r=>r.nct===query.nct)?.nct||"NCT05126758";
  const base=focus.records.find(r=>r.nct===nct)||focus.records[0];
+ const [phaseContext]=await getRegistryPhases([nct]);
+ // The rankings are anchored to results from the most recently completed,
+ // verified phase. This preview has no authoritative prior-phase result ledger yet.
+ // A current-phase registry label alone never establishes past results.
+ const phaseEndBaseline=rankAtLastCompletedPhase(DEEP_ASSESSMENTS,
+   {nct,phase:phaseContext.verifiedPhase,status:"UNKNOWN"},null,[]);
+ // No certified current-phase milestone/test ledger is connected in this preview.
+ // The latest current-phase score and observed risks therefore remain unassigned.
+ const phaseActivity=assessLatestPhaseActivity(DEEP_ASSESSMENTS,nct,phaseContext.verifiedPhase,
+   new Date().toISOString().slice(0,10),[],[],[]);
+ const assessmentRatings=phaseActivity.currentScores;
+ const testPriority=rankScientificInvestigations(DEEP_ASSESSMENTS,SCIENTIFIC_LEVELS,nct,phaseContext.verifiedPhase,[]);
+ const priorityById=new Map(testPriority.tests.map(t=>[t.id,t]));
+ const evidenceCoverage=assessmentRatings.map(r=>({
+   ...r,
+   latestMilestoneScore:phaseActivity.latestEventScores.find(x=>x.id===r.id)?.score??null,
+   priorityRank:testPriority.tests.find(x=>x.assessmentId===r.id)?.rank??null,
+   priorityTier:testPriority.tests.find(x=>x.assessmentId===r.id)?.priority??"VERIFY_PHASE",
+   sourceSlots:SCIENTIFIC_LEVELS.filter(l=>applicationsForNct(nct).some(c=>Boolean(researchForSlot(c.id,r.id,l.id)))).length
+ })).sort((a,b)=>(a.priorityRank??Infinity)-(b.priorityRank??Infinity)||a.id.localeCompare(b.id));
  const assessment=DEEP_ASSESSMENTS.find(a=>a.id===query.assessment)||DEEP_ASSESSMENTS.find(a=>a.id==="4.3")||DEEP_ASSESSMENTS[0];
  const layer=SCIENTIFIC_LAYERS.find(l=>l.id===assessment.layerId)||SCIENTIFIC_LAYERS[0];
  const matches=applicationsForNct(nct);
  const firstCase=matches.map(m=>caseForCycle(m.id)).find(caseStudy=>caseStudy?.nct===nct)||null;
  const caseStudies=matches.filter(m=>caseForCycle(m.id)?.nct===nct);
- const slots=SCIENTIFIC_LEVELS.map(l=>({lvl:l,slot:getDepthSlot(assessment.id,l.id),
+ const slots=SCIENTIFIC_LEVELS.map(l=>({lvl:l,slot:getDepthSlot(assessment.id,l.id),priority:priorityById.get(assessment.id+":L"+l.id),
   evidence:matches.filter(m=>caseForCycle(m.id)?.nct===nct).map(m=>researchForSlot(m.id,assessment.id,l.id)).find(Boolean)||null}));
  const sourceChecked=slots.filter(s=>s.evidence).length;
  const capr=firstCase?.cycleId==="capr-deramiocel";
@@ -38,6 +62,9 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
  return <main style={{maxWidth:1360,margin:"25px auto",padding:"0 16px 45px",fontFamily:"system-ui,sans-serif",color:c.ink}}>
    <div style={{fontWeight:750,letterSpacing:1,fontSize:12,color:c.accent}}>POOL → FOCUS → STANDALONE DEEP MEDICAL INTELLIGENCE</div>
    <h1 style={{fontSize:"clamp(1.7rem,4vw,2.5rem)",margin:"8px 0 4px"}}>Medical Master Depth · 20-Level Scientific Investigation</h1>
+   <p style={{fontSize:14,fontWeight:700}}><Link href={"/medical-intelligence-preview/specialist-review/all-phases/priority?nct="+encodeURIComponent(nct)}>
+     Open phase-specific #1–#800 scientific investigation priority ranking
+   </Link></p>
    <p style={{fontWeight:700,fontSize:14}}><Link href="/medical-intelligence-preview/master-depth/coverage">Open exact 29-trial Master Depth coverage audit</Link></p>
    <p style={{lineHeight:1.6,maxWidth:1130}}>The research architecture follows the original clinical scientific investigation standard: 8 disease/medical/regulatory layers, 5 assessments per layer, and 20 distinct scientific methods applied to each assessment. The result is 800 possible investigation positions <strong>per trial</strong>, supplemented by 75 therapeutic-strategy questions. A position is not an actual medical finding until source evidence has been investigated and documented.</p>
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(155px,1fr))",gap:10}}>
@@ -71,6 +98,43 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
    </section>
 
    <section style={panel}>
+     <h2 style={{margin:"0 0 8px",fontSize:19}}>Current phase · latest verified activity and risks</h2>
+     <p style={subtle}>This is the primary analysis view. The trial's current phase determines which risks to inspect. Each method is rated against the <strong>latest documented, verified scientific or operational result</strong> — not automatically against the previous phase's results. Historical phase-end grades are saved as a separate baseline for comparison.</p>
+     <p style={subtle}><strong>Verified phase:</strong> {phaseActivity.phase}. <strong>Latest confirmed milestone:</strong> {phaseActivity.latestVerifiedMilestone?phaseActivity.latestVerifiedMilestone.title+" · "+phaseActivity.latestVerifiedMilestone.occurredOn:"Not yet linked to a verified current-phase event"}. <strong>Active observed risks:</strong> {phaseActivity.activeRisks.length?phaseActivity.activeRisks.length+" evidenced risk(s)":"No source-verified risk findings loaded; absence of a record is not evidence of safety"}.</p>
+     <details style={{padding:"10px 12px",background:c.off,border:"1px solid "+c.line,borderRadius:9}} open>
+       <summary style={{fontWeight:750,cursor:"pointer"}}>Phase-specific risks to investigate (not presumed failures)</summary>
+       <ul style={{paddingLeft:22,lineHeight:1.8,fontSize:13}}>{phaseActivity.watchlist.map(r=><li key={r.domain}><strong>{r.domain.replaceAll("_"," ")}</strong> — {r.question} <span style={{color:c.muted}}>· Needs source review</span></li>)}</ul>
+       {phaseActivity.activeRisks.map((r,i)=><p key={i} style={{color:c.alert}}><strong>{r.level} · {r.domain}</strong> — {r.finding}</p>)}
+     </details>
+     <p style={{...subtle,marginBottom:0}}>An enrollment update can rate execution but cannot establish efficacy. An interim efficacy result may rate the specific efficacy tests supported by its analysis, while untested assessments stay pending. Risk severity and scientific evidence strength are separate from FDA approval probabilities.</p>
+   </section>
+
+   <section style={panel}>
+     <h2 style={{margin:"0 0 8px",fontSize:19}}>Current-phase test ratings · all 40 assessments</h2>
+     <p style={subtle}>Each of the 40 assessments contains 20 separately rated investigative tests. Each current-phase test rating incorporates its <strong>latest verified, relevant result</strong> from the ongoing phase, preserving earlier demonstrated outcomes in the same phase. The newest milestone is scored separately to show exactly what just changed. The last completed phase remains a separate historical baseline. The scientific grade is 0–5 per test, with a transparent 0–100 assessment average. A final comparative rank is shown only after every phase-applicable method is independently reviewed or explicitly excluded with a rationale. Missing evidence never counts as a zero, a failure, or a clinical benefit.</p>
+     <p style={{...subtle,marginTop:0}}><strong>Exact-NCT phase:</strong> {phaseContext.verifiedPhase} {phaseContext.sourceUrl&&<>· <EvidenceSource url={phaseContext.sourceUrl}>ClinicalTrials.gov</EvidenceSource></>}. <strong>Phase-specific standard:</strong> {PHASE_REVIEW_STANDARD[phaseContext.verifiedPhase]}. <strong>Historical previous phase-end baseline:</strong> {phaseEndBaseline.basis==="NO_VERIFIED_PHASE_END"?"Not yet verified / no defensible historical grade":phaseEndBaseline.completedPhase+" · "+phaseEndBaseline.phaseEndDate}. Scientific grades are not FDA approval probabilities or certainty ratings.</p>
+     <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
+       {TEST_GRADE_RUBRIC.map(r=><span key={r.grade} title={r.meaning} style={{fontSize:12,border:"1px solid "+c.line,borderRadius:6,padding:"5px 8px",background:c.off}}>{r.grade}/5: {r.meaning}</span>)}
+     </div>
+     <div style={{overflowX:"auto"}}>
+       <table style={{borderCollapse:"collapse",width:"100%",minWidth:790,fontSize:13}}>
+         <thead><tr>{["Assessment","Phase investigation priority","Current phase score / 100","Newest milestone score / 100","Complete-test grade rank","Scored / applicable tests","Source-examined methods / 20","Review status"].map(k=><th key={k} style={{padding:"9px 7px",textAlign:"left",borderBottom:"1px solid "+c.line}}>{k}</th>)}</tr></thead>
+         <tbody>{evidenceCoverage.map(row=><tr key={row.id}>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line}}><Link href={href(nct,row.id)}>{row.id} · {row.label}</Link></td>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.priorityRank===null?"Unranked":"#"+row.priorityRank+" · "+row.priorityTier}</td>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line,fontWeight:700}}>{row.score===null?"Not rated":row.score+"/100"+(row.status==="PROVISIONAL"?" (provisional)":"")}</td>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.latestMilestoneScore===null?"Not rated":row.latestMilestoneScore+"/100 (event-only)"}</td>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.rank===null?"—":"#"+row.rank}</td>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.scoredTests} / {row.applicableTests}</td>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.sourceSlots} / 20</td>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.status==="NOT_REVIEWED"?"Pending adjudication":row.status==="NOT_APPLICABLE"?"Excluded with rationale":row.status==="PROVISIONAL"?"Partial scientific review":"Complete"}</td>
+         </tr>)}</tbody>
+       </table>
+     </div>
+     <p style={{...subtle,marginBottom:0}}>Rows are sorted by current-phase scientific investigation priority, not by FDA outcome probability or strength of evidence. A source-examined observation does not automatically pass its scientific test. This preview has not yet connected a certified current-phase milestone and grading ledger, or a verified previous-phase outcomes ledger. Therefore scores, actual risks and ranks remain pending rather than fabricated. Each new result must be recorded at its actual date, update only the supported tests in the current-phase assessment, and be compared with—but not overwrite—the prior phase end.</p>
+   </section>
+
+   <section style={panel}>
      <h2 style={{margin:"0 0 8px",fontSize:19}}>Eight subject layers · 40 scientific assessments</h2>
      <p style={subtle}>Each assessment opens the full 20-level scientific method sequence. Select a different assessment to explore its methods and any source-examined findings for this trial.</p>
      {SCIENTIFIC_LAYERS.map(l=><details key={l.id} open={l.id===layer.id} style={{border:"1px solid "+c.line,borderRadius:9,padding:"11px 14px",marginTop:9}}>
@@ -97,9 +161,9 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
      </div>
      <p style={{...subtle,margin:"4px 0 11px"}}><strong>Potential FDA deficiency:</strong> {assessment.failureMechanism}. <strong>Source requirements:</strong> {assessment.requiredSources}. An unreviewed slot is neither a clinical failure nor a passing scientific assessment.</p>
      <div style={{display:"grid",gap:8}}>
-       {slots.map(({lvl,slot,evidence})=><details key={lvl.id} style={{border:"1px solid "+c.line,borderRadius:9,padding:"11px 13px",background:evidence?"#f2f8f0":"#fff"}} open={Boolean(evidence&&lvl.id===12)}>
+       {slots.map(({lvl,slot,evidence,priority})=><details key={lvl.id} style={{border:"1px solid "+c.line,borderRadius:9,padding:"11px 13px",background:evidence?"#f2f8f0":"#fff"}} open={Boolean(evidence&&lvl.id===12)}>
          <summary style={{cursor:"pointer",fontWeight:720,fontSize:14}}>
-           Level {lvl.id}. {lvl.name} <span style={{fontSize:12,fontWeight:450,color:evidence?c.accent:c.muted}}>· {evidence?"SOURCE-EXAMINED EXAMPLE":"NOT YET SOURCE-REVIEWED"}</span>
+           Level {lvl.id}. {lvl.name} <span style={{fontSize:12,fontWeight:450,color:evidence?c.accent:c.muted}}>· {evidence?"SOURCE-EXAMINED EXAMPLE":"NOT YET SOURCE-REVIEWED"} · Investigation priority {priority?.rank===null?"unranked":"#"+priority?.rank+" "+priority?.priority} · Scientific grade pending</span>
          </summary>
          <div style={{paddingTop:9,fontSize:13,lineHeight:1.6}}>
            <p style={{margin:"4px 0"}}><strong>Method:</strong> {slot?.method}</p>

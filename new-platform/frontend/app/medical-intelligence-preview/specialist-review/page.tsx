@@ -29,7 +29,9 @@ export default async function SpecialistReviewPage({searchParams}:{searchParams:
  return <main style={{maxWidth:1320,margin:"26px auto",padding:"0 16px 45px",fontFamily:"system-ui,sans-serif",color:theme.ink}}>
    <div style={{fontWeight:750,color:theme.green,letterSpacing:1,fontSize:12}}>CLINICAL SPECIALTY SCIENCE → INDEPENDENT FDA EVIDENCE REVIEW</div>
    <h1 style={{fontSize:"clamp(1.7rem,4vw,2.4rem)",margin:"9px 0 5px"}}>Clinical Subspecialty Intelligence</h1>
-   <p style={{fontSize:14,fontWeight:700}}><Link href="/medical-intelligence-preview/specialist-review/coverage">Clinical evidence coverage: 23 applications</Link></p>
+   <p style={{fontSize:14,fontWeight:700}}><Link href="/medical-intelligence-preview/specialist-review/coverage">Clinical evidence coverage: 23 applications</Link>
+     {" · "}<Link href={"/medical-intelligence-preview/specialist-review/all-phases?nct="+encodeURIComponent(selected.ncts[0]||"NCT06081894")+"&specialty="+encodeURIComponent(p?.id||"")}>Open the same clinical specialty depth at any trial phase</Link>
+   </p>
    <p style={{maxWidth:1040,lineHeight:1.65}}>
      This is the <strong>medical-doctor specialist depth</strong> you requested: investigation of disease phenotype, diagnosis, prognosis, meaningful patient benefit, treatment decisions, serious adverse effects and how these change a drug&apos;s clinical benefit-risk case. The questions are tailored to the indication and reviewed against original sources. <strong>It is not a clinical specialist&apos;s signed opinion</strong> and does not pretend a licensed physician has examined or endorsed an application.
    </p>
