@@ -5,7 +5,7 @@
 export type ApplicationCycle = {
  id:string; ticker:string; drug:string; indication:string; ncts:readonly string[];
  applicationType:string;
- stage:"PLANNED"|"PRIOR_CRL_RESUBMISSION_PLANNED"|"SUBMITTED_PENDING_ACCEPTANCE"|"UNDER_REVIEW"|"SUPPLEMENT_UNDER_REVIEW"|"APPROVED_ALREADY";
+ stage:"NOT_RECONCILED"|"PLANNED"|"PRIOR_CRL_RESUBMISSION_PLANNED"|"SUBMITTED_PENDING_ACCEPTANCE"|"UNDER_REVIEW"|"SUPPLEMENT_UNDER_REVIEW"|"APPROVED_ALREADY";
  reportedGoal:string|null; sourceDate:string; sourceUrl:string; criticalQuestion:string;
 };
 export const APPLICATION_CYCLES:readonly ApplicationCycle[]=[
