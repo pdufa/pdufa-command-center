@@ -56,11 +56,21 @@ export default function CompanyDateBadges({
    :<span key={b.label} style={style} title={note} aria-label={note}>{readable}</span>;
  })}
  {pRecord?.results.length?pRecord.results.map((item,i)=>{
+  const caution="caution" in pRecord && typeof pRecord.caution==="string"?pRecord.caution:"";
   const note="Clinical primary endpoint p"+item.value+" · "+item.endpoint+". "+
-   "Evidence recorded for exact trial "+pRecord.nct+"; not FDA approval probability.";
+   "Evidence recorded for exact trial "+pRecord.nct+"; not FDA approval probability. "+caution;
   return <a key={"p-"+i} href={pRecord.sourceUrl} target="_blank" rel="noopener noreferrer"
-   style={common} title={note} aria-label={note}><strong>p</strong>{item.value}</a>;
- }):<span style={{...common,color:"#647569",background:"#f5f6f5"}}
-  title="No source-recorded primary endpoint p-value for this exact trial" aria-label="p-value not recorded"><strong>p</strong>—</span>}
+   style={{...common,...(caution?{borderColor:"#b28a58",background:"#fdf8ee"}:{})}}
+   title={note} aria-label={note}><strong>p</strong>{item.value}{caution?" †":""}</a>;
+ }):pRecord?.evidenceStatus==="PRIMARY_NOT_SIGNIFICANT_NUMERIC_UNDISCLOSED"
+ ?<a href={pRecord.sourceUrl} target="_blank" rel="noopener noreferrer"
+   title={("notAvailableReason" in pRecord && pRecord.notAvailableReason)||"Primary comparison not significant"}
+   style={{...common,background:"#fff7ef",color:"#8b4d2d"}}><strong>p</strong>NS</a>
+ :pRecord?.evidenceStatus==="NOT_APPLICABLE_SINGLE_ARM"
+ ?<a href={pRecord.sourceUrl} target="_blank" rel="noopener noreferrer"
+   title={("notAvailableReason" in pRecord && pRecord.notAvailableReason)||"Single-arm study"}
+   style={{...common,color:"#647569",background:"#f5f6f5"}}><strong>p</strong>N/A</a>
+ :<span style={{...common,color:"#647569",background:"#f5f6f5"}}
+  title="Primary endpoint p-value not yet source recorded for this exact trial" aria-label="p-value not recorded"><strong>p</strong>—</span>}
  </span>;
 }
