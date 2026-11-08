@@ -52,41 +52,21 @@ test("Recorded clinical leads and independent nominal-price audits count accurat
  assert.equal(trvi.approvedCalibration,false);
  assert.ok(raw.limitations.some(x=>/source audit completed/i.test(x)));
 });
-test("The actual scanner CLI writes dated full JSON and cannot claim metric approvals",()=>{
- const temp=fs.mkdtempSync(path.join(os.tmpdir(),"pdufa-raas-audit-"));
+test("retired readiness CLI cannot run or overwrite a saved scan",()=>{
+ const temp=fs.mkdtempSync(path.join(os.tmpdir(),"pdufa-raas-retired-"));
  try{
-  const output=path.join(temp,"scan.json");
-  const r=child.spawnSync(process.execPath,["scripts/raas-readiness-scan.cjs"],{
-   cwd:path.resolve(__dirname,".."),
-   env:{...process.env,RAAS_SCAN_OUTPUT:output,GITHUB_SHA:"test-no-real-deployment"},
-   encoding:"utf8",timeout:30000});
-  assert.equal(r.status,0,r.stderr+"\n"+r.stdout);
-  const scan=JSON.parse(fs.readFileSync(output,"utf8"));
-  assert.equal(scan.gitSha,"test-no-real-deployment");
-  assert.ok(!Number.isNaN(Date.parse(scan.generatedAtUtc)));
-  assert.equal(scan.summary.metricsInspected,60);
-  assert.equal(scan.summary.approvedMetricCalibrations,0);
-  assert.equal(scan.metrics.length,60);
-  assert.match(r.stdout,/Final numerical RAAS validation: NOT_VALIDATED/);
+  const output=path.join(temp,"scan.json");fs.writeFileSync(output,'{"historical":true}');
+  const r=child.spawnSync(process.execPath,["scripts/raas-readiness-scan.cjs"],{cwd:path.resolve(__dirname,".."),env:{...process.env,RAAS_SCAN_OUTPUT:output},encoding:"utf8",timeout:30000});
+  assert.notEqual(r.status,0);assert.match(r.stderr,/RAAS_PERMANENTLY_RETIRED/);
+  assert.equal(fs.readFileSync(output,"utf8"),'{"historical":true}');
  }finally{fs.rmSync(temp,{force:true,recursive:true});}
 });
-test("UI distinguishes actual source audit from real predictive RAAS and exposes every metric in a caret",()=>{
+test("retired readiness UI cannot load calculators or expose scoring controls",()=>{
  const root=path.resolve(__dirname,"..");
  const page=fs.readFileSync(path.join(root,"app/raas-scan/page.tsx"),"utf8");
  const historical=fs.readFileSync(path.join(root,"app/raas-history/page.tsx"),"utf8");
  const trial=fs.readFileSync(path.join(root,"app/TrialRaasDisclosure.tsx"),"utf8");
- for(const x of ["data-raas-readiness-executed","data-raas-scan-metric","data-raas-scan-group",
-  "FINAL RAAS NOT VALIDATED","30 metric checks","source snapshot","actions/workflows/raas-readiness-scan.yml"]){
-  assert.ok(page.includes(x),x);
- }
- assert.match(historical,/href="\/raas-scan"/);
- assert.match(trial,/href="\/raas-scan"/);
- for(const rel of ["lib/raas-readiness-scan.ts","app/raas-scan/page.tsx"]){
-  const output=ts.transpileModule(fs.readFileSync(path.join(root,rel),"utf8"),{
-   fileName:rel,reportDiagnostics:true,compilerOptions:{
-    module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX
-   }});
-  assert.deepEqual((output.diagnostics||[]).filter(d=>d.category===ts.DiagnosticCategory.Error)
-   .map(d=>ts.flattenDiagnosticMessageText(d.messageText," ")),[],rel);
- }
+ assert.match(page,/permanently retired/);assert.doesNotMatch(page,/from ["'][^"']*raas-/);
+ assert.match(historical,/archive\/raas/);assert.doesNotMatch(historical,/analyzeRaasHistoricalReturns/);
+ assert.doesNotMatch(trial,/computeRaasScore|scanRaasCurrentEvidence|href=["']\/raas-scan/);
 });

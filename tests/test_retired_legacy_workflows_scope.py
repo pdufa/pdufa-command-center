@@ -5,7 +5,7 @@ import unittest
 ROOT=Path(__file__).resolve().parents[1]
 FILES=(
     ".github/workflows/pdufa-pipeline-research-sync.yml",
-    ".github/workflows/raas-clinical-evidence-collector.yml",
+    "archives/raas/workflows/raas-clinical-evidence-collector.yml.disabled",
 )
 
 class RetiredLegacyWorkflows(unittest.TestCase):

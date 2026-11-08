@@ -1,3 +1,7 @@
+
+// Permanently retired artifact writer: refuse imports and commands before I/O.
+throw new Error("RAAS_PERMANENTLY_RETIRED: this archived writer cannot run or modify historical records.");
+
 /* Recompute from the canonical BOTTOM ledger, export coverage, append changed
  * exact-NCT score snapshots. No network, grades, roster changes or sheet writes.
  */

@@ -21,10 +21,6 @@ on:
       - site_scorecard.py
       - score_input_audit.py
       - scripts/nightly_scoring_audit.py
-      - scripts/raas_trial_history_capture.cjs
-      - scripts/raas_trial_provisional_metric_capture.cjs
-      - scripts/raas_post_clinical_provisional_capture.cjs
-      - scripts/raas_self_audit_history_capture.cjs
       - scripts/post_scan_repair.py
       - scripts/scan_recovery_triage.py
       - tests/test_nightly_scoring_audit.py
@@ -64,14 +60,14 @@ jobs:
     outputs:
       source_run_id: ${{ steps.handoff.outputs.source_run_id }}
     steps:
-      - name: Preserve source run identity without scoring or RAAS history changes
+      - name: Preserve source run identity without scoring or historical record changes
         id: handoff
         env:
           SOURCE_RUN_ID: ${{ inputs.source_run_id || github.event.workflow_run.id }}
         shell: bash
         run: |
           echo "source_run_id=$SOURCE_RUN_ID" >> "$GITHUB_OUTPUT"
-          echo "Survey, rating, scoring, and RAAS history updates cancelled by user."
+          echo "Survey, rating, scoring, and historical score writes permanently retired."
 
   error-check:
     name: 2 — Check Gmail and GitHub after scoring

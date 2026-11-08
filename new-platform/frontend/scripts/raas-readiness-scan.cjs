@@ -1,4 +1,8 @@
 "use strict";
+
+// Permanently retired artifact writer: refuse imports and commands before I/O.
+throw new Error("RAAS_PERMANENTLY_RETIRED: this archived writer cannot run or modify historical records.");
+
 /** Run an honest RAAS source-readiness scan. No prediction creation or ingestion. */
 const fs=require("node:fs");
 const path=require("node:path");

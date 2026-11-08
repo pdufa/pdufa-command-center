@@ -113,7 +113,7 @@ export default function MainStatus(){
       <p style={fine}>Only two sections remain in the active MAIN checklist: <strong>Core Platform (3)</strong> and <strong>Pipeline (4)</strong>.
         The other six former sections (24 gates) have been removed from active MAIN acceptance.
         Core Platform checks the shared infrastructure; Pipeline trial checks apply only to the {FOCUS_FINAL_TRIAL_AUDIT.trialCount} exact-NCT final FOCUS listing.
-        Source data and services outside the checklist continue operating; removing their installation gates does not disable RAAS, FDA monitoring, analysis, or reporting.
+        Independent FDA monitoring, source analysis and reporting continue operating. RAAS is permanently retired from active analysis, predictions, scans and installation requirements; its historical records remain read-only archives.
         Historic October 26 statuses are not fresh verification, and no archived scan is restored.</p>
       {activeScopeValid ? <details>
         <summary style={{cursor:"pointer",fontWeight:700}}>
@@ -166,7 +166,7 @@ export default function MainStatus(){
       <p>Verify the authenticated deployed POOL → FOCUS handoff for the {FOCUS_FINAL_TRIAL_AUDIT.trialCount} exact final-list NCTs only, checking
         company, drug, indication and FDA application/cycle identities, then reconcile
         those results with the registry and nightly artifacts. Keep missing evidence as
-        <strong> UNKNOWN</strong>, and preserve all original trial and RAAS history.</p>
+        <strong> UNKNOWN</strong>, and preserve all original trial history and read-only archived legacy rating records.</p>
       <p style={fine}>No scan is dispatched, trial promoted, score changed, FDA probability
         generated or trading permission granted by this page.</p>
       <div style={{display:"flex",gap:16,flexWrap:"wrap"}}>

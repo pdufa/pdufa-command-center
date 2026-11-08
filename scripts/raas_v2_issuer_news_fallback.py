@@ -6,6 +6,11 @@ records. A link is a review candidate, not evidence of a specific regulatory
 deadline or a numbered pending application. Empty dynamic pages are UNKNOWN.
 """
 from __future__ import annotations
+
+# Permanent retirement: historical functions are importable for read-only audits only.
+if __name__ == "__main__":
+    raise SystemExit("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.")
+
 import datetime as dt
 from html.parser import HTMLParser
 import json

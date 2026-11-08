@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 "use strict";
+
+// Permanent retirement: no historical artifact writer may execute as a command.
+if (require.main === module) { process.stderr.write("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.\n"); process.exit(78); }
+
 /**
  * Official FDA 2016–2019 approval discovery ONLY.
  * Drugs@FDA/openFDA does not establish historically known PDUFA target dates,

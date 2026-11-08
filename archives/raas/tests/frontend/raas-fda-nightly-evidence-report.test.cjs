@@ -76,21 +76,13 @@ test("CSV has one row per application with clear status and no probability",()=>
  assert.match(csv,/COGT-BEZUCLASTINIB-GIST-2026/);
  assert.doesNotMatch(csv,/0\.5,0\.3,0\.2/);
 });
-test("CLI writes nightly JSON and CSV artifacts with shared source signatures",()=>{
- const temp=fs.mkdtempSync(path.join(os.tmpdir(),"raas-fda-nightly-"));
+test("retired nightly CLI cannot produce new report artifacts",()=>{
+ const temp=fs.mkdtempSync(path.join(os.tmpdir(),"raas-fda-retired-"));
  try{
-  const json=path.join(temp,"daily-report.json"),
-   csv=path.join(temp,"daily-review.csv");
-  const stdout=execFileSync(process.execPath,[
-   path.join(__dirname,"../scripts/raas-fda-nightly-evidence-report.cjs")
-  ],{env:{...process.env,RAAS_FDA_EVALUATION_AS_OF_UTC:"2026-11-05T20:00:00Z",
-   RAAS_FDA_NIGHTLY_REPORT_JSON:json,RAAS_FDA_NIGHTLY_REPORT_CSV:csv
-  },encoding:"utf8"});
-  assert.match(stdout,/EVIDENCE_GAPS_REPORTED_NOT_VALIDATED/);
-  const result=JSON.parse(fs.readFileSync(json,"utf8"));
-  assert.equal(result.counts.researchApplicationCycles,11);
-  assert.equal(result.counts.qualifiedForecastOutcomePairs,0);
-  assert.equal(result.records.length,11);
-  assert.equal(fs.readFileSync(csv,"utf8").trim().split("\n").length,12);
+  const json=path.join(temp,"daily-report.json"),csv=path.join(temp,"daily-review.csv");
+  assert.throws(()=>execFileSync(process.execPath,[path.join(__dirname,"../scripts/raas-fda-nightly-evidence-report.cjs")],{
+   env:{...process.env,RAAS_FDA_NIGHTLY_REPORT_JSON:json,RAAS_FDA_NIGHTLY_REPORT_CSV:csv},encoding:"utf8",stdio:"pipe"
+  }),error=>String(error.stderr).includes("RAAS_PERMANENTLY_RETIRED"));
+  assert.equal(fs.existsSync(json),false);assert.equal(fs.existsSync(csv),false);
  }finally{fs.rmSync(temp,{recursive:true,force:true});}
 });

@@ -66,22 +66,10 @@ test("60 metric identities, holdout totals and acceptance gates must reconcile",
  assert.throws(()=>run(report,{...installation,eligibleSourceYears:2}),
   /RAAS_SELF_AUDIT_SOURCE_INCONSISTENT/);
 });
-test("mobile RAAS page and nightly JSON share the same independent self-audit",()=>{
+test("retired audit UI and CLI cannot execute the historical self-audit",()=>{
  const root=path.resolve(__dirname,"..");
  const page=fs.readFileSync(path.join(root,"app/raas-scan/page.tsx"),"utf8");
  const cli=fs.readFileSync(path.join(root,"scripts/raas-readiness-scan.cjs"),"utf8");
- assert.match(page,/data-raas-self-audit/);
- assert.match(page,/data-raas-self-audit-gate/);
- assert.match(page,/RAAS accuracy audit/);
- assert.match(page,/independentReturnAccuracyPct/);
- assert.match(page,/raas-worklist#raas-fda-prediction-accuracy/);
- assert.match(cli,/selfAccuracyAudit/);
- assert.match(cli,/auditRaasSurveyAccuracy/);
- for(const rel of ["lib/raas-self-accuracy-audit.ts","app/raas-scan/page.tsx"]){
-  const result=ts.transpileModule(fs.readFileSync(path.join(root,rel),"utf8"),{
-   fileName:rel,reportDiagnostics:true,compilerOptions:{
-    module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022,jsx:ts.JsxEmit.ReactJSX
-   }});
-  assert.deepEqual((result.diagnostics||[]).filter(d=>d.category===ts.DiagnosticCategory.Error),[]);
- }
+ assert.match(page,/permanently retired/);assert.doesNotMatch(page,/auditRaasSurveyAccuracy|data-raas-self-audit/);
+ assert.doesNotMatch(cli,/require\(['"]\.\.\/lib\/raas-self-accuracy-audit/);
 });

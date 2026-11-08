@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 "use strict";
+
+// Permanent retirement: no historical artifact writer may execute as a command.
+if (require.main === module) { process.stderr.write("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.\n"); process.exit(78); }
+
 /** Unified 2016–2025 historical event worklist.
  * 2016–2019 original FDA approvals and 2020–2025 retrospective "event dates"
  * do NOT equal point-in-time PDUFA target announcements. Preserve independent

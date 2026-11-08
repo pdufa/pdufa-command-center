@@ -6,6 +6,11 @@ date change, an FDA application number, PASS/CRL/EXTENSION, or a prediction.
 This monitor never downloads or interprets filing contents.
 """
 from __future__ import annotations
+
+# Permanent retirement: historical functions are importable for read-only audits only.
+if __name__ == "__main__":
+    raise SystemExit("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.")
+
 import datetime as dt
 import json
 import os

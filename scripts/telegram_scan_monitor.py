@@ -25,11 +25,11 @@ SCAN_PREFIXES = (
     "pdufa-individual-", "pdufa-nightly-", "pdufa-filings-", "pdufa-pipeline-",
     "pdufa-scan-", "pdufa-adhoc-", "pdufa-sec-", "pdufa-onetime-",
     "pdufa-one-time-", "pdufa-overnight-", "main-phase3-",
-    "main-130-", "main-sva-", "raas-", "phase3-", "nightly-registry-",
+    "main-130-", "main-sva-", "phase3-", "nightly-registry-",
     "fda-source-", "hop-fda-", "hop-drugsfda-",
 )
 # Existing workflows send instantaneous start/end alerts themselves.
-DIRECT_ALERTS = {"pdufa-overnight-sequential.yml", "raas-fda-decision-accuracy.yml"}
+DIRECT_ALERTS = {"pdufa-overnight-sequential.yml"}
 EVENTS = {"schedule", "workflow_dispatch", "repository_dispatch", "workflow_run"}
 MAX_PAGES = 5
 MAX_LOOKBACK_HOURS = 48
@@ -41,6 +41,9 @@ def is_active_scan(run):
     path = str(run.get("path") or "").rsplit("/", 1)[-1].lower()
     title = str(run.get("name") or "") + " " + str(run.get("display_title") or "")
     if path in DIRECT_ALERTS or path.startswith("pdufa-telegram-"):
+        return False
+    # Permanently retired analysis jobs are excluded even if old runs remain.
+    if path.startswith("raas-") or re.search(r"\bRAAS\b", title, re.I):
         return False
     # Retired GEM / GEM JR must never be reintroduced through monitoring.
     if "gem" in path or re.search(r"\bGEM\s*(?:JR)?\b", title, re.I):

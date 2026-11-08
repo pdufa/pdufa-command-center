@@ -8,6 +8,11 @@ quotes and phase-status source checks fail CLOSED to non-current eligibility.
 """
 from __future__ import annotations
 
+# Permanent retirement: historical functions are importable for read-only audits only.
+if __name__ == "__main__":
+    raise SystemExit("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.")
+
+
 import csv
 from datetime import date
 import io

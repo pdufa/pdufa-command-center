@@ -9,14 +9,15 @@ import {activeOfficialRegistryRecord} from "./phase3-active-official-registry";
 export const PHASE3_PEER_FACT_COUNT=peerEvidence.facts.length;
 const bySlot=new Map(peerEvidence.facts.map(r=>[r.nctId+"#"+r.question,r] as const));
 export function phase3PeerReviewedFact(nctId:string,question:number){
- return bySlot.get(nctId+"#"+question)??null;
+ const fact=bySlot.get(nctId+"#"+question);
+ return fact?{nctId:fact.nctId,question:fact.question,status:fact.status,
+  evidence:fact.evidence,sourceUrl:fact.sourceUrl,sourceDate:fact.sourceDate}:null;
 }
 export function phase3PeerEvidenceIntegrity(activeIds:ReadonlySet<string>):boolean{
  return peerEvidence.schemaVersion===1&&peerEvidence.asOf==="2026-11-06"&&
   peerEvidence.facts.length===27&&bySlot.size===27&&
   peerEvidence.facts.every(f=>activeIds.has(f.nctId)&&
    [3,20,21,23,24,26,28].includes(f.question)&&f.status==="SOURCE_FACT_ONLY"&&
-   f.clinicalRating===null&&f.raasScore===null&&
    f.sourceDate<="2026-11-06"&&/^\d{4}-\d{2}-\d{2}$/.test(f.sourceDate)&&
    f.sourceUrl.startsWith("https://")&&f.evidence.length>60);
 }

@@ -55,7 +55,7 @@ def _discovery(root, signature, pacific_day):
 
 
 def render_gem_scans(root="data"):
-    st.info("GEM scanning is retired. Use PIPELINE and RAAS for active research; historical data is preserved.")
+    st.info("GEM scanning is retired. Use POOL, FOCUS and independent Deep Medical Intelligence; historical data is preserved read-only.")
     return
     st.markdown("## GEM — MASTER STOCK LIST")
     st.caption(

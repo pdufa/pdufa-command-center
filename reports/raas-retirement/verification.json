@@ -1,0 +1,197 @@
+{
+  "asOf": "2026-11-08",
+  "dependencyAudit": {
+    "passed": true,
+    "activeDependenciesRemaining": 0,
+    "activeEntrypointsInspected": 220,
+    "reachableSourceFilesInspected": 503
+  },
+  "historicalFilesPinned": 104,
+  "historicalHashesVerified": true,
+  "retiredCliEntrypoints": 71,
+  "githubWorkflowsDisabled": 21,
+  "githubReadbackVerified": true,
+  "frontendTests": {
+    "passed": 687,
+    "failed": 0
+  },
+  "backendTests": {
+    "passed": 1133,
+    "skipped": 2,
+    "failed": 0
+  },
+  "rootRetirementTests": {
+    "passed": 23,
+    "failed": 0
+  },
+  "archivedObsoleteAcceptanceSpecifications": 98,
+  "productionBuild": {
+    "status": 0
+  },
+  "browserLocal": {
+    "base": "http://127.0.0.1:3012",
+    "retiredEndpointsVerified": 18,
+    "readOnlyArchiveVerified": true,
+    "originalHistoricalRecordsPreserved": true,
+    "focusTrialCount": 29,
+    "independentApplicationTargets": 23,
+    "independentLevels": 12,
+    "completedMedicalDecisions": 0,
+    "desktopVerified": true,
+    "mobileHorizontalExpansion": {
+      "client": 364,
+      "scroll": 2836
+    },
+    "installationPageReachable": true,
+    "errors": []
+  },
+  "deployment": {
+    "status": "PENDING_PUBLICATION"
+  },
+  "installationContinuation": {
+    "asOf": "2026-11-08T03:48:41.727983+00:00",
+    "levels": [
+      {
+        "level": 1,
+        "name": "Identity and application relationships",
+        "state": "FUNCTIONAL_SOURCE_INGESTION",
+        "evidence": "Exact-source inventory and resumable collector implemented; existing completed installation task IDs are unchanged."
+      },
+      {
+        "level": 2,
+        "name": "Phase-appropriate source ingestion",
+        "state": "FUNCTIONAL_SOURCE_INGESTION",
+        "evidence": "Exact-source inventory and resumable collector implemented; existing completed installation task IDs are unchanged."
+      },
+      {
+        "level": 3,
+        "name": "Disease and natural-history dossiers",
+        "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+        "evidence": "No completion claimed from source capture or a build."
+      },
+      {
+        "level": 4,
+        "name": "Trial design and protocol investigation",
+        "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+        "evidence": "No completion claimed from source capture or a build."
+      },
+      {
+        "level": 5,
+        "name": "Efficacy and clinical relevance",
+        "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+        "evidence": "No completion claimed from source capture or a build."
+      },
+      {
+        "level": 6,
+        "name": "Statistical robustness",
+        "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+        "evidence": "No completion claimed from source capture or a build."
+      },
+      {
+        "level": 7,
+        "name": "Safety and exposure",
+        "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+        "evidence": "No completion claimed from source capture or a build."
+      },
+      {
+        "level": 8,
+        "name": "Trial integrity and evidence consistency",
+        "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+        "evidence": "No completion claimed from source capture or a build."
+      },
+      {
+        "level": 9,
+        "name": "Competitive medical context",
+        "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+        "evidence": "No completion claimed from source capture or a build."
+      },
+      {
+        "level": 10,
+        "name": "Application quality, inspections and regulatory risks",
+        "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+        "evidence": "No completion claimed from source capture or a build."
+      },
+      {
+        "level": 11,
+        "name": "Historical precedents and independent challenge",
+        "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+        "evidence": "No completion claimed from source capture or a build."
+      },
+      {
+        "level": 12,
+        "name": "Separate outcome/timing decisions and immutable validation",
+        "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+        "evidence": "No completion claimed from source capture or a build."
+      }
+    ],
+    "preservesCompletedInstallation": true,
+    "sourceOnlyPreview": true,
+    "outcomeDecisionsCompleted": 0,
+    "applicationIdentityReviewRequired": 23
+  },
+  "backendDeploymentBranchTests": {
+    "staging": {
+      "passed": 409,
+      "skipped": 2,
+      "failed": 0
+    },
+    "medicalPreview": {
+      "passed": 1166,
+      "skipped": 2,
+      "failed": 0
+    }
+  },
+  "releaseSmokeTests": {
+    "offlineValidatorPassed": 16,
+    "workflowPassed": 3,
+    "failed": 0
+  },
+  "backendDeployments": {
+    "workspace": "My Workspace",
+    "workspaceId": "tea-db967i3l550s73cadem0",
+    "staging": {
+      "commit": {
+        "createdAt": "2026-11-08T04:17:45Z",
+        "id": "d11c3d74b322889963d35e8bdaf2f472e19a1011",
+        "message": "Harden retirement aliases and preserve deployment-branch history schema"
+      },
+      "createdAt": "2026-11-08T04:18:28.586951Z",
+      "finishedAt": "2026-11-08T04:19:03.225501Z",
+      "id": "dep-dbnvg52jnfac73dgm3d0",
+      "startedAt": "2026-11-08T04:18:28.559793Z",
+      "status": "live",
+      "trigger": "api",
+      "updatedAt": "2026-11-08T04:19:03.225776Z",
+      "serviceId": "srv-db976hfbtjjs73bb98fg",
+      "health": {
+        "httpStatus": 200,
+        "status": "ok",
+        "storageReady": true,
+        "storageKind": "postgresql"
+      }
+    },
+    "medicalPreview": {
+      "commit": {
+        "createdAt": "2026-11-08T04:17:57Z",
+        "id": "5608059b05382359bc14f575d1dbe31b78d7bb1a",
+        "message": "Harden permanently retired scoring aliases without changing medical installation"
+      },
+      "createdAt": "2026-11-08T04:18:24.669357Z",
+      "finishedAt": "2026-11-08T04:19:01.087489Z",
+      "id": "dep-dbnvg40u01pc73drvip0",
+      "startedAt": "2026-11-08T04:18:24.637533Z",
+      "status": "live",
+      "trigger": "api",
+      "updatedAt": "2026-11-08T04:19:01.087687Z",
+      "serviceId": "srv-dbntrkpsrm7s73aec3lg",
+      "health": {
+        "httpStatus": 200,
+        "status": "waiting_for_database",
+        "storageReady": false,
+        "storageReason": "POSTGRES_NOT_CONFIGURED",
+        "storageKind": "sqlite"
+      }
+    },
+    "verificationScope": "Exact deployed commits read back from Render plus unauthenticated /health GET. No database mutation or authenticated prediction write was performed."
+  }
+}

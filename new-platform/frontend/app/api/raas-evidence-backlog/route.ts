@@ -1,6 +1,5 @@
-/** This old 762-trial cohort export is retired; use P3 POST-DATA instead. */
+/** Permanently retired compatibility endpoint. No scoring module is imported. */
 export const dynamic="force-dynamic";
 export function GET(){
- return Response.json({error:"RETIRED_COHORT",currentPage:"/p3-post-data",detail:"Historical Phase 3 research is preserved; the 762-trial cohort is not a live candidate list."},
-  {status:410,headers:{"Cache-Control":"no-store"}});
+ return Response.json({error:"RAAS_PERMANENTLY_RETIRED",status:"RETIRED",historicalArchive:"/api/archive/raas",message:"Historical records are read-only and cannot enter active analysis."},{status:410,headers:{"Cache-Control":"no-store"}});
 }

@@ -1,0 +1,503 @@
+{
+  "schemaVersion": 1,
+  "retiredAt": "2026-11-08",
+  "commands": [
+    {
+      "originalPath": "scripts/raas_2024_2025_expanded_sec_price_research.cjs",
+      "archivePath": "archives/raas/cli/raas_2024_2025_expanded_sec_price_research.cjs.disabled",
+      "sha256": "e4621cbfbec7389fbd0f0f9a977cf3bce711570cc6d8e7735fcd29dd1c5222fd",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_2025_crl_candidate_coverage_funnel.cjs",
+      "archivePath": "archives/raas/cli/raas_2025_crl_candidate_coverage_funnel.cjs.disabled",
+      "sha256": "c73902104b4ee084c4a270cf8d1f36fc7c0b762e77c8f2b93d0fd6318650fac8",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_2025_crl_candidate_inclusion_exclusion.cjs",
+      "archivePath": "archives/raas/cli/raas_2025_crl_candidate_inclusion_exclusion.cjs.disabled",
+      "sha256": "9c73e7d1d3d305f1e3039d0841656d75dbba46baf1f9947343e93a7d9b7fd883",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_active_2024_2025_census_gap_audit.cjs",
+      "archivePath": "archives/raas/cli/raas_active_2024_2025_census_gap_audit.cjs.disabled",
+      "sha256": "e8db6771327d216333666ca39128cb8036ee64cd65bc4b4d76ede2c547222d85",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_active_2024_2025_fda_outcome_discovery.cjs",
+      "archivePath": "archives/raas/cli/raas_active_2024_2025_fda_outcome_discovery.cjs.disabled",
+      "sha256": "ee2fda2938837d3b2aeb0f5fe6e3857c8fdf35e53187a9e80ccbb0ae78767993",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_active_2024_2025_fda_source_triage_queue.cjs",
+      "archivePath": "archives/raas/cli/raas_active_2024_2025_fda_source_triage_queue.cjs.disabled",
+      "sha256": "5920b741f1a82ff6d44e5e695dfcad27a13f85f07793394096572ba2a6197ca0",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_active_2024_2025_full_90_3_grid.cjs",
+      "archivePath": "archives/raas/cli/raas_active_2024_2025_full_90_3_grid.cjs.disabled",
+      "sha256": "5667361d2501c8f74c5c847ff6352643ddf1ffc6c43d7d90e62c46d841e3f94b",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_active_2024_2025_primary_cap_research.cjs",
+      "archivePath": "archives/raas/cli/raas_active_2024_2025_primary_cap_research.cjs.disabled",
+      "sha256": "dedea75e3f61ac893f9367a7634106c4bd7d461700f67f2aa419cd1ee9a47c61",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_active_2024_2025_review_priority.cjs",
+      "archivePath": "archives/raas/cli/raas_active_2024_2025_review_priority.cjs.disabled",
+      "sha256": "78da259dc1392b80aa0c786682b7b94f19de8aef864b423a10f2edc42145a4cc",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_active_2024_2025_sec_cap_snapshot_sensitivity.cjs",
+      "archivePath": "archives/raas/cli/raas_active_2024_2025_sec_cap_snapshot_sensitivity.cjs.disabled",
+      "sha256": "47d40bf848cef15b677de20e2eaf8cbf767a402df1df5dfd2683d3a8c2e5b90f",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_active_2024_2025_walkforward_selection_audit.cjs",
+      "archivePath": "archives/raas/cli/raas_active_2024_2025_walkforward_selection_audit.cjs.disabled",
+      "sha256": "e166f8802e0ca94afcb5d7c38616d724a493cf84224496036182b55946a44d58",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_active_2024_2025_window79_audit.cjs",
+      "archivePath": "archives/raas/cli/raas_active_2024_2025_window79_audit.cjs.disabled",
+      "sha256": "e3fffa62075c6132961ef63a1ed6b3e30081341f7e40917aea35128c0c16e72d",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_active_2024_2025_window_robustness_audit.cjs",
+      "archivePath": "archives/raas/cli/raas_active_2024_2025_window_robustness_audit.cjs.disabled",
+      "sha256": "58c587ea24847cdc47f2ef2cfbc12c411515f3c18b7eacf0cc3b990429199430",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_active_phase3_source_screen.py",
+      "archivePath": "archives/raas/cli/raas_active_phase3_source_screen.py.disabled",
+      "sha256": "ac1b62500be24e904e157a36962c55a0993ce2be07dac429d9e7e1be68069561",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_active_two_year_study.cjs",
+      "archivePath": "archives/raas/cli/raas_active_two_year_study.cjs.disabled",
+      "sha256": "2f9cb64fd8bf0911b416ad7a4f7b3be54d50fe1c3fd5861b8c26043a07b262af",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_adjustment_factor_window_audit.cjs",
+      "archivePath": "archives/raas/cli/raas_adjustment_factor_window_audit.cjs.disabled",
+      "sha256": "ee92adbfb112ddc80f807f41b1784bac6863921c0186511fb751153121d8c087",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_all_trial_partial_metric_ratings.py",
+      "archivePath": "archives/raas/cli/raas_all_trial_partial_metric_ratings.py.disabled",
+      "sha256": "63f4b21f09917720525d1fb37ed2f55bde8507d0f62963cf003b6843d3261bd4",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_alpaca_historical_price_study.cjs",
+      "archivePath": "archives/raas/cli/raas_alpaca_historical_price_study.cjs.disabled",
+      "sha256": "63abcf83c3109d37fab96138d0e6ce54b1553a564bc9f535e4ecdfefa2788349",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_alpaca_ten_year_study.cjs",
+      "archivePath": "archives/raas/cli/raas_alpaca_ten_year_study.cjs.disabled",
+      "sha256": "827c71fb149f9a0319aec2da570704b1465e1469dc05055e0a3641fe7a33f9dd",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_clinical_component_evidence.py",
+      "archivePath": "archives/raas/cli/raas_clinical_component_evidence.py.disabled",
+      "sha256": "934c16b556e3a8c76dc4b6dedcb7ff00381b9dab732fd23a7f628f476a48b954",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_collect_registry_evidence.py",
+      "archivePath": "archives/raas/cli/raas_collect_registry_evidence.py.disabled",
+      "sha256": "5d96ef9933329575d1955ed450be26276288177759d22c7ea7082181d85e5054",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_current_accepted_fda_applications.py",
+      "archivePath": "archives/raas/cli/raas_current_accepted_fda_applications.py.disabled",
+      "sha256": "90bda89ac53135aa0aba3ce2fd60aadb4321d5903e7991b50cbfcea33cf266a2",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_current_pipeline_top_metric_audit.py",
+      "archivePath": "archives/raas/cli/raas_current_pipeline_top_metric_audit.py.disabled",
+      "sha256": "f243b07d80c5aa52a56be2e2bade59735ab4f18ab10f82954aa89396a6065f82",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_current_saved_data_scan.cjs",
+      "archivePath": "archives/raas/cli/raas_current_saved_data_scan.cjs.disabled",
+      "sha256": "55c70fbdb13b069f5e9465333b893f8de6a8aa526d0c6768f5c3dd9c7fc7ba69",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_fda_all_case_primary_discovery.py",
+      "archivePath": "archives/raas/cli/raas_fda_all_case_primary_discovery.py.disabled",
+      "sha256": "378114853a7ef35817b79a51d641523eb484cc8ce21449094c437c6c4d1e57b4",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_fda_decision_accuracy_audit.py",
+      "archivePath": "archives/raas/cli/raas_fda_decision_accuracy_audit.py.disabled",
+      "sha256": "c60c2e4fa3179398d177960da2c51723afad5e0aa56a60365f9b1e8b225686b4",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_historical_acrx_2018_research.cjs",
+      "archivePath": "archives/raas/cli/raas_historical_acrx_2018_research.cjs.disabled",
+      "sha256": "aae43624997fa4f61072f6b2d2f68b539a8e45f2a271232d173bb8804717181e",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_historical_arqt_2022_research.cjs",
+      "archivePath": "archives/raas/cli/raas_historical_arqt_2022_research.cjs.disabled",
+      "sha256": "81f279e2adf8a1f4bea82e816904d4dddc5d1335c7e6924dafeed6e20744182b",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_historical_candidate_review_queue.cjs",
+      "archivePath": "archives/raas/cli/raas_historical_candidate_review_queue.cjs.disabled",
+      "sha256": "4bd1a56c911ca680ca272a9288bbfa9943b433ffc785f789c4aa5f7bfc0af54f",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_historical_cara_2021_research.cjs",
+      "archivePath": "archives/raas/cli/raas_historical_cara_2021_research.cjs.disabled",
+      "sha256": "8b7f4c71b383856fb264c443e7b7a7dbbffded93b2ece08eaa82ea4ab76510cf",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_historical_event_census_worklist.cjs",
+      "archivePath": "archives/raas/cli/raas_historical_event_census_worklist.cjs.disabled",
+      "sha256": "3d3606405c929c015cfed07d58efbfc16449a63e64138e49489dd5a230651b7e",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_historical_fda_application_outcomes.py",
+      "archivePath": "archives/raas/cli/raas_historical_fda_application_outcomes.py.disabled",
+      "sha256": "95633d26f805784db9d633ed383b07b7dab6f3c816d4e6cd05581bb73673ccfd",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_historical_preentry_share_window_research.cjs",
+      "archivePath": "archives/raas/cli/raas_historical_preentry_share_window_research.cjs.disabled",
+      "sha256": "67d882d7c1a2689bd5abd63fbffe95e5f0394507a13c5e7147afd6aeab557f4c",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_historical_provisional_window_grid.cjs",
+      "archivePath": "archives/raas/cli/raas_historical_provisional_window_grid.cjs.disabled",
+      "sha256": "ccd8a8477e5eb311c948c98cbbff9d6ed10acf99499c9ad892b7d719eb336dbf",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_historical_ptct_2017_research.cjs",
+      "archivePath": "archives/raas/cli/raas_historical_ptct_2017_research.cjs.disabled",
+      "sha256": "387759dd52f07fae36e4d6155ad8e1cac437176f3a35efb1aa7ee49fba8cdda6",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_historical_raw_market_cap_research.cjs",
+      "archivePath": "archives/raas/cli/raas_historical_raw_market_cap_research.cjs.disabled",
+      "sha256": "3e42a40c462ef96d643cc6b95f9c2bba7c9f95fd051d2f8c1b3c672b8624ff05",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_historical_sage_2019_research.cjs",
+      "archivePath": "archives/raas/cli/raas_historical_sage_2019_research.cjs.disabled",
+      "sha256": "6f0ce606b3671a3c5da0b082eb545341d357a489cb18d151c164e2295e29d247",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_independent_entry_close_research.cjs",
+      "archivePath": "archives/raas/cli/raas_independent_entry_close_research.cjs.disabled",
+      "sha256": "5827fe7590e342527e08789542e7a7e7952ec171bf796d2ca669e323983ddabf",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_match_fda_2016_2019_sponsors.cjs",
+      "archivePath": "archives/raas/cli/raas_match_fda_2016_2019_sponsors.cjs.disabled",
+      "sha256": "3cc3385a627ce80bdb24f9728415fe5caa91e69642847abf99d25b1c4de1f815",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_openfda_2016_2019_discovery.cjs",
+      "archivePath": "archives/raas/cli/raas_openfda_2016_2019_discovery.cjs.disabled",
+      "sha256": "1eea969553391d1dc9944a98113d1fff1729af239643d31195deefc98860e917",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_openfda_historical_crl_discovery.cjs",
+      "archivePath": "archives/raas/cli/raas_openfda_historical_crl_discovery.cjs.disabled",
+      "sha256": "f1f46323c9c046e3da461fcced2747fcdcff9a7d3c68be49ef7a63622c8beca1",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_population_coverage_audit.py",
+      "archivePath": "archives/raas/cli/raas_population_coverage_audit.py.disabled",
+      "sha256": "78f25caeb7ed6826b6663e7ba47544cb085dffbc2c0b84f3b6285264471c6431",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_post_clinical_provisional_capture.cjs",
+      "archivePath": "archives/raas/cli/raas_post_clinical_provisional_capture.cjs.disabled",
+      "sha256": "cb8f647c220646cfa719adf11f7bc1e1a7fb4180ad8607f5406dacff54af6f92",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_provisional_validation_readiness.cjs",
+      "archivePath": "archives/raas/cli/raas_provisional_validation_readiness.cjs.disabled",
+      "sha256": "5bc3af6d69c92847f24d7209ed10e267c6603cbc9131a5c1f88e66be47fa7bff",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_raw_entry_cap_research.cjs",
+      "archivePath": "archives/raas/cli/raas_raw_entry_cap_research.cjs.disabled",
+      "sha256": "d69cde7c94fb42d7d7f6f77e8840523e5cda614883e47d567753cb4d0d317aac",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_registry_evidence_change_audit.py",
+      "archivePath": "archives/raas/cli/raas_registry_evidence_change_audit.py.disabled",
+      "sha256": "b343d855ed9a423158f64e8f0d55cb79f31e7ece513b7aaee751113202d1ec86",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_registry_evidence_harvest.py",
+      "archivePath": "archives/raas/cli/raas_registry_evidence_harvest.py.disabled",
+      "sha256": "f18fab5712cb626fde483d4d5b754ed5d8a5d98687cc4b27b406f753fa459da1",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_registry_evidence_index.py",
+      "archivePath": "archives/raas/cli/raas_registry_evidence_index.py.disabled",
+      "sha256": "540916e8b139afe93e204d6cdcd3c4709e025ced10bac4d90e5f08f50a25771a",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_registry_evidence_summary.py",
+      "archivePath": "archives/raas/cli/raas_registry_evidence_summary.py.disabled",
+      "sha256": "c7f1a862eb1245a3927eab9f988f117b18482a62f385eaec891a8285e4c38b9f",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_research_workflow_receipt.cjs",
+      "archivePath": "archives/raas/cli/raas_research_workflow_receipt.cjs.disabled",
+      "sha256": "16ad1c3d02de9750a880dbffa890ea02eae33a9eadc6319f0c850437b9cd7087",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_review_worklist.py",
+      "archivePath": "archives/raas/cli/raas_review_worklist.py.disabled",
+      "sha256": "0ddf5e7d5ec65ca0b1e1903b243dfbec0c40db0d7c3ba418d3ae91bb86a43597",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_sec_historical_share_evidence.cjs",
+      "archivePath": "archives/raas/cli/raas_sec_historical_share_evidence.cjs.disabled",
+      "sha256": "77ad5cf71cc8e018cd63deccce1eb6f44238912920579048b6325fb96c30cf6f",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_self_audit_history_capture.cjs",
+      "archivePath": "archives/raas/cli/raas_self_audit_history_capture.cjs.disabled",
+      "sha256": "bb8d51976892ad4ed1c2fe5fd0521944c0e804e47deb6faf6420e5ea12264417",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_ten_trial_clinical_pilot.py",
+      "archivePath": "archives/raas/cli/raas_ten_trial_clinical_pilot.py.disabled",
+      "sha256": "f9b662347bf1d4b6f1e79848c6df7b2616329924d5b5de3a46e46706a53843bb",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_trial_history_capture.cjs",
+      "archivePath": "archives/raas/cli/raas_trial_history_capture.cjs.disabled",
+      "sha256": "987564bfadc3918a4aa26f1c5fd90a3ef5a06dccd057b335eccbd303a79068f9",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_trial_provisional_metric_capture.cjs",
+      "archivePath": "archives/raas/cli/raas_trial_provisional_metric_capture.cjs.disabled",
+      "sha256": "c073ac9edec83a97a1b153802c696c6624f0be4c51e0b8b63778cdc3b99f37ef",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_trial_score_ledger.py",
+      "archivePath": "archives/raas/cli/raas_trial_score_ledger.py.disabled",
+      "sha256": "7cb38fb1656b7237f244e2d2b5fef17d96566a96ee2a8aae41d9ac41d516123b",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_v2_issuer_news_fallback.py",
+      "archivePath": "archives/raas/cli/raas_v2_issuer_news_fallback.py.disabled",
+      "sha256": "a36256f74e2406f7efebff9e0efebba9741e34021e8857118fe8719f9aa8b80c",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_v2_openfda_application_watch.py",
+      "archivePath": "archives/raas/cli/raas_v2_openfda_application_watch.py.disabled",
+      "sha256": "f5dba0951e78bc83764e09c264973f6446a8ee461af98f5cd4bc29d5b946da5c",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_v2_prospective_source_readiness.py",
+      "archivePath": "archives/raas/cli/raas_v2_prospective_source_readiness.py.disabled",
+      "sha256": "e9067dabf2e02a97e334ba8a20e4bedef9097fda0e350c69f87cd1c61b61c102",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_v2_sec_nov14_filing_watch.py",
+      "archivePath": "archives/raas/cli/raas_v2_sec_nov14_filing_watch.py.disabled",
+      "sha256": "80dac5780f5cb5f8cd72cc5eec004bab249727f58ca2c27f8cc3c64c7d5c9dd9",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/raas_v2_source_provenance_manifest.py",
+      "archivePath": "archives/raas/cli/raas_v2_source_provenance_manifest.py.disabled",
+      "sha256": "eced49a508ffb4a0de9f0eb708890761724568e87b4fc86619162e64af063019",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "new-platform/frontend/scripts/raas-pdufa-goal-asof-metric-audit.cjs",
+      "archivePath": "archives/raas/cli/new-platform__frontend__scripts__raas-pdufa-goal-asof-metric-audit.cjs.disabled",
+      "sha256": "31fe6cb81616f578d5d5297d4dc0bdba5fbad5eff14c4f0d0d5cc01e3d51e2d0",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "new-platform/frontend/scripts/raas-readiness-scan.cjs",
+      "archivePath": "archives/raas/cli/new-platform__frontend__scripts__raas-readiness-scan.cjs.disabled",
+      "sha256": "6fe7f0ade4d50cbbb469428d2270b6fab9ab61c24e3a54aa20e2b34b304efc6a",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "new-platform/frontend/scripts/raas-fda-nightly-evidence-report.cjs",
+      "archivePath": "archives/raas/cli/new-platform__frontend__scripts__raas-fda-nightly-evidence-report.cjs.disabled",
+      "sha256": "fba63b0189f4c3b9efec9c236f2b87bace1704b5881270fb134722147a0ad05f",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "new-platform/frontend/scripts/raas-historical-sec-entry-bridge.cjs",
+      "archivePath": "archives/raas/cli/new-platform__frontend__scripts__raas-historical-sec-entry-bridge.cjs.disabled",
+      "sha256": "25091e884d4f13d4411ed8309672a08a17b6f79bebe16f50b7f3a870d8f31ff0",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "new-platform/frontend/scripts/raas-fda-nightly-compare.cjs",
+      "archivePath": "archives/raas/cli/new-platform__frontend__scripts__raas-fda-nightly-compare.cjs.disabled",
+      "sha256": "012679ddd36e8fa75ac58752feae224638e706ea23f152f02d75585d81820c35",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "new-platform/frontend/scripts/bottom-only-recalculate.cjs",
+      "archivePath": "archives/raas/cli/new-platform__frontend__scripts__bottom-only-recalculate.cjs.disabled",
+      "sha256": "51e6f23600f92d59561c4eb7edf79fdb3280cf504889bc0db3b9e5b45eafdefe",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/snapshot_phase_first.cjs",
+      "archivePath": "archives/raas/cli/scripts__snapshot_phase_first.cjs.disabled",
+      "sha256": "59c248f44dfd89611008ea1358d81f2953f80ff196605013ea59fb7b3ecc0a8f",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/sync_bottom_clinical_ratings.py",
+      "archivePath": "archives/raas/cli/scripts__sync_bottom_clinical_ratings.py.disabled",
+      "sha256": "1ea7939d2878be127d7e64029817a282f78a13f9ccf0a5a5ee277d87b82df2ee",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    },
+    {
+      "originalPath": "scripts/telegram_raas_source_change_alert.py",
+      "archivePath": "archives/raas/cli/scripts__telegram_raas_source_change_alert.py.disabled",
+      "sha256": "9161d87e52c54848645dcf3aaecd695155008eb1ae07a3999d7c1494343f38c7",
+      "cliStatus": "PERMANENTLY_BLOCKED_BEFORE_IMPORTS_OR_IO",
+      "libraryUse": "READ_ONLY_ARCHIVE_TESTS_ONLY"
+    }
+  ]
+}

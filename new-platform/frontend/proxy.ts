@@ -10,7 +10,7 @@ export function proxy(request:NextRequest){
  if(/^\/(?:api\/)?raas(?:-|\/|$)/.test(path)){
   return new NextResponse(
    path.startsWith("/api/")?
-    JSON.stringify({error:"Retired historical research endpoint. No live operation."}):
+    JSON.stringify({error:"Retired historical research endpoint. No live operation.",status:"RAAS_PERMANENTLY_RETIRED",archive:"/archive/raas"}):
     "Historical research interface retired. Live analysis is available through the independent medical system.",
    {status:410,headers:{
      "Content-Type":path.startsWith("/api/")?"application/json":"text/plain; charset=utf-8",

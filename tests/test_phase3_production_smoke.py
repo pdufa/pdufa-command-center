@@ -7,7 +7,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 from check_system_status_production import verify_phase3_census_production
 
 SOURCE = (Path(__file__).resolve().parents[1]
-          / "data" / "phase3_all_years_300m_10b_trials.csv").read_bytes()
+          / "new-platform" / "frontend" / "public" / "phase3-census-2026-10-26.csv").read_bytes()
 PAGE = (
     "<html><h1>Phase 3 market-cap census</h1>"
     "<p>741 unique trial IDs are published here. "
@@ -35,8 +35,7 @@ class FakeResponse:
         return False
 
 
-def response_pair(*, page=PAGE, csv=SOURCE):
-    base = "https://pdufa-new-dashboard.vercel.app"
+def response_pair(*, page=PAGE, csv=SOURCE, base="https://pdufa-new-dashboard.vercel.app"):
     return [
         FakeResponse(base + "/installation-audit/phase3-census", page, "text/html"),
         FakeResponse(base + "/phase3-census-2026-10-26.csv", csv, "text/csv; charset=utf-8"),
@@ -48,6 +47,28 @@ class Phase3CensusProductionSmokeTests(unittest.TestCase):
         with patch("check_system_status_production.urllib.request.urlopen", side_effect=response_pair()) as fetch:
             verify_phase3_census_production()
             self.assertEqual(fetch.call_count, 2)
+
+    def test_mutable_all_years_research_is_not_the_published_census_contract(self):
+        def published_only(path):
+            self.assertEqual(path.name, "phase3-census-2026-10-26.csv")
+            self.assertEqual(path.parent.name, "public")
+            return SOURCE
+        with patch("check_system_status_production.urllib.request.urlopen", side_effect=response_pair()), \
+             patch("check_system_status_production.Path.read_bytes", autospec=True, side_effect=published_only):
+            verify_phase3_census_production()
+
+    def test_local_census_uses_the_same_bounded_origin_and_exact_source_contract(self):
+        base = "http://127.0.0.1:3012"
+        with patch("check_system_status_production.urllib.request.urlopen",
+                   side_effect=response_pair(base=base)) as fetch:
+            verify_phase3_census_production(base)
+            self.assertEqual([call.args[0].full_url for call in fetch.call_args_list], [
+                base + "/installation-audit/phase3-census", base + "/phase3-census-2026-10-26.csv"])
+        pair = response_pair(base=base)
+        pair[1].url = "http://127.0.0.1:3013/phase3-census-2026-10-26.csv"
+        with patch("check_system_status_production.urllib.request.urlopen", side_effect=pair):
+            with self.assertRaisesRegex(ValueError, "redirect origin"):
+                verify_phase3_census_production(base)
 
     def test_partial_or_fake_741_trials_cannot_pass(self):
         with patch("check_system_status_production.urllib.request.urlopen",

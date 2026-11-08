@@ -1,0 +1,52 @@
+name: RAAS 2019 SAGE original PDUFA extension and historical price research
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/data/raas-historical-2019-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-2019-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-preentry-2019-sec-cover-share-leads.json'
+      - 'scripts/raas_historical_sage_2019_research.cjs'
+      - 'tests/raas_historical_sage_2019_research.test.cjs'
+      - '.github/workflows/raas-sage-2019-historical-research.yml'
+  pull_request:
+    paths:
+      - 'new-platform/frontend/data/raas-historical-2019-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-2019-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-preentry-2019-sec-cover-share-leads.json'
+      - 'scripts/raas_historical_sage_2019_research.cjs'
+      - 'tests/raas_historical_sage_2019_research.test.cjs'
+      - '.github/workflows/raas-sage-2019-historical-research.yml'
+permissions:
+  contents: read
+jobs:
+  sage-2019-original-sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Regress REMS extension, DEA legal marketing caveat, dated SEC shares and delisted price handling
+        run: |
+          node --test tests/raas_historical_sage_2019_research.test.cjs
+          node --test tests/raas_historical_raw_market_cap_research.test.cjs
+      - name: Research SAGE 2019 historical raw and adjusted SIP price windows, never approved
+        if: github.event_name != 'pull_request'
+        env:
+          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+          RAAS_2019_SAGE_OUTPUT: ${{ runner.temp }}/raas-2019-sage-zulresso-research.json
+        run: node scripts/raas_historical_sage_2019_research.cjs
+      - name: Save 2019 SAGE historical share and price research diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-2019-sage-zulresso-research
+          path: ${{ runner.temp }}/raas-2019-sage-zulresso-research.json
+          retention-days: 30
+          if-no-files-found: ignore

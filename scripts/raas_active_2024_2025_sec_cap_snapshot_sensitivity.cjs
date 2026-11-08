@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 "use strict";
+
+// Permanent retirement: no historical artifact writer may execute as a command.
+if (require.main === module) { process.stderr.write("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.\n"); process.exit(78); }
+
 /**
  * Dated SEC cover share-snapshot sensitivity for actual T-79 -> T-14
  * historical RAW Alpaca entry closes. ALL results are unvalidated.

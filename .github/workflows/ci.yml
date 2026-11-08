@@ -3,46 +3,8 @@ name: PDUFA Command Center CI
 on:
   push:
     branches: [main]
-    paths:
-      - 'new-platform/**'
-      - 'scripts/validate_gem_source_ledgers.py'
-      - 'scripts/phase3_results_intake.py'
-      - 'scripts/nightly_clinical_collection.py'
-      - 'scripts/pdufa_scan_audit.py'
-      - 'scripts/run_scan_with_email.py'
-      - 'scripts/scan_sms.py'
-      - 'tests/test_scan_email_notifications.py'
-      - 'tests/test_scan_sms_notifications.py'
-      - 'score_input_audit.py'
-      - 'tests/test_score_input_audit.py'
-      - 'tests/test_nightly_scoring_audit.py'
-      - 'tests/test_scoring_tab_navigation.py'
-      - 'tests/test_new_scan_result_identities.py'
-      - 'data/pdufa_candidates.csv'
-      - 'data/second_financing_status.csv'
-      - 'scripts/verify_backup_archive.py'
-      - 'tests/test_backup_archive_verification.py'
-      - '.github/workflows/ci.yml'
   pull_request:
     branches: [main]
-    paths:
-      - 'new-platform/**'
-      - 'scripts/validate_gem_source_ledgers.py'
-      - 'scripts/phase3_results_intake.py'
-      - 'scripts/nightly_clinical_collection.py'
-      - 'scripts/pdufa_scan_audit.py'
-      - 'scripts/run_scan_with_email.py'
-      - 'scripts/scan_sms.py'
-      - 'tests/test_scan_email_notifications.py'
-      - 'tests/test_scan_sms_notifications.py'
-      - 'score_input_audit.py'
-      - 'tests/test_score_input_audit.py'
-      - 'tests/test_nightly_scoring_audit.py'
-      - 'tests/test_scoring_tab_navigation.py'
-      - 'tests/test_new_scan_result_identities.py'
-      - 'data/pdufa_candidates.csv'
-      - 'data/second_financing_status.csv'
-      - '.github/workflows/ci.yml'
   # Run an unattended read-only verification every day, including days with no pushes.
   # GitHub cron is UTC; 15:00 UTC is 07:00 PST / 08:00 PDT.
   schedule:
@@ -61,6 +23,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  permanent-retirement-policy:
+    name: Enforce independent analysis and read-only historical archives
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Audit permanently retired active dependencies
+        run: python scripts/audit_raas_retirement.py --check
+      - name: Test permanent retirement guards
+        run: python -m unittest discover -s tests -p 'test_raas_retirement_guard.py' -v
+
   source-integrity:
     name: GEM ledger and exact-event source checks
     runs-on: ubuntu-latest

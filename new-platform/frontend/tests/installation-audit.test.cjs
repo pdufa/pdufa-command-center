@@ -48,7 +48,7 @@ test("dated, incomplete source audit is not misrepresented as qualified Pipeline
   assert.doesNotMatch(tracker, /Latest saved RESULTS:<\/strong> October 24, 2026/);
   assert.match(tracker, /not Pipeline qualified/);
   assert.match(tracker, /FDA-labelled historical outcomes/);
-  assert.match(tracker, /40 assessments/);
+  assert.match(tracker, /Independent phase-appropriate medical investigation/);
   assert.match(tracker, /Implementation-stage counts are reported separately from verified acceptance/);
   assert.match(tracker, /Full acceptance requires runtime verification and applicable evidence verification/);
 });

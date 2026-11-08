@@ -14,10 +14,12 @@ class TelegramScanAlertTests(unittest.TestCase):
         self.assertIn("FAILED / INCOMPLETE", text)
         self.assertNotIn("COMPLETED", text)
 
-    def test_raas_success_is_workflow_success_only(self):
-        text = message("raas-end", "success", "Review source artifacts")
-        self.assertIn("RAAS ACCURACY", text)
-        self.assertIn("Workflow status: success", text)
+    def test_retired_analysis_events_cannot_send_notifications(self):
+        for event in ("raas-start", "raas-end", "raas-evidence-change"):
+            with self.assertRaises(ValueError):
+                message(event, "success", "Historical run")
+        self.assertNotIn("RAAS", message("scan-end", "success"))
+        self.assertNotIn("RAAS", message("prediction-change", "success"))
 
     def test_untrusted_links_not_included(self):
         self.assertNotIn("evil.example", message("test", url="https://evil.example/secret"))

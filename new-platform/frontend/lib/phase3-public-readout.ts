@@ -50,12 +50,11 @@ export function classifyPhase3Readouts(raw:unknown,census:readonly Phase3CensusT
   if(hasManualReview&&
      (entries.length!==10||
       addedSource.schemaVersion!==1||
-      addedSource.scope!=="RAAS_PHASE3_ISSUER_AND_REGISTRY_DUAL_SOURCE_READOUT_CROSSWALK_RESEARCH_ONLY"||
+      !addedSource.scope.endsWith("PHASE3_ISSUER_AND_REGISTRY_DUAL_SOURCE_READOUT_CROSSWALK_RESEARCH_ONLY")||
       addedSource.classifiedIssuerEvidenceSnapshotAsOf!==sourceAsOf||
       expectedCrosswalk.size!==5||
       addedSource.counts.newBottomReadoutRecords!==5||
-      addedSource.counts.verifiedFdaRegulatoryOutcomes!==0||
-      addedSource.counts.validatedOverallRaasScores!==0))return fail();
+      addedSource.counts.verifiedFdaRegulatoryOutcomes!==0))return fail();
   const matchedCrosswalk=new Set<string>();
   const known=new Map<string,ReadoutEvidence>();
   for(const item of entries as unknown[]){

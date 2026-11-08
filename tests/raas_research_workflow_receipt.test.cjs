@@ -25,7 +25,7 @@ test("PR check says TESTS_ONLY and never claims live prices or outcomes",()=>{
   assert.deepEqual(r.missingRequiredArtifacts,[]);
  }finally{fs.rmSync(tmp,{recursive:true,force:true})}
 });
-test("main cannot be green without its expected source artifact",()=>{
+test("retired receipt CLI refuses to create new artifacts",()=>{
  const tmp=fs.mkdtempSync(path.join(os.tmpdir(),"raas-receipt-"));
  try{
   const cfg=config(tmp,"push");
@@ -33,11 +33,9 @@ test("main cannot be green without its expected source artifact",()=>{
    ["scripts/raas_research_workflow_receipt.cjs"],{
     cwd:path.resolve(__dirname,".."),env:{...process.env,...cfg},encoding:"utf8"
    });
-  assert.equal(r.status,1);
-  assert.match(r.stderr,/RAAS_LIVE_RESEARCH_REQUIRED_OUTPUT_MISSING/);
-  const receipt=JSON.parse(fs.readFileSync(cfg.RAAS_RECEIPT_OUTPUT,"utf8"));
-  assert.equal(receipt.status,"LIVE_RESEARCH_REQUIRED_OUTPUT_MISSING");
-  assert.deepEqual(receipt.missingRequiredArtifacts,["research.json"]);
+  assert.notEqual(r.status,0);
+  assert.match(r.stderr,/RAAS_PERMANENTLY_RETIRED/);
+  assert.equal(fs.existsSync(cfg.RAAS_RECEIPT_OUTPUT),false);
  }finally{fs.rmSync(tmp,{recursive:true,force:true})}
 });
 test("existing source outputs permit a research receipt, not a validated RAAS score",()=>{
@@ -65,12 +63,13 @@ test("invalid paths, duplicate files and unsupported execution modes fail closed
   ])assert.throws(()=>createReceipt({...base,...override}),/RAAS_RECEIPT_INPUT_INVALID/);
  }finally{fs.rmSync(tmp,{recursive:true,force:true})}
 });
-test("historical workflows publish execution receipts, not silent green no-artifact results",()=>{
- const workflowDir=path.resolve(__dirname,"../.github/workflows");
+test("archived historical workflow originals retain their prior execution receipts without active triggers",()=>{
+ const workflowDir=path.resolve(__dirname,"../archives/raas/workflows");
  for(const name of ["raas-active-2024-2025-original-source-research.yml",
   "raas-active-2024-2025-fda-outcome-discovery.yml",
   "raas-alpaca-active-two-year-study.yml"]){
-  const src=fs.readFileSync(path.join(workflowDir,name),"utf8");
+  assert.equal(fs.existsSync(path.resolve(__dirname,"../.github/workflows",name)),false);
+  const src=fs.readFileSync(path.join(workflowDir,name+".disabled"),"utf8");
   assert.match(src,/node scripts\/raas_research_workflow_receipt\.cjs/);
   assert.match(src,/RAAS_RECEIPT_EXPECTED/);
   assert.match(src,/RAAS_RECEIPT_REQUIRED/);

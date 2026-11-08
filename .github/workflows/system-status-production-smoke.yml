@@ -7,6 +7,7 @@ on:
       - '.github/workflows/system-status-production-smoke.yml'
       - 'scripts/check_system_status_production.py'
       - 'tests/test_system_status_production_smoke.py'
+      - 'tests/test_system_status_smoke_workflow.py'
       - 'tests/test_phase3_production_smoke.py'
       - 'new-platform/frontend/app/installation-audit/phase3-census/**'
       - 'new-platform/frontend/public/phase3-census-2026-10-26.csv'
@@ -16,7 +17,8 @@ on:
       - 'new-platform/frontend/app/api/assessments/route.ts'
       - 'new-platform/frontend/app/api/hop/readiness/route.ts'
       - 'new-platform/frontend/app/api/phase3-registry/route.ts'
-      - 'new-platform/frontend/lib/science-outcome-gates.ts'
+      - 'new-platform/frontend/lib/installation-analysis-readiness.ts'
+      - 'new-platform/frontend/lib/installation-active-requirements.ts'
       - 'new-platform/frontend/lib/hop-backend.ts'
   push:
     branches: [main]
@@ -24,6 +26,7 @@ on:
       - '.github/workflows/system-status-production-smoke.yml'
       - 'scripts/check_system_status_production.py'
       - 'tests/test_system_status_production_smoke.py'
+      - 'tests/test_system_status_smoke_workflow.py'
       - 'tests/test_phase3_production_smoke.py'
       - 'new-platform/frontend/app/installation-audit/phase3-census/**'
       - 'new-platform/frontend/public/phase3-census-2026-10-26.csv'
@@ -33,7 +36,8 @@ on:
       - 'new-platform/frontend/app/api/assessments/route.ts'
       - 'new-platform/frontend/app/api/hop/readiness/route.ts'
       - 'new-platform/frontend/app/api/phase3-registry/route.ts'
-      - 'new-platform/frontend/lib/science-outcome-gates.ts'
+      - 'new-platform/frontend/lib/installation-analysis-readiness.ts'
+      - 'new-platform/frontend/lib/installation-active-requirements.ts'
       - 'new-platform/frontend/lib/hop-backend.ts'
   workflow_dispatch:
 
@@ -48,7 +52,7 @@ jobs:
   read-only-public-page-check:
     name: Production page, 15 sections, science/outcome privacy guards
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
@@ -57,5 +61,61 @@ jobs:
         run: |
           python3 -m py_compile scripts/check_system_status_production.py
           python3 -m unittest discover -s tests -p 'test_*production_smoke.py' -v
-      - name: Verify production page and anonymous evidence access protections
-        run: python3 scripts/check_system_status_production.py
+          python3 -m unittest discover -s tests -p 'test_system_status_smoke_workflow.py' -v
+      # A PR must test its own code, not require an undeployed UI change to
+      # already exist on main's production alias. The validator is identical.
+      - name: Set up Node for the PR production build
+        if: github.event_name == 'pull_request'
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - name: Build the frontend under review without production credentials
+        if: github.event_name == 'pull_request'
+        working-directory: new-platform/frontend
+        env:
+          NEXT_TELEMETRY_DISABLED: '1'
+        run: |
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm run build
+      - name: Verify the actual PR production server, privacy guards and immutable census
+        if: github.event_name == 'pull_request'
+        working-directory: new-platform/frontend
+        run: |
+          node node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3012 > "$RUNNER_TEMP/system-status-next.log" 2>&1 &
+          server_pid=$!
+          cleanup() {
+            status=$?
+            kill "$server_pid" 2>/dev/null || true
+            wait "$server_pid" 2>/dev/null || true
+            if [ "$status" -ne 0 ]; then tail -80 "$RUNNER_TEMP/system-status-next.log"; fi
+            return "$status"
+          }
+          trap cleanup EXIT
+          python3 - <<'PY'
+          import time, urllib.error, urllib.request
+          deadline = time.monotonic() + 60
+          while time.monotonic() < deadline:
+              try:
+                  with urllib.request.urlopen("http://127.0.0.1:3012/installation-audit", timeout=2) as response:
+                      if response.status == 200:
+                          break
+              except (urllib.error.URLError, OSError):
+                  pass
+              time.sleep(1)
+          else:
+              raise SystemExit("PR production server did not become ready within 60 seconds")
+          PY
+          python3 ../../scripts/check_system_status_production.py --base-url http://127.0.0.1:3012
+      - name: Verify production after the main-branch deployment window
+        if: github.event_name != 'pull_request'
+        run: |
+          # Main pushes can race automatic deployment. Retry the same complete
+          # validation briefly; never accept stale content or weakened guards.
+          for attempt in $(seq 1 8); do
+            if python3 scripts/check_system_status_production.py; then exit 0; fi
+            if [ "$attempt" -eq 8 ]; then exit 1; fi
+            echo "Production deployment not verified yet; retrying complete smoke ($attempt/8)."
+            sleep 20
+          done

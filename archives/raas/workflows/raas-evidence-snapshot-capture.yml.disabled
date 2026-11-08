@@ -1,0 +1,14 @@
+name: "CANCELLED — RAAS scoring/score-history capture"
+# Cancelled by user on 2026-11-05. Previous source retained in Git history.
+# No cron, workflow_run, push or pull_request triggers, and no survey/rating actions.
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  cancelled:
+    name: "Cancelled — no surveys or ratings"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Confirm retirement without source or scoring changes
+        run: echo "Cancelled by user. No rating, survey, export or scoring job will run."

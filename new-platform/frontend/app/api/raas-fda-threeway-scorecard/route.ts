@@ -1,13 +1,5 @@
-/** Read-only RAAS FDA three-way research accuracy scorecard.
- * Never accepts client-submitted forecasts or promotes ratings.
- */
-import {currentRaasFdaThreeWayResearchScorecard}
- from "../../../lib/raas-fda-three-way-research-scorecard";
+/** Permanently retired compatibility endpoint. No scoring module is imported. */
 export const dynamic="force-dynamic";
 export function GET(){
- const scorecard=currentRaasFdaThreeWayResearchScorecard();
- return Response.json(scorecard,{headers:{
-  "Cache-Control":"no-store",
-  "X-Content-Type-Options":"nosniff"
- }});
+ return Response.json({error:"RAAS_PERMANENTLY_RETIRED",status:"RETIRED",historicalArchive:"/api/archive/raas",message:"Historical records are read-only and cannot enter active analysis."},{status:410,headers:{"Cache-Control":"no-store"}});
 }

@@ -18,7 +18,7 @@ from stage_wt_tables import render_stage_wt_tables
 
 
 def render_gem_jr(root="data"):
-    st.info("GEM JR scanning is retired. Use PIPELINE and RAAS for active research; historical data is preserved.")
+    st.info("GEM JR scanning is retired. Use POOL, FOCUS and independent Deep Medical Intelligence; historical data is preserved read-only.")
     return
     st.markdown("## GEM JR — RESEARCH & QUALIFICATION QUEUE")
     st.caption(

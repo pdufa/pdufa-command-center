@@ -1,0 +1,476 @@
+{
+  "baseCommit": "00a3abbd8edbf582e963ac38841f2389c1a7dd65",
+  "files": [
+    {
+      "path": "new-platform/frontend/data/raas-reviewed-metric-assessments.json",
+      "sha256": "db91894cd9f34dbbf4424097fdac8e7a8e6a16f5fec71e95b40cbc8171576159",
+      "bytes": 201659
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2024-2025-expanded-candidate-sec-snapshots.json",
+      "sha256": "699d8003893ce79e27b391864e9935dddcb488c7cb275821e827a1dfde1c3130",
+      "bytes": 3720
+    },
+    {
+      "path": "new-platform/frontend/data/raas-historical-cases.json",
+      "sha256": "c2e2659b03dc0b16a9fc06c7f4d4e3243c23954972667abfbbdba6a51d718ee4",
+      "bytes": 426
+    },
+    {
+      "path": "new-platform/frontend/data/raas-fda-historical-other-cycle-exclusions.json",
+      "sha256": "c97c4a8b420a37220ad4034210462a3bf66251905cd4565e160603fef984062f",
+      "bytes": 3130
+    },
+    {
+      "path": "new-platform/frontend/data/raas-current-accepted-fda-applications.json",
+      "sha256": "36149b623444b98f1f55788b367d0c337c48650c11fbe588ed52d7e8eef02497",
+      "bytes": 4471
+    },
+    {
+      "path": "new-platform/frontend/data/raas-registry-evidence-change-status.json",
+      "sha256": "86a64ef88eb543abefa03422ae5ba730ea4515dee6a873daf28cf4f775698302",
+      "bytes": 1091
+    },
+    {
+      "path": "new-platform/frontend/data/raas-retrospective-top-cases.json",
+      "sha256": "b988aa0afd1a01641f5f57fa16e52012ae5c997603fb725607f10d00f2e3e47b",
+      "bytes": 6657
+    },
+    {
+      "path": "new-platform/frontend/data/raas-historical-2021-primary-source-leads.json",
+      "sha256": "e5d5bd2eeaa146f2ad11ed82c2c7dcc18fe1e03e7698f3517eb7d2cb522fb54a",
+      "bytes": 2559
+    },
+    {
+      "path": "new-platform/frontend/data/raas-clinical-evidence-components-status.json",
+      "sha256": "054087ffea9507959be4b09c515fa94fc1d4ef88c6d5102ea36b65243041eeb9",
+      "bytes": 844
+    },
+    {
+      "path": "new-platform/frontend/data/raas-v2-nov14-issuer-goal-continuity.json",
+      "sha256": "abe9a525e88a2439a79e17a105f9de8919df2e57ce4e3b91de15c3cfa5580fd1",
+      "bytes": 6216
+    },
+    {
+      "path": "new-platform/frontend/data/raas-current-pipeline-pre-candidate-snapshots.json",
+      "sha256": "6ff142fb66bdeff85da443778d5afb532d9cc4190d54897a3281b47d59bbc0be",
+      "bytes": 8675
+    },
+    {
+      "path": "new-platform/frontend/data/raas-historical-2017-primary-source-leads.json",
+      "sha256": "fbc1073e631117566e0248ba63d8c2327e9b373a4a65b11a65fee7a3e2492c9d",
+      "bytes": 3597
+    },
+    {
+      "path": "new-platform/frontend/data/raas-historical-fda-application-outcomes-status.json",
+      "sha256": "430f75f09d46402f89180fa8d4bd01d3f88de53119cfe33a01eb26f388bb8e6c",
+      "bytes": 608
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2025-nine-archived-goal-original-source-triage.json",
+      "sha256": "ecaa163b658776b128b0db39ddd27e52e50fcedd1bb598372bd08711f5e1ea38",
+      "bytes": 13138
+    },
+    {
+      "path": "new-platform/frontend/data/raas-primary-estimand-five-case-triage.json",
+      "sha256": "6acae2f2bfb22388005065e53ced398035ebf36cf6b0dda9b66540c1f638ef1d",
+      "bytes": 7132
+    },
+    {
+      "path": "new-platform/frontend/data/raas-price-crosschecks.json",
+      "sha256": "36e64d026f8026eedf591068b10379cfe25bea91065de40777ef9d6c25d7affd",
+      "bytes": 9720
+    },
+    {
+      "path": "new-platform/frontend/data/raas-alpaca-venue-exceptions.json",
+      "sha256": "a817519268b00db0f4384bd6d40e6998597ae804c2cf21a875db7169113fc6f4",
+      "bytes": 1439
+    },
+    {
+      "path": "new-platform/frontend/data/raas-v2-candidate-source-readiness-site-snapshot.json",
+      "sha256": "5b24c27f23964d1a481dce560cd7f0bf17ffa63fd98a45f4676959952bd74184",
+      "bytes": 7711
+    },
+    {
+      "path": "new-platform/frontend/data/raas-external-review-receipts.json",
+      "sha256": "dc6f675149b350d7ac8e5be79a6d1123ccb8ff3a21a1709d70bf9947de1e8fc5",
+      "bytes": 503
+    },
+    {
+      "path": "new-platform/frontend/data/raas-preentry-2021-sec-cover-share-leads.json",
+      "sha256": "3e06e8430655c1c58b4cc40f6d9cd5a337b35332fc3bdb2e8a7268d52827aa15",
+      "bytes": 1457
+    },
+    {
+      "path": "new-platform/frontend/data/raas-fda-original-goal-outcome-candidates.json",
+      "sha256": "fc1b3f52f7d0d595b9626e0f4fed2b3f08a47b516d958e3dd338c4369d357ae8",
+      "bytes": 569
+    },
+    {
+      "path": "new-platform/frontend/data/raas-all-trials-partial-metric-ratings-status.json",
+      "sha256": "ba4d4176c2e463922f2fccfefb2dc88ffef16200839b746da20af98e75033f93",
+      "bytes": 1005
+    },
+    {
+      "path": "new-platform/frontend/data/raas-share-bridge-research.json",
+      "sha256": "17a93146c82ffc6b5e0768a424e2e56f4422af98724fadabcfac10ce4991131e",
+      "bytes": 7961
+    },
+    {
+      "path": "new-platform/frontend/data/raas-registry-evidence-change-history.json",
+      "sha256": "3ca5595802fcea9f063b380a5397df2caa2f68b104c206d663d2449239dc1e8b",
+      "bytes": 110
+    },
+    {
+      "path": "new-platform/frontend/data/raas-corporate-actions-research.json",
+      "sha256": "8c722af24126de8e9066c5cd26e9a0f0da2f78810d15264ef89ad030092b6f57",
+      "bytes": 2594
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2025-adverse-candidate-inclusion-exclusion-leads.json",
+      "sha256": "75e0867f3216662b17b78148765630e6d8072f6c89ffcae9bef6408b3155b2f2",
+      "bytes": 5550
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2017-sec-cover-share-leads.json",
+      "sha256": "2e6f5f781229b4ef947c097218f042004fe1d2f33b3b8bafb5e34b59975a2c8f",
+      "bytes": 1525
+    },
+    {
+      "path": "new-platform/frontend/data/raas-historical-2018-primary-source-leads.json",
+      "sha256": "aea8ebcdcf6fea1ac85b567cd7ad6bdada643c849a21ecb5729e381211c3ffef",
+      "bytes": 3395
+    },
+    {
+      "path": "new-platform/frontend/data/raas-classified-published-metric-leads.json",
+      "sha256": "9e24e9a2c2d17edc4aa498364c1db61c660fd18779b2486a49e50dd2a7664203",
+      "bytes": 451
+    },
+    {
+      "path": "new-platform/frontend/data/raas-current-accepted-fda-applications-status.json",
+      "sha256": "341cbd9f82cf6013fb3510e21fcffdc80ef7fcf18aec27334a938ada358fc42f",
+      "bytes": 1448
+    },
+    {
+      "path": "new-platform/frontend/data/raas-preentry-2017-sec-cover-share-leads.json",
+      "sha256": "c05fc42b3f6dcdc0531c377330ed61a270f72e90042042f06c9140c4e49d95f9",
+      "bytes": 1492
+    },
+    {
+      "path": "new-platform/frontend/data/raas-v2-nov14-review-cycle-triangulation.json",
+      "sha256": "72872eb2db83fb288f09e0274a6eea3f41042b12aff679b1379225bc66af741b",
+      "bytes": 7755
+    },
+    {
+      "path": "new-platform/frontend/data/raas-current-pipeline-pre-metric-audit-status.json",
+      "sha256": "600eb93178c4a4328668e5591178cdd44e3fb0971434a04396ead353081e91a1",
+      "bytes": 1834
+    },
+    {
+      "path": "new-platform/frontend/data/raas-trial-score-history.json",
+      "sha256": "9de281d832b71d7a1382a4fd2c3f4c2f4d179481a09d5bae952383ff283b34c5",
+      "bytes": 16236
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2025-cort-relacorilant-fda-phase3-source-lead.json",
+      "sha256": "9e52ec63d30f3a54dfae748c64f136ce96ef5acbca6aa4cae24394ea85cc514e",
+      "bytes": 4784
+    },
+    {
+      "path": "new-platform/frontend/data/raas-prospective-source-baselines.json",
+      "sha256": "db8141a8756c77c4631b2115e1904d8714e6a422d7ab348ec5feaa2d980c95f7",
+      "bytes": 9738
+    },
+    {
+      "path": "new-platform/frontend/data/raas-active-clinical-policy.json",
+      "sha256": "3fb666c54e85836cf1e027840e0f341e1301ce93744d4deaf5a7f7ed81401762",
+      "bytes": 1256
+    },
+    {
+      "path": "new-platform/frontend/data/raas-pilot-observations.json",
+      "sha256": "f88f10d0d59f9c53b4ed593ab18c9b125bfb77c06d8113a91d3704ad657e8ee6",
+      "bytes": 9383
+    },
+    {
+      "path": "new-platform/frontend/data/raas-preentry-2020-sec-cover-share-leads.json",
+      "sha256": "f0665b40b42587f199c0828454396e131f5f699763e937e0ac1b2f583839d165",
+      "bytes": 2640
+    },
+    {
+      "path": "new-platform/frontend/data/raas-retrospective-asof-evidence.json",
+      "sha256": "bb4f7a3f11f8fd167f84b8758f87de107ad8a4bc3bba986479421e272d660788",
+      "bytes": 6328
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2024-2025-expanded-candidate-source-leads.json",
+      "sha256": "ffcf22c14a39023fa282b5f772542b5a680bc6da9ea9e31985d98574c4e995bc",
+      "bytes": 4117
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2022-sec-cover-share-leads.json",
+      "sha256": "c05ed658c795269d2b15f4933e33647be09b840638996bbadf2d9e9805c297f2",
+      "bytes": 1446
+    },
+    {
+      "path": "new-platform/frontend/data/raas-preentry-2022-sec-cover-share-leads.json",
+      "sha256": "8232ad1cf2cae9e04030ce0d3abce50258ce8582e4d2c046c3f31f92a8b4ddfe",
+      "bytes": 1385
+    },
+    {
+      "path": "new-platform/frontend/data/bottomOnlyScoreHistory20261107.json",
+      "sha256": "799446cfa0d4d5a6b4f7c69db4fd9f31ffbebd19f8d88338be43f52d5aeaf19a",
+      "bytes": 1008179
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2021-sec-cover-share-leads.json",
+      "sha256": "6484591448be314a71c8da9808c43037a46a1273aca54a71295513f8c0b13609",
+      "bytes": 1442
+    },
+    {
+      "path": "new-platform/frontend/data/raas-fda-three-way-accuracy-site-snapshot.json",
+      "sha256": "bdfaed705074393b192ba7dc52b5457338e07aae675a69e0876dae2a98596e6b",
+      "bytes": 1712
+    },
+    {
+      "path": "new-platform/frontend/data/raas-historical-2020-primary-source-leads.json",
+      "sha256": "34d4c6d1862cd296e4204bd3e56297d972e500d94e3f06c087f920369c9637d1",
+      "bytes": 13206
+    },
+    {
+      "path": "new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json",
+      "sha256": "96b5983076734c1ef37dafa92af528573115aba9310d48bbe910ecc2de2521fd",
+      "bytes": 11789
+    },
+    {
+      "path": "new-platform/frontend/data/raas-historical-six-gap-source-leads.json",
+      "sha256": "e62e73892fbb5947589e9e5bb01bb5a923f3e3f0354fd4298e230b509417e787",
+      "bytes": 5269
+    },
+    {
+      "path": "new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json",
+      "sha256": "efc7599fc818da8f50de304b9359a7405eafb72dac21ffcdc3d677e17f9cec9f",
+      "bytes": 11714
+    },
+    {
+      "path": "new-platform/frontend/data/raas-source-review-worklist-status.json",
+      "sha256": "eeed9431cdda08bd520fe81447fba28b1ee7e333d721534c9c3c9eb67100ff5f",
+      "bytes": 644
+    },
+    {
+      "path": "new-platform/frontend/data/raas-historical-fda-application-outcomes.json",
+      "sha256": "54f05235f69085bb41a0b818868dd0353f2015bbaed19a688c859c859cb44e31",
+      "bytes": 3032
+    },
+    {
+      "path": "new-platform/frontend/data/raas-active-741-coverage.json",
+      "sha256": "a541657450130c6d1085e1aa036a9e9d9a19d14b0a90ab2898a98720f63a7115",
+      "bytes": 3255
+    },
+    {
+      "path": "new-platform/frontend/data/raas-active-study-config.json",
+      "sha256": "62d8298a510498a17e17da221322c627132da254efb6c813beb9c2ded890a797",
+      "bytes": 1662
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2019-sec-cover-share-leads.json",
+      "sha256": "1ed5c5faccfeedfa3487f59b1e61931e1e01d84bc9ba71aa1c5edf9f66a63a8d",
+      "bytes": 1421
+    },
+    {
+      "path": "new-platform/frontend/data/raas-self-audit-history.json",
+      "sha256": "4d9f48355daf496b0f3720fc84730236e8e9406775d2a1ab1137c184c0629637",
+      "bytes": 2020
+    },
+    {
+      "path": "new-platform/frontend/data/raas-clinical-five-reviewed-increment.json",
+      "sha256": "3e9b708b0b9f64dc7fef9460faf2c4f10ead356d5ae8741a05e1b145360db874",
+      "bytes": 219497
+    },
+    {
+      "path": "new-platform/frontend/data/raas-historical-2019-primary-source-leads.json",
+      "sha256": "3946aa33ef30c91c0dbb1d8e7a6c3741c056b345a66fe3e3c2cd509d0e17f673",
+      "bytes": 2953
+    },
+    {
+      "path": "new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json",
+      "sha256": "d9a86fcffcadeb0435a3d9d7ffb251e678470dfacfe7ac982cfdd4d9c0e65645",
+      "bytes": 29390
+    },
+    {
+      "path": "new-platform/frontend/data/raas-trial-score-ledger-status.json",
+      "sha256": "eaf8130740ca5e613445fe0458804caa4379efe7325b7beb8c901348a4dde3e5",
+      "bytes": 740
+    },
+    {
+      "path": "new-platform/frontend/data/raas-registry-evidence-status.json",
+      "sha256": "1b29c476dacc55d3d3d60d6c87ef19e050c3a6686882f95cf008fbe6ec6605be",
+      "bytes": 1929
+    },
+    {
+      "path": "new-platform/frontend/data/raas-source-acceptance-policy.json",
+      "sha256": "95428a486cfc24c616ec1852a4f10b9d5cca43efc3941fcee9f16ef547663326",
+      "bytes": 1793
+    },
+    {
+      "path": "new-platform/frontend/data/raas-ten-trial-metric-pilot-status.json",
+      "sha256": "13a73ff20fc2106e881ccf7fc3fdc2e83fa1ff2ce72ef279afdd3d284b58dc1c",
+      "bytes": 978
+    },
+    {
+      "path": "new-platform/frontend/data/raas-fda-primary-outcomes.json",
+      "sha256": "79c303ecb8f36bfb53a22ab1ffbf2c32d7707143324d1f83070fdae4b478b1ce",
+      "bytes": 3756
+    },
+    {
+      "path": "new-platform/frontend/data/raas-reviewed-snapshots.json",
+      "sha256": "8f9b684f28476db6467deea075d6cfcb272d06d1e6f54a77a24cb487127a0752",
+      "bytes": 354
+    },
+    {
+      "path": "new-platform/frontend/data/raas-historical-2022-primary-source-leads.json",
+      "sha256": "010497638a3bd78ef1bbc92b19d222c4baeee983e4c74b521fa428868d46292e",
+      "bytes": 2539
+    },
+    {
+      "path": "new-platform/frontend/data/RAAS_HISTORICAL_INTAKE.md",
+      "sha256": "4303c3871f4ad7e13bca2c4b6728f82a4cf0b6c3e696226f4718f9a03799706e",
+      "bytes": 20558
+    },
+    {
+      "path": "new-platform/frontend/data/raas-active-phase3-source-screen-status.json",
+      "sha256": "e7053c8b5e428b63b25ff5fcd5941947ea65c8e09d6d163c734507eb7dc9c8bd",
+      "bytes": 1359
+    },
+    {
+      "path": "new-platform/frontend/data/raas-ten-year-pdufa-intake.json",
+      "sha256": "2c73f5bab6f1da11aeef7daff6aa1c5916933fc47007ee1b02a336736c6331e0",
+      "bytes": 1520
+    },
+    {
+      "path": "new-platform/frontend/data/raas-fda-forecast-freeze-receipts.json",
+      "sha256": "4c3ae3bdf1bad17dd9addf9241a5e4b57bd1886d84c31d633264d3ddf2616afd",
+      "bytes": 518
+    },
+    {
+      "path": "new-platform/frontend/data/raas-fda-three-way-scorecard-pairs.json",
+      "sha256": "752135db8cd57f675d771855e77aeab775218afc3232d592eb51a382a2e09794",
+      "bytes": 540
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2025-three-phase3-fda-price-research-leads.json",
+      "sha256": "a3c97e111256ca201bbe3e62376c4fb82c5b9c6de8b46f3952be5c441a249d53",
+      "bytes": 7814
+    },
+    {
+      "path": "new-platform/frontend/data/raas-active-2024-2025-independent-entry-close-leads.json",
+      "sha256": "bdcdb77bbebba79cd3bd4c28a58da2ace446145b69939d9146bef6972f666d37",
+      "bytes": 1310
+    },
+    {
+      "path": "new-platform/frontend/data/raas-approved-calibrations.json",
+      "sha256": "53ce482defca5ad9d8c018200b66b384194c0dcaa0ee37fbd3bcd41e1dfbe12f",
+      "bytes": 282
+    },
+    {
+      "path": "new-platform/frontend/data/raas-preentry-2018-sec-cover-share-leads.json",
+      "sha256": "323a42864d0b9e6e54e462ea1ae8e38a91d0317af1f30870f1b349b9fdf66df4",
+      "bytes": 1506
+    },
+    {
+      "path": "new-platform/frontend/data/raas-preentry-2019-sec-cover-share-leads.json",
+      "sha256": "72ac3a5d22645fb25d6815583452a2e876c6adb98d089a27398fe6efb12fc81f",
+      "bytes": 1537
+    },
+    {
+      "path": "new-platform/frontend/data/raas-retrospective-source-cases.json",
+      "sha256": "57f222c79c008075a91482280a6843cf17a14a798227cde3aaeb8df15c51de84",
+      "bytes": 18143
+    },
+    {
+      "path": "new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json",
+      "sha256": "65d01801038573fc2c04b495b3cb4201e4809ed70c072b20db7490ce1c0fdab5",
+      "bytes": 773
+    },
+    {
+      "path": "new-platform/frontend/data/raas-historical-metric-snapshots.json",
+      "sha256": "30f400060a27c4e7932a323513ce5c4630f69cc13ead104ea2ba536afd2d6158",
+      "bytes": 376
+    },
+    {
+      "path": "new-platform/frontend/data/raas-historical-finance-facts.json",
+      "sha256": "6b8dfedd2b309122c67c8b0de67444b0efc31dc8a9a6695036bedbd55f2faae2",
+      "bytes": 11007
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2020-sec-cover-share-leads.json",
+      "sha256": "9745d989784602b4b0d246cc4f9876cd9dd8171aa7e303dc1f084740dfc9ab55",
+      "bytes": 6225
+    },
+    {
+      "path": "new-platform/frontend/data/raas-v2-top8-2026-source-intake.json",
+      "sha256": "4265b7129612b099ba1e9d6de99c9f86e87d097b490605015cfd2cb239e9c1cb",
+      "bytes": 23657
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2024-2025-additional-earliest-sec-cover.json",
+      "sha256": "17d81eba746b40dd5e74bb4370033cabed4d6c75aaff8b0bad4b4856c8c884b9",
+      "bytes": 1757
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2025-unanchored-crl-source-leads.json",
+      "sha256": "150154a50f864110047b8ece17e73a3498ebac4b49ff9de426898e7a29387850",
+      "bytes": 4745
+    },
+    {
+      "path": "new-platform/frontend/data/raas-2018-sec-cover-share-leads.json",
+      "sha256": "eff1edd24bc3f5cb45299b73b5ffc7964355c99c34a78b7b919d6281e1bc8a4c",
+      "bytes": 1454
+    },
+    {
+      "path": "data/raas_fda_three_way_protocol.json",
+      "sha256": "74787fadc4545897952bac5dab50abd168c2c7caca48917b486b635538f68bd3",
+      "bytes": 2365
+    },
+    {
+      "path": "data/raas_fda_three_way_frozen_forecasts.json",
+      "sha256": "8611db61ce21701f88c3984b4338e4a70400b08f751a0aeedb096d8cf61e8651",
+      "bytes": 373
+    },
+    {
+      "path": "data/raas_population_coverage_audit.json",
+      "sha256": "7544fad8e3b18df7a01f16dedc22e294ff24052d05a8b154e471916920960043",
+      "bytes": 694185
+    },
+    {
+      "path": "data/raas_provisional_validation_readiness.json",
+      "sha256": "d353a54b03bf489ac060ece4a41d2a8530b0915ffbb9acc57f3773afffdc7ffa",
+      "bytes": 1298
+    },
+    {
+      "path": "data/raas_registry_live_evidence.json",
+      "sha256": "6acd1fc8a36b26868ea2e285ef2721866aa64faeeae2fe6d1263f3e2cd9844b6",
+      "bytes": 4206322
+    },
+    {
+      "path": "data/raas_registry_missing_backfill.json",
+      "sha256": "16c92b353a6bd0183ce7416e188154e3346a305f6078648721562a092a256ece",
+      "bytes": 7168
+    },
+    {
+      "path": "data/raas_clinical_evidence_inventory.json",
+      "sha256": "5bb201cfa3b271618e26d626864bdda3d82268196a603aaf86d89ec70f58b6e8",
+      "bytes": 1987172
+    },
+    {
+      "path": "data/raas_fda_three_way_eligible_cases.json",
+      "sha256": "a30f531e2dcefbae2a45f434084e730cb27d7ee8553be5da69eadafff9798c0f",
+      "bytes": 358
+    },
+    {
+      "path": "data/raas_fda_three_way_outcomes.json",
+      "sha256": "66401ff11559cadb8f2bcc844e09e72d0dce24d0001fe48eda0601401d9cf262",
+      "bytes": 351
+    }
+  ],
+  "policy": "Read-only historical records; never active calculation inputs."
+}

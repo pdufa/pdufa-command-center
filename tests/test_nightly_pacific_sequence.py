@@ -297,7 +297,7 @@ class AwaitedWorkflowTests(unittest.TestCase):
         self.assertIn('source_run_id: ${{ steps.handoff.outputs.source_run_id }}', handoff)
         self.assertIn('SOURCE_RUN_ID: ${{ inputs.source_run_id || github.event.workflow_run.id }}', handoff)
         self.assertIn('echo "source_run_id=$SOURCE_RUN_ID" >> "$GITHUB_OUTPUT"', handoff)
-        self.assertIn('Preserve source run identity without scoring or RAAS history changes', handoff)
+        self.assertIn('Preserve source run identity without scoring or historical record changes', handoff)
         self.assertNotIn('completed_source_stage(', handoff)
         self.assertNotIn('python scripts/nightly_scoring_audit.py', handoff)
         self.assertNotIn('python scripts/raas', handoff)

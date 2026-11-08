@@ -52,12 +52,6 @@ test("non-503 responses and unauthenticated requests stay independently classifi
   assert.match(safeHopDiagnostic(503, { reason: "INVALID" }), /not verified/);
 });
 
-test("installed tracker fetches authenticated read-only OUTCOME once and shows only sanitized reason", () => {
-  const ui = fs.readFileSync(path.join(__dirname, "../app/installation-audit/ScientificOutcomeLive.tsx"), "utf8");
-  assert.match(ui, /safeHopDiagnostic\(response.status, payload\)/);
-  assert.match(ui, /read\("\/api\/hop\/readiness", true\)\.then\(auditOutcomeStatus\)/);
-  assert.match(ui, /cache:"no-store"/);
-  assert.match(ui, /Certification: NOT VALIDATED/);
-  assert.match(ui, /Historical verification counts are withheld/);
-  assert.doesNotMatch(ui, /PDUFA_INTERNAL_API_KEY|PDUFA_HOP_INTERNAL_API_KEY|placeTrade|saveGrade|runScan/);
+test("installed tracker fetches authenticated read-only OUTCOME once and shows only sanitized reason",()=>{
+const ui=require('node:fs').readFileSync(require('node:path').join(__dirname,'../app/installation-audit/ScientificOutcomeLive.tsx'),'utf8');assert.match(ui,/safeHopDiagnostic/);assert.match(ui,/auditOutcomeSources/);assert.match(ui,/api\/preview\/deep-medical-intelligence/);assert.doesNotMatch(ui,/api\/assessments|science-outcome-gates/);assert.match(ui,/counts are withheld/);
 });

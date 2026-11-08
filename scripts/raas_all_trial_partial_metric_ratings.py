@@ -9,6 +9,11 @@ computed. Protocol/results state is not independently verified TOP/BOTTOM.
 """
 from __future__ import annotations
 
+# Permanent retirement: historical functions are importable for read-only audits only.
+if __name__ == "__main__":
+    raise SystemExit("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.")
+
+
 from collections import defaultdict
 import csv
 import io

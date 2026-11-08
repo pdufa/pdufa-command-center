@@ -5,6 +5,6 @@ export function GET(request:Request){
  if(!id||!/^(NCT|ISRCTN)\d{8}$/.test(id))return Response.json({error:"Exact trial identifier required"},{status:400});
  const records=history.records.filter(r=>r.continuityKey===id);
  if(!records.length)return Response.json({error:"No phase-first history for this trial"},{status:404});
- return Response.json({trialId:id,scope:history.scope,records,
-  note:"Append-only Git-persisted research snapshots. Existing RAAS, clinical-grade and calibration ledgers are unchanged; no source-only fact is promoted to a prediction."},{headers:{"Cache-Control":"no-store"}});
+ return Response.json({trialId:id,scope:"HISTORICAL_ARCHIVE_ONLY",readOnly:true,records,
+  note:"Read-only historical snapshots as originally recorded. Retired ratings do not contribute to current source analysis or FDA predictions."},{headers:{"Cache-Control":"no-store"}});
 }

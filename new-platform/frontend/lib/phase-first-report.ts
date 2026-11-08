@@ -1,11 +1,8 @@
 import alksRegistry from "../data/alkermesPhaseFirstRegistry20261106.json";
 import international from "../data/alkermesInternationalTrials20261106.json";
 import censusRegistry from "../data/phaseFirstCensusRegistry20261106.json";
-import legacyAlks from "../data/alks34ClinicalScorecard20261106.json";
 import census from "../public/phase3-unified-classifications-2026-11-05.json";
 import ir from "../data/phase3CompanyWebsiteEvidence20261105.json";
-import {clinicalFiveForTrial} from "./raas-clinical-five";
-import {raasSpreadsheetSummary} from "./raas-spreadsheet-status";
 import {evaluatePhaseFirst,PHASE_FIRST_VERSION,type PhaseTrial,type ClinicalContext} from "./phase-first-clinical";
 import {phase3DeepRegistryRecord,PHASE3_DEEP_REGISTRY_AS_OF} from "./phase3-deep-registry-results";
 import endpointAdjudications from "../data/phase3EndpointAdjudications20261105.json";
@@ -18,7 +15,6 @@ import ionisEvidence from "../data/ionisPhase3Evidence20261106.json";
 import peerEvidence from "../data/phase3PeerReviewedClinicalEvidence20261106.json";
 
 const AS_OF="2026-11-06";
-const oldById=new Map(legacyAlks.records.map(r=>[r.nctId,r]));
 const companyById=new Map(census.rows.map(r=>[r.nctId,r]));
 const irById=new Map(ir.records.map(r=>[r.nctId,r]));
 const endpointById=new Map(endpointAdjudications.records.map(r=>[r.nctId,r]));
@@ -41,9 +37,9 @@ function currentProgram(drug:string){
  return null;
 }
 export function phaseFirstContext(trial:PhaseTrial,alkermes:boolean):ClinicalContext{
- const old=oldById.get(trial.trialId),row=companyById.get(trial.trialId);
- const drug=old?.clinicalProgramDrug||trial.interventions.filter(i=>!/placebo/i.test(i.name)).map(i=>i.name).join("; ")||"Intervention not recorded";
- const indication=old?.clinicalProgramIndication||trial.indications.join("; ")||"Indication not recorded";
+ const row=companyById.get(trial.trialId);
+ const drug=trial.interventions.filter(i=>!/placebo/i.test(i.name)).map(i=>i.name).join("; ")||"Intervention not recorded";
+ const indication=trial.indications.join("; ")||"Indication not recorded";
  const ticker=alkermes?"ALKS":row?.ticker??"UNKNOWN";
  const program=currentProgram(drug);
  const link=irById.get(trial.trialId);
@@ -51,13 +47,8 @@ export function phaseFirstContext(trial:PhaseTrial,alkermes:boolean):ClinicalCon
   {status:link.regulatoryEvidenceStatus,url:link.regulatoryEvidenceUrl,date:("regulatorySourceDate" in link?link.regulatorySourceDate:null)||link.sourceDate,
    text:("regulatoryEvidence" in link?link.regulatoryEvidence:null)||"Exact-trial regulatory link documented",
    goalDate:("pdufaGoalDate" in link?link.pdufaGoalDate:undefined)}:null;
- const stage=old?.clinicalStage==="post"?"post":old?.clinicalStage==="pre"?"pre":null;
- const isPhase3=trial.phases.includes("PHASE3");
- const stageVerified=!!old?.clinicalStageVerified&&isPhase3;
- const accepted=stage?clinicalFiveForTrial({nctId:trial.nctId??"",ticker,drug,indication},stage,stageVerified):null;
- const approved=trial.nctId?raasSpreadsheetSummary({nctId:trial.nctId,ticker,drug,indication,classifiedStage:stage}).approvedScore:null;
- const safetyPrimary=old?.studyPurpose==="SAFETY_PRIMARY"||
-  (trial.primary.length>0&&trial.primary.every(p=>/adverse|safety|tolerab/i.test(p.measure)));
+ const publicReadoutDocumented=trial.hasResults||endpointById.has(trial.trialId);
+ const safetyPrimary=trial.primary.length>0&&trial.primary.every(p=>/adverse|safety|tolerab/i.test(p.measure));
  const additional:NonNullable<ClinicalContext["additionalEvidence"]>={};
  if(program)additional.mechanism={text:program.mechanism+". Mechanistic description is not proof of clinical efficacy.",url:program.sourceUrl,date:program.sourceDate};
  const deep=phase3DeepRegistryRecord(trial.trialId);
@@ -112,7 +103,7 @@ export function phaseFirstContext(trial:PhaseTrial,alkermes:boolean):ClinicalCon
   }
  }
  // Exact-NCT peer-reviewed/FDA outcomes are added to documentation requirements
- // only. They never produce reviewed factor grades or approved RAAS probabilities.
+ // only. They never produce reviewed factor grades or future FDA predictions.
  for(const fact of peerEvidence.facts){
   if(fact.nctId!==trial.trialId)continue;
   const requirement=fact.question===20?"benefitRisk":
@@ -130,13 +121,9 @@ export function phaseFirstContext(trial:PhaseTrial,alkermes:boolean):ClinicalCon
   pipelineRestriction:ticker==="SVA"?sinovacEvidence.eligibilityNote:null,
   pipelineRestrictionSource:ticker==="SVA"?sinovacEvidence.eligibilitySourceUrl:null,
   programPhase:program?.phase??null,programSourceUrl:program?.sourceUrl??null,
-  legacyStage:stage,stageVerified,safetyPrimary,
-  notApplicableFactors:old?.notApplicableClinicalFactors??(safetyPrimary?["efficacy","clinicalBenefit","statistics","reproducibility"]:[]),
-  reviewedFactors:accepted?.factors??[],approvedRaas:approved,regulatory,
+  publicReadoutDocumented,safetyPrimary,regulatory,
   additionalEvidence:additional};
 }
-// Survey system retired; no questionnaire hierarchy is installed.
-export const PHASE_FIRST_SURVEY_HIERARCHY:readonly []=[];
 export type PhaseFirstScope="alkermes"|"axsome"|"sinovac"|"census";
 const caches:Partial<Record<PhaseFirstScope,ReturnType<typeof build>>>={};
 function build(scope:PhaseFirstScope){
@@ -152,17 +139,13 @@ function build(scope:PhaseFirstScope){
   sourceScope:scope==="alkermes"?"Alkermes sponsor/collaborator search plus verified current compound/Avadel aliases; associations do not establish current ownership.":scope==="axsome"?"Axsome: all 28 exact-NCT records in the existing census, not an exhaustive historical/acquired-program census.":scope==="sinovac"?sinovacEvidence.scope:"Existing exact-NCT 762-trial research census; analysis never admits a row to restricted Pipeline.",
   companyResearch:scope==="axsome"?{company:axsomeEvidence.company,documentsReviewed:axsomeEvidence.sources.length,factsRecorded:axsomeEvidence.records.length,blockers:axsomeEvidence.blockers,eligibilityNote:null,eligibilitySourceUrl:null}:scope==="sinovac"?{company:sinovacEvidence.company,documentsReviewed:sinovacEvidence.sources.length,factsRecorded:sinovacEvidence.records.length,blockers:sinovacEvidence.blockers,eligibilityNote:sinovacEvidence.eligibilityNote,eligibilitySourceUrl:sinovacEvidence.eligibilitySourceUrl}:null,
   currentAlkermesPrograms:scope==="alkermes"?CURRENT_ALKERMES_PROGRAMS:[],
-  legacyAlkermesTrials:legacyAlks.records.length,byPhase,evidenceCounts,
-  ratedTrials:trials.filter(t=>t.overallRating!==null).length,
-  fullyCoveredRatings:trials.filter(t=>t.ratingCoverage.eligible>0&&t.ratingCoverage.scored===t.ratingCoverage.eligible).length,
-  scoredComponents:trials.reduce((s,t)=>s+t.ratingCoverage.scored,0),
+  analysisMode:"PHASE_APPROPRIATE_SOURCE_EVIDENCE_ONLY",byPhase,evidenceCounts,
   fdaPredictions:trials.filter(t=>t.fdaPrediction.probabilities!==null).length,
-  surveyHierarchy:PHASE_FIRST_SURVEY_HIERARCHY,
-  notes:["Clinical research rating, evidence completeness, regulatory readiness and calibrated FDA probability are distinct.",
-   "Partial means normalize existing 20% factor weights only over eligible scored components. They are not complete five-factor scores or cross-phase ranks.",
+  notes:["Clinical source documentation, regulatory readiness and FDA predictions are distinct.",
+   "No numerical clinical rating or composite is generated from evidence availability.",
    "Missing and conflicting evidence are research gaps; pending and not-yet-expected milestones are excluded from evidence completeness.",
    "Current phase is source-verified per registry snapshot, not inferred from the program's most advanced phase. Original source dates and staleness remain visible.",
-   "Existing clinical grades/history, RAAS calibration and Pipeline eligibility are read-only. No GEM/GEM JR model is activated."],trials};
+   "Historical ratings remain archived and do not participate in active clinical analysis or Pipeline eligibility."],trials};
 }
 export function phaseFirstReport(scope:PhaseFirstScope="alkermes"){
  return caches[scope]??(caches[scope]=build(scope));

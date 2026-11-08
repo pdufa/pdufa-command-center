@@ -44,12 +44,12 @@ export default function RestrictionsPage(){
   </div>
   <section style={{...panel,marginTop:16}}>
    <h2>Optional restrictions — disabled</h2>
-   <p>These seven settings do not exclude trials, lower scientific ratings or enter RAAS scoring.</p>
+   <p>These seven settings do not exclude trials, alter the underlying clinical evidence.</p>
    {DISABLED_POLICY.map(rule=><p key={rule.id}>☐ {rule.label} <span title={rule.detail} aria-label={rule.detail} style={{color:"#2176a7",cursor:"help"}}>ⓘ</span></p>)}
   </section>
   <section style={panel}>
    <h2>Pending enforcement and verification</h2>
-   <p>Current listing, entry/current cap quotes, sponsor rights, exact FDA application crosswalks, phase-specific scientific evidence and recurring source refreshes need independently verified inputs. Until then their audit status is UNKNOWN, not PASS or FAIL. The dated census does not establish completed regulatory eligibility or production RAAS readiness.</p>
+   <p>Current listing, entry/current cap quotes, sponsor rights, exact FDA application crosswalks, phase-specific scientific evidence and recurring source refreshes need independently verified inputs. Until then their audit status is UNKNOWN, not PASS or FAIL. The dated census does not establish completed regulatory eligibility or independent FDA application readiness.</p>
    <p>Research source: <a href="/api/pdufa-restriction-audit">Audit JSON</a> · snapshot {ledger.asOf} · checked {asOf}. Historical trials, scores, predictions and benchmarks are preserved.</p>
   </section>
  </main>;

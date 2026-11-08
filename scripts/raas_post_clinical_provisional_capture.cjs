@@ -3,6 +3,10 @@
  * signal grades, never composite RAAS scores or retroactive predictions.
  */
 "use strict";
+
+// Permanent retirement: no historical artifact writer may execute as a command.
+if (require.main === module) { process.stderr.write("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.\n"); process.exit(78); }
+
 const fs=require("node:fs"),path=require("node:path"),crypto=require("node:crypto");
 const root=path.resolve(__dirname,"../new-platform/frontend");
 const hash=x=>crypto.createHash("sha256").update(JSON.stringify(x)).digest("hex");

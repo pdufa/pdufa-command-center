@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 "use strict";
+
+// Permanent retirement: no historical artifact writer may execute as a command.
+if (require.main === module) { process.stderr.write("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.\n"); process.exit(78); }
+
 /**
  * Research-only walk-forward and multiple-comparisons diagnostic for the
  * FULL T-90..T-3 study. 2024 defines selection; 2025 can only be evaluated

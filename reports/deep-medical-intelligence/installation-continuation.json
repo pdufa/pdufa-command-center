@@ -1,0 +1,81 @@
+{
+  "asOf": "2026-11-08T03:48:41.727983+00:00",
+  "levels": [
+    {
+      "level": 1,
+      "name": "Identity and application relationships",
+      "state": "FUNCTIONAL_SOURCE_INGESTION",
+      "evidence": "Exact-source inventory and resumable collector implemented; existing completed installation task IDs are unchanged."
+    },
+    {
+      "level": 2,
+      "name": "Phase-appropriate source ingestion",
+      "state": "FUNCTIONAL_SOURCE_INGESTION",
+      "evidence": "Exact-source inventory and resumable collector implemented; existing completed installation task IDs are unchanged."
+    },
+    {
+      "level": 3,
+      "name": "Disease and natural-history dossiers",
+      "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+      "evidence": "No completion claimed from source capture or a build."
+    },
+    {
+      "level": 4,
+      "name": "Trial design and protocol investigation",
+      "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+      "evidence": "No completion claimed from source capture or a build."
+    },
+    {
+      "level": 5,
+      "name": "Efficacy and clinical relevance",
+      "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+      "evidence": "No completion claimed from source capture or a build."
+    },
+    {
+      "level": 6,
+      "name": "Statistical robustness",
+      "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+      "evidence": "No completion claimed from source capture or a build."
+    },
+    {
+      "level": 7,
+      "name": "Safety and exposure",
+      "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+      "evidence": "No completion claimed from source capture or a build."
+    },
+    {
+      "level": 8,
+      "name": "Trial integrity and evidence consistency",
+      "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+      "evidence": "No completion claimed from source capture or a build."
+    },
+    {
+      "level": 9,
+      "name": "Competitive medical context",
+      "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+      "evidence": "No completion claimed from source capture or a build."
+    },
+    {
+      "level": 10,
+      "name": "Application quality, inspections and regulatory risks",
+      "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+      "evidence": "No completion claimed from source capture or a build."
+    },
+    {
+      "level": 11,
+      "name": "Historical precedents and independent challenge",
+      "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+      "evidence": "No completion claimed from source capture or a build."
+    },
+    {
+      "level": 12,
+      "name": "Separate outcome/timing decisions and immutable validation",
+      "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
+      "evidence": "No completion claimed from source capture or a build."
+    }
+  ],
+  "preservesCompletedInstallation": true,
+  "sourceOnlyPreview": true,
+  "outcomeDecisionsCompleted": 0,
+  "applicationIdentityReviewRequired": 23
+}

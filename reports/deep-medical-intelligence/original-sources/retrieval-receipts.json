@@ -1,0 +1,23 @@
+[
+  {
+    "name": "cytisinicline",
+    "url": "https://download.open.fda.gov/crl/CRL_NDA218995_20260620_Redacted.pdf",
+    "sha256": "0eabc1bbdbfdb6b7f5a68208fb49edeae51949b8f29c5e24d55d32f638af8600",
+    "bytes": 1199830,
+    "status": "CAPTURED_OFFICIAL_FDA"
+  },
+  {
+    "name": "deramiocel",
+    "url": "https://download.open.fda.gov/crl/CRL_BLA125842_20250709.pdf",
+    "sha256": "67e0394f2451ae5d82d13abf77f112fce9e76b55205f5bfc1c572899f7f39af5",
+    "bytes": 103138,
+    "status": "CAPTURED_OFFICIAL_FDA"
+  },
+  {
+    "name": "relacorilant",
+    "url": "https://download.open.fda.gov/crl/CRL_NDA219398_20260128.pdf",
+    "sha256": "f07c1252e27afbc06c37cabb18a27ded3c06386486cb358c02442d0e52a69536",
+    "bytes": 942182,
+    "status": "CAPTURED_OFFICIAL_FDA"
+  }
+]

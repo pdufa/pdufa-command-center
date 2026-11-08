@@ -6,6 +6,11 @@ TOP/BOTTOM, regulatory PDUFA, RAAS component scores or clinical success odds.
 A missing source remains missing; unknown never scores zero.
 """
 from __future__ import annotations
+
+# Permanent retirement: historical functions are importable for read-only audits only.
+if __name__ == "__main__":
+    raise SystemExit("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.")
+
 import argparse
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import csv

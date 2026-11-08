@@ -8,22 +8,11 @@ const root=path.resolve(__dirname,"..");
 const source=fs.readFileSync(path.join(root,"app/PoolStageExplorer.tsx"),"utf8");
 const styles=fs.readFileSync(path.join(root,"app/FunnelWorkspace.module.css"),"utf8");
 const page=fs.readFileSync(path.join(root,"app/tools/page.tsx"),"utf8");
-test("POOL five segments have independent native disclosures and start closed",()=>{
- const keys=[...source.matchAll(/data-pool-segment="([^"]+)"/g)].map(x=>x[1]);
- assert.deepEqual(keys,["funnel","selectors","assessments","live-trials","advanced"]);
- assert.equal((source.match(/className=\{styles\.poolSegment\}/g)||[]).length,5);
- assert.equal((source.match(/className=\{styles\.poolSegmentSummary\}/g)||[]).length,5);
- assert.doesNotMatch(source,/<details[^>]*\sopen(?:\s|=|>)/);
- assert.match(page,/<details data-tools-segment="pool"/);
- assert.ok(styles.includes(".poolSegmentSummary{"));
- assert.ok(styles.includes(".poolSegment[open]>.poolSegmentSummary"));
+test("POOL source segments remain collapsed without retired assessment controls",()=>{
+const keys=[...source.matchAll(/data-pool-segment="([^"]+)"/g)].map(x=>x[1]);assert.deepEqual(keys,['funnel','selectors','live-trials','advanced']);assert.equal((source.match(/className=\{styles\.poolSegment\}/g)||[]).length,4);assert.doesNotMatch(source,/<details[^>]*\sopen(?:\s|=|>)/);
 });
 test("POOL sections stay visible without selections; research inputs remain gated",()=>{
- assert.doesNotMatch(source,/\{hasSelections&&<>\s*<details/);
- assert.match(source,/hasSelections\?<ToolsAssessmentSection/);
- assert.match(source,/hasSelections\?<div className=\{styles\.toolsFinalSpreadsheet\}/);
- assert.match(source,/hasSelections&&<ToolsResultsSpreadsheet/);
- assert.match(source,/Select a Phase or FDA designation in section 2/);
+assert.doesNotMatch(source,/ToolsAssessmentSection|ToolsBenefitMatrix/);assert.match(source,/hasSelections\?<div className=\{styles\.toolsFinalSpreadsheet\}/);assert.match(source,/hasSelections&&<ToolsResultsSpreadsheet/);
 });
 test("POOL disclosure changes do not clear saved Phase/FDA selections or search",()=>{
  assert.match(source,/setSelectedStages\(saved\.selectedStages\)/);

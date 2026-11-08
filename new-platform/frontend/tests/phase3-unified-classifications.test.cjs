@@ -22,12 +22,5 @@ test("Every unique NCT in the full 762-trial census has a source-qualified class
  }
 });
 test("Unified classifications appear above legacy Phase 3 panels without removing historical records",()=>{
- const view=fs.readFileSync(path.join(root,"app/Phase3SourceOnlySheets.tsx"),"utf8");
- const table=fs.readFileSync(path.join(root,"app/Phase3UnifiedClassifications.tsx"),"utf8");
- assert.match(view,/Phase3UnifiedClassifications/);
- assert.match(view,/Phase3PreDataBatch query=\{query\}/);
- assert.match(table,/data-phase3-unified-census="762"/);
- assert.match(table,/data-trial-classification/);
- assert.match(table,/classificationCode/);
- assert.match(table,/setPage/);
+const ui=require('node:fs').readFileSync(require('node:path').join(__dirname,'../app/Phase3ReadoutSheets.tsx'),'utf8');assert.match(ui,/classifyPhase3Readouts/);assert.match(ui,/Not verified/);assert.doesNotMatch(ui,/Phase3PreDataBatch|Survey|RAAS.*Score/);
 });

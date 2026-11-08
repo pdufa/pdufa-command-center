@@ -1,0 +1,31 @@
+name: RAAS current saved evidence read-only scan
+on:
+  pull_request:
+    paths:
+      - "scripts/raas_current_saved_data_scan.cjs"
+      - ".github/workflows/raas-current-saved-data-scan.yml"
+      - "new-platform/frontend/data/raas-*.json"
+      - "new-platform/frontend/data/tools-pool-snapshot.json"
+      - "new-platform/frontend/data/registry-benefit-research-snapshot.json"
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scan-current-saved-evidence:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Read the full saved inventory and RAAS evidence without edits or secrets
+        env:
+          RAAS_SCAN_RESULT_PATH: ${{ runner.temp }}/raas-current-saved-scan.json
+        run: node scripts/raas_current_saved_data_scan.cjs
+      - name: Upload read-only scan counts
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-current-saved-evidence-audit
+          path: ${{ runner.temp }}/raas-current-saved-scan.json
+          retention-days: 14
