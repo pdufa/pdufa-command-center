@@ -77,6 +77,7 @@ def build_queue(engine):
                 or registry_row["scientificSignoff"] is not False
                 or triage_row["scientificSignoff"] is not False):
             raise RuntimeError("Mismatched exact trial and saved original source identity")
+        reviews=ledger.trial_history(engine,nct)["reviewEvents"]
         phase=registry_row["currentRegistryPhases"]
         phase_status=registry_row["phaseAgreement"]
         posted=registry_row["registryPostedPrimaryOutcomeMeasures"]
@@ -106,9 +107,9 @@ def build_queue(engine):
             "sourceRunId":triage_row["sourceRunId"],
             "methodPositions":triage_row["methodPositions"],
             "sourceClassCounts":triage_row["sourceClassCounts"],
-            "scientificGradeStatus":"NOT_REVIEWED" if triage_row["methodsWithIndependentGrade"]==0
-                                     else "REVIEW_EVENTS_EXIST_VALIDATE_IN_LEDGER",
-            "independentlyGradedPositionsReported":triage_row["methodsWithIndependentGrade"],
+            "scientificGradeStatus":"NOT_REVIEWED" if not reviews
+                                    else "REVIEW_EVENTS_EXIST_RECONCILE_LATEST_PHASE",
+            "scientificReviewEventCount":len(reviews),
             "nextEvidenceAction":ACTIONS[category],
             "clinicalFinding":None,
             "fdaPrediction":"ABSTAIN",
