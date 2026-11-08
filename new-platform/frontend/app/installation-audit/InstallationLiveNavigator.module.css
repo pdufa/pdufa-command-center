@@ -35,3 +35,45 @@
 @media (prefers-reduced-motion: reduce) {
   .navigator * { scroll-behavior: auto !important; }
 }
+
+/* PREDICTIONS-matched, keyboard-accessible jump to a verified live worker. */
+.liveButton {
+  display: inline-flex;
+  gap: 9px;
+  align-items: center;
+  justify-content: center;
+  min-height: 43px;
+  padding: 9px 18px;
+  border: 2px solid #6af8cf;
+  border-radius: 10px;
+  background: #0b625c;
+  color: #eafffc !important;
+  font-size: 15px;
+  font-weight: 850;
+  letter-spacing: .055em;
+  box-shadow: 0 0 0 2px rgba(58,243,185,.12);
+}
+.liveButton:hover:not(:disabled) { background: #175b55; }
+.liveButton:disabled { cursor: wait; opacity: .65; }
+.liveIndicator {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #6af8cf;
+  box-shadow: 0 0 0 3px rgba(106,248,207,.15);
+}
+.liveArrow { font-size: 24px; font-weight: 900; line-height: 1; }
+.liveNotice {
+  background: #0e3740;
+  border: 1px solid #6eb1a8;
+  color: #e7f9fc;
+  padding: 10px 12px;
+  border-radius: 9px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+.cursorTarget {
+  outline: 3px solid #6af8cf;
+  outline-offset: 2px;
+  box-shadow: 0 0 0 5px rgba(69,235,186,.12);
+}
