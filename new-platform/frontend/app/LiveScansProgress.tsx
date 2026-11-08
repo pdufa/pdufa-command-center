@@ -159,6 +159,8 @@ export default function LiveScansProgress() {
   const taskStepName = taskIsBackground && task.currentStep
     ? "Supporting-evidence check in progress" : task.currentStep?.name;
   const run = report?.run;
+  const sourceOnly = run?.workflow === "pdufa-nightly-missing-sources.yml";
+  const displayRunName = sourceOnly ? "FDA / SEC / supporting-source verification" : run?.name;
   const overallStatus: RunState = run?.status || "unknown";
   const overnight = run?.workflow === "pdufa-overnight-sequential.yml" ||
     run?.workflow === "pdufa-nightly-clinical.yml";
@@ -204,7 +206,7 @@ export default function LiveScansProgress() {
         <span className={"pdufa-state pdufa-state-" + overallStatus} aria-live="polite">
           {iconFor(overallStatus)} {labelFor(overallStatus)}
         </span>
-        <strong>{run.workflow === "pdufa-nightly-missing-sources.yml" ? "FDA / SEC / supporting-source verification" : run.title}</strong>
+        <strong>{sourceOnly ? displayRunName : run.title}</strong>
         <span className="pdufa-run-meta">#{run.id} · Attempt {run.attempt}</span>
         <a href={run.url} target="_blank" rel="noopener noreferrer">View exact GitHub run ↗</a>
       </div>
@@ -228,7 +230,7 @@ export default function LiveScansProgress() {
           <div className="pdufa-current-stage">{task.count ? currentStage : overallStatus === "success" ? "Run finished" :
             overallStatus === "failure" ? "Run stopped with a failure" :
             overallStatus === "queued" ? "Waiting for GitHub runner" : "No task currently reported"}</div>
-          <div className="pdufa-current-name">{taskName || (overallStatus === "running" ? "Waiting for job-level telemetry" : run.name)}</div>
+          <div className="pdufa-current-name">{taskName || (overallStatus === "running" ? "Waiting for job-level telemetry" : displayRunName)}</div>
           <div className="pdufa-current-step">
             <span className={task.currentStep ? "pdufa-step-working" : "pdufa-step-wait"}>
               {task.currentStep ? "● RUNNING STEP" : "STEP STATUS"}
