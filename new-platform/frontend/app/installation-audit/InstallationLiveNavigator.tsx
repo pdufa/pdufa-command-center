@@ -3,6 +3,7 @@
 import {useCallback,useEffect,useMemo,useRef,useState} from "react";
 import {masterBuildTasks} from "./master-build-tasks";
 import {activeInstallationTasks} from "../../lib/installation-active-requirements";
+import styles from "./InstallationLiveNavigator.module.css";
 
 type TaskState="Verified"|"In Progress"|"Blocked"|"Failed"|"Not Started"|"Unverified";
 type TaskEvidence={
@@ -37,11 +38,11 @@ const branchNames=[
 ];
 const branchOwner=["SCIENCE","SCIENCE","SCIENCE","SCIENCE","SCIENCE","SCIENCE","OUTCOME","MAIN"];
 const palette:Record<string,string>={
- Verified:"#0c7555","In Progress":"#955c12",Blocked:"#9f3535",Failed:"#9f3535",
- "Not Started":"#53677b",Unverified:"#53677b"
+ Verified:"#6af8cf","In Progress":"#ffdc97",Blocked:"#ffb4a6",Failed:"#ff9b9b",
+ "Not Started":"#c1dfe2",Unverified:"#c1dfe2"
 };
-const panel={border:"1px solid #cbd5e1",borderRadius:10,padding:14,background:"#fff"} as const;
-const info={fontSize:13,lineHeight:1.55,color:"#475569"} as const;
+const panel={border:"1px solid #39717b",borderRadius:10,padding:14,background:"#0a2c3b",color:"#e7f9fc"} as const;
+const info={fontSize:13,lineHeight:1.55,color:"#c1dfe2"} as const;
 const idOf=(taskId:string)=>"install-task-"+taskId;
 const safeTime=(value:string|undefined|null)=>value&&Number.isFinite(Date.parse(value))?
  new Date(value).toLocaleString():"Not recorded";
@@ -105,14 +106,15 @@ export default function InstallationLiveNavigator(){
  const question=catalog?.questions.find(q=>q.id===chosenQuestion);
  const grouped=catalog?Array.from({length:8},(_,i)=>catalog.questions.filter(q=>q.layer===i+1)):[];
  return <section id="live-installation-timeline" aria-label="Past present and future installation timeline"
-   style={{...panel,margin:"18px 0",background:"#f8fafc"}}>
+   className={styles.navigator}
+   style={{...panel,margin:"18px 0",background:"radial-gradient(circle at 100% 0,#175364,transparent 42%),linear-gradient(135deg,#071824,#0b3543)"}}>
   <h2 style={{margin:"0 0 8px"}}>INSTALLATION · past / present / future</h2>
   <p style={info}>Read-only verified acceptance records and source-linked scientific planning catalog.
    Live checks refresh every 15 seconds while the page is visible. A green deployment or an “In Progress”
    registry label does not establish that Codex is executing that task.</p>
   <div style={{display:"flex",gap:10,flexWrap:"wrap",margin:"12px 0"}}>
    <button type="button" onClick={()=>{setBusy(true);void fetchData();}} disabled={busy}
-    style={{padding:"9px 12px",borderRadius:8,border:"1px solid #0f766e",background:"#0f766e",color:"#fff"}}>
+    style={{padding:"9px 12px",borderRadius:8,border:"1px solid #5aa9ae",background:"#0b625c",color:"#fff"}}>
     {busy?"Checking…":"Check installation now"}
    </button>
    <label style={{display:"flex",gap:8,alignItems:"center",fontWeight:600,fontSize:13}}>
@@ -120,8 +122,8 @@ export default function InstallationLiveNavigator(){
     Follow live execution cursor
    </label>
   </div>
-  {error&&<p role="alert" style={{color:"#991b1b"}}>{error}. Previous data may be stale.</p>}
-  <div style={{...panel,border:"2px solid #475569",marginBottom:12}}>
+  {error&&<p role="alert" style={{color:"#ffd4bb"}}>{error}. Previous data may be stale.</p>}
+  <div style={{...panel,border:"2px solid #5aa9ae",marginBottom:12}}>
    <strong>ACTIVE CURSOR</strong>
    {active?<>
     <p role="status"><strong>RUNNING: {active.taskId}</strong> · {taskList.find(t=>t.id===active.taskId)?.label}</p>
@@ -136,17 +138,17 @@ export default function InstallationLiveNavigator(){
   </div>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(155px,1fr))",gap:8,marginBottom:12}}>
    <button type="button" onClick={()=>setSection("past")}
-    aria-pressed={section==="past"} style={{...panel,textAlign:"left",borderColor:section==="past"?"#0f766e":"#cbd5e1"}}>
+    aria-pressed={section==="past"} style={{...panel,textAlign:"left",borderColor:section==="past"?"#45ebba":"#39717b"}}>
     <strong>PAST</strong><div style={{fontSize:25,fontWeight:750}}>{audit?past.length:"—"}</div>
     <small>Accepted with proof</small>
    </button>
    <button type="button" onClick={()=>setSection("present")}
-    aria-pressed={section==="present"} style={{...panel,textAlign:"left",borderColor:section==="present"?"#0f766e":"#cbd5e1"}}>
+    aria-pressed={section==="present"} style={{...panel,textAlign:"left",borderColor:section==="present"?"#45ebba":"#39717b"}}>
     <strong>PRESENT</strong><div style={{fontSize:25,fontWeight:750}}>{active?"1":"—"}</div>
     <small>{active?"Running task":"No confirmed active task"}</small>
    </button>
    <button type="button" onClick={()=>setSection("future")}
-    aria-pressed={section==="future"} style={{...panel,textAlign:"left",borderColor:section==="future"?"#0f766e":"#cbd5e1"}}>
+    aria-pressed={section==="future"} style={{...panel,textAlign:"left",borderColor:section==="future"?"#45ebba":"#39717b"}}>
     <strong>FUTURE / OPEN</strong><div style={{fontSize:25,fontWeight:750}}>{audit?future.length:"—"}</div>
     <small>Awaiting acceptance review; not all unbuilt</small>
    </button>
@@ -165,17 +167,17 @@ export default function InstallationLiveNavigator(){
     {visible.length===0&&<p style={info}>No items with independently supported status in this category.</p>}
     {visible.map(task=>{
      const row=audit?.tasks[task.id];
-     return <div key={task.id} id={idOf(task.id)} style={{padding:"9px 10px",border:"1px solid #e2e8f0",borderRadius:8,
-       background:task.id===active?.taskId?"#e0f2fe":"#fff"}}>
+     return <div key={task.id} id={idOf(task.id)} style={{padding:"9px 10px",border:"1px solid #39717b",borderRadius:8,
+       background:task.id===active?.taskId?"#145751":"#0b3040"}}>
       <button type="button" onClick={()=>setChosenTask(chosenTask===task.id?null:task.id)}
        aria-expanded={chosenTask===task.id}
-       style={{display:"flex",alignItems:"center",gap:8,textAlign:"left",width:"100%",background:"transparent",border:0,cursor:"pointer"}}>
+       style={{display:"flex",alignItems:"center",gap:8,textAlign:"left",width:"100%",background:"transparent",color:"#e7f9fc",border:0,cursor:"pointer"}}>
        <span style={{fontWeight:750,flexShrink:0,fontSize:12}}>{task.id}</span>
        <span style={{flex:1,fontSize:13}}>{task.label}</span>
        <span style={{fontSize:11,color:palette[status(row)]}}>{status(row)}</span>
        <span aria-hidden="true">ⓘ</span>
       </button>
-      {chosenTask===task.id&&<div style={{...info,padding:"10px 3px 3px",borderTop:"1px solid #e2e8f0",marginTop:8}}>
+      {chosenTask===task.id&&<div style={{...info,padding:"10px 3px 3px",borderTop:"1px solid #39717b",marginTop:8}}>
        <p><strong>Stage:</strong> {String(task.section+1).padStart(2,"0")} ·
         <strong> Last verified:</strong> {safeTime(row?.checkedAt)}</p>
        <p><strong>Explanation:</strong> {row?.note??"No accepted execution proof recorded for this requirement."}</p>
@@ -208,14 +210,14 @@ export default function InstallationLiveNavigator(){
    <p style={{fontWeight:700,margin:"10px 0"}}>Original source-defined eight question groups</p>
    {catalog?grouped.map((questions,i)=><details key={i} open={expandedBranch===i}
     onToggle={event=>{if(event.currentTarget.open)setExpandedBranch(i);}}
-    style={{border:"1px solid #e2e8f0",borderRadius:8,padding:"8px 12px",marginBottom:7}}>
+    style={{border:"1px solid #39717b",background:"#0b3040",borderRadius:8,padding:"8px 12px",marginBottom:7}}>
     <summary style={{cursor:"pointer",fontWeight:650}}>
      {i+1}. {questions[0]?.layerName??"Unknown"} · {questions.length} original questions
     </summary>
     {questions.map(q=><button type="button" key={q.id}
      onClick={()=>{setChosenQuestion(q.id);setChosenLevel(1);}}
      style={{display:"block",width:"100%",textAlign:"left",padding:"9px",margin:"4px 0",borderRadius:6,
-      border:q.id===chosenQuestion?"2px solid #0f766e":"1px solid #e2e8f0",background:"#fff"}}>
+      border:q.id===chosenQuestion?"2px solid #45ebba":"1px solid #39717b",background:q.id===chosenQuestion?"#145751":"#0a2c3b",color:"#e7f9fc"}}>
      <strong>{q.id}:</strong> {q.question}
     </button>)}
    </details>):<p role="status" style={info}>Original scientific question catalog unavailable; no fabricated definitions displayed.</p>}
@@ -230,8 +232,8 @@ export default function InstallationLiveNavigator(){
     <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
      {Array.from({length:20},(_,n)=><button type="button" key={n} onClick={()=>setChosenLevel(n+1)}
       aria-pressed={chosenLevel===n+1}
-      style={{padding:"7px 10px",borderRadius:6,border:"1px solid #64748b",
-       background:chosenLevel===n+1?"#0f766e":"#fff",color:chosenLevel===n+1?"#fff":"#10233a"}}>
+      style={{padding:"7px 10px",borderRadius:6,border:"1px solid #5aa9ae",
+       background:chosenLevel===n+1?"#0b625c":"#0a2c3b",color:chosenLevel===n+1?"#fff":"#e7f9fc"}}>
       {String(n+1).padStart(2,"0")}
      </button>)}
     </div>
