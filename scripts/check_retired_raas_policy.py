@@ -82,6 +82,7 @@ def run():
         roots.append(item)
     visited=set()
     queue=list(roots)
+    parent={}
     module_ref=re.compile(r'(?:\bfrom\s*|\bimport\s*\(?\s*|\brequire\s*\(\s*)[\'"]([^\'"]+)[\'"]')
     while queue:
         current=queue.pop()
@@ -99,9 +100,15 @@ def run():
             if target is None or not target.is_relative_to(ROOT):
                 continue
             if FORBIDDEN.search(target.stem) or "raas-" in target.as_posix().lower():
+                chain=[current]
+                while chain[-1] in parent and len(chain)<20:
+                    chain.append(parent[chain[-1]])
+                chain.reverse()
                 ERRORS.append("Active import of retired module/archive: "+
-                    str(current.relative_to(ROOT))+" -> "+str(target.relative_to(ROOT)))
+                    " → ".join(str(p.relative_to(ROOT)) for p in [*chain,target]))
+                continue  # Do not traverse into archived modules.
             if target.suffix in (".ts",".tsx",".js",".jsx") and target not in visited:
+                parent.setdefault(target,current)
                 queue.append(target)
     print("Reachable source modules checked:",len(visited))
 
