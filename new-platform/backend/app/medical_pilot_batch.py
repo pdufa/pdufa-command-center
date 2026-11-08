@@ -30,7 +30,7 @@ def requested():
     raw = os.getenv("PDUFA_MEDICAL_BATCH_NCTS", "")
     studies = [x.strip() for x in raw.split(",")]
     if (not CAMPAIGN.fullmatch(campaign) or not (1 <= len(studies) <= 3)
-            or len(set(studies)) != 3 or
+            or len(set(studies)) != len(studies) or
             any(not core.NCT.fullmatch(x) for x in studies)):
         raise ValueError("Batch gate requires one named campaign and one to three unique NCTs")
     if os.getenv("PDUFA_ANALYZE_NOW_ALL_ENABLED", "").lower() in YES:
