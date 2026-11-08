@@ -634,7 +634,36 @@ async def lifespan(app: FastAPI):
                             "PDUFA_MEDICAL_ASSESSMENT_LEDGER status=ERROR error_type=%s",
                             type(ledger_exc).__name__,
                         )
-                # Explicit isolated 3-NCT cohort; every run is campaign-idempotent.
+                # Stage 3 derives a read-only 8×5×20 review matrix from Stage-2 data.
+                # No grades, milestones, observed clinical risks, or FDA decisions are inferred.
+                if (os.getenv("PDUFA_MEDICAL_PHASE_MATRIX_ENABLED", "").lower() in ("true", "1", "yes")
+                        and getattr(app.state, "medical_assessment_ledger_ready", False)):
+                    try:
+                        from .medical_phase_matrix import coverage as phase_matrix_coverage
+                        phase_report = phase_matrix_coverage(ENGINE)
+                        app.state.medical_phase_matrix_ready = (
+                            phase_report["status"] == "READY_FOR_PHASE_REVIEW"
+                            and phase_report["sourceComplete"] == 29
+                            and phase_report["totalPotentialPositions"] == 23200
+                        )
+                        logging.getLogger(__name__).warning(
+                            "PDUFA_MEDICAL_PHASE_MATRIX status=%s "
+                            "sourceComplete=%d/29 potentialPositions=%d "
+                            "phaseVerified=%d savedReviews=%d "
+                            "scientificSignoff=False prediction=ABSTAIN certainty=NOT_VALIDATED",
+                            "PASS" if app.state.medical_phase_matrix_ready else "INCOMPLETE",
+                            phase_report["sourceComplete"],
+                            phase_report["totalPotentialPositions"],
+                            phase_report["phaseVerifiedNcts"],
+                            phase_report["savedReviewEvents"],
+                        )
+                    except Exception as matrix_exc:
+                        app.state.medical_phase_matrix_ready = False
+                        logging.getLogger(__name__).error(
+                            "PDUFA_MEDICAL_PHASE_MATRIX status=ERROR error_type=%s",
+                            type(matrix_exc).__name__,
+                        )
+                                # Explicit isolated 3-NCT cohort; every run is campaign-idempotent.
                 # No startup jobs or tables are created without the opt-in gate.
                 if os.getenv("PDUFA_MEDICAL_BATCH_AUTORUN", "").lower() in ("true", "1", "yes"):
                     try:
@@ -743,6 +772,20 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes
     install_medical_assessment_routes(app, lambda: ENGINE,
                                      require_medical_internal_key,
                                      require_medical_assessment_storage)
+
+# Phase-aware review is separately opt-in and uses ONLY authenticated GETs.
+def require_medical_phase_matrix_storage() -> None:
+    require_medical_assessment_storage()
+    if not getattr(app.state, "medical_phase_matrix_ready", False):
+        raise HTTPException(status_code=503, detail="Phase-aware scientific matrix is not ready")
+
+if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_ASSESSMENT_LEDGER_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_PHASE_MATRIX_ENABLED", "").lower() in ("1", "true", "yes")):
+    from .medical_phase_matrix import install_routes as install_medical_phase_matrix_routes
+    install_medical_phase_matrix_routes(app, lambda: ENGINE,
+                                        require_medical_internal_key,
+                                        require_medical_phase_matrix_storage)
 
 @app.get("/api/internal/medical-canary-preflight", dependencies=[Depends(require_medical_internal_key)])
 def medical_canary_preflight():
