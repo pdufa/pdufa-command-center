@@ -3,7 +3,7 @@
 This service runs after an explicit operator POST, continues independently of the browser,
 records each stage in the database, and resumes unfinished runs after service restart.
 It records evidence leads and source observations, NOT an FDA or physician decision.
-No RAAS, survey scoring, POOL/FOCUS writes, or approval probability.
+No legacy scoring, survey inputs, POOL/FOCUS writes, or approval probability.
 """
 from __future__ import annotations
 
