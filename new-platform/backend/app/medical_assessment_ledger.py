@@ -365,14 +365,32 @@ def append_review(engine, *, nct: str, run_id: str, phase_event_id: str,
             if type(index) is not int or not 0 <= index < SOURCE_RUN_STAGES:
                 raise ValueError("Source evidence must reference a recorded stage 0–11")
             url = _url(item.get("sourceUrl"))
-            document = c.execute(text("""SELECT document FROM medical_continuous_stages
-                WHERE run_id=:run AND stage_index=:idx"""),
-                {"run":run_id,"idx":index}).scalar()
-            if document is None or url not in _source_urls(json.loads(document)):
+            source_stage = c.execute(text("""SELECT document,finished_at
+                FROM medical_continuous_stages WHERE run_id=:run AND stage_index=:idx"""),
+                {"run":run_id,"idx":index}).first()
+            if source_stage is None or url not in _source_urls(json.loads(source_stage[0])):
                 raise ValueError("Source URL is not present in the immutable saved source stage")
-            captures.append({"stageIndex":index,"sourceUrl":url,
-                             "stageDocumentSha256":hashlib.sha256(
-                                 document.encode("utf-8")).hexdigest()})
+            capture = {"stageIndex":index,"sourceUrl":url,
+                       "stageDocumentSha256":hashlib.sha256(
+                           source_stage[0].encode("utf-8")).hexdigest(),
+                       "sourceCapturedAt":source_stage[1]}
+            # Human reviewer annotations are preserved with the captured
+            # source. They can never be inferred from a source-audit receipt.
+            annotation_keys = ("classification","sourceLocation","examinedFinding")
+            if any(k in item for k in annotation_keys):
+                if (item.get("classification") not in (
+                        "FAVORABLE","UNFAVORABLE","MISSING","CONTRADICTORY")
+                    or not isinstance(item.get("sourceLocation"),str)
+                    or not 5 <= len(item["sourceLocation"].strip()) <= 500
+                    or not isinstance(item.get("examinedFinding"),str)
+                    or not 40 <= len(item["examinedFinding"].strip()) <= 3000):
+                    raise ValueError("Independent source finding requires classification and precise source location")
+                capture.update({
+                    "classification":item["classification"],
+                    "sourceLocation":item["sourceLocation"].strip(),
+                    "examinedFinding":item["examinedFinding"].strip(),
+                })
+            captures.append(capture)
         previous = c.execute(text("""SELECT review_event_id,revision FROM medical_assessment_review_events
             WHERE nct_id=:nct AND verified_phase=:phase AND
             assessment_index=:assessment AND method_index=:method
