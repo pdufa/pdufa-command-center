@@ -207,8 +207,12 @@ def start_watch(engine):
         while not _WATCH_STOP.is_set():
             try:
                 check_registry_updates_once(engine)
+                # Source changes and newly operational components share this
+                # existing opt-in worker; no second polling service or scan.
+                from .medical_on_demand import check_operational_component_changes
+                check_operational_component_changes(engine)
             except Exception as exc:
-                LOG.warning("medical registry watch skipped error_type=%s",type(exc).__name__)
+                LOG.warning("medical registry/component watch skipped error_type=%s",type(exc).__name__)
             _WATCH_STOP.wait(WATCH_INTERVAL_SECONDS)
     _WATCH_THREAD=threading.Thread(target=loop,daemon=True,name="medical-registry-watch")
     _WATCH_THREAD.start()
