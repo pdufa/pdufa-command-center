@@ -7,6 +7,7 @@ const page=fs.readFileSync(path.join(root,"app/p3-post-data/page.tsx"),"utf8");
 const control=fs.readFileSync(path.join(root,"app/focus/AnalyzeNowTrial.tsx"),"utf8");
 const proxy=fs.readFileSync(path.join(root,"app/api/analyze-now/route.ts"),"utf8");
 const historyPage=fs.readFileSync(path.join(root,"app/analyze-now/history/page.tsx"),"utf8");
+const canonicalHistoryPage=fs.readFileSync(path.join(root,"app/analyze-now/page.tsx"),"utf8");
 const focus=JSON.parse(fs.readFileSync(path.join(root,"data/p3PostDataActive.json"),"utf8"));
 test("every exact eligible FOCUS row has Analyze Now plus history control",()=>{
  assert.equal(focus.records.length,29);
@@ -59,9 +60,11 @@ test("legacy optional scored archive contains the exact pilot score from real pr
 
 test("archived exact-NCT history remains reachable without active FOCUS membership",()=>{
  assert.match(page,/href="\/analyze-now\/history"/);
- assert.match(historyPage,/historyOnly/);
- assert.match(historyPage,/pattern="NCT\[0-9\]\{8\}"/);
- assert.match(historyPage,/AnalyzeNowTrial nct=\{nct\} enabled=\{false\}/);
- assert.match(historyPage,/This page never starts an analysis/);
+ assert.match(historyPage,/redirect\(nct\?/);
+ assert.match(historyPage,/\/analyze-now\?nct=/);
+ assert.match(canonicalHistoryPage,/historyOnly/);
+ assert.match(canonicalHistoryPage,/pattern="NCT\[0-9\]\{8\}"/);
+ assert.match(canonicalHistoryPage,/AnalyzeNowTrial nct=\{nct\} enabled=\{false\}/);
+ assert.match(canonicalHistoryPage,/read-only and never starts a new analysis/);
  assert.match(proxy,/Historical exact NCTs remain accessible after the trial leaves FOCUS/);
 });
