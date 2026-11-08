@@ -16,7 +16,9 @@ const card={padding:16,border:"1px solid "+line,borderRadius:12,background:"#fff
 const small={fontSize:13,lineHeight:1.6,color:muted} as const;
 const dateRange=(d:string|null)=>d||"No confirmed current goal";
 function Claim({claim}:{claim:AdjudicationClaim}){
- const label=claim.type==="FDA_REVIEWER"?"FDA reviewer analysis":
+ const label=claim.type==="FDA_ACTION_LETTER"?"Direct FDA action / CRL":
+  claim.type==="SEC_SPONSOR_FILING"?"SEC-filed sponsor evidence":
+  claim.type==="FDA_REVIEWER"?"FDA reviewer analysis":
   claim.type==="FDA_DOCUMENTED_APPLICANT_ANALYSIS"?"Applicant model recorded in FDA document":
   claim.type==="PEER_REVIEWED_TRIAL"?"Peer-reviewed clinical trial":
   claim.type==="SPONSOR_REPORT_OF_FDA_COMMUNICATION"?"Sponsor's report of FDA meeting":
@@ -75,7 +77,7 @@ export default function AdjudicationDesk(){
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(175px,1fr))",gap:10,marginTop:16}}>
      {[
        ["FDA application cycles tracked",APPLICATION_CYCLES.length],
-       ["Open deep adjudication cases",ADJUDICATION_CASES.length],
+       ["Open detailed adjudication cases",ADJUDICATION_CASES.length],
        ["Cycles with new detailed comparisons",worked],
        ["Individually documented evidence claims",published],
        ["Completed regulatory forecasts",0]
@@ -93,7 +95,8 @@ export default function AdjudicationDesk(){
       <p style={{...small,margin:0}}>{discontinuation.interpretation} These are not classified as treatment-related serious events. See the peer-reviewed SynAIRgy safety Table 6 below.</p>
    </section>
    <section style={{marginTop:15}}>
-    <h2 style={{fontSize:19}}>Current high-information adjudications</h2>
+    <h2 style={{fontSize:19}}>Source-matched high-information adjudications</h2>
+    <p style={{...small,margin:"0 0 7px"}}>Partial source review only; not completed clinical, CMC, manufacturing or FDA adjudication. Several findings drawn from one trial or document are not independent confirmations.</p>
     {ADJUDICATION_CASES.map(item=><Case key={item.id} item={item}/>)}
    </section>
    <section style={{...card,marginTop:16}}>
