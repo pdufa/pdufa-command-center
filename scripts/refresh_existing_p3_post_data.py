@@ -59,7 +59,8 @@ def grid_shift(rows):
         if len(head)<31 or head[6]!="Registry Status":
             raise ValueError("FOCUS extended layout is incomplete")
         return 3
-    if len(head)>3 and head[3]=="Registry Status":
+    if (len(head)>23 and head[3]=="Registry Status"
+            and head[4]=="Phase 3 Results Public?" and head[23]=="Market Cap USD"):
         return 0
     raise ValueError("Unknown FOCUS headers; no source writes permitted")
 
