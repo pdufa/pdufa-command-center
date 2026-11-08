@@ -6,6 +6,7 @@ import {
   FAILURE_INVESTIGATIONS, INITIAL_DECISION,
   summarizeRegistryStudy, type TrialEvidence
 } from "../../lib/medical-intelligence-preview";
+import {findingsForNct,REVIEW_COVERAGE,REVIEW_AS_OF} from "../../lib/medical-intelligence-reviewed-findings";
 
 export const metadata:Metadata={
   title:"Deep Medical Intelligence — Read-only preview | PDUFA",
@@ -53,6 +54,7 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
   const trialResults=evidence?.resultsPosted;
   const identity=evidence?("ClinicalTrials.gov exact NCT matched: "+record.nct):"Registry details not independently loaded";
   const domains=FAILURE_INVESTIGATIONS;
+  const reviewed=findingsForNct(record.nct);
   return <main style={{maxWidth:1260,margin:"24px auto",padding:"0 16px 36px",color:palette.ink,fontFamily:"system-ui,sans-serif"}}>
     <div style={{fontSize:12,letterSpacing:1,color:palette.teal,fontWeight:750}}>POOL → FOCUS → DEEP MEDICAL INTELLIGENCE → DECISION</div>
     <h1 style={{margin:"10px 0 6px",fontSize:"clamp(1.6rem,4vw,2.5rem)"}}>Deep Medical Intelligence</h1>
@@ -96,6 +98,37 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
         <Source href={focus.source}>Source FOCUS spreadsheet</Source>
       </div>
       {error&&<p role="status" style={{color:palette.red,fontSize:13}}>ClinicalTrials.gov retrieval not available: {error}. Original FOCUS identity and links remain visible; the investigation cannot be marked complete.</p>}
+    </section>
+
+    <section style={panel} aria-label="Source-adjudicated findings">
+      <div style={{display:"flex",justifyContent:"space-between",gap:12,flexWrap:"wrap",alignItems:"baseline"}}>
+        <h2 style={{marginTop:0,marginBottom:4}}>Documented FDA and clinical findings</h2>
+        <span style={small}>Research snapshot: {REVIEW_AS_OF}</span>
+      </div>
+      <p style={small}><strong>{REVIEW_COVERAGE.reviewedNcts} of {rows.length} FOCUS trials</strong> currently have manually curated source-backed findings across {REVIEW_COVERAGE.reviewedPrograms} application/indication programs. There are {REVIEW_COVERAGE.documentedFindings} findings in the source ledger. Other dossiers still need substantive review. Findings are not equivalent to completed assessments or predictions.</p>
+      {reviewed.length ? <>
+        <p style={{fontSize:14}}><strong>{reviewed.length} published findings</strong> associated with {record.nct}. Each preserves its source type, FDA relevance, contrary evidence, and the next question to resolve.</p>
+        <div style={{display:"grid",gap:9}}>
+          {reviewed.map((f,i)=><details key={f.id} open={i===0}
+            style={{border:"1px solid "+(f.type==="REGULATORY_OBJECTION"||f.type==="PREVIOUS_CRL"?"#c8988f":palette.line),borderRadius:10,padding:"13px 15px",background:"#fff"}}>
+            <summary style={{cursor:"pointer",fontWeight:700,fontSize:15}}>
+              <span style={{display:"block",fontSize:12,fontWeight:600,color:f.type==="REGULATORY_OBJECTION"||f.type==="PREVIOUS_CRL"?palette.red:palette.muted,marginBottom:4}}>{f.type.replace(/_/g," ")} · {f.evidence.replace(/_/g," ")} · {f.published}</span>
+              {f.headline}
+            </summary>
+            <div style={{fontSize:14,lineHeight:1.55,paddingTop:12}}>
+              <p style={{margin:"0 0 9px"}}><strong>Published evidence:</strong> {f.detail}</p>
+              <p style={{margin:"0 0 9px"}}><strong>FDA consequence / interpretation:</strong> {f.fdaRelevance}</p>
+              <p style={{margin:"0 0 9px"}}><strong>Counterevidence or limitation:</strong> {f.counterpoint}</p>
+              <p style={{margin:"0 0 9px"}}><strong>Still to investigate:</strong> {f.remainingQuestion}</p>
+              <p style={{margin:0}}><Source href={f.sourceUrl}>{f.sourceTitle}</Source></p>
+            </div>
+          </details>)}
+        </div>
+        <p style={{...small,marginBottom:0}}>Note: Confirmed historical CRLs, documented FDA objections, sponsor statements, and reported extensions are distinguished from new unresolved FDA deficiencies. No historical event is automatically treated as a future CRL prediction.</p>
+      </>:<div style={{background:palette.cream,padding:14,borderRadius:8}}>
+        <strong>Source review not yet completed for this NCT.</strong>
+        <p style={{...small,marginBottom:0}}>The registry and FOCUS source links remain available. Do not mistake absence of reviewed findings for an absence of safety, clinical or FDA risks.</p>
+      </div>}
     </section>
 
     <section style={panel}>
