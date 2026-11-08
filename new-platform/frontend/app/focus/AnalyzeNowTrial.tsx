@@ -22,7 +22,7 @@ type Run={
  analysis:SavedAnalysis|null;revision:number|null;savedAt:string|null;
 };
 type History={nct:string;historyKey:string;locationIndependent:boolean;total:number;
- records:{runId:string;revision:number;savedAt:string;evidenceChanged:boolean;analysis:SavedAnalysis|null}[]};
+ records:{runId:string;revision:number|null;status?:string;savedAt:string;evidenceChanged:boolean;analysis:SavedAnalysis|null}[]};
 const border="#cadae0",dim="#586e62",teal="#00695a";
 const caption={fontSize:12,color:dim,lineHeight:1.45} as const;
 function asScore(v:number|null){return typeof v==="number"?v.toFixed(1)+" / 100":"Not available";}
@@ -140,7 +140,7 @@ export default function AnalyzeNowTrial({nct,enabled,historyOnly=false}:{nct:str
    </summary>
    {history.records.length===0&&<p style={caption}>No completed saved reports. A pending run is not yet a historical analysis.</p>}
    {history.records.map(h=><details key={h.runId} style={{borderTop:"1px solid "+border,padding:"6px 0"}}>
-    <summary style={{cursor:"pointer",fontSize:12}}>#{h.revision} · {h.savedAt} · evidence {h.evidenceChanged?"changed":"unchanged"}</summary>
+    <summary style={{cursor:"pointer",fontSize:12}}>{h.revision===null?(h.status??"PENDING")+" · initial report":"#"+h.revision} · {h.savedAt} · {h.revision===null?"awaiting final source revision":h.evidenceChanged?"evidence changed":"evidence unchanged"}</summary>
     {h.analysis?<Report a={h.analysis}/>:<p style={caption}>Older source-only revision retained; optional Analyze Now report did not exist for this run.</p>}
    </details>)}
   </details>}
