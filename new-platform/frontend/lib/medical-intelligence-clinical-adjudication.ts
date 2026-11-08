@@ -7,7 +7,7 @@ import {APPLICATION_CYCLES} from "./medical-intelligence-applications";
 import {ADDITIONAL_ADJUDICATION_CASES} from "./medical-intelligence-clinical-adjudication-extra";
 import {ADJUDICATION_WAVE_A} from "./medical-intelligence-clinical-adjudication-wave-a";
 import {ADJUDICATION_WAVE_B} from "./medical-intelligence-clinical-adjudication-wave-b";
-export type ClaimSourceType="FDA_REVIEWER"|"FDA_ACTION_LETTER"|"FDA_DOCUMENTED_APPLICANT_ANALYSIS"|"SEC_SPONSOR_FILING"|"SPONSOR_TRIAL_DATA"|"SPONSOR_REPORT_OF_FDA_COMMUNICATION"|"SPONSOR_STATUS"|"PEER_REVIEWED_TRIAL"|"FDA_PUBLIC_APPROVAL";
+export type ClaimSourceType="FDA_REVIEWER"|"FDA_ACTION_LETTER"|"FDA_DOCUMENTED_APPLICANT_ANALYSIS"|"SEC_SPONSOR_FILING"|"SPONSOR_TRIAL_DATA"|"SPONSOR_REPORT_OF_FDA_COMMUNICATION"|"SPONSOR_STATUS"|"PEER_REVIEWED_TRIAL"|"FDA_PUBLIC_APPROVAL"|"CONFERENCE_ABSTRACT";
 export type EvidenceRole="FAVORABLE"|"CHALLENGING"|"CONTEXT";
 export type AdjudicationClaim={
  id:string;role:EvidenceRole;type:ClaimSourceType;date:string;title:string;url:string;scope?:"RELATED_EXTERNAL_TRIAL";
