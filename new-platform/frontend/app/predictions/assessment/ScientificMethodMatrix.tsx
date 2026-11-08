@@ -5,6 +5,7 @@ import ScientificInstallationStatus from "./ScientificInstallationStatus";
 import PhaseVerificationPanel from "./PhaseVerificationPanel";
 import PilotPredictionWorkup from "./PilotPredictionWorkup";
 import LivePredictionMonitor from "./LivePredictionMonitor";
+import {buildClinicalReviewRegisterCsv} from "../../../lib/medical-review-register";
 
 const panel = {border: "1px solid #a8c9bc", borderRadius: 9, padding: 14, margin: "12px 0"} as const;
 function SourceLinks({sources}: {sources: Evidence[]}) {
@@ -52,13 +53,14 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
   const [showAllScores, setShowAllScores] = useState(false);
   const [loadingAllScores, setLoadingAllScores] = useState(false);
   const [scoreLoadProgress, setScoreLoadProgress] = useState(0);
+  const [exportError, setExportError] = useState("");
   const pending = useRef(new Set<number>());
   const firstAssessment = useRef<HTMLDetailsElement|null>(null);
   const controller = useRef<AbortController | null>(null);
   useEffect(() => {
     setReview(null); setCatalog(null); setDetails({}); setErrors({}); setError(""); setLoading(true);
     setRefreshing(false); setLastCheckedAt(null); setLastChange(null); lastSnapshotRef.current=null;
-    setShowAllScores(false); setLoadingAllScores(false); setScoreLoadProgress(0); pending.current.clear();
+    setShowAllScores(false); setLoadingAllScores(false); setScoreLoadProgress(0); setExportError(""); pending.current.clear();
     const abort = new AbortController(); controller.current = abort;
     let inFlight = false;
     let disposed = false;
@@ -152,7 +154,7 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
   }
   async function openAllScores() {
     if (showAllScores) {setShowAllScores(false); return;}
-    setShowAllScores(true);
+    setShowAllScores(true); setExportError("");
     if (loadingAllScores) return;
     setLoadingAllScores(true);
     try {
@@ -165,6 +167,21 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
         setScoreLoadProgress(Math.min(40, start + 3));
       }
     } finally {setLoadingAllScores(false);}
+  }
+  function exportClinicalRegister(){
+    if (!review || !catalog || error || loadingAllScores) return;
+    setExportError("");
+    try {
+      const csv=buildClinicalReviewRegisterCsv(catalog,review,details);
+      const url=URL.createObjectURL(new Blob([csv],{type:"text/csv;charset=utf-8"}));
+      const anchor=document.createElement("a");
+      anchor.href=url;
+      anchor.download="MAIN-independent-method-review-"+nct+".csv";
+      document.body.appendChild(anchor);anchor.click();anchor.remove();
+      window.setTimeout(()=>URL.revokeObjectURL(url),1000);
+    } catch(e) {
+      setExportError(e instanceof Error?e.message:"Method register export could not be verified");
+    }
   }
   function openFirstMethods(){
     const row=firstAssessment.current;
@@ -249,6 +266,16 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
                 <p role="alert">Assessment records unavailable: {errors[assessment.assessmentIndex]}</p> : null}
             </section>;
           })}
+          <button type="button" onClick={exportClinicalRegister}
+            disabled={loadingAllScores || Object.keys(details).length!==40 || Object.values(errors).some(Boolean)}
+            style={{padding:"10px 13px",border:"1px solid #218169",background:"#dbf7e9",
+              color:"#154c3f",borderRadius:8,fontWeight:800,margin:"8px 0"}}>
+            Export all 800 reviewer method records (CSV)
+          </button>
+          <p style={{fontSize:12,margin:"4px 0"}}>Available only after all 40 authenticated assessment records load.
+            Exports independently recorded current grades, reviewer references, sources and evidence gaps;
+            blank grades remain blank. This does not run scoring or issue an FDA forecast.</p>
+          {exportError ? <p role="alert">Export blocked: {exportError}</p> : null}
           <p>Legend: N/R = not reviewed; N/A = explicitly not applicable; VERIFY = phase unverified;
              STALE = earlier-phase review; RETRACT = grade retracted; … = review not loaded.
              A score of 0/5 is a genuine reviewer grade, never a missing-data substitute.</p>
