@@ -28,6 +28,11 @@ ACTIVE=[
         "app/analyze-now/page.tsx","app/api/analyze-now/route.ts",
         "app/api/main/installation-progress/route.ts",
         "lib/main-install-progress.ts",
+        "lib/phase-first-report.ts","lib/phase-first-clinical.ts",
+        "app/phase-first/PhaseFirstTable.tsx",
+        "app/api/phase-first/route.ts",
+        "app/api/phase3-active-trial-scores/route.ts",
+        "app/predictions/page.tsx",
     )
 ]
 # Cover every current Next.js page except explicitly retired paths,
