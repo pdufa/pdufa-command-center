@@ -65,6 +65,11 @@ def run() -> dict:
     if result.get("ctNumber") != TRIAL:
         raise ValueError("EXACT_EU_TRIAL_ID_MISMATCH")
     docs = gather_documents(result)
+    related = [v for v in docs if any(t in str(v.get("title","")).lower() for t in
+                ("statist", "analysis plan", "sap", "protocol"))]
+    print("CTIS_INFO potential SAP/protocol document titles: " +
+          json.dumps([{"title":d["title"],"version":d.get("version") or d.get("versionNumber")}
+                      for d in related][:18], ensure_ascii=True))
     print("CTIS_INFO retrieved trial keys: " + ", ".join(sorted(result.keys())[:20]))
     print("CTIS_INFO public document records in retrieved trial: " + str(len(docs)))
     print("CTIS_INFO exact published protocol title matches: " + str(sum(1 for v in docs if v["title"] == NAME)))
@@ -129,6 +134,27 @@ def run() -> dict:
                 )
             }
             details["machine_readable_text_bytes"] = text_file.stat().st_size
+            normalized = " ".join(text.split())
+            details["first_page_identity_preview"] = normalized[:360]
+            terms = (
+                "statistical analysis plan", "protocol amendment", "amendment 4", "amendment no",
+                "analysis populations", "estimand", "intercurrent event",
+                "missing data", "randomization", "multiplicity", "sample size",
+                "kansas city cardiomyopathy", "peak oxygen uptake", "pvo2", "36 weeks",
+                "heart failure", "ejection fraction", "primary efficacy",
+            )
+            details["protocol_topic_locations"] = []
+            for term in terms:
+                position = normalized.find(term)
+                details["protocol_topic_locations"].append({
+                    "topic":term,
+                    "found":position>=0,
+                    "context_excerpt":normalized[max(0,position-60):position+130] if position>=0 else None,
+                })
+            print("CTIS_PDF_INFO identity_excerpt=" + repr(details["first_page_identity_preview"]))
+            for entry in details["protocol_topic_locations"]:
+                if entry["found"]:
+                    print("CTIS_PDF_TOPIC " + entry["topic"] + " = " + repr(entry["context_excerpt"][:170]))
             # Do not upload extracted copyrighted text as an artifact.
             text_file.unlink()
     return details
