@@ -42,10 +42,15 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
   const [errors, setErrors] = useState<Record<number, string>>({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [showAllScores, setShowAllScores] = useState(false);
+  const [loadingAllScores, setLoadingAllScores] = useState(false);
+  const [scoreLoadProgress, setScoreLoadProgress] = useState(0);
   const pending = useRef(new Set<number>());
   const firstAssessment = useRef<HTMLDetailsElement|null>(null);
   const controller = useRef<AbortController | null>(null);
   useEffect(() => {
+    setReview(null); setCatalog(null); setDetails({}); setErrors({}); setError(""); setLoading(true);
+    setShowAllScores(false); setLoadingAllScores(false); setScoreLoadProgress(0); pending.current.clear();
     const abort = new AbortController(); controller.current = abort;
     fetch("/api/predictions/medical-matrix?nct=" + encodeURIComponent(nct), {cache: "no-store", signal: abort.signal})
       .then(async response => {
@@ -73,6 +78,22 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
       if (!controller.current?.signal.aborted) setErrors(previous => ({...previous, [index]: e instanceof Error ? e.message : "Method evidence unavailable"}));
     } finally {pending.current.delete(index);}
   }
+  async function openAllScores() {
+    if (showAllScores) {setShowAllScores(false); return;}
+    setShowAllScores(true);
+    if (loadingAllScores) return;
+    setLoadingAllScores(true);
+    try {
+      // The read-only backend serves one assessment per request. Use bounded concurrency,
+      // and never infer a grade from a catalog position or absent review record.
+      for (let start = 1; start <= 40; start += 4) {
+        await Promise.all(Array.from({length: Math.min(4, 41 - start)}, (_, offset) =>
+          loadAssessment(start + offset)));
+        if (controller.current?.signal.aborted) break;
+        setScoreLoadProgress(Math.min(40, start + 3));
+      }
+    } finally {setLoadingAllScores(false);}
+  }
   function openFirstMethods(){
     const row=firstAssessment.current;
     if(!row)return;
@@ -99,6 +120,64 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
       <p>Recorded current-phase method grades: <strong>{review.counts.SCORED} / 800</strong> · Explicit exclusions: {review.counts.NOT_APPLICABLE} · Remaining: {800 - review.counts.SCORED - review.counts.NOT_APPLICABLE}</p>
       <progress aria-label="Recorded current-phase method review positions" max={800} value={review.counts.SCORED + review.counts.NOT_APPLICABLE} />
       <p>Historical review events: {review.historicalReviewEvents} · Recorded gap events: {review.recordedGapEvents}</p>
+      <section style={{...panel, background: "#edf6f1"}} aria-label="All 800 scientific method score positions">
+        <h3>All 800 individual scientific scores</h3>
+        <p><strong>{review.counts.SCORED} / 800</strong> current-phase evidence-backed grades.
+          Unreviewed, unverified, retracted and stale methods have no numeric grade; not-applicable methods are excluded.</p>
+        <button type="button" onClick={() => void openAllScores()}
+          style={{padding: "12px 14px", border: "1px solid #218169", background: "#dbf7e9",
+            color: "#154c3f", borderRadius: 9, fontWeight: 800}}>
+          {showAllScores ? "Hide complete score register" : "Open all 800 score positions"}
+        </button>
+        {showAllScores ? <div>
+          <p role="status">{loadingAllScores
+            ? "Loading method records: " + scoreLoadProgress + " / 40 assessments checked"
+            : "Records loaded for " + Object.keys(details).length + " / 40 assessments. Blank values are not zero."}</p>
+          {catalog.assessments.map(assessment => {
+            const loaded = details[assessment.assessmentIndex];
+            return <section key={assessment.assessmentIndex} style={{margin: "12px 0",
+              border: "1px solid #a8c9bc", borderRadius: 9, padding: 10}}>
+              <strong>Assessment {assessment.assessmentIndex}: {assessment.label}</strong>
+              <div style={{display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(78px, 1fr))",
+                gap: 5, marginTop: 8}}>
+                {assessment.methods.map(method => {
+                  const record = loaded?.methods?.[method.methodIndex - 1];
+                  const score = !record ? "…" : record.grade !== null ? record.grade + "/5" :
+                    record.status === "NOT_APPLICABLE" ? "N/A" :
+                    record.status === "VERIFY_PHASE" ? "VERIFY" :
+                    record.status === "STALE_PHASE" ? "STALE" :
+                    record.status === "RETRACTED" ? "RETRACT" : "N/R";
+                  return <a key={method.methodIndex}
+                    href={"#scientific-method-" + assessment.assessmentIndex + "-" + method.methodIndex}
+                    aria-label={"Assessment " + assessment.assessmentIndex + ", method " + method.methodIndex +
+                      ", " + method.method + ": " + (record?.status ?? "NOT_LOADED") +
+                      ", grade " + (record?.grade === null || !record ? "not scored" : record.grade + " out of 5")}
+                    onClick={() => {
+                      const section = document.getElementById("scientific-assessment-" + assessment.assessmentIndex);
+                      if (section instanceof HTMLDetailsElement) section.open = true;
+                      const item = document.getElementById("scientific-method-" +
+                        assessment.assessmentIndex + "-" + method.methodIndex);
+                      if (item instanceof HTMLDetailsElement) item.open = true;
+                    }}
+                    title={method.method + " · " + (record?.status ?? "NOT_LOADED")}
+                    style={{display: "block", padding: "8px 4px", border: "1px solid #b4cfc2",
+                      borderRadius: 6, textAlign: "center", color: "#154c3f", textDecoration: "none",
+                      background: record?.grade !== null && record?.grade !== undefined ? "#d8efe2" : "#ffffff"}}>
+                    <span style={{display: "block", fontSize: 11}}>M{method.methodIndex}</span>
+                    <strong>{score}</strong>
+                  </a>;
+                })}
+              </div>
+              {errors[assessment.assessmentIndex] ?
+                <p role="alert">Assessment records unavailable: {errors[assessment.assessmentIndex]}</p> : null}
+            </section>;
+          })}
+          <p>Legend: N/R = not reviewed; N/A = explicitly not applicable; VERIFY = phase unverified;
+             STALE = earlier-phase review; RETRACT = grade retracted; … = review not loaded.
+             A score of 0/5 is a genuine reviewer grade, never a missing-data substitute.</p>
+        </div> : null}
+      </section>
+
       {review.gradingPolicy ? <details style={panel}><summary>Scientific grading rubric · {review.gradingPolicy.status}</summary>
         <p>{review.gradingPolicy.version} · {review.gradingPolicy.normalization.formula}</p>
         <ul>{review.gradingPolicy.anchors.map(anchor => <li key={anchor.grade}>{anchor.grade} / 5: {anchor.meaning}</li>)}</ul>
@@ -113,6 +192,7 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
         const row = review.assessments[i], detail = details[assessment.assessmentIndex];
         return <details key={assessment.assessmentIndex} ref={i===0?firstAssessment:undefined}
           id={i===0?"first-scientific-assessment":undefined}
+          id={"scientific-assessment-" + assessment.assessmentIndex}
           style={{...panel,scrollMarginTop:90}} onToggle={event => {if (event.currentTarget.open) void loadAssessment(assessment.assessmentIndex);}}> 
           <summary><strong>Layer {assessment.layerId} · {assessment.assessmentId} {assessment.label}</strong> · {row.status} · {row.reviewedMethods} scored / 20 · {row.scoreOutOf100 === null ? "Unscored" : row.scoreOutOf100 + " / 100 evidence strength"}</summary>
           <p>{assessment.objective}</p>
@@ -120,7 +200,8 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
           <p>{row.pendingMethods} pending · {row.excludedMethods} explicitly excluded</p>
           {errors[assessment.assessmentIndex] ? <p role="alert">{errors[assessment.assessmentIndex]} <button type="button" onClick={() => void loadAssessment(assessment.assessmentIndex)}>Retry evidence</button></p> : null}
           {!detail && !errors[assessment.assessmentIndex] ? <p role="status">Loading 20 method records…</p> : null}
-          {assessment.methods.map(method => <details key={method.methodIndex} style={panel}>
+          {assessment.methods.map(method => <details key={method.methodIndex}
+            id={"scientific-method-" + assessment.assessmentIndex + "-" + method.methodIndex} style={panel}>
             <summary>Method {method.methodIndex}: {method.method} · {detail?.methods?.[method.methodIndex - 1]?.status ?? "Evidence not loaded"} · Priority {method.priorityRank ?? "Verify phase"}</summary>
             <p>{method.methodDescription}</p><p>Required sources: {method.requiredSources}</p>
             {detail?.methods?.[method.methodIndex - 1] ? <MethodEvidence method={detail.methods[method.methodIndex - 1]} /> : <p>Method evidence not loaded. No score assigned.</p>}
