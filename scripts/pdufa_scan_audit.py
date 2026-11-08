@@ -18,7 +18,7 @@ from pathlib import Path
 REPO = "pdufa/pdufa-command-center"
 SCANS = {"2": ("PIPELINE — trial inventory", "all_phase_scan_state.json"),
          "3": ("PIPELINE — clinical enrichment", "phase_pipeline_state.json"),
-         "4": ("PHASE 3 RESULTS — posted readout", "phase3_intake_status.json")}
+         "4": ("FOCUS — published Phase 3 results", "phase3_intake_status.json")}
 MISSING_FAMILIES = [
     "FDA regulatory decision/date verification",
     "SEC financing and dilution verification",
