@@ -74,6 +74,14 @@ class RetirementGuardTests(unittest.TestCase):
         self.assertIn('RETIRED_API_REQUEST', self.kinds())
         self.assertIn('RETIRED_ACTIVE_ANALYSIS_OUTPUT', self.kinds())
 
+    def test_active_controls_and_automated_sheet_prompts_cannot_reactivate_raas(self):
+        self.write('new-platform/frontend/app/page.tsx', 'export default function Page(){return "Open RAAS (search NCT)";}')
+        self.write('scripts/refresh_focus.py', 'row={18:"Run RAAS"}\n')
+        self.write('.github/workflows/source-sync.yml', 'on: [push]\njobs:\n  refresh:\n    steps:\n      - run: python scripts/refresh_focus.py\n')
+        violations = [v for v in self.audit()['violations'] if v['kind'] == 'RETIRED_ACTIVE_CONTROL']
+        self.assertEqual({v['path'] for v in violations}, {
+            'new-platform/frontend/app/page.tsx', 'scripts/refresh_focus.py'})
+
     def test_import_free_retirement_tombstone_is_allowed(self):
         self.write('new-platform/frontend/app/raas-review/page.tsx', 'export default function Page(){return "RAAS permanently retired; historical records are read-only.";}')
         self.write('new-platform/frontend/app/api/raas-review/route.ts', 'export function GET(){return Response.json({error:"RAAS retired"},{status:410});}')

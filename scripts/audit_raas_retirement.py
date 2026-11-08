@@ -27,6 +27,7 @@ JS_DYNAMIC = re.compile(r'\b(?:require|import)\s*\(([^)]+)\)')
 RETIRED_CALL = re.compile(r'\b(?:raas[A-Z_][A-Za-z0-9_]*|RAAS_[A-Za-z0-9_]+|[A-Za-z_]*(?:Raas|RAAS)(?:Score|Rating|Grade|Prediction)[A-Za-z0-9_]*)\s*\(')
 RETIRED_OUTPUT = re.compile(r'''["']?(?:raasScore|raasRating|raasPredictionConfidence|approvedRaas|raas_score|raas_rating|raas_prediction)["']?\s*[:=]''', re.I)
 RETIRED_REQUEST = re.compile(r'''\b(?:fetch|axios\.(?:get|post|put|delete)|requests\.(?:get|post|put|delete))\s*\(\s*["']([^"']*(?:/api/raas[-/]|/api/raas\b)[^"']*)["']''', re.I)
+RETIRED_CONTROL = re.compile(r'''["'](?:Open|Run|Calculate|Install|Recalculate|Launch|Start)\s+RAAS\b[^"'\n]*["']''', re.I)
 
 
 def relative(path: Path, root: Path) -> str:
@@ -263,6 +264,8 @@ def audit(root: Path = ROOT, check_policy: bool = True) -> dict:
             add('RETIRED_ACTIVE_ANALYSIS_OUTPUT', path, match.group(0), chain)
         for match in RETIRED_REQUEST.finditer(clean):
             add('RETIRED_API_REQUEST', path, match.group(1), chain)
+        for match in RETIRED_CONTROL.finditer(clean):
+            add('RETIRED_ACTIVE_CONTROL', path, match.group(0), chain)
         dependencies, dynamic = imports(path, root)
         for expression in dynamic:
             add('RETIRED_DYNAMIC_IMPORT', path, expression, chain)

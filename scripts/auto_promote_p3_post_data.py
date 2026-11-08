@@ -217,8 +217,9 @@ def evaluate(catalog, caps, census, pool_ids, existing, cutoff, phase3_check=reg
                   3:status, 4:"YES - company/SEC/journal", 5:result_event.isoformat(),
                   6:"https://clinicaltrials.gov/study/" + nct, 7:day, 8:now,
                   9:"PRIMARY_PUBLIC_ISSUER_DISCLOSURE", 10:"P3 automatic verified-source intake",
-                  11:0, 13:30, 14:0, 16:"NOT YET SCORED", 17:day,
-                  18:"Open RAAS (search NCT)", 19:regulatory["status"],
+                  # Legacy rating columns 11..18 intentionally remain blank.
+                  # New source rows must never initialize retired scores or controls.
+                  19:regulatory["status"],
                   20:description, 21:regulatory["source"], 22:regulatory["asOf"],
                   23:int(value), 24:check_day.isoformat(), 25:regulatory["display"],
                   26:result["source_url"], 27:cap["market_cap_source"]}

@@ -21,7 +21,7 @@
     "failed": 0
   },
   "rootRetirementTests": {
-    "passed": 22,
+    "passed": 23,
     "failed": 0
   },
   "archivedObsoleteAcceptanceSpecifications": 98,
@@ -29,7 +29,7 @@
     "status": 0
   },
   "browserLocal": {
-    "base": "http://localhost:3011",
+    "base": "http://127.0.0.1:3012",
     "retiredEndpointsVerified": 18,
     "readOnlyArchiveVerified": true,
     "originalHistoricalRecordsPreserved": true,

@@ -20,6 +20,9 @@ installation requirements.
 - Preserve historical RAAS observations, scores, versions, dates and audit
   records as read-only archives. Do not delete them as a substitute for removing
   active dependencies. Do not write new RAAS histories or update old values.
+- Source ingestion may preserve legacy spreadsheet columns, but must leave
+  retired rating fields blank for new rows. Never insert default grades,
+  "not yet scored" statuses or prompts to open the retired system.
 - Retained historical source/code references are not permission to execute an
   archived analysis. A successful build or a cancellation flag is not proof of
   retirement: audit active entry points and their transitive dependencies.

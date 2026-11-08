@@ -1,10 +1,12 @@
 """P3 exact-NCT eligibility tests against the reviewed issuer evidence catalog."""
+import copy
 import importlib.util
 import json
 import sys
 import unittest
 from datetime import date, timedelta
 from pathlib import Path
+from unittest.mock import patch
 
 ROOT=Path(__file__).resolve().parents[1]
 SCRIPT=ROOT/"scripts/auto_promote_p3_post_data.py"
@@ -12,7 +14,8 @@ spec=importlib.util.spec_from_file_location("p3_gate",SCRIPT)
 gate=importlib.util.module_from_spec(spec)
 sys.modules[spec.name]=gate
 spec.loader.exec_module(gate)
-CUTOFF=date(2026,11,7)
+FIXTURE=json.loads((ROOT/"tests/fixtures/p3_regulatory_source_snapshot_20261107.json").read_text())
+CUTOFF=date.fromisoformat(FIXTURE["asOf"])
 
 class RegulatoryTests(unittest.TestCase):
     def test_four_evidence_stages_have_distinct_statuses(self):
@@ -46,27 +49,32 @@ class RegulatoryTests(unittest.TestCase):
         item["regulatory_path"]["planned_filing_period"]="2025"
         self.assertIsNone(gate.classify_regulatory_path(item,CUTOFF,CUTOFF)[0])
 
-    def test_source_catalog_yields_four_qualified_candidates_and_keeps_izar_for_review(self):
-        catalog=json.loads((ROOT/"new-platform/backend/app/phase3_curated_announcements.json").read_text())
+    def test_reviewed_source_snapshot_yields_four_candidates_and_keeps_izar_for_review(self):
+        catalog=copy.deepcopy(FIXTURE["catalog"])
         cases={k:v for k,v in catalog["cases"].items() if "|CLDX|" in k or "|MLTX|" in k}
         self.assertEqual(len(cases),4)
         ncts={v["nctId"] for v in cases.values()}
         self.assertEqual(ncts,{"NCT06445023","NCT06455202","NCT06411899","NCT06411379"})
         self.assertEqual(sorted(v["regulatory_path"]["stage"] for v in cases.values()),
                          ["PLANNED","PLANNED","SUBMITTED","SUBMITTED"])
-        caps=[x for x in gate.load_csv(ROOT/"data/phase_pipeline_market_caps.csv")
-              if x["ticker"] in {"CLDX","MLTX"}]
-        census=[x for x in gate.load_csv(ROOT/"data/phase3_all_years_300m_10b_trials.csv")
-                if x["nct_id"] in ncts]
+        # Live ledgers can refresh after this snapshot cutoff. Freeze their
+        # actual dated observations, rather than weakening the future-date gate.
+        caps=copy.deepcopy(FIXTURE["caps"])
+        census=copy.deepcopy(FIXTURE["census"])
         self.assertEqual(len(census),4)
         pool={x["nct_id"]:x["ticker"] for x in census}
         selected={"schemaVersion":catalog["schemaVersion"],"cases":cases}
-        additions,review=gate.evaluate(selected,caps,census,pool,set(),CUTOFF,
-                                      phase3_check=lambda n:"COMPLETED")
+        with patch.object(gate,"load_csv",return_value=FIXTURE["discoveries"]):
+            additions,review=gate.evaluate(selected,caps,census,pool,set(),CUTOFF,
+                                          phase3_check=lambda n:"COMPLETED")
         self.assertEqual({a["nct"] for a in additions},ncts)
         for a in additions:
             self.assertEqual(a["values"][15],"")
-            self.assertEqual(a["values"][16],"NOT YET SCORED")
+            self.assertEqual(a["values"][16],"")
+            self.assertEqual(a["values"][11:19],[""]*8)
+            self.assertEqual(a["values"][6],"https://clinicaltrials.gov/study/"+a["nct"])
+            self.assertTrue(gate.link_ok(a["values"][21]))
+            self.assertTrue(gate.link_ok(a["values"][26]))
             self.assertTrue(300_000_000<=a["values"][23]<=10_000_000_000)
             if a["ticker"]=="CLDX":
                 self.assertIn("filing planned 2027",a["values"][25])
@@ -74,6 +82,21 @@ class RegulatoryTests(unittest.TestCase):
                 self.assertIn("submitted 2026-09-30",a["values"][25])
         self.assertIn("p=0.053",next(a for a in additions if a["nct"]=="NCT06411379")["values"][20])
         self.assertIn("NCT06641076",{r["nct"] for r in review})
+
+    def test_market_caps_after_the_snapshot_cutoff_still_fail_closed(self):
+        caps=copy.deepcopy(FIXTURE["caps"])
+        for cap in caps:
+            cap["market_cap_checked_at"]=(CUTOFF+timedelta(days=1)).isoformat()+"T00:00:00+00:00"
+        census=FIXTURE["census"]
+        pool={row["nct_id"]:row["ticker"]for row in census}
+        with patch.object(gate,"load_csv",return_value=FIXTURE["discoveries"]):
+            additions,review=gate.evaluate(FIXTURE["catalog"],caps,census,pool,set(),CUTOFF,
+                                          phase3_check=lambda n:"COMPLETED")
+        self.assertEqual(additions,[])
+        target_ids={item["nctId"]for item in FIXTURE["catalog"]["cases"].values()}
+        rejected=[r for r in review if r["nct"]in target_ids]
+        self.assertEqual(len(rejected),4)
+        self.assertTrue(all("CAP_NOT_CURRENT_VERIFIED_300M_10B"in r["reasons"]for r in rejected))
 
     def test_master_pool_is_not_the_empty_local_csv(self):
         self.assertEqual(gate.master_pool_identity([["ticker","company","nct_id"],
