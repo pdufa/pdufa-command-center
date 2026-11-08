@@ -78,3 +78,26 @@ test("LIVE arrow refreshes the current execution position before jumping",()=>{
  assert.match(ui,/kind:cursor\?"live":documented\?"documented":"status"/);
  assert.doesNotMatch(ui,/status\(row\)==="In Progress".*setLiveJump/);
 });
+
+
+test("installation timeline and scientific assessments collapse under independent carets",()=>{
+ const css=fs.readFileSync(path.join(app,"installation-audit/InstallationLiveNavigator.module.css"),"utf8");
+ assert.match(ui,/const \[installationExpanded,setInstallationExpanded\]=useState\(false\)/);
+ assert.match(ui,/aria-expanded=\{installationExpanded\} aria-controls="installation-tracker-details"/);
+ assert.match(ui,/onClick=\{\(\)=>setInstallationExpanded\(open=>!open\)\}/);
+ assert.match(ui,/installationExpanded&&<div id="installation-tracker-details"/);
+ assert.match(ui,/<details id="scientific-assessment-register"/);
+ assert.match(ui,/<summary className=\{styles\.scienceSummary\}>Scientific assessments/);
+ assert.match(css,/\.sectionCaret/);
+ assert.match(css,/\.scienceSummary::marker/);
+});
+
+test("LOCATE LIVE still opens the caret before scrolling to the task",()=>{
+ assert.match(ui,/setInstallationExpanded\(true\);/);
+ assert.match(ui,/if\(!liveJump\|\|!installationExpanded\)return/);
+ assert.match(ui,/\[liveJump,section,installationExpanded\]/);
+ assert.match(ui,/if\(!following\|\|!installationExpanded\|\|!active\?\.taskId\)return/);
+ assert.match(ui,/document\.getElementById\(idOf\(liveJump\.taskId\)\)/);
+ assert.match(ui,/document\.getElementById\("installation-active-cursor"\)/);
+ assert.match(ui,/no fresh, verified running task or dated checkpoint/);
+});
