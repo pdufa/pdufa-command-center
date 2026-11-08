@@ -128,6 +128,11 @@ def test_append_only_canary_snapshot_is_idempotent_and_preserves_source_tables(e
 
 
 def test_auto_run_is_canary_gated_and_never_runs_an_alternate_nct(engine,monkeypatch):
+    # Exercise the actual canary gate while explicitly using isolated SQLite
+    # test persistence. Production run_canary still requires PostgreSQL.
+    original_persist = triage.persist
+    monkeypatch.setattr(triage, "persist",
+        lambda db,nct: original_persist(db,nct,test_only=True))
     assert triage.run_canary(engine) is None
     monkeypatch.setenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_CANARY_AUTORUN","true")
     monkeypatch.setenv("PDUFA_ANALYZE_NOW_CANARY_NCT","NCT05507203")
