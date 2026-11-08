@@ -7,6 +7,7 @@ import {
   summarizeRegistryStudy, type TrialEvidence
 } from "../../lib/medical-intelligence-preview";
 import {findingsForNct,REVIEW_COVERAGE,REVIEW_AS_OF} from "../../lib/medical-intelligence-reviewed-findings";
+import {conditionForNct} from "../../lib/medical-intelligence-conditions";
 
 export const metadata:Metadata={
   title:"Deep Medical Intelligence — Read-only preview | PDUFA",
@@ -55,6 +56,7 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
   const identity=evidence?("ClinicalTrials.gov exact NCT matched: "+record.nct):"Registry details not independently loaded";
   const domains=FAILURE_INVESTIGATIONS;
   const reviewed=findingsForNct(record.nct);
+  const conditionDossier=conditionForNct(record.nct);
   const queue=rows.map(r=>{
     const f=findingsForNct(r.nct);
     return {...r,findings:f.length,
@@ -128,6 +130,24 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
         <Source href={focus.source}>Source FOCUS spreadsheet</Source>
       </div>
       {error&&<p role="status" style={{color:palette.red,fontSize:13}}>ClinicalTrials.gov retrieval not available: {error}. Original FOCUS identity and links remain visible; the investigation cannot be marked complete.</p>}
+    </section>
+
+    <section style={panel} aria-label="Disease-specific scientific investigation">
+      <h2 style={{marginTop:0}}>Condition and disease intelligence</h2>
+      {conditionDossier ? <>
+        <h3 style={{fontSize:17,margin:"0 0 12px"}}>{conditionDossier.indication}</h3>
+        <p style={{lineHeight:1.6,fontSize:14}}><strong>Disease mechanism:</strong> {conditionDossier.mechanism}</p>
+        <p style={{lineHeight:1.6,fontSize:14}}><strong>Natural history and confounders:</strong> {conditionDossier.naturalHistory}</p>
+        <p style={{lineHeight:1.6,fontSize:14}}><strong>Patient-important outcomes:</strong> {conditionDossier.patientOutcomes}</p>
+        <p style={{lineHeight:1.6,fontSize:14}}><strong>Trial interpretation:</strong> {conditionDossier.trialInterpretation}</p>
+        <details style={{border:"1px solid "+palette.line,borderRadius:8,padding:"11px 13px",marginTop:10}} open>
+          <summary style={{cursor:"pointer",fontWeight:700}}>Condition-specific failure investigations ({conditionDossier.failureFirstQuestions.length})</summary>
+          <ol style={{paddingLeft:24,marginBottom:0,fontSize:14,lineHeight:1.6}}>
+            {conditionDossier.failureFirstQuestions.map((q,i)=><li key={i} style={{marginBottom:6}}>{q}</li>)}
+          </ol>
+        </details>
+        <p style={{...small,marginBottom:0}}>Medical source: <Source href={conditionDossier.sourceUrl}>{conditionDossier.sourceTitle}</Source>. These questions are hypotheses to investigate, not documented drug defects.</p>
+      </>:<p style={small}>A complete, sourced disease-specific dossier has not yet been curated for this indication. Registry condition names remain available above; absence of a dossier does not establish clinical safety or FDA readiness.</p>}
     </section>
 
     <section style={panel} aria-label="Source-adjudicated findings">
