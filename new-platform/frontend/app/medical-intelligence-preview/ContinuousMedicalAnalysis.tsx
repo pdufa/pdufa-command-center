@@ -63,7 +63,11 @@ export default function ContinuousMedicalAnalysis({ nct }: { nct: string }) {
         return;
       }
       if (!response.ok) {
+        const raw: unknown = await response.json().catch(() => null);
+        const detail = raw && typeof raw === "object" && "error" in raw
+          ? (raw as { error?: unknown }).error : null;
         if (mounted.current) setError(response.status === 401 ? "Sign in to view saved research runs." :
+          typeof detail === "string" ? detail :
           "Continuous processing backend unavailable or not yet deployed.");
         return;
       }
