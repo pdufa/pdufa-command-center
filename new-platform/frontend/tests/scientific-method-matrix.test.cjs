@@ -116,18 +116,19 @@ test('proxy authenticates, rejects missing isolated backend despite production U
   } finally {for (const [key, value] of Object.entries(saved)) {if (value === undefined) delete process.env[key]; else process.env[key] = value;}}
 });
 test('proxy uses only the configured isolated origin and keeps the internal credential server-side', async () => {
-  const names = ['DASHBOARD_PASSWORD', 'SESSION_SIGNING_KEY', 'PDUFA_MEDICAL_REVIEW_API_BASE_URL', 'PDUFA_MEDICAL_INTERNAL_API_KEY'];
+  const names = ['DASHBOARD_PASSWORD', 'SESSION_SIGNING_KEY', 'PDUFA_MEDICAL_REVIEW_API_BASE_URL', 'PDUFA_MEDICAL_INTERNAL_API_KEY', 'PDUFA_MEDICAL_REVIEW_READ_KEY'];
   const saved = Object.fromEntries(names.map(k => [k, process.env[k]])), previousFetch = global.fetch;
   try {
     process.env.DASHBOARD_PASSWORD = 'local-test-password'; process.env.SESSION_SIGNING_KEY = 'x'.repeat(32);
     process.env.PDUFA_MEDICAL_REVIEW_API_BASE_URL = 'https://isolated.example';
     process.env.PDUFA_MEDICAL_INTERNAL_API_KEY = 'local-test-medical-key';
+    process.env.PDUFA_MEDICAL_REVIEW_READ_KEY = 'local-scoped-read-only-key';
     const m = matrix();
     m.selectedAssessment = {...m.assessments[0], methods: Array.from({length:20}, (_, i) => method(i))};
     let calls = 0;
     global.fetch = async (url, options) => {
       calls++; assert.equal(url, 'https://isolated.example/api/internal/medical-assessments/' + nct + '/matrix?assessmentIndex=1');
-      assert.equal(options.headers['x-pdufa-internal-key'], 'local-test-medical-key');
+      assert.equal(options.headers['x-pdufa-internal-key'], 'local-scoped-read-only-key');
       assert.equal(options.redirect, 'error'); assert.equal(options.cache, 'no-store');
       return Response.json(m);
     };
@@ -135,7 +136,8 @@ test('proxy uses only the configured isolated origin and keeps the internal cred
       headers: {cookie: auth.COOKIE_NAME + '=' + auth.makeSession()}
     }));
     assert.equal(response.status, 200); assert.equal(calls, 1);
-    const body = await response.text(); assert.ok(!body.includes('local-test-medical-key'));
+    const body = await response.text(); assert.ok(!body.includes('local-scoped-read-only-key'));
+    assert.ok(!body.includes('local-test-medical-key'));
     assert.equal(JSON.parse(body).review.selectedAssessment.methods.length, 20);
   } finally {
     global.fetch = previousFetch;
