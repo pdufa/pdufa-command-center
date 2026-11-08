@@ -22,7 +22,8 @@ function load(name){
  return cache[name]=module.exports;
 }
 const {APPLICATION_CYCLES}=load("medical-intelligence-applications");
-const {ADVANCED_LEVELS,buildAdvancedAssessment}=load("medical-intelligence-advanced");
+const {ADVANCED_LEVELS,buildAdvancedAssessment,listAdvancedCandidates}=load("medical-intelligence-advanced");
+const {parseExactRegistryPhase}=load("medical-intelligence-registry-phase");
 const {HISTORICAL_CALIBRATION,evaluateHistoricalCalibration}=load("medical-intelligence-calibration");
 const page=fs.readFileSync(path.join(__dirname,"../app/medical-intelligence-preview/advanced/page.tsx"),"utf8");
 const main=fs.readFileSync(path.join(__dirname,"../app/medical-intelligence-preview/page.tsx"),"utf8");
@@ -103,4 +104,30 @@ test("preview renders three outcomes, certainty, research gaps and expandable tw
  assert.match(main,/medical-intelligence-preview\/advanced/);
  const analysis=fs.readFileSync(path.join(__dirname,"../lib/medical-intelligence-advanced.ts"),"utf8");
  assert.doesNotMatch(analysis,/\bfrom\s+["\x27][^"\x27]*(?:raas|survey)/i);
+});
+
+test("exact-NCT phase parsing adapts early and pivotal studies without guessing",()=>{
+ const nct="NCT05126758";
+ const source={protocolSection:{
+  identificationModule:{nctId:nct},
+  designModule:{phases:["PHASE2","PHASE3"]},
+  statusModule:{studyFirstPostDate:"2020-01-01",lastUpdatePostDate:"2026-11-01"}
+ }};
+ const parsed=parseExactRegistryPhase(source,nct);
+ assert.equal(parsed.nct,nct);
+ assert.equal(parsed.verifiedPhase,"PHASE3");
+ assert.equal(parsed.verifiedAt,"2026-11-01");
+ assert.throws(()=>parseExactRegistryPhase(source,"NCT99999999"),/mismatch/);
+ assert.equal(parseExactRegistryPhase({...source,protocolSection:{
+  ...source.protocolSection,designModule:{phases:[]}}},nct).verifiedPhase,"UNKNOWN");
+});
+test("all FOCUS trial options use universal 12-level architecture and adaptive questions",()=>{
+ const available=listAdvancedCandidates();
+ assert.ok(available.length>=23);
+ assert.ok(available.every(a=>a.ncts.length>0));
+ const capr=buildAdvancedAssessment("capr-deramiocel");
+ assert.ok(capr.levels.find(x=>x.id==="MANUFACTURING_CMC").missing.some(x=>/Biologic-specific/.test(x)));
+ assert.ok(capr.levels.find(x=>x.id==="CLINICAL_BENEFIT_RISK").missing.some(x=>/Neuromuscular/.test(x)));
+ const achv=buildAdvancedAssessment("achv-cytisinicline");
+ assert.ok(achv.levels.find(x=>x.id==="MANUFACTURING_CMC").missing.some(x=>/Drug-product process/.test(x)));
 });
