@@ -1,0 +1,154 @@
+{
+  "schema": "MAIN_ACACIA_PROTOCOL_VERSION_AND_SOURCE_ISSUES_V1",
+  "revision": 7,
+  "observedAt": "2026-11-08",
+  "nct": "NCT06081894",
+  "trialCode": "CY 6033",
+  "euCt": "2023-505797-15-00",
+  "phaseVerificationAuthorized": false,
+  "independentlyGradedMethods": 0,
+  "independentClinicalSignoff": false,
+  "officialHistory": {
+    "url": "https://clinicaltrials.gov/study/NCT06081894?tab=history",
+    "totalVersions": 31,
+    "officialFullHistoricalValuesRetrieved": false,
+    "versions": [
+      {
+        "v": 26,
+        "date": "2025-01-11",
+        "categories": [
+          "Study Status",
+          "Contacts/Locations"
+        ]
+      },
+      {
+        "v": 27,
+        "date": "2025-05-15",
+        "categories": [
+          "Study Status",
+          "Sponsor/Collaborators",
+          "Study Design",
+          "Outcome Measures",
+          "Eligibility"
+        ]
+      },
+      {
+        "v": 28,
+        "date": "2025-10-27",
+        "categories": [
+          "Recruitment Status",
+          "Study Status",
+          "Contacts/Locations"
+        ]
+      },
+      {
+        "v": 29,
+        "date": "2026-01-29",
+        "categories": [
+          "Study Status",
+          "Outcome Measures"
+        ]
+      },
+      {
+        "v": 30,
+        "date": "2026-08-03",
+        "categories": [
+          "Study Identification",
+          "Study Status",
+          "Outcome Measures"
+        ]
+      },
+      {
+        "v": 31,
+        "date": "2026-09-21",
+        "categories": [
+          "Study Status"
+        ]
+      }
+    ]
+  },
+  "secondaryIndexedChange": {
+    "url": "https://dashboard.datalookout.com/trial/NCT06081894",
+    "version": 27,
+    "date": "2025-05-15",
+    "previousPrimaryEndpointCount": 1,
+    "nextPrimaryEndpointCount": 2,
+    "previousEnrollmentTarget": 420,
+    "nextEnrollmentTarget": 500,
+    "officialBeforeAfterRecordVerified": false,
+    "classification": "SECONDARY_LEAD"
+  },
+  "sourceProtocol": {
+    "version": "AMENDMENT_04",
+    "date": "2025-10-28",
+    "sha256": "853ffd80a547df8a7b813b8985c7116dd6168a640f18521f61b95cf33a8ca5f8",
+    "obtained": true,
+    "lockedSapObtained": false
+  },
+  "unresolvedIssues": [
+    {
+      "id": "REV7-VERSION",
+      "severity": "CRITICAL",
+      "status": "NEEDS_ORIGINAL_VERSION_DIFF",
+      "reviewIds": [
+        "4.2",
+        "4.3",
+        "4.5",
+        "5.1",
+        "5.2"
+      ],
+      "mayInferProtocolManipulation": false
+    },
+    {
+      "id": "REV7-SAP",
+      "severity": "CRITICAL",
+      "status": "FINAL_LOCKED_SAP_MISSING",
+      "reviewIds": [
+        "4.3",
+        "5.1",
+        "5.2"
+      ],
+      "mayInferFdaOutcome": false
+    },
+    {
+      "id": "REV7-COUNT",
+      "severity": "HIGH",
+      "status": "DIFFERENT_REPORTED_RANDOMIZED_COUNTS",
+      "values": {
+        "mayTopline": 516,
+        "augustFull": 517
+      },
+      "needsPopulationReconciliation": true
+    },
+    {
+      "id": "REV7-HF-SAE",
+      "severity": "CRITICAL",
+      "status": "UNRESOLVED_TIME_OR_DEFINITION_DISCORDANCE",
+      "values": {
+        "earlierAficamten": 11,
+        "earlierPlacebo": 1,
+        "laterAficamten": 12,
+        "laterPlacebo": 3
+      },
+      "needsEventListing": true
+    },
+    {
+      "id": "REV7-DENOM",
+      "severity": "HIGH",
+      "status": "PERCENTAGE_DENOMINATOR_SOURCE_CHECK",
+      "needsOriginalTable": true
+    },
+    {
+      "id": "REV7-NHCM-FILING",
+      "severity": "HIGH",
+      "status": "ACTUAL_NHCM_FILING_NOT_VERIFIED",
+      "shouldAssignPdufaDate": false
+    }
+  ],
+  "fdaPredictions": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "certainty": "NOT_VALIDATED"
+}
