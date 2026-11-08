@@ -19,6 +19,8 @@ from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 # Render supplies postgres:// or postgresql://; SQLAlchemy 2 uses psycopg (v3) explicitly.
 DATABASE_URL = os.getenv("DATABASE_URL", "sqlite:///./checklists_dev.sqlite3")
 REQUIRE_POSTGRES = os.getenv("PDUFA_REQUIRE_POSTGRES", "").lower() in ("1", "true", "yes")
+# Independent medical pilot is opt-in; a production build never enables it.
+MEDICAL_PREVIEW_ENABLED = os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
 if DATABASE_URL.startswith("postgres://"):
     DATABASE_URL = "postgresql+psycopg://" + DATABASE_URL[len("postgres://"):]
 elif DATABASE_URL.startswith("postgresql://"):
@@ -584,6 +586,15 @@ async def lifespan(app: FastAPI):
             logging.getLogger(__name__).error("PDUFA_PHASE3_STARTUP_FAILED error_type=%s", type(exc).__name__)
         from .nct_live_stream import start as start_nct_live_stream
         start_nct_live_stream(ENGINE)
+        # Do not initialize medical worker tables or background jobs unless explicitly
+        # enabled on durable PostgreSQL. The existing production scans are unchanged.
+        if MEDICAL_PREVIEW_ENABLED and REQUIRE_POSTGRES and DATABASE_URL.startswith("postgresql+psycopg://"):
+            try:
+                from .medical_continuous import start as start_medical_continuous
+                start_medical_continuous(ENGINE)
+            except Exception as exc:
+                import logging
+                logging.getLogger(__name__).error("PDUFA_MEDICAL_PILOT_INIT_FAILED type=%s", type(exc).__name__)
     yield
 
 
@@ -592,6 +603,20 @@ from .reconciliation_review import ReviewPackage
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 from .nct_live_stream import install_routes as install_nct_stream_routes
 install_nct_stream_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+
+def require_medical_pilot_storage() -> None:
+    # Fail closed even if this staging service permits SQLite elsewhere.
+    if not (MEDICAL_PREVIEW_ENABLED and REQUIRE_POSTGRES and
+            DATABASE_URL.startswith("postgresql+psycopg://") and _DB_STATE["available"]):
+        raise HTTPException(status_code=503,
+                            detail="Isolated medical pilot requires ready persistent PostgreSQL")
+
+if MEDICAL_PREVIEW_ENABLED:
+    from .medical_continuous import install_routes as install_medical_continuous_routes
+    from .medical_on_demand import install_routes as install_analyze_now_routes
+    install_medical_continuous_routes(app, lambda: ENGINE, require_internal_key, require_medical_pilot_storage)
+    install_analyze_now_routes(app, lambda: ENGINE, require_internal_key, require_medical_pilot_storage)
+
 from .phase3_catalog import install_routes as install_phase3_catalog_routes
 from .phase3_ingestion import install_routes as install_phase3_ingestion_routes
 install_phase3_catalog_routes(app, lambda: ENGINE, require_internal_key, require_storage)
