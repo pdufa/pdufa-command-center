@@ -212,7 +212,7 @@ export default function ToolsResultsSpreadsheet({
               <strong>{display(row.ticker)}</strong>
               <TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row}/>
             </div></td>
-            <td>{display(row.company)}<CompanyDateBadges timeline={row.timeline} today={today}/></td>
+            <td>{display(row.company)}<CompanyDateBadges nctId={row.nctId} timeline={row.timeline} today={today}/></td>
             <td className={styles.toolsSheetDateValue} title="D: Days since source-verified public Phase 3 results release">
               {days.daysSincePhase3Release===null?<span title="Phase 3 data release not source-verified">Not verified</span>:
                 <a href={row.timeline?.phase3DataRelease?.sourceUrl} target="_blank" rel="noopener noreferrer"

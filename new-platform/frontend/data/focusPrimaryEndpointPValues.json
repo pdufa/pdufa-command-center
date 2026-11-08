@@ -1,0 +1,137 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-07",
+  "description": "Exact-NCT primary endpoint statistical p-values sourced from issuer, regulatory filings, and journal reports; independent of cancelled surveys. Each value describes only its specified endpoint and group.",
+  "records": [
+    {
+      "nct": "NCT05507203",
+      "sourceUrl": "https://ir.abivax.com/static-files/99de1b8a-f695-4e75-a38f-9d970eb52d52",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "Week 8 clinical remission, 25 mg",
+          "value": "<0.0001"
+        },
+        {
+          "endpoint": "Week 8 clinical remission, 50 mg",
+          "value": "<0.0001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05507216",
+      "sourceUrl": "https://ir.abivax.com/static-files/99de1b8a-f695-4e75-a38f-9d970eb52d52",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "Week 8 clinical remission, 50 mg",
+          "value": "=0.0001"
+        },
+        {
+          "endpoint": "Week 8 clinical remission, 25 mg (did not reach statistical significance)",
+          "value": "=0.1034"
+        }
+      ]
+    },
+    {
+      "nct": "NCT04576949",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37432430/",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "6-week continuous abstinence, primary outcome",
+          "value": "<0.001"
+        },
+        {
+          "endpoint": "12-week continuous abstinence, primary outcome",
+          "value": "<0.001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05206370",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40257755/",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "6-week continuous abstinence, primary outcome",
+          "value": "<0.001"
+        },
+        {
+          "endpoint": "12-week continuous abstinence, primary outcome",
+          "value": "<0.001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05059223",
+      "sourceUrl": "https://www.globenewswire.com/news-release/2024/03/25/2851469/33090/en/Axsome-Therapeutics-Announces-AXS-12-Achieves-Primary-Endpoint-in-the-SYMPHONY-Phase-3-Trial-in-Narcolepsy.html",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "Week 5 weekly cataplexy frequency, primary endpoint",
+          "value": "=0.018"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05113745",
+      "sourceUrl": "https://www.globenewswire.com/news-release/2024/11/26/2987364/33090/en/axsome-therapeutics-announces-axs-12-achieves-primary-endpoint-in-encore-long-term-phase-3-trial-in-narcolepsy.html",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "Randomized withdrawal cataplexy frequency, primary endpoint",
+          "value": "=0.017"
+        }
+      ]
+    },
+    {
+      "nct": "NCT03697109",
+      "sourceUrl": "https://ir.corcept.com/node/18326/html",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "GRACE randomized-withdrawal blood-pressure control",
+          "value": "=0.02"
+        }
+      ]
+    },
+    {
+      "nct": "NCT06081894",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526372456/cytk-ex99_1.htm",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "KCCQ-CSS co-primary endpoint",
+          "value": "=0.021"
+        },
+        {
+          "endpoint": "Peak VO2 co-primary endpoint",
+          "value": "=0.003"
+        }
+      ]
+    },
+    {
+      "nct": "NCT04544293",
+      "sourceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2410542",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "DLCO change at Week 24, primary endpoint",
+          "value": "<0.001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT04716231",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41196369/",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "UPCR reduction at Week 36, prespecified interim primary endpoint",
+          "value": "<0.001"
+        }
+      ]
+    }
+  ]
+}

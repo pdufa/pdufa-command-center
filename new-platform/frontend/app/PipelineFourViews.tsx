@@ -40,7 +40,7 @@ function Dossier({row,today,onClose}:{row:PipelineResearchRow;today:string;onClo
       <h3 style={{margin:0}}>{row.nctId} · {row.ticker}</h3>
       <TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row}/>
       </div>
-      <p>{row.company}<CompanyDateBadges timeline={row.timeline} today={today}/> · {named(row)} · {row.indication||"Indication not verified"}</p>
+      <p>{row.company}<CompanyDateBadges nctId={row.nctId} timeline={row.timeline} today={today}/> · {named(row)} · {row.indication||"Indication not verified"}</p>
       <p>Public Phase 3 release: {row.timeline?.phase3DataRelease?.date||"Not verified"} · Verified PDUFA: {row.timeline?.pdufaTarget?.date||"Not verified"}</p>
       <p className={styles.muted}>Source-backed clinical and regulatory research. NCT studies are not necessarily distinct commercial products.</p>
     </div>
@@ -203,7 +203,7 @@ export default function PipelineFourViews(){
       <th>Existing Approved Therapies</th><th>Competing Pipeline Therapies</th><th>Comparative Advantage</th></tr></thead>
      <tbody>{visible.map(row=>{
       const inventory=validateComparatorInventory(row,row.competitorEvidence||[]);
-      return <tr key={row.nctId}><td>{row.nctId}</td><td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><span>{row.company}<CompanyDateBadges timeline={row.timeline} today={today}/></span></div></td>
+      return <tr key={row.nctId}><td>{row.nctId}</td><td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><span>{row.company}<CompanyDateBadges nctId={row.nctId} timeline={row.timeline} today={today}/></span></div></td>
        <td>{named(row)}<small>{row.indication||"Not assessed"}</small></td>
        <td>{row.timeline?.phase3DataRelease?.date||"Not verified"}</td><td>{trialDay(row,"daysSinceReadout",today).value}</td><td>{row.timeline?.pdufaTarget?.date||"Not verified"}</td><td>{trialDay(row,"daysToPdufa",today).value}</td>
        <td>{inventory.accepted.length?inventory.approved+" documented":"Not assessed"}</td>
@@ -219,7 +219,7 @@ export default function PipelineFourViews(){
       <tr>
        <td><button type="button" aria-expanded={selected===row.nctId} onClick={()=>setSelected(selected===row.nctId?null:row.nctId)}>{selected===row.nctId?"Close":"Expand"}</button></td>
        <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId} ↗</a></td>
-       <td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><span>{row.company}<CompanyDateBadges timeline={row.timeline} today={today}/></span></div></td>
+       <td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><span>{row.company}<CompanyDateBadges nctId={row.nctId} timeline={row.timeline} today={today}/></span></div></td>
        <td>{named(row)}<small>{row.indication||"Indication not verified"}</small></td>
        <td>{trialDay(row,"daysSinceReadout",today).value}</td>
        <td>{trialDay(row,"daysToPdufa",today).value}</td>
@@ -241,7 +241,7 @@ export default function PipelineFourViews(){
     <div className={styles.cardGrid}>
      {visible.map(row=><button key={row.nctId} type="button" className={styles.researchCard}
       onClick={()=>openTrial(row)} aria-pressed={selected===row.nctId}>
-       <strong>{row.nctId} · {row.ticker}</strong><span>{row.company}<CompanyDateBadges timeline={row.timeline} today={today}/></span>
+       <strong>{row.nctId} · {row.ticker}</strong><span>{row.company}<CompanyDateBadges nctId={row.nctId} timeline={row.timeline} today={today}/></span>
        <b>{named(row)}</b><span>{row.indication||"Indication not verified"}</span>
        <small>Phase 3 age: {trialDay(row,"daysSinceReadout",today).value}</small>
        <small>PDUFA: {trialDay(row,"daysToPdufa",today).value}</small>

@@ -1,6 +1,7 @@
 "use client";
 import {useEffect,useState,type CSSProperties} from "react";
 import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline-timeline";
+import primaryPValues from "../data/focusPrimaryEndpointPValues.json";
 /** D and P counters with exact-program source-verified or explicitly recorded, unverified dates. */
 const valid=(value:string|null|undefined):value is string=>
  typeof value==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(value)&&
@@ -9,8 +10,8 @@ const valid=(value:string|null|undefined):value is string=>
 const dayDifference=(later:string,earlier:string)=>
  Math.round((Date.parse(later+"T00:00:00Z")-Date.parse(earlier+"T00:00:00Z"))/86400000);
 export default function CompanyDateBadges({
- timeline,today,recordedReleaseDate,recordedPdufaDate,releaseSource,pdufaSource
-}:{timeline?:TimelineDates|null;today?:string;
+ timeline,today,nctId,recordedReleaseDate,recordedPdufaDate,releaseSource,pdufaSource
+}:{timeline?:TimelineDates|null;today?:string;nctId?:string;
  recordedReleaseDate?:string|null;recordedPdufaDate?:string|null;
  releaseSource?:string|null;pdufaSource?:string|null}){
  const [localToday,setLocalToday]=useState("");
@@ -31,6 +32,7 @@ export default function CompanyDateBadges({
    count:dates.pdufaTarget?verified.daysToPdufa:
     current&&pdufaFallback?dayDifference(pdufaFallback,current):null}
  ];
+ const pRecord=nctId?primaryPValues.records.find(x=>x.nct===nctId):undefined;
  const common:CSSProperties={display:"inline-flex",alignItems:"center",gap:4,
    padding:"2px 6px",border:"1px solid #c3d8ca",borderRadius:6,
    background:"#f7fbf8",color:"#174830",textDecoration:"none",
@@ -53,5 +55,12 @@ export default function CompanyDateBadges({
        title={note+" Open the recorded source link."} aria-label={note}>{readable}</a>
    :<span key={b.label} style={style} title={note} aria-label={note}>{readable}</span>;
  })}
+ {pRecord?.results.length?pRecord.results.map((item,i)=>{
+  const note="Clinical primary endpoint p"+item.value+" · "+item.endpoint+". "+
+   "Evidence recorded for exact trial "+pRecord.nct+"; not FDA approval probability.";
+  return <a key={"p-"+i} href={pRecord.sourceUrl} target="_blank" rel="noopener noreferrer"
+   style={common} title={note} aria-label={note}><strong>p</strong>{item.value}</a>;
+ }):<span style={{...common,color:"#647569",background:"#f5f6f5"}}
+  title="No source-recorded primary endpoint p-value for this exact trial" aria-label="p-value not recorded"><strong>p</strong>—</span>}
  </span>;
 }

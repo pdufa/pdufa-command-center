@@ -146,7 +146,7 @@ export default function TrialComparison(){
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:12}}>
             {present.map(t=><div key={t.key} style={{border:"1px solid #c6d3e0",borderRadius:8,padding:12}}>
               <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:10}}>
-                <h3 style={{fontSize:18,margin:0}}>{t.row.ticker} · {t.row.company}</h3><CompanyDateBadges timeline={t.row.timeline}/>
+                <h3 style={{fontSize:18,margin:0}}>{t.row.ticker} · {t.row.company}</h3><CompanyDateBadges nctId={t.row.nctId} timeline={t.row.timeline}/>
                 <TrialTimelineSummary timeline={t.row.timeline} compact trial={t.row}
                   peers={present.filter(peer=>peer.key!==t.key).map(peer=>peer.row)}/>
               </div>

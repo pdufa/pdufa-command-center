@@ -401,7 +401,7 @@ export default function ToolsOpeningTrialGrid({
             <td className={css.rowNum}>{offset+i+1}</td>
             <td><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
             <td>{safe(row.ticker)}</td>
-            <td className={css.longTextCell}>{safe(row.company)}<CompanyDateBadges timeline={row.timeline} today={today}/></td>
+            <td className={css.longTextCell}>{safe(row.company)}<CompanyDateBadges nctId={row.nctId} timeline={row.timeline} today={today}/></td>
             <td className={css.dayCell}><DayCell count={days.daysSincePhase3Release}
               date={row.timeline?.phase3DataRelease?.date} url={row.timeline?.phase3DataRelease?.sourceUrl}
               description="D · Days since verified Phase 3 data release"/></td>
