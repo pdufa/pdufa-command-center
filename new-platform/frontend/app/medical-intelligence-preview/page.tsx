@@ -55,6 +55,12 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
   const identity=evidence?("ClinicalTrials.gov exact NCT matched: "+record.nct):"Registry details not independently loaded";
   const domains=FAILURE_INVESTIGATIONS;
   const reviewed=findingsForNct(record.nct);
+  const queue=rows.map(r=>{
+    const f=findingsForNct(r.nct);
+    return {...r,findings:f.length,
+      objections:f.filter(x=>x.type==="REGULATORY_OBJECTION"||x.type==="PREVIOUS_CRL").length,
+      extensions:f.filter(x=>x.type==="EXTENSION_CONFIRMED").length};
+  }).sort((a,b)=>(a.recordedPdufaDate||"9999-12-31").localeCompare(b.recordedPdufaDate||"9999-12-31")||a.nct.localeCompare(b.nct));
   return <main style={{maxWidth:1260,margin:"24px auto",padding:"0 16px 36px",color:palette.ink,fontFamily:"system-ui,sans-serif"}}>
     <div style={{fontSize:12,letterSpacing:1,color:palette.teal,fontWeight:750}}>POOL → FOCUS → DEEP MEDICAL INTELLIGENCE → DECISION</div>
     <h1 style={{margin:"10px 0 6px",fontSize:"clamp(1.6rem,4vw,2.5rem)"}}>Deep Medical Intelligence</h1>
@@ -73,6 +79,29 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
       </form>
       <p style={{...small,marginBottom:0}}><strong>{rows.length} FOCUS NCT records loaded</strong> · Candidate {candidateIndex} of {rows.length}. These are initialized dossiers, not {rows.length} completed scientific reviews.</p>
     </section>
+
+    <details style={panel} aria-label="FOCUS-wide investigation queue">
+      <summary style={{cursor:"pointer",fontSize:19,fontWeight:750}}>FOCUS research queue — all {rows.length} trials <span style={{fontSize:13,fontWeight:400,color:palette.muted}}>(expand)</span></summary>
+      <p style={small}>Sorted by the FOCUS-recorded PDUFA date where available. Dates are not independently certified here. Research status means curated source findings exist, not that scientific review is complete.</p>
+      <div style={{overflowX:"auto"}}>
+        <table style={{width:"100%",minWidth:640,borderCollapse:"collapse",fontSize:13}}>
+          <thead style={{background:palette.cream}}><tr>
+            <th style={{textAlign:"left",padding:9}}>Trial</th>
+            <th style={{textAlign:"left",padding:9}}>Recorded goal</th>
+            <th style={{textAlign:"left",padding:9}}>Source-reviewed findings</th>
+            <th style={{textAlign:"left",padding:9}}>Documented regulatory context</th>
+          </tr></thead>
+          <tbody>{queue.map(q=><tr key={q.nct} style={{borderTop:"1px solid "+palette.line}}>
+            <td style={{padding:9}}><Link href={"/medical-intelligence-preview?nct="+q.nct}>{q.ticker} · {q.nct}</Link></td>
+            <td style={{padding:9}}>{q.recordedPdufaDate||"Not established"}</td>
+            <td style={{padding:9}}>{q.findings ? q.findings+" source-backed finding(s) — review incomplete":"Not yet independently reviewed"}</td>
+            <td style={{padding:9}}>{q.objections ? q.objections+" historical/FDA concern(s)" : "No curated FDA objection"}
+              {q.extensions ? " · "+q.extensions+" confirmed extension event(s)" : ""}</td>
+          </tr>)}</tbody>
+        </table>
+      </div>
+      <p style={small}>A blank or zero count is a research-coverage gap, not evidence that a drug has no risk. Multiple trials can feed one FDA application decision.</p>
+    </details>
 
     <section style={panel}>
       <div style={{display:"flex",gap:14,justifyContent:"space-between",alignItems:"start",flexWrap:"wrap"}}>
