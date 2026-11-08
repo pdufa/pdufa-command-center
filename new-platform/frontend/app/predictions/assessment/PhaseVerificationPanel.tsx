@@ -69,6 +69,11 @@ export default function PhaseVerificationPanel({nct}:{nct:string}){
         {" "}<strong>Previously completed phases:</strong> not independently verified.
         {" "}No scientific grade or FDA probability is assigned.</p>
       <p style={{fontSize:13}}><strong>Next evidence action:</strong> {selected.nextAction}</p>
+      {selected.nct==="NCT06081894"?<aside style={{padding:12,border:"1px solid #d5c298",borderRadius:8,background:"#fff9ec",margin:"12px 0"}}>
+        <strong>ACACIA-HCM — updated Phase 3 source review docket (Nov 8)</strong>
+        <p style={{fontSize:13}}>November 4 SEC safety reporting and planned nHCM filing are source-linked. The NEJM publisher lists a protocol and supplementary appendix, but their contents have not been independently retrieved and verified. No scientific phase approval, grade or PDUFA date is inferred.</p>
+        <a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/phase3-reviewer-handoff-revision2-20261108.md" target="_blank" rel="noopener noreferrer">Open source-linked Phase 3 reviewer handoff</a>
+      </aside>:null}
       <p>
         <a href={selected.officialUrl} target="_blank" rel="noopener noreferrer">Original ClinicalTrials.gov study</a>
         {" · "}
