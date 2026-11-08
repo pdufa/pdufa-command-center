@@ -32,6 +32,8 @@ test("run status refuses to claim activity or prediction without a backend event
   assert.match(monitor,/ACCURACY RATING/);
   assert.match(monitor,/NOT CALIBRATED/);
   assert.match(monitor,/not reported by the existing backend/);
+  assert.match(monitor,/Source research worker · 12 stages/);
+  assert.match(monitor,/This is a real <strong>source collection<\/strong> job/);
   assert.doesNotMatch(monitor,/>RUNNING</);
   assert.doesNotMatch(monitor,/>100%</);
 });
@@ -41,7 +43,7 @@ test("live progress only counts independently recorded reviewed/excluded methods
   assert.match(monitor,/800-graded-excluded/);
   assert.match(monitor,/Progress withheld until the isolated ledger can be read and validated/);
   assert.match(monitor,/refreshing\|\|loading/);
-  assert.match(monitor,/onClick=\{refresh\}/);
+  assert.match(monitor,/onClick=\{\(\)=>\{refresh\(\);sourcePollRef\.current\?\.\(\);\}\}/);
   assert.match(monitor,/href="#live-scientific-review-ledger"/);
   assert.match(scientific,/<div id="live-scientific-review-ledger">/);
   assert.match(scientific,/setLastCheckedAt\(new Date\(\)\.toISOString\(\)\)/);
