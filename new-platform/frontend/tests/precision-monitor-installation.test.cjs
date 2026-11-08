@@ -11,7 +11,7 @@ test("Monitor is on MAIN and a standalone active route",()=>{
  const ui=read("new-platform/frontend/app/main/InstallationProgressDashboard.tsx");
  assert.match(main,/<InstallationProgressDashboard\s*\/>/);
  assert.match(standalone,/Precision Monitoring Dashboard/);
- assert.match(nav,/href:"\/precision-monitor"/);
+ assert.match(nav,/href="\/precision-monitor"/);
  assert.match(ui,/45000/);
  assert.match(ui,/<TrialEvidenceExplorer\s*\/>/);
  assert.match(ui,/data\.signals\.alerts/);
