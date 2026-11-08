@@ -30,6 +30,7 @@ export default function P3PostDataPage(){
   <p>Snapshot of the final Google Sheets list as of {snapshot.asOf}. Recorded listing, readout and FDA-path links are evidence pointers, not independent certification of trial eligibility or a successful nightly sync. Completed trials remain if their program may continue toward approval. No retired or historical research-only cohort is included.</p>
   <p><a href={source} target="_blank" rel="noopener noreferrer" style={{fontWeight:700}}>Open and edit the source-of-truth FOCUS spreadsheet</a></p>
   <p style={{fontSize:13}}>Saved RAAS research and scoring history stays attached to the exact NCT, where available. Missing history is not a zero score.</p>
+  <p style={{fontSize:13}}><Link href="/analyze-now/history">Look up saved Analyze Now history by NCT, even after a trial moves between spreadsheets</Link>.</p>
   <p style={{fontSize:13}}>Analyze Now reuses the existing persistent medical research worker, not unfinished advanced analysis. Pilot: {canaryNct}. Other trials remain gated until one real database-backed result and its history pass verification.</p>
   <section aria-label="Final trial gate coverage" style={{border:"1px solid #b9cebe",padding:14,borderRadius:8,marginBottom:14}}>
     <h2 style={{margin:"0 0 8px",fontSize:18}}>Acceptance gates · final FOCUS trials only</h2>
