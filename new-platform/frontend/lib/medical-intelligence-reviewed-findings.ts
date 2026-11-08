@@ -404,6 +404,267 @@ export const REVIEWED_FINDINGS:readonly ReviewedFinding[]=[
   "remainingQuestion": "How did investigators adjudicate heart-failure cases, reversible LVEF reduction, discontinuation, monitoring and dose-titration safety?",
   "sourceTitle": "Cytokinetics November 2026 SEC quarterly clinical safety disclosures",
   "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm"
+},
+{
+  "id": "imnm-ringside-efficacy",
+  "relatedNcts": [
+    "NCT04871282"
+  ],
+  "company": "Immunome",
+  "drug": "Varegacestat",
+  "indication": "Progressing desmoid tumors",
+  "domain": "endpoint",
+  "type": "EFFICACY_EVIDENCE",
+  "evidence": "SPONSOR_RELEASE",
+  "published": "2026-10-26",
+  "headline": "RINGSIDE confirmed response 56% vs 9% placebo; PFS HR 0.16",
+  "detail": "At ESMO 2026, sponsor reported 56% versus 9% independently assessed confirmed objective responses, and PFS hazard ratio 0.16 (95% CI 0.071–0.375; p<0.0001); common adverse effects included diarrhea, fatigue, rash and nausea.",
+  "fdaRelevance": "Large tumor and progression effects support efficacy, while toxicity and patient-reported benefit inform FDA benefit-risk.",
+  "counterpoint": "Strong Phase 3 results do not establish manufacturing, inspections or FDA-acceptable proposed labeling.",
+  "remainingQuestion": "Are longer-term adverse effects, reproductive risks, secondary malignancies and quality-of-life tradeoffs adequately characterized?",
+  "sourceTitle": "Immunome ESMO 2026 RINGSIDE clinical results",
+  "sourceUrl": "https://investors.immunome.com/immunome-presents-additional-clinical-data-for-varegacestat-in-desmoid-tumors-at-esmo-2026/"
+},
+{
+  "id": "mltx-vela2-primary",
+  "relatedNcts": [
+    "NCT06411379"
+  ],
+  "company": "MoonLake Immunotherapeutics",
+  "drug": "Sonelokimab",
+  "indication": "Hidradenitis suppurativa",
+  "domain": "statistics",
+  "type": "SCIENTIFIC_UNCERTAINTY",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2026-11-04",
+  "headline": "VELA-2 prespecified composite primary HiSCR75 missed significance (p=0.053)",
+  "detail": "MoonLake reports Week 16 VELA-2 HiSCR75 placebo-adjusted difference of 9 percentage points with prespecified composite-strategy p=0.053; alternative treatment-policy strategy showed p=0.033.",
+  "fdaRelevance": "A prespecified multiplicity-controlled primary failure is a substantive statistical uncertainty for reliance on two similarly designed pivotal studies.",
+  "counterpoint": "VELA-1's primary was positive and a second prespecified treatment-policy strategy produced significant results in VELA-2.",
+  "remainingQuestion": "Which estimand and missing/intercurrent-event treatment will FDA judge adequate for substantial evidence of efficacy?",
+  "sourceTitle": "MoonLake November 4 2026 Q3 SEC business update",
+  "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000182158626000013/moonlake-pressreleasexq320.htm"
+},
+{
+  "id": "mltx-vela1",
+  "relatedNcts": [
+    "NCT06411899"
+  ],
+  "company": "MoonLake Immunotherapeutics",
+  "drug": "Sonelokimab",
+  "indication": "Hidradenitis suppurativa",
+  "domain": "endpoint",
+  "type": "EFFICACY_EVIDENCE",
+  "evidence": "SPONSOR_RELEASE",
+  "published": "2025-09-28",
+  "headline": "VELA-1 Week 16 HiSCR75 significantly improved over placebo",
+  "detail": "MoonLake reports VELA-1 Week 16 HiSCR75 rates 34.8% sonelokimab versus 17.5% placebo, a 17.3-point difference; company stated significance in both prespecified analysis strategies.",
+  "fdaRelevance": "One pivotal trial supports efficacy, but the discordant companion VELA-2 composite analysis requires integrated interpretation.",
+  "counterpoint": "The more stringent HiSCR75 endpoint differs from some historical HS comparator programs, limiting cross-trial superiority claims.",
+  "remainingQuestion": "What are the complete efficacy, safety, infection and immunogenicity findings across the full VELA program?",
+  "sourceTitle": "MoonLake September 28 2025 Phase 3 VELA primary report",
+  "sourceUrl": "https://www.globenewswire.com/news-release/2025/9/28/3157370/0/en/moonlake-immunotherapeutics-reports-on-week-16-results-of-the-vela-phase-3-hidradenitis-suppurativa-program-with-the-nanobody-sonelokimab.html"
+},
+{
+  "id": "mltx-filing",
+  "relatedNcts": [
+    "NCT06411379",
+    "NCT06411899"
+  ],
+  "company": "MoonLake Immunotherapeutics",
+  "drug": "Sonelokimab",
+  "indication": "Hidradenitis suppurativa",
+  "domain": "timing",
+  "type": "REVIEW_STATUS",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2026-11-04",
+  "headline": "BLA submitted September 30; FDA filing acceptance and review goal were still pending",
+  "detail": "The company stated its sonelokimab BLA was submitted September 30, 2026 and it expected FDA filing acceptance within roughly 60 days, with review timeline to follow; no approved PDUFA date was confirmed in the filing.",
+  "fdaRelevance": "Forecasting a PDUFA action date before FDA accepts the BLA is premature; filing status and statistical concern must both be tracked.",
+  "counterpoint": "The filing contains multiple Phase 2/3 studies, including VELA and MIRA, that may strengthen the integrated record.",
+  "remainingQuestion": "Has FDA formally accepted the BLA, set a review goal, or requested additional analyses?",
+  "sourceTitle": "MoonLake November 4 2026 SEC company update",
+  "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000182158626000013/moonlake-pressreleasexq320.htm"
+},
+{
+  "id": "mlys-launch-hypertension",
+  "relatedNcts": [
+    "NCT06153693"
+  ],
+  "company": "Mineralys Therapeutics",
+  "drug": "Lorundrostat",
+  "indication": "Uncontrolled or resistant hypertension",
+  "domain": "endpoint",
+  "type": "EFFICACY_EVIDENCE",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2026-11-04",
+  "headline": "Launch-HTN additional analyses show meaningful blood-pressure reductions",
+  "detail": "Company reports that 46% on 50 mg achieved office SBP <130 mmHg at Week 12; more than two-thirds had SBP reduction ≥10 mmHg; the NDA review continued toward December 22, 2026.",
+  "fdaRelevance": "Objective blood-pressure lowering supports efficacy; aldosterone pathway risks, electrolytes, renal function and integrated safety require full review.",
+  "counterpoint": "Goal attainment is an additional descriptive result; the prespecified primary comparison and hyperkalemia/renal monitoring must be separately verified.",
+  "remainingQuestion": "What are placebo-adjusted primary effects, hyperkalemia rates, discontinuation and renal-function safety by baseline CKD status?",
+  "sourceTitle": "Mineralys November 4 2026 SEC Q3 results release",
+  "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000142/mlys2026q38kex991.htm"
+},
+{
+  "id": "phvs-rapide3",
+  "relatedNcts": [
+    "NCT06343779"
+  ],
+  "company": "Pharvaris",
+  "drug": "Deucrictibant immediate release",
+  "indication": "On-demand hereditary angioedema attacks",
+  "domain": "endpoint",
+  "type": "EFFICACY_EVIDENCE",
+  "evidence": "SPONSOR_RELEASE",
+  "published": "2025-12-11",
+  "headline": "RAPIDe-3 reported time to onset of relief 1.28 h vs over 12 h",
+  "detail": "Pharvaris reports faster median time to symptom relief (1.28 h vs >12 h, p<0.0001) and shorter time to end of progression (17.47 vs 228.67 minutes, p<0.0001) compared with placebo.",
+  "fdaRelevance": "Acute symptom time-to-relief is highly clinically relevant; robust event adjudication, rescue and recurrence after dosing need assessment.",
+  "counterpoint": "The sponsor-reported efficacy effect does not establish FDA acceptance of integrated safety or final product quality.",
+  "remainingQuestion": "Were attack-level correlations and repeated attacks handled correctly, and is rescue-medication use captured without bias?",
+  "sourceTitle": "Pharvaris RAPIDe-3 top-line results announcement",
+  "sourceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-positive-topline-data-rapide-3-pivotal-study"
+},
+{
+  "id": "phvs-chapter3",
+  "relatedNcts": [
+    "NCT06669754"
+  ],
+  "company": "Pharvaris",
+  "drug": "Deucrictibant extended release",
+  "indication": "Hereditary angioedema prophylaxis",
+  "domain": "endpoint",
+  "type": "EFFICACY_EVIDENCE",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2026-09-08",
+  "headline": "CHAPTER-3 prevention study reported 83% HAE attack-rate reduction",
+  "detail": "In 85 randomized participants (55 treated, 30 placebo), sponsor reported a mean monthly HAE attack-rate reduction of 83% versus placebo (p<0.0001); NDA filing was planned for first half 2027.",
+  "fdaRelevance": "Strong preventive effect potentially supports a separate prophylaxis application; do not attach the on-demand April 2027 PDUFA date to this study.",
+  "counterpoint": "Sample size and heterogeneous HAE subtypes, including normal C1 inhibitor, require population-specific precision and safety analysis.",
+  "remainingQuestion": "Are confidence intervals, subtype interactions, long-term tolerability and a distinct FDA application cycle adequately established?",
+  "sourceTitle": "Pharvaris September 8 2026 CHAPTER-3 SEC exhibit",
+  "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm"
+},
+{
+  "id": "prax-ulix-regulatory",
+  "relatedNcts": [
+    "NCT06087276"
+  ],
+  "company": "Praxis Precision Medicines",
+  "drug": "Ulixacaltamide",
+  "indication": "Essential tremor",
+  "domain": "inspections",
+  "type": "REVIEW_STATUS",
+  "evidence": "SPONSOR_RELEASE",
+  "published": "2026-08-06",
+  "headline": "Sponsor reported favorable FDA mid-cycle feedback and BIMO inspection",
+  "detail": "Praxis said FDA identified no major safety or efficacy concerns at mid-cycle to date, did not plan an advisory committee meeting, and BIMO inspections concluded without Form FDA 483 observations. PDUFA goal Jan 29, 2027.",
+  "fdaRelevance": "A favorable interim disclosure lowers the concern for known specific inspection deficiencies, but does not confirm final review outcome or CMC completion.",
+  "counterpoint": "The company statement is not the full FDA review; manufacturing inspections and final labeling may remain nonpublic.",
+  "remainingQuestion": "Are both ESSENTIAL3 pivotal studies, exposure-adjusted adverse events and product-quality readiness acceptable?",
+  "sourceTitle": "Praxis August 6 2026 regulatory and operations update",
+  "sourceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-provides-corporate-update-and-20"
+},
+{
+  "id": "srpt-essence-failure",
+  "relatedNcts": [
+    "NCT02500381"
+  ],
+  "company": "Sarepta Therapeutics",
+  "drug": "Golodirsen / casimersen (VYONDYS 53 / AMONDYS 45)",
+  "indication": "Duchenne muscular dystrophy",
+  "domain": "endpoint",
+  "type": "SCIENTIFIC_UNCERTAINTY",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2026-11-05",
+  "headline": "ESSENCE confirmatory trial missed primary endpoint; sNDAs seek traditional approval",
+  "detail": "Sarepta September 2026 Form 10-Q states the November 2025 ESSENCE topline primary endpoint did not reach statistical significance. FDA accepted supplemental NDAs in June 2026 to convert accelerated approvals, with Feb 28 2027 goal.",
+  "fdaRelevance": "Direct regulatory risk to verification of clinical benefit; potential outcomes include denial of conversion, label adjustments or an accelerated approval reassessment, rather than a simple first-time approval/CRL dichotomy.",
+  "counterpoint": "Both medicines remain approved under accelerated approval and the applications include other published and real-world evidence.",
+  "remainingQuestion": "What are the prespecified ESSENCE outcome, treatment effect, confidence intervals, subgroup findings and FDA's standard for adequate confirmation?",
+  "sourceTitle": "Sarepta November 5 2026 Form 10-Q ESSENCE result and sNDA risk",
+  "sourceUrl": "https://www.sec.gov/Archives/edgar/data/873303/000119312526449721/srpt-20260930.htm"
+},
+{
+  "id": "urgn-utopia",
+  "relatedNcts": [
+    "NCT06331299"
+  ],
+  "company": "UroGen Pharma",
+  "drug": "UGN-103 (mitomycin intravesical)",
+  "indication": "Recurrent low-grade intermediate-risk non-muscle-invasive bladder cancer",
+  "domain": "design",
+  "type": "EFFICACY_EVIDENCE",
+  "evidence": "SPONSOR_RELEASE",
+  "published": "2026-08-25",
+  "headline": "UTOPIA single-arm CR 77.8% and conditional 6-month response durability 94.5%",
+  "detail": "Sponsor reports 3-month complete response 77.8% (95% CI 68.3–85.5%) and 6-month duration of response by Kaplan-Meier 94.5% (95% CI 86.1–97.9%) among eligible responders; separate-trial ZUSDURI results are not randomized comparisons.",
+  "fdaRelevance": "The FDA-agreed single-arm filing strategy and existing mitomycin formulation precedent matter, but cross-trial equivalence is not demonstrated.",
+  "counterpoint": "FDA accepted the application with a June 14 2027 goal and a prior approved related product supports the clinical framework.",
+  "remainingQuestion": "What do FDA correspondence, selection bias, disease surveillance, durability beyond 6 months and product/CMC changes show?",
+  "sourceTitle": "UroGen UGN-103 NDA submission and UTOPIA evidence release",
+  "sourceUrl": "https://urogen.gcs-web.com/news-releases/news-release-details/urogen-submits-nda-ugn-103-investigational-treatment-recurrent"
+},
+{
+  "id": "vera-origin3",
+  "relatedNcts": [
+    "NCT04716231"
+  ],
+  "company": "Vera Therapeutics",
+  "drug": "Atacicept (TRUTAKNA)",
+  "indication": "IgA nephropathy",
+  "domain": "endpoint",
+  "type": "EFFICACY_EVIDENCE",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2026-11-05",
+  "headline": "ORIGIN 3 final analysis supports sustained kidney-function protection",
+  "detail": "Sponsor reports Week-52 eGFR treatment difference +5.6 mL/min/1.73m² (95% CI 3.7–7.5, p<0.0001), two-year annualized eGFR slope difference +5.0 (95% CI 3.6–6.5), composite kidney disease progression HR 0.24.",
+  "fdaRelevance": "Provides kidney-function outcomes supporting conversion from accelerated to full approval; duration, clinical endpoint definitions and integrated safety require review.",
+  "counterpoint": "Product was already FDA accelerated-approved in July 2026 for proteinuria reduction; a new approval forecast must address the supplemental BLA specifically.",
+  "remainingQuestion": "Do longer-term safety, infections/immunoglobulin effects and renal endpoint sensitivity analyses support full approval?",
+  "sourceTitle": "Vera November 2026 SEC 10-Q ORIGIN 3 efficacy analysis",
+  "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1831828/000119312526449826/vera-20260930.htm"
+},
+{
+  "id": "vera-approval-cycle",
+  "relatedNcts": [
+    "NCT04716231"
+  ],
+  "company": "Vera Therapeutics",
+  "drug": "Atacicept (TRUTAKNA)",
+  "indication": "IgA nephropathy",
+  "domain": "timing",
+  "type": "REVIEW_STATUS",
+  "evidence": "SPONSOR_RELEASE",
+  "published": "2026-11-05",
+  "headline": "Accelerated approval already granted July 7; full-approval sBLA submitted Nov 3",
+  "detail": "Vera announced FDA accelerated approval on July 7 2026 and completion of sBLA filing November 3 2026 for full approval based on ORIGIN 3 final efficacy outcomes. No accepted sBLA PDUFA date was stated.",
+  "fdaRelevance": "Separates existing approved product from future supplemental full-approval review and prevents fabricated PDUFA dates.",
+  "counterpoint": "A submitted sBLA still requires filing acceptance and review; previous accelerated approval does not guarantee traditional approval.",
+  "remainingQuestion": "When does FDA accept the sBLA and what review goal and confirmatory-benefit objections apply?",
+  "sourceTitle": "Vera November 5 2026 corporate update",
+  "sourceUrl": "https://veratherapeutics.gcs-web.com/news-releases/news-release-details/vera-therapeutics-provides-business-update-and-reports-third-3"
+},
+{
+  "id": "zbio-indigo",
+  "relatedNcts": [
+    "NCT05662241"
+  ],
+  "company": "Zenas BioPharma",
+  "drug": "Obexelimab",
+  "indication": "IgG4-related disease",
+  "domain": "endpoint",
+  "type": "EFFICACY_EVIDENCE",
+  "evidence": "PEER_REVIEWED",
+  "published": "2026-06-17",
+  "headline": "INDIGO peer-reviewed flare-prevention benefit HR 0.44 with fewer steroid rescue doses",
+  "detail": "NEJM reports 194 randomized; first disease flare HR 0.44 (95% CI 0.28–0.71, p<0.001); complete remission 37.1% vs 19.6% (p=0.005). Serious AEs 10.3% on obexelimab versus 18.6% placebo in the trial.",
+  "fdaRelevance": "Strong disease-flare efficacy and reduced corticosteroid exposure, balanced against immune modulation, infection and generalizability to target organ subtypes.",
+  "counterpoint": "Not all long-term immunologic risks can be ruled out from 52 weeks; FDA accepted BLA with May 27 2027 goal, not an approval commitment.",
+  "remainingQuestion": "Were flare criteria uniform across organs, and is long-term infection/immune surveillance sufficient?",
+  "sourceTitle": "NEJM, Obexelimab for Treatment of IgG4-Related Disease",
+  "sourceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2601337"
 }
 ];
 export function findingsForNct(nct:string):ReviewedFinding[]{
