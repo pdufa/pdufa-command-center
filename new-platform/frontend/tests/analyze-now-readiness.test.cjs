@@ -1,0 +1,21 @@
+const test=require("node:test");
+const assert=require("node:assert/strict");
+const fs=require("node:fs");
+const path=require("node:path");
+const root=path.resolve(__dirname,"..");
+const read=p=>fs.readFileSync(path.join(root,p),"utf8");
+test("Analyze Now visibly checks isolated backend readiness and fails closed",()=>{
+ const page=read("app/analyze-now/page.tsx");
+ const client=read("app/analyze-now/CanaryReadiness.tsx");
+ const route=read("app/api/analyze-now/readiness/route.ts");
+ assert.match(page,/<CanaryReadiness\/>/);
+ assert.match(client,/\/api\/analyze-now\/readiness/);
+ assert.match(client,/Recheck readiness/);
+ assert.match(route,/authConfigured\(\)/);
+ assert.match(route,/hasSession\(/);
+ assert.match(route,/medical-canary-preflight/);
+ assert.match(route,/data\.persistentStorageReady===true/);
+ assert.match(route,/data\.sourceWorkerReady===true/);
+ assert.match(route,/ready\?200:503/);
+ assert.doesNotMatch(route,/DATABASE_URL|PDUFA_ANALYZE_NOW_ALL_ENABLED/);
+});

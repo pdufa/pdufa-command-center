@@ -595,6 +595,15 @@ async def lifespan(app: FastAPI):
                 import logging
                 logging.getLogger(__name__).error(
                     "PDUFA_INSTALL_MONITOR_START_FAILED error_type=%s",type(exc).__name__)
+        # Isolated, opt-in medical canary: never create analysis tables in production by default.
+        if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+                and REQUIRE_POSTGRES and DATABASE_URL.startswith("postgresql+psycopg://")):
+            try:
+                from .medical_continuous import start as start_medical_continuous
+                start_medical_continuous(ENGINE)
+                app.state.medical_canary_initialized = True
+            except Exception as exc:
+                logging.getLogger(__name__).error("PDUFA_MEDICAL_CANARY_INIT_FAILED error_type=%s", type(exc).__name__)
     yield
     if os.getenv("PDUFA_INSTALL_MONITOR_ENABLED","").lower() in ("1","true","yes"):
         from .installation_monitor import stop as stop_install_monitor
@@ -612,6 +621,35 @@ def installation_monitor_status():
     """Authenticated, no-store, read-only evidence. No scans, alerts or predictions start on GET."""
     from .installation_monitor import collect
     return collect(ENGINE, storage_ready=_DB_STATE["available"],require_postgres=True)
+
+# Independent medical writes require the *medical* canary to be initialized
+# against durable PostgreSQL; general checklist storage readiness is insufficient.
+def require_medical_pilot_storage() -> None:
+    enabled = os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+    if not (enabled and REQUIRE_POSTGRES and DATABASE_URL.startswith("postgresql+psycopg://")
+            and _DB_STATE["available"] and getattr(app.state, "medical_canary_initialized", False)):
+        raise HTTPException(status_code=503, detail="Isolated medical canary PostgreSQL is not ready")
+
+if os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes"):
+    from .medical_continuous import install_routes as install_medical_continuous_routes
+    from .medical_on_demand import install_routes as install_analyze_now_routes
+    install_medical_continuous_routes(app, lambda: ENGINE, require_internal_key, require_medical_pilot_storage)
+    install_analyze_now_routes(app, lambda: ENGINE, require_internal_key, require_medical_pilot_storage)
+
+@app.get("/api/internal/medical-canary-preflight", dependencies=[Depends(require_internal_key)])
+def medical_canary_preflight():
+    """Read-only preview gate: this does not launch analysis, assign scores, or expose secrets."""
+    configured = os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+    durable = bool(REQUIRE_POSTGRES and _DB_STATE["available"] and DATABASE_URL.startswith("postgresql+psycopg://"))
+    return {
+        "enabled": configured,
+        "persistentStorageReady": durable,
+        "canaryNct": os.getenv("PDUFA_ANALYZE_NOW_CANARY_NCT", "NCT06081894"),
+        "sourceWorkerReady": configured and durable and bool(getattr(app.state, "medical_canary_initialized", False)),
+        "fdaPredictionStatus": "ABSTAIN",
+        "certaintyStatus": "NOT_VALIDATED",
+        "numericalPredictionAvailable": False,
+    }
 
 from .phase3_catalog import install_routes as install_phase3_catalog_routes
 from .phase3_ingestion import install_routes as install_phase3_ingestion_routes
