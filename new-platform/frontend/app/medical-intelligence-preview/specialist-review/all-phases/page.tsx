@@ -3,20 +3,22 @@ import type {Metadata} from "next";
 import {CLINICAL_SPECIALTY_PROFILES} from "../../../../lib/medical-intelligence-specialty";
 import {getRegistryPhases} from "../../../../lib/medical-intelligence-registry-phase";
 import {buildAllPhaseSubspecialtyReview} from "../../../../lib/medical-intelligence-specialty-all-phases";
-import {DEEP_ASSESSMENTS,SCIENTIFIC_LEVELS} from "../../../../lib/medical-intelligence-master-depth";
+import {DEEP_ASSESSMENTS,SCIENTIFIC_LEVELS,getDepthSlot} from "../../../../lib/medical-intelligence-master-depth";
+import {PHASE_REVIEW_STANDARD} from "../../../../lib/medical-intelligence-assessment-rankings";
 
 export const metadata:Metadata={
  title:"All-Phase Deep Clinical Subspecialty Intelligence",
  description:"Consistent disease-specific specialist research across phases, with phase-aware evidence requirements and risks."
 };
 export const dynamic="force-dynamic";
-type Params={nct?:string;specialty?:string};
+type Params={nct?:string;specialty?:string;assessment?:string};
 const theme={ink:"#173a30",muted:"#50695b",line:"#c9dacf",light:"#f3f8f4",green:"#006453"};
 const card={background:"#fff",padding:16,border:"1px solid "+theme.line,borderRadius:12} as const;
 export default async function AllPhaseSpecialistPage({searchParams}:{searchParams:Promise<Params>}){
  const query=await searchParams;
  const selectedNct=typeof query.nct==="string"&&/^NCT\d{8}$/.test(query.nct)?query.nct:"NCT06081894";
  const selectedProfileId=typeof query.specialty==="string"?query.specialty:"";
+ const selectedAssessment=DEEP_ASSESSMENTS.find(a=>a.id===query.assessment)||DEEP_ASSESSMENTS[0];
  const [registry]=await getRegistryPhases([selectedNct]);
  const review=selectedProfileId?buildAllPhaseSubspecialtyReview(selectedNct,registry.verifiedPhase,selectedProfileId):null;
  return <main style={{maxWidth:1220,margin:"24px auto",padding:"0 16px 56px",color:theme.ink,fontFamily:"system-ui,sans-serif"}}>
@@ -100,6 +102,36 @@ export default async function AllPhaseSpecialistPage({searchParams}:{searchParam
        <p style={{fontSize:12,color:theme.muted,marginBottom:0}}>Scores from one phase are not treated as identical evidence quality to a different phase. Previous phase-end results, current-phase accumulated results and newest-event effects stay separate and dated.</p>
      </section>
    </>}
+   <section style={{...card,marginTop:16}}>
+     <h2 style={{fontSize:19,margin:"0 0 8px"}}>Unchanged scientific depth · 40 assessments × 20 methods</h2>
+     <p style={{fontSize:13,color:theme.muted,lineHeight:1.6}}>The full scientific framework is available at every stage, including early phases. Scientific methodology stays consistent; required evidence is determined by the verified clinical phase. Questions about future results remain investigation plans, never automatic failures.</p>
+     <p style={{fontSize:13}}><strong>Verified phase standard:</strong> {PHASE_REVIEW_STANDARD[registry.verifiedPhase]}</p>
+     <form action="/medical-intelligence-preview/specialist-review/all-phases" method="get" style={{display:"flex",gap:10,alignItems:"end",flexWrap:"wrap"}}>
+       <input type="hidden" name="nct" value={selectedNct}/>
+       <input type="hidden" name="specialty" value={selectedProfileId}/>
+       <label style={{display:"grid",gap:5,flex:"1 1 340px",fontSize:13,fontWeight:700}}>Select any one of the 40 scientific assessments
+         <select name="assessment" defaultValue={selectedAssessment.id} style={{padding:11,borderRadius:8,border:"1px solid #a3bdad",background:"#fff",fontSize:13}}>
+           {DEEP_ASSESSMENTS.map(a=><option key={a.id} value={a.id}>{a.id} · {a.label}</option>)}
+         </select>
+       </label>
+       <button type="submit" style={{padding:11,borderRadius:8,border:0,background:theme.green,color:"#fff",fontWeight:750,cursor:"pointer"}}>Inspect 20 tests</button>
+     </form>
+     <div style={{marginTop:14,border:"1px solid "+theme.line,borderRadius:9,padding:13}}>
+       <strong style={{fontSize:15}}>{selectedAssessment.id}. {selectedAssessment.label}</strong>
+       <p style={{fontSize:13,lineHeight:1.6}}>{selectedAssessment.objective}</p>
+       <p style={{fontSize:12,color:theme.muted}}>Twenty method positions; each has a separate source-dependent rating once investigated. No scientific test score is inferred from a methodology definition alone.</p>
+       {SCIENTIFIC_LEVELS.map(level=>{
+         const slot=getDepthSlot(selectedAssessment.id,level.id);
+         return <details key={level.id} style={{borderTop:"1px solid "+theme.line,padding:"10px 4px"}}>
+           <summary style={{fontSize:13,fontWeight:700,cursor:"pointer"}}>Test {level.id}. {level.name} · Not rated</summary>
+           <p style={{fontSize:13}}><strong>Scientific question:</strong> {slot?.question}</p>
+           <p style={{fontSize:13}}><strong>Research method:</strong> {slot?.method}</p>
+           <p style={{fontSize:13}}><strong>Evidence to seek when phase-appropriate:</strong> {slot?.requiredSources}</p>
+           <p style={{fontSize:12,color:theme.muted}}>Evidence status: UNREVIEWED. Not enough verified data to issue a grade or declare clinical failure.</p>
+         </details>;
+       })}
+     </div>
+   </section>
    <p style={{fontSize:13,marginTop:17}}>
      <Link href="/medical-intelligence-preview/specialist-review">Existing FDA application specialty dossiers</Link>
      {" · "}<Link href="/medical-intelligence-preview/master-depth">40 assessments × 20 investigations</Link>
