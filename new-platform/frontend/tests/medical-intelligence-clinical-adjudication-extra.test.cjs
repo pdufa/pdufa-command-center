@@ -21,8 +21,8 @@ const {ADJUDICATION_CASES,INVESTIGATION_PRIORITIES,adjudicationForCycle,getAdjud
 const {ADDITIONAL_ADJUDICATION_CASES}=load("medical-intelligence-clinical-adjudication-extra");
 test("Second wave has eight separate verified regulatory research topics",()=>{
  assert.equal(ADDITIONAL_ADJUDICATION_CASES.length,8);
- assert.equal(ADJUDICATION_CASES.length,11);
- assert.equal(new Set(ADJUDICATION_CASES.map(x=>x.cycleId)).size,11);
+ assert.equal(ADJUDICATION_CASES.length,23);
+ assert.equal(new Set(ADJUDICATION_CASES.map(x=>x.cycleId)).size,23);
  const ids=new Set();
  for(const c of ADDITIONAL_ADJUDICATION_CASES){
   assert.ok(!ids.has(c.id));ids.add(c.id);
@@ -86,6 +86,6 @@ test("Regulatory scope and subgroup/safety contrasts remain independent by appli
  assert.match(getAdjudicationCase("prax-tremor-tolerability").sources.find(s=>s.id==="prax-adverse").result,/63\/233/);
  assert.match(getAdjudicationCase("svra-dlco-function").sources.find(s=>s.id==="svra-qol48").result,/0\.1046/);
  const pending=INVESTIGATION_PRIORITIES.filter(x=>x.detailedCaseCount);
- assert.equal(pending.length,11);
+ assert.equal(pending.length,22);
  assert.equal(INVESTIGATION_PRIORITIES.length,22);
 });
