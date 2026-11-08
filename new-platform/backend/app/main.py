@@ -620,7 +620,7 @@ if os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes"
 def medical_canary_preflight():
     """Read-only preview gate: this does not launch analysis, assign scores, or expose secrets."""
     configured = os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
-    durable = bool(_DB_STATE["available"] and DATABASE_URL.startswith("postgresql+psycopg://"))
+    durable = bool(REQUIRE_POSTGRES and _DB_STATE["available"] and DATABASE_URL.startswith("postgresql+psycopg://"))
     return {
         "enabled": configured,
         "persistentStorageReady": durable,
