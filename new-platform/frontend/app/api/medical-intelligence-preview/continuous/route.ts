@@ -39,12 +39,20 @@ async function upstream(path: string, method: "GET" | "POST", body?: object) {
     if (!response.headers.get("content-type")?.toLowerCase().startsWith("application/json"))
       return json({ error: "Medical stage service returned unexpected data" }, 503);
     const payload: unknown = await response.json();
-    if (!response.ok)
-      return json({ error: response.status === 404 ? "No saved run or stage service not deployed" :
+    if (!response.ok) {
+      // FastAPI returns a different 404 for an unknown route than for an existing
+      // research endpoint with no saved run. Do not disguise a missing backend
+      // deployment as "no previous run" when the operator opens the page.
+      const missingRun = response.status === 404 && payload !== null &&
+        typeof payload === "object" && "detail" in payload &&
+        (payload as { detail?: unknown }).detail === "Saved medical research run not found";
+      return json({ error: missingRun ? "No saved medical research run" :
+          response.status === 404 ? "Persistent medical stage backend route is not deployed" :
           response.status === 422 ? "Run identity invalid" :
           response.status === 401 ? "Backend authorization unavailable" :
           "Medical stage backend unavailable" },
-        response.status === 404 ? 404 : response.status === 422 ? 422 : 503);
+        missingRun ? 404 : response.status === 422 ? 422 : 503);
+    }
     return json(payload);
   } catch {
     return json({ error: "Persistent medical stage service unavailable; no job started" }, 503);
