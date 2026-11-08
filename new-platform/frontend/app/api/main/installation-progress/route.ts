@@ -1,6 +1,6 @@
 import {NextRequest,NextResponse} from "next/server";
-import {authConfigured,COOKIE_NAME,hasSession} from "../../../lib/auth";
-import {buildInstallationProgress,type MonitorTelemetry,type ExternalVerification} from "../../../lib/main-install-progress";
+import {authConfigured,COOKIE_NAME,hasSession} from "../../../../lib/auth";
+import {buildInstallationProgress,type MonitorTelemetry,type ExternalVerification} from "../../../../lib/main-install-progress";
 
 export const runtime="nodejs";
 export const dynamic="force-dynamic";
