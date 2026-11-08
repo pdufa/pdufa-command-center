@@ -58,6 +58,6 @@ export default function ApplicationsPage(){
     </table>
    </div>
   </section>
-  <p style={{fontSize:13,lineHeight:1.6,color:muted,marginTop:18}}>Caveat: the grouped application identity is reconstructed from dated sponsor/SEC records and trial associations, not verified against confidential FDA application files. Some entries, especially the Cytokinetics oHCM listing, require correction of the original FOCUS date-to-application relationship. No source spreadsheets were changed. <Link href="/medical-intelligence-preview">Return to individual trial dossier</Link> · <Link href="/medical-intelligence-preview/coverage">Registry coverage</Link>.</p>
+  <p style={{fontSize:13,lineHeight:1.6,color:muted,marginTop:18}}>Caveat: the grouped application identity is reconstructed from dated sponsor/SEC records and trial associations, not verified against confidential FDA application files. Some entries, especially the Cytokinetics oHCM listing, require correction of the original FOCUS date-to-application relationship. No source spreadsheets were changed. <Link href="/medical-intelligence-preview/specialist-review">Clinical Subspecialty Review</Link> · <Link href="/medical-intelligence-preview">Return to individual trial dossier</Link> · <Link href="/medical-intelligence-preview/coverage">Registry coverage</Link>.</p>
  </main>;
 }
