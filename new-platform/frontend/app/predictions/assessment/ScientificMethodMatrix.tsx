@@ -14,7 +14,13 @@ function SourceLinks({sources}: {sources: Evidence[]}) {
     try {url = new URL(source.sourceUrl);} catch {return <li key={i}>Invalid source URL withheld</li>;}
     return <li key={i}>{url.protocol === "https:" && !url.username && !url.password ?
       <a href={url.href} target="_blank" rel="noopener noreferrer">{url.href}</a> : "Unsafe source URL withheld"}
-      {source.stageDocumentSha256 ? <div style={{fontSize: 11, overflowWrap: "anywhere"}}>Captured stage SHA-256: {source.stageDocumentSha256}</div> : null}</li>;
+      {source.stageDocumentSha256 ? <div style={{fontSize: 11, overflowWrap: "anywhere"}}>Captured stage SHA-256: {source.stageDocumentSha256}</div> : null}
+      {source.sourceCapturedAt ? <div style={{fontSize:11}}>Original source captured: {source.sourceCapturedAt}</div> : null}
+      {source.classification ? <div style={{fontSize:12,marginTop:5}}>
+        <strong>Human evidence finding: {source.classification}</strong>
+        <div>Source location: {source.sourceLocation}</div>
+        <div>{source.examinedFinding}</div>
+      </div> : null}</li>;
   })}</ul>;
 }
 function MethodEvidence({method}: {method: MethodReview}) {
