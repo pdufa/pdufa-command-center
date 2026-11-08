@@ -31,7 +31,7 @@ test("Analyze Now starts only by authenticated same-origin canary request",()=>{
 
 test("Backend and stage worker fail closed until explicit isolated PostgreSQL opt-in",()=>{
   assert.match(backend,/PDUFA_MEDICAL_PREVIEW_ENABLED/);
-  assert.match(backend,/DATABASE_URL\.startsWith\("postgresql\+psycopg:\/\/"\)/);
+  assert.ok(backend.includes('DATABASE_URL.startswith("postgresql+psycopg://")'));
   assert.match(backend,/medical_canary_preflight/);
   assert.match(backend,/install_analyze_now_routes/);
   assert.match(source,/core\.create\(engine,nct,request_key,submit=False\)/);
