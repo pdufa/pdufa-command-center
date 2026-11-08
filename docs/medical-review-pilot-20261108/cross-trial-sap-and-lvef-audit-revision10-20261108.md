@@ -22,6 +22,12 @@ Three records must be preserved **as separately labeled results**, not averaged,
 
 [Original Cytokinetics trial-results disclosure](https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Results-from-ACACIA-HCM-Presented-in-Hot-Line-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026-and-Published-in-The-New-England-Journal-of-Medicine/default.aspx) describes **LVEF under 50%** in 27/258 versus 2/259 and **serious heart-failure events** 12 versus 3; the published secondary responder paper gives 11 versus 1. Those are different endpoints from low-LVEF interruption and require their own event-coded, exposure-window reconciliation. No FDA safety conclusion can be inferred from numerical consistency alone.
 
+## Regulatory-cycle identity protection — same drug, two different applications
+
+The same aficamten/MYQORZO drug has **separate** indication-specific FDA review cycles. [Cytokinetics' May 5, 2026 original earnings release](https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Reports-First-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx) states that the sNDA based on **MAPLE-HCM, obstructive HCM**, had been **accepted for filing** and assigned **PDUFA 2026-11-14**. [Its November 4, 2026 original earnings release](https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Reports-Third-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx) continues to describe the **ACACIA-HCM, nonobstructive HCM** sNDA as **expected to be submitted in Q4 2026**, not an accepted FDA filing.
+
+Thus the **November 14, 2026 PDUFA applies to MAPLE-HCM / oHCM, not this pilot's ACACIA-HCM / nHCM**. No nHCM PDUFA date is established. Never transfer another indication's filing status, date, FDA outcome, or approval probability into the exact-NCT pilot, even when sponsor and molecule match. Third-party biotech event scanners must be crosschecked against **trial/program + indication + application cycle**, not just ticker or drug.
+
 ## What changed in scientific readiness
 
 **New useful evidence:** (1) Explicit wrong-trial SAP identification and prevention of protocol CY 6031 cross-contamination; (2) a second peer-reviewed paper directly reporting **7/258** site-read low-LVEF interruptions; (3) a clear source-definition hypothesis for why the first report says 14 with a mismatched percentage.
