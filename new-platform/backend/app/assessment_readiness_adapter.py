@@ -8,9 +8,9 @@ from math import isfinite
 
 
 def assessment_readiness_inputs(record: dict, *, program_id: str, exact_key: str,
-                                stage: str = "GEM_JR") -> dict:
-    if stage not in {"GEM_JR", "GEM"}:
-        raise ValueError("Only GEM JR and GEM assessments are eligible")
+                                stage: str = "PIPELINE") -> dict:
+    if stage != "PIPELINE":
+        raise ValueError("Only Pipeline assessments are active")
     candidate = (record.get("data") or {}).get("candidate") or {}
     if (record.get("programId") != program_id or record.get("id") != exact_key
             or candidate.get("id") != exact_key or candidate.get("programId") != program_id):

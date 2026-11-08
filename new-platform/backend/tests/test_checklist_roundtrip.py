@@ -39,19 +39,17 @@ def test_per_ticker_checklist_autosave_and_restore(monkeypatch):
         assert client.get(path, headers=headers).json()["selections"]["cash"] is False
 
 
-def test_archived_gem_stages_reject_new_writes_but_preserve_read_access(monkeypatch):
+def test_retired_stages_reject_reads_and_writes(monkeypatch):
     monkeypatch.setenv("PDUFA_INTERNAL_API_KEY", "test-secret-not-for-production")
     ticker = "T" + uuid4().hex[:10].upper()
     headers = {"X-PDUFA-Internal-Key": "test-secret-not-for-production"}
     with TestClient(app) as client:
         for stage in ("GEM_JR", "GEM"):
             path = "/api/checklists/" + ticker + "/" + stage
-            archived = client.get(path, headers=headers)
-            assert archived.status_code == 200
-            assert archived.json()["version"] == 0
+            assert client.get(path, headers=headers).status_code == 410
             disabled = client.put(path, headers=headers, json={
                 "version": 0, "selections": {"market_cap": True},
-                "notes": "Must not create archived stage association"
+                "notes": "Must not create retired stage association"
             })
             assert disabled.status_code == 410
-            assert client.get(path, headers=headers).json()["version"] == 0
+            assert client.get(path, headers=headers).status_code == 410

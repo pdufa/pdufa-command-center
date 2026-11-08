@@ -307,12 +307,6 @@ def gather(today: date | None = None) -> dict:
         except (ValueError, TypeError):
             problems.append("overnight_scan_status.json: invalid JSON")
 
-    # Empty compatibility keys preserve old read-only schema without linking
-    # GEM stage membership, promotions, historical signals or FS/FA to POOL.
-    members = {
-        "GEM_JR": {"asOf": "", "rows": [], "history": []},
-        "GEM": {"asOf": "", "rows": [], "history": []},
-    }
     from .trial_qualification import attach_trial_filter_facts
     attach_trial_filter_facts(candidates, original, funding, sec_recheck, runway, ledger, now)
     missing_trial_feeds = [
@@ -330,7 +324,6 @@ def gather(today: date | None = None) -> dict:
         "marketCapRange": {"min": _MIN, "max": _MAX},
         "trialFilterSchema": 1,
         "pipeline": candidates,
-        "members": members,
         "sourceHealth": {
             "state": "PARTIAL" if problems or not status.get("complete") else "COMPLETE_PUBLISHED",
             "issues": problems, "publishedScan": status,
