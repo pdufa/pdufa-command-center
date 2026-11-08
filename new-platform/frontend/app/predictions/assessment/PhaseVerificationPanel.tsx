@@ -73,6 +73,8 @@ export default function PhaseVerificationPanel({nct}:{nct:string}){
         <strong>ACACIA-HCM — updated Phase 3 source review docket (Nov 8)</strong>
         <p style={{fontSize:13}}>November 4 SEC safety reporting and planned nHCM filing are source-linked. The NEJM publisher lists a protocol and supplementary appendix, but their contents have not been independently retrieved and verified. No scientific phase approval, grade or PDUFA date is inferred.</p>
         <a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/phase3-reviewer-handoff-revision2-20261108.md" target="_blank" rel="noopener noreferrer">Open source-linked Phase 3 reviewer handoff</a>
+        <p style={{fontSize:13,marginBottom:0}}><strong>New source reconciliation:</strong> open publisher protocol/appendix access checks, the secondary responder-analysis missingness rules, and two unresolved adverse-event reporting discrepancies. No reviewer grades or approvals inferred.</p>
+        <a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/source-reconciliation-revision3-20261108.md" target="_blank" rel="noopener noreferrer">Open revision 3 · safety and statistical source review</a>
       </aside>:null}
       <p>
         <a href={selected.officialUrl} target="_blank" rel="noopener noreferrer">Original ClinicalTrials.gov study</a>
