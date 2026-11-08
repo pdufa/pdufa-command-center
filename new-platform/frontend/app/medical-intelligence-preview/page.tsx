@@ -4,6 +4,7 @@ import type {CSSProperties} from "react";
 import focus from "../../data/p3PostDataActive.json";
 import {FAILURE_INVESTIGATIONS, INITIAL_DECISION} from "../../lib/medical-intelligence-preview";
 import OnDemandRegistryResearch from "./OnDemandRegistryResearch";
+import ContinuousMedicalAnalysis from "./ContinuousMedicalAnalysis";
 import {findingsForNct,REVIEW_COVERAGE,REVIEW_AS_OF} from "../../lib/medical-intelligence-reviewed-findings";
 import {conditionForNct} from "../../lib/medical-intelligence-conditions";
 import {applicationsForNct,CYCLE_COUNTS} from "../../lib/medical-intelligence-applications";
@@ -108,6 +109,8 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
         <Source href={focus.source}>Source FOCUS spreadsheet</Source>
       </div>
     </section>
+
+    <ContinuousMedicalAnalysis key={"continuous-"+record.nct} nct={record.nct}/>
 
     <OnDemandRegistryResearch key={record.nct} nct={record.nct}/>
 
