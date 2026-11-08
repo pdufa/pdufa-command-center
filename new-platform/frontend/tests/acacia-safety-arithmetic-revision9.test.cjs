@@ -1,0 +1,42 @@
+const test=require("node:test"),assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path");
+const source=JSON.parse(fs.readFileSync(path.resolve(__dirname,"../../../docs/medical-review-pilot-20261108/safety-arithmetic-source-audit-revision9-20261108.json"),"utf8"));
+const panel=fs.readFileSync(path.resolve(__dirname,"../app/predictions/assessment/PhaseVerificationPanel.tsx"),"utf8");
+test("original safety counts use source-specific endpoint categories",()=>{
+  assert.equal(source.exactNct,"NCT06081894");
+  assert.equal(source.revision,9);
+  assert.equal(source.observations.length,6);
+  assert.equal(source.randomizedArmSize.aficamten,258);
+  assert.equal(source.randomizedArmSize.placebo,259);
+  const peer=source.observations.find(x=>x.id==="HF_SAE_PUBLISHED");
+  const sponsor=source.observations.find(x=>x.id==="HF_SAE_LATER");
+  assert.equal(peer.endpoint,"HEART_FAILURE_SERIOUS_ADVERSE_EVENT");
+  assert.equal(sponsor.endpoint,peer.endpoint);
+  assert.deepEqual([peer.treatment,peer.placebo],[11,1]);
+  assert.deepEqual([sponsor.treatment,sponsor.placebo],[12,3]);
+  assert.ok(peer.publishedPctConsistent.every(Boolean));
+  assert.ok(sponsor.publishedPctConsistent.every(Boolean));
+  assert.notEqual(source.observations.find(x=>x.id==="ANY_SAE_PUBLISHED").endpoint,peer.endpoint);
+});
+test("published interruption percentages are audited, not invented or silently corrected",()=>{
+  const interruption=source.observations.find(x=>x.id==="LVEF_INTERRUPTION_PUBLISHED");
+  assert.deepEqual([interruption.treatment,interruption.placebo],[14,1]);
+  assert.deepEqual(interruption.reportedPct,[2.7,0.8]);
+  assert.deepEqual(interruption.calculatedPct,[5.4,0.4]);
+  assert.deepEqual(interruption.publishedPctConsistent,[false,false]);
+  assert.equal(interruption.randomizedDenominatorAssumption,true);
+  assert.equal(interruption.status,"PUBLISHED_NUMERATOR_PERCENTAGE_DISCORDANCE_REVIEW");
+  const issue=source.unresolvedChecks.find(x=>x.id==="REV9-002");
+  assert.equal(issue.status,"OPEN");
+  assert.equal(source.lockedSapAvailable,false);
+  assert.equal(source.clinicalSignoff,false);
+  assert.equal(source.phaseVerified,false);
+  assert.equal(source.scoreEvents,0);
+  assert.deepEqual(source.outcomePrediction,{APPROVAL:"ABSTAIN",CRL:"ABSTAIN",REVIEW_DELAY:"ABSTAIN"});
+  assert.equal(source.certainty,"NOT_VALIDATED");
+});
+test("mobile scientific review panel shows distinct source and arithmetic comparisons with abstain guard",()=>{
+  assert.match(panel,/Safety source audit · numerical comparison and unresolved counts/);
+  assert.match(panel,/14\/258 is 5\.4% and 1\/259 is 0\.4%/);
+  assert.match(panel,/CLINICAL SAFETY ADJUDICATION OPEN · GRADE EVENTS 0/);
+  assert.match(panel,/safety-arithmetic-source-audit-revision9-20261108\.md/);
+});
