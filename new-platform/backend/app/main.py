@@ -584,7 +584,21 @@ async def lifespan(app: FastAPI):
             logging.getLogger(__name__).error("PDUFA_PHASE3_STARTUP_FAILED error_type=%s", type(exc).__name__)
         from .nct_live_stream import start as start_nct_live_stream
         start_nct_live_stream(ENGINE)
+        # Read-only monitoring is independent of all medical analysis and prediction jobs.
+        # Its 5-minute alert dispatcher is opt-in and requires durable PostgreSQL.
+        if (REQUIRE_POSTGRES and DATABASE_URL.startswith("postgresql+psycopg://")
+                and os.getenv("PDUFA_INSTALL_MONITOR_ENABLED","").lower() in ("1","true","yes")):
+            try:
+                from .installation_monitor import start as start_install_monitor
+                start_install_monitor(ENGINE,ready_provider=lambda: _DB_STATE["available"])
+            except Exception as exc:
+                import logging
+                logging.getLogger(__name__).error(
+                    "PDUFA_INSTALL_MONITOR_START_FAILED error_type=%s",type(exc).__name__)
     yield
+    if os.getenv("PDUFA_INSTALL_MONITOR_ENABLED","").lower() in ("1","true","yes"):
+        from .installation_monitor import stop as stop_install_monitor
+        stop_install_monitor()
 
 
 from .reconciliation_review import ReviewPackage
@@ -592,6 +606,13 @@ from .reconciliation_review import ReviewPackage
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 from .nct_live_stream import install_routes as install_nct_stream_routes
 install_nct_stream_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+
+@app.get("/api/internal/installation-monitor", dependencies=[Depends(require_internal_key)])
+def installation_monitor_status():
+    """Authenticated, no-store, read-only evidence. No scans, alerts or predictions start on GET."""
+    from .installation_monitor import collect
+    return collect(ENGINE, storage_ready=_DB_STATE["available"],require_postgres=True)
+
 from .phase3_catalog import install_routes as install_phase3_catalog_routes
 from .phase3_ingestion import install_routes as install_phase3_ingestion_routes
 install_phase3_catalog_routes(app, lambda: ENGINE, require_internal_key, require_storage)
