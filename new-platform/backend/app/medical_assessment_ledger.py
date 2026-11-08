@@ -47,6 +47,17 @@ def _reviewer(value: str) -> str:
     return value
 
 
+def _source_urls(value) -> set[str]:
+    """Exact parsed source values, never substrings of a serialized document."""
+    if isinstance(value, dict):
+        return set().union(*(_source_urls(v) for v in value.values()))
+    if isinstance(value, list):
+        return set().union(*(_source_urls(v) for v in value))
+    if isinstance(value, str) and value.startswith("https://"):
+        return {value}
+    return set()
+
+
 def _position(assessment: int, method: int | None = None) -> None:
     if type(assessment) is not int or not 1 <= assessment <= ASSESSMENTS:
         raise ValueError("Assessment index must be 1–40")
@@ -248,6 +259,9 @@ def record_verified_phase(engine, *, nct: str, run_id: str, phase: str,
         if stage is None:
             raise ValueError("Original registry identity stage is missing")
         details = json.loads(stage)
+        if (details.get("nct") != nct or
+                details.get("source") != f"https://clinicaltrials.gov/study/{nct}"):
+            raise ValueError("Phase confirmation requires the exact NCT registry identity")
         if phase not in details.get("phases", []):
             raise ValueError("Verified phase must match the saved original registry phase")
         source_url = _url(details.get("source", ""))
@@ -307,7 +321,7 @@ def append_review(engine, *, nct: str, run_id: str, phase_event_id: str,
             document = c.execute(text("""SELECT document FROM medical_continuous_stages
                 WHERE run_id=:run AND stage_index=:idx"""),
                 {"run":run_id,"idx":index}).scalar()
-            if document is None or url not in document:
+            if document is None or url not in _source_urls(json.loads(document)):
                 raise ValueError("Source URL is not present in the immutable saved source stage")
             captures.append({"stageIndex":index,"sourceUrl":url,
                              "stageDocumentSha256":hashlib.sha256(

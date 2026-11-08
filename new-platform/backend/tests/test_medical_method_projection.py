@@ -82,3 +82,38 @@ def test_invalid_assessment_and_malformed_grades_fail_closed():
         project_trial_history(history([phase()], [review(grade=9)]))
     with pytest.raises(ValueError, match="revision"):
         project_trial_history(history([phase()], [review(revision=0)]))
+
+
+def test_history_retains_previous_phase_and_retraction_without_counting_them():
+    first = review()
+    second = review(disposition="RETRACTED", grade=None, revision=2)
+    second["supersedes_event_id"] = first["review_event_id"]
+    h = history([phase(), phase("p2")], [first, second])
+    h["explicitGapEvents"] = [
+        {"assessment_index": 1, "method_index": None, "gap_code": "PROTOCOL_MISSING"},
+        {"assessment_index": 1, "method_index": 2, "gap_code": "CONTRADICTORY_EVIDENCE"},
+        {"assessment_index": 2, "method_index": 1, "gap_code": "SAP_MISSING"},
+    ]
+    import copy
+    original = copy.deepcopy(h)
+    x = project_trial_history(h, assessment_index=1)
+    method = x["selectedAssessment"]["methods"][0]
+    assert x["counts"]["SCORED"] == 0
+    assert method["grade"] is None and method["status"] == "STALE_PHASE"
+    assert [r["grade"] for r in method["history"]] == [4, None]
+    assert method["history"][1]["supersedes_event_id"] == first["review_event_id"]
+    assert len(method["evidenceGaps"]) == 1
+    assert len(x["selectedAssessment"]["methods"][1]["evidenceGaps"]) == 2
+    assert method["gapResolutionStatus"] == "NOT_ADJUDICATED"
+    assert x["recordedGapEvents"] == 3
+    assert x["phaseHistory"] == h["phaseEvents"]
+    assert h == original
+
+
+def test_phase_verification_alone_does_not_claim_partial_scientific_review():
+    assert project_trial_history(history([phase()]))["status"] == "PHASE_VERIFIED_NOT_REVIEWED"
+
+
+def test_duplicate_older_revision_cannot_hide_behind_newer_grade():
+    with pytest.raises(ValueError, match="Duplicate"):
+        project_trial_history(history([phase()], [review(revision=2), review(), review()]))

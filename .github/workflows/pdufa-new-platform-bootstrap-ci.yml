@@ -2,7 +2,9 @@ name: PDUFA New Platform Bootstrap Checks
 
 on:
   push:
-    branches: [new-platform-bootstrap]
+    branches:
+      - new-platform-bootstrap
+      - feature/medical-stage4-verified-method-matrix-20261108
     paths:
       - 'new-platform/**'
       - '.github/workflows/pdufa-new-platform-bootstrap-ci.yml'
@@ -12,6 +14,17 @@ permissions:
   contents: read
 
 jobs:
+  permanent-retirement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/audit_raas_retirement.py --check
+      - run: python -m unittest discover -s tests -p 'test_raas_retirement_guard.py' -v
+
   backend:
     runs-on: ubuntu-latest
     timeout-minutes: 10

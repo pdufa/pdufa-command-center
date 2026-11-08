@@ -159,6 +159,31 @@ def test_explicit_evidence_gaps_have_independent_append_only_history(seeded):
     assert ledger.coverage(db)["explicitGapEvents"]==1
 
 
+def test_source_url_prefix_and_wrong_saved_registry_identity_fail_closed(seeded):
+    db, focus, runs = seeded
+    ledger.seed_roster(db)
+    nct, other = focus[:2]
+    when = "2026-11-08T18:00:00Z"
+    phase = ledger.record_verified_phase(db, nct=nct, run_id=runs[nct],
+        phase="PHASE3", reviewer_id="reviewer_one", verified_at=when)
+    with pytest.raises(ValueError, match="saved source stage"):
+        ledger.append_review(db, nct=nct, run_id=runs[nct], phase_event_id=phase,
+            assessment_index=1, method_index=1, disposition="SCORED", grade=4,
+            evidence=[{"stageIndex": 0, "sourceUrl": "https://clinicaltrials.gov/study/NCT"}],
+            rationale="A URL prefix must never authenticate a saved original source.",
+            reviewer_id="reviewer_one", evidence_reviewed_at=when)
+    # Deliberately corrupt only the isolated fixture; immutable live sources
+    # must never be changed to reconcile an identity mismatch.
+    with db.begin() as c:
+        c.execute(text("UPDATE medical_continuous_stages SET document=:doc WHERE run_id=:run AND stage_index=0"),
+            {"doc": json.dumps({"source": "https://clinicaltrials.gov/study/" + other,
+                                "nct": other, "phases": ["PHASE3"]}), "run": runs[nct]})
+    with pytest.raises(ValueError, match="exact NCT"):
+        ledger.record_verified_phase(db, nct=nct, run_id=runs[nct], phase="PHASE3",
+            reviewer_id="reviewer_one", verified_at=when, supersedes_event_id=phase)
+    assert ledger.trial_history(db, nct)["reviewEvents"] == []
+
+
 def test_read_only_authenticated_route_shape_without_write_route(seeded):
     db,focus,_=seeded
     ledger.seed_roster(db)

@@ -34,6 +34,127 @@ def _tables(engine):
     return set(inspect(engine).get_table_names())
 
 
+def _medical_installation(engine, tables, *, storage_ready):
+    """Observe the existing assessment ledger without seeding or reviewing it.
+
+    Task IDs are stable across polls. Source counts and revision counts are not
+    method grades, and a completed assessment never implies clinical signoff.
+    """
+    definitions = {
+        "VERIFIED": "The named task's acceptance condition is observed in this snapshot.",
+        "ACTIVE": "Dependencies are observed; work remains on this task.",
+        "BLOCKED": "A named dependency is unavailable or has not been validated.",
+        "UNKNOWN": "The required observation is unavailable; no zero or completion is inferred.",
+        "sourceFreshness": "Source collection dates identify saved snapshots, not current source validity. Original publication and update dates require source-specific review.",
+        "evidenceExpiry": "No universal expiry or automatic grade renewal is assumed. Reverified phase events require fresh method review; current-phase grades alone do not prove source freshness.",
+        "gapEvents": "Recorded gap events are history. Without a gap-resolution adjudication they cannot be counted as resolved or as distinct unresolved scientific questions.",
+        "independence": "Recorded reviewer events are distinct from an independently authorized clinical signoff. Source collection and methodology positions never count as graded methods.",
+    }
+    out = {"state": "UNKNOWN", "counts": None, "tasks": [],
+           "currentTaskId": None, "definitions": definitions,
+           "fdaPredictions": {"APPROVAL": "ABSTAIN", "CRL": "ABSTAIN", "REVIEW_DELAY": "ABSTAIN"},
+           "certainty": "NOT_VALIDATED", "clinicalSignoff": "NOT_VERIFIED"}
+    required = {"medical_assessment_trial_roster", "medical_assessment_phase_events",
+                "medical_assessment_review_events", "medical_assessment_gap_events",
+                "medical_continuous_runs", "medical_continuous_stages"}
+    if not storage_ready:
+        out.update(state="BLOCKED", reason="Persistent PostgreSQL telemetry is unavailable")
+        return out
+    missing = sorted(required - tables)
+    if missing:
+        out.update(reason="Assessment ledger tables are not all available", missingTables=missing)
+        return out
+    from . import medical_assessment_ledger as ledger
+    from . import medical_continuous as source
+    from .medical_method_projection import project_trial_history
+    try:
+        coverage = ledger.coverage(engine)
+        totals = {key: 0 for key in ("SCORED", "NOT_APPLICABLE", "RETRACTED",
+                                    "STALE_PHASE", "UNREVIEWED", "VERIFY_PHASE")}
+        complete_assessments = 0
+        verified_trials = 0
+        dates = []
+        observed_ncts = 0
+        for nct in sorted(source.roster()):
+            try:
+                history = ledger.trial_history(engine, nct)
+            except LookupError:
+                continue
+            projected = project_trial_history(history)
+            observed_ncts += 1
+            verified_trials += projected["verifiedPhase"] is not None
+            for key in totals:
+                totals[key] += projected["counts"][key]
+            complete_assessments += sum(a["status"] == "COMPLETE" for a in projected["assessments"])
+            dates.append(history["sourceCompletedAt"])
+        canonical = coverage["canonicalTrials"]
+        potential = coverage["potentialMethodPositions"]
+        # Unseeded trials have no ledger observation. They remain explicitly
+        # unobserved rather than appearing as 800 reviewed or failed methods.
+        unobserved = (canonical - observed_ncts) * ledger.ASSESSMENTS * ledger.METHODS
+        pending = sum(totals[k] for k in ("RETRACTED", "STALE_PHASE", "UNREVIEWED", "VERIFY_PHASE"))
+        counts = {"canonicalTrials": canonical, "observedTrialLedgers": observed_ncts,
+                  "sourceCompleteTrials": coverage["sourceComplete"],
+                  "sourceStages": coverage["sourceStageCount"],
+                  "phaseVerifiedTrials": verified_trials,
+                  "potentialMethodPositions": potential,
+                  "recordedCurrentPhaseGrades": totals["SCORED"],
+                  "excludedMethods": totals["NOT_APPLICABLE"],
+                  "pendingObservedMethods": pending, "unobservedMethodPositions": unobserved,
+                  "methodStates": totals, "completedAssessments": complete_assessments,
+                  "historicalReviewEvents": coverage["reviewEvents"],
+                  "recordedGapEvents": coverage["explicitGapEvents"],
+                  "independentlySignedClinicalReviews": None}
+        sources_ok = coverage["status"] == "READY_FOR_REVIEW"
+        phases_ok = sources_ok and verified_trials == canonical
+        methods_ok = phases_ok and pending == 0 and unobserved == 0
+        def task(ident, title, status, completed, remaining, dependency, evidence):
+            return {"id": ident, "title": title, "status": status,
+                    "completed": completed, "remaining": remaining,
+                    "dependency": dependency, "evidence": evidence}
+        tasks = [
+            task("medical.sources", "Attach completed original-source runs", "VERIFIED" if sources_ok else "ACTIVE",
+                 coverage["sourceComplete"], canonical - coverage["sourceComplete"],
+                 None if sources_ok else "Complete exact-NCT 12-stage source runs and preserve roster attachments",
+                 "medical_assessment_trial_roster and medical_continuous_stages"),
+            task("medical.phase-verification", "Verify the current phase",
+                 "VERIFIED" if phases_ok else "ACTIVE" if sources_ok else "BLOCKED",
+                 verified_trials, canonical - verified_trials,
+                 None if phases_ok else "Named independent phase review of original registry evidence; prior completed phases need separate evidence",
+                 "medical_assessment_phase_events (current phase only; previous completion not inferred)"),
+            task("medical.prior-phase-review", "Verify previously completed phases", "UNKNOWN", None, None,
+                 "Original completed-phase evidence and independent adjudication; current registry phase cannot establish prior completion",
+                 "No completed-phase adjudication ledger is installed"),
+            task("medical.method-review", "Review phase-prioritized scientific methods",
+                 "VERIFIED" if methods_ok else "ACTIVE" if verified_trials else "BLOCKED",
+                 totals["SCORED"], pending + unobserved,
+                 None if methods_ok else "Verified phase and independent source-linked method review; exclusions are tracked separately",
+                 "Current phase-event method projection; immutable revisions retained"),
+            task("medical.clinical-review", "Obtain authorized independent clinical review", "BLOCKED", None, None,
+                 "Authorized multidisciplinary review and an installed signoff ledger; method grades do not establish signoff",
+                 "No clinical signoff ledger is installed"),
+            task("medical.fda-forecast", "Validate separate approval, CRL and delay forecasts", "BLOCKED", None, None,
+                 "Independent evidence assessment and outcome-specific historical calibration release gates",
+                 "All three outcomes remain ABSTAIN"),
+            task("medical.certainty", "Validate independent certainty", "BLOCKED", None, None,
+                 "Independent out-of-sample reliability validation and authorized release",
+                 "NOT_VALIDATED"),
+        ]
+        current = next((t for t in tasks if t["status"] == "ACTIVE"),
+                       next((t for t in tasks if t["status"] != "VERIFIED"), None))
+        out.update(state="OBSERVED", counts=counts, tasks=tasks,
+                   currentTaskId=current["id"] if current else None,
+                   taskCounts={state: sum(t["status"] == state for t in tasks)
+                               for state in ("VERIFIED", "ACTIVE", "BLOCKED", "UNKNOWN")},
+                   sourceCollectionDates={"oldest": min(dates) if dates else None,
+                                          "newest": max(dates) if dates else None,
+                                          "freshnessValidation": "NOT_ADJUDICATED"})
+    except Exception as exc:
+        LOG.warning("Medical installation telemetry unavailable type=%s", type(exc).__name__)
+        out.update(state="UNKNOWN", reason="Assessment ledger could not be fully projected; no completion is inferred")
+    return out
+
+
 def collect(engine, *, storage_ready, require_postgres=True):
     """Live snapshot. If PostgreSQL is missing, do not read ephemeral SQLite."""
     out = {
@@ -45,6 +166,7 @@ def collect(engine, *, storage_ready, require_postgres=True):
                     "postgresRequired": bool(require_postgres)},
         "services": {}, "sourceSnapshots": {}, "analysisNow": {}, "trialHistories": {},
         "scans": {}, "research": {},
+        "medicalInstallation": _medical_installation(engine, set(), storage_ready=False),
         "alerts": {"telegramConfigured": configured(),
                    "monitorWorkerEnabled": os.getenv("PDUFA_INSTALL_MONITOR_ENABLED","").lower()
                        in ("1","true","yes"), "lastDelivery": None},
@@ -75,6 +197,7 @@ def collect(engine, *, storage_ready, require_postgres=True):
         "source":"RENDER_GIT_COMMIT_RUNTIME"
     }
     if out["storage"]["state"]!="READY":
+        out["medicalInstallation"] = _medical_installation(engine, set(), storage_ready=False)
         out["errors"].append("Persistent PostgreSQL is not connected or unavailable")
         for name in ("phase3Ingestion","nctStream"):
             out["scans"][name]={"state":"BLOCKED","detail":"Database telemetry unavailable"}
@@ -85,6 +208,7 @@ def collect(engine, *, storage_ready, require_postgres=True):
         return out
     try:
         tables=_tables(engine)
+        out["medicalInstallation"] = _medical_installation(engine, tables, storage_ready=True)
         with engine.connect() as c:
             if "phase3_ingestion_state" in tables:
                 row=c.execute(text("SELECT document FROM phase3_ingestion_state LIMIT 1")).scalar()
@@ -124,7 +248,7 @@ def collect(engine, *, storage_ready, require_postgres=True):
                     "activeSourceRuns":counts.get("RUNNING",0)+counts.get("PENDING",0),
                     "savedSourceStages":stage_rows,"immutableRevisions":revisions,
                     "newSourceEvidenceRevisions":changed_revisions,
-                    "latestRunAt":last,"completedIndependentReviews":0,
+                    "latestRunAt":last,"completedIndependentReviews":None,
                     "probabilityForecastsValidated":False,
                     "certaintyReliabilityValidated":False,
                     "detail":"Recorded 12-stage source checks do not constitute 12 completed clinical reviews."}

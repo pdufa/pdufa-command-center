@@ -10,6 +10,8 @@ from __future__ import annotations
 import re
 from collections import Counter
 
+from .medical_grading_policy import grading_policy
+
 POSITIONS_PER_ASSESSMENT = 20
 ASSESSMENTS = 40
 STATES = ("SCORED", "NOT_APPLICABLE", "RETRACTED", "STALE_PHASE", "UNREVIEWED", "VERIFY_PHASE")
@@ -37,6 +39,8 @@ def project_trial_history(history: dict, *, assessment_index: int | None = None)
     # Only current phase-matched events can count. A changed/reverified phase
     # requires fresh examination, even when the phase label is unchanged.
     latest = {}
+    revisions = {}
+    seen_revisions = set()
     stale_positions = set()
     for review in history.get("reviewEvents") or []:
         a, m, rev = review.get("assessment_index"), review.get("method_index"), review.get("revision")
@@ -45,6 +49,12 @@ def project_trial_history(history: dict, *, assessment_index: int | None = None)
                 type(rev) is not int or rev < 1):
             raise ValueError("Stored scientific review has an invalid position or revision")
         key = (a, m)
+        # Revision numbers are scoped to a phase label in the durable ledger.
+        revision_key = (review.get("verified_phase"), a, m, rev)
+        if revision_key in seen_revisions:
+            raise ValueError("Duplicate review revision")
+        seen_revisions.add(revision_key)
+        revisions.setdefault(key, []).append(review)
         if not current or review.get("verified_phase") != phase or review.get("phase_event_id") != phase_event_id:
             stale_positions.add(key)
             continue
@@ -78,6 +88,12 @@ def project_trial_history(history: dict, *, assessment_index: int | None = None)
                 scored.append(grade)
             counts[state] += 1
             if assessment_index == a:
+                method_history = sorted(revisions.get((a, m), []),
+                                        key=lambda r: (r.get("created_at", ""),
+                                                       r["revision"], r.get("review_event_id", "")))
+                gaps = [dict(g) for g in history.get("explicitGapEvents", [])
+                        if g.get("assessment_index") == a
+                        and g.get("method_index") in (None, m)]
                 methods.append({
                     "methodIndex": m, "status": state, "grade": grade,
                     "reviewEventId": review.get("review_event_id") if review else None,
@@ -86,6 +102,11 @@ def project_trial_history(history: dict, *, assessment_index: int | None = None)
                     "reviewerId": review.get("reviewer_id") if review else None,
                     "rationale": review.get("rationale") if review else None,
                     "sourceEvidence": review.get("evidence", []) if review else [],
+                    # Historical evidence is shown verbatim, never promoted
+                    # into the current phase's grade or completion count.
+                    "history": [dict(r) for r in method_history],
+                    "evidenceGaps": gaps,
+                    "gapResolutionStatus": "NOT_ADJUDICATED" if gaps else "NO_RECORDED_GAP",
                 })
         totals.update(counts)
         eligible = POSITIONS_PER_ASSESSMENT - counts["NOT_APPLICABLE"]
@@ -111,12 +132,18 @@ def project_trial_history(history: dict, *, assessment_index: int | None = None)
     return {
         "schema": "EXACT_NCT_REVIEWED_METHOD_MATRIX_V1", "nct": nct,
         "verifiedPhase": phase, "phaseEventId": phase_event_id,
-        "status": "PHASE_VERIFIED_REVIEW_PARTIAL" if current else "VERIFY_PHASE",
+        "status": ("VERIFY_PHASE" if not current else
+                   "PHASE_VERIFIED_NOT_REVIEWED" if not totals["SCORED"] and not totals["NOT_APPLICABLE"] else
+                   "PHASE_VERIFIED_REVIEW_COMPLETE" if all(a["pendingMethods"] == 0 for a in assessments) else
+                   "PHASE_VERIFIED_REVIEW_PARTIAL"),
         "totalPositions": ASSESSMENTS * POSITIONS_PER_ASSESSMENT,
         "counts": dict(totals),
         "assessments": assessments,
         "selectedAssessment": detail,
         "historicalReviewEvents": len(history.get("reviewEvents") or []),
+        "phaseHistory": [dict(p) for p in phases],
+        "recordedGapEvents": len(history.get("explicitGapEvents") or []),
+        "gradingPolicy": grading_policy(),
         "clinicalSignoff": False,
         "fdaPredictions": {"APPROVAL": "ABSTAIN", "CRL": "ABSTAIN", "REVIEW_DELAY": "ABSTAIN"},
         "certainty": "NOT_VALIDATED",
