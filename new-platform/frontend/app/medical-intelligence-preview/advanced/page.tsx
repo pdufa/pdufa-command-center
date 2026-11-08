@@ -31,7 +31,7 @@ export default async function AdvancedReviewPage({searchParams}:{searchParams:Pr
   <div style={{fontSize:12,color:teal,fontWeight:750}}>POOL → FOCUS → STANDALONE MEDICAL → FDA PREDICTIONS + SEPARATE CERTAINTY</div>
   <h1 style={{margin:"9px 0 4px"}}>12 advanced Deep Medical Intelligence levels</h1>
   <p style={{marginTop:6,lineHeight:1.5}}>Universal application-level research framework · Preview research, not an FDA or licensed clinician determination.
-   No RAAS or survey scores. Source presence is never counted as completion of an independent analysis.</p>
+   Historical scoring systems are excluded. Source presence is never counted as completion of independent clinical analysis.</p>
   <form action="/medical-intelligence-preview/advanced" method="GET" style={{background:"#f5faf6",border:"1px solid "+line,borderRadius:10,padding:15}}>
    <label htmlFor="advanced-cycle" style={{fontWeight:700}}>FDA application / indication</label>
    <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:8}}>
