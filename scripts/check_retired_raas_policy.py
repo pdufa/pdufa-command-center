@@ -30,6 +30,14 @@ ACTIVE=[
         "lib/main-install-progress.ts",
     )
 ]
+# Cover every current Next.js page except explicitly retired paths,
+# so new pages cannot silently reinstate old scoring.
+for page in sorted((WEB/"app").rglob("page.tsx")):
+    rel=page.relative_to(WEB/"app")
+    if not any(part.lower().startswith("raas-") for part in rel.parts):
+        if page not in ACTIVE:
+            ACTIVE.append(page)
+
 FORBIDDEN=re.compile(r"raas",re.I)
 EXE=re.compile(r"(?:python|node|bash|sh|uv|npm|pnpm)[^\n]*?(?:raas[\-_]|raas/)|uses:\s*[^\n]*raas",re.I)
 WORKFLOW=ROOT/".github"/"workflows"
@@ -68,7 +76,7 @@ def run():
         s=path.read_text(encoding="utf-8")
         if "raas" in path.name.lower():
             ERRORS.append("Executable retired workflow remains: "+path.name)
-        if EXE.search(s):
+        if EXE.search(s.replace("python scripts/check_retired_raas_policy.py","")):
             ERRORS.append("Retired script referenced by a workflow: "+path.name)
     # New analysis must not import from preserved score snapshots,
     # including via aliases: explicit artifact references are disallowed.
