@@ -54,20 +54,27 @@ test("scientific drilldown preserves the original catalog and labels 800 as a ta
 
 test("LIVE arrow refreshes the current execution position before jumping",()=>{
  const css=fs.readFileSync(path.join(app,"installation-audit/InstallationLiveNavigator.module.css"),"utf8");
- assert.match(ui,/LIVE <span className=\{styles\.liveArrow\}/);
+ assert.match(ui,/<span>LOCATE LIVE<\/span> <span className=\{styles\.liveArrow\}/);
  assert.match(ui,/onClick=\{\(\)=>\{void goToLive\(\);\}\}/);
  assert.match(ui,/const latest=await fetchData\(\)/);
  assert.match(ui,/const cursor=getActiveExecution\(latest\)/);
  assert.match(ui,/setSection\("present"\)/);
- assert.match(ui,/setChosenTask\(cursor\?\.taskId\?\?null\)/);
+ assert.match(ui,/setChosenTask\(destination\)/);
  assert.match(ui,/requestAnimationFrame/);
  assert.match(ui,/document\.getElementById\(idOf\(liveJump\.taskId\)\)/);
  assert.match(ui,/document\.getElementById\("installation-active-cursor"\)/);
  assert.match(ui,/id="installation-active-cursor"/);
- assert.match(ui,/Live location unavailable: no fresh, verified running task is reported/);
+ assert.match(ui,/Live location unavailable: no fresh, verified running task or dated checkpoint/);
  assert.match(ui,/90000/);
  assert.match(css,/\.liveButton/);
  assert.match(css,/\.liveArrow/);
  assert.match(css,/\.cursorTarget/);
+ assert.match(css,/\.locateIcon/);
+ assert.match(css,/\.checkpointMarker/);
+ assert.match(ui,/const documented=cursor\?null:getDocumentedCheckpoint\(latest\)/);
+ assert.match(ui,/aria-current=\{located\?"location":undefined\}/);
+ assert.match(ui,/last documented checkpoint/);
+ assert.match(ui,/Historical implementation evidence only/);
+ assert.match(ui,/kind:cursor\?"live":documented\?"documented":"status"/);
  assert.doesNotMatch(ui,/status\(row\)==="In Progress".*setLiveJump/);
 });
