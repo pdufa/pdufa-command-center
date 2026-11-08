@@ -1,0 +1,776 @@
+{
+  "schemaVersion": 1,
+  "source": "GitHub PR #949 phase-aware draft at 20f80e63739083797119052ff296511c26efc70c",
+  "sourceStatus": "DESIGN_REFERENCE_NOT_MEDICAL_FINDING",
+  "layers": [
+    {
+      "id": "disease",
+      "title": "Disease biology & pathophysiology"
+    },
+    {
+      "id": "molecular",
+      "title": "Molecular mechanism & drug action"
+    },
+    {
+      "id": "translational",
+      "title": "Preclinical & translational evidence"
+    },
+    {
+      "id": "trial",
+      "title": "Trial design & statistical integrity"
+    },
+    {
+      "id": "clinical",
+      "title": "Clinical efficacy, safety & replication"
+    },
+    {
+      "id": "comparative",
+      "title": "Comparative therapeutic science"
+    },
+    {
+      "id": "regulatory",
+      "title": "FDA regulatory science & approval readiness"
+    },
+    {
+      "id": "integration",
+      "title": "Integrated scientific inference & red-team"
+    }
+  ],
+  "assessments": [
+    {
+      "id": "1.1",
+      "layerId": "disease",
+      "label": "Molecular cause and pathogenesis",
+      "objective": "Connect disease-driving pathology to candidate's therapeutic target",
+      "failureMechanism": "Mechanistic mismatch could undercut causal plausibility",
+      "requiredSources": "Disease natural-history publications; biomarker validation; FDA disease reviews"
+    },
+    {
+      "id": "1.2",
+      "layerId": "disease",
+      "label": "Untreated progression and variability",
+      "objective": "Quantify untreated progression, spontaneous remission, measurement variability and prognosis",
+      "failureMechanism": "Natural history could explain apparent response or weaken endpoint sensitivity",
+      "requiredSources": "Longitudinal cohorts; registries; natural-history analyses"
+    },
+    {
+      "id": "1.3",
+      "layerId": "disease",
+      "label": "Disease biomarkers and surrogate validity",
+      "objective": "Examine biomarker analytical validity, clinical meaning and surrogate qualification",
+      "failureMechanism": "A surrogate may not reliably predict patient benefit",
+      "requiredSources": "FDA endpoint guidance; biomarker validation; clinical-outcome correlations"
+    },
+    {
+      "id": "1.4",
+      "layerId": "disease",
+      "label": "Current treatment burden and unmet need",
+      "objective": "Define therapeutic baseline and patient-important outcomes for indication",
+      "failureMechanism": "Benefit-risk context may not justify tolerability burden",
+      "requiredSources": "Approved labels; guidelines; patient studies; comparative data"
+    },
+    {
+      "id": "1.5",
+      "layerId": "disease",
+      "label": "Diagnostic and population heterogeneity",
+      "objective": "Assess diagnostic error, organ severity, genetic, demographic and responder subtypes",
+      "failureMechanism": "Misclassification or restricted efficacy may limit proposed indication",
+      "requiredSources": "Eligibility criteria; genotypes; baseline subgroups; diagnostic publications"
+    },
+    {
+      "id": "2.1",
+      "layerId": "molecular",
+      "label": "Drug target validation",
+      "objective": "Trace target specificity and causal importance in disease biology",
+      "failureMechanism": "Target is noncausal or poorly validated",
+      "requiredSources": "Target genetics; target perturbation; structural and molecular biology"
+    },
+    {
+      "id": "2.2",
+      "layerId": "molecular",
+      "label": "Mechanism of action and target engagement",
+      "objective": "Validate engagement, tissue penetration, occupancy, and downstream activity",
+      "failureMechanism": "Exposure may not reach relevant tissue or achieve the proposed mechanism",
+      "requiredSources": "In-vitro/in-vivo target assays; human biomarkers; PK/PD"
+    },
+    {
+      "id": "2.3",
+      "layerId": "molecular",
+      "label": "Selectivity and off-target liabilities",
+      "objective": "Assess selectivity, unintended pathways and differential tissue safety",
+      "failureMechanism": "Off-target toxicity may offset observed efficacy",
+      "requiredSources": "Off-target panels; safety pharmacology; exposure margins"
+    },
+    {
+      "id": "2.4",
+      "layerId": "molecular",
+      "label": "Systems/pathway feedback and compensation",
+      "objective": "Model cross-pathway effects, feedback and alternative causal hypotheses",
+      "failureMechanism": "Compensatory biology may blunt durable effect or increase risk",
+      "requiredSources": "Pathway experiments; omics; resistant phenotypes"
+    },
+    {
+      "id": "2.5",
+      "layerId": "molecular",
+      "label": "Resistance and loss of response",
+      "objective": "Examine target escape, neutralizing antibodies, tolerance and durability",
+      "failureMechanism": "Loss of action could undermine long-term benefit",
+      "requiredSources": "Resistance mechanism studies; repeat-dosing clinical follow-up"
+    },
+    {
+      "id": "3.1",
+      "layerId": "translational",
+      "label": "Cellular potency and reproducibility",
+      "objective": "Assess preclinical assays, controls, batch-to-batch reliability",
+      "failureMechanism": "Assay artifacts or inconsistent product potency",
+      "requiredSources": "Cell-line assays; potency validation; SOPs"
+    },
+    {
+      "id": "3.2",
+      "layerId": "translational",
+      "label": "Animal models and model fitness",
+      "objective": "Test construct, external and translational validity of animal models",
+      "failureMechanism": "Nonpredictive models can exaggerate expected benefit",
+      "requiredSources": "Animal model datasets; species differences"
+    },
+    {
+      "id": "3.3",
+      "layerId": "translational",
+      "label": "Human PK/PD and exposure–response",
+      "objective": "Compare dose, exposure, target saturation, exposure-efficacy and exposure-safety",
+      "failureMechanism": "Inadequate dose selection or pharmacology evidence",
+      "requiredSources": "Population PK; dose-ranging; model diagnostics"
+    },
+    {
+      "id": "3.4",
+      "layerId": "translational",
+      "label": "Nonclinical toxicology and margins",
+      "objective": "Assess carcinogenicity, reproductive safety, chronic toxicity and organ-risk margins as applicable",
+      "failureMechanism": "Unresolved nonclinical risks may restrict approval/label",
+      "requiredSources": "GLP toxicology; exposure multiples; toxicology reviews"
+    },
+    {
+      "id": "3.5",
+      "layerId": "translational",
+      "label": "Cross-stage translational coherence",
+      "objective": "Trace changes in mechanism, effect size, dose and biomarker from early to pivotal trials",
+      "failureMechanism": "Phase-to-phase inconsistency may reflect model fragility",
+      "requiredSources": "Phase 1–3 protocols; cross-study estimates"
+    },
+    {
+      "id": "4.1",
+      "layerId": "trial",
+      "label": "Randomization, blinding and comparator",
+      "objective": "Evaluate randomization, concealment, masking, site conduct and control appropriateness",
+      "failureMechanism": "Bias or invalid comparator can invalidate efficacy evidence",
+      "requiredSources": "Protocol; CONSORT; monitoring; regulatory correspondence"
+    },
+    {
+      "id": "4.2",
+      "layerId": "trial",
+      "label": "Endpoint selection and clinical meaning",
+      "objective": "Reconstruct endpoint definitions, validation, hierarchy and change dates",
+      "failureMechanism": "Unacceptable endpoint or clinically marginal effect",
+      "requiredSources": "Original/final protocol; endpoint charter; FDA guidance"
+    },
+    {
+      "id": "4.3",
+      "layerId": "trial",
+      "label": "Estimands, intercurrent events and missingness",
+      "objective": "Match estimand to treatment-policy/hypothetical/composite strategy; test missingness",
+      "failureMechanism": "Selective censoring/imputation can reverse the outcome",
+      "requiredSources": "Original SAP; final SAP; CSR; raw-data sensitivity analyses"
+    },
+    {
+      "id": "4.4",
+      "layerId": "trial",
+      "label": "Population, allocation and statistical power",
+      "objective": "Review target population, sample size, subgroup power, eligibility and attrition",
+      "failureMechanism": "Underpowered/misaligned population can invalidate claim",
+      "requiredSources": "Enrollment; eligibility; power assumptions; trial registry"
+    },
+    {
+      "id": "4.5",
+      "layerId": "trial",
+      "label": "Conduct, deviations and data integrity",
+      "objective": "Examine sites, protocol changes, adjudication, withdrawals and inspections",
+      "failureMechanism": "Data or conduct findings may trigger FDA objections",
+      "requiredSources": "Deviation logs; inspections; protocol amendments; audit reports"
+    },
+    {
+      "id": "5.1",
+      "layerId": "clinical",
+      "label": "Pivotal primary efficacy",
+      "objective": "Compare prespecified primary treatment effect, CI, p and clinical effect thresholds",
+      "failureMechanism": "Primary failure may directly prevent approval",
+      "requiredSources": "Full primary results; locked SAP; FDA reviewer tables"
+    },
+    {
+      "id": "5.2",
+      "layerId": "clinical",
+      "label": "Secondary endpoints, multiplicity and hierarchy",
+      "objective": "Check testing sequence, adjustment and label-claim boundaries",
+      "failureMechanism": "Nominal or post-hoc endpoints cannot rescue a failed primary without strong context",
+      "requiredSources": "SAP multiplicity plan; alpha spending; FDA multiple endpoints"
+    },
+    {
+      "id": "5.3",
+      "layerId": "clinical",
+      "label": "Integrated safety and competing harms",
+      "objective": "Analyze serious AEs, death, organ toxicity, rates, time at risk and causality",
+      "failureMechanism": "Benefit-risk may be unfavorable or require restrictions",
+      "requiredSources": "Pooled safety; SAE line lists; lab shifts; label precedents"
+    },
+    {
+      "id": "5.4",
+      "layerId": "clinical",
+      "label": "Subgroups, effect modification and robustness",
+      "objective": "Test true treatment–subgroup interaction, missingness and consistency",
+      "failureMechanism": "Apparent overall effect may not generalize to label",
+      "requiredSources": "Interaction CIs; baseline balance; multiplicity controls"
+    },
+    {
+      "id": "5.5",
+      "layerId": "clinical",
+      "label": "Replication, durability and long-term effects",
+      "objective": "Assess study-to-study consistency, external validation and attrition of follow-up",
+      "failureMechanism": "Transient efficacy or non-reproducibility could limit approval",
+      "requiredSources": "Separate randomized trials; OLE limits; long-term outcomes"
+    },
+    {
+      "id": "6.1",
+      "layerId": "comparative",
+      "label": "Current standard-of-care performance",
+      "objective": "Establish relevant comparator and expected patient outcomes",
+      "failureMechanism": "Misleading placebo-only or historical comparison",
+      "requiredSources": "Current guidelines; approved labels; direct trials"
+    },
+    {
+      "id": "6.2",
+      "layerId": "comparative",
+      "label": "Competing assets and alternatives",
+      "objective": "Compare efficacy, safety and stage-matched populations without invalid cross-trial claims",
+      "failureMechanism": "Indirect comparison may overstate differentiating benefits",
+      "requiredSources": "Head-to-head trials; network meta-analysis (when valid)"
+    },
+    {
+      "id": "6.3",
+      "layerId": "comparative",
+      "label": "Class effects and precedent failures",
+      "objective": "Examine class-wide efficacy, severe events and regulatory warnings",
+      "failureMechanism": "Shared mechanism may import risk not seen in small studies",
+      "requiredSources": "Labels; safety surveillance; historical CRLs"
+    },
+    {
+      "id": "6.4",
+      "layerId": "comparative",
+      "label": "Clinically meaningful differentiation",
+      "objective": "Quantify NNT/NNH, PROs, dosing burden and practical utility where valid",
+      "failureMechanism": "Marginal incremental benefit might not offset risk",
+      "requiredSources": "Patient preferences; comparative outcomes; exposure"
+    },
+    {
+      "id": "6.5",
+      "layerId": "comparative",
+      "label": "Combination therapy and sequencing",
+      "objective": "Analyze interaction, additive harms, pharmacology, and role in therapy",
+      "failureMechanism": "Drug interactions or positioning weaknesses may affect label",
+      "requiredSources": "Combination trials; DDI; sequencing evidence"
+    },
+    {
+      "id": "7.1",
+      "layerId": "regulatory",
+      "label": "Application and review-cycle identity",
+      "objective": "Verify NDA/BLA/supplement, indication, pathways, goal and prior action letters",
+      "failureMechanism": "Wrong cycle or unaccepted filing makes prediction invalid",
+      "requiredSources": "FDA records; dated SEC documents; approval/CRL history"
+    },
+    {
+      "id": "7.2",
+      "layerId": "regulatory",
+      "label": "FDA communications and prior objections",
+      "objective": "Trace agency comments, prior deficiencies and applicant remediation",
+      "failureMechanism": "Unresolved stated FDA concern may trigger CRL",
+      "requiredSources": "FDA advisory package; letters when public; meeting minutes"
+    },
+    {
+      "id": "7.3",
+      "layerId": "regulatory",
+      "label": "Label, population, endpoint and indication fit",
+      "objective": "Compare requested claim against studied population and supported clinical benefit",
+      "failureMechanism": "Unsupported indication or claim may be rejected or narrowed",
+      "requiredSources": "Proposed/approved labeling; endpoints; FDA precedent"
+    },
+    {
+      "id": "7.4",
+      "layerId": "regulatory",
+      "label": "REMS, safety management and inspections",
+      "objective": "Examine tolerability, REMS, pharmacovigilance, BIMO and inspection findings",
+      "failureMechanism": "Unresolved safety or inspection problems may prevent approval",
+      "requiredSources": "Public inspection records; risk controls; safety reviews"
+    },
+    {
+      "id": "7.5",
+      "layerId": "regulatory",
+      "label": "CMC, facilities, stability and major amendment timing",
+      "objective": "Assess process control, identity/purity/potency, facility status and amendments",
+      "failureMechanism": "Unresolved quality deficiency may cause CRL; major amendment may extend clock",
+      "requiredSources": "CMC disclosures; inspections; validation; PDUFA goals"
+    },
+    {
+      "id": "8.1",
+      "layerId": "integration",
+      "label": "Integrated clinical benefit-risk",
+      "objective": "Integrate magnitude, uncertainty, severity, treatment options, safety tradeoffs",
+      "failureMechanism": "Insufficient evidence of favorable benefit-risk",
+      "requiredSources": "Full trial/regulator evidence matrix; disease context"
+    },
+    {
+      "id": "8.2",
+      "layerId": "integration",
+      "label": "Contradictions and missing-data map",
+      "objective": "Audit discrepancies between FDA, publications, SEC releases and trial registry",
+      "failureMechanism": "Unresolved contradictions erode reproducibility and FDA-readiness",
+      "requiredSources": "Dated comparative sources; original document sections"
+    },
+    {
+      "id": "8.3",
+      "layerId": "integration",
+      "label": "CRL, delay and withdrawal pathways",
+      "objective": "Build separate causal routes for efficacy, safety, CMC, integrity and timing",
+      "failureMechanism": "Failure modes may be missed if focus only on positive top-line",
+      "requiredSources": "Historical CRLs; active FDA concerns; PDUFA procedures"
+    },
+    {
+      "id": "8.4",
+      "layerId": "integration",
+      "label": "Real-world effectiveness, external validity and label restrictions",
+      "objective": "Assess transportability, dose burden, population and health-system factors",
+      "failureMechanism": "Limited external validity may shrink intended label",
+      "requiredSources": "Representative cohorts; subgroup confidence; real-world records"
+    },
+    {
+      "id": "8.5",
+      "layerId": "integration",
+      "label": "Independent scientific judgment and reversal conditions",
+      "objective": "Red-team all claims, test counterfactuals, document strongest objection and what changes judgment",
+      "failureMechanism": "Overconfidence or hidden assumptions produce false forecasts",
+      "requiredSources": "Independent sourced challenge, replication audit, calibrated historic outcomes"
+    }
+  ],
+  "methods": [
+    {
+      "id": 1,
+      "name": "Document extraction and source authentication",
+      "method": "Authenticate dated original protocol/SAP, clinical/FDA documents and every factual claim",
+      "deliverable": "Source ledger with precise references, date and version"
+    },
+    {
+      "id": 2,
+      "name": "Scientific hypothesis reconstruction",
+      "method": "Translate the candidate mechanism into falsifiable medical expectations",
+      "deliverable": "Clear causal hypothesis and falsifiers"
+    },
+    {
+      "id": 3,
+      "name": "Biological plausibility investigation",
+      "method": "Trace molecular and organ-level mechanisms and biological alternatives",
+      "deliverable": "Mechanism evidence and contradictory biology"
+    },
+    {
+      "id": 4,
+      "name": "Evidence quality validation",
+      "method": "Audit study methods, measurements, provenance and quality",
+      "deliverable": "Methodological reliability and data gaps"
+    },
+    {
+      "id": 5,
+      "name": "Critical challenge",
+      "method": "Seek primary contradictions, biases and alternative explanations",
+      "deliverable": "Failure mechanisms and strongest counterargument"
+    },
+    {
+      "id": 6,
+      "name": "Cross-disciplinary integration",
+      "method": "Compare disease biology, pharmacology, clinical design and regulation",
+      "deliverable": "Cross-domain consistency/conflict"
+    },
+    {
+      "id": 7,
+      "name": "Predictive scenario modeling",
+      "method": "Define approval/CRL/delay counterfactuals; never fabricate probabilities",
+      "deliverable": "Qualitative scenarios and missing validation"
+    },
+    {
+      "id": 8,
+      "name": "Scientific synthesis",
+      "method": "Distinguish supported, mixed and unsupported evidence",
+      "deliverable": "Bounded independent synthesis"
+    },
+    {
+      "id": 9,
+      "name": "Causal inference",
+      "method": "Assess what observations can truly establish drug-caused benefit",
+      "deliverable": "Causal graph, confounding and identification limits"
+    },
+    {
+      "id": 10,
+      "name": "Systems biology",
+      "method": "Examine feedback networks, compensation and systemic off-target pathways",
+      "deliverable": "Network consequences and testability"
+    },
+    {
+      "id": 11,
+      "name": "Adversarial scientific review",
+      "method": "Actively disprove strongest favorable conclusion",
+      "deliverable": "Pre-registered challenge and failure check"
+    },
+    {
+      "id": 12,
+      "name": "Multi-method adjudication",
+      "method": "Reconcile prespecified, FDA, company, alternative and sensitivity estimates",
+      "deliverable": "Analysis-by-analysis evidence table"
+    },
+    {
+      "id": 13,
+      "name": "Quantitative pharmacology",
+      "method": "Evaluate dose/exposure/response/target engagement when data permit",
+      "deliverable": "PK/PD assumptions, calculations and limits"
+    },
+    {
+      "id": 14,
+      "name": "Patient heterogeneity",
+      "method": "Test interaction, population transportability and biomarker-specific outcomes",
+      "deliverable": "Effect-modification evidence and precision"
+    },
+    {
+      "id": 15,
+      "name": "Bayesian evidence integration",
+      "method": "Update uncertainty only with defendable priors/data; avoid false posterior precision",
+      "deliverable": "Transparent prior, likelihood and sensitivity if feasible"
+    },
+    {
+      "id": 16,
+      "name": "External validity",
+      "method": "Compare trial patients, delivery setting and outcomes to labeled use",
+      "deliverable": "Transportability limitations and label fit"
+    },
+    {
+      "id": 17,
+      "name": "Historical failure patterns",
+      "method": "Find similar FDA CRLs and identify genuine versus superficial analogies",
+      "deliverable": "Precedent mechanisms and differences"
+    },
+    {
+      "id": 18,
+      "name": "Regulatory counterfactuals",
+      "method": "Simulate scientifically plausible FDA reviewer interpretations and alternative labeling",
+      "deliverable": "CRL, approval, label, extension mechanisms"
+    },
+    {
+      "id": 19,
+      "name": "Independent reproducibility audit",
+      "method": "Reproduce equations, effect metrics and p-values only with sufficient inputs",
+      "deliverable": "Verified calculations, discrepancies, reproducibility status"
+    },
+    {
+      "id": 20,
+      "name": "Final red-team adjudication",
+      "method": "Force independent opposition and scientific judgment with decision-reversal triggers",
+      "deliverable": "Adjudicated evidence state and unresolved blockers"
+    }
+  ],
+  "phasePriority": {
+    "critical": {
+      "EARLY_PHASE1": [
+        "1.1",
+        "1.5",
+        "2.1",
+        "2.2",
+        "2.3",
+        "3.3",
+        "3.4",
+        "4.5",
+        "5.3",
+        "8.1"
+      ],
+      "PHASE1": [
+        "1.5",
+        "2.1",
+        "2.2",
+        "2.3",
+        "3.3",
+        "3.4",
+        "3.5",
+        "4.5",
+        "5.3",
+        "8.1"
+      ],
+      "PHASE2": [
+        "3.3",
+        "4.1",
+        "4.2",
+        "4.3",
+        "4.4",
+        "4.5",
+        "5.1",
+        "5.3",
+        "5.4",
+        "8.1"
+      ],
+      "PHASE3": [
+        "4.1",
+        "4.2",
+        "4.3",
+        "4.4",
+        "4.5",
+        "5.1",
+        "5.2",
+        "5.3",
+        "5.4",
+        "8.1",
+        "8.2"
+      ],
+      "PHASE4": [
+        "4.5",
+        "5.3",
+        "5.5",
+        "6.1",
+        "6.4",
+        "7.4",
+        "7.3",
+        "8.1",
+        "8.2",
+        "8.4"
+      ]
+    },
+    "high": {
+      "EARLY_PHASE1": [
+        "1.2",
+        "1.3",
+        "1.4",
+        "2.4",
+        "2.5",
+        "3.1",
+        "3.2",
+        "3.5",
+        "4.1",
+        "4.2",
+        "4.3",
+        "4.4",
+        "5.4",
+        "6.1",
+        "8.2",
+        "8.5"
+      ],
+      "PHASE1": [
+        "1.1",
+        "1.2",
+        "1.3",
+        "1.4",
+        "2.4",
+        "2.5",
+        "3.1",
+        "3.2",
+        "4.1",
+        "4.2",
+        "4.3",
+        "4.4",
+        "5.1",
+        "5.4",
+        "6.1",
+        "8.2",
+        "8.5"
+      ],
+      "PHASE2": [
+        "1.3",
+        "1.4",
+        "1.5",
+        "2.1",
+        "2.2",
+        "2.3",
+        "2.5",
+        "3.4",
+        "3.5",
+        "5.2",
+        "5.5",
+        "6.1",
+        "6.3",
+        "6.4",
+        "8.2",
+        "8.5"
+      ],
+      "PHASE3": [
+        "1.3",
+        "1.4",
+        "1.5",
+        "2.2",
+        "2.3",
+        "3.3",
+        "3.4",
+        "3.5",
+        "5.5",
+        "6.1",
+        "6.3",
+        "6.4",
+        "7.1",
+        "7.2",
+        "7.3",
+        "7.4",
+        "7.5",
+        "8.3",
+        "8.4",
+        "8.5"
+      ],
+      "PHASE4": [
+        "1.3",
+        "1.5",
+        "2.3",
+        "2.5",
+        "3.3",
+        "3.5",
+        "4.2",
+        "4.3",
+        "5.1",
+        "5.2",
+        "5.4",
+        "6.2",
+        "6.3",
+        "6.5",
+        "7.1",
+        "7.2",
+        "7.5",
+        "8.3",
+        "8.5"
+      ]
+    },
+    "forward": {
+      "EARLY_PHASE1": [
+        "5.1",
+        "5.2",
+        "5.5",
+        "7.1",
+        "7.2",
+        "7.3",
+        "7.4",
+        "7.5",
+        "8.3",
+        "8.4"
+      ],
+      "PHASE1": [
+        "5.2",
+        "5.5",
+        "7.1",
+        "7.2",
+        "7.3",
+        "7.4",
+        "7.5",
+        "8.3",
+        "8.4"
+      ],
+      "PHASE2": [
+        "7.1",
+        "7.2",
+        "7.4",
+        "7.5",
+        "8.3"
+      ],
+      "PHASE3": [],
+      "PHASE4": []
+    }
+  },
+  "phaseRiskWatchlist": {
+    "EARLY_PHASE1": [
+      {
+        "domain": "DOSE_EXPOSURE",
+        "question": "Dose escalation, exposure and target engagement adequate?"
+      },
+      {
+        "domain": "SAFETY",
+        "question": "Any dose-limiting or serious emergent toxicity?"
+      },
+      {
+        "domain": "TRIAL_EXECUTION",
+        "question": "First-in-human enrollment and monitoring proceeding as planned?"
+      }
+    ],
+    "PHASE1": [
+      {
+        "domain": "DOSE_EXPOSURE",
+        "question": "Therapeutic exposure and maximum tolerated or selected dose supported?"
+      },
+      {
+        "domain": "SAFETY",
+        "question": "Any serious adverse events, DLTs, discontinuations or immunogenicity?"
+      },
+      {
+        "domain": "EFFICACY",
+        "question": "Are any early signals controlled and interpretable rather than assumed efficacy?"
+      }
+    ],
+    "PHASE2": [
+      {
+        "domain": "EFFICACY",
+        "question": "Magnitude and repeatability of preliminary benefit versus control?"
+      },
+      {
+        "domain": "STATISTICS",
+        "question": "Endpoint validity, missing data, multiplicity and underpowered findings?"
+      },
+      {
+        "domain": "DOSE_EXPOSURE",
+        "question": "Dose-selection and exposure-response evidence support pivotal planning?"
+      },
+      {
+        "domain": "SAFETY",
+        "question": "Toxicity profile and duration adequate for Phase 3 advancement?"
+      }
+    ],
+    "PHASE3": [
+      {
+        "domain": "EFFICACY",
+        "question": "Prespecified primary endpoint and clinically meaningful effect achieved, when reported?"
+      },
+      {
+        "domain": "STATISTICS",
+        "question": "Multiplicity, amendments, missingness, prespecified versus post-hoc estimates?"
+      },
+      {
+        "domain": "TRIAL_EXECUTION",
+        "question": "Enrollment, retention, blinding and site/data integrity risks?"
+      },
+      {
+        "domain": "SAFETY",
+        "question": "Serious harms, exposure and benefit-risk consistency?"
+      },
+      {
+        "domain": "REGULATORY",
+        "question": "FDA endpoints and evidence requirements resolved for the exact indication?"
+      }
+    ],
+    "PHASE4": [
+      {
+        "domain": "SAFETY",
+        "question": "New or cumulative rare/long-term safety signals?"
+      },
+      {
+        "domain": "DURABILITY",
+        "question": "Durability and effectiveness in practice?"
+      },
+      {
+        "domain": "CONFIRMATORY",
+        "question": "Postmarketing commitments and confirmatory results on track?"
+      },
+      {
+        "domain": "REAL_WORLD_GENERALIZABILITY",
+        "question": "Effectiveness across populations and care settings?"
+      }
+    ],
+    "UNKNOWN": [
+      {
+        "domain": "TRIAL_EXECUTION",
+        "question": "Confirm exact-NCT trial phase before assessing current-phase risk."
+      }
+    ]
+  }
+}
