@@ -3,6 +3,7 @@ import {useEffect, useRef, useState} from "react";
 import type {AssessmentReview, CatalogMatrix, Evidence, MethodReview, ReviewMatrix} from "../../../lib/medical-review-matrix";
 import ScientificInstallationStatus from "./ScientificInstallationStatus";
 import PhaseVerificationPanel from "./PhaseVerificationPanel";
+import PilotPredictionWorkup from "./PilotPredictionWorkup";
 
 const panel = {border: "1px solid #a8c9bc", borderRadius: 9, padding: 14, margin: "12px 0"} as const;
 function SourceLinks({sources}: {sources: Evidence[]}) {
@@ -102,6 +103,7 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
   }
   return <section style={{...panel, background: "#f5faf7"}} aria-label={"Scientific method matrix for " + nct}>
     <h2>Scientific assessment matrix · {nct}</h2>
+    <PilotPredictionWorkup nct={nct} />
     <button type="button" onClick={openFirstMethods} disabled={!review||!catalog}
       style={{padding:"12px 14px",borderRadius:9,border:"1px solid #218169",background:"#dbf7e9",color:"#154c3f",fontWeight:800,marginBottom:8}}>
       Open Assessment 1 → 20 scientific methods
