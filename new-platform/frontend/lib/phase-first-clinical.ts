@@ -80,7 +80,7 @@ export function evaluatePhaseFirst(trial:PhaseTrial,context:ClinicalContext,asOf
  const noClinical=trial.studyType!=="INTERVENTIONAL"||!phase.verified;
  const regulatoryLinked=!!context.regulatory;
  const regContext=regulatoryLinked?"EXACT_TRIAL_HISTORICAL_REGULATORY_LINK":
-  context.legacyStage==="post"&&mature>=3?"POST_READOUT_APPLICATION_NOT_ESTABLISHED":"CLINICAL_DEVELOPMENT";
+  trial.hasResults&&mature>=3?"POST_READOUT_APPLICATION_NOT_ESTABLISHED":"CLINICAL_DEVELOPMENT";
  const registryResults=trial.results as {adverseEventsModule?:unknown;participantFlowModule?:unknown;outcomeMeasuresModule?:{outcomeMeasures?:{title:string;type?:string;analyses?:unknown[]}[]}};
  const outcomes=registryResults.outcomeMeasuresModule?.outcomeMeasures??[];
  const direct:Record<string,string|undefined>={
