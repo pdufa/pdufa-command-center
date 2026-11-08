@@ -16,7 +16,7 @@ const study={
   hasResults:true,
   protocolSection:{
     identificationModule:{nctId:"NCT05507203",briefTitle:"Registry smoke-test fixture"},
-    statusModule:{overallStatus:"COMPLETED",lastUpdatePostDateStruct:{date:"2026-01-12"}},
+    statusModule:{overallStatus:"COMPLETED",studyFirstPostDateStruct:{date:"2021-01-12"},lastUpdatePostDateStruct:{date:"2026-01-12"}},
     designModule:{phases:["PHASE3"],studyType:"INTERVENTIONAL",
       designInfo:{allocation:"RANDOMIZED",interventionModel:"PARALLEL"},
       enrollmentInfo:{count:500}},
@@ -45,6 +45,7 @@ test("one exact-NCT full source scan builds twelve separate evidence checks and 
   assert.equal(result.tests[10].state,"NOT_AUTOMATED");
   assert.equal(result.tests[11].state,"NOT_AUTOMATED");
   assert.equal(result.registrySourceUrl,sourceUrl);
+  assert.equal(result.registryLastUpdate,"2026-01-12");
   assert.deepEqual(result.prediction,{approval:"ABSTAIN",crl:"ABSTAIN",reviewDelay:"ABSTAIN",certainty:"NOT_VALIDATED"});
 });
 test("run exactly one requested check, no synthetic completion of other checks",()=>{

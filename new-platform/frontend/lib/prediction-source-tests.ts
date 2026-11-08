@@ -142,7 +142,7 @@ export function makeEvidenceRun(study:unknown,nct:string,mode:"FULL"|"SINGLE",te
   return {
     nct,ticker:trial.ticker,mode,executedAt:new Date().toISOString(),
     registrySourceUrl:"https://clinicaltrials.gov/study/"+nct,
-    registryLastUpdate:string(nested(status,"studyFirstPostDateStruct").date)||string(nested(status,"lastUpdatePostDateStruct").date)||null,
+    registryLastUpdate:string(nested(status,"lastUpdatePostDateStruct").date)||string(nested(status,"studyFirstPostDateStruct").date)||null,
     researchState:"SOURCE_INSPECTION_ONLY",tests:selected,executedCount:selected.length,
     prediction:{approval:"ABSTAIN",crl:"ABSTAIN",reviewDelay:"ABSTAIN",certainty:"NOT_VALIDATED"},
     message:"Each executed test checks recorded source fields, not independent scientific accuracy. No regulatory outcome prediction is certified or released."
