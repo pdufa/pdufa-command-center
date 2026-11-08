@@ -25,6 +25,7 @@ export type MonitorTelemetry={
  services?:Record<string,Record<string,unknown>>;
  scans?:Record<string,Record<string,unknown>>;
  research?:Record<string,unknown>;
+ analysisNow?:Record<string,unknown>;
  alerts?:Record<string,unknown>;
  errors?:string[];
  coverage?:Record<string,unknown>;
@@ -35,6 +36,7 @@ export type ExternalVerification={
  overallCi:"success"|"failure"|"pending"|"unknown";
  scheduledScans:{state:"success"|"failure"|"running"|"unknown";at:string|null;url:string|null};
  apiReachable:boolean;
+ analyzeNowAllEnabled?:boolean;
 };
 export type MonitorSnapshot={
  schemaVersion:1;observedAt:string;
@@ -45,6 +47,7 @@ export type MonitorSnapshot={
  facts:{focusTrialCount:number;fdaApplicationCycles:number;advancedLevelDefinitions:number;
  historicalCalibrationRows:number;rosterAsOf:string;productionModified:false};
  signals:{scans:MonitorTelemetry["scans"];research:MonitorTelemetry["research"];
+ analysisNow:MonitorTelemetry["analysisNow"];
  alerts:MonitorTelemetry["alerts"];coverage:MonitorTelemetry["coverage"]};
 };
 
@@ -56,6 +59,7 @@ export function buildInstallationProgress(
  const validStorage=Boolean(live?.schemaVersion===1&&live.storage?.state==="READY"&&live.storage?.kind==="postgresql");
  const backendDown=!validStorage||!external.apiReachable;
  const research=live?.research??{};
+ const analyzeNow=live?.analysisNow??{};
  const applications=live?.sourceSnapshots?.applications??{};
  const runtimeSha=live?.services?.backendDeployment?.gitSha;
  const backendSha=typeof runtimeSha==="string"&&/^[a-f0-9]{40}$/.test(runtimeSha)?runtimeSha:null;
@@ -160,6 +164,21 @@ export function buildInstallationProgress(
        "No independently signed current-cycle level completion is recorded.","Medical/reviewer signoff")
    ]);
  }
+ add("analyze-now","Analyze Now — immediate trial assessment",[
+   from("analyze-now.button","Per-trial controls linked to FOCUS","VERIFIED",
+     "Analyze Now and expandable NCT history controls are installed for each of 29 FOCUS trial rows. Non-pilot actions remain disabled until live validation.","FOCUS trial page"),
+   from("analyze-now.pilot","One completed saved exact-NCT pilot",
+     analyzeNow.state==="OBSERVED"&&analyzeNow.pilotSaved===true?"VERIFIED":backendBlock(),
+     "Canary "+String(analyzeNow.pilotTrial??"NCT06081894")+" saved: "+String(analyzeNow.pilotSaved??"not observed")+". The exact report must include date, source gaps and separate uncalibrated outcomes.",
+     "PostgreSQL medical_analyze_requests and medical_prediction_revisions",observed),
+   from("analyze-now.automation","Automatic evidence/component reanalysis verified",
+     analyzeNow.autoRerunEnabled===true&&typeof analyzeNow.componentWatchBaselines==="number"&&analyzeNow.componentWatchBaselines>0?"VERIFIED":backendBlock(),
+     "Registry and newly operational component watchers require opt-in and persistent PostgreSQL; a baseline is not a completed reanalysis.","Persisted component watch and registry watch",observed),
+   from("analyze-now.rollout","All 29 eligible trials operationally enabled",
+     analyzeNow.pilotSaved===true&&analyzeNow.allTrialsEnabled===true&&external.analyzeNowAllEnabled===true?"VERIFIED":
+       (analyzeNow.allTrialsEnabled===true)!==Boolean(external.analyzeNowAllEnabled)?"BLOCKED":"PENDING",
+     "Wider rollout requires a saved pilot plus consistent backend and frontend enablement; no implicit enablement from a passing unit test.","Operator-approved environment rollout",observed)
+ ]);
  add("predictions","FDA Prediction Engine — three separate outcomes",[
    from("prediction.contract","Approval, CRL and delay models remain separate","VERIFIED",
      "Three separate outcomes are defined, with abstention and null probabilities when unvalidated.","FDA prediction schema"),
@@ -230,6 +249,6 @@ export function buildInstallationProgress(
    facts:{focusTrialCount:focus.records.length,fdaApplicationCycles:APPLICATION_CYCLES.length,
      advancedLevelDefinitions:ADVANCED_LEVELS.length,historicalCalibrationRows:HISTORICAL_CALIBRATION.eligibleCount,
      rosterAsOf:focus.asOf,productionModified:false},
-   signals:{scans:live?.scans,research:live?.research,alerts:live?.alerts,coverage:live?.coverage}
+   signals:{scans:live?.scans,research:live?.research,analysisNow:live?.analysisNow,alerts:live?.alerts,coverage:live?.coverage}
  };
 }
