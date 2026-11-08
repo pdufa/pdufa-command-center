@@ -330,6 +330,26 @@ def require_internal_key(
     if not x_pdufa_internal_key or not secrets.compare_digest(expected, x_pdufa_internal_key):
         raise HTTPException(status_code=401, detail="Unauthorized")
 
+# Scope a separate read-only preview key to the clinical review surfaces.
+# Do not rotate the general internal key: other preview branches and callers use it.
+# This dependency MUST NOT be assigned to write routes or operational workers.
+def require_medical_review_read_key(
+    x_pdufa_internal_key: Annotated[str | None, Header()] = None,
+) -> None:
+    configured = [
+        key for key in (
+            os.getenv("PDUFA_INTERNAL_API_KEY"),
+            os.getenv("PDUFA_MEDICAL_INTERNAL_API_KEY"),
+            os.getenv("PDUFA_MEDICAL_REVIEW_READ_KEY"),
+        ) if key
+    ]
+    if not configured:
+        raise HTTPException(status_code=503, detail="Scientific preview read access not configured")
+    if not x_pdufa_internal_key or not any(
+        secrets.compare_digest(key, x_pdufa_internal_key) for key in configured
+    ):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
 
 def storage_ready() -> bool:
     # Hosted staging must NEVER silently save ticker data to ephemeral SQLite.
@@ -833,7 +853,7 @@ app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 from .nct_live_stream import install_routes as install_nct_stream_routes
 install_nct_stream_routes(app, lambda: ENGINE, require_internal_key, require_storage)
 
-@app.get("/api/internal/installation-monitor", dependencies=[Depends(require_internal_key)])
+@app.get("/api/internal/installation-monitor", dependencies=[Depends(require_medical_review_read_key)])
 def installation_monitor_status():
     """Authenticated, no-store, read-only evidence. No scans, alerts or predictions start on GET."""
     from .installation_monitor import collect
@@ -881,7 +901,7 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes
         and os.getenv("PDUFA_MEDICAL_ASSESSMENT_LEDGER_ENABLED", "").lower() in ("1", "true", "yes")):
     from .medical_assessment_ledger import install_routes as install_medical_assessment_routes
     install_medical_assessment_routes(app, lambda: ENGINE,
-                                     require_medical_internal_key,
+                                     require_medical_review_read_key,
                                      require_medical_assessment_storage)
 
 # Phase-aware review is separately opt-in and uses ONLY authenticated GETs.
@@ -895,7 +915,7 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes
         and os.getenv("PDUFA_MEDICAL_PHASE_MATRIX_ENABLED", "").lower() in ("1", "true", "yes")):
     from .medical_phase_matrix import install_routes as install_medical_phase_matrix_routes
     install_medical_phase_matrix_routes(app, lambda: ENGINE,
-                                        require_medical_internal_key,
+                                        require_medical_review_read_key,
                                         require_medical_phase_matrix_storage)
 
 # Stage-4 source triage has independent storage gate, authenticated GET only.
