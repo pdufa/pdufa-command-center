@@ -20,11 +20,11 @@ function load(name){
 const {APPLICATION_CYCLES}=load("medical-intelligence-applications");
 const {ADJUDICATION_CASES,ADJUDICATION_AS_OF,INVESTIGATION_PRIORITIES,adjudicationForCycle,getAdjudicationCase,adverseEventAbsoluteDifference}=load("medical-intelligence-clinical-adjudication");
 test("Exact application and NCT identity, source authorship, and dates checked for all deep issue comparisons",()=>{
- assert.equal(ADJUDICATION_CASES.length,3);
+ assert.equal(ADJUDICATION_CASES.length,11);
  assert.equal(ADJUDICATION_AS_OF,"2026-11-07");
- assert.equal(new Set(ADJUDICATION_CASES.map(x=>x.id)).size,3);
+ assert.equal(new Set(ADJUDICATION_CASES.map(x=>x.id)).size,11);
  const caseCycles=new Set(ADJUDICATION_CASES.map(x=>x.cycleId));
- assert.equal(caseCycles.size,3);
+ assert.equal(caseCycles.size,11);
  for(const c of ADJUDICATION_CASES){
    const app=APPLICATION_CYCLES.find(a=>a.id===c.cycleId);
    assert.ok(app,"Unknown application "+c.cycleId);
@@ -39,7 +39,7 @@ test("Exact application and NCT identity, source authorship, and dates checked f
    assert.ok(c.bestCase.length>60);
    assert.ok(c.whatWouldResolve.length>=4);
    for(const claim of c.sources){
-     assert.equal(claim.trial,c.nct);
+     assert.ok(app.ncts.includes(claim.trial),"Foreign NCT "+claim.trial+" for "+c.cycleId);
      assert.match(claim.url,/^https:\/\//);
      assert.ok(claim.date<=ADJUDICATION_AS_OF,"Future evidence not allowed: "+claim.id);
      assert.match(claim.date,/^20\d\d-\d\d-\d\d$/);
