@@ -52,7 +52,7 @@ export function buildInstallationProgress(
  const points:Stage[]=[];
  const observed=live?.observedAt??null;
  const validStorage=Boolean(live?.schemaVersion===1&&live.storage?.state==="READY"&&live.storage?.kind==="postgresql");
- const backendDown=live?.storage?.state==="BLOCKED"||!external.apiReachable;
+ const backendDown=!validStorage||!external.apiReachable;
  const research=live?.research??{};
  const scans=live?.scans??{};
  const alerts=live?.alerts??{};
