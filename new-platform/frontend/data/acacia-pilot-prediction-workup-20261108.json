@@ -16,7 +16,10 @@
     "criticalPhase3AssessmentHeadings": 11,
     "criticalHeadingsWithSourceLeads": 11,
     "independentlyGradedMethodPositions": 0,
-    "independentlyCompletedAssessments": 0
+    "independentlyCompletedAssessments": 0,
+    "mappedCandidateMethodLeads": 15,
+    "candidateMeaning": "SOURCE_TO_METHOD_RESEARCH_LEAD_ONLY_NOT_A_REVIEW_EVENT_OR_GRADE",
+    "everyMappedMethodGraded": false
   },
   "finalDecision": {
     "approval": "ABSTAIN",
@@ -115,7 +118,10 @@
         "CTIS_AM04",
         "NEJM_PIVOTAL"
       ],
-      "remaining": "Independent CONSORT and actual protocol conduct verification"
+      "remaining": "Independent CONSORT and actual protocol conduct verification",
+      "candidateMethodIndices": [
+        1
+      ]
     },
     {
       "id": "4.2",
@@ -125,7 +131,11 @@
         "NEJM_PIVOTAL",
         "ISSUER_MAY_2025"
       ],
-      "remaining": "Clinically important difference, prior amendment approvals and final SAP"
+      "remaining": "Clinically important difference, prior amendment approvals and final SAP",
+      "candidateMethodIndices": [
+        1,
+        2
+      ]
     },
     {
       "id": "4.3",
@@ -133,7 +143,10 @@
       "sourceLeadIds": [
         "CTIS_AM04"
       ],
-      "remaining": "Final locked SAP, intercurrent event and missing-data sensitivity tables"
+      "remaining": "Final locked SAP, intercurrent event and missing-data sensitivity tables",
+      "candidateMethodIndices": [
+        1
+      ]
     },
     {
       "id": "4.4",
@@ -142,7 +155,10 @@
         "CTIS_AM04",
         "NEJM_PIVOTAL"
       ],
-      "remaining": "516-versus-517 participant accounting, actual missingness and CONSORT"
+      "remaining": "516-versus-517 participant accounting, actual missingness and CONSORT",
+      "candidateMethodIndices": [
+        1
+      ]
     },
     {
       "id": "4.5",
@@ -151,7 +167,10 @@
         "CTIS_AM04",
         "REGISTRY"
       ],
-      "remaining": "Original amendment effective dates, monitoring and protocol deviations"
+      "remaining": "Original amendment effective dates, monitoring and protocol deviations",
+      "candidateMethodIndices": [
+        1
+      ]
     },
     {
       "id": "5.1",
@@ -160,7 +179,11 @@
         "NEJM_PIVOTAL",
         "CTIS_AM04"
       ],
-      "remaining": "Final SAP analysis sets, primary sensitivity checks and clinical meaning"
+      "remaining": "Final SAP analysis sets, primary sensitivity checks and clinical meaning",
+      "candidateMethodIndices": [
+        1,
+        12
+      ]
     },
     {
       "id": "5.2",
@@ -169,7 +192,10 @@
         "CTIS_AM04",
         "NEJM_PIVOTAL"
       ],
-      "remaining": "Complete alpha graph, hierarchy, LAVI non-significant outcome and SAP"
+      "remaining": "Complete alpha graph, hierarchy, LAVI non-significant outcome and SAP",
+      "candidateMethodIndices": [
+        1
+      ]
     },
     {
       "id": "5.3",
@@ -179,7 +205,11 @@
         "SEC_10Q",
         "ECHO_ANALYSIS"
       ],
-      "remaining": "HF SAE 11/1 versus 12/3 and 7 versus 14 treatment interruptions"
+      "remaining": "HF SAE 11/1 versus 12/3 and 7 versus 14 treatment interruptions",
+      "candidateMethodIndices": [
+        1,
+        19
+      ]
     },
     {
       "id": "5.4",
@@ -188,7 +218,10 @@
         "NEJM_PIVOTAL",
         "RESPONDER_ANALYSIS"
       ],
-      "remaining": "Independent subgroup effects, CI interaction and nonrandom missingness"
+      "remaining": "Independent subgroup effects, CI interaction and nonrandom missingness",
+      "candidateMethodIndices": [
+        1
+      ]
     },
     {
       "id": "8.1",
@@ -197,7 +230,10 @@
         "NEJM_PIVOTAL",
         "SEC_10Q"
       ],
-      "remaining": "Authorized benefit-risk adjudication and independent safety assessment"
+      "remaining": "Authorized benefit-risk adjudication and independent safety assessment",
+      "candidateMethodIndices": [
+        1
+      ]
     },
     {
       "id": "8.2",
@@ -207,7 +243,11 @@
         "CTIS_AM04",
         "SEC_10Q"
       ],
-      "remaining": "Final SAP, safety discrepancy correction and independent reviewer signoff"
+      "remaining": "Final SAP, safety discrepancy correction and independent reviewer signoff",
+      "candidateMethodIndices": [
+        1,
+        5
+      ]
     }
   ],
   "sources": {
@@ -251,5 +291,6 @@
     "SAFETY_SOURCE_RECONCILIATION",
     "INDICATION_SPECIFIC_FILING"
   ],
-  "nextHighestValueStep": "Independent clinical review of authenticated CY 6033 protocol and trial data; obtain final SAP and safety tables; construct historical outcome validation set before calculating probabilities."
+  "nextHighestValueStep": "Independent clinical review of authenticated CY 6033 protocol and trial data; obtain final SAP and safety tables; construct historical outcome validation set before calculating probabilities.",
+  "sourceVersion": "research_pilot_1"
 }
