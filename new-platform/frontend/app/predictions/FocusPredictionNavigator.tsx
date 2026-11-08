@@ -134,6 +134,7 @@ export default function FocusPredictionNavigator(){
         <span className={styles.label}>RECORDED EVIDENCE LINKS</span>
         <a href={"https://clinicaltrials.gov/study/"+selectedTrial.nct} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov study ↗</a>
         <a href={selectedTrial.regulatoryUrl} target="_blank" rel="noopener noreferrer">Roster-listed regulatory / issuer source ↗</a>
+        <a href={"/predictions/assessment?nct="+encodeURIComponent(selectedTrial.nct)}>Open specialty evidence worklist ↗</a>
       </div>
     </div>}
     <p className={styles.footerNote}>
