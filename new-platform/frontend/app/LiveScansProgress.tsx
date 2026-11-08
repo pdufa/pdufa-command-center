@@ -18,7 +18,7 @@ type Report = {
 const FEEDS = [
   ["AUTO", "Latest active / recent scan"],
   ["OVERNIGHT", "Full POOL → PIPELINE → FOCUS"],
-  ["SOURCES", "FDA / SEC / Financial / Market / Issuer"],
+  ["SOURCES", "FDA / SEC / background evidence"],
   ["SCAN_CONTROL", "Manual scan commands"],
   ["GMAIL_AUDIT", "Gmail email audit"],
   ["GMAIL_REPAIR", "Gmail fix & Trash resolved"],
@@ -30,10 +30,16 @@ const STAGES = [
   { key: "pipeline", label: "PIPELINE", mini: "Trial inventory" },
   { key: "phase3", label: "FOCUS", mini: "Published Phase 3 evidence" },
   { key: "publish", label: "REPORT", mini: "Published results" },
-  { key: "sources", label: "SOURCES", mini: "FDA · SEC · Financial · Market · Issuer" },
+  { key: "sources", label: "SOURCES", mini: "FDA · SEC · background checks" },
   { key: "score", label: "SCORE / REPAIR", mini: "Scoring · Gmail · repair" },
   { key: "final", label: "FINAL", mini: "Result & checks" },
 ] as const;
+
+// These jobs still run and remain part of all totals, stage status and audits.
+// Only their individual cards are suppressed from the operator-facing scan list.
+function backgroundEvidenceJob(name: string): boolean {
+  return /\bLive PDUFA (?:FINANCIAL|MARKET|ISSUER) source check\b/i.test(name);
+}
 
 function stageForJob(name: string): string | null {
   const n = name.toLowerCase();
@@ -143,9 +149,18 @@ export default function LiveScansProgress() {
   }, [feed, refresh]);
 
   const jobs = useMemo(() => report?.jobs || [], [report?.jobs]);
+  // Compute progress from ALL actual jobs before applying the display-only filter.
   const data = progress(jobs, report?.totalJobs, report?.truncated);
   const task = currentTask(jobs);
+  const visibleJobs = jobs.filter(job => !backgroundEvidenceJob(job.name));
+  const backgroundJobCount = jobs.length - visibleJobs.length;
+  const taskIsBackground = !!task.first && backgroundEvidenceJob(task.first.name);
+  const taskName = taskIsBackground ? "Background supporting-evidence collection" : task.first?.name;
+  const taskStepName = taskIsBackground && task.currentStep
+    ? "Supporting-evidence check in progress" : task.currentStep?.name;
   const run = report?.run;
+  const sourceOnly = run?.workflow === "pdufa-nightly-missing-sources.yml";
+  const displayRunName = sourceOnly ? "FDA / SEC / supporting-source verification" : run?.name;
   const overallStatus: RunState = run?.status || "unknown";
   const overnight = run?.workflow === "pdufa-overnight-sequential.yml" ||
     run?.workflow === "pdufa-nightly-clinical.yml";
@@ -191,7 +206,7 @@ export default function LiveScansProgress() {
         <span className={"pdufa-state pdufa-state-" + overallStatus} aria-live="polite">
           {iconFor(overallStatus)} {labelFor(overallStatus)}
         </span>
-        <strong>{run.title}</strong>
+        <strong>{sourceOnly ? displayRunName : run.title}</strong>
         <span className="pdufa-run-meta">#{run.id} · Attempt {run.attempt}</span>
         <a href={run.url} target="_blank" rel="noopener noreferrer">View exact GitHub run ↗</a>
       </div>
@@ -215,12 +230,12 @@ export default function LiveScansProgress() {
           <div className="pdufa-current-stage">{task.count ? currentStage : overallStatus === "success" ? "Run finished" :
             overallStatus === "failure" ? "Run stopped with a failure" :
             overallStatus === "queued" ? "Waiting for GitHub runner" : "No task currently reported"}</div>
-          <div className="pdufa-current-name">{task.first?.name || (overallStatus === "running" ? "Waiting for job-level telemetry" : run.name)}</div>
+          <div className="pdufa-current-name">{taskName || (overallStatus === "running" ? "Waiting for job-level telemetry" : displayRunName)}</div>
           <div className="pdufa-current-step">
             <span className={task.currentStep ? "pdufa-step-working" : "pdufa-step-wait"}>
               {task.currentStep ? "● RUNNING STEP" : "STEP STATUS"}
             </span>
-            <strong>{task.currentStep?.name || (task.first ? "No individual step reported as running" :
+            <strong>{taskStepName || (task.first ? "No individual step reported as running" :
               overallStatus === "success" ? "All reported jobs finished" :
               overallStatus === "failure" ? "Review failed jobs below" : "Awaiting live step telemetry")}</strong>
           </div>
@@ -263,8 +278,10 @@ export default function LiveScansProgress() {
           <h4>LIVE TASK CHECKLIST</h4>
           <span>{data.doneJobs}/{data.knownJobs} jobs finished · expand a job to inspect its actual steps and timestamps</span>
         </div>
+        {backgroundJobCount > 0 && <p className="subtle">{backgroundJobCount} supporting-evidence jobs are running or recorded in the background, included in the overall progress and source-audit results but not shown as separate scans here.</p>}
         {jobs.length === 0 ? <p>No jobs have been reported by GitHub yet.</p> :
-          jobs.map(job => {
+          visibleJobs.length === 0 ? <p>No front-facing scan jobs in this run. All reported jobs are still included in the progress totals.</p> :
+          visibleJobs.map(job => {
             const ended = job.steps.filter(s => TERMINAL.has(s.status)).length;
             const percent = job.steps.length ? Math.round(ended / job.steps.length * 100) : null;
             return <details key={job.id + "-" + job.name} className={"pdufa-task-row pdufa-task-" + job.status}

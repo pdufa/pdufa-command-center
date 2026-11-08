@@ -257,8 +257,9 @@ export default function PublishedScansPanel() {
       <p className="subtle">Report coverage: {value(record.status)} · Evidence updated {value(sources?.updated_at_utc)} · Source workflow #{value(sources?.latest_run_id)}. These scores do not indicate investment or FDA-approval probability.</p>
       <div className="scans-evidence-masonry">
       <div className="source-health">
-        <strong>Five-source audit: {value(sources?.status)}</strong>
+        <strong>Full evidence audit: {value(sources?.status)}</strong>
         <span>{value(sources?.findings_verified)} findings verified / {value(sources?.findings_due)} examined; {value(sources?.required_findings_unresolved)} required findings unresolved.</span>
+        <p className="subtle">Three supporting source collectors continue in the background and remain included in the complete audit. Individual scan cards below show FDA and SEC only; saved evidence remains accessible through the verification ledger.</p>
       </div>
       {(record.clinical?.scans || []).map(scan => {
         const m = scan.metrics || {};
@@ -271,7 +272,7 @@ export default function PublishedScansPanel() {
           <p className="subtle">Why not 100% full verification? Clinical collector completeness does not certify SEC financing, FDA, market, or issuer claims. For non-inventory stages, no complete qualifying denominator has been published.</p>
         </details>;
       })}
-      {(sources?.sources || []).map(s => {
+      {(sources?.sources || []).filter(s => s.source === "FDA" || s.source === "SEC").map(s => {
         const pct = score(s.findings_due, s.findings_verified, s.findings_not_applicable);
         const missing = s.findings_due === undefined || s.findings_verified === undefined ? null : Math.max(0,s.findings_due - s.findings_verified - (s.findings_not_applicable || 0));
         return <details className="nested-expander" key={s.source}>
