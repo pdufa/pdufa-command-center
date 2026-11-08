@@ -136,11 +136,15 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
       const response = await fetch("/api/predictions/medical-matrix?nct=" + encodeURIComponent(nct) + "&assessmentIndex=" + index,
         {cache: "no-store", signal: controller.current?.signal});
       const data = await response.json();
-      if (!response.ok || data.review?.phaseEventId !== review?.phaseEventId ||
-          data.review?.historicalReviewEvents !== review?.historicalReviewEvents ||
-          data.review?.recordedGapEvents !== review?.recordedGapEvents ||
-          JSON.stringify(data.review?.assessments) !== JSON.stringify(review?.assessments))
-        throw Error("Evidence changed or is unavailable. Reload the page before comparing reviews.");
+      // Check against the most recently refreshed ledger, not an older render
+      // captured before a poll. A phase/review change invalidates old method details.
+      const current = lastSnapshotRef.current;
+      if (!response.ok || !current ||
+          data.review?.phaseEventId !== current.phaseEventId ||
+          data.review?.historicalReviewEvents !== current.historicalReviewEvents ||
+          data.review?.recordedGapEvents !== current.recordedGapEvents ||
+          JSON.stringify(data.review?.assessments) !== JSON.stringify(current.assessments))
+        throw Error("Evidence changed or is unavailable. Reload the method evidence before comparing reviews.");
       setDetails(previous => ({...previous, [index]: data.review.selectedAssessment}));
     } catch (e) {
       if (!controller.current?.signal.aborted) setErrors(previous => ({...previous, [index]: e instanceof Error ? e.message : "Method evidence unavailable"}));
