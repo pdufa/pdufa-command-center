@@ -109,6 +109,15 @@ export default function PhaseVerificationPanel({nct}:{nct:string}){
           <p><a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/issuer-design-chronology-revision8-20261108.md" target="_blank" rel="noopener noreferrer">Open revision 8 · original source redesign timeline</a></p>
           <p style={{fontSize:12,marginBottom:0}}>Source chronology corroborated · ORIGINAL VERSION DIFF PENDING · FINAL SAP MISSING · 0 SCIENTIFIC GRADES</p>
         </details>
+        <details style={{...panel,background:"#fff8f2",marginBottom:0}}>
+          <summary><strong>Safety source audit · numerical comparison and unresolved counts</strong></summary>
+          <p style={{fontSize:13}}>The peer-reviewed secondary safety report describes 11 versus 1 serious heart-failure events, while the August sponsor disclosure and November 10-Q describe 12 versus 3. Each set has internally consistent percentages using 258 and 259 randomized patients, but the difference between sources remains unexplained. All-cause serious adverse events (52 versus 38) are a separate endpoint category.</p>
+          <p style={{fontSize:13}}>A second publication-level issue: the secondary report lists LVEF-related interruptions as 14 (2.7%) versus 1 (0.8%). For the randomized groups, 14/258 is 5.4% and 1/259 is 0.4%. These reference-group calculations flag a discrepancy; the true analysis populations, event definitions and original journal corrections remain to be verified. No numerator is silently changed or clinically graded.</p>
+          <p><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13674601/" target="_blank" rel="noopener noreferrer">Peer-reviewed secondary analysis — safety section</a></p>
+          <p><a href="https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm" target="_blank" rel="noopener noreferrer">Sponsor 10-Q — subsequent safety disclosure</a></p>
+          <p><a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/safety-arithmetic-source-audit-revision9-20261108.md" target="_blank" rel="noopener noreferrer">Open revision 9 · full source arithmetic audit</a></p>
+          <p style={{fontSize:12,marginBottom:0}}>ARITHMETIC AUDIT COMPLETE · CLINICAL SAFETY ADJUDICATION OPEN · GRADE EVENTS 0</p>
+        </details>
       </aside>:null}
       <p>
         <a href={selected.officialUrl} target="_blank" rel="noopener noreferrer">Original ClinicalTrials.gov study</a>
