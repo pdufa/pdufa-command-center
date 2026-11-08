@@ -17,7 +17,9 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({error: "Select an exact FOCUS NCT and assessment 1–40"}, {status: 422, headers});
   // Deliberately no fallback to the ordinary storage/production backend.
   const base = isolatedMedicalBackend(process.env.PDUFA_MEDICAL_REVIEW_API_BASE_URL);
-  const key = process.env.PDUFA_MEDICAL_INTERNAL_API_KEY ?? process.env.PDUFA_INTERNAL_API_KEY;
+  // Dedicated read-only medical-preview key avoids changing existing service credentials.
+  const key = process.env.PDUFA_MEDICAL_REVIEW_READ_KEY ??
+    process.env.PDUFA_MEDICAL_INTERNAL_API_KEY ?? process.env.PDUFA_INTERNAL_API_KEY;
   if (!base || !key) return NextResponse.json({error: "Isolated medical review backend is not configured"}, {status: 503, headers});
   try {
     const init: RequestInit = {headers: {"x-pdufa-internal-key": key}, redirect: "error", cache: "no-store", signal: AbortSignal.timeout(20000)};
