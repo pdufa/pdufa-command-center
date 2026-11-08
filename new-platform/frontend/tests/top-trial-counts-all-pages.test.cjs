@@ -19,7 +19,7 @@ test("production home only surfaces the POOL and FOCUS trial lists",()=>{
 });
 
 test("both active trial populations and their POOL controls have native routes",()=>{
- for(const file of ["pool/page.tsx","p3-post-data/page.tsx","tools/page.tsx",
+ for(const file of ["pool/page.tsx","focus/page.tsx","tools/page.tsx",
     "api/scope-funnel/route.ts","api/auth/route.ts"]){
   assert.ok(read(file).length>0,file);
  }
@@ -31,7 +31,7 @@ test("both active trial populations and their POOL controls have native routes",
 
 test("FOCUS has verified candidate snapshot data and evidence",()=>{
  const sheet=JSON.parse(fs.readFileSync(path.join(__dirname,"../data/p3PostDataActive.json"),"utf8"));
- const page=read("p3-post-data/page.tsx");
+ const page=read("focus/page.tsx");
  assert.equal(sheet.schemaVersion,1);
  assert.ok(sheet.records.length>0);
  assert.equal(new Set(sheet.records.map(r=>r.nct)).size,sheet.records.length);
