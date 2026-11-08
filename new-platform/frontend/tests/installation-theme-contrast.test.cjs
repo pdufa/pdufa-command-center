@@ -22,7 +22,7 @@ test("INSTALLATION adopts the same dark navy and teal palette as PREDICTIONS",()
 });
 
 test("task labels, status cards and scientific questions cannot inherit white text on white surfaces",()=>{
- assert.match(src,/background:task\.id===active\?\.taskId\?"#145751":"#0b3040"/);
+ assert.match(src,/background:located\|\|task\.id===active\?\.taskId\?"#145751":"#0b3040"/);
  assert.match(src,/background:q\.id===chosenQuestion\?"#145751":"#0a2c3b",color:"#e7f9fc"/);
  assert.match(src,/textAlign:"left",width:"100%",background:"transparent",color:"#e7f9fc"/);
  assert.doesNotMatch(src,/background:"#fff"/);
