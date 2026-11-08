@@ -2,6 +2,7 @@ import Link from "next/link";
 import type {Metadata} from "next";
 import FocusPredictionNavigator from "./FocusPredictionNavigator";
 import FullRosterSourceScan from "./FullRosterSourceScan";
+import PredictionReleaseStatus from "./PredictionReleaseStatus";
 
 export const metadata:Metadata={
   title:"FDA Outcome Predictions | PDUFA",
@@ -13,6 +14,7 @@ export default function PredictionsPage(){
   return <main className="shell" style={{maxWidth:1200,margin:"0 auto",padding:"24px 14px 48px"}}>
     <div className="topline">PDUFA COMMAND CENTER · INDEPENDENT OUTCOME GOVERNANCE</div>
     <h1>FDA Outcome Predictions</h1>
+    <PredictionReleaseStatus/>
     <p aria-label="Prediction analysis depth" style={{margin:"8px 0 18px",lineHeight:1.6,fontSize:17,color:"#195749"}}>
       <strong style={{color:"#075c4b",background:"linear-gradient(transparent 58%,#b6f2dd 58%)",fontWeight:850,fontSize:"clamp(17px,2.3vw,22px)",paddingBottom:3}}>
         Deep Clinical Subspecialty Intelligence

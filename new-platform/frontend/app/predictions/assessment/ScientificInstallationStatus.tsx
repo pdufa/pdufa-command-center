@@ -1,5 +1,5 @@
 "use client";
-import {useEffect, useState} from "react";
+import {useEffect, useRef, useState} from "react";
 import type {MedicalInstallationSnapshot} from "../../../lib/medical-installation-status";
 
 const panel = {border: "1px solid #a8c9bc", borderRadius: 9, padding: 14, margin: "12px 0"} as const;
@@ -7,6 +7,7 @@ const quantity = (value: number | null) => value === null ? "Not verified" : Str
 export default function ScientificInstallationStatus() {
   const [snapshot, setSnapshot] = useState<MedicalInstallationSnapshot | null>(null);
   const [error, setError] = useState("");
+  const tasksSection = useRef<HTMLDetailsElement>(null);
   useEffect(() => {
     const abort = new AbortController();
     fetch("/api/predictions/medical-installation", {cache: "no-store", signal: abort.signal})
@@ -19,9 +20,22 @@ export default function ScientificInstallationStatus() {
   }, []);
   const installation = snapshot?.installation;
   const current = installation?.tasks.find(task => task.id === installation.currentTaskId);
+  function locateCurrentTask() {
+    if (!current || !tasksSection.current) return;
+    tasksSection.current.open = true;
+    const target = document.getElementById("medical-installation-task-" + current.id);
+    if (!target) return;
+    target.focus({preventScroll: true});
+    target.scrollIntoView({behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth", block: "center"});
+  }
   return <section style={{...panel, background: "white"}} aria-label="MAIN scientific installation status">
     <h3>MAIN scientific installation status</h3>
     <p>Progress follows the current task and observed ledger counts. Methodology positions and retrieved sources do not count as independently graded scientific tests.</p>
+    <button type="button" onClick={locateCurrentTask} disabled={!current}
+      style={{minHeight: 44, padding: "10px 14px", border: "1px solid #287a80", borderRadius: 8,
+        background: current ? "#102e45" : "#e5ecef", color: current ? "#a6f0e5" : "#52646c", fontWeight: 750}}>
+      Locate current installation task
+    </button>
     {error ? <p role="alert">{error} No completion count is inferred.</p> : null}
     {!snapshot && !error ? <p role="status">Loading isolated installation observations…</p> : null}
     {snapshot && installation ? <div>
@@ -33,8 +47,11 @@ export default function ScientificInstallationStatus() {
       {installation.counts ? <p>Attached completed source runs: {installation.counts.sourceCompleteTrials} / {installation.counts.canonicalTrials} · Verified current phases: {installation.counts.phaseVerifiedTrials} / {installation.counts.canonicalTrials}<br />
         Recorded current-phase grades: {installation.counts.recordedCurrentPhaseGrades} · Excluded methods: {installation.counts.excludedMethods} · Pending observed methods: {installation.counts.pendingObservedMethods} · Unobserved positions: {installation.counts.unobservedMethodPositions}<br />
         Historical review events: {installation.counts.historicalReviewEvents} · Recorded gap events: {installation.counts.recordedGapEvents} · Independently signed clinical reviews: {quantity(installation.counts.independentlySignedClinicalReviews)}</p> : <p>Ledger counts are unavailable.</p>}
-      <details style={panel}><summary>Installation tasks and unresolved dependencies · {installation.tasks.length} observed</summary>
-        {installation.tasks.map(task => <article key={task.id} style={panel}>
+      <details ref={tasksSection} style={panel}><summary>Installation tasks and unresolved dependencies · {installation.tasks.length} observed</summary>
+        {installation.tasks.map(task => <article key={task.id} id={"medical-installation-task-" + task.id}
+          tabIndex={-1} aria-current={task.id === installation.currentTaskId ? "step" : undefined}
+          style={{...panel, scrollMarginTop: 24, overflowWrap: "anywhere",
+            borderColor: task.id === installation.currentTaskId ? "#287a80" : "#a8c9bc"}}>
           <strong>{task.id} · {task.title} · {task.status}</strong>
           <p>Completed: {quantity(task.completed)} · Remaining: {quantity(task.remaining)}</p>
           {task.dependency ? <p>Dependency: {task.dependency}</p> : null}
