@@ -39,7 +39,7 @@ export default function P3PostDataPage(){
     <tbody>{trials.map((t,i)=>{const history=bottomTrialHistory(t.nct);const research=researchByNct.get(t.nct);const gateAudit=finalGateByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
       <td style={{padding:10,fontWeight:700}}><TickerChartButton ticker={t.ticker}/></td>
       <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a>{research&&<small style={{display:"block"}}>{research.drug}</small>}</td>
-      <td style={{padding:10}}>{t.company}<CompanyDateBadges timeline={null}/></td>
+      <td style={{padding:10}}>{t.company}<CompanyDateBadges timeline={null} recordedReleaseDate={t.recordedReleaseDate} recordedPdufaDate={t.recordedPdufaDate} releaseSource={t.resultsUrl} pdufaSource={t.regulatoryUrl}/></td>
       <td style={{padding:10,textAlign:"right"}}>{(t.marketCap/1e9).toFixed(2)}</td>
       <td style={{padding:10}}>{t.fdaStatus}</td>
       <td style={{padding:10,whiteSpace:"nowrap"}}><a href={t.resultsUrl} target="_blank" rel="noopener noreferrer">Phase 3 source</a>{" · "}<a href={t.regulatoryUrl} target="_blank" rel="noopener noreferrer">FDA source</a></td>
