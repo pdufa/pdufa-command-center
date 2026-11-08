@@ -3,7 +3,7 @@
  * NOT independent clinical adjudication, a confidence interval, an adjusted
  * odds ratio, an NNT, or a calibrated FDA outcome probability.
  */
-import type {BenefitRecord} from "./benefit-assessments";
+import type {BenefitRecord} from "./clinical-source-types";
 
 const release="https://celldex.gcs-web.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and";
 const filedCopy="https://www.sec.gov/Archives/edgar/data/744218/000110465926109465/tm2625892d1_ex99-1.htm";

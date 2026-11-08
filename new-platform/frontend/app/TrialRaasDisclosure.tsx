@@ -2,7 +2,7 @@
 import {useState} from "react";
 import RaasLiveRegistryEvidence from "./RaasLiveRegistryEvidence";
 import type {ReadoutRow} from "../lib/phase3-public-readout";
-import type {BenefitFeed} from "../lib/benefit-assessments";
+import type {BenefitFeed} from "../lib/clinical-source-types";
 import {exactReadoutBenefit} from "../lib/phase3-readout-sort";
 import type {readoutResearchCoverage} from "../lib/phase3-readout-sort";
 import {ALL_RESEARCH_FIELD_DEFINITIONS} from "../lib/pipeline-research-view";

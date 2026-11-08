@@ -3,7 +3,7 @@
  * matches its registered endpoint only when all exact NCT/program identifiers
  * and the Week 12/16 outcome text agree. Never upgrades the 38 survey fields.
  */
-import type {BenefitRecord} from "./benefit-assessments";
+import type {BenefitRecord} from "./clinical-source-types";
 
 export type Phase3RegistryEntry={
  nctId:string;ticker:string;drug:string;indication:string;trial:string;

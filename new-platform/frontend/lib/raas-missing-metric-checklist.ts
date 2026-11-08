@@ -4,7 +4,7 @@
  * neither a VERIFIED survey fact nor an empty mapping can promote an RAAS grade.
  */
 import {RAAS_METRIC_CATALOG,type RaasStage} from "./raas-metric-specs";
-import type {BenefitRecord} from "./benefit-assessments";
+import type {BenefitRecord} from "./clinical-source-types";
 
 export type RaasMissingMetric={
  id:string;name:string;requiredEvidence:string;

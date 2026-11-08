@@ -2,7 +2,7 @@
  * Survey columns sort by documented research completeness, never clinical merit.
  * Unknown or absent evidence is always last in both directions.
  */
-import {BENEFIT_GROUPS,benefitForTrial,type BenefitFeed,type BenefitRecord} from "./benefit-assessments";
+import {BENEFIT_GROUPS,benefitForTrial,type BenefitFeed,type BenefitRecord} from "./clinical-source-types";
 import type {ReadoutRow} from "./phase3-public-readout";
 
 export type Phase3ReadoutSortKey="row"|"nctId"|"ticker"|"company"|"factorP"|"survey"|"synthesis"|"drug"|"indication"|"status"|"date"|"source";

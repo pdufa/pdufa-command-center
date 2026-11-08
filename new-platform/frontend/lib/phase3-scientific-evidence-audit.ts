@@ -2,7 +2,7 @@
  * SURVEY findings. These are disclosure checks, NOT clinical merit or a validated
  * FDA approval/CRL/extension probability.
  */
-import type {BenefitRecord} from "./benefit-assessments";
+import type {BenefitRecord} from "./clinical-source-types";
 import {checkPhase3PublishedArithmetic} from "./phase3-published-arithmetic";
 export type ScientificEvidenceCheck={
  id:string;
