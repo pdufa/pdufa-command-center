@@ -25,7 +25,9 @@ test("prediction navigator uses only uniquely identified FOCUS rows",()=>{
   assert.ok(roster.records.every(r=>/^[A-Z0-9.-]+$/.test(r.ticker)));
   const symbols=new Set(roster.records.map(r=>r.ticker));
   const html=renderToStaticMarkup(React.createElement(require(component).default));
-  assert.equal((html.match(/class="tickerButton"/g)||[]).length,symbols.size);
+  const firstTicker=Array.from(symbols).sort((a,b)=>a.localeCompare(b))[0];
+  const initialTrialButtons=roster.records.filter(r=>r.ticker===firstTicker).length;
+  assert.equal((html.match(/aria-pressed="(?:true|false)"/g)||[]).length,symbols.size+initialTrialButtons);
   for(const ticker of symbols)assert.ok(html.includes(">"+ticker+"</strong>"),"Ticker missing: "+ticker);
   assert.match(html,new RegExp(roster.records.length+"<!-- --> exact-NCT trials|"+roster.records.length+" exact-NCT trials"));
   assert.match(html,/aria-label="Previous FOCUS ticker"/);
