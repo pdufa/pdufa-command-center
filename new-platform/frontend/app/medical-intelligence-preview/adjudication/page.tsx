@@ -70,7 +70,7 @@ function Case({item}:{item:AdjudicationCase}){
 export default async function AdjudicationDesk({searchParams}:{searchParams:Promise<{cycle?:string}>}){
  const query=await searchParams;
  const allowed=new Set(ADJUDICATION_CASES.map(c=>c.cycleId));
- const selectedCycle=query.cycle&&allowed.has(query.cycle)?query.cycle:"all";
+ const selectedCycle=query.cycle==="all"?"all":query.cycle&&allowed.has(query.cycle)?query.cycle:"capr-deramiocel";
  const visibleCases=selectedCycle==="all"?ADJUDICATION_CASES:ADJUDICATION_CASES.filter(c=>c.cycleId===selectedCycle);
  const published=ADJUDICATION_CASES.reduce((n,c)=>n+c.sources.length,0);
  const worked=new Set(ADJUDICATION_CASES.map(x=>x.cycleId)).size;
