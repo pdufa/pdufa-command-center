@@ -12,6 +12,10 @@ function load(name){
  const js=ts.transpileModule(src,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022}}).outputText;
  const module={exports:{}};
  vm.runInNewContext(js,{module,exports:module.exports,require:(dep)=>{
+   if(dep==="../data/p3PostDataActive.json"){
+     const data=JSON.parse(fs.readFileSync(path.join(__dirname,"../data/p3PostDataActive.json"),"utf8"));
+     return {default:data,...data};
+   }
    assert.ok(dep.startsWith("./"),dep);
    return load(dep.slice(2));
  }});
