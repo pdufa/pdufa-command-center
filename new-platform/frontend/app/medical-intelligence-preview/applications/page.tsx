@@ -45,7 +45,7 @@ export default function ApplicationsPage(){
        const openStat=findings.filter(f=>f.type==="SCIENTIFIC_UNCERTAINTY").length;
        const extension=findings.filter(f=>f.type==="EXTENSION_CONFIRMED").length;
        return <tr key={a.id} style={{borderTop:"1px solid "+line}}>
-        <td style={{padding:10,verticalAlign:"top",minWidth:200}}><strong>{a.ticker} · {a.drug}</strong><div style={{color:muted,marginTop:4}}>{a.applicationType}</div><div style={{marginTop:6}}>{a.ncts.map(n=><div key={n}><Link href={"/medical-intelligence-preview?nct="+n}>{n}</Link></div>)}</div></td>
+        <td style={{padding:10,verticalAlign:"top",minWidth:200}}><strong>{a.ticker} · {a.drug}</strong><div style={{marginTop:5}}><Link href={"/medical-intelligence-preview/applications/"+a.id}>Open decision brief</Link></div><div style={{color:muted,marginTop:4}}>{a.applicationType}</div><div style={{marginTop:6}}>{a.ncts.map(n=><div key={n}><Link href={"/medical-intelligence-preview?nct="+n}>{n}</Link></div>)}</div></td>
         <td style={{padding:10,verticalAlign:"top",minWidth:190}}>{a.indication}<div style={{color:muted,marginTop:6}}>{stageLabels[a.stage]||a.stage}</div></td>
         <td style={{padding:10,verticalAlign:"top",whiteSpace:"nowrap"}}>{a.reportedGoal||"Not assigned"}<div style={{color:muted,fontSize:11,marginTop:6}}>Source-reported only</div></td>
         <td style={{padding:10,verticalAlign:"top",minWidth:158}}>{findings.length} cited finding(s)<div style={{color:muted,marginTop:6}}>{historicalCrl?historicalCrl+" prior CRL(s) · ":""}{openStat?openStat+" open scientific issue(s) · ":""}{extension?extension+" prior extension(s)":"Not fully adjudicated"}</div></td>
