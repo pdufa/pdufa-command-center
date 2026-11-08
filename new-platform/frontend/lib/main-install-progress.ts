@@ -52,7 +52,7 @@ export type MonitorTrial={
 };
 export type MonitorSnapshot={
  schemaVersion:1;observedAt:string;
- methodology:string;stages:Stage[];
+ methodology:string;stages:Stage[];trials:MonitorTrial[];
  overall:{percent:number;verified:number;total:number;pending:number;blocked:number;failed:number;unknown:number};
  nextUnfinished:{stage:string;checkpoint:string;status:CheckState;detail:string}|null;
  health:{level:"HEALTHY"|"DEGRADED"|"BLOCKED"|"UNKNOWN";issues:string[]};
