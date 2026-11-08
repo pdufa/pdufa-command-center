@@ -1,9 +1,7 @@
-"""Analyze Now: independent, immediately available source analysis plus optional historical RAAS context.
+"""Independent per-trial medical source analysis using the one existing worker.
 
-Reuses the existing 12-stage durable worker. No duplicate medical pipeline, no
-dependency on RAAS or surveys for research completion, and no invented score,
-FDA probability or reliability percentage. Trial history is keyed by exact NCT,
-not by current spreadsheet membership.
+Only current evidence stages are analyzed. Historical scoring data remain in
+read-only archive files and are not read by this module.
 """
 from __future__ import annotations
 
@@ -13,99 +11,39 @@ import logging
 import os
 import uuid
 from datetime import datetime, timezone
-from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
 from sqlalchemy import text, inspect
 
 LOG = logging.getLogger(__name__)
-LEGACY = Path(__file__).resolve().parent / "data" / "focus_legacy_score_snapshot.json"
 STATUS = ("SOURCE_RECORDED", "LEADS_ONLY", "EVIDENCE_GAP", "SOURCE_UNAVAILABLE")
-# These are explicitly OPERATIONAL component versions; unfinished 12 advanced
-# clinical levels and uncalibrated forecast models are never part of this set.
+# Only source tools are operational; advanced reviews and forecast
+# probabilities require independent clinical and historical validation.
 OPERATIONAL_SOURCE_VERSION = "medical-continuous-source-12-v1"
-REPORT_VERSION = "analyze-now-v1"
-WATCH_GENERATION_KEY = "operational_components_v1"
+REPORT_VERSION = "analyze-now-source-only-v2"
+WATCH_GENERATION_KEY = "operational_components_v2"
 
 
 def utcnow():
     return datetime.now(timezone.utc).isoformat()
 
 
-def optional_legacy(nct):
-    """Pure read-only import of existing historical RAAS/five-factor evidence.
-
-    If the optional archive isn't present, the medical engine still operates.
-    A five-factor clinical research rating is NOT the full 30-metric RAAS score.
-    """
-    from .medical_continuous import NCT
-    if not NCT.fullmatch(str(nct)):
-        raise ValueError("Exact NCT required")
-    try:
-        data=json.loads(LEGACY.read_text(encoding="utf-8"))
-        if data.get("schemaVersion")!=1 or data.get("scope")!="OPTIONAL_READ_ONLY_LEGACY_RAAS_MIRROR":
-            raise ValueError("Unrecognized legacy archive")
-        item=next((x for x in data.get("records",[]) if x.get("nct")==nct),None)
-        if not item:
-            return {"status":"NOT_AVAILABLE","raasOverall":None,"clinicalFive":None,
-                    "sources":[],"sourceAsOf":None}
-        raas=item.get("raas30",{})
-        clinical=item.get("clinicalFive",{})
-        numeric=clinical.get("score") if isinstance(clinical.get("score"),(int,float)) else None
-        graded=clinical.get("graded",[])
-        verified_grades=isinstance(graded,list) and len(graded)==5 and all(
-            isinstance(x,dict) and x.get("metricId") and
-            (x.get("score") is None or isinstance(x.get("score"),(int,float)))
-            for x in graded)
-        valid_five=(numeric is not None and verified_grades and
-                    clinical.get("scoredFactors")==5 and 0<=numeric<=100)
-        raas30=raas.get("score")
-        if not isinstance(raas30,(int,float)) or not 0<=raas30<=100:
-            raas30=None
-        return {
-            "status":"ARCHIVED_READ_ONLY","raasOverall":raas30,
-            "raasScoreKind":raas.get("status","UNSCORED"),
-            "raasVersion":raas.get("version"),
-            "clinicalFive":numeric if valid_five else None,
-            "clinicalFiveStatus":"SOURCE_ACCEPTED_RESEARCH_FIVE_FACTORS" if valid_five else
-                "NOT_ALL_FIVE_FACTORS_SCORED",
-            "clinicalScoredFactors":sum(isinstance(x.get("score"),(int,float)) for x in graded) if verified_grades else 0,
-            "clinicalFactors":[{"id":x["metricId"],"grade":x["score"],"sourceUrl":x.get("sourceUrl")}
-                               for x in graded] if verified_grades else [],
-            "clinicalEventId":clinical.get("eventId"),
-            "clinicalRecordedAt":clinical.get("recordedAt"),
-            "sources":[u for u in item.get("sources",[]) if isinstance(u,str) and u.startswith("https://")][:12],
-            "sourceAsOf":data.get("asOf"),
-            "historicalRaasEventIds":item.get("priorEventIds",[]),
-            "historicalFiveFactorEventIds":item.get("archivedFiveEventIds",[]),
-            "disclaimer":"Read-only preserved research grade, NOT independently FDA-calibrated approval probability or complete 30-metric RAAS."
-        }
-    except (OSError,ValueError,TypeError,KeyError,AttributeError):
-        return {"status":"ARCHIVE_UNAVAILABLE","raasOverall":None,"clinicalFive":None,
-                "sources":[],"sourceAsOf":None}
-
-
 def operational_fingerprint():
-    """Changes when enabled source tools or the optional evidence archive change.
-
-    New advanced modules are not considered operational merely by being defined.
-    Deployment of an explicitly configured component generation changes the
-    fingerprint; an unchanged deployment does not trigger repeated work.
-    """
-    try:
-        digest=hashlib.sha256(LEGACY.read_bytes()).hexdigest()
-    except OSError:
-        digest="unavailable"
-    components={"sourceWorker":OPERATIONAL_SOURCE_VERSION,
-                "optionalHistoricalRaas":digest,
-                "generation":os.getenv("PDUFA_ANALYZE_COMPONENT_GENERATION","v1"),
-                "componentStatus":{"sourceCollection":"OPERATIONAL",
-                    "historicalRaas":"OPTIONAL_READ_ONLY",
-                    "FDA_prediction":"NOT_OPERATIONAL",
-                    "certainty":"NOT_OPERATIONAL",
-                    "advancedClinical":"NOT_OPERATIONAL"}}
-    packed=json.dumps(components,sort_keys=True,separators=(",",":"))
+    """Monitor the independent operational evidence services only."""
+    components = {
+        "sourceWorker": OPERATIONAL_SOURCE_VERSION,
+        "reportVersion": REPORT_VERSION,
+        "generation": os.getenv("PDUFA_ANALYZE_COMPONENT_GENERATION", "v2"),
+        "componentStatus": {
+            "sourceCollection": "OPERATIONAL",
+            "independentScientificReview": "NOT_COMPLETE",
+            "FDA_prediction": "NOT_VALIDATED",
+            "certainty": "NOT_VALIDATED",
+            "advancedClinical": "NOT_OPERATIONAL"
+        }
+    }
+    packed = json.dumps(components, sort_keys=True, separators=(",", ":"))
     return hashlib.sha256(packed.encode("utf-8")).hexdigest()
 
 
@@ -256,7 +194,6 @@ def build_saved_analysis(connection,run_id,nct,details):
          component_fingerprint FROM medical_analyze_requests WHERE run_id=:run"""),
          {"run":run_id}).mappings().first()
     known=core.roster().get(nct,{})
-    optional=optional_legacy(nct)
     source_urls=[]
     source_checks=[]
     gaps=[]
@@ -279,18 +216,11 @@ def build_saved_analysis(connection,run_id,nct,details):
         source_checks.append({"stage":index+1,"title":core.STAGES[index],
             "status":state,"source":data.get("source") if isinstance(data.get("source"),str) else None,
             "evaluatedAt":None})
-    if optional["raasOverall"] is None:
-        gaps.append({"stage":None,"missing":"A validated full 30-metric RAAS score was not available in the preserved exact-NCT archive."})
-    if optional["clinicalFive"] is None:
-        gaps.append({"stage":None,"missing":"A complete five-factor scientific research score was not available; partial grades remain research leads."})
     gaps.extend([
         {"stage":None,"missing":"Independent FDA multidisciplinary, statistical and CMC signoff unavailable."},
         {"stage":None,"missing":"No calibrated FDA approval, CRL or review-delay probability model is operational."},
         {"stage":None,"missing":"No validated independent prediction-certainty rating is operational."},
     ])
-    for url in optional["sources"]:
-        if url not in source_urls:
-            source_urls.append(url)
     return {
         "schema":"ANALYZE_NOW_V1","savedAt":utcnow(),"nct":nct,
         "identity":{"ticker":known.get("ticker"),"company":known.get("company"),
@@ -298,24 +228,13 @@ def build_saved_analysis(connection,run_id,nct,details):
         "trigger":with_request["trigger_kind"] if with_request else "EXISTING_SOURCE_REANALYSIS",
         "requestRecordedAt":with_request["requested_at"] if with_request else None,
         "operationalComponentFingerprint":with_request["component_fingerprint"] if with_request else operational_fingerprint(),
-        "scores":{"raasOverallScore":optional["raasOverall"],
-                  "raasStatus":optional.get("raasScoreKind","UNSCORED"),
-                  "raasVersion":optional.get("raasVersion"),
-                  "scientificFiveFactorScore":optional["clinicalFive"],
-                  "scientificFiveFactorStatus":optional.get("clinicalFiveStatus"),
-                  "scientificFiveFactorsGraded":optional.get("clinicalScoredFactors",0),
-                  "scientificFactors":optional.get("clinicalFactors",[]),
-                  "sourceArchiveAsOf":optional.get("sourceAsOf"),
-                  "sourceEventId":optional.get("clinicalEventId"),
-                  "historicalRaasEventIds":optional.get("historicalRaasEventIds",[]),
-                  "historicalFiveFactorEventIds":optional.get("historicalFiveFactorEventIds",[])},
         "scientificAssessment":{
             "status":"SOURCE_RESEARCH_ONLY",
             "stagesAttempted":len(details),
             "sourceRecordedStages":recorded,
             "sourceChecks":source_checks,
             "independentScientificSignoff":False,
-            "explanation":"Public-source observations and optional historical provisional clinical grades, not a completed new multidisciplinary FDA review."},
+            "explanation":"Public-source observations only; no independently completed multidisciplinary FDA review."},
         "fdaPredictions":[{"outcome":name,"status":"ABSTAIN","probability":None,
             "reason":"Historical calibration and current-cycle regulator evidence remain insufficient."}
             for name in ("APPROVAL","CRL","REVIEW_DELAY")],
@@ -325,12 +244,11 @@ def build_saved_analysis(connection,run_id,nct,details):
         "supportingSourceUrls":source_urls[:80],
         "componentReadiness":{
             "sourceCollection":"OPERATIONAL_SOURCE_CHECKS",
-            "legacyRaas":"OPTIONAL_ARCHIVED_RESEARCH",
             "independentClinicalAnalysis":"NOT_COMPLETE",
             "advanced12Levels":"NOT_REQUIRED_FOR_INITIAL_RUN",
             "fdaPrediction":"NOT_VALIDATED",
             "certainty":"NOT_VALIDATED"},
-        "warning":"Never substitute a five-factor historical research score for full RAAS or interpret ABSTAIN as a numeric approval forecast."
+        "warning":"This source report does not calculate clinical readiness scores, FDA probabilities, or forecast reliability; ABSTAIN is mandatory without validation."
     }
 
 
