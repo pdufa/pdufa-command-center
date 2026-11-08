@@ -77,6 +77,7 @@ export default function InstallationLiveNavigator(){
  const [catalog,setCatalog]=useState<ScienceCatalog|null>(null);
  const [error,setError]=useState("");
  const [section,setSection]=useState<"past"|"present"|"future">("present");
+ const [installationExpanded,setInstallationExpanded]=useState(false);
  const [following,setFollowing]=useState(true);
  const [chosenTask,setChosenTask]=useState<string|null>(null);
  const [chosenQuestion,setChosenQuestion]=useState("S01");
@@ -121,6 +122,7 @@ export default function InstallationLiveNavigator(){
   const documented=cursor?null:getDocumentedCheckpoint(latest);
   const destination=cursor?.taskId??documented;
   setFollowing(true);
+  setInstallationExpanded(true); // A location jump opens its hidden destination first.
   setSection("present");
   setChosenTask(destination);
   setLiveNotice(cursor
@@ -134,15 +136,15 @@ export default function InstallationLiveNavigator(){
   }));
  },[fetchData]);
  useEffect(()=>{
-  if(!following||!active?.taskId)return;
+  if(!following||!installationExpanded||!active?.taskId)return;
   setSection("present");
   setChosenTask(active.taskId);
   setLiveJump(previous=>previous?.taskId===active.taskId&&previous.kind==="live"?previous:
    {taskId:active.taskId,kind:"live",sequence:(previous?.sequence??0)+1});
- },[active?.taskId,following]);
+ },[active?.taskId,following,installationExpanded]);
  useEffect(()=>{
-  if(!liveJump)return;
-  // React must render the PRESENT list before scrolling to a newly selected task.
+  if(!liveJump||!installationExpanded)return;
+  // React must render the PRESENT list and expand the caret before scrolling.
   const frame=window.requestAnimationFrame(()=>{
    const target=liveJump.taskId?
     document.getElementById(idOf(liveJump.taskId)):
@@ -153,7 +155,7 @@ export default function InstallationLiveNavigator(){
    });
   });
   return()=>window.cancelAnimationFrame(frame);
- },[liveJump,section]);
+ },[liveJump,section,installationExpanded]);
  const past=taskList.filter(t=>status(audit?.tasks[t.id])==="Verified");
  const progress=taskList.filter(t=>status(audit?.tasks[t.id])==="In Progress");
  const future=taskList.filter(t=>status(audit?.tasks[t.id])!=="Verified");
@@ -163,10 +165,18 @@ export default function InstallationLiveNavigator(){
  return <section id="live-installation-timeline" aria-label="Past present and future installation timeline"
    className={styles.navigator}
    style={{...panel,margin:"18px 0",background:"radial-gradient(circle at 100% 0,#175364,transparent 42%),linear-gradient(135deg,#071824,#0b3543)"}}>
-  <h2 style={{margin:"0 0 8px"}}>INSTALLATION · past / present / future</h2>
-  <p style={info}>Read-only verified acceptance records and source-linked scientific planning catalog.
+  <h2 className={styles.sectionHeading}>
+   <button type="button" className={styles.sectionCaret}
+    aria-expanded={installationExpanded} aria-controls="installation-tracker-details"
+    onClick={()=>setInstallationExpanded(open=>!open)}>
+    <span className={styles.caret} aria-hidden="true">{installationExpanded?"⌄":"›"}</span>
+    <span>INSTALLATION · past / present / future</span>
+    <span className={styles.caretHint}>{installationExpanded?"Collapse":"Expand"}</span>
+   </button>
+  </h2>
+  {installationExpanded&&<p style={info}>Read-only verified acceptance records and source-linked scientific planning catalog.
    Live checks refresh every 15 seconds while the page is visible. A green deployment or an “In Progress”
-   registry label does not establish that Codex is executing that task.</p>
+   registry label does not establish that Codex is executing that task.</p>}
   <div style={{display:"flex",gap:10,flexWrap:"wrap",margin:"12px 0"}}>
    <button type="button" onClick={()=>{setBusy(true);void fetchData();}} disabled={busy}
     style={{padding:"9px 12px",borderRadius:8,border:"1px solid #5aa9ae",background:"#0b625c",color:"#fff"}}>
@@ -190,6 +200,7 @@ export default function InstallationLiveNavigator(){
   </div>
   {error&&<p role="alert" style={{color:"#ffd4bb"}}>{error}. Previous data may be stale.</p>}
   {liveNotice&&<p role="status" aria-live="polite" className={styles.liveNotice}>{liveNotice}</p>}
+  {installationExpanded&&<div id="installation-tracker-details" className={styles.trackerDetails}>
   <div id="installation-active-cursor" className={liveJump?.kind==="status"?styles.cursorTarget:undefined}
    style={{...panel,border:"2px solid #5aa9ae",marginBottom:12,scrollMarginTop:92}}>
    <strong>ACTIVE CURSOR</strong>
@@ -265,8 +276,9 @@ export default function InstallationLiveNavigator(){
     })}
    </div>
   </details>
-  <div id="scientific-assessment-register" style={{...panel,marginTop:18}}>
-   <h3 style={{margin:"0 0 8px"}}>Scientific assessments · 800-target drill-down</h3>
+  <details id="scientific-assessment-register" className={styles.scienceDetails}
+   style={{...panel,marginTop:18}}>
+   <summary className={styles.scienceSummary}>Scientific assessments · 800-target drill-down</summary>
    <p style={info}>The original source catalog has 40 research questions with a 20-level maximum
     ({catalog?"40 × 20 = 800 planned drill-down positions":"catalog loading"}). These are
     <strong> not 800 installed tests</strong>. The newer directive permits up to 50 depth levels
@@ -316,6 +328,7 @@ export default function InstallationLiveNavigator(){
      There is no verified level-specific result, score or worker checkpoint for this position.
     </p>
    </div>}
-  </div>
+  </details>
+  </div>}
  </section>;
 }
