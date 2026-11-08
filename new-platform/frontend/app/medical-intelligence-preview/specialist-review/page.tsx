@@ -4,6 +4,8 @@ import {APPLICATION_CYCLES} from "../../../lib/medical-intelligence-applications
 import {CLINICAL_SPECIALTY_AXES,CLINICAL_SPECIALTY_PROFILES,CLINICAL_SPECIALTY_ASSIGNMENTS,CLINICAL_SPECIALTY_STANDARDS,getSpecialtyProfile,getSpecialtyTasks} from "../../../lib/medical-intelligence-specialty";
 import {caseForCycle} from "../../../lib/medical-intelligence-md-casebook";
 import {specialistCaseForCycle} from "../../../lib/medical-intelligence-specialist-casebook";
+import {expandedSpecialistCaseForCycle} from "../../../lib/medical-intelligence-specialist-expanded";
+import {buildSpecialtyEvidenceAudit} from "../../../lib/medical-intelligence-specialty-evidence";
 import {deskIssuesForCycle} from "../../../lib/medical-intelligence-failure-desk";
 
 export const metadata:Metadata={
@@ -21,12 +23,14 @@ export default async function SpecialistReviewPage({searchParams}:{searchParams:
  const p=getSpecialtyProfile(selected.id);
  const tasks=getSpecialtyTasks(selected.id);
  const research=caseForCycle(selected.id);
- const actualSpecialtyReview=specialistCaseForCycle(selected.id);
+ const actualSpecialtyReview=specialistCaseForCycle(selected.id)||expandedSpecialistCaseForCycle(selected.id);
+ const clinicalAudit=buildSpecialtyEvidenceAudit(selected.id);
  const sourceIssues=deskIssuesForCycle(selected.id);
- const sourceCounts=APPLICATION_CYCLES.filter(x=>caseForCycle(x.id)).length;
+ const sourceCounts=APPLICATION_CYCLES.filter(x=>Boolean(specialistCaseForCycle(x.id)||expandedSpecialistCaseForCycle(x.id))).length;
  return <main style={{maxWidth:1320,margin:"26px auto",padding:"0 16px 45px",fontFamily:"system-ui,sans-serif",color:theme.ink}}>
    <div style={{fontWeight:750,color:theme.green,letterSpacing:1,fontSize:12}}>CLINICAL SPECIALTY SCIENCE → INDEPENDENT FDA EVIDENCE REVIEW</div>
    <h1 style={{fontSize:"clamp(1.7rem,4vw,2.4rem)",margin:"9px 0 5px"}}>Clinical Subspecialty Intelligence</h1>
+   <p style={{fontSize:14,fontWeight:700}}><Link href="/medical-intelligence-preview/specialist-review/coverage">Clinical evidence coverage: 23 applications</Link></p>
    <p style={{maxWidth:1040,lineHeight:1.65}}>
      This is the <strong>medical-doctor specialist depth</strong> you requested: investigation of disease phenotype, diagnosis, prognosis, meaningful patient benefit, treatment decisions, serious adverse effects and how these change a drug&apos;s clinical benefit-risk case. The questions are tailored to the indication and reviewed against original sources. <strong>It is not a clinical specialist&apos;s signed opinion</strong> and does not pretend a licensed physician has examined or endorsed an application.
    </p>
@@ -35,7 +39,7 @@ export default async function SpecialistReviewPage({searchParams}:{searchParams:
        ["Specialty-specific profiles",CLINICAL_SPECIALTY_PROFILES.length],
        ["Application cycles mapped",Object.keys(CLINICAL_SPECIALTY_ASSIGNMENTS).length],
        ["Clinical reasoning domains",CLINICAL_SPECIALTY_AXES.length],
-       ["Programs with deeper sourced examples",sourceCounts]
+       ["Programs with partial specialty case analyses",sourceCounts]
      ].map(([label,value])=><div style={card} key={String(label)}><div style={{fontSize:12,color:theme.muted}}>{label}</div><div style={{fontSize:26,fontWeight:750,marginTop:7}}>{value}</div></div>)}
    </div>
    <section style={{...card,marginTop:17}}>
@@ -81,6 +85,19 @@ export default async function SpecialistReviewPage({searchParams}:{searchParams:
            <p><strong>Clinical challenge:</strong> {task.prompt}</p>
            <p><strong>Evidence required:</strong> {task.requiredEvidence}</p>
            <p><strong>How this could affect FDA:</strong> {task.potentialFdaConsequence}</p>
+           {clinicalAudit&&<div style={{background:theme.light,padding:12,borderRadius:8,marginTop:10}}>
+             <strong>Relevant published-source triage:</strong> {clinicalAudit.axes[i]?.sourceCount??0} curated findings.
+             <span style={{fontSize:12,color:theme.muted}}> Not a completed specialist adjudication.</span>
+             {clinicalAudit.axes[i]?.supportingSourceFindings.map(f=><details key={f.id} style={{borderTop:"1px solid "+theme.line,padding:"8px 0"}}>
+               <summary style={{fontWeight:700,cursor:"pointer",fontSize:13}}>{f.headline} · {f.evidence.replace(/_/g," ")}</summary>
+               <p style={{margin:"7px 0"}}><strong>Published evidence:</strong> {f.detail}</p>
+               <p style={{margin:"7px 0"}}><strong>Clinical/FDA implication:</strong> {f.fdaRelevance}</p>
+               <p style={{margin:"7px 0"}}><strong>Counterevidence:</strong> {f.counterpoint}</p>
+               <p style={{margin:"7px 0"}}><strong>Still to resolve:</strong> {f.remainingQuestion}</p>
+               <a target="_blank" rel="noopener noreferrer" href={f.sourceUrl}>{f.sourceTitle} ({f.published})</a>
+             </details>)}
+             {clinicalAudit.axes[i]?.notes.map((note,j)=><p key={j} style={{fontSize:12,color:theme.muted,marginBottom:3}}>{note}</p>)}
+           </div>}
          </div>
        </details>)}
      </div>
@@ -97,6 +114,7 @@ export default async function SpecialistReviewPage({searchParams}:{searchParams:
            <p><strong>Current published clinical evidence:</strong> {dimension.observedClinicalEvidence}</p>
            <p><strong>Specialty-style interpretation:</strong> {dimension.specialistInterpretation}</p>
            <p><strong>What the evidence must still resolve:</strong> {dimension.neededToResolve}</p>
+           {dimension.sourceUrl&&<p style={{fontSize:12}}><a target="_blank" rel="noopener noreferrer" href={dimension.sourceUrl}>Original dated source ({dimension.sourceDate||"date unavailable"})</a></p>}
          </div>
        </details>)}
      </div>
@@ -122,7 +140,7 @@ export default async function SpecialistReviewPage({searchParams}:{searchParams:
          <summary style={{fontWeight:700,cursor:"pointer"}}>What evidence must the specialist-level review still resolve?</summary>
          <ul style={{fontSize:13,lineHeight:1.65}}>{research.uncertainties.map((u,i)=><li key={i}>{u}</li>)}</ul>
        </details>
-     </>:<p style={{fontSize:14,lineHeight:1.55}}>No complete, source-examined specialist-depth case is available for this application yet. Its clinical research questions above are tailored to the disease, but they must be answered using original studies, independent medical literature, current treatment standards and pertinent FDA source documents.</p>}
+     </>:<p style={{fontSize:14,lineHeight:1.55}}>No expanded source-examined specialty case is available for this application yet. Its clinical research questions above are tailored to the disease, but they must be answered using original studies, independent medical literature, current treatment standards and pertinent FDA source documents.</p>}
      <div style={{borderTop:"1px solid "+theme.line,marginTop:14,paddingTop:10}}>
        <strong>Existing targeted FDA evidence ({sourceIssues.length} issues)</strong>
        <p style={{fontSize:13,color:theme.muted}}>Investigate all clinical findings and their counterevidence independently before a regulatory outcome assessment.</p>
