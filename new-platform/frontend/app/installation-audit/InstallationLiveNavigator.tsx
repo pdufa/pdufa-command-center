@@ -102,8 +102,6 @@ export default function InstallationLiveNavigator(){
  const progress=taskList.filter(t=>status(audit?.tasks[t.id])==="In Progress");
  const future=taskList.filter(t=>status(audit?.tasks[t.id])!=="Verified");
  const visible=section==="past"?past:section==="future"?future:active?taskList.filter(t=>t.id===active.taskId):progress;
- const selected=taskList.find(t=>t.id===chosenTask);
- const selectedProof=chosenTask?audit?.tasks[chosenTask]:null;
  const question=catalog?.questions.find(q=>q.id===chosenQuestion);
  const grouped=catalog?Array.from({length:8},(_,i)=>catalog.questions.filter(q=>q.layer===i+1)):[];
  return <section id="live-installation-timeline" aria-label="Past present and future installation timeline"
