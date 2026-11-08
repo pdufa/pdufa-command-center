@@ -44,7 +44,7 @@ export default function RestrictionsPage(){
   </div>
   <section style={{...panel,marginTop:16}}>
    <h2>Optional restrictions — disabled</h2>
-   <p>These seven settings do not exclude trials, lower scientific ratings or enter RAAS scoring.</p>
+   <p>These seven optional restrictions are disabled and do not affect current trial selection or independent medical evidence.</p>
    {DISABLED_POLICY.map(rule=><p key={rule.id}>☐ {rule.label} <span title={rule.detail} aria-label={rule.detail} style={{color:"#2176a7",cursor:"help"}}>ⓘ</span></p>)}
   </section>
   <section style={panel}>
