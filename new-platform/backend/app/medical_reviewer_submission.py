@@ -103,6 +103,9 @@ class OriginalSource(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
     stageIndex: int = Field(ge=0, le=11)
     sourceUrl: str = Field(min_length=10, max_length=2048)
+    classification: Literal["FAVORABLE", "UNFAVORABLE", "MISSING", "CONTRADICTORY"]
+    sourceLocation: str = Field(min_length=5, max_length=500)
+    examinedFinding: str = Field(min_length=40, max_length=3000)
 
 
 class MethodRequest(BaseModel):
@@ -114,7 +117,6 @@ class MethodRequest(BaseModel):
     disposition: Literal["SCORED", "NOT_APPLICABLE", "RETRACTED"]
     grade: int | None = Field(default=None, ge=0, le=5)
     sourceEvidence: list[OriginalSource] = Field(default_factory=list, max_length=12)
-    findingsClassification: list[Literal["FAVORABLE", "UNFAVORABLE", "MISSING", "CONTRADICTORY"]] = Field(min_length=1, max_length=4)
     rationale: str = Field(min_length=80, max_length=6000)
     evidenceReviewedAt: str
     supersedesEventId: str | None = None
@@ -162,10 +164,16 @@ def install_routes(app, engine_provider, require_storage, require_writes) -> Non
         if request.disposition == "SCORED":
             if request.grade is None or not request.sourceEvidence:
                 raise HTTPException(422, "Evidence-backed numerical grades require saved original sources")
-            if not set(request.findingsClassification).intersection({"FAVORABLE", "UNFAVORABLE", "CONTRADICTORY"}):
+            if not any(item.classification in ("FAVORABLE", "UNFAVORABLE", "CONTRADICTORY")
+                       for item in request.sourceEvidence):
                 raise HTTPException(422, "Missing-only evidence cannot become a numerical grade")
         elif request.grade is not None:
             raise HTTPException(422, "Unreviewed or excluded methods do not receive numerical grades")
+        if request.disposition == "NOT_APPLICABLE" and (
+            not request.sourceEvidence or
+            all(item.classification == "MISSING" for item in request.sourceEvidence)
+        ):
+            raise HTTPException(422, "Missing evidence alone is not grounds for excluding a method")
         # The method reviewer cannot attest the very phase they verified.
         history = ledger.trial_history(engine_provider(), nct)
         phase_events = history["phaseEvents"]
