@@ -34,6 +34,12 @@ def extract_test_archive(path, scan="2", errors=None):
 
 
 class NightlyScanAuditTests(unittest.TestCase):
+    def test_third_scan_displays_focus_without_changing_collector(self):
+        self.assertEqual(audit.SCANS["4"],
+                         ("FOCUS — published Phase 3 results", "phase3_intake_status.json"))
+        self.assertEqual(audit.SCANS["2"][0], "PIPELINE — trial inventory")
+        self.assertEqual(audit.SCANS["3"][0], "PIPELINE — clinical enrichment")
+
     def test_valid_clinical_report_remains_partial(self):
         with tempfile.TemporaryDirectory() as folder:
             extract_test_archive(folder)
