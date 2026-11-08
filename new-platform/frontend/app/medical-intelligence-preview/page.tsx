@@ -8,6 +8,7 @@ import {
 } from "../../lib/medical-intelligence-preview";
 import {findingsForNct,REVIEW_COVERAGE,REVIEW_AS_OF} from "../../lib/medical-intelligence-reviewed-findings";
 import {conditionForNct} from "../../lib/medical-intelligence-conditions";
+import {applicationsForNct,CYCLE_COUNTS} from "../../lib/medical-intelligence-applications";
 
 export const metadata:Metadata={
   title:"Deep Medical Intelligence — Read-only preview | PDUFA",
@@ -57,6 +58,7 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
   const domains=FAILURE_INVESTIGATIONS;
   const reviewed=findingsForNct(record.nct);
   const conditionDossier=conditionForNct(record.nct);
+  const applicationCycles=applicationsForNct(record.nct);
   const queue=rows.map(r=>{
     const f=findingsForNct(r.nct);
     return {...r,findings:f.length,
@@ -67,7 +69,7 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
     <div style={{fontSize:12,letterSpacing:1,color:palette.teal,fontWeight:750}}>POOL → FOCUS → DEEP MEDICAL INTELLIGENCE → DECISION</div>
     <h1 style={{margin:"10px 0 6px",fontSize:"clamp(1.6rem,4vw,2.5rem)"}}>Deep Medical Intelligence</h1>
     <p style={{lineHeight:1.55,maxWidth:1000}}>Independent, failure-first research preview. It investigates what could prevent FDA approval, produce a Complete Response Letter (CRL), or cause a PDUFA extension or missed goal date. The preview is <strong>read-only</strong>; it does not modify POOL or FOCUS and does not issue an unsupported prediction.</p>
-    <p style={{fontSize:14,fontWeight:700}}><Link href="/medical-intelligence-preview/coverage">Open the full 29-trial registry coverage audit</Link></p>
+    <p style={{fontSize:14,fontWeight:700,display:"flex",flexWrap:"wrap",gap:18}}><Link href="/medical-intelligence-preview/coverage">All-FOCUS registry coverage</Link><Link href="/medical-intelligence-preview/applications">All FDA application cycles</Link></p>
     <p style={{...small,marginTop:4}}><strong>Evidence boundary:</strong> FOCUS roster is a dated spreadsheet snapshot ({focus.asOf}); selected study details are retrieved from ClinicalTrials.gov when available. Company links and recorded PDUFA dates are pointers pending independent verification.</p>
 
     <section style={panel} aria-label="FOCUS trial selection">
@@ -148,6 +150,22 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
         </details>
         <p style={{...small,marginBottom:0}}>Medical source: <Source href={conditionDossier.sourceUrl}>{conditionDossier.sourceTitle}</Source>. These questions are hypotheses to investigate, not documented drug defects.</p>
       </>:<p style={small}>A complete, sourced disease-specific dossier has not yet been curated for this indication. Registry condition names remain available above; absence of a dossier does not establish clinical safety or FDA readiness.</p>}
+    </section>
+
+    <section style={panel} aria-label="FDA application cycle mapping">
+      <h2 style={{marginTop:0}}>Matching FDA application cycles</h2>
+      <p style={small}><strong>{CYCLE_COUNTS.total} distinct application/review-cycle records</strong> across FOCUS. A trial is not an FDA application: multiple NCTs can support one application, and one NCT can contribute to two distinct supplemental applications.</p>
+      {applicationCycles.length ? <div style={{display:"grid",gap:11}}>
+        {applicationCycles.map(a=><div key={a.id} style={{border:"1px solid "+palette.line,borderRadius:9,padding:13,background:palette.cream}}>
+          <strong>{a.drug} — {a.applicationType}</strong>
+          <div style={{...small,marginTop:4}}>Indication: {a.indication}</div>
+          <div style={{...small,marginTop:4}}>Source-reported cycle: <strong>{a.stage.replace(/_/g," ")}</strong> · goal: <strong>{a.reportedGoal||"Not assigned in cited source"}</strong></div>
+          <div style={{...small,marginTop:4}}>Connected trials: {a.ncts.join(", ")}</div>
+          <p style={{fontSize:14,margin:"10px 0 6px"}}><strong>Decision-critical question:</strong> {a.criticalQuestion}</p>
+          <div style={{fontSize:13}}><Source href={a.sourceUrl}>Review supporting disclosure ({a.sourceDate})</Source></div>
+        </div>)}
+      </div>:<p style={small}>No cycle has been reconciled for this exact NCT; application prediction is blocked until matching evidence exists.</p>}
+      <p style={{...small,marginBottom:0}}>Each application-outcome and review-timing judgment remains <strong>indeterminate</strong> until current-cycle sources, full evidence and unresolved regulatory deficiencies are independently assessed. <Link href="/medical-intelligence-preview/applications">View all application cycles</Link>.</p>
     </section>
 
     <section style={panel} aria-label="Source-adjudicated findings">
