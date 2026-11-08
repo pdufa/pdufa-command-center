@@ -52,10 +52,11 @@ export const ADJUDICATION_WAVE_A:readonly AdjudicationCase[]=[
         "title": "Abivax ABTECT maintenance topline",
         "url": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial/",
         "section": "Maintenance Week 44 response-conditioned re-randomization",
-        "trial": "NCT05507216",
+        "trial": "NCT05535946",
         "measure": "Maintenance response conditional on induction success",
         "result": "After induction response, remission 50.8% on 25 mg and 51.3% on 50 mg vs placebo 10.4% at Week 44; both p<0.0001.",
-        "limits": "The maintenance population was selected among induction responders across linked trials; assigning this result to one induction NCT is contextual, not trial-level attribution."
+        "limits": "The maintenance result belongs to ABTECT-Maintenance NCT05535946, a distinct randomized trial fed by responders from the two induction NCTs. Source evidence is application-level context and must never be assigned as an endpoint of ABTECT-2.",
+        "scope": "RELATED_EXTERNAL_TRIAL"
       }
     ],
     "clinicalSynthesis": "The replicated higher-dose induction and strong responder-selected maintenance remission present a promising GI case. The 25 mg Week 8 ABTECT-2 miss should remain visible, and the maintenance effect must not be generalized to every person beginning treatment.",
@@ -63,7 +64,7 @@ export const ADJUDICATION_WAVE_A:readonly AdjudicationCase[]=[
     "bestCase": "Clear maintenance remission and steroid-free/endoscopic improvements can be clinically significant when the patient population and chosen sequence align with the trials.",
     "whatWouldResolve": [
       "Verify actual NDA submission and acceptance before assigning an FDA clock.",
-      "Trace induction-1 versus induction-2 NCT and pool composition exactly; link maintenance results to its own NCT if identified.",
+      "Trace induction-1 versus induction-2 NCT and pool composition exactly; link maintenance results to verified NCT05535946.",
       "Reconstruct locked multiplicity, steroid taper, rescue, patient-reported severity and nonresponder handling.",
       "Review long-term safety, immunologic consequences and product CMC/inspection readiness."
     ],
@@ -301,7 +302,7 @@ export const ADJUDICATION_WAVE_A:readonly AdjudicationCase[]=[
     "researchDate": "2026-11-07",
     "regulatoryQuestion": "What, if any, specific current supplemental FDA claim is tied to the MAPLE-HCM study rather than the already-approved MYQORZO oHCM indication?",
     "clinicalQuestion": "Do later head-to-head results help practical cardiology treatment selection for an already approved therapy without inventing a future initial approval event?",
-    "verdict": "UNRESOLVED_REQUIRES_INDEPENDENT_ADJUDICATION",
+    "verdict": "ALREADY_APPROVED_NO_PENDING_FIRST_APPROVAL",
     "timing": "NO_NEW_TIMING_EVENT_PROVEN",
     "sources": [
       {
@@ -312,10 +313,11 @@ export const ADJUDICATION_WAVE_A:readonly AdjudicationCase[]=[
         "title": "FDA MYQORZO Drug Trials Snapshot",
         "url": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshots-myqorzo",
         "section": "FDA approval for symptomatic obstructive HCM based on SEQUOIA-HCM (NCT05186818)",
-        "trial": "NCT05767346",
+        "trial": "NCT05186818",
         "measure": "Confirmed existing approval",
         "result": "FDA approved aficamten for adult symptomatic obstructive hypertrophic cardiomyopathy on December 19, 2025.",
-        "limits": "FDA primary approval was based on a distinct SEQUOIA-HCM trial NCT05186818; this source references the application and should not be falsely relabeled as a MAPLE trial result."
+        "limits": "FDA primary approval was based on a distinct SEQUOIA-HCM trial NCT05186818; this source references the application and should not be falsely relabeled as a MAPLE trial result.",
+        "scope": "RELATED_EXTERNAL_TRIAL"
       },
       {
         "id": "cytk-maple",
@@ -338,10 +340,11 @@ export const ADJUDICATION_WAVE_A:readonly AdjudicationCase[]=[
         "title": "FDA MYQORZO Drug Trials Snapshot",
         "url": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshots-myqorzo",
         "section": "Approved label and dated first approval status",
-        "trial": "NCT05767346",
+        "trial": "NCT05186818",
         "measure": "Incorrect future PDUFA premise",
         "result": "The FOCUS-associated November 2026 initial oHCM decision must not be treated as pending because the indication already obtained FDA approval in December 2025.",
-        "limits": "Only a specifically verified supplemental application could create another approval clock; do not invent one from the MAPLE results."
+        "limits": "Only a specifically verified supplemental application could create another approval clock; do not invent one from the MAPLE results.",
+        "scope": "RELATED_EXTERNAL_TRIAL"
       }
     ],
     "clinicalSynthesis": "This case is a regulatory data-quality correction rather than an efficacy concern. MAPLE may inform treatment choice, but the relevant initial oHCM drug decision is a historical FDA approval.",
