@@ -6,7 +6,6 @@ import TrialTimelineSummary from "./TrialTimelineSummary";
 import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "../lib/trial-designations";
 import type {ToolPdufaApplication} from "../lib/tools-pdufa-links";
 import styles from "./FunnelWorkspace.module.css";
-import ToolsRankingChecklists from "./ToolsRankingChecklists";
 import RaasSpreadsheetStatus from "./RaasSpreadsheetStatus";
 import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type ColumnFilterField} from "./TrialColumnFilterBar";
 
@@ -169,7 +168,7 @@ export default function ToolsResultsSpreadsheet({
       <span>{hasSelection&&!loading&&!error?fmt(total)+(designations.length?" documented FDA-linked matches in restricted subset (partial coverage)":" restricted trial matches"):hasSelection&&loading?"Calculating…":hasSelection&&error?"Unavailable":"0 matching trials"}</span>
     </div>
     <p className={styles.muted}><strong>S</strong> is days since verified public Phase 3 data release; <strong>D</strong> is days to the verified PDUFA target (negative after the target date). Missing source evidence stays Not verified, never zero.</p>
-    <ToolsRankingChecklists/>
+
     <TrialColumnFilterBar title="Selected trial records" fields={tableFilterFields}
       filters={columnFilters} onChange={setColumnFilters}
       hint="Filters narrow only the loaded page; Step 3 selectors control the full trial pool. S and D accept numeric expressions such as >=30.">

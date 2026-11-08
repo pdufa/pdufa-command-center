@@ -11,7 +11,7 @@ export type BenefitRecord={
 };
 export type BenefitFeed={schemaVersion:1;sourceAsOf:string|null;records:BenefitRecord[]};
 /** Explicitly no survey groups remain installed. */
-export const BENEFIT_GROUPS:readonly {number:number;fields:readonly {id:string;label:string}[]}[]=[];
+export const BENEFIT_GROUPS:readonly {number:number;name:string;fields:readonly {id:string;label:string}[]}[]=[];
 export function benefitForTrial(
   _feed:BenefitFeed|null,
   _trial:{nctId:string;ticker:string;drug:string|null;indication:string|null}

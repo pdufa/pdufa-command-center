@@ -7,7 +7,6 @@ import ir from "../data/phase3CompanyWebsiteEvidence20261105.json";
 import {clinicalFiveForTrial} from "./raas-clinical-five";
 import {raasSpreadsheetSummary} from "./raas-spreadsheet-status";
 import {evaluatePhaseFirst,PHASE_FIRST_VERSION,type PhaseTrial,type ClinicalContext} from "./phase-first-clinical";
-import {BENEFIT_GROUPS} from "./clinical-source-types";
 import {phase3DeepRegistryRecord,PHASE3_DEEP_REGISTRY_AS_OF} from "./phase3-deep-registry-results";
 import endpointAdjudications from "../data/phase3EndpointAdjudications20261105.json";
 import axsomeRegistry from "../data/axsomePhaseFirstRegistry20261106.json";
@@ -136,12 +135,8 @@ export function phaseFirstContext(trial:PhaseTrial,alkermes:boolean):ClinicalCon
   reviewedFactors:accepted?.factors??[],approvedRaas:approved,regulatory,
   additionalEvidence:additional};
 }
-const surveySections=[{key:"A",name:"Medical Impact",min:1,max:5},{key:"B",name:"Competitive Strength",min:6,max:8},
- {key:"C",name:"Market Opportunity",min:9,max:14},{key:"D",name:"Revenue Value",min:15,max:18},
- {key:"E",name:"Investment Potential",min:19,max:20}];
-// Existing three-level survey identifiers remain unchanged; this overlay does
-// not replace their stored responses or silently turn documentation into grades.
-export const PHASE_FIRST_SURVEY_HIERARCHY=surveySections.map(g=>({...g,surveys:BENEFIT_GROUPS.filter(s=>s.number>=g.min&&s.number<=g.max).map(s=>({number:s.number,name:s.name,questions:s.fields.map(f=>({id:f.id,label:f.label}))}))}));
+// Survey system retired; no questionnaire hierarchy is installed.
+export const PHASE_FIRST_SURVEY_HIERARCHY:readonly []=[];
 export type PhaseFirstScope="alkermes"|"axsome"|"sinovac"|"census";
 const caches:Partial<Record<PhaseFirstScope,ReturnType<typeof build>>>={};
 function build(scope:PhaseFirstScope){
@@ -167,7 +162,7 @@ function build(scope:PhaseFirstScope){
    "Partial means normalize existing 20% factor weights only over eligible scored components. They are not complete five-factor scores or cross-phase ranks.",
    "Missing and conflicting evidence are research gaps; pending and not-yet-expected milestones are excluded from evidence completeness.",
    "Current phase is source-verified per registry snapshot, not inferred from the program's most advanced phase. Original source dates and staleness remain visible.",
-   "Existing clinical grades/history, survey responses, RAAS calibration and Pipeline eligibility are read-only. No GEM/GEM JR model is activated."],trials};
+   "Existing clinical grades/history, RAAS calibration and Pipeline eligibility are read-only. No GEM/GEM JR model is activated."],trials};
 }
 export function phaseFirstReport(scope:PhaseFirstScope="alkermes"){
  return caches[scope]??(caches[scope]=build(scope));
