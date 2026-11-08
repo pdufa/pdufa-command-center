@@ -20,3 +20,5 @@ jobs:
           python-version: '3.12'
       - name: Enforce permanently retired workflow and Codex constraints
         run: python scripts/check_retired_workflows.py
+      - name: Enforce retired P3 workspace identities without disturbing FOCUS
+        run: python scripts/check_retired_p3_spreadsheets.py
