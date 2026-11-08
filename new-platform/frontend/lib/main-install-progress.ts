@@ -8,6 +8,7 @@ import focus from "../data/p3PostDataActive.json";
 import {ADVANCED_LEVELS} from "./precision-monitor-levels";
 import {APPLICATION_CYCLES} from "./medical-intelligence-applications";
 import {HISTORICAL_CALIBRATION} from "./medical-intelligence-calibration";
+import {FOCUS_FINAL_TRIAL_AUDIT} from "./focus-final-gate-checks";
 
 export type CheckState="VERIFIED"|"PENDING"|"BLOCKED"|"FAILED"|"UNKNOWN";
 export type Checkpoint={
@@ -29,6 +30,10 @@ export type MonitorTelemetry={
  alerts?:Record<string,unknown>;
  errors?:string[];
  coverage?:Record<string,unknown>;
+ trialHistories?:Record<string,{
+  state:string;latestStatus?:string;sourceStages?:number;failedRuns?:number;
+  revisions?:{ordinal:number;recordedAt:string;runId:string;evidenceChanged:boolean}[];
+ }>;
 };
 export type ExternalVerification={
  observedAt:string;deployment:{state:"READY"|"UNKNOWN";sha:string|null;url:string|null};
@@ -38,6 +43,13 @@ export type ExternalVerification={
  apiReachable:boolean;
  analyzeNowAllEnabled?:boolean;
 };
+export type MonitorTrial={
+ nct:string;ticker:string;company:string;pointers:number;review:number;missing:number;
+ independentlyVerified:number;sourceState:"OBSERVED"|"UNKNOWN";
+ latestStatus:string;sourceStages:number|null;failedRuns:number|null;
+ revisions:{ordinal:number;recordedAt:string;runId:string;evidenceChanged:boolean}[];
+ gates:{id:string;title:string;state:string;note:string;sourceUrl:string|null}[];
+};
 export type MonitorSnapshot={
  schemaVersion:1;observedAt:string;
  methodology:string;stages:Stage[];
@@ -45,7 +57,7 @@ export type MonitorSnapshot={
  nextUnfinished:{stage:string;checkpoint:string;status:CheckState;detail:string}|null;
  health:{level:"HEALTHY"|"DEGRADED"|"BLOCKED"|"UNKNOWN";issues:string[]};
  facts:{focusTrialCount:number;fdaApplicationCycles:number;advancedLevelDefinitions:number;
- historicalCalibrationRows:number;rosterAsOf:string;productionModified:false};
+ historicalCalibrationRows:number;rosterAsOf:string;sourceDataModified:false};
  signals:{scans:MonitorTelemetry["scans"];research:MonitorTelemetry["research"];
  analysisNow:MonitorTelemetry["analysisNow"];
  alerts:MonitorTelemetry["alerts"];coverage:MonitorTelemetry["coverage"]};
@@ -134,8 +146,8 @@ export function buildInstallationProgress(
      "Broader legacy tests may fail independently of the medical-only suite.","GitHub Actions",external.observedAt)
  ]);
  add("medical","Standalone Deep Medical Intelligence",[
-   from("medical.code","Independent research framework","VERIFIED",
-     "Evidence-gated, 12-level medical framework operates independently of retired scoring and survey architectures.","Medical application source code"),
+   from("medical.code","Independent research framework","PENDING",
+     "The 12-stage source worker is staged separately; the monitoring dashboard does not itself deploy or verify a medical decision engine.","Medical application source code"),
    from("medical.application-map","Backend packaged 29-NCT application context",
      applications.state==="VALID"&&applications.focusNctCount===focus.records.length&&
        applications.coveredNctCount===focus.records.length?"VERIFIED":
@@ -165,8 +177,8 @@ export function buildInstallationProgress(
    ]);
  }
  add("analyze-now","Analyze Now — immediate trial assessment",[
-   from("analyze-now.button","Per-trial controls linked to FOCUS","VERIFIED",
-     "Analyze Now and expandable NCT history controls are installed for each of 29 FOCUS trial rows. Non-pilot actions remain disabled until live validation.","FOCUS trial page"),
+   from("analyze-now.button","Per-trial source-analysis controls linked to FOCUS","PENDING",
+     "Per-trial source analysis remains on the isolated canary branch until verified; this monitoring dashboard cannot start analysis.","FOCUS trial page"),
    from("analyze-now.pilot","One completed saved exact-NCT pilot",
      analyzeNow.state==="OBSERVED"&&analyzeNow.pilotSaved===true?"VERIFIED":backendBlock(),
      "Canary "+String(analyzeNow.pilotTrial??"NCT06081894")+" saved: "+String(analyzeNow.pilotSaved??"not observed")+". The exact report must include date, source gaps and separate uncalibrated outcomes.",
@@ -244,11 +256,26 @@ export function buildInstallationProgress(
    schemaVersion:1,observedAt:at,
    methodology:"Verified installation checkpoints ÷ all fixed checkpoints. Every checkpoint has equal weight. Failed, blocked, pending and unknown count as unfinished; source pointers and old QA do not count as validated scientific outcomes.",
    stages:points,overall,
+   trials:FOCUS_FINAL_TRIAL_AUDIT.rows.map(row=>{
+     const source=live?.trialHistories?.[row.nct];
+     const observed=live?.schemaVersion===1&&source?.state==="OBSERVED";
+     const revisions=observed&&Array.isArray(source?.revisions)?
+       source.revisions.filter(r=>Number.isSafeInteger(r.ordinal)&&r.ordinal>0&&
+         typeof r.recordedAt==="string"&&typeof r.runId==="string"&&
+         typeof r.evidenceChanged==="boolean").slice(0,20):[];
+     return {nct:row.nct,ticker:row.ticker,company:row.company,
+       pointers:row.pointers,review:row.review,missing:row.missing,
+       independentlyVerified:0,sourceState:observed?"OBSERVED" as const:"UNKNOWN" as const,
+       latestStatus:observed?String(source.latestStatus??"UNKNOWN"):"UNKNOWN",
+       sourceStages:observed&&typeof source.sourceStages==="number"?source.sourceStages:null,
+       failedRuns:observed&&typeof source.failedRuns==="number"?source.failedRuns:null,
+       revisions,gates:row.gates.map(g=>({...g}))};
+   }),
    nextUnfinished:next&&stage?{stage:stage.title,checkpoint:next.title,status:next.status,detail:next.detail}:null,
    health:{level:overall.failed?"DEGRADED":overall.blocked?"BLOCKED":overall.unknown?"UNKNOWN":"HEALTHY",issues},
    facts:{focusTrialCount:focus.records.length,fdaApplicationCycles:APPLICATION_CYCLES.length,
      advancedLevelDefinitions:ADVANCED_LEVELS.length,historicalCalibrationRows:HISTORICAL_CALIBRATION.eligibleCount,
-     rosterAsOf:focus.asOf,productionModified:false},
+     rosterAsOf:focus.asOf,sourceDataModified:false},
    signals:{scans:live?.scans,research:live?.research,analysisNow:live?.analysisNow,alerts:live?.alerts,coverage:live?.coverage}
  };
 }
