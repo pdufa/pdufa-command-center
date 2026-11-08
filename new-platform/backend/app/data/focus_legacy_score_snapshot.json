@@ -1,0 +1,1645 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-07",
+  "scope": "OPTIONAL_READ_ONLY_LEGACY_RAAS_MIRROR",
+  "sourceFiles": [
+    "new-platform/frontend/data/raas-trial-score-history.json",
+    "new-platform/frontend/data/bottomOnlyScoreHistory20261107.json"
+  ],
+  "doesNotComputeRaasScores": true,
+  "notAFdaProbability": true,
+  "nctKey": "exact_nctId",
+  "records": [
+    {
+      "nct": "NCT05507203",
+      "ticker": "ABVX",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 60,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507203"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 75,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507203"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507203"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507203"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507203"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT05507203_BOTTOM_ONLY_POST_READOUT_20261107_V3_b687a939843b74e9",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://clinicaltrials.gov/api/v2/studies/NCT05507203"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT05507203_BOTTOM_ONLY_POST_READOUT_20261107_V3_8844042056194fc8",
+        "BOTTOM_NCT05507203_BOTTOM_ONLY_POST_READOUT_20261107_V3_b687a939843b74e9"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT05507216",
+      "ticker": "ABVX",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 55,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507216"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 75,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507216"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507216"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507216"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05507216"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT05507216_BOTTOM_ONLY_POST_READOUT_20261107_V3_ec4f5f3dbf8f167f",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://clinicaltrials.gov/api/v2/studies/NCT05507216"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT05507216_BOTTOM_ONLY_POST_READOUT_20261107_V3_9362acd0d0ba779a",
+        "BOTTOM_NCT05507216_BOTTOM_ONLY_POST_READOUT_20261107_V3_ec4f5f3dbf8f167f"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT04576949",
+      "ticker": "ACHV",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 50,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37432430/"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37432430/"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37432430/"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37432430/"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37432430/"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT04576949_BOTTOM_ONLY_POST_READOUT_20261107_V3_e636d3f3cd7dd33e",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/37432430/"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT04576949_BOTTOM_ONLY_POST_READOUT_20261107_V3_5472f949bbb8aedb",
+        "BOTTOM_NCT04576949_BOTTOM_ONLY_POST_READOUT_20261107_V3_e636d3f3cd7dd33e"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT05206370",
+      "ticker": "ACHV",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 50,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40257755/"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40257755/"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40257755/"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40257755/"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40257755/"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT05206370_BOTTOM_ONLY_POST_READOUT_20261107_V3_b77790eea14ce3f8",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/40257755/"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT05206370_BOTTOM_ONLY_POST_READOUT_20261107_V3_2f41f94db6ccbf30",
+        "BOTTOM_NCT05206370_BOTTOM_ONLY_POST_READOUT_20261107_V3_b77790eea14ce3f8"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT05811247",
+      "ticker": "APMD",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 4,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05811247"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": null,
+            "sourceUrl": null
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 75,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05811247"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05811247"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05811247"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT05811247_BOTTOM_ONLY_POST_READOUT_20261107_V3_cb9d9b1758778363",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://clinicaltrials.gov/api/v2/studies/NCT05811247"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT05811247_BOTTOM_ONLY_POST_READOUT_20261107_V3_200fc2023a971209",
+        "BOTTOM_NCT05811247_BOTTOM_ONLY_POST_READOUT_20261107_V3_cb9d9b1758778363"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT05813275",
+      "ticker": "APMD",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 50,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05813275"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42148495/"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 75,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05813275"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05813275"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 25,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42148495/"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT05813275_BOTTOM_ONLY_POST_READOUT_20261107_V3_99495e37f8c70ca3",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://clinicaltrials.gov/api/v2/studies/NCT05813275",
+        "https://pubmed.ncbi.nlm.nih.gov/42148495/"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT05813275_BOTTOM_ONLY_POST_READOUT_20261107_V3_673e9e74912e322f",
+        "BOTTOM_NCT05813275_BOTTOM_ONLY_POST_READOUT_20261107_V3_99495e37f8c70ca3"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT05059223",
+      "ticker": "AXSM",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 4,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024035655/axsm-ex99_1.htm"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024035655/axsm-ex99_1.htm"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": null,
+            "sourceUrl": null
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024035655/axsm-ex99_1.htm"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024035655/axsm-ex99_1.htm"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT05059223_BOTTOM_ONLY_POST_READOUT_20261107_V3_f83015d8622a1947",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1579428/000095017024035655/axsm-ex99_1.htm"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT05059223_BOTTOM_ONLY_POST_READOUT_20261107_V3_2d50425a5f39db8f",
+        "BOTTOM_NCT05059223_BOTTOM_ONLY_POST_READOUT_20261107_V3_f83015d8622a1947"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT05113745",
+      "ticker": "AXSM",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 60,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024130755/axsm-ex99_1.htm"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024130755/axsm-ex99_1.htm"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024130755/axsm-ex99_1.htm"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024130755/axsm-ex99_1.htm"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000095017024130755/axsm-ex99_1.htm"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT05113745_BOTTOM_ONLY_POST_READOUT_20261107_V3_6ffb1f93d90c0a76",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1579428/000095017024130755/axsm-ex99_1.htm"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT05113745_BOTTOM_ONLY_POST_READOUT_20261107_V3_19d41e0243bd554c",
+        "BOTTOM_NCT05113745_BOTTOM_ONLY_POST_READOUT_20261107_V3_6ffb1f93d90c0a76"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT05244304",
+      "ticker": "BLTE",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 4,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": null,
+            "sourceUrl": null
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT05244304_BOTTOM_ONLY_POST_READOUT_20261107_V3_68b9dde8f3a9cc28",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT05244304_BOTTOM_ONLY_POST_READOUT_20261107_V3_5d0abe6df229975f",
+        "BOTTOM_NCT05244304_BOTTOM_ONLY_POST_READOUT_20261107_V3_68b9dde8f3a9cc28"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT05126758",
+      "ticker": "CAPR",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 4,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42526472/"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42526472/"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42526472/"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42526472/"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": null,
+            "sourceUrl": null
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT05126758_BOTTOM_ONLY_POST_READOUT_20261107_V3_abaccdb913613d66",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/42526472/"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT05126758_BOTTOM_ONLY_POST_READOUT_20261107_V3_93de418990c072b2",
+        "BOTTOM_NCT05126758_BOTTOM_ONLY_POST_READOUT_20261107_V3_abaccdb913613d66"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT06445023",
+      "ticker": "CLDX",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": "154fd6cf653e522d345ea294c100227b03c53a24617dcf1c44abb1b39b6730c9"
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 4,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 50,
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": null,
+            "sourceUrl": null
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT06445023_BOTTOM_ONLY_POST_READOUT_20261107_V3_2ddd27213dc258e6",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://ir.celldex.com/node/16781/ixbrl-viewer",
+        "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and"
+      ],
+      "priorEventIds": [
+        "aea2f4bb8789969fa73d4cd3af23b16ff71c4cddfbbf54cc33d10ad5eb98dee7",
+        "071cb263eff1cf6f65aa12ae595b3ee4b11814bf36a576d432c9e236e80b0c4d",
+        "154fd6cf653e522d345ea294c100227b03c53a24617dcf1c44abb1b39b6730c9"
+      ],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT06445023_20261106_REVIEWED_FIVE_SNAPSHOT",
+        "BOTTOM_NCT06445023_BOTTOM_ONLY_POST_READOUT_20261107_V2_2ddd27213dc258e6",
+        "BOTTOM_NCT06445023_BOTTOM_ONLY_POST_READOUT_20261107_V2_4657beb4ab7e18a8",
+        "BOTTOM_NCT06445023_BOTTOM_ONLY_POST_READOUT_20261107_V3_2a83f8c69d7efcb3",
+        "BOTTOM_NCT06445023_BOTTOM_ONLY_POST_READOUT_20261107_V3_2ddd27213dc258e6"
+      ],
+      "archivedEvidenceOnlySummary": "Research-only post-1-1 descriptive clinical contrast 75/100. Clinical efficacy/return probabilities and overall RAAS remain unscored."
+    },
+    {
+      "nct": "NCT06455202",
+      "ticker": "CLDX",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": "c362b42361c85e863a54c2d7b9c504d79abc40e78d6c16d519812eccb27008d0"
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 4,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 50,
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://ir.celldex.com/node/16781/ixbrl-viewer"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": null,
+            "sourceUrl": null
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT06455202_BOTTOM_ONLY_POST_READOUT_20261107_V3_83f043e877ab68e7",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://ir.celldex.com/node/16781/ixbrl-viewer",
+        "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and"
+      ],
+      "priorEventIds": [
+        "3222c1e65f507ba22d463d2613d8f7cfe80950960c67eb4a539c7221d56aa86c",
+        "4f7caab87c305568c7bdd75cbd1c54ac70bb5b42fe526fb4b1fbb458ef348911",
+        "c362b42361c85e863a54c2d7b9c504d79abc40e78d6c16d519812eccb27008d0"
+      ],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT06455202_20261106_REVIEWED_FIVE_SNAPSHOT",
+        "BOTTOM_NCT06455202_BOTTOM_ONLY_POST_READOUT_20261107_V2_0b4983cc14ac7f04",
+        "BOTTOM_NCT06455202_BOTTOM_ONLY_POST_READOUT_20261107_V2_3e7107024ed34966",
+        "BOTTOM_NCT06455202_BOTTOM_ONLY_POST_READOUT_20261107_V3_3e7107024ed34966",
+        "BOTTOM_NCT06455202_BOTTOM_ONLY_POST_READOUT_20261107_V3_83f043e877ab68e7"
+      ],
+      "archivedEvidenceOnlySummary": "Research-only post-1-2 descriptive clinical contrast 100/100. Clinical efficacy/return probabilities and overall RAAS remain unscored."
+    },
+    {
+      "nct": "NCT05208047",
+      "ticker": "COGT",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 55,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT05208047_BOTTOM_ONLY_POST_READOUT_20261107_V3_ae49ac1c531cb4d2",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+        "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT05208047_BOTTOM_ONLY_POST_READOUT_20261107_V3_111f157a07e0bc63",
+        "BOTTOM_NCT05208047_BOTTOM_ONLY_POST_READOUT_20261107_V3_ae49ac1c531cb4d2"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT03697109",
+      "ticker": "CORT",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 50,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41730814/"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT03697109_BOTTOM_ONLY_POST_READOUT_20261107_V3_c7c5486c576f30b7",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/41730814/",
+        "https://pmc.ncbi.nlm.nih.gov/articles/PMC13220893/"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT03697109_BOTTOM_ONLY_POST_READOUT_20261107_V3_2d5f9a4fefd6f8c0",
+        "BOTTOM_NCT03697109_BOTTOM_ONLY_POST_READOUT_20261107_V3_c7c5486c576f30b7"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT04308590",
+      "ticker": "CORT",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 40,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 25,
+            "sourceUrl": "https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 25,
+            "sourceUrl": "https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/study/NCT04308590"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT04308590_BOTTOM_ONLY_POST_READOUT_20261107_V3_be047417ac47d374",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-3",
+        "https://clinicaltrials.gov/study/NCT04308590"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT04308590_BOTTOM_ONLY_POST_READOUT_20261107_V3_5c9afa4a95cbbdc9",
+        "BOTTOM_NCT04308590_BOTTOM_ONLY_POST_READOUT_20261107_V3_be047417ac47d374"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT05767346",
+      "ticker": "CYTK",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 60,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40888697/"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 75,
+            "sourceUrl": "https://www.jacc.org/doi/full/10.1016/j.jacc.2025.10.059"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://www.nejm.org/doi/10.1056/NEJMoa2504654"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://www.nejm.org/doi/10.1056/NEJMoa2504654"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2025/Cytokinetics-Presents-Additional-Data-from-MAPLE-HCM-at-the-Hypertrophic-Cardiomyopathy-Medical-Society-Scientific-Sessions-and-American-Heart-Association-Scientific-Sessions-2025/default.aspx"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT05767346_BOTTOM_ONLY_POST_READOUT_20261107_V3_97f08ffac0ed9e88",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/40888697/",
+        "https://www.jacc.org/doi/full/10.1016/j.jacc.2025.10.059",
+        "https://www.nejm.org/doi/10.1056/NEJMoa2504654",
+        "https://ir.cytokinetics.com/press-releases/press-release-details/2025/Cytokinetics-Presents-Additional-Data-from-MAPLE-HCM-at-the-Hypertrophic-Cardiomyopathy-Medical-Society-Scientific-Sessions-and-American-Heart-Association-Scientific-Sessions-2025/default.aspx"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT05767346_BOTTOM_ONLY_POST_READOUT_20261107_V3_782ecf8cb60462a3",
+        "BOTTOM_NCT05767346_BOTTOM_ONLY_POST_READOUT_20261107_V3_97f08ffac0ed9e88"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT06081894",
+      "ticker": "CYTK",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 45,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 50,
+            "sourceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Results-from-ACACIA-HCM-Presented-in-Hot-Line-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026-and-Published-in-The-New-England-Journal-of-Medicine/default.aspx"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Results-from-ACACIA-HCM-Presented-in-Hot-Line-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026-and-Published-in-The-New-England-Journal-of-Medicine/default.aspx"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 25,
+            "sourceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT06081894_BOTTOM_ONLY_POST_READOUT_20261107_V3_a99ab509e2ac31b0",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021",
+        "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Results-from-ACACIA-HCM-Presented-in-Hot-Line-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026-and-Published-in-The-New-England-Journal-of-Medicine/default.aspx"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT06081894_20261106_REVIEWED_FIVE_SNAPSHOT",
+        "BOTTOM_NCT06081894_BOTTOM_ONLY_POST_READOUT_20261107_V2_4d217830785a560d",
+        "BOTTOM_NCT06081894_BOTTOM_ONLY_POST_READOUT_20261107_V2_7ef3c481cc6474d7",
+        "BOTTOM_NCT06081894_BOTTOM_ONLY_POST_READOUT_20261107_V3_4d217830785a560d",
+        "BOTTOM_NCT06081894_BOTTOM_ONLY_POST_READOUT_20261107_V3_a99ab509e2ac31b0"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT04871282",
+      "ticker": "IMNM",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 2,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1472012/000119312526344636/imnm-20260630.htm"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1472012/000119312526344636/imnm-20260630.htm"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": null,
+            "sourceUrl": null
+          },
+          {
+            "metricId": "post-1-4",
+            "score": null,
+            "sourceUrl": null
+          },
+          {
+            "metricId": "post-1-5",
+            "score": null,
+            "sourceUrl": null
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT04871282_BOTTOM_ONLY_POST_READOUT_20261107_V3_4f6c7e3471466ce2",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1472012/000119312526344636/imnm-20260630.htm"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT04871282_BOTTOM_ONLY_POST_READOUT_20261107_V3_10793fa94c2fbbb5",
+        "BOTTOM_NCT04871282_BOTTOM_ONLY_POST_READOUT_20261107_V3_4f6c7e3471466ce2"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT06411379",
+      "ticker": "MLTX",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 4,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": null,
+            "sourceUrl": null
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT06411379_BOTTOM_ONLY_POST_READOUT_20261107_V3_f6769fe28721ece7",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT06411379_BOTTOM_ONLY_POST_READOUT_20261107_V3_5950f1e9437ccb39",
+        "BOTTOM_NCT06411379_BOTTOM_ONLY_POST_READOUT_20261107_V3_f6769fe28721ece7"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT06411899",
+      "ticker": "MLTX",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 4,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 50,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 25,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": null,
+            "sourceUrl": null
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT06411899_BOTTOM_ONLY_POST_READOUT_20261107_V3_84c59bc7bf1ba13b",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1821586/000121390025092614/ea025912901ex99-1_moonlake.htm"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT06411899_BOTTOM_ONLY_POST_READOUT_20261107_V3_2d84ba320f91c272",
+        "BOTTOM_NCT06411899_BOTTOM_ONLY_POST_READOUT_20261107_V3_84c59bc7bf1ba13b"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT06153693",
+      "ticker": "MLYS",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 4,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40587141/"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": null,
+            "sourceUrl": null
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 75,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40587141/"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40587141/"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40587141/"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT06153693_BOTTOM_ONLY_POST_READOUT_20261107_V3_b5640a7475b48da8",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/40587141/"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT06153693_BOTTOM_ONLY_POST_READOUT_20261107_V3_5a51b6acb6ab6322",
+        "BOTTOM_NCT06153693_BOTTOM_ONLY_POST_READOUT_20261107_V3_b5640a7475b48da8"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT06343779",
+      "ticker": "PHVS",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 4,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42849489/"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 75,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42849489/"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42849489/"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42849489/"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": null,
+            "sourceUrl": null
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT06343779_BOTTOM_ONLY_POST_READOUT_20261107_V3_98000849158d9a5d",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/42849489/"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT06343779_BOTTOM_ONLY_POST_READOUT_20261107_V3_1fb7e9d52d0878e7",
+        "BOTTOM_NCT06343779_BOTTOM_ONLY_POST_READOUT_20261107_V3_98000849158d9a5d"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT06669754",
+      "ticker": "PHVS",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 3,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": null,
+            "sourceUrl": null
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": null,
+            "sourceUrl": null
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT06669754_BOTTOM_ONLY_POST_READOUT_20261107_V3_78da3370687fa933",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT06669754_BOTTOM_ONLY_POST_READOUT_20261107_V3_4a35aee4b79805fe",
+        "BOTTOM_NCT06669754_BOTTOM_ONLY_POST_READOUT_20261107_V3_78da3370687fa933"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT06087276",
+      "ticker": "PRAX",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 55,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 75,
+            "sourceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 25,
+            "sourceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT06087276_BOTTOM_ONLY_POST_READOUT_20261107_V3_eabc2f10cebe8b85",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT06087276_BOTTOM_ONLY_POST_READOUT_20261107_V3_4bc5987a48ae32d0",
+        "BOTTOM_NCT06087276_BOTTOM_ONLY_POST_READOUT_20261107_V3_eabc2f10cebe8b85"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT02500381",
+      "ticker": "SRPT",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 4,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 25,
+            "sourceUrl": "https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-therapeutics-announces-third-quarter-2025-financial"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 25,
+            "sourceUrl": "https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-therapeutics-announces-third-quarter-2025-financial"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 25,
+            "sourceUrl": "https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-therapeutics-announces-third-quarter-2025-financial"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 25,
+            "sourceUrl": "https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-therapeutics-announces-third-quarter-2025-financial"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": null,
+            "sourceUrl": null
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT02500381_BOTTOM_ONLY_POST_READOUT_20261107_V3_d759342c987bce8f",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-therapeutics-announces-third-quarter-2025-financial"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT02500381_BOTTOM_ONLY_POST_READOUT_20261107_V3_65a38a3fd577bfe2",
+        "BOTTOM_NCT02500381_BOTTOM_ONLY_POST_READOUT_20261107_V3_d759342c987bce8f"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT04544293",
+      "ticker": "SVRA",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 55,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40834301/"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40834301/"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40834301/"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40834301/"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40834301/"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT04544293_BOTTOM_ONLY_POST_READOUT_20261107_V3_e9058fe5a41014ff",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/40834301/"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT04544293_20261106_REVIEWED_FIVE_SNAPSHOT",
+        "BOTTOM_NCT04544293_BOTTOM_ONLY_POST_READOUT_20261107_V2_4fbd86f9297cd9cf",
+        "BOTTOM_NCT04544293_BOTTOM_ONLY_POST_READOUT_20261107_V2_9139bb9948017e92",
+        "BOTTOM_NCT04544293_BOTTOM_ONLY_POST_READOUT_20261107_V2_e9058fe5a41014ff",
+        "BOTTOM_NCT04544293_BOTTOM_ONLY_POST_READOUT_20261107_V3_45122c7f1328f755",
+        "BOTTOM_NCT04544293_BOTTOM_ONLY_POST_READOUT_20261107_V3_e9058fe5a41014ff"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT06331299",
+      "ticker": "URGN",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": null,
+        "scoredFactors": 4,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06331299"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06331299"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 25,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06331299"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": null,
+            "sourceUrl": null
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06331299"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT06331299_BOTTOM_ONLY_POST_READOUT_20261107_V3_77742631a9c4b470",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "INCOMPLETE_PROVISIONAL_RESEARCH"
+      },
+      "sources": [
+        "https://clinicaltrials.gov/api/v2/studies/NCT06331299"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT06331299_BOTTOM_ONLY_POST_READOUT_20261107_V3_6871da8eee94478c",
+        "BOTTOM_NCT06331299_BOTTOM_ONLY_POST_READOUT_20261107_V3_77742631a9c4b470"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT04716231",
+      "ticker": "VERA",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 65,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42911181/"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 75,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42911181/"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 75,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42911181/"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42911181/"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42911181/"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT04716231_BOTTOM_ONLY_POST_READOUT_20261107_V3_40eff943d1038e12",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://pubmed.ncbi.nlm.nih.gov/42911181/"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT04716231_20261106_REVIEWED_FIVE_SNAPSHOT",
+        "BOTTOM_NCT04716231_BOTTOM_ONLY_POST_READOUT_20261107_V2_19ef31a8fe7f99d0",
+        "BOTTOM_NCT04716231_BOTTOM_ONLY_POST_READOUT_20261107_V2_31d5616fb2162605",
+        "BOTTOM_NCT04716231_BOTTOM_ONLY_POST_READOUT_20261107_V2_40eff943d1038e12",
+        "BOTTOM_NCT04716231_BOTTOM_ONLY_POST_READOUT_20261107_V3_1dc969a484a7011c",
+        "BOTTOM_NCT04716231_BOTTOM_ONLY_POST_READOUT_20261107_V3_40eff943d1038e12"
+      ],
+      "archivedEvidenceOnlySummary": null
+    },
+    {
+      "nct": "NCT05662241",
+      "ticker": "ZBIO",
+      "raas30": {
+        "status": "UNSCORED",
+        "score": null,
+        "version": null,
+        "lastEventId": null
+      },
+      "clinicalFive": {
+        "score": 65,
+        "scoredFactors": 5,
+        "expectedFactors": 5,
+        "graded": [
+          {
+            "metricId": "post-1-1",
+            "score": 75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926123040/zbio-20260930x10q.htm"
+          },
+          {
+            "metricId": "post-1-2",
+            "score": 75,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926123040/zbio-20260930x10q.htm"
+          },
+          {
+            "metricId": "post-1-3",
+            "score": 75,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42233621/"
+          },
+          {
+            "metricId": "post-1-4",
+            "score": 50,
+            "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926123040/zbio-20260930x10q.htm"
+          },
+          {
+            "metricId": "post-1-5",
+            "score": 50,
+            "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/42233621/"
+          }
+        ],
+        "recordedAt": "2026-11-07",
+        "eventId": "BOTTOM_NCT05662241_BOTTOM_ONLY_POST_READOUT_20261107_V3_f14fd9a6d046de6b",
+        "scoreType": "SOURCE_ACCEPTED_POSTDATA_FIVE_FACTOR_RESEARCH_NOT_FDA_PROBABILITY",
+        "status": "COMPLETE_FIVE_FACTOR_RESEARCH_ONLY"
+      },
+      "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1953926/000110465926123040/zbio-20260930x10q.htm",
+        "https://pubmed.ncbi.nlm.nih.gov/42233621/"
+      ],
+      "priorEventIds": [],
+      "archivedFiveEventIds": [
+        "BOTTOM_NCT05662241_BOTTOM_ONLY_POST_READOUT_20261107_V3_54bf0ec00dc70657",
+        "BOTTOM_NCT05662241_BOTTOM_ONLY_POST_READOUT_20261107_V3_f14fd9a6d046de6b"
+      ],
+      "archivedEvidenceOnlySummary": null
+    }
+  ]
+}
