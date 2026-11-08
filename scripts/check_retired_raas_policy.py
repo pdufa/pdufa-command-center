@@ -82,7 +82,7 @@ def run():
         roots.append(item)
     visited=set()
     queue=list(roots)
-    module_ref=re.compile(r'(?:\\bfrom\\s*|\\bimport\\s*\\(?\\s*|\\brequire\\s*\\(\\s*)[\'"]([^\'"]+)[\'"]')
+    module_ref=re.compile(r'(?:\bfrom\s*|\bimport\s*\(?\s*|\brequire\s*\(\s*)[\'"]([^\'"]+)[\'"]')
     while queue:
         current=queue.pop()
         if current in visited or not current.is_file():
