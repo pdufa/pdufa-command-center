@@ -11,8 +11,8 @@ export function parseExactRegistryPhase(study:unknown,nct:string):PhaseContext{
  const reported=Array.isArray(values)?values.filter((p):p is string=>typeof p==="string"):[];
  const accepted=PHASES.filter(phase=>reported.includes(phase));
  const verifiedPhase=accepted.length?accepted[accepted.length-1]:"UNKNOWN";
- const lastUpdate=str(record(protocol.statusModule).studyFirstPostDate)||
-   str(record(protocol.statusModule).lastUpdatePostDate);
+ const lastUpdate=str(record(protocol.statusModule).lastUpdatePostDate)||
+   str(record(protocol.statusModule).studyFirstPostDate);
  return {nct,verifiedPhase,sourceUrl:"https://clinicaltrials.gov/study/"+nct,
    ...(lastUpdate?{verifiedAt:lastUpdate}:{})};
 }
