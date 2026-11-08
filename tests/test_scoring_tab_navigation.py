@@ -10,11 +10,12 @@ ROOT = Path(__file__).resolve().parents[1]
 APP = ROOT / "new-platform/frontend/app"
 
 
-def test_active_navigation_links_only_pool_focus_and_pool_tools():
+def test_active_navigation_links_only_supported_primary_destinations():
     source = (APP / "GlobalNavigation.tsx").read_text(encoding="utf-8")
     expected = {
         "POOL": "/pool",
         "FOCUS": "/focus",
+        "PREDICTIONS": "/predictions",
         "TOOLS": "/tools",
     }
     for label, href in expected.items():
@@ -25,7 +26,8 @@ def test_active_navigation_links_only_pool_focus_and_pool_tools():
     assert all(label not in {"GEM", "GEM JR", "GEM_JR", "TOP", "BOTTOM", "PIPELINE"} for label, _ in live_links)
     assert 'aria-label="Site navigation"' in source
     # Research source history remains in Git; legacy clinical cohorts are not
-    # active menu choices. Only the two active candidate populations are linked.
+    # active menu choices. POOL and FOCUS remain the only candidate populations;
+    # PREDICTIONS is a read-only FDA outcome-status destination.
 
 def test_retired_scoring_ui_is_absent_but_nightly_input_audits_are_preserved():
     nav = (APP / "GlobalNavigation.tsx").read_text(encoding="utf-8")
