@@ -1,0 +1,142 @@
+#!/usr/bin/env python3
+"""Single-study, public-source CTIS protocol receipt. No secrets, no scoring or DB writes."""
+from __future__ import annotations
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import urllib.error
+import urllib.request
+
+TRIAL = "2023-505797-15-00"
+PROTOCOL = "CY 6033"
+NAME = f"D1_{TRIAL}_Protocol_FP"
+ROOT = "https://euclinicaltrials.eu/ctis-public-api"
+PORTAL = f"https://euclinicaltrials.eu/ctis-public/view/{TRIAL}?lang=en"
+OUTPUT = Path("acacia-ctis-source-receipt")
+MAX_JSON = 12_000_000
+MAX_DOC = 25_000_000
+USER_AGENT = "PDUFA-MAIN-open-source-research/1.0 (single trial, public protocol; no credential)"
+UUID = re.compile(r"^[A-Za-z0-9-]{16,80}$")
+
+def request(url: str, max_bytes: int, accept: str) -> tuple[bytes, dict]:
+    req = urllib.request.Request(url, headers={
+        "User-Agent": USER_AGENT,
+        "Accept": accept,
+        "Referer": PORTAL,
+    })
+    with urllib.request.urlopen(req, timeout=30) as rsp:
+        code = rsp.status
+        mime = rsp.headers.get("content-type", "")
+        raw = rsp.read(max_bytes + 1)
+        final_url = rsp.url
+    if len(raw) > max_bytes:
+        raise ValueError("SOURCE_TOO_LARGE")
+    if code != 200:
+        raise ValueError(f"HTTP_{code}")
+    if not final_url.startswith("https://euclinicaltrials.eu/"):
+        raise ValueError("UNEXPECTED_REDIRECT_DOMAIN")
+    return raw, {"http_status": code, "content_type": mime, "returned_url": final_url}
+
+def gather_documents(root: object) -> list[dict]:
+    """Look for the documented CTIS .documents[] entries at any nesting depth."""
+    found, stack, steps = [], [root], 0
+    while stack and steps < 40000:
+        node = stack.pop()
+        steps += 1
+        if isinstance(node, dict):
+            if isinstance(node.get("title"), str) and isinstance(node.get("uuid"), str):
+                found.append(node)
+            stack.extend(node.values())
+        elif isinstance(node, list):
+            stack.extend(node)
+    return found
+
+def run() -> dict:
+    payload, response = request(f"{ROOT}/retrieve/{TRIAL}", MAX_JSON, "application/json")
+    result = json.loads(payload)
+    if not isinstance(result, dict):
+        raise ValueError("INVALID_CTIS_OBJECT")
+    if result.get("ctNumber") != TRIAL:
+        raise ValueError("EXACT_EU_TRIAL_ID_MISMATCH")
+    docs = gather_documents(result)
+    candidates = [v for v in docs if v["title"] == NAME and UUID.fullmatch(v["uuid"])]
+    if len(candidates) != 1:
+        raise ValueError(f"AM4_PROTOCOL_UNRESOLVED_MATCH_COUNT_{len(candidates)}")
+    doc = candidates[0]
+    identifier = str(doc["uuid"])
+    file_type = str(doc.get("fileType", "")).lower()
+    if file_type not in ("pdf", "application/pdf", ""):
+        raise ValueError("UNEXPECTED_DOCUMENT_FORMAT")
+    data, doc_response = request(f"{ROOT}/documents/{TRIAL}/{identifier}/download",
+                                 MAX_DOC, "application/pdf,application/octet-stream")
+    if not data.startswith(b"%PDF-"):
+        raise ValueError("DOCUMENT_IS_NOT_PDF")
+    file = OUTPUT / "D1_2023-505797-15-00_Protocol_FP_AM4.pdf"
+    file.write_bytes(data)
+    details = {
+        "status": "PUBLIC_ORIGINAL_PROTOCOL_DOWNLOADED_FOR_SOURCE_INSPECTION",
+        "trial_id": TRIAL, "protocol_code": PROTOCOL,
+        "document_title": NAME, "listed_version": doc.get("version") or doc.get("versionNumber") or "VERIFY_IN_DOCUMENT",
+        "document_uuid": identifier,
+        "document_type": doc.get("documentTypeLabel"),
+        "source_trial_portal": PORTAL,
+        "document_endpoint": f"{ROOT}/documents/{TRIAL}/{identifier}/download",
+        "bytes": len(data), "sha256": hashlib.sha256(data).hexdigest(),
+        "response": doc_response,
+        "number_of_documents_in_response": len(docs),
+        "phase_independently_verified": False, "clinical_signoff": False,
+        "graded_methods": 0,
+        "fda_predictions": {"APPROVAL":"ABSTAIN","CRL":"ABSTAIN","REVIEW_DELAY":"ABSTAIN"},
+    }
+    if shutil.which("pdfinfo"):
+        p = subprocess.run(["pdfinfo",str(file)],capture_output=True,text=True,timeout=12)
+        if p.returncode == 0:
+            m = re.search(r"(?im)^Pages:\s*(\d+)",p.stdout)
+            if m: details["pdf_pages"] = int(m.group(1))
+    if shutil.which("pdftotext"):
+        text_file = OUTPUT / "_private_protocol_extracted.txt"
+        p = subprocess.run(["pdftotext",str(file),str(text_file)],capture_output=True,text=True,timeout=18)
+        if p.returncode == 0 and text_file.exists():
+            text = text_file.read_text(encoding="utf-8",errors="replace").lower()
+            details["term_presence_only"] = {
+                term:term.lower() in text for term in (
+                    "statistical analysis plan", "intercurrent event", "randomization",
+                    "missing data", "peak oxygen uptake", "kansas city",
+                )
+            }
+            details["machine_readable_text_bytes"] = text_file.stat().st_size
+            # Do not upload extracted copyrighted text as an artifact.
+            text_file.unlink()
+    return details
+
+def main():
+    OUTPUT.mkdir(exist_ok=True)
+    receipt = {
+        "schema": "ONE_SHOT_PUBLIC_CTIS_PROTOCOL_CAPTURE_V1",
+        "target_ct_number":TRIAL, "source_portal":PORTAL,
+        "independent_clinical_review":False, "method_grades":0,
+    }
+    try:
+        receipt.update(run())
+        print("CTIS source retrieval SUCCESS; validate source bytes and protocol version before reviewer grading.")
+        print(f"SHA256: {receipt['sha256']}  PDF bytes: {receipt['bytes']}")
+    except (urllib.error.HTTPError, urllib.error.URLError, TimeoutError, ValueError, OSError,
+            json.JSONDecodeError, subprocess.SubprocessError) as ex:
+        receipt["status"] = "NOT_RETRIEVED_OR_NOT_VERIFIED"
+        name = type(ex).__name__
+        receipt["error_category"] = name
+        if isinstance(ex, urllib.error.HTTPError): receipt["http_status"]=ex.code
+        print(f"CTIS public protocol capture not completed: {name}. No clinical grades or phase status were changed.")
+    (OUTPUT/"source_receipt.json").write_text(json.dumps(receipt,indent=2)+"\n",encoding="utf-8")
+    (OUTPUT/"README.txt").write_text(
+        "Research-only CTIS protocol capture for EU CT 2023-505797-15-00.\n"
+        "A stored original protocol is not a signed clinical review, final SAP or FDA prediction.\n"
+        "Do not import this artifact as an approved method grade or phase event.\n",encoding="utf-8")
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main())
