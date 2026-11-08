@@ -1,5 +1,5 @@
-/** Phase-first applicability and partial clinical research ratings.
- * Never modifies a saved score, calibration, prediction or Pipeline membership.
+/** Independent phase-aware source evidence and applicability assessment.
+ * No numerical scoring, prediction or Pipeline admission is performed.
  */
 export const PHASE_FIRST_VERSION="PHASE_FIRST_CLINICAL_2026_11_06_V1";
 export type EvidenceStatus="AVAILABLE"|"MISSING"|"NOT YET EXPECTED"|"NOT APPLICABLE"|"PENDING"|"CONFLICTING";
@@ -20,14 +20,11 @@ export type EvidenceItem={id:string;label:string;status:EvidenceStatus;evidence:
  sourceUrl:string|null;evidenceDate:string|null;confidence:SourceConfidence;
  expectedAt:string;searchScope:string;dateKind:string;reviewedAt:string;searchedSourceUrl:string;group:"IDENTITY"|"CLINICAL"|"REGULATORY"};
 export type FactorKey="efficacy"|"clinicalBenefit"|"statistics"|"reproducibility"|"safety";
-export type ReviewedFactor={key:FactorKey;grade:number|null;sourceUrl:string|null;
- sourceDate:string|null;benchmarkSourceUrl:string|null;finding:string|null;assessedAt?:string|null;phaseScope?:readonly string[]};
 export type ClinicalContext={
  pipelineRestriction?:string|null;pipelineRestrictionSource?:string|null;
  ticker:string;drug:string;indication:string;programId:string;programPhase:string|null;
- programSourceUrl:string|null;legacyStage:"pre"|"post"|null;stageVerified:boolean;
+ programSourceUrl:string|null;
  safetyPrimary:boolean;notApplicableFactors:readonly string[];
- reviewedFactors:readonly ReviewedFactor[];approvedRaas:number|null;
  regulatory:{status:string;url:string;date:string;text:string;goalDate?:string}|null;
  additionalEvidence?:Partial<Record<string,{text:string;url:string;date:string;dateKind?:string;confidence?:SourceConfidence;status?:EvidenceStatus}>>;
 };
@@ -133,23 +130,18 @@ export function evaluatePhaseFirst(trial:PhaseTrial,context:ClinicalContext,asOf
    expectedAt:minimum===4?"Regulatory":minimum===0?"Identity":"Phase "+minimum,
    searchScope:"Exact trial registry, existing source-reviewed dossiers and explicitly matched manufacturer/FDA/publication sources; unreviewed publications are leads only.",group};
  });
+ // Phase-aware evidence questions do not create numeric scientific scores.
  const factors=FACTORS.map(f=>{
   const na=noClinical||context.notApplicableFactors.includes(f.key);
   const later=mature===1&&["efficacy","clinicalBenefit"].includes(f.key);
-  const prior=context.reviewedFactors.find(r=>r.key===f.key);
-  const phaseBound=prior?.phaseScope?prior.phaseScope.includes(trial.phases.join("|")):trial.phases.includes("PHASE3");
-  const acceptable=!na&&!later&&phaseBound&&context.stageVerified&&context.legacyStage!==null&&
-   prior?.grade!==null&&prior?.grade!==undefined&&[0,25,50,75,100].includes(prior.grade)&&
-   prior.sourceUrl?.startsWith("https://")&&prior.benchmarkSourceUrl?.startsWith("https://")&&
-   prior.sourceDate&&prior.assessedAt&&prior.sourceDate<=prior.assessedAt&&prior.assessedAt<=asOf;
-  const grade=acceptable?prior!.grade:null;
-  return {...f,weight:20,score:grade,
-   applicability:(na?"NOT APPLICABLE":later?"NOT YET EXPECTED":"APPLICABLE") as "NOT APPLICABLE"|"NOT YET EXPECTED"|"APPLICABLE",
-   reason:na?"Not applicable to this study's verified purpose.":later?"Confirmatory efficacy/patient-benefit grading is premature for Phase 1; early biological activity remains in the checklist.":
-    grade===null?"No accepted exact-trial, phase-appropriate benchmark grade. Source availability is not a scientific score.":"Preserved existing exact-trial reviewed research grade; not a calibrated FDA probability.",
-   sourceUrl:grade!==null?prior!.sourceUrl:null,sourceDate:grade!==null?prior!.sourceDate:null,
-   benchmarkSourceUrl:grade!==null?prior!.benchmarkSourceUrl:null,finding:grade!==null?prior!.finding:null,
-   confidence:grade!==null?"MODERATE":"NOT_ASSESSABLE"};
+  return {...f,weight:20,score:null as number|null,
+   applicability:(na?"NOT APPLICABLE":later?"NOT YET EXPECTED":"APPLICABLE") as
+    "NOT APPLICABLE"|"NOT YET EXPECTED"|"APPLICABLE",
+   reason:na?"Not applicable to this study's documented purpose.":later?
+    "Later phase evidence is not yet expected for this early trial.":
+    "Independent source review is pending; evidence coverage is not a numerical score.",
+   sourceUrl:null,sourceDate:null,benchmarkSourceUrl:null,finding:null,
+   confidence:"NOT_ASSESSABLE"};
  });
  const eligible=factors.filter(f=>f.applicability==="APPLICABLE");const scored=eligible.filter(f=>f.score!==null);
  const coveredWeight=scored.reduce((n,f)=>n+f.weight,0);
@@ -171,7 +163,6 @@ export function evaluatePhaseFirst(trial:PhaseTrial,context:ClinicalContext,asOf
   evidenceCounts:counts,evidenceConfidence:counts.CONFLICTING?"LOW":counts.MISSING?"MODERATE":"HIGH",
   missingExpected:evidence.filter(e=>e.status==="MISSING"||e.status==="CONFLICTING"),
   notYetExpected:evidence.filter(e=>e.status==="NOT YET EXPECTED"),pending:evidence.filter(e=>e.status==="PENDING"),
-  raasScore:context.approvedRaas,raasPredictionConfidence:null,
   fdaPrediction:{status:fdaState,probabilities:null,confidence:null,
    reason:early?"The individual trial has not reached the applicable regulatory-prediction stage.":
     "A calibrated, exact-application, pre-decision FDA model and complete frozen eligibility evidence have not been established. A clinical research rating is not an approval/CRL/extension probability."},
