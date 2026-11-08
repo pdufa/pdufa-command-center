@@ -148,12 +148,17 @@ def register_request(connection, run_id, nct, trigger):
         {"report":json.dumps(initial,allow_nan=False),"run":run_id})
 
 
+def eligible_for_analysis(nct):
+    """Canary gate applies to manual, source-change and component-change runs."""
+    return os.getenv("PDUFA_ANALYZE_NOW_ALL_ENABLED","").lower() in ("1","true","yes") or \
+        nct==os.getenv("PDUFA_ANALYZE_NOW_CANARY_NCT","NCT06081894")
+
+
 def start_now(engine,nct,request_key,*,submit=True,trigger="MANUAL"):
     """One Analyze Now invocation. Reuses any active research job, never clones it."""
     from . import medical_continuous as core
     core.check_nct(nct)  # only currently eligible roster is startable
-    if trigger=="MANUAL" and os.getenv("PDUFA_ANALYZE_NOW_ALL_ENABLED","").lower() not in ("1","true","yes") and \
-       nct!=os.getenv("PDUFA_ANALYZE_NOW_CANARY_NCT","NCT06081894"):
+    if not eligible_for_analysis(nct):
         raise ValueError("Analyze Now wider rollout is gated until a verified database-backed canary")
     saved=core.create(engine,nct,request_key,submit=False)
     with engine.begin() as c:
@@ -339,6 +344,8 @@ def check_operational_component_changes(engine, *,generation=None):
     key=generation or operational_fingerprint()
     tally={"checked":0,"baselined":0,"changed":0,"queued":0,"deferred":0}
     for nct in sorted(core.roster()):
+        if not eligible_for_analysis(nct):
+            continue
         tally["checked"]+=1
         with engine.begin() as c:
             prior=c.execute(text("SELECT component_fingerprint FROM medical_component_watch WHERE nct_id=:nct"),
