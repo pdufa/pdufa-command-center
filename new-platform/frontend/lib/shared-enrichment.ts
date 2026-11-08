@@ -58,9 +58,10 @@ export function enrichmentDetail(index: EnrichmentIndex, shard: EnrichmentShard,
     result.value = cell[0]; result.status = cell[1]; result.observedAt = cell[3]; result.retrievedAt = cell[4]; result.note = cell[5];
     try { const u = new URL(source); if (u.protocol === "https:" && !u.username && !u.password) result.sourceUrl = source; } catch { /* An unsourced saved value remains review-only. */ }
     const checkedAge = age(cell[4], today), observedAge = cell[3] ? age(cell[3], today) : 0;
-    if (READY.has(result.status)) {
+    // Previously stale evidence with impossible future dates is REVIEW, not accepted as simple staleness.
+    if (READY.has(result.status) || result.status === "STALE") {
       if (!result.sourceUrl || checkedAge === null || checkedAge < 0 || observedAge !== null && observedAge < 0) result.status = "REVIEW";
-      else if (checkedAge > field.maxAgeDays) result.status = "STALE";
+      else if (READY.has(result.status) && checkedAge > field.maxAgeDays) result.status = "STALE";
     }
     return result;
   });
