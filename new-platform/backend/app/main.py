@@ -184,12 +184,40 @@ PDUFA_CHART_FEATURES = frozenset({
 PDUFA_FEATURE_ROW_ID = "pdufa-chart-feature-selection-v1"
 
 
+def active_pdufa_chart_features(features):
+    """Project saved historical display choices onto current supported controls.
+
+    Read-only filtering preserves the original database document, including
+    retired selections. It never reactivates a feature from saved user state.
+    """
+    if not isinstance(features, list):
+        return sorted(PDUFA_CHART_FEATURES)
+    return sorted({feature for feature in features
+                   if isinstance(feature, str) and feature in PDUFA_CHART_FEATURES})
+
+
+def preserve_retired_feature_archive(prior_markers, current_markers):
+    """Retain unsupported saved choices as inert historical metadata on edits."""
+    archived = [marker for marker in (prior_markers or [])
+                if isinstance(marker, dict) and marker.get("kind") == "retired_feature_archive"]
+    for marker in (prior_markers or []):
+        if not isinstance(marker, dict) or marker.get("kind") != "feature_selection":
+            continue
+        features = marker.get("enabledFeatures")
+        if isinstance(features, list) and any(feature not in PDUFA_CHART_FEATURES for feature in features):
+            entry = {"id": "retired-overlay-feature-selection-v1",
+                     "kind": "retired_feature_archive", "originalSelection": marker}
+            if entry not in archived:
+                archived.append(entry)
+    return current_markers + archived
+
+
 class CustomFdaOverlayPayload(BaseModel):
     version: int = Field(ge=0)
     markers: list[CustomFdaMarker] = Field(default_factory=list, max_length=40)
     verifiedOverrides: list[VerifiedFdaDisplayOverride] = Field(default_factory=list, max_length=20)
     enabledCategories: list[str] | None = Field(default=None, max_length=20)
-    enabledFeatures: list[str] | None = Field(default=None, max_length=7)
+    enabledFeatures: list[str] | None = Field(default=None, max_length=6)
 
     def canonical(self, program_id: str) -> list[dict]:
         from datetime import date as caldate
@@ -1391,12 +1419,12 @@ def get_fda_chart_overlay(program_id: str):
                 and m.get("kind") == "category_selection"
                 and isinstance(m.get("enabledCategories"), list)
             ), sorted(FDA_CHART_CATEGORIES)) if row else sorted(FDA_CHART_CATEGORIES),
-            "enabledFeatures": next((
+            "enabledFeatures": active_pdufa_chart_features(next((
                 m.get("enabledFeatures") for m in (row.markers or [])
                 if isinstance(m, dict) and m.get("id") == PDUFA_FEATURE_ROW_ID
                 and m.get("kind") == "feature_selection"
                 and isinstance(m.get("enabledFeatures"), list)
-            ), sorted(PDUFA_CHART_FEATURES)) if row else sorted(PDUFA_CHART_FEATURES),
+            ), sorted(PDUFA_CHART_FEATURES))) if row else sorted(PDUFA_CHART_FEATURES),
             "categorySourceCoverage": {
                 "automatic": ["original-approval", "supplement-approval", "tentative-action"],
                 "awaiting_separate_source": sorted(FDA_CHART_CATEGORIES - {
@@ -1449,8 +1477,12 @@ def save_fda_chart_overlay(program_id: str, payload: CustomFdaOverlayPayload):
             prior = session.get(FdaChartOverlay, program_id)
             feature_row = next((m for m in (prior.markers or []) if isinstance(m, dict)
                                 and m.get("id") == PDUFA_FEATURE_ROW_ID), None) if prior else None
-            markers.append(feature_row or dict(id=PDUFA_FEATURE_ROW_ID,
-                kind="feature_selection", enabledFeatures=sorted(PDUFA_CHART_FEATURES)))
+            markers.append(dict(id=PDUFA_FEATURE_ROW_ID, kind="feature_selection",
+                enabledFeatures=active_pdufa_chart_features(
+                    feature_row.get("enabledFeatures") if feature_row else None)))
+        previous_overlay = session.get(FdaChartOverlay, program_id)
+        markers = preserve_retired_feature_archive(
+            previous_overlay.markers if previous_overlay else [], markers)
         result = session.execute(
             update(FdaChartOverlay)
             .where(FdaChartOverlay.program_id == program_id, FdaChartOverlay.version == payload.version)
