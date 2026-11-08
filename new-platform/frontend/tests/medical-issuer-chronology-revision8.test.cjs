@@ -8,9 +8,12 @@ test("independent source chronology is explicit about issuer's earlier endpoint 
   assert.equal(poster.singlePrimaryKccq,true);
   assert.equal(poster.pvo2PartOfSecondary,true);
   assert.equal(poster.sourceVisualReviewed,true);
-  const earnings=facts.historicalSources.find(x=>x.id==="ISSUER_Q1_2025_EXECUTIVE_REMARKS");
+  const earnings=facts.historicalSources.find(x=>x.id==="ISSUER_MAY_6_2025_ORIGINAL_RELEASE");
   assert.equal(earnings.date,"2025-05-06");
   assert.equal(earnings.claimIndependentRegulatorVerified,false);
+  assert.equal(earnings.sourceClass,"FIRST_PARTY_ISSUER_BUSINESS_UPDATE");
+  assert.equal(earnings.exactSponsorAcknowledgmentOfEndpointRedesign,true);
+  assert.equal(earnings.companyClaimGlobalRegulatorFeedbackIndependentlyVerified,false);
   assert.equal(earnings.alphaPerPrimary,0.025);
   const registry=facts.historicalSources.find(x=>x.id==="NCT_REGISTRY_V27_METADATA");
   assert.equal(registry.outcomeMeasuresChanged,true);
