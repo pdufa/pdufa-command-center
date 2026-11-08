@@ -6,6 +6,7 @@ on:
       - feature/medical-stage4-verified-method-matrix-20261108
     paths:
       - .github/workflows/acacia-ctis-public-protocol-capture.yml
+      - scripts/medical/acacia_ctis_capture.py
 
 permissions:
   contents: read
