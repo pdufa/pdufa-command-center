@@ -47,6 +47,20 @@ const idOf=(taskId:string)=>"install-task-"+taskId;
 const safeTime=(value:string|undefined|null)=>value&&Number.isFinite(Date.parse(value))?
  new Date(value).toLocaleString():"Not recorded";
 const status=(row:TaskEvidence|undefined):TaskState=>row?.status??"Unverified";
+type JumpTarget={taskId:string|null;kind:"live"|"documented"|"status";sequence:number};
+
+/** A dated In Progress registry record is a historical implementation checkpoint, never a live worker. */
+function getDocumentedCheckpoint(snapshot:TaskResponse|null):string|null{
+ if(!snapshot)return null;
+ const candidates=taskList.filter(t=>
+  snapshot.tasks[t.id]?.status==="In Progress" &&
+  Number.isFinite(Date.parse(snapshot.tasks[t.id]?.checkedAt??"")));
+ if(!candidates.length)return null;
+ const newest=candidates.reduce((best,current)=>
+  Date.parse(snapshot.tasks[current.id].checkedAt??"") >
+  Date.parse(snapshot.tasks[best.id].checkedAt??"")?current:best);
+ return newest.id;
+}
 
 /** Only a fresh, specifically identified RUNNING worker event is a live position. */
 function getActiveExecution(snapshot:TaskResponse|null):ExecutionCursor|null{
@@ -70,7 +84,7 @@ export default function InstallationLiveNavigator(){
  const [expandedBranch,setExpandedBranch]=useState(0);
  const [busy,setBusy]=useState(false);
  const [liveNotice,setLiveNotice]=useState("");
- const [liveJump,setLiveJump]=useState<{taskId:string|null;sequence:number}|null>(null);
+ const [liveJump,setLiveJump]=useState<JumpTarget|null>(null);
  const mounted=useRef(true);
  const fetchData=useCallback(async()=>{
   try{
@@ -104,20 +118,27 @@ export default function InstallationLiveNavigator(){
   setBusy(true);
   const latest=await fetchData();
   const cursor=getActiveExecution(latest);
+  const documented=cursor?null:getDocumentedCheckpoint(latest);
+  const destination=cursor?.taskId??documented;
   setFollowing(true);
   setSection("present");
-  setChosenTask(cursor?.taskId??null);
+  setChosenTask(destination);
   setLiveNotice(cursor
-    ?"Jumped to the confirmed running installation task "+cursor.taskId+"."
-    :"Live location unavailable: no fresh, verified running task is reported. Showing active cursor status instead.");
-  setLiveJump(previous=>({taskId:cursor?.taskId??null,sequence:(previous?.sequence??0)+1}));
+    ?"Located current LIVE installation task "+cursor.taskId+"."
+    :documented
+     ?"Located last documented checkpoint "+documented+". Historical implementation evidence only — NOT a verified running task."
+     :"Live location unavailable: no fresh, verified running task or dated checkpoint. Showing active cursor status instead.");
+  setLiveJump(previous=>({
+   taskId:destination??null,kind:cursor?"live":documented?"documented":"status",
+   sequence:(previous?.sequence??0)+1
+  }));
  },[fetchData]);
  useEffect(()=>{
   if(!following||!active?.taskId)return;
   setSection("present");
   setChosenTask(active.taskId);
-  setLiveJump(previous=>previous?.taskId===active.taskId?previous:
-   {taskId:active.taskId,sequence:(previous?.sequence??0)+1});
+  setLiveJump(previous=>previous?.taskId===active.taskId&&previous.kind==="live"?previous:
+   {taskId:active.taskId,kind:"live",sequence:(previous?.sequence??0)+1});
  },[active?.taskId,following]);
  useEffect(()=>{
   if(!liveJump)return;
@@ -153,9 +174,14 @@ export default function InstallationLiveNavigator(){
    </button>
    <button type="button" className={styles.liveButton}
     onClick={()=>{void goToLive();}} disabled={busy}
-    aria-label="LIVE: jump to the current verified installation task">
-    <span className={styles.liveIndicator} aria-hidden="true"/>
-    LIVE <span className={styles.liveArrow} aria-hidden="true">→</span>
+    aria-label="Locate installation: jump to the current live task or last documented checkpoint">
+    <svg className={styles.locateIcon} width="22" height="22" viewBox="0 0 24 24"
+     fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
+     aria-hidden="true">
+     <circle cx="12" cy="12" r="5"/>
+     <path d="M12 2v5M12 17v5M2 12h5M17 12h5"/>
+    </svg>
+    <span>LOCATE LIVE</span> <span className={styles.liveArrow} aria-hidden="true">→</span>
    </button>
    <label style={{display:"flex",gap:8,alignItems:"center",fontWeight:600,fontSize:13}}>
     <input type="checkbox" checked={following} onChange={event=>setFollowing(event.target.checked)}/>
@@ -164,7 +190,7 @@ export default function InstallationLiveNavigator(){
   </div>
   {error&&<p role="alert" style={{color:"#ffd4bb"}}>{error}. Previous data may be stale.</p>}
   {liveNotice&&<p role="status" aria-live="polite" className={styles.liveNotice}>{liveNotice}</p>}
-  <div id="installation-active-cursor" className={!active&&liveJump?.taskId===null?styles.cursorTarget:undefined}
+  <div id="installation-active-cursor" className={liveJump?.kind==="status"?styles.cursorTarget:undefined}
    style={{...panel,border:"2px solid #5aa9ae",marginBottom:12,scrollMarginTop:92}}>
    <strong>ACTIVE CURSOR</strong>
    {active?<>
@@ -209,16 +235,20 @@ export default function InstallationLiveNavigator(){
     {visible.length===0&&<p style={info}>No items with independently supported status in this category.</p>}
     {visible.map(task=>{
      const row=audit?.tasks[task.id];
+     const located=task.id===liveJump?.taskId;
      return <div key={task.id} id={idOf(task.id)}
-      className={task.id===active?.taskId?styles.cursorTarget:undefined}
+      className={located||task.id===active?.taskId?styles.cursorTarget:undefined}
+      aria-current={located?"location":undefined}
       style={{padding:"9px 10px",scrollMarginTop:92,border:"1px solid #39717b",borderRadius:8,
-       background:task.id===active?.taskId?"#145751":"#0b3040"}}>
+       background:located||task.id===active?.taskId?"#145751":"#0b3040"}}>
       <button type="button" onClick={()=>setChosenTask(chosenTask===task.id?null:task.id)}
        aria-expanded={chosenTask===task.id}
        style={{display:"flex",alignItems:"center",gap:8,textAlign:"left",width:"100%",background:"transparent",color:"#e7f9fc",border:0,cursor:"pointer"}}>
        <span style={{fontWeight:750,flexShrink:0,fontSize:12}}>{task.id}</span>
        <span style={{flex:1,fontSize:13}}>{task.label}</span>
        <span style={{fontSize:11,color:palette[status(row)]}}>{status(row)}</span>
+       {located&&<span className={styles.checkpointMarker}>
+        {liveJump?.kind==="live"?"⌖ LIVE":"⌖ CHECKPOINT"}</span>}
        <span aria-hidden="true">ⓘ</span>
       </button>
       {chosenTask===task.id&&<div style={{...info,padding:"10px 3px 3px",borderTop:"1px solid #39717b",marginTop:8}}>
