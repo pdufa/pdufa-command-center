@@ -9,6 +9,19 @@ from app import medical_continuous as medical
 NCT = "NCT00000001"
 
 
+def test_packaged_focus_roster_matches_frontend_snapshot():
+    # Render builds with Docker context new-platform/backend, so the runtime
+    # cannot read its sibling frontend/data directory.
+    packaged = Path(medical.__file__).resolve().parent / "data" / "focus_snapshot.json"
+    frontend = Path(__file__).resolve().parents[2] / "frontend" / "data" / "p3PostDataActive.json"
+    assert packaged.is_file(), "FOCUS roster must ship in the backend image"
+    bundled = json.loads(packaged.read_text(encoding="utf-8"))
+    original = json.loads(frontend.read_text(encoding="utf-8"))
+    assert bundled["asOf"] == original["asOf"]
+    assert len(bundled["records"]) == 29
+    assert bundled["records"] == original["records"]
+
+
 @pytest.fixture
 def engine(tmp_path, monkeypatch):
     roster = tmp_path / "focus.json"
