@@ -398,9 +398,49 @@ def run_batch(engine, *, test_only=False) -> list[dict]:
     return results
 
 
+
+def coverage(engine) -> dict:
+    """Read persisted unique exact-NCT coverage, not transient batch process logs."""
+    from . import medical_continuous as core
+    canonical = set(core.roster())
+    original = ledger.coverage(engine)
+    with engine.connect() as c:
+        rows = list(c.execute(text("""SELECT nct_id,COUNT(*) AS snapshot_count
+            FROM medical_scientific_triage_snapshots GROUP BY nct_id
+            ORDER BY nct_id""")).mappings())
+    captured = {row["nct_id"] for row in rows}
+    unexpected = sorted(captured - canonical)
+    missing = sorted(canonical - captured)
+    ok = not missing and not unexpected and original["sourceComplete"] == len(canonical)
+    return {
+        "status":"COMPLETE_SOURCE_TRIAGE" if ok else "IN_PROGRESS",
+        "canonicalTrials":len(canonical),
+        "savedNcts":len(captured & canonical),
+        "sourceResearchCompleteNcts":original["sourceComplete"],
+        "originalSourceStages":original["sourceStageCount"],
+        "savedSnapshotCount":sum(int(x["snapshot_count"]) for x in rows),
+        "methodPositionsScreened":len(captured & canonical)*800,
+        "positionsPerTrial":800,
+        "missingNcts":missing,
+        "unexpectedNcts":unexpected,
+        "independentScientificReviewEvents":original["reviewEvents"],
+        "reviewerVerifiedPhaseNcts":original["phaseVerifiedNcts"],
+        "scientificSignoff":False,
+        "fdaPrediction":"ABSTAIN",
+        "certainty":"NOT_VALIDATED",
+        "note":"Method positions screened for SOURCE leads and gaps; "
+               "these do not count as adjudicated medical tests.",
+    }
+
+
+
 def install_routes(app, engine_provider, require_key, require_storage):
     router = APIRouter(prefix="/api/internal/medical-scientific-triage",
                        dependencies=[Depends(require_key),Depends(require_storage)])
+    @router.get("/coverage")
+    def get_coverage():
+        return coverage(engine_provider())
+
     @router.get("/{nct}/latest")
     def get_latest(nct: str):
         try:
