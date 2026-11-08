@@ -124,41 +124,61 @@ def run() -> dict:
         if p.returncode == 0:
             m = re.search(r"(?im)^Pages:\s*(\d+)",p.stdout)
             if m: details["pdf_pages"] = int(m.group(1))
+    # Fallback to a pinned pure-Python PDF reader when poppler is not available.
+    text_file = OUTPUT / "_private_protocol_extracted.txt"
     if shutil.which("pdftotext"):
-        text_file = OUTPUT / "_private_protocol_extracted.txt"
         p = subprocess.run(["pdftotext",str(file),str(text_file)],capture_output=True,text=True,timeout=18)
-        if p.returncode == 0 and text_file.exists():
-            text = text_file.read_text(encoding="utf-8",errors="replace").lower()
-            details["term_presence_only"] = {
-                term:term.lower() in text for term in (
-                    "statistical analysis plan", "intercurrent event", "randomization",
-                    "missing data", "peak oxygen uptake", "kansas city",
-                )
-            }
-            details["machine_readable_text_bytes"] = text_file.stat().st_size
-            normalized = " ".join(text.split())
-            details["first_page_identity_preview"] = normalized[:360]
-            terms = (
-                "statistical analysis plan", "protocol amendment", "amendment 4", "amendment no",
-                "analysis populations", "estimand", "intercurrent event",
-                "missing data", "randomization", "multiplicity", "sample size",
-                "kansas city cardiomyopathy", "peak oxygen uptake", "pvo2", "36 weeks",
-                "heart failure", "ejection fraction", "primary efficacy",
+        if p.returncode != 0:
+            details["text_extraction_status"] = "SYSTEM_PDFTOTEXT_FAILED"
+    else:
+        try:
+            from pypdf import PdfReader
+            pdf = PdfReader(str(file))
+            details["pdf_pages"] = len(pdf.pages)
+            details["pdf_encrypted"] = bool(pdf.is_encrypted)
+            if not pdf.is_encrypted:
+                parts = [p.extract_text(extraction_mode="plain") or "" for p in pdf.pages[:180]]
+                text_file.write_text("\n".join(parts),encoding="utf-8")
+        except (ImportError, ValueError, OSError, Exception) as exc:
+            details["text_extraction_status"] = "PYTHON_PDF_READER_UNAVAILABLE_OR_FAILED"
+            print("CTIS_PDF_TEXT_READER error_class=" + type(exc).__name__)
+    if text_file.exists() and text_file.stat().st_size:
+        text = text_file.read_text(encoding="utf-8",errors="replace").lower()
+        details["term_presence_only"] = {
+            term:term.lower() in text for term in (
+                "statistical analysis plan", "intercurrent event", "randomization",
+                "missing data", "peak oxygen uptake", "kansas city",
             )
-            details["protocol_topic_locations"] = []
-            for term in terms:
-                position = normalized.find(term)
-                details["protocol_topic_locations"].append({
-                    "topic":term,
-                    "found":position>=0,
-                    "context_excerpt":normalized[max(0,position-60):position+130] if position>=0 else None,
-                })
-            print("CTIS_PDF_INFO identity_excerpt=" + repr(details["first_page_identity_preview"]))
-            for entry in details["protocol_topic_locations"]:
-                if entry["found"]:
-                    print("CTIS_PDF_TOPIC " + entry["topic"] + " = " + repr(entry["context_excerpt"][:170]))
-            # Do not upload extracted copyrighted text as an artifact.
-            text_file.unlink()
+        }
+        details["machine_readable_text_bytes"] = text_file.stat().st_size
+        normalized = " ".join(text.split())
+        details["first_page_identity_preview"] = normalized[:360]
+        terms = (
+            "statistical analysis plan", "protocol amendment", "amendment 4", "amendment no",
+            "analysis populations", "estimand", "intercurrent event",
+            "missing data", "randomization", "multiplicity", "sample size",
+            "kansas city cardiomyopathy", "peak oxygen uptake", "pvo2", "36 weeks",
+            "heart failure", "ejection fraction", "primary efficacy",
+        )
+        details["protocol_topic_locations"] = []
+        for term in terms:
+            position = normalized.find(term)
+            details["protocol_topic_locations"].append({
+                "topic":term,
+                "found":position>=0,
+                "context_excerpt":normalized[max(0,position-60):position+130] if position>=0 else None,
+            })
+        print("CTIS_PDF_INFO pages=" + str(details.get("pdf_pages")) +
+              " readable_text_bytes=" + str(details["machine_readable_text_bytes"]))
+        print("CTIS_PDF_INFO identity_excerpt=" + repr(details["first_page_identity_preview"]))
+        for entry in details["protocol_topic_locations"]:
+            if entry["found"]:
+                print("CTIS_PDF_TOPIC " + entry["topic"] + " = " + repr(entry["context_excerpt"][:170]))
+        # Do not upload extracted copyrighted text as an artifact.
+        text_file.unlink()
+    elif text_file.exists():
+        text_file.unlink()
+        details["text_extraction_status"] = "NO_MACHINE_READABLE_TEXT"
     return details
 
 def main():
