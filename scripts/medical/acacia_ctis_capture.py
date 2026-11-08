@@ -117,6 +117,8 @@ def run() -> dict:
         "graded_methods": 0,
         "fda_predictions": {"APPROVAL":"ABSTAIN","CRL":"ABSTAIN","REVIEW_DELAY":"ABSTAIN"},
     }
+    print("CTIS_PDF_TOOLS pdfinfo=" + str(bool(shutil.which("pdfinfo"))) +
+          " pdftotext=" + str(bool(shutil.which("pdftotext"))))
     if shutil.which("pdfinfo"):
         p = subprocess.run(["pdfinfo",str(file)],capture_output=True,text=True,timeout=12)
         if p.returncode == 0:
