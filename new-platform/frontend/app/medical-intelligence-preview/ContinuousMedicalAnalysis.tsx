@@ -5,6 +5,11 @@ import { useCallback, useEffect, useRef, useState } from "react";
 type Status = "PENDING" | "RUNNING" | "COMPLETE" | "FAILED" | "STOPPED";
 type StageStatus = "QUEUED" | "RUNNING" | "SOURCE_RECORDED" | "LEADS_ONLY" | "EVIDENCE_GAP" | "SOURCE_UNAVAILABLE";
 type Stage = { number: number; title: string; state: StageStatus; details: Record<string, unknown> | null; finishedAt: string | null };
+type ResearchRevision = { runId: string; ordinal: number; recordedAt: string; evidenceChanged: boolean;
+  sourceDigest: string; report: { modelVersion: string;
+    outcomes: { outcome: string; status: string; probability: null; reason: string }[];
+    certainty: { status: string; rating: null }; reviewLevels: { id: string; reviewStatus: string }[] } };
+type ResearchHistory = { nct: string; revisions: ResearchRevision[]; historyKind: string; note: string };
 type Run = { runId: string; nct: string; status: Status; stageNumber: number; completedStages: number; totalStages: number;
   stopRequested: boolean; startedAt: string; updatedAt: string; stages: Stage[]; decision: "ABSTAIN"; note: string };
 const complete = new Set<StageStatus>(["SOURCE_RECORDED", "LEADS_ONLY", "EVIDENCE_GAP", "SOURCE_UNAVAILABLE"]);
@@ -50,6 +55,9 @@ export default function ContinuousMedicalAnalysis({ nct }: { nct: string }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [note, setNote] = useState("");
+  const [history, setHistory] = useState<ResearchHistory | null>(null);
+  const [historyBusy, setHistoryBusy] = useState(false);
+  const [historyError, setHistoryError] = useState("");
   const mounted = useRef(true);
   const endpoint = "/api/medical-intelligence-preview/continuous";
 
@@ -118,6 +126,28 @@ export default function ContinuousMedicalAnalysis({ nct }: { nct: string }) {
     } finally { setBusy(false); }
   }
 
+  async function loadHistory() {
+    if (historyBusy) return;
+    setHistoryBusy(true); setHistoryError("");
+    try {
+      const query = new URLSearchParams({ nct, history: "1" });
+      const response = await fetch(endpoint + "?" + query.toString(), { cache: "no-store" });
+      const raw: unknown = await response.json().catch(() => null);
+      if (!response.ok) {
+        const msg = raw && typeof raw === "object" && "error" in raw
+          ? (raw as { error?: unknown }).error : null;
+        throw Error(typeof msg === "string" ? msg : "Saved research history unavailable");
+      }
+      const data = raw as ResearchHistory;
+      if (!data || data.nct !== nct || !Array.isArray(data.revisions) ||
+          data.revisions.some(x => !Array.isArray(x.report?.outcomes) || x.report.outcomes.length !== 3))
+        throw Error("Saved research history does not match exact trial");
+      setHistory(data);
+    } catch (cause) {
+      setHistoryError(cause instanceof Error ? cause.message : "Cannot read saved research history");
+    } finally { setHistoryBusy(false); }
+  }
+
   const percent = run ? Math.round(run.completedStages / run.totalStages * 100) : 0;
   return <section aria-label="Persistent twelve-stage medical research" style={{
     border: "1px solid #b9d5c4", background: "#fff", borderRadius: 12, padding: 17, marginTop: 16
@@ -166,6 +196,33 @@ export default function ContinuousMedicalAnalysis({ nct }: { nct: string }) {
           "Not started. The persistent worker advances here automatically after prior stages."}</p>}
       </details>)}
     </div>}
+    <section style={{ borderTop: "1px solid #d8e5da", paddingTop: 15, marginTop: 18 }} aria-label="Immutable research revision history">
+      <h3 style={{ margin: "0 0 6px", fontSize: 17 }}>Historical medical research and prediction changes</h3>
+      <p style={muted}>Read-only, append-only revisions for the exact NCT. Each revision records source changes and three separate FDA outcome decisions; an ABSTAIN remains an abstention, not an estimated probability.</p>
+      <button type="button" onClick={() => void loadHistory()} disabled={historyBusy}
+        style={{ padding: "10px 13px", borderRadius: 8 }}>
+        {historyBusy ? "Loading saved revisions…" : history ? "Refresh revision history" : "Expand saved revision history"}
+      </button>
+      {historyError && <p role="alert" style={{ color: "#93463b" }}>{historyError}</p>}
+      {history && <div style={{ marginTop: 10 }}>
+        <p style={muted}>{history.revisions.length} stored revisions · {history.note}</p>
+        {history.revisions.length === 0 && <p style={muted}>No completed saved research run. Nothing to display yet.</p>}
+        {history.revisions.map(item => <details key={item.runId} style={{ border: "1px solid #d6e4da", borderRadius: 8, padding: "10px 12px", marginTop: 8 }}>
+          <summary style={{ cursor: "pointer", fontWeight: 700 }}>
+            Revision {item.ordinal} · {item.recordedAt} · {item.evidenceChanged ? "Evidence digest changed" : "No source-digest change"}
+          </summary>
+          <p style={muted}>Research model: {item.report.modelVersion} · Source fingerprint: {item.sourceDigest.slice(0, 16)}…</p>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 12 }}>
+            {item.report.outcomes.map(outcome => <div key={outcome.outcome} style={{ border: "1px solid #e0eae2", padding: 9, borderRadius: 6, flex: "1 1 125px" }}>
+              <strong>{outcome.outcome.replaceAll("_", " ")}</strong>
+              <p style={{ margin: "4px 0", fontSize: 13 }}>{outcome.status} · No issued probability</p>
+            </div>)}
+          </div>
+          <p style={muted}><strong>Independent certainty:</strong> {item.report.certainty.status} — no issued rating.</p>
+          <p style={muted}>All {item.report.reviewLevels.length} advanced levels remain source-evidence collection, not independent adjudications.</p>
+        </details>)}
+      </div>}
+    </section>
     <p style={{ ...muted, marginTop: 14, marginBottom: 0 }}>
       <strong>Research boundary:</strong> These stages collect registry facts, literature leads and documented gaps.
       They do not complete the full 40 × 20 scientific assessment, independent specialist signoff, FDA CMC adjudication or a calibrated approval/CRL prediction. The final decision remains <strong>ABSTAIN</strong> until evidence supports otherwise.
