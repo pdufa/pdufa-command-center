@@ -10,6 +10,7 @@ import focus from "../data/p3PostDataActive.json";
 import {REVIEWED_FINDINGS,type ReviewedFinding} from "./medical-intelligence-reviewed-findings";
 import {deskIssuesForCycle,type ReviewIssue} from "./medical-intelligence-failure-desk";
 import {adjudicationForCycle,type AdjudicationClaim} from "./medical-intelligence-clinical-adjudication";
+import {getFullSpecialistCase} from "./medical-intelligence-specialist-all";
 
 export type AdvancedLevelId =
   | "CRL_HISTORY" | "MULTIDISCIPLINARY_REVIEW" | "STATISTICAL_FORENSICS"
@@ -185,7 +186,7 @@ function selectEvidence(cycle:ApplicationCycle, level:AdvancedLevelId):SourceRec
       scope:"APPLICATION_CONTEXT",observation:issue.observation,
       limitations:issue.decisiveFollowUp});
   }
-  if(level==="REGULATORY_PATHWAY"){
+  if(level==="REGULATORY_PATHWAY"&&cycle.stage!=="NOT_RECONCILED"){
     sources.push({id:"cycle:"+cycle.id,title:"Dated application identity and filing status",url:cycle.sourceUrl,
       date:cycle.sourceDate,
       sourceClass:"SPONSOR",scope:"APPLICATION_CONTEXT",
@@ -232,6 +233,17 @@ export function buildAdvancedAssessment(cycleId:string,phases:readonly PhaseCont
       missing.unshift("Verify registry phase from the exact NCT; do not require Phase 3 results from an early-phase trial.");
     if(early&&(def.id==="STATISTICAL_FORENSICS"||def.id==="CLINICAL_BENEFIT_RISK"))
       missing.push("Current phase is early; later-phase pivotal or integrated data are not yet due and must not be treated as a deficiency.");
+    if(def.id==="MANUFACTURING_CMC"&&cycle.applicationType.toUpperCase().includes("BLA"))
+      missing.push("Biologic-specific potency, process comparability, analytical methods, stability and viral/adventitious-agent controls where relevant.");
+    if(def.id==="MANUFACTURING_CMC"&&cycle.applicationType.toUpperCase().includes("NDA"))
+      missing.push("Drug-product process validation, impurity/degradation controls, stability and commercial manufacturing readiness.");
+    if(def.id==="REGULATORY_PATHWAY"&&/SUPPLEMENT/.test(cycle.stage))
+      missing.push("Identify the previously approved indication and exact supplement scope; do not relabel a supplement as an original NDA/BLA.");
+    const specialist=getFullSpecialistCase(cycle.id);
+    if(def.id==="CLINICAL_BENEFIT_RISK"&&specialist)
+      missing.push(specialist.specialty+": "+specialist.medicalQuestion+" (no independent medical signoff)");
+    if(cycle.stage==="NOT_RECONCILED"&&def.id==="REGULATORY_PATHWAY")
+      missing.unshift("No source-reconciled FDA application identity or filing status exists for this FOCUS NCT.");
     if(def.id==="BACKTEST_CALIBRATION")
       missing.push("No approved historical out-of-sample calibration cohort is installed; numerical probabilities are disabled.");
     return {...def,sources,missing,relevantNcts:cycle.ncts,
