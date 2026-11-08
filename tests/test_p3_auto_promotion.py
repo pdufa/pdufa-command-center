@@ -86,7 +86,7 @@ class PromotionTests(unittest.TestCase):
         self.assertEqual(recovered[0]["marketCap"],5491198055)
         self.assertEqual(recovered[0]["regulatoryUrl"],FDA)
         self.assertEqual(recovered[0]["resultsUrl"],P3)
-        self.assertIsNone(recovered[0]["recordedReleaseDate"])
+        self.assertEqual(recovered[0]["recordedReleaseDate"],original[5])
         self.assertIsNone(recovered[0]["recordedPdufaDate"])
         live[8]="2026-09-10"  # I: verified registry/issuer result publication
         live[28]="2027-02-28" # AC: exact-date FDA target
