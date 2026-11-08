@@ -191,9 +191,6 @@ def monitor_once(engine, *, storage_ready, require_postgres=True):
     if report["storage"]["state"]!="READY":
         return report
     initialize(engine)
-    if os.getenv("PDUFA_ANALYZE_AUTO_UPGRADE","").lower() in ("1","true","yes"):
-        from .medical_analyze_now import check_operational_upgrades_once
-        check_operational_upgrades_once(engine)
     _queue_event(engine,"MILESTONE","first-persistent-monitor-ready",
                  "PDUFA installation health: isolated PostgreSQL monitor is connected and has returned a live source-status snapshot. This does not certify FDA forecasts.")
     runtime_sha=report.get("services",{}).get("backendDeployment",{}).get("gitSha")
