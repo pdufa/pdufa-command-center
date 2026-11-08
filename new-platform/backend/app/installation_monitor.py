@@ -43,7 +43,7 @@ def collect(engine, *, storage_ready, require_postgres=True):
                     else "BLOCKED",
                     "kind": engine.dialect.name,
                     "postgresRequired": bool(require_postgres)},
-        "services": {}, "sourceSnapshots": {},
+        "services": {}, "sourceSnapshots": {}, "analysisNow": {},
         "scans": {}, "research": {},
         "alerts": {"telegramConfigured": configured(),
                    "monitorWorkerEnabled": os.getenv("PDUFA_INSTALL_MONITOR_ENABLED","").lower()
@@ -75,6 +75,9 @@ def collect(engine, *, storage_ready, require_postgres=True):
         for name in ("phase3Ingestion","nctStream"):
             out["scans"][name]={"state":"BLOCKED","detail":"Database telemetry unavailable"}
         out["research"]={"state":"BLOCKED","detail":"Database-backed research history unavailable"}
+        out["analysisNow"]={"state":"BLOCKED","pilotTrial":"NCT06081894",
+            "pilotSaved":False,"allTrialsEnabled":False,
+            "reason":"Persistent PostgreSQL is not configured or available"}
         return out
     try:
         tables=_tables(engine)
@@ -123,6 +126,33 @@ def collect(engine, *, storage_ready, require_postgres=True):
                     "detail":"Recorded 12-stage source checks do not constitute 12 completed clinical reviews."}
             else:
                 out["research"]={"state":"UNKNOWN","detail":"No medical research table"}
+            if "medical_analyze_requests" in tables:
+                pilot=os.getenv("PDUFA_ANALYZE_NOW_CANARY_NCT","NCT06081894")
+                counts=c.execute(text("""SELECT COUNT(*) AS total,
+                    SUM(CASE WHEN r.status='COMPLETE' THEN 1 ELSE 0 END) AS finished
+                    FROM medical_analyze_requests a
+                    JOIN medical_continuous_runs r ON r.run_id=a.run_id""")).mappings().first()
+                recorded=c.execute(text("""SELECT r.run_id,r.updated_at,p.report
+                    FROM medical_analyze_requests a
+                    JOIN medical_continuous_runs r ON r.run_id=a.run_id
+                    JOIN medical_prediction_revisions p ON p.run_id=r.run_id
+                    WHERE a.nct_id=:nct AND r.status='COMPLETE'
+                    ORDER BY p.ordinal DESC LIMIT 1"""),{"nct":pilot}).mappings().first()
+                has_report=bool(recorded and isinstance(json.loads(recorded["report"]).get("analyzeNow"),dict))
+                watch_count=int(c.execute(text("SELECT COUNT(*) FROM medical_component_watch")).scalar() or 0) if "medical_component_watch" in tables else 0
+                out["analysisNow"]={"state":"OBSERVED","pilotTrial":pilot,
+                    "pilotSaved":has_report,
+                    "pilotRunId":recorded["run_id"] if has_report else None,
+                    "pilotSavedAt":recorded["updated_at"] if has_report else None,
+                    "totalRequested":int(counts["total"] or 0),
+                    "completedSavedRuns":int(counts["finished"] or 0),
+                    "allTrialsEnabled":os.getenv("PDUFA_ANALYZE_NOW_ALL_ENABLED","").lower() in ("1","true","yes"),
+                    "componentWatchBaselines":watch_count,
+                    "autoRerunEnabled":os.getenv("PDUFA_MEDICAL_AUTO_WATCH","").lower() in ("1","true","yes"),
+                    "detail":"Pilot is verified only if an exact-NCT completed run has a persisted Analyze Now report. Source completion does not validate FDA probabilities."}
+            else:
+                out["analysisNow"]={"state":"UNKNOWN","pilotSaved":False,
+                    "detail":"Analyze Now request tables not initialized"}
             if "medical_registry_watch" in tables:
                 stats=c.execute(text("""SELECT COUNT(*) AS total,
                     MAX(last_checked_at) AS checked,MAX(last_triggered_at) AS triggered
@@ -198,6 +228,9 @@ def monitor_once(engine, *, storage_ready, require_postgres=True):
         _queue_event(engine,"MILESTONE","backend-deployed:"+runtime_sha,
                      "PDUFA isolated medical backend is running commit "+runtime_sha[:12]+
                      " with PostgreSQL confirmed ready. This does not authorize clinical predictions.")
+    if report.get("analysisNow",{}).get("pilotSaved"):
+        _queue_event(engine,"MILESTONE","analyze-now-pilot-saved",
+          "PDUFA Analyze Now canary: one exact-NCT analysis was saved with historical research scores, source gaps, separate ABSTAIN outcomes and unvalidated certainty. Wider rollout still requires operator verification.")
     medical=report["research"]
     if medical.get("finishedSourceRuns",0)>0:
         _queue_event(engine,"MILESTONE","medical-first-complete",
