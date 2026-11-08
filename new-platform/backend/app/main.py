@@ -602,6 +602,40 @@ async def lifespan(app: FastAPI):
                 from .medical_continuous import start as start_medical_continuous
                 start_medical_continuous(ENGINE)
                 app.state.medical_canary_initialized = True
+                # Read-only, restart-time proof that the approved canary's
+                # exact-NCT revisions survived the prior process and redeploy.
+                # Never create a run here or print source evidence/credentials.
+                try:
+                    from .medical_on_demand import latest as read_medical_latest
+                    from .medical_on_demand import history as read_medical_history
+                    pilot_nct = os.getenv("PDUFA_ANALYZE_NOW_CANARY_NCT", "NCT06081894")
+                    saved = read_medical_latest(ENGINE, pilot_nct)
+                    ledger = read_medical_history(ENGINE, pilot_nct)
+                    persisted = (
+                        saved.get("status") == "COMPLETE"
+                        and saved.get("completedStages") == 12
+                        and isinstance(saved.get("revision"), int)
+                        and saved["revision"] >= 1
+                        and any(row.get("runId") == saved.get("runId")
+                                and row.get("revision") == saved.get("revision")
+                                for row in ledger.get("records", []))
+                    )
+                    logging.getLogger(__name__).warning(
+                        "PDUFA_MEDICAL_RESTART_READBACK status=%s "
+                        "stages=%s revision=%s historyCount=%d",
+                        "PASS" if persisted else "INCOMPLETE",
+                        saved.get("completedStages"), saved.get("revision"),
+                        ledger.get("total", 0),
+                    )
+                except LookupError:
+                    logging.getLogger(__name__).warning(
+                        "PDUFA_MEDICAL_RESTART_READBACK status=NO_SAVED_RUN"
+                    )
+                except Exception as read_exc:
+                    logging.getLogger(__name__).error(
+                        "PDUFA_MEDICAL_RESTART_READBACK status=ERROR error_type=%s",
+                        type(read_exc).__name__,
+                    )
             except Exception as exc:
                 logging.getLogger(__name__).error("PDUFA_MEDICAL_CANARY_INIT_FAILED error_type=%s", type(exc).__name__)
     yield
