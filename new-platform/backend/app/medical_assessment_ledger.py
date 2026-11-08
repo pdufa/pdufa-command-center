@@ -280,6 +280,14 @@ def record_verified_phase(engine, *, nct: str, run_id: str, phase: str,
     datetime.fromisoformat(verified_at.replace("Z", "+00:00"))
     _run(engine,nct,run_id)
     with engine.begin() as c:
+        # Serialize reviewer writes on the immutable roster row and refuse an
+        # alternative saved source run, even if it also has 12 stages.
+        lock = " FOR UPDATE" if engine.dialect.name == "postgresql" else ""
+        attached = c.execute(text(
+            "SELECT source_run_id FROM medical_assessment_trial_roster WHERE nct_id=:nct" + lock
+        ), {"nct":nct}).scalar()
+        if attached != run_id:
+            raise ValueError("Phase confirmation must use the roster-attached source run")
         stage = c.execute(text("""SELECT document FROM medical_continuous_stages
             WHERE run_id=:run AND stage_index=0"""), {"run":run_id}).scalar()
         if stage is None:
@@ -332,10 +340,23 @@ def append_review(engine, *, nct: str, run_id: str, phase_event_id: str,
     if not isinstance(evidence,list) or len(evidence)>12:
         raise ValueError("At most twelve original source evidence links per method")
     with engine.begin() as c:
-        phase = c.execute(text("""SELECT verified_phase,nct_id FROM medical_assessment_phase_events
-            WHERE phase_event_id=:id"""), {"id":phase_event_id}).first()
-        if not phase or phase[1]!=nct:
-            raise ValueError("A matching reviewer-verified phase is required")
+        # Keep phase/review writes serialized by exact NCT. A stale verified
+        # phase event, even with the same phase label, cannot receive new grades.
+        lock = " FOR UPDATE" if engine.dialect.name == "postgresql" else ""
+        attached = c.execute(text(
+            "SELECT source_run_id FROM medical_assessment_trial_roster WHERE nct_id=:nct" + lock
+        ), {"nct":nct}).scalar()
+        if attached != run_id:
+            raise ValueError("Review must use the roster-attached source run")
+        phase = c.execute(text("""SELECT verified_phase,nct_id,source_run_id
+            FROM medical_assessment_phase_events WHERE phase_event_id=:id"""),
+            {"id":phase_event_id}).first()
+        latest_phase = c.execute(text("""SELECT phase_event_id FROM medical_assessment_phase_events
+            WHERE nct_id=:nct ORDER BY created_at DESC,phase_event_id DESC LIMIT 1"""),
+            {"nct":nct}).scalar()
+        if (not phase or phase[1]!=nct or phase[2]!=run_id
+                or latest_phase != phase_event_id):
+            raise ValueError("Review requires the latest verified phase event and source run")
         captures = []
         for item in evidence:
             if not isinstance(item,dict):
