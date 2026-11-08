@@ -73,8 +73,12 @@ export async function GET(req: NextRequest) {
   if (!authorized(req)) return json({ error: "Sign in required" }, 401);
   const nct = req.nextUrl.searchParams.get("nct");
   const run = req.nextUrl.searchParams.get("run");
-  if (!knownNct(nct) || (run !== null && !UUID.test(run)))
+  const history = req.nextUrl.searchParams.get("history");
+  if (!knownNct(nct) || (run !== null && !UUID.test(run)) ||
+      (history !== null && history !== "1") || (history === "1" && run !== null))
     return json({ error: "Exact FOCUS trial and valid run identifier required" }, 422);
+  if (history === "1")
+    return upstream("/api/medical-continuous/" + nct + "/history", "GET");
   return upstream("/api/medical-continuous/" + nct + "/runs/" + (run || "latest"), "GET");
 }
 
