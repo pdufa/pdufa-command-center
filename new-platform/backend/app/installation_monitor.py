@@ -62,6 +62,14 @@ def collect(engine, *, storage_ready, require_postgres=True):
         out["sourceSnapshots"]["applications"] = {
             "state":"INVALID", "detail":"Packaged source-linked application identity map failed validation"
         }
+    # Render supplies exact running Git SHA, distinct from a merely queued build.
+    running_sha=os.getenv("RENDER_GIT_COMMIT","").strip().lower()
+    out["services"]["backendDeployment"]={
+        "gitSha":running_sha if len(running_sha)==40 and all(c in "0123456789abcdef" for c in running_sha) else None,
+        "branch":os.getenv("RENDER_GIT_BRANCH") or None,
+        "environment":"isolated_preview",
+        "source":"RENDER_GIT_COMMIT_RUNTIME"
+    }
     if out["storage"]["state"]!="READY":
         out["errors"].append("Persistent PostgreSQL is not connected or unavailable")
         for name in ("phase3Ingestion","nctStream"):
@@ -185,6 +193,11 @@ def monitor_once(engine, *, storage_ready, require_postgres=True):
     initialize(engine)
     _queue_event(engine,"MILESTONE","first-persistent-monitor-ready",
                  "PDUFA installation health: isolated PostgreSQL monitor is connected and has returned a live source-status snapshot. This does not certify FDA forecasts.")
+    runtime_sha=report.get("services",{}).get("backendDeployment",{}).get("gitSha")
+    if runtime_sha:
+        _queue_event(engine,"MILESTONE","backend-deployed:"+runtime_sha,
+                     "PDUFA isolated medical backend is running commit "+runtime_sha[:12]+
+                     " with PostgreSQL confirmed ready. This does not authorize clinical predictions.")
     medical=report["research"]
     if medical.get("finishedSourceRuns",0)>0:
         _queue_event(engine,"MILESTONE","medical-first-complete",
