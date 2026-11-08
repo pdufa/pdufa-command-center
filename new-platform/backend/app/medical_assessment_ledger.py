@@ -377,4 +377,16 @@ def install_routes(app, engine_provider, require_key, require_storage) -> None:
         except LookupError:
             raise HTTPException(404, "Trial assessment roster not found")
 
+    @router.get("/{nct}/matrix")
+    def get_matrix(nct: str, assessmentIndex: int | None = None):
+        """Read-only current-phase projection; optional 20-method drill-down."""
+        from .medical_method_projection import project_trial_history
+        try:
+            return project_trial_history(trial_history(engine_provider(), nct),
+                                         assessment_index=assessmentIndex)
+        except ValueError:
+            raise HTTPException(422, "Exact trial and assessment 1–40 are required")
+        except LookupError:
+            raise HTTPException(404, "Trial assessment roster not found")
+
     app.include_router(router)
