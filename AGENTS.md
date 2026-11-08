@@ -71,3 +71,14 @@ Only an explicit new instruction from the project owner can reverse retirement.
 For compatibility with the earlier approved instruction path,
 `python scripts/check_retired_raas_policy.py` delegates to the same mandatory
 permanent-retirement guard; it is not a second analysis or scoring system.
+
+## Retired P3 and P3 POST-DATA spreadsheet identities
+
+Project owner retired the **P3** and **P3 POST-DATA** spreadsheets on November 7, 2026. This is permanent unless explicitly reversed. They are NOT active workbooks, worksheet tabs, destinations, sources of truth, navigation items, or installation requirements.
+
+- The active record architecture is **POOL → FOCUS → independent Deep Medical Intelligence → FDA Decision**. The surviving **FOCUS** tab in `PDUFA Master Scan Data` is the authoritative final trial list. Preserve its exact-NCT identity, source provenance and current data; do not delete or stop valid FOCUS refreshes.
+- A clinical trial having Phase 3 or post-Phase-3 evidence is not a dependency on the retired spreadsheets. Continue legitimate Phase 3 scientific research and POOL discovery without recreating retired spreadsheet tabs.
+- Retire old P3/P3 POST-DATA UI identity and links; preserve old URLs only as redirects to `/focus` or read-only historical evidence. No active user journey may require `/p3-post-data` or a P3 worksheet.
+- Legacy scripts, snapshots and test filenames containing `p3` may remain until safely migrated, **provided actual active Google Sheets reads/writes target the surviving FOCUS tab** and no retired worksheet. Never rename a source or silently redirect a write without validating its exact spreadsheet ID, tab, headers and record identity.
+- Historical P3 spreadsheet material, screenshots, trial data and evidence are read-only archives. Do not delete them; they cannot drive active predictions or installation acceptance.
+- Future development and Codex sessions must not reinstate these retired spreadsheets, scheduled spreadsheet publishers, buttons or requirements. Continue current MAIN work and preserve already-accepted unrelated installation checks. Verify the spreadsheet-retirement guard before merging.
