@@ -1,8 +1,8 @@
 import Link from "next/link";
 import type {Metadata} from "next";
 import {notFound} from "next/navigation";
-import {APPLICATION_CYCLES} from "../../../lib/medical-intelligence-applications";
-import {ADVANCED_LEVELS,buildAdvancedAssessment,type SourceRecord} from "../../../lib/medical-intelligence-advanced";
+import {getRegistryPhases} from "../../../lib/medical-intelligence-registry-phase";
+import {ADVANCED_LEVELS,buildAdvancedAssessment,listAdvancedCandidates,type SourceRecord} from "../../../lib/medical-intelligence-advanced";
 import {HISTORICAL_CALIBRATION} from "../../../lib/medical-intelligence-calibration";
 export const metadata:Metadata={title:"12 Advanced Medical Intelligence Levels — PDUFA",description:"Independent failure-first research and uncalibrated outcome/CRL/delay decision gates."};
 export const dynamic="force-dynamic";
@@ -17,8 +17,14 @@ function SourceRow({s}:{s:SourceRecord}){
 }
 export default async function AdvancedReviewPage({searchParams}:{searchParams:Promise<{cycle?:string}>}){
  const q=await searchParams;
- const id=typeof q.cycle==="string"?q.cycle:APPLICATION_CYCLES[0]?.id;
- const a=id?buildAdvancedAssessment(id):null;
+ const candidates=listAdvancedCandidates();
+ const id=typeof q.cycle==="string"?q.cycle:candidates[0]?.id;
+ const selected=candidates.find(c=>c.id===id);
+ if(!selected)notFound();
+ // Exact-ID official registry phase is fetched with a six-hour server cache.
+ // Unavailable or mismatched payloads remain UNKNOWN, never guessed.
+ const phases=await getRegistryPhases(selected.ncts);
+ const a=buildAdvancedAssessment(selected.id,phases);
  if(!a)notFound();
  const isPending=a.cycle.stage!=="APPROVED_ALREADY";
  return <main style={{maxWidth:1250,margin:"22px auto",padding:"0 16px 44px",fontFamily:"system-ui,sans-serif",color:ink}}>
@@ -30,11 +36,11 @@ export default async function AdvancedReviewPage({searchParams}:{searchParams:Pr
    <label htmlFor="advanced-cycle" style={{fontWeight:700}}>FDA application / indication</label>
    <div style={{display:"flex",gap:8,flexWrap:"wrap",marginTop:8}}>
     <select id="advanced-cycle" name="cycle" defaultValue={a.cycle.id} style={{padding:"10px",maxWidth:"100%",flex:"1 1 280px"}}>
-     {APPLICATION_CYCLES.map(c=><option value={c.id} key={c.id}>{c.ticker} · {c.drug} · {c.indication} ({c.stage.replaceAll("_"," ")})</option>)}
+     {candidates.map(c=><option value={c.id} key={c.id}>{c.ticker} · {c.drug} · {c.indication} ({c.stage.replaceAll("_"," ")})</option>)}
     </select>
     <button type="submit" style={{padding:"10px 16px",color:"white",background:teal,border:0,borderRadius:6}}>Show analysis</button>
    </div>
-   <p style={{fontSize:12,color:muted,marginBottom:0}}>Current curated cohort: {APPLICATION_CYCLES.length} separately identified review cycles. Not a claim of comprehensive market coverage.</p>
+   <p style={{fontSize:12,color:muted,marginBottom:0}}>Current research choices: {candidates.length} FOCUS-linked application/trial records. Unmapped trials remain explicitly unverified.</p>
   </form>
   <section style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(165px,1fr))",gap:10,marginTop:16}}>
    {[
