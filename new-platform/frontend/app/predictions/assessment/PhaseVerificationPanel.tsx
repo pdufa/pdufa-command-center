@@ -91,6 +91,14 @@ export default function PhaseVerificationPanel({nct}:{nct:string}){
           <p><a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/locked-sap-public-audit-revision6-20261108.md" target="_blank" rel="noopener noreferrer">Read revision 6 · original-SAP public search and endpoint audit</a></p>
           <p style={{fontSize:12,marginBottom:0}}>Source audit only · FINAL SAP NOT OBTAINED · INDEPENDENT PHASE REVIEW 0 · METHOD GRADES 0 · FDA ABSTAIN</p>
         </details>
+        <details style={{...panel,background:"#f7f6fd",marginBottom:0}}>
+          <summary><strong>Trial amendment history and unresolved safety counts · review revision 7</strong></summary>
+          <p style={{fontSize:13}}>The official ClinicalTrials.gov history lists 31 versions. Version 27 (May 15, 2025) changed registered outcome measures and study design; versions 29 and 30 also changed outcome measures. An independent history index suggests the primary-outcome count changed from one to two, but the original before-and-after version text has not been independently authenticated.</p>
+          <p style={{fontSize:13}}>The sponsor reported 516 treated/randomized participants in a May topline announcement and 517 in the later full-results announcement. Heart-failure SAE counts also differ between reports (11/1 versus 12/3). Both are unresolved source-accounting questions, not established mistakes or adverse FDA decisions.</p>
+          <p><a href="https://clinicaltrials.gov/study/NCT06081894?tab=history" target="_blank" rel="noopener noreferrer">Official registry — compare versions 26 and 27</a></p>
+          <p><a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/version-and-safety-crosscheck-revision7-20261108.md" target="_blank" rel="noopener noreferrer">Read revision 7 · timeline and safety audit</a></p>
+          <p style={{fontSize:12,marginBottom:0}}>Research discrepancies only · NO VERIFIED SAP · NO REVIEWER SIGNOFF · NO SCORES OR FDA PREDICTIONS</p>
+        </details>
       </aside>:null}
       <p>
         <a href={selected.officialUrl} target="_blank" rel="noopener noreferrer">Original ClinicalTrials.gov study</a>
