@@ -94,6 +94,7 @@ export async function GET(req:NextRequest){
   observedAt:now,
   deployment:{state:frontendReady?"READY":"UNKNOWN",sha,url},
   apiReachable:backend.apiReachable,
+  analyzeNowAllEnabled:process.env.PDUFA_ANALYZE_NOW_ALL_ENABLED==="true",
   ...github
  };
  const snapshot=buildInstallationProgress(backend.live,verification,now);
