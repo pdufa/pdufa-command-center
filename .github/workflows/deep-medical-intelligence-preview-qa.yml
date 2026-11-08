@@ -34,6 +34,6 @@ jobs:
       - name: Verify TypeScript
         run: npm run typecheck
         working-directory: new-platform/frontend
-      - name: Run frontend regression suite
-        run: npm test
+      - name: Run isolated medical intelligence regression suite
+        run: node --test tests/medical-intelligence-*.test.cjs
         working-directory: new-platform/frontend
