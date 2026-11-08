@@ -14,8 +14,19 @@ from app.retired_analysis_guard import reject_retired_analysis_payload
 
 @pytest.mark.parametrize('payload', [
     {'raas_score': 90}, {'raasScore': None},
+    {'approvedRaas': 80}, {'legacyRaasScore': 80},
+    {'inputs': {'approved_raas': 80}},
+    {'clinical_inputs': [{'legacy_raas_rating': 80}]},
+    {'confidence_input': {'previousRaasPrediction': 0.8}},
+    {'metadata': {'archived_R-A-A-S_score': 90}},
     {'metadata': {'framework': 'RAAS_FIVE_FACTOR'}},
     {'model_version': 'CLINICAL_FIVE_2026_11_05'},
+    {'model_version': 'clinicalFive'},
+    {'model_version': 'CLINICAL FIVE 2026 11 05'},
+    {'confidence_basis': 'post data five factor'},
+    {'scoring_framework': 'BottomOnlyPostReadout'},
+    {'metadata': {'ratingModel': 'Top Only Pre Readout'}},
+    {'source_model': 'R-A-A-S'},
     {'scientific_readiness': 'RAAS_COMPLETE'},
     {'confidence_basis': 'raas-derived rating'},
     {'sourceType': 'RAAS_RESEARCH_SCORE'},
@@ -31,7 +42,9 @@ def test_active_prediction_rejects_retired_inputs_before_storage(payload):
 def test_source_prose_is_not_an_input_score_or_model():
     payload = {'model_version': 'independent-medical-review-v1',
                'uncertainty': 'Historical RAAS records are excluded from this analysis.',
-               'evidence_ids': ['ctgov:original-document-hash'], 'confidence': None}
+               'evidence_ids': ['ctgov:original-document-hash'], 'confidence': None,
+               'source': {'title': 'RAAS historical archive exclusion',
+                          'finding': 'Legacy RAAS is not a scientific input.'}}
     original = copy.deepcopy(payload)
     reject_retired_analysis_payload(payload)
     assert payload == original
@@ -45,10 +58,15 @@ def test_chart_cannot_reenable_retired_feature_from_new_or_saved_settings():
         CustomFdaOverlayPayload(version=1, enabledFeatures=['raas-snapshot']).canonical('PDUFA-000069')
     assert exc.value.status_code == 422
 
-def test_archived_prediction_readable_but_never_current_or_validated():
+@pytest.mark.parametrize('archived_document', [
+    {'model_version': 'RAAS_30_METRIC_HISTORY', 'grade': 85},
+    {'approvedRaas': 85},
+    {'inputs': {'legacy_raas_rating': 85}},
+])
+def test_archived_prediction_readable_but_never_current_or_validated(archived_document):
     engine = create_engine('sqlite://', connect_args={'check_same_thread': False}, poolclass=StaticPool)
     phase3_catalog.initialize(engine)
-    encoded = json.dumps({'model_version': 'RAAS_30_METRIC_HISTORY', 'grade': 85})
+    encoded = json.dumps(archived_document)
     with engine.begin() as c:
         c.execute(text('''INSERT INTO phase3_predictions
           (prediction_id,nct_id,application_id,decision,created_at,evidence_cutoff,
