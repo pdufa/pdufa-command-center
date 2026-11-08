@@ -3,8 +3,7 @@ import type {Metadata} from "next";
 import {APPLICATION_CYCLES} from "../../../lib/medical-intelligence-applications";
 import {CLINICAL_SPECIALTY_AXES,CLINICAL_SPECIALTY_PROFILES,CLINICAL_SPECIALTY_ASSIGNMENTS,CLINICAL_SPECIALTY_STANDARDS,getSpecialtyProfile,getSpecialtyTasks} from "../../../lib/medical-intelligence-specialty";
 import {caseForCycle} from "../../../lib/medical-intelligence-md-casebook";
-import {specialistCaseForCycle} from "../../../lib/medical-intelligence-specialist-casebook";
-import {expandedSpecialistCaseForCycle} from "../../../lib/medical-intelligence-specialist-expanded";
+import {ALL_SPECIALIST_CASES,getFullSpecialistCase} from "../../../lib/medical-intelligence-specialist-all";
 import {buildSpecialtyEvidenceAudit} from "../../../lib/medical-intelligence-specialty-evidence";
 import {deskIssuesForCycle} from "../../../lib/medical-intelligence-failure-desk";
 
@@ -23,10 +22,10 @@ export default async function SpecialistReviewPage({searchParams}:{searchParams:
  const p=getSpecialtyProfile(selected.id);
  const tasks=getSpecialtyTasks(selected.id);
  const research=caseForCycle(selected.id);
- const actualSpecialtyReview=specialistCaseForCycle(selected.id)||expandedSpecialistCaseForCycle(selected.id);
+ const actualSpecialtyReview=getFullSpecialistCase(selected.id);
  const clinicalAudit=buildSpecialtyEvidenceAudit(selected.id);
  const sourceIssues=deskIssuesForCycle(selected.id);
- const sourceCounts=APPLICATION_CYCLES.filter(x=>Boolean(specialistCaseForCycle(x.id)||expandedSpecialistCaseForCycle(x.id))).length;
+ const sourceCounts=ALL_SPECIALIST_CASES.length;
  return <main style={{maxWidth:1320,margin:"26px auto",padding:"0 16px 45px",fontFamily:"system-ui,sans-serif",color:theme.ink}}>
    <div style={{fontWeight:750,color:theme.green,letterSpacing:1,fontSize:12}}>CLINICAL SPECIALTY SCIENCE → INDEPENDENT FDA EVIDENCE REVIEW</div>
    <h1 style={{fontSize:"clamp(1.7rem,4vw,2.4rem)",margin:"9px 0 5px"}}>Clinical Subspecialty Intelligence</h1>
@@ -39,7 +38,7 @@ export default async function SpecialistReviewPage({searchParams}:{searchParams:
        ["Specialty-specific profiles",CLINICAL_SPECIALTY_PROFILES.length],
        ["Application cycles mapped",Object.keys(CLINICAL_SPECIALTY_ASSIGNMENTS).length],
        ["Clinical reasoning domains",CLINICAL_SPECIALTY_AXES.length],
-       ["Programs with partial specialty case analyses",sourceCounts]
+       ["Applications with partial specialty case analyses",sourceCounts]
      ].map(([label,value])=><div style={card} key={String(label)}><div style={{fontSize:12,color:theme.muted}}>{label}</div><div style={{fontSize:26,fontWeight:750,marginTop:7}}>{value}</div></div>)}
    </div>
    <section style={{...card,marginTop:17}}>
@@ -118,7 +117,7 @@ export default async function SpecialistReviewPage({searchParams}:{searchParams:
          </div>
        </details>)}
      </div>
-     <p style={{fontSize:13,marginBottom:0}}>Lead reference: <a href={actualSpecialtyReview.source} target="_blank" rel="noopener noreferrer">{actualSpecialtyReview.sourceTitle}</a>. This is a partial public-evidence interpretation, not an independently verified specialist opinion or an FDA outcome prediction.</p>
+     <p style={{fontSize:13,marginBottom:0}}>Lead reference: <a href={actualSpecialtyReview.source} target="_blank" rel="noopener noreferrer">{actualSpecialtyReview.sourceTitle}</a>. This is a partial public-evidence interpretation, not a completed medical adjudication, licensed specialist opinion or FDA outcome prediction. Individual source links are shown where curated; earlier examples may provide only a lead source.</p>
    </section>}
    <section style={{...card,marginTop:15}}>
      <h2 style={{margin:"0 0 8px",fontSize:19}}>Actual source-examined medical evidence</h2>
