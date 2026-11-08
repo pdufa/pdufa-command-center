@@ -77,7 +77,9 @@ def run() -> dict:
     data, doc_response = request(f"{ROOT}/documents/{TRIAL}/{identifier}/download",
                                  MAX_DOC, "application/pdf,application/octet-stream")
     if not data.startswith(b"%PDF-"):
-        raise ValueError("DOCUMENT_IS_NOT_PDF")
+        mime = str(doc_response.get("content_type", ""))[:64].replace(" ", "_")
+        magic = data[:12].hex()
+        raise ValueError(f"DOCUMENT_NOT_PDF_mime={mime}_magic={magic}_bytes={len(data)}")
     file = OUTPUT / "D1_2023-505797-15-00_Protocol_FP_AM4.pdf"
     file.write_bytes(data)
     details = {
