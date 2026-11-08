@@ -590,6 +590,7 @@ async def lifespan(app: FastAPI):
             try:
                 from .medical_continuous import start as start_medical_continuous
                 start_medical_continuous(ENGINE)
+                app.state.medical_canary_initialized = True
             except Exception as exc:
                 logging.getLogger(__name__).error("PDUFA_MEDICAL_CANARY_INIT_FAILED error_type=%s", type(exc).__name__)
     yield
@@ -617,7 +618,7 @@ def medical_canary_preflight():
         "enabled": configured,
         "persistentStorageReady": durable,
         "canaryNct": os.getenv("PDUFA_ANALYZE_NOW_CANARY_NCT", "NCT06081894"),
-        "sourceWorkerReady": configured and durable,
+        "sourceWorkerReady": configured and durable and bool(getattr(app.state, "medical_canary_initialized", False)),
         "fdaPredictionStatus": "ABSTAIN",
         "certaintyStatus": "NOT_VALIDATED",
         "numericalPredictionAvailable": False,
