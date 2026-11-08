@@ -175,15 +175,14 @@ export function rankAtLastCompletedPhase(
     throw Error("Phase-end baseline cannot use an unfinished current phase or later phase");
   if(!last.exactDrugAndIndicationMatchVerified || !last.finalOrPrimaryPhaseResultsVerified)
     throw Error("Prior-phase drug, indication, and actual results must be verified");
-  if(!validDay(last.phaseCompletedOn) || !validDay(last.readoutDate) || last.readoutDate<last.phaseCompletedOn)
-    throw Error("Phase completion and published readout require valid, ordered dates");
+  if(!validDay(last.phaseCompletedOn) || !validDay(last.readoutDate))
+    throw Error("Phase completion and phase readout require valid dates");
   if(!last.sourceUrls.length || last.sourceUrls.some(url=>!/^https:\/\/[^/]+/.test(url)))
     throw Error("Phase-end baseline requires exact original-source links");
   const validated: AssessmentTestReview[]=reviews.map(r=>{
     if(r.nct!==last.sourceNct || r.phase!==last.completedPhase)
       throw Error("Test grade must use the exact completed-phase source trial");
-    if(!validDay(r.sourcePublishedOn) || r.sourcePublishedOn<last.phaseCompletedOn ||
-       r.sourcePublishedOn>r.recordedAt)
+    if(!validDay(r.sourcePublishedOn) || r.sourcePublishedOn>r.recordedAt)
       throw Error("Test grade needs a dated phase-end source available when reviewed");
     if(r.disposition==="SCORED" && !r.phaseEndResultVerified)
       throw Error("A current-phase or speculative signal cannot be graded as prior-phase outcome");
