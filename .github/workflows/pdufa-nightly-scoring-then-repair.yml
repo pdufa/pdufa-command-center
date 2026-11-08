@@ -1,4 +1,4 @@
-name: PDUFA Nightly Scoring Then Error Check And Safe Repair
+name: PDUFA Nightly Source Handoff Then Error Check And Safe Repair
 # Runs only after the full source chain completes: clinical, publisher, five source families, reconciliation.
 on:
   workflow_call:
@@ -21,10 +21,6 @@ on:
       - site_scorecard.py
       - score_input_audit.py
       - scripts/nightly_scoring_audit.py
-      - scripts/raas_trial_history_capture.cjs
-      - scripts/raas_trial_provisional_metric_capture.cjs
-      - scripts/raas_post_clinical_provisional_capture.cjs
-      - scripts/raas_self_audit_history_capture.cjs
       - scripts/post_scan_repair.py
       - scripts/scan_recovery_triage.py
       - tests/test_nightly_scoring_audit.py
@@ -58,20 +54,20 @@ jobs:
         run: python -m pytest -q tests/test_nightly_scoring_audit.py tests/test_post_scan_repair.py tests/test_scan_recovery_triage.py tests/test_score_input_audit.py tests/test_scoring_tab_navigation.py
 
   scoring:
-    name: 1 — Surveys and ratings cancelled · source-run handoff only
+    name: 1 — Independent source-run identity handoff only
     if: github.event_name == 'workflow_run' || inputs.source_run_id != ''
     runs-on: ubuntu-latest
     outputs:
       source_run_id: ${{ steps.handoff.outputs.source_run_id }}
     steps:
-      - name: Preserve source run identity without scoring or RAAS history changes
+      - name: Preserve source run identity without modifying any historical records
         id: handoff
         env:
           SOURCE_RUN_ID: ${{ inputs.source_run_id || github.event.workflow_run.id }}
         shell: bash
         run: |
           echo "source_run_id=$SOURCE_RUN_ID" >> "$GITHUB_OUTPUT"
-          echo "Survey, rating, scoring, and RAAS history updates cancelled by user."
+          echo "Retired scoring is disabled; source handoff and error checks only."
 
   error-check:
     name: 2 — Check Gmail and GitHub after scoring
