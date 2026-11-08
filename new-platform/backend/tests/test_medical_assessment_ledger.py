@@ -168,3 +168,41 @@ def test_read_only_authenticated_route_shape_without_write_route(seeded):
     assert client.get("/api/internal/medical-assessments/coverage").json()["sourceComplete"]==29
     assert client.get("/api/internal/medical-assessments/"+focus[0]+"/history").json()["nct"]==focus[0]
     assert client.post("/api/internal/medical-assessments/coverage").status_code==405
+
+
+def test_current_phase_method_matrix_is_read_only_and_no_source_lead_is_a_grade(seeded):
+    db, focus, runs = seeded
+    ledger.seed_roster(db)
+    app = FastAPI()
+    ledger.install_routes(app, lambda: db, lambda: None, lambda: None)
+    client = TestClient(app)
+    nct = focus[0]
+    url = "/api/internal/medical-assessments/" + nct + "/matrix"
+    before = client.get(url).json()
+    assert before["totalPositions"] == 800
+    assert before["counts"]["VERIFY_PHASE"] == 800
+    assert before["counts"]["SCORED"] == 0
+    assert before["fdaPredictions"]["APPROVAL"] == "ABSTAIN"
+
+    phase_id = ledger.record_verified_phase(
+        db, nct=nct, run_id=runs[nct], phase="PHASE3",
+        reviewer_id="evidence_reviewer", verified_at="2026-11-08T18:00:00Z")
+    after_phase = client.get(url + "?assessmentIndex=1").json()
+    assert after_phase["counts"]["UNREVIEWED"] == 800
+    assert after_phase["selectedAssessment"]["scoreOutOf100"] is None
+
+    ledger.append_review(
+        db, nct=nct, run_id=runs[nct], phase_event_id=phase_id,
+        assessment_index=1, method_index=1, disposition="SCORED", grade=4,
+        evidence=[{"stageIndex": 0, "sourceUrl": "https://clinicaltrials.gov/study/" + nct}],
+        rationale="Verified source comparison with trial-specific statistical limitations.",
+        reviewer_id="evidence_reviewer", evidence_reviewed_at="2026-11-08T18:00:00Z")
+    reviewed = client.get(url + "?assessmentIndex=1").json()
+    assert reviewed["counts"]["SCORED"] == 1
+    assert reviewed["selectedAssessment"]["status"] == "PROVISIONAL"
+    assert reviewed["selectedAssessment"]["scoreOutOf100"] == 80.0
+    assert reviewed["selectedAssessment"]["methods"][0]["sourceEvidence"][0]["stageDocumentSha256"]
+    assert client.get(url + "?assessmentIndex=41").status_code == 422
+    assert client.post(url).status_code == 405
+    assert reviewed["clinicalSignoff"] is False
+    assert reviewed["certainty"] == "NOT_VALIDATED"
