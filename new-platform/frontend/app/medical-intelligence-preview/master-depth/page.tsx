@@ -39,6 +39,7 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
  const assessmentRatings=phaseActivity.currentScores;
  const evidenceCoverage=assessmentRatings.map(r=>({
    ...r,
+   latestMilestoneScore:phaseActivity.latestEventScores.find(x=>x.id===r.id)?.score??null,
    sourceSlots:SCIENTIFIC_LEVELS.filter(l=>applicationsForNct(nct).some(c=>Boolean(researchForSlot(c.id,r.id,l.id)))).length
  })).sort((a,b)=>b.sourceSlots-a.sourceSlots||a.id.localeCompare(b.id));
  const assessment=DEEP_ASSESSMENTS.find(a=>a.id===query.assessment)||DEEP_ASSESSMENTS.find(a=>a.id==="4.3")||DEEP_ASSESSMENTS[0];
@@ -101,18 +102,19 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
    </section>
 
    <section style={panel}>
-     <h2 style={{margin:"0 0 8px",fontSize:19}}>Latest-activity scientific test ratings · all 40 assessments</h2>
-     <p style={subtle}>Each of the 40 assessments contains 20 separately rated investigative tests. The current score must reflect <strong>what the trial actually demonstrated in its latest verified current-phase milestone</strong>. The previous completed phase provides a separate, unchanged comparison baseline. The scientific grade is 0–5 per test, with a transparent 0–100 assessment average. A final comparative rank is shown only after every phase-applicable method is independently reviewed or explicitly excluded with a rationale. Missing evidence never counts as a zero, a failure, or a clinical benefit.</p>
+     <h2 style={{margin:"0 0 8px",fontSize:19}}>Current-phase test ratings · all 40 assessments</h2>
+     <p style={subtle}>Each of the 40 assessments contains 20 separately rated investigative tests. Each current-phase test rating incorporates its <strong>latest verified, relevant result</strong> from the ongoing phase, preserving earlier demonstrated outcomes in the same phase. The newest milestone is scored separately to show exactly what just changed. The last completed phase remains a separate historical baseline. The scientific grade is 0–5 per test, with a transparent 0–100 assessment average. A final comparative rank is shown only after every phase-applicable method is independently reviewed or explicitly excluded with a rationale. Missing evidence never counts as a zero, a failure, or a clinical benefit.</p>
      <p style={{...subtle,marginTop:0}}><strong>Exact-NCT phase:</strong> {phaseContext.verifiedPhase} {phaseContext.sourceUrl&&<>· <EvidenceSource url={phaseContext.sourceUrl}>ClinicalTrials.gov</EvidenceSource></>}. <strong>Phase-specific standard:</strong> {PHASE_REVIEW_STANDARD[phaseContext.verifiedPhase]}. <strong>Historical previous phase-end baseline:</strong> {phaseEndBaseline.basis==="NO_VERIFIED_PHASE_END"?"Not yet verified / no defensible historical grade":phaseEndBaseline.completedPhase+" · "+phaseEndBaseline.phaseEndDate}. Scientific grades are not FDA approval probabilities or certainty ratings.</p>
      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
        {TEST_GRADE_RUBRIC.map(r=><span key={r.grade} title={r.meaning} style={{fontSize:12,border:"1px solid "+c.line,borderRadius:6,padding:"5px 8px",background:c.off}}>{r.grade}/5: {r.meaning}</span>)}
      </div>
      <div style={{overflowX:"auto"}}>
        <table style={{borderCollapse:"collapse",width:"100%",minWidth:790,fontSize:13}}>
-         <thead><tr>{["Assessment","Latest activity score / 100","Complete-test rank","Scored / applicable tests","Source-examined methods / 20","Review status"].map(k=><th key={k} style={{padding:"9px 7px",textAlign:"left",borderBottom:"1px solid "+c.line}}>{k}</th>)}</tr></thead>
+         <thead><tr>{["Assessment","Current phase score / 100","Newest milestone score / 100","Complete-test rank","Scored / applicable tests","Source-examined methods / 20","Review status"].map(k=><th key={k} style={{padding:"9px 7px",textAlign:"left",borderBottom:"1px solid "+c.line}}>{k}</th>)}</tr></thead>
          <tbody>{evidenceCoverage.map(row=><tr key={row.id}>
            <td style={{padding:8,borderBottom:"1px solid "+c.line}}><Link href={href(nct,row.id)}>{row.id} · {row.label}</Link></td>
            <td style={{padding:8,borderBottom:"1px solid "+c.line,fontWeight:700}}>{row.score===null?"Not rated":row.score+"/100"+(row.status==="PROVISIONAL"?" (provisional)":"")}</td>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.latestMilestoneScore===null?"Not rated":row.latestMilestoneScore+"/100 (event-only)"}</td>
            <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.rank===null?"—":"#"+row.rank}</td>
            <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.scoredTests} / {row.applicableTests}</td>
            <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.sourceSlots} / 20</td>
@@ -120,7 +122,7 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
          </tr>)}</tbody>
        </table>
      </div>
-     <p style={{...subtle,marginBottom:0}}>Rows are sorted by documented source-investigation coverage, not by evidence strength. A source-examined observation does not automatically pass its scientific test. This preview has not yet connected a certified current-phase milestone and grading ledger, or a verified previous-phase outcomes ledger. Therefore scores, actual risks and ranks remain pending rather than fabricated. Each new result must be recorded at its actual date, scored by its tested domain, and compared with—but not overwrite—the prior phase end.</p>
+     <p style={{...subtle,marginBottom:0}}>Rows are sorted by documented source-investigation coverage, not by evidence strength. A source-examined observation does not automatically pass its scientific test. This preview has not yet connected a certified current-phase milestone and grading ledger, or a verified previous-phase outcomes ledger. Therefore scores, actual risks and ranks remain pending rather than fabricated. Each new result must be recorded at its actual date, update only the supported tests in the current-phase assessment, and be compared with—but not overwrite—the prior phase end.</p>
    </section>
 
    <section style={panel}>
