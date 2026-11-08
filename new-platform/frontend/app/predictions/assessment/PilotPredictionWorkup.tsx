@@ -28,13 +28,13 @@ export default function PilotPredictionWorkup({nct}:{nct:string}){
       <strong>Descriptive safety signal — not a risk-adjusted prediction</strong>
       <p style={{fontSize:13}}>LVEF below 50%: {pilot.descriptiveSafety[0].treated}/{pilot.descriptiveSafety[0].treatedN} ({pilot.descriptiveSafety[0].treatedPct}%) vs {pilot.descriptiveSafety[0].control}/{pilot.descriptiveSafety[0].controlN} ({pilot.descriptiveSafety[0].controlPct}%) — unadjusted difference +{pilot.descriptiveSafety[0].unadjustedRiskDifferencePp} percentage points. All-cause serious adverse events: {pilot.descriptiveSafety[1].treatedPct}% vs {pilot.descriptiveSafety[1].controlPct}%. Source-discordant heart-failure SAE reporting requires separate review.</p>
     </div>
-    <p style={{fontSize:13,marginTop:12}}><strong>Investigation coverage:</strong> source leads for {pilot.scientificFramework.criticalHeadingsWithSourceLeads}/{pilot.scientificFramework.criticalPhase3AssessmentHeadings} critical Phase 3 assessment headings. <strong>Independently reviewed methods: {pilot.scientificFramework.independentlyGradedMethodPositions}/{pilot.scientificFramework.positions}.</strong> Having a source lead is not a method grade or completed assessment.</p>
+    <p style={{fontSize:13,marginTop:12}}><strong>Investigation coverage:</strong> source leads for {pilot.scientificFramework.criticalHeadingsWithSourceLeads}/{pilot.scientificFramework.criticalPhase3AssessmentHeadings} critical Phase 3 assessment headings; {pilot.scientificFramework.mappedCandidateMethodLeads}/{pilot.scientificFramework.positions} method positions have a mapped source-research lead. <strong>Independent clinical grades: {pilot.scientificFramework.independentlyGradedMethodPositions}/{pilot.scientificFramework.positions} as of this research snapshot.</strong> Mapped leads are not graded or completed methods; see the live ledger below for current counts.</p>
     <details style={frame}>
       <summary style={{fontWeight:800,cursor:"pointer"}}>Open 11 critical assessment evidence leads and gaps</summary>
       <div style={{display:"grid",gap:8,marginTop:12}}>
       {pilot.criticalAssessmentEvidence.map(a=><article key={a.id} style={{padding:10,border:"1px solid #d5e6df",borderRadius:8,background:"#fff"}}>
         <strong>{a.id} · {a.label}</strong>
-        <div style={{fontSize:12,marginTop:3}}>Sources indexed: {a.sourceLeadIds.join(", ")} · <strong>NOT GRADED</strong></div>
+        <div style={{fontSize:12,marginTop:3}}>Method source leads: {a.candidateMethodIndices.map(i=>"L"+i).join(", ")} · Sources: {a.sourceLeadIds.join(", ")} · <strong>NOT GRADED</strong></div>
         <div style={{fontSize:13,marginTop:5}}>Needs review: {a.remaining}</div>
       </article>)}
       </div>
