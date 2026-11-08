@@ -104,3 +104,18 @@ test("degraded PostgreSQL never passes database-backed installation gates",()=>{
  assert.equal(degraded.stages.find(s=>s.id==="medical").checks.find(c=>c.id==="medical.db").status,"BLOCKED");
  assert.equal(degraded.stages.find(s=>s.id==="operations").checks.find(c=>c.id==="ops.ingestion").status,"BLOCKED");
 });
+
+
+test("backend application map requires all 29 exact NCTs before becoming verified",()=>{
+ const valid={...external,apiReachable:true};
+ const base={schemaVersion:1,observedAt:at,storage:{state:"BLOCKED",kind:"sqlite",postgresRequired:true},
+   sourceSnapshots:{applications:{state:"VALID",focusNctCount:29,coveredNctCount:29,applicationCycleCount:23}}};
+ const verified=buildInstallationProgress(base,valid,at);
+ assert.equal(verified.stages.find(x=>x.id==="medical").checks.find(x=>x.id==="medical.application-map").status,"VERIFIED");
+ assert.equal(verified.stages.find(x=>x.id==="medical").checks.find(x=>x.id==="medical.db").status,"BLOCKED");
+ const partial=buildInstallationProgress({...base,sourceSnapshots:{applications:{state:"VALID",focusNctCount:29,
+   coveredNctCount:28,applicationCycleCount:23}}},valid,at);
+ assert.equal(partial.stages.find(x=>x.id==="medical").checks.find(x=>x.id==="medical.application-map").status,"UNKNOWN");
+ const corrupt=buildInstallationProgress({...base,sourceSnapshots:{applications:{state:"INVALID"}}},valid,at);
+ assert.equal(corrupt.stages.find(x=>x.id==="medical").checks.find(x=>x.id==="medical.application-map").status,"FAILED");
+});
