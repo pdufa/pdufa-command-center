@@ -386,3 +386,124 @@ def test_isolated_postgres_rejects_update_delete_truncate_and_preserves_restarts
             with admin.begin() as c:
                 c.execute(text(f"DROP SCHEMA {schema} CASCADE"))
         admin.dispose()
+
+
+def test_rejects_review_against_superseded_phase_and_another_saved_source_run(seeded):
+    """A stale phase ID must never create a grade even if the label is the same."""
+    db, focus, runs = seeded
+    ledger.seed_roster(db)
+    nct = focus[0]
+    when = "2026-11-08T18:00:00Z"
+    first = ledger.record_verified_phase(db, nct=nct, run_id=runs[nct],
+        phase="PHASE3", reviewer_id="fixture_phase", verified_at=when)
+    second = ledger.record_verified_phase(db, nct=nct, run_id=runs[nct],
+        phase="PHASE3", reviewer_id="fixture_phase", verified_at=when,
+        supersedes_event_id=first)
+    review = dict(nct=nct,run_id=runs[nct],phase_event_id=first,
+        assessment_index=1,method_index=1,disposition="SCORED",grade=3,
+        evidence=[{"stageIndex":0,"sourceUrl":"https://clinicaltrials.gov/study/"+nct}],
+        rationale="This test refuses a stale source-linked phase grade after a newer phase event.",
+        reviewer_id="fixture_method",evidence_reviewed_at=when)
+    with pytest.raises(ValueError,match="latest verified phase"):
+        ledger.append_review(db,**review)
+    assert ledger.trial_history(db,nct)["reviewEvents"] == []
+    ledger.append_review(db,**{**review,"phase_event_id":second})
+    assert len(ledger.trial_history(db,nct)["reviewEvents"]) == 1
+
+    # An alternative complete source run must not replace the immutable
+    # exact-NCT attachment, even if the source URL looks legitimate.
+    alternate=str(uuid.uuid4())
+    with db.begin() as c:
+        c.execute(text("""INSERT INTO medical_continuous_runs
+          (run_id,request_key,nct_id,status,stage_index,created_at,updated_at,stop_requested)
+          VALUES(:run,:key,:nct,'COMPLETE',12,:now,:now,FALSE)"""),
+          {"run":alternate,"key":str(uuid.uuid4()),"nct":nct,"now":when})
+        for i in range(12):
+            c.execute(text("""INSERT INTO medical_continuous_stages
+              (run_id,stage_index,state,document,finished_at)
+              VALUES(:run,:idx,'SOURCE_RECORDED',:document,:now)"""),
+              {"run":alternate,"idx":i,"document":json.dumps({
+                  "nct":nct,"source":"https://clinicaltrials.gov/study/"+nct,"phases":["PHASE3"]}),
+               "now":when})
+    with pytest.raises(ValueError,match="roster-attached"):
+        ledger.record_verified_phase(db,nct=nct,run_id=alternate,phase="PHASE3",
+            reviewer_id="fixture_phase",verified_at=when,supersedes_event_id=second)
+    with pytest.raises(ValueError,match="roster-attached"):
+        ledger.append_review(db,**{**review,"run_id":alternate,"phase_event_id":second,
+                                    "supersedes_event_id":ledger.trial_history(db,nct)["reviewEvents"][0]["review_event_id"]})
+
+
+def test_isolated_human_reviewer_writes_are_role_bound_and_default_disabled(seeded, monkeypatch):
+    from app import medical_reviewer_submission as intake
+    db,focus,runs=seeded
+    ledger.seed_roster(db)
+    nct="NCT06081894"
+    assert nct in focus
+    app=FastAPI()
+    intake.install_routes(app,lambda:db,lambda:None,lambda:None)
+    client=TestClient(app)
+    when=__import__("datetime").datetime.now(__import__("datetime").timezone.utc).isoformat()
+    phase_body={
+        "sourceRunId":runs[nct],"verifiedPhase":"PHASE3","verifiedAt":when,
+        "attestation":intake.PHASE_ATTESTATION}
+    phase_url=f"/api/internal/medical-reviewer-intake/{nct}/phase"
+    method_url=f"/api/internal/medical-reviewer-intake/{nct}/method"
+    phase_headers={"X-PDUFA-Reviewer-Id":"phase_reviewer","X-PDUFA-Reviewer-Key":"P"*40}
+    method_headers={"X-PDUFA-Reviewer-Id":"method_reviewer","X-PDUFA-Reviewer-Key":"M"*40}
+    assert client.post(phase_url,headers=phase_headers,json=phase_body).status_code==503
+    monkeypatch.setenv("PDUFA_MEDICAL_REVIEW_WRITES_ENABLED","true")
+    assert client.post(phase_url,headers=phase_headers,json=phase_body).status_code==503
+    monkeypatch.setenv("PDUFA_MEDICAL_REVIEWER_CREDENTIALS_JSON",json.dumps({
+        "phase":{"phase_reviewer":"P"*40},"method":{"method_reviewer":"M"*40}}))
+    assert client.post(phase_url,headers=method_headers,json=phase_body).status_code==401
+    assert client.post(method_url,headers=phase_headers,json={}).status_code in (401,422)
+    assert client.post(phase_url,headers=phase_headers,
+        json={**phase_body,"inventedClinicalScore":5}).status_code==422
+    assert ledger.trial_history(db,nct)["phaseEvents"]==[]
+
+    first=client.post(phase_url,headers=phase_headers,json=phase_body)
+    assert first.status_code==201,first.text
+    phase_id=first.json()["eventId"]
+    assert first.json()["fdaPredictions"]["APPROVAL"]=="ABSTAIN"
+    assert first.json()["clinicalSignoff"] is False
+    method_body={
+      "sourceRunId":runs[nct],"currentPhaseEventId":phase_id,
+      "assessmentIndex":1,"methodIndex":1,"disposition":"SCORED","grade":0,
+      "sourceEvidence":[{"stageIndex":0,"sourceUrl":"https://clinicaltrials.gov/study/"+nct}],
+      "findingsClassification":["UNFAVORABLE"],
+      "rationale":"Synthetic evidence comparison for the test fixture: a numeric zero here means an actual signed review in a fixture, not missing source data.",
+      "evidenceReviewedAt":when,"attestation":intake.METHOD_ATTESTATION
+    }
+    missing=client.post(method_url,headers=method_headers,json={
+        **method_body,"findingsClassification":["MISSING"]})
+    assert missing.status_code==422
+    denied=client.post(method_url,headers=phase_headers,json=method_body)
+    assert denied.status_code==401
+    actual=client.post(method_url,headers=method_headers,json=method_body)
+    assert actual.status_code==201,actual.text
+    assert actual.json()["certainty"]=="NOT_VALIDATED"
+    history=ledger.trial_history(db,nct)
+    assert history["reviewEvents"][0]["grade"]==0
+    assert history["reviewEvents"][0]["reviewer_id"]=="method_reviewer"
+    assert history["scientificSignoff"] is False
+    assert client.post(method_url,headers=method_headers,json=method_body).status_code==409
+    assert len(ledger.trial_history(db,nct)["reviewEvents"])==1
+    wrong=f"/api/internal/medical-reviewer-intake/NCT00000001/phase"
+    assert client.post(wrong,headers=phase_headers,json=phase_body).status_code==404
+    monkeypatch.setenv("PDUFA_MEDICAL_REVIEW_WRITES_ENABLED","false")
+    assert client.post(phase_url,headers=phase_headers,json=phase_body).status_code==503
+
+
+def test_reviewer_configuration_rejects_shared_identity_or_shared_secret(monkeypatch):
+    from app import medical_reviewer_submission as intake
+    monkeypatch.setenv("PDUFA_MEDICAL_REVIEW_WRITES_ENABLED","true")
+    for settings in (
+        {"phase":{"same":"P"*40},"method":{"same":"M"*40}},
+        {"phase":{"phase":"P"*40},"method":{"method":"P"*40}},
+        {"phase":{"phase":"short"},"method":{"method":"M"*40}},
+        {"phase":{"phase":"P"*40},"method":{}},
+    ):
+        monkeypatch.setenv("PDUFA_MEDICAL_REVIEWER_CREDENTIALS_JSON",json.dumps(settings))
+        with pytest.raises(__import__("fastapi").HTTPException) as exc:
+            intake._authenticate("phase","P"*40,"phase")
+        assert exc.value.status_code==503
