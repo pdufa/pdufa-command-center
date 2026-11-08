@@ -70,6 +70,41 @@ def run():
         ERRORS.append("Codex/Copilot permanent retirement instructions missing")
     for path in ACTIVE:
         check_file(path,"source")
+    # Build an import reachability graph from active Next.js entry points.
+    # An unreferenced historical module is archival; an imported module
+    # containing retired executable logic is an ACTIVE dependency.
+    roots=list(ACTIVE)
+    for item in (WEB/"app").rglob("route.ts"):
+        if any(part.lower().startswith("raas-") for part in item.relative_to(WEB/"app").parts):
+            continue
+        roots.append(item)
+    for item in (WEB/"app").rglob("layout.tsx"):
+        roots.append(item)
+    visited=set()
+    queue=list(roots)
+    module_ref=re.compile(r'(?:\\bfrom\\s*|\\bimport\\s*\\(?\\s*|\\brequire\\s*\\(\\s*)[\'"]([^\'"]+)[\'"]')
+    while queue:
+        current=queue.pop()
+        if current in visited or not current.is_file():
+            continue
+        visited.add(current)
+        source=current.read_text(encoding="utf-8")
+        for ref in module_ref.findall(source):
+            if not ref.startswith("."):
+                continue
+            base=(current.parent/ref).resolve()
+            options=[base,*(Path(str(base)+ext) for ext in (".ts",".tsx",".js",".jsx",".json"))]
+            options.extend(base/("index"+ext) for ext in (".ts",".tsx",".js",".jsx"))
+            target=next((p for p in options if p.is_file()),None)
+            if target is None or not target.is_relative_to(ROOT):
+                continue
+            if FORBIDDEN.search(target.stem) or "raas-" in target.as_posix().lower():
+                ERRORS.append("Active import of retired module/archive: "+
+                    str(current.relative_to(ROOT))+" -> "+str(target.relative_to(ROOT)))
+            if target.suffix in (".ts",".tsx",".js",".jsx") and target not in visited:
+                queue.append(target)
+    print("Reachable source modules checked:",len(visited))
+
     proxy=WEB/"proxy.ts"
     if not proxy.exists():
         ERRORS.append("Retired UI/API execution-blocking Proxy missing")
