@@ -68,6 +68,19 @@ def test_all_29_coverage_exposes_23200_unscored_positions(seeded):
     assert report["fdaPrediction"]=="ABSTAIN"
 
 
+def test_every_one_of_29_trials_has_exactly_800_isolated_unscored_slots(seeded):
+    from app import medical_continuous as source
+    for nct in sorted(source.roster()):
+        review = matrix.matrix(seeded,nct)
+        assert review["nct"]==nct
+        assert review["testPositions"]==800
+        assert sum(len(a["methods"]) for a in review["assessments"])==800
+        assert review["reviewedMethodPositions"]==0
+        assert review["completedAssessmentCount"]==0
+        assert review["scientificSignoff"] is False
+        assert all(t["grade"] is None for a in review["assessments"] for t in a["methods"])
+
+
 def test_reported_phase_is_only_provisional_investigation_priority(seeded):
     row=matrix.matrix(seeded,"NCT05126758")
     assert row["phase"]=="PHASE3"
