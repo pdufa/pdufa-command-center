@@ -97,6 +97,10 @@ def record_revision(connection, run_id, nct):
         "calibrationReleasePermitted":False,
         "sourceType":"RECORDED_PUBLIC_SOURCE_CHECKS",
         "warning":"Revisions track evidence collection, not validated FDA probability or signed clinical decisions."}
+    # Analyze Now is an optional report adapter over this same immutable run.
+    # Full RAAS scores are not fabricated; prior source research stays separate.
+    from .medical_on_demand import build_saved_analysis
+    report["analyzeNow"]=build_saved_analysis(connection,run_id,nct,details)
     connection.execute(text("""INSERT INTO medical_prediction_revisions
         (run_id,nct_id,ordinal,source_digest,evidence_changed,report,recorded_at)
         VALUES(:run,:nct,:ordinal,:digest,:changed,:report,:time)"""),
