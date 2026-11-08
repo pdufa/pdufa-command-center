@@ -34,4 +34,7 @@ test("persistent operations are protected by session and same-origin write", () 
   assert.match(proxy, /PDUFA_API_BASE_URL/);
   assert.match(proxy, /PDUFA_INTERNAL_API_KEY/);
   assert.match(proxy, /private, no-store/);
+  assert.match(proxy, /Saved medical research run not found/);
+  assert.match(proxy, /Persistent medical stage backend route is not deployed/);
+  assert.match(proxy, /missingRun \? 404/);
 });
