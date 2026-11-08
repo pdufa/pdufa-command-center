@@ -3,6 +3,7 @@ import type {Metadata} from "next";
 import {notFound} from "next/navigation";
 import {buildDecisionBrief} from "../../../../lib/medical-intelligence-decision-brief";
 import type {ReviewedFinding} from "../../../../lib/medical-intelligence-reviewed-findings";
+import {deskIssuesForCycle,type ReviewIssue} from "../../../../lib/medical-intelligence-failure-desk";
 
 export const metadata:Metadata={title:"FDA Decision Brief — Deep Medical Intelligence",description:"Source-linked approval, CRL and timing evidence for a specific FDA application review cycle."};
 export const dynamic="force-dynamic";
@@ -29,6 +30,7 @@ export default async function DecisionBriefPage({params}:{params:Promise<{id:str
  const brief=buildDecisionBrief(id);
  if(!brief)notFound();
  const a=brief.cycle;
+ const targeted=deskIssuesForCycle(a.id);
  return <main style={{maxWidth:1140,margin:"26px auto",padding:"0 16px 44px",fontFamily:"system-ui,sans-serif",color:ink}}>
    <div style={{fontSize:12,fontWeight:750,color:"#006451",letterSpacing:1}}>FOCUS → APPLICATION → INDEPENDENT FAILURE-FIRST BRIEF</div>
    <h1 style={{margin:"10px 0 4px"}}>{a.ticker} · {a.drug}</h1>
@@ -48,6 +50,21 @@ export default async function DecisionBriefPage({params}:{params:Promise<{id:str
      <p style={{fontWeight:650,lineHeight:1.6}}>{brief.primaryReviewQuestion}</p>
      <p style={{fontSize:13,color:muted}}>Linked NCT studies: {a.ncts.join(", ")}</p>
      <p style={{fontSize:13,marginBottom:0}}><a href={a.sourceUrl} target="_blank" rel="noopener noreferrer">Source establishing this application cycle ({a.sourceDate})</a></p>
+   </section>
+   <section style={{border:"1px solid "+line,padding:16,borderRadius:10,marginTop:14,background:"#f7fbf7"}}>
+    <h2 style={{margin:"0 0 8px",fontSize:18}}>Targeted failure-risk adjudication ({targeted.length} sourced issue{targeted.length===1?"":"s"})</h2>
+    {targeted.length?targeted.map((issue:ReviewIssue)=><details key={issue.id} style={{borderTop:"1px solid "+line,padding:"10px 0"}}>
+     <summary style={{cursor:"pointer",fontWeight:700}}>{issue.title} <small style={{fontWeight:400,color:muted}}>· {issue.evidenceClass.replace(/_/g," ")}</small></summary>
+     <div style={{fontSize:14,lineHeight:1.6}}>
+      <p><strong>Evidence:</strong> {issue.observation}</p>
+      <p><strong>Why FDA could care:</strong> {issue.whyItMatters}</p>
+      <p><strong>Opposing evidence:</strong> {issue.responseOrCounterevidence}</p>
+      <p><strong>Resolution status:</strong> {issue.resolutionState.replace(/_/g," ").toLowerCase()}.</p>
+      <p><strong>Required verification:</strong> {issue.decisiveFollowUp}</p>
+      <p><a href={issue.sourceUrl} target="_blank" rel="noopener noreferrer">{issue.sourceTitle} ({issue.sourceDate})</a></p>
+     </div>
+    </details>):<p style={{fontSize:13,color:muted}}>No deep failure-case review has been curated for this cycle yet. The broader evidence ledger below is only initial source mapping; absence of a case is not a clean FDA risk assessment.</p>}
+    <p style={{fontSize:13,marginBottom:0}}><Link href="/medical-intelligence-preview/failure-desk">Review all targeted failure investigations</Link></p>
    </section>
    <EvidenceGroup title="Documented FDA objections" items={brief.documentedFdaObjections} description="FDA-origin objections in the reviewed source record; not a final future decision."/>
    <EvidenceGroup title="Previous Complete Response Letters" items={brief.pastCrls} description="Historical application-level CRLs and their stated causes. Whether a new cycle resolves them must be established separately."/>
