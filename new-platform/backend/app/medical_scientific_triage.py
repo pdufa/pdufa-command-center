@@ -356,13 +356,13 @@ def requested_batch() -> tuple[str,tuple[str,...]] | None:
     return campaign, ncts
 
 
-def run_batch(engine) -> list[dict]:
+def run_batch(engine, *, test_only=False) -> list[dict]:
     """Preflight EVERY trial before appending; preserve source/grade ledgers."""
     selected = requested_batch()
     if selected is None:
         return []
     campaign, ncts = selected
-    if engine.dialect.name != "postgresql":
+    if engine.dialect.name != "postgresql" and not test_only:
         raise RuntimeError("Controlled research triage tail requires durable PostgreSQL")
     # No table writes before every source/assessment projection checks out.
     prepared = {nct: analyze(engine, nct) for nct in ncts}
@@ -371,7 +371,7 @@ def run_batch(engine) -> list[dict]:
         raise RuntimeError("Batch source coverage is not internally consistent")
     results = []
     for nct in ncts:
-        row = persist(engine, nct)
+        row = persist(engine, nct, test_only=test_only)
         original = prepared[nct]
         if (row["sourceInputSha256"] != original["sourceInputSha256"]
                 or row["catalogSha256"] != original["catalogSha256"]
