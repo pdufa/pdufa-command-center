@@ -75,7 +75,7 @@ def test_stop_and_resume_from_saved_stage(engine, monkeypatch):
         count += 1
         if index == 2:
             medical.stop(engine, NCT, job["runId"])
-        return "EVIDENCE_GAP", {"index": index}
+        return ("SOURCE_RECORDED" if index == 0 else "EVIDENCE_GAP"), {"index": index}
     medical.worker(engine, job["runId"], step=stage)
     stopped = medical.snapshot(engine, NCT, job["runId"])
     assert stopped["status"] == "STOPPED"
