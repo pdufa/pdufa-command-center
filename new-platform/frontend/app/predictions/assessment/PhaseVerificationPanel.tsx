@@ -118,6 +118,14 @@ export default function PhaseVerificationPanel({nct}:{nct:string}){
           <p><a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/safety-arithmetic-source-audit-revision9-20261108.md" target="_blank" rel="noopener noreferrer">Open revision 9 · full source arithmetic audit</a></p>
           <p style={{fontSize:12,marginBottom:0}}>ARITHMETIC AUDIT COMPLETE · CLINICAL SAFETY ADJUDICATION OPEN · GRADE EVENTS 0</p>
         </details>
+        <details style={{...panel,background:"#f4f7fa",marginBottom:0}}>
+          <summary><strong>Trial-specific SAP identity and LVEF site-versus-core audit · revision 10</strong></summary>
+          <p style={{fontSize:13}}>A public supplemental statistical analysis document was found for <strong>CY 6031 / SEQUOIA-HCM (obstructive HCM)</strong>. This is <strong>not</strong> the missing final SAP for <strong>CY 6033 / ACACIA-HCM (nonobstructive HCM)</strong>. It is excluded from this trial's source research. ACACIA's signed final SAP is still not obtained.</p>
+          <p style={{fontSize:13}}>A second ACACIA-HCM peer-reviewed echocardiography study reports <strong>7/258 (2.7%)</strong> patients with low-LVEF treatment interruption. This agrees arithmetically with the 2.7% figure but does not yet resolve another paper's text reporting <strong>14 (2.7%)</strong>. Core-laboratory LVEF excursions and site-read interruption triggers may be different outcomes; the original source tables still need checking.</p>
+          <p><a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC13674599/" target="_blank" rel="noopener noreferrer">Published echocardiography analysis — 7 interruptions</a></p>
+          <p><a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/cross-trial-sap-and-lvef-audit-revision10-20261108.md" target="_blank" rel="noopener noreferrer">Read revision 10 · source identity and safety definition review</a></p>
+          <p style={{fontSize:12,marginBottom:0}}>WRONG-TRIAL SAP EXCLUDED FROM PILOT RESEARCH · ORIGINAL CY 6033 SAP PENDING · 0 CLINICAL GRADES</p>
+        </details>
       </aside>:null}
       <p>
         <a href={selected.officialUrl} target="_blank" rel="noopener noreferrer">Original ClinicalTrials.gov study</a>
