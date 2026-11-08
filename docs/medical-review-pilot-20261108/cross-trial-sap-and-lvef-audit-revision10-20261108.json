@@ -96,5 +96,26 @@
     "CRL": "ABSTAIN",
     "REVIEW_DELAY": "ABSTAIN"
   },
-  "certainty": "NOT_VALIDATED"
+  "certainty": "NOT_VALIDATED",
+  "regulatoryCycleDisambiguation": {
+    "drug": "aficamten",
+    "otherApplication": {
+      "trial": "MAPLE-HCM",
+      "indication": "OBSTRUCTIVE_HCM",
+      "cycle": "LABEL_EXPANSION_SNDA",
+      "pdufaDate": "2026-11-14",
+      "evidence": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Reports-First-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx"
+    },
+    "pilotApplication": {
+      "trial": "ACACIA-HCM",
+      "indication": "NONOBSTRUCTIVE_HCM",
+      "cycle": "PROSPECTIVE_SNDA",
+      "latestPublicAsOf": "2026-11-04",
+      "filingStatus": "PLANNED_Q4_2026_NOT_CONFIRMED_FILED",
+      "pdufaDate": null,
+      "evidence": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Reports-Third-Quarter-2026-Financial-Results-and-Provides-Business-Update/default.aspx"
+    },
+    "sameDrugDifferentIndicationsAndCycles": true,
+    "copyingOtherTrialPdufaToPilot": "PROHIBITED"
+  }
 }
