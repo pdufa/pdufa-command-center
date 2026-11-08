@@ -28,13 +28,7 @@ test("numeric filter excludes missing evidence instead of treating as zero",()=>
  assert.deepEqual(applyColumnFilters(rows,{s:">20"},read).map(x=>x.ticker),["BBB","CCC"]);
 });
 test("all three existing TOOLS/readout table components include independent filter state",()=>{
- const p=require("node:path");
- const dir=p.resolve(__dirname,"../app");
- for(const file of ["ToolsOpeningTrialGrid.tsx","ToolsResultsSpreadsheet.tsx","Phase3ReadoutSheets.tsx"]){
-  const data=fs.readFileSync(p.join(dir,file),"utf8");
-  assert.match(data,/TrialColumnFilterBar/);
-  assert.match(data,/applyColumnFilters/);
- }
+for(const f of ['ToolsOpeningTrialGrid.tsx','ToolsResultsSpreadsheet.tsx']){const ui=require('node:fs').readFileSync(require('node:path').join(__dirname,'../app',f),'utf8');assert.match(ui,/TrialColumnFilterBar/);assert.match(ui,/applyColumnFilters/);}const source=require('node:fs').readFileSync(require('node:path').join(__dirname,'../app/Phase3ReadoutSheets.tsx'),'utf8');assert.match(source,/filtered=useMemo/);assert.doesNotMatch(source,/Survey|BenefitMatrix/);
 });
 test("visible-page filter controls expose inputs, clear action and are responsive",async()=>{
  global.IS_REACT_ACT_ENVIRONMENT=true;

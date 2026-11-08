@@ -1,13 +1,5 @@
-/** Research-only, read-only audit of the currently saved FDA forecast
- * receipt metadata. Never returns approved accuracy or trading signals.
- */
-import {currentRaasFdaForecastFreezeReceiptAudit}
- from "../../../lib/raas-fda-forecast-freeze-receipt-audit";
+/** Permanently retired compatibility endpoint. No scoring module is imported. */
 export const dynamic="force-dynamic";
 export function GET(){
- const audit=currentRaasFdaForecastFreezeReceiptAudit();
- return Response.json(audit,{headers:{
-  "Cache-Control":"no-store",
-  "X-Content-Type-Options":"nosniff"
- }});
+ return Response.json({error:"RAAS_PERMANENTLY_RETIRED",status:"RETIRED",historicalArchive:"/api/archive/raas",message:"Historical records are read-only and cannot enter active analysis."},{status:410,headers:{"Cache-Control":"no-store"}});
 }

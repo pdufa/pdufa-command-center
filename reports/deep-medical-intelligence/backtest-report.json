@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-08T03:51:51.532449+00:00",
+  "asOf": "2026-11-08T03:51:51.532423+00:00",
+  "status": "AUDITED",
+  "method": "EARLIEST_ELIGIBLE_EVENT_PER_EXACT_APPLICATION_REVIEW_CYCLE",
+  "sourceValidation": "METADATA_IDENTITY_AND_TIME_ONLY_NOT_LIVE_URL_VERIFICATION",
+  "syntheticFixturesIncluded": false,
+  "inputCounts": {
+    "predictionEvents": 0,
+    "outcomeRecords": 0
+  },
+  "evaluatedApplicationCycles": 0,
+  "cases": [],
+  "fda": {
+    "actualOutcomeCounts": {},
+    "categoricalConfusion": [],
+    "crlBinaryDenominator": 0,
+    "confusion": {
+      "truePositive": 0,
+      "falsePositive": 0,
+      "trueNegative": 0,
+      "falseNegative": 0
+    },
+    "crlSensitivity": {
+      "numerator": 0,
+      "denominator": 0,
+      "value": null
+    },
+    "crlSpecificity": {
+      "numerator": 0,
+      "denominator": 0,
+      "value": null
+    },
+    "crlPrecision": {
+      "numerator": 0,
+      "denominator": 0,
+      "value": null
+    },
+    "abstentionCount": 0,
+    "abstentions": [],
+    "excluded": [],
+    "negativeClass": "ADJUDICATED_TRADITIONAL_OR_ACCELERATED_APPROVAL_ONLY"
+  },
+  "timing": {
+    "denominator": 0,
+    "accuracy": {
+      "numerator": 0,
+      "denominator": 0,
+      "value": null
+    },
+    "confusion": [],
+    "abstentionCount": 0,
+    "abstentions": [],
+    "excluded": []
+  },
+  "predictionExclusions": [],
+  "qaIssues": [],
+  "sourceAudit": [],
+  "limitations": [
+    "No historical prediction is reconstructed from known outcomes.",
+    "Source publication dates and application identities require external provenance review.",
+    "Date-only public evidence is available at UTC day end; date-only action dates begin at UTC day start.",
+    "Multiple trials supporting one application do not create additional independent outcomes.",
+    "Diagnostic proportions describe this adjudicated cohort and are not FDA approval probabilities."
+  ]
+}

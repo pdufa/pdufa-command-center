@@ -1,3 +1,7 @@
+
+// Permanently retired artifact writer: refuse imports and commands before I/O.
+throw new Error("RAAS_PERMANENTLY_RETIRED: this archived writer cannot run or modify historical records.");
+
 /** Append-only phase/rating snapshots. Existing RAAS ledgers are never edited. */
 const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');
 const root=path.resolve(__dirname,'../new-platform/frontend'),ts=require(path.join(root,'node_modules/typescript'));

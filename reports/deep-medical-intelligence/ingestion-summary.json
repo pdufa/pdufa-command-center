@@ -1,0 +1,70 @@
+{
+  "asOf": "2026-11-08T03:46:35+00:00",
+  "counts": {
+    "uniqueInventoryNcts": 11647,
+    "poolUniqueNcts": 11644,
+    "csvRows": 11641,
+    "csvUniqueNcts": 11641,
+    "focusTrials": 29,
+    "linkedNcts": 0,
+    "poolRecords": 11841,
+    "poolClinicalRecordsIncludingUnlinkedResults": 11650,
+    "unlinkedResultAliases": 6,
+    "regulatoryEventsExcludedFromTrialCount": 191,
+    "poolAdditionsBeyondCsv": [
+      "NCT07922330",
+      "NCT07923526",
+      "NCT07923591"
+    ],
+    "csvNotInPool": [],
+    "duplicateIdentityGroups": 0,
+    "metadataAliasDiscrepancyGroups": 2251,
+    "statusCounts": {
+      "COMPLETED": 7336,
+      "UNKNOWN": 61,
+      "TERMINATED": 1441,
+      "ACTIVE_NOT_RECRUITING": 953,
+      "TEMPORARILY_NOT_AVAILABLE": 5,
+      "WITHDRAWN": 299,
+      "APPROVED_FOR_MARKETING": 16,
+      "NO_LONGER_AVAILABLE": 10,
+      "ENROLLING_BY_INVITATION": 104,
+      "RECRUITING": 1235,
+      "SUSPENDED": 8,
+      "AVAILABLE": 21,
+      "NOT_YET_RECRUITING": 155,
+      "UNKNOWN_SOURCE_NOT_REPORTED": 3
+    },
+    "phaseCounts": {
+      "PHASE2": 3272,
+      "NA": 697,
+      "PHASE1|PHASE2": 955,
+      "PHASE3": 4335,
+      "PHASE2|PHASE3": 294,
+      "PHASE1": 1655,
+      "PHASE4": 428,
+      "EARLY_PHASE1": 11
+    },
+    "processingStates": {
+      "METADATA_SCREENED_INCOMPLETE": 11647
+    },
+    "rawRegistryPacketsCaptured": 47,
+    "fullySourceReviewed": 0,
+    "scientificReviewIncomplete": 11647,
+    "sourceUnavailable": 0
+  },
+  "ingestion": {
+    "importedRawRegistryCaches": 0,
+    "freshFetchSelected": 29,
+    "persistentJobPath": "reports/deep-medical-intelligence/ingestion-job.json",
+    "remainingFetchQueue": 11600,
+    "resumePolicy": "Reuse current-UTC-day successful remote captures; older caches are refreshed when selected.",
+    "remainingPoolCommand": "python scripts/collect_deep_medical_intelligence.py --all --fetch-all --resume",
+    "arbitraryTrialCountCap": null
+  },
+  "inputSourceHashes": {
+    "new-platform/frontend/data/tools-pool-snapshot.json": "d091282bb426e34334f23ea9637d2a31e0e0a86c7a29607413f83b69f16b1b2e",
+    "data/all_phase_trials.csv": "0ebbc5f8abd7815934e70620755511872fcd60c164e306d0b1c6a222bde23e5c",
+    "new-platform/frontend/data/p3PostDataActive.json": "48797f7e604cbe56d21ed3a1e791e9ec8ccda515ae629a88a13c5f999ed7a251"
+  }
+}

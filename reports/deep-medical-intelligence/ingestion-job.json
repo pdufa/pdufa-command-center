@@ -1,0 +1,274 @@
+{
+  "schemaVersion": 1,
+  "attemptedNcts": [
+    "NCT02500381",
+    "NCT04308590",
+    "NCT03697109",
+    "NCT04544293",
+    "NCT04716231",
+    "NCT04871282",
+    "NCT05059223",
+    "NCT04576949",
+    "NCT05113745",
+    "NCT05208047",
+    "NCT05126758",
+    "NCT05206370",
+    "NCT05244304",
+    "NCT05507216",
+    "NCT05507203",
+    "NCT05662241",
+    "NCT05767346",
+    "NCT05811247",
+    "NCT05813275",
+    "NCT06081894",
+    "NCT06331299",
+    "NCT06153693",
+    "NCT06087276",
+    "NCT06343779",
+    "NCT06445023",
+    "NCT06411899",
+    "NCT06411379",
+    "NCT06455202",
+    "NCT06669754"
+  ],
+  "events": [
+    {
+      "nctId": "NCT02500381",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT02500381",
+      "at": "2026-11-08T03:46:32+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT04308590",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT04308590",
+      "at": "2026-11-08T03:46:32+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT03697109",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT03697109",
+      "at": "2026-11-08T03:46:32+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT04544293",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT04544293",
+      "at": "2026-11-08T03:46:32+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT04716231",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT04716231",
+      "at": "2026-11-08T03:46:32+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT04871282",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT04871282",
+      "at": "2026-11-08T03:46:32+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT05059223",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05059223",
+      "at": "2026-11-08T03:46:32+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT04576949",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT04576949",
+      "at": "2026-11-08T03:46:32+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT05113745",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05113745",
+      "at": "2026-11-08T03:46:32+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT05208047",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05208047",
+      "at": "2026-11-08T03:46:32+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT05126758",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05126758",
+      "at": "2026-11-08T03:46:32+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT05206370",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05206370",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT05244304",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05244304",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT05507216",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05507216",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT05507203",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05507203",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT05662241",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05662241",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT05767346",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05767346",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT05811247",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05811247",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT05813275",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT05813275",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT06081894",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06081894",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT06331299",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06331299",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT06153693",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06153693",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT06087276",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06087276",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT06343779",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06343779",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT06445023",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06445023",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT06411899",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06411899",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT06411379",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06411379",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT06455202",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06455202",
+      "at": "2026-11-08T03:46:33+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    },
+    {
+      "nctId": "NCT06669754",
+      "url": "https://clinicaltrials.gov/api/v2/studies/NCT06669754",
+      "at": "2026-11-08T03:46:34+00:00",
+      "state": "OFFICIAL_CT_GOV_API_V2",
+      "error": null
+    }
+  ],
+  "startedAt": "2026-11-08T03:46:32+00:00",
+  "selectedNcts": [
+    "NCT02500381",
+    "NCT03697109",
+    "NCT04308590",
+    "NCT04544293",
+    "NCT04576949",
+    "NCT04716231",
+    "NCT04871282",
+    "NCT05059223",
+    "NCT05113745",
+    "NCT05126758",
+    "NCT05206370",
+    "NCT05208047",
+    "NCT05244304",
+    "NCT05507203",
+    "NCT05507216",
+    "NCT05662241",
+    "NCT05767346",
+    "NCT05811247",
+    "NCT05813275",
+    "NCT06081894",
+    "NCT06087276",
+    "NCT06153693",
+    "NCT06331299",
+    "NCT06343779",
+    "NCT06411379",
+    "NCT06411899",
+    "NCT06445023",
+    "NCT06455202",
+    "NCT06669754"
+  ],
+  "state": "COMPLETED",
+  "workers": 4,
+  "finishedAt": "2026-11-08T03:46:34+00:00"
+}

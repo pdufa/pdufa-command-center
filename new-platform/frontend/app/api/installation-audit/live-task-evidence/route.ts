@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { masterBuildTasks } from "../../../installation-audit/master-build-tasks";
+import { activeInstallationTasks } from "../../../../lib/installation-active-requirements";
 import evidenceRegistry from "../../../../public/installation-audit/task-evidence.json";
 
 export const dynamic = "force-dynamic";
@@ -15,8 +16,7 @@ function hasTaskAcceptance(row:Evidence):boolean {
  if (!/^[a-f0-9]{40}$/.test(proof.deployedCommit)) return false;
  return true;
 }
-const ids = masterBuildTasks.flatMap((section,i)=>section.map((_,j)=>
-  String(i+1).padStart(2,"0")+"-"+String(j+1).padStart(3,"0")));
+const ids=activeInstallationTasks(masterBuildTasks).map(task=>task.id);
 export async function GET(request: Request) {
  const checkedAt = new Date().toISOString();
  const origin = new URL(request.url).origin;
@@ -122,5 +122,5 @@ export async function GET(request: Request) {
  // Runtime failures do not erase previously dated acceptance evidence. Live checks
  // are observations only; no requirement is auto-certified without a test contract.
  const counts=ids.reduce((acc,id)=>{const status=tasks[id].status;acc[status]=(acc[status]??0)+1;return acc;},{} as Record<string,number>);
- return NextResponse.json({schemaVersion:1,checkedAt,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,rejectedVerified,counts,tasks,checks,observations:mappedObservations,observationSummary,automatedAcceptanceCoverage:0,unverifiedCount:counts.Unverified??0,verifiedCount:counts.Verified??0,liveChecksPassing:observationSummary.probesHealthy,liveChecksTotal:Object.keys(checks).length,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
+ return NextResponse.json({schemaVersion:1,checkedAt,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,historicalTaskCount:masterBuildTasks.reduce((n,tasks)=>n+tasks.length,0)-ids.length,rejectedVerified,counts,tasks,checks,observations:mappedObservations,observationSummary,automatedAcceptanceCoverage:0,unverifiedCount:counts.Unverified??0,verifiedCount:counts.Verified??0,liveChecksPassing:observationSummary.probesHealthy,liveChecksTotal:Object.keys(checks).length,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
 }

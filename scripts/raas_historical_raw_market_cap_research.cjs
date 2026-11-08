@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 "use strict";
+
+// Permanent retirement: no historical artifact writer may execute as a command.
+if (require.main === module) { process.stderr.write("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.\n"); process.exit(78); }
+
 /** Real dated SEC cover shares x Alpaca RAW SIP close (NOT a validated
  * historical market-cap series or a qualified RAAS backtest). Separate
  * adjusted SIP prices are requested for return arithmetic only.

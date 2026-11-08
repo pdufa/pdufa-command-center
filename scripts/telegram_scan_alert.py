@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Telegram notifications for verified PDUFA/RAAS job events.
+"""Telegram notifications for verified independent PDUFA job events.
 
 GitHub Actions secrets: TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID.
 Do not display secrets or Telegram request URLs in job output.
@@ -14,14 +14,11 @@ import urllib.error
 LABELS = {
     "pipeline-start": "▶️ PDUFA PIPELINE — LAUNCHING",
     "pipeline-end": "✅ PDUFA PIPELINE — COMPLETED",
-    "raas-start": "▶️ RAAS ACCURACY — STARTED",
-    "raas-end": "✅ RAAS ACCURACY — COMPLETED",
-    "raas-evidence-change": "📄 RAAS — SAVED RESEARCH EVIDENCE CHANGED",
     "system-edit": "🛠 PDUFA SYSTEM — CODE UPDATED",
-    "prediction-change": "📈 RAAS — VERIFIED PREDICTION CHANGE",
-    "scan-start": "▶️ PDUFA / RAAS — SCAN STARTED",
-    "scan-end": "✅ PDUFA / RAAS — SCAN COMPLETED",
-    "test": "🔔 PDUFA / RAAS — TELEGRAM TEST",
+    "prediction-change": "📈 PDUFA — VERIFIED PREDICTION CHANGE",
+    "scan-start": "▶️ PDUFA — SCAN STARTED",
+    "scan-end": "✅ PDUFA — SCAN COMPLETED",
+    "test": "🔔 PDUFA — TELEGRAM TEST",
 }
 
 def message(kind, status="", details="", url=""):
@@ -29,7 +26,7 @@ def message(kind, status="", details="", url=""):
         raise ValueError("unknown event")
     label = LABELS[kind]
     if kind.endswith("-end") and status != "success":
-        label = "❌ " + ("PDUFA PIPELINE" if kind == "pipeline-end" else ("RAAS ACCURACY" if kind == "raas-end" else "PDUFA / RAAS SCAN")) + " — FAILED / INCOMPLETE"
+        label = "❌ " + ("PDUFA PIPELINE" if kind == "pipeline-end" else "PDUFA SCAN") + " — FAILED / INCOMPLETE"
     parts = [label]
     if status:
         parts.append("Workflow status: " + status[:70])

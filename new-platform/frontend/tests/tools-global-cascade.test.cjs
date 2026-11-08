@@ -159,18 +159,5 @@ test("checking FDA category reveals program and linked-trial counts without chan
  }finally{if(root)await act(async()=>root.unmount());}
 });
 test("20-assessment selector stays sequential and evidence UI follows active assessment",()=>{
- const matrix=fs.readFileSync(require.resolve("../app/ToolsBenefitMatrix.tsx"),"utf8");
- assert.match(matrix,/STEP4_SECTIONS\.map/);
- assert.match(matrix,/4a\{g\.number\} — \{g\.name\}/);
- assert.match(matrix,/id="tools-step4-analysis"/);
- const ranking=fs.readFileSync(require.resolve("../app/ToolsRankingChecklists.tsx"),"utf8");
- assert.match(ranking,/data-cascade-for=\{"assessment-"\+id\}/);
- const explorer=fs.readFileSync(require.resolve("../app/PoolStageExplorer.tsx"),"utf8");
- assert.match(explorer,/stages.map\(\(stage,stageIndex\)=>/);
- assert.match(explorer,/total=\{stages.length\}/);
- const designation=fs.readFileSync(require.resolve("../app/PoolDesignationSelector.tsx"),"utf8");
- assert.match(designation,/checked&&index&&<div className=\{styles.toolsCascadeFdaEvidence\}/);
- assert.match(designation,/className=\{styles.toolsFdaRowCount\}/);
- assert.match(designation,/poolTotals\?\.\[category.key\]/);
- assert.match(designation,/documented matching trial IDs in selected scope/);
+const ui=require('node:fs').readFileSync(require('node:path').join(__dirname,'../app/PoolStageExplorer.tsx'),'utf8');assert.doesNotMatch(ui,/ToolsAssessmentSection|ToolsBenefitMatrix/);assert.match(ui,/PoolDesignationSelector/);assert.match(ui,/ToolsOpeningTrialGrid/);
 });

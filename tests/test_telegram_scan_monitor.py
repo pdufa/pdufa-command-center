@@ -35,8 +35,9 @@ class TestTelegramScanMonitor(unittest.TestCase):
         self.assertFalse(is_active_scan(run(event="pull_request")))
         self.assertFalse(is_active_scan(run(event="push")))
 
-    def test_raas_manual_research_and_daytime_scan(self):
-        self.assertTrue(is_active_scan(run(path=".github/workflows/raas-evidence-snapshot-capture.yml", title="RAAS evidence snapshot capture")))
+    def test_retired_research_is_excluded_but_daytime_source_scan_remains(self):
+        self.assertFalse(is_active_scan(run(path=".github/workflows/raas-evidence-snapshot-capture.yml", title="RAAS evidence snapshot capture")))
+        self.assertFalse(is_active_scan(run(path=".github/workflows/pdufa-nightly-experimental.yml", title="RAAS source capture")))
         self.assertTrue(is_active_scan(run(path=".github/workflows/pdufa-filings-section-scan.yml", title="FDA source scan")))
 
     def test_existing_direct_alerts_not_duplicated(self):

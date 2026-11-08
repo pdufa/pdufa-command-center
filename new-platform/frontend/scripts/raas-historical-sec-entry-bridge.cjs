@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 "use strict";
+
+// Permanent retirement: no historical artifact writer may execute as a command.
+if (require.main === module) { process.stderr.write("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.\n"); process.exit(78); }
+
 /** Export research-only SEC cover share source availability at proposed T-79 session.
  * No independently verified market capitalization, price or trading score.
  */

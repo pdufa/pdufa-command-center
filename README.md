@@ -1,11 +1,13 @@
 # PDUFA Command Center — active platform
 
+**Permanent policy:** RAAS is retired from all active analysis, predictions, certainty, scans and installation requirements. Historical records are read-only. Read [AGENTS.md](AGENTS.md) before making changes. The independent medical installation continues without restarting completed work.
+
 **Operational stack (November 3, 2026):** Next.js frontend on Vercel, FastAPI backend on Render, and GitHub Actions for the research scans and published source reports.
 
 - Live dashboard: https://pdufa-new-dashboard.vercel.app
 - Frontend: `new-platform/frontend/` (Next.js / React)
 - Backend: `new-platform/backend/` (FastAPI; configured Render service)
-- Main research area: **POOL → PIPELINE**, with evidence, FDA outcomes, scientific evaluation, and supporting commercial analysis
+- Main research area: **POOL → FOCUS → Deep Medical Intelligence → FDA Decision**, with evidence, FDA outcomes, scientific evaluation, and supporting commercial analysis
 - Eligibility focus: publicly traded issuers with a $300 million–$10 billion market cap and source-verified post–Phase 3 programs. Keep unverified claims clearly labeled; do not remove historical POOL records.
 
 ## Current dashboard

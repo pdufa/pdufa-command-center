@@ -1,0 +1,103 @@
+name: RAAS ACTIVE 2024–2025 two-year PDUFA historical study
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - 'scripts/raas_research_workflow_receipt.cjs'
+      - 'tests/raas_research_workflow_receipt.test.cjs'
+      - 'scripts/raas_active_two_year_study.cjs'
+      - 'scripts/raas_raw_entry_cap_research.cjs'
+      - 'scripts/raas_adjustment_factor_window_audit.cjs'
+      - 'tests/raas_adjustment_factor_window_audit.test.cjs'
+      - 'scripts/raas_independent_entry_close_research.cjs'
+      - 'new-platform/frontend/data/raas-active-2024-2025-independent-entry-close-leads.json'
+      - 'tests/raas_independent_entry_close_research.test.cjs'
+      - 'scripts/raas_alpaca_historical_price_study.cjs'
+      - 'tests/raas_raw_entry_cap_research.test.cjs'
+      - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
+      - 'new-platform/frontend/data/raas-2024-2025-additional-earliest-sec-cover.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
+      - 'tests/raas_active_two_year_study.test.cjs'
+      - 'new-platform/frontend/data/raas-active-study-config.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
+      - 'new-platform/frontend/data/raas-alpaca-venue-exceptions.json'
+      - 'new-platform/frontend/data/raas-2025-cort-relacorilant-fda-phase3-source-lead.json'
+      - '.github/workflows/raas-alpaca-active-two-year-study.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/raas_research_workflow_receipt.cjs'
+      - 'tests/raas_research_workflow_receipt.test.cjs'
+      - 'scripts/raas_active_two_year_study.cjs'
+      - 'scripts/raas_raw_entry_cap_research.cjs'
+      - 'scripts/raas_adjustment_factor_window_audit.cjs'
+      - 'tests/raas_adjustment_factor_window_audit.test.cjs'
+      - 'scripts/raas_independent_entry_close_research.cjs'
+      - 'new-platform/frontend/data/raas-active-2024-2025-independent-entry-close-leads.json'
+      - 'tests/raas_independent_entry_close_research.test.cjs'
+      - 'scripts/raas_alpaca_historical_price_study.cjs'
+      - 'tests/raas_raw_entry_cap_research.test.cjs'
+      - 'new-platform/frontend/data/raas-active-2024-2025-preentry-sec-share-leads.json'
+      - 'new-platform/frontend/data/raas-2024-2025-additional-earliest-sec-cover.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-primary-source-leads.json'
+      - 'tests/raas_active_two_year_study.test.cjs'
+      - 'new-platform/frontend/data/raas-active-study-config.json'
+      - 'new-platform/frontend/data/raas-active-2024-2025-pdufa-intake.json'
+      - 'new-platform/frontend/data/raas-alpaca-venue-exceptions.json'
+      - 'new-platform/frontend/data/raas-2025-cort-relacorilant-fda-phase3-source-lead.json'
+      - '.github/workflows/raas-alpaca-active-two-year-study.yml'
+permissions:
+  contents: read
+concurrency:
+  group: raas-active-two-year-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  research-2024-2025:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Test research execution receipts are not confused with validation
+        run: node --test tests/raas_research_workflow_receipt.test.cjs
+      - name: Test two-year scope, SEC/PDUFA chronology, independent holdout and no false grading
+        run: |
+          node --test tests/raas_alpaca_historical_price_study.test.cjs
+          node --test tests/raas_alpaca_ten_year_study.test.cjs
+          node --test tests/raas_active_two_year_study.test.cjs
+          node --test tests/raas_raw_entry_cap_research.test.cjs
+          node --test tests/raas_adjustment_factor_window_audit.test.cjs
+          node --test tests/raas_independent_entry_close_research.test.cjs
+      - name: Research 2024–2025 only using historical Alpaca SIP candidates (research, never approved trades)
+        if: github.event_name != 'pull_request'
+        env:
+          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+          ALPACA_API_KEY_ID: ${{ secrets.ALPACA_API_KEY_ID }}
+          ALPACA_SECRET_KEY: ${{ secrets.ALPACA_SECRET_KEY }}
+          RAAS_TWO_YEAR_RESULT_PATH: ${{ runner.temp }}/raas-2024-2025-pdufa-research.json
+        run: node scripts/raas_active_two_year_study.cjs
+      - name: Record whether research really ran and ensure required live evidence artifact exists
+        if: always()
+        env:
+          RAAS_RECEIPT_SCOPE: ACTIVE_2024_2025_ALPACA_STUDY
+          RAAS_RECEIPT_EXPECTED: raas-2024-2025-pdufa-research.json
+          RAAS_RECEIPT_REQUIRED: raas-2024-2025-pdufa-research.json
+          RAAS_RECEIPT_OUTPUT: ${{ runner.temp }}/raas-2024-2025-research-execution-receipt.json
+        run: node scripts/raas_research_workflow_receipt.cjs
+      - name: Save 2024–2025 source gaps and actual price research, not RAAS scores
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-2024-2025-pdufa-research
+          path: |
+            ${{ runner.temp }}/raas-2024-2025-pdufa-research.json
+            ${{ runner.temp }}/raas-2024-2025-research-execution-receipt.json
+          retention-days: 30
+          if-no-files-found: warn

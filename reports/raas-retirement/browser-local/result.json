@@ -1,0 +1,17 @@
+{
+  "base": "http://localhost:3011",
+  "retiredEndpointsVerified": 18,
+  "readOnlyArchiveVerified": true,
+  "originalHistoricalRecordsPreserved": true,
+  "focusTrialCount": 29,
+  "independentApplicationTargets": 23,
+  "independentLevels": 12,
+  "completedMedicalDecisions": 0,
+  "desktopVerified": true,
+  "mobileHorizontalExpansion": {
+    "client": 364,
+    "scroll": 2836
+  },
+  "installationPageReachable": true,
+  "errors": []
+}

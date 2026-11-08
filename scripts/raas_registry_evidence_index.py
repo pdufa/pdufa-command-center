@@ -7,6 +7,11 @@ PDUFA eligibility or RAAS 0–100 scores. Only the exact public-source packet
 and publication dates are shown, without backdating research forecasts.
 """
 from __future__ import annotations
+
+# Permanent retirement: historical functions are importable for read-only audits only.
+if __name__ == "__main__":
+    raise SystemExit("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.")
+
 import csv
 import json
 from pathlib import Path

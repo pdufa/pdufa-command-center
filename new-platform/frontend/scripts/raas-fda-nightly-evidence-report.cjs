@@ -1,4 +1,8 @@
 "use strict";
+
+// Permanent retirement: no historical artifact writer may execute as a command.
+if (require.main === module) { process.stderr.write("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.\n"); process.exit(78); }
+
 /** Read-only as-of FDA PASS/CRL/EXTENSION readiness artifact for the EXISTING
  * scheduled RAAS FDA accuracy workflow. Never adds hypothetical forecasts,
  * adjudicates an outcome, submits an order, or claims a live FDA lookup.

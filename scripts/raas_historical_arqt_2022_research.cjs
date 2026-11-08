@@ -1,5 +1,9 @@
 #!/usr/bin/env node
 "use strict";
+
+// Permanent retirement: no historical artifact writer may execute as a command.
+if (require.main === module) { process.stderr.write("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.\n"); process.exit(78); }
+
 /**
  * Additional 2022 FDA program: ARQT/Zoryve 0.3% plaque psoriasis.
  * Point-in-time PDUFA/Phase3 source and SEC raw-share/price research only.

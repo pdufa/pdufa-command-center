@@ -1,7 +1,8 @@
-/** Phase-first applicability and partial clinical research ratings.
- * Never modifies a saved score, calibration, prediction or Pipeline membership.
+/** Phase-appropriate, source-only clinical evidence.
+ * No numerical clinical ratings or legacy score dependencies execute here.
+ * Historical ratings remain read-only archives outside this analysis path.
  */
-export const PHASE_FIRST_VERSION="PHASE_FIRST_CLINICAL_2026_11_06_V1";
+export const PHASE_FIRST_VERSION="PHASE_FIRST_SOURCE_EVIDENCE_2026_11_08_V2";
 export type EvidenceStatus="AVAILABLE"|"MISSING"|"NOT YET EXPECTED"|"NOT APPLICABLE"|"PENDING"|"CONFLICTING";
 export type SourceConfidence="HIGH"|"MODERATE"|"LOW";
 export type PhaseTrial={
@@ -19,25 +20,14 @@ export type PhaseTrial={
 export type EvidenceItem={id:string;label:string;status:EvidenceStatus;evidence:string;
  sourceUrl:string|null;evidenceDate:string|null;confidence:SourceConfidence;
  expectedAt:string;searchScope:string;dateKind:string;reviewedAt:string;searchedSourceUrl:string;group:"IDENTITY"|"CLINICAL"|"REGULATORY"};
-export type FactorKey="efficacy"|"clinicalBenefit"|"statistics"|"reproducibility"|"safety";
-export type ReviewedFactor={key:FactorKey;grade:number|null;sourceUrl:string|null;
- sourceDate:string|null;benchmarkSourceUrl:string|null;finding:string|null;assessedAt?:string|null;phaseScope?:readonly string[]};
 export type ClinicalContext={
  pipelineRestriction?:string|null;pipelineRestrictionSource?:string|null;
  ticker:string;drug:string;indication:string;programId:string;programPhase:string|null;
- programSourceUrl:string|null;legacyStage:"pre"|"post"|null;stageVerified:boolean;
- safetyPrimary:boolean;notApplicableFactors:readonly string[];
- reviewedFactors:readonly ReviewedFactor[];approvedRaas:number|null;
+ programSourceUrl:string|null;publicReadoutDocumented:boolean;
+ safetyPrimary:boolean;
  regulatory:{status:string;url:string;date:string;text:string;goalDate?:string}|null;
  additionalEvidence?:Partial<Record<string,{text:string;url:string;date:string;dateKind?:string;confidence?:SourceConfidence;status?:EvidenceStatus}>>;
 };
-const FACTORS:readonly {key:FactorKey;label:string;requirements:string[]}[]=[
- {key:"efficacy",label:"Clinical efficacy",requirements:["earlyEfficacy","phase3Results","priorEfficacySafety"]},
- {key:"clinicalBenefit",label:"Patient benefit and counterevidence",requirements:["proofOfConcept","benefitRisk"]},
- {key:"statistics",label:"Design and statistical strength",requirements:["design","power","uncertainty"]},
- {key:"reproducibility",label:"Mechanism, dose and reproducibility",requirements:["mechanism","doseSelection","pkPd"]},
- {key:"safety",label:"Safety and tolerability",requirements:["safety","tolerability"]}
-];
 const REQUIREMENTS:readonly [string,string,number,"IDENTITY"|"CLINICAL"|"REGULATORY"][]=[
  ["phase","Verified individual-trial phase",0,"IDENTITY"],["status","Recruitment/completion status",0,"IDENTITY"],
  ["indication","Indication and intended clinical benefit",0,"IDENTITY"],
@@ -83,7 +73,7 @@ export function evaluatePhaseFirst(trial:PhaseTrial,context:ClinicalContext,asOf
  const noClinical=trial.studyType!=="INTERVENTIONAL"||!phase.verified;
  const regulatoryLinked=!!context.regulatory;
  const regContext=regulatoryLinked?"EXACT_TRIAL_HISTORICAL_REGULATORY_LINK":
-  context.legacyStage==="post"&&mature>=3?"POST_READOUT_APPLICATION_NOT_ESTABLISHED":"CLINICAL_DEVELOPMENT";
+  context.publicReadoutDocumented&&mature>=3?"POST_READOUT_APPLICATION_NOT_ESTABLISHED":"CLINICAL_DEVELOPMENT";
  const registryResults=trial.results as {adverseEventsModule?:unknown;participantFlowModule?:unknown;outcomeMeasuresModule?:{outcomeMeasures?:{title:string;type?:string;analyses?:unknown[]}[]}};
  const outcomes=registryResults.outcomeMeasuresModule?.outcomeMeasures??[];
  const direct:Record<string,string|undefined>={
@@ -112,7 +102,7 @@ export function evaluatePhaseFirst(trial:PhaseTrial,context:ClinicalContext,asOf
   if(extra&&(!extra.url.startsWith("https://")||!/^\d{4}-\d{2}(-\d{2})?$/.test(extra.date)||extra.date>asOf))throw Error("PHASE_FIRST_EVIDENCE_CHRONOLOGY_INVALID");
   let status:EvidenceStatus;let explanation:string;
   if(value){status="AVAILABLE";explanation=value;}
-  else if(id==="phase"&&!phase.verified){status=trial.studyType==="OBSERVATIONAL"?"NOT APPLICABLE":"CONFLICTING";explanation="No interventional phase is assigned; no numerical phase-adjusted rating can be issued.";}
+  else if(id==="phase"&&!phase.verified){status=trial.studyType==="OBSERVATIONAL"?"NOT APPLICABLE":"CONFLICTING";explanation="No interventional phase is assigned; no interventional clinical phase is inferred.";}
   else if(noClinical&&group!=="IDENTITY"){status="NOT APPLICABLE";explanation="No verified interventional clinical phase; do not infer a phase from drug-program maturity.";}
   else if(group==="REGULATORY"&&mature<3){status="NOT YET EXPECTED";explanation="Later regulatory-stage evidence; excluded from this trial's current completeness denominator.";}
   else if(group==="REGULATORY"&&!regulatoryLinked){status=ongoing?"NOT YET EXPECTED":"PENDING";explanation="An exact trial/application milestone is not established. Trial completion is not proof of submission, acceptance or an FDA decision.";}
@@ -133,27 +123,6 @@ export function evaluatePhaseFirst(trial:PhaseTrial,context:ClinicalContext,asOf
    expectedAt:minimum===4?"Regulatory":minimum===0?"Identity":"Phase "+minimum,
    searchScope:"Exact trial registry, existing source-reviewed dossiers and explicitly matched manufacturer/FDA/publication sources; unreviewed publications are leads only.",group};
  });
- const factors=FACTORS.map(f=>{
-  const na=noClinical||context.notApplicableFactors.includes(f.key);
-  const later=mature===1&&["efficacy","clinicalBenefit"].includes(f.key);
-  const prior=context.reviewedFactors.find(r=>r.key===f.key);
-  const phaseBound=prior?.phaseScope?prior.phaseScope.includes(trial.phases.join("|")):trial.phases.includes("PHASE3");
-  const acceptable=!na&&!later&&phaseBound&&context.stageVerified&&context.legacyStage!==null&&
-   prior?.grade!==null&&prior?.grade!==undefined&&[0,25,50,75,100].includes(prior.grade)&&
-   prior.sourceUrl?.startsWith("https://")&&prior.benchmarkSourceUrl?.startsWith("https://")&&
-   prior.sourceDate&&prior.assessedAt&&prior.sourceDate<=prior.assessedAt&&prior.assessedAt<=asOf;
-  const grade=acceptable?prior!.grade:null;
-  return {...f,weight:20,score:grade,
-   applicability:(na?"NOT APPLICABLE":later?"NOT YET EXPECTED":"APPLICABLE") as "NOT APPLICABLE"|"NOT YET EXPECTED"|"APPLICABLE",
-   reason:na?"Not applicable to this study's verified purpose.":later?"Confirmatory efficacy/patient-benefit grading is premature for Phase 1; early biological activity remains in the checklist.":
-    grade===null?"No accepted exact-trial, phase-appropriate benchmark grade. Source availability is not a scientific score.":"Preserved existing exact-trial reviewed research grade; not a calibrated FDA probability.",
-   sourceUrl:grade!==null?prior!.sourceUrl:null,sourceDate:grade!==null?prior!.sourceDate:null,
-   benchmarkSourceUrl:grade!==null?prior!.benchmarkSourceUrl:null,finding:grade!==null?prior!.finding:null,
-   confidence:grade!==null?"MODERATE":"NOT_ASSESSABLE"};
- });
- const eligible=factors.filter(f=>f.applicability==="APPLICABLE");const scored=eligible.filter(f=>f.score!==null);
- const coveredWeight=scored.reduce((n,f)=>n+f.weight,0);
- const overall=coveredWeight?Math.round(scored.reduce((n,f)=>n+f.score!*f.weight,0)/coveredWeight*10)/10:null;
  const due=evidence.filter(e=>["AVAILABLE","MISSING","CONFLICTING"].includes(e.status));
  const counts=Object.fromEntries((['AVAILABLE','MISSING','PENDING','NOT YET EXPECTED','NOT APPLICABLE','CONFLICTING'] as const).map(s=>[s,evidence.filter(e=>e.status===s).length]));
  const early=mature<3||!phase.verified;
@@ -163,18 +132,14 @@ export function evaluatePhaseFirst(trial:PhaseTrial,context:ClinicalContext,asOf
   programId:context.programId,programPhase:context.programPhase,programSourceUrl:context.programSourceUrl,
   start:trial.start,phaseEntryDate:null,phaseEntryNote:"Trial start and program phase-entry dates are distinct; no exact individual phase-entry date inferred.",
   sourceUrl:trial.sourceUrl,sourceDate:trial.sourceDate,retrievedAt:trial.retrievedAt,regulatoryContext:regContext,
-  modelVersion:PHASE_FIRST_VERSION,evidence,factors,overallRating:overall,
-  ratingKind:overall===null?"NOT_ASSESSABLE":scored.length===eligible.length?"PHASE_ADJUSTED_RESEARCH_RATING":"PARTIAL_SCORED_COMPONENT_MEAN",
-  ratingCoverage:{scored:scored.length,eligible:eligible.length,total:5,percent:eligible.length?Math.round(scored.length/eligible.length*100):null,
-   coveredWeight,eligibleWeight:eligible.reduce((n,f)=>n+f.weight,0)},
+  modelVersion:PHASE_FIRST_VERSION,evidence,analysisMode:"PHASE_APPROPRIATE_SOURCE_EVIDENCE_ONLY" as const,
   evidenceCompleteness:due.length?Math.round(counts.AVAILABLE/due.length*1000)/10:null,
   evidenceCounts:counts,evidenceConfidence:counts.CONFLICTING?"LOW":counts.MISSING?"MODERATE":"HIGH",
   missingExpected:evidence.filter(e=>e.status==="MISSING"||e.status==="CONFLICTING"),
   notYetExpected:evidence.filter(e=>e.status==="NOT YET EXPECTED"),pending:evidence.filter(e=>e.status==="PENDING"),
-  raasScore:context.approvedRaas,raasPredictionConfidence:null,
   fdaPrediction:{status:fdaState,probabilities:null,confidence:null,
    reason:early?"The individual trial has not reached the applicable regulatory-prediction stage.":
-    "A calibrated, exact-application, pre-decision FDA model and complete frozen eligibility evidence have not been established. A clinical research rating is not an approval/CRL/extension probability."},
+    "A calibrated, exact-application, pre-decision FDA model and complete frozen eligibility evidence have not been established. Source documentation alone does not establish an approval/CRL/extension prediction."},
   pipeline:{automaticTransfer:false,companyRestriction:context.pipelineRestriction??null,companyRestrictionSource:context.pipelineRestrictionSource??null,phaseRequirementMet:trial.phases.includes("PHASE3"),marketCapStatus:"CURRENT_MARKET_CAP_RECHECK_REQUIRED",
    restrictions:"Existing public-company, $300m–$10bn, Phase 3/post-Phase 3, US FDA and validated Pipeline filters remain authoritative; no admission or score history is changed."}};
 }

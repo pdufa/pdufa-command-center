@@ -1,0 +1,593 @@
+{
+  "policy": "Permanently retired requirements are retained as read-only historical test specifications, not active installation prerequisites.",
+  "files": [
+    {
+      "originalPath": "new-platform/frontend/tests/raas-provisional-rubric-engine.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-provisional-rubric-engine.test.cjs",
+      "sha256": "32d74c611d48175f5c2332ed0b8d96454cbfcee8cfefe352d9a5e417ce44678d",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-history-audit.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-history-audit.test.cjs",
+      "sha256": "eb432419c50d0624532285803a684eb7aedb2e931e16897da0962f376ac5694b",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-top-header-accuracy-button.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-top-header-accuracy-button.test.cjs",
+      "sha256": "25e2a139a38b35bf45cf3f5cb11c384cce1e6307a63a0ab9e7f4d380e5286a9f",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-self-accuracy-audit.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-self-accuracy-audit.test.cjs",
+      "sha256": "5b549bd21e747328b324213a50b638ca1ba3654edb47b5e03792d810dca01c4e",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-share-bridge.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-share-bridge.test.cjs",
+      "sha256": "375d9ea45af7ba1d7d98128404874bbf04ca7d8611dc38bc4eb9926e26d42ce3",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-full-universe-scores.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-full-universe-scores.test.cjs",
+      "sha256": "078a7d4b4e2f1a80432e4966b247fe74b12f7b9619e6b4712e812892a534c312",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-741-research-stage-matrix.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-741-research-stage-matrix.test.cjs",
+      "sha256": "c201b983635b1b13842462733e249c9537231da875d6d12336c554b2f6685830",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-provisional-trial-scores.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-provisional-trial-scores.test.cjs",
+      "sha256": "7eb9e130d8a61e939b6e6b3be8147c984cea9eab8f8c8da6141dc1c0c5c49542",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-762-trial-evidence-backlog.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-762-trial-evidence-backlog.test.cjs",
+      "sha256": "ec0121f29c5ff322c131ba19762723f2f9edce071e2eed347c0b78dbf4ec0879",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-corporate-action-audit.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-corporate-action-audit.test.cjs",
+      "sha256": "78b42d0b9a49d2b4e7643f8127724f2eef82fa441e7508d6af98b4334c1a8518",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-registry-revision-review-inbox.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-registry-revision-review-inbox.test.cjs",
+      "sha256": "66d1921a75b86c7021fb216bc0532429705489a134d3f0ee60a634743f7ef572",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-registry-source-integrity.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-registry-source-integrity.test.cjs",
+      "sha256": "ab93d774134caa63b38a5d625b19dde49f5cb692ea498737102f6ae832724cf4",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-source-frozen-review-packets.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-source-frozen-review-packets.test.cjs",
+      "sha256": "631bc0a7cd2cb5789ceb43bd4472efb64008592a630d0b48babe19436843d34a",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/competitive-assessment.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/competitive-assessment.test.cjs",
+      "sha256": "2edc5c79e303ed0b8908b941b4fdc1eedb59a25371ecb3b59db4c2a44f0b8cc6",
+      "reason": "Obsolete survey/rating UI contract; replaced by independent source-only and permanent-retirement regression coverage."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-readiness-scan.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-readiness-scan.test.cjs",
+      "sha256": "4c031c6593094cbe798bdcadd07253671c8cbc90ef88565dafad47a5974f6242",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-finance-reconciliation.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-finance-reconciliation.test.cjs",
+      "sha256": "df4d2dcaa0803defa2807827966e32ee8db88a14414aac5b97fd59b0844e671e",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-historical-return-distribution.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-historical-return-distribution.test.cjs",
+      "sha256": "e46c6c8848875900638ec20e589b108266230fdaf8b7d1ed1d5272215655a01b",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-full-90-3-window-policy.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-full-90-3-window-policy.test.cjs",
+      "sha256": "08c49590010bc8c5b1817f9a077147ec0e72b3d2c6d1a47174e619fdb91418aa",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-active-clinical-five.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-active-clinical-five.test.cjs",
+      "sha256": "9460da2093ffcca2b5056c61a272da3bdfd93f41d5303c6adad2cc31d8482866",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-registry-clinical-fact-ledger.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-registry-clinical-fact-ledger.test.cjs",
+      "sha256": "a778d084a1d25f59a3e2918c9035778f8b9f928954bcdb92c2f499370afc5ed4",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-spreadsheet-status.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-spreadsheet-status.test.cjs",
+      "sha256": "29bd2df2297ceb4b5cd45470b7fdcdaf1e4d2909415b7f0304f8b9f0bcec0e62",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-fda-primary-outcomes.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-fda-primary-outcomes.test.cjs",
+      "sha256": "537f407e4c0f2e36143898136e4ba24ff066f3d3e54318c9c110915f43ac1d9b",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-fda-three-way-research-scorecard.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-fda-three-way-research-scorecard.test.cjs",
+      "sha256": "72e872152cfbaf479e95a86ae697e395d442e46c2247136733ed50b9ede96d58",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-current-evidence-scan.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-current-evidence-scan.test.cjs",
+      "sha256": "832fb7e86e5d147dad04d0817a0211ba9f4a484756e5bbf2be5166cc7e924b16",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-unsigned-review-worksheet.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-unsigned-review-worksheet.test.cjs",
+      "sha256": "5281b60c88bcfd5e9ca1d60967f85edcbd3d7462ea92b7b8acd6295d038fa86b",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-retrospective-asof-evidence.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-retrospective-asof-evidence.test.cjs",
+      "sha256": "7154e58746e0dafe5579fa08bd7dc451f20ebb1e3b0a4452a5c90fa87b073874",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-v2-source-readiness-site.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-v2-source-readiness-site.test.cjs",
+      "sha256": "d100ecb5022a14bfd3ff82e23ded3443f8235ddee9fbcf72cd56567e2bd9d7b3",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-complete-registry-roster.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-complete-registry-roster.test.cjs",
+      "sha256": "41f7c56e99a3e90888478ed9d822c7ce34502dd900999bc390d7f7776df6832a",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-raw-registry-design.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-raw-registry-design.test.cjs",
+      "sha256": "54d663fce15486d918d696a0b9a940faa66243c6f8fc9aee136fc7a537338c4b",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-top-retrospective-intake.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-top-retrospective-intake.test.cjs",
+      "sha256": "fcc3b81ca9e4620823c0090f5fdf02b9bad27963a69fbbc7b777c4001416eeb1",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-retrospective-pairs.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-retrospective-pairs.test.cjs",
+      "sha256": "c7139298cf4e73f04ecc496e809bccdccff28d8567119981279d7c11f91648b6",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-all-trials-top-bottom-review.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-all-trials-top-bottom-review.test.cjs",
+      "sha256": "79861ce714107ad632a9cdd8b353577616e85bbf0b92ade6b2fa2ee6152d7733",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-validation-readiness.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-validation-readiness.test.cjs",
+      "sha256": "edbdb3764a87b5626b2018ea9b1b5a80589d063a456b5bf1e7daf0c17d7c82b2",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-five-primary-estimand-triage.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-five-primary-estimand-triage.test.cjs",
+      "sha256": "806efa5e11a04552a442ca7a618e84d32ff83156ba9da1a05d369d8ad5c47b84",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-quantitative-source-metric-leads.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-quantitative-source-metric-leads.test.cjs",
+      "sha256": "f92f682a71c6267a21aaab1441d4763479c36e6b58d9db785b6bd0342a0094d0",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-metric-gradebook.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-metric-gradebook.test.cjs",
+      "sha256": "ea98bb00689bda714cf6ccc47ee8e8da3c34ffa0e8cdd558efc1947618f47263",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/phase3-readout-sheets.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/phase3-readout-sheets.test.cjs",
+      "sha256": "fc96f6886464f4f35516428d37ad2c8cb340c503e42c4c226f5e540339934e5e",
+      "reason": "Obsolete survey/rating UI contract; replaced by independent source-only and permanent-retirement regression coverage."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-fda-forecast-freeze-receipt-audit.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-fda-forecast-freeze-receipt-audit.test.cjs",
+      "sha256": "1bfb4235ec9a07a1176a424f80ddb9583dc7a781768ebb969087c5a0eccb72e2",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-registry-stage-coverage.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-registry-stage-coverage.test.cjs",
+      "sha256": "000cdcc1c386a0097fddc249481fd9b9ec70d6c0935b5be61bac6dc6a4e0a285",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-registry-evidence-dashboard.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-registry-evidence-dashboard.test.cjs",
+      "sha256": "a554f01af57eecbd7a6b06d54f2455c275d67ee88eab6d0a77320a48a6200030",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-live-registry-audit.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-live-registry-audit.test.cjs",
+      "sha256": "cbc68e20fac6ec6f0fb596a632e26d9ba26bd7f200ec878df18e28761a712395",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-populated-top-bottom-score-cells.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-populated-top-bottom-score-cells.test.cjs",
+      "sha256": "60dcebc94948b0dc83f212ba78cbc8e8e7b0aceabd4cbab4b920196cb69a1a7c",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-primary-arm-reconciliation.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-primary-arm-reconciliation.test.cjs",
+      "sha256": "bf5807c0a9d49750e7331488d6f03b42d2d20c267410c65ab1185bf2b648c095",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-top-bottom-full-completion-coverage.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-top-bottom-full-completion-coverage.test.cjs",
+      "sha256": "c5729d00640bfe3390a5b0e408dc0ff3e8227b11272fb52193e68fb74a8214dd",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-trial-disclosure.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-trial-disclosure.test.cjs",
+      "sha256": "06b9ba7504a5ef6016a64d739d84da11a4373c5f9c199dff2d1ed73167f807d5",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-review-worksheet-preflight.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-review-worksheet-preflight.test.cjs",
+      "sha256": "564904fa8a66322b2a80d522a5a1c77c1f08be58a394626d793b43c505b399d0",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-prediction-queue.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-prediction-queue.test.cjs",
+      "sha256": "69c3d0be0a5b57e7679fd9bfbcb14d1637b2244e314acc1aff496a27ef8ba69a",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-fda-original-goal-outcome-audit.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-fda-original-goal-outcome-audit.test.cjs",
+      "sha256": "0b4fa4ced2803352c85541645cbc115fe4110eae9642a421397869d7be8bd4c7",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-full-reviewed-numeric-composite.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-full-reviewed-numeric-composite.test.cjs",
+      "sha256": "70b67a92c1a581328ef0a30c5baa912f95230ea89f1265c0848a2ce9f8457051",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-fda-public-other-cycle-review.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-fda-public-other-cycle-review.test.cjs",
+      "sha256": "d9eb6acc2f8501e846b4a68944285a6f371a92e9e95a008a67d894695116d814",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-historical-backtest.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-historical-backtest.test.cjs",
+      "sha256": "ac8daadafba2ebf926f1f28ad4b8d0ac7b668d3d509c0ef7fcc77bc2cae2a9da",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-top-bottom-spreadsheet-worklist.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-top-bottom-spreadsheet-worklist.test.cjs",
+      "sha256": "d0587a1c2449ee52e67bf1455bba1e86352e76ccae6504b2f7f61346e83158d2",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/phase3-registry-visible-rating-groups.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/phase3-registry-visible-rating-groups.test.cjs",
+      "sha256": "fe4e34740250dce8428bed69f08cd60cec66899a9d109f11b07e09337ab6a112",
+      "reason": "Obsolete survey/rating UI contract; replaced by independent source-only and permanent-retirement regression coverage."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-threshold-calibration.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-threshold-calibration.test.cjs",
+      "sha256": "cfb9a0ca9dd5fe4f2afb285f3de9d8c56361b3f3fe86cbcad353e8f0d285415d",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-historical-sec-entry-bridge.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-historical-sec-entry-bridge.test.cjs",
+      "sha256": "f28bd95b2853dc2d6e1377ebcd658c8538ed304261960c7647fdcbdc2ca2d615",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-trial-metric-review-dossier.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-trial-metric-review-dossier.test.cjs",
+      "sha256": "057a2789f5b699fa530be104fca4ac5cee7e567ad791a820e5b7afffeb68617c",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/phase3-readout-column-sorting.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/phase3-readout-column-sorting.test.cjs",
+      "sha256": "ded0dcf525bd93f863bee9f2cd0fdfd34325eed71f9d9e058a46f556928cae4d",
+      "reason": "Obsolete survey/rating UI contract; replaced by independent source-only and permanent-retirement regression coverage."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/bottom-only-evidence-completion.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/bottom-only-evidence-completion.test.cjs",
+      "sha256": "a773dd087fc0037cdf2cdcabd0ac6d40b16e202be96a36857a0f2341ceb84442",
+      "reason": "Retired questionnaire or score-workflow acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-independent-review-queue.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-independent-review-queue.test.cjs",
+      "sha256": "839e9baadd095ac52d3ee96bc1022404b58086293a722965a4e33bdedc8379ba",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-registry-source-change-history.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-registry-source-change-history.test.cjs",
+      "sha256": "c1a3b0cd2752b431b6a73bfeb217305f2cb8be72d597560deffeb08078210bcc",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-90to3-eligibility.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-90to3-eligibility.test.cjs",
+      "sha256": "1cb40a8787c8bf46369921b467b82b048fd595449868140f8cfdaa509fe53d7d",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-post-clinical-pilot.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-post-clinical-pilot.test.cjs",
+      "sha256": "d4ae0009484ce3ad072f6d7bc7eb0446cecf5cb13f182616fc2cdb5d0137ce15",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-price-crosschecks.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-price-crosschecks.test.cjs",
+      "sha256": "9b549f7861c183d0f524d796c913e3015e8c423ec934015ce86677cab544a617",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-metric-validation-worklist.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-metric-validation-worklist.test.cjs",
+      "sha256": "626684e4ea68d817ee593b842cbd9919dba0860a0119cb8e59b05ae7a28357ac",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-installation-gates.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-installation-gates.test.cjs",
+      "sha256": "2f732fa02dae7d0cb223d3d9ff37cdb7fabf28a403d5e53f3dbb6f7fd25be66d",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-review-source-alert-gate.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-review-source-alert-gate.test.cjs",
+      "sha256": "5c0ed09de79c25d653589cb5382cd79ad7b87dfc93a6985f5360ea89a56bf6d8",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-fda-nightly-compare.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-fda-nightly-compare.test.cjs",
+      "sha256": "b357e042291e3b8dca943110f40ced9b5d84c15f2ea932bb01179048765f2d02",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-exact-program-review-bundle.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-exact-program-review-bundle.test.cjs",
+      "sha256": "b8205d90f531b942db8a0e3d361daa06a8952f76dd8fc928513b4a12d2716660",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-metric-backtest.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-metric-backtest.test.cjs",
+      "sha256": "4251d592f5bd5b2af0cf6ff113ebf467125ee6f59aa3a1dc32746393c0b22d35",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-registry-outcome-contrasts.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-registry-outcome-contrasts.test.cjs",
+      "sha256": "e5eed1ecd212edc66ec960d5ef7ee2fed6d79fe44786d63e2a22cf1d7f42f5a0",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-trial-history-continuity.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-trial-history-continuity.test.cjs",
+      "sha256": "c219c51c465381480c38b11a4348286a5ee2de008ae11b8fb351eccb4ed52622",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-self-audit-history.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-self-audit-history.test.cjs",
+      "sha256": "73d6702860e869bd0c06fc6ffa5a17484b220707591eb2ccd437771fdcc8fc6d",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-fda-three-way-freeze-preflight.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-fda-three-way-freeze-preflight.test.cjs",
+      "sha256": "7e97eb1b0d7fc5c28291604d9854fb1bd3bd8bfb208f20c113d066d882fa9089",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-clinical-reporting-diagnostic.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-clinical-reporting-diagnostic.test.cjs",
+      "sha256": "5309b29e26ae3ce7020074b53b6ea8bb4374a892af07a40a4aa9141ebbc77d28",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-retrospective-intake.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-retrospective-intake.test.cjs",
+      "sha256": "140f03c4af098190543058f3397b75ca0c73ec4877e4660c60f558f43a94ecc7",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-all-classified-source-review.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-all-classified-source-review.test.cjs",
+      "sha256": "61d0c5f874585f7c8ab7a4777500776fe5f7007ac3e5c4f7e53ecedb94eba3e6",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-five-dual-source-phase3-readouts.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-five-dual-source-phase3-readouts.test.cjs",
+      "sha256": "a094e5c80c2c11e111b9dbafdae8f0dcc5d06193565e94229d1f6e0eeafd800d",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-fda-nightly-evidence-report.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-fda-nightly-evidence-report.test.cjs",
+      "sha256": "7d22e173fc3cf7f8458aceb2daae263f5693aac1d46925214794c6031051a7da",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-registry-evidence-integration.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-registry-evidence-integration.test.cjs",
+      "sha256": "4fcf5a320373298df74d532545f492f99e87385d10414b5a8fb14eb263691d5e",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/competitive-edge.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/competitive-edge.test.cjs",
+      "sha256": "abf2e1d0e805762bf8c9dc3af30b78d53c13a278d0628dd1d61d0747604daefa",
+      "reason": "Obsolete survey/rating UI contract; replaced by independent source-only and permanent-retirement regression coverage."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-fda-three-way-accuracy-site.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-fda-three-way-accuracy-site.test.cjs",
+      "sha256": "1f8d359d4ee4a10082b53e44cfde3bb36fb8575f776e554c4cf589468c3e2ba3",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-pdufa-goal-asof-metric-audit.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-pdufa-goal-asof-metric-audit.test.cjs",
+      "sha256": "7148ec77f9df2da88e7493754e83d8a4c14d59b45766bed089de88419ea44c04",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-762-exact-review-drawer.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-762-exact-review-drawer.test.cjs",
+      "sha256": "10b1fa200ddc2341f8018d3d94c4b3ebf46da3870829ae3ca9693809b1d2d95d",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-score-engine.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-score-engine.test.cjs",
+      "sha256": "e167d1dfda08cb88dc2d4e2351f004a10a8fab7348e75aa55b4ccb7139585170",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-prospective-source-baselines.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-prospective-source-baselines.test.cjs",
+      "sha256": "ed161ce7d8f1b20a19075ee86f54cb692ed18755d2d5447c589d733d9821f007",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-v2-top8-source-site.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-v2-top8-source-site.test.cjs",
+      "sha256": "f8da1ed9ef4b2734e044a91cfd5fe2aaa1bf083e33e55ababa9d8882527ac30a",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-review-assignment-plan.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-review-assignment-plan.test.cjs",
+      "sha256": "8ff8a8ef5bce42e68e551740e1ec472436535e1a684c900edb1b1b9186f72305",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/raas-missing-metric-checklist.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/raas-missing-metric-checklist.test.cjs",
+      "sha256": "a4762ee188acbb85369317765bcb7c8d3c196f62dcd01ca0b1a94dbebf9103f3",
+      "reason": "Retired scoring, dashboard, CLI, or qualification acceptance requirement."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/phase3-predata-batch.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/phase3-predata-batch.test.cjs",
+      "sha256": "800ce75a5f66456078bf2f6ed0150c727f5c047049b375d59f62f80ab0a2c4c1",
+      "reason": "Retired survey/grade acceptance contract references removed taxonomy/UI; independent source and retirement tests remain active."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/phase3-published-arithmetic.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/phase3-published-arithmetic.test.cjs",
+      "sha256": "0805f1a83c5b41c9c299adbf2a8c58fe768f8fc6696f44b4a720b8211de27331",
+      "reason": "Retired survey/grade acceptance contract references removed taxonomy/UI; independent source and retirement tests remain active."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/phase3-registry-column-filters.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/phase3-registry-column-filters.test.cjs",
+      "sha256": "cfb86bd395b4e4f403db5c47897b4ce79cb68c834649345de31b0f5ff44602de",
+      "reason": "Retired survey/grade acceptance contract references removed taxonomy/UI; independent source and retirement tests remain active."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/phase3-registry-concordance.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/phase3-registry-concordance.test.cjs",
+      "sha256": "a677e5314d1195b027e4d0f29a96f25bef3e9f80c7b28e6f3bbebf0f40c70918",
+      "reason": "Retired survey/grade acceptance contract references removed taxonomy/UI; independent source and retirement tests remain active."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/phase3-scientific-evidence-audit.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/phase3-scientific-evidence-audit.test.cjs",
+      "sha256": "de2855b92f110770d9875cff375ac3020aec83a83453f944b0637191b51a7b76",
+      "reason": "Retired survey/grade acceptance contract references removed taxonomy/UI; independent source and retirement tests remain active."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/phase3-top-question-analysis.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/phase3-top-question-analysis.test.cjs",
+      "sha256": "aeb0c311266174502b30b60bcc1bf2de79ed3f0adc7daa1a258817642410127c",
+      "reason": "Retired survey/grade acceptance contract references removed taxonomy/UI; independent source and retirement tests remain active."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/pipeline-research-completion.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/pipeline-research-completion.test.cjs",
+      "sha256": "d0a612f8d226921c5a42ec52b6b8c272e5082f7453f919c216810d1b3fcd4ea7",
+      "reason": "Retired survey/grade acceptance contract references removed taxonomy/UI; independent source and retirement tests remain active."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/tools-competitive-readiness.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/tools-competitive-readiness.test.cjs",
+      "sha256": "ff69da75fbc54b10fb21662f4b266657817a79c8dae2e1b9f4575f464e9fb591",
+      "reason": "Retired survey/grade acceptance contract references removed taxonomy/UI; independent source and retirement tests remain active."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/tools-rating-engine.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/tools-rating-engine.test.cjs",
+      "sha256": "d3646f3c220a3476981f090da69692c20cce7da5cc598ef91a99724c39ed077b",
+      "reason": "Retired survey/grade acceptance contract references removed taxonomy/UI; independent source and retirement tests remain active."
+    },
+    {
+      "originalPath": "new-platform/frontend/tests/tools-horizontal-ratings.test.cjs",
+      "archivePath": "archives/raas/tests/frontend/tools-horizontal-ratings.test.cjs",
+      "sha256": "b2a2e3f52fb9c30384d26597e6867d78fbe31d25786b840d40d3a1fa2369ec55",
+      "reason": "Retired survey/grade acceptance contract references removed taxonomy/UI; independent source and retirement tests remain active."
+    }
+  ]
+}

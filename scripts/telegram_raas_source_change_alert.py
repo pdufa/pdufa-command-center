@@ -8,6 +8,11 @@ No source URLs, case metadata, secrets, or untrusted field contents in messages.
 """
 from __future__ import annotations
 
+# Permanent retirement: historical functions are importable for read-only audits only.
+if __name__ == "__main__":
+    raise SystemExit("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.")
+
+
 import argparse
 import json
 from pathlib import Path

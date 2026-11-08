@@ -41,13 +41,5 @@ test("an unmatched or future-dated trial cannot earn evidence-complete status",(
  assert.equal(pipelineGateCounts(row,"2026-10-31").qualified,false);
 });
 test("all 20 assessment dossier views keep a safe separately linked Google Sheet evidence matrix",()=>{
- const component=fs.readFileSync(path.resolve(__dirname,"../app/PipelineEligibilityChecklist.tsx"),"utf8");
- const dossier=fs.readFileSync(path.resolve(__dirname,"../app/PipelineFourViews.tsx"),"utf8");
- const nav=fs.readFileSync(path.resolve(__dirname,"../app/FunnelWorkspace.tsx"),"utf8");
- assert.ok(component.includes("No historical snapshot"));
- assert.ok(component.includes("Site-to-Sheet synchronization is not installed"));
- assert.ok(component.includes("gid=1138168786"));
- assert.ok(dossier.includes("<PipelineEligibilityChecklist row={row} today={today}/>"));
- assert.ok(nav.includes("Eligibility Gate Matrix (Google Sheets)"));
- assert.ok(dossier.includes("RANKED_BENEFIT_ASSESSMENTS.map"));
+const ui=require('node:fs').readFileSync(require('node:path').join(__dirname,'../app/PipelineFourViews.tsx'),'utf8');assert.match(ui,/PipelineEligibilityChecklist/);assert.match(ui,/LiveRegistryReview/);assert.doesNotMatch(ui,/RANKED_BENEFIT_ASSESSMENTS|Survey|raas-/);
 });

@@ -111,33 +111,14 @@ test("strict previous run fingerprint checks use exact case statuses but ignore 
  assert.equal(compared.sourceChangedSincePreviousRun,false);
  assert.equal(compared.previousRunAtUtc,old.runAtUtc);
 });
-test("CLI compares a cached previous JSON and writes nullable source-change results",()=>{
- const folder=fs.mkdtempSync(path.join(os.tmpdir(),"raas-nightly-diff-"));
+test("retired comparison CLI preserves prior reports and refuses new history",()=>{
+ const folder=fs.mkdtempSync(path.join(os.tmpdir(),"raas-retired-diff-"));
  try{
-  const oldPath=path.join(folder,"prior.json");
-  fs.writeFileSync(oldPath,JSON.stringify(build("2026-11-05T20:00:00Z")));
-  const out=path.join(folder,"new.json"),csv=path.join(folder,"new.csv");
-  const stdout=execFileSync(process.execPath,[
-   path.join(__dirname,"../scripts/raas-fda-nightly-evidence-report.cjs")
-  ],{env:{...process.env,
-   RAAS_FDA_EVALUATION_AS_OF_UTC:"2026-11-06T20:00:00Z",
-   RAAS_FDA_NIGHTLY_PREVIOUS_JSON:oldPath,
-   RAAS_FDA_NIGHTLY_REPORT_JSON:out,RAAS_FDA_NIGHTLY_REPORT_CSV:csv
-  },encoding:"utf8"});
-  const summary=JSON.parse(stdout);
-  assert.equal(summary.comparisonStatus,
-   "COMPARED_SAVED_SOURCE_AND_INTAKE_METADATA_ONLY");
-  assert.equal(summary.changedSavedSourceCases,0);
-  assert.equal(JSON.parse(fs.readFileSync(out,"utf8")).sourceChangedSincePreviousRun,false);
-  assert.ok(fs.existsSync(csv));
-  fs.writeFileSync(oldPath,"{invalid JSON");
-  execFileSync(process.execPath,[
-   path.join(__dirname,"../scripts/raas-fda-nightly-evidence-report.cjs")
-  ],{env:{...process.env,
-   RAAS_FDA_EVALUATION_AS_OF_UTC:"2026-11-06T20:00:00Z",
-   RAAS_FDA_NIGHTLY_PREVIOUS_JSON:oldPath,
-   RAAS_FDA_NIGHTLY_REPORT_JSON:out,RAAS_FDA_NIGHTLY_REPORT_CSV:csv
-  },encoding:"utf8"});
-  assert.equal(JSON.parse(fs.readFileSync(out,"utf8")).sourceChangedSincePreviousRun,null);
+  const oldPath=path.join(folder,"prior.json"),original=JSON.stringify(build("2026-11-05T20:00:00Z"));
+  fs.writeFileSync(oldPath,original);const out=path.join(folder,"new.json"),csv=path.join(folder,"new.csv");
+  assert.throws(()=>execFileSync(process.execPath,[path.join(__dirname,"../scripts/raas-fda-nightly-evidence-report.cjs")],{
+   env:{...process.env,RAAS_FDA_NIGHTLY_PREVIOUS_JSON:oldPath,RAAS_FDA_NIGHTLY_REPORT_JSON:out,RAAS_FDA_NIGHTLY_REPORT_CSV:csv},encoding:"utf8",stdio:"pipe"
+  }),error=>String(error.stderr).includes("RAAS_PERMANENTLY_RETIRED"));
+  assert.equal(fs.readFileSync(oldPath,"utf8"),original);assert.equal(fs.existsSync(out),false);assert.equal(fs.existsSync(csv),false);
  }finally{fs.rmSync(folder,{recursive:true,force:true});}
 });

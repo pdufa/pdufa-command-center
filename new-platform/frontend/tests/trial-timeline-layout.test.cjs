@@ -56,24 +56,13 @@ test("green-bordered date boxes are visible directly next to tickers across tria
            comparison.indexOf("<TrialTimelineSummary timeline={t.row.timeline} compact"));
 });
 
-test("TOOLS trial listing and 20-assessment table show the green counters after ticker",()=>{
- const sheet=read("ToolsResultsSpreadsheet.tsx");
- const matrix=read("ToolsBenefitMatrix.tsx");
- const route=read("api/scope-funnel/route.ts");
- assert.ok(sheet.includes("<strong>{display(row.ticker)}</strong>"));
- assert.ok(sheet.includes("<TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={benefitFeed}/>"));
- assert.ok(matrix.includes("<strong>{short(row.ticker)}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={feed}/>"));
- assert.ok(matrix.includes("<TrialTimelineSummary timeline={selected.timeline} today={today} compact trial={selected} benefitFeed={feed}/>"));
- const toolRow=fs.readFileSync(path.join(__dirname,"../lib/tools-spreadsheet.ts"),"utf8");
- assert.ok(route.includes("toolSpreadsheetRow(trial,selectedStages,selectedDesignations,index"));
- assert.ok(toolRow.includes("const timeline=exactProgramTimeline(trial,hasExactIdentity)"));
- assert.ok(toolRow.includes("timeline,"));
- assert.ok(toolRow.includes("matchedToolPdufaApplications(trial,pdufaIndex)"));
+test("TOOLS source listing preserves date counters without the retired assessment table",()=>{
+const ui=require('node:fs').readFileSync(require('node:path').join(__dirname,'../app/ToolsResultsSpreadsheet.tsx'),'utf8');assert.match(ui,/TrialTimelineSummary/);assert.doesNotMatch(ui,/RaasSpreadsheetStatus|ToolsBenefitMatrix/);assert.equal(require('node:fs').existsSync(require('node:path').join(__dirname,'../app/ToolsBenefitMatrix.tsx')),false);
 });
 
-test("prominent A and P labels preserve descriptions and verified values",()=>{
+test("prominent D and P labels preserve descriptions and verified values",()=>{
  const summary=read("TrialTimelineSummary.tsx");
- assert.ok(summary.includes('aria-label="A: days since Phase 3 readout">A</span>'));
+ assert.ok(summary.includes('aria-label="D: days since Phase 3 data release">D</span>'));
  assert.ok(summary.includes('aria-label="P: days to PDUFA">P</span>'));
  assert.ok(summary.includes('DAYS SINCE PHASE 3'));
  assert.ok(summary.includes('DAYS TO PDUFA'));

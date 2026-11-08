@@ -7,7 +7,6 @@ on:
       - 'tests/test_telegram_scan_alert.py'
       - '.github/workflows/pdufa-telegram-*.yml'
       - '.github/workflows/pdufa-overnight-sequential.yml'
-      - '.github/workflows/raas-fda-decision-accuracy.yml'
   push:
     branches: [main]
     paths:

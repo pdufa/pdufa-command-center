@@ -1,4 +1,8 @@
 "use strict";
+
+// Permanent retirement: no historical artifact writer may execute as a command.
+if (require.main === module) { process.stderr.write("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.\n"); process.exit(78); }
+
 /** Compare SAVED FDA research evidence and intake metadata across nightly
  * artifacts. This cannot establish new official FDA events or prove a past
  * forecast was timestamped independently. Calendar passage is a separate

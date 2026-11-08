@@ -1,0 +1,127 @@
+{
+  "schemaVersion": 1,
+  "retiredAt": "2026-11-08",
+  "reason": "User-approved permanent retirement; preserve historical source definitions without executable GitHub Actions triggers.",
+  "workflows": [
+    {
+      "originalPath": ".github/workflows/raas-acrx-2018-historical-research.yml",
+      "archivePath": "archives/raas/workflows/raas-acrx-2018-historical-research.yml.disabled",
+      "sha256": "4f00877ea24916165c347a29a68b7f6886c2ce0fce204f7b5e29e373afaf94d8",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-active-2024-2025-fda-outcome-discovery.yml",
+      "archivePath": "archives/raas/workflows/raas-active-2024-2025-fda-outcome-discovery.yml.disabled",
+      "sha256": "5f403f3ed6c9ee3dfdafc8636de0bfabcb726fbcf13eec4ee99e166ec5d79c50",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-active-2024-2025-original-source-research.yml",
+      "archivePath": "archives/raas/workflows/raas-active-2024-2025-original-source-research.yml.disabled",
+      "sha256": "87356c6fe5468e2502332efec1f3870477e59d3a8e6ffc96cfea4d3e1f711f5f",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-alpaca-active-two-year-study.yml",
+      "archivePath": "archives/raas/workflows/raas-alpaca-active-two-year-study.yml.disabled",
+      "sha256": "86a645390834eb5464e0bb0a5a062af85819f39e54a43f58f6f4d04011d49262",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-alpaca-historical-prices.yml",
+      "archivePath": "archives/raas/workflows/raas-alpaca-historical-prices.yml.disabled",
+      "sha256": "696a06a32a83fe5b54012718bb9a4408eb6eaf4bdefc777e4270870090096ee4",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-alpaca-ten-year-study.yml",
+      "archivePath": "archives/raas/workflows/raas-alpaca-ten-year-study.yml.disabled",
+      "sha256": "8372c93199a3878d3d57b0e3ec5f9f2ab2f543b98b28798d357f6770cdee00e0",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-arqt-2022-historical-research.yml",
+      "archivePath": "archives/raas/workflows/raas-arqt-2022-historical-research.yml.disabled",
+      "sha256": "531a6d7974f73d426f5d8ec773248cd841321f43eea8ebfdcf03d08bd9bbe3b9",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-cara-2021-historical-research.yml",
+      "archivePath": "archives/raas/workflows/raas-cara-2021-historical-research.yml.disabled",
+      "sha256": "19e0c1203bffbb3141f1e3ed9e80977827a5665c9892e92286212b623f5ba722",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-clinical-evidence-backfill.yml",
+      "archivePath": "archives/raas/workflows/raas-clinical-evidence-backfill.yml.disabled",
+      "sha256": "0690292d6cef184c8ad230742d09a61fee42ccb81bc75f7d2c4590108125a8c2",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-clinical-evidence-collector.yml",
+      "archivePath": "archives/raas/workflows/raas-clinical-evidence-collector.yml.disabled",
+      "sha256": "6f2bd0f686925af20adefb4e7495271188313039684d7350fcf9cc13f7fa6ac4",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-current-saved-data-scan.yml",
+      "archivePath": "archives/raas/workflows/raas-current-saved-data-scan.yml.disabled",
+      "sha256": "e0c56d2dc399a7e220defb2a777677907f8688f38645c3947f6bb692d06028d2",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-evidence-snapshot-capture.yml",
+      "archivePath": "archives/raas/workflows/raas-evidence-snapshot-capture.yml.disabled",
+      "sha256": "3cd9e251717e95bd6884483a54b9f34728caa55bb8b2f7966fd0c52210d0fb08",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-fda-2016-2019-discovery.yml",
+      "archivePath": "archives/raas/workflows/raas-fda-2016-2019-discovery.yml.disabled",
+      "sha256": "fe7e59ef76d0ee993d4a3a1b64cf532c11470477996f08c682e9cb072c5b4869",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-fda-decision-accuracy.yml",
+      "archivePath": "archives/raas/workflows/raas-fda-decision-accuracy.yml.disabled",
+      "sha256": "97be168b9e242539af37e63c5feed39eb557662b71315461da09652ac5cdd88c",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-live-condition-contract.yml",
+      "archivePath": "archives/raas/workflows/raas-live-condition-contract.yml.disabled",
+      "sha256": "f7caa398093c5ae10c77fb7ef66004661780377f886ea62823d2b051fbf59ac4",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-ptct-2017-historical-research.yml",
+      "archivePath": "archives/raas/workflows/raas-ptct-2017-historical-research.yml.disabled",
+      "sha256": "db2aab41e81079f8328e94a4b6fdd4fe0629d2d1222a65dfff1c3a4110f375d6",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-raw-historical-cap-research.yml",
+      "archivePath": "archives/raas/workflows/raas-raw-historical-cap-research.yml.disabled",
+      "sha256": "d326cf4be38b1cb874d60b8c094a90d6c8820db2a22321b28607da16779261b1",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-readiness-scan.yml",
+      "archivePath": "archives/raas/workflows/raas-readiness-scan.yml.disabled",
+      "sha256": "a862c3457feb6cd6fffc352cd6c6d938e9297995711c35b8374c51b5842e123b",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-sage-2019-historical-research.yml",
+      "archivePath": "archives/raas/workflows/raas-sage-2019-historical-research.yml.disabled",
+      "sha256": "80e9621601add7c8960c6763aeeef25ff4baf6e10998f469ec5db3cf6a94a247",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    },
+    {
+      "originalPath": ".github/workflows/raas-sec-historical-shares.yml",
+      "archivePath": "archives/raas/workflows/raas-sec-historical-shares.yml.disabled",
+      "sha256": "01fd54ac785c0c602a5232423b85e7243ae5086e0a614378f3ffffed9757c937",
+      "retirement": "PERMANENT_NO_AUTOMATIC_OR_MANUAL_ACTIONS_TRIGGER"
+    }
+  ]
+}

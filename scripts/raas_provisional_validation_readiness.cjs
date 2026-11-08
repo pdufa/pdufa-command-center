@@ -3,6 +3,10 @@
  * numerical component proxies, historical cherry-picked trials, or source counts.
  */
 "use strict";
+
+// Permanent retirement: no historical artifact writer may execute as a command.
+if (require.main === module) { process.stderr.write("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.\n"); process.exit(78); }
+
 const fs=require("node:fs"),path=require("node:path");
 const root=path.resolve(__dirname,".."),front=path.join(root,"new-platform/frontend");
 const load=f=>JSON.parse(fs.readFileSync(path.join(root,f),"utf8"));

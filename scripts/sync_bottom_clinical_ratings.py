@@ -6,6 +6,11 @@ GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON as the established roster integration.
 The pure planner is also usable with authenticated connected Sheets read/write.
 """
 from __future__ import annotations
+
+# Permanent retirement: historical functions are importable for read-only audits only.
+if __name__ == "__main__":
+    raise SystemExit("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.")
+
 import json
 from pathlib import Path
 

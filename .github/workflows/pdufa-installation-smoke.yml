@@ -44,7 +44,7 @@ jobs:
               "/scans":"SCANS",
               "/results":"RESULTS",
               "/restrictions":"RESTRICTIONS",
-              "/predictions":"RAAS Predictions",
+              "/predictions":"Predictions",
           }
           def fetch(path, maxbytes=1600000):
               url=base+path

@@ -7,6 +7,11 @@ public-source RESEARCH LEADS; they are not independently verified NDA/BLA
 cycles, three-way probability forecasts, complete FDA cohorts, RAAS ratings,
 or approved trading windows. Never convert this report to a forecast ledger.
 """
+
+# Permanent retirement: historical functions are importable for read-only audits only.
+if __name__ == "__main__":
+    raise SystemExit("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.")
+
 from collections import Counter, defaultdict
 from datetime import date
 import csv

@@ -1,0 +1,153 @@
+{
+  "workflowCount": 21,
+  "verifiedAllDisabled": true,
+  "workflows": [
+    {
+      "id": 405124237,
+      "name": "CANCELLED \u2014 RAAS metric readiness ratings",
+      "path": ".github/workflows/raas-readiness-scan.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405124773,
+      "name": "RAAS current saved evidence read-only scan",
+      "path": ".github/workflows/raas-current-saved-data-scan.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405163337,
+      "name": "RAAS Alpaca historical adjusted price research",
+      "path": ".github/workflows/raas-alpaca-historical-prices.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405282375,
+      "name": "RAAS ARCHIVED 2016-2025 historical research (manual only)",
+      "path": ".github/workflows/raas-alpaca-ten-year-study.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405292324,
+      "name": "RAAS official FDA 2016\u20132025 approvals and CRL source discovery",
+      "path": ".github/workflows/raas-fda-2016-2019-discovery.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405300285,
+      "name": "RAAS historical SEC share evidence audit",
+      "path": ".github/workflows/raas-sec-historical-shares.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405314053,
+      "name": "RAAS dated SEC shares x Alpaca raw historical-cap research",
+      "path": ".github/workflows/raas-raw-historical-cap-research.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405360012,
+      "name": "RAAS 2021 CARA original PDUFA and Alpaca raw-cap research",
+      "path": ".github/workflows/raas-cara-2021-historical-research.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405366334,
+      "name": "RAAS 2022 ARQT original FDA PDUFA and Alpaca price research",
+      "path": ".github/workflows/raas-arqt-2022-historical-research.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405372432,
+      "name": "RAAS 2019 SAGE original PDUFA extension and historical price research",
+      "path": ".github/workflows/raas-sage-2019-historical-research.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405381012,
+      "name": "RAAS 2018 ACRX original FDA PDUFA and historical capitalization research",
+      "path": ".github/workflows/raas-acrx-2018-historical-research.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405703302,
+      "name": "RAAS 2017 PTCT Translarna CRL historical research",
+      "path": ".github/workflows/raas-ptct-2017-historical-research.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405727852,
+      "name": "RAAS ACTIVE 2024\u20132025 two-year PDUFA historical study",
+      "path": ".github/workflows/raas-alpaca-active-two-year-study.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405752638,
+      "name": "RAAS ACTIVE 2024-2025 original FDA and SEC historical case research",
+      "path": ".github/workflows/raas-active-2024-2025-original-source-research.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 405776469,
+      "name": "RAAS ACTIVE 2024-2025 official FDA approval and CRL outcome discovery",
+      "path": ".github/workflows/raas-active-2024-2025-fda-outcome-discovery.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 406252362,
+      "name": "CANCELLED \u2014 RAAS survey/rating accuracy audit",
+      "path": ".github/workflows/raas-fda-decision-accuracy.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 406964184,
+      "name": "CANCELLED \u2014 RAAS scoring/score-history capture",
+      "path": ".github/workflows/raas-evidence-snapshot-capture.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 407077838,
+      "name": "RAAS Official Registry Evidence Census",
+      "path": ".github/workflows/raas-registry-evidence-collect.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 407091856,
+      "name": "CANCELLED \u2014 RAAS-specific scoring ledger and research backfill",
+      "path": ".github/workflows/raas-clinical-evidence-backfill.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 407092967,
+      "name": "RETIRED \u2014 Old 762-trial RAAS registry collector",
+      "path": ".github/workflows/raas-clinical-evidence-collector.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    },
+    {
+      "id": 407515463,
+      "name": "RAAS Live CTgov Condition Contract",
+      "path": ".github/workflows/raas-live-condition-contract.yml",
+      "stateBefore": "active",
+      "stateAfter": "disabled_manually"
+    }
+  ]
+}

@@ -8,6 +8,11 @@ RAAS score. The original 741-NCT dated reference is immutable; newer NCTs remain
 in a separate evolving research cohort with explicit reconciliation differences.
 """
 from __future__ import annotations
+
+# Permanent retirement: historical functions are importable for read-only audits only.
+if __name__ == "__main__":
+    raise SystemExit("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.")
+
 import csv
 import datetime as dt
 import hashlib

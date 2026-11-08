@@ -1,0 +1,52 @@
+name: RAAS 2021 CARA original PDUFA and Alpaca raw-cap research
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/data/raas-historical-2021-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-2021-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-preentry-2021-sec-cover-share-leads.json'
+      - 'scripts/raas_historical_cara_2021_research.cjs'
+      - 'tests/raas_historical_cara_2021_research.test.cjs'
+      - '.github/workflows/raas-cara-2021-historical-research.yml'
+  pull_request:
+    paths:
+      - 'new-platform/frontend/data/raas-historical-2021-primary-source-leads.json'
+      - 'new-platform/frontend/data/raas-2021-sec-cover-share-leads.json'
+      - 'new-platform/frontend/data/raas-preentry-2021-sec-cover-share-leads.json'
+      - 'scripts/raas_historical_cara_2021_research.cjs'
+      - 'tests/raas_historical_cara_2021_research.test.cjs'
+      - '.github/workflows/raas-cara-2021-historical-research.yml'
+permissions:
+  contents: read
+jobs:
+  cara-2021-primary-source:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify FDA NDA identity, 2021 published SEC shares and no score promotion
+        run: |
+          node --test tests/raas_historical_cara_2021_research.test.cjs
+          node --test tests/raas_historical_raw_market_cap_research.test.cjs
+      - name: Research CARA 2021 raw share capitalization and T-90 to T-3 windows
+        if: github.event_name != 'pull_request'
+        env:
+          APCA_API_KEY_ID: ${{ secrets.APCA_API_KEY_ID }}
+          APCA_API_SECRET_KEY: ${{ secrets.APCA_API_SECRET_KEY }}
+          RAAS_2021_CARA_OUTPUT: ${{ runner.temp }}/raas-2021-cara-korsuva-research.json
+        run: node scripts/raas_historical_cara_2021_research.cjs
+      - name: Save independently located CARA historical evidence and price diagnostics
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: raas-2021-cara-korsuva-research
+          path: ${{ runner.temp }}/raas-2021-cara-korsuva-research.json
+          retention-days: 30
+          if-no-files-found: ignore

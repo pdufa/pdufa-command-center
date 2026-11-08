@@ -6,6 +6,11 @@ original goal; EXTENSION = publicly documented formal FDA goal extension
 on/before the original goal, regardless of ultimate later approval.
 Clinical outcomes and retrospective price research are NOT prediction features.
 """
+
+# Permanent retirement: historical functions are importable for read-only audits only.
+if __name__ == "__main__":
+    raise SystemExit("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.")
+
 from collections import Counter, defaultdict
 from datetime import date, datetime, timezone
 from math import isfinite, log, sqrt

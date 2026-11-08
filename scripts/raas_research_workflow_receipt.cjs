@@ -1,4 +1,8 @@
 "use strict";
+
+// Permanent retirement: no historical artifact writer may execute as a command.
+if (require.main === module) { process.stderr.write("RAAS_PERMANENTLY_RETIRED: this archived command cannot run or modify historical records.\n"); process.exit(78); }
+
 /** Fail-closed provenance for RAAS source-research Actions.
  * Passing unit tests on a pull request never means Alpaca/FDA research ran.
  * File existence only proves an artifact was emitted, never validation.
