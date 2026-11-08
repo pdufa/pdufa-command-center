@@ -65,7 +65,11 @@ function Case({item}:{item:AdjudicationCase}){
    </p>
  </article>;
 }
-export default function AdjudicationDesk(){
+export default async function AdjudicationDesk({searchParams}:{searchParams:Promise<{cycle?:string}>}){
+ const query=await searchParams;
+ const allowed=new Set(ADJUDICATION_CASES.map(c=>c.cycleId));
+ const selectedCycle=query.cycle&&allowed.has(query.cycle)?query.cycle:"all";
+ const visibleCases=selectedCycle==="all"?ADJUDICATION_CASES:ADJUDICATION_CASES.filter(c=>c.cycleId===selectedCycle);
  const published=ADJUDICATION_CASES.reduce((n,c)=>n+c.sources.length,0);
  const worked=new Set(ADJUDICATION_CASES.map(x=>x.cycleId)).size;
  const discontinuation=adverseEventAbsoluteDifference(69,325,10,319);
@@ -94,10 +98,22 @@ export default function AdjudicationDesk(){
       </p>
       <p style={{...small,margin:0}}>{discontinuation.interpretation} These are not classified as treatment-related serious events. See the peer-reviewed SynAIRgy safety Table 6 below.</p>
    </section>
+   <section style={{...card,marginTop:15}}>
+    <h2 style={{fontSize:19,margin:"0 0 8px"}}>Select a company and application to inspect</h2>
+    <form action="/medical-intelligence-preview/adjudication" method="get" style={{display:"flex",gap:10,flexWrap:"wrap",alignItems:"end"}}>
+     <label style={{display:"grid",gap:6,flex:"1 1 300px",fontSize:13,fontWeight:650}}>Source-adjudicated FDA application
+      <select name="cycle" defaultValue={selectedCycle} style={{padding:11,border:"1px solid "+line,borderRadius:8,fontSize:14}}>
+       <option value="all">View all {ADJUDICATION_CASES.length} detailed cases</option>
+       {APPLICATION_CYCLES.filter(a=>allowed.has(a.id)).map(a=><option key={a.id} value={a.id}>{a.ticker} · {a.drug} — {a.indication}</option>)}
+      </select>
+     </label>
+     <button type="submit" style={{border:0,borderRadius:8,padding:12,background:green,color:"#fff",fontWeight:700,cursor:"pointer"}}>Open adjudication</button>
+    </form>
+   </section>
    <section style={{marginTop:15}}>
     <h2 style={{fontSize:19}}>Source-matched high-information adjudications</h2>
     <p style={{...small,margin:"0 0 7px"}}>Partial source review only; not completed clinical, CMC, manufacturing or FDA adjudication. Several findings drawn from one trial or document are not independent confirmations.</p>
-    {ADJUDICATION_CASES.map(item=><Case key={item.id} item={item}/>)}
+    {visibleCases.map(item=><Case key={item.id} item={item}/>)}
    </section>
    <section style={{...card,marginTop:16}}>
     <h2 style={{fontSize:19,marginTop:0}}>Remaining FDA application review queue</h2>
