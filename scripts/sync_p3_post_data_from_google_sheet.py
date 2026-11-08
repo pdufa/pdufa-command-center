@@ -7,7 +7,7 @@ from __future__ import annotations
 import json
 import os
 import re
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 from urllib.parse import quote, urlsplit
 
@@ -26,6 +26,22 @@ def https_url(v):
         return False
     url = urlsplit(v)
     return url.scheme == "https" and bool(url.hostname) and not url.username and not url.password
+
+
+def exact_date(value):
+    """Only unambiguous real ISO dates from the original Sheet.
+
+    A planned filing quarter or regulatory narrative is never converted
+    into a fabricated FDA target date.
+    """
+    if not isinstance(value, str) or not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value):
+        return None
+    try:
+        if date.fromisoformat(value).isoformat() == value:
+            return value
+    except ValueError:
+        pass
+    return None
 
 
 def extract(rows):
@@ -58,6 +74,10 @@ def extract(rows):
             "ticker": ticker, "nct": nct, "company": company, "marketCap": int(cap),
             "fdaStatus": str(fields[28]).strip(), "resultsUrl": fields[29],
             "regulatoryUrl": fields[24],
+            # Source date I; FDA application target AC, only when a real
+            # ISO calendar date appears. Preserve null if not confirmed.
+            "recordedReleaseDate": exact_date(fields[8]),
+            "recordedPdufaDate": exact_date(fields[28]),
         })
     if not trials:
         raise ValueError("P3 POST-DATA candidate table is empty")
