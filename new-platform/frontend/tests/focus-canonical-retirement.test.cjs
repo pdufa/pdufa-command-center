@@ -32,5 +32,9 @@ test("nightly workflows are clearly named for their live POOL and FOCUS destinat
   assert.match(pool,/^name: POOL Master Evidence Nightly Discovery/m);
   assert.match(focus,/^name: FOCUS Google Sheets → Website source snapshot/m);
   assert.match(read(path.join(root,"scripts/auto_promote_p3_post_data.py")),/SHEET_NAME = "FOCUS"/);
-  assert.match(read(path.join(root,"scripts/sync_p3_post_data_from_google_sheet.py")),/RANGE = "FOCUS!A4:AB"/);
+  const publisher=read(path.join(root,"scripts/sync_p3_post_data_from_google_sheet.py"));
+  // FOCUS is the stable sheet identity; its physical schema may widen (28 → 31 columns).
+  // Column-width contracts belong to the source extraction/schema tests, not to the retirement guard.
+  assert.match(publisher,/RANGE\s*=\s*"FOCUS!A4:[A-Z]{1,2}"/);
+  assert.doesNotMatch(publisher,/RANGE\s*=\s*["\x27]P3(?: POST-DATA)?!/);
 });
