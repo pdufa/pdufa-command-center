@@ -5,7 +5,7 @@ import focus from "../../../data/p3PostDataActive.json";
 import {SCIENTIFIC_LEVELS,SCIENTIFIC_LAYERS,DEEP_ASSESSMENTS,DEPTH_SLOT_COUNT,THERAPEUTIC_STRATEGY_QUESTIONS,getDepthSlot,FDA_GUIDANCE_SOURCES} from "../../../lib/medical-intelligence-master-depth";
 import {applicationsForNct} from "../../../lib/medical-intelligence-applications";
 import {getRegistryPhases} from "../../../lib/medical-intelligence-registry-phase";
-import {rankTrialAssessments,PHASE_REVIEW_STANDARD,TEST_GRADE_RUBRIC} from "../../../lib/medical-intelligence-assessment-rankings";
+import {rankAtLastCompletedPhase,PHASE_REVIEW_STANDARD,TEST_GRADE_RUBRIC} from "../../../lib/medical-intelligence-assessment-rankings";
 import {MEDICAL_CASES,caseForCycle,researchForSlot,caprSapComparisonSummary,CAPR_FDA_PUL_SAP_COMPARISONS,cogtLiverSafetyDifference} from "../../../lib/medical-intelligence-md-casebook";
 
 export const metadata:Metadata={
@@ -26,9 +26,12 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
  const nct=focus.records.find(r=>r.nct===query.nct)?.nct||"NCT05126758";
  const base=focus.records.find(r=>r.nct===nct)||focus.records[0];
  const [phaseContext]=await getRegistryPhases([nct]);
- // Scores cannot be invented from source collection alone. Reviewed per-test marks
- // will be supplied by the independent assessment-review ledger once available.
- const assessmentRatings=rankTrialAssessments(DEEP_ASSESSMENTS,nct,phaseContext.verifiedPhase,[]);
+ // The rankings are anchored to results from the most recently completed,
+ // verified phase. This preview has no authoritative prior-phase result ledger yet.
+ // A current-phase registry label alone never establishes past results.
+ const phaseEndBaseline=rankAtLastCompletedPhase(DEEP_ASSESSMENTS,
+   {nct,phase:phaseContext.verifiedPhase,status:"UNKNOWN"},null,[]);
+ const assessmentRatings=phaseEndBaseline.assessments;
  const evidenceCoverage=assessmentRatings.map(r=>({
    ...r,
    sourceSlots:SCIENTIFIC_LEVELS.filter(l=>applicationsForNct(nct).some(c=>Boolean(researchForSlot(c.id,r.id,l.id)))).length
@@ -81,9 +84,9 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
    </section>
 
    <section style={panel}>
-     <h2 style={{margin:"0 0 8px",fontSize:19}}>Scientific test rankings · every assessment</h2>
-     <p style={subtle}>Each of the 40 assessments contains 20 separately rated investigative tests. The evidence-backed scientific grade is 0–5 per test, with a transparent 0–100 assessment average. A final comparative rank is shown only after every phase-applicable method is independently reviewed or explicitly excluded with a rationale. Missing evidence never counts as a zero, a failure, or a clinical benefit.</p>
-     <p style={{...subtle,marginTop:0}}><strong>Exact-NCT phase:</strong> {phaseContext.verifiedPhase} {phaseContext.sourceUrl&&<>· <EvidenceSource url={phaseContext.sourceUrl}>ClinicalTrials.gov</EvidenceSource></>}. <strong>Phase-specific standard:</strong> {PHASE_REVIEW_STANDARD[phaseContext.verifiedPhase]}. Scientific grades are not FDA approval probabilities or certainty ratings.</p>
+     <h2 style={{margin:"0 0 8px",fontSize:19}}>Prior phase-end scientific rankings · every assessment</h2>
+     <p style={subtle}>Each of the 40 assessments contains 20 separately rated investigative tests. The starting assessment rating must describe <strong>what the therapy actually demonstrated by the end of its last verified completed phase</strong>, using original results from the same drug, indication and linked trial. New current-phase evidence is displayed separately until the phase ends. The scientific grade is 0–5 per test, with a transparent 0–100 assessment average. A final comparative rank is shown only after every phase-applicable method is independently reviewed or explicitly excluded with a rationale. Missing evidence never counts as a zero, a failure, or a clinical benefit.</p>
+     <p style={{...subtle,marginTop:0}}><strong>Exact-NCT phase:</strong> {phaseContext.verifiedPhase} {phaseContext.sourceUrl&&<>· <EvidenceSource url={phaseContext.sourceUrl}>ClinicalTrials.gov</EvidenceSource></>}. <strong>Phase-specific standard:</strong> {PHASE_REVIEW_STANDARD[phaseContext.verifiedPhase]}. <strong>Previous phase-end baseline:</strong> {phaseEndBaseline.basis==="NO_VERIFIED_PHASE_END"?"Not yet verified / no defensible historical grade":phaseEndBaseline.completedPhase+" · "+phaseEndBaseline.phaseEndDate}. Scientific grades are not FDA approval probabilities or certainty ratings.</p>
      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
        {TEST_GRADE_RUBRIC.map(r=><span key={r.grade} title={r.meaning} style={{fontSize:12,border:"1px solid "+c.line,borderRadius:6,padding:"5px 8px",background:c.off}}>{r.grade}/5: {r.meaning}</span>)}
      </div>
@@ -100,7 +103,7 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
          </tr>)}</tbody>
        </table>
      </div>
-     <p style={{...subtle,marginBottom:0}}>Rows are sorted by documented source-investigation coverage, not by evidence strength. A source-examined observation does not automatically pass its scientific test. This preview has not yet connected a persistent, independently verified grade ledger; therefore scores and ranks remain pending rather than fabricated.</p>
+     <p style={{...subtle,marginBottom:0}}>Rows are sorted by documented source-investigation coverage, not by evidence strength. A source-examined observation does not automatically pass its scientific test. This preview has not yet connected a verified previous-phase outcomes ledger or a persistent independent grade ledger. Therefore scores and ranks remain pending rather than fabricated. A posted current-phase result must not be backfilled into an earlier phase-end grade.</p>
    </section>
 
    <section style={panel}>
