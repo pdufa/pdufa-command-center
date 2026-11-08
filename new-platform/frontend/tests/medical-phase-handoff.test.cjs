@@ -121,7 +121,7 @@ test("phase handoff fails closed on drift, missing identity or fabricated signof
       global.fetch=async target=>Response.json(String(target).endsWith("/queue")?fixture.queue:fixture.detail);
       const response=await GET(new NextRequest(url,{headers:sessionHeaders()}));
       assert.equal(response.status,503);
-      assert.match((await response.json()).error,/not/);
+      assert.match((await response.json()).error,/unavailable|inferred/);
     }
   }finally{
     global.fetch=oldFetch;
