@@ -717,6 +717,21 @@ async def lifespan(app: FastAPI):
                         initialize_method_audit(ENGINE)
                         app.state.medical_method_audit_ready = True
                         resumed=resume_method_audit(ENGINE)
+                        # Explicit canary-only one-shot source-audit launch, idempotent
+                        # for each exact saved original source triage snapshot.
+                        if (os.getenv("PDUFA_MEDICAL_METHOD_AUDIT_CANARY_AUTORUN","").lower()
+                                in ("1","true","yes") and resumed == 0):
+                            try:
+                                from .medical_method_audit_worker import start as start_method_audit
+                                audit_job=start_method_audit(ENGINE,"NCT06081894")
+                                logging.getLogger(__name__).warning(
+                                    "PDUFA_MEDICAL_METHOD_AUDIT_CANARY status=%s "
+                                    "sourceAuditOnly=True reviewGradesWritten=0",
+                                    audit_job["status"])
+                            except Exception as pilot_start_exc:
+                                logging.getLogger(__name__).error(
+                                    "PDUFA_MEDICAL_METHOD_AUDIT_CANARY status=ERROR error_type=%s",
+                                    type(pilot_start_exc).__name__)
                         logging.getLogger(__name__).warning(
                             "PDUFA_MEDICAL_METHOD_AUDIT_READY status=PASS resumed=%d "
                             "gradesWritten=0 prediction=ABSTAIN",resumed)
