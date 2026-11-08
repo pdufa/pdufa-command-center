@@ -86,6 +86,18 @@ class PromotionTests(unittest.TestCase):
         self.assertEqual(recovered[0]["marketCap"],5491198055)
         self.assertEqual(recovered[0]["regulatoryUrl"],FDA)
         self.assertEqual(recovered[0]["resultsUrl"],P3)
+        self.assertEqual(recovered[0]["recordedReleaseDate"],original[5])
+        self.assertEqual(recovered[0]["recordedPdufaDate"],original[25])
+        live[8]="2026-09-10"  # I: verified registry/issuer result publication
+        live[28]="2027-02-28" # AC: exact-date FDA target
+        dated=sync.extract([live])[0]
+        self.assertEqual(dated["recordedReleaseDate"],"2026-09-10")
+        self.assertEqual(dated["recordedPdufaDate"],"2027-02-28")
+        for invalid in ("2027-Q1","2027-02-30","2027-1-01",
+                        "NDA planned 2027","2027-04-23; not accepted"):
+            self.assertIsNone(sync.exact_date(invalid))
+        self.assertIsNone(sync.exact_date("2026-09-10T00:00:00Z"))
+
 
     def test_unknown_sheet_layout_cannot_append(self):
         header=[""]*31
