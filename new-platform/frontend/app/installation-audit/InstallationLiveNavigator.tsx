@@ -48,6 +48,16 @@ const safeTime=(value:string|undefined|null)=>value&&Number.isFinite(Date.parse(
  new Date(value).toLocaleString():"Not recorded";
 const status=(row:TaskEvidence|undefined):TaskState=>row?.status??"Unverified";
 
+/** Only a fresh, specifically identified RUNNING worker event is a live position. */
+function getActiveExecution(snapshot:TaskResponse|null):ExecutionCursor|null{
+ const c=snapshot?.activeExecution;
+ if(!c||c.state!=="RUNNING"||!c.taskId||!c.observedAt)return null;
+ if(!taskList.some(t=>t.id===c.taskId))return null;
+ const when=Date.parse(c.observedAt);
+ if(!Number.isFinite(when)||Math.abs(Date.now()-when)>90000)return null;
+ return c;
+}
+
 export default function InstallationLiveNavigator(){
  const [audit,setAudit]=useState<TaskResponse|null>(null);
  const [catalog,setCatalog]=useState<ScienceCatalog|null>(null);
@@ -59,6 +69,8 @@ export default function InstallationLiveNavigator(){
  const [chosenLevel,setChosenLevel]=useState(1);
  const [expandedBranch,setExpandedBranch]=useState(0);
  const [busy,setBusy]=useState(false);
+ const [liveNotice,setLiveNotice]=useState("");
+ const [liveJump,setLiveJump]=useState<{taskId:string|null;sequence:number}|null>(null);
  const mounted=useRef(true);
  const fetchData=useCallback(async()=>{
   try{
@@ -68,8 +80,10 @@ export default function InstallationLiveNavigator(){
    if(next.schemaVersion!==1||typeof next.tasks!=="object"||!next.tasks)
     throw Error("Installation task evidence format is unavailable");
    if(mounted.current){setAudit(next);setError("");}
+   return next;
   }catch(cause){
    if(mounted.current)setError(cause instanceof Error?cause.message:"Installation telemetry unavailable");
+   return null;
   }finally{if(mounted.current)setBusy(false);}
  },[]);
  useEffect(()=>{
@@ -84,21 +98,41 @@ export default function InstallationLiveNavigator(){
   document.addEventListener("visibilitychange",visible);
   return()=>{mounted.current=false;window.clearInterval(interval);document.removeEventListener("visibilitychange",visible);};
  },[fetchData]);
- const active=useMemo(()=>{
-  const c=audit?.activeExecution;
-  if(!c||c.state!=="RUNNING"||!c.taskId||!c.observedAt)return null;
-  if(!taskList.some(t=>t.id===c.taskId))return null;
-  const when=Date.parse(c.observedAt);
-  if(!Number.isFinite(when)||Math.abs(Date.now()-when)>90000)return null;
-  return c;
- },[audit]);
+ const active=useMemo(()=>getActiveExecution(audit),[audit]);
+ const goToLive=useCallback(async()=>{
+  // The button refreshes first; a stale saved registry never becomes a live cursor.
+  setBusy(true);
+  const latest=await fetchData();
+  const cursor=getActiveExecution(latest);
+  setFollowing(true);
+  setSection("present");
+  setChosenTask(cursor?.taskId??null);
+  setLiveNotice(cursor
+    ?"Jumped to the confirmed running installation task "+cursor.taskId+"."
+    :"Live location unavailable: no fresh, verified running task is reported. Showing active cursor status instead.");
+  setLiveJump(previous=>({taskId:cursor?.taskId??null,sequence:(previous?.sequence??0)+1}));
+ },[fetchData]);
  useEffect(()=>{
   if(!following||!active?.taskId)return;
   setSection("present");
   setChosenTask(active.taskId);
-  const target=document.getElementById(idOf(active.taskId));
-  if(target)target.scrollIntoView({block:"center",behavior:"smooth"});
- },[active,following]);
+  setLiveJump(previous=>previous?.taskId===active.taskId?previous:
+   {taskId:active.taskId,sequence:(previous?.sequence??0)+1});
+ },[active?.taskId,following]);
+ useEffect(()=>{
+  if(!liveJump)return;
+  // React must render the PRESENT list before scrolling to a newly selected task.
+  const frame=window.requestAnimationFrame(()=>{
+   const target=liveJump.taskId?
+    document.getElementById(idOf(liveJump.taskId)):
+    document.getElementById("installation-active-cursor");
+   target?.scrollIntoView({
+    behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",
+    block:"center"
+   });
+  });
+  return()=>window.cancelAnimationFrame(frame);
+ },[liveJump,section]);
  const past=taskList.filter(t=>status(audit?.tasks[t.id])==="Verified");
  const progress=taskList.filter(t=>status(audit?.tasks[t.id])==="In Progress");
  const future=taskList.filter(t=>status(audit?.tasks[t.id])!=="Verified");
@@ -117,13 +151,21 @@ export default function InstallationLiveNavigator(){
     style={{padding:"9px 12px",borderRadius:8,border:"1px solid #5aa9ae",background:"#0b625c",color:"#fff"}}>
     {busy?"Checking…":"Check installation now"}
    </button>
+   <button type="button" className={styles.liveButton}
+    onClick={()=>{void goToLive();}} disabled={busy}
+    aria-label="LIVE: jump to the current verified installation task">
+    <span className={styles.liveIndicator} aria-hidden="true"/>
+    LIVE <span className={styles.liveArrow} aria-hidden="true">→</span>
+   </button>
    <label style={{display:"flex",gap:8,alignItems:"center",fontWeight:600,fontSize:13}}>
     <input type="checkbox" checked={following} onChange={event=>setFollowing(event.target.checked)}/>
     Follow live execution cursor
    </label>
   </div>
   {error&&<p role="alert" style={{color:"#ffd4bb"}}>{error}. Previous data may be stale.</p>}
-  <div style={{...panel,border:"2px solid #5aa9ae",marginBottom:12}}>
+  {liveNotice&&<p role="status" aria-live="polite" className={styles.liveNotice}>{liveNotice}</p>}
+  <div id="installation-active-cursor" className={!active&&liveJump?.taskId===null?styles.cursorTarget:undefined}
+   style={{...panel,border:"2px solid #5aa9ae",marginBottom:12,scrollMarginTop:92}}>
    <strong>ACTIVE CURSOR</strong>
    {active?<>
     <p role="status"><strong>RUNNING: {active.taskId}</strong> · {taskList.find(t=>t.id===active.taskId)?.label}</p>
@@ -167,7 +209,9 @@ export default function InstallationLiveNavigator(){
     {visible.length===0&&<p style={info}>No items with independently supported status in this category.</p>}
     {visible.map(task=>{
      const row=audit?.tasks[task.id];
-     return <div key={task.id} id={idOf(task.id)} style={{padding:"9px 10px",border:"1px solid #39717b",borderRadius:8,
+     return <div key={task.id} id={idOf(task.id)}
+      className={task.id===active?.taskId?styles.cursorTarget:undefined}
+      style={{padding:"9px 10px",scrollMarginTop:92,border:"1px solid #39717b",borderRadius:8,
        background:task.id===active?.taskId?"#145751":"#0b3040"}}>
       <button type="button" onClick={()=>setChosenTask(chosenTask===task.id?null:task.id)}
        aria-expanded={chosenTask===task.id}
