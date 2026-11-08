@@ -53,6 +53,25 @@ def test_packaged_application_context_reconciles_all_focus_ncts():
 
 
 
+
+def test_published_application_indication_leads_are_used_without_cross_indication_leakage(monkeypatch):
+    terms=[]
+    monkeypatch.setattr(medical,"pm_search",lambda term:terms.append(term) or [])
+    state,known=medical.process_stage(5,"NCT05126758")
+    assert state=="EVIDENCE_GAP"
+    assert known["indication"]=="Duchenne muscular dystrophy"
+    assert terms[-1].startswith("Duchenne muscular dystrophy")
+    _,shared=medical.process_stage(5,"NCT02500381")
+    assert shared["indication"]=="Not reconciled"
+    assert "natural history" in terms[-1]
+    _,related=medical.process_stage(6,"NCT05126758")
+    assert related["drug"]=="Deramiocel"
+    assert related["indication"]=="Duchenne muscular dystrophy"
+    assert "Deramiocel" in terms[-1]
+    assert "Duchenne" in terms[-1]
+
+
+
 def test_packaged_focus_roster_matches_frontend_snapshot():
     # Render builds with Docker context new-platform/backend, so the runtime
     # cannot read its sibling frontend/data directory.
