@@ -372,8 +372,9 @@ def append_review(engine, *, nct: str, run_id: str, phase_event_id: str,
                 raise ValueError("Source URL is not present in the immutable saved source stage")
             capture = {"stageIndex":index,"sourceUrl":url,
                        "stageDocumentSha256":hashlib.sha256(
-                           source_stage[0].encode("utf-8")).hexdigest(),
-                       "sourceCapturedAt":source_stage[1]}
+                           source_stage[0].encode("utf-8")).hexdigest()}
+            if source_stage[1]:
+                capture["sourceCapturedAt"] = source_stage[1]
             # Human reviewer annotations are preserved with the captured
             # source. They can never be inferred from a source-audit receipt.
             annotation_keys = ("classification","sourceLocation","examinedFinding")
