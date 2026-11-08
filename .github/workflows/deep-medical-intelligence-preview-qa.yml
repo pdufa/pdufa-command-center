@@ -16,6 +16,7 @@ on:
       - 'new-platform/backend/app/medical_continuous.py'
       - 'new-platform/backend/app/medical_advanced_runtime.py'
       - 'new-platform/backend/app/data/focus_snapshot.json'
+      - 'new-platform/backend/app/data/focus_application_snapshot.json'
       - 'new-platform/backend/tests/test_medical_continuous.py'
       - 'new-platform/backend/tests/test_medical_advanced_runtime.py'
       - '.github/workflows/deep-medical-intelligence-preview-qa.yml'
