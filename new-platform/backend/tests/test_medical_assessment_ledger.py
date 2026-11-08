@@ -2,15 +2,34 @@
 from __future__ import annotations
 
 import json
+import os
 import uuid
 
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine, text
+from sqlalchemy.engine import make_url
+from sqlalchemy.exc import DBAPIError, IntegrityError
 
 from app import medical_continuous as source
 from app import medical_assessment_ledger as ledger
+
+
+def populated_history(db, nct, run):
+    """Synthetic test reviews only; never a clinical review or live signoff."""
+    when = "2026-11-08T18:00:00Z"
+    phase = ledger.record_verified_phase(db, nct=nct, run_id=run,
+        phase="PHASE3", reviewer_id="offline-fixture-reviewer", verified_at=when)
+    ledger.append_review(db, nct=nct, run_id=run, phase_event_id=phase,
+        assessment_index=1, method_index=1, disposition="SCORED", grade=3,
+        evidence=[{"stageIndex": 0, "sourceUrl": "https://clinicaltrials.gov/study/" + nct}],
+        rationale="Synthetic fixture verifies persistence, not independently assessed clinical evidence.",
+        reviewer_id="offline-fixture-reviewer", evidence_reviewed_at=when)
+    ledger.append_evidence_gap(db, nct=nct, run_id=run, assessment_index=1,
+        method_index=2, gap_code="MISSING_ORIGINAL_PROTOCOL",
+        evidence_note="Synthetic fixture has no independently examined original protocol.")
+    return ledger.trial_history(db, nct)
 
 
 @pytest.fixture
@@ -231,3 +250,139 @@ def test_current_phase_method_matrix_is_read_only_and_no_source_lead_is_a_grade(
     assert client.post(url).status_code == 405
     assert reviewed["clinicalSignoff"] is False
     assert reviewed["certainty"] == "NOT_VALIDATED"
+
+
+@pytest.mark.parametrize("table,column", [
+    ("medical_assessment_trial_roster", "source_completed_at"),
+    ("medical_assessment_phase_events", "reviewer_id"),
+    ("medical_assessment_review_events", "rationale"),
+    ("medical_assessment_gap_events", "evidence_note"),
+])
+@pytest.mark.parametrize("operation", ["UPDATE", "DELETE"])
+def test_direct_mutations_rejected_without_losing_history(seeded, table, column, operation):
+    db, focus, runs = seeded
+    ledger.seed_roster(db)
+    nct = focus[0]
+    before = populated_history(db, nct, runs[nct])
+    statement = (f"UPDATE {table} SET {column}=:changed WHERE nct_id=:nct"
+                 if operation == "UPDATE" else f"DELETE FROM {table} WHERE nct_id=:nct")
+    # Table and column names come only from the static test parameter list.
+    with pytest.raises(IntegrityError, match="append-only"):
+        with db.begin() as c:
+            c.execute(text(statement), {"nct": nct, "changed": "Rejected accidental overwrite"})
+    assert ledger.trial_history(db, nct) == before
+    coverage = ledger.coverage(db)
+    assert coverage["sourceComplete"] == 29
+    assert coverage["sourceStageCount"] == 348
+    assert coverage["phaseVerifiedNcts"] == 1
+    assert coverage["reviewEvents"] == 1
+    assert coverage["explicitGapEvents"] == 1
+
+
+def test_initialize_and_seed_restart_preserve_existing_rows_and_allow_new_revisions(seeded):
+    db, focus, runs = seeded
+    ledger.seed_roster(db)
+    nct = focus[0]
+    before = populated_history(db, nct, runs[nct])
+    with db.connect() as c:
+        roster_before = list(c.execute(text("SELECT * FROM medical_assessment_trial_roster ORDER BY nct_id")))
+        sources_before = list(c.execute(text("SELECT * FROM medical_continuous_stages ORDER BY run_id,stage_index")))
+    for _ in range(2):
+        ledger.initialize(db, test_only=True)
+        assert ledger.seed_roster(db)["sourceComplete"] == 29
+    assert ledger.trial_history(db, nct) == before
+    with db.connect() as c:
+        assert list(c.execute(text("SELECT * FROM medical_assessment_trial_roster ORDER BY nct_id"))) == roster_before
+        assert list(c.execute(text("SELECT * FROM medical_continuous_stages ORDER BY run_id,stage_index"))) == sources_before
+    original = before["reviewEvents"][0]
+    ledger.append_review(db, nct=nct, run_id=runs[nct], phase_event_id=original["phase_event_id"],
+        assessment_index=1, method_index=1, disposition="RETRACTED", grade=None, evidence=[],
+        rationale="Synthetic fixture tests an append-only retraction after a repeated initialization.",
+        reviewer_id="offline-fixture-reviewer", evidence_reviewed_at="2026-11-08T19:00:00Z",
+        supersedes_event_id=original["review_event_id"])
+    after = ledger.trial_history(db, nct)
+    assert len(after["reviewEvents"]) == 2
+    assert after["reviewEvents"][0] == original
+    assert after["reviewEvents"][1]["supersedes_event_id"] == original["review_event_id"]
+    assert after["reviewEvents"][1]["disposition"] == "RETRACTED"
+
+
+def test_isolated_postgres_rejects_update_delete_truncate_and_preserves_restarts(seeded):
+    """Optional real PostgreSQL contract test in a disposable loopback database.
+
+    Remote databases are deliberately rejected. Each execution owns only its
+    randomly named schema, which it removes after verifying the ledger.
+    """
+    configured = os.getenv("PDUFA_TEST_POSTGRES_URL")
+    if not configured:
+        pytest.skip("Isolated loopback PostgreSQL test database is not configured")
+    url = make_url(configured)
+    if (url.drivername != "postgresql+psycopg" or url.host not in ("127.0.0.1", "localhost")
+            or url.port != 55432 or url.database != "pdufa_ledger_test" or url.query):
+        pytest.fail("PostgreSQL ledger test requires the dedicated loopback test database")
+    schema = "medical_ledger_test_" + uuid.uuid4().hex
+    admin = create_engine(url)
+    db = create_engine(url, connect_args={"options": "-csearch_path=" + schema})
+    local, focus, runs = seeded
+    created = False
+    try:
+        with admin.begin() as c:
+            c.execute(text(f"CREATE SCHEMA {schema}"))
+        created = True
+        source.initialize(db)
+        ledger.initialize(db)
+        # Copy only synthetic local-fixture source runs into the owned schema.
+        # No production records or real clinical review findings are involved.
+        with local.connect() as c:
+            source_runs = [dict(row) for row in c.execute(text("SELECT * FROM medical_continuous_runs")).mappings()]
+            source_stages = [dict(row) for row in c.execute(text("SELECT * FROM medical_continuous_stages")).mappings()]
+        for row in source_runs:
+            row["stop_requested"] = bool(row["stop_requested"])
+        with db.begin() as c:
+            c.execute(text("""INSERT INTO medical_continuous_runs
+                (run_id,request_key,nct_id,status,stage_index,created_at,updated_at,stop_requested)
+                VALUES(:run_id,:request_key,:nct_id,:status,:stage_index,:created_at,:updated_at,:stop_requested)"""), source_runs)
+            c.execute(text("""INSERT INTO medical_continuous_stages
+                (run_id,stage_index,state,document,finished_at)
+                VALUES(:run_id,:stage_index,:state,:document,:finished_at)"""), source_stages)
+        ledger.seed_roster(db)
+        nct = focus[0]
+        before = populated_history(db, nct, runs[nct])
+        counts = ledger.coverage(db)
+        for table, column in (
+            ("medical_assessment_trial_roster", "source_completed_at"),
+            ("medical_assessment_phase_events", "reviewer_id"),
+            ("medical_assessment_review_events", "rationale"),
+            ("medical_assessment_gap_events", "evidence_note"),
+        ):
+            for statement in (
+                f"UPDATE {table} SET {column}=:changed WHERE nct_id=:nct",
+                f"DELETE FROM {table} WHERE nct_id=:nct",
+                f"TRUNCATE {table} CASCADE",
+            ):
+                with pytest.raises(DBAPIError, match="append-only"):
+                    with db.begin() as c:
+                        c.execute(text(statement), {"nct": nct, "changed": "Rejected accidental overwrite"})
+                assert ledger.trial_history(db, nct) == before
+                assert ledger.coverage(db) == counts
+        for _ in range(2):
+            ledger.initialize(db)
+            assert ledger.seed_roster(db) == counts
+        assert ledger.trial_history(db, nct) == before
+        original = before["reviewEvents"][0]
+        ledger.append_review(db, nct=nct, run_id=runs[nct], phase_event_id=original["phase_event_id"],
+            assessment_index=1, method_index=1, disposition="RETRACTED", grade=None, evidence=[],
+            rationale="Synthetic PostgreSQL fixture verifies a new append-only revision after rejected DML.",
+            reviewer_id="offline-fixture-reviewer", evidence_reviewed_at="2026-11-08T19:00:00Z",
+            supersedes_event_id=original["review_event_id"])
+        after = ledger.trial_history(db, nct)
+        assert len(after["reviewEvents"]) == 2
+        assert after["reviewEvents"][0] == original
+        assert after["reviewEvents"][1]["supersedes_event_id"] == original["review_event_id"]
+        assert after["reviewEvents"][1]["disposition"] == "RETRACTED"
+    finally:
+        db.dispose()
+        if created:
+            with admin.begin() as c:
+                c.execute(text(f"DROP SCHEMA {schema} CASCADE"))
+        admin.dispose()

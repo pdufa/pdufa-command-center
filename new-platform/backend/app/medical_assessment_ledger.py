@@ -122,6 +122,32 @@ def initialize(engine, *, test_only: bool = False) -> None:
             recorded_at TEXT NOT NULL)"""))
         c.execute(text("""CREATE INDEX IF NOT EXISTS medical_assessment_gaps_nct
             ON medical_assessment_gap_events(nct_id,recorded_at)"""))
+        # Guard accidental DML without rewriting any existing rows or changing
+        # database privileges. Source runs/stages remain outside this ledger's
+        # schema boundary. Owners can still alter schema; these are not a claim
+        # of protection against a privileged database administrator.
+        immutable = ("medical_assessment_trial_roster", "medical_assessment_phase_events",
+                     "medical_assessment_review_events", "medical_assessment_gap_events")
+        if engine.dialect.name == "postgresql":
+            c.execute(text("""CREATE OR REPLACE FUNCTION medical_assessment_reject_mutation()
+                RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+                RAISE EXCEPTION 'Medical assessment history and roster attachments are append-only';
+                END; $$"""))
+            for table in immutable:
+                exists = c.execute(text("""SELECT 1 FROM pg_trigger
+                    WHERE tgname=:name AND tgrelid=CAST(:table AS regclass)"""),
+                    {"name": table + "_immutable", "table": table}).scalar()
+                if not exists:
+                    c.execute(text(f"CREATE TRIGGER {table}_immutable "
+                                   f"BEFORE UPDATE OR DELETE OR TRUNCATE ON {table} "
+                                   "FOR EACH STATEMENT EXECUTE FUNCTION medical_assessment_reject_mutation()"))
+        else:
+            # SQLite is permitted only by the explicit isolated-test flag.
+            for table in immutable:
+                for operation in ("UPDATE", "DELETE"):
+                    c.execute(text(f"CREATE TRIGGER IF NOT EXISTS {table}_{operation.lower()} "
+                                   f"BEFORE {operation} ON {table} BEGIN SELECT RAISE(ABORT, "
+                                   "'Medical assessment history and roster attachments are append-only'); END"))
 
 
 def seed_roster(engine) -> dict:
