@@ -1,5 +1,5 @@
 /** Competitive-strategy investigation for post–Phase 3 trial candidates.
- * Uses the existing twenty-assessment source fields, not new unreviewed scores.
+ * Independent, unscored clinical and competitive research topics; no survey collection.
  * A displayed field requires the exact NCT + ticker + drug + indication match.
  */
 export const COMPETITIVE_STRATEGY_TOPICS=[

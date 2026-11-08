@@ -4,14 +4,12 @@ import {useEffect,useState} from "react";
 import type {PipelineResearchRow} from "../lib/pipeline-research-view";
 import type {TimelineDates} from "../lib/pipeline-timeline";
 import TrialTimelineSummary from "./TrialTimelineSummary";
-import {parseBenefitFeed,type BenefitFeed} from "../lib/benefit-assessments";
 
 type Result={view:string;rows:PipelineResearchRow[];total:number;offset:number;limit:number};
 export default function FullTrialTimeline({nctId}:{nctId:string}){
   const [timeline,setTimeline]=useState<TimelineDates|null>(null);
   const [ticker,setTicker]=useState<string|null>(null);
   const [fullTrial,setFullTrial]=useState<PipelineResearchRow|null>(null);
-  const [feed,setFeed]=useState<BenefitFeed|null>(null);
   const [status,setStatus]=useState("Loading exact-program timing evidence…");
   useEffect(()=>{
     if(!/^NCT\d{8}$/.test(nctId)){setStatus("Invalid trial identifier");return;}
@@ -46,19 +44,11 @@ export default function FullTrialTimeline({nctId}:{nctId:string}){
     });
     return ()=>controller.abort();
   },[nctId]);
-  useEffect(()=>{
-    const controller=new AbortController();
-    void fetch("/api/benefit-assessments",{cache:"no-store",signal:controller.signal})
-      .then(async response=>{if(!response.ok)throw Error("BENEFIT_FEED_UNAVAILABLE");return parseBenefitFeed(await response.json());})
-      .then(data=>{if(!controller.signal.aborted)setFeed(data);})
-      .catch(()=>{if(!controller.signal.aborted)setFeed(null);});
-    return ()=>controller.abort();
-  },[]);
   return <div style={{margin:"12px 0"}} aria-label="Trial ticker and green date counters">
     <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:12}}>
       <strong style={{fontSize:20,color:"#113e2b",whiteSpace:"nowrap"}}>Ticker: {ticker||"Not verified"}</strong>
       <TrialTimelineSummary timeline={timeline} compact
-        trial={fullTrial||{nctId,ticker:ticker||"",drug:null,indication:null}} benefitFeed={feed}/>
+        trial={fullTrial||{nctId,ticker:ticker||"",drug:null,indication:null}}/>
     </div>
     {status&&<p className="subtle" role="status">{status}</p>}
   </div>;

@@ -3,7 +3,7 @@
 import {useEffect,useState,type CSSProperties} from "react";
 import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline-timeline";
 import {competitiveEdge,type EdgeTrial} from "../lib/competitive-edge";
-import type {BenefitFeed} from "../lib/benefit-assessments";
+import type {BenefitFeed} from "../lib/clinical-source-types";
 
 const grid:CSSProperties={display:"flex",flexWrap:"wrap",alignItems:"stretch",gap:8};
 const panel:CSSProperties={border:"3px solid #0b9348",background:"#e9fff2",borderRadius:10,padding:"9px 12px",minWidth:135,flex:"1 1 175px",boxShadow:"0 0 0 1px #a6eac4"};
@@ -87,7 +87,7 @@ export default function TrialTimelineSummary({
           <div style={{padding:"4px 4px 2px",lineHeight:1.5}}>
             <p><strong>Assessment result:</strong> {edge.status==="SOURCED_FACTOR"?"A source-reviewed competitive factor is recorded. This is not an overall trial winner.":edge.status==="NOT_COMPARABLE"?"The selected trials cannot be directly compared with the available clinical context.":"No verified comparative advantage has been established for this trial."}</p>
             <p><strong>Reason:</strong> {edge.reason}</p>
-            {edge.assessment&&<p><strong>Relevant category:</strong> #{edge.assessment} — {edge.assessmentTitle} (of 20 assessments)</p>}
+            {edge.assessment&&<p><strong>Relevant category:</strong> #{edge.assessment} — {edge.assessmentTitle}</p>}
             {edge.comparator&&<p><strong>Compared with:</strong> {edge.comparator}</p>}
             {edge.method&&<p><strong>How it was assessed:</strong> {edge.method}</p>}
             {edge.sourceUrl&&<p><strong>Supporting evidence:</strong> <a href={edge.sourceUrl} rel="noopener noreferrer" target="_blank">Open verified source</a>{edge.sourceDate?" · source dated "+edge.sourceDate:""}</p>}

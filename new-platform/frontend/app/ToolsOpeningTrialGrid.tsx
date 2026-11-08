@@ -10,7 +10,7 @@ import TrialColumnFilterBar,{applyColumnFilters,type ColumnFilterState,type Colu
 import {TOOLS_CLEAR_EVENT,TOOLS_RATINGS_STORAGE_KEY,TOOLS_COMPETITION_STORAGE_KEY,
   readToolsPreference,saveToolsPreference} from "../lib/tools-selection-persistence";
 import {COMPETITIVE_STRATEGY_TOPICS} from "../lib/tools-competitive-strategy";
-import {parseBenefitFeed,benefitForTrial,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
+import {benefitForTrial,type BenefitFact} from "../lib/clinical-source-types";
 import {competitiveReadiness,type CompetitivePopulationScan}
   from "../lib/tools-competitive-readiness";
 import {auditTrialRatings,type RatingAuditCell} from "../lib/tools-rating-engine";
@@ -140,8 +140,8 @@ export default function ToolsOpeningTrialGrid({
   const [today,setToday]=useState("");
   const [expandedRatings,setExpandedRatings]=useState<RatingGroupKey[]>([]);
   const [competitiveOpen,setCompetitiveOpen]=useState(false);
-  const [competitionEvidence,setCompetitionEvidence]=useState<BenefitFeed|null>(null);
-  const [competitionError,setCompetitionError]=useState(false);
+  const competitionEvidence=null;
+  const competitionError=false;
   const [registryCoverage,setRegistryCoverage]=useState<RegistryCoverage|null>(null);
   const [registryUnavailable,setRegistryUnavailable]=useState(false);
   const [peerLeads,setPeerLeads]=useState<Record<string,RegistryPeerLeads>|null>(null);
@@ -163,22 +163,6 @@ export default function ToolsOpeningTrialGrid({
     saveToolsPreference(TOOLS_RATINGS_STORAGE_KEY,expandedRatings);
     saveToolsPreference(TOOLS_COMPETITION_STORAGE_KEY,competitiveOpen);
   },[expandedRatings,competitiveOpen,selectionsRestored]);
-  useEffect(()=>{
-    if(selectedStages+selectedDesignations===0){
-      setCompetitionEvidence(null);setCompetitionError(false);return;
-    }
-    const controller=new AbortController();
-    setCompetitionError(false);
-    // Rating inputs load whenever trials are selected: opening CS is NOT required.
-    void fetch("/api/benefit-assessments",{cache:"no-store",signal:controller.signal})
-      .then(async response=>{
-        if(!response.ok)throw Error("BENEFIT_FEED_UNAVAILABLE");
-        return parseBenefitFeed(await response.json());
-      })
-      .then(data=>{if(!controller.signal.aborted)setCompetitionEvidence(data);})
-      .catch(()=>{if(!controller.signal.aborted){setCompetitionEvidence(null);setCompetitionError(true);}});
-    return ()=>controller.abort();
-  },[selectedStages,selectedDesignations]);
   useEffect(()=>{
     if(selectedStages+selectedDesignations===0){
       setRegistryCoverage(null);setRegistryUnavailable(false);return;

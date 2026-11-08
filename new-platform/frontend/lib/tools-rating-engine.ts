@@ -3,7 +3,7 @@
  * trading prediction or a comparable investment rank.
  * Do not equate a source count with positive benefit or greater stock upside.
  */
-import {BENEFIT_GROUPS,benefitForTrial,type BenefitFeed,type BenefitFact} from "./benefit-assessments";
+import {BENEFIT_GROUPS,benefitForTrial,type BenefitFeed,type BenefitFact} from "./clinical-source-types";
 import {competitiveReadiness,type CompetitiveResearchTrial} from "./tools-competitive-readiness";
 import type {RegistrySourceRow} from "./registry-benefit-coverage";
 import type {RegistryPeerLeads} from "./registry-competitor-leads";

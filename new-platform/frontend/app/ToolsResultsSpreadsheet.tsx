@@ -3,7 +3,6 @@
 import {useEffect,useMemo,useState} from "react";
 import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline-timeline";
 import TrialTimelineSummary from "./TrialTimelineSummary";
-import {parseBenefitFeed,type BenefitFeed} from "../lib/benefit-assessments";
 import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "../lib/trial-designations";
 import type {ToolPdufaApplication} from "../lib/tools-pdufa-links";
 import styles from "./FunnelWorkspace.module.css";
@@ -80,16 +79,6 @@ export default function ToolsResultsSpreadsheet({
 }:Props){
   const [sortKey,setSortKey]=useState<SortField>("nctId");
   const [columnFilters,setColumnFilters]=useState<ColumnFilterState>({});
-  const [benefitFeed,setBenefitFeed]=useState<BenefitFeed|null>(null);
-  const [benefitError,setBenefitError]=useState("");
-  useEffect(()=>{
-    const controller=new AbortController();
-    void fetch("/api/benefit-assessments",{cache:"no-store",signal:controller.signal})
-     .then(async response=>{if(!response.ok)throw Error("BENEFIT_FEED_UNAVAILABLE");return parseBenefitFeed(await response.json());})
-     .then(result=>{if(!controller.signal.aborted)setBenefitFeed(result);})
-     .catch(()=>{if(!controller.signal.aborted)setBenefitError("Competitive research source unavailable; no edge can be verified.");});
-    return ()=>controller.abort();
-  },[]);
   const [descending,setDescending]=useState(false);
   const [today,setToday]=useState("");
   useEffect(()=>{const update=()=>setToday(pacificToday());update();const timer=setInterval(update,60000);return ()=>clearInterval(timer);},[]);
@@ -221,7 +210,7 @@ export default function ToolsResultsSpreadsheet({
               target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
             <td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:295}}>
               <strong>{display(row.ticker)}</strong>
-              <TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={benefitFeed}/>
+              <TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row}/>
             </div></td>
             <td>{display(row.company)}</td>
             <td className={styles.toolsSheetDateValue} title="S: Days since source-verified public Phase 3 results release">

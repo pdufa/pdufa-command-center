@@ -3,7 +3,7 @@
  * No missing competitor, benefit or FDA date is converted to zero or a ranking.
  */
 import { ASSESSMENT_SUPPORT_FIELDS, type AssessmentSupportFieldId } from "./pipeline-assessment-inputs";
-import type { ComparatorEvidence } from "./pipeline-benefit-assessments";
+import type { ComparatorEvidence } from "./clinical-comparators";
 import { COMPETITIVE_ASSESSMENT_COLUMNS, verifiedCompetitiveFact, type CompetitiveAssessment, type ResearchEvidence } from "./competitive-assessment";
 import { calculateTherapyCosts, type TherapyCostComparison } from "./post-phase3-population";
 import { pipelineDayCounts, type TimelineDates } from "./pipeline-timeline";

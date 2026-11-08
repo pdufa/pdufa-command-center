@@ -4,7 +4,7 @@
  * clinical superiority, an approved label, trade eligibility, or FDA action.
  */
 import {COMPETITIVE_STRATEGY_TOPICS} from "./tools-competitive-strategy";
-import {benefitForTrial,type BenefitFeed,type BenefitFact} from "./benefit-assessments";
+import {benefitForTrial,type BenefitFeed,type BenefitFact} from "./clinical-source-types";
 import {pipelineDayCounts,type TimelineDates} from "./pipeline-timeline";
 
 export type CompetitiveResearchTrial={
