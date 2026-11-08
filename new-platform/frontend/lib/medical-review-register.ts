@@ -10,7 +10,7 @@ const HEADERS=[
   "assessment_label","method_index","method","method_description","priority_tier",
   "priority_rank","phase_applicability","required_sources","review_status","clinical_grade_0_to_5",
   "review_event_id","revision","reviewed_at","reviewer_id","rationale",
-  "captured_source_urls","evidence_gap_count","evidence_gaps"
+  "captured_source_urls","captured_source_findings","evidence_gap_count","evidence_gaps"
 ];
 const STATUSES=new Set(["SCORED","NOT_APPLICABLE","RETRACTED","STALE_PHASE","UNREVIEWED","VERIFY_PHASE"]);
 function csvCell(value:unknown):string{
@@ -57,7 +57,8 @@ export function buildClinicalReviewRegisterCsv(catalog:CatalogMatrix,review:Revi
         ca.label,m,cm.method,cm.methodDescription,cm.priorityTier,cm.priorityRank,
         cm.phaseApplicability,cm.requiredSources,r.status,scored?r.grade:null,
         r.reviewEventId,r.revision,r.reviewedAt,r.reviewerId,r.rationale,
-        JSON.stringify(r.sourceEvidence.map(x=>x.sourceUrl)),r.evidenceGaps.length,
+        JSON.stringify(r.sourceEvidence.map(x=>x.sourceUrl)),
+        JSON.stringify(r.sourceEvidence),r.evidenceGaps.length,
         JSON.stringify(r.evidenceGaps.map(g=>({code:g.gap_code,note:g.evidence_note,date:g.recorded_at})))
       ]));
     }
