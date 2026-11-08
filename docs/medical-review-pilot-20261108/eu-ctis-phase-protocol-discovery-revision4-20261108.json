@@ -1,0 +1,120 @@
+{
+  "schema": "MAIN_EU_CTIS_PHASE_SOURCE_DISCOVERY_V1",
+  "revision": 4,
+  "previousRevision": 3,
+  "recordedAt": "2026-11-08",
+  "nct": "NCT06081894",
+  "protocolCode": "CY 6033",
+  "euTrialNumber": "2023-505797-15-00",
+  "sourceState": "PUBLIC_PROTOCOL_LISTED_NOT_RETRIEVED",
+  "clinicalPhaseCertified": false,
+  "reviewerSignoff": false,
+  "phaseGradeEvents": 0,
+  "methodGradeEvents": 0,
+  "fdaPredictions": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "certainty": "NOT_VALIDATED",
+  "originalSources": [
+    {
+      "sourceId": "EMA-CTIS-PUBLIC",
+      "sourceType": "REGULATORY_PRIMARY_PORTAL",
+      "url": "https://euclinicaltrials.eu/ctis-public/view/2023-505797-15-00?lang=en",
+      "verifiedFields": [
+        "trial_id",
+        "protocol_id",
+        "Phase III",
+        "eu_member_state_status"
+      ],
+      "hasDownloadedSourceDocuments": false
+    },
+    {
+      "sourceId": "CTIS-DOCUMENT-INDEX",
+      "sourceType": "INDEPENDENT_REGULATOR_DATA_INDEX",
+      "url": "https://ctis.eu/trial/2023-505797-15-00",
+      "verifiedFields": [
+        "document_names",
+        "AM4_listed_version",
+        "public_document_count"
+      ],
+      "hasDownloadedSourceDocuments": false
+    },
+    {
+      "sourceId": "CTG-PUBLIC",
+      "sourceType": "SPONSOR_SUBMITTED_US_REGISTRY",
+      "url": "https://clinicaltrials.gov/study/NCT06081894",
+      "verifiedFields": [
+        "exact_nct",
+        "global_reported_phase",
+        "overall_status"
+      ],
+      "hasDownloadedSourceDocuments": false
+    }
+  ],
+  "publicDocuments": [
+    {
+      "source": "CTIS-DOCUMENT-INDEX",
+      "name": "D1_2023-505797-15-00_Protocol_FP",
+      "version": "AM4",
+      "recordedAs": "PUBLIC_PROTOCOL_LISTED",
+      "retrieved": false,
+      "contentsExamined": false,
+      "verifiedSha256": null
+    },
+    {
+      "source": "CTIS-DOCUMENT-INDEX",
+      "name": "D1_2023-505797-15-00_Protocol_el_FP",
+      "version": "AM4",
+      "recordedAs": "PUBLIC_PROTOCOL_LISTED",
+      "retrieved": false,
+      "contentsExamined": false,
+      "verifiedSha256": null
+    },
+    {
+      "source": "CTIS-DOCUMENT-INDEX",
+      "name": "D1_2023-505797-15-00_Protocol_add_A_FP",
+      "version": "A",
+      "recordedAs": "PUBLIC_PROTOCOL_LISTED",
+      "retrieved": false,
+      "contentsExamined": false,
+      "verifiedSha256": null
+    }
+  ],
+  "phaseScope": {
+    "europeanUnion": {
+      "scope": "EU_MEMBER_STATES",
+      "reportedPhase": "PHASE3",
+      "trialStatus": "ENDED",
+      "lastMemberStateEndDate": "2026-02-27",
+      "recordStatus": "SPONSOR_SUBMITTED_REGULATORY_RECORD"
+    },
+    "unitedStates": {
+      "scope": "GLOBAL_STUDY",
+      "reportedPhase": "PHASE3",
+      "trialStatus": "ACTIVE_NOT_RECRUITING",
+      "lastUpdatePosted": "2026-09-22",
+      "recordStatus": "SPONSOR_SUBMITTED_REGISTRY_RECORD"
+    },
+    "statusComparison": "DIFFERENT_SCOPE_NO_AUTOMATIC_CONTRADICTION",
+    "scientificPhaseVerification": "PENDING_INDEPENDENT_AUTHORIZED_REVIEW"
+  },
+  "populationScope": {
+    "euAdministrativePlan": 435,
+    "plannedEuEeaParticipants": 175,
+    "usGlobalEstimatedEnrollment": 500,
+    "publishedRandomized": 517,
+    "interpretation": "NOT_DIRECTLY_COMPARABLE_SCOPE_AND_STAGE",
+    "enrollmentVarianceReviewed": false
+  },
+  "gates": {
+    "originalProtocolBytesVerified": false,
+    "finalSapObtained": false,
+    "documentVersionAndDateReconciled": false,
+    "independentReviewerIdentified": false,
+    "phaseEventAuthorized": false,
+    "regulatoryOutcomeValidated": false
+  },
+  "nextAction": "Download named AM4 public protocol via EMA CTIS Trial Documents; hash and validate original document, source/amendment timeline and final SAP; request independent clinical reviewer signoff."
+}
