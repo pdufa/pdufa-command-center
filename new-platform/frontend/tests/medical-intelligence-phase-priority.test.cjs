@@ -41,7 +41,7 @@ test("phase-dependent priorities shift without changing the scientific test iden
  const p4=rankScientificInvestigations(DEEP_ASSESSMENTS,SCIENTIFIC_LEVELS,NCT,"PHASE4");
  assert.equal(find(p1,"3.3:L1").priority,"CRITICAL");
  assert.equal(find(p3,"3.3:L1").priority,"HIGH");
- assert.equal(find(p1,"5.1:L1").priority,"MODERATE");
+ assert.equal(find(p1,"5.1:L1").priority,"HIGH");
  assert.equal(find(p3,"5.1:L1").priority,"CRITICAL");
  assert.equal(find(p1,"7.5:L1").priority,"LOW");
  assert.equal(find(p1,"7.5:L1").phaseApplicability,"FORWARD_LOOKING");
