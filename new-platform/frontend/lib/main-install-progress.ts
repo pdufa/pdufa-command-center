@@ -22,6 +22,7 @@ export type MonitorTelemetry={
  schemaVersion:number;observedAt:string;
  storage?:{state:string;kind:string;postgresRequired:boolean};
  sourceSnapshots?:Record<string,Record<string,unknown>>;
+ services?:Record<string,Record<string,unknown>>;
  scans?:Record<string,Record<string,unknown>>;
  research?:Record<string,unknown>;
  alerts?:Record<string,unknown>;
@@ -56,6 +57,11 @@ export function buildInstallationProgress(
  const backendDown=!validStorage||!external.apiReachable;
  const research=live?.research??{};
  const applications=live?.sourceSnapshots?.applications??{};
+ const runtimeSha=live?.services?.backendDeployment?.gitSha;
+ const backendSha=typeof runtimeSha==="string"&&/^[a-f0-9]{40}$/.test(runtimeSha)?runtimeSha:null;
+ const frontendSha=external.deployment.sha;
+ const commitParity:CheckState=backendSha&&frontendSha?
+     (backendSha===frontendSha?"VERIFIED":"BLOCKED"):"UNKNOWN";
  const scans=live?.scans??{};
  const alerts=live?.alerts??{};
  const completeSourceRuns=typeof research.finishedSourceRuns==="number"?research.finishedSourceRuns:0;
@@ -104,6 +110,12 @@ export function buildInstallationProgress(
  add("infrastructure","Infrastructure — deployment, tests and storage",[
    from("infra.frontend","Frontend preview responding",external.deployment.state==="READY"?"VERIFIED":"UNKNOWN",
      external.deployment.state==="READY"?"Serving compiled preview "+(external.deployment.sha?.slice(0,8)??""):"Current deployment not independently identified.","Vercel deployment metadata",external.observedAt),
+   from("infra.commit-parity","Exact frontend/backend deployment parity",commitParity,
+     backendSha&&frontendSha?
+       "Vercel "+frontendSha.slice(0,12)+" vs Render running "+backendSha.slice(0,12)+
+       (backendSha===frontendSha?" — identical commits.":" — deployment revisions differ; verify backend rollout."):
+       "Cannot compare authenticated running Render SHA with this Vercel deployment SHA.",
+     "Render RENDER_GIT_COMMIT and Vercel VERCEL_GIT_COMMIT_SHA",observed),
    from("infra.backend","Medical API health observed",external.apiReachable?"VERIFIED":"BLOCKED",
      external.apiReachable?"Authenticated health endpoint returned a structured result.":"Cannot retrieve current authenticated backend health.","Backend API",observed),
    from("infra.storage","Persistent PostgreSQL available",validStorage?"VERIFIED":"BLOCKED",
