@@ -26,10 +26,10 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
  const assessment=DEEP_ASSESSMENTS.find(a=>a.id===query.assessment)||DEEP_ASSESSMENTS.find(a=>a.id==="4.3")||DEEP_ASSESSMENTS[0];
  const layer=SCIENTIFIC_LAYERS.find(l=>l.id===assessment.layerId)||SCIENTIFIC_LAYERS[0];
  const matches=applicationsForNct(nct);
- const firstCase=matches.map(m=>caseForCycle(m.id)).find(Boolean)||null;
- const caseStudies=matches.filter(m=>caseForCycle(m.id));
+ const firstCase=matches.map(m=>caseForCycle(m.id)).find(caseStudy=>caseStudy?.nct===nct)||null;
+ const caseStudies=matches.filter(m=>caseForCycle(m.id)?.nct===nct);
  const slots=SCIENTIFIC_LEVELS.map(l=>({lvl:l,slot:getDepthSlot(assessment.id,l.id),
-  evidence:matches.map(m=>researchForSlot(m.id,assessment.id,l.id)).find(Boolean)||null}));
+  evidence:matches.filter(m=>caseForCycle(m.id)?.nct===nct).map(m=>researchForSlot(m.id,assessment.id,l.id)).find(Boolean)||null}));
  const sourceChecked=slots.filter(s=>s.evidence).length;
  const capr=firstCase?.cycleId==="capr-deramiocel";
  const cogt=firstCase?.cycleId==="cogt-gist";
