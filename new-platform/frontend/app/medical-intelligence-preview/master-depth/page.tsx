@@ -6,6 +6,7 @@ import {SCIENTIFIC_LEVELS,SCIENTIFIC_LAYERS,DEEP_ASSESSMENTS,DEPTH_SLOT_COUNT,TH
 import {applicationsForNct} from "../../../lib/medical-intelligence-applications";
 import {getRegistryPhases} from "../../../lib/medical-intelligence-registry-phase";
 import {rankAtLastCompletedPhase,PHASE_REVIEW_STANDARD,TEST_GRADE_RUBRIC} from "../../../lib/medical-intelligence-assessment-rankings";
+import {assessLatestPhaseActivity} from "../../../lib/medical-intelligence-phase-snapshot";
 import {MEDICAL_CASES,caseForCycle,researchForSlot,caprSapComparisonSummary,CAPR_FDA_PUL_SAP_COMPARISONS,cogtLiverSafetyDifference} from "../../../lib/medical-intelligence-md-casebook";
 
 export const metadata:Metadata={
@@ -31,7 +32,11 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
  // A current-phase registry label alone never establishes past results.
  const phaseEndBaseline=rankAtLastCompletedPhase(DEEP_ASSESSMENTS,
    {nct,phase:phaseContext.verifiedPhase,status:"UNKNOWN"},null,[]);
- const assessmentRatings=phaseEndBaseline.assessments;
+ // No certified current-phase milestone/test ledger is connected in this preview.
+ // The latest current-phase score and observed risks therefore remain unassigned.
+ const phaseActivity=assessLatestPhaseActivity(DEEP_ASSESSMENTS,nct,phaseContext.verifiedPhase,
+   new Date().toISOString().slice(0,10),[],[],[]);
+ const assessmentRatings=phaseActivity.currentScores;
  const evidenceCoverage=assessmentRatings.map(r=>({
    ...r,
    sourceSlots:SCIENTIFIC_LEVELS.filter(l=>applicationsForNct(nct).some(c=>Boolean(researchForSlot(c.id,r.id,l.id)))).length
@@ -84,15 +89,27 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
    </section>
 
    <section style={panel}>
-     <h2 style={{margin:"0 0 8px",fontSize:19}}>Prior phase-end scientific rankings · every assessment</h2>
-     <p style={subtle}>Each of the 40 assessments contains 20 separately rated investigative tests. The starting assessment rating must describe <strong>what the therapy actually demonstrated by the end of its last verified completed phase</strong>, using original results from the same drug, indication and linked trial. New current-phase evidence is displayed separately until the phase ends. The scientific grade is 0–5 per test, with a transparent 0–100 assessment average. A final comparative rank is shown only after every phase-applicable method is independently reviewed or explicitly excluded with a rationale. Missing evidence never counts as a zero, a failure, or a clinical benefit.</p>
-     <p style={{...subtle,marginTop:0}}><strong>Exact-NCT phase:</strong> {phaseContext.verifiedPhase} {phaseContext.sourceUrl&&<>· <EvidenceSource url={phaseContext.sourceUrl}>ClinicalTrials.gov</EvidenceSource></>}. <strong>Phase-specific standard:</strong> {PHASE_REVIEW_STANDARD[phaseContext.verifiedPhase]}. <strong>Previous phase-end baseline:</strong> {phaseEndBaseline.basis==="NO_VERIFIED_PHASE_END"?"Not yet verified / no defensible historical grade":phaseEndBaseline.completedPhase+" · "+phaseEndBaseline.phaseEndDate}. Scientific grades are not FDA approval probabilities or certainty ratings.</p>
+     <h2 style={{margin:"0 0 8px",fontSize:19}}>Current phase · latest verified activity and risks</h2>
+     <p style={subtle}>This is the primary analysis view. The trial's current phase determines which risks to inspect. Each method is rated against the <strong>latest documented, verified scientific or operational result</strong> — not automatically against the previous phase's results. Historical phase-end grades are saved as a separate baseline for comparison.</p>
+     <p style={subtle}><strong>Verified phase:</strong> {phaseActivity.phase}. <strong>Latest confirmed milestone:</strong> {phaseActivity.latestVerifiedMilestone?phaseActivity.latestVerifiedMilestone.title+" · "+phaseActivity.latestVerifiedMilestone.occurredOn:"Not yet linked to a verified current-phase event"}. <strong>Active observed risks:</strong> {phaseActivity.activeRisks.length?phaseActivity.activeRisks.length+" evidenced risk(s)":"No source-verified risk findings loaded; absence of a record is not evidence of safety"}.</p>
+     <details style={{padding:"10px 12px",background:c.off,border:"1px solid "+c.line,borderRadius:9}} open>
+       <summary style={{fontWeight:750,cursor:"pointer"}}>Phase-specific risks to investigate (not presumed failures)</summary>
+       <ul style={{paddingLeft:22,lineHeight:1.8,fontSize:13}}>{phaseActivity.watchlist.map(r=><li key={r.domain}><strong>{r.domain.replaceAll("_"," ")}</strong> — {r.question} <span style={{color:c.muted}}>· Needs source review</span></li>)}</ul>
+       {phaseActivity.activeRisks.map((r,i)=><p key={i} style={{color:c.alert}}><strong>{r.level} · {r.domain}</strong> — {r.finding}</p>)}
+     </details>
+     <p style={{...subtle,marginBottom:0}}>An enrollment update can rate execution but cannot establish efficacy. An interim efficacy result may rate the specific efficacy tests supported by its analysis, while untested assessments stay pending. Risk severity and scientific evidence strength are separate from FDA approval probabilities.</p>
+   </section>
+
+   <section style={panel}>
+     <h2 style={{margin:"0 0 8px",fontSize:19}}>Latest-activity scientific test ratings · all 40 assessments</h2>
+     <p style={subtle}>Each of the 40 assessments contains 20 separately rated investigative tests. The current score must reflect <strong>what the trial actually demonstrated in its latest verified current-phase milestone</strong>. The previous completed phase provides a separate, unchanged comparison baseline. The scientific grade is 0–5 per test, with a transparent 0–100 assessment average. A final comparative rank is shown only after every phase-applicable method is independently reviewed or explicitly excluded with a rationale. Missing evidence never counts as a zero, a failure, or a clinical benefit.</p>
+     <p style={{...subtle,marginTop:0}}><strong>Exact-NCT phase:</strong> {phaseContext.verifiedPhase} {phaseContext.sourceUrl&&<>· <EvidenceSource url={phaseContext.sourceUrl}>ClinicalTrials.gov</EvidenceSource></>}. <strong>Phase-specific standard:</strong> {PHASE_REVIEW_STANDARD[phaseContext.verifiedPhase]}. <strong>Historical previous phase-end baseline:</strong> {phaseEndBaseline.basis==="NO_VERIFIED_PHASE_END"?"Not yet verified / no defensible historical grade":phaseEndBaseline.completedPhase+" · "+phaseEndBaseline.phaseEndDate}. Scientific grades are not FDA approval probabilities or certainty ratings.</p>
      <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
        {TEST_GRADE_RUBRIC.map(r=><span key={r.grade} title={r.meaning} style={{fontSize:12,border:"1px solid "+c.line,borderRadius:6,padding:"5px 8px",background:c.off}}>{r.grade}/5: {r.meaning}</span>)}
      </div>
      <div style={{overflowX:"auto"}}>
        <table style={{borderCollapse:"collapse",width:"100%",minWidth:790,fontSize:13}}>
-         <thead><tr>{["Assessment","Scientific grade / 100","Final grade rank","Scored / applicable tests","Source-examined methods / 20","Review status"].map(k=><th key={k} style={{padding:"9px 7px",textAlign:"left",borderBottom:"1px solid "+c.line}}>{k}</th>)}</tr></thead>
+         <thead><tr>{["Assessment","Latest activity score / 100","Complete-test rank","Scored / applicable tests","Source-examined methods / 20","Review status"].map(k=><th key={k} style={{padding:"9px 7px",textAlign:"left",borderBottom:"1px solid "+c.line}}>{k}</th>)}</tr></thead>
          <tbody>{evidenceCoverage.map(row=><tr key={row.id}>
            <td style={{padding:8,borderBottom:"1px solid "+c.line}}><Link href={href(nct,row.id)}>{row.id} · {row.label}</Link></td>
            <td style={{padding:8,borderBottom:"1px solid "+c.line,fontWeight:700}}>{row.score===null?"Not rated":row.score+"/100"+(row.status==="PROVISIONAL"?" (provisional)":"")}</td>
@@ -103,7 +120,7 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
          </tr>)}</tbody>
        </table>
      </div>
-     <p style={{...subtle,marginBottom:0}}>Rows are sorted by documented source-investigation coverage, not by evidence strength. A source-examined observation does not automatically pass its scientific test. This preview has not yet connected a verified previous-phase outcomes ledger or a persistent independent grade ledger. Therefore scores and ranks remain pending rather than fabricated. A posted current-phase result must not be backfilled into an earlier phase-end grade.</p>
+     <p style={{...subtle,marginBottom:0}}>Rows are sorted by documented source-investigation coverage, not by evidence strength. A source-examined observation does not automatically pass its scientific test. This preview has not yet connected a certified current-phase milestone and grading ledger, or a verified previous-phase outcomes ledger. Therefore scores, actual risks and ranks remain pending rather than fabricated. Each new result must be recorded at its actual date, scored by its tested domain, and compared with—but not overwrite—the prior phase end.</p>
    </section>
 
    <section style={panel}>
@@ -135,7 +152,7 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
      <div style={{display:"grid",gap:8}}>
        {slots.map(({lvl,slot,evidence})=><details key={lvl.id} style={{border:"1px solid "+c.line,borderRadius:9,padding:"11px 13px",background:evidence?"#f2f8f0":"#fff"}} open={Boolean(evidence&&lvl.id===12)}>
          <summary style={{cursor:"pointer",fontWeight:720,fontSize:14}}>
-           Level {lvl.id}. {lvl.name} <span style={{fontSize:12,fontWeight:450,color:evidence?c.accent:c.muted}}>· {evidence?"SOURCE-EXAMINED EXAMPLE":"NOT YET SOURCE-REVIEWED"}</span>
+           Level {lvl.id}. {lvl.name} <span style={{fontSize:12,fontWeight:450,color:evidence?c.accent:c.muted}}>· {evidence?"SOURCE-EXAMINED EXAMPLE":"NOT YET SOURCE-REVIEWED"} · Current-phase grade pending</span>
          </summary>
          <div style={{paddingTop:9,fontSize:13,lineHeight:1.6}}>
            <p style={{margin:"4px 0"}}><strong>Method:</strong> {slot?.method}</p>
