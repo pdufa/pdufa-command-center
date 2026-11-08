@@ -15,6 +15,12 @@ on:
       - 'new-platform/backend/tests/test_installation_monitor.py'
       - 'new-platform/backend/app/medical_continuous.py'
       - 'new-platform/backend/app/medical_advanced_runtime.py'
+      - 'new-platform/backend/app/medical_on_demand.py'
+      - 'new-platform/backend/app/data/focus_legacy_score_snapshot.json'
+      - 'new-platform/backend/tests/test_medical_on_demand.py'
+      - 'new-platform/frontend/app/focus/**'
+      - 'new-platform/frontend/app/p3-post-data/page.tsx'
+      - 'new-platform/frontend/app/api/analyze-now/**'
       - 'new-platform/backend/app/data/focus_snapshot.json'
       - 'new-platform/backend/app/data/focus_application_snapshot.json'
       - 'new-platform/backend/scripts/sync_focus_application_snapshot.py'
@@ -68,4 +74,4 @@ jobs:
       - name: Check application snapshot parity with canonical FOCUS data
         run: python new-platform/backend/scripts/sync_focus_application_snapshot.py --check
       - name: Test 12-stage history and source-change logic
-        run: PYTHONPATH=new-platform/backend python -m pytest -q new-platform/backend/tests/test_medical_continuous.py new-platform/backend/tests/test_medical_advanced_runtime.py new-platform/backend/tests/test_installation_monitor.py
+        run: PYTHONPATH=new-platform/backend python -m pytest -q new-platform/backend/tests/test_medical_continuous.py new-platform/backend/tests/test_medical_advanced_runtime.py new-platform/backend/tests/test_medical_on_demand.py new-platform/backend/tests/test_installation_monitor.py
