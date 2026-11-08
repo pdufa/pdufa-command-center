@@ -175,7 +175,10 @@ def check_registry_updates_once(engine, *, fetch=None):
                     continue
             # Create outside the earlier transaction, avoiding a DB lock and
             # preserving the old fingerprint if job creation fails.
-            from .medical_on_demand import start_now
+            from .medical_on_demand import start_now,eligible_for_analysis
+            if not eligible_for_analysis(nct):
+                counts["activeDeferred"]+=1
+                continue
             start_now(engine,nct,str(uuid.uuid4()),trigger="REGISTRY_CHANGE")
             with engine.begin() as c:
                 c.execute(text("""UPDATE medical_registry_watch
