@@ -12,6 +12,14 @@ export default function PredictionsPage(){
   return <main className="shell" style={{maxWidth:1200,margin:"0 auto",padding:"24px 14px 48px"}}>
     <div className="topline">PDUFA COMMAND CENTER · INDEPENDENT OUTCOME GOVERNANCE</div>
     <h1>FDA Outcome Predictions</h1>
+    <p aria-label="Prediction analysis depth" style={{margin:"8px 0 18px",lineHeight:1.6,fontSize:17,color:"#195749"}}>
+      <strong style={{color:"#075c4b",background:"linear-gradient(transparent 58%,#b6f2dd 58%)",fontWeight:850,fontSize:"clamp(17px,2.3vw,22px)",paddingBottom:3}}>
+        Deep Clinical Subspecialty Intelligence
+      </strong>
+      <span style={{display:"block",fontSize:12,color:"#5a6f64",marginTop:4}}>
+        Disease-specific scientific research framework · outcome probabilities and certainty not yet independently validated
+      </span>
+    </p>
     <p style={{fontSize:15,lineHeight:1.6,maxWidth:960}}>
       Select a FOCUS stock ticker, then choose the exact trial to inspect separate
       <strong> FDA Approval</strong>, <strong>Complete Response Letter (CRL)</strong>, and
