@@ -84,6 +84,13 @@ export default function PhaseVerificationPanel({nct}:{nct:string}){
           <p><a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/authenticated-am4-original-protocol-revision5-20261108.md" target="_blank" rel="noopener noreferrer">Read revision 5 · original protocol research findings</a></p>
           <p style={{fontSize:12,marginBottom:0}}>Status: ORIGINAL PROTOCOL CAPTURED · SAP NOT OBTAINED · CLINICAL GRADES WITHHELD</p>
         </details>
+        <details style={{...panel,background:"#f5f8ff",marginBottom:0}}>
+          <summary><strong>Final SAP audit · public registry checked · analysis still unverified</strong></summary>
+          <p style={{fontSize:13}}>The official ClinicalTrials.gov current study API shows no posted results section or separate study-document records for NCT06081894. This does not prove no SAP exists privately. The original Phase 3 protocol remains captured, but the final locked SAP and its complete alpha graph, missing-data rules, and version chronology have not been independently authenticated.</p>
+          <p style={{fontSize:13}}><strong>Published trial results, not calibrated FDA predictions:</strong> KCCQ-CSS +3.0 points (p=0.021) and peak VO₂ +0.67 mL/kg/min (p=0.003) both meet the sponsor-reported 0.025 primary threshold. LAVI (p=0.058) and time to cardiovascular event (nominal p=0.678) do not establish secondary confirmatory benefit. Benefit–risk remains an open review question.</p>
+          <p><a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/locked-sap-public-audit-revision6-20261108.md" target="_blank" rel="noopener noreferrer">Read revision 6 · original-SAP public search and endpoint audit</a></p>
+          <p style={{fontSize:12,marginBottom:0}}>Source audit only · FINAL SAP NOT OBTAINED · INDEPENDENT PHASE REVIEW 0 · METHOD GRADES 0 · FDA ABSTAIN</p>
+        </details>
       </aside>:null}
       <p>
         <a href={selected.officialUrl} target="_blank" rel="noopener noreferrer">Original ClinicalTrials.gov study</a>
