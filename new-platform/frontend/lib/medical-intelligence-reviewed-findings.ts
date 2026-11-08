@@ -126,7 +126,7 @@ export const REVIEWED_FINDINGS:readonly ReviewedFinding[]=[
   },
   {
     id:"cort-grace",relatedNcts:["NCT03697109"],company:"Corcept",drug:"Relacorilant",indication:"Endogenous Cushing syndrome / hypercortisolism",
-    domain:"design",type:"EFFICACY_EVIDENCE",evidence:"PEER_REVIEWED",published:"2026-03-01",
+    domain:"design",type:"EFFICACY_EVIDENCE",evidence:"PEER_REVIEWED",published:"2026-02-20",
     headline:"Randomized withdrawal GRACE results support maintenance of blood-pressure control",
     detail:"Published GRACE trial reports 62 participants randomized after open-label response enrichment, 30 continuing relacorilant versus 32 placebo, and an odds ratio of 0.17 (95% CI 0.04–0.77; p=0.022) for loss of hypertension control in the prespecified comparison.",
     fdaRelevance:"Randomized-withdrawal design and enrichment require careful interpretation for the full proposed indication and global multicomponent endpoint.",
