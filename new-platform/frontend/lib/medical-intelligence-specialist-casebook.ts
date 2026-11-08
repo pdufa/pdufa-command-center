@@ -1,6 +1,7 @@
 /** Source-limited specialty-style clinical analyses. Authored as analytical research, not a licensed physician review. */
 export type SpecialistInterpretation={
  topic:string; observedClinicalEvidence:string; specialistInterpretation:string; neededToResolve:string;
+ sourceUrl?:string; sourceDate?:string;
 };
 export type SpecialistCase={
  cycleId:string;specialty:string;medicalQuestion:string;source:string;sourceTitle:string;
