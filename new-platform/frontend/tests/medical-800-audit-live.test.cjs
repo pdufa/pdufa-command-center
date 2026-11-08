@@ -52,7 +52,7 @@ test("source audit is explicitly started; no GET starts a worker, no simulated m
   assert.match(monitor,/window\.setInterval/);
   assert.match(monitor,/document\.visibilityState==="visible"/);
   assert.match(monitor,/pollRef\.current\?\.\(\)/);
-  assert.match(monitor,/not the 800-method scientific scoring/);
+  assert.match(monitor,/does not assign clinical grades or calculate FDA probabilities/);
   assert.match(parent,/<PilotMethodAuditMonitor nct=\{nct\}\/>/);
   assert.match(parent,/NOT CALIBRATED/);
   assert.match(parent,/ABSTAIN/);
