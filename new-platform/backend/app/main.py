@@ -663,7 +663,31 @@ async def lifespan(app: FastAPI):
                             "PDUFA_MEDICAL_PHASE_MATRIX status=ERROR error_type=%s",
                             type(matrix_exc).__name__,
                         )
-                                # Explicit isolated 3-NCT cohort; every run is campaign-idempotent.
+                                # Stage 4: one exact canary's reproducible scientific SOURCE triage.
+                # Only new append-only snapshots; never assign clinical grades.
+                if (os.getenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_ENABLED", "").lower() in ("1", "true", "yes")
+                        and getattr(app.state, "medical_phase_matrix_ready", False)):
+                    try:
+                        from .medical_scientific_triage import (
+                            initialize as initialize_scientific_triage,
+                            run_canary as run_scientific_triage_canary,
+                        )
+                        initialize_scientific_triage(ENGINE)
+                        app.state.medical_scientific_triage_ready = True
+                        scientific_triage = run_scientific_triage_canary(ENGINE)
+                        logging.getLogger(__name__).warning(
+                            "PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_READY status=PASS "
+                            "canarySnapshot=%s scientificSignoff=False "
+                            "prediction=ABSTAIN certainty=NOT_VALIDATED",
+                            "SAVED" if scientific_triage else "NOT_RUN",
+                        )
+                    except Exception as triage_exc:
+                        app.state.medical_scientific_triage_ready = False
+                        logging.getLogger(__name__).error(
+                            "PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_READY status=ERROR error_type=%s",
+                            type(triage_exc).__name__,
+                        )
+                # Explicit isolated 3-NCT cohort; every run is campaign-idempotent.
                 # No startup jobs or tables are created without the opt-in gate.
                 if os.getenv("PDUFA_MEDICAL_BATCH_AUTORUN", "").lower() in ("true", "1", "yes"):
                     try:
@@ -786,6 +810,21 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes
     install_medical_phase_matrix_routes(app, lambda: ENGINE,
                                         require_medical_internal_key,
                                         require_medical_phase_matrix_storage)
+
+# Stage-4 source triage has independent storage gate, authenticated GET only.
+def require_medical_scientific_triage_storage() -> None:
+    require_medical_phase_matrix_storage()
+    if not getattr(app.state, "medical_scientific_triage_ready", False):
+        raise HTTPException(status_code=503, detail="Scientific source triage is not ready")
+
+if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_ASSESSMENT_LEDGER_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_PHASE_MATRIX_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_ENABLED", "").lower() in ("1", "true", "yes")):
+    from .medical_scientific_triage import install_routes as install_scientific_triage_routes
+    install_scientific_triage_routes(app, lambda: ENGINE,
+                                    require_medical_internal_key,
+                                    require_medical_scientific_triage_storage)
 
 @app.get("/api/internal/medical-canary-preflight", dependencies=[Depends(require_medical_internal_key)])
 def medical_canary_preflight():
