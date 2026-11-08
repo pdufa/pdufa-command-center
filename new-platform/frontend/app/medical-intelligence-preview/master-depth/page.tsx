@@ -109,7 +109,7 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
              <p style={{margin:"6px 0"}}>{evidence.sourceObservation}</p>
              <strong>Medical / FDA interpretation</strong>
              <p style={{margin:"6px 0"}}>{evidence.medicalInterpretation}</p>
-             <p style={{...subtle,margin:0}}>Reference section: {evidence.sourceSection} · {firstCase&&<EvidenceSource url={firstCase.source}>Open lead source</EvidenceSource>}. Full independent reproduction and final FDA adjudication are not implied.</p>
+             <p style={{...subtle,margin:0}}>Reference section: {evidence.sourceSection} · {firstCase&&<EvidenceSource url={evidence.sourceUrl||firstCase.source}>Open source for this observation</EvidenceSource>}. Full independent reproduction and final FDA adjudication are not implied.</p>
            </div>}
            <p style={{...subtle,margin:"8px 0 0"}}><strong>Expected output:</strong> {slot?.output}</p>
          </div>
