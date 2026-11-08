@@ -97,3 +97,53 @@
   .checkpointMarker { font-size: 9px; }
   .liveButton { padding: 9px 12px; gap: 6px; }
 }
+
+/* Keep installation history compact while leaving room for future survey details. */
+.sectionHeading { margin: 0; font-size: 18px; }
+.sectionCaret {
+ display: flex;
+ align-items: center;
+ gap: 10px;
+ width: 100%;
+ min-height: 48px;
+ padding: 9px 12px;
+ color: #eafffc !important;
+ background: #0b3040;
+ border: 1px solid #5aa9ae;
+ border-radius: 10px;
+ text-align: left;
+ font-size: clamp(14px, 2vw, 19px);
+ font-weight: 850;
+}
+.sectionCaret:hover { background: #134755; }
+.caret {
+ display: inline-grid;
+ place-items: center;
+ width: 24px;
+ flex: 0 0 24px;
+ font-size: 27px;
+ line-height: 1;
+ color: #6af8cf;
+}
+.caretHint {
+ margin-left: auto;
+ flex: 0 0 auto;
+ font-size: 11px;
+ font-weight: 700;
+ color: #c1dfe2;
+}
+.trackerDetails { min-width: 0; padding-top: 5px; }
+.scienceDetails { min-width: 0; }
+.scienceSummary {
+ display: list-item;
+ cursor: pointer;
+ padding: 8px 3px;
+ font-size: 17px;
+ font-weight: 800;
+ color: #e7f9fc;
+}
+.scienceSummary::marker { color: #6af8cf; }
+@media(max-width:580px) {
+ .sectionCaret { padding: 9px 8px; font-size: 14px; }
+ .caretHint { font-size: 10px; }
+}
