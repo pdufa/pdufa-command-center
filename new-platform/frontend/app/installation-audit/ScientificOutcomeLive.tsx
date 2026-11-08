@@ -42,7 +42,7 @@ export default function ScientificOutcomeLive() {
     setChecked(new Date().toISOString());
     setBusy(false);
   }
-  return <section aria-label="SCIENCE and OUTCOME live evidence checks" style={{padding:"16px 0",borderTop:"1px solid #39717b",marginTop:22}}>
+  return <section aria-label="SCIENCE and OUTCOME live evidence checks" style={{padding:"16px",border:"1px solid #39717b",borderRadius:10,background:"#0b3040",marginTop:22}}>
     <h2>SCIENCE and OUTCOME — protected evidence checks</h2>
     <p>Independent medical investigation and public FDA source readiness are separate from this page's dated installation snapshot. This check only reads evidence inventories; it does not start scans, replace completed installation records or certify a prediction.</p>
     <button type="button" disabled={busy} onClick={() => void check()} style={{cursor:busy?"wait":"pointer",border:"1px solid #5aa9ae",borderRadius:8,background:"#0b625c",padding:"10px 14px",color:"#e7f9fc",fontWeight:650}}>
