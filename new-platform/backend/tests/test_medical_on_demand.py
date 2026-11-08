@@ -47,7 +47,11 @@ def test_pilot_first_analysis_preserves_actual_45_research_score_and_abstains(en
     key="00000000-0000-4000-8000-000000000201"
     job=analyze.start_now(engine,PILOT,key,submit=False)
     assert job["status"]=="PENDING"
-    assert job["analysis"] is None
+    assert job["analysis"]["nct"]==PILOT
+    assert job["analysis"]["scores"]["scientificFiveFactorScore"]==45
+    assert job["analysis"]["scores"]["raasOverallScore"] is None
+    assert job["analysis"]["scientificAssessment"]["stagesAttempted"]==0
+    assert job["analysis"]["savedAt"]
     core.worker(engine,job["runId"],step=fixture_stage)
     result=analyze.latest(engine,PILOT)
     assert result["status"]=="COMPLETE"
@@ -135,23 +139,25 @@ def test_operational_component_change_is_auto_requeued_without_duplicate_active(
     submissions=[]
     monkeypatch.setattr(core._POOL,"submit",lambda fn,db,run_id:submissions.append(run_id))
     first=analyze.check_operational_component_changes(engine,generation="tested-v1")
-    assert first["checked"]==29 and first["baselined"]==29 and first["queued"]==0
+    assert first["checked"]==1 and first["baselined"]==1 and first["queued"]==0
     again=analyze.check_operational_component_changes(engine,generation="tested-v1")
     assert again["queued"]==0
-    # A manual pending pilot must not produce a duplicate active worker.
+    # Canary-only scope even for automatic reruns. The 28 others stay gated.
     pending=analyze.start_now(engine,PILOT,"00000000-0000-4000-8000-000000000209",submit=False)
     changed=analyze.check_operational_component_changes(engine,generation="tested-v2")
-    assert changed["queued"]==28
-    assert changed["deferred"]==1
-    assert len(submissions)==28
-    assert pending["status"]=="PENDING"
+    assert changed["queued"]==0 and changed["deferred"]==1
+    assert not submissions and pending["status"]=="PENDING"
     with engine.begin() as c:
         c.execute(text("""UPDATE medical_continuous_runs SET status='FAILED'
             WHERE run_id=:run"""),{"run":pending["runId"]})
     deferred=analyze.check_operational_component_changes(engine,generation="tested-v2")
-    assert deferred["queued"]==1
-    assert deferred["checked"]==29
-    assert len(submissions)==29
+    assert deferred["queued"]==1 and deferred["checked"]==1
+    assert len(submissions)==1
+    # The same watcher covers all 29 only after a separate rollout gate.
+    monkeypatch.setenv("PDUFA_ANALYZE_NOW_ALL_ENABLED","true")
+    all_baseline=analyze.check_operational_component_changes(engine,generation="tested-v2")
+    assert all_baseline["checked"]==29 and all_baseline["baselined"]==28
+    assert all_baseline["queued"]==0
 
 
 def test_source_research_works_even_when_optional_raas_archive_missing(engine,monkeypatch,tmp_path):
@@ -163,3 +169,36 @@ def test_source_research_works_even_when_optional_raas_archive_missing(engine,mo
     assert a["scores"]["scientificFiveFactorScore"] is None
     assert a["scientificAssessment"]["sourceRecordedStages"]==2
     assert all(p["status"]=="ABSTAIN" for p in a["fdaPredictions"])
+
+
+def test_failed_pilot_retains_immutable_initial_grade_and_failure_in_history(engine):
+    job=analyze.start_now(engine,PILOT,"00000000-0000-4000-8000-000000000211",submit=False)
+    def unavailable(index,nct):
+        raise TimeoutError("Deliberate offline fixture outage")
+    core.worker(engine,job["runId"],step=unavailable)
+    current=analyze.get_run(engine,PILOT,job["runId"])
+    assert current["status"]=="FAILED"
+    assert current["analysis"]["scores"]["scientificFiveFactorScore"]==45
+    assert current["analysis"]["scientificAssessment"]["stagesAttempted"]==0
+    assert current["analysis"]["fdaPredictions"][0]["probability"] is None
+    archived=analyze.history(engine,PILOT)
+    assert archived["total"]==1
+    assert archived["records"][0]["status"]=="FAILED"
+    assert archived["records"][0]["analysis"]["savedAt"]
+    assert archived["records"][0]["revision"] is None
+
+
+def test_explicit_rollout_accepts_same_operational_engine_for_all_29(engine,monkeypatch):
+    monkeypatch.setenv("PDUFA_ANALYZE_NOW_ALL_ENABLED","true")
+    ncts=sorted(core.roster())
+    assert len(ncts)==29
+    for i,nct in enumerate(ncts):
+        saved=analyze.start_now(engine,nct,f"00000000-0000-4000-8000-{i+900:012d}",submit=False)
+        assert saved["nct"]==nct and saved["status"]=="PENDING"
+        assert saved["analysis"]["scores"]["raasOverallScore"] is None
+        assert len(saved["analysis"]["fdaPredictions"])==3
+        assert saved["analysis"]["certainty"]["rating"] is None
+        assert analyze.history(engine,nct)["total"]==1
+    with engine.connect() as c:
+        assert c.execute(text("SELECT COUNT(*) FROM medical_continuous_runs")).scalar_one()==29
+        assert c.execute(text("SELECT COUNT(*) FROM medical_analyze_requests")).scalar_one()==29
