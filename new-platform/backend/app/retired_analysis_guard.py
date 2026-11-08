@@ -13,12 +13,20 @@ _RETIRED_MODEL_MARKERS = (
     'raas', 'clinical_five', 'clinical-five', 'postdata_five_factor',
     'bottom_only_post_readout', 'top_only_pre_readout',
 )
+_NORMALIZED_RETIRED_MODEL_MARKERS = tuple(
+    re.sub(r'[^a-z0-9]', '', marker.lower())
+    for marker in _RETIRED_MODEL_MARKERS
+)
 _MODEL_FIELDS = frozenset({
     'model', 'modelname', 'modelversion', 'scorekind', 'scoretype',
     'scoringsystem', 'framework', 'algorithm', 'derivedfrom', 'inputmodel',
     'evidencemodel', 'sourcemodel', 'sourcetype', 'sourcekind', 'scoreversion',
     'assessmenttype', 'inputsource', 'assessmentmodel', 'scientificreadiness',
     'readinesssource', 'confidencebasis', 'certaintybasis',
+    'modelid', 'modelbasis', 'scoringmodel', 'scoringframework',
+    'scoremodel', 'scoreframework', 'ratingmodel', 'ratingframework',
+    'assessmentframework', 'inputframework', 'componentmodel',
+    'certaintyframework', 'confidenceframework', 'frameworkversion',
 })
 
 
@@ -36,10 +44,15 @@ def reject_retired_analysis_payload(payload: Mapping) -> None:
         if isinstance(item, Mapping):
             for key, value in item.items():
                 normalized = re.sub(r'[^a-z0-9]', '', str(key).lower())
-                if normalized.startswith('raas'):
+                # Legacy producers used both prefix and suffix aliases, such as
+                # approvedRaas and legacy_raas_score. Any structured RAAS key
+                # declares a prohibited input; ordinary source prose remains
+                # outside this key/model-boundary check.
+                if 'raas' in normalized:
                     raise ValueError('Permanently retired analysis inputs are prohibited')
                 if normalized in _MODEL_FIELDS and isinstance(value, str):
-                    if any(marker in value.lower() for marker in _RETIRED_MODEL_MARKERS):
+                    model_identity = re.sub(r'[^a-z0-9]', '', value.lower())
+                    if any(marker in model_identity for marker in _NORMALIZED_RETIRED_MODEL_MARKERS):
                         raise ValueError('Permanently retired scoring models cannot produce FDA predictions or certainty')
                 if normalized in {'evidenceids', 'inputids'} and isinstance(value, (list, tuple)):
                     if any(isinstance(eid, str) and eid.lower().startswith(('raas:', 'raas-', 'raas_')) for eid in value):
