@@ -405,6 +405,140 @@ export const EXPANDED_SPECIALIST_CASES:readonly SpecialistCase[]=[
         "sourceUrl": "https://www.sec.gov/Archives/edgar/data/873303/000119312526449721/srpt-20260930.htm"
       }
     ]
+  },
+  {
+    "cycleId": "blte-stargardt",
+    "specialty": "Retina / inherited retinal degeneration",
+    "medicalQuestion": "Does a 35.7% slowing of retinal atrophic-lesion enlargement with tinlarebant confer a meaningful preservation of visual function that justifies night-vision and retinal-cycle adverse effects?",
+    "source": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite",
+    "sourceTitle": "Belite DRAGON Phase 3 clinical results and safety",
+    "completedSpecialistSignoff": false,
+    "conclusion": "PARTIAL_SOURCED_RESEARCH",
+    "dimensions": [
+      {
+        "topic": "Patient phenotype and progression",
+        "observedClinicalEvidence": "The DRAGON trial enrolled adolescents diagnosed with STGD1 with at least one ABCA4 mutation, lesion size under three disc areas, and BCVA of 20/200 or better.",
+        "specialistInterpretation": "Restricting trial entry to early or moderately preserved visual acuity may affect how treatment benefit transfers to advanced retinal atrophy or other genotypes.",
+        "neededToResolve": "Verify age, ABCA4 variant severity, lesion location relative to fovea, baseline visual acuity and fellow-eye dependence.",
+        "sourceDate": "2025-12-12",
+        "sourceUrl": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite"
+      },
+      {
+        "topic": "Retinal imaging as the pivotal endpoint",
+        "observedClinicalEvidence": "The sponsor reported 35.7% slowing of primary retinal atrophic-lesion growth with the prespecified unstructured MMRM (p=0.0033).",
+        "specialistInterpretation": "A statistically significant retinal-imaging effect is evidence of disease modification, but it is not automatically proof of preserved reading, visual acuity or low-light function.",
+        "neededToResolve": "Examine lesion adjudication, image reliability, foveal involvement, absolute lesion change and relationship with functional acuity outcomes.",
+        "sourceDate": "2025-12-12",
+        "sourceUrl": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite"
+      },
+      {
+        "topic": "Statistical model sensitivity",
+        "observedClinicalEvidence": "The sponsor also reported a 35.4% lesion-growth reduction using a post-hoc autoregressive covariance MMRM (p<0.0001), alongside the prespecified p=0.0033.",
+        "specialistInterpretation": "A smaller post-hoc p-value does not improve the hierarchy or replace the prespecified analysis; model choice and missing ocular follow-up remain important.",
+        "neededToResolve": "Obtain original SAP, covariance diagnostics, repeated-measures completeness, masked imaging rules and multiplicity plan.",
+        "sourceDate": "2025-12-12",
+        "sourceUrl": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite"
+      },
+      {
+        "topic": "Bilateral consistency and biological effect",
+        "observedClinicalEvidence": "The sponsor reported a 33.6% reduction in lesion growth in the fellow eye (p=0.041) and about 80% suppression of serum RBP4 at 5 mg/day.",
+        "specialistInterpretation": "Bilateral imaging consistency and target engagement strengthen biological plausibility but dependence between two eyes must be considered in any inference.",
+        "neededToResolve": "Check eye-level correlation, whether fellow-eye endpoint was prespecified, and whether stronger RBP4 suppression tracks visual benefit.",
+        "sourceDate": "2025-12-12",
+        "sourceUrl": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite"
+      },
+      {
+        "topic": "Patient-important vision outcomes",
+        "observedClinicalEvidence": "STGD1 progressively impairs central vision, reading, face recognition and functional independence, while a lesion boundary may grow without immediate loss of visual acuity.",
+        "specialistInterpretation": "Clinical relevance requires estimating whether a slowing in an anatomical lesion delays vision decline or disability over a patient's remaining years.",
+        "neededToResolve": "Obtain BCVA and low-luminance visual acuity trajectories, reading speed, patient-reported visual function and lesion-location analyses.",
+        "sourceDate": "2025-12-12",
+        "sourceUrl": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite"
+      },
+      {
+        "topic": "Ocular tolerability and dark adaptation",
+        "observedClinicalEvidence": "The sponsor reported xanthopsia, delayed dark adaptation and night-vision impairment as common drug-related ocular adverse events, generally mild and often resolving.",
+        "specialistInterpretation": "The intended medicine affects a visual-cycle pathway; even reversible visual side effects matter to patients with reduced retinal reserve.",
+        "neededToResolve": "Determine severity, duration, night-driving and daily-function impact, discontinuations, recovery and any deterioration on restarting.",
+        "sourceDate": "2025-12-12",
+        "sourceUrl": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite"
+      },
+      {
+        "topic": "Current FDA decision question",
+        "observedClinicalEvidence": "FDA accepted the tinlarebant NDA for priority review with a reported February 12, 2027 PDUFA goal.",
+        "specialistInterpretation": "Filing acceptance establishes an ongoing regulatory review, not FDA validation of anatomical endpoints, visual functioning or CMC adequacy.",
+        "neededToResolve": "Compare proposed label and disease-severity range to DRAGON population; obtain full endpoint and safety interpretation and FDA communications.",
+        "sourceDate": "2026-08-11",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1889109/000110465926094040/tm2622827d1_ex99-1.htm"
+      }
+    ]
+  },
+  {
+    "cycleId": "mlys-lorundrostat",
+    "specialty": "Hypertension cardiology / clinical nephrology",
+    "medicalQuestion": "Can aldosterone-synthase inhibition meaningfully lower resistant hypertension in patients on multiple background drugs without clinically consequential hyperkalemia, kidney injury or hypotension?",
+    "source": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000142/mlys2026q38kex991.htm",
+    "sourceTitle": "Mineralys November 4 2026 8-K clinical results and FDA review",
+    "completedSpecialistSignoff": false,
+    "conclusion": "PARTIAL_SOURCED_RESEARCH",
+    "dimensions": [
+      {
+        "topic": "Resistant hypertension diagnosis",
+        "observedClinicalEvidence": "Launch-HTN enrolled participants inadequately controlled despite two to five background antihypertensive medications.",
+        "specialistInterpretation": "True resistant hypertension requires assessment of adherence, measurements, white-coat effect and appropriate concurrent therapy; a broader uncontrolled-HTN population can differ.",
+        "neededToResolve": "Obtain ambulatory BP confirmation, medication adherence, sodium intake, secondary cause screening, CKD/OSA and baseline treatment mix.",
+        "sourceDate": "2026-10-26",
+        "sourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/123/mineralys-therapeutics-presents-new-lorundrostat-data-in"
+      },
+      {
+        "topic": "Clinical measurement and primary effect",
+        "observedClinicalEvidence": "The trial compared lorundrostat 50 mg, a dose-escalation strategy, and placebo, with Week 6 automated office systolic BP change as the primary endpoint.",
+        "specialistInterpretation": "Automated office BP is objective and clinically relevant, but antihypertensive outcome inference still depends on placebo-adjusted effect, time of day and background-medication stability.",
+        "neededToResolve": "Obtain the full Week 6 primary ANCOVA estimate and CI, ambulatory monitoring, medication changes and Week 12 persistence.",
+        "sourceDate": "2026-10-26",
+        "sourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/123/mineralys-therapeutics-presents-new-lorundrostat-data-in"
+      },
+      {
+        "topic": "Patient-level target attainment",
+        "observedClinicalEvidence": "Sponsor reported 46% on lorundrostat 50 mg achieved Week 12 office SBP below 130 mmHg and more than two-thirds achieved reduction ≥10 mmHg.",
+        "specialistInterpretation": "Goal attainment can be meaningful, but treatment comparisons must account for baseline severity and placebo response; descriptive active-arm percentages are not independent comparative efficacy statistics.",
+        "neededToResolve": "Obtain placebo target-achievement rate, responder risk difference, trial denominator and confidence intervals.",
+        "sourceDate": "2026-11-04",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000142/mlys2026q38kex991.htm"
+      },
+      {
+        "topic": "CKD and proteinuria subgroup",
+        "observedClinicalEvidence": "The company reported similar BP reductions with and without CKD and an exploratory reduction of albuminuria by 52% versus placebo.",
+        "specialistInterpretation": "A potentially helpful renal signal is plausible through aldosterone reduction, but must be separated from primary BP efficacy and from definitive kidney-outcome benefit.",
+        "neededToResolve": "Review albuminuria multiplicity, exact subgroup denominators, baseline eGFR, potassium and whether renal endpoints were prospectively controlled.",
+        "sourceDate": "2026-11-04",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000142/mlys2026q38kex991.htm"
+      },
+      {
+        "topic": "Hyperkalemia and electrolyte harm",
+        "observedClinicalEvidence": "Aldosterone-synthase inhibition may impair potassium excretion, especially with CKD or concomitant RAAS blockade; the reviewed public summary does not establish excess serious hyperkalemia in Launch-HTN.",
+        "specialistInterpretation": "This is a disease-and-mechanism-specific risk to investigate, not a documented adverse effect imbalance or FDA objection.",
+        "neededToResolve": "Obtain trial potassium frequency by grade, eGFR change, temporary interruptions, discontinuation, and monitoring protocol.",
+        "sourceDate": "2026-11-04",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000142/mlys2026q38kex991.htm"
+      },
+      {
+        "topic": "Titration, polypharmacy and persistence",
+        "observedClinicalEvidence": "Launch-HTN included a fixed 50 mg group and a strategy with optional escalation to 100 mg at Week 6 based on predefined criteria.",
+        "specialistInterpretation": "The clinical product label may depend on titration benefit-risk, renal function, hypotension and interactions with multiple pre-existing antihypertensives.",
+        "neededToResolve": "Determine the number escalated, absolute dose-specific effect, adverse-event risk and longer-term BP stability.",
+        "sourceDate": "2026-10-26",
+        "sourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/123/mineralys-therapeutics-presents-new-lorundrostat-data-in"
+      },
+      {
+        "topic": "Regulatory interpretation and timing",
+        "observedClinicalEvidence": "FDA accepted the lorundrostat NDA for hypertension in combination with other therapies with a reported December 22, 2026 review goal.",
+        "specialistInterpretation": "Positive BP results support review but cannot show manufacturing, safety and labeling readiness; review timing is a separate question from drug efficacy.",
+        "neededToResolve": "Verify accepted dose/indication, regulatory communication, CMC and inspection status, and integrated long-term electrolyte-safety evidence.",
+        "sourceDate": "2026-11-04",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000142/mlys2026q38kex991.htm"
+      }
+    ]
   }
 ] as const;
 export function expandedSpecialistCaseForCycle(id:string):SpecialistCase|null{
