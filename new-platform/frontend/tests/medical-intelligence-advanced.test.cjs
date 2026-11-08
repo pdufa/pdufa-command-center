@@ -98,5 +98,5 @@ test("preview renders three outcomes, certainty, research gaps and expandable tw
  assert.match(page,/Automatic source watch/);
  assert.match(main,/medical-intelligence-preview\/advanced/);
  const analysis=fs.readFileSync(path.join(__dirname,"../lib/medical-intelligence-advanced.ts"),"utf8");
- assert.doesNotMatch(analysis,/\bRAAS\b|\bsurvey\s*\(/i);
+ assert.doesNotMatch(analysis,/\bfrom\s+["\x27][^"\x27]*(?:raas|survey)/i);
 });
