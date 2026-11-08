@@ -102,11 +102,13 @@ def collect(engine, *, storage_ready, require_postgres=True):
                 last=c.execute(text("SELECT MAX(updated_at) FROM medical_continuous_runs")).scalar()
                 revisions=int(c.execute(text("SELECT COUNT(*) FROM medical_prediction_revisions")).scalar() or 0) if "medical_prediction_revisions" in tables else 0
                 stage_rows=int(c.execute(text("SELECT COUNT(*) FROM medical_continuous_stages")).scalar() or 0) if "medical_continuous_stages" in tables else 0
+                changed_revisions=int(c.execute(text("SELECT COUNT(*) FROM medical_prediction_revisions WHERE ordinal>1 AND evidence_changed=TRUE")).scalar() or 0) if "medical_prediction_revisions" in tables else 0
                 out["research"]={"state":"OBSERVED","runsByStatus":counts,
                     "finishedSourceRuns":counts.get("COMPLETE",0),
                     "failedSourceRuns":counts.get("FAILED",0),
                     "activeSourceRuns":counts.get("RUNNING",0)+counts.get("PENDING",0),
                     "savedSourceStages":stage_rows,"immutableRevisions":revisions,
+                    "newSourceEvidenceRevisions":changed_revisions,
                     "latestRunAt":last,"completedIndependentReviews":0,
                     "probabilityForecastsValidated":False,
                     "certaintyReliabilityValidated":False,
@@ -200,6 +202,18 @@ def monitor_once(engine, *, storage_ready, require_postgres=True):
         # No repeated alerts on every poll. A new failure count creates a new event.
         _queue_event(engine,"FAILURE","medical-failed-count:"+str(count),
                      "PDUFA: medical source collection has "+str(count)+" failed runs; inspect run status.")
+    # A second or later immutable revision can document changed source
+    # observations. This event is not described as a validated FDA forecast.
+    with engine.connect() as c:
+        changed=list(c.execute(text("""SELECT run_id,nct_id,ordinal
+            FROM medical_prediction_revisions
+            WHERE ordinal>1 AND evidence_changed=TRUE
+            ORDER BY recorded_at DESC LIMIT 20""")).mappings())
+    for row in changed:
+        _queue_event(engine,"EVIDENCE_UPDATE","medical-evidence:"+row["run_id"],
+            "PDUFA medical evidence changed for "+row["nct_id"]+
+            " (research revision "+str(row["ordinal"])+
+            "). Source-digest change requires scientific review; FDA predictions remain evidence-gated.")
     if not configured():
         return report
     cutoff=(datetime.now(timezone.utc)-timedelta(minutes=10)).isoformat()
