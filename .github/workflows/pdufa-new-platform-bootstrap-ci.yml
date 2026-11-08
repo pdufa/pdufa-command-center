@@ -58,10 +58,10 @@ jobs:
       - run: npm test
       - run: npm run build
 
-  # Pushes run mandatory checks but NEVER deploy Render. Only an explicit
-  # manual dispatch on this exact preview branch can release the checked SHA.
+  # Single authorized exact-commit phase-handoff preview rollout after all
+  # required checks; restore manual-only deployment gate immediately afterward.
   deploy-isolated-medical-preview:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_isolated_medical_preview && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108' }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108' }}
     needs:
       - permanent-retirement
       - backend
