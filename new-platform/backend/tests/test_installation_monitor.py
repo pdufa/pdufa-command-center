@@ -80,7 +80,7 @@ def test_monitor_poll_records_real_failure_and_milestone_no_telegram_spam(tmp_pa
         monitor.monitor_once(engine,storage_ready=True,require_postgres=False)
     with engine.connect() as c:
         events=list(c.execute(text("SELECT kind,delivery_state,attempts FROM installation_monitor_alerts ORDER BY kind")))
-    assert len(events)==2
+    assert len(events)==3
     assert {k for k,_,_ in events}=={"MILESTONE","FAILURE"}
     assert all(status=="PENDING" and count==0 for _,status,count in events)
     engine.dispose()
@@ -99,10 +99,10 @@ def test_telegram_delivery_is_explicit_and_deduplicated(tmp_path,monkeypatch):
                    'NCT00000003','COMPLETE',12,'2026-11-08','2026-11-08')"""))
     monitor.monitor_once(engine,storage_ready=True,require_postgres=False)
     monitor.monitor_once(engine,storage_ready=True,require_postgres=False)
-    assert len(sends)==1
+    assert len(sends)==2
     with engine.connect() as c:
-        event=c.execute(text("SELECT delivery_state,attempts,sent_at FROM installation_monitor_alerts")).first()
-    assert event[0]=="SENT" and event[1]==1 and event[2]
+        events=list(c.execute(text("SELECT delivery_state,attempts,sent_at FROM installation_monitor_alerts")))
+    assert all(item[0]=="SENT" and item[1]==1 and item[2] for item in events)
     engine.dispose()
 
 
