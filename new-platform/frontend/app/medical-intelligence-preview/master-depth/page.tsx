@@ -38,6 +38,7 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
  return <main style={{maxWidth:1360,margin:"25px auto",padding:"0 16px 45px",fontFamily:"system-ui,sans-serif",color:c.ink}}>
    <div style={{fontWeight:750,letterSpacing:1,fontSize:12,color:c.accent}}>POOL → FOCUS → STANDALONE DEEP MEDICAL INTELLIGENCE</div>
    <h1 style={{fontSize:"clamp(1.7rem,4vw,2.5rem)",margin:"8px 0 4px"}}>Medical Master Depth · 20-Level Scientific Investigation</h1>
+   <p style={{fontWeight:700,fontSize:14}}><Link href="/medical-intelligence-preview/master-depth/coverage">Open exact 29-trial Master Depth coverage audit</Link></p>
    <p style={{lineHeight:1.6,maxWidth:1130}}>The research architecture follows the original clinical scientific investigation standard: 8 disease/medical/regulatory layers, 5 assessments per layer, and 20 distinct scientific methods applied to each assessment. The result is 800 possible investigation positions <strong>per trial</strong>, supplemented by 75 therapeutic-strategy questions. A position is not an actual medical finding until source evidence has been investigated and documented.</p>
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(155px,1fr))",gap:10}}>
      {[
