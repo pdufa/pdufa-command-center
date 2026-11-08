@@ -212,3 +212,34 @@ def test_non_identity_network_outage_is_gap_and_run_can_finish(engine):
     assert final["status"] == "COMPLETE"
     assert final["stages"][4]["state"] == "SOURCE_UNAVAILABLE"
     assert final["decision"] == "ABSTAIN"
+
+
+def test_direct_stage_api_obeys_same_canary_gate(engine, monkeypatch):
+    """A direct 12-stage API call cannot bypass the Analyze Now NCT pilot."""
+    from fastapi import FastAPI, HTTPException
+
+    monkeypatch.delenv("PDUFA_ANALYZE_NOW_ALL_ENABLED", raising=False)
+    monkeypatch.delenv("PDUFA_ANALYZE_NOW_CANARY_NCT", raising=False)
+    app = FastAPI()
+    medical.install_routes(app, lambda: engine, lambda: None, lambda: None)
+    lookup = {r.path: r.endpoint for r in app.routes if hasattr(r, "path")}
+    start = lookup["/api/medical-continuous/{nct}/runs"]
+    resume = lookup["/api/medical-continuous/{nct}/runs/{run_id}/resume"]
+
+    with pytest.raises(HTTPException) as exc:
+        start("NCT05126758", medical.StartPayload(
+            request_key="00000000-0000-4000-8000-000000000400"))
+    assert exc.value.status_code == 409
+
+    with pytest.raises(HTTPException) as exc:
+        resume("NCT05126758", "00000000-0000-4000-8000-000000000401")
+    assert exc.value.status_code == 409
+
+
+def test_current_main_medical_registration_is_opt_in():
+    """New analysis routes and jobs stay absent in an unchanged production environment."""
+    source = (Path(__file__).resolve().parents[1] / "app" / "main.py").read_text()
+    assert 'MEDICAL_PREVIEW_ENABLED = os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED"' in source
+    assert "if MEDICAL_PREVIEW_ENABLED:" in source
+    assert 'DATABASE_URL.startswith("postgresql+psycopg://") and _DB_STATE["available"]' in source
+    assert "require_medical_pilot_storage" in source
