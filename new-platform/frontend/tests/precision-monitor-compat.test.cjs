@@ -1,0 +1,20 @@
+const test=require("node:test"),assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path");
+const root=path.resolve(__dirname,"../../..");
+const read=p=>fs.readFileSync(path.join(root,p),"utf8");
+test("independent monitoring remains installed as the source canary is prepared",()=>{
+ const main=read("new-platform/frontend/app/main/page.tsx");
+ const monitor=read("new-platform/frontend/app/main/InstallationProgressDashboard.tsx");
+ const api=read("new-platform/frontend/app/api/main/installation-progress/route.ts");
+ const backend=read("new-platform/backend/app/main.py");
+ assert.match(main,/<InstallationProgressDashboard\s*\/>/);
+ assert.match(main,/href="\/precision-monitoring"/);
+ assert.match(monitor,/data\.trials\.length/);
+ assert.match(api,/hasSession/);
+ assert.match(backend,/api\/internal\/installation-monitor/);
+ assert.match(backend,/def medical_canary_preflight/);
+ assert.match(backend,/def require_medical_pilot_storage/);
+ assert.match(backend,/PDUFA_INSTALL_MONITOR_ENABLED/);
+ assert.match(backend,/PDUFA_MEDICAL_PREVIEW_ENABLED/);
+ assert.match(backend,/REQUIRE_POSTGRES/);
+ assert.doesNotMatch(backend,/\bRAASScore\(/);
+});

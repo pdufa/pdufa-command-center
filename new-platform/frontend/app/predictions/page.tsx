@@ -37,6 +37,7 @@ export default function PredictionsPage(){
       </span>
     </p>
     <FullRosterSourceScan/>
+    <p style={{fontSize:13,margin:"12px 0"}}><Link href="/analyze-now?nct=NCT06081894" style={{color:"#075c4b",fontWeight:700}}>Open saved research pilot and exact-NCT revision history (PostgreSQL required)</Link> · The pilot fails closed until its secure backend is explicitly ready.</p>
     <FocusPredictionNavigator/>
     <section style={{...card,background:"#f5faf7",marginBottom:16}} aria-label="Independent prediction certainty">
       <h2 style={{margin:"0 0 9px",fontSize:19}}>How prediction certainty is determined</h2>
