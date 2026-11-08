@@ -1,0 +1,82 @@
+import { NextRequest, NextResponse } from "next/server";
+import focus from "../../../../data/p3PostDataActive.json";
+import { authConfigured, COOKIE_NAME, hasSession } from "../../../../lib/auth";
+
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
+export const maxDuration = 30;
+const privateHeaders = { "Cache-Control": "private, no-store" };
+const NCT = /^NCT\d{8}$/;
+const UUID = /^[a-f0-9]{8}-[a-f0-9]{4}-[1-8][a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/i;
+
+const json = (payload: unknown, status = 200) =>
+  NextResponse.json(payload, { status, headers: privateHeaders });
+
+function authorized(req: NextRequest) {
+  return authConfigured() && hasSession(req.cookies.get(COOKIE_NAME)?.value);
+}
+function knownNct(nct: unknown): nct is string {
+  return typeof nct === "string" && NCT.test(nct) && focus.records.some(r => r.nct === nct);
+}
+function baseAndKey() {
+  const base = process.env.PDUFA_API_BASE_URL?.trim().replace(/\/$/, "");
+  const key = process.env.PDUFA_INTERNAL_API_KEY?.trim();
+  return base?.startsWith("https://") && key ? { base, key } : null;
+}
+async function upstream(path: string, method: "GET" | "POST", body?: object) {
+  const settings = baseAndKey();
+  if (!settings) return json({ error: "Persistent medical stage backend not configured" }, 503);
+  try {
+    const response = await fetch(settings.base + path, {
+      method, cache: "no-store", signal: AbortSignal.timeout(24000),
+      headers: {
+        "X-Pdufa-Internal-Key": settings.key,
+        Accept: "application/json",
+        ...(body ? { "Content-Type": "application/json" } : {})
+      },
+      ...(body ? { body: JSON.stringify(body) } : {})
+    });
+    if (!response.headers.get("content-type")?.toLowerCase().startsWith("application/json"))
+      return json({ error: "Medical stage service returned unexpected data" }, 503);
+    const payload: unknown = await response.json();
+    if (!response.ok)
+      return json({ error: response.status === 404 ? "No saved run or stage service not deployed" :
+          response.status === 422 ? "Run identity invalid" :
+          response.status === 401 ? "Backend authorization unavailable" :
+          "Medical stage backend unavailable" },
+        response.status === 404 ? 404 : response.status === 422 ? 422 : 503);
+    return json(payload);
+  } catch {
+    return json({ error: "Persistent medical stage service unavailable; no job started" }, 503);
+  }
+}
+
+/** Read-only; opening the page only retrieves an existing saved run. */
+export async function GET(req: NextRequest) {
+  if (!authorized(req)) return json({ error: "Sign in required" }, 401);
+  const nct = req.nextUrl.searchParams.get("nct");
+  const run = req.nextUrl.searchParams.get("run");
+  if (!knownNct(nct) || (run !== null && !UUID.test(run)))
+    return json({ error: "Exact FOCUS trial and valid run identifier required" }, 422);
+  return upstream("/api/medical-continuous/" + nct + "/runs/" + (run || "latest"), "GET");
+}
+
+export async function POST(req: NextRequest) {
+  if (!authorized(req)) return json({ error: "Sign in required" }, 401);
+  if (req.headers.get("origin") !== req.nextUrl.origin)
+    return json({ error: "Same-origin operator action required" }, 403);
+  if (!req.headers.get("content-type")?.toLowerCase().startsWith("application/json"))
+    return json({ error: "JSON request required" }, 415);
+  if (Number(req.headers.get("content-length") || 0) > 1500)
+    return json({ error: "Request too large" }, 413);
+  const payload: unknown = await req.json().catch(() => null);
+  if (!payload || typeof payload !== "object" || Array.isArray(payload))
+    return json({ error: "Invalid request" }, 422);
+  const { action, nct, run, requestKey } = payload as Record<string, unknown>;
+  if (!knownNct(nct)) return json({ error: "Exact FOCUS trial required" }, 422);
+  if (action === "start" && typeof requestKey === "string" && UUID.test(requestKey))
+    return upstream("/api/medical-continuous/" + nct + "/runs", "POST", { request_key: requestKey });
+  if ((action === "stop" || action === "resume") && typeof run === "string" && UUID.test(run))
+    return upstream("/api/medical-continuous/" + nct + "/runs/" + run + "/" + action, "POST");
+  return json({ error: "Invalid medical stage operator action" }, 422);
+}
