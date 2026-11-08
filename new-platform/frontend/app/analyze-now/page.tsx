@@ -26,7 +26,7 @@ export default async function AnalyzeNowHistoryPage({searchParams}:{searchParams
   {valid&&<section style={{padding:16,border:"1px solid #bfd6c6",borderRadius:10,background:"white"}}>
    <h2 style={{marginTop:0}}>{nct} · read-only history</h2>
    <AnalyzeNowTrial nct={nct} enabled={false} historyOnly={true}/>
-   <p style={{fontSize:13,color:"#506a59"}}>Choose History to retrieve all saved research revisions. The archived scores are historical source-backed research, not newly calculated RAAS grades or FDA approval forecasts.</p>
+   <p style={{fontSize:13,color:"#506a59"}}>Choose History to retrieve all saved research revisions. Saved reports contain independent source checks, missing evidence and abstaining FDA outcomes, not retired scoring fields.</p>
   </section>}
  </main>;
 }
