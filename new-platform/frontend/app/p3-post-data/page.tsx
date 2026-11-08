@@ -5,6 +5,7 @@ import CompanyDateBadges from "../CompanyDateBadges";
 import {bottomOnlyReport} from "../../lib/bottom-only-completion";
 import {BottomClinicalRating} from "../BottomOnlyCompletionSheet";
 import snapshot from "../../data/p3PostDataActive.json";
+import designationData from "../../data/focusFdaDesignations.json";
 import {FOCUS_FINAL_TRIAL_AUDIT} from "../../lib/focus-final-gate-checks";
 import {bottomTrialHistory} from "../../lib/bottom-only-exports";
 
@@ -15,6 +16,7 @@ export const metadata:Metadata={
 const source="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit#gid=202611061";
 /** Snapshot of the user's source-of-truth Google Sheet. Historical 762-trial cohorts are not active listings. */
 const trials=snapshot.records;
+const designationByNct=new Map(designationData.records.map(r=>[r.nct,r]));
 const finalGateAudit=FOCUS_FINAL_TRIAL_AUDIT;
 const finalGateByNct=new Map(finalGateAudit.rows.map(row=>[row.nct,row]));
 const researchByNct=new Map(bottomOnlyReport().trials.map(t=>[t.nctId,t]));
@@ -35,11 +37,27 @@ export default function P3PostDataPage(){
   </section>
   <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:970,fontSize:14}}>
-    <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>7 gate checks</th><th style={{padding:10}}>Clinical research rating</th><th style={{padding:10}}>RAAS history</th></tr></thead>
-    <tbody>{trials.map((t,i)=>{const history=bottomTrialHistory(t.nct);const research=researchByNct.get(t.nct);const gateAudit=finalGateByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
+    <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"left"}}>FDA Special Designations</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>7 gate checks</th><th style={{padding:10}}>Clinical research rating</th><th style={{padding:10}}>RAAS history</th></tr></thead>
+    <tbody>{trials.map((t,i)=>{const history=bottomTrialHistory(t.nct);const research=researchByNct.get(t.nct);const gateAudit=finalGateByNct.get(t.nct);const d=designationByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
       <td style={{padding:10,fontWeight:700}}><TickerChartButton ticker={t.ticker}/></td>
       <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a>{research&&<small style={{display:"block"}}>{research.drug}</small>}</td>
       <td style={{padding:10}}>{t.company}<CompanyDateBadges nctId={t.nct} timeline={null} recordedReleaseDate={t.recordedReleaseDate} recordedPdufaDate={t.recordedPdufaDate} releaseSource={t.resultsUrl} pdufaSource={t.regulatoryUrl}/></td>
+      <td style={{padding:10,minWidth:220,verticalAlign:"top",fontSize:12}}>
+       {d?.designations.length?<><strong>{d.designations.map(x=>x.label).join(" · ")}</strong>
+        <details style={{marginTop:5}}><summary style={{cursor:"pointer"}}>Branch 6 · Regulatory evidence ({d.designations.length})</summary>
+          {d.designations.map((x,i)=><div key={i} style={{padding:"7px 0",borderTop:"1px solid #dce7e0"}}>
+           <strong>{x.label}</strong> · {x.kind.replaceAll("_"," ")} · {x.verification==="FDA_DOCUMENT"?"FDA document":"Sponsor/SEC report"}
+           <div>{x.scope}</div>{x.grantDate&&<div>Recorded date: {x.grantDate}</div>}
+           <a href={x.sourceUrl} target="_blank" rel="noopener noreferrer">Original designation evidence</a>
+          </div>)}
+        </details>
+        <details style={{marginTop:5}}><summary style={{cursor:"pointer"}}>Branch 7 · FDA precedents and failure checks</summary>
+          <div>Check whether historical FDA decisions for the same indication and regulatory pathway required additional studies, revised labeling, CMC changes or resulted in a CRL.</div>
+          <div>Unknown: confidential FDA feedback, inspection outcomes, and whether the designation changes this application's approval risk.</div>
+          <div>Designation alone is not proof of approval or a favorable forecast. No historical comparator adjudication completed here.</div>
+        </details>
+       </>:<span title={d?.notes||"No confirmed special designation for exact drug and indication; not a claim that no designation exists."}>Not verified</span>}
+       </td>
       <td style={{padding:10,textAlign:"right"}}>{(t.marketCap/1e9).toFixed(2)}</td>
       <td style={{padding:10}}>{t.fdaStatus}</td>
       <td style={{padding:10,whiteSpace:"nowrap"}}><a href={t.resultsUrl} target="_blank" rel="noopener noreferrer">Phase 3 source</a>{" · "}<a href={t.regulatoryUrl} target="_blank" rel="noopener noreferrer">FDA source</a></td>

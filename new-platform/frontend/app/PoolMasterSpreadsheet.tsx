@@ -4,6 +4,7 @@ import {useEffect,useMemo,useState,type DragEvent} from "react";
 import {POOL_PHASE_OPTIONS,togglePoolPhase,type PoolPhaseSelection,type PoolPhase} from "../lib/pool-phase-options";
 import {POOL_SORT_KEYS,type PoolSortSpec,type PoolSortKey} from "../lib/pool-full-sort";
 import snapshot from "../data/p3PostDataActive.json";
+import focusDesignations from "../data/focusFdaDesignations.json";
 import css from "./PoolMasterSpreadsheet.module.css";
 import TickerChartButton from "./TickerChartButton";
 import {POOL_DETAIL_FIELDS,type PoolDetailField,type PoolRegistryDetail} from "../lib/pool-registry-details";
@@ -140,6 +141,7 @@ const IDENTITY_INFO={ticker:"Stock ticker reported in the POOL source. A ticker 
 const known=(v:unknown)=>typeof v==="string"&&v.trim()?v:"Not verified";
 const formatCap=(n:number)=>n.toLocaleString("en-US",{style:"currency",currency:"USD",maximumFractionDigits:0});
 const focusByTrial=new Map(snapshot.records.map(r=>[r.nct+"|"+r.ticker.toUpperCase(),r]));
+const designationByTrial=new Map(focusDesignations.records.map(r=>[r.nct+"|"+r.ticker.toUpperCase(),r]));
 const quoteDateFor=(focus:(typeof snapshot.records)[number])=>{
  const date:unknown="marketCapAsOf" in focus?focus.marketCapAsOf:null;
  return known(date);
@@ -182,7 +184,8 @@ function contentFor(row:PoolMasterRow,key:Key,details:PoolRegistryDetail|null):{
   case "fdaPath":return{text:focus?"Recorded FOCUS path":"Not verified"};
   case "application":return{text:focus?focus.fdaStatus:"Not verified"};
   case "pdufa":return{text:"Not verified at exact-trial level"};
-  case "designations":return{text:"Not verified"};
+  case "designations":{const d=nct?designationByTrial.get(nct+"|"+row.ticker.toUpperCase()):undefined;
+   return d?.designations.length?{text:d.designations.map(x=>x.label).join(" · "),url:d.designations[0].sourceUrl}:{text:"Not verified"};}
   case "focusQualified":return{text:focus?"In FOCUS":"Not on current FOCUS roster — unassessed"};
   case "reason":return{text:focus?"Exact NCT + ticker matches the saved FOCUS roster":"FOCUS gates not established for this record"};
   case "evidence":return focus?{text:"Results evidence",url:focus.resultsUrl}:

@@ -1,0 +1,509 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-07",
+  "source": "Public FDA database, FDA review documents, SEC issuer filings and dated sponsor announcements",
+  "scope": "29 exact NCTs of FOCUS, trial linkage must match indication and drug; missing is unknown, not no",
+  "description": "Authoritative and sponsor-recorded US FDA designation, review classification, approval pathway and review program claims. Not a completed regulatory-risk adjudication or a clinical prediction.",
+  "records": [
+    {
+      "nct": "NCT05507203",
+      "ticker": "ABVX",
+      "company": "Abivax S.A.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT05507216",
+      "ticker": "ABVX",
+      "company": "Abivax S.A.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT04576949",
+      "ticker": "ACHV",
+      "company": "Achieve Life Sciences",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT05206370",
+      "ticker": "ACHV",
+      "company": "Achieve Life Sciences",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT05811247",
+      "ticker": "APMD",
+      "company": "Apnimed",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT05813275",
+      "ticker": "APMD",
+      "company": "Apnimed",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT05059223",
+      "ticker": "AXSM",
+      "company": "Axsome Therapeutics, Inc.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Orphan Drug",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://www.axsome.com/news/axsome-therapeutics-reports-third-quarter-2026-financial-res-13311",
+          "scope": "AXS-12 (reboxetine) for narcolepsy; sponsor reports FDA orphan designation",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT05113745",
+      "ticker": "AXSM",
+      "company": "Axsome Therapeutics, Inc.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Orphan Drug",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://www.axsome.com/news/axsome-therapeutics-reports-third-quarter-2026-financial-res-13311",
+          "scope": "AXS-12 (reboxetine) for narcolepsy; sponsor reports FDA orphan designation",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT05244304",
+      "ticker": "BLTE",
+      "company": "Belite Bio, Inc.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Orphan Drug",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://belitebio.gcs-web.com/news-releases/news-release-details/belite-bio-announces-multi-market-submission-marketing",
+          "scope": "Tinlarebant for Stargardt disease type 1, not its separate geographic-atrophy indication",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        },
+        {
+          "label": "Fast Track",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://belitebio.gcs-web.com/news-releases/news-release-details/belite-bio-announces-multi-market-submission-marketing",
+          "scope": "Tinlarebant for Stargardt disease type 1, not its separate geographic-atrophy indication",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        },
+        {
+          "label": "Breakthrough Therapy",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://belitebio.gcs-web.com/news-releases/news-release-details/belite-bio-announces-multi-market-submission-marketing",
+          "scope": "Tinlarebant for Stargardt disease type 1, not its separate geographic-atrophy indication",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        },
+        {
+          "label": "Rare Pediatric Disease",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://belitebio.gcs-web.com/news-releases/news-release-details/belite-bio-announces-multi-market-submission-marketing",
+          "scope": "Tinlarebant for Stargardt disease type 1, not its separate geographic-atrophy indication",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        },
+        {
+          "label": "Priority Review",
+          "kind": "REVIEW_CLASSIFICATION",
+          "sourceUrl": "https://investors.belitebio.com/news-releases/news-release-details/belite-bio-announces-us-food-and-drug-administration-acceptance",
+          "scope": "Tinlarebant NDA for Stargardt disease type 1 granted Priority Review on 2026-08-11",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT05126758",
+      "ticker": "CAPR",
+      "company": "Capricor Therapeutics, Inc.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Orphan Drug",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://www.fda.gov/media/193839/download",
+          "scope": "Deramiocel for Duchenne muscular dystrophy; FDA regulatory-history table",
+          "grantDate": "2015-04-21",
+          "verification": "FDA_DOCUMENT"
+        },
+        {
+          "label": "Rare Pediatric Disease",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://www.fda.gov/media/193839/download",
+          "scope": "Deramiocel for Duchenne muscular dystrophy; FDA regulatory-history table",
+          "grantDate": "2017-07-05",
+          "verification": "FDA_DOCUMENT"
+        },
+        {
+          "label": "RMAT",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://www.fda.gov/media/193839/download",
+          "scope": "Deramiocel for Duchenne muscular dystrophy; FDA regulatory-history table",
+          "grantDate": "2018-01-29",
+          "verification": "FDA_DOCUMENT"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT06445023",
+      "ticker": "CLDX",
+      "company": "Celldex Therapeutics",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT06455202",
+      "ticker": "CLDX",
+      "company": "Celldex Therapeutics",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT05208047",
+      "ticker": "COGT",
+      "company": "Cogent Biosciences, Inc.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Breakthrough Therapy",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0",
+          "scope": "Bezuclastinib plus sunitinib for imatinib-treated GIST, not other mastocytosis indications",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        },
+        {
+          "label": "Priority Review",
+          "kind": "REVIEW_CLASSIFICATION",
+          "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0",
+          "scope": "Bezuclastinib GIST application accepted 2026-05-28; priority review announced",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        },
+        {
+          "label": "Real-Time Oncology Review (RTOR)",
+          "kind": "REVIEW_PROGRAM",
+          "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-fda-acceptance-new-drug-0",
+          "scope": "FDA RTOR program participation for GIST application; not a designation",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT03697109",
+      "ticker": "CORT",
+      "company": "Corcept Therapeutics",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Orphan Drug",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://www.accessdata.fda.gov/scripts/opdlisting/oopd/detailedindex.cfm?cfgridkey=656518",
+          "scope": "Relacorilant for endogenous Cushing syndrome; same drug/indication, not separate grant to trial",
+          "grantDate": "2018-10-15",
+          "verification": "FDA_DOCUMENT"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT04308590",
+      "ticker": "CORT",
+      "company": "Corcept Therapeutics",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Orphan Drug",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://www.accessdata.fda.gov/scripts/opdlisting/oopd/detailedindex.cfm?cfgridkey=656518",
+          "scope": "Relacorilant for endogenous Cushing syndrome; same drug/indication, not separate grant to trial",
+          "grantDate": "2018-10-15",
+          "verification": "FDA_DOCUMENT"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT05767346",
+      "ticker": "CYTK",
+      "company": "Cytokinetics",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": "Existing aficamten oHCM authorization cannot be assumed to establish any particular designation for the nHCM sNDA."
+    },
+    {
+      "nct": "NCT06081894",
+      "ticker": "CYTK",
+      "company": "Cytokinetics, Inc.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": "Existing aficamten oHCM authorization cannot be assumed to establish any particular designation for the nHCM sNDA."
+    },
+    {
+      "nct": "NCT04871282",
+      "ticker": "IMNM",
+      "company": "Immunome, Inc.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Orphan Drug",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://www.accessdata.fda.gov/scripts/opdlisting/oopd/detailedIndex.cfm?cfgridkey=968423",
+          "scope": "Varegacestat for desmoid tumors",
+          "grantDate": "2023-11-02",
+          "verification": "FDA_DOCUMENT"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT06411379",
+      "ticker": "MLTX",
+      "company": "MoonLake Immunotherapeutics AG",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": "Sonelokimab Fast Track designation for PPP is a DIFFERENT indication from the HS VELA studies, so it is intentionally excluded."
+    },
+    {
+      "nct": "NCT06411899",
+      "ticker": "MLTX",
+      "company": "MoonLake Immunotherapeutics AG",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": "Sonelokimab Fast Track designation for PPP is a DIFFERENT indication from the HS VELA studies, so it is intentionally excluded."
+    },
+    {
+      "nct": "NCT06153693",
+      "ticker": "MLYS",
+      "company": "Mineralys Therapeutics, Inc.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT06343779",
+      "ticker": "PHVS",
+      "company": "Pharvaris N.V.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Orphan Drug",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://www.accessdata.fda.gov/scripts/opdlisting/oopd/detailedIndex.cfm?cfgridkey=809521",
+          "scope": "Deucrictibant for bradykinin-mediated angioedema, encompassing hereditary or acquired disease; grant is drug/indication-based, not formulation-specific",
+          "grantDate": "2022-03-18",
+          "verification": "FDA_DOCUMENT"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT06669754",
+      "ticker": "PHVS",
+      "company": "Pharvaris N.V.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Orphan Drug",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://www.accessdata.fda.gov/scripts/opdlisting/oopd/detailedIndex.cfm?cfgridkey=809521",
+          "scope": "Deucrictibant for bradykinin-mediated angioedema, encompassing hereditary or acquired disease; grant is drug/indication-based, not formulation-specific",
+          "grantDate": "2022-03-18",
+          "verification": "FDA_DOCUMENT"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT06087276",
+      "ticker": "PRAX",
+      "company": "Praxis Precision Medicines, Inc.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Breakthrough Therapy",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000082/praxisq22026pr.htm",
+          "scope": "Ulixacaltamide for essential tremor, FDA designation reported December 2025",
+          "grantDate": "2025-12",
+          "verification": "SOURCE_RECORDED"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT02500381",
+      "ticker": "SRPT",
+      "company": "Sarepta Therapeutics, Inc.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Accelerated Approval (existing drugs)",
+          "kind": "APPROVAL_PATHWAY",
+          "sourceUrl": "https://sarepta.gcs-web.com/news-releases/news-release-details/sarepta-announces-fda-acceptance-sndas-amondys-45r-and-vyondys",
+          "scope": "AMONDYS 45 (casimersen) and VYONDYS 53 (golodirsen) already received accelerated approvals; ESSENCE supports sNDAs for traditional-approval conversion. NOT newly approved in 2026.",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT04544293",
+      "ticker": "SVRA",
+      "company": "Savara Inc.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Orphan Drug",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://investors.savarapharma.com/news/news-details/2026/Savara-Announces-the-U-S--Food--Drug-Administration-FDA-Has-Extended-the-Review-Period-for-the-Molgramostim-Inhalation-Solution-Molgramostim-Biologics-License-Application-BLA-in-Autoimmune-Pulmonary-Alveolar-Proteinosis-Autoimmune-PAP/default.aspx",
+          "scope": "Molgramostim inhalation solution for autoimmune pulmonary alveolar proteinosis",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        },
+        {
+          "label": "Fast Track",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://investors.savarapharma.com/news/news-details/2026/Savara-Announces-the-U-S--Food--Drug-Administration-FDA-Has-Extended-the-Review-Period-for-the-Molgramostim-Inhalation-Solution-Molgramostim-Biologics-License-Application-BLA-in-Autoimmune-Pulmonary-Alveolar-Proteinosis-Autoimmune-PAP/default.aspx",
+          "scope": "Molgramostim inhalation solution for autoimmune pulmonary alveolar proteinosis",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        },
+        {
+          "label": "Breakthrough Therapy",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://investors.savarapharma.com/news/news-details/2026/Savara-Announces-the-U-S--Food--Drug-Administration-FDA-Has-Extended-the-Review-Period-for-the-Molgramostim-Inhalation-Solution-Molgramostim-Biologics-License-Application-BLA-in-Autoimmune-Pulmonary-Alveolar-Proteinosis-Autoimmune-PAP/default.aspx",
+          "scope": "Molgramostim inhalation solution for autoimmune pulmonary alveolar proteinosis",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        },
+        {
+          "label": "Priority Review",
+          "kind": "REVIEW_CLASSIFICATION",
+          "sourceUrl": "https://investors.savarapharma.com/news/news-details/2026/Savara-Announces-the-U-S--Food--Drug-Administration-FDA-Has-Extended-the-Review-Period-for-the-Molgramostim-Inhalation-Solution-Molgramostim-Biologics-License-Application-BLA-in-Autoimmune-Pulmonary-Alveolar-Proteinosis-Autoimmune-PAP/default.aspx",
+          "scope": "Molgramostim BLA for autoimmune PAP, under priority review with formal PDUFA extension",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT06331299",
+      "ticker": "URGN",
+      "company": "UroGen Pharma Ltd.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [],
+      "status": "NOT_VERIFIED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT04716231",
+      "ticker": "VERA",
+      "company": "Vera Therapeutics, Inc.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Breakthrough Therapy",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://ir.veratx.com/news-releases/news-release-details/vera-therapeutics-announces-us-fda-granted-priority-review",
+          "scope": "Atacicept for IgA nephropathy",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        },
+        {
+          "label": "Priority Review (original BLA)",
+          "kind": "REVIEW_CLASSIFICATION",
+          "sourceUrl": "https://ir.veratx.com/news-releases/news-release-details/vera-therapeutics-announces-us-fda-granted-priority-review",
+          "scope": "Original atacicept BLA for IgA nephropathy (January 2026); does not imply the planned later sBLA has priority review.",
+          "grantDate": "",
+          "verification": "SOURCE_RECORDED"
+        },
+        {
+          "label": "Accelerated Approval (granted 2026-07-07)",
+          "kind": "APPROVAL_PATHWAY",
+          "sourceUrl": "https://ir.veratx.com/news-releases/news-release-details/vera-therapeutics-receives-fda-accelerated-approval-trutaknatm",
+          "scope": "TRUTAKNA (atacicept-vymj) received FDA accelerated approval for reducing proteinuria in adults with primary IgA nephropathy at risk of progression",
+          "grantDate": "2026-07-07",
+          "verification": "SOURCE_RECORDED"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    },
+    {
+      "nct": "NCT05662241",
+      "ticker": "ZBIO",
+      "company": "Zenas BioPharma, Inc.",
+      "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
+      "designations": [
+        {
+          "label": "Orphan Drug",
+          "kind": "DESIGNATION",
+          "sourceUrl": "https://www.accessdata.fda.gov/scripts/opdlisting/oopd/detailedIndex.cfm?cfgridkey=566516",
+          "scope": "Obexelimab for IgG4-related disease",
+          "grantDate": "2017-05-09",
+          "verification": "FDA_DOCUMENT"
+        }
+      ],
+      "status": "SOURCE_LINKED",
+      "notes": ""
+    }
+  ]
+}
