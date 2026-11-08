@@ -121,3 +121,47 @@ def test_render_liveness_route_is_separate_from_storage_health():
     response=TestClient(app).head("/")
     assert response.status_code==204
     assert response.headers["cache-control"]=="no-store"
+
+
+def test_completed_source_revision_queues_one_evidence_update_not_a_prediction(tmp_path,monkeypatch):
+    engine=db(tmp_path)
+    monkeypatch.delenv("PDUFA_TELEGRAM_BOT_TOKEN",raising=False)
+    monkeypatch.delenv("PDUFA_TELEGRAM_CHAT_ID",raising=False)
+    with engine.begin() as c:
+        for ordinal in (1,2):
+            run=f"00000000-0000-4000-8000-{ordinal:012d}"
+            c.execute(text("""INSERT INTO medical_continuous_runs
+                (run_id,request_key,nct_id,status,stage_index,created_at,updated_at)
+                VALUES(:run,:key,'NCT00000001','COMPLETE',12,'2026-11-08','2026-11-08')"""),
+                {"run":run,"key":"key"+str(ordinal)})
+            c.execute(text("""INSERT INTO medical_prediction_revisions
+                (run_id,nct_id,ordinal,source_digest,evidence_changed,report,recorded_at)
+                VALUES(:run,'NCT00000001',:ordinal,:digest,1,:report,:at)"""),
+                {"run":run,"ordinal":ordinal,"digest":str(ordinal)*64,
+                 "report":json.dumps({"outcomes":[{"outcome":"APPROVAL","status":"ABSTAIN",
+                     "probability":None}]}),"at":f"2026-11-0{ordinal}"})
+    observed=monitor.monitor_once(engine,storage_ready=True,require_postgres=False)
+    monitor.monitor_once(engine,storage_ready=True,require_postgres=False)
+    assert observed["research"]["newSourceEvidenceRevisions"]==1
+    with engine.connect() as c:
+        changed=list(c.execute(text("""SELECT event_key,kind,message FROM installation_monitor_alerts
+            WHERE kind='EVIDENCE_UPDATE'""")))
+    assert len(changed)==1
+    assert changed[0][0]=="medical-evidence:00000000-0000-4000-8000-000000000002"
+    assert changed[0][1]=="EVIDENCE_UPDATE"
+    assert "FDA predictions remain evidence-gated" in changed[0][2]
+    assert "approval probability" not in changed[0][2].lower()
+    engine.dispose()
+
+
+def test_packaged_application_evidence_is_visible_without_postgres(tmp_path):
+    engine=db(tmp_path)
+    report=monitor.collect(engine,storage_ready=False,require_postgres=True)
+    context=report["sourceSnapshots"]["applications"]
+    assert context["state"]=="VALID"
+    assert context["focusNctCount"]==29
+    assert context["coveredNctCount"]==29
+    assert context["applicationCycleCount"]==23
+    assert context["fdaApplicationStatusVerified"] is False
+    assert report["storage"]["state"]=="BLOCKED"
+    engine.dispose()
