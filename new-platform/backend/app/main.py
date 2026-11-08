@@ -892,6 +892,24 @@ def require_medical_internal_key(
         raise HTTPException(status_code=401, detail="Unauthorized")
 
 
+# Read-only scientific-monitor key accepted independently of write permissions.
+# Both endpoints remain restricted to the isolated medical preview service.
+def require_medical_review_read_key(
+    x_pdufa_internal_key: Annotated[str | None, Header()] = None,
+) -> None:
+    configured = [key for key in (
+        os.getenv("PDUFA_MEDICAL_REVIEW_READ_KEY"),
+        os.getenv("PDUFA_MEDICAL_INTERNAL_API_KEY"),
+        os.getenv("PDUFA_INTERNAL_API_KEY"),
+    ) if key]
+    if not configured:
+        raise HTTPException(status_code=503, detail="Scientific preview read access not configured")
+    if not x_pdufa_internal_key or not any(
+        secrets.compare_digest(key, x_pdufa_internal_key) for key in configured
+    ):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+
 # Independent medical writes require the *medical* canary to be initialized
 # against durable PostgreSQL; general checklist storage readiness is insufficient.
 def require_medical_pilot_storage() -> None:
