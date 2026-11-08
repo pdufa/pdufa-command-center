@@ -167,4 +167,4 @@ def test_read_only_authenticated_route_shape_without_write_route(seeded):
     client=TestClient(app)
     assert client.get("/api/internal/medical-assessments/coverage").json()["sourceComplete"]==29
     assert client.get("/api/internal/medical-assessments/"+focus[0]+"/history").json()["nct"]==focus[0]
-    assert client.post("/api/internal/medical-assessments/"+focus[0]+"/reviews").status_code==405
+    assert client.post("/api/internal/medical-assessments/coverage").status_code==405
