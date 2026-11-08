@@ -671,15 +671,18 @@ async def lifespan(app: FastAPI):
                         from .medical_scientific_triage import (
                             initialize as initialize_scientific_triage,
                             run_canary as run_scientific_triage_canary,
+                            run_batch as run_scientific_triage_batch,
                         )
                         initialize_scientific_triage(ENGINE)
                         app.state.medical_scientific_triage_ready = True
                         scientific_triage = run_scientific_triage_canary(ENGINE)
+                        triage_tail = run_scientific_triage_batch(ENGINE)
                         logging.getLogger(__name__).warning(
                             "PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_READY status=PASS "
-                            "canarySnapshot=%s scientificSignoff=False "
+                            "canarySnapshot=%s tailCount=%d scientificSignoff=False "
                             "prediction=ABSTAIN certainty=NOT_VALIDATED",
                             "SAVED" if scientific_triage else "NOT_RUN",
+                            len(triage_tail),
                         )
                     except Exception as triage_exc:
                         app.state.medical_scientific_triage_ready = False
