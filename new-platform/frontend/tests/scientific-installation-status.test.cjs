@@ -43,11 +43,11 @@ test('current task and methods reconcile with the actual potential positions', (
   ]) {const value = observed(); change(value); assert.throws(() => validateMedicalInstallation(value));}
 });
 test('isolated monitor proxy authenticates, refuses production fallback, and withholds malformed observations', async () => {
-  const names = ['DASHBOARD_PASSWORD', 'SESSION_SIGNING_KEY', 'PDUFA_MEDICAL_REVIEW_API_BASE_URL', 'PDUFA_API_BASE_URL', 'PDUFA_INTERNAL_API_KEY'];
+  const names = ['DASHBOARD_PASSWORD', 'SESSION_SIGNING_KEY', 'PDUFA_MEDICAL_REVIEW_API_BASE_URL', 'PDUFA_API_BASE_URL', 'PDUFA_INTERNAL_API_KEY', 'PDUFA_MEDICAL_REVIEW_READ_KEY'];
   const saved = Object.fromEntries(names.map(k => [k, process.env[k]])), fetchBefore = global.fetch;
   try {
     process.env.DASHBOARD_PASSWORD = 'local-fixture-password'; process.env.SESSION_SIGNING_KEY = 'x'.repeat(32);
-    process.env.PDUFA_INTERNAL_API_KEY = 'local-fixture-key'; process.env.PDUFA_API_BASE_URL = 'https://production.example';
+    process.env.PDUFA_INTERNAL_API_KEY = 'local-fixture-key'; process.env.PDUFA_MEDICAL_REVIEW_READ_KEY = 'local-scoped-read-only-key'; process.env.PDUFA_API_BASE_URL = 'https://production.example';
     delete process.env.PDUFA_MEDICAL_REVIEW_API_BASE_URL;
     const url = 'http://localhost/api/predictions/medical-installation';
     let calls = 0;
@@ -58,6 +58,7 @@ test('isolated monitor proxy authenticates, refuses production fallback, and wit
     process.env.PDUFA_MEDICAL_REVIEW_API_BASE_URL = 'https://isolated.example/';
     global.fetch = async (target, init) => {
       assert.equal(target, 'https://isolated.example/api/internal/installation-monitor');
+      assert.equal(init.headers['x-pdufa-internal-key'], 'local-scoped-read-only-key');
       assert.equal(init.redirect, 'error'); assert.equal(init.cache, 'no-store');
       return Response.json(observed());
     };
