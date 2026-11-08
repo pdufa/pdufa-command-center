@@ -39,16 +39,16 @@ jobs:
           PDUFA_MEDICAL_METHOD_AUDIT_ENABLED: 'true'
         run: |
           python - <<'PY'
-          import os, app.main as main
+          from fastapi.testclient import TestClient
           from app.main import app
-          print("MODULE FILE:", main.__file__)
-          print("FEATURE FLAGS:", {name:os.getenv(name) for name in ("PDUFA_MEDICAL_PREVIEW_ENABLED","PDUFA_MEDICAL_ASSESSMENT_LEDGER_ENABLED","PDUFA_MEDICAL_PHASE_MATRIX_ENABLED","PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_ENABLED","PDUFA_MEDICAL_METHOD_AUDIT_ENABLED")})
-          print("ALL ROUTE COUNT:", len(app.routes))
-          print("ALL ROUTE PATHS:", sorted(getattr(r,"path","") for r in app.routes))
-          print("EMPTY ROUTE TYPES:", [(type(r).__name__, type(r).__module__, [(getattr(x,"path",""),sorted(getattr(x,"methods",[]) or ())) for x in getattr(r,"routes",[])][:10]) for r in app.routes if not getattr(r,"path",None)])
-          paths={getattr(r,"path",None):set(getattr(r,"methods",[]) or ()) for r in app.routes}
-          print("ACTUAL ROUTES:", sorted((p, sorted(methods)) for p,methods in paths.items() if p and ("medical-method" in p or "medical-scientific" in p or "medical-phase" in p)))
-          assert "GET" in paths["/api/internal/medical-method-audit/{nct}/latest"]
-          assert "POST" in paths["/api/internal/medical-method-audit/{nct}/runs"]
-          print("PASS: isolated route imports and exact source audit GET/POST defined")
+          client=TestClient(app)
+          url="/api/internal/medical-method-audit/NCT06081894"
+          read=client.get(url+"/latest")
+          write=client.post(url+"/runs")
+          assert read.status_code in (401,503), ("Audit read route absent or insecure",read.status_code)
+          assert write.status_code in (401,503), ("Audit operator route absent or insecure",write.status_code)
+          wrong=client.get("/api/internal/medical-method-audit/NCT99999999/latest")
+          assert wrong.status_code in (401,503), ("No unguarded wrong-trial read allowed",wrong.status_code)
+          print("PASS: actual isolated audit GET/POST paths match auth-denied contract",
+                read.status_code,write.status_code)
           PY
