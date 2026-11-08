@@ -37,7 +37,7 @@ export default function FocusPage(){
     <tbody>{trials.map((t,i)=>{const gateAudit=finalGateByNct.get(t.nct);const d=designationByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
       <td style={{padding:10,fontWeight:700}}><TickerChartButton ticker={t.ticker}/></td>
       <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a></td>
-      <td style={{padding:10}}>{t.company}<CompanyDateBadges nctId={t.nct} timeline={null} recordedReleaseDate={t.recordedReleaseDate} recordedPdufaDate={t.recordedPdufaDate} releaseSource={t.resultsUrl} pdufaSource={t.regulatoryUrl}/></td>
+      <td style={{padding:10}}>{t.company}<CompanyDateBadges nctId={t.nct} timeline={null} recordedReleaseDate={"recordedReleaseDate" in t && typeof t.recordedReleaseDate==="string" ? t.recordedReleaseDate : null} recordedPdufaDate={"recordedPdufaDate" in t && typeof t.recordedPdufaDate==="string" ? t.recordedPdufaDate : null} releaseSource={t.resultsUrl} pdufaSource={t.regulatoryUrl}/></td>
       <td style={{padding:10,minWidth:220,verticalAlign:"top",fontSize:12}}>
        {d?.designations.length?<><strong>{d.designations.map(x=>x.label).join(" · ")}</strong>
         <details style={{marginTop:5}}><summary style={{cursor:"pointer"}}>Branch 6 · Regulatory evidence ({d.designations.length})</summary>
