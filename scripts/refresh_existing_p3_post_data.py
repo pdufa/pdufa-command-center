@@ -2,7 +2,7 @@
 """Source-gated daily refresh of EXISTING P3 POST-DATA Google Sheets trial rows.
 
 Updates only supported source columns. Never overwrites exact trial identity,
-RAAS scoring, human research notes or historical trial evidence. Fail closed
+archived scoring, human research notes or historical trial evidence. Fail closed
 on stale/missing sources and record each skipped field in an audit.
 """
 from __future__ import annotations
@@ -33,7 +33,7 @@ CTGOV = "https://clinicaltrials.gov/api/v2/studies/"
 SHEETS_API = f"https://sheets.googleapis.com/v4/spreadsheets/{SHEET_ID}/values:batchUpdate"
 MAX_TRIALS = None  # Candidate population has no arbitrary count cap
 MAX_CAP_AGE = timedelta(days=3)
-# A-C trial identity; K-U scoring, study history, human research notes are never written.
+# A-C identity; live D-F evidence and retired N:X historical columns must remain unchanged.
 # FDA source changes require specifically reviewed new regulatory evidence.
 EDITABLE = frozenset((3, 4, 5, 6, 7, 8, 9, 21, 22, 23, 24, 25, 26, 27))
 IMMUTABLE = frozenset((0, 1, 2, *range(10, 21)))
@@ -46,6 +46,29 @@ HEADERS = {0:"Ticker", 1:"NCT ID", 2:"Company", 3:"Registry Status",
            27:"Market Cap Source"}
 
 
+# Three source-only columns were inserted at D:F in the current FOCUS sheet.
+# Reject unrecognized layouts instead of risking archived history.
+INSERTED_HEADERS = ("FDA Special Designations", "D · P · p-value",
+                    "Intelligence Prediction At (Pacific)")
+
+def grid_shift(rows):
+    if not rows:
+        raise ValueError("P3 grid has no header")
+    head=rows[0]
+    if head[3:6]==list(INSERTED_HEADERS):
+        if len(head)<31 or head[6]!="Registry Status":
+            raise ValueError("FOCUS extended layout is incomplete")
+        return 3
+    if len(head)>3 and head[3]=="Registry Status":
+        return 0
+    raise ValueError("Unknown FOCUS headers; no source writes permitted")
+
+def logical_rows(rows):
+    return [list(row[:3])+list(row[6:]) for row in rows] if grid_shift(rows) else rows
+
+def physical_index(idx,shift):
+    return idx+shift if idx>=3 else idx
+
 def val(row, idx):
     return row[idx] if idx < len(row) else ""
 
@@ -53,11 +76,12 @@ def val(row, idx):
 def validate_grid(rows):
     if not rows or len(rows) < 2:
         raise ValueError("Existing P3 grid empty or exceeds protected row limit")
+    source=logical_rows(rows)
     for index, title in HEADERS.items():
-        if val(rows[0], index) != title:
+        if val(source[0], index) != title:
             raise ValueError(f"Header changed in P3 column {index+1}: {title}")
     indexed = {}
-    for row_no, row in enumerate(rows[1:], start=4):
+    for row_no, row in enumerate(source[1:], start=4):
         ticker, nct = str(val(row, 0)).strip(), str(val(row, 1)).strip()
         if not TICKER.fullmatch(ticker) or not NCT.fullmatch(nct):
             raise ValueError("Blank or invalid exact trial identity on row " + str(row_no))
@@ -147,6 +171,7 @@ def build_plan(rows, market_rows, catalog, registry, cutoff, checked_at,
     backup_caps = backup_caps or {}
     backup_errors = backup_errors or {}
     indexed = validate_grid(rows)
+    shift = grid_shift(rows)
     market = cap_index(market_rows)
     data = []
     report = []
@@ -252,16 +277,16 @@ def build_plan(rows, market_rows, catalog, registry, cutoff, checked_at,
         if updates:
             counts["rowsChanged"] += 1
             for idx, value in sorted(updates.items()):
-                column = a1_col(idx)
+                column = a1_col(physical_index(idx,shift))
                 data.append({"range":f"{SHEET_NAME}!{column}{row_no}",
                              "majorDimension":"ROWS","values":[[value]]})
         report.append({"nct":nct,"ticker":ticker,"row":row_no,
-                       "updatedColumns":[a1_col(k) for k in sorted(updates)],
+                       "updatedColumns":[a1_col(physical_index(k,shift)) for k in sorted(updates)],
                        "marketCapSourceKind":"SECONDARY_DATED_PUBLISHER_QUOTE" if backup_used
                          else ("NASDAQ_LEDGER" if not issue else "PRESERVED_NO_VERIFIED_UPDATE"),
                        "review":sorted(set(review))})
     return data, {"asOf":checked_at,"counts":counts,"records":report,
-                  "protectedColumns":"A:C,K:U",
+                  "protectedColumns":"A:F,N:X" if shift else "A:C,K:U",
                   "source":"Official ClinicalTrials.gov + Nasdaq cap ledger + dated Stock Analysis fallback + reviewed FDA evidence",
                   "secondaryLimitations":"Dated publisher quote, rounded to source precision; never a verified exchange-timestamped tick"}
 
@@ -306,7 +331,7 @@ def api_auth():
 
 def main():
     auth=api_auth()
-    before=sheets_values(auth,"A3:AB")
+    before=sheets_values(auth,"A3:AE")
     indexed=validate_grid(before)
     checked_at=datetime.now(timezone.utc).isoformat(timespec="seconds")
     cutoff=datetime.now(timezone.utc).date()
@@ -328,22 +353,26 @@ def main():
         "failures":backup_errors,
         "sourcePrecision":"SOURCE_QUOTED_ROUNDED_NOT_EXCHANGE_TIMESTAMPED"
     }
-    # Recheck the entire destination before any write. We do not modify A-C or K-U.
-    if sheets_values(auth,"A3:AB")!=before:
+    # Recheck before writing. A:F identity/evidence and N:X archive are protected.
+    if sheets_values(auth,"A3:AE")!=before:
         raise RuntimeError("Google Sheet modified during refresh; no updates written")
     if data:
         response=requests.post(SHEETS_API,headers=auth,
             json={"valueInputOption":"RAW","data":data,"includeValuesInResponse":False},
             timeout=60)
         response.raise_for_status()
-        updated=sheets_values(auth,"A3:AB")
+        updated=sheets_values(auth,"A3:AE")
         after=validate_grid(updated)
         if set(indexed)!=set(after):
             raise RuntimeError("Candidate identity changed during refresh")
         for nct,(row_no,ticker,row) in indexed.items():
             new_row=after[nct][2]
             if new_row[:3]!=row[:3] or any(val(new_row,k)!=val(row,k) for k in IMMUTABLE):
-                raise RuntimeError("Protected trial identity/RAAS/history changed: "+nct)
+                raise RuntimeError("Protected trial identity/archived history changed: "+nct)
+            if grid_shift(before):
+                for col in (3,4,5):
+                    if val(before[row_no-3],col)!=val(updated[row_no-3],col):
+                        raise RuntimeError("Inserted D:F evidence changed during refresh: "+nct)
         for item in data:
             cell=item["range"].split("!")[-1]
             match=re.fullmatch(r"([A-Z]+)(\d+)",cell)
@@ -356,13 +385,13 @@ def main():
                 raise RuntimeError("Updated value not confirmed in "+cell)
     report["writes"]=len(data)
     report["poolModified"]=False
-    report["raasHistoryModified"]=False
+    report["historicalArchiveModified"]=False
     AUDIT.parent.mkdir(parents=True,exist_ok=True)
     AUDIT.write_text(json.dumps(report,indent=2,ensure_ascii=False)+"\n",encoding="utf-8")
     print(json.dumps({"asOf":report["asOf"],"counts":report["counts"],
                       "writes":report["writes"],"secondaryMarketCapCheck":report["secondaryMarketCapCheck"],
                       "reviewTrialCount":sum(bool(r["review"]) for r in report["records"]),
-                      "poolModified":False,"raasHistoryModified":False},indent=2))
+                      "poolModified":False,"historicalArchiveModified":False},indent=2))
 
 
 if __name__=="__main__":
