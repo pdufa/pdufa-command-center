@@ -2,14 +2,11 @@ import type {Metadata} from "next";
 import Link from "next/link";
 import type {CSSProperties} from "react";
 import focus from "../../data/p3PostDataActive.json";
-import {
-  FAILURE_INVESTIGATIONS, INITIAL_DECISION,
-  summarizeRegistryStudy, type TrialEvidence
-} from "../../lib/medical-intelligence-preview";
+import {FAILURE_INVESTIGATIONS, INITIAL_DECISION} from "../../lib/medical-intelligence-preview";
+import OnDemandRegistryResearch from "./OnDemandRegistryResearch";
 import {findingsForNct,REVIEW_COVERAGE,REVIEW_AS_OF} from "../../lib/medical-intelligence-reviewed-findings";
 import {conditionForNct} from "../../lib/medical-intelligence-conditions";
 import {applicationsForNct,CYCLE_COUNTS} from "../../lib/medical-intelligence-applications";
-import {parseRegistryResults,type RegistryResultReport} from "../../lib/medical-intelligence-registry-results";
 
 export const metadata:Metadata={
   title:"Deep Medical Intelligence — Read-only preview | PDUFA",
@@ -24,40 +21,18 @@ const panel:CSSProperties={background:"#fff",border:"1px solid "+palette.line,bo
 const small:CSSProperties={color:palette.muted,fontSize:13,lineHeight:1.55};
 const rows=focus.records;
 
-async function getRegistryStudy(nct:string):Promise<{evidence:TrialEvidence|null;results:RegistryResultReport|null;error:string|null}>{
-  try{
-    const r=await fetch("https://clinicaltrials.gov/api/v2/studies/"+nct,{
-      headers:{Accept:"application/json"},next:{revalidate:21600},signal:AbortSignal.timeout(12000)
-    });
-    if(!r.ok)throw new Error("Registry returned HTTP "+r.status);
-    const payload=await r.json();
-    const evidence=summarizeRegistryStudy(payload,nct);
-    const results=parseRegistryResults(payload,nct);
-    return {evidence,results,error:null};
-  }catch(e){
-    return {evidence:null,results:null,error:e instanceof Error?e.message:"Registry retrieval unavailable"};
-  }
-}
 function Source({href,children}:{href:string;children:React.ReactNode}){
   return <a href={href} target="_blank" rel="noopener noreferrer" style={{color:palette.teal,textDecoration:"underline"}}>{children}</a>;
 }
 function Info({label,value}:{label:string;value:string|number}){
   return <div style={{minWidth:0}}><div style={small}>{label}</div><strong style={{display:"block",overflowWrap:"anywhere",marginTop:3}}>{value}</strong></div>;
 }
-function EndpointList({items}:{items:string[]}){
-  return items.length?
-    <ol style={{paddingLeft:22,margin:"8px 0"}}>{items.map((s,i)=><li key={i} style={{marginBottom:6}}>{s}</li>)}</ol>:
-    <p style={small}>No endpoint description retrieved. This is an evidence gap, not an FDA deficiency.</p>;
-}
 export default async function MedicalIntelligencePreview({searchParams}:{searchParams:Promise<SearchParams>}){
   const query=await searchParams;
   const requested=typeof query.nct==="string"?query.nct:"";
   const record=rows.find(r=>r.nct===requested)||rows[0];
-  const {evidence,results:registryResults,error}=await getRegistryStudy(record.nct);
   const sourceUrl="https://clinicaltrials.gov/study/"+record.nct;
   const candidateIndex=rows.findIndex(r=>r.nct===record.nct)+1;
-  const trialResults=evidence?.resultsPosted;
-  const identity=evidence?("ClinicalTrials.gov exact NCT matched: "+record.nct):"Registry details not independently loaded";
   const domains=FAILURE_INVESTIGATIONS;
   const reviewed=findingsForNct(record.nct);
   const conditionDossier=conditionForNct(record.nct);
@@ -71,10 +46,10 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
   return <main style={{maxWidth:1260,margin:"24px auto",padding:"0 16px 36px",color:palette.ink,fontFamily:"system-ui,sans-serif"}}>
     <div style={{fontSize:12,letterSpacing:1,color:palette.teal,fontWeight:750}}>POOL → FOCUS → DEEP MEDICAL INTELLIGENCE → DECISION</div>
     <h1 style={{margin:"10px 0 6px",fontSize:"clamp(1.6rem,4vw,2.5rem)"}}>Deep Medical Intelligence</h1>
-    <p style={{fontWeight:700,margin:"6px 0"}}><Link href="/medical-intelligence-preview/specialist-review">Clinical Subspecialty Review (medical doctor depth)</Link> · <Link href="/medical-intelligence-preview/master-depth">Open Medical Master Depth — 20 levels × 40 assessments</Link></p>
+    <p style={{fontWeight:700,margin:"6px 0"}}><Link href="/medical-intelligence-preview/specialist-review">Clinical Subspecialty Review (medical specialist depth)</Link> · <Link href="/medical-intelligence-preview/master-depth">Open Medical Master Depth — 20 levels × 40 assessments</Link></p>
     <p style={{lineHeight:1.55,maxWidth:1000}}>Independent, failure-first research preview. It investigates what could prevent FDA approval, produce a Complete Response Letter (CRL), or cause a PDUFA extension or missed goal date. The preview is <strong>read-only</strong>; it does not modify POOL or FOCUS and does not issue an unsupported prediction.</p>
     <p style={{fontSize:14,fontWeight:700,display:"flex",flexWrap:"wrap",gap:18}}><Link href="/medical-intelligence-preview/coverage">All-FOCUS registry coverage</Link><Link href="/medical-intelligence-preview/applications">All FDA application cycles</Link><Link href="/medical-intelligence-preview/failure-desk">Failure-first decision desk</Link></p>
-    <p style={{...small,marginTop:4}}><strong>Evidence boundary:</strong> FOCUS roster is a dated spreadsheet snapshot ({focus.asOf}); selected study details are retrieved from ClinicalTrials.gov when available. Company links and recorded PDUFA dates are pointers pending independent verification.</p>
+    <p style={{...small,marginTop:4}}><strong>Evidence boundary:</strong> FOCUS roster is a dated spreadsheet snapshot ({focus.asOf}); live registry data are fetched only if the Run External Source Check button is pressed. Company links and recorded PDUFA dates are pointers pending independent verification.</p>
 
     <section style={panel} aria-label="FOCUS trial selection">
       <h2 style={{marginTop:0,fontSize:19}}>Select a FOCUS trial</h2>
@@ -84,7 +59,7 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
             {rows.map(r=><option value={r.nct} key={r.nct}>{r.ticker} · {r.nct} · {r.company}</option>)}
           </select>
         </label>
-        <button type="submit" style={{minHeight:43,border:0,borderRadius:8,background:palette.teal,color:"white",padding:"10px 18px",fontWeight:700,cursor:"pointer"}}>Investigate</button>
+        <button type="submit" style={{minHeight:43,border:0,borderRadius:8,background:palette.teal,color:"white",padding:"10px 18px",fontWeight:700,cursor:"pointer"}}>View saved research</button>
       </form>
       <p style={{...small,marginBottom:0}}><strong>{rows.length} FOCUS NCT records loaded</strong> · Candidate {candidateIndex} of {rows.length}. These are initialized dossiers, not {rows.length} completed scientific reviews.</p>
     </section>
@@ -116,27 +91,25 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
       <div style={{display:"flex",gap:14,justifyContent:"space-between",alignItems:"start",flexWrap:"wrap"}}>
         <div><p style={{...small,margin:0}}>FOCUS candidate · {record.ticker}</p>
           <h2 style={{margin:"5px 0"}}>{record.company}</h2>
-          <p style={{margin:"5px 0",fontWeight:600}}>{record.nct} · {evidence?.title || "Registry title not retrieved"}</p>
+          <p style={{margin:"5px 0",fontWeight:600}}>{record.nct} · External evidence check available on demand</p>
         </div>
         <div style={{border:"1px solid "+palette.line,borderRadius:8,padding:"9px 12px",background:palette.cream,fontSize:13}}><strong>Not adjudicated</strong><br/>No blocker has been verified in this preview</div>
       </div>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:16,marginTop:17}}>
-        <Info label="Conditions (registry)" value={evidence?.conditions.join("; ")||"Not retrieved"}/>
-        <Info label="Investigational interventions" value={evidence?.interventions.join("; ")||"Not retrieved"}/>
-        <Info label="Study phase / status" value={evidence?(evidence.phases.join(", ")||"Not stated")+" · "+(evidence.status||"Unknown"):"Not retrieved"}/>
-        <Info label="Enrollment (registry)" value={evidence?.enrollment??"Not retrieved"}/>
         <Info label="Sponsor-reported FDA path" value={record.fdaStatus}/>
-        <Info label="Recorded PDUFA date" value={record.recordedPdufaDate||"Not recorded — do not infer"}/>
+        <Info label="Recorded PDUFA date" value={record.recordedPdufaDate||"Not independently verified"}/>
+        <Info label="Live clinical source check" value="Not started — click the Run button below"/>
       </div>
-      <p style={{...small,marginBottom:0}}>{identity}. {record.recordedPdufaDate?"The PDUFA date is recorded in FOCUS but not independently confirmed here.":"An application review goal date has not been established by this snapshot."}</p>
+      <p style={{...small,marginBottom:0}}>FOCUS identity, saved clinical findings and existing source links are shown without a live external lookup.</p>
       <div style={{display:"flex",flexWrap:"wrap",gap:16,marginTop:9,fontSize:13}}>
         <Source href={sourceUrl}>Registry study</Source>
         <Source href={record.resultsUrl}>FOCUS clinical source</Source>
         <Source href={record.regulatoryUrl}>FOCUS regulatory source</Source>
         <Source href={focus.source}>Source FOCUS spreadsheet</Source>
       </div>
-      {error&&<p role="status" style={{color:palette.red,fontSize:13}}>ClinicalTrials.gov retrieval not available: {error}. Original FOCUS identity and links remain visible; the investigation cannot be marked complete.</p>}
     </section>
+
+    <OnDemandRegistryResearch key={record.nct} nct={record.nct}/>
 
     <section style={panel} aria-label="Disease-specific scientific investigation">
       <h2 style={{marginTop:0}}>Condition and disease intelligence</h2>
@@ -214,75 +187,6 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
     </section>
 
     <section style={panel}>
-      <h2 style={{marginTop:0}}>Trial-level evidence captured so far</h2>
-      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:14}}>
-        <Info label="Randomization / allocation" value={evidence?.allocation||"Not retrieved"}/>
-        <Info label="Masking" value={evidence?.masking||"Not retrieved"}/>
-        <Info label="Results in retrieved registry record" value={evidence?(trialResults?"Results section present — requires independent review":"No posted results section found"):"Not retrieved"}/>
-      </div>
-      <details style={{marginTop:16,borderTop:"1px solid "+palette.line,paddingTop:12}} open>
-        <summary style={{cursor:"pointer",fontWeight:700}}>Primary endpoints ({evidence?.primaryEndpoints.length??"unknown"})</summary>
-        <EndpointList items={evidence?.primaryEndpoints||[]}/>
-      </details>
-      <details style={{marginTop:12,borderTop:"1px solid "+palette.line,paddingTop:12}}>
-        <summary style={{cursor:"pointer",fontWeight:700}}>Secondary endpoints ({evidence?.secondaryEndpoints.length??"unknown"})</summary>
-        <EndpointList items={evidence?.secondaryEndpoints||[]}/>
-      </details>
-      <p style={small}>Registry presence does not establish that an endpoint was achieved, that an analysis is statistically robust, or that the FDA accepted the sponsor&apos;s evidence. Full results, trial protocols, and statistical analysis plans require separate review.</p>
-    </section>
-
-    <section style={panel} aria-label="ClinicalTrials.gov posted statistical results">
-      <h2 style={{marginTop:0}}>Registry-reported statistical evidence and adverse events</h2>
-      <p style={small}>Exact NCT: <Source href={sourceUrl}>{record.nct}</Source>. This section transcribes posted trial results and p-values from the federal registry; it does not infer statistical success, proper multiplicity correction or FDA acceptance.</p>
-      {registryResults?.resultsPosted ? <>
-        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(175px,1fr))",gap:11}}>
-          <Info label="Posted outcome measures" value={registryResults.outcomes.length}/>
-          <Info label="Posted statistical comparisons" value={registryResults.outcomes.reduce((n,o)=>n+o.analyses.length,0)}/>
-          <Info label="Adverse-event groups" value={registryResults.events.length}/>
-          <Info label="Serious adverse event terms" value={registryResults.seriousEventTerms}/>
-        </div>
-        <details style={{marginTop:15,border:"1px solid "+palette.line,borderRadius:9,padding:12}}>
-          <summary style={{fontWeight:750,cursor:"pointer"}}>View outcome measures, reported p-values and confidence intervals</summary>
-          {registryResults.outcomes.length?registryResults.outcomes.map((o,i)=><div key={i} style={{padding:"13px 0",borderBottom:"1px solid "+palette.line}}>
-            <strong>{o.type} — {o.title}</strong>
-            <div style={small}>Time frame: {o.timeFrame||"Not posted"} · Unit: {o.unit||"Not posted"}</div>
-            {o.analyses.length>0?o.analyses.map((a,j)=><div key={j} style={{background:palette.cream,padding:10,borderRadius:8,marginTop:9,fontSize:13,lineHeight:1.55}}>
-              <div><strong>Comparison:</strong> {a.comparisons.join(" versus ")||"Group labels not supplied"}</div>
-              <div><strong>Reported p-value:</strong> {a.reportedPValue||"Not provided"}</div>
-              <div><strong>Analysis method:</strong> {a.method||"Not posted"}</div>
-              <div><strong>Parameter:</strong> {a.parameter||"Not posted"} {a.estimate||""}</div>
-              <div><strong>Confidence interval:</strong> {a.confidenceInterval||"Not provided"}</div>
-              {a.note&&<div><strong>Registry note:</strong> {a.note}</div>}
-            </div>):<p style={small}>No statistical comparison or p-value was posted for this measure. That does not imply that the endpoint failed.</p>}
-          </div>):<p style={small}>A results section is present, but outcome-measure tables are not available in the retrieved record.</p>}
-        </details>
-        <details style={{marginTop:12,border:"1px solid "+palette.line,borderRadius:9,padding:12}}>
-          <summary style={{fontWeight:750,cursor:"pointer"}}>View reported adverse events by group</summary>
-          <div style={{overflowX:"auto",marginTop:12}}>
-            <table style={{borderCollapse:"collapse",width:"100%",minWidth:530,fontSize:13}}>
-              <thead><tr>{["Group","Serious affected / at risk","Other affected / at risk","Deaths affected / at risk"].map(x=><th key={x} style={{textAlign:"left",borderBottom:"1px solid "+palette.line,padding:8}}>{x}</th>)}</tr></thead>
-              <tbody>{registryResults.events.map((g,i)=><tr key={g.id||String(i)} style={{borderBottom:"1px solid "+palette.line}}>
-                <td style={{padding:8}}>{g.title}</td>
-                <td style={{padding:8}}>{g.seriousAffected??"Not posted"} / {g.seriousAtRisk??"Not posted"}</td>
-                <td style={{padding:8}}>{g.otherAffected??"Not posted"} / {g.otherAtRisk??"Not posted"}</td>
-                <td style={{padding:8}}>{g.deathAffected??"Not posted"} / {g.deathAtRisk??"Not posted"}</td>
-              </tr>)}</tbody>
-            </table>
-            {registryResults.events.length===0&&<p style={small}>Adverse event group totals were not present in the retrieved record.</p>}
-          </div>
-          <p style={small}>Counts must be compared only within appropriately matched periods and arms. The totals here are not an adjusted risk estimate and do not establish causality.</p>
-        </details>
-        <details style={{marginTop:12,border:"1px solid "+palette.line,borderRadius:9,padding:12}}>
-          <summary style={{fontWeight:700,cursor:"pointer"}}>Statistical and regulatory interpretation limits</summary>
-          <ul style={{fontSize:13,lineHeight:1.6,paddingLeft:20}}>{registryResults.limitations.map((x,i)=><li key={i}>{x}</li>)}</ul>
-        </details>
-      </>:<div style={{border:"1px solid "+palette.line,borderRadius:8,padding:14,background:palette.cream}}>
-        <strong>Full posted registry results unavailable for this NCT.</strong>
-        <p style={{...small,marginBottom:0}}>Search the sponsor's clinical study report, peer-reviewed publication and results presentation. A missing registry result is not a failed primary endpoint or a missing clinical trial.</p>
-      </div>}
-    </section>
-
-    <section style={panel}>
       <h2 style={{marginTop:0}}>FDA failure investigations · {domains.length} research domains</h2>
       <p style={small}>Each expandable domain specifies what investigators must test. These are <strong>open investigation questions</strong>, not identified defects. No fabricated risk probabilities or implicit zero-risk assessments.</p>
       <div style={{display:"grid",gap:8}}>
@@ -309,6 +213,6 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
         <strong>Next defensible action:</strong> Match the drug and indication to the exact FDA application; inspect complete published results and FDA/issuer regulatory communications; then document evidence for or against each proposed blocker. Preserve source dates and a traceable prediction history.
       </div>
     </section>
-    <p style={{...small,marginTop:20}}>Preview only · Registry data are fetched when a candidate is selected · No spreadsheet writes, no historical score dependencies, no asserted approval forecasts. <Link href="/focus">Return to FOCUS</Link>.</p>
+    <p style={{...small,marginTop:20}}>Preview only · Live registry data are only collected on button click · No spreadsheet writes, no historical score dependencies, no asserted approval forecasts. <Link href="/focus">Return to FOCUS</Link>.</p>
   </main>;
 }
