@@ -64,7 +64,7 @@ function Report({a}:{a:SavedAnalysis}){
 }
 
 /** Per-trial control. Nothing runs until the operator clicks. No duplicate worker. */
-export default function AnalyzeNowTrial({nct,enabled}:{nct:string;enabled:boolean}){
+export default function AnalyzeNowTrial({nct,enabled,historyOnly=false}:{nct:string;enabled:boolean;historyOnly?:boolean}){
  const [run,setRun]=useState<Run|null>(null);
  const [history,setHistory]=useState<History|null>(null);
  const [busy,setBusy]=useState(false);
@@ -121,14 +121,14 @@ export default function AnalyzeNowTrial({nct,enabled}:{nct:string;enabled:boolea
  }
  return <div style={{minWidth:145}}>
   <div style={{display:"flex",flexWrap:"wrap",gap:5}}>
-   <button type="button" onClick={()=>void analyze()} disabled={!enabled||busy||run?.status==="PENDING"||run?.status==="RUNNING"}
+   {!historyOnly&&<button type="button" onClick={()=>void analyze()} disabled={!enabled||busy||run?.status==="PENDING"||run?.status==="RUNNING"}
     style={{padding:"8px 10px",background:enabled?teal:"#d6e0da",color:enabled?"white":"#50685d",border:0,borderRadius:7,fontWeight:750,fontSize:12,cursor:enabled?"pointer":"not-allowed"}}>
     Analyze Now
-   </button>
+   </button>}
    <button type="button" onClick={()=>void loadHistory()} disabled={busy}
     style={{padding:"8px 10px",border:"1px solid "+border,borderRadius:7,fontSize:12}}>History</button>
   </div>
-  {!enabled&&<p style={{...caption,marginTop:5}}>Pilot verification first; full rollout is gated.</p>}
+  {!enabled&&!historyOnly&&<p style={{...caption,marginTop:5}}>Pilot verification first; full rollout is gated.</p>}
   {run&&<p role="status" style={{...caption,margin:"5px 0"}}>{run.status} · {run.completedStages}/12 stages{run.revision?" · revision "+run.revision:""}</p>}
   {note&&<p style={caption}>{note}</p>}
   {error&&<p role="alert" style={{...caption,color:"#9b3934"}}>{error}</p>}
