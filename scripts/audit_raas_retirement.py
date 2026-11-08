@@ -190,9 +190,18 @@ def audit(root: Path = ROOT, check_policy: bool = True) -> dict:
         if not (re.search(r'RAAS', text, re.I) and re.search(r'permanent(?:ly)?\s+retir', text, re.I) and
                 re.search(r'read.only', text, re.I)):
             add('PERMANENT_POLICY_MISSING', policy, 'Root instructions must permanently retire RAAS and preserve read-only history.')
+        copilot = root / '.github/copilot-instructions.md'
+        copilot_text = copilot.read_text() if copilot.exists() else ''
+        if not (re.search(r'AGENTS\.md', copilot_text, re.I) and
+                re.search(r'RAAS', copilot_text, re.I) and
+                re.search(r'permanent(?:ly)?\s+retir', copilot_text, re.I) and
+                re.search(r'read.only', copilot_text, re.I)):
+            add('COPILOT_POLICY_MISSING', copilot, 'Persistent Copilot instructions must bind AGENTS.md, permanent retirement and read-only history.')
 
     pinned = root / 'archives/raas/read-only-record-manifest.json'
     pinned_count = 0
+    if check_policy and not pinned.is_file():
+        add('HISTORICAL_MANIFEST_MISSING', pinned, 'The read-only historical record manifest is required; removing it cannot disable preservation checks.')
     if pinned.exists():
         try:
             manifest = json.loads(pinned.read_text())
@@ -209,7 +218,7 @@ def audit(root: Path = ROOT, check_policy: bool = True) -> dict:
                     add('HISTORICAL_RECORD_DELETED', path, 'Pinned read-only historical record is absent.')
                 elif hashlib.sha256(path.read_bytes()).hexdigest() != record['sha256']:
                     add('HISTORICAL_RECORD_MODIFIED', path, 'Pinned read-only historical record differs from its preserved baseline.')
-        except (ValueError, KeyError, TypeError):
+        except (OSError, ValueError, KeyError, TypeError):
             add('HISTORICAL_MANIFEST_INVALID', pinned, 'Read-only archive manifest failed validation.')
 
     roots = frontend_entrypoints(root)

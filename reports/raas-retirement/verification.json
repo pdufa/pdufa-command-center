@@ -3,8 +3,8 @@
   "dependencyAudit": {
     "passed": true,
     "activeDependenciesRemaining": 0,
-    "activeEntrypointsInspected": 218,
-    "reachableSourceFilesInspected": 501
+    "activeEntrypointsInspected": 219,
+    "reachableSourceFilesInspected": 502
   },
   "historicalFilesPinned": 104,
   "historicalHashesVerified": true,
@@ -16,7 +16,7 @@
     "failed": 0
   },
   "backendTests": {
-    "passed": 1114,
+    "passed": 1133,
     "skipped": 2,
     "failed": 0
   },
@@ -128,5 +128,17 @@
     "sourceOnlyPreview": true,
     "outcomeDecisionsCompleted": 0,
     "applicationIdentityReviewRequired": 23
+  },
+  "backendDeploymentBranchTests": {
+    "staging": {
+      "passed": 409,
+      "skipped": 2,
+      "failed": 0
+    },
+    "medicalPreview": {
+      "passed": 1166,
+      "skipped": 2,
+      "failed": 0
+    }
   }
 }

@@ -1,5 +1,6 @@
 """Regression fixtures prove retirement is an execution boundary, not a word ban."""
 import importlib.util
+import hashlib
 import json
 from pathlib import Path
 import tempfile
@@ -16,6 +17,8 @@ class RetirementGuardTests(unittest.TestCase):
         self.directory = tempfile.TemporaryDirectory()
         self.root = Path(self.directory.name)
         self.write('AGENTS.md', 'RAAS is permanently retired. Preserve historical records read-only.\n')
+        self.write('.github/copilot-instructions.md', 'Read AGENTS.md. RAAS is permanently retired. Preserve history read-only.\n')
+        self.write('archives/raas/read-only-record-manifest.json', json.dumps({'schemaVersion': 1, 'files': []}))
 
     def tearDown(self):
         self.directory.cleanup()
@@ -114,6 +117,37 @@ class RetirementGuardTests(unittest.TestCase):
     def test_policy_removal_is_a_regression(self):
         (self.root / 'AGENTS.md').unlink()
         self.assertIn('PERMANENT_POLICY_MISSING', self.kinds())
+
+    def test_copilot_policy_removal_or_weakening_is_a_regression(self):
+        policy = self.root / '.github/copilot-instructions.md'
+        policy.unlink()
+        self.assertIn('COPILOT_POLICY_MISSING', self.kinds())
+        policy.write_text('Use independent analysis.')
+        self.assertIn('COPILOT_POLICY_MISSING', self.kinds())
+
+    def test_historical_manifest_removal_cannot_disable_preservation(self):
+        (self.root / 'archives/raas/read-only-record-manifest.json').unlink()
+        report = self.audit()
+        self.assertFalse(report['passed'])
+        self.assertIn('HISTORICAL_MANIFEST_MISSING', {v['kind'] for v in report['violations']})
+
+    def test_historical_manifest_schema_is_required(self):
+        self.write('archives/raas/read-only-record-manifest.json', '{"schemaVersion": 1}')
+        self.assertIn('HISTORICAL_MANIFEST_INVALID', self.kinds())
+
+    def test_pinned_historical_record_changes_and_deletions_fail(self):
+        history = self.write('new-platform/frontend/data/raas-history.json', '{"records":[{"score":65}]}')
+        self.write('archives/raas/read-only-record-manifest.json', json.dumps({
+            'schemaVersion': 1, 'files': [{
+                'path': 'new-platform/frontend/data/raas-history.json',
+                'sha256': hashlib.sha256(history.read_bytes()).hexdigest()
+            }]
+        }))
+        self.assertTrue(self.audit()['passed'])
+        history.write_text('{"records":[{"score":95}]}')
+        self.assertIn('HISTORICAL_RECORD_MODIFIED', self.kinds())
+        history.unlink()
+        self.assertIn('HISTORICAL_RECORD_DELETED', self.kinds())
 
 
 if __name__ == '__main__':
