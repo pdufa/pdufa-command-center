@@ -53,7 +53,7 @@ export function buildFocusSpecialtyAssessmentQueue():TrialAssessmentIntake[]{
         researchQuestions:getSpecialtyTasks(cycle.id).length,
         partialCaseDimensions:dimensions.length,
         sourceLinkedDimensions:dimensions.filter(x=>typeof x.sourceUrl==="string"&&/^https:\/\//.test(x.sourceUrl)).length,
-        specialistSignoff:false,clinicalAdjudicationComplete:false
+        specialistSignoff:false as const,clinicalAdjudicationComplete:false as const
       };
     });
     return {
