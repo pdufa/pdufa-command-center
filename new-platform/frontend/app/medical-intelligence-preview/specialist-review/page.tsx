@@ -3,6 +3,7 @@ import type {Metadata} from "next";
 import {APPLICATION_CYCLES} from "../../../lib/medical-intelligence-applications";
 import {CLINICAL_SPECIALTY_AXES,CLINICAL_SPECIALTY_PROFILES,CLINICAL_SPECIALTY_ASSIGNMENTS,CLINICAL_SPECIALTY_STANDARDS,getSpecialtyProfile,getSpecialtyTasks} from "../../../lib/medical-intelligence-specialty";
 import {caseForCycle} from "../../../lib/medical-intelligence-md-casebook";
+import {specialistCaseForCycle} from "../../../lib/medical-intelligence-specialist-casebook";
 import {deskIssuesForCycle} from "../../../lib/medical-intelligence-failure-desk";
 
 export const metadata:Metadata={
@@ -20,6 +21,7 @@ export default async function SpecialistReviewPage({searchParams}:{searchParams:
  const p=getSpecialtyProfile(selected.id);
  const tasks=getSpecialtyTasks(selected.id);
  const research=caseForCycle(selected.id);
+ const actualSpecialtyReview=specialistCaseForCycle(selected.id);
  const sourceIssues=deskIssuesForCycle(selected.id);
  const grouping=[...new Set(CLINICAL_SPECIALTY_PROFILES.map(x=>x.specialty))].length;
  const sourceCounts=APPLICATION_CYCLES.filter(x=>caseForCycle(x.id)).length;
@@ -84,6 +86,23 @@ export default async function SpecialistReviewPage({searchParams}:{searchParams:
        </details>)}
      </div>
    </section>
+   {actualSpecialtyReview&&<section style={{...card,marginTop:15}} aria-label="Source-examined clinical subspecialty case analysis">
+     <div style={{fontSize:12,fontWeight:750,color:theme.green}}>SOURCE-EXAMINED SPECIALTY-STYLE REASONING · NOT A LICENSED PHYSICIAN'S SIGN-OFF</div>
+     <h2 style={{fontSize:21,margin:"7px 0"}}>{actualSpecialtyReview.specialty} · clinical case interpretation</h2>
+     <p style={{fontSize:15,lineHeight:1.6}}><strong>Central medical question:</strong> {actualSpecialtyReview.medicalQuestion}</p>
+     <p style={{fontSize:13,color:theme.muted}}>{actualSpecialtyReview.dimensions.length} domain-specific clinical interpretations grounded in existing public records. The data do not substitute for the complete clinical study report or patient-level records.</p>
+     <div style={{display:"grid",gap:9,marginTop:13}}>
+       {actualSpecialtyReview.dimensions.map((dimension,i)=><details key={dimension.topic} open={i===0} style={{border:"1px solid "+theme.line,borderRadius:9,padding:"12px 14px"}}>
+         <summary style={{cursor:"pointer",fontWeight:700}}>{i+1}. {dimension.topic}</summary>
+         <div style={{fontSize:14,lineHeight:1.6,paddingTop:9}}>
+           <p><strong>Current published clinical evidence:</strong> {dimension.observedClinicalEvidence}</p>
+           <p><strong>Specialty-style interpretation:</strong> {dimension.specialistInterpretation}</p>
+           <p><strong>What the evidence must still resolve:</strong> {dimension.neededToResolve}</p>
+         </div>
+       </details>)}
+     </div>
+     <p style={{fontSize:13,marginBottom:0}}>Lead reference: <a href={actualSpecialtyReview.source} target="_blank" rel="noopener noreferrer">{actualSpecialtyReview.sourceTitle}</a>. This is a partial public-evidence interpretation, not an independently verified specialist opinion or an FDA outcome prediction.</p>
+   </section>}
    <section style={{...card,marginTop:15}}>
      <h2 style={{margin:"0 0 8px",fontSize:19}}>Actual source-examined medical evidence</h2>
      {research?<>
