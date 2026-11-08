@@ -1,0 +1,87 @@
+{
+  "schema": "MAIN_ORIGINAL_PROTOCOL_SOURCE_FACTS_V1",
+  "revision": 5,
+  "supersedesDiscoveryRevision": 4,
+  "dateCaptured": "2026-11-08",
+  "identity": {
+    "nct": "NCT06081894",
+    "euTrial": "2023-505797-15-00",
+    "sponsor": "Cytokinetics",
+    "protocolCode": "CY 6033",
+    "indication": "SYMPTOMATIC_NONOBSTRUCTIVE_HCM"
+  },
+  "source": {
+    "status": "ORIGINAL_PUBLIC_PROTOCOL_CAPTURED",
+    "title": "D1_2023-505797-15-00_Protocol_FP",
+    "version": "AMENDMENT_04",
+    "versionDate": "2025-10-28",
+    "trialLink": "https://euclinicaltrials.eu/ctis-public/view/2023-505797-15-00?lang=en",
+    "artifactLink": "https://github.com/pdufa/pdufa-command-center/actions/runs/42525291355/artifacts/13634488398",
+    "sha256": "853ffd80a547df8a7b813b8985c7116dd6168a640f18521f61b95cf33a8ca5f8",
+    "bytes": 701086,
+    "pages": 90,
+    "textExtracted": true,
+    "sourceAuthenticity": "CTIS_PUBLIC_SIGNED_DELIVERY_EXACT_TRIAL_AND_TITLE",
+    "independentHumanReview": false,
+    "visualVerification": false
+  },
+  "protocolSourceFacts": [
+    {
+      "assessment": "4.2",
+      "topic": "PRIMARY_ENDPOINTS",
+      "evidence": "Dual week-36 change from baseline in KCCQ-CSS and pVO2",
+      "status": "SOURCE_TEXT_CAPTURED_NOT_CLINICALLY_ADJUDICATED"
+    },
+    {
+      "assessment": "4.3",
+      "topic": "ESTIMANDS",
+      "evidence": "Treatment effects in nHCM despite postrandomization intercurrent events",
+      "status": "SOURCE_TEXT_CAPTURED_NOT_CLINICALLY_ADJUDICATED"
+    },
+    {
+      "assessment": "4.3",
+      "topic": "ANALYSIS_SETS",
+      "evidence": "FAS comprises all randomized; safety population includes randomized participants receiving at least one dose",
+      "status": "SOURCE_TEXT_CAPTURED_NOT_CLINICALLY_ADJUDICATED"
+    },
+    {
+      "assessment": "4.3",
+      "topic": "FINAL_SAP_DEPENDENCY",
+      "evidence": "Protocol delegates detailed missingness/sensitivity analyses to SAP",
+      "status": "SAP_DOCUMENT_MISSING"
+    },
+    {
+      "assessment": "4.4",
+      "topic": "PLANNED_POWER",
+      "evidence": "Approximately 500 randomized, 10% missingness, roughly 90% design power for each co-primary endpoint",
+      "status": "SOURCE_TEXT_CAPTURED_NOT_CLINICALLY_ADJUDICATED"
+    },
+    {
+      "assessment": "5.2",
+      "topic": "MULTIPLICITY",
+      "evidence": "Prespecified two-sided FWER alpha 0.05, graphical multiplicity approach and alpha recycling",
+      "status": "NEEDS_FINAL_SAP_GRAPH_AND_VERSION_RECONCILIATION"
+    }
+  ],
+  "finalSap": {
+    "documentLocated": false,
+    "bytesCaptured": false,
+    "lockedVersionChecked": false,
+    "missingnessAlgorithmsConfirmed": false,
+    "testingGraphConfirmed": false
+  },
+  "reviewGates": {
+    "phaseCertified": false,
+    "independentReviewer": false,
+    "methodsScored": 0,
+    "assessmentsCompleted": 0,
+    "scientificSignoff": false
+  },
+  "fdaPredictions": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "certainty": "NOT_VALIDATED",
+  "nextAction": "Retrieve final signed SAP; reconcile original Amendment 04 protocol graph and missingness with complete trial results, and obtain independent clinical review before authorizing phase or scoring methods."
+}
