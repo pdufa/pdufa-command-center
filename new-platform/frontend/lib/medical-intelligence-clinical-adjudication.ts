@@ -5,18 +5,20 @@
  */
 import {APPLICATION_CYCLES} from "./medical-intelligence-applications";
 import {ADDITIONAL_ADJUDICATION_CASES} from "./medical-intelligence-clinical-adjudication-extra";
-export type ClaimSourceType="FDA_REVIEWER"|"FDA_ACTION_LETTER"|"FDA_DOCUMENTED_APPLICANT_ANALYSIS"|"SEC_SPONSOR_FILING"|"SPONSOR_TRIAL_DATA"|"SPONSOR_REPORT_OF_FDA_COMMUNICATION"|"SPONSOR_STATUS"|"PEER_REVIEWED_TRIAL";
+import {ADJUDICATION_WAVE_A} from "./medical-intelligence-clinical-adjudication-wave-a";
+import {ADJUDICATION_WAVE_B} from "./medical-intelligence-clinical-adjudication-wave-b";
+export type ClaimSourceType="FDA_REVIEWER"|"FDA_ACTION_LETTER"|"FDA_DOCUMENTED_APPLICANT_ANALYSIS"|"SEC_SPONSOR_FILING"|"SPONSOR_TRIAL_DATA"|"SPONSOR_REPORT_OF_FDA_COMMUNICATION"|"SPONSOR_STATUS"|"PEER_REVIEWED_TRIAL"|"FDA_PUBLIC_APPROVAL";
 export type EvidenceRole="FAVORABLE"|"CHALLENGING"|"CONTEXT";
 export type AdjudicationClaim={
- id:string;role:EvidenceRole;type:ClaimSourceType;date:string;title:string;url:string;
+ id:string;role:EvidenceRole;type:ClaimSourceType;date:string;title:string;url:string;scope?:"RELATED_EXTERNAL_TRIAL";
  section:string;trial:string;measure:string;result:string;limits:string;
 };
 export type AdjudicationCase={
  id:string;cycleId:string;nct:string;specialty:string;title:string;
- mode:"ANALYSIS_CONFLICT"|"BENEFIT_RISK_DISCORDANCE"|"REGULATORY_OBJECTION";
- category:"EFFICACY_STATISTICS"|"SAFETY_AND_PATIENT_BENEFIT"|"CMC_AND_FACILITY";
+ mode:"ANALYSIS_CONFLICT"|"BENEFIT_RISK_DISCORDANCE"|"REGULATORY_OBJECTION"|"REGULATORY_STATUS_CORRECTION";
+ category:"EFFICACY_STATISTICS"|"SAFETY_AND_PATIENT_BENEFIT"|"CMC_AND_FACILITY"|"APPLICATION_IDENTITY";
  researchDate:string;regulatoryQuestion:string;clinicalQuestion:string;
- verdict:"UNRESOLVED_REQUIRES_INDEPENDENT_ADJUDICATION";
+ verdict:"UNRESOLVED_REQUIRES_INDEPENDENT_ADJUDICATION"|"ALREADY_APPROVED_NO_PENDING_FIRST_APPROVAL";
  timing:"NO_NEW_TIMING_EVENT_PROVEN";
  sources:readonly AdjudicationClaim[];
  clinicalSynthesis:string;whyItCouldFail:string;bestCase:string;
@@ -245,7 +247,7 @@ const ORIGINAL_ADJUDICATION_CASES:readonly AdjudicationCase[]=[
     "sourceInterpretation": "The clinical publication establishes positive respiratory physiological effects and a tolerability tradeoff; it does not establish a current FDA safety objection."
   }
 ] as const;
-export const ADJUDICATION_CASES:readonly AdjudicationCase[]=[...ORIGINAL_ADJUDICATION_CASES,...ADDITIONAL_ADJUDICATION_CASES];
+export const ADJUDICATION_CASES:readonly AdjudicationCase[]=[...ORIGINAL_ADJUDICATION_CASES,...ADDITIONAL_ADJUDICATION_CASES,...ADJUDICATION_WAVE_A,...ADJUDICATION_WAVE_B];
 export function adjudicationForCycle(cycleId:string):AdjudicationCase[]{
  return ADJUDICATION_CASES.filter(x=>x.cycleId===cycleId);
 }
