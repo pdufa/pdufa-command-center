@@ -12,6 +12,7 @@ on:
       - 'new-platform/frontend/tests/main-install-progress.test.cjs'
       - 'new-platform/backend/app/installation_monitor.py'
       - 'new-platform/backend/app/data/focus_application_snapshot.json'
+      - 'new-platform/backend/scripts/sync_focus_application_snapshot.py'
       - 'new-platform/backend/tests/test_installation_monitor.py'
       - 'new-platform/backend/app/main.py'
       - '.github/workflows/main-installation-monitor-qa.yml'
@@ -56,5 +57,7 @@ jobs:
           python-version: '3.12'
       - name: Install backend requirements
         run: python -m pip install -r new-platform/backend/requirements.txt
+      - name: Check application snapshot parity with canonical FOCUS data
+        run: python new-platform/backend/scripts/sync_focus_application_snapshot.py --check
       - name: Verify durable monitor telemetry and alert delivery
         run: PYTHONPATH=new-platform/backend python -m pytest -q new-platform/backend/tests/test_installation_monitor.py
