@@ -6,12 +6,12 @@ const path=require("node:path");
 const root=path.join(__dirname,"..");
 const source=p=>fs.readFileSync(path.join(root,p),"utf8");
 
-test("active site navigation lists only POOL, FOCUS and POOL tools",()=>{
+test("active site navigation preserves POOL and FOCUS populations with prediction status",()=>{
  const nav=source("app/GlobalNavigation.tsx");
  const home=source("app/page.tsx");
  const tools=source("app/tools/page.tsx");
  const links=[...nav.matchAll(/\{label:"([^"]+)",href:"([^"]+)"\}/g)].map(m=>[m[1],m[2]]);
- assert.deepEqual(links,[["POOL","/pool"],["FOCUS","/focus"],["TOOLS","/tools"]]);
+ assert.deepEqual(links,[["POOL","/pool"],["FOCUS","/focus"],["PREDICTIONS","/predictions"],["TOOLS","/tools"]]);
  assert.match(home,/href:"\/pool"/);
  assert.match(home,/href:"\/focus"/);
  assert.match(home,/\/api\/auth/);

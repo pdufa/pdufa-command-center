@@ -14,7 +14,8 @@ test("production home only surfaces the POOL and FOCUS trial lists",()=>{
  assert.match(nav,/label:"POOL",href:"\/pool"/);
  assert.match(nav,/label:"FOCUS",href:"\/focus"/);
  assert.match(nav,/label:"TOOLS",href:"\/tools"/);
- assert.doesNotMatch(nav,/label:"(?:PIPELINE|SCAN|RESULTS|GOAL|GEM|TOP|BOTTOM|PREDICTIONS)"/);
+ assert.match(nav,/label:"PREDICTIONS",href:"\/predictions"/);
+ assert.doesNotMatch(nav,/label:"(?:PIPELINE|SCAN|RESULTS|GOAL|GEM|TOP|BOTTOM)"/);
  assert.doesNotMatch(home,/streamlit\.app|GemQualificationChecklist|href:"\/raas-/);
 });
 
