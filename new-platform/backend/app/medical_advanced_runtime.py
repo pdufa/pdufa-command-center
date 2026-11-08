@@ -175,7 +175,7 @@ def check_registry_updates_once(engine, *, fetch=None):
                     continue
             # Create outside the earlier transaction, avoiding a DB lock and
             # preserving the old fingerprint if job creation fails.
-            core.create(engine,nct,str(uuid.uuid4()))
+            core.create(engine,nct,str(uuid.uuid4()), trigger="REGISTRY_EVIDENCE_UPDATE")
             with engine.begin() as c:
                 c.execute(text("""UPDATE medical_registry_watch
                     SET evidence_digest=:sha,last_checked_at=:time,last_triggered_at=:time
