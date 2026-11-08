@@ -14,9 +14,9 @@ def engine(tmp_path,monkeypatch):
     f=tmp_path/"focus.json"
     f.write_text(json.dumps({"records":[{"nct":NCT,"ticker":"TEST","company":"Fixture"}]}))
     monkeypatch.setattr(medical,"FOCUS",f)
-    d=tmp_path/"designations.json"
-    d.write_text('{"records":[]}')
-    monkeypatch.setattr(medical,"DESIGNATIONS",d)
+    d=tmp_path/"applications.json"
+    d.write_text('{"schemaVersion":1,"asOf":"2026-11-07","records":[]}')
+    monkeypatch.setattr(medical,"APPLICATIONS",d)
     db=create_engine("sqlite:///"+str(tmp_path/"medical.sqlite3"),
                      connect_args={"check_same_thread":False})
     medical.initialize(db)
