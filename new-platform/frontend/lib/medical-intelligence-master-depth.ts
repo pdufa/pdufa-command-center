@@ -141,42 +141,42 @@ export const SCIENTIFIC_LAYERS:readonly DeepLayer[]=[
       {
         "id": "1.1",
         "layerId": "disease",
-        "label": "disease-mechanism",
-        "objective": "Molecular cause and pathogenesis",
-        "failureMechanism": "Connect disease-driving pathology to candidate's therapeutic target",
-        "requiredSources": "Mechanistic mismatch could undercut causal plausibility"
+        "label": "Molecular cause and pathogenesis",
+        "objective": "Connect disease-driving pathology to candidate's therapeutic target",
+        "failureMechanism": "Mechanistic mismatch could undercut causal plausibility",
+        "requiredSources": "Disease natural-history publications; biomarker validation; FDA disease reviews"
       },
       {
         "id": "1.2",
         "layerId": "disease",
-        "label": "natural-history",
-        "objective": "Untreated progression and variability",
-        "failureMechanism": "Quantify untreated progression, spontaneous remission, measurement variability and prognosis",
-        "requiredSources": "Natural history could explain apparent response or weaken endpoint sensitivity"
+        "label": "Untreated progression and variability",
+        "objective": "Quantify untreated progression, spontaneous remission, measurement variability and prognosis",
+        "failureMechanism": "Natural history could explain apparent response or weaken endpoint sensitivity",
+        "requiredSources": "Longitudinal cohorts; registries; natural-history analyses"
       },
       {
         "id": "1.3",
         "layerId": "disease",
-        "label": "disease-biomarkers",
-        "objective": "Disease biomarkers and surrogate validity",
-        "failureMechanism": "Examine biomarker analytical validity, clinical meaning and surrogate qualification",
-        "requiredSources": "A surrogate may not reliably predict patient benefit"
+        "label": "Disease biomarkers and surrogate validity",
+        "objective": "Examine biomarker analytical validity, clinical meaning and surrogate qualification",
+        "failureMechanism": "A surrogate may not reliably predict patient benefit",
+        "requiredSources": "FDA endpoint guidance; biomarker validation; clinical-outcome correlations"
       },
       {
         "id": "1.4",
         "layerId": "disease",
-        "label": "unmet-need",
-        "objective": "Current treatment burden and unmet need",
-        "failureMechanism": "Define therapeutic baseline and patient-important outcomes for indication",
-        "requiredSources": "Benefit-risk context may not justify tolerability burden"
+        "label": "Current treatment burden and unmet need",
+        "objective": "Define therapeutic baseline and patient-important outcomes for indication",
+        "failureMechanism": "Benefit-risk context may not justify tolerability burden",
+        "requiredSources": "Approved labels; guidelines; patient studies; comparative data"
       },
       {
         "id": "1.5",
         "layerId": "disease",
-        "label": "heterogeneity",
-        "objective": "Diagnostic and population heterogeneity",
-        "failureMechanism": "Assess diagnostic error, organ severity, genetic, demographic and responder subtypes",
-        "requiredSources": "Misclassification or restricted efficacy may limit proposed indication"
+        "label": "Diagnostic and population heterogeneity",
+        "objective": "Assess diagnostic error, organ severity, genetic, demographic and responder subtypes",
+        "failureMechanism": "Misclassification or restricted efficacy may limit proposed indication",
+        "requiredSources": "Eligibility criteria; genotypes; baseline subgroups; diagnostic publications"
       }
     ]
   },
@@ -187,42 +187,42 @@ export const SCIENTIFIC_LAYERS:readonly DeepLayer[]=[
       {
         "id": "2.1",
         "layerId": "molecular",
-        "label": "target",
-        "objective": "Drug target validation",
-        "failureMechanism": "Trace target specificity and causal importance in disease biology",
-        "requiredSources": "Target is noncausal or poorly validated"
+        "label": "Drug target validation",
+        "objective": "Trace target specificity and causal importance in disease biology",
+        "failureMechanism": "Target is noncausal or poorly validated",
+        "requiredSources": "Target genetics; target perturbation; structural and molecular biology"
       },
       {
         "id": "2.2",
         "layerId": "molecular",
-        "label": "action",
-        "objective": "Mechanism of action and target engagement",
-        "failureMechanism": "Validate engagement, tissue penetration, occupancy, and downstream activity",
-        "requiredSources": "Exposure may not reach relevant tissue or achieve the proposed mechanism"
+        "label": "Mechanism of action and target engagement",
+        "objective": "Validate engagement, tissue penetration, occupancy, and downstream activity",
+        "failureMechanism": "Exposure may not reach relevant tissue or achieve the proposed mechanism",
+        "requiredSources": "In-vitro/in-vivo target assays; human biomarkers; PK/PD"
       },
       {
         "id": "2.3",
         "layerId": "molecular",
-        "label": "selectivity",
-        "objective": "Selectivity and off-target liabilities",
-        "failureMechanism": "Assess selectivity, unintended pathways and differential tissue safety",
-        "requiredSources": "Off-target toxicity may offset observed efficacy"
+        "label": "Selectivity and off-target liabilities",
+        "objective": "Assess selectivity, unintended pathways and differential tissue safety",
+        "failureMechanism": "Off-target toxicity may offset observed efficacy",
+        "requiredSources": "Off-target panels; safety pharmacology; exposure margins"
       },
       {
         "id": "2.4",
         "layerId": "molecular",
-        "label": "network",
-        "objective": "Systems/pathway feedback and compensation",
-        "failureMechanism": "Model cross-pathway effects, feedback and alternative causal hypotheses",
-        "requiredSources": "Compensatory biology may blunt durable effect or increase risk"
+        "label": "Systems/pathway feedback and compensation",
+        "objective": "Model cross-pathway effects, feedback and alternative causal hypotheses",
+        "failureMechanism": "Compensatory biology may blunt durable effect or increase risk",
+        "requiredSources": "Pathway experiments; omics; resistant phenotypes"
       },
       {
         "id": "2.5",
         "layerId": "molecular",
-        "label": "resistance",
-        "objective": "Resistance and loss of response",
-        "failureMechanism": "Examine target escape, neutralizing antibodies, tolerance and durability",
-        "requiredSources": "Loss of action could undermine long-term benefit"
+        "label": "Resistance and loss of response",
+        "objective": "Examine target escape, neutralizing antibodies, tolerance and durability",
+        "failureMechanism": "Loss of action could undermine long-term benefit",
+        "requiredSources": "Resistance mechanism studies; repeat-dosing clinical follow-up"
       }
     ]
   },
@@ -233,42 +233,42 @@ export const SCIENTIFIC_LAYERS:readonly DeepLayer[]=[
       {
         "id": "3.1",
         "layerId": "translational",
-        "label": "in-vitro",
-        "objective": "Cellular potency and reproducibility",
-        "failureMechanism": "Assess preclinical assays, controls, batch-to-batch reliability",
-        "requiredSources": "Assay artifacts or inconsistent product potency"
+        "label": "Cellular potency and reproducibility",
+        "objective": "Assess preclinical assays, controls, batch-to-batch reliability",
+        "failureMechanism": "Assay artifacts or inconsistent product potency",
+        "requiredSources": "Cell-line assays; potency validation; SOPs"
       },
       {
         "id": "3.2",
         "layerId": "translational",
-        "label": "in-vivo",
-        "objective": "Animal models and model fitness",
-        "failureMechanism": "Test construct, external and translational validity of animal models",
-        "requiredSources": "Nonpredictive models can exaggerate expected benefit"
+        "label": "Animal models and model fitness",
+        "objective": "Test construct, external and translational validity of animal models",
+        "failureMechanism": "Nonpredictive models can exaggerate expected benefit",
+        "requiredSources": "Animal model datasets; species differences"
       },
       {
         "id": "3.3",
         "layerId": "translational",
-        "label": "pkpd",
-        "objective": "Human PK/PD and exposure–response",
-        "failureMechanism": "Compare dose, exposure, target saturation, exposure-efficacy and exposure-safety",
-        "requiredSources": "Inadequate dose selection or pharmacology evidence"
+        "label": "Human PK/PD and exposure–response",
+        "objective": "Compare dose, exposure, target saturation, exposure-efficacy and exposure-safety",
+        "failureMechanism": "Inadequate dose selection or pharmacology evidence",
+        "requiredSources": "Population PK; dose-ranging; model diagnostics"
       },
       {
         "id": "3.4",
         "layerId": "translational",
-        "label": "tox",
-        "objective": "Nonclinical toxicology and margins",
-        "failureMechanism": "Assess carcinogenicity, reproductive safety, chronic toxicity and organ-risk margins as applicable",
-        "requiredSources": "Unresolved nonclinical risks may restrict approval/label"
+        "label": "Nonclinical toxicology and margins",
+        "objective": "Assess carcinogenicity, reproductive safety, chronic toxicity and organ-risk margins as applicable",
+        "failureMechanism": "Unresolved nonclinical risks may restrict approval/label",
+        "requiredSources": "GLP toxicology; exposure multiples; toxicology reviews"
       },
       {
         "id": "3.5",
         "layerId": "translational",
-        "label": "translation",
-        "objective": "Cross-stage translational coherence",
-        "failureMechanism": "Trace changes in mechanism, effect size, dose and biomarker from early to pivotal trials",
-        "requiredSources": "Phase-to-phase inconsistency may reflect model fragility"
+        "label": "Cross-stage translational coherence",
+        "objective": "Trace changes in mechanism, effect size, dose and biomarker from early to pivotal trials",
+        "failureMechanism": "Phase-to-phase inconsistency may reflect model fragility",
+        "requiredSources": "Phase 1–3 protocols; cross-study estimates"
       }
     ]
   },
@@ -279,42 +279,42 @@ export const SCIENTIFIC_LAYERS:readonly DeepLayer[]=[
       {
         "id": "4.1",
         "layerId": "trial",
-        "label": "design",
-        "objective": "Randomization, blinding and comparator",
-        "failureMechanism": "Evaluate randomization, concealment, masking, site conduct and control appropriateness",
-        "requiredSources": "Bias or invalid comparator can invalidate efficacy evidence"
+        "label": "Randomization, blinding and comparator",
+        "objective": "Evaluate randomization, concealment, masking, site conduct and control appropriateness",
+        "failureMechanism": "Bias or invalid comparator can invalidate efficacy evidence",
+        "requiredSources": "Protocol; CONSORT; monitoring; regulatory correspondence"
       },
       {
         "id": "4.2",
         "layerId": "trial",
-        "label": "endpoint",
-        "objective": "Endpoint selection and clinical meaning",
-        "failureMechanism": "Reconstruct endpoint definitions, validation, hierarchy and change dates",
-        "requiredSources": "Unacceptable endpoint or clinically marginal effect"
+        "label": "Endpoint selection and clinical meaning",
+        "objective": "Reconstruct endpoint definitions, validation, hierarchy and change dates",
+        "failureMechanism": "Unacceptable endpoint or clinically marginal effect",
+        "requiredSources": "Original/final protocol; endpoint charter; FDA guidance"
       },
       {
         "id": "4.3",
         "layerId": "trial",
-        "label": "estimand",
-        "objective": "Estimands, intercurrent events and missingness",
-        "failureMechanism": "Match estimand to treatment-policy/hypothetical/composite strategy; test missingness",
-        "requiredSources": "Selective censoring/imputation can reverse the outcome"
+        "label": "Estimands, intercurrent events and missingness",
+        "objective": "Match estimand to treatment-policy/hypothetical/composite strategy; test missingness",
+        "failureMechanism": "Selective censoring/imputation can reverse the outcome",
+        "requiredSources": "Original SAP; final SAP; CSR; raw-data sensitivity analyses"
       },
       {
         "id": "4.4",
         "layerId": "trial",
-        "label": "pop",
-        "objective": "Population, allocation and statistical power",
-        "failureMechanism": "Review target population, sample size, subgroup power, eligibility and attrition",
-        "requiredSources": "Underpowered/misaligned population can invalidate claim"
+        "label": "Population, allocation and statistical power",
+        "objective": "Review target population, sample size, subgroup power, eligibility and attrition",
+        "failureMechanism": "Underpowered/misaligned population can invalidate claim",
+        "requiredSources": "Enrollment; eligibility; power assumptions; trial registry"
       },
       {
         "id": "4.5",
         "layerId": "trial",
-        "label": "conduct",
-        "objective": "Conduct, deviations and data integrity",
-        "failureMechanism": "Examine sites, protocol changes, adjudication, withdrawals and inspections",
-        "requiredSources": "Data or conduct findings may trigger FDA objections"
+        "label": "Conduct, deviations and data integrity",
+        "objective": "Examine sites, protocol changes, adjudication, withdrawals and inspections",
+        "failureMechanism": "Data or conduct findings may trigger FDA objections",
+        "requiredSources": "Deviation logs; inspections; protocol amendments; audit reports"
       }
     ]
   },
@@ -325,42 +325,42 @@ export const SCIENTIFIC_LAYERS:readonly DeepLayer[]=[
       {
         "id": "5.1",
         "layerId": "clinical",
-        "label": "primary",
-        "objective": "Pivotal primary efficacy",
-        "failureMechanism": "Compare prespecified primary treatment effect, CI, p and clinical effect thresholds",
-        "requiredSources": "Primary failure may directly prevent approval"
+        "label": "Pivotal primary efficacy",
+        "objective": "Compare prespecified primary treatment effect, CI, p and clinical effect thresholds",
+        "failureMechanism": "Primary failure may directly prevent approval",
+        "requiredSources": "Full primary results; locked SAP; FDA reviewer tables"
       },
       {
         "id": "5.2",
         "layerId": "clinical",
-        "label": "secondary",
-        "objective": "Secondary endpoints, multiplicity and hierarchy",
-        "failureMechanism": "Check testing sequence, adjustment and label-claim boundaries",
-        "requiredSources": "Nominal or post-hoc endpoints cannot rescue a failed primary without strong context"
+        "label": "Secondary endpoints, multiplicity and hierarchy",
+        "objective": "Check testing sequence, adjustment and label-claim boundaries",
+        "failureMechanism": "Nominal or post-hoc endpoints cannot rescue a failed primary without strong context",
+        "requiredSources": "SAP multiplicity plan; alpha spending; FDA multiple endpoints"
       },
       {
         "id": "5.3",
         "layerId": "clinical",
-        "label": "safety",
-        "objective": "Integrated safety and competing harms",
-        "failureMechanism": "Analyze serious AEs, death, organ toxicity, rates, time at risk and causality",
-        "requiredSources": "Benefit-risk may be unfavorable or require restrictions"
+        "label": "Integrated safety and competing harms",
+        "objective": "Analyze serious AEs, death, organ toxicity, rates, time at risk and causality",
+        "failureMechanism": "Benefit-risk may be unfavorable or require restrictions",
+        "requiredSources": "Pooled safety; SAE line lists; lab shifts; label precedents"
       },
       {
         "id": "5.4",
         "layerId": "clinical",
-        "label": "subgroups",
-        "objective": "Subgroups, effect modification and robustness",
-        "failureMechanism": "Test true treatment–subgroup interaction, missingness and consistency",
-        "requiredSources": "Apparent overall effect may not generalize to label"
+        "label": "Subgroups, effect modification and robustness",
+        "objective": "Test true treatment–subgroup interaction, missingness and consistency",
+        "failureMechanism": "Apparent overall effect may not generalize to label",
+        "requiredSources": "Interaction CIs; baseline balance; multiplicity controls"
       },
       {
         "id": "5.5",
         "layerId": "clinical",
-        "label": "replication",
-        "objective": "Replication, durability and long-term effects",
-        "failureMechanism": "Assess study-to-study consistency, external validation and attrition of follow-up",
-        "requiredSources": "Transient efficacy or non-reproducibility could limit approval"
+        "label": "Replication, durability and long-term effects",
+        "objective": "Assess study-to-study consistency, external validation and attrition of follow-up",
+        "failureMechanism": "Transient efficacy or non-reproducibility could limit approval",
+        "requiredSources": "Separate randomized trials; OLE limits; long-term outcomes"
       }
     ]
   },
@@ -371,42 +371,42 @@ export const SCIENTIFIC_LAYERS:readonly DeepLayer[]=[
       {
         "id": "6.1",
         "layerId": "comparative",
-        "label": "standard",
-        "objective": "Current standard-of-care performance",
-        "failureMechanism": "Establish relevant comparator and expected patient outcomes",
-        "requiredSources": "Misleading placebo-only or historical comparison"
+        "label": "Current standard-of-care performance",
+        "objective": "Establish relevant comparator and expected patient outcomes",
+        "failureMechanism": "Misleading placebo-only or historical comparison",
+        "requiredSources": "Current guidelines; approved labels; direct trials"
       },
       {
         "id": "6.2",
         "layerId": "comparative",
-        "label": "competitors",
-        "objective": "Competing assets and alternatives",
-        "failureMechanism": "Compare efficacy, safety and stage-matched populations without invalid cross-trial claims",
-        "requiredSources": "Indirect comparison may overstate differentiating benefits"
+        "label": "Competing assets and alternatives",
+        "objective": "Compare efficacy, safety and stage-matched populations without invalid cross-trial claims",
+        "failureMechanism": "Indirect comparison may overstate differentiating benefits",
+        "requiredSources": "Head-to-head trials; network meta-analysis (when valid)"
       },
       {
         "id": "6.3",
         "layerId": "comparative",
-        "label": "class",
-        "objective": "Class effects and precedent failures",
-        "failureMechanism": "Examine class-wide efficacy, severe events and regulatory warnings",
-        "requiredSources": "Shared mechanism may import risk not seen in small studies"
+        "label": "Class effects and precedent failures",
+        "objective": "Examine class-wide efficacy, severe events and regulatory warnings",
+        "failureMechanism": "Shared mechanism may import risk not seen in small studies",
+        "requiredSources": "Labels; safety surveillance; historical CRLs"
       },
       {
         "id": "6.4",
         "layerId": "comparative",
-        "label": "differentiation",
-        "objective": "Clinically meaningful differentiation",
-        "failureMechanism": "Quantify NNT/NNH, PROs, dosing burden and practical utility where valid",
-        "requiredSources": "Marginal incremental benefit might not offset risk"
+        "label": "Clinically meaningful differentiation",
+        "objective": "Quantify NNT/NNH, PROs, dosing burden and practical utility where valid",
+        "failureMechanism": "Marginal incremental benefit might not offset risk",
+        "requiredSources": "Patient preferences; comparative outcomes; exposure"
       },
       {
         "id": "6.5",
         "layerId": "comparative",
-        "label": "combination",
-        "objective": "Combination therapy and sequencing",
-        "failureMechanism": "Analyze interaction, additive harms, pharmacology, and role in therapy",
-        "requiredSources": "Drug interactions or positioning weaknesses may affect label"
+        "label": "Combination therapy and sequencing",
+        "objective": "Analyze interaction, additive harms, pharmacology, and role in therapy",
+        "failureMechanism": "Drug interactions or positioning weaknesses may affect label",
+        "requiredSources": "Combination trials; DDI; sequencing evidence"
       }
     ]
   },
@@ -417,42 +417,42 @@ export const SCIENTIFIC_LAYERS:readonly DeepLayer[]=[
       {
         "id": "7.1",
         "layerId": "regulatory",
-        "label": "pathway",
-        "objective": "Application and review-cycle identity",
-        "failureMechanism": "Verify NDA/BLA/supplement, indication, pathways, goal and prior action letters",
-        "requiredSources": "Wrong cycle or unaccepted filing makes prediction invalid"
+        "label": "Application and review-cycle identity",
+        "objective": "Verify NDA/BLA/supplement, indication, pathways, goal and prior action letters",
+        "failureMechanism": "Wrong cycle or unaccepted filing makes prediction invalid",
+        "requiredSources": "FDA records; dated SEC documents; approval/CRL history"
       },
       {
         "id": "7.2",
         "layerId": "regulatory",
-        "label": "feedback",
-        "objective": "FDA communications and prior objections",
-        "failureMechanism": "Trace agency comments, prior deficiencies and applicant remediation",
-        "requiredSources": "Unresolved stated FDA concern may trigger CRL"
+        "label": "FDA communications and prior objections",
+        "objective": "Trace agency comments, prior deficiencies and applicant remediation",
+        "failureMechanism": "Unresolved stated FDA concern may trigger CRL",
+        "requiredSources": "FDA advisory package; letters when public; meeting minutes"
       },
       {
         "id": "7.3",
         "layerId": "regulatory",
-        "label": "label",
-        "objective": "Label, population, endpoint and indication fit",
-        "failureMechanism": "Compare requested claim against studied population and supported clinical benefit",
-        "requiredSources": "Unsupported indication or claim may be rejected or narrowed"
+        "label": "Label, population, endpoint and indication fit",
+        "objective": "Compare requested claim against studied population and supported clinical benefit",
+        "failureMechanism": "Unsupported indication or claim may be rejected or narrowed",
+        "requiredSources": "Proposed/approved labeling; endpoints; FDA precedent"
       },
       {
         "id": "7.4",
         "layerId": "regulatory",
-        "label": "remssafety",
-        "objective": "REMS, safety management and inspections",
-        "failureMechanism": "Examine tolerability, REMS, pharmacovigilance, BIMO and inspection findings",
-        "requiredSources": "Unresolved safety or inspection problems may prevent approval"
+        "label": "REMS, safety management and inspections",
+        "objective": "Examine tolerability, REMS, pharmacovigilance, BIMO and inspection findings",
+        "failureMechanism": "Unresolved safety or inspection problems may prevent approval",
+        "requiredSources": "Public inspection records; risk controls; safety reviews"
       },
       {
         "id": "7.5",
         "layerId": "regulatory",
-        "label": "cmc",
-        "objective": "CMC, facilities, stability and major amendment timing",
-        "failureMechanism": "Assess process control, identity/purity/potency, facility status and amendments",
-        "requiredSources": "Unresolved quality deficiency may cause CRL; major amendment may extend clock"
+        "label": "CMC, facilities, stability and major amendment timing",
+        "objective": "Assess process control, identity/purity/potency, facility status and amendments",
+        "failureMechanism": "Unresolved quality deficiency may cause CRL; major amendment may extend clock",
+        "requiredSources": "CMC disclosures; inspections; validation; PDUFA goals"
       }
     ]
   },
@@ -463,42 +463,42 @@ export const SCIENTIFIC_LAYERS:readonly DeepLayer[]=[
       {
         "id": "8.1",
         "layerId": "integration",
-        "label": "benefitrisk",
-        "objective": "Integrated clinical benefit-risk",
-        "failureMechanism": "Integrate magnitude, uncertainty, severity, treatment options, safety tradeoffs",
-        "requiredSources": "Insufficient evidence of favorable benefit-risk"
+        "label": "Integrated clinical benefit-risk",
+        "objective": "Integrate magnitude, uncertainty, severity, treatment options, safety tradeoffs",
+        "failureMechanism": "Insufficient evidence of favorable benefit-risk",
+        "requiredSources": "Full trial/regulator evidence matrix; disease context"
       },
       {
         "id": "8.2",
         "layerId": "integration",
-        "label": "contradictions",
-        "objective": "Contradictions and missing-data map",
-        "failureMechanism": "Audit discrepancies between FDA, publications, SEC releases and trial registry",
-        "requiredSources": "Unresolved contradictions erode reproducibility and FDA-readiness"
+        "label": "Contradictions and missing-data map",
+        "objective": "Audit discrepancies between FDA, publications, SEC releases and trial registry",
+        "failureMechanism": "Unresolved contradictions erode reproducibility and FDA-readiness",
+        "requiredSources": "Dated comparative sources; original document sections"
       },
       {
         "id": "8.3",
         "layerId": "integration",
-        "label": "failuremodes",
-        "objective": "CRL, delay and withdrawal pathways",
-        "failureMechanism": "Build separate causal routes for efficacy, safety, CMC, integrity and timing",
-        "requiredSources": "Failure modes may be missed if focus only on positive top-line"
+        "label": "CRL, delay and withdrawal pathways",
+        "objective": "Build separate causal routes for efficacy, safety, CMC, integrity and timing",
+        "failureMechanism": "Failure modes may be missed if focus only on positive top-line",
+        "requiredSources": "Historical CRLs; active FDA concerns; PDUFA procedures"
       },
       {
         "id": "8.4",
         "layerId": "integration",
-        "label": "generalize",
-        "objective": "Real-world effectiveness, external validity and label restrictions",
-        "failureMechanism": "Assess transportability, dose burden, population and health-system factors",
-        "requiredSources": "Limited external validity may shrink intended label"
+        "label": "Real-world effectiveness, external validity and label restrictions",
+        "objective": "Assess transportability, dose burden, population and health-system factors",
+        "failureMechanism": "Limited external validity may shrink intended label",
+        "requiredSources": "Representative cohorts; subgroup confidence; real-world records"
       },
       {
         "id": "8.5",
         "layerId": "integration",
-        "label": "judgment",
-        "objective": "Independent scientific judgment and reversal conditions",
-        "failureMechanism": "Red-team all claims, test counterfactuals, document strongest objection and what changes judgment",
-        "requiredSources": "Overconfidence or hidden assumptions produce false forecasts"
+        "label": "Independent scientific judgment and reversal conditions",
+        "objective": "Red-team all claims, test counterfactuals, document strongest objection and what changes judgment",
+        "failureMechanism": "Overconfidence or hidden assumptions produce false forecasts",
+        "requiredSources": "Independent sourced challenge, replication audit, calibrated historic outcomes"
       }
     ]
   }
