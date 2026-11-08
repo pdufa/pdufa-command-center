@@ -70,7 +70,7 @@ def initialize(engine):
 
 def register_request(connection, run_id, nct, trigger):
     """Only log source-run provenance; the medical worker remains the one executor."""
-    if trigger not in ("MANUAL","REGISTRY_CHANGE","COMPONENT_CHANGE"):
+    if trigger not in ("MANUAL","REGISTRY_CHANGE","COMPONENT_CHANGE","CONTROLLED_SOURCE_BATCH"):
         raise ValueError("Unknown analysis trigger")
     connection.execute(text("""INSERT INTO medical_analyze_requests
         (run_id,nct_id,trigger_kind,requested_at,source_sheet,component_fingerprint)
@@ -87,9 +87,13 @@ def register_request(connection, run_id, nct, trigger):
 
 
 def eligible_for_analysis(nct):
-    """Canary gate applies to manual, source-change and component-change runs."""
-    return os.getenv("PDUFA_ANALYZE_NOW_ALL_ENABLED","").lower() in ("1","true","yes") or \
-        nct==os.getenv("PDUFA_ANALYZE_NOW_CANARY_NCT","NCT06081894")
+    """Only the original canary or a rigorously checked three-NCT cohort."""
+    if nct == os.getenv("PDUFA_ANALYZE_NOW_CANARY_NCT", "NCT06081894"):
+        return True
+    if os.getenv("PDUFA_ANALYZE_NOW_ALL_ENABLED", "").lower() in ("1", "true", "yes"):
+        return True
+    from .medical_pilot_batch import allowed_ncts
+    return nct in allowed_ncts()
 
 
 def start_now(engine,nct,request_key,*,submit=True,trigger="MANUAL"):

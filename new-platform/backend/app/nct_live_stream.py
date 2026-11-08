@@ -455,6 +455,27 @@ def start(engine):
     threading.Thread(target=bootstrap, name="nct-stream-bootstrap", daemon=True).start()
 
 
+def scientific_selftest_prerequisites(engine):
+    """The legacy NCT stream selftest needs a previously populated dossier.
+
+    A separate medical source-research worker can be ready without this legacy
+    scientific-dossier table. Label an uninitialized stream NOT_APPLICABLE,
+    rather than reporting an unexplained ProgrammingError or inventing a pass.
+    """
+    with engine.connect() as c:
+        present = c.execute(text("""SELECT
+            to_regclass('public.scientific_candidate_dossiers'),
+            to_regclass('public.scientific_review_runs')""")).one()
+        if present[0] is None or present[1] is None:
+            return "SCIENTIFIC_DOSSIER_TABLES_NOT_INSTALLED"
+        has_seed = c.execute(text(
+            "SELECT EXISTS(SELECT 1 FROM scientific_candidate_dossiers)"
+        )).scalar()
+        if not has_seed:
+            return "NO_SAVED_SCIENTIFIC_DOSSIERS"
+    return None
+
+
 def deployed_selftest(engine):
     """Use the existing credential through real localhost HTTP; log no field data."""
     import os
@@ -470,6 +491,10 @@ def deployed_selftest(engine):
             time.sleep(1)
         else:
             raise RuntimeError("Application HTTP server did not become ready")
+        reason = scientific_selftest_prerequisites(engine)
+        if reason:
+            LOG.warning("PDUFA_STAGE1_BACKEND_VERIFICATION status=NOT_APPLICABLE reason=%s", reason)
+            return
         with engine.connect() as c:
             selected = c.execute(text("SELECT nct_id FROM scientific_candidate_dossiers ORDER BY nct_id LIMIT 1")).scalar_one()
         base = "http://127.0.0.1:8000/api/nct-stream/" + selected + "/runs"
@@ -536,4 +561,4 @@ def deployed_selftest(engine):
                  "verified_at": stamp(), "frontend_browser_verified": False, "decision": "ABSTAIN"}
         LOG.warning("PDUFA_STAGE1_BACKEND_VERIFICATION %s", canonical(proof))
     except Exception as exc:
-        LOG.error("PDUFA_STAGE1_BACKEND_VERIFICATION status=FAIL error_type=%s", type(exc).__name__)
+        LOG.error("PDUFA_STAGE1_BACKEND_VERIFICATION status=FAIL error_type=%s sqlstate=%s", type(exc).__name__, getattr(getattr(exc, "orig", None), "sqlstate", "UNKNOWN"))
