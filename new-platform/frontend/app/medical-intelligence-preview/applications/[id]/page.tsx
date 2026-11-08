@@ -35,6 +35,7 @@ export default async function DecisionBriefPage({params}:{params:Promise<{id:str
    <div style={{fontSize:12,fontWeight:750,color:"#006451",letterSpacing:1}}>FOCUS → APPLICATION → INDEPENDENT FAILURE-FIRST BRIEF</div>
    <h1 style={{margin:"10px 0 4px"}}>{a.ticker} · {a.drug}</h1>
    <p style={{marginTop:0,color:muted}}>{a.applicationType} · {a.indication}</p>
+   <p style={{fontWeight:700}}><Link href={"/medical-intelligence-preview/advanced?cycle="+a.id}>Open 12 advanced levels, separate FDA outcomes, certainty, and evidence gaps</Link></p>
    <p style={{lineHeight:1.55}}>This is an <strong>application-specific decision research brief</strong>, not a score or the historical result of a survey. Every source-backed claim has a contrary argument and an unresolved verification question.</p>
    <section style={{background:"#f0f7f1",border:"1px solid "+line,borderRadius:12,padding:17}}>
      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(190px,1fr))",gap:16}}>
