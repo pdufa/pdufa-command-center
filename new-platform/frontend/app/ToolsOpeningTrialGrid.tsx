@@ -3,7 +3,6 @@ import {Fragment,useEffect,useMemo,useState} from "react";
 import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline-timeline";
 import CompanyDateBadges from "./CompanyDateBadges";
 import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
-import RaasSpreadsheetStatus from "./RaasSpreadsheetStatus";
 import {SPECIAL_DESIGNATION_CATEGORIES} from "../lib/trial-designations";
 import {TOOLS_RATING_GROUPS} from "../lib/tools-rating-groups";
 import css from "./ToolsOpeningTrialGrid.module.css";
@@ -352,7 +351,7 @@ export default function ToolsOpeningTrialGrid({
               {col.hint&&<small>{col.hint}</small>}
             </th>
           </Fragment>)}
-          <th>RAAS <small>Approved score / source coverage</small></th>
+
           {RATING_GROUPS.map(group=>{
             const open=expandedRatings.includes(group.key);
             const outer=[css.ratingCell,open?css.ratingOpen:"",css.ratingStart,
@@ -467,9 +466,7 @@ export default function ToolsOpeningTrialGrid({
             <td className={css.longTextCell}>{safe(row.drug)}</td>
             <td className={css.longTextCell}>{safe(row.indication)}</td>
             <td>{safe(row.stage)}</td>
-            <td><RaasSpreadsheetStatus trial={{nctId:row.nctId,ticker:row.ticker,
-              drug:row.drug,indication:row.indication,
-              confirmedPostReadout:!!row.timeline?.phase3DataRelease}}/></td>
+
             {RATING_GROUPS.map(group=>{
               const open=expandedRatings.includes(group.key);
               return <Fragment key={group.key}>
