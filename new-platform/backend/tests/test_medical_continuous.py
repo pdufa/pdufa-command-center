@@ -115,6 +115,28 @@ def test_duplicate_active_run_and_no_auto_start_from_read(engine):
         medical.create(engine, "NCT99999999", "00000000-0000-4000-8000-000000000006", submit=False)
 
 
+
+def test_startup_requeues_all_29_unfinished_focus_runs(engine, monkeypatch):
+    # Simulate the full FOCUS roster and a restart with more than 25 pending runs.
+    records = [{"nct": f"NCT{i:08d}", "ticker": "TEST", "company": "Fixture"}
+               for i in range(1, 30)]
+    medical.FOCUS.write_text(json.dumps({"records": records}), encoding="utf-8")
+    expected = set()
+    for index, row in enumerate(records, 1):
+        key = f"00000000-0000-4000-8000-{index:012d}"
+        saved = medical.create(engine, row["nct"], key, submit=False)
+        expected.add(saved["runId"])
+
+    submitted = []
+    monkeypatch.setattr(medical._POOL, "submit",
+                        lambda fn, db, rid: submitted.append((fn, rid)))
+    medical.start(engine)
+    assert len(submitted) == 29
+    assert {rid for _, rid in submitted} == expected
+    assert all(fn is medical.worker for fn, _ in submitted)
+
+
+
 def test_non_identity_network_outage_is_gap_and_run_can_finish(engine):
     req = "00000000-0000-4000-8000-000000000007"
     job = medical.create(engine, NCT, req, submit=False)
