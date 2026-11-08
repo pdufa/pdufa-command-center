@@ -1,4 +1,4 @@
-name: P3 Full Master POOL Nightly Discovery
+name: POOL Master Evidence Nightly Discovery
 on:
   workflow_dispatch:
   push:
