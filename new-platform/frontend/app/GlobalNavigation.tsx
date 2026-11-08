@@ -7,6 +7,7 @@ const links=[
  {label:"FOCUS",href:"/focus"},
  {label:"PREDICTIONS",href:"/predictions"},
  {label:"TOOLS",href:"/tools"},
+ {label:"INSTALLATION",href:"/installation-audit"},
 ];
 
 export default function GlobalNavigation(){

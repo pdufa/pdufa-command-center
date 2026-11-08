@@ -2,6 +2,8 @@ import Link from "next/link";
 import ScientificOutcomeLive from "./ScientificOutcomeLive";
 import DailySystemProgress from "./DailySystemProgress";
 import InstallationProgressChart from "./InstallationProgressChart";
+import InstallationLiveNavigator from "./InstallationLiveNavigator";
+import MasterBuildProgress from "./MasterBuildProgress";
 import { PHASE3_CENSUS_SNAPSHOT, auditPhase3CensusSnapshot } from "../../lib/phase3-census-snapshot";
 import { isAccepted, summarizeInstallationAudit, mainTechnicalAcceptance } from "../../lib/installation-audit-summary";
 import { FDA_REVIEW_WORKLIST_SNAPSHOT, auditFDAReviewWorklist } from "../../lib/fda-review-worklist-snapshot";
@@ -67,6 +69,7 @@ export default function InstallationAudit() {
   return <main style={{maxWidth:1420,margin:"0 auto",padding:"28px 18px",fontFamily:"system-ui,sans-serif",color:"#17212b"}}>
     <p><Link href="/">← Dashboard</Link></p>
     <h1>System installation & evidence tracker</h1>
+    <InstallationLiveNavigator />
     <p><strong>15-section audit · snapshot as of October 25, 2026.</strong> This is a dated read-only checklist with separate, on-demand protected SCIENCE/OUTCOME evidence checks below. A green build establishes neither scientific accuracy nor complete runtime operation.</p>
     <p><strong>Release:</strong> GitHub change #332 merged; Vercel production READY and user access reported on October 25, 2026. Deployment of the dashboard does not mean its scientific or prediction checks are complete. Implementation-stage counts are reported separately from verified acceptance; they are not an estimate of development-hours completion.</p>
     <p><strong>Main technical installation:</strong> No mandatory human reviewer enrollment, reviewer keys or reviewer handoff is required to install or operate POOL, Pipeline, scanning, reporting and backups. Scientific evidence and prediction validation remain a separate research requirement; this policy change does not certify a trial or authorize trades.</p>
@@ -153,6 +156,10 @@ export default function InstallationAudit() {
         </div>
       </details>)}
     </section>
+    <details style={{margin:"22px 0",padding:14,border:"1px solid #cbd5e1",borderRadius:9}}>
+      <summary style={{fontWeight:700,cursor:"pointer"}}>Full master installation task inventory · expandable verification records</summary>
+      <MasterBuildProgress />
+    </details>
     <DailySystemProgress />
     <ScientificOutcomeLive />
     <section aria-labelledby="fda-research-worklist" style={{margin:"26px 0",padding:"18px",border:"1px solid #cbd5e1",borderRadius:9,background:"#f8fafc"}}>
