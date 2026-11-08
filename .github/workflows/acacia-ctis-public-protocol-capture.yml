@@ -1,0 +1,46 @@
+name: ACACIA-HCM public EU CTIS source receipt (isolated research)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - feature/medical-stage4-verified-method-matrix-20261108
+    paths:
+      - .github/workflows/acacia-ctis-public-protocol-capture.yml
+
+permissions:
+  contents: read
+concurrency:
+  group: acacia-ctis-public-document-one-off
+  cancel-in-progress: false
+
+jobs:
+  capture-public-am4-protocol:
+    runs-on: ubuntu-latest
+    timeout-minutes: 7
+    steps:
+      - name: Checkout exact research branch (no push credentials)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Verify single trial and public-only source guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "\${GITHUB_REF_NAME}" = "feature/medical-stage4-verified-method-matrix-20261108"
+          python3 -m py_compile scripts/medical/acacia_ctis_capture.py
+          grep -Fq 'TRIAL = "2023-505797-15-00"' scripts/medical/acacia_ctis_capture.py
+          grep -Fq 'https://euclinicaltrials.eu/ctis-public-api' scripts/medical/acacia_ctis_capture.py
+      - name: Fetch only publicly accessible original protocol (no secrets)
+        shell: bash
+        timeout-minutes: 3
+        env:
+          PYTHONDONTWRITEBYTECODE: "1"
+        run: python3 scripts/medical/acacia_ctis_capture.py
+      - name: Upload source evidence receipt (not a clinical grade)
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: acacia-ctis-am4-public-research-receipt
+          path: acacia-ctis-source-receipt/
+          if-no-files-found: warn
+          retention-days: 30
