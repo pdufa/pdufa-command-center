@@ -42,3 +42,15 @@ test("persistent operations are protected by session and same-origin write", () 
   assert.match(proxy, /PostgreSQL database connection is not configured/);
   assert.match(control, /const raw: unknown = await response.json\(\)\.catch/);
 });
+
+test("source research history is load-on-click, exact-NCT scoped, and includes abstaining outcomes", () => {
+  assert.match(proxy, /history === "1"/);
+  assert.match(proxy, /"\/history", "GET"/);
+  assert.match(control, /Expand saved revision history/);
+  assert.match(control, /loadHistory\(\)/);
+  assert.match(control, /history\.revisions\.map/);
+  assert.match(control, /item\.report\.outcomes\.map/);
+  assert.match(control, /item\.report\.certainty\.status/);
+  assert.match(control, /No issued probability/);
+  assert.doesNotMatch(control, /useEffect\(\(\) => \{\s*void loadHistory/);
+});
