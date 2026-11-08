@@ -1,6 +1,6 @@
 # MAIN PDUFA — Automated Installation Progress & System Health Monitor
 
-This monitor is **additive** to the existing MAIN 7-gate Core Platform/Pipeline acceptance checklist and the archived 31-gate audit. It neither replaces those gates nor silently resets/accepts any trial. It is independent of RAAS and surveys.
+This monitor is **additive** to the existing MAIN 7-gate Core Platform/Pipeline acceptance checklist and the archived 31-gate audit. It neither replaces those gates nor silently resets/accepts any trial. It monitors only independent medical and operational components; retired scoring is outside the active installation.
 
 ## Installed modules
 
