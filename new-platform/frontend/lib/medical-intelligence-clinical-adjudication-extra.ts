@@ -64,7 +64,7 @@ export const ADDITIONAL_ADJUDICATION_CASES:readonly AdjudicationCase[]=[
         "date": "2026-06-22",
         "title": "Achieve announcement describing efficacy/safety scope of FDA CRL",
         "url": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda",
-        "section": "June 2026 NDA action",
+        "section": "June 2026 NDA Complete Response action and deficiency disclosure",
         "trial": "NCT04576949",
         "measure": "Company reports no efficacy or safety deficiency",
         "result": "Company stated the CRL identified no clinical efficacy or safety deficiency, consistent with the published FDA letter emphasizing CGMP and labeling.",
