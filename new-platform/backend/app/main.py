@@ -940,6 +940,18 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes
                                      require_medical_review_read_key,
                                      require_medical_assessment_storage)
 
+# These are the ONLY human review writes; they never run from the source worker.
+# Disabled by default and never usable outside the isolated preview. Distinct
+# role-bound reviewer secrets are required (general/worker/read keys do not work).
+# No browser-facing proxy, synthetic credentials or automatic method scoring.
+if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_ASSESSMENT_LEDGER_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_REVIEW_WRITES_ENABLED", "").lower() in ("1", "true", "yes")):
+    from .medical_reviewer_submission import install_routes as install_medical_reviewer_intake
+    install_medical_reviewer_intake(app, lambda: ENGINE,
+                                   require_medical_assessment_storage,
+                                   require_writes_enabled)
+
 # Phase-aware review is separately opt-in and uses ONLY authenticated GETs.
 def require_medical_phase_matrix_storage() -> None:
     require_medical_assessment_storage()
