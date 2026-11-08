@@ -70,6 +70,11 @@ class PromotionTests(unittest.TestCase):
         self.assertEqual(live[29],P3)
         self.assertEqual(live[30],CAP)
         self.assertEqual(live[13:24],original[10:21])
+        self.assertEqual(live[13:22],[""]*9)
+        rejected=original[:]
+        rejected[10]="Provisional grade attempted"
+        with self.assertRaisesRegex(ValueError,"retired research archive"):
+            promote.physical_append_row(rejected,3)
         from importlib import util
         syncpath=PATH.parent/"sync_p3_post_data_from_google_sheet.py"
         spec=util.spec_from_file_location("focus_live_sync",syncpath)
