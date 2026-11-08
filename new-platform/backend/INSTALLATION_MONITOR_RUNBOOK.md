@@ -40,6 +40,15 @@ This monitor is **additive** to the existing MAIN 7-gate Core Platform/Pipeline 
 
 External scanner schedules, external deployment failures, FDA/SEC/company/PubMed changes, and the actual Google Sheets live sync are not silently inferred from these tables. They display unknown or pending until connected to authoritative run/record APIs. GitHub scheduled workflows are checked by `event=schedule` and do not prove an external scheduler ran.
 
+## Added identity and deployment checks
+
+- Backend Docker ships `app/data/focus_application_snapshot.json` derived from the existing 23 source-linked FDA application-cycle reconstructions. The authenticated monitor independently verifies unique coverage of all **29 exact FOCUS NCTs**, source dates, and the absence of invented FDA-designation claims.
+- Shared `NCT02500381` contributes to separate exon-45 and exon-53 applications. Its drug and indication are intentionally left **unreconciled** rather than assigning it to an arbitrary application.
+- The public-source research worker can now use the correct indication/drug for unambiguous FOCUS trials when gathering PubMed leads. These remain source leads, not independently verified drug approval facts.
+- The frontend progress model compares exact `VERCEL_GIT_COMMIT_SHA` with the running Render `RENDER_GIT_COMMIT` reported by the authenticated backend. A mismatch is **BLOCKED**, a missing fingerprint **UNKNOWN**, and only equal full SHAs are **VERIFIED**. Both fingerprints are supplied automatically by their respective hosting providers.
+- The monitor records count of `ordinal > 1` source revisions with `evidence_changed=TRUE` and queues one `EVIDENCE_UPDATE` Telegram event per revision. It never calls this an FDA probability change. Genuine prediction-model change monitoring remains unverified because the models have not been calibrated or released.
+- Snapshot coverage, live deployment consistency, and current database readiness are separate checks; fixing one does not silently complete another.
+
 ## Configure the optional monitor and Telegram
 
 The isolated Render preview service is `pdufa-medical-intelligence-preview`. The source-side health endpoint is available without reading the database, but **database-backed monitoring remains blocked until `DATABASE_URL` is configured** with the Render PostgreSQL **Internal Database URL** in Render's own dashboard. Do not paste the database URL or Telegram credentials into chat, GitHub, documentation or logs.
