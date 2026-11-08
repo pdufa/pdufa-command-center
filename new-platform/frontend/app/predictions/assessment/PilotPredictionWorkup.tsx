@@ -10,18 +10,7 @@ export default function PilotPredictionWorkup({nct}:{nct:string}){
   const sourceList=Object.entries(pilot.sources);
   return <section aria-label="ACACIA preliminary scientific prediction workup" style={{...frame,background:"#f6fbf8"}}>
     <h2 style={{margin:"2px 0 10px"}}>ACACIA-HCM · Pilot prediction workup</h2>
-    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(165px,1fr))",gap:10}}>
-      <div style={{border:"1px solid #a3b8b0",background:"#fff",borderRadius:9,padding:12}}>
-        <div style={{fontSize:12,color:"#485f58",fontWeight:700}}>FINAL FDA PREDICTION</div>
-        <div style={{fontSize:23,fontWeight:850,color:"#73522a"}}>{pilot.finalDecision.approval}</div>
-        <div style={{fontSize:12}}>Approval / CRL / delay unresolved</div>
-      </div>
-      <div style={{border:"1px solid #a3b8b0",background:"#fff",borderRadius:9,padding:12}}>
-        <div style={{fontSize:12,color:"#485f58",fontWeight:700}}>PREDICTION ACCURACY</div>
-        <div style={{fontSize:18,fontWeight:850,color:"#73522a"}}>NOT CALIBRATED</div>
-        <div style={{fontSize:12}}>No validated probabilities or accuracy claim</div>
-      </div>
-    </div>
+    <p style={{fontSize:12,color:"#476258"}}>Historical evidence snapshot — the live prediction, grade counts and accuracy state are shown in the monitor above.</p>
     <p style={{marginTop:12}}><strong>Research-only directional finding:</strong> published pivotal efficacy is positive, while meaningful-benefit thresholds, safety, protocol statistics and indication-specific regulatory review remain uncertain. This is a qualitative scientific synthesis, <strong>not a validated FDA forecast</strong>.</p>
     <p style={{fontSize:13}}><strong>Phase 3 evidence:</strong> week-36 KCCQ-CSS placebo-adjusted difference +{pilot.publishedPrimary.kccq.difference.toFixed(1)} points (95% CI {pilot.publishedPrimary.kccq.ci95[0]}–{pilot.publishedPrimary.kccq.ci95[1]}); peak VO₂ +{pilot.publishedPrimary.peakVo2.difference} mL/kg/min (95% CI {pilot.publishedPrimary.peakVo2.ci95[0]}–{pilot.publishedPrimary.peakVo2.ci95[1]}). Both met the sponsor-reported initial statistical criteria, which is not the same as validated clinical benefit or FDA approval.</p>
     <div style={{padding:12,border:"1px solid #d8c1a4",borderRadius:8,background:"#fffaf2"}}>
