@@ -3,8 +3,8 @@
   "policy": "RAAS_PERMANENTLY_RETIRED",
   "activeDependenciesRemaining": 0,
   "passed": true,
-  "activeEntrypointsInspected": 218,
-  "reachableSourceFilesInspected": 501,
+  "activeEntrypointsInspected": 220,
+  "reachableSourceFilesInspected": 503,
   "violations": [],
   "historicalReadOnlyRecordFilesRetained": [
     "archives/raas/cli/new-platform__frontend__scripts__raas-fda-nightly-compare.cjs.disabled",
@@ -359,6 +359,7 @@
     "new-platform/frontend/lib/raas-trial-evidence-backlog.ts",
     "new-platform/frontend/lib/raas-trial-metric-review-dossier.ts",
     "new-platform/frontend/lib/raas-trial-score-history.ts",
+    "scripts/check_retired_raas_policy.py",
     "scripts/raas_2024_2025_expanded_sec_price_research.cjs",
     "scripts/raas_2025_crl_candidate_coverage_funnel.cjs",
     "scripts/raas_2025_crl_candidate_inclusion_exclusion.cjs",
@@ -423,6 +424,6 @@
     "scripts/raas_v2_source_provenance_manifest.py",
     "scripts/telegram_raas_source_change_alert.py"
   ],
-  "unreachableHistoricalImplementationFileCount": 131,
+  "unreachableHistoricalImplementationFileCount": 132,
   "scopeNote": "Static active-execution import/scheduler/config audit; historical records and unreachable historical implementations are retained, never executed by this audit."
 }

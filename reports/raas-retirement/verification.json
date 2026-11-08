@@ -3,8 +3,8 @@
   "dependencyAudit": {
     "passed": true,
     "activeDependenciesRemaining": 0,
-    "activeEntrypointsInspected": 219,
-    "reachableSourceFilesInspected": 502
+    "activeEntrypointsInspected": 220,
+    "reachableSourceFilesInspected": 503
   },
   "historicalFilesPinned": 104,
   "historicalHashesVerified": true,
@@ -21,7 +21,7 @@
     "failed": 0
   },
   "rootRetirementTests": {
-    "passed": 18,
+    "passed": 22,
     "failed": 0
   },
   "archivedObsoleteAcceptanceSpecifications": 98,
@@ -140,5 +140,58 @@
       "skipped": 2,
       "failed": 0
     }
+  },
+  "releaseSmokeTests": {
+    "offlineValidatorPassed": 16,
+    "workflowPassed": 3,
+    "failed": 0
+  },
+  "backendDeployments": {
+    "workspace": "My Workspace",
+    "workspaceId": "tea-db967i3l550s73cadem0",
+    "staging": {
+      "commit": {
+        "createdAt": "2026-11-08T04:17:45Z",
+        "id": "d11c3d74b322889963d35e8bdaf2f472e19a1011",
+        "message": "Harden retirement aliases and preserve deployment-branch history schema"
+      },
+      "createdAt": "2026-11-08T04:18:28.586951Z",
+      "finishedAt": "2026-11-08T04:19:03.225501Z",
+      "id": "dep-dbnvg52jnfac73dgm3d0",
+      "startedAt": "2026-11-08T04:18:28.559793Z",
+      "status": "live",
+      "trigger": "api",
+      "updatedAt": "2026-11-08T04:19:03.225776Z",
+      "serviceId": "srv-db976hfbtjjs73bb98fg",
+      "health": {
+        "httpStatus": 200,
+        "status": "ok",
+        "storageReady": true,
+        "storageKind": "postgresql"
+      }
+    },
+    "medicalPreview": {
+      "commit": {
+        "createdAt": "2026-11-08T04:17:57Z",
+        "id": "5608059b05382359bc14f575d1dbe31b78d7bb1a",
+        "message": "Harden permanently retired scoring aliases without changing medical installation"
+      },
+      "createdAt": "2026-11-08T04:18:24.669357Z",
+      "finishedAt": "2026-11-08T04:19:01.087489Z",
+      "id": "dep-dbnvg40u01pc73drvip0",
+      "startedAt": "2026-11-08T04:18:24.637533Z",
+      "status": "live",
+      "trigger": "api",
+      "updatedAt": "2026-11-08T04:19:01.087687Z",
+      "serviceId": "srv-dbntrkpsrm7s73aec3lg",
+      "health": {
+        "httpStatus": 200,
+        "status": "waiting_for_database",
+        "storageReady": false,
+        "storageReason": "POSTGRES_NOT_CONFIGURED",
+        "storageKind": "sqlite"
+      }
+    },
+    "verificationScope": "Exact deployed commits read back from Render plus unauthenticated /health GET. No database mutation or authenticated prediction write was performed."
   }
 }

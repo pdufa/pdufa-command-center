@@ -1,0 +1,111 @@
+{
+  "verifiedAllInactive": true,
+  "count": 21,
+  "workflows": [
+    {
+      "id": 405124237,
+      "name": "CANCELLED \u2014 RAAS metric readiness ratings",
+      "state": "deleted"
+    },
+    {
+      "id": 405124773,
+      "name": "RAAS current saved evidence read-only scan",
+      "state": "deleted"
+    },
+    {
+      "id": 405163337,
+      "name": "RAAS Alpaca historical adjusted price research",
+      "state": "deleted"
+    },
+    {
+      "id": 405282375,
+      "name": "RAAS ARCHIVED 2016-2025 historical research (manual only)",
+      "state": "deleted"
+    },
+    {
+      "id": 405292324,
+      "name": "RAAS official FDA 2016\u20132025 approvals and CRL source discovery",
+      "state": "deleted"
+    },
+    {
+      "id": 405300285,
+      "name": "RAAS historical SEC share evidence audit",
+      "state": "deleted"
+    },
+    {
+      "id": 405314053,
+      "name": "RAAS dated SEC shares x Alpaca raw historical-cap research",
+      "state": "deleted"
+    },
+    {
+      "id": 405360012,
+      "name": "RAAS 2021 CARA original PDUFA and Alpaca raw-cap research",
+      "state": "deleted"
+    },
+    {
+      "id": 405366334,
+      "name": "RAAS 2022 ARQT original FDA PDUFA and Alpaca price research",
+      "state": "deleted"
+    },
+    {
+      "id": 405372432,
+      "name": "RAAS 2019 SAGE original PDUFA extension and historical price research",
+      "state": "deleted"
+    },
+    {
+      "id": 405381012,
+      "name": "RAAS 2018 ACRX original FDA PDUFA and historical capitalization research",
+      "state": "deleted"
+    },
+    {
+      "id": 405703302,
+      "name": "RAAS 2017 PTCT Translarna CRL historical research",
+      "state": "deleted"
+    },
+    {
+      "id": 405727852,
+      "name": "RAAS ACTIVE 2024\u20132025 two-year PDUFA historical study",
+      "state": "deleted"
+    },
+    {
+      "id": 405752638,
+      "name": "RAAS ACTIVE 2024-2025 original FDA and SEC historical case research",
+      "state": "deleted"
+    },
+    {
+      "id": 405776469,
+      "name": "RAAS ACTIVE 2024-2025 official FDA approval and CRL outcome discovery",
+      "state": "deleted"
+    },
+    {
+      "id": 406252362,
+      "name": "CANCELLED \u2014 RAAS survey/rating accuracy audit",
+      "state": "deleted"
+    },
+    {
+      "id": 406964184,
+      "name": "CANCELLED \u2014 RAAS scoring/score-history capture",
+      "state": "deleted"
+    },
+    {
+      "id": 407077838,
+      "name": "RAAS Official Registry Evidence Census",
+      "state": "disabled_manually"
+    },
+    {
+      "id": 407091856,
+      "name": "CANCELLED \u2014 RAAS-specific scoring ledger and research backfill",
+      "state": "deleted"
+    },
+    {
+      "id": 407092967,
+      "name": "RETIRED \u2014 Old 762-trial RAAS registry collector",
+      "state": "deleted"
+    },
+    {
+      "id": 407515463,
+      "name": "RAAS Live CTgov Condition Contract",
+      "state": "deleted"
+    }
+  ]
+}
