@@ -146,11 +146,18 @@ def run(engine, run_id):
                 raise ValueError("Original source/catalog digest changed")
             positions=_validated_positions(record)
             with engine.begin() as c:
+                done=c.execute(text("""SELECT processed_methods
+                    FROM medical_pilot_method_audit_runs WHERE run_id=:run"""),
+                    {"run":run_id}).scalar_one()
+                checked=c.execute(text("""SELECT COUNT(*) FROM medical_pilot_method_audit_events
+                    WHERE run_id=:run"""),{"run":run_id}).scalar_one()
+                if done!=checked or done%20 or done<0 or done>TOTAL:
+                    raise RuntimeError("Cannot resume a partial or inconsistent source-audit batch")
                 c.execute(text("""UPDATE medical_pilot_method_audit_runs SET status='RUNNING',
                     updated_at=:now,failure_kind=NULL WHERE run_id=:run AND status IN ('PENDING','RUNNING','FAILED')"""),
                     {"now":stamp(),"run":run_id})
             # One committed assessment batch at a time. No fake delays or grades.
-            for start in range(0,TOTAL,20):
+            for start in range(done,TOTAL,20):
                 with engine.begin() as c:
                     for pos in range(start,start+20):
                         ai,mi,cls,count=positions[pos]
