@@ -8,13 +8,11 @@ import {
   researchFieldResult, verifiedMetricCount, workflowColumn, comparableIndication, comparableResearchGroup,
   type PipelineResearchRow, type ResearchFieldId, type WorkflowColumn,
 } from "../lib/pipeline-research-view";
-import { ASSESSMENT_SUPPORT_FIELDS, CLAIM_PROVENANCE_REQUIREMENTS } from "../lib/pipeline-assessment-inputs";
 import { loadCompleteResearch } from "../lib/pipeline-research-pagination";
 import { pacificToday } from "../lib/pipeline-timeline";
-import { RANKED_BENEFIT_ASSESSMENTS, assessmentCoverage, validateComparatorInventory } from "../lib/pipeline-benefit-assessments";
+import {validateComparatorInventory} from "../lib/clinical-comparators";
 import LiveRegistryReview from "./LiveRegistryReview";
 import TrialTimelineSummary from "./TrialTimelineSummary";
-import {parseBenefitFeed,type BenefitFeed} from "../lib/benefit-assessments";
 import PipelineSponsorReadout from "./PipelineSponsorReadout";
 import PipelineEligibilityChecklist from "./PipelineEligibilityChecklist";
 
@@ -33,17 +31,17 @@ function named(row:PipelineResearchRow){return row.drug||"Therapy not verified"}
 function trialDay(row:PipelineResearchRow,id:ResearchFieldId,today:string){
  return researchFieldResult(row,id,today);
 }
-function Dossier({row,today,onClose,benefitFeed}:{row:PipelineResearchRow;today:string;onClose:()=>void;benefitFeed:BenefitFeed|null}){
+function Dossier({row,today,onClose}:{row:PipelineResearchRow;today:string;onClose:()=>void}){
  const [opened,setOpened]=useState<"all"|"none">("none");
  return <section className={styles.dossier} aria-label={"Detailed trial dossier "+row.nctId}>
    <div className={styles.dossierHeading}>
     <div><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:10}}>
       <h3 style={{margin:0}}>{row.nctId} · {row.ticker}</h3>
-      <TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={benefitFeed}/>
+      <TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row}/>
       </div>
       <p>{row.company} · {named(row)} · {row.indication||"Indication not verified"}</p>
       <p>Public Phase 3 release: {row.timeline?.phase3DataRelease?.date||"Not verified"} · Verified PDUFA: {row.timeline?.pdufaTarget?.date||"Not verified"}</p>
-      <p className={styles.muted}>20 original assessments · 38 preserved research fields · seven supporting source sections. NCT studies are not necessarily distinct commercial products.</p>
+      <p className={styles.muted}>Source-backed clinical and regulatory research. NCT studies are not necessarily distinct commercial products.</p>
     </div>
     <button type="button" onClick={onClose}>Close trial</button>
    </div>
@@ -55,53 +53,8 @@ function Dossier({row,today,onClose,benefitFeed}:{row:PipelineResearchRow;today:
    <LiveRegistryReview nctId={row.nctId}/>
    <PipelineSponsorReadout nctId={row.nctId} ticker={row.ticker}/>
    <PipelineEligibilityChecklist row={row} today={today}/>
-   <div className={styles.analyticsPanel} aria-label="Twenty ranked patient benefit assessments">
-    <h4>Original 20 ranked assessments · exact-program evidence only</h4>
-    <p className={styles.muted}>Twenty primary categories preserve the 38 source fields. All twenty assessments have defined inputs; clinical findings still require original evidence. No source-backed ranking is inferred from a blank input.</p>
-    {RANKED_BENEFIT_ASSESSMENTS.map(spec=>{
-     const c=assessmentCoverage(row,today)[spec.rank-1];
-     const inventory=spec.rank===6?validateComparatorInventory(row,row.competitorEvidence||[]):null;
-     return <details className={styles.dossierSection} key={spec.rank}>
-      <summary><strong>#{spec.rank} · {spec.title}</strong><span>{c.state==="NOT_ASSESSED"?"Not assessed":c.verified+" verified source fields"}</span></summary>
-      <div className={styles.dossierFields}>
-       <p className={styles.muted}>{spec.objective}</p>
-       {!spec.fields.length&&<p>Not assessed: dedicated research inputs and primary sources are still required.</p>}
-       {spec.fields.map(id=>{
-        const f=ALL_RESEARCH_FIELD_DEFINITIONS.find(x=>x.id===id);
-        const support=ASSESSMENT_SUPPORT_FIELDS.find(x=>x.id===id);
-        const result=researchFieldResult(row,id,today);
-        return <details key={id} className={styles.dossierField}>
-         <summary><span>{f?.label||id}</span><strong>{result.value}</strong></summary>
-         <div className={styles.dossierEvidence}>
-          <p>{result.why}</p><p><strong>Evidence required:</strong> {f?.evidence}</p>
-          {support&&<><ul>{support.secondary.map(q=><li key={q}>{q}</li>)}</ul><p><strong>Calculation:</strong> {support.calculation}</p></>}
-          <details><summary>Tertiary evidence and provenance requirements</summary><ul>{CLAIM_PROVENANCE_REQUIREMENTS.map(q=><li key={q}>{q}</li>)}</ul><p>VERIFIED / MODELED / CONFLICTING / NOT ASSESSED / NOT APPLICABLE. Missing values remain unknown.</p></details>
-          {result.sourceUrl&&<a href={result.sourceUrl} target="_blank" rel="noopener noreferrer">Open source · {result.sourceDate||"date not recorded"}</a>}
-         </div>
-        </details>;
-       })}
-       {inventory&&<div className={styles.dossierEvidence}>
-        <h4>Approved therapies · {inventory.approved} sourced entries</h4>
-        <h4>Competing pipeline therapies · {inventory.pipeline} sourced entries</h4>
-        {!inventory.accepted.length&&<p>No exact-indication source-verified competitor inventory is attached. This is not evidence that competitors are absent.</p>}
-        {inventory.accepted.map(c=><details key={c.kind+"|"+c.id} className={styles.dossierField}>
-         <summary><span>{c.kind==="APPROVED"?"Approved":"Pipeline"} · {c.therapy} · {c.manufacturer}</span><strong>{c.finding.replaceAll("_"," ")}</strong></summary>
-         <div><p>{c.patientPopulation} · {c.lineOfTherapy} · {c.regulatorOrTrialId} · {c.approvalOrPhase}</p>
-          <p><strong>Comparison:</strong> {c.comparisonBasis.replaceAll("_"," ")} · {c.reason||"Insufficient evidence"}</p>
-          <p><strong>Outcome:</strong> {c.outcome||"Not assessed"} · <strong>Effect:</strong> {c.effectSize||"Not assessed"}</p>
-          <p><strong>Safety / convenience / price:</strong> {c.safety||"Not assessed"} · {c.convenience||"Not assessed"} · {c.firstYearPrice||"Not assessed"}</p>
-          <p><a href={c.sourceUrl} target="_blank" rel="noopener noreferrer">Primary research source</a> · {c.sourceDate} · {c.confidence}</p>
-         </div>
-        </details>)}
-        <p><strong>Rank status:</strong> {inventory.rankingAllowed?"Direct comparison evidence present; validate effect size, uncertainty and independent reviewer weights before ranking.":"ABSTAIN — a defensible peer ranking cannot be established."}</p>
-        {inventory.rejected>0&&<p>{inventory.rejected} conflicting or insufficiently identified comparator records excluded.</p>}
-       </div>}
-      </div>
-     </details>;
-    })}
-   </div>
    <details className={styles.dossierSection}>
-    <summary><strong>Original 38 research fields · seven evidence groups</strong><span>Reference detail</span></summary>
+    <summary><strong>Source research fields · evidence groups</strong><span>Reference detail</span></summary>
    {PIPELINE_RESEARCH_SECTIONS.map(section=><details key={row.nctId+"|"+section.title}
       className={styles.dossierSection} open={opened==="all"?true:undefined}>
      <summary><strong>{section.title}</strong><span>{section.fields.length} fields</span></summary>
@@ -143,7 +96,6 @@ function TrialMini({row,today,onOpen}:{row:PipelineResearchRow;today:string;onOp
 export default function PipelineFourViews(){
  const [data,setData]=useState<Payload|null>(null);
  const [fetchError,setFetchError]=useState("");
- const [benefitFeed,setBenefitFeed]=useState<BenefitFeed|null>(null);
  const [loading,setLoading]=useState(true);
  const [mode,setMode]=useState<Mode>("table");
  const [query,setQuery]=useState("");
@@ -170,14 +122,7 @@ export default function PipelineFourViews(){
     .finally(()=>{if(!controller.signal.aborted)setLoading(false)});
   return()=>controller.abort();
  },[]);
- useEffect(()=>{
-  const controller=new AbortController();
-  void fetch("/api/benefit-assessments",{cache:"no-store",signal:controller.signal})
-   .then(async response=>{if(!response.ok)throw Error("BENEFIT_FEED_UNAVAILABLE");return parseBenefitFeed(await response.json());})
-   .then(result=>{if(!controller.signal.aborted)setBenefitFeed(result);})
-   .catch(()=>{if(!controller.signal.aborted)setBenefitFeed(null);});
-  return ()=>controller.abort();
- },[]);
+ 
  const all=data?.rows||[];
  const filtered=useMemo(()=>{
   const q=query.trim().toLocaleLowerCase("en-US");
@@ -222,7 +167,7 @@ export default function PipelineFourViews(){
  return <section className={styles.fourViews} aria-label="Four shared Pipeline research views">
   <div className={styles.fourIntro}>
    <div><h2>PIPELINE · Four connected research views</h2>
-     <p>One authenticated dataset · 20 ranked assessments · 38 original fields · seven supporting evidence sections · no assumed commercial rank or FDA approval odds</p></div>
+     <p>One authenticated dataset · clinical and regulatory source evidence · no assumed commercial rank or FDA approval odds</p></div>
    <span className={styles.sharedCount}>{data?data.total.toLocaleString()+" exact-linked research trials":"Awaiting source"}</span>
   </div>
   <div role="tablist" aria-label="Pipeline display mode" className={styles.viewPicker}>
@@ -250,19 +195,16 @@ export default function PipelineFourViews(){
    </div>
    <p role="status" className={styles.muted}>{filtered.length.toLocaleString()} matching trials · Same filtered source across all views</p>
    {mode==="table"&&<>
-    <h3>Twenty primary assessments · selected trial overview</h3>
-    <p className={styles.muted}>All 20 assessments come from the original ranked framework. The rightmost three columns separately identify existing approved therapy evidence, competing pipeline therapy evidence, and comparative advantage. Horizontal scrolling is available.</p>
-    <div className={styles.scroll}><table className={styles.table} aria-label="Twenty ranked assessment overview">
+    <h3>Trial clinical and regulatory research</h3>
+    <p className={styles.muted}>The rightmost three columns identify documented approved therapies, pipeline competitors, and comparative evidence. Horizontal scrolling is available.</p>
+    <div className={styles.scroll}><table className={styles.table} aria-label="Trial evidence overview">
      <thead><tr><th>NCT</th><th>Company / ticker</th><th>Proposed therapy / disease</th><th>Public Phase 3 release</th><th>Days since release</th><th>Verified PDUFA date</th><th>Days until PDUFA</th>
-      {RANKED_BENEFIT_ASSESSMENTS.map(spec=><th key={spec.rank}>#{spec.rank} {spec.title}</th>)}
       <th>Existing Approved Therapies</th><th>Competing Pipeline Therapies</th><th>Comparative Advantage</th></tr></thead>
      <tbody>{visible.map(row=>{
-      const c=assessmentCoverage(row,today);
       const inventory=validateComparatorInventory(row,row.competitorEvidence||[]);
-      return <tr key={row.nctId}><td>{row.nctId}</td><td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={benefitFeed}/></div></td>
+      return <tr key={row.nctId}><td>{row.nctId}</td><td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row}/></div></td>
        <td>{named(row)}<small>{row.indication||"Not assessed"}</small></td>
        <td>{row.timeline?.phase3DataRelease?.date||"Not verified"}</td><td>{trialDay(row,"daysSinceReadout",today).value}</td><td>{row.timeline?.pdufaTarget?.date||"Not verified"}</td><td>{trialDay(row,"daysToPdufa",today).value}</td>
-       {c.map(item=><td key={item.rank} title={item.summary}>{item.state==="NOT_ASSESSED"?"Not assessed":item.verified+" of "+item.required+" sourced"}</td>)}
        <td>{inventory.accepted.length?inventory.approved+" documented":"Not assessed"}</td>
        <td>{inventory.accepted.length?inventory.pipeline+" documented":"Not assessed"}</td>
        <td>{inventory.rankingAllowed?"Review comparative evidence":"ABSTAIN — insufficient comparable evidence"}</td>
@@ -276,7 +218,7 @@ export default function PipelineFourViews(){
       <tr>
        <td><button type="button" aria-expanded={selected===row.nctId} onClick={()=>setSelected(selected===row.nctId?null:row.nctId)}>{selected===row.nctId?"Close":"Expand"}</button></td>
        <td><a href={row.sourceUrl} target="_blank" rel="noopener noreferrer">{row.nctId} ↗</a></td>
-       <td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row} benefitFeed={benefitFeed}/></div><small>{row.company}</small></td>
+       <td><div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:8,minWidth:290}}><strong>{row.ticker}</strong><TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row}/></div><small>{row.company}</small></td>
        <td>{named(row)}<small>{row.indication||"Indication not verified"}</small></td>
        <td>{trialDay(row,"daysSinceReadout",today).value}</td>
        <td>{trialDay(row,"daysToPdufa",today).value}</td>
@@ -285,7 +227,7 @@ export default function PipelineFourViews(){
        <td>{verifiedMetricCount(row,today)} sourced</td>
        <td>{trialDay(row,"verdict",today).value}</td>
       </tr>
-      {selected===row.nctId&&<tr><td colSpan={10}><Dossier row={row} today={today} benefitFeed={benefitFeed} onClose={()=>setSelected(null)}/></td></tr>}
+      {selected===row.nctId&&<tr><td colSpan={10}><Dossier row={row} today={today} onClose={()=>setSelected(null)}/></td></tr>}
      </Fragment>)}</tbody>
     </table></div>
     <div className={styles.pagination}>
@@ -302,10 +244,10 @@ export default function PipelineFourViews(){
        <b>{named(row)}</b><span>{row.indication||"Indication not verified"}</span>
        <small>Phase 3 age: {trialDay(row,"daysSinceReadout",today).value}</small>
        <small>PDUFA: {trialDay(row,"daysToPdufa",today).value}</small>
-       <small>{verifiedMetricCount(row,today)} sourced fields · Open full 38-field dossier</small>
+       <small>{verifiedMetricCount(row,today)} sourced fields · Open research dossier</small>
       </button>)}
     </div>
-    {selectedRow&&<Dossier key={selectedRow.nctId} row={selectedRow} today={today} benefitFeed={benefitFeed} onClose={()=>setSelected(null)}/>}
+    {selectedRow&&<Dossier key={selectedRow.nctId} row={selectedRow} today={today} onClose={()=>setSelected(null)}/>}
     <div className={styles.pagination}>
      <button type="button" disabled={activePage===0} onClick={()=>{setPage(activePage-1);setSelected(null)}}>Previous</button>
      <span>Page {activePage+1} of {totalPages}</span>
@@ -323,7 +265,7 @@ export default function PipelineFourViews(){
       {!buckets[bucket.id].length&&<p className={styles.muted}>No matched trials in this category.</p>}
      </section>)}
     </div></div>
-    {selectedRow&&<Dossier key={selectedRow.nctId} row={selectedRow} today={today} benefitFeed={benefitFeed} onClose={()=>setSelected(null)}/>}
+    {selectedRow&&<Dossier key={selectedRow.nctId} row={selectedRow} today={today} onClose={()=>setSelected(null)}/>}
    </>}
    {mode==="analytics"&&<>
     <div className={styles.analyticsGrid}>
@@ -336,18 +278,6 @@ export default function PipelineFourViews(){
      ] as const).map(([title,value])=><div key={title} className={styles.statCard}>
       <small>{title}</small><strong>{value.toLocaleString()}</strong>
      </div>)}
-    </div>
-    <div className={styles.analyticsPanel}>
-     <h3>Evidence coverage by original 20 assessments</h3>
-     <p className={styles.muted}>A recorded source is not a score or ranking. Dedicated inputs remain unassessed until separately sourced.</p>
-     {RANKED_BENEFIT_ASSESSMENTS.map(spec=>{
-      const total=spec.fields.length*filtered.length;
-      const verified=spec.fields.reduce((acc,id)=>acc+filtered.filter(row=>researchFieldResult(row,id,today).state==="VERIFIED").length,0);
-      return <div className={styles.coverageRow} key={spec.rank}><span>#{spec.rank} {spec.title}</span>
-       <progress value={verified} max={total||1} aria-label={"Evidence coverage for "+spec.title}></progress>
-       <strong>{total?Math.round(100*verified/total)+"%":"—"}</strong>
-      </div>;
-     })}
     </div>
     <div className={styles.analyticsPanel}>
      <h3>Evidence coverage by research section</h3>
@@ -393,7 +323,7 @@ export default function PipelineFourViews(){
       {chosen.map(row=><button key={row.nctId} type="button" onClick={()=>openTrial(row)}>Open {row.nctId} dossier</button>)}
      </div>}
     </div>
-    {selectedRow&&<Dossier key={selectedRow.nctId} row={selectedRow} today={today} benefitFeed={benefitFeed} onClose={()=>setSelected(null)}/>}
+    {selectedRow&&<Dossier key={selectedRow.nctId} row={selectedRow} today={today} onClose={()=>setSelected(null)}/>}
    </>}
    <p className={styles.muted}>Research assessment period: public pivotal Phase 3 results announcement → PDUFA − 3 calendar days. Restricted Pipeline eligibility ($300M–$10B, U.S.-listed, verified pivotal Phase 3 and commercial rights) requires independent current checks. No probability-of-approval-based competitive ranking.</p>
   </div>}

@@ -1,7 +1,7 @@
 /** Evidence-first, read-only comparison of exact Pipeline study identities.
  * No composite score or FDA approval probability may be inferred from coverage.
  */
-import {BENEFIT_GROUPS,benefitForTrial,type BenefitFeed,type BenefitFact} from "./benefit-assessments";
+import {BENEFIT_GROUPS,benefitForTrial,type BenefitFeed,type BenefitFact} from "./clinical-source-types";
 import type {PipelineResearchRow} from "./pipeline-research-view";
 
 export type TrialComparisonField={id:string;label:string;fact:BenefitFact|null};

@@ -7,7 +7,7 @@ import ir from "../data/phase3CompanyWebsiteEvidence20261105.json";
 import {clinicalFiveForTrial} from "./raas-clinical-five";
 import {raasSpreadsheetSummary} from "./raas-spreadsheet-status";
 import {evaluatePhaseFirst,PHASE_FIRST_VERSION,type PhaseTrial,type ClinicalContext} from "./phase-first-clinical";
-import {BENEFIT_GROUPS} from "./benefit-assessments";
+import {BENEFIT_GROUPS} from "./clinical-source-types";
 import {phase3DeepRegistryRecord,PHASE3_DEEP_REGISTRY_AS_OF} from "./phase3-deep-registry-results";
 import endpointAdjudications from "../data/phase3EndpointAdjudications20261105.json";
 import axsomeRegistry from "../data/axsomePhaseFirstRegistry20261106.json";
