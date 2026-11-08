@@ -29,7 +29,7 @@ const at="2026-11-08T00:00:00Z";
 test("monitored progress only counts verified installation checkpoints",()=>{
  const snapshot=buildInstallationProgress(null,external,at);
  assert.equal(snapshot.schemaVersion,1);
- assert.equal(snapshot.stages.length,20);
+ assert.equal(snapshot.stages.length,21);
  assert.equal(snapshot.stages.filter(x=>x.id.startsWith("advanced-")).length,12);
  const all=snapshot.stages.flatMap(x=>x.checks);
  assert.equal(snapshot.overall.total,all.length);
@@ -133,4 +133,20 @@ test("frontend/backend commit parity is verified only for identical running SHAs
  const unknown=buildInstallationProgress({...base,services:{backendDeployment:{gitSha:null}}},external,at);
  assert.equal(parity(unknown),"UNKNOWN");
  assert.equal(mismatched.stages.find(s=>s.id==="infrastructure").status,"BLOCKED");
+});
+
+test("Analyze Now progress waits for saved pilot and independent rollout switches",()=>{
+ const local={...external,analyzeNowAllEnabled:false,apiReachable:true};
+ const live={schemaVersion:1,observedAt:at,storage:{state:"READY",kind:"postgresql",postgresRequired:true},
+   analysisNow:{state:"OBSERVED",pilotSaved:false,allTrialsEnabled:false,autoRerunEnabled:false,componentWatchBaselines:0}};
+ const pilotGate=m=>m.stages.find(x=>x.id==="analyze-now").checks.find(x=>x.id==="analyze-now.pilot").status;
+ const enabledGate=m=>m.stages.find(x=>x.id==="analyze-now").checks.find(x=>x.id==="analyze-now.rollout").status;
+ assert.equal(pilotGate(buildInstallationProgress(live,local,at)),"PENDING");
+ assert.equal(enabledGate(buildInstallationProgress(live,local,at)),"PENDING");
+ assert.equal(pilotGate(buildInstallationProgress({...live,analysisNow:{...live.analysisNow,pilotSaved:true}},local,at)),"VERIFIED");
+ const mismatched=buildInstallationProgress({...live,analysisNow:{...live.analysisNow,pilotSaved:true,allTrialsEnabled:true}},local,at);
+ assert.equal(enabledGate(mismatched),"BLOCKED");
+ const all=buildInstallationProgress({...live,analysisNow:{...live.analysisNow,pilotSaved:true,allTrialsEnabled:true}},
+   {...local,analyzeNowAllEnabled:true},at);
+ assert.equal(enabledGate(all),"VERIFIED");
 });
