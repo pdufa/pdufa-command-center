@@ -49,7 +49,7 @@ export default function RestrictionsPage(){
   </section>
   <section style={panel}>
    <h2>Pending enforcement and verification</h2>
-   <p>Current listing, entry/current cap quotes, sponsor rights, exact FDA application crosswalks, phase-specific scientific evidence and recurring source refreshes need independently verified inputs. Until then their audit status is UNKNOWN, not PASS or FAIL. The dated census does not establish completed regulatory eligibility or production RAAS readiness.</p>
+   <p>Current listing, entry/current cap quotes, sponsor rights, exact FDA application crosswalks, phase-specific scientific evidence and recurring source refreshes need independently verified inputs. Until then their audit status is UNKNOWN, not PASS or FAIL. The dated census does not establish regulatory eligibility or production prediction readiness.</p>
    <p>Research source: <a href="/api/pdufa-restriction-audit">Audit JSON</a> · snapshot {ledger.asOf} · checked {asOf}. Historical trials, scores, predictions and benchmarks are preserved.</p>
   </section>
  </main>;
