@@ -57,8 +57,7 @@ export default function PhaseFirstTable(){
        <h3>Not yet expected</h3><ul>{t.notYetExpected.map(e=><li key={e.id}>{e.label}: {e.evidence}</li>)}</ul>
        <h3>Pending</h3><ul>{t.pending.map(e=><li key={e.id}>{e.label}: {e.evidence}</li>)}</ul>
        <details><summary>Complete phase-specific evidence checklist</summary>{t.evidence.map(e=><p key={e.id}><strong>{e.label} — {e.status}</strong><br/>{e.evidence}<br/><small>Confidence {e.confidence}; expected at {e.expectedAt}; date kind {e.dateKind}. {e.searchScope} Reviewed {e.reviewedAt}.</small>{!e.sourceUrl&&<a href={e.searchedSourceUrl} target="_blank" rel="noopener noreferrer">Reviewed registry source</a>}{e.sourceUrl&&<> <a href={e.sourceUrl} target="_blank" rel="noopener noreferrer">Source ({e.evidenceDate??'date not documented'})</a></>}</p>)}</details>
-       <details><summary>Existing three-level survey hierarchy</summary>{data.surveyHierarchy.map(g=><div key={g.key}><h3>{g.key} · {g.name}</h3>{g.surveys.map(s=><details key={s.number}><summary>Survey {s.number} · {s.name}</summary><ul>{s.questions.map(q=><li key={q.id}>{q.label} ({q.id})</li>)}</ul></details>)}</div>)}<p>Existing survey responses and calibration are preserved; this applicability view does not create new survey grades.</p></details>
-       <PhaseHistory trialId={t.trialId}/>
+<PhaseHistory trialId={t.trialId}/>
        <p><a href={'/api/phase-first/history?trialId='+t.trialId} target="_blank" rel="noopener noreferrer">Persisted phase/rating history</a> · <a href={'/raas-history?nctId='+t.trialId}>Existing RAAS history</a></p>
        {t.pipeline.companyRestriction&&<p><strong>{t.pipeline.companyRestriction}</strong></p>}
        <p>{t.pipeline.restrictions}</p>

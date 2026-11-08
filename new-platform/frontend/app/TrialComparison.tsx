@@ -81,7 +81,7 @@ export default function TrialComparison(){
     chosen.map(key=>{
       const row=lookup.get(key);
       return row?{key,row,evidence:comparisonSnapshot(row,null)}:null;
-    }),[chosen,lookup,feed]);
+    }),[chosen,lookup]);
   const present=selected.filter((t):t is SelectedTrial=>t!==null);
   const canCompare=present.length>=2&&present.length===new Set(present.map(t=>t.key)).size;
   const edit=(index:number,key:string)=>setChosen(before=>before.map((value,i)=>i===index?key:value));

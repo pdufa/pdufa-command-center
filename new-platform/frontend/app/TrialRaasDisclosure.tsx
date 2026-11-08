@@ -255,7 +255,7 @@ export default function TrialRaasDisclosure({row,bucket,researchStatus,coverage,
      <details className={css.anchorDetails} aria-label={label+" missing RAAS metric evidence checklist"}>
        <summary>Missing RAAS metric grades · {missingChecklist?missingChecklist.missing+"/30":"Inventory check required"} · evidence worklist ▸</summary>
        <div className={css.historicalStatus}>
-         <p><strong>How the final SURVEY connects to RAAS:</strong> Its 20 surveys and 38 research questions provide leads, but RAAS separately requires six weighted categories, 30 individually validated metric grades, approved calibrations, dated ENTRY/CURRENT/EXIT evidence and passed risk gates. This list does not manufacture a score.</p>
+         <p><strong>The original 20-question survey has been retired. RAAS separately requires RAAS separately requires six weighted categories, 30 individually validated metric grades, approved calibrations, dated ENTRY/CURRENT/EXIT evidence and passed risk gates. This list does not manufacture a score.</p>
          {!missingChecklist?<p role="status">RAAS catalog and score-engine metric IDs do not reconcile. No readiness conclusion can be drawn.</p>:
            <>
              <p><strong>Accepted RAAS metric grades:</strong> {missingChecklist.approved}/30 · <strong>still ungraded:</strong> {missingChecklist.missing}/30. Research-field coverage is not an approved metric grade, and missing data are not zeroes.</p>
