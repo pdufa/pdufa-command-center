@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import Link from "next/link";
 import {MAIN_DAILY_EVIDENCE} from "../../lib/main-daily-evidence";
 import {FOCUS_FINAL_TRIAL_AUDIT} from "../../lib/focus-final-gate-checks";
+import InstallationProgressDashboard from "./InstallationProgressDashboard";
 
 export const metadata:Metadata={
   title:"MAIN · Core Platform and Pipeline acceptance | PDUFA",
@@ -62,6 +63,7 @@ export default function MainStatus(){
     <p>This is an evidence and operating-status view, <strong>not a third active trial list</strong>.
       POOL is the complete research inventory; FOCUS is the screened post-Phase-3 population.
       P3 and P3 POST-DATA are retired spreadsheet identities; historical evidence remains read-only. Clinical Phase 3 research remains valid for FOCUS and independent medical analysis.</p>
+    <InstallationProgressDashboard/>
     <section style={{...card,margin:"18px 0"}} aria-label="Dated release verification">
       <h2 style={{marginTop:0}}>Verified release snapshot · {release.date}</h2>
       <p><strong>Production deployment: READY.</strong> The associated main-branch commit is{" "}

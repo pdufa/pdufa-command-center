@@ -45,6 +45,7 @@ export default function Home(){
    </div>
    <p style={{fontSize:13,lineHeight:1.55,marginTop:8}}>
     <Link href="/main">MAIN · Technical status and evidence gates</Link>
+    {" · "}<Link href="/precision-monitor">Precision Monitoring Dashboard</Link>
     {" "}— a read-only operating status view, not another trial population.
    </p>
   </>}
