@@ -222,9 +222,14 @@ def test_direct_stage_api_obeys_same_canary_gate(engine, monkeypatch):
     monkeypatch.delenv("PDUFA_ANALYZE_NOW_CANARY_NCT", raising=False)
     app = FastAPI()
     medical.install_routes(app, lambda: engine, lambda: None, lambda: None)
-    lookup = {r.path: r.endpoint for r in app.routes if hasattr(r, "path")}
-    start = lookup["/api/medical-continuous/{nct}/runs"]
-    resume = lookup["/api/medical-continuous/{nct}/runs/{run_id}/resume"]
+    # Select registered FastAPI handlers by identity, then assert their API prefix.
+    routes = {r.name: r for r in app.routes if hasattr(r, "endpoint")}
+    start_route = routes["create_job"]
+    resume_route = routes["resume_job"]
+    assert start_route.path.startswith("/api/medical-continuous/")
+    assert resume_route.path.startswith("/api/medical-continuous/")
+    start = start_route.endpoint
+    resume = resume_route.endpoint
 
     with pytest.raises(HTTPException) as exc:
         start("NCT05126758", medical.StartPayload(
