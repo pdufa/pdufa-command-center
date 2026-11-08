@@ -1,0 +1,51 @@
+.auditPage {
+  --audit-bg: #071824;
+  --audit-surface: #0b3040;
+  --audit-card: #0a2c3b;
+  --audit-row: #102f3a;
+  --audit-header: #123e4b;
+  --audit-border: #39717b;
+  --audit-text: #e7f9fc;
+  --audit-muted: #c1dfe2;
+  --audit-accent: #6af8cf;
+  background: radial-gradient(circle at 100% 0,#175364,transparent 35%),linear-gradient(135deg,#071824,#0b3543);
+  color: var(--audit-text);
+  border: 1px solid #3b6977;
+  border-radius: 12px;
+  overflow-wrap: anywhere;
+}
+.auditPage :global(h1), .auditPage :global(h2), .auditPage :global(h3),
+.auditPage :global(h4), .auditPage :global(strong) {
+  color: inherit;
+}
+.auditPage :global(a) {
+  color: #72f7d2 !important;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.auditPage :global(a:hover) { color: #c0ffe9 !important; }
+.auditPage :global(a:focus-visible), .auditPage :global(button:focus-visible),
+.auditPage :global(summary:focus-visible) {
+  outline: 3px solid #6af8cf;
+  outline-offset: 3px;
+}
+.auditPage :global(th), .auditPage :global(td) {
+  color: inherit;
+  line-height: 1.52;
+}
+.auditPage :global(table) { color: #e7f9fc; }
+.auditPage :global(thead th) { color: #e7f9fc; }
+.auditPage :global(summary) {
+  color: #e7f9fc;
+  line-height: 1.5;
+}
+.auditPage :global(summary::marker) { color: #6af8cf; }
+.auditPage :global(p), .auditPage :global(li) { line-height: 1.58; }
+.auditPage :global(button) { line-height: 1.4; }
+@media(max-width:640px) {
+  .auditPage { padding: 16px 10px !important; border-radius: 8px; }
+  .auditPage :global(table) { font-size: 12px; }
+}
+@media(prefers-reduced-motion:reduce){
+  .auditPage :global(*) { scroll-behavior: auto !important; }
+}
