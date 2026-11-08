@@ -13,7 +13,7 @@ The same encrypted archive must be copied byte-for-byte to all three. iCloud Dri
 
 Source-of-truth inventory includes:
 - Neon PostgreSQL project `pdufa-new-persistent-db` and relevant databases on its default branch.
-- Every independently confirmed active Render PostgreSQL database, including those described in `docs/RENDER_DATABASE_RECOVERY_RUNBOOK.md` after current inventory reconciliation.
+- All four currently visible Render PostgreSQL instances: `pdufa-new-staging-db`, `pdufa-alpaca-review-db`, `pdufa-scientific-assessment-review-db`, and `pdufa-medical-intelligence-preview-db`. The preview database is currently marked with a 2026-12-08 expiry; preserve it promptly if it contains required persistent records. Verify actual service-to-database use before tagging any environment production. The older `docs/RENDER_DATABASE_RECOVERY_RUNBOOK.md` names only two of the four and is not a complete current inventory.
 - Applicable POOL/FOCUS Google Sheets exports and evidence datasets, full research provenance, historical read-only records, immutable prediction and assessment history.
 - Git source at an exact commit, required application/research artifact manifests, non-secret configuration, deployment definitions, cron/workflow definitions and restore instructions.
 - Any additional persistent object storage/assets discovered through the deployment inventory.
