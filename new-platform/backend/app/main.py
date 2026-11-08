@@ -602,6 +602,17 @@ async def lifespan(app: FastAPI):
                 from .medical_continuous import start as start_medical_continuous
                 start_medical_continuous(ENGINE)
                 app.state.medical_canary_initialized = True
+                # Explicit isolated 3-NCT cohort; every run is campaign-idempotent.
+                # No startup jobs or tables are created without the opt-in gate.
+                if os.getenv("PDUFA_MEDICAL_BATCH_AUTORUN", "").lower() in ("true", "1", "yes"):
+                    try:
+                        from .medical_pilot_batch import start as start_medical_batch
+                        start_medical_batch(ENGINE)
+                    except Exception as batch_exc:
+                        logging.getLogger(__name__).error(
+                            "PDUFA_MEDICAL_BATCH_STARTUP_FAILED error_type=%s",
+                            type(batch_exc).__name__,
+                        )
                 # Read-only, restart-time proof that the approved canary's
                 # exact-NCT revisions survived the prior process and redeploy.
                 # Never create a run here or print source evidence/credentials.
