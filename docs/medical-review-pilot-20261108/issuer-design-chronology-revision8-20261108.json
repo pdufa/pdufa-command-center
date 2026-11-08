@@ -54,7 +54,8 @@
       28,
       29
     ],
-    "allHttpStatus": 403,
+    "overviewHttpStatus": 403,
+    "individualVersionHttpStatuses": "NOT_VERIFIED_FROM_LOG",
     "originalVersionBodiesCaptured": 0,
     "run": "https://github.com/pdufa/pdufa-command-center/actions/runs/42527582798",
     "sourceUnretrieved": true
