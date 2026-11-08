@@ -688,6 +688,16 @@ def validate_reconciliation_package(payload: "ReviewPackage"):
         raise HTTPException(status_code=422, detail=str(exc)) from exc
 
 
+@app.head("/")
+def service_liveness():
+    """Load-balancer liveness only. Never equate this with Postgres readiness.
+
+    The authenticated installation monitor and /health carry the actual
+    storage readiness, source record counts, and blocked-state evidence.
+    """
+    return Response(status_code=204, headers={"Cache-Control":"no-store"})
+
+
 @app.get("/health")
 def health():
     # An HTTP 200 permits configuration inspection without claiming DB readiness.
