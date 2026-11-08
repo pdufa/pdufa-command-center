@@ -23,7 +23,6 @@ export default async function SpecialistReviewPage({searchParams}:{searchParams:
  const research=caseForCycle(selected.id);
  const actualSpecialtyReview=specialistCaseForCycle(selected.id);
  const sourceIssues=deskIssuesForCycle(selected.id);
- const grouping=[...new Set(CLINICAL_SPECIALTY_PROFILES.map(x=>x.specialty))].length;
  const sourceCounts=APPLICATION_CYCLES.filter(x=>caseForCycle(x.id)).length;
  return <main style={{maxWidth:1320,margin:"26px auto",padding:"0 16px 45px",fontFamily:"system-ui,sans-serif",color:theme.ink}}>
    <div style={{fontWeight:750,color:theme.green,letterSpacing:1,fontSize:12}}>CLINICAL SPECIALTY SCIENCE → INDEPENDENT FDA EVIDENCE REVIEW</div>
