@@ -1,0 +1,39 @@
+name: Deep Medical Intelligence Preview QA
+on:
+  pull_request:
+    paths:
+      - 'new-platform/frontend/lib/medical-intelligence-*.ts'
+      - 'new-platform/frontend/app/medical-intelligence-preview/**'
+      - 'new-platform/frontend/tests/medical-intelligence-*.test.cjs'
+      - 'new-platform/frontend/data/p3PostDataActive.json'
+      - '.github/workflows/deep-medical-intelligence-preview-qa.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    name: Typecheck and regression tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Checkout PR source
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+        with:
+          persist-credentials: false
+      - name: Set up Node 22
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - name: Install deterministic dependencies
+        run: npm ci --ignore-scripts
+        working-directory: new-platform/frontend
+      - name: Verify TypeScript
+        run: npm run typecheck
+        working-directory: new-platform/frontend
+      - name: Run frontend regression suite
+        run: npm test
+        working-directory: new-platform/frontend
