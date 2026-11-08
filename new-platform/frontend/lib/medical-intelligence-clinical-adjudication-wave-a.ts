@@ -115,7 +115,7 @@ export const ADJUDICATION_WAVE_A:readonly AdjudicationCase[]=[
         "role": "CONTEXT",
         "type": "SEC_SPONSOR_FILING",
         "date": "2026-11-05",
-        "title": "Axsome Q3 2026 10-Q",
+        "title": "Axsome Q3 2026 SEC Form 10-Q",
         "url": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526443752/axsm-20260930.htm",
         "section": "Regulatory acceptability and 2027 target",
         "trial": "NCT05113745",
