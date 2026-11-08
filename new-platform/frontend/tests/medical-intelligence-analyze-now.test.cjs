@@ -39,23 +39,26 @@ test("analysis endpoint requires an operator session, same origin and eligible N
  assert.match(proxy,/PDUFA_INTERNAL_API_KEY/);
  assert.match(proxy,/private, no-store/);
 });
-test("clinical five-factor score remains explicitly different from full RAAS and FDA probability",()=>{
- assert.match(control,/Full RAAS \(30 metrics\)/);
- assert.match(control,/Preserved clinical research \(5 factors\)/);
- assert.match(control,/No independent scientific signoff/);
+test("Analyze Now displays only independent source investigations and abstaining FDA outcomes",()=>{
+ assert.match(control,/Scientific source checks/);
+ assert.match(control,/Independent signoff:/);
  assert.match(control,/a\.fdaPredictions\.map/);
- assert.match(control,/Not issued/);
+ assert.match(control,/Not validated/);
  assert.match(control,/a\.missingEvidence\.map/);
  assert.match(control,/a\.supportingSourceUrls/);
  assert.match(control,/h\.analysis\?<Report/);
+ assert.doesNotMatch(control,/raas|Full RAAS|scientificFiveFactorScore/i);
 });
-test("legacy optional scored archive contains the exact pilot score from real preserved history",()=>{
+
+test("retired scores remain in read-only evidence files, never loaded by Analyze Now",()=>{
  const historic=JSON.parse(fs.readFileSync(path.join(root,"data/bottomOnlyScoreHistory20261107.json"),"utf8"));
  const pilot=historic.records.filter(x=>x.nctId==="NCT06081894"&&x.recordedAt==="2026-11-07");
  assert.ok(pilot.length>0);
  assert.ok(pilot.every(x=>x.clinicalFullScore===45&&x.clinicalScoredFactors===5));
  const RAAS=JSON.parse(fs.readFileSync(path.join(root,"data/raas-trial-score-history.json"),"utf8"));
  assert.ok(!RAAS.records.some(x=>x.nctId==="NCT06081894"&&typeof x.score==="number"));
+ const active=fs.readFileSync(path.join(root,"../backend/app/medical_on_demand.py"),"utf8");
+ assert.doesNotMatch(active,/optional_legacy|focus_legacy_score_snapshot|raasOverall|raasScoreKind/i);
 });
 
 test("archived exact-NCT history remains reachable without active FOCUS membership",()=>{
