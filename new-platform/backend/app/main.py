@@ -622,6 +622,23 @@ def installation_monitor_status():
     from .installation_monitor import collect
     return collect(ENGINE, storage_ready=_DB_STATE["available"],require_postgres=True)
 
+# Separate pilot-only API key allows branch-isolated Vercel previews to
+# authenticate without rotating the existing internal key used elsewhere.
+# The optional original internal key remains valid for backwards compatibility.
+def require_medical_internal_key(
+    x_pdufa_internal_key: Annotated[str | None, Header()] = None,
+) -> None:
+    medical_key = os.getenv("PDUFA_MEDICAL_INTERNAL_API_KEY")
+    existing_key = os.getenv("PDUFA_INTERNAL_API_KEY")
+    configured = [k for k in (medical_key, existing_key) if k]
+    if not configured:
+        raise HTTPException(status_code=503, detail="Medical API authentication not configured")
+    if not x_pdufa_internal_key or not any(
+        secrets.compare_digest(k, x_pdufa_internal_key) for k in configured
+    ):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
+
 # Independent medical writes require the *medical* canary to be initialized
 # against durable PostgreSQL; general checklist storage readiness is insufficient.
 def require_medical_pilot_storage() -> None:
@@ -633,10 +650,10 @@ def require_medical_pilot_storage() -> None:
 if os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes"):
     from .medical_continuous import install_routes as install_medical_continuous_routes
     from .medical_on_demand import install_routes as install_analyze_now_routes
-    install_medical_continuous_routes(app, lambda: ENGINE, require_internal_key, require_medical_pilot_storage)
-    install_analyze_now_routes(app, lambda: ENGINE, require_internal_key, require_medical_pilot_storage)
+    install_medical_continuous_routes(app, lambda: ENGINE, require_medical_internal_key, require_medical_pilot_storage)
+    install_analyze_now_routes(app, lambda: ENGINE, require_medical_internal_key, require_medical_pilot_storage)
 
-@app.get("/api/internal/medical-canary-preflight", dependencies=[Depends(require_internal_key)])
+@app.get("/api/internal/medical-canary-preflight", dependencies=[Depends(require_medical_internal_key)])
 def medical_canary_preflight():
     """Read-only preview gate: this does not launch analysis, assign scores, or expose secrets."""
     configured = os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
