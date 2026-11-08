@@ -71,3 +71,23 @@ Only an explicit new instruction from the project owner can reverse retirement.
 For compatibility with the earlier approved instruction path,
 `python scripts/check_retired_raas_policy.py` delegates to the same mandatory
 permanent-retirement guard; it is not a second analysis or scoring system.
+
+## Retired P3 and P3 POST-DATA workspaces — November 7, 2026
+
+P3 and P3 POST-DATA as **separate active trial workspaces, pages, installation
+branches and report destinations** have been removed by owner directive.
+The only active trial populations are POOL (complete master source inventory)
+and FOCUS (screened trial/issuer evidence). Do not recreate P3 or P3 POST-DATA
+navigation, separate spreadsheet tabs, scan destinations, scoring interfaces,
+buttons, automatic promotions into retired tabs, acceptance gates, or rollout
+tasks in this or future Codex sessions.
+
+Clinical Phase 3 and post-Phase-3 **evidence are still scientific attributes**
+used by FOCUS eligibility and Deep Medical Intelligence, not retired populations.
+Preserve the current FOCUS Google Sheet and its exact-NCT source roster; legacy
+script filenames, data snapshot keys and preserved archives may remain internal
+until safely migrated, but must not cause writes to removed workspaces.
+Retired public URLs may permanently redirect to FOCUS; never run the old page as
+an independent active list. Preserve research provenance and historical records.
+Make sure installation progress excludes the retired P3/P3 POST-DATA branches,
+without counting their removal as completed active work.

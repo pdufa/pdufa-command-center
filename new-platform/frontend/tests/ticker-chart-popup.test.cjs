@@ -7,7 +7,7 @@ const read=(name)=>fs.readFileSync(path.join(app,name),"utf8");
 
 test("every POOL and FOCUS ticker cell uses the shared chart button",()=>{
  const pool=read("PoolMasterSpreadsheet.tsx");
- const focus=read("p3-post-data/page.tsx");
+ const focus=read("focus/page.tsx");
  assert.match(pool, /<TickerChartButton ticker=\{row\.ticker\}\/>/);
  assert.match(focus, /<TickerChartButton ticker=\{t\.ticker\}\/>/);
 });

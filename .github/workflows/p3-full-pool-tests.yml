@@ -1,4 +1,4 @@
-name: P3 Full POOL Discovery Tests
+name: POOL master discovery safety checks
 on:
   pull_request:
     paths:

@@ -60,7 +60,7 @@ test("dated sources, missing identity detail and planned FDA dates never certify
 });
 
 test("FOCUS and MAIN display only the current final-list gate scope",()=>{
-  const focus=fs.readFileSync(path.join(__dirname,"../app/p3-post-data/page.tsx"),"utf8");
+  const focus=fs.readFileSync(path.join(__dirname,"../app/focus/page.tsx"),"utf8");
   const main=fs.readFileSync(path.join(__dirname,"../app/main/page.tsx"),"utf8");
   assert.ok(focus.includes("finalGateByNct.get(t.nct)"));
   assert.ok(focus.includes("gateAudit.gates.map"));

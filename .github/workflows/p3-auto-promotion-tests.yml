@@ -1,4 +1,4 @@
-name: P3 POST-DATA auto-transfer safety checks
+name: FOCUS exact-NCT intake safety checks
 on:
   pull_request:
     paths:
