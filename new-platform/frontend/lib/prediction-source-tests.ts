@@ -72,7 +72,7 @@ export function createSourceTests(study:unknown,nct:string):EvidenceTest[]{
   const armsCount=array(arms.armGroups).length;
   const primary=array(outcomes.primaryOutcomes);
   const posted=array(resultOutcomes.outcomeMeasures);
-  const outcomeAnalyses=posted.reduce((n,x)=>n+array(object(x).analyses).length,0);
+  const outcomeAnalyses=posted.reduce<number>((n,x)=>n+array(object(x).analyses).length,0);
   const serious=array(events.seriousEvents);
   const reportsEvents=!!Object.keys(events).length;
   const periods=array(flow.periods);
