@@ -79,3 +79,30 @@ export const INITIAL_DECISION = {
   adjudicatedBlockers:0,
   note:"All investigations begin as unresolved research questions. No concern is confirmed solely from a missing public record or company/registry pointer."
 } as const;
+
+export type RegistryBatchAudit={
+  byNct:Record<string,TrialEvidence>;
+  requestedNcts:string[];
+  missingNcts:string[];
+  unexpectedNcts:string[];
+  duplicateNcts:string[];
+  responseCount:number;
+};
+/** Exact-ID batch reconciliation: registry absence is a data gap, not a trial failure. */
+export function reconcileRegistryBatch(payload:unknown,requested:readonly string[]):RegistryBatchAudit{
+  const ids=[...new Set(requested)];
+  if(!ids.length||ids.length>100||ids.some(id=>!/^NCT\d{8}$/.test(id)))throw Error("Invalid batch NCTs");
+  const allowed=new Set(ids);
+  const byNct:Record<string,TrialEvidence>={};
+  const unexpectedNcts:string[]=[];
+  const duplicateNcts:string[]=[];
+  const studies=arr(object(payload).studies);
+  for(const study of studies){
+    const nct=str(objAt(objAt(study,"protocolSection"),"identificationModule").nctId);
+    if(!allowed.has(nct)){unexpectedNcts.push(nct||"INVALID");continue;}
+    if(byNct[nct]){duplicateNcts.push(nct);continue;}
+    try{byNct[nct]=summarizeRegistryStudy(study,nct);}
+    catch{unexpectedNcts.push(nct+"-INVALID-PAYLOAD");}
+  }
+  return {byNct,requestedNcts:ids,missingNcts:ids.filter(id=>!byNct[id]),unexpectedNcts,duplicateNcts,responseCount:studies.length};
+}
