@@ -16,15 +16,19 @@
       "sourceVisualReviewed": true
     },
     {
-      "id": "ISSUER_Q1_2025_EXECUTIVE_REMARKS",
+      "id": "ISSUER_MAY_6_2025_ORIGINAL_RELEASE",
       "date": "2025-05-06",
-      "sourceClass": "SECONDARY_TRANSCRIPT_OF_ISSUER_REMARKS",
-      "url": "https://www.marketbeat.com/earnings/reports/2025-5-6-cytokinetics-incorporated-stock/",
+      "sourceClass": "FIRST_PARTY_ISSUER_BUSINESS_UPDATE",
+      "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2025/Cytokinetics-Reports-First-Quarter-2025-Financial-Results-and-Provides-Business-Update-05-06-2025/default.aspx",
       "companyAttributedRationale": "ALIGN_WITH_NON_US_REGULATOR_FEEDBACK",
       "newDesignDualPrimary": true,
       "plannedEnrollmentLowerBound": 500,
       "alphaPerPrimary": 0.025,
-      "claimIndependentRegulatorVerified": false
+      "claimIndependentRegulatorVerified": false,
+      "supportingExecutiveTranscript": "https://www.marketbeat.com/earnings/reports/2025-5-6-cytokinetics-incorporated-stock/",
+      "exactSponsorAcknowledgmentOfEndpointRedesign": true,
+      "companyClaimUnchangedConductIndependentlyVerified": false,
+      "companyClaimGlobalRegulatorFeedbackIndependentlyVerified": false
     },
     {
       "id": "NCT_REGISTRY_V27_METADATA",
