@@ -169,3 +169,80 @@ def test_authenticated_read_routes_are_get_only_no_triage_write_route(engine):
     assert hist.status_code==200 and hist.json()["total"]==1
     assert client.post("/api/internal/medical-scientific-triage/"+CANARY+"/latest").status_code==405
     assert client.get("/api/internal/medical-scientific-triage/NCT99999999/latest").status_code==422
+
+
+def configure_scientific_tail(monkeypatch, ncts="NCT05507203,NCT05507216,NCT04576949"):
+    monkeypatch.setenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_BATCH_AUTORUN","true")
+    monkeypatch.setenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_BATCH_CAMPAIGN","NOV08_TRIAGE_B")
+    monkeypatch.setenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_BATCH_NCTS",ncts)
+    monkeypatch.setenv("PDUFA_MEDICAL_BATCH_AUTORUN","false")
+    monkeypatch.setenv("PDUFA_ANALYZE_NOW_ALL_ENABLED","false")
+
+
+def test_controlled_tail_rejects_duplicate_unrostered_and_original_canary(monkeypatch):
+    assert triage.requested_batch() is None
+    configure_scientific_tail(monkeypatch)
+    campaign,ncts=triage.requested_batch()
+    assert campaign=="NOV08_TRIAGE_B"
+    assert ncts==("NCT05507203","NCT05507216","NCT04576949")
+    for batch in ("NCT05507203", "NCT05507203,NCT05507216"):
+        monkeypatch.setenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_BATCH_NCTS",batch)
+        assert len(triage.requested_batch()[1])==len(batch.split(","))
+    invalid = [
+        "NCT05507203,NCT05507203",
+        "NCT06081894",
+        "NCT99999999",
+        "NCT05507203,NCT05507216,NCT04576949,NCT05126758",
+        "NCT05507203,INVALID",
+        "",
+    ]
+    for batch in invalid:
+        monkeypatch.setenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_BATCH_NCTS",batch)
+        with pytest.raises((ValueError,RuntimeError)):
+            triage.requested_batch()
+    monkeypatch.setenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_BATCH_NCTS","NCT05507203")
+    monkeypatch.setenv("PDUFA_ANALYZE_NOW_ALL_ENABLED","true")
+    with pytest.raises(RuntimeError,match="Global all-trial"):
+        triage.requested_batch()
+    monkeypatch.setenv("PDUFA_ANALYZE_NOW_ALL_ENABLED","false")
+    monkeypatch.setenv("PDUFA_MEDICAL_BATCH_AUTORUN","true")
+    with pytest.raises(RuntimeError,match="cannot overlap"):
+        triage.requested_batch()
+
+
+def test_tail_requires_durable_postgresql_unless_explicit_test_only(engine,monkeypatch):
+    configure_scientific_tail(monkeypatch)
+    with pytest.raises(RuntimeError,match="PostgreSQL"):
+        triage.run_batch(engine)
+    with engine.connect() as c:
+        assert c.execute(text("SELECT COUNT(*) FROM medical_scientific_triage_snapshots")).scalar_one()==0
+
+
+def test_three_trial_batch_preflights_before_any_scientific_snapshot_writes(engine,monkeypatch):
+    configure_scientific_tail(monkeypatch)
+    victim="NCT04576949"
+    run=ledger.trial_history(engine,victim)["sourceRunId"]
+    with engine.begin() as c:
+        c.execute(text("""DELETE FROM medical_continuous_stages
+            WHERE run_id=:run AND stage_index=11"""),{"run":run})
+    with pytest.raises(RuntimeError,match="Exactly 12"):
+        triage.run_batch(engine,test_only=True)
+    with engine.connect() as c:
+        assert c.execute(text("SELECT COUNT(*) FROM medical_scientific_triage_snapshots")).scalar_one()==0
+
+
+def test_three_trial_tail_is_idempotent_and_preserves_29_original_research_runs(engine,monkeypatch):
+    configure_scientific_tail(monkeypatch)
+    first=triage.run_batch(engine,test_only=True)
+    second=triage.run_batch(engine,test_only=True)
+    assert len(first)==len(second)==3
+    assert [x["snapshotId"] for x in first]==[x["snapshotId"] for x in second]
+    assert all(x["methodPositions"]==800 and x["methodsWithIndependentGrade"]==0
+               for x in first)
+    assert all(x["scientificSignoff"] is False and x["certainty"]=="NOT_VALIDATED"
+               for x in first)
+    with engine.connect() as c:
+        assert c.execute(text("SELECT COUNT(*) FROM medical_scientific_triage_snapshots")).scalar_one()==3
+        assert c.execute(text("SELECT COUNT(*) FROM medical_continuous_stages")).scalar_one()==348
+        assert c.execute(text("SELECT COUNT(*) FROM medical_assessment_review_events")).scalar_one()==0
+        assert c.execute(text("SELECT COUNT(*) FROM medical_assessment_phase_events")).scalar_one()==0
