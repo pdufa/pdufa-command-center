@@ -204,11 +204,13 @@ def monitor_once(engine, *, storage_ready, require_postgres=True):
                      "PDUFA: medical source collection has "+str(count)+" failed runs; inspect run status.")
     # A second or later immutable revision can document changed source
     # observations. This event is not described as a validated FDA forecast.
-    with engine.connect() as c:
-        changed=list(c.execute(text("""SELECT run_id,nct_id,ordinal
-            FROM medical_prediction_revisions
-            WHERE ordinal>1 AND evidence_changed=TRUE
-            ORDER BY recorded_at DESC LIMIT 20""")).mappings())
+    changed=[]
+    if "medical_prediction_revisions" in _tables(engine):
+        with engine.connect() as c:
+            changed=list(c.execute(text("""SELECT run_id,nct_id,ordinal
+                FROM medical_prediction_revisions
+                WHERE ordinal>1 AND evidence_changed=TRUE
+                ORDER BY recorded_at DESC LIMIT 20""")).mappings())
     for row in changed:
         _queue_event(engine,"EVIDENCE_UPDATE","medical-evidence:"+row["run_id"],
             "PDUFA medical evidence changed for "+row["nct_id"]+
