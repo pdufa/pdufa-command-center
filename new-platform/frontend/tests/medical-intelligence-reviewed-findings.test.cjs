@@ -25,7 +25,8 @@ test("reviewed findings map only to exact FOCUS NCTs and trace to valid sources"
       assert.ok(typeof f[k]==="string"&&f[k].length>10,f.id+" missing "+k);
   }
   assert.equal(REVIEW_COVERAGE.reviewedNcts,new Set(REVIEWED_FINDINGS.flatMap(f=>f.relatedNcts)).size);
-  assert.ok(REVIEW_COVERAGE.reviewedNcts<roster.records.length,"Do not imply universal source coverage");
+  assert.equal(REVIEW_COVERAGE.reviewedNcts,roster.records.length,"Every NCT requires at least one sourced finding; this is NOT full adjudication");
+  for(const nct of ncts)assert.ok(findingsForNct(nct).length>=1,"Source research gap for "+nct);
 });
 test("FDA objections, prior CRL and extension remain separate from predictions",()=>{
   assert.ok(findingsForNct("NCT05126758").some(f=>f.type==="REGULATORY_OBJECTION"&&f.evidence==="FDA_PRIMARY"));
