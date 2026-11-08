@@ -54,7 +54,8 @@ test("All newly researched clinical interpretations have an individual date and 
    assert.match(d.sourceDate,/^20\d\d-\d\d-\d\d$/);
    assert.ok(d.sourceDate<="2026-11-07","Future source "+c.cycleId+": "+d.sourceDate);
    assert.match(d.sourceUrl,/^https:\/\//);
-   for(const prop of ["topic","observedClinicalEvidence","specialistInterpretation","neededToResolve"])
+   assert.ok(d.topic.length>=10,c.cycleId+" missing topic");
+   for(const prop of ["observedClinicalEvidence","specialistInterpretation","neededToResolve"])
     assert.ok(d[prop].length>35,c.cycleId+" missing "+prop);
   }
  }
