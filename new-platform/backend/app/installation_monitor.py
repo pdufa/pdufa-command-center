@@ -161,13 +161,13 @@ def _queue_event(engine,kind,key,message):
             {"key":key,"kind":kind,"msg":message[:3500],"at":utc_now()})
 
 
-def monitor_once(engine, *, storage_ready):
+def monitor_once(engine, *, storage_ready, require_postgres=True):
     """Observe, persist milestone/failure alerts, and attempt safe delivery.
 
     Does not generate installation successes from source-code presence or send
     anything if storage is unavailable. Telegram delivery is opt-in.
     """
-    report=collect(engine,storage_ready=storage_ready,require_postgres=True)
+    report=collect(engine,storage_ready=storage_ready,require_postgres=require_postgres)
     if report["storage"]["state"]!="READY":
         return report
     initialize(engine)
