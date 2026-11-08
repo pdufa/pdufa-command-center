@@ -161,6 +161,6 @@ export default async function SpecialistReviewPage({searchParams}:{searchParams:
      <div style={{fontSize:13,lineHeight:1.9}}>{CLINICAL_SPECIALTY_STANDARDS.map(s=><div key={s.url}><a href={s.url} target="_blank" rel="noopener noreferrer">{s.title}</a></div>)}</div>
      <p style={{fontSize:13,color:theme.muted}}>Status: research framework + partial sourced examples. Clinical sign-off: none. FDA application disposition and timing forecast: indeterminate unless independently established. No invented approval odds.</p>
    </section>
-   <p style={{fontSize:13,color:theme.muted,marginTop:18}}><Link href="/medical-intelligence-preview/adjudication">Independent clinical evidence adjudication</Link> · <Link href="/medical-intelligence-preview">FOCUS trial evidence</Link> · <Link href="/medical-intelligence-preview/master-depth">20-level scientific analysis</Link> · <Link href="/medical-intelligence-preview/applications">FDA application dossiers</Link>. This preview cannot alter production POOL or FOCUS.</p>
+   <p style={{fontSize:13,color:theme.muted,marginTop:18}}><Link href={"/medical-intelligence-preview/adjudication?cycle="+selected.id}>Independent clinical evidence adjudication</Link> · <Link href="/medical-intelligence-preview">FOCUS trial evidence</Link> · <Link href="/medical-intelligence-preview/master-depth">20-level scientific analysis</Link> · <Link href="/medical-intelligence-preview/applications">FDA application dossiers</Link>. This preview cannot alter production POOL or FOCUS.</p>
  </main>;
 }
