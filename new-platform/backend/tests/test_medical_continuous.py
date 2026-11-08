@@ -35,7 +35,7 @@ def test_all_twelve_stages_run_continuously_and_abstain(engine):
     def stage(index, nct):
         assert nct == NCT
         seen.append(index)
-        return "LEADS_ONLY", {"source": "https://example.com/", "search": index}
+        return ("SOURCE_RECORDED" if index == 0 else "LEADS_ONLY"), {"source": "https://example.com/", "search": index}
 
     medical.worker(engine, snapshot["runId"], step=stage)
     result = medical.latest(engine, NCT)
