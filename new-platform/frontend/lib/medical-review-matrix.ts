@@ -1,5 +1,7 @@
 /** Read-only scientific evidence projection. No forecast or score is inferred here. */
-export type Evidence = {sourceUrl: string; stageDocumentSha256?: string};
+export type Evidence = {sourceUrl: string; stageDocumentSha256?: string; sourceCapturedAt?: string;
+  classification?: "FAVORABLE"|"UNFAVORABLE"|"MISSING"|"CONTRADICTORY";
+  sourceLocation?: string; examinedFinding?: string};
 export type Revision = {review_event_id: string; verified_phase: string; phase_event_id: string;
   revision: number; disposition: string; grade: number | null; reviewer_id: string;
   evidence_reviewed_at: string; rationale: string; evidence: Evidence[]};
@@ -56,6 +58,13 @@ function sources(value: unknown): value is Evidence[] {
   return Array.isArray(value) && value.every(raw => {
     const source = object(raw);
     if (typeof source.sourceUrl !== "string" || typeof source.stageDocumentSha256 !== "string" || !/^[a-f0-9]{64}$/.test(source.stageDocumentSha256)) return false;
+    if (source.classification !== undefined &&
+        (!["FAVORABLE","UNFAVORABLE","MISSING","CONTRADICTORY"].includes(String(source.classification)) ||
+         typeof source.sourceLocation !== "string" || source.sourceLocation.trim().length < 5 ||
+         typeof source.examinedFinding !== "string" || source.examinedFinding.trim().length < 40))
+      return false;
+    if (source.sourceCapturedAt !== undefined && (typeof source.sourceCapturedAt !== "string" ||
+        !Number.isFinite(Date.parse(source.sourceCapturedAt)))) return false;
     try {
       const url = new URL(source.sourceUrl);
       return url.protocol === "https:" && !url.username && !url.password;
