@@ -91,3 +91,14 @@ test("MAIN monitor UI is protected, refreshing, expandable, and does not alter a
  assert.match(nav,/label:"MAIN",href:"\/main"/);
  assert.doesNotMatch(component,/<button[^>]+(?:sendMessage|startScan|placeOrder)/);
 });
+
+
+test("degraded PostgreSQL never passes database-backed installation gates",()=>{
+ const degraded=buildInstallationProgress({schemaVersion:1,observedAt:at,
+   storage:{state:"DEGRADED",kind:"postgresql",postgresRequired:true},
+   research:{state:"UNKNOWN"},errors:["live telemetry query failed"]},
+   {...external,apiReachable:true},at);
+ assert.equal(degraded.stages.find(s=>s.id==="infrastructure").checks.find(c=>c.id==="infra.storage").status,"BLOCKED");
+ assert.equal(degraded.stages.find(s=>s.id==="medical").checks.find(c=>c.id==="medical.db").status,"BLOCKED");
+ assert.equal(degraded.stages.find(s=>s.id==="operations").checks.find(c=>c.id==="ops.ingestion").status,"BLOCKED");
+});
