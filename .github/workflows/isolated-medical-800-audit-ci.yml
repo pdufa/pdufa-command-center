@@ -39,7 +39,11 @@ jobs:
           PDUFA_MEDICAL_METHOD_AUDIT_ENABLED: 'true'
         run: |
           python - <<'PY'
+          import os, app.main as main
           from app.main import app
+          print("MODULE FILE:", main.__file__)
+          print("FEATURE FLAGS:", {name:os.getenv(name) for name in ("PDUFA_MEDICAL_PREVIEW_ENABLED","PDUFA_MEDICAL_ASSESSMENT_LEDGER_ENABLED","PDUFA_MEDICAL_PHASE_MATRIX_ENABLED","PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_ENABLED","PDUFA_MEDICAL_METHOD_AUDIT_ENABLED")})
+          print("ALL ROUTE COUNT:", len(app.routes))
           paths={getattr(r,"path",None):set(getattr(r,"methods",[]) or ()) for r in app.routes}
           print("ACTUAL ROUTES:", sorted((p, sorted(methods)) for p,methods in paths.items() if p and ("medical-method" in p or "medical-scientific" in p or "medical-phase" in p)))
           assert "GET" in paths["/api/internal/medical-method-audit/{nct}/latest"]
