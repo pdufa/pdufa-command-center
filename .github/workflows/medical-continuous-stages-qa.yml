@@ -5,6 +5,8 @@ on:
       - feature/deep-medical-intelligence-preview-20261107
     paths:
       - 'new-platform/backend/app/medical_continuous.py'
+      - 'new-platform/backend/app/data/focus_snapshot.json'
+      - 'new-platform/frontend/data/p3PostDataActive.json'
       - 'new-platform/backend/app/main.py'
       - 'new-platform/backend/tests/test_medical_continuous.py'
       - 'new-platform/frontend/app/medical-intelligence-preview/**'
