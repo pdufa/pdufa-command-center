@@ -732,6 +732,31 @@ async def lifespan(app: FastAPI):
                             "PDUFA_MEDICAL_REGISTRY_RECONCILE_COVERAGE status=ERROR error_type=%s",
                             type(registry_exc).__name__,
                         )
+                # Read-only evidence work queue, gated on both 29/29 saved source
+                # triage and 29/29 official registry source reconciliation.
+                if (os.getenv("PDUFA_MEDICAL_PRIMARY_REVIEW_QUEUE_ENABLED","").lower()
+                        in ("true","1","yes")
+                        and getattr(app.state,"medical_registry_reconcile_ready",False)):
+                    try:
+                        from .medical_primary_evidence_queue import readiness as review_queue_readiness
+                        _review_queue = review_queue_readiness(ENGINE)
+                        app.state.medical_primary_review_queue_ready = (
+                            _review_queue["status"]=="READY_FOR_EVIDENCE_REVIEW")
+                        logging.getLogger(__name__).warning(
+                            "PDUFA_MEDICAL_PRIMARY_REVIEW_QUEUE status=%s "
+                            "registry=%d/29 sourceTriage=%d/29 humanReviewEvents=%d "
+                            "scientificSignoff=False prediction=ABSTAIN certainty=NOT_VALIDATED",
+                            "PASS" if app.state.medical_primary_review_queue_ready else "INCOMPLETE",
+                            _review_queue["registryRecordsSaved"],
+                            _review_queue["triageRecordsSaved"],
+                            _review_queue["independentScientificReviewEvents"],
+                        )
+                    except Exception as queue_exc:
+                        app.state.medical_primary_review_queue_ready=False
+                        logging.getLogger(__name__).error(
+                            "PDUFA_MEDICAL_PRIMARY_REVIEW_QUEUE status=ERROR error_type=%s",
+                            type(queue_exc).__name__,
+                        )
                 # Explicit isolated 3-NCT cohort; every run is campaign-idempotent.
                 # No startup jobs or tables are created without the opt-in gate.
                 if os.getenv("PDUFA_MEDICAL_BATCH_AUTORUN", "").lower() in ("true", "1", "yes"):
@@ -883,6 +908,19 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED","").lower() in ("true","1","yes")
     install_registry_reconcile_routes(app, lambda: ENGINE,
                                       require_medical_internal_key,
                                       require_medical_registry_reconcile_storage)
+
+# The review queue gives evidence work priorities, never a medical/FDA score.
+def require_medical_primary_review_queue_storage() -> None:
+    require_medical_registry_reconcile_storage()
+    if not getattr(app.state, "medical_primary_review_queue_ready", False):
+        raise HTTPException(status_code=503, detail="Primary evidence queue is not ready")
+
+if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED","").lower() in ("true","1","yes")
+        and os.getenv("PDUFA_MEDICAL_PRIMARY_REVIEW_QUEUE_ENABLED","").lower() in ("true","1","yes")):
+    from .medical_primary_evidence_queue import install_routes as install_primary_review_queue_routes
+    install_primary_review_queue_routes(app, lambda: ENGINE,
+                                        require_medical_internal_key,
+                                        require_medical_primary_review_queue_storage)
 
 @app.get("/api/internal/medical-canary-preflight", dependencies=[Depends(require_medical_internal_key)])
 def medical_canary_preflight():
