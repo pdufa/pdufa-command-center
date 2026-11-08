@@ -174,6 +174,15 @@ def run() -> dict:
         for entry in details["protocol_topic_locations"]:
             if entry["found"]:
                 print("CTIS_PDF_TOPIC " + entry["topic"] + " = " + repr(entry["context_excerpt"][:170]))
+        # Bounded internal reviewer cues from the exact protocol; no scores.
+        for term in ("9.4.1.1. multiplicity adjustment", "9.3. populations for analyses",
+                     "primary estimands", "further details, including methods for handling missing data",
+                     "9.2. sample size determination", "statistical analysis plan"):
+            hits = [m.start() for m in re.finditer(re.escape(term), normalized)]
+            if hits:
+                position = next((v for v in hits if v > len(normalized) * 0.45), hits[-1])
+                print("CTIS_PROTOCOL_SECTION " + term + " = " +
+                      repr(normalized[position:position+430]))
         # Do not upload extracted copyrighted text as an artifact.
         text_file.unlink()
     elif text_file.exists():
