@@ -9,6 +9,12 @@ on:
       - 'new-platform/**'
       - '.github/workflows/pdufa-new-platform-bootstrap-ci.yml'
   workflow_dispatch:
+    inputs:
+      deploy_isolated_medical_preview:
+        description: 'Opt in to isolated Render deployment only after all exact-SHA checks pass'
+        required: true
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -51,3 +57,98 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+
+  # A push never deploys Render. An explicit manual dispatch on this exact
+  # feature branch is required, and all three check jobs must succeed.
+  deploy-isolated-medical-preview:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_isolated_medical_preview && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108' }}
+    needs:
+      - permanent-retirement
+      - backend
+      - frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    permissions:
+      contents: read
+    env:
+      RENDER_SERVICE_ID: srv-dbntrkpsrm7s73aec3lg
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify exact source commit and fixed preview scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$GITHUB_REF" = "refs/heads/feature/medical-stage4-verified-method-matrix-20261108"
+          test "$RENDER_SERVICE_ID" = "srv-dbntrkpsrm7s73aec3lg"
+          echo "Verified exact source commit and isolated medical-preview target."
+      - name: Confirm isolated service and deploy precise verified commit
+        id: deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$RENDER_API_KEY" ]]; then
+            echo "::error::RENDER_API_KEY missing from Actions secrets; deployment not attempted."
+            exit 1
+          fi
+          base="https://api.render.com/v1/services/$RENDER_SERVICE_ID"
+          service="$(curl --fail --silent --show-error --retry 3 --max-time 30 \
+            -H "Authorization: Bearer $RENDER_API_KEY" "$base")"
+          if ! jq -e --arg id "$RENDER_SERVICE_ID" \
+            '.id == $id and .name == "pdufa-medical-intelligence-preview"
+             and (.repo | strings | contains("github.com/pdufa/pdufa-command-center"))
+             and (.autoDeployTrigger == "off" or .autoDeploy == "no")' \
+             >/dev/null <<< "$service"; then
+            echo "::error::Render target identity, repository, or auto-deploy-off state differs; no deployment attempted."
+            exit 1
+          fi
+          payload="$(jq -n --arg sha "$GITHUB_SHA" '{commitId: $sha, clearCache: "do_not_clear"}')"
+          reply="$(curl --fail --silent --show-error --max-time 45 -X POST \
+            -H "Authorization: Bearer $RENDER_API_KEY" \
+            -H "Content-Type: application/json" \
+            --data "$payload" "$base/deploys")"
+          deploy_id="$(jq -r '.id // empty' <<< "$reply")"
+          if [[ -z "$deploy_id" || ! "$deploy_id" =~ ^dep-[A-Za-z0-9]+$ ]]; then
+            echo "::error::Render did not return a valid deploy ID."
+            exit 1
+          fi
+          echo "deploy_id=$deploy_id" >> "$GITHUB_OUTPUT"
+          echo "Render accepted exact-SHA preview deploy: $deploy_id"
+      - name: Confirm live state and deployed commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://api.render.com/v1/services/$RENDER_SERVICE_ID"
+          deploy_id="${{ steps.deploy.outputs.deploy_id }}"
+          for attempt in $(seq 1 70); do
+            response="$(curl --fail --silent --show-error --retry 2 --max-time 30 \
+              -H "Authorization: Bearer $RENDER_API_KEY" "$base/deploys/$deploy_id")"
+            status="$(jq -r '.status // empty' <<< "$response")"
+            case "$status" in
+              live)
+                actual="$(jq -r '.commit.id // empty' <<< "$response")"
+                if [[ "$actual" != "$GITHUB_SHA" ]]; then
+                  echo "::error::Live commit mismatch. Expected $GITHUB_SHA, received $actual."
+                  exit 1
+                fi
+                echo "Isolated medical-preview backend live at verified commit $actual."
+                exit 0
+                ;;
+              build_failed|update_failed|pre_deploy_failed|canceled|deactivated)
+                echo "::error::Render deploy $deploy_id ended as $status"
+                exit 1
+                ;;
+              created|queued|build_in_progress|pre_deploy_in_progress|update_in_progress)
+                sleep 10
+                ;;
+              *)
+                echo "::error::Unrecognized Render deployment state $status; failing closed."
+                exit 1
+                ;;
+            esac
+          done
+          echo "::error::Render did not report LIVE with exact matching SHA before timeout."
+          exit 1
