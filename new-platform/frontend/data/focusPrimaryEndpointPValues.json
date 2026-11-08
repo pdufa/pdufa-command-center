@@ -1,8 +1,158 @@
 {
   "schemaVersion": 1,
   "asOf": "2026-11-07",
-  "description": "Exact-NCT primary endpoint statistical p-values sourced from issuer, regulatory filings, and journal reports; independent of cancelled surveys. Each value describes only its specified endpoint and group.",
+  "description": "Independent exact-NCT primary endpoint p-value source index, not cancelled survey data. Distinguish methods and co-primary studies; published values are not FDA approval odds. Not significant and single-arm studies are explicitly annotated.",
   "records": [
+    {
+      "nct": "NCT02500381",
+      "sourceUrl": "https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-provides-regulatory-update-amondys-45r-and-vyondys-53r",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "ESSENCE Week 96 four-step ascend velocity, prespecified ITT primary comparison",
+          "value": "=0.309"
+        }
+      ],
+      "caution": "Primary endpoint NOT statistically significant. Do not replace with subgroup/post-hoc nominal p-value."
+    },
+    {
+      "nct": "NCT03697109",
+      "sourceUrl": "https://ir.corcept.com/node/18326/html",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "GRACE randomized-withdrawal blood-pressure control",
+          "value": "=0.02"
+        }
+      ]
+    },
+    {
+      "nct": "NCT04308590",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1088856/000162828026069501/cort-20260930.htm",
+      "evidenceStatus": "PRIMARY_NOT_SIGNIFICANT_NUMERIC_UNDISCLOSED",
+      "results": [],
+      "notAvailableReason": "GRADIENT primary between-arm SBP comparison was not statistically significant; the exact between-arm p-value was not disclosed in reviewed source. p=0.012 is within-treatment change from baseline and MUST NOT be used as the primary between-arm p-value."
+    },
+    {
+      "nct": "NCT04544293",
+      "sourceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2410542",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "DLCO change at Week 24, primary endpoint",
+          "value": "<0.001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT04576949",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37432430/",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "6-week continuous abstinence, primary outcome",
+          "value": "<0.001"
+        },
+        {
+          "endpoint": "12-week continuous abstinence, primary outcome",
+          "value": "<0.001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT04716231",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41196369/",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "UPCR reduction at Week 36, prespecified interim primary endpoint",
+          "value": "<0.001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT04871282",
+      "sourceUrl": "https://investors.immunome.com/immunome-presents-additional-clinical-data-for-varegacestat-in-desmoid-tumors-at-esmo-2026/",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "RINGSIDE Part B confirmed objective response rate (RECIST v1.1), central review",
+          "value": "<0.0001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05059223",
+      "sourceUrl": "https://www.globenewswire.com/news-release/2024/03/25/2851469/33090/en/Axsome-Therapeutics-Announces-AXS-12-Achieves-Primary-Endpoint-in-the-SYMPHONY-Phase-3-Trial-in-Narcolepsy.html",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "Week 5 weekly cataplexy frequency, primary endpoint",
+          "value": "=0.018"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05113745",
+      "sourceUrl": "https://www.globenewswire.com/news-release/2024/11/26/2987364/33090/en/axsome-therapeutics-announces-axs-12-achieves-primary-endpoint-in-encore-long-term-phase-3-trial-in-narcolepsy.html",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "Randomized withdrawal cataplexy frequency, primary endpoint",
+          "value": "=0.017"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05126758",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1133869/000110465926097294/capr-20260630x10q.htm",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "HOPE-3 PUL 2.0 primary endpoint, sponsor revised/SAP-aligned model",
+          "value": "=0.029"
+        }
+      ],
+      "caution": "DISPUTED INTERPRETATION: FDA briefing reported a different prespecified analysis of HOPE-3 primary PUL (p=0.24); sponsor cites p=0.029 after analysis revisions. Do not infer statistically secure FDA acceptance; verify FDA reviews and final SAP. Also LVEF secondary p revised from 0.04 to 0.09."
+    },
+    {
+      "nct": "NCT05206370",
+      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40257755/",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "6-week continuous abstinence, primary outcome",
+          "value": "<0.001"
+        },
+        {
+          "endpoint": "12-week continuous abstinence, primary outcome",
+          "value": "<0.001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05208047",
+      "sourceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-reports-positive-results-bezuclastinib-peak",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "PEAK primary progression-free survival, bezuclastinib+sunitinib vs sunitinib",
+          "value": "<0.0001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05244304",
+      "sourceUrl": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "DRAGON primary annualized lesion growth, prespecified unstructured covariance MMRM",
+          "value": "=0.0033"
+        }
+      ],
+      "caution": "Do not substitute post-hoc model p<0.0001 for prespecified primary result."
+    },
     {
       "nct": "NCT05507203",
       "sourceUrl": "https://ir.abivax.com/static-files/99de1b8a-f695-4e75-a38f-9d970eb52d52",
@@ -34,65 +184,46 @@
       ]
     },
     {
-      "nct": "NCT04576949",
-      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/37432430/",
+      "nct": "NCT05662241",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926123040/zbio-20260930x10q.htm",
       "evidenceStatus": "SOURCE_RECORDED",
       "results": [
         {
-          "endpoint": "6-week continuous abstinence, primary outcome",
-          "value": "<0.001"
-        },
-        {
-          "endpoint": "12-week continuous abstinence, primary outcome",
-          "value": "<0.001"
+          "endpoint": "INDIGO risk of IgG4-related disease flare, primary time-to-event comparison",
+          "value": "=0.0005"
         }
       ]
     },
     {
-      "nct": "NCT05206370",
-      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/40257755/",
+      "nct": "NCT05767346",
+      "sourceUrl": "https://www.nejm.org/doi/10.1056/NEJMoa2504654",
       "evidenceStatus": "SOURCE_RECORDED",
       "results": [
         {
-          "endpoint": "6-week continuous abstinence, primary outcome",
-          "value": "<0.001"
-        },
-        {
-          "endpoint": "12-week continuous abstinence, primary outcome",
+          "endpoint": "MAPLE-HCM primary Week 24 peak oxygen uptake, aficamten vs metoprolol",
           "value": "<0.001"
         }
       ]
     },
     {
-      "nct": "NCT05059223",
-      "sourceUrl": "https://www.globenewswire.com/news-release/2024/03/25/2851469/33090/en/Axsome-Therapeutics-Announces-AXS-12-Achieves-Primary-Endpoint-in-the-SYMPHONY-Phase-3-Trial-in-Narcolepsy.html",
+      "nct": "NCT05811247",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1745648/000119312526316811/apni-20260727.htm",
       "evidenceStatus": "SOURCE_RECORDED",
       "results": [
         {
-          "endpoint": "Week 5 weekly cataplexy frequency, primary endpoint",
-          "value": "=0.018"
+          "endpoint": "SynAIRgy AHI change at Week 26 versus placebo, treatment-policy estimand",
+          "value": "<0.0001"
         }
       ]
     },
     {
-      "nct": "NCT05113745",
-      "sourceUrl": "https://www.globenewswire.com/news-release/2024/11/26/2987364/33090/en/axsome-therapeutics-announces-axs-12-achieves-primary-endpoint-in-encore-long-term-phase-3-trial-in-narcolepsy.html",
+      "nct": "NCT05813275",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1745648/000119312526316811/apni-20260727.htm",
       "evidenceStatus": "SOURCE_RECORDED",
       "results": [
         {
-          "endpoint": "Randomized withdrawal cataplexy frequency, primary endpoint",
-          "value": "=0.017"
-        }
-      ]
-    },
-    {
-      "nct": "NCT03697109",
-      "sourceUrl": "https://ir.corcept.com/node/18326/html",
-      "evidenceStatus": "SOURCE_RECORDED",
-      "results": [
-        {
-          "endpoint": "GRACE randomized-withdrawal blood-pressure control",
-          "value": "=0.02"
+          "endpoint": "LunAIRo AHI change at Week 26 versus placebo, treatment-policy estimand",
+          "value": "<0.0001"
         }
       ]
     },
@@ -112,24 +243,111 @@
       ]
     },
     {
-      "nct": "NCT04544293",
-      "sourceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2410542",
+      "nct": "NCT06087276",
+      "sourceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-positive-topline-results-1",
       "evidenceStatus": "SOURCE_RECORDED",
       "results": [
         {
-          "endpoint": "DLCO change at Week 24, primary endpoint",
+          "endpoint": "Essential3 Study 1 primary mADL11 Week 8 parallel group",
+          "value": "<0.0001"
+        },
+        {
+          "endpoint": "Essential3 Study 2 primary randomized-withdrawal maintenance of response",
+          "value": "=0.0369"
+        }
+      ],
+      "caution": "Both distinct studies share NCT06087276; preserve which p-value belongs to which design."
+    },
+    {
+      "nct": "NCT06153693",
+      "sourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/60/mineralys-therapeutics-announces-positive-topline-results",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "Launch-HTN primary placebo-adjusted automated office SBP change at Week 6, 50mg",
+          "value": "<0.0001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT06331299",
+      "sourceUrl": "https://www.urogen.com/pipeline",
+      "evidenceStatus": "NOT_APPLICABLE_SINGLE_ARM",
+      "results": [],
+      "notAvailableReason": "UTOPIA is a single-arm Phase 3 study with complete-response rate (78%, 95% CI 68-86) as primary endpoint. A comparative between-arm primary p-value is not applicable in the described design."
+    },
+    {
+      "nct": "NCT06343779",
+      "sourceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-positive-topline-data-rapide-3-pivotal-study",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "RAPIDe-3 primary median time to onset of symptom relief, PGI-C vs placebo",
+          "value": "<0.0001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT06411379",
+      "sourceUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-reports-third-quarter-2026-financial-results-and",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "VELA-2 Week 16 HiSCR75 primary composite strategy",
+          "value": "=0.053"
+        }
+      ],
+      "caution": "Primary composite strategy was NOT significant; pooled program and alternative treatment-policy strategies should not replace this trial's primary composite result."
+    },
+    {
+      "nct": "NCT06411899",
+      "sourceUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-reports-third-quarter-2026-financial-results-and",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "VELA-1 Week 16 HiSCR75 primary composite strategy",
           "value": "<0.001"
         }
       ]
     },
     {
-      "nct": "NCT04716231",
-      "sourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41196369/",
+      "nct": "NCT06445023",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm",
       "evidenceStatus": "SOURCE_RECORDED",
       "results": [
         {
-          "endpoint": "UPCR reduction at Week 36, prespecified interim primary endpoint",
-          "value": "<0.001"
+          "endpoint": "EMBARQ-CSU1 Week 12 UAS7 vs placebo, 150mg q4w",
+          "value": "<0.00001"
+        },
+        {
+          "endpoint": "EMBARQ-CSU1 Week 12 UAS7 vs placebo, 300mg q8w",
+          "value": "<0.00001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT06455202",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "EMBARQ-CSU2 Week 12 UAS7 vs placebo, 150mg q4w",
+          "value": "<0.00001"
+        },
+        {
+          "endpoint": "EMBARQ-CSU2 Week 12 UAS7 vs placebo, 300mg q8w",
+          "value": "<0.00001"
+        }
+      ]
+    },
+    {
+      "nct": "NCT06669754",
+      "sourceUrl": "https://pharvaris.gcs-web.com/news-releases/news-release-details/pharvaris-announces-positive-topline-data-chapter-3-pivotal",
+      "evidenceStatus": "SOURCE_RECORDED",
+      "results": [
+        {
+          "endpoint": "CHAPTER-3 primary HAE attack-rate reduction vs placebo",
+          "value": "<0.0001"
         }
       ]
     }
