@@ -469,13 +469,15 @@ def test_isolated_human_reviewer_writes_are_role_bound_and_default_disabled(seed
     method_body={
       "sourceRunId":runs[nct],"currentPhaseEventId":phase_id,
       "assessmentIndex":1,"methodIndex":1,"disposition":"SCORED","grade":0,
-      "sourceEvidence":[{"stageIndex":0,"sourceUrl":"https://clinicaltrials.gov/study/"+nct}],
-      "findingsClassification":["UNFAVORABLE"],
+      "sourceEvidence":[{"stageIndex":0,"sourceUrl":"https://clinicaltrials.gov/study/"+nct,
+        "classification":"UNFAVORABLE","sourceLocation":"Registry source test fixture",
+        "examinedFinding":"This is an explicitly synthetic reviewer finding against a saved source; no real clinical fact is asserted."}],
       "rationale":"Synthetic evidence comparison for the test fixture: a numeric zero here means an actual signed review in a fixture, not missing source data.",
       "evidenceReviewedAt":when,"attestation":intake.METHOD_ATTESTATION
     }
     missing=client.post(method_url,headers=method_headers,json={
-        **method_body,"findingsClassification":["MISSING"]})
+        **method_body,"sourceEvidence":[{**method_body["sourceEvidence"][0],
+                                         "classification":"MISSING"}]})
     assert missing.status_code==422
     denied=client.post(method_url,headers=phase_headers,json=method_body)
     assert denied.status_code==401
