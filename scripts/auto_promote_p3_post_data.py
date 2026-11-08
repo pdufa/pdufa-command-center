@@ -50,7 +50,9 @@ def focus_layout(headers):
 def physical_append_row(logical, shift):
     if len(logical)!=28 or shift not in (0,3):
         raise ValueError("Candidate append schema is invalid")
-    # D:F is source-only; archived research fields stay blank on new rows.
+    # The nine archived research/rubric cells are blank for new NCTs.
+    if any(str(logical[i]).strip() for i in range(10,19)):
+        raise ValueError("New record attempts to initialize retired research archive")
     return logical[:3]+["Not verified","","Not yet predicted"]+logical[3:] if shift else logical
 
 
@@ -237,7 +239,7 @@ def evaluate(catalog, caps, census, pool_ids, existing, cutoff, phase3_check=reg
                   2:next(r.get("company","") for r in census if r.get("nct_id")==nct),
                   3:status, 4:"YES - company/SEC/journal", 5:result_event.isoformat(),
                   6:"https://clinicaltrials.gov/study/" + nct, 7:day, 8:now,
-                  9:"PRIMARY_PUBLIC_ISSUER_DISCLOSURE", 10:"P3 automatic verified-source intake",
+                  9:"PRIMARY_PUBLIC_ISSUER_DISCLOSURE",
                   # Legacy rating columns 11..18 intentionally remain blank.
                   # New source rows must never initialize retired scores or controls.
                   19:regulatory["status"],
