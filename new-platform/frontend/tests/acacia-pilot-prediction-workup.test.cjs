@@ -3,6 +3,7 @@ const root=path.resolve(__dirname,"..");
 const pilot=JSON.parse(fs.readFileSync(path.join(root,"data/acacia-pilot-prediction-workup-20261108.json"),"utf8"));
 const catalog=JSON.parse(fs.readFileSync(path.resolve(__dirname,"../../backend/app/data/medical_phase_assessment_catalog.json"),"utf8"));
 const widget=fs.readFileSync(path.join(root,"app/predictions/assessment/PilotPredictionWorkup.tsx"),"utf8");
+const live=fs.readFileSync(path.join(root,"app/predictions/assessment/LivePredictionMonitor.tsx"),"utf8");
 const parent=fs.readFileSync(path.join(root,"app/predictions/assessment/ScientificMethodMatrix.tsx"),"utf8");
 
 test("pilot workup is bound to the exact trial, correct program, and zero validated predictions",()=>{
@@ -65,9 +66,10 @@ test("published endpoint and adverse-event arithmetic is independently reproduci
 });
 
 test("prediction and accuracy appear above installation but never as invented calibrated numbers",()=>{
-  assert.match(widget,/FINAL FDA PREDICTION/);
-  assert.match(widget,/PREDICTION ACCURACY/);
-  assert.match(widget,/NOT CALIBRATED/);
+  assert.match(live,/FDA PREDICTION/);
+  assert.match(live,/ACCURACY RATING/);
+  assert.match(live,/NOT CALIBRATED/);
+  assert.match(widget,/Historical evidence snapshot/);
   assert.match(widget,/Conditional regulatory scenarios/);
   assert.match(widget,/source leads for/);
   assert.match(widget,/Mapped leads are not graded or completed methods/);
