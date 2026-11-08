@@ -53,7 +53,7 @@ function validateReview(r: AssessmentTestReview, nct: string, phase: TrialPhase,
   if (!/^\d{4}-\d{2}-\d{2}/.test(r.recordedAt))
     throw Error("Test rating needs a recorded date");
   if (r.disposition === "SCORED") {
-    if (!Number.isInteger(r.grade) || (r.grade as number) < 0 || (r.grade as number) > 5)
+    if (typeof r.grade !== "number" || !Number.isInteger(r.grade) || r.grade < 0 || r.grade > 5)
       throw Error("A scientific test grade must be an integer from 0 to 5");
     if (!r.evidenceUrls?.length || r.evidenceUrls.some(url => !/^https:\/\//.test(url)))
       throw Error("A scored test requires original-source HTTPS evidence");
@@ -90,7 +90,7 @@ export function rankTrialAssessments(
     const applicable = 20 - excluded;
     const unreviewed = applicable - scored.length;
     const score = scored.length ? Math.round((scored.reduce((sum, m) => sum + Number(m.grade), 0) / scored.length) * 200) / 10 : null;
-    const status = !applicable ? "NOT_APPLICABLE" : !scored.length ? "NOT_REVIEWED" : unreviewed ? "PROVISIONAL" : "COMPLETE";
+    const status: AssessmentRanking["status"] = !applicable ? "NOT_APPLICABLE" : !scored.length ? "NOT_REVIEWED" : unreviewed ? "PROVISIONAL" : "COMPLETE";
     return { ...assessment, score, rank: null, status, scoredTests: scored.length,
       unreviewedTests: unreviewed, excludedTests: excluded, applicableTests: applicable };
   });
