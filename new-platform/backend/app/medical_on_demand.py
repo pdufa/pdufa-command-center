@@ -70,7 +70,7 @@ def initialize(engine):
 
 def register_request(connection, run_id, nct, trigger):
     """Only log source-run provenance; the medical worker remains the one executor."""
-    if trigger not in ("MANUAL","REGISTRY_CHANGE","COMPONENT_CHANGE"):
+    if trigger not in ("MANUAL","REGISTRY_CHANGE","COMPONENT_CHANGE","CONTROLLED_SOURCE_BATCH"):
         raise ValueError("Unknown analysis trigger")
     connection.execute(text("""INSERT INTO medical_analyze_requests
         (run_id,nct_id,trigger_kind,requested_at,source_sheet,component_fingerprint)
