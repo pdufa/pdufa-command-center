@@ -1,7 +1,66 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-07T04:36:11.447461+00:00",
+  "updated_at_utc": "2026-11-08T04:35:42.786956+00:00",
   "days": [
+    {
+      "date_pacific": "2026-11-07",
+      "run_id": 42446049264,
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42446049264",
+      "status": "PARTIAL",
+      "run_started_at_utc": "2026-11-08T04:15:15+00:00",
+      "scheduled_8pm_pacific_utc": "2026-11-08T04:00:00+00:00",
+      "start_delay_minutes": 15,
+      "scan_night_source": "GUARDED_SCHEDULER_INPUT",
+      "registered_at_utc": "2026-11-08T04:35:42.785827+00:00",
+      "sections": {
+        "master": {
+          "previous": null,
+          "new": null,
+          "updated": 0,
+          "removed": null,
+          "total": 11644,
+          "basis": "Same-night verified collector: tracked clinical trial inventory. This is not the qualified Pipeline total or an independently certified unique-NCT published master feed. Updated means trial records changed, not new trials or new GEM candidates."
+        },
+        "pipeline": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": null,
+          "basis": "Full mandatory Pipeline qualification totals are not established by clinical source collection."
+        },
+        "designations": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": null,
+          "basis": "FDA special designation grant records and dates require authoritative verification."
+        },
+        "gem_jr": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": null,
+          "basis": "Retired: historical GEM JR membership retained only in prior saved dates; no active screen."
+        },
+        "gem": {
+          "previous": null,
+          "new": null,
+          "updated": null,
+          "removed": null,
+          "total": null,
+          "basis": "Retired: historical GEM membership retained only in prior saved dates; no active screen."
+        }
+      },
+      "notes": [
+        "0 tracked trial records changed during this run; newly added trials and qualified Pipeline additions remain unverified.",
+        "Same-run source audit: 990 of 1121 verified; 23 unresolved, 3 conflicted, 93 unavailable, 12 not applicable. Full coverage verified: no.",
+        "Clinical collection and the full overnight sequence are different verification standards; full-source certification is not implied.",
+        "FDA, SEC, issuer and/or market source families remain unverified."
+      ]
+    },
     {
       "date_pacific": "2026-11-06",
       "run_id": 42337619911,
