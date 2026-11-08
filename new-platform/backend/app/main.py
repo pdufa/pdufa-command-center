@@ -179,7 +179,7 @@ FDA_CHART_CATEGORIES = frozenset(["original-approval","supplement-approval","ten
 FDA_CATEGORY_ROW_ID = "overlay-category-selection-v1"
 PDUFA_CHART_FEATURES = frozenset({
     "countdown", "decision", "date-history", "review-progress",
-    "safety", "raas-snapshot", "market-reaction",
+    "safety", "market-reaction",
 })
 PDUFA_FEATURE_ROW_ID = "pdufa-chart-feature-selection-v1"
 
