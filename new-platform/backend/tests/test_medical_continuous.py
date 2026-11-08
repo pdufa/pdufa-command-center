@@ -224,6 +224,9 @@ def test_direct_stage_api_obeys_same_canary_gate(engine, monkeypatch):
     medical.install_routes(app, lambda: engine, lambda: None, lambda: None)
     # Select registered FastAPI handlers by identity, then assert their API prefix.
     routes = {r.name: r for r in app.routes if hasattr(r, "endpoint")}
+    assert "create_job" in routes and "resume_job" in routes, (
+        "Medical router registration mismatch: " +
+        repr([(r.path, r.name) for r in app.routes if hasattr(r, "path")]))
     start_route = routes["create_job"]
     resume_route = routes["resume_job"]
     assert start_route.path.startswith("/api/medical-continuous/")
