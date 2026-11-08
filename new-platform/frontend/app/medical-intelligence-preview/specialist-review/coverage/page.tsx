@@ -1,8 +1,7 @@
 import Link from "next/link";
 import type {Metadata} from "next";
 import {allSpecialtyEvidenceAudits} from "../../../../lib/medical-intelligence-specialty-evidence";
-import {SPECIALIST_CASES} from "../../../../lib/medical-intelligence-specialist-casebook";
-import {EXPANDED_SPECIALIST_CASES} from "../../../../lib/medical-intelligence-specialist-expanded";
+import {ALL_SPECIALIST_CASES,getSpecialistDepthCoverage} from "../../../../lib/medical-intelligence-specialist-all";
 import {CLINICAL_SPECIALTY_AXES} from "../../../../lib/medical-intelligence-specialty";
 import {APPLICATION_CYCLES} from "../../../../lib/medical-intelligence-applications";
 
@@ -12,7 +11,9 @@ export const metadata:Metadata={
 };
 export const dynamic="force-dynamic";
 const border="#cbdacd",muted="#52645b",accent="#006351";
-const cases=[...SPECIALIST_CASES,...EXPANDED_SPECIALIST_CASES];
+const cases=ALL_SPECIALIST_CASES;
+const depth=getSpecialistDepthCoverage();
+const linkedInterpretations=depth.reduce((n,x)=>n+x.sourceLinkedDimensions,0);
 const audits=allSpecialtyEvidenceAudits();
 const sourceAxes=audits.reduce((n,a)=>n+a.sourceBackedAxes,0);
 const totalAxes=APPLICATION_CYCLES.length*CLINICAL_SPECIALTY_AXES.length;
@@ -29,6 +30,8 @@ export default function SpecialistCoveragePage(){
     ["Areas with relevant curated source",sourceAxes],
     ["Areas still lacking curated source",totalAxes-sourceAxes],
     ["Partial specialty case dossiers",cases.length],
+    ["Clinical interpretations",depth.reduce((n,x)=>n+x.clinicalDimensions,0)],
+    ["Per-interpretation source links",linkedInterpretations],
     ["Licensed specialist sign-offs",0]
    ].map(([label,value])=><div key={String(label)} style={{border:"1px solid "+border,borderRadius:11,padding:14,background:"#fff"}}>
     <div style={{fontSize:12,color:muted}}>{label}</div><div style={{fontSize:28,fontWeight:750,marginTop:6}}>{value}</div>
@@ -47,11 +50,12 @@ export default function SpecialistCoveragePage(){
      </tr></thead>
      <tbody>{audits.map(a=>{
        const detail=cases.find(c=>c.cycleId===a.cycleId);
+       const coverage=depth.find(d=>d.cycleId===a.cycleId);
        return <tr key={a.cycleId} style={{borderBottom:"1px solid "+border}}>
         <td style={{padding:9}}><strong><Link href={"/medical-intelligence-preview/specialist-review?cycle="+a.cycleId}>{a.drug}</Link></strong><div style={{fontSize:11,color:muted}}>{a.specialty}</div></td>
         {a.axes.map(ax=><td key={ax.axis} title={ax.sourceCount?ax.sourceCount+" evidence pointers — clinical interpretation incomplete":"No curated evidence mapped to this topic"} style={{textAlign:"center",padding:8,color:ax.sourceCount?accent:muted,fontWeight:ax.sourceCount?700:400}}>{ax.sourceCount||"—"}</td>)}
         <td style={{textAlign:"center",padding:9}}><strong>{a.sourceBackedAxes}/10</strong></td>
-        <td style={{padding:9,color:muted}}>{detail?detail.dimensions.length+" sourced interpretations; incomplete":"Initial curated evidence only; specialist review incomplete"}</td>
+        <td style={{padding:9,color:muted}}>{detail?detail.dimensions.length+" clinical interpretations; "+(coverage?.sourceLinkedDimensions??0)+" individually source-linked; incomplete":"Initial curated evidence only; specialist review incomplete"}</td>
        </tr>;
      })}</tbody>
     </table>
