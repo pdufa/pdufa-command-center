@@ -27,6 +27,14 @@ export default function PredictionsPage(){
       <strong> No numerical forecast has been independently validated or released.</strong>
       Until then, each outcome remains <strong>ABSTAIN</strong> and certainty remains <strong>NOT VALIDATED</strong>.
     </p>
+    <p style={{margin:"12px 0 7px",fontSize:14,lineHeight:1.6}}>
+      <Link href="/predictions/assessment" style={{fontWeight:800,color:"#087260",textDecoration:"underline"}}>
+        Explore the 29-trial Deep Clinical Subspecialty research and evidence-readiness ledger
+      </Link>
+      <span style={{display:"block",fontSize:12,color:"#657c74"}}>
+        Source-linked partial clinical dossiers and missing-evidence checkpoints. Not completed assessments or validated forecasts.
+      </span>
+    </p>
     <FocusPredictionNavigator/>
     <section style={{...card,background:"#f5faf7",marginBottom:16}} aria-label="Independent prediction certainty">
       <h2 style={{margin:"0 0 9px",fontSize:19}}>How prediction certainty is determined</h2>
