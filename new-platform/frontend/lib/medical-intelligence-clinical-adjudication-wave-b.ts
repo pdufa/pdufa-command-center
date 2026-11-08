@@ -21,7 +21,7 @@ export const ADJUDICATION_WAVE_B:readonly AdjudicationCase[]=[
       {
         "id": "imnm-pfs",
         "role": "FAVORABLE",
-        "type": "PEER_REVIEWED_TRIAL",
+        "type": "CONFERENCE_ABSTRACT",
         "date": "2026-06-01",
         "title": "ASCO RINGSIDE trial abstract",
         "url": "https://ascopubs.org/doi/10.1200/JCO.2026.44.16_suppl.11506",
