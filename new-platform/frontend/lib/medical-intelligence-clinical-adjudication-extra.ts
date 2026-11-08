@@ -221,7 +221,7 @@ export const ADDITIONAL_ADJUDICATION_CASES:readonly AdjudicationCase[]=[
         "title": "Corcept November 2026 Form 10-Q",
         "url": "https://www.sec.gov/Archives/edgar/data/1088856/000162828026069501/cort-20260930.htm",
         "section": "GRADIENT hypertension and metabolic efficacy",
-        "trial": "NCT03697109",
+        "trial": "NCT04308590",
         "measure": "BP between-group treatment contrast",
         "result": "Sponsor reported GRADIENT's between-arm systolic BP contrast did not meet statistical significance despite favorable within-arm and metabolic measures.",
         "limits": "GRADIENT corresponds to another linked NCT in the same application; the two trial data should not be assigned as a GRACE-specific statistical outcome."
