@@ -216,6 +216,51 @@ def pm_search(term):
     return [{"pmid": x, "url": "https://pubmed.ncbi.nlm.nih.gov/" + x + "/"} for x in ids]
 
 
+
+def application_roster_status():
+    """Verify packaged identity mapping, not the FDA's current application status."""
+    expected = set(roster())
+    data = json.loads(APPLICATIONS.read_text(encoding="utf-8"))
+    rows = data.get("records", [])
+    if data.get("schemaVersion") != 1 or data.get("asOf") != "2026-11-07" or not isinstance(rows, list):
+        raise ValueError("Application map source version not recognized")
+    by_nct = {row.get("nct"): row for row in rows if isinstance(row, dict)}
+    if len(by_nct) != len(rows) or set(by_nct) != expected:
+        raise ValueError("Application map is not a unique, complete FOCUS identity set")
+    ids = set()
+    ambiguous = []
+    for nct, row in by_nct.items():
+        apps = row.get("candidateApplications", [])
+        if not isinstance(apps, list) or not apps or row.get("designations") != []:
+            raise ValueError("Original-source application identities incomplete or designation claims unverified")
+        indications = set()
+        drugs = set()
+        for app in apps:
+            if not isinstance(app, dict) or not str(app.get("sourceUrl", "")).startswith("https://"):
+                raise ValueError("An FDA application lead lacks a dated secure source")
+            if not isinstance(app.get("sourceDate"), str) or app["sourceDate"] > data["asOf"]:
+                raise ValueError("An FDA application lead is future dated or undated")
+            if not str(app.get("cycleId", "")):
+                raise ValueError("Application cycle identity absent")
+            ids.add(app["cycleId"])
+            indications.add(app.get("indication"))
+            drugs.add(app.get("drug"))
+        if len(indications) != 1 or len(drugs) != 1:
+            ambiguous.append(nct)
+            if row.get("indication") or row.get("drug"):
+                raise ValueError("Shared study attributed to a specific unverified application")
+        elif row.get("indication") not in indications or row.get("drug") not in drugs:
+            raise ValueError("Study-level labels do not match exact application records")
+    return {"state": "VALID", "asOf": data["asOf"],
+            "focusNctCount":len(expected),"coveredNctCount":len(by_nct),
+            "applicationCycleCount":len(ids),
+            "sharedIndicationUnresolvedNcts":ambiguous,
+            "regulatorySourceType":"SPONSOR_SEC_RECONSTRUCTION",
+            "fdaApplicationStatusVerified":False,
+            "clinicalResearchSignoff":False}
+
+
+
 def program_record(nct):
     """Dated source-linked application context; not FDA-confirmed status.
 
