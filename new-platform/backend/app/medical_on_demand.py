@@ -17,7 +17,7 @@ from pathlib import Path
 
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel, Field
-from sqlalchemy import text
+from sqlalchemy import text, inspect
 
 LOG = logging.getLogger(__name__)
 LEGACY = Path(__file__).resolve().parent / "data" / "focus_legacy_score_snapshot.json"
@@ -115,12 +115,19 @@ def initialize(engine):
         c.execute(text("""CREATE TABLE IF NOT EXISTS medical_analyze_requests (
             run_id TEXT PRIMARY KEY REFERENCES medical_continuous_runs(run_id),
             nct_id TEXT NOT NULL, trigger_kind TEXT NOT NULL, requested_at TEXT NOT NULL,
-            source_sheet TEXT NOT NULL, component_fingerprint TEXT NOT NULL)"""))
+            source_sheet TEXT NOT NULL, component_fingerprint TEXT NOT NULL,
+            initial_report TEXT)"""))
         c.execute(text("""CREATE INDEX IF NOT EXISTS medical_analyze_by_nct
             ON medical_analyze_requests(nct_id,requested_at)"""))
         c.execute(text("""CREATE TABLE IF NOT EXISTS medical_component_watch (
             nct_id TEXT PRIMARY KEY, component_fingerprint TEXT NOT NULL,
             checked_at TEXT NOT NULL, triggered_at TEXT)"""))
+    # Non-destructive forward migration for preview DBs that already created
+    # the provenance table before immediate initial snapshots were introduced.
+    columns={item["name"] for item in inspect(engine).get_columns("medical_analyze_requests")}
+    if "initial_report" not in columns:
+        with engine.begin() as c:
+            c.execute(text("ALTER TABLE medical_analyze_requests ADD COLUMN initial_report TEXT"))
 
 
 def register_request(connection, run_id, nct, trigger):
@@ -133,6 +140,12 @@ def register_request(connection, run_id, nct, trigger):
         ON CONFLICT(run_id) DO NOTHING"""), {
           "run":run_id,"nct":nct,"trigger":trigger,"now":utcnow(),
           "version":operational_fingerprint()})
+    # Save the *initial*, uncalibrated report at request time even if a network
+    # outage prevents a complete 12-stage research run.
+    initial=build_saved_analysis(connection,run_id,nct,[])
+    connection.execute(text("""UPDATE medical_analyze_requests
+        SET initial_report=:report WHERE run_id=:run AND initial_report IS NULL"""),
+        {"report":json.dumps(initial,allow_nan=False),"run":run_id})
 
 
 def start_now(engine,nct,request_key,*,submit=True,trigger="MANUAL"):
@@ -170,13 +183,16 @@ def get_run(engine,nct,run_id):
             raise LookupError("Analysis not recorded for exact NCT")
         stored=c.execute(text("SELECT report,recorded_at,ordinal FROM medical_prediction_revisions WHERE run_id=:run"),
                          {"run":run_id}).mappings().first()
+        captured=c.execute(text("SELECT initial_report FROM medical_analyze_requests WHERE run_id=:run"),
+                           {"run":run_id}).scalar()
         stages=c.execute(text("""SELECT stage_index,state,document,finished_at
             FROM medical_continuous_stages WHERE run_id=:run ORDER BY stage_index"""),
             {"run":run_id}).mappings().all()
     return {"nct":nct,"runId":record["run_id"],"status":record["status"],
             "startedAt":record["created_at"],"updatedAt":record["updated_at"],
             "completedStages":len(stages),"totalStages":len(core.STAGES),
-            "analysis":json.loads(stored["report"]).get("analyzeNow") if stored else None,
+            "analysis":json.loads(stored["report"]).get("analyzeNow") if stored else
+                       json.loads(captured) if captured else None,
             "revision":int(stored["ordinal"]) if stored else None,
             "savedAt":stored["recorded_at"] if stored else None,
             "stages":[{"number":int(s["stage_index"])+1,"state":s["state"],
@@ -197,20 +213,35 @@ def latest(engine,nct):
 
 
 def history(engine,nct):
-    """Archive is independent of current FOCUS membership or spreadsheet location."""
+    """All runs, including interrupted/failed, stay keyed to exact NCT.
+
+    Existing completed revisions are preserved. Pending analyses use their
+    immutable initial snapshots; no analysis is fabricated on a GET.
+    """
     _check_identity(nct)
     with engine.connect() as c:
-        entries=c.execute(text("""SELECT run_id,ordinal,report,recorded_at,evidence_changed
-            FROM medical_prediction_revisions WHERE nct_id=:nct
-            ORDER BY ordinal DESC"""),{"nct":nct}).mappings().all()
+        entries=list(c.execute(text("""SELECT r.run_id,r.status,r.created_at,
+            a.requested_at,a.initial_report,
+            p.ordinal,p.report,p.recorded_at,p.evidence_changed
+            FROM medical_continuous_runs r
+            LEFT JOIN medical_analyze_requests a ON a.run_id=r.run_id
+            LEFT JOIN medical_prediction_revisions p ON p.run_id=r.run_id
+            WHERE r.nct_id=:nct ORDER BY r.created_at DESC,r.run_id DESC LIMIT 100"""),
+            {"nct":nct}).mappings())
+    reports=[]
+    for row in entries:
+        completed=json.loads(row["report"]) if row["report"] else None
+        initial=json.loads(row["initial_report"]) if row["initial_report"] else None
+        reports.append({"runId":row["run_id"],"status":row["status"],
+            "revision":int(row["ordinal"]) if row["ordinal"] is not None else None,
+            "savedAt":row["recorded_at"] or row["requested_at"] or row["created_at"],
+            "evidenceChanged":bool(row["evidence_changed"]) if row["report"] else False,
+            "analysis":completed.get("analyzeNow") if completed else initial,
+            "researchPrediction":completed.get("outcomes") if completed else None,
+            "certainty":completed.get("certainty") if completed else None})
     return {"nct":nct,"locationIndependent":True,"historyKey":"EXACT_NCT",
-            "total":len(entries),
-            "records":[{"runId":x["run_id"],"revision":int(x["ordinal"]),
-                        "savedAt":x["recorded_at"],"evidenceChanged":bool(x["evidence_changed"]),
-                        "analysis":json.loads(x["report"]).get("analyzeNow"),
-                        "researchPrediction":json.loads(x["report"]).get("outcomes"),
-                        "certainty":json.loads(x["report"]).get("certainty")}
-                       for x in entries]}
+            "total":len(reports),"records":reports}
+
 
 
 def build_saved_analysis(connection,run_id,nct,details):
