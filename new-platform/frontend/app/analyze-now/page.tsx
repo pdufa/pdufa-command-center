@@ -1,4 +1,5 @@
 import Link from "next/link";
+import CanaryReadiness from "./CanaryReadiness";
 import AnalyzeNowTrial from "../focus/AnalyzeNowTrial";
 import type {Metadata} from "next";
 import focus from "../../data/p3PostDataActive.json";
@@ -21,6 +22,7 @@ export default async function AnalyzeNowHistoryPage({searchParams}:{searchParams
   <h1>Analyze Now · 12-stage medical research canary</h1>
   <p>Enter an exact ClinicalTrials.gov NCT to view immutable source-research history. Only the FOCUS canary NCT06081894 may start a new 12-stage research run before a verified database-backed rollout; older trials remain read-only. Running research requires an enabled preview backend and persistent PostgreSQL.</p>
   <p><strong>Medical evidence is not an FDA prediction.</strong> Approval, CRL, and review-delay outcomes stay ABSTAIN; certainty is not validated until independent calibration and review.</p>
+  <CanaryReadiness/>
   <form action="/analyze-now" method="get" style={{display:"flex",gap:9,flexWrap:"wrap",margin:"15px 0"}}>
    <label style={{display:"grid",gap:6,flex:"1 1 260px"}}>Exact NCT
     <input name="nct" defaultValue={nct} placeholder="NCT06081894" pattern="NCT[0-9]{8}" required
