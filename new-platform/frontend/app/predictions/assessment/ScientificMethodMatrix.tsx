@@ -2,6 +2,7 @@
 import {useEffect, useRef, useState} from "react";
 import type {AssessmentReview, CatalogMatrix, Evidence, MethodReview, ReviewMatrix} from "../../../lib/medical-review-matrix";
 import ScientificInstallationStatus from "./ScientificInstallationStatus";
+import PhaseVerificationPanel from "./PhaseVerificationPanel";
 
 const panel = {border: "1px solid #a8c9bc", borderRadius: 9, padding: 14, margin: "12px 0"} as const;
 function SourceLinks({sources}: {sources: Evidence[]}) {
@@ -42,6 +43,7 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
   const pending = useRef(new Set<number>());
+  const firstAssessment = useRef<HTMLDetailsElement|null>(null);
   const controller = useRef<AbortController | null>(null);
   useEffect(() => {
     const abort = new AbortController(); controller.current = abort;
@@ -71,9 +73,20 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
       if (!controller.current?.signal.aborted) setErrors(previous => ({...previous, [index]: e instanceof Error ? e.message : "Method evidence unavailable"}));
     } finally {pending.current.delete(index);}
   }
+  function openFirstMethods(){
+    const row=firstAssessment.current;
+    if(!row)return;
+    row.open=true;
+    row.scrollIntoView({behavior:"smooth",block:"start"});
+  }
   return <section style={{...panel, background: "#f5faf7"}} aria-label={"Scientific method matrix for " + nct}>
     <h2>Scientific assessment matrix · {nct}</h2>
+    <button type="button" onClick={openFirstMethods} disabled={!review||!catalog}
+      style={{padding:"12px 14px",borderRadius:9,border:"1px solid #218169",background:"#dbf7e9",color:"#154c3f",fontWeight:800,marginBottom:8}}>
+      Open Assessment 1 → 20 scientific methods
+    </button>
     <ScientificInstallationStatus />
+    <PhaseVerificationPanel nct={nct} />
     <p>8 subject layers · 40 assessments · 20 methods per assessment. Source collection and methodology slots do not count as independently graded scientific tests.</p>
     <details style={panel}><summary>Status, freshness and dependency definitions</summary>
       <p>Unreviewed means no recorded current-phase grade. Provisional means a partial assessment; complete means every applicable method has a recorded reviewer event. Independent source verification, reviewer authorization and clinical validation remain separate release requirements. Not applicable is an explicit reviewer exclusion. Stale phase means an earlier phase event requires fresh review. A grade is evidence strength, never an FDA probability.</p>
@@ -98,7 +111,9 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
       </details>
       {catalog.assessments.map((assessment, i) => {
         const row = review.assessments[i], detail = details[assessment.assessmentIndex];
-        return <details key={assessment.assessmentIndex} style={panel} onToggle={event => {if (event.currentTarget.open) void loadAssessment(assessment.assessmentIndex);}}>
+        return <details key={assessment.assessmentIndex} ref={i===0?firstAssessment:undefined}
+          id={i===0?"first-scientific-assessment":undefined}
+          style={{...panel,scrollMarginTop:90}} onToggle={event => {if (event.currentTarget.open) void loadAssessment(assessment.assessmentIndex);}}> 
           <summary><strong>Layer {assessment.layerId} · {assessment.assessmentId} {assessment.label}</strong> · {row.status} · {row.reviewedMethods} scored / 20 · {row.scoreOutOf100 === null ? "Unscored" : row.scoreOutOf100 + " / 100 evidence strength"}</summary>
           <p>{assessment.objective}</p>
           <p>Priority: {assessment.methods[0]?.priorityTier} · {assessment.methods[0]?.phaseApplicability}. Investigation order is not an observed risk.</p>
