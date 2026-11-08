@@ -12,7 +12,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": ""
+      "notes": "",
+      "drug": "obefazimod",
+      "indication": "ulcerative colitis"
     },
     {
       "nct": "NCT05507216",
@@ -21,7 +23,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": ""
+      "notes": "",
+      "drug": "obefazimod",
+      "indication": "ulcerative colitis"
     },
     {
       "nct": "NCT04576949",
@@ -30,7 +34,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": ""
+      "notes": "",
+      "drug": "cytisinicline",
+      "indication": "smoking cessation"
     },
     {
       "nct": "NCT05206370",
@@ -39,7 +45,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": ""
+      "notes": "",
+      "drug": "cytisinicline",
+      "indication": "smoking cessation"
     },
     {
       "nct": "NCT05811247",
@@ -48,7 +56,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": ""
+      "notes": "",
+      "drug": "AD109 (Oxnimbi)",
+      "indication": "obstructive sleep apnea"
     },
     {
       "nct": "NCT05813275",
@@ -57,7 +67,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": ""
+      "notes": "",
+      "drug": "AD109 (Oxnimbi)",
+      "indication": "obstructive sleep apnea"
     },
     {
       "nct": "NCT05059223",
@@ -75,7 +87,9 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "AXS-12 (reboxetine)",
+      "indication": "narcolepsy with cataplexy"
     },
     {
       "nct": "NCT05113745",
@@ -93,7 +107,9 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "AXS-12 (reboxetine)",
+      "indication": "narcolepsy with cataplexy"
     },
     {
       "nct": "NCT05244304",
@@ -143,7 +159,9 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "tinlarebant",
+      "indication": "Stargardt disease type 1"
     },
     {
       "nct": "NCT05126758",
@@ -177,7 +195,9 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "deramiocel",
+      "indication": "Duchenne muscular dystrophy"
     },
     {
       "nct": "NCT06445023",
@@ -186,7 +206,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": ""
+      "notes": "",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria"
     },
     {
       "nct": "NCT06455202",
@@ -195,7 +217,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": ""
+      "notes": "",
+      "drug": "barzolvolimab",
+      "indication": "chronic spontaneous urticaria"
     },
     {
       "nct": "NCT05208047",
@@ -229,7 +253,9 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "bezuclastinib + sunitinib",
+      "indication": "gastrointestinal stromal tumor after imatinib"
     },
     {
       "nct": "NCT03697109",
@@ -247,7 +273,9 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "relacorilant",
+      "indication": "endogenous Cushing syndrome"
     },
     {
       "nct": "NCT04308590",
@@ -265,7 +293,9 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "relacorilant",
+      "indication": "endogenous Cushing syndrome"
     },
     {
       "nct": "NCT05767346",
@@ -274,7 +304,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": "Existing aficamten oHCM authorization cannot be assumed to establish any particular designation for the nHCM sNDA."
+      "notes": "Existing aficamten oHCM authorization cannot be assumed to establish any particular designation for the nHCM sNDA.",
+      "drug": "aficamten",
+      "indication": "obstructive hypertrophic cardiomyopathy"
     },
     {
       "nct": "NCT06081894",
@@ -283,7 +315,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": "Existing aficamten oHCM authorization cannot be assumed to establish any particular designation for the nHCM sNDA."
+      "notes": "Existing aficamten oHCM authorization cannot be assumed to establish any particular designation for the nHCM sNDA.",
+      "drug": "aficamten",
+      "indication": "non-obstructive hypertrophic cardiomyopathy"
     },
     {
       "nct": "NCT04871282",
@@ -301,7 +335,9 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "varegacestat",
+      "indication": "desmoid tumors"
     },
     {
       "nct": "NCT06411379",
@@ -310,7 +346,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": "Sonelokimab Fast Track designation for PPP is a DIFFERENT indication from the HS VELA studies, so it is intentionally excluded."
+      "notes": "Sonelokimab Fast Track designation for PPP is a DIFFERENT indication from the HS VELA studies, so it is intentionally excluded.",
+      "drug": "sonelokimab",
+      "indication": "hidradenitis suppurativa"
     },
     {
       "nct": "NCT06411899",
@@ -319,7 +357,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": "Sonelokimab Fast Track designation for PPP is a DIFFERENT indication from the HS VELA studies, so it is intentionally excluded."
+      "notes": "Sonelokimab Fast Track designation for PPP is a DIFFERENT indication from the HS VELA studies, so it is intentionally excluded.",
+      "drug": "sonelokimab",
+      "indication": "hidradenitis suppurativa"
     },
     {
       "nct": "NCT06153693",
@@ -328,7 +368,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": ""
+      "notes": "",
+      "drug": "lorundrostat",
+      "indication": "uncontrolled hypertension"
     },
     {
       "nct": "NCT06343779",
@@ -346,7 +388,10 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "deucrictibant",
+      "indication": "hereditary angioedema",
+      "formulation": "deucrictibant immediate-release; on-demand HAE"
     },
     {
       "nct": "NCT06669754",
@@ -364,7 +409,10 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "deucrictibant",
+      "indication": "hereditary angioedema",
+      "formulation": "deucrictibant extended-release; prophylactic HAE"
     },
     {
       "nct": "NCT06087276",
@@ -382,7 +430,9 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "ulixacaltamide",
+      "indication": "essential tremor"
     },
     {
       "nct": "NCT02500381",
@@ -400,7 +450,9 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "casimersen and golodirsen",
+      "indication": "Duchenne muscular dystrophy exon-skipping indications"
     },
     {
       "nct": "NCT04544293",
@@ -442,7 +494,9 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "molgramostim inhalation solution",
+      "indication": "autoimmune pulmonary alveolar proteinosis"
     },
     {
       "nct": "NCT06331299",
@@ -451,7 +505,9 @@
       "drugAndIndicationScope": "Exact NCT / drug / FDA intended indication crosswalk required; listed statuses belong to treatment programs or applications, not the trial itself.",
       "designations": [],
       "status": "NOT_VERIFIED",
-      "notes": ""
+      "notes": "",
+      "drug": "UGN-103 (mitomycin intravesical)",
+      "indication": "recurrent low-grade intermediate-risk non-muscle-invasive bladder cancer"
     },
     {
       "nct": "NCT04716231",
@@ -485,7 +541,9 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "atacicept (TRUTAKNA)",
+      "indication": "primary IgA nephropathy"
     },
     {
       "nct": "NCT05662241",
@@ -503,7 +561,15 @@
         }
       ],
       "status": "SOURCE_LINKED",
-      "notes": ""
+      "notes": "",
+      "drug": "obexelimab",
+      "indication": "IgG4-related disease"
     }
-  ]
+  ],
+  "statusSummary": {
+    "focusTrials": 29,
+    "sourceLinkedTrials": 15,
+    "notVerifiedTrials": 14,
+    "totalSourceLinkedClaims": 28
+  }
 }
