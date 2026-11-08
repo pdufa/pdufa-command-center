@@ -602,6 +602,38 @@ async def lifespan(app: FastAPI):
                 from .medical_continuous import start as start_medical_continuous
                 start_medical_continuous(ENGINE)
                 app.state.medical_canary_initialized = True
+                # Stage 2 is independently opt-in and creates only new additive tables.
+                # A complete 29-NCT source roster is required; no scores are inferred.
+                if os.getenv("PDUFA_MEDICAL_ASSESSMENT_LEDGER_ENABLED", "").lower() in ("true", "1", "yes"):
+                    try:
+                        from .medical_assessment_ledger import (
+                            initialize as initialize_medical_ledger,
+                            seed_roster as seed_medical_ledger,
+                        )
+                        initialize_medical_ledger(ENGINE)
+                        assessment_report = seed_medical_ledger(ENGINE)
+                        app.state.medical_assessment_ledger_ready = (
+                            assessment_report["status"] == "READY_FOR_REVIEW"
+                            and assessment_report["sourceComplete"] == assessment_report["canonicalTrials"]
+                        )
+                        logging.getLogger(__name__).warning(
+                            "PDUFA_MEDICAL_ASSESSMENT_LEDGER status=%s "
+                            "sourceComplete=%d/%d sourceStages=%d "
+                            "phaseVerified=%d reviewEvents=%d "
+                            "scientificSignoff=False prediction=ABSTAIN certainty=NOT_VALIDATED",
+                            "PASS" if app.state.medical_assessment_ledger_ready else "INCOMPLETE",
+                            assessment_report["sourceComplete"],
+                            assessment_report["canonicalTrials"],
+                            assessment_report["sourceStageCount"],
+                            assessment_report["phaseVerifiedNcts"],
+                            assessment_report["reviewEvents"],
+                        )
+                    except Exception as ledger_exc:
+                        app.state.medical_assessment_ledger_ready = False
+                        logging.getLogger(__name__).error(
+                            "PDUFA_MEDICAL_ASSESSMENT_LEDGER status=ERROR error_type=%s",
+                            type(ledger_exc).__name__,
+                        )
                 # Explicit isolated 3-NCT cohort; every run is campaign-idempotent.
                 # No startup jobs or tables are created without the opt-in gate.
                 if os.getenv("PDUFA_MEDICAL_BATCH_AUTORUN", "").lower() in ("true", "1", "yes"):
@@ -697,6 +729,20 @@ if os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes"
     from .medical_on_demand import install_routes as install_analyze_now_routes
     install_medical_continuous_routes(app, lambda: ENGINE, require_medical_internal_key, require_medical_pilot_storage)
     install_analyze_now_routes(app, lambda: ENGINE, require_medical_internal_key, require_medical_pilot_storage)
+
+# Ledger visibility and storage gate are distinct from the source worker.
+# Never expose a review write route until independent reviewer authorization exists.
+def require_medical_assessment_storage() -> None:
+    require_medical_pilot_storage()
+    if not getattr(app.state, "medical_assessment_ledger_ready", False):
+        raise HTTPException(status_code=503, detail="Scientific assessment ledger is not ready")
+
+if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_ASSESSMENT_LEDGER_ENABLED", "").lower() in ("1", "true", "yes")):
+    from .medical_assessment_ledger import install_routes as install_medical_assessment_routes
+    install_medical_assessment_routes(app, lambda: ENGINE,
+                                     require_medical_internal_key,
+                                     require_medical_assessment_storage)
 
 @app.get("/api/internal/medical-canary-preflight", dependencies=[Depends(require_medical_internal_key)])
 def medical_canary_preflight():
