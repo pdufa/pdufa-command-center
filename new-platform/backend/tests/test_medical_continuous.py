@@ -1,0 +1,116 @@
+"""No live internet in tests; a completed source stage never implies FDA readiness."""
+import json
+from pathlib import Path
+
+import pytest
+from sqlalchemy import create_engine, text
+from app import medical_continuous as medical
+
+NCT = "NCT00000001"
+
+
+@pytest.fixture
+def engine(tmp_path, monkeypatch):
+    roster = tmp_path / "focus.json"
+    roster.write_text(json.dumps({"records": [{"nct": NCT, "ticker": "TEST",
+        "company": "Fixture", "regulatoryUrl": "https://example.com/research"}]}))
+    monkeypatch.setattr(medical, "FOCUS", roster)
+    designations = tmp_path / "designations.json"
+    designations.write_text(json.dumps({"records": []}))
+    monkeypatch.setattr(medical, "DESIGNATIONS", designations)
+    db = create_engine("sqlite:///" + str(tmp_path / "medical.sqlite3"),
+                       connect_args={"check_same_thread": False})
+    medical.initialize(db)
+    yield db
+    db.dispose()
+
+
+def test_all_twelve_stages_run_continuously_and_abstain(engine):
+    req = "00000000-0000-4000-8000-000000000001"
+    seen = []
+    snapshot = medical.create(engine, NCT, req, submit=False)
+    assert snapshot["status"] == "PENDING"
+    assert snapshot["completedStages"] == 0
+
+    def stage(index, nct):
+        assert nct == NCT
+        seen.append(index)
+        return "LEADS_ONLY", {"source": "https://example.com/", "search": index}
+
+    medical.worker(engine, snapshot["runId"], step=stage)
+    result = medical.latest(engine, NCT)
+    assert result["status"] == "COMPLETE"
+    assert result["completedStages"] == 12
+    assert result["decision"] == "ABSTAIN"
+    assert result["approvalProbability"] is None
+    assert seen == list(range(12))
+    assert [s["number"] for s in result["stages"]] == list(range(1, 13))
+    assert result["stages"][8]["details"]["review"] == "SOURCE_COLLECTION_ONLY"
+    assert result["stages"][8]["details"]["scientificSignoff"] is False
+    # Repeating an already completed run does not fetch additional evidence.
+    medical.worker(engine, result["runId"], step=lambda *_: pytest.fail("duplicate stage"))
+    assert medical.create(engine, NCT, req, submit=False)["runId"] == result["runId"]
+
+
+def test_fail_closed_when_official_trial_identity_cannot_be_read(engine):
+    req = "00000000-0000-4000-8000-000000000002"
+    job = medical.create(engine, NCT, req, submit=False)
+    def unavailable(index, _):
+        raise TimeoutError("fixture network unavailable")
+    medical.worker(engine, job["runId"], step=unavailable)
+    saved = medical.snapshot(engine, NCT, job["runId"])
+    assert saved["status"] == "FAILED"
+    assert saved["completedStages"] == 1
+    assert saved["stages"][0]["state"] == "SOURCE_UNAVAILABLE"
+    assert "failed" in saved["stages"][0]["details"]["gap"].lower()
+    assert saved["decision"] == "ABSTAIN"
+
+
+def test_stop_and_resume_from_saved_stage(engine, monkeypatch):
+    req = "00000000-0000-4000-8000-000000000003"
+    job = medical.create(engine, NCT, req, submit=False)
+    count = 0
+    def stage(index, nct):
+        nonlocal count
+        count += 1
+        if index == 2:
+            medical.stop(engine, NCT, job["runId"])
+        return "EVIDENCE_GAP", {"index": index}
+    medical.worker(engine, job["runId"], step=stage)
+    stopped = medical.snapshot(engine, NCT, job["runId"])
+    assert stopped["status"] == "STOPPED"
+    assert stopped["completedStages"] == 3
+    assert count == 3
+    called = []
+    monkeypatch.setattr(medical._POOL, "submit", lambda fn, *args: called.append((fn, args)))
+    medical.resume(engine, NCT, job["runId"])
+    assert called and called[0][0] is medical.worker
+    medical.worker(engine, job["runId"], step=stage)
+    final = medical.snapshot(engine, NCT, job["runId"])
+    assert final["status"] == "COMPLETE"
+    assert final["completedStages"] == 12
+
+
+def test_duplicate_active_run_and_no_auto_start_from_read(engine):
+    a = medical.create(engine, NCT, "00000000-0000-4000-8000-000000000004", submit=False)
+    b = medical.create(engine, NCT, "00000000-0000-4000-8000-000000000005", submit=False)
+    assert a["runId"] == b["runId"]
+    assert medical.latest(engine, NCT)["completedStages"] == 0
+    with engine.connect() as c:
+        assert c.execute(text("SELECT COUNT(*) FROM medical_continuous_runs")).scalar_one() == 1
+    with pytest.raises(ValueError):
+        medical.create(engine, "NCT99999999", "00000000-0000-4000-8000-000000000006", submit=False)
+
+
+def test_non_identity_network_outage_is_gap_and_run_can_finish(engine):
+    req = "00000000-0000-4000-8000-000000000007"
+    job = medical.create(engine, NCT, req, submit=False)
+    def stage(index, nct):
+        if index == 4:
+            raise ConnectionError("FDA fixture inaccessible")
+        return "SOURCE_RECORDED", {"source": "https://clinicaltrials.gov/study/" + nct}
+    medical.worker(engine, job["runId"], step=stage)
+    final = medical.snapshot(engine, NCT, job["runId"])
+    assert final["status"] == "COMPLETE"
+    assert final["stages"][4]["state"] == "SOURCE_UNAVAILABLE"
+    assert final["decision"] == "ABSTAIN"
