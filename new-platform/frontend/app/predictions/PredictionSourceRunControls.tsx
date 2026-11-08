@@ -1,7 +1,20 @@
 "use client";
 import {useState} from "react";
 import type {EvidenceRun,EvidenceTest,TestState} from "../../lib/prediction-source-tests";
-import {TEST_NAMES} from "../../lib/prediction-source-tests";
+const TEST_NAMES=[
+  "Exact registry identity",
+  "Current registry phase and status",
+  "Conditions, interventions and sponsor",
+  "Study design and allocation",
+  "Prespecified primary outcomes",
+  "Official registry results posting",
+  "Outcome results and statistical analyses",
+  "Reported serious adverse events",
+  "Participant flow and attrition reporting",
+  "Disease-specific specialist research",
+  "FDA review, manufacturing and sponsor corroboration",
+  "Historical outcome calibration and prediction"
+] as const;
 import styles from "./FocusPredictionNavigator.module.css";
 
 const stateText:Record<TestState,string>={
