@@ -8,6 +8,7 @@ on:
       - 'new-platform/frontend/lib/medical-intelligence-*.ts'
       - 'new-platform/frontend/app/medical-intelligence-preview/**'
       - 'new-platform/frontend/tests/medical-intelligence-*.test.cjs'
+      - 'new-platform/frontend/tests/medical-analyze-now.test.cjs'
       - 'new-platform/frontend/data/p3PostDataActive.json'
       - 'new-platform/frontend/lib/main-install-progress.ts'
       - 'new-platform/frontend/app/main/**'
@@ -58,7 +59,7 @@ jobs:
         run: npm run typecheck
         working-directory: new-platform/frontend
       - name: Run isolated medical intelligence regression suite
-        run: node --test tests/medical-intelligence-*.test.cjs tests/main-install-progress.test.cjs
+        run: node --test tests/medical-intelligence-*.test.cjs tests/medical-analyze-now.test.cjs tests/main-install-progress.test.cjs
         working-directory: new-platform/frontend
 
   backend:
