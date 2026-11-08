@@ -193,9 +193,9 @@ export default function PublishedScansPanel() {
         </label>
         <label htmlFor="pdufa-scan-target">Stage
           <select id="pdufa-scan-target" value={target} onChange={e => setTarget(e.target.value as ScanTarget)}>
-            <option value="ALL">ALL — POOL, PIPELINE, Phase 3 results</option>
+            <option value="ALL">ALL — POOL, PIPELINE, FOCUS</option>
             <option value="PIPELINE">PIPELINE only</option>
-            <option value="PHASE3_RESULTS">Phase 3 results only</option>
+            <option value="PHASE3_RESULTS">FOCUS — Phase 3 results only</option>
           </select>
         </label>
         <button type="button"
@@ -263,7 +263,7 @@ export default function PublishedScansPanel() {
       {(record.clinical?.scans || []).map(scan => {
         const m = scan.metrics || {};
         const pipeline = scan.scan === "2";
-        const code = scan.scan === "2" ? "PIPELINE — inventory" : scan.scan === "3" ? "PIPELINE — enrichment" : "PHASE3_RESULTS — posted outcomes";
+        const code = scan.scan === "2" ? "PIPELINE — inventory" : scan.scan === "3" ? "PIPELINE — enrichment" : "FOCUS — posted Phase 3 outcomes";
         const pct = pipeline ? score(m.tracked_trials_total, m.tracked_trials_checked) : null;
         return <details key={scan.scan} className="nested-expander">
           <summary>{code} · {pct == null ? "Score N/A — no validated denominator" : pct.toFixed(1)+"% tracked ID coverage"} · {value(scan.collector_status)}</summary>

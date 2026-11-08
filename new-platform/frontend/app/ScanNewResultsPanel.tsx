@@ -23,7 +23,7 @@ export default function ScanNewResultsPanel({
     : null;
   const primary = [
     {key:"pipeline",label:"PIPELINE",desc:"New master programs",value:summary?.pipelineNewPrograms ?? null},
-    {key:"phase3-result",label:"PHASE 3 RESULTS",desc:"New posted Phase 3 results (historic source count)",value:summary?.gemJrNewResultRecords ?? null},
+    {key:"phase3-result",label:"FOCUS",desc:"New posted Phase 3 results (historic source count)",value:summary?.gemJrNewResultRecords ?? null},
   ];
   const known = summary && primary.some(x => x.value !== null);
   return <section className="scans-new-results" aria-label="New from scan — latest published additions">
@@ -61,7 +61,7 @@ export default function ScanNewResultsPanel({
           <table className="scans-new-table">
             <thead><tr><th>Stage</th><th>Status</th><th>Ticker</th><th>Program / drug</th><th>Trial ID</th><th>Evidence</th></tr></thead>
             <tbody>{summary.rows.filter(row=>row.kind==="NEW_PROGRAM"||row.kind==="NEW_PHASE3_RESULT").map((row, i) => <tr key={row.stage+"|"+row.kind+"|"+(row.trialId || i)}>
-              <td><strong>{row.kind==="NEW_PHASE3_RESULT"?"PHASE 3 RESULTS":"POOL"}</strong></td>
+              <td><strong>{row.kind==="NEW_PHASE3_RESULT"?"FOCUS":"POOL"}</strong></td>
               <td><span className={"scans-new-item-badge"+(row.exactRun?"":" scans-new-date-badge")}>{category(row)}</span></td>
               <td>{row.ticker ? <strong>{row.ticker}</strong> : <em>Not published</em>}</td>
               <td>{row.drug || "Identity not published in the scan report"}</td>
