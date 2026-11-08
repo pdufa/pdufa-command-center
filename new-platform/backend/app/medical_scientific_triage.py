@@ -328,6 +328,76 @@ def run_canary(engine) -> dict | None:
     return report
 
 
+
+CAMPAIGN = re.compile(r"^[A-Za-z0-9_-]{8,72}$")
+
+
+def requested_batch() -> tuple[str,tuple[str,...]] | None:
+    """Explicit 1–3 unique FOCUS NCTs. The original canary never joins a tail."""
+    if os.getenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_BATCH_AUTORUN", "").lower() not in YES:
+        return None
+    campaign = os.getenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_BATCH_CAMPAIGN", "")
+    raw = os.getenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_BATCH_NCTS", "")
+    ncts = tuple(x.strip() for x in raw.split(","))
+    if (not CAMPAIGN.fullmatch(campaign) or not 1 <= len(ncts) <= 3
+            or len(set(ncts)) != len(ncts)
+            or any(not NCT.fullmatch(x) for x in ncts)):
+        raise ValueError("Source triage batches require an exact campaign and 1–3 unique NCTs")
+    if os.getenv("PDUFA_MEDICAL_BATCH_AUTORUN", "").lower() in YES:
+        raise RuntimeError("Source research and scientific triage batches cannot overlap")
+    if os.getenv("PDUFA_ANALYZE_NOW_ALL_ENABLED", "").lower() in YES:
+        raise RuntimeError("Global all-trial medical analysis must remain disabled")
+    if "NCT06081894" in ncts:
+        raise ValueError("Original completed canary must not be rerun as a tail batch")
+    from . import medical_continuous as core
+    roster = core.roster()
+    if any(nct not in roster for nct in ncts):
+        raise ValueError("Every selected exact NCT must belong to the dated FOCUS roster")
+    return campaign, ncts
+
+
+def run_batch(engine) -> list[dict]:
+    """Preflight EVERY trial before appending; preserve source/grade ledgers."""
+    selected = requested_batch()
+    if selected is None:
+        return []
+    campaign, ncts = selected
+    if engine.dialect.name != "postgresql":
+        raise RuntimeError("Controlled research triage tail requires durable PostgreSQL")
+    # No table writes before every source/assessment projection checks out.
+    prepared = {nct: analyze(engine, nct) for nct in ncts}
+    if any(x["methodPositions"] != 800 or sum(x["sourceClassCounts"].values()) != 800
+           or x["scientificSignoff"] is not False for x in prepared.values()):
+        raise RuntimeError("Batch source coverage is not internally consistent")
+    results = []
+    for nct in ncts:
+        row = persist(engine, nct)
+        original = prepared[nct]
+        if (row["sourceInputSha256"] != original["sourceInputSha256"]
+                or row["catalogSha256"] != original["catalogSha256"]
+                or row["sourceRunId"] != original["sourceRunId"]):
+            raise RuntimeError("Source changed between preflight and saved triage readback")
+        if (row["methodPositions"] != 800 or row["scientificSignoff"] is not False
+                or row["certainty"] != "NOT_VALIDATED"):
+            raise RuntimeError("Saved method triage does not match safety contract")
+        LOG.warning(
+            "PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_TRIAL status=PASS campaign=%s "
+            "nct=%s sourceStages=12 methods=800 sourceRecords=%d leadsOnly=%d "
+            "sourceGaps=%d independentGrades=%d prediction=ABSTAIN",
+            campaign, nct,
+            row["sourceClassCounts"]["SOURCE_RECORD_UNADJUDICATED"],
+            row["sourceClassCounts"]["RESEARCH_LEADS_ONLY"],
+            row["sourceClassCounts"]["SOURCE_GAP"],
+            row["methodsWithIndependentGrade"])
+        results.append(row)
+    LOG.warning(
+        "PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_BATCH status=COMPLETE campaign=%s "
+        "completed=%d target=%d scientificSignoff=False "
+        "prediction=ABSTAIN certainty=NOT_VALIDATED",
+        campaign,len(results),len(ncts))
+    return results
+
+
 def install_routes(app, engine_provider, require_key, require_storage):
     router = APIRouter(prefix="/api/internal/medical-scientific-triage",
                        dependencies=[Depends(require_key),Depends(require_storage)])
