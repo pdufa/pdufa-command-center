@@ -1,10 +1,5 @@
 name: ACACIA exact official CTG historical versions
 on:
-  push:
-    branches:
-      - feature/medical-stage4-verified-method-matrix-20261108
-    paths:
-      - .github/workflows/acacia-ctg-historical-versions.yml
   workflow_dispatch:
 
 permissions:
