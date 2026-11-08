@@ -113,3 +113,11 @@ def test_watchdog_disabled_unless_opted_in_to_persistent_postgres(tmp_path,monke
     monkeypatch.delenv("PDUFA_INSTALL_MONITOR_ENABLED")
     assert monitor.start(engine,ready_provider=lambda:True) is False
     engine.dispose()
+
+
+def test_render_liveness_route_is_separate_from_storage_health():
+    from fastapi.testclient import TestClient
+    from app.main import app
+    response=TestClient(app).head("/")
+    assert response.status_code==204
+    assert response.headers["cache-control"]=="no-store"
