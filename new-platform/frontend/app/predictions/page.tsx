@@ -1,6 +1,7 @@
 import Link from "next/link";
 import type {Metadata} from "next";
 import FocusPredictionNavigator from "./FocusPredictionNavigator";
+import FullRosterSourceScan from "./FullRosterSourceScan";
 
 export const metadata:Metadata={
   title:"FDA Outcome Predictions | PDUFA",
@@ -35,6 +36,7 @@ export default function PredictionsPage(){
         Source-linked partial clinical dossiers and missing-evidence checkpoints. Not completed assessments or validated forecasts.
       </span>
     </p>
+    <FullRosterSourceScan/>
     <FocusPredictionNavigator/>
     <section style={{...card,background:"#f5faf7",marginBottom:16}} aria-label="Independent prediction certainty">
       <h2 style={{margin:"0 0 9px",fontSize:19}}>How prediction certainty is determined</h2>
