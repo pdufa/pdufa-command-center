@@ -81,6 +81,8 @@ def initialize(engine):
             stage_index INTEGER NOT NULL, state TEXT NOT NULL, document TEXT NOT NULL,
             finished_at TEXT NOT NULL, PRIMARY KEY(run_id,stage_index))"""))
         c.execute(text("CREATE INDEX IF NOT EXISTS medical_continuous_by_nct ON medical_continuous_runs(nct_id,created_at)"))
+        c.execute(text("""CREATE UNIQUE INDEX IF NOT EXISTS medical_continuous_one_active
+            ON medical_continuous_runs(nct_id) WHERE status IN ('PENDING','RUNNING')"""))
 
 
 def _read(engine, run_id):
@@ -184,7 +186,11 @@ def resume(engine, nct, run_id):
 def source_json(url, *, limit=2000000):
     req = Request(url, headers={"Accept": "application/json", "User-Agent": "PDUFA-IndependentMedicalResearch/1.0"})
     with urlopen(req, timeout=18) as response:
-        if response.status != 200 or "json" not in response.headers.get("Content-Type", "").lower():
+        content_type = response.headers.get("Content-Type", "").lower()
+        # NCBI E-utilities sometimes labels JSON results as text/plain.
+        # Only trust that type from the fixed E-utilities API host.
+        ncbi_json = url.startswith("https://eutils.ncbi.nlm.nih.gov/") and "text/plain" in content_type
+        if response.status != 200 or ("json" not in content_type and not ncbi_json):
             raise ValueError("Unexpected source response")
         raw = response.read(limit + 1)
         if len(raw) > limit:
