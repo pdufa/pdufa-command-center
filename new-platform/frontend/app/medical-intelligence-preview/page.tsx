@@ -69,7 +69,7 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
     <div style={{fontSize:12,letterSpacing:1,color:palette.teal,fontWeight:750}}>POOL → FOCUS → DEEP MEDICAL INTELLIGENCE → DECISION</div>
     <h1 style={{margin:"10px 0 6px",fontSize:"clamp(1.6rem,4vw,2.5rem)"}}>Deep Medical Intelligence</h1>
     <p style={{lineHeight:1.55,maxWidth:1000}}>Independent, failure-first research preview. It investigates what could prevent FDA approval, produce a Complete Response Letter (CRL), or cause a PDUFA extension or missed goal date. The preview is <strong>read-only</strong>; it does not modify POOL or FOCUS and does not issue an unsupported prediction.</p>
-    <p style={{fontSize:14,fontWeight:700,display:"flex",flexWrap:"wrap",gap:18}}><Link href="/medical-intelligence-preview/coverage">All-FOCUS registry coverage</Link><Link href="/medical-intelligence-preview/applications">All FDA application cycles</Link></p>
+    <p style={{fontSize:14,fontWeight:700,display:"flex",flexWrap:"wrap",gap:18}}><Link href="/medical-intelligence-preview/coverage">All-FOCUS registry coverage</Link><Link href="/medical-intelligence-preview/applications">All FDA application cycles</Link><Link href="/medical-intelligence-preview/failure-desk">Failure-first decision desk</Link></p>
     <p style={{...small,marginTop:4}}><strong>Evidence boundary:</strong> FOCUS roster is a dated spreadsheet snapshot ({focus.asOf}); selected study details are retrieved from ClinicalTrials.gov when available. Company links and recorded PDUFA dates are pointers pending independent verification.</p>
 
     <section style={panel} aria-label="FOCUS trial selection">
