@@ -21,6 +21,7 @@ export type Stage={
 export type MonitorTelemetry={
  schemaVersion:number;observedAt:string;
  storage?:{state:string;kind:string;postgresRequired:boolean};
+ sourceSnapshots?:Record<string,Record<string,unknown>>;
  scans?:Record<string,Record<string,unknown>>;
  research?:Record<string,unknown>;
  alerts?:Record<string,unknown>;
@@ -54,6 +55,7 @@ export function buildInstallationProgress(
  const validStorage=Boolean(live?.schemaVersion===1&&live.storage?.state==="READY"&&live.storage?.kind==="postgresql");
  const backendDown=!validStorage||!external.apiReachable;
  const research=live?.research??{};
+ const applications=live?.sourceSnapshots?.applications??{};
  const scans=live?.scans??{};
  const alerts=live?.alerts??{};
  const completeSourceRuns=typeof research.finishedSourceRuns==="number"?research.finishedSourceRuns:0;
@@ -118,6 +120,14 @@ export function buildInstallationProgress(
  add("medical","Standalone Deep Medical Intelligence",[
    from("medical.code","Independent research framework","VERIFIED",
      "Evidence-gated medical framework is imported independently of legacy RAAS and surveys.","Medical application source code"),
+   from("medical.application-map","Backend packaged 29-NCT application context",
+     applications.state==="VALID"&&applications.focusNctCount===focus.records.length&&
+       applications.coveredNctCount===focus.records.length?"VERIFIED":
+       applications.state==="INVALID"?"FAILED":"UNKNOWN",
+     applications.state==="VALID"?
+       String(applications.applicationCycleCount)+" dated source-linked cycles across "+String(applications.coveredNctCount)+" exact FOCUS NCTs; conflicting indications remain unreconciled; not FDA-confirmed.":
+       "No valid deployed application mapping observed. This is a Docker/package verification, not current FDA acceptance.",
+     "Authenticated backend application identity verification",observed),
    from("medical.db","Durable 12-stage run schema",
      validStorage&&research.state==="OBSERVED"?"VERIFIED":backendBlock(),
      "Requires backend medical run and revision tables to be readable.","PostgreSQL medical_continuous_runs",observed),
