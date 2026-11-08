@@ -23,7 +23,9 @@ async function readGithub(sha:string|null):Promise<Pick<ExternalVerification,"me
  };
  const headers:Record<string,string>={Accept:"application/vnd.github+json",
     "X-GitHub-Api-Version":"2022-11-28","User-Agent":"PDUFA-installation-health"};
- const token=process.env.PDUFA_GITHUB_READ_TOKEN?.trim();
+ // Reuse the existing production GitHub credential for read-only status queries.
+ // A dedicated least-privilege token takes precedence when configured.
+ const token=process.env.PDUFA_GITHUB_READ_TOKEN?.trim() || process.env.PDUFA_GITHUB_TOKEN?.trim();
  if(token)headers.Authorization="Bearer "+token;
  const fetchRuns=async(q:string)=>{
   const response=await fetch("https://api.github.com/repos/"+gitRepo+"/actions/runs?"+q,{
