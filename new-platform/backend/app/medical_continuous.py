@@ -484,6 +484,9 @@ def install_routes(app, engine_provider, require_key, require_storage):
 
     @router.post("/{nct}/runs")
     def create_job(nct: str, payload: StartPayload):
+        from .medical_on_demand import eligible_for_analysis
+        if not eligible_for_analysis(nct):
+            raise HTTPException(status_code=409, detail="Medical analysis limited to verified canary until pilot acceptance")
         try:
             return create(engine_provider(), nct, payload.request_key)
         except Exception as exc:
@@ -520,6 +523,9 @@ def install_routes(app, engine_provider, require_key, require_storage):
 
     @router.post("/{nct}/runs/{run_id}/resume")
     def resume_job(nct: str, run_id: str):
+        from .medical_on_demand import eligible_for_analysis
+        if not eligible_for_analysis(nct):
+            raise HTTPException(status_code=409, detail="Medical analysis limited to verified canary until pilot acceptance")
         try:
             return resume(engine_provider(), nct, run_id)
         except Exception as exc:
