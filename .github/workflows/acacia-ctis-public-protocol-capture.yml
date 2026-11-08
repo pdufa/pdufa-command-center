@@ -31,12 +31,16 @@ jobs:
           python3 -m py_compile scripts/medical/acacia_ctis_capture.py
           grep -Fq 'TRIAL = "2023-505797-15-00"' scripts/medical/acacia_ctis_capture.py
           grep -Fq 'https://euclinicaltrials.eu/ctis-public-api' scripts/medical/acacia_ctis_capture.py
-      - name: Fetch only publicly accessible original protocol (no secrets)
+      - name: Fetch publicly available CTIS protocol, inspect metadata only
         shell: bash
-        timeout-minutes: 3
+        timeout-minutes: 5
         env:
           PYTHONDONTWRITEBYTECODE: "1"
-        run: python3 scripts/medical/acacia_ctis_capture.py
+        run: |
+          set -euo pipefail
+          python3 -m venv /tmp/ctis-protocol-venv
+          /tmp/ctis-protocol-venv/bin/python -m pip install --disable-pip-version-check --no-input pypdf==5.9.0
+          /tmp/ctis-protocol-venv/bin/python scripts/medical/acacia_ctis_capture.py
       - name: Upload source evidence receipt (not a clinical grade)
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
