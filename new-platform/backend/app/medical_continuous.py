@@ -45,7 +45,7 @@ STAGE_DONE = {"SOURCE_RECORDED", "LEADS_ONLY", "EVIDENCE_GAP", "SOURCE_UNAVAILAB
 _POOL = ThreadPoolExecutor(max_workers=2, thread_name_prefix="medical-stages")
 _IN_PROCESS = threading.RLock()
 ROOT = Path(__file__).resolve().parents[2]
-FOCUS = ROOT / "frontend" / "data" / "p3PostDataActive.json"
+FOCUS = Path(__file__).resolve().parent / "data" / "focus_snapshot.json"
 DESIGNATIONS = ROOT / "frontend" / "data" / "focusFdaDesignations.json"
 
 
