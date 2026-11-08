@@ -67,7 +67,7 @@ test("ABTECT maintenance belongs to NCT05535946, not ABTECT-2 induction",()=>{
  const maintenance=c.sources.find(s=>s.id==="abvx-maintenance");
  assert.equal(maintenance.trial,"NCT05535946");
  assert.equal(maintenance.scope,"RELATED_EXTERNAL_TRIAL");
- assert.match(maintenance.limits,/not.*ABTECT-2/i);
+ assert.match(maintenance.limits,/\b(?:not|never)\b.*ABTECT-2/i);
 });
 test("Already FDA-approved obstructive aficamten is not a pending PDUFA alert",()=>{
  const c=getAdjudicationCase("cytk-obstructive-approved-status");
