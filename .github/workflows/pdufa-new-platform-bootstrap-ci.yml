@@ -62,7 +62,7 @@ jobs:
   # to this feature branch, after ALL required checks, may deploy ONLY the fixed
   # isolated preview service. Remove this exception after successful verification.
   deploy-isolated-medical-preview:
-    if: ${{ github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108' && ((github.event_name == 'workflow_dispatch' && inputs.deploy_isolated_medical_preview) || (github.event_name == 'push' && github.event.head_commit.message == 'ci(medical): one-time isolated read-only auth repair rollout')) }}
+    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108' }}
     needs:
       - permanent-retirement
       - backend
