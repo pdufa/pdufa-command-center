@@ -1,7 +1,6 @@
 "use client";
 
 import {useEffect,useMemo,useState,type CSSProperties} from "react";
-import {parseBenefitFeed,type BenefitFeed,type BenefitFact} from "../lib/benefit-assessments";
 import type {PipelineResearchRow} from "../lib/pipeline-research-view";
 import TrialTimelineSummary from "./TrialTimelineSummary";
 import {
@@ -56,42 +55,18 @@ async function loadScreenedPipeline(signal:AbortSignal):Promise<PipelineResearch
 const describe=(r:PipelineResearchRow)=>
   r.ticker+" · "+(r.drug||"Unknown therapy")+" · "+(r.indication||"Unverified indication")+" · "+r.nctId;
 const number=(v:number)=>v.toLocaleString("en-US");
-function Fact({fact}:{fact:BenefitFact|null}){
-  if(!fact)return <span style={muted}>Not assessed</span>;
-  return <div>
-    <span>{String(fact.value)} {fact.status==="MODELED"?"(modeled; not verified)":""}</span>
-    <div style={muted}>{fact.status==="VERIFIED"?"Source verified":"Scenario"} · {fact.confidence}
-      {" · "}source {fact.sourceDate}</div>
-    <details>
-      <summary style={{cursor:"pointer",fontSize:13}}>Method and source</summary>
-      <p style={muted}>{fact.method}</p>
-      <a href={fact.sourceUrl} rel="noopener noreferrer" target="_blank">Read original source</a>
-    </details>
-  </div>;
-}
-
 export default function TrialComparison(){
   const [all,setAll]=useState<PipelineResearchRow[]>([]);
-  const [feed,setFeed]=useState<BenefitFeed|null>(null);
   const [chosen,setChosen]=useState<string[]>(["",""]);
   const [filter,setFilter]=useState("");
   const [loading,setLoading]=useState(true);
   const [error,setError]=useState("");
-  const [benefitWarning,setBenefitWarning]=useState("");
   useEffect(()=>{
     const controller=new AbortController();
     void loadScreenedPipeline(controller.signal)
       .then(rows=>{if(!controller.signal.aborted)setAll(rows);})
       .catch(e=>{if(!controller.signal.aborted)setError(e instanceof Error?e.message:"Pipeline unavailable");})
       .finally(()=>{if(!controller.signal.aborted)setLoading(false);});
-    void fetch("/api/benefit-assessments",{signal:controller.signal,cache:"no-store"})
-      .then(async response=>{
-        if(!response.ok)throw Error("Verified benefit feed unavailable");
-        return parseBenefitFeed(await response.json());
-      })
-      .then(result=>{if(!controller.signal.aborted)setFeed(result);})
-      .catch(()=>{if(!controller.signal.aborted)setBenefitWarning(
-        "Benefit evidence feed is unavailable. No verified benefit findings can be displayed.");});
     return ()=>controller.abort();
   },[]);
 
@@ -104,7 +79,7 @@ export default function TrialComparison(){
   const selected=useMemo(()=>
     chosen.map(key=>{
       const row=lookup.get(key);
-      return row?{key,row,evidence:comparisonSnapshot(row,feed)}:null;
+      return row?{key,row,evidence:comparisonSnapshot(row,null)}:null;
     }),[chosen,lookup,feed]);
   const present=selected.filter((t):t is SelectedTrial=>t!==null);
   const canCompare=present.length>=2&&present.length===new Set(present.map(t=>t.key)).size;
@@ -127,7 +102,6 @@ export default function TrialComparison(){
         <p style={muted}>Screened records: {loading?"Loading…":error?"Unavailable":number(all.length)}.
           Historical market-cap screening is not live issuer qualification.</p>
         {error&&<p role="alert" style={{color:"#a32020"}}>{error}</p>}
-        {benefitWarning&&<p role="status" style={{color:"#9a5810"}}>{benefitWarning}</p>}
         <label htmlFor="compare-search" style={{display:"block",fontWeight:700,marginBottom:6}}>
           Search ticker, drug, indication or NCT
         </label>
@@ -164,7 +138,7 @@ export default function TrialComparison(){
       {canCompare?<section aria-label="Evidence comparison">
         <div style={panel}>
           <h2 style={{fontSize:20,marginTop:0}}>Decision status: ABSTAIN — comparative winner not established</h2>
-          <p>Evidence completeness does not mean clinical superiority. The current 20 assessments do not supply
+          <p>Evidence completeness does not mean clinical superiority. Available clinical evidence does not supply
             a validated cross-disease composite scoring rubric, matched head-to-head endpoint comparisons,
             or independently validated approval probabilities. A numerical winner would be unsupported.</p>
           <p style={{fontWeight:700}}>{caveat}</p>
@@ -173,56 +147,16 @@ export default function TrialComparison(){
               <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:10}}>
                 <h3 style={{fontSize:18,margin:0}}>{t.row.ticker}</h3>
                 <TrialTimelineSummary timeline={t.row.timeline} compact trial={t.row}
-                  peers={present.filter(peer=>peer.key!==t.key).map(peer=>peer.row)} benefitFeed={feed}/>
+                  peers={present.filter(peer=>peer.key!==t.key).map(peer=>peer.row)}/>
               </div>
               <p style={muted}>{t.row.drug} · {t.row.indication}</p>
-              <p><strong>{t.evidence.verified}</strong> source-verified fields of {t.evidence.required}
-                {" "}· {t.evidence.modeled} modeled</p>
+              <p>Open source-linked registry and FDA records for this exact trial.</p>
               <p style={muted}>{t.evidence.readiness==="PARTIAL_EVIDENCE"
                 ?"Partial evidence recorded":"Not assessed"}
                 {" · "}Market-cap record as of {t.row.capAsOf}</p>
               <a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(t.row.nctId)}
                 target="_blank" rel="noopener noreferrer">{t.row.nctId} — registry</a>
             </div>)}
-          </div>
-        </div>
-        <div style={panel}>
-          <h2 style={{fontSize:20,marginTop:0}}>All 20 assessments — side by side</h2>
-          <p style={muted}>Each expandable cell displays exact-identity source facts and methods.
-            Blank findings remain Not assessed; modeled scenarios never count as verified results.</p>
-          <div style={{overflowX:"auto"}} role="region" tabIndex={0} aria-label="20-assessment comparison table">
-            <table style={{width:"100%",borderCollapse:"collapse",tableLayout:"auto"}}>
-              <thead><tr>
-                <th scope="col" style={{...heading,minWidth:210,position:"sticky",left:0,background:"#fff",zIndex:1}}>
-                  Assessment</th>
-                {present.map(t=><th scope="col" key={t.key} style={{...heading,minWidth:220}}>
-                  {t.row.ticker} · {t.row.nctId}</th>)}
-              </tr></thead>
-              <tbody>
-                {present[0].evidence.groups.map((g,i)=><tr key={g.rank}>
-                  <th scope="row" style={{...cell,minWidth:210,position:"sticky",left:0,
-                    background:"#fff",fontWeight:700}}>#{g.rank} — {g.title}</th>
-                  {present.map(t=>{
-                    const current=t.evidence.groups[i];
-                    return <td key={t.key} style={cell}>
-                      <span>{current.verified} verified · {current.modeled} modeled</span>
-                      <details style={{marginTop:8}}>
-                        <summary style={{cursor:"pointer",color:"#174e79",fontWeight:700}}>
-                          {current.verified||current.modeled?"View evidence":"Not assessed"} ▾
-                        </summary>
-                        <div style={{marginTop:10}}>
-                          {current.fields.map(f=><div key={f.id}
-                            style={{borderTop:"1px solid #e1e7ee",padding:"9px 0"}}>
-                            <strong style={{display:"block",marginBottom:4}}>{f.label}</strong>
-                            <Fact fact={f.fact}/>
-                          </div>)}
-                        </div>
-                      </details>
-                    </td>;
-                  })}
-                </tr>)}
-              </tbody>
-            </table>
           </div>
         </div>
         <div style={panel}>
@@ -233,13 +167,13 @@ export default function TrialComparison(){
             competitive assumptions support a comparable model.</p>
           <p><strong>Risk-adjusted investment:</strong> ABSTAIN until current valuation, financing, ownership
             and independently justified outcome assumptions support scenarios.</p>
-          <p><strong>FDA PASS / CRL / EXTENSION:</strong> Not inferred from the benefit assessments.
+          <p><strong>FDA PASS / CRL / EXTENSION:</strong> Not inferred from research coverage.
             Consult the separate PREDICTIONS tab for independently supported outcomes.</p>
         </div>
       </section>:
       <section style={panel} role="status">
         <strong>Choose two distinct trials to begin.</strong>
-        <p style={muted}>The 20 assessments will appear once at least two different research records are selected.
+        <p style={muted}>The trial comparison will appear once at least two different research records are selected.
           No trial comparison, clinical ranking or investment conclusion is asserted beforehand.</p>
       </section>}
     </div>
