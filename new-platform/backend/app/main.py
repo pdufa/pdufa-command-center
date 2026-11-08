@@ -580,6 +580,8 @@ from .nct_live_stream import install_routes as install_nct_stream_routes
 install_nct_stream_routes(app, lambda: ENGINE, require_internal_key, require_storage)
 from .medical_continuous import install_routes as install_medical_continuous_routes
 install_medical_continuous_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+from .medical_on_demand import install_routes as install_analyze_now_routes
+install_analyze_now_routes(app, lambda: ENGINE, require_internal_key, require_storage)
 
 @app.get("/api/internal/installation-monitor", dependencies=[Depends(require_internal_key)])
 def installation_monitor_status():
