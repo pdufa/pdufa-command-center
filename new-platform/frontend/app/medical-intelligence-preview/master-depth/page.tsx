@@ -4,6 +4,8 @@ import type {CSSProperties} from "react";
 import focus from "../../../data/p3PostDataActive.json";
 import {SCIENTIFIC_LEVELS,SCIENTIFIC_LAYERS,DEEP_ASSESSMENTS,DEPTH_SLOT_COUNT,THERAPEUTIC_STRATEGY_QUESTIONS,getDepthSlot,FDA_GUIDANCE_SOURCES} from "../../../lib/medical-intelligence-master-depth";
 import {applicationsForNct} from "../../../lib/medical-intelligence-applications";
+import {getRegistryPhases} from "../../../lib/medical-intelligence-registry-phase";
+import {rankTrialAssessments,PHASE_REVIEW_STANDARD,TEST_GRADE_RUBRIC} from "../../../lib/medical-intelligence-assessment-rankings";
 import {MEDICAL_CASES,caseForCycle,researchForSlot,caprSapComparisonSummary,CAPR_FDA_PUL_SAP_COMPARISONS,cogtLiverSafetyDifference} from "../../../lib/medical-intelligence-md-casebook";
 
 export const metadata:Metadata={
@@ -23,6 +25,14 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
  const query=await searchParams;
  const nct=focus.records.find(r=>r.nct===query.nct)?.nct||"NCT05126758";
  const base=focus.records.find(r=>r.nct===nct)||focus.records[0];
+ const [phaseContext]=await getRegistryPhases([nct]);
+ // Scores cannot be invented from source collection alone. Reviewed per-test marks
+ // will be supplied by the independent assessment-review ledger once available.
+ const assessmentRatings=rankTrialAssessments(DEEP_ASSESSMENTS,nct,phaseContext.verifiedPhase,[]);
+ const evidenceCoverage=assessmentRatings.map(r=>({
+   ...r,
+   sourceSlots:SCIENTIFIC_LEVELS.filter(l=>applicationsForNct(nct).some(c=>Boolean(researchForSlot(c.id,r.id,l.id)))).length
+ })).sort((a,b)=>b.sourceSlots-a.sourceSlots||a.id.localeCompare(b.id));
  const assessment=DEEP_ASSESSMENTS.find(a=>a.id===query.assessment)||DEEP_ASSESSMENTS.find(a=>a.id==="4.3")||DEEP_ASSESSMENTS[0];
  const layer=SCIENTIFIC_LAYERS.find(l=>l.id===assessment.layerId)||SCIENTIFIC_LAYERS[0];
  const matches=applicationsForNct(nct);
@@ -68,6 +78,29 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
        <button type="submit" style={{background:c.accent,color:"#fff",border:0,padding:12,borderRadius:8,fontSize:14,fontWeight:750,cursor:"pointer"}}>Open 20-Level Investigation</button>
      </form>
      <p style={{...subtle,marginBottom:0}}>Viewing {base.ticker} / {base.nct}. Matched to {matches.length} source-reconstructed FDA application cycle(s). The matrix always remains available; substantive research is shown only where completed.</p>
+   </section>
+
+   <section style={panel}>
+     <h2 style={{margin:"0 0 8px",fontSize:19}}>Scientific test rankings · every assessment</h2>
+     <p style={subtle}>Each of the 40 assessments contains 20 separately rated investigative tests. The evidence-backed scientific grade is 0–5 per test, with a transparent 0–100 assessment average. A final comparative rank is shown only after every phase-applicable method is independently reviewed or explicitly excluded with a rationale. Missing evidence never counts as a zero, a failure, or a clinical benefit.</p>
+     <p style={{...subtle,marginTop:0}}><strong>Exact-NCT phase:</strong> {phaseContext.verifiedPhase} {phaseContext.sourceUrl&&<>· <EvidenceSource url={phaseContext.sourceUrl}>ClinicalTrials.gov</EvidenceSource></>}. <strong>Phase-specific standard:</strong> {PHASE_REVIEW_STANDARD[phaseContext.verifiedPhase]}. Scientific grades are not FDA approval probabilities or certainty ratings.</p>
+     <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
+       {TEST_GRADE_RUBRIC.map(r=><span key={r.grade} title={r.meaning} style={{fontSize:12,border:"1px solid "+c.line,borderRadius:6,padding:"5px 8px",background:c.off}}>{r.grade}/5: {r.meaning}</span>)}
+     </div>
+     <div style={{overflowX:"auto"}}>
+       <table style={{borderCollapse:"collapse",width:"100%",minWidth:790,fontSize:13}}>
+         <thead><tr>{["Assessment","Scientific grade / 100","Final grade rank","Scored / applicable tests","Source-examined methods / 20","Review status"].map(k=><th key={k} style={{padding:"9px 7px",textAlign:"left",borderBottom:"1px solid "+c.line}}>{k}</th>)}</tr></thead>
+         <tbody>{evidenceCoverage.map(row=><tr key={row.id}>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line}}><Link href={href(nct,row.id)}>{row.id} · {row.label}</Link></td>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line,fontWeight:700}}>{row.score===null?"Not rated":row.score+"/100"+(row.status==="PROVISIONAL"?" (provisional)":"")}</td>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.rank===null?"—":"#"+row.rank}</td>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.scoredTests} / {row.applicableTests}</td>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.sourceSlots} / 20</td>
+           <td style={{padding:8,borderBottom:"1px solid "+c.line}}>{row.status==="NOT_REVIEWED"?"Pending adjudication":row.status==="NOT_APPLICABLE"?"Excluded with rationale":row.status==="PROVISIONAL"?"Partial scientific review":"Complete"}</td>
+         </tr>)}</tbody>
+       </table>
+     </div>
+     <p style={{...subtle,marginBottom:0}}>Rows are sorted by documented source-investigation coverage, not by evidence strength. A source-examined observation does not automatically pass its scientific test. This preview has not yet connected a persistent, independently verified grade ledger; therefore scores and ranks remain pending rather than fabricated.</p>
    </section>
 
    <section style={panel}>
