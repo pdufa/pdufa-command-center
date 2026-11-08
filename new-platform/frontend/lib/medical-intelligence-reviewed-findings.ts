@@ -178,7 +178,233 @@ export const REVIEWED_FINDINGS:readonly ReviewedFinding[]=[
     remainingQuestion:"Is there any newer dated FDA correspondence, major amendment, advisory review or inspection disclosure?",
     sourceTitle:"Cogent November 5, 2026 Form 8-K Exhibit 99.1",
     sourceUrl:"https://www.sec.gov/Archives/edgar/data/1622229/000119312526449926/cogt-ex99_1.htm"
-  }
+  },
+{
+  "id": "abvx-induction-1",
+  "relatedNcts": [
+    "NCT05507203"
+  ],
+  "company": "Abivax",
+  "drug": "Obefazimod",
+  "indication": "Moderately to severely active ulcerative colitis",
+  "domain": "endpoint",
+  "type": "EFFICACY_EVIDENCE",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2025-07-22",
+  "headline": "ABTECT-1 achieved Week 8 clinical remission endpoint at both doses",
+  "detail": "ABTECT-1 clinical remission: 25 mg 23.8% versus placebo 2.5% (p<0.0001), 50 mg 21.7% versus placebo 2.5% (p<0.0001).",
+  "fdaRelevance": "Two doses showed statistically significant induction benefit in this pivotal trial; judge consistency in ABTECT-2 and confirm disease-relevant maintenance response.",
+  "counterpoint": "One successful trial and sponsor-reported results do not establish FDA acceptance of the entire efficacy or safety package.",
+  "remainingQuestion": "Do longer-term risks, treatment adherence and efficacy in prior-advanced-therapy subgroups support the proposed label?",
+  "sourceTitle": "Abivax SEC furnished ABTECT induction primary-endpoint table",
+  "sourceUrl": "https://ir.abivax.com/static-files/99de1b8a-f695-4e75-a38f-9d970eb52d52"
+},
+{
+  "id": "abvx-induction-2",
+  "relatedNcts": [
+    "NCT05507216"
+  ],
+  "company": "Abivax",
+  "drug": "Obefazimod",
+  "indication": "Moderately to severely active ulcerative colitis",
+  "domain": "statistics",
+  "type": "SCIENTIFIC_UNCERTAINTY",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2025-07-22",
+  "headline": "ABTECT-2 low-dose arm did not meet primary significance",
+  "detail": "ABTECT-2 25 mg clinical remission was 11.3% versus 6.3% placebo (p=0.1034), whereas 50 mg achieved 19.8% versus 6.3% (p=0.0001).",
+  "fdaRelevance": "Confirmed dose-specific failure of significance in one trial warrants dose-selection and multiplicity review; it is not proof of a forthcoming CRL.",
+  "counterpoint": "The 50 mg dose met primary remission endpoints in both induction trials; maintenance efficacy was also reported at both doses.",
+  "remainingQuestion": "Which dose and trial comparisons are intended for FDA labeling, and how was the multiplicity hierarchy handled?",
+  "sourceTitle": "Abivax SEC furnished ABTECT-1/2 endpoint table",
+  "sourceUrl": "https://ir.abivax.com/static-files/99de1b8a-f695-4e75-a38f-9d970eb52d52"
+},
+{
+  "id": "achv-cmc-crl",
+  "relatedNcts": [
+    "NCT04576949",
+    "NCT05206370"
+  ],
+  "company": "Achieve Life Sciences",
+  "drug": "Cytisinicline",
+  "indication": "Smoking cessation / nicotine dependence",
+  "domain": "cmc",
+  "type": "PREVIOUS_CRL",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2026-08-11",
+  "headline": "June 2026 CRL tied to third-party facility CGMP deficiencies and labeling",
+  "detail": "The NDA received a CRL after the prior contract manufacturer's OAI classification and warning letter following FDA CGMP inspection; draft labeling remained unfinished. Company reported no FDA clinical efficacy or safety deficiencies.",
+  "fdaRelevance": "A real manufacturing-based prior CRL must be explicitly carried into the resubmission review rather than discounting positive cessation trials.",
+  "counterpoint": "The cited observations were general facility matters rather than cytisinicline-specific; the sponsor has arranged a replacement manufacturer.",
+  "remainingQuestion": "Can the replacement commercial facility complete technology transfer, validation, stability, inspection and label review satisfactorily?",
+  "sourceTitle": "Achieve Life Sciences August 2026 Form 10-Q, NDA and CGMP risk disclosures",
+  "sourceUrl": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-344624/achv-20260630.htm"
+},
+{
+  "id": "achv-remediation",
+  "relatedNcts": [
+    "NCT04576949",
+    "NCT05206370"
+  ],
+  "company": "Achieve Life Sciences",
+  "drug": "Cytisinicline",
+  "indication": "Smoking cessation / nicotine dependence",
+  "domain": "cmc",
+  "type": "REVIEW_STATUS",
+  "evidence": "SPONSOR_RELEASE",
+  "published": "2026-06-22",
+  "headline": "Replacement manufacturer identified; Q4 2026 NDA resubmission planned",
+  "detail": "Achieve said it had transferred analytical methods to Adare Pharma Solutions, made an engineering batch and qualified testing procedures; planned to resubmit naming Adare, not the cited prior facility.",
+  "fdaRelevance": "Concrete corrective work may address the prior CRL, but an engineering batch does not itself establish commercial process qualification or FDA approval.",
+  "counterpoint": "The originally cited facility problem did not concern efficacy and safety of the candidate.",
+  "remainingQuestion": "Has the sponsor actually resubmitted, and has FDA accepted all manufacturing documentation and inspections?",
+  "sourceTitle": "Achieve June 22 2026 cytisinicline CRL response announcement",
+  "sourceUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/264/achieve-life-sciences-receives-complete-response-letter-from-fda-for-cytisinicline-nda"
+},
+{
+  "id": "apmd-osa-efficacy",
+  "relatedNcts": [
+    "NCT05811247",
+    "NCT05813275"
+  ],
+  "company": "Apnimed",
+  "drug": "AD109 (aroxybutynin/atomoxetine)",
+  "indication": "Obstructive sleep apnea",
+  "domain": "endpoint",
+  "type": "EFFICACY_EVIDENCE",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2026-07-27",
+  "headline": "SynAIRgy and LunAIRo achieved treatment-policy apnea-hypopnea improvements",
+  "detail": "In Apnimed's S-1, Week 26 treatment-policy mean AHI reduction was 44.1% and 33.7% in SynAIRgy and LunAIRo, respectively, versus 17.6% and 7.3% on placebo (p≤0.0001).",
+  "fdaRelevance": "Supports physiological OSA efficacy across two pivotal trials; clinical meaning and adherence remain important for labeling and benefit-risk.",
+  "counterpoint": "Reduced AHI is not identical to demonstrated cardiovascular outcome benefit; full safety, clinical symptom and adherence evidence require review.",
+  "remainingQuestion": "Do insomnia, anticholinergic effects, blood pressure, heart-rate and dropout patterns create a clinically important benefit-risk concern?",
+  "sourceTitle": "Apnimed July 2026 SEC S-1, Phase 3 results discussion",
+  "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1745648/000119312526316811/apni-20260727.htm"
+},
+{
+  "id": "apmd-responder",
+  "relatedNcts": [
+    "NCT05811247",
+    "NCT05813275"
+  ],
+  "company": "Apnimed",
+  "drug": "AD109 (aroxybutynin/atomoxetine)",
+  "indication": "Obstructive sleep apnea",
+  "domain": "statistics",
+  "type": "SCIENTIFIC_UNCERTAINTY",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2026-07-10",
+  "headline": "SynAIRgy responder secondary analysis depends on intercurrent-event strategy",
+  "detail": "At 26 weeks, SynAIRgy AHI ≥50% responder rate was 25.8% versus 19.8% placebo (treatment-policy p=0.182); on-treatment estimate was 39.6% versus 22.3% (p<0.0001).",
+  "fdaRelevance": "The analysis strategy changes inference on a clinically interpretable secondary endpoint; requires assessment of adherence, estimands and multiplicity.",
+  "counterpoint": "The prespecified AHI primary endpoints were significant in both pivotal studies, and LunAIRo responder analyses were also positive.",
+  "remainingQuestion": "How are treatment discontinuation and missing observations handled across co-primary and key secondary analyses?",
+  "sourceTitle": "Apnimed July 2026 IPO S-1, responder/estimand analyses",
+  "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1745648/000119312526300909/apni-20260710.htm"
+},
+{
+  "id": "axsm-axs12-identity",
+  "relatedNcts": [
+    "NCT05059223",
+    "NCT05113745"
+  ],
+  "company": "Axsome Therapeutics",
+  "drug": "AXS-12 (reboxetine)",
+  "indication": "Cataplexy in narcolepsy",
+  "domain": "timing",
+  "type": "REVIEW_STATUS",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2026-07-15",
+  "headline": "FDA accepted AXS-12 NDA for narcolepsy cataplexy, May 1 2027 PDUFA",
+  "detail": "Axsome's July 15 SEC exhibit confirms an accepted NDA for AXS-12, FDA target date May 1, 2027, and no advisory committee currently planned. Both FOCUS NCT IDs pertain to the AXS-12 narcolepsy program.",
+  "fdaRelevance": "Validates the current product and indication review cycle rather than conflating it with approved AXS-05 or other Axsome candidates.",
+  "counterpoint": "FDA filing acceptance and absence of planned advisory committee do not establish approval readiness.",
+  "remainingQuestion": "How robust are SYMPHONY and ENCORE efficacy and long-term safety data, including cataplexy attack frequency and rebound effects?",
+  "sourceTitle": "Axsome July 15 2026 SEC 8-K exhibit, AXS-12 FDA acceptance",
+  "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526304039/axsm-ex99_1.htm"
+},
+{
+  "id": "blte-dragon",
+  "relatedNcts": [
+    "NCT05244304"
+  ],
+  "company": "Belite Bio",
+  "drug": "Tinlarebant",
+  "indication": "Stargardt disease type 1",
+  "domain": "statistics",
+  "type": "EFFICACY_EVIDENCE",
+  "evidence": "SPONSOR_RELEASE",
+  "published": "2025-12-12",
+  "headline": "DRAGON lesion-growth endpoint positive; additional post-hoc model reported",
+  "detail": "Sponsor reports 35.7% reduction in retinal atrophic-lesion growth with prespecified MMRM unstructured covariance (p=0.0033). A separate post-hoc autoregressive MMRM yielded 35.4% and p<0.0001; these are analytically distinct.",
+  "fdaRelevance": "The prespecified result supports anatomical benefit; distinguish the alternative post-hoc analysis and examine visual-function relevance.",
+  "counterpoint": "FDA granted priority review with a Feb 12 2027 goal; ocular adverse effects such as xanthopsia and delayed dark adaptation remain relevant.",
+  "remainingQuestion": "Does the lesion-growth effect translate to preserved vision/function in the intended population and are ocular adverse effects manageable?",
+  "sourceTitle": "Belite Bio Phase 3 DRAGON positive topline results",
+  "sourceUrl": "https://investors.belitebio.com/news-releases/news-release-details/new-hope-people-living-disease-once-deemed-untreatable-belite"
+},
+{
+  "id": "cldx-embarq",
+  "relatedNcts": [
+    "NCT06445023",
+    "NCT06455202"
+  ],
+  "company": "Celldex Therapeutics",
+  "drug": "Barzolvolimab",
+  "indication": "Chronic spontaneous urticaria",
+  "domain": "endpoint",
+  "type": "EFFICACY_EVIDENCE",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2026-11-05",
+  "headline": "Both EMBARQ-CSU Phase 3 studies met Week 12 UAS7 primary endpoints",
+  "detail": "Celldex SEC filing reports for the 150 mg dose Week 12 LS mean UAS7 change of -20.2 in each study versus -10.7 and -11.4 placebo, respectively (p<0.00001); all key secondary endpoints reportedly met.",
+  "fdaRelevance": "Consistent placebo-controlled pivotal efficacy across two studies supports a future BLA, but the company still plans to file in 2027.",
+  "counterpoint": "No FDA-accepted BLA or assigned PDUFA date has yet been shown for these study IDs, and 52-week treatment/safety data require review.",
+  "remainingQuestion": "Are long-term safety, immunologic issues and durability sufficient for the proposed population and dosing intervals?",
+  "sourceTitle": "Celldex November 2026 Form 10-Q EMBARQ trial tables",
+  "sourceUrl": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm"
+},
+{
+  "id": "cytk-maple-cycle",
+  "relatedNcts": [
+    "NCT05767346"
+  ],
+  "company": "Cytokinetics",
+  "drug": "Aficamten (MYQORZO)",
+  "indication": "Obstructive hypertrophic cardiomyopathy",
+  "domain": "timing",
+  "type": "SCIENTIFIC_UNCERTAINTY",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2026-11-04",
+  "headline": "MAPLE-HCM is in an already approved oHCM indication; recorded Nov 14 goal needs verification",
+  "detail": "Cytokinetics' September 2026 Form 10-Q confirms FDA approved MYQORZO for symptomatic obstructive HCM in December 2025 and it was commercially available in 2026. Separate non-obstructive HCM sNDA filing was still planned for Q4 2026.",
+  "fdaRelevance": "Do not predict a fresh oHCM approval/CRL against an already approved product or assume November 14 2026 belongs to this trial.",
+  "counterpoint": "Other supplemental regulatory cycles could exist, but the exact NDA number, indication and source of the FOCUS date must be demonstrated.",
+  "remainingQuestion": "Which exact current FDA application has a November 14 target, and is this NCT actually pivotal for that review cycle?",
+  "sourceTitle": "Cytokinetics November 2026 Form 10-Q, approved MYQORZO and future sNDA",
+  "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm"
+},
+{
+  "id": "cytk-acacia-safety",
+  "relatedNcts": [
+    "NCT06081894"
+  ],
+  "company": "Cytokinetics",
+  "drug": "Aficamten",
+  "indication": "Symptomatic non-obstructive hypertrophic cardiomyopathy",
+  "domain": "safety",
+  "type": "SCIENTIFIC_UNCERTAINTY",
+  "evidence": "SEC_COMPANY_DISCLOSURE",
+  "published": "2026-11-04",
+  "headline": "ACACIA-HCM showed heart-failure serious-adverse-event imbalance despite positive endpoints",
+  "detail": "Cytokinetics reports LVEF <50% in 10% aficamten versus 1% placebo and heart-failure serious adverse events in 12/255 (4.7%) versus 3/?? (reported 1.2%) placebo; dual endpoints were met.",
+  "fdaRelevance": "Potential clinical benefit-risk and REMS/labeling scrutiny for a proposed non-obstructive HCM indication.",
+  "counterpoint": "The company reports statistically significant improvements in both dual primary endpoints and key secondary measures; no FDA deficiency is confirmed.",
+  "remainingQuestion": "How did investigators adjudicate heart-failure cases, reversible LVEF reduction, discontinuation, monitoring and dose-titration safety?",
+  "sourceTitle": "Cytokinetics November 2026 SEC quarterly clinical safety disclosures",
+  "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm"
+}
 ];
 export function findingsForNct(nct:string):ReviewedFinding[]{
   if(!/^NCT\d{8}$/.test(nct))return [];
