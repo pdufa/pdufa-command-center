@@ -84,7 +84,7 @@ test("AD109 dropouts are distinct from treatment-related serious events",()=>{
  const r=adverseEventAbsoluteDifference(69,325,10,319);
  assert.equal(r.treatedPercent,21.23);
  assert.equal(r.controlPercent,3.13);
- assert.equal(r.excessPercentagePoints,18.09);
+ assert.equal(r.excessPercentagePoints,18.10);
  const ae=c.sources.find(x=>x.id==="apmd-discontinuation");
  const serious=c.sources.find(x=>x.id==="apmd-serious-safety");
  assert.ok(ae.result.includes("69/325"));
