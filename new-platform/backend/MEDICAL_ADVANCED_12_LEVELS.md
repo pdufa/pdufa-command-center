@@ -2,7 +2,7 @@
 
 **Architecture:** POOL (source evidence) → FOCUS (qualifying trials) → independent Deep Medical Intelligence (12 advanced levels) → separate approval/CRL/review-delay research outcomes → independent prediction-certainty gate.
 
-**Isolation:** No RAAS or survey imports, no POOL/FOCUS Google Sheet writes, no production merge, no trading execution. The source roster used for the initial preview is dated 2026-11-07; this is not a continuous Google Sheets synchronization.
+**Isolation:** No retired scoring or survey dependencies, no POOL/FOCUS Google Sheet writes, no production merge, no trading execution. The source roster used for the initial preview is dated 2026-11-07; this is not a continuous Google Sheets synchronization.
 
 ## What is implemented in the draft PR
 
