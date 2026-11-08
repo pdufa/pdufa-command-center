@@ -10,7 +10,7 @@ export type CaseRecord={
  facts:readonly {label:string;value:string;source:string}[];
  source:string;sourceDate:string;sourceTitle:string;
  uncertainties:readonly string[];strongestCounter:string;
- investigations:readonly {level:number;assessmentId:string;sourceObservation:string;medicalInterpretation:string;sourceSection:string}[];
+ investigations:readonly {level:number;assessmentId:string;sourceObservation:string;medicalInterpretation:string;sourceSection:string;sourceUrl?:string}[];
 };
 export const MEDICAL_CASES:readonly CaseRecord[]=[
   {
@@ -158,7 +158,8 @@ export const MEDICAL_CASES:readonly CaseRecord[]=[
         "assessmentId": "7.5",
         "sourceObservation": "Sponsor reported FDA classified additional HOPE-3 analyses/indication change as a major amendment and extended the goal to Nov 22.",
         "medicalInterpretation": "A formal extension is already an event, not a prediction of further delay.",
-        "sourceSection": "Capricor August 24 2026 announcement"
+        "sourceSection": "Capricor August 24 2026 announcement",
+        "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1133869/000110465926100071/capr-20260824x8k.htm"
       },
       {
         "level": 19,
@@ -334,7 +335,8 @@ export const MEDICAL_CASES:readonly CaseRecord[]=[
         "assessmentId": "1.1",
         "sourceObservation": "Metastatic GIST commonly depends on KIT/PDGFRA signaling and may develop imatinib resistance.",
         "medicalInterpretation": "Mutation-specific biological resistance motivates second-line kinase therapy.",
-        "sourceSection": "NCI GIST disease background and PEAK design"
+        "sourceSection": "NCI GIST disease background and PEAK design",
+        "sourceUrl": "https://www.cancer.gov/types/soft-tissue-sarcoma/hp/gist-treatment-pdq"
       },
       {
         "level": 4,
