@@ -2,6 +2,7 @@
 import {useEffect,useRef,useState} from "react";
 import type {ReviewMatrix} from "../../../lib/medical-review-matrix";
 import type {MedicalSourceRunObservation} from "../../../lib/medical-source-run";
+import PilotMethodAuditMonitor from "./PilotMethodAuditMonitor";
 
 type MonitorProps={
   nct:string;
@@ -125,6 +126,7 @@ export default function LivePredictionMonitor({
           :"Checking the isolated source-worker record…"}</p>}
       <p style={{fontSize:12,margin:"5px 0"}}>Worker status last fetched: {sourceTime}. This is a real <strong>source collection</strong> job, not the 800-method scientific scoring or FDA prediction engine.</p>
     </div>
+    <PilotMethodAuditMonitor nct={nct}/>
     <div style={{...block,marginTop:10}}>
       <div style={{display:"flex",justifyContent:"space-between",gap:8,flexWrap:"wrap"}}>
         <strong>Verified current-phase method reviews</strong>
@@ -153,7 +155,7 @@ export default function LivePredictionMonitor({
     </div>
     <details style={{marginTop:10,borderTop:"1px solid #c7ded5",paddingTop:10}}>
       <summary style={{fontWeight:750,cursor:"pointer"}}>What updates live, and what still needs a worker feed?</summary>
-      <p style={{fontSize:13}}>The monitor refreshes exact NCT reviewer phase events, method grade counts, exclusions and review/gap-event totals. It never counts retrieved sources, displayed method positions or page requests as scored tests. The existing source-research worker now supplies real 12-stage job IDs, source stage states and completion timestamps when access is configured. The scientific scoring engine does not yet expose a distinct started/running/completed 800-method job ID or current method being processed, and it has not produced calibrated FDA probabilities. Until a real run-event producer and prediction/calibration model are connected, those items correctly remain unavailable.</p>
+      <p style={{fontSize:13}}>The monitor refreshes exact NCT reviewer phase events, method grade counts, exclusions and review/gap-event totals. It never counts retrieved sources, displayed method positions or page requests as scored tests. The existing source-research worker now supplies real 12-stage job IDs, source stage states and completion timestamps when access is configured. A distinct saved 800-position source-classification audit can now show genuine per-method source-check receipts. That audit is not the independent scientific scoring worker. The scoring engine still lacks a reviewed-and-graded run event stream and has not produced calibrated FDA probabilities. Until a real run-event producer and prediction/calibration model are connected, those items correctly remain unavailable.</p>
     </details>
   </section>;
 }
