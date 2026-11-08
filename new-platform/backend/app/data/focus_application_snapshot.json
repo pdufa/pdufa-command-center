@@ -1,0 +1,604 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-07",
+  "upstreamPath": "new-platform/frontend/lib/medical-intelligence-applications.ts",
+  "sourceRosters": [
+    "new-platform/frontend/data/p3PostDataActive.json"
+  ],
+  "intendedUse": "PREVIEW_RESEARCH_IDENTITY_LEADS_ONLY",
+  "clinicalSignoff": false,
+  "sourceVerifiedByFda": false,
+  "records": [
+    {
+      "nct": "NCT05507203",
+      "drug": "Obefazimod",
+      "indication": "Ulcerative colitis",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "abvx-uc",
+          "ticker": "ABVX",
+          "drug": "Obefazimod",
+          "indication": "Ulcerative colitis",
+          "applicationType": "NDA",
+          "stage": "PLANNED",
+          "reportedGoal": null,
+          "sourceDate": "2026-06-01",
+          "sourceUrl": "https://abivax.gcs-web.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT05507216",
+      "drug": "Obefazimod",
+      "indication": "Ulcerative colitis",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "abvx-uc",
+          "ticker": "ABVX",
+          "drug": "Obefazimod",
+          "indication": "Ulcerative colitis",
+          "applicationType": "NDA",
+          "stage": "PLANNED",
+          "reportedGoal": null,
+          "sourceDate": "2026-06-01",
+          "sourceUrl": "https://abivax.gcs-web.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT04576949",
+      "drug": "Cytisinicline",
+      "indication": "Nicotine dependence / smoking cessation",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "achv-cytisinicline",
+          "ticker": "ACHV",
+          "drug": "Cytisinicline",
+          "indication": "Nicotine dependence / smoking cessation",
+          "applicationType": "NDA",
+          "stage": "PRIOR_CRL_RESUBMISSION_PLANNED",
+          "reportedGoal": null,
+          "sourceDate": "2026-08-11",
+          "sourceUrl": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-344624/achv-20260630.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT05206370",
+      "drug": "Cytisinicline",
+      "indication": "Nicotine dependence / smoking cessation",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "achv-cytisinicline",
+          "ticker": "ACHV",
+          "drug": "Cytisinicline",
+          "indication": "Nicotine dependence / smoking cessation",
+          "applicationType": "NDA",
+          "stage": "PRIOR_CRL_RESUBMISSION_PLANNED",
+          "reportedGoal": null,
+          "sourceDate": "2026-08-11",
+          "sourceUrl": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-344624/achv-20260630.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT05811247",
+      "drug": "AD109 (aroxybutynin + atomoxetine)",
+      "indication": "Obstructive sleep apnea",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "apmd-ad109",
+          "ticker": "APMD",
+          "drug": "AD109 (aroxybutynin + atomoxetine)",
+          "indication": "Obstructive sleep apnea",
+          "applicationType": "NDA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2027-02-28",
+          "sourceDate": "2026-07-14",
+          "sourceUrl": "https://ir.apnimed.com/news-releases/news-release-details/apnimed-announces-fda-acceptance-new-drug-application-ad109"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT05813275",
+      "drug": "AD109 (aroxybutynin + atomoxetine)",
+      "indication": "Obstructive sleep apnea",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "apmd-ad109",
+          "ticker": "APMD",
+          "drug": "AD109 (aroxybutynin + atomoxetine)",
+          "indication": "Obstructive sleep apnea",
+          "applicationType": "NDA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2027-02-28",
+          "sourceDate": "2026-07-14",
+          "sourceUrl": "https://ir.apnimed.com/news-releases/news-release-details/apnimed-announces-fda-acceptance-new-drug-application-ad109"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT05059223",
+      "drug": "AXS-12 (reboxetine)",
+      "indication": "Cataplexy in narcolepsy",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "axsm-axs12",
+          "ticker": "AXSM",
+          "drug": "AXS-12 (reboxetine)",
+          "indication": "Cataplexy in narcolepsy",
+          "applicationType": "NDA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2027-05-01",
+          "sourceDate": "2026-07-15",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526304039/axsm-ex99_1.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT05113745",
+      "drug": "AXS-12 (reboxetine)",
+      "indication": "Cataplexy in narcolepsy",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "axsm-axs12",
+          "ticker": "AXSM",
+          "drug": "AXS-12 (reboxetine)",
+          "indication": "Cataplexy in narcolepsy",
+          "applicationType": "NDA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2027-05-01",
+          "sourceDate": "2026-07-15",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526304039/axsm-ex99_1.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT05244304",
+      "drug": "Tinlarebant",
+      "indication": "Stargardt disease type 1",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "blte-stargardt",
+          "ticker": "BLTE",
+          "drug": "Tinlarebant",
+          "indication": "Stargardt disease type 1",
+          "applicationType": "NDA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2027-02-12",
+          "sourceDate": "2026-08-11",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1889109/000110465926094040/tm2622827d1_ex99-1.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT05126758",
+      "drug": "Deramiocel",
+      "indication": "Duchenne muscular dystrophy",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "capr-deramiocel",
+          "ticker": "CAPR",
+          "drug": "Deramiocel",
+          "indication": "Duchenne muscular dystrophy",
+          "applicationType": "BLA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2026-11-22",
+          "sourceDate": "2026-08-24",
+          "sourceUrl": "https://www.capricor.com/investors/news-events/press-releases/detail/354/capricor-therapeutics-announces-extension-of-pdufa-target"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT06445023",
+      "drug": "Barzolvolimab",
+      "indication": "Chronic spontaneous urticaria",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "cldx-barzolvolimab",
+          "ticker": "CLDX",
+          "drug": "Barzolvolimab",
+          "indication": "Chronic spontaneous urticaria",
+          "applicationType": "BLA",
+          "stage": "PLANNED",
+          "reportedGoal": null,
+          "sourceDate": "2026-11-05",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT06455202",
+      "drug": "Barzolvolimab",
+      "indication": "Chronic spontaneous urticaria",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "cldx-barzolvolimab",
+          "ticker": "CLDX",
+          "drug": "Barzolvolimab",
+          "indication": "Chronic spontaneous urticaria",
+          "applicationType": "BLA",
+          "stage": "PLANNED",
+          "reportedGoal": null,
+          "sourceDate": "2026-11-05",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT05208047",
+      "drug": "Bezuclastinib + sunitinib",
+      "indication": "GIST after prior imatinib",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "cogt-gist",
+          "ticker": "COGT",
+          "drug": "Bezuclastinib + sunitinib",
+          "indication": "GIST after prior imatinib",
+          "applicationType": "NDA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2026-11-30",
+          "sourceDate": "2026-11-05",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526449926/cogt-ex99_1.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT03697109",
+      "drug": "Relacorilant",
+      "indication": "Cushing syndrome / hypercortisolism",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "cort-relacorilant",
+          "ticker": "CORT",
+          "drug": "Relacorilant",
+          "indication": "Cushing syndrome / hypercortisolism",
+          "applicationType": "NDA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2026-12-17",
+          "sourceDate": "2026-11-03",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1088856/000162828026069501/cort-20260930.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT04308590",
+      "drug": "Relacorilant",
+      "indication": "Cushing syndrome / hypercortisolism",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "cort-relacorilant",
+          "ticker": "CORT",
+          "drug": "Relacorilant",
+          "indication": "Cushing syndrome / hypercortisolism",
+          "applicationType": "NDA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2026-12-17",
+          "sourceDate": "2026-11-03",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1088856/000162828026069501/cort-20260930.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT05767346",
+      "drug": "MYQORZO (aficamten)",
+      "indication": "Obstructive HCM",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "cytk-aficamten-ohcm",
+          "ticker": "CYTK",
+          "drug": "MYQORZO (aficamten)",
+          "indication": "Obstructive HCM",
+          "applicationType": "NDA",
+          "stage": "APPROVED_ALREADY",
+          "reportedGoal": null,
+          "sourceDate": "2026-11-04",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT06081894",
+      "drug": "Aficamten",
+      "indication": "Non-obstructive HCM",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "cytk-aficamten-nhcm",
+          "ticker": "CYTK",
+          "drug": "Aficamten",
+          "indication": "Non-obstructive HCM",
+          "applicationType": "sNDA",
+          "stage": "PLANNED",
+          "reportedGoal": null,
+          "sourceDate": "2026-11-04",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT04871282",
+      "drug": "Varegacestat",
+      "indication": "Progressing desmoid tumors",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "imnm-desmoid",
+          "ticker": "IMNM",
+          "drug": "Varegacestat",
+          "indication": "Progressing desmoid tumors",
+          "applicationType": "NDA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2027-04-28",
+          "sourceDate": "2026-08-11",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1472012/000119312526344577/imnm-ex99_1.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT06411379",
+      "drug": "Sonelokimab",
+      "indication": "Hidradenitis suppurativa",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "mltx-sonelokimab",
+          "ticker": "MLTX",
+          "drug": "Sonelokimab",
+          "indication": "Hidradenitis suppurativa",
+          "applicationType": "BLA",
+          "stage": "SUBMITTED_PENDING_ACCEPTANCE",
+          "reportedGoal": null,
+          "sourceDate": "2026-11-04",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000182158626000013/moonlake-pressreleasexq320.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT06411899",
+      "drug": "Sonelokimab",
+      "indication": "Hidradenitis suppurativa",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "mltx-sonelokimab",
+          "ticker": "MLTX",
+          "drug": "Sonelokimab",
+          "indication": "Hidradenitis suppurativa",
+          "applicationType": "BLA",
+          "stage": "SUBMITTED_PENDING_ACCEPTANCE",
+          "reportedGoal": null,
+          "sourceDate": "2026-11-04",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000182158626000013/moonlake-pressreleasexq320.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT06153693",
+      "drug": "Lorundrostat",
+      "indication": "Resistant or uncontrolled hypertension",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "mlys-lorundrostat",
+          "ticker": "MLYS",
+          "drug": "Lorundrostat",
+          "indication": "Resistant or uncontrolled hypertension",
+          "applicationType": "NDA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2026-12-22",
+          "sourceDate": "2026-11-04",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000142/mlys2026q38kex991.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT06343779",
+      "drug": "Deucrictibant immediate-release",
+      "indication": "On-demand hereditary angioedema attacks",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "phvs-ondemand",
+          "ticker": "PHVS",
+          "drug": "Deucrictibant immediate-release",
+          "indication": "On-demand hereditary angioedema attacks",
+          "applicationType": "NDA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2027-04-23",
+          "sourceDate": "2026-10-08",
+          "sourceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-fda-acceptance-new-drug-application"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT06669754",
+      "drug": "Deucrictibant extended-release",
+      "indication": "Prophylaxis of hereditary angioedema attacks",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "phvs-prophylaxis",
+          "ticker": "PHVS",
+          "drug": "Deucrictibant extended-release",
+          "indication": "Prophylaxis of hereditary angioedema attacks",
+          "applicationType": "NDA",
+          "stage": "PLANNED",
+          "reportedGoal": null,
+          "sourceDate": "2026-09-08",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT06087276",
+      "drug": "Ulixacaltamide",
+      "indication": "Essential tremor",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "prax-ulixacaltamide",
+          "ticker": "PRAX",
+          "drug": "Ulixacaltamide",
+          "indication": "Essential tremor",
+          "applicationType": "NDA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2027-01-29",
+          "sourceDate": "2026-08-06",
+          "sourceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-provides-corporate-update-and-20"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT02500381",
+      "drug": "",
+      "indication": "",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "srpt-casimersen",
+          "ticker": "SRPT",
+          "drug": "AMONDYS 45 (casimersen)",
+          "indication": "DMD mutation amenable to exon 45 skipping",
+          "applicationType": "sNDA",
+          "stage": "SUPPLEMENT_UNDER_REVIEW",
+          "reportedGoal": "2027-02-28",
+          "sourceDate": "2026-11-05",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/873303/000119312526449721/srpt-20260930.htm"
+        },
+        {
+          "cycleId": "srpt-golodirsen",
+          "ticker": "SRPT",
+          "drug": "VYONDYS 53 (golodirsen)",
+          "indication": "DMD mutation amenable to exon 53 skipping",
+          "applicationType": "sNDA",
+          "stage": "SUPPLEMENT_UNDER_REVIEW",
+          "reportedGoal": "2027-02-28",
+          "sourceDate": "2026-11-05",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/873303/000119312526449721/srpt-20260930.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT04544293",
+      "drug": "Molgramostim inhalation solution",
+      "indication": "Autoimmune pulmonary alveolar proteinosis",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "svra-molgramostim",
+          "ticker": "SVRA",
+          "drug": "Molgramostim inhalation solution",
+          "indication": "Autoimmune pulmonary alveolar proteinosis",
+          "applicationType": "BLA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2026-11-22",
+          "sourceDate": "2026-04-15",
+          "sourceUrl": "https://investors.savarapharma.com/news/news-details/2026/Savara-Announces-the-U-S--Food--Drug-Administration-FDA-Has-Extended-the-Review-Period-for-the-Molgramostim-Inhalation-Solution-Molgramostim-Biologics-License-Application-BLA-in-Autoimmune-Pulmonary-Alveolar-Proteinosis-Autoimmune-PAP/default.aspx"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT06331299",
+      "drug": "UGN-103 (mitomycin)",
+      "indication": "Recurrent low-grade intermediate-risk NMIBC",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "urgn-ugn103",
+          "ticker": "URGN",
+          "drug": "UGN-103 (mitomycin)",
+          "indication": "Recurrent low-grade intermediate-risk NMIBC",
+          "applicationType": "NDA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2027-06-14",
+          "sourceDate": "2026-11-04",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1668243/000143774926034769/ex_1036873.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT04716231",
+      "drug": "TRUTAKNA (atacicept)",
+      "indication": "IgA nephropathy",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "vera-trutakna",
+          "ticker": "VERA",
+          "drug": "TRUTAKNA (atacicept)",
+          "indication": "IgA nephropathy",
+          "applicationType": "sBLA",
+          "stage": "SUBMITTED_PENDING_ACCEPTANCE",
+          "reportedGoal": null,
+          "sourceDate": "2026-11-05",
+          "sourceUrl": "https://veratherapeutics.gcs-web.com/news-releases/news-release-details/vera-therapeutics-provides-business-update-and-reports-third-3"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    },
+    {
+      "nct": "NCT05662241",
+      "drug": "Obexelimab",
+      "indication": "IgG4-related disease",
+      "designations": [],
+      "candidateApplications": [
+        {
+          "cycleId": "zbio-obexelimab",
+          "ticker": "ZBIO",
+          "drug": "Obexelimab",
+          "indication": "IgG4-related disease",
+          "applicationType": "BLA",
+          "stage": "UNDER_REVIEW",
+          "reportedGoal": "2027-05-27",
+          "sourceDate": "2026-11-05",
+          "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926123040/zbio-20260930x10q.htm"
+        }
+      ],
+      "attribution": "SOURCE_LINKED_CYCLE_RECONSTRUCTION_NOT_FDA_CONFIRMED"
+    }
+  ]
+}
