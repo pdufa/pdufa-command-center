@@ -31,7 +31,7 @@ function review(milestoneId,domain="EXECUTION",grade=4){
   sourcePublishedOn:"2026-11-06",recordedAt:"2026-11-08"};
 }
 function risk(milestoneId,level="HIGH",state="OPEN"){
- return {milestoneId,nct:NCT,phase,domain:"TRIAL_EXECUTION",level,state,
+ return {riskId:"execution-delay",milestoneId,nct:NCT,phase,domain:"TRIAL_EXECUTION",level,state,
   finding:"Source-verified enrollment delays and remaining site-activation limitations",
   evidenceUrls:[url]};
 }
@@ -80,4 +80,28 @@ test("completed safety readout can yield an unfavorable risk and independent tes
  assert.equal(r.currentScores.find(x=>x.id==="4.1").score,20);
  assert.equal(r.activeRisks[0].level,"CRITICAL");
  assert.equal(PHASE_RISK_WATCHLIST.PHASE1.some(x=>x.domain==="DOSE_EXPOSURE"),true);
+});
+
+test("new activity changes affected tests without erasing valid earlier results from the same phase",()=>{
+ const old=event("efficacy","PRIMARY_READOUT","2026-11-01");
+ const recent=event("progress","ENROLLMENT_UPDATE","2026-11-06");
+ const previousGrade={...review("efficacy","EFFICACY",5),assessmentId:"4.2",level:2,
+   sourcePublishedOn:"2026-11-01"};
+ const newGrade=review("progress","EXECUTION",2);
+ const r=assessLatestPhaseActivity(DEEP_ASSESSMENTS,NCT,phase,asOf,[old,recent],
+   [previousGrade,newGrade],[]);
+ assert.equal(r.latestVerifiedMilestone.id,"progress");
+ assert.equal(r.currentScores.find(x=>x.id==="4.2").score,100);
+ assert.equal(r.currentScores.find(x=>x.id==="4.1").score,40);
+ assert.equal(r.latestEventScores.find(x=>x.id==="4.2").score,null);
+ assert.equal(r.latestEventScores.find(x=>x.id==="4.1").score,40);
+});
+test("risk resolution in a later verified milestone removes earlier open risk from the active register",()=>{
+ const old=event("s1","ENROLLMENT_UPDATE","2026-11-01");
+ const recent=event("s2","ENROLLMENT_UPDATE","2026-11-06");
+ const r=assessLatestPhaseActivity(DEEP_ASSESSMENTS,NCT,phase,asOf,[old,recent],[],
+   [risk("s1","HIGH","OPEN"),risk("s2","LOW","RESOLVED")]);
+ assert.equal(r.activeRisks.length,0);
+ assert.equal(r.resolvedRisks.length,1);
+ assert.equal(r.resolvedRisks[0].level,"LOW");
 });
