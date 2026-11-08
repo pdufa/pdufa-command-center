@@ -12,7 +12,7 @@ function load(name){
  vm.runInNewContext(compiled,{module:m,exports:m.exports});
  return m.exports;
 }
-const {rankTrialAssessments,TEST_GRADE_RUBRIC,PHASE_REVIEW_STANDARD}=load("medical-intelligence-assessment-rankings");
+const {rankTrialAssessments,rankAtLastCompletedPhase,TEST_GRADE_RUBRIC,PHASE_REVIEW_STANDARD}=load("medical-intelligence-assessment-rankings");
 const {DEEP_ASSESSMENTS}=load("medical-intelligence-master-depth");
 const NCT="NCT06081894";
 const phase="PHASE1";
@@ -67,4 +67,53 @@ test("grade input validation rejects unverified phase, duplicate marks, invalid 
  assert.throws(()=>rankTrialAssessments(DEEP_ASSESSMENTS,NCT,phase,[{...scored("1.1",1,5),grade:7}]),/integer from 0 to 5/);
  assert.throws(()=>rankTrialAssessments(DEEP_ASSESSMENTS,NCT,phase,[{...scored("1.1",1,5),evidenceUrls:[]}]),/original-source/);
  assert.throws(()=>rankTrialAssessments(DEEP_ASSESSMENTS,NCT,phase,[{...scored("1.1",1,5),phase:"PHASE3"}]),/exact NCT and verified phase/);
+});
+
+const past={
+ sourceNct:"NCT05507203",
+ completedPhase:"PHASE2",
+ phaseCompletedOn:"2025-02-01",
+ readoutDate:"2025-03-05",
+ sourceUrls:["https://clinicaltrials.gov/study/NCT05507203"],
+ exactDrugAndIndicationMatchVerified:true,
+ finalOrPrimaryPhaseResultsVerified:true,
+};
+const current={nct:NCT,phase:"PHASE3",status:"ONGOING"};
+const priorReview=(level,grade)=>({
+ nct:past.sourceNct,phase:past.completedPhase,assessmentId:"1.1",level,
+ disposition:"SCORED",grade,evidenceUrls:past.sourceUrls,
+ rationale:"Original completed phase outcome, full source and patient endpoint audit",
+ recordedAt:"2026-11-08",sourcePublishedOn:"2025-03-05",phaseEndResultVerified:true
+});
+test("a Phase 3 trial is based on its verified Phase 2 end results, not current Phase 3",()=>{
+ const r=rankAtLastCompletedPhase(DEEP_ASSESSMENTS,current,past,[priorReview(1,4),priorReview(2,3)]);
+ assert.equal(r.basis,"LAST_COMPLETED_PHASE");
+ assert.equal(r.completedPhase,"PHASE2");
+ assert.equal(r.completedPhaseNct,past.sourceNct);
+ const first=r.assessments.find(x=>x.id==="1.1");
+ assert.equal(first.scoredTests,2);
+ assert.equal(first.score,70);
+ assert.equal(first.status,"PROVISIONAL");
+ assert.equal(first.rank,null);
+});
+test("missing last-phase completion stays pending without a fabricated zero or rank",()=>{
+ const r=rankAtLastCompletedPhase(DEEP_ASSESSMENTS,current,null,[]);
+ assert.equal(r.basis,"NO_VERIFIED_PHASE_END");
+ assert.equal(r.assessments.length,40);
+ assert.ok(r.assessments.every(x=>x.score===null && x.rank===null));
+ assert.throws(()=>rankAtLastCompletedPhase(DEEP_ASSESSMENTS,current,null,[priorReview(1,3)]),/Cannot grade/);
+});
+test("prevent cross-program mixing, phase future leakage and scoring unsupported signals",()=>{
+ assert.throws(()=>rankAtLastCompletedPhase(DEEP_ASSESSMENTS,current,{...past,exactDrugAndIndicationMatchVerified:false},[]),/drug, indication/);
+ assert.throws(()=>rankAtLastCompletedPhase(DEEP_ASSESSMENTS,current,{...past,completedPhase:"PHASE4"},[]),/later phase/);
+ assert.throws(()=>rankAtLastCompletedPhase(DEEP_ASSESSMENTS,current,{...past,completedPhase:"PHASE3"},[]),/unfinished current/);
+ assert.throws(()=>rankAtLastCompletedPhase(DEEP_ASSESSMENTS,current,past,[{...priorReview(1,4),nct:NCT}]),/exact completed-phase/);
+ assert.throws(()=>rankAtLastCompletedPhase(DEEP_ASSESSMENTS,current,past,[{...priorReview(1,4),phaseEndResultVerified:false}]),/speculative signal/);
+ assert.throws(()=>rankAtLastCompletedPhase(DEEP_ASSESSMENTS,current,past,[{...priorReview(1,4),sourcePublishedOn:"2027-01-01"}]),/dated phase-end source/);
+});
+test("completed Phase 3 can be the last completed phase if a new phase has not begun",()=>{
+ const r=rankAtLastCompletedPhase(DEEP_ASSESSMENTS,
+   {nct:NCT,phase:"PHASE3",status:"COMPLETED"},
+   {...past,sourceNct:NCT,completedPhase:"PHASE3"},[]);
+ assert.equal(r.completedPhase,"PHASE3");
 });
