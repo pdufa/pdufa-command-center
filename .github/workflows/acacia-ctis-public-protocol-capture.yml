@@ -26,7 +26,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "\${GITHUB_REF_NAME}" = "feature/medical-stage4-verified-method-matrix-20261108"
+          test "${GITHUB_REF_NAME}" = "feature/medical-stage4-verified-method-matrix-20261108"
           python3 -m py_compile scripts/medical/acacia_ctis_capture.py
           grep -Fq 'TRIAL = "2023-505797-15-00"' scripts/medical/acacia_ctis_capture.py
           grep -Fq 'https://euclinicaltrials.eu/ctis-public-api' scripts/medical/acacia_ctis_capture.py
