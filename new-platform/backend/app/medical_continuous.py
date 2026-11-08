@@ -83,6 +83,8 @@ def initialize(engine):
         c.execute(text("CREATE INDEX IF NOT EXISTS medical_continuous_by_nct ON medical_continuous_runs(nct_id,created_at)"))
         c.execute(text("""CREATE UNIQUE INDEX IF NOT EXISTS medical_continuous_one_active
             ON medical_continuous_runs(nct_id) WHERE status IN ('PENDING','RUNNING')"""))
+    from .medical_advanced_runtime import initialize as initialize_advanced
+    initialize_advanced(engine)
 
 
 def _read(engine, run_id):
@@ -340,7 +342,12 @@ def worker(engine, run_id, *, step=process_stage):
                 return
             index = int(run["stage_index"])
             if index >= len(STAGES):
+                # The history report and COMPLETE status commit atomically:
+                # no completed run without a corresponding immutable source
+                # revision and independent abstention/certainty disposition.
+                from .medical_advanced_runtime import record_revision
                 with engine.begin() as c:
+                    record_revision(c, run_id, run["nct_id"])
                     c.execute(text("""UPDATE medical_continuous_runs SET status='COMPLETE',updated_at=:t
                         WHERE run_id=:id"""), {"t": now(), "id": run_id})
                 return
@@ -394,6 +401,8 @@ def start(engine):
             WHERE status IN ('PENDING','RUNNING') ORDER BY created_at,run_id""")).scalars())
     for run_id in ids:
         _POOL.submit(worker, engine, run_id)
+    from .medical_advanced_runtime import start_watch
+    start_watch(engine)
 
 
 class StartPayload(BaseModel):
@@ -416,6 +425,14 @@ def install_routes(app, engine_provider, require_key, require_storage):
     def create_job(nct: str, payload: StartPayload):
         try:
             return create(engine_provider(), nct, payload.request_key)
+        except Exception as exc:
+            fail(exc)
+
+    @router.get("/{nct}/history")
+    def read_history(nct: str):
+        from .medical_advanced_runtime import list_revisions
+        try:
+            return list_revisions(engine_provider(), nct)
         except Exception as exc:
             fail(exc)
 
