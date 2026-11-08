@@ -21,7 +21,7 @@ test("active site navigation lists only POOL, FOCUS and POOL tools",()=>{
 });
 
 test("FOCUS allows any positive number of unique qualified NCT records with source links",()=>{
- const page=source("app/p3-post-data/page.tsx");
+ const page=source("app/focus/page.tsx");
  const snapshot=JSON.parse(source("data/p3PostDataActive.json"));
  assert.equal(snapshot.schemaVersion,1);
  const records=snapshot.records;
