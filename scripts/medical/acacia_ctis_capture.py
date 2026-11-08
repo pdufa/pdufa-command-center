@@ -63,6 +63,9 @@ def run() -> dict:
     if result.get("ctNumber") != TRIAL:
         raise ValueError("EXACT_EU_TRIAL_ID_MISMATCH")
     docs = gather_documents(result)
+    print("CTIS_INFO retrieved trial keys: " + ", ".join(sorted(result.keys())[:20]))
+    print("CTIS_INFO public document records in retrieved trial: " + str(len(docs)))
+    print("CTIS_INFO exact published protocol title matches: " + str(sum(1 for v in docs if v["title"] == NAME)))
     candidates = [v for v in docs if v["title"] == NAME and UUID.fullmatch(v["uuid"])]
     if len(candidates) != 1:
         raise ValueError(f"AM4_PROTOCOL_UNRESOLVED_MATCH_COUNT_{len(candidates)}")
@@ -130,7 +133,9 @@ def main():
         name = type(ex).__name__
         receipt["error_category"] = name
         if isinstance(ex, urllib.error.HTTPError): receipt["http_status"]=ex.code
-        print(f"CTIS public protocol capture not completed: {name}. No clinical grades or phase status were changed.")
+        if isinstance(ex, ValueError):
+            receipt["safe_diagnostic"] = str(ex)[:180]
+        print(f"CTIS public protocol capture not completed: {name}: {receipt.get('safe_diagnostic','see status')}. No clinical grades or phase status were changed.")
     (OUTPUT/"source_receipt.json").write_text(json.dumps(receipt,indent=2)+"\n",encoding="utf-8")
     (OUTPUT/"README.txt").write_text(
         "Research-only CTIS protocol capture for EU CT 2023-505797-15-00.\n"
