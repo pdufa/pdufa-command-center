@@ -1,5 +1,6 @@
 "use client";
 import {useState} from "react";
+import savedSnapshot from "../../data/focus-29-registry-source-scan-20261108.json";
 type TestState="SOURCE_FIELD_PRESENT"|"SOURCE_FIELD_MISSING"|"INDEPENDENT_REVIEW_REQUIRED"|"NOT_AUTOMATED";
 type Row={
   nct:string;ticker:string;company:string;applicationCycles:string[];
@@ -20,7 +21,7 @@ type Response={
 const card={background:"#fff",border:"1px solid #b6d4c6",borderRadius:12,padding:16} as const;
 const small={fontSize:12,lineHeight:1.6,color:"#52675e"} as const;
 export default function FullRosterSourceScan(){
-  const [data,setData]=useState<Response|null>(null);
+  const [data,setData]=useState<Response|null>(savedSnapshot as unknown as Response);
   const [running,setRunning]=useState(false);
   const [error,setError]=useState("");
   async function start(){
@@ -56,7 +57,7 @@ export default function FullRosterSourceScan(){
       <div style={{flex:"1 1 360px"}}>
         <p style={{fontSize:11,color:"#00644c",letterSpacing:1,fontWeight:800,margin:"0 0 5px"}}>29-TRIAL SOURCE COVERAGE · OPERATOR START</p>
         <h2 style={{fontSize:21,margin:"0 0 7px"}}>Run all FOCUS trial source checks</h2>
-        <p style={{...small,margin:0}}>Runs 12 evidence-readiness checks for each of the 29 exact NCT trials by querying ClinicalTrials.gov.
+        <p style={{...small,margin:0}}>The display initially uses the dated November 8, 2026 source scan stored in the project. Press the button to rerun 12 evidence-readiness checks for each of the 29 exact NCT trials against ClinicalTrials.gov.
           This is source inspection, not completed specialist adjudication, historical calibration or an FDA probability forecast.
           Nothing runs until you select the button.</p>
       </div>
@@ -89,7 +90,7 @@ export default function FullRosterSourceScan(){
       </div>
       <p role="status" style={small}>Scan completed {new Date(data.completedAt).toLocaleString()}.
         {" "}{data.status==="ALL_REGISTRY_SOURCES_SCANNED"?"All registry records were retrieved.":"Some registry records were unavailable; inspect their row errors."}
-        {" "}The result is available to download but is not automatically stored in the medical database.</p>
+        {" "}The initial result is stored as a versioned source snapshot; new browser-initiated runs are downloadable but are not automatically stored in the medical database.</p>
       <div style={{maxHeight:560,overflow:"auto",border:"1px solid #dae9e0",borderRadius:9}}>
         <table style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:650}}>
           <thead><tr style={{position:"sticky",top:0,background:"#e8f4ed",textAlign:"left"}}>
