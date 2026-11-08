@@ -14,7 +14,7 @@ on:
   workflow_dispatch:
     inputs:
       scan:
-        description: 'Clinical source stage (POOL, Pipeline or posted Phase 3 results)'
+        description: 'Clinical source stage (POOL, PIPELINE or FOCUS — posted Phase 3 results)'
         type: choice
         options: ['ALL', 'PIPELINE', 'PHASE3_RESULTS']
         default: 'ALL'
@@ -178,7 +178,7 @@ jobs:
             data/phase3_announcements.csv
 
   phase3_results:
-    name: 'Post–Phase 3 — registry results collector'
+    name: 'FOCUS — published Phase 3 registry results'
     needs: pipeline
     # PHASE3_RESULTS-only dispatch skips PIPELINE by design. always() prevents the
     # implicit needs-success guard from skipping this independently requested job.
