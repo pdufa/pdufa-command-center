@@ -71,16 +71,18 @@ export default function PhaseVerificationPanel({nct}:{nct:string}){
       <p style={{fontSize:13}}><strong>Next evidence action:</strong> {selected.nextAction}</p>
       {selected.nct==="NCT06081894"?<aside style={{padding:12,border:"1px solid #d5c298",borderRadius:8,background:"#fff9ec",margin:"12px 0"}}>
         <strong>ACACIA-HCM — updated Phase 3 source review docket (Nov 8)</strong>
-        <p style={{fontSize:13}}>November 4 SEC safety reporting and planned nHCM filing are source-linked. The NEJM publisher lists a protocol and supplementary appendix, but their contents have not been independently retrieved and verified. No scientific phase approval, grade or PDUFA date is inferred.</p>
+        <p style={{fontSize:13}}>November 4 SEC safety reporting and planned nHCM filing are source-linked. The original EU CTIS Amendment 04 protocol has now been downloaded and source-hashed; the NEJM supplements and final locked SAP remain unverified. No scientific phase approval, grade or PDUFA date is inferred.</p>
         <a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/phase3-reviewer-handoff-revision2-20261108.md" target="_blank" rel="noopener noreferrer">Open source-linked Phase 3 reviewer handoff</a>
         <p style={{fontSize:13,marginBottom:0}}><strong>New source reconciliation:</strong> open publisher protocol/appendix access checks, the secondary responder-analysis missingness rules, and two unresolved adverse-event reporting discrepancies. No reviewer grades or approvals inferred.</p>
         <a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/source-reconciliation-revision3-20261108.md" target="_blank" rel="noopener noreferrer">Open revision 3 · safety and statistical source review</a>
         <details style={{...panel,background:"#f6fbf9",marginBottom:0}}>
-          <summary><strong>EU Phase III protocol identified · document review still pending</strong></summary>
-          <p style={{fontSize:13}}>Official EU clinical trial <strong>2023-505797-15-00</strong> matches this NCT and protocol CY 6033. The public CTIS index lists an Amendment 4 protocol, but its contents and final SAP have not been examined or verified. European countries report their local trial as ended; that does not override the global registry's Active, Not Recruiting status.</p>
-          <p><a href="https://euclinicaltrials.eu/ctis-public/view/2023-505797-15-00?lang=en" target="_blank" rel="noopener noreferrer">EMA official record — open Trial Documents</a></p>
-          <p><a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/eu-ctis-phase-protocol-discovery-revision4-20261108.md" target="_blank" rel="noopener noreferrer">Read revision 4 · EU protocol discovery and scope reconciliation</a></p>
-          <p style={{fontSize:12,marginBottom:0}}>Status: PUBLIC PROTOCOL LISTED · NOT DOWNLOADED · NOT CLINICALLY GRADED</p>
+          <summary><strong>Original Phase III protocol captured · final SAP still missing</strong></summary>
+          <p style={{fontSize:13}}>Official EU clinical trial <strong>2023-505797-15-00</strong> matches this NCT and protocol CY 6033. Public Amendment 04 dated October 28, 2025 was captured from CTIS (90 PDF pages; SHA-256 recorded). It describes co-primary endpoints, analysis sets and graphical multiplicity, but refers detailed missing-data analyses to a separate final SAP that has not been obtained. No independent clinical phase certification or method grade has been recorded.</p>
+          <p style={{fontSize:13}}>The EU countries report their regional study as ended; that does not override the global registry's Active, Not Recruiting status.</p>
+          <p><a href="https://euclinicaltrials.eu/ctis-public/view/2023-505797-15-00?lang=en" target="_blank" rel="noopener noreferrer">EMA official protocol listing</a></p>
+          <p><a href="https://github.com/pdufa/pdufa-command-center/actions/runs/42525291355/artifacts/13634488398" target="_blank" rel="noopener noreferrer">Original AM04 PDF and source receipt</a></p>
+          <p><a href="https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/authenticated-am4-original-protocol-revision5-20261108.md" target="_blank" rel="noopener noreferrer">Read revision 5 · original protocol research findings</a></p>
+          <p style={{fontSize:12,marginBottom:0}}>Status: ORIGINAL PROTOCOL CAPTURED · SAP NOT OBTAINED · CLINICAL GRADES WITHHELD</p>
         </details>
       </aside>:null}
       <p>
