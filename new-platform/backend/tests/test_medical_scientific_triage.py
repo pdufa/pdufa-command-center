@@ -246,3 +246,35 @@ def test_three_trial_tail_is_idempotent_and_preserves_29_original_research_runs(
         assert c.execute(text("SELECT COUNT(*) FROM medical_continuous_stages")).scalar_one()==348
         assert c.execute(text("SELECT COUNT(*) FROM medical_assessment_review_events")).scalar_one()==0
         assert c.execute(text("SELECT COUNT(*) FROM medical_assessment_phase_events")).scalar_one()==0
+
+
+def test_persisted_exact_trial_source_triage_coverage_is_distinct_from_scientific_grading(engine,monkeypatch):
+    before=triage.coverage(engine)
+    assert before["canonicalTrials"]==29
+    assert before["sourceResearchCompleteNcts"]==29
+    assert before["originalSourceStages"]==348
+    assert before["savedNcts"]==0
+    assert before["methodPositionsScreened"]==0
+    assert before["status"]=="IN_PROGRESS"
+    triage.persist(engine,CANARY,test_only=True)
+    configure_scientific_tail(monkeypatch)
+    triage.run_batch(engine,test_only=True)
+    triage.run_batch(engine,test_only=True)
+    after=triage.coverage(engine)
+    assert after["savedNcts"]==4
+    assert after["methodPositionsScreened"]==3200
+    assert after["savedSnapshotCount"]==4
+    assert len(after["missingNcts"])==25
+    assert after["unexpectedNcts"]==[]
+    assert after["independentScientificReviewEvents"]==0
+    assert after["reviewerVerifiedPhaseNcts"]==0
+    assert after["scientificSignoff"] is False
+    assert after["fdaPrediction"]=="ABSTAIN"
+    assert after["certainty"]=="NOT_VALIDATED"
+    app=FastAPI()
+    triage.install_routes(app,lambda:engine,lambda:None,lambda:None)
+    client=TestClient(app)
+    result=client.get("/api/internal/medical-scientific-triage/coverage")
+    assert result.status_code==200
+    assert result.json()["savedNcts"]==4
+    assert client.post("/api/internal/medical-scientific-triage/coverage").status_code==405

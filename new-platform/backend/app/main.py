@@ -672,11 +672,25 @@ async def lifespan(app: FastAPI):
                             initialize as initialize_scientific_triage,
                             run_canary as run_scientific_triage_canary,
                             run_batch as run_scientific_triage_batch,
+                            coverage as scientific_triage_coverage,
                         )
                         initialize_scientific_triage(ENGINE)
                         app.state.medical_scientific_triage_ready = True
                         scientific_triage = run_scientific_triage_canary(ENGINE)
                         triage_tail = run_scientific_triage_batch(ENGINE)
+                        triage_progress = scientific_triage_coverage(ENGINE)
+                        logging.getLogger(__name__).warning(
+                            "PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_COVERAGE status=%s "
+                            "saved=%d/%d methodPositions=%d researchStages=%d "
+                            "reviewerEvents=%d prediction=ABSTAIN certainty=NOT_VALIDATED",
+                            "PASS" if triage_progress["status"] == "COMPLETE_SOURCE_TRIAGE"
+                            else "PARTIAL",
+                            triage_progress["savedNcts"],
+                            triage_progress["canonicalTrials"],
+                            triage_progress["methodPositionsScreened"],
+                            triage_progress["originalSourceStages"],
+                            triage_progress["independentScientificReviewEvents"],
+                        )
                         logging.getLogger(__name__).warning(
                             "PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_READY status=PASS "
                             "canarySnapshot=%s tailCount=%d scientificSignoff=False "
