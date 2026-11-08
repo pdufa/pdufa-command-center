@@ -1,0 +1,39 @@
+name: ACACIA-HCM official CTG SAP and history source audit
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths: [.github/workflows/acacia-ctg-public-sap-audit.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  capture-current-and-history:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout exact branch without retained credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Check immutable exact-NCT source audit scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "feature/medical-stage4-verified-method-matrix-20261108"
+          python3 -m py_compile scripts/medical/acacia_ctg_sap_history_audit.py
+          grep -Fq 'NCT = "NCT06081894"' scripts/medical/acacia_ctg_sap_history_audit.py
+          grep -Fq 'https://clinicaltrials.gov' scripts/medical/acacia_ctg_sap_history_audit.py
+      - name: Read public ClinicalTrials.gov exact-NCT documents and history metadata
+        shell: bash
+        timeout-minutes: 3
+        run: python3 scripts/medical/acacia_ctg_sap_history_audit.py
+      - name: Upload public-source receipt only
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: acacia-clinicaltrials-gov-sap-history-receipt
+          path: acacia-clinicaltrials-gov-sap-audit/
+          retention-days: 30
+          if-no-files-found: warn
