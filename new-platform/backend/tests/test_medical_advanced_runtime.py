@@ -5,12 +5,14 @@ import pytest
 from sqlalchemy import create_engine, text
 from app import medical_continuous as medical
 from app import medical_advanced_runtime as advanced
+from app import medical_on_demand as analyze
 
 NCT="NCT00000001"
 
 
 @pytest.fixture
 def engine(tmp_path,monkeypatch):
+    monkeypatch.setenv("PDUFA_ANALYZE_NOW_CANARY_NCT",NCT)
     f=tmp_path/"focus.json"
     f.write_text(json.dumps({"records":[{"nct":NCT,"ticker":"TEST","company":"Fixture"}]}))
     monkeypatch.setattr(medical,"FOCUS",f)
@@ -75,11 +77,11 @@ def study(label):
 
 def test_exact_registry_monitor_baseline_change_defer_and_fail_closed(engine,monkeypatch):
     recorded=[]
-    def fake_create(_db,nct,key):
-        assert nct==NCT
+    def fake_start(_db,nct,key,*,trigger):
+        assert nct==NCT and trigger=="REGISTRY_CHANGE"
         recorded.append(key)
         return {"runId":"synthetic","status":"PENDING"}
-    monkeypatch.setattr(medical,"create",fake_create)
+    monkeypatch.setattr(analyze,"start_now",fake_start)
     baseline=advanced.check_registry_updates_once(engine,fetch=lambda n:study("RECRUITING"))
     assert baseline["baselined"]==1 and baseline["queued"]==0
     stable=advanced.check_registry_updates_once(engine,fetch=lambda n:study("RECRUITING"))
