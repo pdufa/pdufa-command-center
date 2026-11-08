@@ -178,7 +178,7 @@ export default async function MedicalMasterDepth({searchParams}:{searchParams:Pr
    <section style={panel}>
      <h2 style={{marginTop:0,fontSize:18}}>FDA methodological standards</h2>
      <div style={{fontSize:13,lineHeight:1.8}}>{FDA_GUIDANCE_SOURCES.map(x=><div key={x.url}><EvidenceSource url={x.url}>{x.title}</EvidenceSource></div>)}</div>
-     <p style={{...subtle,marginBottom:0}}>Independent source review and calibrated historical outcome testing are required before converting investigation findings into approval/CRL/extension forecasts. This prototype remains entirely separate from RAAS, survey scoring and source spreadsheet writes.</p>
+     <p style={{...subtle,marginBottom:0}}>Independent source review and calibrated historical outcome testing are required before converting investigation findings into approval/CRL/extension forecasts. This prototype is independent of retired scoring systems and never writes to source spreadsheets.</p>
    </section>
    <p style={{...subtle,marginTop:16}}><Link href="/medical-intelligence-preview/specialist-review">Clinical Subspecialty Review</Link> · <Link href="/medical-intelligence-preview">Clinical trial dossier</Link> · <Link href="/medical-intelligence-preview/failure-desk">FDA failure desk</Link> · <Link href="/medical-intelligence-preview/applications">FDA application cases</Link></p>
  </main>;
