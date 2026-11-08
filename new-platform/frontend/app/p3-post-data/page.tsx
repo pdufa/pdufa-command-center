@@ -7,6 +7,7 @@ import {BottomClinicalRating} from "../BottomOnlyCompletionSheet";
 import snapshot from "../../data/p3PostDataActive.json";
 import {FOCUS_FINAL_TRIAL_AUDIT} from "../../lib/focus-final-gate-checks";
 import {bottomTrialHistory} from "../../lib/bottom-only-exports";
+import AnalyzeNowTrial from "../focus/AnalyzeNowTrial";
 
 export const metadata:Metadata={
  title:"FOCUS — Final-list Phase 3 / post-Phase 3 candidates | PDUFA",
@@ -18,6 +19,8 @@ const trials=snapshot.records;
 const finalGateAudit=FOCUS_FINAL_TRIAL_AUDIT;
 const finalGateByNct=new Map(finalGateAudit.rows.map(row=>[row.nct,row]));
 const researchByNct=new Map(bottomOnlyReport().trials.map(t=>[t.nctId,t]));
+const analyzeAllEnabled=process.env.PDUFA_ANALYZE_NOW_ALL_ENABLED==="true";
+const canaryNct=process.env.PDUFA_ANALYZE_NOW_CANARY_NCT||"NCT06081894";
 
 export default function P3PostDataPage(){
  return <main style={{maxWidth:1220,margin:"28px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif",color:"#173d2b"}}>
@@ -27,6 +30,7 @@ export default function P3PostDataPage(){
   <p>Snapshot of the final Google Sheets list as of {snapshot.asOf}. Recorded listing, readout and FDA-path links are evidence pointers, not independent certification of trial eligibility or a successful nightly sync. Completed trials remain if their program may continue toward approval. No retired or historical research-only cohort is included.</p>
   <p><a href={source} target="_blank" rel="noopener noreferrer" style={{fontWeight:700}}>Open and edit the source-of-truth FOCUS spreadsheet</a></p>
   <p style={{fontSize:13}}>Saved RAAS research and scoring history stays attached to the exact NCT, where available. Missing history is not a zero score.</p>
+  <p style={{fontSize:13}}>Analyze Now reuses the existing persistent medical research worker, not unfinished advanced analysis. Pilot: {canaryNct}. Other trials remain gated until one real database-backed result and its history pass verification.</p>
   <section aria-label="Final trial gate coverage" style={{border:"1px solid #b9cebe",padding:14,borderRadius:8,marginBottom:14}}>
     <h2 style={{margin:"0 0 8px",fontSize:18}}>Acceptance gates · final FOCUS trials only</h2>
     <p style={{margin:"0 0 7px"}}><strong>{finalGateAudit.trialCount} exact NCTs</strong> from the dated FOCUS list · <strong>{finalGateAudit.checksPerTrial} checks per trial</strong> · <strong>{finalGateAudit.totalChecks} trial checks</strong>.</p>
@@ -35,7 +39,7 @@ export default function P3PostDataPage(){
   </section>
   <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:970,fontSize:14}}>
-    <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>7 gate checks</th><th style={{padding:10}}>Clinical research rating</th><th style={{padding:10}}>RAAS history</th></tr></thead>
+    <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>7 gate checks</th><th style={{padding:10}}>Clinical research rating</th><th style={{padding:10}}>RAAS history</th><th style={{padding:10}}>Analyze Now · history</th></tr></thead>
     <tbody>{trials.map((t,i)=>{const history=bottomTrialHistory(t.nct);const research=researchByNct.get(t.nct);const gateAudit=finalGateByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
       <td style={{padding:10,fontWeight:700}}><TickerChartButton ticker={t.ticker}/></td>
       <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a>{research&&<small style={{display:"block"}}>{research.drug}</small>}</td>
@@ -51,6 +55,7 @@ export default function P3PostDataPage(){
       </details>:<span role="alert">Gate identity mismatch — not verified</span>}</td>
       <td style={{padding:10,minWidth:180}}>{research?<BottomClinicalRating nctId={t.nct} score={research.clinicalFullScore} graded={research.clinicalScoredFactors}/>:<span>No exact-trial clinical review yet</span>}</td>
       <td style={{padding:10,minWidth:180}}>{history.length?<details><summary style={{cursor:"pointer"}}>{history.length} saved record{history.length===1?"":"s"}</summary>{history.map(h=><div key={h.eventId} style={{borderTop:"1px solid #dbe9de",padding:"8px 0",fontSize:12}}><strong>{h.recordedAt} · {h.eventType}</strong>{("clinicalFullScore" in h)&&<p>Clinical rating: {typeof h.clinicalFullScore==="number"?h.clinicalFullScore.toFixed(1)+" / 100":"Not fully scored"}</p>}<p>{h.note}</p></div>)}</details>:<span style={{color:"#687b6a",fontSize:12}}>No saved rating yet</span>}</td>
+      <td style={{padding:10,verticalAlign:"top",minWidth:200}}><AnalyzeNowTrial nct={t.nct} enabled={analyzeAllEnabled||t.nct===canaryNct}/></td>
     </tr>;})}</tbody>
    </table>
   </div>
