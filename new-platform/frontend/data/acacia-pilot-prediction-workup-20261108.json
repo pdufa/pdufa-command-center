@@ -1,0 +1,255 @@
+{
+  "schema": "MAIN_PRELIMINARY_PILOT_PREDICTION_WORKUP_V1",
+  "asOf": "2026-11-08",
+  "nct": "NCT06081894",
+  "sponsor": "Cytokinetics",
+  "protocolCode": "CY 6033",
+  "trial": "ACACIA-HCM",
+  "indication": "symptomatic nonobstructive hypertrophic cardiomyopathy",
+  "phaseReported": "PHASE3",
+  "phaseIndependentReviewerVerified": false,
+  "scientificFramework": {
+    "layers": 8,
+    "assessments": 40,
+    "methodsPerAssessment": 20,
+    "positions": 800,
+    "criticalPhase3AssessmentHeadings": 11,
+    "criticalHeadingsWithSourceLeads": 11,
+    "independentlyGradedMethodPositions": 0,
+    "independentlyCompletedAssessments": 0
+  },
+  "finalDecision": {
+    "approval": "ABSTAIN",
+    "crl": "ABSTAIN",
+    "reviewDelay": "ABSTAIN",
+    "certainty": "NOT_VALIDATED",
+    "calibratedAccuracy": null,
+    "calibratedProbabilities": null
+  },
+  "researchHypothesis": {
+    "status": "QUALITATIVE_EVIDENCE_SYNTHESIS_NOT_A_VALIDATED_FORECAST",
+    "signal": "PIVOTAL_EFFICACY_POSITIVE_SAFETY_AND_REGULATORY_UNCERTAINTY",
+    "narrative": "Published co-primary results support a plausible regulatory efficacy case. Clinically meaningful magnitude, safety and monitoring requirements, source-data discrepancies, final locked SAP, and a filed/accepted exact nHCM application remain unadjudicated.",
+    "notRegulatoryRecommendation": true,
+    "notAProbability": true,
+    "unvalidated": true
+  },
+  "publishedPrimary": {
+    "publication": "https://pubmed.ncbi.nlm.nih.gov/42663312/",
+    "randomized": {
+      "aficamten": 258,
+      "placebo": 259
+    },
+    "kccq": {
+      "difference": 3,
+      "unit": "points",
+      "ci95": [
+        0.5,
+        5.5
+      ],
+      "pValueRounded": 0.02,
+      "reportedBySponsorP": 0.021
+    },
+    "peakVo2": {
+      "difference": 0.67,
+      "unit": "ml/kg/min",
+      "ci95": [
+        0.22,
+        1.11
+      ],
+      "pValue": 0.003
+    },
+    "sponsorReportedInitialAlphaEach": 0.025,
+    "statisticallyPositiveSponsorCriteria": true,
+    "clinicalImportanceReviewed": false,
+    "finalSapVerified": false
+  },
+  "descriptiveSafety": [
+    {
+      "metric": "LVEF_BELOW_50_PERCENT",
+      "source": "https://pubmed.ncbi.nlm.nih.gov/42663312/",
+      "treated": 27,
+      "treatedN": 258,
+      "control": 2,
+      "controlN": 259,
+      "treatedPct": 10.5,
+      "controlPct": 0.8,
+      "unadjustedRiskDifferencePp": 9.69
+    },
+    {
+      "metric": "ANY_SERIOUS_ADVERSE_EVENT",
+      "source": "https://pubmed.ncbi.nlm.nih.gov/42663312/",
+      "treated": 52,
+      "treatedN": 258,
+      "control": 38,
+      "controlN": 259,
+      "treatedPct": 20.2,
+      "controlPct": 14.7,
+      "unadjustedRiskDifferencePp": 5.48
+    },
+    {
+      "metric": "SPONSOR_REPORTED_SERIOUS_HEART_FAILURE_AE",
+      "source": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm",
+      "treated": 12,
+      "treatedN": 258,
+      "control": 3,
+      "controlN": 259,
+      "treatedPct": 4.7,
+      "controlPct": 1.2,
+      "unadjustedRiskDifferencePp": 3.49,
+      "sourceDiscrepancy": "SECONDARY_PAPER_REPORTS_11_VS_1"
+    }
+  ],
+  "fdaCycle": {
+    "status": "PLANNED_NOT_ESTABLISHED_FILED_AS_OF_2026_11_04",
+    "date": null,
+    "app": "ACACIA_HCM_NHCM_SNDA",
+    "source": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm",
+    "otherIndicationPdufaMustNotCopy": true
+  },
+  "criticalAssessmentEvidence": [
+    {
+      "id": "4.1",
+      "label": "Randomization, blinding and comparator",
+      "sourceLeadIds": [
+        "CTIS_AM04",
+        "NEJM_PIVOTAL"
+      ],
+      "remaining": "Independent CONSORT and actual protocol conduct verification"
+    },
+    {
+      "id": "4.2",
+      "label": "Endpoint selection and clinical meaning",
+      "sourceLeadIds": [
+        "CTIS_AM04",
+        "NEJM_PIVOTAL",
+        "ISSUER_MAY_2025"
+      ],
+      "remaining": "Clinically important difference, prior amendment approvals and final SAP"
+    },
+    {
+      "id": "4.3",
+      "label": "Estimands, intercurrent events and missingness",
+      "sourceLeadIds": [
+        "CTIS_AM04"
+      ],
+      "remaining": "Final locked SAP, intercurrent event and missing-data sensitivity tables"
+    },
+    {
+      "id": "4.4",
+      "label": "Population, allocation and statistical power",
+      "sourceLeadIds": [
+        "CTIS_AM04",
+        "NEJM_PIVOTAL"
+      ],
+      "remaining": "516-versus-517 participant accounting, actual missingness and CONSORT"
+    },
+    {
+      "id": "4.5",
+      "label": "Conduct, deviations and data integrity",
+      "sourceLeadIds": [
+        "CTIS_AM04",
+        "REGISTRY"
+      ],
+      "remaining": "Original amendment effective dates, monitoring and protocol deviations"
+    },
+    {
+      "id": "5.1",
+      "label": "Pivotal primary efficacy",
+      "sourceLeadIds": [
+        "NEJM_PIVOTAL",
+        "CTIS_AM04"
+      ],
+      "remaining": "Final SAP analysis sets, primary sensitivity checks and clinical meaning"
+    },
+    {
+      "id": "5.2",
+      "label": "Secondary endpoints, multiplicity and hierarchy",
+      "sourceLeadIds": [
+        "CTIS_AM04",
+        "NEJM_PIVOTAL"
+      ],
+      "remaining": "Complete alpha graph, hierarchy, LAVI non-significant outcome and SAP"
+    },
+    {
+      "id": "5.3",
+      "label": "Integrated safety and competing harms",
+      "sourceLeadIds": [
+        "NEJM_PIVOTAL",
+        "SEC_10Q",
+        "ECHO_ANALYSIS"
+      ],
+      "remaining": "HF SAE 11/1 versus 12/3 and 7 versus 14 treatment interruptions"
+    },
+    {
+      "id": "5.4",
+      "label": "Subgroups, effect modification and robustness",
+      "sourceLeadIds": [
+        "NEJM_PIVOTAL",
+        "RESPONDER_ANALYSIS"
+      ],
+      "remaining": "Independent subgroup effects, CI interaction and nonrandom missingness"
+    },
+    {
+      "id": "8.1",
+      "label": "Integrated clinical benefit-risk",
+      "sourceLeadIds": [
+        "NEJM_PIVOTAL",
+        "SEC_10Q"
+      ],
+      "remaining": "Authorized benefit-risk adjudication and independent safety assessment"
+    },
+    {
+      "id": "8.2",
+      "label": "Contradictions and missing-data map",
+      "sourceLeadIds": [
+        "NEJM_PIVOTAL",
+        "CTIS_AM04",
+        "SEC_10Q"
+      ],
+      "remaining": "Final SAP, safety discrepancy correction and independent reviewer signoff"
+    }
+  ],
+  "sources": {
+    "CTIS_AM04": {
+      "url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42525291355/artifacts/13634488398",
+      "label": "Original public CY 6033 protocol Amendment 04",
+      "sha256": "853ffd80a547df8a7b813b8985c7116dd6168a640f18521f61b95cf33a8ca5f8",
+      "retrieved": true
+    },
+    "NEJM_PIVOTAL": {
+      "url": "https://pubmed.ncbi.nlm.nih.gov/42663312/",
+      "label": "NEJM primary report, PubMed 42663312"
+    },
+    "SEC_10Q": {
+      "url": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm",
+      "label": "Cytokinetics 2026-11-04 10-Q"
+    },
+    "ISSUER_MAY_2025": {
+      "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2025/Cytokinetics-Reports-First-Quarter-2025-Financial-Results-and-Provides-Business-Update-05-06-2025/default.aspx",
+      "label": "Issuer described endpoint-design change"
+    },
+    "REGISTRY": {
+      "url": "https://clinicaltrials.gov/study/NCT06081894",
+      "label": "Official NCT registry"
+    },
+    "ECHO_ANALYSIS": {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674599/",
+      "label": "ACACIA echocardiography secondary analysis"
+    },
+    "RESPONDER_ANALYSIS": {
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674601/",
+      "label": "ACACIA responder secondary analysis"
+    }
+  },
+  "mandatoryForecastGate": [
+    "INDEPENDENT_PHASE_VERIFICATION",
+    "ORIGINAL_LOCKED_SAP",
+    "SCIENTIFIC_GRADE_REVIEW",
+    "CROSS_TRIAL_CALIBRATION",
+    "ACCURACY_VALIDATION",
+    "SAFETY_SOURCE_RECONCILIATION",
+    "INDICATION_SPECIFIC_FILING"
+  ],
+  "nextHighestValueStep": "Independent clinical review of authenticated CY 6033 protocol and trial data; obtain final SAP and safety tables; construct historical outcome validation set before calculating probabilities."
+}
