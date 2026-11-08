@@ -117,3 +117,10 @@ test("completed Phase 3 can be the last completed phase if a new phase has not b
    {...past,sourceNct:NCT,completedPhase:"PHASE3"},[]);
  assert.equal(r.completedPhase,"PHASE3");
 });
+
+test("a primary endpoint readout preceding extended study completion can support a verified phase-end baseline",()=>{
+ const earlier={...past,phaseCompletedOn:"2025-06-01",readoutDate:"2025-03-05"};
+ const r=rankAtLastCompletedPhase(DEEP_ASSESSMENTS,current,earlier,[priorReview(1,4)]);
+ assert.equal(r.basis,"LAST_COMPLETED_PHASE");
+ assert.equal(r.assessments.find(x=>x.id==="1.1").score,80);
+});
