@@ -77,6 +77,6 @@ export default async function DecisionBriefPage({params}:{params:Promise<{id:str
      <ul style={{paddingLeft:22,lineHeight:1.6,fontSize:14}}>{brief.evidenceLimitations.map((g,i)=><li key={i}>{g}</li>)}</ul>
      <p style={{fontSize:13,color:red,marginBottom:0}}>Until independent source review resolves these material gaps, the system must not label this application as likely approved, likely CRL, or likely extended.</p>
    </section>
-   <p style={{fontSize:13,color:muted,marginTop:20}}><Link href="/medical-intelligence-preview/applications">All application review cycles</Link> · <Link href={"/medical-intelligence-preview?nct="+a.ncts[0]}>Open trial evidence</Link> · <Link href="/medical-intelligence-preview/coverage">FOCUS registry audit</Link></p>
+   <p style={{fontSize:13,color:muted,marginTop:20}}><Link href="/medical-intelligence-preview/adjudication">Independent source adjudication</Link> · <Link href="/medical-intelligence-preview/applications">All application review cycles</Link> · <Link href={"/medical-intelligence-preview?nct="+a.ncts[0]}>Open trial evidence</Link> · <Link href="/medical-intelligence-preview/coverage">FOCUS registry audit</Link></p>
  </main>;
 }
