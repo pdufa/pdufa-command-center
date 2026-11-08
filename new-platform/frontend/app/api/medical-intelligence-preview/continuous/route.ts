@@ -46,7 +46,16 @@ async function upstream(path: string, method: "GET" | "POST", body?: object) {
       const missingRun = response.status === 404 && payload !== null &&
         typeof payload === "object" && "detail" in payload &&
         (payload as { detail?: unknown }).detail === "Saved medical research run not found";
+      const detail = payload !== null && typeof payload === "object" && "detail" in payload
+        ? (payload as { detail?: unknown }).detail : null;
+      const missingDatabase = response.status === 503 && typeof detail === "string" &&
+        detail.startsWith("Persistent PostgreSQL is not connected");
+      const databaseUnavailable = response.status === 503 && detail !== null &&
+        typeof detail === "object" && "error" in detail &&
+        (detail as { error?: unknown }).error === "Persistent database temporarily unavailable; no data was reset";
       return json({ error: missingRun ? "No saved medical research run" :
+          missingDatabase ? "Preview backend is live, but its PostgreSQL database connection is not configured." :
+          databaseUnavailable ? "Preview PostgreSQL is temporarily unavailable; saved research has not been reset." :
           response.status === 404 ? "Persistent medical stage backend route is not deployed" :
           response.status === 422 ? "Run identity invalid" :
           response.status === 401 ? "Backend authorization unavailable" :
