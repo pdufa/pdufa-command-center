@@ -3,6 +3,7 @@
 import {useEffect,useMemo,useRef,useState} from "react";
 import focusRoster from "../../data/p3PostDataActive.json";
 import styles from "./FocusPredictionNavigator.module.css";
+import PredictionSourceRunControls from "./PredictionSourceRunControls";
 
 type FocusRow=(typeof focusRoster.records)[number];
 type FocusTicker={ticker:string;company:string;trials:FocusRow[]};
@@ -106,6 +107,7 @@ export default function FocusPredictionNavigator(){
         </div>
         <div className={styles.readiness}><small>Current prediction</small><strong>ABSTAIN</strong></div>
       </div>
+      <PredictionSourceRunControls key={selectedTrial.nct} nct={selectedTrial.nct}/>
       <div className={styles.sourceInfo}>
         <div>
           <span>Roster-reported filing status</span>
