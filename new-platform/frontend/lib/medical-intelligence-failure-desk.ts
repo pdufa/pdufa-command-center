@@ -97,7 +97,7 @@ export const FAILURE_DESK:readonly ReviewIssue[]=[
   },
   {
     id:"cogt-hepatic",cycleId:"cogt-gist",title:"Grade 3+ liver-enzyme imbalance with the combination",
-    evidenceClass:"TRIAL_SIGNAL",consequence:"LABEL_OR_BENEFIT_RISK",sourceDate:"2026-05-31",sourceType:"SPONSOR",
+    evidenceClass:"TRIAL_SIGNAL",consequence:"LABEL_OR_BENEFIT_RISK",sourceDate:"2026-05-30",sourceType:"SPONSOR",
     sourceTitle:"Cogent PEAK 2026 ASCO detailed clinical data and safety tables",
     sourceUrl:"https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
     observation:"Sponsor reported Grade 3+ ALT/AST elevations 10.8% with bezuclastinib plus sunitinib versus 1.4% sunitinib alone, and treatment-related discontinuations of 7.4% vs 3.8%.",
