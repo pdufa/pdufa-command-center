@@ -678,5 +678,99 @@
       "PHASE3": [],
       "PHASE4": []
     }
+  },
+  "phaseRiskWatchlist": {
+    "EARLY_PHASE1": [
+      {
+        "domain": "DOSE_EXPOSURE",
+        "question": "Dose escalation, exposure and target engagement adequate?"
+      },
+      {
+        "domain": "SAFETY",
+        "question": "Any dose-limiting or serious emergent toxicity?"
+      },
+      {
+        "domain": "TRIAL_EXECUTION",
+        "question": "First-in-human enrollment and monitoring proceeding as planned?"
+      }
+    ],
+    "PHASE1": [
+      {
+        "domain": "DOSE_EXPOSURE",
+        "question": "Therapeutic exposure and maximum tolerated or selected dose supported?"
+      },
+      {
+        "domain": "SAFETY",
+        "question": "Any serious adverse events, DLTs, discontinuations or immunogenicity?"
+      },
+      {
+        "domain": "EFFICACY",
+        "question": "Are any early signals controlled and interpretable rather than assumed efficacy?"
+      }
+    ],
+    "PHASE2": [
+      {
+        "domain": "EFFICACY",
+        "question": "Magnitude and repeatability of preliminary benefit versus control?"
+      },
+      {
+        "domain": "STATISTICS",
+        "question": "Endpoint validity, missing data, multiplicity and underpowered findings?"
+      },
+      {
+        "domain": "DOSE_EXPOSURE",
+        "question": "Dose-selection and exposure-response evidence support pivotal planning?"
+      },
+      {
+        "domain": "SAFETY",
+        "question": "Toxicity profile and duration adequate for Phase 3 advancement?"
+      }
+    ],
+    "PHASE3": [
+      {
+        "domain": "EFFICACY",
+        "question": "Prespecified primary endpoint and clinically meaningful effect achieved, when reported?"
+      },
+      {
+        "domain": "STATISTICS",
+        "question": "Multiplicity, amendments, missingness, prespecified versus post-hoc estimates?"
+      },
+      {
+        "domain": "TRIAL_EXECUTION",
+        "question": "Enrollment, retention, blinding and site/data integrity risks?"
+      },
+      {
+        "domain": "SAFETY",
+        "question": "Serious harms, exposure and benefit-risk consistency?"
+      },
+      {
+        "domain": "REGULATORY",
+        "question": "FDA endpoints and evidence requirements resolved for the exact indication?"
+      }
+    ],
+    "PHASE4": [
+      {
+        "domain": "SAFETY",
+        "question": "New or cumulative rare/long-term safety signals?"
+      },
+      {
+        "domain": "DURABILITY",
+        "question": "Durability and effectiveness in practice?"
+      },
+      {
+        "domain": "CONFIRMATORY",
+        "question": "Postmarketing commitments and confirmatory results on track?"
+      },
+      {
+        "domain": "REAL_WORLD_GENERALIZABILITY",
+        "question": "Effectiveness across populations and care settings?"
+      }
+    ],
+    "UNKNOWN": [
+      {
+        "domain": "TRIAL_EXECUTION",
+        "question": "Confirm exact-NCT trial phase before assessing current-phase risk."
+      }
+    ]
   }
 }
