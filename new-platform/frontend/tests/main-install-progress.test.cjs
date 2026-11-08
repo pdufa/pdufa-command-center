@@ -119,3 +119,18 @@ test("backend application map requires all 29 exact NCTs before becoming verifie
  const corrupt=buildInstallationProgress({...base,sourceSnapshots:{applications:{state:"INVALID"}}},valid,at);
  assert.equal(corrupt.stages.find(x=>x.id==="medical").checks.find(x=>x.id==="medical.application-map").status,"FAILED");
 });
+
+
+test("frontend/backend commit parity is verified only for identical running SHAs",()=>{
+ const sha=external.deployment.sha;
+ const base={schemaVersion:1,observedAt:at,
+   storage:{state:"BLOCKED",kind:"sqlite",postgresRequired:true},
+   services:{backendDeployment:{gitSha:sha,branch:"feature/deep-medical-intelligence-preview-20261107"}}};
+ const parity=(m)=>m.stages.find(s=>s.id==="infrastructure").checks.find(c=>c.id==="infra.commit-parity").status;
+ assert.equal(parity(buildInstallationProgress(base,external,at)),"VERIFIED");
+ const mismatched=buildInstallationProgress({...base,services:{backendDeployment:{gitSha:"f".repeat(40)}}},external,at);
+ assert.equal(parity(mismatched),"BLOCKED");
+ const unknown=buildInstallationProgress({...base,services:{backendDeployment:{gitSha:null}}},external,at);
+ assert.equal(parity(unknown),"UNKNOWN");
+ assert.equal(mismatched.stages.find(s=>s.id==="infrastructure").status,"BLOCKED");
+});
