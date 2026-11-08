@@ -6,6 +6,7 @@
  * RAAS/surveys are neither read nor imported.
  */
 import {APPLICATION_CYCLES,type ApplicationCycle} from "./medical-intelligence-applications";
+import focus from "../data/p3PostDataActive.json";
 import {REVIEWED_FINDINGS,type ReviewedFinding} from "./medical-intelligence-reviewed-findings";
 import {deskIssuesForCycle,type ReviewIssue} from "./medical-intelligence-failure-desk";
 import {adjudicationForCycle,type AdjudicationClaim} from "./medical-intelligence-clinical-adjudication";
@@ -197,8 +198,24 @@ function selectEvidence(cycle:ApplicationCycle, level:AdvancedLevelId):SourceRec
   }
   return [...unique.values()];
 }
+/**
+ * Reuse the same 12-level architecture if a future qualifying FOCUS NCT has
+ * not yet been mapped to an FDA application. This is NOT a guessed submission.
+ */
+export function listAdvancedCandidates():ApplicationCycle[]{
+  const mapped=new Set(APPLICATION_CYCLES.flatMap(a=>a.ncts));
+  const unmapped=focus.records.filter(r=>/^NCT\d{8}$/.test(r.nct)&&!mapped.has(r.nct))
+    .map(r=>({
+      id:"focus-unmapped-"+r.nct,ticker:r.ticker,drug:"NOT VERIFIED",
+      indication:"NOT VERIFIED",ncts:[r.nct],applicationType:"UNCONFIRMED",
+      stage:"NOT_RECONCILED" as const,reportedGoal:null,sourceDate:focus.asOf,
+      sourceUrl:"https://clinicaltrials.gov/study/"+r.nct,
+      criticalQuestion:"Verify the drug, indication, regulatory application identity, phase and original FDA documentation before making any filing or approval prediction."
+    }));
+  return [...APPLICATION_CYCLES,...unmapped];
+}
 export function buildAdvancedAssessment(cycleId:string,phases:readonly PhaseContext[]=[]):AdvancedAssessment|null{
-  const cycle=APPLICATION_CYCLES.find(a=>a.id===cycleId);
+  const cycle=listAdvancedCandidates().find(a=>a.id===cycleId);
   if(!cycle)return null;
   const known=phases.filter(p=>cycle.ncts.includes(p.nct)&&
     /^NCT\d{8}$/.test(p.nct)&&p.verifiedPhase!=="UNKNOWN");
