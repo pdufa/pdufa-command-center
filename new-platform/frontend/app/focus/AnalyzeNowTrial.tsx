@@ -2,13 +2,10 @@
 import {useEffect,useState} from "react";
 
 type SavedAnalysis={
- schema:string;savedAt:string;nct:string;
- trigger:string;
- scores:{raasOverallScore:number|null;raasStatus:string;
-  scientificFiveFactorScore:number|null;scientificFiveFactorsGraded:number;
-  scientificFiveFactorStatus:string;scientificFactors:{id:string;grade:number|null;sourceUrl:string|null}[];
-  sourceArchiveAsOf:string|null;sourceEventId:string|null};
- scientificAssessment:{status:string;stagesAttempted:number;sourceRecordedStages:number;independentScientificSignoff:boolean;explanation:string};
+ schema:string;savedAt:string;nct:string;trigger:string;
+ scientificAssessment:{status:string;stagesAttempted:number;sourceRecordedStages:number;
+  sourceChecks:{stage:number;title:string;status:string;source:string|null}[];
+  independentScientificSignoff:boolean;explanation:string};
  fdaPredictions:{outcome:string;status:string;probability:null;reason:string}[];
  certainty:{status:string;rating:null;reason:string};
  missingEvidence:{stage:number|null;missing:string}[];
@@ -25,39 +22,39 @@ type History={nct:string;historyKey:string;locationIndependent:boolean;total:num
  records:{runId:string;revision:number|null;status?:string;savedAt:string;evidenceChanged:boolean;analysis:SavedAnalysis|null}[]};
 const border="#cadae0",dim="#586e62",teal="#00695a";
 const caption={fontSize:12,color:dim,lineHeight:1.45} as const;
-function asScore(v:number|null){return typeof v==="number"?v.toFixed(1)+" / 100":"Not available";}
-
 function Report({a}:{a:SavedAnalysis}){
  return <div style={{fontSize:12,lineHeight:1.55,paddingTop:9}}>
   <p style={{margin:"4px 0"}}><strong>Saved:</strong> {a.savedAt} · {a.trigger.replaceAll("_"," ")}</p>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:9}}>
-   <div><strong>Full RAAS (30 metrics)</strong><div>{asScore(a.scores.raasOverallScore)}</div>
-    <small>{a.scores.raasStatus}</small></div>
-   <div><strong>Preserved clinical research (5 factors)</strong><div>{asScore(a.scores.scientificFiveFactorScore)}</div>
-    <small>{a.scores.scientificFiveFactorsGraded} / 5 graded · provisional, not FDA odds</small></div>
-   <div><strong>Scientific evidence</strong><div>{a.scientificAssessment.sourceRecordedStages} / {a.scientificAssessment.stagesAttempted} stages with source records</div>
-    <small>No independent scientific signoff</small></div>
-   <div><strong>Prediction certainty</strong><div>Not issued</div><small>{a.certainty.status}</small></div>
+   <div><strong>Source checks attempted</strong><div>{a.scientificAssessment.stagesAttempted} / 12</div>
+    <small>Available operational source-collection stages</small></div>
+   <div><strong>Sources recorded</strong><div>{a.scientificAssessment.sourceRecordedStages} / {a.scientificAssessment.stagesAttempted}</div>
+    <small>Not a medical effectiveness rating</small></div>
+   <div><strong>Scientific review</strong><div>{a.scientificAssessment.status.replaceAll("_"," ")}</div>
+    <small>Independent signoff: {a.scientificAssessment.independentScientificSignoff?"Yes":"Not completed"}</small></div>
+   <div><strong>Prediction certainty</strong><div>{a.certainty.rating===null?"Not validated":a.certainty.rating}</div>
+    <small>{a.certainty.status.replaceAll("_"," ")}</small></div>
   </div>
   <div style={{marginTop:9,borderTop:"1px solid "+border,paddingTop:9}}>
-   <strong>Separate FDA outcomes</strong>
+   <strong>Independent FDA outcomes</strong>
    <div style={{display:"flex",flexWrap:"wrap",gap:8,marginTop:5}}>
     {a.fdaPredictions.map(p=><span key={p.outcome} style={{padding:"5px 8px",border:"1px solid "+border,borderRadius:5}}>
       {p.outcome.replaceAll("_"," ")}: <strong>{p.status}</strong> · no validated probability
     </span>)}
    </div>
   </div>
-  <details style={{marginTop:9}}><summary style={{cursor:"pointer",fontWeight:700}}>Preserved five-factor grades ({a.scores.scientificFactors.length})</summary>
-   {a.scores.scientificFactors.map(x=><div key={x.id} style={{padding:"5px 0",borderTop:"1px solid #e6ece8"}}>
-    {x.id}: {x.grade===null?"Unscored":x.grade+" / 100"} · {x.sourceUrl?<a href={x.sourceUrl} target="_blank" rel="noopener noreferrer">Source</a>:"No linked source"}
-   </div>)}
+  <details style={{marginTop:9}}><summary style={{cursor:"pointer",fontWeight:700}}>Scientific source checks ({a.scientificAssessment.sourceChecks.length})</summary>
+   <ul style={{paddingLeft:18,margin:"5px 0"}}>{a.scientificAssessment.sourceChecks.map(x=><li key={x.stage}>
+    Stage {x.stage}: {x.title} · {x.status.replaceAll("_"," ")}
+    {x.source&&<> · <a href={x.source} target="_blank" rel="noopener noreferrer">Inspect source</a></>}
+   </li>)}</ul>
   </details>
   <details style={{marginTop:9}}><summary style={{cursor:"pointer",fontWeight:700}}>Missing evidence / unavailable components ({a.missingEvidence.length})</summary>
    <ul style={{paddingLeft:18,margin:"5px 0"}}>{a.missingEvidence.map((x,i)=><li key={i}>{x.stage!==null?"Stage "+x.stage+": ":""}{x.missing}</li>)}</ul>
   </details>
   <details style={{marginTop:9}}><summary style={{cursor:"pointer",fontWeight:700}}>Supporting source pointers ({a.supportingSourceUrls.length})</summary>
-   {a.supportingSourceUrls.length? <ul style={{paddingLeft:18}}>{a.supportingSourceUrls.slice(0,25).map((url,i)=>
-      <li key={i} style={{overflowWrap:"anywhere"}}><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>)}</ul>:<p>No independent-source links saved.</p>}
+   {a.supportingSourceUrls.length?<ul style={{paddingLeft:18}}>{a.supportingSourceUrls.slice(0,25).map((url,i)=>
+    <li key={i} style={{overflowWrap:"anywhere"}}><a href={url} target="_blank" rel="noopener noreferrer">{url}</a></li>)}</ul>:<p>No source links yet.</p>}
   </details>
   <p style={{...caption,marginTop:10}}>{a.warning}</p>
  </div>;
