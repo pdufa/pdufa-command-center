@@ -85,6 +85,8 @@ def initialize(engine):
             ON medical_continuous_runs(nct_id) WHERE status IN ('PENDING','RUNNING')"""))
     from .medical_advanced_runtime import initialize as initialize_advanced
     initialize_advanced(engine)
+    from .medical_analyze_now import initialize as initialize_analyze_now
+    initialize_analyze_now(engine)
     from .medical_on_demand import initialize as initialize_analyze_now
     initialize_analyze_now(engine)
 
@@ -134,7 +136,7 @@ def latest(engine, nct):
     return snapshot(engine, nct, run_id)
 
 
-def create(engine, nct, request_key, *, submit=True):
+def create(engine, nct, request_key, *, submit=True, trigger="MANUAL"):
     check_nct(nct)
     if not isinstance(request_key, str) or not RUN.fullmatch(request_key):
         raise ValueError("UUID request key required")
@@ -155,6 +157,8 @@ def create(engine, nct, request_key, *, submit=True):
                 (run_id,request_key,nct_id,status,stage_index,created_at,updated_at,stop_requested)
                 VALUES(:id,:key,:nct,'PENDING',0,:time,:time,FALSE)"""),
                 {"id": run_id, "key": request_key, "nct": nct, "time": now()})
+            from .medical_analyze_now import capture_start
+            capture_start(c, run_id, nct, trigger)
     if submit:
         _POOL.submit(worker, engine, run_id)
     return snapshot(engine, nct, run_id)
@@ -407,8 +411,10 @@ def worker(engine, run_id, *, step=process_stage):
                 # no completed run without a corresponding immutable source
                 # revision and independent abstention/certainty disposition.
                 from .medical_advanced_runtime import record_revision
+                from .medical_analyze_now import capture_finish
                 with engine.begin() as c:
                     record_revision(c, run_id, run["nct_id"])
+                    capture_finish(c, run_id, run["nct_id"], "COMPLETE")
                     c.execute(text("""UPDATE medical_continuous_runs SET status='COMPLETE',updated_at=:t
                         WHERE run_id=:id"""), {"t": now(), "id": run_id})
                 return
@@ -438,7 +444,9 @@ def worker(engine, run_id, *, step=process_stage):
                    WHERE run_id=:id AND stage_index=:i"""),
                    {"next": index + 1, "t": now(), "id": run_id, "i": index})
             if index == 0 and state != "SOURCE_RECORDED":
+                from .medical_analyze_now import capture_finish
                 with engine.begin() as c:
+                    capture_finish(c, run_id, run["nct_id"], "FAILED")
                     c.execute(text("""UPDATE medical_continuous_runs SET status='FAILED',updated_at=:t
                          WHERE run_id=:id"""), {"t": now(), "id": run_id})
                 return
@@ -481,6 +489,22 @@ def install_routes(app, engine_provider, require_key, require_storage):
             raise HTTPException(422, "Invalid trial identity or request key")
         LOG.error("Medical continuous endpoint error_type=%s", type(exc).__name__)
         raise HTTPException(503, "Persistent medical stage storage unavailable")
+
+    @router.post("/{nct}/analyze-now")
+    def start_analysis(nct: str, payload: StartPayload):
+        """Single-click operational analysis using existing 12-stage worker."""
+        try:
+            return create(engine_provider(), nct, payload.request_key, trigger="MANUAL")
+        except Exception as exc:
+            fail(exc)
+
+    @router.get("/{nct}/analysis-history")
+    def read_analysis_history(nct: str):
+        from .medical_analyze_now import history
+        try:
+            return history(engine_provider(), nct)
+        except Exception as exc:
+            fail(exc)
 
     @router.post("/{nct}/runs")
     def create_job(nct: str, payload: StartPayload):
