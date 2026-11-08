@@ -1,12 +1,6 @@
 name: ACACIA-HCM public EU CTIS source receipt (isolated research)
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - feature/medical-stage4-verified-method-matrix-20261108
-    paths:
-      - .github/workflows/acacia-ctis-public-protocol-capture.yml
-      - scripts/medical/acacia_ctis_capture.py
 
 permissions:
   contents: read
