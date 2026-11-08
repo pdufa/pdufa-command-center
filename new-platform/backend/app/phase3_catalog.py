@@ -436,6 +436,8 @@ def _reconcile(c, nct):
 
 def record_prediction(engine, prediction):
     """Persist an existing assessment output. This function computes no prediction."""
+    from .retired_analysis_guard import reject_retired_analysis_payload
+    reject_retired_analysis_payload(prediction)
     for key in ("prediction_id", "nct_id", "application_id", "decision", "created_at", "evidence_cutoff", "evidence_ids"):
         if key not in prediction:
             raise ValueError("Incomplete timestamped prediction")
@@ -493,6 +495,15 @@ def _prediction_rows(c, nct, actual=None, actual_date=None):
             AND e.verification_status='VERIFIED' AND ae.verification_status='VERIFIED'"""), {"nct": nct, "app": row["application_id"]}).all()
         linked = any(_time(v[0]) <= _time(row["evidence_cutoff"]) and _time(v[1]) <= _time(row["evidence_cutoff"]) for v in linked_rows)
         timely = bool(linked and actual in expected and actual_date and row["created_at"][:10] < actual_date and _time(row["evidence_cutoff"]) <= _time(row["created_at"]))
+        from .retired_analysis_guard import reject_retired_analysis_payload
+        archive_only = False
+        try:
+            document = json.loads(row['document'])
+            if not isinstance(document, dict): archive_only = True
+            else: reject_retired_analysis_payload(document)
+        except (ValueError, TypeError):
+            archive_only = True
+        if archive_only: timely = False
         evidence = []
         for eid in json.loads(row["evidence_ids"]):
             source = c.execute(text("SELECT * FROM phase3_evidence WHERE evidence_id=:id AND verification_status='VERIFIED'"), {"id": eid}).mappings().first()
@@ -501,7 +512,7 @@ def _prediction_rows(c, nct, actual=None, actual_date=None):
             elif source:
                 evidence.append(_public_evidence(source))
         correctness = row["decision"] == expected[actual] if timely and row["decision"] != "ABSTAIN" else None
-        result.append({"prediction_id": row["prediction_id"], "application_id": row["application_id"], "decision": row["decision"], "created_at": row["created_at"], "evidence_cutoff": row["evidence_cutoff"], "actual_decision": actual, "actual_decision_date": actual_date, "scientific_readiness": row["scientific_readiness"], "confidence": row["confidence"], "uncertainty": row["uncertainty"], "evidence": evidence, "correctness": correctness, "prospective_eligible": timely})
+        result.append({"prediction_id": row["prediction_id"], "application_id": row["application_id"], "decision": row["decision"], "created_at": row["created_at"], "evidence_cutoff": row["evidence_cutoff"], "actual_decision": actual, "actual_decision_date": actual_date, "scientific_readiness": row["scientific_readiness"], "confidence": row["confidence"], "uncertainty": row["uncertainty"], "evidence": evidence, "correctness": correctness, "prospective_eligible": timely, "archive_only": archive_only, "active_prediction_eligible": not archive_only})
     return result
 
 
@@ -512,7 +523,7 @@ def historical_validation(engine):
         known = sum(_application_outcome(c, app)[0] in ("APPROVED", "CRL", "EXTENDED") for app in apps)
         ncts = c.execute(text("SELECT DISTINCT nct_id FROM phase3_predictions")).scalars().all()
         predictions = [p for nct in ncts for p in _prediction_rows(c, nct)]
-    eligible = [p for p in predictions if p["prospective_eligible"]]
+    eligible = [p for p in predictions if p["prospective_eligible"] and not p["archive_only"]]
     # A fixed protocol selects the earliest eligible prospective prediction per
     # application, avoiding multiple counting and retrospective cherry-picking.
     first_by_app = {}
@@ -919,18 +930,19 @@ def install_routes(app, engine_provider, require_internal_key, require_storage):
             raise HTTPException(422, "Invalid NCT identifier")
         with engine_provider().connect() as connection:
             records = _prediction_rows(connection, nct_id)
+        active_records = [r for r in records if r["active_prediction_eligible"]]
         return {
             "nct_id": nct_id,
             "predictions": records,
-            "latest_prediction": records[0] if records else None,
-            "status": "RECORDED" if records else "NOT_READY",
+            "latest_prediction": active_records[0] if active_records else None,
+            "status": "RECORDED" if active_records else "ARCHIVE_ONLY" if records else "NOT_READY",
             # Readiness in a stored record is not independent clinical adjudication or calibrated FDA prediction.
             "decision": "ABSTAIN",
             "validated_decision_available": False,
             "decision_explanation": {
                 "reason_code": "UNVALIDATED_SAVED_RECORD" if records else "NO_VALIDATED_PREDICTION",
                 "reason": "A historical saved prediction exists, but scientific adjudication and independent outcome calibration have not been demonstrated. FDA decision remains ABSTAIN." if records else "No scientifically validated and calibrated trial-specific PASS, CRL, or EXTENSION prediction exists.",
-                "scientific_readiness": records[0]["scientific_readiness"] if records else "NOT_READY",
+                "scientific_readiness": active_records[0]["scientific_readiness"] if active_records else "NOT_READY",
                 "validated_confidence_available": False,
                 "requires_independent_adjudication": True,
                 "requires_outcome_calibration": True,
