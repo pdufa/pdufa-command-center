@@ -61,7 +61,7 @@ export default function MainStatus(){
     <h1>MAIN · Technical status and prediction readiness</h1>
     <p>This is an evidence and operating-status view, <strong>not a third active trial list</strong>.
       POOL is the complete research inventory; FOCUS is the screened post-Phase-3 population.
-      Retired research groups remain outside the active workflow; archival records are preserved separately.</p>
+      P3 and P3 POST-DATA are retired spreadsheet identities; historical evidence remains read-only. Clinical Phase 3 research remains valid for FOCUS and independent medical analysis.</p>
     <section style={{...card,margin:"18px 0"}} aria-label="Dated release verification">
       <h2 style={{marginTop:0}}>Verified release snapshot · {release.date}</h2>
       <p><strong>Production deployment: READY.</strong> The associated main-branch commit is{" "}
