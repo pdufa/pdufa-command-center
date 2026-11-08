@@ -45,6 +45,7 @@ export default function InstallationProgressDashboard(){
  const [data,setData]=useState<MonitorSnapshot|null>(null);
  const [error,setError]=useState("");
  const [busy,setBusy]=useState(true);
+ const [trialFilter,setTrialFilter]=useState("");
  const refresh=useCallback(async()=>{
   try{
    const response=await fetch("/api/main/installation-progress",{cache:"no-store"});
@@ -63,6 +64,7 @@ export default function InstallationProgressDashboard(){
   document.addEventListener("visibilitychange",active);
   return ()=>{clearInterval(tick);document.removeEventListener("visibilitychange",active);};
  },[refresh]);
+ const visibleTrials=data?.trials.filter(t=>[t.nct,t.ticker,t.company].join(" ").toLowerCase().includes(trialFilter.trim().toLowerCase()))??[];
  return <section style={{...box,margin:"18px 0"}} aria-label="Automated installation progress and system health" id="installation-progress">
   <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:10,flexWrap:"wrap"}}>
    <div>
@@ -76,6 +78,8 @@ export default function InstallationProgressDashboard(){
   {error&&<p role="alert" style={{color:"#912d31",fontSize:13}}>{error}</p>}
   {!data&&<p role="status" style={muted}>{busy?"Loading verified installation telemetry…":"Progress unavailable. No percentages are estimated when live evidence cannot be retrieved."}</p>}
   {data&&<>
+   <p role="status" style={{...muted,marginTop:10}}><strong>System health:</strong> {data.health.level}. {data.health.issues.length?data.health.issues.slice(0,5).join("; "):"No observed blockers from current telemetry."}</p>
+   <p style={muted}><strong>Prediction:</strong> FDA approval, CRL and review delay — ABSTAIN. <strong>Certainty:</strong> NOT VALIDATED. Source coverage or passing builds cannot unlock either.</p>
    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(165px,1fr))",gap:11,marginTop:18}}>
     <div style={{padding:14,background:"#f3f8f4",borderRadius:9}}>
      <div style={muted}>Overall verified installation</div>
@@ -116,7 +120,45 @@ export default function InstallationProgressDashboard(){
      <p style={muted}>Live backend records report observed events, not the separate external scheduled scanner's success. Telegram messages are deduplicated and require configured credentials plus a recorded successful send.</p>
     </div>
    </details>
-   <details style={{marginTop:14}} open>
+   <details style={{...box,marginTop:14}} id="trial-details" aria-label="FOCUS trial-level source evidence and immutable revision history">
+    <summary style={{cursor:"pointer",fontWeight:750,fontSize:17}}>FOCUS trial details · {data.trials.length} exact NCTs · evidence gaps and source revisions</summary>
+    <p style={muted}>Every trial inherits the seven recorded FOCUS evidence gates. Source links do not certify the underlying science. A revision is shown only after the authenticated backend confirms that it was saved; unavailable history is marked Unknown.</p>
+    <label style={{display:"grid",gap:5,maxWidth:410,fontSize:13,fontWeight:700}}>Search by ticker, company or NCT
+      <input type="search" value={trialFilter} onChange={e=>setTrialFilter(e.target.value)}
+        placeholder="e.g. NCT06081894 or CYTK"
+        style={{padding:"10px",border:"1px solid #b8cfc2",borderRadius:7}}/>
+    </label>
+    <p style={{...muted,marginTop:8}}>Showing {visibleTrials.length} of {data.trials.length} FOCUS trials. Historical trial identities remain anchored to exact NCT; no retired worksheet is reactivated.</p>
+    {visibleTrials.map(t=><details key={t.nct} data-nct={t.nct}
+       style={{border:"1px solid #d0e1d5",borderRadius:9,padding:12,margin:"10px 0"}}>
+      <summary style={{cursor:"pointer"}}>
+        <strong>{t.ticker} · {t.nct}</strong> — {t.company}
+        <span style={{display:"block",fontSize:12,color:"#596770",marginTop:3}}>
+         {t.pointers} recorded pointers · {t.review} need independent review · {t.missing} missing ·
+         saved history {t.sourceState==="OBSERVED"?"observed":"unknown"}
+        </span>
+      </summary>
+      <p style={muted}>Source worker: {t.latestStatus.replaceAll("_"," ")} · Saved source stages: {t.sourceStages===null?"unknown":t.sourceStages+"/12"} · Failed runs: {t.failedRuns===null?"unknown":t.failedRuns}. No FDA approval/CRL/delay probability is validated: <strong>ABSTAIN</strong>. Certainty: <strong>NOT VALIDATED</strong>.</p>
+      <details style={{margin:"10px 0"}}>
+        <summary style={{cursor:"pointer",fontWeight:700}}>Recorded evidence and missing data · {t.gates.length} checks</summary>
+        <div>{t.gates.map(g=><div key={g.id} style={{borderTop:"1px solid #e0e9e1",padding:"8px 0",fontSize:13}}>
+         <strong>{g.title}</strong> — {g.state.replaceAll("_"," ")}
+         <p style={{...muted,margin:"4px 0"}}>{g.note}</p>
+         {g.sourceUrl&&<a href={g.sourceUrl} target="_blank" rel="noopener noreferrer">Recorded original source</a>}
+        </div>)}</div>
+      </details>
+      <details style={{margin:"10px 0"}}>
+        <summary style={{cursor:"pointer",fontWeight:700}}>Immutable source revision history · {t.sourceState==="OBSERVED"?t.revisions.length+" recent":"not verified"}</summary>
+        {t.sourceState!=="OBSERVED"?<p style={muted}>Saved trial revisions cannot currently be checked against persistent PostgreSQL. No historic revisions were inferred.</p>:
+        t.revisions.length===0?<p style={muted}>No saved revisions were reported for this NCT.</p>:
+        <ol>{t.revisions.map(r=><li key={r.runId} style={{fontSize:13,margin:"7px 0"}}>
+          Revision {r.ordinal} · {r.recordedAt} · evidence changed: {r.evidenceChanged?"Yes":"No"} · run {r.runId}
+        </li>)}</ol>}
+      </details>
+      <p style={{fontSize:12,marginBottom:0}}><Link href={"/focus"}>FOCUS roster</Link> · <a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov record</a></p>
+    </details>)}
+   </details>
+   <details style={{marginTop:14}} open id="levels">
     <summary style={{cursor:"pointer",fontWeight:750,fontSize:17}}>Expand installation stages — {data.stages.length} groups including all 12 advanced levels</summary>
     <div style={{marginTop:8}}>{data.stages.map(stage=><StagePanel key={stage.id} stage={stage}/>)}</div>
    </details>
