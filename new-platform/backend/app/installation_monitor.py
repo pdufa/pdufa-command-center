@@ -171,6 +171,8 @@ def monitor_once(engine, *, storage_ready, require_postgres=True):
     if report["storage"]["state"]!="READY":
         return report
     initialize(engine)
+    _queue_event(engine,"MILESTONE","first-persistent-monitor-ready",
+                 "PDUFA installation health: isolated PostgreSQL monitor is connected and has returned a live source-status snapshot. This does not certify FDA forecasts.")
     medical=report["research"]
     if medical.get("finishedSourceRuns",0)>0:
         _queue_event(engine,"MILESTONE","medical-first-complete",
