@@ -1,6 +1,7 @@
 "use client";
 import {Fragment,useEffect,useMemo,useState} from "react";
 import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline-timeline";
+import CompanyDateBadges from "./CompanyDateBadges";
 import type {ToolsSpreadsheetRow} from "./ToolsResultsSpreadsheet";
 import RaasSpreadsheetStatus from "./RaasSpreadsheetStatus";
 import {SPECIAL_DESIGNATION_CATEGORIES} from "../lib/trial-designations";
@@ -117,8 +118,8 @@ const columns:{key:Field;label:string;hint?:string}[]=[
   {key:"nctId",label:"NCT Trial ID"},
   {key:"ticker",label:"Ticker"},
   {key:"company",label:"Company"},
-  {key:"s",label:"S",hint:"Days since Phase 3 data release"},
-  {key:"d",label:"D",hint:"Days to PDUFA"},
+  {key:"s",label:"D",hint:"Days since Phase 3 data release"},
+  {key:"d",label:"P",hint:"Days to PDUFA"},
   {key:"drug",label:"Drug / therapy"},
   {key:"indication",label:"Disease / indication"},
   {key:"stage",label:"Recorded stage"}
@@ -400,13 +401,13 @@ export default function ToolsOpeningTrialGrid({
             <td className={css.rowNum}>{offset+i+1}</td>
             <td><a href={"https://clinicaltrials.gov/study/"+encodeURIComponent(row.nctId)} target="_blank" rel="noopener noreferrer">{row.nctId}</a></td>
             <td>{safe(row.ticker)}</td>
-            <td className={css.longTextCell}>{safe(row.company)}</td>
+            <td className={css.longTextCell}>{safe(row.company)}<CompanyDateBadges timeline={row.timeline} today={today}/></td>
             <td className={css.dayCell}><DayCell count={days.daysSincePhase3Release}
               date={row.timeline?.phase3DataRelease?.date} url={row.timeline?.phase3DataRelease?.sourceUrl}
-              description="S · Days since verified Phase 3 data release"/></td>
+              description="D · Days since verified Phase 3 data release"/></td>
             <td className={css.dayCell}><DayCell count={days.daysToPdufa}
               date={row.timeline?.pdufaTarget?.date} url={row.timeline?.pdufaTarget?.sourceUrl}
-              description="D · Days to verified PDUFA target"/></td>
+              description="P · Days to verified PDUFA target"/></td>
             <td className={[css.competitionCell,css.competitionStart,
                 competitiveOpen?css.competitionOpen:css.competitionEnd].join(" ")}
                 title="Competitive Strategy: source and PDUFA gates are shown, but a validated ranking is not yet available">
@@ -576,7 +577,7 @@ export default function ToolsOpeningTrialGrid({
         <button type="button" disabled={!hasSelection||loading||!!error||nextOffset===null} onClick={onNext}>Next 50</button>
       </div>
     </div>
-    <p className={css.source}><strong>S</strong> = whole days since a source-verified public Phase 3 data release; <strong>D</strong> = whole days until a source-verified FDA PDUFA target (negative means the target date passed). Dates are Pacific-calendar-based; Not verified is not zero. Linked applications alone do not establish an exact trial's PDUFA date. {!regulatorySourcesAvailable?"FDA/PDUFA enrichment source unavailable for this request; absence of a link is not established. ":""}FDA designation and PDUFA application coverage is incomplete. A PDUFA target is application-level; the linked NCT is not automatically pivotal. Published source: {sourceDate||"Not recorded"} · State: {sourceState||"Unverified"}.
+    <p className={css.source}><strong>D</strong> = whole days since a source-verified public Phase 3 data release; <strong>P</strong> = whole days until a source-verified FDA PDUFA target (negative means the target date passed). Dates are Pacific-calendar-based; Not verified is not zero. Linked applications alone do not establish an exact trial's PDUFA date. {!regulatorySourcesAvailable?"FDA/PDUFA enrichment source unavailable for this request; absence of a link is not established. ":""}FDA designation and PDUFA application coverage is incomplete. A PDUFA target is application-level; the linked NCT is not automatically pivotal. Published source: {sourceDate||"Not recorded"} · State: {sourceState||"Unverified"}.
       {inventoryMode?" This inventory is the restricted dated research subset, not the unrestricted published POOL or a verified trade-ready Pipeline.":""}
       {hasSelection&&selectedDesignations>0?" FDA program records lacking NCT links cannot be treated as zero trials.":""}
     </p>

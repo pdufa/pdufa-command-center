@@ -57,7 +57,7 @@ export default function TrialTimelineSummary({
     <div style={{...grid,flexWrap:"wrap"}}>
       <div style={{...panel,padding:compact?"6px 9px":panel.padding,minWidth:compact?112:135,flex:compact?"1 1 140px":panel.flex}}>
         <div style={label}>DAYS SINCE PHASE 3</div>
-        <div style={{display:"flex",alignItems:"center",gap:8,marginTop:3}}><span style={letter} aria-label="A: days since Phase 3 readout">A</span><strong style={{...value,fontSize:compact?18:23}}>{metric.since}</strong></div>
+        <div style={{display:"flex",alignItems:"center",gap:8,marginTop:3}}><span style={letter} aria-label="D: days since Phase 3 data release">D</span><strong style={{...value,fontSize:compact?18:23}}>{metric.since}</strong></div>
         {metric.release
           ?<small style={note}>Public results released {metric.release.date}
             {" · "}<a target="_blank" rel="noopener noreferrer" href={metric.release.sourceUrl}>Verified source</a></small>

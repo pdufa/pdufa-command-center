@@ -3,6 +3,7 @@
 import {useEffect,useMemo,useState} from "react";
 import {pacificToday,pipelineDayCounts,type TimelineDates} from "../lib/pipeline-timeline";
 import TrialTimelineSummary from "./TrialTimelineSummary";
+import CompanyDateBadges from "./CompanyDateBadges";
 import {SPECIAL_DESIGNATION_CATEGORIES,type DesignationKey} from "../lib/trial-designations";
 import type {ToolPdufaApplication} from "../lib/tools-pdufa-links";
 import styles from "./FunnelWorkspace.module.css";
@@ -61,8 +62,8 @@ const sortFields:{key:SortField;label:string;hint?:string}[]=[
   {key:"nctId",label:"NCT / Trial ID"},
   {key:"ticker",label:"Ticker"},
   {key:"company",label:"Company"},
-  {key:"s",label:"S",hint:"Days since Phase 3 data release"},
-  {key:"d",label:"D",hint:"Days to PDUFA"},
+  {key:"s",label:"D",hint:"Days since Phase 3 data release"},
+  {key:"d",label:"P",hint:"Days to PDUFA"},
   {key:"drug",label:"Drug / therapy"},
   {key:"indication",label:"Disease / indication"},
   {key:"stage",label:"Recorded stage"},
@@ -167,7 +168,7 @@ export default function ToolsResultsSpreadsheet({
       <h3>Matching trial records</h3>
       <span>{hasSelection&&!loading&&!error?fmt(total)+(designations.length?" documented FDA-linked matches in restricted subset (partial coverage)":" restricted trial matches"):hasSelection&&loading?"Calculating…":hasSelection&&error?"Unavailable":"0 matching trials"}</span>
     </div>
-    <p className={styles.muted}><strong>S</strong> is days since verified public Phase 3 data release; <strong>D</strong> is days to the verified PDUFA target (negative after the target date). Missing source evidence stays Not verified, never zero.</p>
+    <p className={styles.muted}><strong>D</strong> is days since verified public Phase 3 data release; <strong>P</strong> is days to the verified PDUFA target (negative after the target date). Missing source evidence stays Not verified, never zero.</p>
 
     <TrialColumnFilterBar title="Selected trial records" fields={tableFilterFields}
       filters={columnFilters} onChange={setColumnFilters}
@@ -211,13 +212,13 @@ export default function ToolsResultsSpreadsheet({
               <strong>{display(row.ticker)}</strong>
               <TrialTimelineSummary timeline={row.timeline} today={today} compact trial={row}/>
             </div></td>
-            <td>{display(row.company)}</td>
-            <td className={styles.toolsSheetDateValue} title="S: Days since source-verified public Phase 3 results release">
+            <td>{display(row.company)}<CompanyDateBadges timeline={row.timeline} today={today}/></td>
+            <td className={styles.toolsSheetDateValue} title="D: Days since source-verified public Phase 3 results release">
               {days.daysSincePhase3Release===null?<span title="Phase 3 data release not source-verified">Not verified</span>:
                 <a href={row.timeline?.phase3DataRelease?.sourceUrl} target="_blank" rel="noopener noreferrer"
                   title={"Verified Phase 3 release: "+row.timeline?.phase3DataRelease?.date}>{days.daysSincePhase3Release.toLocaleString("en-US")}</a>}
             </td>
-            <td className={styles.toolsSheetDateValue} title="D: Days to source-verified PDUFA target; negative means target date passed">
+            <td className={styles.toolsSheetDateValue} title="P: Days to source-verified PDUFA target; negative means target date passed">
               {days.daysToPdufa===null?<span title="PDUFA target date not source-verified">Not verified</span>:
                 <a href={row.timeline?.pdufaTarget?.sourceUrl} target="_blank" rel="noopener noreferrer"
                   title={"Verified FDA PDUFA target: "+row.timeline?.pdufaTarget?.date}>{days.daysToPdufa.toLocaleString("en-US")}</a>}
