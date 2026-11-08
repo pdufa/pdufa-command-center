@@ -9,6 +9,7 @@ import {
 import {findingsForNct,REVIEW_COVERAGE,REVIEW_AS_OF} from "../../lib/medical-intelligence-reviewed-findings";
 import {conditionForNct} from "../../lib/medical-intelligence-conditions";
 import {applicationsForNct,CYCLE_COUNTS} from "../../lib/medical-intelligence-applications";
+import {parseRegistryResults,type RegistryResultReport} from "../../lib/medical-intelligence-registry-results";
 
 export const metadata:Metadata={
   title:"Deep Medical Intelligence — Read-only preview | PDUFA",
@@ -23,16 +24,18 @@ const panel:CSSProperties={background:"#fff",border:"1px solid "+palette.line,bo
 const small:CSSProperties={color:palette.muted,fontSize:13,lineHeight:1.55};
 const rows=focus.records;
 
-async function getRegistryStudy(nct:string):Promise<{evidence:TrialEvidence|null;error:string|null}>{
+async function getRegistryStudy(nct:string):Promise<{evidence:TrialEvidence|null;results:RegistryResultReport|null;error:string|null}>{
   try{
     const r=await fetch("https://clinicaltrials.gov/api/v2/studies/"+nct,{
       headers:{Accept:"application/json"},next:{revalidate:21600},signal:AbortSignal.timeout(12000)
     });
     if(!r.ok)throw new Error("Registry returned HTTP "+r.status);
-    const evidence=summarizeRegistryStudy(await r.json(),nct);
-    return {evidence,error:null};
+    const payload=await r.json();
+    const evidence=summarizeRegistryStudy(payload,nct);
+    const results=parseRegistryResults(payload,nct);
+    return {evidence,results,error:null};
   }catch(e){
-    return {evidence:null,error:e instanceof Error?e.message:"Registry retrieval unavailable"};
+    return {evidence:null,results:null,error:e instanceof Error?e.message:"Registry retrieval unavailable"};
   }
 }
 function Source({href,children}:{href:string;children:React.ReactNode}){
@@ -50,7 +53,7 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
   const query=await searchParams;
   const requested=typeof query.nct==="string"?query.nct:"";
   const record=rows.find(r=>r.nct===requested)||rows[0];
-  const {evidence,error}=await getRegistryStudy(record.nct);
+  const {evidence,results:registryResults,error}=await getRegistryStudy(record.nct);
   const sourceUrl="https://clinicaltrials.gov/study/"+record.nct;
   const candidateIndex=rows.findIndex(r=>r.nct===record.nct)+1;
   const trialResults=evidence?.resultsPosted;
@@ -225,6 +228,57 @@ export default async function MedicalIntelligencePreview({searchParams}:{searchP
         <EndpointList items={evidence?.secondaryEndpoints||[]}/>
       </details>
       <p style={small}>Registry presence does not establish that an endpoint was achieved, that an analysis is statistically robust, or that the FDA accepted the sponsor&apos;s evidence. Full results, trial protocols, and statistical analysis plans require separate review.</p>
+    </section>
+
+    <section style={panel} aria-label="ClinicalTrials.gov posted statistical results">
+      <h2 style={{marginTop:0}}>Registry-reported statistical evidence and adverse events</h2>
+      <p style={small}>Exact NCT: <Source href={sourceUrl}>{record.nct}</Source>. This section transcribes posted trial results and p-values from the federal registry; it does not infer statistical success, proper multiplicity correction or FDA acceptance.</p>
+      {registryResults?.resultsPosted ? <>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(175px,1fr))",gap:11}}>
+          <Info label="Posted outcome measures" value={registryResults.outcomes.length}/>
+          <Info label="Posted statistical comparisons" value={registryResults.outcomes.reduce((n,o)=>n+o.analyses.length,0)}/>
+          <Info label="Adverse-event groups" value={registryResults.events.length}/>
+          <Info label="Serious adverse event terms" value={registryResults.seriousEventTerms}/>
+        </div>
+        <details style={{marginTop:15,border:"1px solid "+palette.line,borderRadius:9,padding:12}}>
+          <summary style={{fontWeight:750,cursor:"pointer"}}>View outcome measures, reported p-values and confidence intervals</summary>
+          {registryResults.outcomes.length?registryResults.outcomes.map((o,i)=><div key={i} style={{padding:"13px 0",borderBottom:"1px solid "+palette.line}}>
+            <strong>{o.type} — {o.title}</strong>
+            <div style={small}>Time frame: {o.timeFrame||"Not posted"} · Unit: {o.unit||"Not posted"}</div>
+            {o.analyses.length>0?o.analyses.map((a,j)=><div key={j} style={{background:palette.cream,padding:10,borderRadius:8,marginTop:9,fontSize:13,lineHeight:1.55}}>
+              <div><strong>Comparison:</strong> {a.comparisons.join(" versus ")||"Group labels not supplied"}</div>
+              <div><strong>Reported p-value:</strong> {a.reportedPValue||"Not provided"}</div>
+              <div><strong>Analysis method:</strong> {a.method||"Not posted"}</div>
+              <div><strong>Parameter:</strong> {a.parameter||"Not posted"} {a.estimate||""}</div>
+              <div><strong>Confidence interval:</strong> {a.confidenceInterval||"Not provided"}</div>
+              {a.note&&<div><strong>Registry note:</strong> {a.note}</div>}
+            </div>):<p style={small}>No statistical comparison or p-value was posted for this measure. That does not imply that the endpoint failed.</p>}
+          </div>):<p style={small}>A results section is present, but outcome-measure tables are not available in the retrieved record.</p>}
+        </details>
+        <details style={{marginTop:12,border:"1px solid "+palette.line,borderRadius:9,padding:12}}>
+          <summary style={{fontWeight:750,cursor:"pointer"}}>View reported adverse events by group</summary>
+          <div style={{overflowX:"auto",marginTop:12}}>
+            <table style={{borderCollapse:"collapse",width:"100%",minWidth:530,fontSize:13}}>
+              <thead><tr>{["Group","Serious affected / at risk","Other affected / at risk","Deaths affected / at risk"].map(x=><th key={x} style={{textAlign:"left",borderBottom:"1px solid "+palette.line,padding:8}}>{x}</th>)}</tr></thead>
+              <tbody>{registryResults.events.map((g,i)=><tr key={g.id||String(i)} style={{borderBottom:"1px solid "+palette.line}}>
+                <td style={{padding:8}}>{g.title}</td>
+                <td style={{padding:8}}>{g.seriousAffected??"Not posted"} / {g.seriousAtRisk??"Not posted"}</td>
+                <td style={{padding:8}}>{g.otherAffected??"Not posted"} / {g.otherAtRisk??"Not posted"}</td>
+                <td style={{padding:8}}>{g.deathAffected??"Not posted"} / {g.deathAtRisk??"Not posted"}</td>
+              </tr>)}</tbody>
+            </table>
+            {registryResults.events.length===0&&<p style={small}>Adverse event group totals were not present in the retrieved record.</p>}
+          </div>
+          <p style={small}>Counts must be compared only within appropriately matched periods and arms. The totals here are not an adjusted risk estimate and do not establish causality.</p>
+        </details>
+        <details style={{marginTop:12,border:"1px solid "+palette.line,borderRadius:9,padding:12}}>
+          <summary style={{fontWeight:700,cursor:"pointer"}}>Statistical and regulatory interpretation limits</summary>
+          <ul style={{fontSize:13,lineHeight:1.6,paddingLeft:20}}>{registryResults.limitations.map((x,i)=><li key={i}>{x}</li>)}</ul>
+        </details>
+      </>:<div style={{border:"1px solid "+palette.line,borderRadius:8,padding:14,background:palette.cream}}>
+        <strong>Full posted registry results unavailable for this NCT.</strong>
+        <p style={{...small,marginBottom:0}}>Search the sponsor's clinical study report, peer-reviewed publication and results presentation. A missing registry result is not a failed primary endpoint or a missing clinical trial.</p>
+      </div>}
     </section>
 
     <section style={panel}>
