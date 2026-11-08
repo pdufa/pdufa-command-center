@@ -40,6 +40,12 @@ def test_packaged_application_context_reconciles_all_focus_ncts():
     assert len(multi["candidateApplications"])==2
     assert multi["indication"]==""
     assert multi["drug"]==""
+    health=medical.application_roster_status()
+    assert health["state"]=="VALID"
+    assert health["coveredNctCount"]==29
+    assert health["applicationCycleCount"]==23
+    assert "NCT02500381" in health["sharedIndicationUnresolvedNcts"]
+    assert health["fdaApplicationStatusVerified"] is False
     capr=medical.program_record("NCT05126758")
     assert capr["indication"]=="Duchenne muscular dystrophy"
     assert capr["drug"]=="Deramiocel"
