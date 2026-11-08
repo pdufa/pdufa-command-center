@@ -738,10 +738,27 @@ async def lifespan(app: FastAPI):
                         in ("true","1","yes")
                         and getattr(app.state,"medical_registry_reconcile_ready",False)):
                     try:
-                        from .medical_primary_evidence_queue import readiness as review_queue_readiness
+                        from .medical_primary_evidence_queue import (
+                            readiness as review_queue_readiness,
+                            build_queue as build_primary_review_queue,
+                        )
                         _review_queue = review_queue_readiness(ENGINE)
                         app.state.medical_primary_review_queue_ready = (
                             _review_queue["status"]=="READY_FOR_EVIDENCE_REVIEW")
+                        if app.state.medical_primary_review_queue_ready:
+                            _actual_primary_queue = build_primary_review_queue(ENGINE)
+                            logging.getLogger(__name__).warning(
+                                "PDUFA_MEDICAL_PRIMARY_REVIEW_QUEUE_ITEMS status=PASS "
+                                "total=%d phaseReview=%d postedPrimary=%d missingPrimary=%d "
+                                "registeredOutcomeMeasures=%d postedOutcomeMeasures=%d "
+                                "clinicalSignoff=False prediction=ABSTAIN certainty=NOT_VALIDATED",
+                                _actual_primary_queue["canonicalTrials"],
+                                _actual_primary_queue["phaseReconciliationRequired"],
+                                _actual_primary_queue["postedPrimaryResultsNeedReview"],
+                                _actual_primary_queue["noPostedPrimaryResults"],
+                                _actual_primary_queue["registeredPrimaryOutcomeDefinitions"],
+                                _actual_primary_queue["postedPrimaryOutcomeMeasures"],
+                            )
                         logging.getLogger(__name__).warning(
                             "PDUFA_MEDICAL_PRIMARY_REVIEW_QUEUE status=%s "
                             "registry=%d/29 sourceTriage=%d/29 humanReviewEvents=%d "
