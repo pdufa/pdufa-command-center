@@ -77,6 +77,12 @@ def run() -> dict:
     data, doc_response = request(f"{ROOT}/documents/{TRIAL}/{identifier}/download",
                                  MAX_DOC, "application/pdf,application/octet-stream")
     if not data.startswith(b"%PDF-"):
+        if "application/json" in str(doc_response.get("content_type", "")):
+            body = json.loads(data)
+            if isinstance(body, dict) and isinstance(body.get("url"), str):
+                from urllib.parse import urlsplit
+                uri = urlsplit(body["url"])
+                raise ValueError("CTIS_SIGNED_DOCUMENT_LINK_HOST_" + str(uri.hostname)[:120])
         mime = str(doc_response.get("content_type", ""))[:64].replace(" ", "_")
         magic = data[:12].hex()
         raise ValueError(f"DOCUMENT_NOT_PDF_mime={mime}_magic={magic}_bytes={len(data)}")
