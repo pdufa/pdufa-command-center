@@ -1,4 +1,4 @@
-name: P3 POST-DATA Google Sheets → Website snapshot
+name: FOCUS Google Sheets → Website source snapshot
 on:
   workflow_dispatch:
   push:
@@ -43,7 +43,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_p3_auto_promotion.py' -v
       - name: Confirm planned/submitted/accepted/PDUFA stage classifications
         run: python -m unittest discover -s tests -p 'test_p3_regulatory_stage_rules.py' -v
-      - name: Automatically append exact-NCT, verified POOL to P3 POST-DATA matches
+      - name: Automatically append reviewed exact-NCT POOL matches to FOCUS
         env:
           GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
         run: python scripts/auto_promote_p3_post_data.py
@@ -59,7 +59,7 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_p3_existing_row_refresh.py' -v
       - name: Verify secondary market-cap fallback parser and primary-source priority
         run: python -m unittest discover -s tests -p 'test_p3_market_cap_secondary.py' -v
-      - name: Refresh existing P3 trial market caps, registry and vetted FDA fields
+      - name: Refresh existing FOCUS source facts and vetted FDA fields
         env:
           GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
         run: python scripts/refresh_existing_p3_post_data.py
