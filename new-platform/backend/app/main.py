@@ -586,7 +586,7 @@ async def lifespan(app: FastAPI):
         start_nct_live_stream(ENGINE)
         # Isolated, opt-in medical canary: never create analysis tables in production by default.
         if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
-                and DATABASE_URL.startswith("postgresql+psycopg://")):
+                and REQUIRE_POSTGRES and DATABASE_URL.startswith("postgresql+psycopg://")):
             try:
                 from .medical_continuous import start as start_medical_continuous
                 start_medical_continuous(ENGINE)
@@ -602,12 +602,19 @@ app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 from .nct_live_stream import install_routes as install_nct_stream_routes
 install_nct_stream_routes(app, lambda: ENGINE, require_internal_key, require_storage)
 
-# Routes and live database writes are explicitly gated to the isolated preview environment.
+# Independent medical writes require the *medical* canary to be initialized
+# against durable PostgreSQL; general checklist storage readiness is insufficient.
+def require_medical_pilot_storage() -> None:
+    enabled = os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+    if not (enabled and REQUIRE_POSTGRES and DATABASE_URL.startswith("postgresql+psycopg://")
+            and _DB_STATE["available"] and getattr(app.state, "medical_canary_initialized", False)):
+        raise HTTPException(status_code=503, detail="Isolated medical canary PostgreSQL is not ready")
+
 if os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes"):
     from .medical_continuous import install_routes as install_medical_continuous_routes
     from .medical_on_demand import install_routes as install_analyze_now_routes
-    install_medical_continuous_routes(app, lambda: ENGINE, require_internal_key, require_storage)
-    install_analyze_now_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+    install_medical_continuous_routes(app, lambda: ENGINE, require_internal_key, require_medical_pilot_storage)
+    install_analyze_now_routes(app, lambda: ENGINE, require_internal_key, require_medical_pilot_storage)
 
 @app.get("/api/internal/medical-canary-preflight", dependencies=[Depends(require_internal_key)])
 def medical_canary_preflight():
