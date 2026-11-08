@@ -74,15 +74,9 @@ export async function GET(req: NextRequest) {
   const nct = req.nextUrl.searchParams.get("nct");
   const run = req.nextUrl.searchParams.get("run");
   const history = req.nextUrl.searchParams.get("history");
-  const analysis = req.nextUrl.searchParams.get("analysis");
   if (!knownNct(nct) || (run !== null && !UUID.test(run)) ||
-      (history !== null && history !== "1") ||
-      (analysis !== null && analysis !== "1") ||
-      (history === "1" && (run !== null || analysis !== null)) ||
-      (analysis === "1" && run !== null))
+      (history !== null && history !== "1") || (history === "1" && run !== null))
     return json({ error: "Exact FOCUS trial and valid run identifier required" }, 422);
-  if (analysis === "1")
-    return upstream("/api/medical-continuous/" + nct + "/analysis-history", "GET");
   if (history === "1")
     return upstream("/api/medical-continuous/" + nct + "/history", "GET");
   return upstream("/api/medical-continuous/" + nct + "/runs/" + (run || "latest"), "GET");
@@ -101,8 +95,6 @@ export async function POST(req: NextRequest) {
     return json({ error: "Invalid request" }, 422);
   const { action, nct, run, requestKey } = payload as Record<string, unknown>;
   if (!knownNct(nct)) return json({ error: "Exact FOCUS trial required" }, 422);
-  if (action === "analyze" && typeof requestKey === "string" && UUID.test(requestKey))
-    return upstream("/api/medical-continuous/" + nct + "/analyze-now", "POST", { request_key: requestKey });
   if (action === "start" && typeof requestKey === "string" && UUID.test(requestKey))
     return upstream("/api/medical-continuous/" + nct + "/runs", "POST", { request_key: requestKey });
   if ((action === "stop" || action === "resume") && typeof run === "string" && UUID.test(run))
