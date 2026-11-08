@@ -192,3 +192,16 @@ test("dashboard is read-only, session-gated and distinct from unfinished predict
  assert.match(backend,/api\/internal\/installation-monitor/);
  assert.doesNotMatch(backend,/\bRAASScore\(/);
 });
+
+test("production GitHub telemetry reuses configured read-only credential without exposing it",()=>{
+ const api=fs.readFileSync(path.join(__dirname,"../app/api/main/installation-progress/route.ts"),"utf8");
+ const smoke=fs.readFileSync(path.join(__dirname,"../../../.github/workflows/precision-monitoring-production-smoke.yml"),"utf8");
+ assert.match(api,/PDUFA_GITHUB_READ_TOKEN\?\.trim\(\) \|\| process\.env\.PDUFA_GITHUB_TOKEN\?\.trim\(\)/);
+ assert.match(api,/head_sha=/);
+ assert.match(api,/x=>rec\(x\)\.head_sha===sha/);
+ assert.match(api,/hasSession/);
+ assert.doesNotMatch(api,/export async function POST|export async function DELETE/);
+ assert.match(smoke,/app\/api\/main\/installation-progress\/route\.ts/);
+ assert.match(smoke,/status" = "401"/);
+ assert.match(smoke,/Sign in required/);
+});
