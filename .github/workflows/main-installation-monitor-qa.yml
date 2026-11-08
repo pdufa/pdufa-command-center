@@ -1,5 +1,8 @@
 name: MAIN Installation Progress and Health Monitor QA
 on:
+  push:
+    branches:
+      - feature/deep-medical-intelligence-preview-20261107
   pull_request:
     paths:
       - 'new-platform/frontend/lib/main-install-progress.ts'
