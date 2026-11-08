@@ -556,6 +556,12 @@ async def lifespan(app: FastAPI):
             logging.getLogger(__name__).error("PDUFA_PHASE3_STARTUP_FAILED error_type=%s", type(exc).__name__)
         from .nct_live_stream import start as start_nct_live_stream
         start_nct_live_stream(ENGINE)
+        try:
+            from .medical_continuous import start as start_medical_continuous
+            start_medical_continuous(ENGINE)
+        except Exception as exc:
+            import logging
+            logging.getLogger(__name__).error("PDUFA_MEDICAL_STAGES_INIT_FAILED type=%s", type(exc).__name__)
     yield
 
 
@@ -564,6 +570,8 @@ from .reconciliation_review import ReviewPackage
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 from .nct_live_stream import install_routes as install_nct_stream_routes
 install_nct_stream_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+from .medical_continuous import install_routes as install_medical_continuous_routes
+install_medical_continuous_routes(app, lambda: ENGINE, require_internal_key, require_storage)
 from .phase3_catalog import install_routes as install_phase3_catalog_routes
 from .phase3_ingestion import install_routes as install_phase3_ingestion_routes
 install_phase3_catalog_routes(app, lambda: ENGINE, require_internal_key, require_storage)
