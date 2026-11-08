@@ -23,7 +23,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          test "$"+"{GITHUB_REF_NAME}" = "feature/medical-stage4-verified-method-matrix-20261108"
+          test "${GITHUB_REF_NAME}" = "feature/medical-stage4-verified-method-matrix-20261108"
           python3 -m py_compile scripts/medical/acacia_ctg_historical_versions.py
           grep -Fq 'NCT="NCT06081894"' scripts/medical/acacia_ctg_historical_versions.py
           grep -Fq 'www.clinicaltrials.gov/api/int/studies/' scripts/medical/acacia_ctg_historical_versions.py
