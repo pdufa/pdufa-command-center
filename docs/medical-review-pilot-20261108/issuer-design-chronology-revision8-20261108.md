@@ -15,7 +15,7 @@
 
 ### Official historical source retrieval outcome
 
-An isolated, credential-free research workflow tried the historical internal endpoints documented by the independent open-source ctrdata R package: `/api/int/studies/NCT06081894?history=true`, and original version API indices 25, 26, 28 and 29. The response was **HTTP 403 for each request**, so the workflow **did not retrieve original full historical registry versions**. The [GitHub Actions run and error receipt](https://github.com/pdufa/pdufa-command-center/actions/runs/42527582798) preserve the limitation. **Never claim official versions 26/27 have been downloaded, or that the historical endpoint audit succeeded.** The official browser history and the issuer's contemporaneous original poster nevertheless support a dated design-history account.
+An isolated, credential-free research workflow tried the historical internal endpoints documented by the independent open-source ctrdata R package: `/api/int/studies/NCT06081894?history=true`, and original version API indices 25, 26, 28 and 29. The overview request returned **HTTP 403**, and the individual-version requests also failed with HTTP errors (the log did not expose their numeric status codes). The workflow **did not retrieve original full historical registry versions**. The [GitHub Actions run and error receipt](https://github.com/pdufa/pdufa-command-center/actions/runs/42527582798) preserve the limitation. **Never claim official versions 26/27 have been downloaded, or that the historical endpoint audit succeeded.** The official browser history and the issuer's contemporaneous original poster nevertheless support a dated design-history account.
 
 ### Scientific adjudication implications (no grades)
 
