@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import Link from "next/link";
 import {MAIN_DAILY_EVIDENCE} from "../../lib/main-daily-evidence";
 import {FOCUS_FINAL_TRIAL_AUDIT} from "../../lib/focus-final-gate-checks";
+import InstallationProgressDashboard from "./InstallationProgressDashboard";
 
 export const metadata:Metadata={
   title:"MAIN · Core Platform and Pipeline acceptance | PDUFA",
@@ -59,6 +60,7 @@ export default function MainStatus(){
   return <main className="shell" style={{maxWidth:1100,margin:"0 auto",padding:"20px 12px 45px"}}>
     <div className="topline">PDUFA COMMAND CENTER · MAIN</div>
     <h1>MAIN · Technical status and prediction readiness</h1>
+    <InstallationProgressDashboard/>
     <p>This is an evidence and operating-status view, <strong>not a third active trial list</strong>.
       POOL is the complete research inventory; FOCUS is the screened post-Phase-3 population.
       Retired research groups remain outside the active workflow; archival records are preserved separately.</p>

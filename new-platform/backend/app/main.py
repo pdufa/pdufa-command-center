@@ -556,7 +556,21 @@ async def lifespan(app: FastAPI):
             logging.getLogger(__name__).error("PDUFA_PHASE3_STARTUP_FAILED error_type=%s", type(exc).__name__)
         from .nct_live_stream import start as start_nct_live_stream
         start_nct_live_stream(ENGINE)
+        try:
+            from .medical_continuous import start as start_medical_continuous
+            start_medical_continuous(ENGINE)
+        except Exception as exc:
+            import logging
+            logging.getLogger(__name__).error("PDUFA_MEDICAL_STAGES_INIT_FAILED type=%s", type(exc).__name__)
+        try:
+            from .installation_monitor import start as start_install_monitor
+            start_install_monitor(ENGINE, ready_provider=lambda: _DB_STATE["available"])
+        except Exception as exc:
+            import logging
+            logging.getLogger(__name__).error("PDUFA_INSTALL_MONITOR_INIT_FAILED type=%s", type(exc).__name__)
     yield
+    from .installation_monitor import stop as stop_install_monitor
+    stop_install_monitor()
 
 
 from .reconciliation_review import ReviewPackage
@@ -564,6 +578,22 @@ from .reconciliation_review import ReviewPackage
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 from .nct_live_stream import install_routes as install_nct_stream_routes
 install_nct_stream_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+from .medical_continuous import install_routes as install_medical_continuous_routes
+install_medical_continuous_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+from .medical_on_demand import install_routes as install_analyze_now_routes
+install_analyze_now_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+
+@app.get("/api/internal/installation-monitor", dependencies=[Depends(require_internal_key)])
+def installation_monitor_status():
+    """Authenticated read-only health snapshot, including DB-down state.
+
+    Do not require storage here: unavailable storage must remain observable.
+    This GET never dispatches alerts, starts scans or updates evidence.
+    """
+    from .installation_monitor import collect
+    return collect(ENGINE, storage_ready=_DB_STATE["available"],
+                   require_postgres=REQUIRE_POSTGRES)
+
 from .phase3_catalog import install_routes as install_phase3_catalog_routes
 from .phase3_ingestion import install_routes as install_phase3_ingestion_routes
 install_phase3_catalog_routes(app, lambda: ENGINE, require_internal_key, require_storage)
@@ -658,6 +688,16 @@ def validate_reconciliation_package(payload: "ReviewPackage"):
         return validate_review_package(payload, ENGINE, ProgramIdentity)
     except ValueError as exc:
         raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+
+@app.head("/")
+def service_liveness():
+    """Load-balancer liveness only. Never equate this with Postgres readiness.
+
+    The authenticated installation monitor and /health carry the actual
+    storage readiness, source record counts, and blocked-state evidence.
+    """
+    return Response(status_code=204, headers={"Cache-Control":"no-store"})
 
 
 @app.get("/health")
