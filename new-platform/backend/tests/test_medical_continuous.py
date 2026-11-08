@@ -216,17 +216,24 @@ def test_non_identity_network_outage_is_gap_and_run_can_finish(engine):
 
 def test_direct_stage_api_obeys_same_canary_gate(engine, monkeypatch):
     """A direct 12-stage API call cannot bypass the Analyze Now NCT pilot."""
-    from fastapi import FastAPI, HTTPException
+    from fastapi import HTTPException
 
     monkeypatch.delenv("PDUFA_ANALYZE_NOW_ALL_ENABLED", raising=False)
     monkeypatch.delenv("PDUFA_ANALYZE_NOW_CANARY_NCT", raising=False)
-    app = FastAPI()
+
+    class CaptureApp:
+        router = None
+
+        def include_router(self, router):
+            self.router = router
+
+    app = CaptureApp()
     medical.install_routes(app, lambda: engine, lambda: None, lambda: None)
-    # Select registered FastAPI handlers by identity, then assert their API prefix.
-    routes = {r.name: r for r in app.routes if hasattr(r, "endpoint")}
+    assert app.router is not None, "Medical router was not added"
+    routes = {r.name: r for r in app.router.routes}
     assert "create_job" in routes and "resume_job" in routes, (
-        "Medical router registration mismatch: " +
-        repr([(r.path, r.name) for r in app.routes if hasattr(r, "path")]))
+        "Medical router missing endpoints: " +
+        repr([(r.path, r.name) for r in app.router.routes]))
     start_route = routes["create_job"]
     resume_route = routes["resume_job"]
     assert start_route.path.startswith("/api/medical-continuous/")
