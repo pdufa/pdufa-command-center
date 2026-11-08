@@ -704,6 +704,27 @@ async def lifespan(app: FastAPI):
                             "PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_READY status=ERROR error_type=%s",
                             type(triage_exc).__name__,
                         )
+                # Preview-only: durable progress receipts for the existing 800-position
+                # source triage, not a separate clinical-grade or prediction engine.
+                app.state.medical_method_audit_ready = False
+                if (os.getenv("PDUFA_MEDICAL_METHOD_AUDIT_ENABLED","").lower() in ("1","true","yes")
+                        and getattr(app.state, "medical_scientific_triage_ready", False)):
+                    try:
+                        from .medical_method_audit_worker import (
+                            initialize as initialize_method_audit,
+                            resume_pending as resume_method_audit,
+                        )
+                        initialize_method_audit(ENGINE)
+                        app.state.medical_method_audit_ready = True
+                        resumed=resume_method_audit(ENGINE)
+                        logging.getLogger(__name__).warning(
+                            "PDUFA_MEDICAL_METHOD_AUDIT_READY status=PASS resumed=%d "
+                            "gradesWritten=0 prediction=ABSTAIN",resumed)
+                    except Exception as audit_exc:
+                        app.state.medical_method_audit_ready = False
+                        logging.getLogger(__name__).error(
+                            "PDUFA_MEDICAL_METHOD_AUDIT_READY status=ERROR error_type=%s",
+                            type(audit_exc).__name__)
                 # Registry facts are separately opt-in, fail closed and do NOT
                 # create reviewer-verified clinical phase or scientific grade events.
                 if (os.getenv("PDUFA_MEDICAL_REGISTRY_RECONCILE_ENABLED","").lower() in ("true","1","yes")
@@ -912,6 +933,21 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes
     install_scientific_triage_routes(app, lambda: ENGINE,
                                     require_medical_internal_key,
                                     require_medical_scientific_triage_storage)
+
+# Evidence audit is distinct from the 800-method reviewer ledger. Preview only.
+# GET has the read key; POST requires the stronger operational canary key.
+def require_medical_method_audit_storage() -> None:
+    require_medical_scientific_triage_storage()
+    if not getattr(app.state, "medical_method_audit_ready", False):
+        raise HTTPException(status_code=503, detail="Exact-NCT pilot source-audit telemetry not initialized")
+
+if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED","").lower() in ("true","1","yes")
+        and os.getenv("PDUFA_MEDICAL_METHOD_AUDIT_ENABLED","").lower() in ("true","1","yes")
+        and os.getenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_ENABLED","").lower() in ("true","1","yes")):
+    from .medical_method_audit_worker import install_routes as install_medical_method_audit_routes
+    install_medical_method_audit_routes(
+        app, lambda: ENGINE, require_medical_review_read_key,
+        require_medical_internal_key, require_medical_method_audit_storage)
 
 # ClinicalTrials.gov metadata remains sponsor-reported, never reviewer signoff.
 def require_medical_registry_reconcile_storage() -> None:
