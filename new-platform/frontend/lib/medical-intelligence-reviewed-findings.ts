@@ -398,7 +398,7 @@ export const REVIEWED_FINDINGS:readonly ReviewedFinding[]=[
   "evidence": "SEC_COMPANY_DISCLOSURE",
   "published": "2026-11-04",
   "headline": "ACACIA-HCM showed heart-failure serious-adverse-event imbalance despite positive endpoints",
-  "detail": "Cytokinetics reports LVEF <50% in 10% aficamten versus 1% placebo and heart-failure serious adverse events in 12/255 (4.7%) versus 3/?? (reported 1.2%) placebo; dual endpoints were met.",
+  "detail": "Cytokinetics reports LVEF <50% in 10% aficamten versus 1% placebo and heart-failure serious adverse events in 4.7% of aficamten recipients versus 1.2% of placebo recipients; dual endpoints were met.",
   "fdaRelevance": "Potential clinical benefit-risk and REMS/labeling scrutiny for a proposed non-obstructive HCM indication.",
   "counterpoint": "The company reports statistically significant improvements in both dual primary endpoints and key secondary measures; no FDA deficiency is confirmed.",
   "remainingQuestion": "How did investigators adjudicate heart-failure cases, reversible LVEF reduction, discontinuation, monitoring and dose-titration safety?",
