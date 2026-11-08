@@ -23,10 +23,10 @@ const {EXPANDED_SPECIALIST_CASES,expandedSpecialistCaseForCycle}=load("medical-i
 const {APPLICATION_CYCLES}=load("medical-intelligence-applications");
 const {CLINICAL_SPECIALTY_ASSIGNMENTS}=load("medical-intelligence-specialty");
 
-test("Six expanded disease-specific cases with seven sourced clinical interpretations each",()=>{
- assert.equal(EXPANDED_SPECIALIST_CASES.length,6);
- assert.equal(new Set(EXPANDED_SPECIALIST_CASES.map(c=>c.cycleId)).size,6);
- assert.equal(new Set([...base.SPECIALIST_CASES,...EXPANDED_SPECIALIST_CASES].map(c=>c.cycleId)).size,9);
+test("Eight expanded disease-specific cases with seven sourced clinical interpretations each",()=>{
+ assert.equal(EXPANDED_SPECIALIST_CASES.length,8);
+ assert.equal(new Set(EXPANDED_SPECIALIST_CASES.map(c=>c.cycleId)).size,8);
+ assert.equal(new Set([...base.SPECIALIST_CASES,...EXPANDED_SPECIALIST_CASES].map(c=>c.cycleId)).size,11);
  const cycleIds=new Set(APPLICATION_CYCLES.map(x=>x.id));
  for(const c of EXPANDED_SPECIALIST_CASES){
   assert.ok(cycleIds.has(c.cycleId),"Not an active FOCUS application: "+c.cycleId);
@@ -66,4 +66,15 @@ test("FDA accelerated approval vs follow-up full approval kept distinct",()=>{
  assert.match(text,/104/);
  assert.match(text,/supplemental BLA/);
  assert.equal(v.completedSpecialistSignoff,false);
+});
+
+test("Retinal lesion surrogate and aldosterone-mediated safety questions stay separate from FDA-verified deficiencies",()=>{
+ const retina=JSON.stringify(expandedSpecialistCaseForCycle("blte-stargardt"));
+ assert.match(retina,/35.7%/);
+ assert.match(retina,/post-hoc/);
+ assert.match(retina,/visual function/);
+ const bp=JSON.stringify(expandedSpecialistCaseForCycle("mlys-lorundrostat"));
+ assert.match(bp,/hyperkalemia/i);
+ assert.match(bp,/does not establish excess serious hyperkalemia/);
+ assert.match(bp,/46%/);
 });
