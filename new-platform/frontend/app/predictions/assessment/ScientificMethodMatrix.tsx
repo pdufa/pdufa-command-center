@@ -4,6 +4,7 @@ import type {AssessmentReview, CatalogMatrix, Evidence, MethodReview, ReviewMatr
 import ScientificInstallationStatus from "./ScientificInstallationStatus";
 import PhaseVerificationPanel from "./PhaseVerificationPanel";
 import PilotPredictionWorkup from "./PilotPredictionWorkup";
+import LivePredictionMonitor from "./LivePredictionMonitor";
 
 const panel = {border: "1px solid #a8c9bc", borderRadius: 9, padding: 14, margin: "12px 0"} as const;
 function SourceLinks({sources}: {sources: Evidence[]}) {
@@ -43,6 +44,11 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
   const [errors, setErrors] = useState<Record<number, string>>({});
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false);
+  const [lastCheckedAt, setLastCheckedAt] = useState<string|null>(null);
+  const [lastChange, setLastChange] = useState<string|null>(null);
+  const refreshRef = useRef<(()=>void)|null>(null);
+  const lastSnapshotRef = useRef<ReviewMatrix|null>(null);
   const [showAllScores, setShowAllScores] = useState(false);
   const [loadingAllScores, setLoadingAllScores] = useState(false);
   const [scoreLoadProgress, setScoreLoadProgress] = useState(0);
@@ -51,16 +57,77 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
   const controller = useRef<AbortController | null>(null);
   useEffect(() => {
     setReview(null); setCatalog(null); setDetails({}); setErrors({}); setError(""); setLoading(true);
+    setRefreshing(false); setLastCheckedAt(null); setLastChange(null); lastSnapshotRef.current=null;
     setShowAllScores(false); setLoadingAllScores(false); setScoreLoadProgress(0); pending.current.clear();
     const abort = new AbortController(); controller.current = abort;
-    fetch("/api/predictions/medical-matrix?nct=" + encodeURIComponent(nct), {cache: "no-store", signal: abort.signal})
-      .then(async response => {
+    let inFlight = false;
+    let disposed = false;
+    async function poll() {
+      if (inFlight || disposed || abort.signal.aborted) return;
+      inFlight = true;
+      setRefreshing(true);
+      try {
+        const response = await fetch("/api/predictions/medical-matrix?nct=" + encodeURIComponent(nct),
+          {cache:"no-store",signal:abort.signal});
         const data = await response.json();
-        if (!response.ok) throw Error(data.error || "Scientific review ledger unavailable");
-        setReview(data.review); setCatalog(data.catalog);
-      }).catch(e => {if (!abort.signal.aborted) setError(e instanceof Error ? e.message : "Scientific review ledger unavailable");})
-      .finally(() => {if (!abort.signal.aborted) setLoading(false);});
-    return () => abort.abort();
+        if (!response.ok) throw Error(data.error || "Isolated review ledger unavailable");
+        // This endpoint performs authenticated, independent backend response checks.
+        // It provides reviewer records, NOT an active prediction-job feed.
+        const nextReview = data.review as ReviewMatrix;
+        const nextCatalog = data.catalog as CatalogMatrix;
+        if (!nextReview || nextReview.nct !== nct || nextReview.totalPositions !== 800 ||
+            !nextCatalog || nextCatalog.nct !== nct || !Array.isArray(nextReview.assessments) ||
+            nextReview.assessments.length !== 40 ||
+            nextReview.counts.SCORED + nextReview.counts.NOT_APPLICABLE > 800)
+          throw Error("Invalid current review snapshot");
+        const prev = lastSnapshotRef.current;
+        if (prev) {
+          const changedPhase = prev.phaseEventId !== nextReview.phaseEventId;
+          const delta = nextReview.counts.SCORED - prev.counts.SCORED;
+          const exclusions = nextReview.counts.NOT_APPLICABLE - prev.counts.NOT_APPLICABLE;
+          const reviewDelta = nextReview.historicalReviewEvents - prev.historicalReviewEvents;
+          const gapDelta = nextReview.recordedGapEvents - prev.recordedGapEvents;
+          if (changedPhase || reviewDelta || gapDelta || delta || exclusions) {
+            const parts = [
+              changedPhase ? "verified phase event changed" : "",
+              delta ? (delta > 0 ? "+" : "") + delta + " graded methods" : "",
+              exclusions ? (exclusions > 0 ? "+" : "") + exclusions + " exclusions" : "",
+              gapDelta ? (gapDelta > 0 ? "+" : "") + gapDelta + " evidence gaps" : "",
+              !delta && !exclusions && reviewDelta ? "review ledger updated" : ""
+            ].filter(Boolean);
+            setLastChange(parts.join(" · "));
+            // Cached method details must not appear current after a real phase/review event.
+            setDetails({}); setErrors({}); setShowAllScores(false); setScoreLoadProgress(0);
+          }
+        }
+        lastSnapshotRef.current=nextReview;
+        if (disposed || abort.signal.aborted) return;
+        setReview(nextReview); setCatalog(nextCatalog); setError("");
+        setLastCheckedAt(new Date().toISOString());
+      } catch (e) {
+        if (!disposed && !abort.signal.aborted)
+          setError(e instanceof Error ? e.message : "Isolated review ledger unavailable");
+      } finally {
+        inFlight=false;
+        if (!disposed && !abort.signal.aborted) {
+          setLoading(false); setRefreshing(false);
+        }
+      }
+    }
+    refreshRef.current = () => {void poll();};
+    void poll();
+    // Poll only while open/visible; a returning tab refreshes immediately.
+    // This avoids excess backend reads and does not invent background processing.
+    const interval = window.setInterval(() => {
+      if (document.visibilityState === "visible") void poll();
+    }, 15000);
+    const onVisibility=()=>{if (document.visibilityState==="visible") void poll();};
+    document.addEventListener("visibilitychange",onVisibility);
+    return () => {
+      disposed=true; window.clearInterval(interval);
+      document.removeEventListener("visibilitychange",onVisibility);
+      refreshRef.current=null; abort.abort();
+    };
   }, [nct]);
   async function loadAssessment(index: number) {
     if (details[index] || pending.current.has(index)) return;
@@ -103,6 +170,9 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
   }
   return <section style={{...panel, background: "#f5faf7"}} aria-label={"Scientific method matrix for " + nct}>
     <h2>Scientific assessment matrix · {nct}</h2>
+    <LivePredictionMonitor nct={nct} review={review} loading={loading}
+      refreshing={refreshing} unavailable={!!error} lastCheckedAt={lastCheckedAt}
+      lastChange={lastChange} refresh={() => refreshRef.current?.()} />
     <PilotPredictionWorkup nct={nct} />
     <button type="button" onClick={openFirstMethods} disabled={!review||!catalog}
       style={{padding:"12px 14px",borderRadius:9,border:"1px solid #218169",background:"#dbf7e9",color:"#154c3f",fontWeight:800,marginBottom:8}}>
@@ -116,8 +186,8 @@ export default function ScientificMethodMatrix({nct}: {nct: string}) {
       <p>Sources retain their review dates and captured-stage receipts. This view has no automated expiry clearance; source freshness, amendments, contradictory evidence and unresolved dependencies require independent re-review. No recorded gap is not proof that evidence is complete.</p>
     </details>
     {loading ? <p role="status">Loading the isolated review ledger…</p> : null}
-    {error ? <p role="alert">{error} No completion count or grade is inferred.</p> : null}
-    {review && catalog ? <div>
+    {error ? <p role="alert">{error} Live source verification failed; cached results are withheld until a successful refresh.</p> : null}
+    {review && catalog && !error ? <div id="live-scientific-review-ledger">
       <p>Current verified phase: <strong>{review.verifiedPhase ?? "NOT VERIFIED"}</strong> · Registry-reported: {catalog.registry.reportedPhases.join(" / ") || "Unknown"} ({catalog.phaseBasis})</p>
       <p>Recorded current-phase method grades: <strong>{review.counts.SCORED} / 800</strong> · Explicit exclusions: {review.counts.NOT_APPLICABLE} · Remaining: {800 - review.counts.SCORED - review.counts.NOT_APPLICABLE}</p>
       <progress aria-label="Recorded current-phase method review positions" max={800} value={review.counts.SCORED + review.counts.NOT_APPLICABLE} />
