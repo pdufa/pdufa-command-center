@@ -704,6 +704,34 @@ async def lifespan(app: FastAPI):
                             "PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_READY status=ERROR error_type=%s",
                             type(triage_exc).__name__,
                         )
+                # Registry facts are separately opt-in, fail closed and do NOT
+                # create reviewer-verified clinical phase or scientific grade events.
+                if (os.getenv("PDUFA_MEDICAL_REGISTRY_RECONCILE_ENABLED","").lower() in ("true","1","yes")
+                        and getattr(app.state, "medical_scientific_triage_ready", False)):
+                    try:
+                        from .medical_registry_reconciliation import (
+                            initialize as initialize_registry_reconcile,
+                            run_selected as run_registry_reconcile,
+                            coverage as registry_reconcile_coverage,
+                        )
+                        initialize_registry_reconcile(ENGINE)
+                        app.state.medical_registry_reconcile_ready = True
+                        _registry_batches = run_registry_reconcile(ENGINE)
+                        _registry_status = registry_reconcile_coverage(ENGINE)
+                        logging.getLogger(__name__).warning(
+                            "PDUFA_MEDICAL_REGISTRY_RECONCILE_COVERAGE status=%s "
+                            "saved=%d/%d new=%d humanPhaseReviews=%d "
+                            "scientificSignoff=False prediction=ABSTAIN certainty=NOT_VALIDATED",
+                            "PASS" if _registry_status["status"] == "COMPLETE_REGISTRY_FACT_CAPTURE"
+                            else "PARTIAL", _registry_status["savedNcts"],
+                            _registry_status["canonicalTrials"],len(_registry_batches),
+                            _registry_status["humanVerifiedClinicalPhases"])
+                    except Exception as registry_exc:
+                        app.state.medical_registry_reconcile_ready = False
+                        logging.getLogger(__name__).error(
+                            "PDUFA_MEDICAL_REGISTRY_RECONCILE_COVERAGE status=ERROR error_type=%s",
+                            type(registry_exc).__name__,
+                        )
                 # Explicit isolated 3-NCT cohort; every run is campaign-idempotent.
                 # No startup jobs or tables are created without the opt-in gate.
                 if os.getenv("PDUFA_MEDICAL_BATCH_AUTORUN", "").lower() in ("true", "1", "yes"):
@@ -842,6 +870,19 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes
     install_scientific_triage_routes(app, lambda: ENGINE,
                                     require_medical_internal_key,
                                     require_medical_scientific_triage_storage)
+
+# ClinicalTrials.gov metadata remains sponsor-reported, never reviewer signoff.
+def require_medical_registry_reconcile_storage() -> None:
+    require_medical_scientific_triage_storage()
+    if not getattr(app.state, "medical_registry_reconcile_ready", False):
+        raise HTTPException(status_code=503, detail="Registry source verification is not ready")
+
+if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED","").lower() in ("true","1","yes")
+        and os.getenv("PDUFA_MEDICAL_REGISTRY_RECONCILE_ENABLED","").lower() in ("true","1","yes")):
+    from .medical_registry_reconciliation import install_routes as install_registry_reconcile_routes
+    install_registry_reconcile_routes(app, lambda: ENGINE,
+                                      require_medical_internal_key,
+                                      require_medical_registry_reconcile_storage)
 
 @app.get("/api/internal/medical-canary-preflight", dependencies=[Depends(require_medical_internal_key)])
 def medical_canary_preflight():
