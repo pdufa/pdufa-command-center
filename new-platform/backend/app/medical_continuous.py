@@ -85,6 +85,8 @@ def initialize(engine):
             ON medical_continuous_runs(nct_id) WHERE status IN ('PENDING','RUNNING')"""))
     from .medical_advanced_runtime import initialize as initialize_advanced
     initialize_advanced(engine)
+    from .medical_on_demand import initialize as initialize_analyze_now
+    initialize_analyze_now(engine)
 
 
 def _read(engine, run_id):
