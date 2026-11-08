@@ -11,6 +11,7 @@ on:
       - 'new-platform/frontend/app/GlobalNavigation.tsx'
       - 'new-platform/frontend/tests/main-install-progress.test.cjs'
       - 'new-platform/backend/app/installation_monitor.py'
+      - 'new-platform/backend/app/data/focus_application_snapshot.json'
       - 'new-platform/backend/tests/test_installation_monitor.py'
       - 'new-platform/backend/app/main.py'
       - '.github/workflows/main-installation-monitor-qa.yml'
