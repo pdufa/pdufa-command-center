@@ -165,3 +165,18 @@ def test_packaged_application_evidence_is_visible_without_postgres(tmp_path):
     assert context["fdaApplicationStatusVerified"] is False
     assert report["storage"]["state"]=="BLOCKED"
     engine.dispose()
+
+
+
+def test_runtime_commit_fingerprint_is_rejected_unless_exact_sha(tmp_path,monkeypatch):
+    engine=db(tmp_path)
+    sha="a"*40
+    monkeypatch.setenv("RENDER_GIT_COMMIT",sha)
+    monkeypatch.setenv("RENDER_GIT_BRANCH","feature/deep-medical-intelligence-preview-20261107")
+    report=monitor.collect(engine,storage_ready=False,require_postgres=True)
+    assert report["services"]["backendDeployment"]["gitSha"]==sha
+    assert report["services"]["backendDeployment"]["source"]=="RENDER_GIT_COMMIT_RUNTIME"
+    monkeypatch.setenv("RENDER_GIT_COMMIT","not-a-commit")
+    bad=monitor.collect(engine,storage_ready=False,require_postgres=True)
+    assert bad["services"]["backendDeployment"]["gitSha"] is None
+    engine.dispose()
