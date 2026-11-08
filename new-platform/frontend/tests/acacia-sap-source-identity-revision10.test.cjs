@@ -51,3 +51,20 @@ test("user-facing scientific review clearly marks a different trial SAP as exclu
   assert.match(panel,/CY 6033 \/ ACACIA-HCM/);
   assert.match(panel,/cross-trial-sap-and-lvef-audit-revision10-20261108\.md/);
 });
+
+test("MAPLE oHCM Nov 14 PDUFA cannot be imported into ACACIA nHCM pilot",()=>{
+  const mapping=revision.regulatoryCycleDisambiguation;
+  assert.equal(mapping.drug,"aficamten");
+  assert.equal(mapping.sameDrugDifferentIndicationsAndCycles,true);
+  assert.equal(mapping.otherApplication.trial,"MAPLE-HCM");
+  assert.equal(mapping.otherApplication.indication,"OBSTRUCTIVE_HCM");
+  assert.equal(mapping.otherApplication.pdufaDate,"2026-11-14");
+  assert.equal(mapping.pilotApplication.trial,"ACACIA-HCM");
+  assert.equal(mapping.pilotApplication.indication,"NONOBSTRUCTIVE_HCM");
+  assert.equal(mapping.pilotApplication.filingStatus,"PLANNED_Q4_2026_NOT_CONFIRMED_FILED");
+  assert.equal(mapping.pilotApplication.pdufaDate,null);
+  assert.equal(mapping.copyingOtherTrialPdufaToPilot,"PROHIBITED");
+  assert.match(panel,/MAPLE-HCM \/ obstructive HCM/);
+  assert.match(panel,/ACACIA-HCM \/ nonobstructive HCM/);
+  assert.match(panel,/no verified PDUFA date/);
+});
