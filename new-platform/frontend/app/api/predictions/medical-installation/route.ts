@@ -12,7 +12,8 @@ export async function GET(req: NextRequest) {
   const base = isolatedMedicalBackend(process.env.PDUFA_MEDICAL_REVIEW_API_BASE_URL);
   // This existing monitor endpoint accepts the ordinary internal key only.
   // It is sent solely to the explicitly selected isolated medical origin.
-  const key = process.env.PDUFA_INTERNAL_API_KEY;
+  const key = process.env.PDUFA_MEDICAL_REVIEW_READ_KEY ??
+    process.env.PDUFA_MEDICAL_INTERNAL_API_KEY ?? process.env.PDUFA_INTERNAL_API_KEY;
   if (!base || !key) return NextResponse.json({error: "Isolated medical installation monitoring is not configured"}, {status: 503, headers});
   try {
     const response = await fetch(base + "/api/internal/installation-monitor", {
