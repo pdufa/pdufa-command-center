@@ -21,6 +21,7 @@ export default function ApplicationsPage(){
  return <main style={{maxWidth:1370,margin:"24px auto",padding:"0 16px 44px",fontFamily:"system-ui,sans-serif",color:ink}}>
   <div style={{fontSize:12,letterSpacing:1,color:"#006452",fontWeight:750}}>FOCUS → APPLICATION IDENTITY → FAILURE INVESTIGATION</div>
   <h1 style={{margin:"9px 0"}}>FDA application and review-cycle intelligence</h1>
+  <p style={{fontWeight:700}}><Link href="/medical-intelligence-preview/adjudication">Independent clinical adjudication of conflicting evidence</Link></p>
   <p style={{fontWeight:700}}><Link href="/medical-intelligence-preview/master-depth">Medical Master Depth — 20 levels × 40 assessments</Link></p>
   <p style={{fontWeight:700}}><Link href="/medical-intelligence-preview/failure-desk">Open failure-first decision desk — latest sourced FDA and clinical objections</Link></p>
   <p style={{lineHeight:1.55}}>Every FOCUS clinical trial must be matched to the <strong>specific drug, indication, NDA/BLA or supplement, and review cycle</strong> before predicting approval, CRL, withdrawal or extension. The 29 NCTs do not equal 29 FDA applications. This page is a dated, cited research inventory, not a validated FDA forecast.</p>
