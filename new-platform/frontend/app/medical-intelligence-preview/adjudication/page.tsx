@@ -16,7 +16,8 @@ const card={padding:16,border:"1px solid "+line,borderRadius:12,background:"#fff
 const small={fontSize:13,lineHeight:1.6,color:muted} as const;
 const dateRange=(d:string|null)=>d||"No confirmed current goal";
 function Claim({claim}:{claim:AdjudicationClaim}){
- const label=claim.type==="FDA_PUBLIC_APPROVAL"?"FDA official existing approval":
+ const label=claim.type==="CONFERENCE_ABSTRACT"?"Scientific conference abstract (not full article)":
+  claim.type==="FDA_PUBLIC_APPROVAL"?"FDA official existing approval":
   claim.type==="FDA_ACTION_LETTER"?"Direct FDA action / CRL":
   claim.type==="SEC_SPONSOR_FILING"?"SEC-filed sponsor evidence":
   claim.type==="FDA_REVIEWER"?"FDA reviewer analysis":
