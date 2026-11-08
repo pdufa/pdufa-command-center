@@ -135,7 +135,7 @@ export function buildInstallationProgress(
  ]);
  add("medical","Standalone Deep Medical Intelligence",[
    from("medical.code","Independent research framework","VERIFIED",
-     "Evidence-gated medical framework is imported independently of legacy RAAS and surveys.","Medical application source code"),
+     "Evidence-gated, 12-level medical framework operates independently of retired scoring and survey architectures.","Medical application source code"),
    from("medical.application-map","Backend packaged 29-NCT application context",
      applications.state==="VALID"&&applications.focusNctCount===focus.records.length&&
        applications.coveredNctCount===focus.records.length?"VERIFIED":
