@@ -53,6 +53,7 @@ export default async function RegistryCoveragePage(){
  return <main style={{maxWidth:1390,margin:"26px auto",padding:"0 16px 42px",fontFamily:"system-ui,sans-serif",color:slate}}>
   <div style={{fontSize:12,fontWeight:750,color:teal,letterSpacing:1}}>POOL → FOCUS → INDEPENDENT INTELLIGENCE</div>
   <h1 style={{marginBottom:5}}>All-FOCUS registry coverage</h1>
+  <p style={{fontWeight:700}}><Link href="/medical-intelligence-preview/master-depth">Deep medical Master investigation: 20 levels / 40 assessments</Link></p>
   <p style={{lineHeight:1.55}}>One batch request checks all {ids.length} exact FOCUS NCT identifiers against ClinicalTrials.gov. This is the <strong>registry evidence inventory</strong>, not a completed FDA review or approval prediction.</p>
   <p style={{fontSize:13,color:muted}}>FOCUS snapshot {focus.asOf}; reviewed-source ledger {REVIEW_AS_OF}. ClinicalTrials.gov is a public registry that does not disclose all FDA review, clinical study report or manufacturing records.</p>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(175px,1fr))",gap:12,marginTop:17}}>
