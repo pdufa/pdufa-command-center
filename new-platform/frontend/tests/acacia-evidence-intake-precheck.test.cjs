@@ -161,3 +161,20 @@ test("UI hashes locally but sends JSON metadata only; API enforces origin, sessi
   assert.doesNotMatch(api,/export async function (PUT|PATCH|DELETE)/);
   assert.doesNotMatch(api,/sendMail|gmail|writeFile|INSERT INTO|update_file|medical_ledger|fetch\(/i);
 });
+
+test("encrypted vault is accurately labeled staged-only and never falsely claims active storage",()=>{
+  const ui=fs.readFileSync(path.join(root,
+    "app/predictions/assessment/PilotEncryptedEvidenceVaultStatus.tsx"),"utf8");
+  const parent=fs.readFileSync(path.join(root,
+    "app/predictions/assessment/PilotPredictionWorkup.tsx"),"utf8");
+  assert.match(ui,/STAGED IN BACKEND CODE — NOT ACTIVATED/);
+  assert.match(ui,/AES-256-GCM/);
+  assert.match(ui,/not connected to this browser or storing documents yet/);
+  assert.match(ui,/NOT ACTIVE/);
+  assert.match(ui,/Original documents deposited:/);
+  assert.match(ui,/0\/800/);
+  assert.match(ui,/FDA prediction/);
+  assert.match(ui,/does not support Neon branchable object storage/);
+  assert.match(ui,/No keys are stored/);
+  assert.match(parent,/<PilotEncryptedEvidenceVaultStatus nct=\{nct\}\/\>/);
+});
