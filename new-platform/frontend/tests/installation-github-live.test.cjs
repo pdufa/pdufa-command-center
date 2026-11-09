@@ -63,7 +63,7 @@ test("no running GitHub Actions is a verified observation only when source API s
  const result=await fetchLiveGithubActions("token",now,api.fn);
  assert.equal(result.state,"VERIFIED");
  assert.deepEqual(result.running,[]);
- assert.match(result.scope,/no Codex worker/);
+ assert.match(result.scope,/No Codex heartbeat/);
 });
 test("API auth failure cannot be mistaken for no activity",async()=>{
  const api=fakeFetch({
