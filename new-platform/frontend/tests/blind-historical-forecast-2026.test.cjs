@@ -61,7 +61,7 @@ test("historical INO challenge remains a read-only archive, not an active panel"
   const page=fs.readFileSync(path.join(root,"app/predictions/assessment/page.tsx"),"utf8");
   assert.doesNotMatch(page,/BlindHistoricalPredictionPanel/);
   assert.doesNotMatch(chart,/INO-3107|blindHistoricalForecasts2026|blindHistoricalComparisons2026/);
-  assert.match(page,/<AssessmentStatusPies \\{\\.\\.\\.pies\\}\\/>/);
+  assert.ok(page.includes("<AssessmentStatusPies {...pies}/>"));
   const model=fs.readFileSync(path.join(root,"lib/focus-assessment-chart.ts"),"utf8");
   assert.doesNotMatch(model,/blindHistoricalForecasts2026|blindHistoricalComparisons2026/);
 });
