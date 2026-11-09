@@ -1,0 +1,76 @@
+name: MAIN R61 verify read-only R60 original-source dashboard
+
+# Draft medical development branch only. No automatic writes to production,
+# clinical-grade ledger, POOL/FOCUS roster or historical Track B.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r61-original-source-dashboard.yml
+      - new-platform/backend/scripts/verify_r61_original_dashboard_snapshot.py
+      - new-platform/frontend/data/focus-r60-original-source-trial-detail.json
+      - new-platform/frontend/lib/focus-r60-original-trial-research.ts
+      - new-platform/frontend/app/predictions/FocusOriginalSourceChallengeR60.tsx
+      - new-platform/frontend/app/predictions/FocusOriginalSourceChallengeR60.module.css
+      - new-platform/frontend/app/predictions/page.tsx
+      - new-platform/frontend/tests/focus-r60-original-source-view.test.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r61-source-only-ui
+  cancel-in-progress: false
+
+jobs:
+  verify-original-research-and-responsive-preview:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Preserve the exact independent 29-NCT / 23-cycle FOCUS universe
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Restore exact previously verified original 29-trial R60 research archive
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42709199117
+          name: main-r60-original-primary-safety-review-42709199117
+          path: ${{ runner.temp }}/r61/source
+      - name: Verify all 29 displayed trial details against pinned original R60 bytes
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/verify_r61_original_dashboard_snapshot.py \
+            --original "$RUNNER_TEMP/r61/source/FOCUS_29_ORIGINAL_PRIMARY_AND_AE_SOURCE_CHALLENGE_R60.json" \
+            --frontend new-platform/frontend/data/focus-r60-original-source-trial-detail.json
+      - name: Install and run original source UI tests, typechecking, and build
+        working-directory: new-platform/frontend
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r60-original-source-view.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Preserve source validation receipt in GitHub Actions log
+        run: |
+          set -euo pipefail
+          echo "## R61 original source-to-UI acceptance" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Exact pinned R60 original 29 unique NCT and 23 application research data checked against compact development UI snapshot. No source tampering, medical reviewer writes, statistical/CMC clinical signoffs or FDA probabilities." >> "$GITHUB_STEP_SUMMARY"
+          echo "Research-only; all official future FDA approval/CRL and review-timing calls ABSTAIN. Production untouched." >> "$GITHUB_STEP_SUMMARY"
