@@ -17,7 +17,9 @@ export default function PilotMethodEvidenceReadiness(){
       document.body.appendChild(a);
       try{a.click();}finally{a.remove();}
     }finally{
-      URL.revokeObjectURL(url);
+      // Safari/iOS may start saving asynchronously after the synthetic click.
+      // Revoke only after the download has had time to start.
+      window.setTimeout(()=>URL.revokeObjectURL(url),30_000);
     }
   };
   return <section aria-label="Revision 37 evidence-to-reviewer handoff for all 800 pilot methods" style={panel}>
