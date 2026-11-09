@@ -139,15 +139,14 @@ def compare(previous:dict|None,current:dict,previous_root:Path|None,
     for url in sorted(set(prev)|set(cur)):
         old=prev.get(url)
         new=cur.get(url)
+        original_data=_read_verified_source(previous_root,old) if old is not None else None
+        current_data=_read_verified_source(current_root,new) if new is not None else None
         if old is None or new is None:
             status="SOURCE_URL_ADDED_OR_REMOVED_REVIEW_REQUIRED"
-            original_data=current_data=None
+        elif old.get("sha256")==new.get("sha256") and old.get("status")==new.get("status"):
+            status="RAW_SOURCE_BYTES_UNCHANGED"
         else:
-            original_data=_read_verified_source(previous_root,old) if previous is not None else None
-            current_data=_read_verified_source(current_root,new)
-            if old.get("sha256")==new.get("sha256") and old.get("status")==new.get("status"):
-                status="RAW_SOURCE_BYTES_UNCHANGED" # even if source is temporarily inaccessible
-            else:status=_kind(url,old,new,original_data,current_data)
+            status=_kind(url,old,new,original_data,current_data)
         classes[status]+=1
         output.append({
           "url":url,
