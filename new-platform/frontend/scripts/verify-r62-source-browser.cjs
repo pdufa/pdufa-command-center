@@ -97,7 +97,9 @@ async function verifyProfile(browser, profile) {
     await applications.waitFor({state:"visible"});
     assert.equal(await applications.locator("details").count(),23,
       "23 provisional application groups must render exactly once");
-    assert.match(await applications.innerText(),/Validated FDA forecasts\s*0/);
+    assert.equal((await applications.getByText("Validated FDA forecasts",{exact:true})
+      .locator("..").locator("strong").innerText()).trim(),"0",
+      "application group review must show zero validated FDA forecasts");
     const applicationSearch=applications.getByRole("searchbox",{
       name:"Find application source evidence"});
     const applicationFilter=applications.getByRole("combobox",{
