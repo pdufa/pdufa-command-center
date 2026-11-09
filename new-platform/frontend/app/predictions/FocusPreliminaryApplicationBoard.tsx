@@ -29,6 +29,11 @@ export default function FocusPreliminaryApplicationBoard(){
     <div style={{fontSize:11,letterSpacing:1.2,fontWeight:800,color:"#086a50"}}>
       MAIN · NOVEMBER 9 2026 · PRIORITY 1 · SOURCE-LINKED RESEARCH</div>
     <h2 style={{fontSize:23,margin:"8px 0 4px"}}>29 FOCUS trials / 23 provisional FDA application assessments</h2>
+    <p style={{margin:"4px 0 10px",fontSize:13}}>
+      <Link href="/api/predictions/focus-preliminary" style={{color:"#08684b",fontWeight:800}}>
+        Download the complete dated 29-trial / 23-application research record (JSON)
+      </Link>
+    </p>
     <p style={{...small,margin:"4px 0 12px"}}>
       This is a dated <strong>research-only preliminary assessment</strong> across all applications using already authored Phase 3 evidence dossiers and issuer/regulator links.
       Research leans are <strong>not validated FDA outcome predictions</strong>. No probability, accuracy, certainty grade or independent clinical authorization is claimed.

@@ -65,6 +65,9 @@ export function buildFocusApplicationPreliminaries(){
        !Array.isArray(caseFile.dimensions)||caseFile.dimensions.length<7)
        throw Error("MISSING_UNREVIEWED_APPLICATION_DOSSIER");
     const support=caseFile.dimensions[cut.support],counter=caseFile.dimensions[cut.risk];
+    if((support.sourceDate&&support.sourceDate>PRELIMINARY_AS_OF)||
+       (counter.sourceDate&&counter.sourceDate>PRELIMINARY_AS_OF))
+       throw Error("POST_CUTOFF_CLINICAL_SOURCE_REFUSED");
     if(!support||!counter||!support.observedClinicalEvidence||!counter.observedClinicalEvidence||
        !support.neededToResolve||!counter.neededToResolve)
        throw Error("MISSING_EXPLICIT_BENEFIT_RISK_EVIDENCE");
@@ -128,7 +131,8 @@ export function buildFocusApplicationPreliminaries(){
     registrySource:"https://clinicaltrials.gov/study/"+r.nct,
     applicationCycleIds:[...linked.get(r.nct)!],
     trialIndependentClinicalReview:false,
-    FDAForecast:"ABSTAIN" as const
+    FDAForecast:linked.get(r.nct)!.every(id=>applications.some(a=>a.id===id&&a.observedAction!==null))?
+      "NOT_APPLICABLE_ALREADY_OBSERVED" as const:"ABSTAIN" as const
   }));
   const researchCalls=applications.reduce((a,c)=>{a[c.preliminaryResearchLean]=(a[c.preliminaryResearchLean]||0)+1;return a;},
      {} as Record<ResearchLean,number>);

@@ -67,6 +67,8 @@ test("MYQORZO oHCM approval observed December 2025; ACACIA NHCM remains separate
  assert.equal(next.observedAction,null);
  assert.equal(next.originalStage,"PLANNED");
  assert.equal(next.reportedGoal,null);
+ assert.equal(d.trials.find(x=>x.nct==="NCT05767346").FDAForecast,"NOT_APPLICABLE_ALREADY_OBSERVED");
+ assert.equal(d.trials.filter(x=>x.FDAForecast==="ABSTAIN").length,28);
  assert.deepEqual(old.ncts,["NCT05767346"]);
  assert.deepEqual(next.ncts,["NCT06081894"]);
 });
@@ -92,5 +94,6 @@ test("PREDICTIONS visibly renders 29/23 distinct assessments and separate outcom
  assert.match(ui,/Official FDA prediction/);
  assert.match(ui,/ABSTAIN/);
  assert.ok(page.includes("<FocusPreliminaryApplicationBoard/>"));
+ assert.ok(ui.includes("/api/predictions/focus-preliminary"));
  assert.doesNotMatch(ui,/\bPOST\b|submitClinicalGrade|recordOfficialFDAForecast/);
 });
