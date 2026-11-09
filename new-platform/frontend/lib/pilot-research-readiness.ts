@@ -47,7 +47,7 @@ export function evaluatePilotReadiness(value:ResearchSnapshot):{points:number;ou
     if(!g||g.id!==expected||!g.title||!g.detail||
       !["RESEARCH_OBSERVED","NOT_VERIFIED"].includes(g.state))return null;
     if(g.state==="RESEARCH_OBSERVED"){
-      if(g.sourceId!==SOURCES[expected]||!validLink(value.sources[g.sourceId]))return null;
+      if(!g.sourceId||g.sourceId!==SOURCES[expected]||!validLink(value.sources[g.sourceId]))return null;
       // The official protocol must retain its content digest and capture receipt.
       if(g.id==="ORIGINAL_PROTOCOL"&&
         (value.sources[g.sourceId].retrieved!==true||
