@@ -4,6 +4,7 @@ import {useMemo,useState} from "react";
 import pilot from "../../../data/acacia-pilot-prediction-workup-20261108.json";
 import {buildPhase3ReviewQueue,type QueueStatus} from "../../../lib/acacia-phase3-review-queue";
 import PilotOriginalHistoryEvidence from "./PilotOriginalHistoryEvidence";
+import PilotMethodEvidenceReadiness from "./PilotMethodEvidenceReadiness";
 
 const card={border:"1px solid #a6c8bd",borderRadius:12,padding:13,background:"#fff",margin:"12px 0"} as const;
 type Filter="ALL"|QueueStatus;
@@ -33,6 +34,7 @@ export default function PilotResearchReviewQueue({nct}:{nct:string}){
     <h3 style={{margin:"0 0 8px"}}>Phase III scientific review queue · 18 research method leads</h3>
     {!queue?<p role="alert" style={{fontWeight:800}}>Research source queue withheld: evidence identity, original source or clinical review status changed.</p>:<>
       <PilotOriginalHistoryEvidence/>
+      <PilotMethodEvidenceReadiness/>
       <details style={{border:"1px solid #c9b98b",borderRadius:9,padding:11,background:"#fffaf0",marginBottom:12}}
         aria-label="Original source gap audit and scientific safety reconciliation">
         <summary style={{cursor:"pointer",fontWeight:800}}>
