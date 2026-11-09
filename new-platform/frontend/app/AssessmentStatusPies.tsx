@@ -110,7 +110,8 @@ export default function AssessmentStatusPies({
         <p style={{fontSize:13,lineHeight:1.55,color:"#4b655d",margin:"0 0 12px"}}>
           <strong>{latest.ticker} · {latest.applicationCycleId}</strong><br/>
           {latest.drug} · {latest.indication}<br/>
-          Frozen: {new Date(latest.completedAt).toLocaleString("en-US",{timeZone:"America/Los_Angeles"})}
+          Frozen: {new Date(latest.completedAt).toLocaleString("en-US",{timeZone:"America/Los_Angeles"})}<br/>
+          Forecast ID: {latest.predictionId}
         </p>
         <Pie
           slices={latest.decisionVerdict!=="AWAITING_DECISION"?latest.decisionComparisonSlices:latest.probabilitySlices}
