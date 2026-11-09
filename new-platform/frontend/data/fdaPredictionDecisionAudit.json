@@ -1,6 +1,38 @@
 {
   "schemaVersion": 1,
-  "asOf": null,
+  "asOf": "2026-11-09T20:44:09Z",
   "provenance": "INDEPENDENT_FDA_DECISION_AUDIT",
-  "records": []
+  "records": [
+    {
+      "predictionId": "HARMONI-SMMT-PDUFA-2026-11-14-V1",
+      "applicationCycleId": "SMMT-HARMONI-US-BLA-2026-NOV14",
+      "ticker": "SMMT",
+      "ncts": [
+        "NCT06396065"
+      ],
+      "drug": "Ivonescimab + chemotherapy",
+      "indication": "EGFR-mutated locally advanced/metastatic nonsquamous NSCLC after EGFR TKI",
+      "status": "COMPLETED",
+      "completedAt": "2026-11-09T20:44:09Z",
+      "predictedOutcome": "CRL",
+      "calibrationStatus": "NOT_VALIDATED",
+      "approvalProbability": null,
+      "crlProbability": null,
+      "evaluationCohort": "PROSPECTIVE",
+      "actualOutcome": "PENDING",
+      "actualDecisionAt": null,
+      "actualDecisionSourceUrl": null,
+      "actualDecisionVerified": false,
+      "researchOnly": true,
+      "evidenceCutoff": "2026-11-09",
+      "sourceFreezeCommit": "80254f5644dfab055bcca0eec28617888caeb293",
+      "sourceFreezeUrl": "https://github.com/pdufa/pdufa-command-center/commit/80254f5644dfab055bcca0eec28617888caeb293",
+      "exactTrialRegistryUrl": "https://clinicaltrials.gov/study/NCT06396065",
+      "applicationStatusSourceUrl": "https://www.sec.gov/Archives/edgar/data/1599298/000159929826000090/smmt-20260930.htm",
+      "pdufaDate": "2026-11-14",
+      "assessmentStatus": "INITIAL_SOURCE_LINKED_RESEARCH_NOT_ADJUDICATED",
+      "confidenceStatus": "NO_VALIDATED_NUMERICAL_PROBABILITY",
+      "note": "Frozen preliminary qualitative CRL-lean research call only; not a statistically validated, independently adjudicated clinical forecast."
+    }
+  ]
 }
