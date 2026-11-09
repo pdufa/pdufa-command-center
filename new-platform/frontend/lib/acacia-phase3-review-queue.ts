@@ -79,7 +79,6 @@ const NUMERIC=new Set(["5.1:L12","5.3:L19"]);
 // Archived exact-run research findings. A live registry record may later differ.
 // These are evidence-search observations, never clinical grades or file absence proof.
 const AUDIT_RUN=42555289486;
-const SAP_AUDIT_AS_OF="2026-11-09T03:14Z";
 const SAP_GAP="2026-11-09 archived source audit: current official registry response did not list an SAP; final locked SAP remains unverified, and journal supplement fetches were unavailable to the automated checker.";
 const SAFETY_GAP="2026-11-09 archived sponsor source: 2 HF SAE cases associated with LVEF below 50% plus 10 other treated HF SAE cases = 12 versus 3 placebo; secondary 11/1 source definition remains unreconciled.";
 const evidenceAuditNote=(assessment:string):string|null=>
