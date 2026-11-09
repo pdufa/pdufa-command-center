@@ -103,7 +103,7 @@ def test_duplicate_json_properties_and_unapproved_source_paths_refused(tmp_path)
 def test_distinct_original_units_same_action_day_not_collapsed():
     a,c=snapshots()
     second=deepcopy(a["records"][0]["submissions_as_published"][0])
-    second["submission_number"]="2"
+    second["submission_number_as_published"]="2"
     a["records"][0]["submissions_as_published"].append(second)
     report,rows=module.research_refresh(a,c,BENCH,CUTOFF)
     assert report["researchCandidateRows"]==3
