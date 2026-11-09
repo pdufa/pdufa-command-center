@@ -88,6 +88,17 @@ def confirm_provisional_score_page(client):
     parser.feed(page.decode('utf-8', 'replace'))
     visible = ' '.join(parser.parts)
     normalized = re.sub(r'\s+', ' ', visible)
+    demand('PROVISIONAL RESEARCH ASSESSMENT' in normalized and
+           'Initial scientific evidence direction' in normalized and
+           'Hypothetical FDA pathway simulator' in normalized and
+           'Reset to observed state' in normalized and
+           'Actual FDA prediction: ABSTAIN' in normalized and
+           'No numeric probabilities or confidence intervals' in normalized,
+           'PROVISIONAL_HYPOTHETICAL_PANEL_NOT_RENDERED')
+    print(json.dumps({'stage':'PROVISIONAL_FDA_PATHWAY_UI_READ','status':'PASS',
+       'nct':PILOT,'researchOnly':True,'publishedPrimaryPositive':2,
+       'sourceMappedMethods':18,'authorizedGrades':0,
+       'hypotheticalOnly':True,'fdaOutcome':'ABSTAIN','accuracy':'NOT_CALIBRATED'}),flush=True)
     demand('Quantitative scientific evidence' in normalized and
            'Assessment 5.1 · Scientific method 12' in normalized and
            'Assessment 5.3 · Scientific method 19' in normalized,
