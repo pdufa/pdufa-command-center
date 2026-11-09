@@ -132,10 +132,26 @@ test("LOCATE LIVE opens the real GitHub source link rather than scrolling",()=>{
  assert.match(link,/<span>LOCATE LIVE<\/span>/);
  assert.doesNotMatch(link,/onClick=|goToLive|locateSnapshot|scrollIntoView/);
  assert.match(ui,/const githubActionsUrl="https:\/\/github\.com\/pdufa\/pdufa-command-center\/actions";/);
- assert.match(ui,/const liveSourceUrl=activeGithub &&/);
+ assert.match(ui,/const liveSourceUrl=active\?\.evidenceUrl\?\?\(activeGithub &&/);
  assert.match(ui,/\.test\(activeGithub\.url\)/);
  assert.match(ui,/\?activeGithub\.url:githubActionsUrl/);
  assert.match(ui,/VIEW LIVE STATUS ON THIS PAGE/);
  assert.match(ui,/LOCATE LIVE opens/);
  assert.match(css,/\.navigator a\.liveButton/);
+});
+
+test("ACTIVE CURSOR requires source-verified task-step identity and stays non-certifying",()=>{
+ const route=fs.readFileSync(path.join(app,"api/installation-audit/live-task-evidence/route.ts"),"utf8");
+ assert.match(route,/const task=githubActions\.taskExecution/);
+ assert.match(route,/row\.id===task\.taskId&&row\.label===task\.label/);
+ assert.match(route,/activeExecution=known&&task\?\.state==="RUNNING"/);
+ assert.match(route,/evidenceUrl:task\.runUrl,acceptanceGranted:false/);
+ assert.match(ui,/c\.source!=="GITHUB_ACTIONS_STEP"/);
+ assert.match(ui,/c\.acceptanceGranted!==false/);
+ assert.match(ui,/RUNNING \(GitHub CI verification\)/);
+ assert.match(ui,/not establish Codex activity or grant task acceptance/);
+ assert.match(ui,/Latest task-specific checkpoint \(NOT LIVE\)/);
+ assert.match(ui,/lastVerifiedTaskExecution\.state/);
+ assert.match(ui,/active\?\.evidenceUrl/);
+ assert.match(ui,/Open the exact running workflow evidence/);
 });

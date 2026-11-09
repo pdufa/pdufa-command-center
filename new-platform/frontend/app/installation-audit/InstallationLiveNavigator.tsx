@@ -13,7 +13,11 @@ type TaskEvidence={
 type ExecutionCursor={
  state:"RUNNING"|"STOPPED"|"UNKNOWN";taskId:string|null;
  observedAt:string|null;runId?:string|null;operation?:string|null;
+ source?:"GITHUB_ACTIONS_STEP";evidenceUrl?:string;acceptanceGranted?:false;
 };
+type TaskStepHistory={taskId:string;label:string;state:"RUNNING"|"SUCCEEDED"|"FAILED";
+ runId:number;runUrl:string;job:string;step:string;source:"GITHUB_ACTIONS_STEP";
+ observedAt:string;stepStartedAt:string|null;stepCompletedAt:string|null;acceptanceGranted:false;};
 type WorkflowEvidence={
  id:number;name:string;branch:string;status:string;conclusion:string|null;
  startedAt:string|null;updatedAt:string|null;url:string;
@@ -28,6 +32,7 @@ type LiveGithubEvidence={
 type TaskResponse={
  schemaVersion:number;checkedAt:string;registryUpdatedAt?:string;
  tasks:Record<string,TaskEvidence>;activeExecution?:ExecutionCursor|null;
+ lastVerifiedTaskExecution?:TaskStepHistory|null;
  githubActions?:LiveGithubEvidence;checks?:Record<string,{status:string;checkedAt:string;note:string}>;
 };
 type ScienceQuestion={
@@ -72,6 +77,8 @@ function getRunningGithub(snapshot:TaskResponse|null):WorkflowEvidence|null{
 function getActiveExecution(snapshot:TaskResponse|null):ExecutionCursor|null{
  const c=snapshot?.activeExecution;
  if(!c||c.state!=="RUNNING"||!c.taskId||!c.observedAt)return null;
+ if(c.source!=="GITHUB_ACTIONS_STEP"||c.acceptanceGranted!==false||
+  !c.evidenceUrl||!/^https:\/\/github\.com\/pdufa\/pdufa-command-center\/actions\/runs\/[1-9]\d*$/.test(c.evidenceUrl))return null;
  if(!taskList.some(t=>t.id===c.taskId))return null;
  const when=Date.parse(c.observedAt);
  if(!Number.isFinite(when)||Math.abs(Date.now()-when)>90000)return null;
@@ -122,9 +129,9 @@ export default function InstallationLiveNavigator(){
  const active=useMemo(()=>getActiveExecution(audit),[audit]);
  const activeGithub=useMemo(()=>getRunningGithub(audit),[audit]);
  const githubActionsUrl="https://github.com/pdufa/pdufa-command-center/actions";
- const liveSourceUrl=activeGithub &&
+ const liveSourceUrl=active?.evidenceUrl??(activeGithub &&
   /^https:\/\/github\.com\/pdufa\/pdufa-command-center\/actions\/runs\/[1-9]\d*$/.test(activeGithub.url)
-   ?activeGithub.url:githubActionsUrl;
+   ?activeGithub.url:githubActionsUrl);
  const locateSnapshot=useCallback((snapshot:TaskResponse|null)=>{
   // A GitHub workflow proves actual GitHub Actions execution only. Never
   // fabricate a Codex worker ID or a verified scientific grading task.
@@ -136,7 +143,7 @@ export default function InstallationLiveNavigator(){
   setSection("present");
   setChosenTask(destination);
   setLiveNotice(cursor
-    ?"Located current LIVE installation task "+cursor.taskId+"."
+    ?"Located verified running GitHub installation check "+cursor.taskId+". This is not a Codex execution heartbeat or full task acceptance."
     :workflow
      ?"Located an active GitHub Actions workflow: "+workflow.name+". Exact Codex / scientific task identity is not verified."
      :snapshot?.githubActions?.state==="VERIFIED"
@@ -221,8 +228,9 @@ export default function InstallationLiveNavigator(){
    </button>
    <a className={styles.liveButton}
     href={liveSourceUrl} target="_blank" rel="noopener noreferrer"
-    aria-label={activeGithub?"LOCATE LIVE: open verified running GitHub workflow "+activeGithub.name+
-     " in a new tab":"LOCATE LIVE: open GitHub Actions workflow page in a new tab; no verified running workflow link"}>
+    aria-label={active?"LOCATE LIVE: open GitHub verification run for installation task "+active.taskId:
+     activeGithub?"LOCATE LIVE: open observed running GitHub workflow "+activeGithub.name:
+     "LOCATE LIVE: open GitHub Actions page; no verified active installation task"}>
     <svg className={styles.locateIcon} width="22" height="22" viewBox="0 0 24 24"
      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
      aria-hidden="true">
@@ -241,8 +249,9 @@ export default function InstallationLiveNavigator(){
    </label>
   </div>
   <p style={{...info,margin:"5px 0 12px"}}>
-   LOCATE LIVE opens {activeGithub?
-    <><strong>the observed running workflow</strong> ({activeGithub.name})</>:
+   LOCATE LIVE opens {active?
+    <><strong>task {active.taskId} in its verified GitHub execution run</strong></>:
+    activeGithub?<><strong>the observed GitHub workflow</strong> ({activeGithub.name}), not a confirmed task-specific step</>:
     <><strong>GitHub Actions</strong> (no verified active run link available)</>}
    {" "}in a new tab. VIEW LIVE STATUS is the separate on-page jump.
   </p>
@@ -253,14 +262,28 @@ export default function InstallationLiveNavigator(){
    style={{...panel,border:"2px solid #5aa9ae",marginBottom:12,scrollMarginTop:92}}>
    <strong>ACTIVE CURSOR</strong>
    {active?<>
-    <p role="status"><strong>RUNNING: {active.taskId}</strong> · {taskList.find(t=>t.id===active.taskId)?.label}</p>
-    <p style={info}>Run {active.runId??"not recorded"} · {active.operation??"Operation not identified"} ·
-     heartbeat {safeTime(active.observedAt)}</p>
+    <p role="status"><strong>RUNNING (GitHub CI verification): {active.taskId}</strong> · {taskList.find(t=>t.id===active.taskId)?.label}</p>
+    <p style={info}>Verified step: {active.operation??"Not identified"} · Run #{active.runId??"unknown"} ·
+     observed {safeTime(active.observedAt)}.</p>
+    {active.evidenceUrl&&<p><a href={active.evidenceUrl} target="_blank" rel="noopener noreferrer">
+     Open the exact running workflow evidence</a></p>}
+    <p style={info}>This establishes only a live CI validation step for the mapped task.
+     It does not establish Codex activity or grant task acceptance.</p>
    </>:<>
     <p role="status"><strong>No verified active installation task is currently reported.</strong></p>
-    <p style={info}>This source does not yet provide an authenticated, fresh, task-ID-level Codex execution
-     heartbeat. The cursor will not jump to a guess or a merely queued task. Last evidence registry:
-     {" "}{safeTime(audit?.registryUpdatedAt)}.</p>
+    <p style={info}>No matching in-progress task-specific GitHub installation-smoke step was observed.
+     Codex has no connected task heartbeat here, so its activity cannot be inferred. Historical
+     "In Progress" rows and queued workflows are not displayed as live tasks.</p>
+    {audit?.lastVerifiedTaskExecution&&<p style={info}>
+     <strong>Latest task-specific checkpoint (NOT LIVE):</strong>
+     {" "}{audit.lastVerifiedTaskExecution.taskId} · {audit.lastVerifiedTaskExecution.label} ·
+     {" "}{audit.lastVerifiedTaskExecution.state} ·
+     {" "}{safeTime(audit.lastVerifiedTaskExecution.stepCompletedAt)}
+     {" "}· <a href={audit.lastVerifiedTaskExecution.runUrl} target="_blank"
+      rel="noopener noreferrer">See completed GitHub run</a>.
+     This is step evidence, not full acceptance.
+    </p>}
+    <p style={info}>Last historical requirements registry: {safeTime(audit?.registryUpdatedAt)}.</p>
    </>}
   </div>
   <section id="installation-github-execution" tabIndex={-1}
