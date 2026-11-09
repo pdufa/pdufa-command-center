@@ -11,6 +11,7 @@ on:
       - 'new-platform/backend/app/medical_original_evidence_vault.py'
       - 'new-platform/backend/app/medical_original_evidence_vault_http.py'
       - 'new-platform/backend/app/medical_original_evidence_key_recovery.py'
+      - 'new-platform/backend/app/medical_original_evidence_permissions.py'
       - 'new-platform/backend/tests/test_medical_original_evidence_vault*.py'
       - 'new-platform/backend/requirements.txt'
       - '.github/workflows/main-medical-vault-postgres-acceptance.yml'
@@ -75,7 +76,8 @@ jobs:
             new-platform/backend/tests/test_medical_original_evidence_vault_postgres.py \
             new-platform/backend/tests/test_medical_original_evidence_key_recovery.py \
             new-platform/backend/tests/test_medical_original_evidence_vault.py \
-            new-platform/backend/tests/test_medical_original_evidence_vault_http.py
+            new-platform/backend/tests/test_medical_original_evidence_vault_http.py \
+            new-platform/backend/tests/test_medical_original_evidence_vault_least_privilege.py
           echo "All evidence materials and cryptographic keys were synthetic and ephemeral."
           echo "No Render/Neon schema change, no active vault, 0 clinical grades."
       - name: Record nonsecret acceptance status
@@ -85,9 +87,10 @@ jobs:
           {
             echo "## MAIN encrypted evidence vault — disposable PostgreSQL 16"
             echo ""
-            echo "- PostgreSQL 16 real DDL, immutable UPDATE/DELETE/TRUNCATE triggers and version uniqueness verified"
+            echo "- PostgreSQL 16 DDL and native append-only triggers; separate owner and runtime credentials verified"
             echo "- AES-256-GCM authenticated original-byte encryption/decryption and SHA-256 verified"
-            echo "- Separate synthetic key recovery envelope restored encryption key without publishing secrets"
+            echo "- Runtime may SELECT and INSERT encrypted evidence, but cannot UPDATE/DELETE/TRUNCATE/ALTER/DROP/GRANT or create tables"
+            echo "- Synthetic key-recovery envelope restored an encryption key without disclosing real secrets"
             echo "- No original trial documents, Neon/Render writes, reviewer events or FDA grades"
             echo "- Source branch remains draft and Render vault flag remains disabled"
           } >> "$GITHUB_STEP_SUMMARY"
