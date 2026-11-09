@@ -20,3 +20,14 @@ test("global navigation includes a working FDA prediction destination",()=>{
   assert.match(page,/NOT VALIDATED/);
   assert.doesNotMatch(page,/approvalProbability:\s*(?:\d|0\.)/);
 });
+
+test("ASSESMENTS tab opens the existing FOCUS scientific review ledger without claiming scores are complete",()=>{
+  const nav=fs.readFileSync(path.join(app,"GlobalNavigation.tsx"),"utf8");
+  assert.ok(nav.includes('label:"ASSESMENTS",href:"/predictions/assessment"'));
+  assert.ok(nav.indexOf('label:"PREDICTIONS"')<nav.indexOf('label:"ASSESMENTS"'));
+  assert.ok(nav.indexOf('label:"ASSESMENTS"')<nav.indexOf('label:"TOOLS"'));
+  const page=fs.readFileSync(path.join(app,"predictions/assessment/page.tsx"),"utf8");
+  assert.match(page,/FOCUS_SPECIALTY_ASSESSMENT_QUEUE/);
+  assert.match(page,/NOT ADJUDICATED/);
+  assert.match(page,/ABSTAIN/);
+});
