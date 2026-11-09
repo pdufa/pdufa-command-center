@@ -129,18 +129,60 @@ jobs:
             echo "::error::Render target identity, repository, or auto-deploy-off state differs; no deployment attempted."
             exit 1
           fi
-          payload="$(jq -n --arg sha "$GITHUB_SHA" '{commitId: $sha, clearCache: "do_not_clear"}')"
-          reply="$(curl --fail --silent --show-error --max-time 45 -X POST \
-            -H "Authorization: Bearer $RENDER_API_KEY" \
-            -H "Content-Type: application/json" \
-            --data "$payload" "$base/deploys")"
-          deploy_id="$(jq -r '.id // empty' <<< "$reply")"
-          if [[ -z "$deploy_id" || ! "$deploy_id" =~ ^dep-[A-Za-z0-9]+$ ]]; then
-            echo "::error::Render did not return a valid deploy ID."
+          # Idempotent retry: a previous accepted deployment may have returned
+          # 202 Queued (without an ID) and must not be submitted again.
+          # Render's list endpoint wraps each entry in {deploy: ..., cursor: ...}.
+          find_existing_deploy() {
+            local list
+            list="$(curl --fail --silent --show-error --retry 3 --max-time 30 \
+              -H "Authorization: Bearer $RENDER_API_KEY" "$base/deploys?limit=30")"
+            jq -er --arg sha "$GITHUB_SHA" '
+              if type != "array" then error("Unexpected Render deploy list") else
+                [ .[] | (.deploy // .)
+                  | select(.commit.id == $sha)
+                  | select(.status == "created" or .status == "queued"
+                      or .status == "build_in_progress" or .status == "pre_deploy_in_progress"
+                      or .status == "update_in_progress" or .status == "live")
+                  | .id
+                  | select(type == "string" and test("^dep-[A-Za-z0-9]+$"))
+                ] | first // empty
+              end' <<< "$list" || test "$?" -eq 4
+          }
+          deploy_id="$(find_existing_deploy)"
+          if [[ -n "$deploy_id" ]]; then
+            echo "Reusing already submitted exact-SHA isolated deploy: $deploy_id"
+          else
+            payload="$(jq -n --arg sha "$GITHUB_SHA" '{commitId: $sha, clearCache: "do_not_clear"}')"
+            response_file="$(mktemp)"
+            trap 'rm -f "$response_file"' EXIT
+            http_code="$(curl --fail-with-body --silent --show-error --max-time 45 -X POST \
+              -o "$response_file" -w '%{http_code}' \
+              -H "Authorization: Bearer $RENDER_API_KEY" \
+              -H "Content-Type: application/json" \
+              --data "$payload" "$base/deploys")"
+            if [[ "$http_code" != "201" && "$http_code" != "202" ]]; then
+              echo "::error::Unexpected Render deploy response status $http_code; not retrying submission."
+              exit 1
+            fi
+            # The official API usually returns .id for 201; tolerate nested
+            # .deploy.id as some Render response formats use this wrapper.
+            deploy_id="$(jq -r '.id // .deploy.id // empty' "$response_file")"
+            if [[ -z "$deploy_id" && "$http_code" == "202" ]]; then
+              echo "Render queued the exact-SHA deployment without a deploy ID."
+              # Poll the safe GET list instead of submitting a duplicate POST.
+              for attempt in $(seq 1 30); do
+                sleep 6
+                deploy_id="$(find_existing_deploy)"
+                [[ -n "$deploy_id" ]] && break
+              done
+            fi
+          fi
+          if [[ ! "$deploy_id" =~ ^dep-[A-Za-z0-9]+$ ]]; then
+            echo "::error::No verifiable exact-SHA deploy ID. Inspect Render deploy history before any retry."
             exit 1
           fi
           echo "deploy_id=$deploy_id" >> "$GITHUB_OUTPUT"
-          echo "Render accepted exact-SHA preview deploy: $deploy_id"
+          echo "Render exact-SHA isolated deployment identified: $deploy_id"
       - name: Confirm live state and deployed commit
         shell: bash
         run: |
