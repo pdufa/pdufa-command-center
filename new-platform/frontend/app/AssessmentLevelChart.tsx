@@ -12,8 +12,8 @@ type LevelRow={
 };
 
 /**
- * The active chart deliberately excludes the retired INO, GSK/IONS, PHAR and ABBV
- * historical assessments. Their original frozen and source records remain in
+ * The active chart deliberately excludes earlier outcome-exposed historical
+ * assessments. Their original frozen and source records remain in
  * read-only repository archives and must never be promoted into live accuracy.
  *
  * AZN is the one explicit user-authorized, outcome-exposed historical example.
