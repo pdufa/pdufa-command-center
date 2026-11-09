@@ -38,6 +38,13 @@ test("exact Phase 3 pilot registry identity matches; wrong trial and phase are r
     designModule:{phases:["PHASE3"]}
   }};
   assert.equal(live.registryIdentityValid(sample),true);
+  const hyphenated=structuredClone(sample);
+  hyphenated.protocolSection.identificationModule.briefTitle =
+    "A Trial to Evaluate Aficamten in Symptomatic Non-Obstructive Hypertrophic Cardiomyopathy";
+  hyphenated.protocolSection.identificationModule.officialTitle =
+    "Phase 3 Trial in Non-Obstructive Hypertrophic Cardiomyopathy";
+  assert.equal(live.registryIdentityValid(hyphenated),true,
+    "ClinicalTrials.gov official Non-Obstructive title must not false-alert");
   const wrong=structuredClone(sample);
   wrong.protocolSection.identificationModule.nctId="NCT11111111";
   assert.equal(live.registryIdentityValid(wrong),false);
