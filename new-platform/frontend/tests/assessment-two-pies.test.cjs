@@ -111,8 +111,8 @@ test("two chart panels show real accuracy semantics and fail closed on empty aud
   assert.equal((html.match(/role="img"/g)||[]).length,2);
   assert.match(html,/Overall prediction accuracy/);
   assert.match(html,/No verified comparisons yet/);
-  assert.match(html,/Accurate: <!-- -->0/);
-  assert.match(html,/Not Accurate: <!-- -->0/);
+  assert.match(html,/Accurate: 0/);
+  assert.match(html,/Not Accurate: 0/);
   assert.match(html,/FDA decisions/);
   assert.match(html,/No independently validated probabilities yet|NO COMPLETED PREDICTION/);
   assert.match(html,/Last completed prediction/);
@@ -127,14 +127,14 @@ test("verified latest prediction switches from probability forecast to accurate/
   assert.equal(accurate.latest.decisionVerdict,"ACCURATE");
   assert.deepEqual(accurate.latest.decisionComparisonSlices.map(x=>x.value),[1,0]);
   const matchedHtml=renderToStaticMarkup(React.createElement(Pies,accurate));
-  assert.match(matchedHtml,/Prediction validity: <!-- -->Accurate/);
+  assert.match(matchedHtml,/Prediction validity: Accurate/);
   const notAccurate=summarizeFdaPredictionAccuracy([create({
     predictedOutcome:"CRL",approvalProbability:0.25,crlProbability:0.75
   })]);
   assert.equal(notAccurate.latest.decisionVerdict,"NOT_ACCURATE");
   assert.deepEqual(notAccurate.latest.decisionComparisonSlices.map(x=>x.value),[0,1]);
   const missedHtml=renderToStaticMarkup(React.createElement(Pies,notAccurate));
-  assert.match(missedHtml,/Prediction validity: <!-- -->Not Accurate/);
+  assert.match(missedHtml,/Prediction validity: Not Accurate/);
   const pending=summarizeFdaPredictionAccuracy([create({
     actualDecisionVerified:false
   })]);
