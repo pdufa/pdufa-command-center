@@ -39,6 +39,8 @@ test("current production audit does not invent completed predictions or historic
   assert.equal(model.incorrect,0);
   assert.equal(model.accuracyPercent,null);
   assert.equal(model.latest,null);
+  assert.deepEqual(model.overallTrend,[]);
+  assert.deepEqual(model.latestTrend,[]);
   assert.equal(model.comparisonSlices.reduce((sum,slice)=>sum+slice.value,0),0);
   assert.deepEqual(model.comparisonSlices.map(x=>x.label),["Accurate","Not Accurate"]);
   assert.deepEqual(model.comparisonSlices.map(x=>x.value),[0,0]);
@@ -108,7 +110,14 @@ test("two chart panels show real accuracy semantics and fail closed on empty aud
   const html=renderToStaticMarkup(React.createElement(Pies,getAssessmentPieData()));
   assert.match(html,/data-testid="total-assessments-pie"/);
   assert.match(html,/data-testid="latest-prediction-pie"/);
-  assert.equal((html.match(/role="img"/g)||[]).length,2);
+  assert.equal((html.match(/role="img"/g)||[]).length,4);
+  assert.match(html,/data-testid="overall-accuracy-line"/);
+  assert.match(html,/data-testid="latest-outlook-line"/);
+  assert.match(html,/Overall competitiveness trend/);
+  assert.match(html,/Latest prediction outlook trend/);
+  assert.match(html,/At least two different FDA decision dates/);
+  assert.match(html,/At least two dated, independently calibrated prediction versions/);
+  assert.doesNotMatch(html,/<polyline /);
   assert.match(html,/Overall prediction accuracy/);
   assert.match(html,/No verified comparisons yet/);
   assert.match(html,/Accurate: 0/);
@@ -148,4 +157,87 @@ test("verified latest prediction switches from probability forecast to accurate/
 test("historical not-blind backtests stay excluded from the current prediction-accuracy engine",()=>{
   const source=fs.readFileSync(path.join(root,"lib/focus-assessment-chart.ts"),"utf8");
   assert.doesNotMatch(source,/historical_assessed_decisions|raas_|prediction_engine_history/);
+});
+
+test("total competitiveness trend matches dated FDA decisions and exact same cohort as accuracy pie",()=>{
+  const compared=summarizeFdaPredictionAccuracy([
+    create({predictionId:"a-first",actualDecisionAt:"2026-02-01T11:00:00Z"}),
+    create({predictionId:"a-revised",completedAt:"2026-01-20T18:00:00Z",
+      actualDecisionAt:"2026-02-01T11:00:00Z",predictedOutcome:"CRL"}),
+    create({predictionId:"b",applicationCycleId:"cycle-b",ticker:"BBB",
+      predictedOutcome:"CRL",approvalProbability:0.2,crlProbability:0.8,
+      actualDecisionAt:"2026-02-01T17:00:00Z"}),
+    create({predictionId:"c",applicationCycleId:"cycle-c",ticker:"CCC",
+      actualDecisionAt:"2026-03-15T17:00:00Z"}),
+    create({predictionId:"d",applicationCycleId:"cycle-d",ticker:"DDD",
+      actualDecisionAt:"2026-05-15T17:00:00Z",actualDecisionVerified:false}),
+    create({predictionId:"e",applicationCycleId:"cycle-e",ticker:"EEE",
+      completedAt:"2026-06-15T17:00:00Z",
+      actualDecisionAt:"2026-04-15T17:00:00Z"})
+  ]);
+  assert.equal(compared.compared,3);
+  assert.equal(compared.correct,3);
+  assert.equal(compared.incorrect,0);
+  assert.deepEqual(compared.overallTrend.map(x=>x.date),["2026-02-01","2026-03-15"]);
+  assert.deepEqual(compared.overallTrend.map(x=>x.compared),[2,3]);
+  assert.deepEqual(compared.overallTrend.map(x=>x.accuratePct),[100,100]);
+  assert.equal(compared.overallTrend.at(-1).accuratePct,compared.accuracyPercent);
+});
+
+test("line chart correctly plots misses, chronological cumulative percentages and no invented baseline",()=>{
+  const model=summarizeFdaPredictionAccuracy([
+    create({predictionId:"miss",applicationCycleId:"cycle-miss",
+      predictedOutcome:"CRL",approvalProbability:0.3,crlProbability:0.7,
+      actualDecisionAt:"2026-02-01T12:00:00Z"}),
+    create({predictionId:"match",applicationCycleId:"cycle-match",
+      actualDecisionAt:"2026-04-01T12:00:00Z"})
+  ]);
+  assert.deepEqual(model.overallTrend.map(p=>p.accuratePct),[0,50]);
+  assert.deepEqual(model.overallTrend.map(p=>p.notAccuratePct),[100,50]);
+  assert.equal(model.accuracyPercent,50);
+  const markup=renderToStaticMarkup(React.createElement(Pies,model));
+  assert.equal((markup.match(/<polyline /g)||[]).length,2);
+  assert.match(markup,/data-testid="overall-accuracy-line"/);
+  assert.match(markup,/0%/);
+  assert.match(markup,/100%/);
+});
+
+test("last competitiveness trend is exact-cycle, time-ordered, calibrated, excludes post-FDA decision versions",()=>{
+  const rows=[
+    create({predictionId:"first",completedAt:"2026-01-01T12:00:00Z",
+      approvalProbability:0.80,crlProbability:0.20}),
+    create({predictionId:"second",completedAt:"2026-01-05T12:00:00Z",
+      approvalProbability:0.60,crlProbability:0.40}),
+    create({predictionId:"unvalidated",completedAt:"2026-01-07T12:00:00Z",
+      calibrationStatus:"NOT_VALIDATED",approvalProbability:0.55,crlProbability:0.45}),
+    create({predictionId:"bad-sum",completedAt:"2026-01-08T12:00:00Z",
+      approvalProbability:0.55,crlProbability:0.56}),
+    create({predictionId:"other",applicationCycleId:"other-cycle",
+      completedAt:"2026-01-09T12:00:00Z",
+      approvalProbability:0.95,crlProbability:0.05}),
+    create({predictionId:"last",completedAt:"2026-01-10T12:00:00Z",
+      approvalProbability:0.45,crlProbability:0.55}),
+  ];
+  const trend=summarizeFdaPredictionAccuracy(rows);
+  assert.equal(trend.latest.applicationCycleId,"cycle-a");
+  assert.deepEqual(trend.latestTrend.map(x=>x.predictionId),["first","second","last"]);
+  assert.deepEqual(trend.latestTrend.map(x=>x.approvalPct),[80,60,45]);
+  assert.deepEqual(trend.latestTrend.map(x=>x.crlPct),[20,40,55]);
+  const html=renderToStaticMarkup(React.createElement(Pies,trend));
+  assert.equal((html.match(/<polyline /g)||[]).length,2);
+  const late=summarizeFdaPredictionAccuracy([...rows,create({
+    predictionId:"after-fda",completedAt:"2026-05-15T12:00:00Z",
+    actualDecisionAt:"2026-05-10T12:00:00Z",
+    approvalProbability:0.99,crlProbability:0.01
+  })]);
+  assert.deepEqual(late.latestTrend.map(x=>x.predictionId),["first","second","last"]);
+});
+
+test("a single calibrated prediction snapshot is not a manufactured line trend",()=>{
+  const one=summarizeFdaPredictionAccuracy([create()]);
+  assert.equal(one.latestTrend.length,1);
+  const html=renderToStaticMarkup(React.createElement(Pies,one));
+  assert.match(html,/Latest prediction outlook trend/);
+  assert.match(html,/No verified trend yet/);
+  assert.doesNotMatch(html,/<polyline /);
 });
