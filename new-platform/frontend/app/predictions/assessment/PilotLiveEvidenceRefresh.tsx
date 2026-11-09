@@ -135,10 +135,14 @@ export default function PilotLiveEvidenceRefresh({nct}:{nct:string}){
         Open evidence-check run history and archived receipts
       </a>
       <p style={{...caption,margin:"9px 0 0"}}>
-        <strong>Nightly schedule: PREPARED, NOT ACTIVE.</strong> The 8:17 PM Pacific schedule runs
-        only after separately approved activation on GitHub's default branch.
-        Current draft-branch checks run when the relevant code changes or by authorized manual launch.
+        <strong>Nightly schedule: CONFIGURED ON MAIN.</strong> The independent public-only
+        workflow is installed for 8:17 PM Pacific daily. Its first default-branch
+        push test passed with a saved source-check artifact; its first clock-triggered
+        scheduled run has not yet been observed.
+        <a href="https://github.com/pdufa/pdufa-command-center/actions/runs/42550358445"
+          target="_blank" rel="noopener noreferrer"> View successful main-branch activation test</a>.
         The on-screen 15-minute refresh works separately while PREDICTIONS remains open.
+        Clinical-review grading remains disabled.
       </p>
     </details>
     <p style={{...caption,margin:"9px 0 0"}}>
