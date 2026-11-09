@@ -144,6 +144,24 @@ test("original-source receipt provenance is mapped to SAP and HF safety work, ne
   assert.match(csv,/secondary 11\/1 source definition remains unreconciled/);
   assert.equal(csv.trimEnd().split("\r\n").length,19);
 });
+test("archived alternate-source failures and sponsor data route never imply an acquired SAP",()=>{
+  const q=evaluate(clone());
+  assert.ok(q);
+  const a=q.alternativeSourceRecovery;
+  assert.equal(a.archivedAuditRun,42556948533);
+  assert.equal(a.sourceCheckDate,"2026-11-09");
+  assert.deepEqual(Object.values(a.publicRetrievalStatuses),["UNAVAILABLE","UNAVAILABLE","UNAVAILABLE"]);
+  assert.equal(a.sponsorResearchContact,"medicalaffairs@cytokinetics.com");
+  assert.equal(a.originalDataRequestPolicy,"SUBJECT_TO_RESEARCH_ELIGIBILITY_AND_SPONSOR_REVIEW");
+  assert.match(a.officialDataSharingUrl,/nejmoa2603021_data-sharing\.pdf/);
+  assert.match(a.secondaryResponderUrl,/PMC13674601/);
+  assert.equal(a.finalLockedPrimarySapAuthenticated,false);
+  assert.equal(a.primarySensitivityRecalculated,false);
+  assert.equal(a.hfSafetySourcesReconciled,false);
+  assert.equal(a.automaticRequestSent,false);
+  assert.equal(q.summary.officialClinicalGrades,0);
+  assert.equal(q.fdaPrediction,"ABSTAIN");
+});
 test("queue is authenticated, GET-only, and downloadable from the iPhone pilot screen",()=>{
   const api=fs.readFileSync(path.join(root,"app/api/predictions/medical-phase3-review-queue/route.ts"),"utf8");
   const ui=fs.readFileSync(path.join(root,"app/predictions/assessment/PilotResearchReviewQueue.tsx"),"utf8");
@@ -156,6 +174,10 @@ test("queue is authenticated, GET-only, and downloadable from the iPhone pilot s
   assert.match(api,/text\/csv/);
   assert.match(api,/reviewQueueCsv\(queue\)/);
   assert.doesNotMatch(api,/export async function POST/);
+  assert.match(ui,/Alternative source recovery/);
+  assert.match(ui,/access failures, not evidence/);
+  assert.match(ui,/subject to access timing and/);
+  assert.match(ui,/no request has been sent/);
   assert.match(ui,/Original-source gap audit/);
   assert.match(ui,/42555289486/);
   assert.match(ui,/NOT RECONCILED/);
