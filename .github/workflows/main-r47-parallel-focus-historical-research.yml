@@ -1,4 +1,4 @@
-name: MAIN R47 parallel FOCUS and historical original-source research
+name: MAIN R47 Track A FOCUS original research (independent)
 
 # Both independent jobs are eligible to run at the same time: no needs edges.
 # Scheduled triggers are only active on GitHub's DEFAULT branch (main) if/when
@@ -21,7 +21,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: main-r47-parallel-research-${{ github.ref }}
+  group: main-r47-focus-research-${{ github.ref }}
   cancel-in-progress: false
 
 jobs:
@@ -104,77 +104,5 @@ jobs:
         with:
           name: main-r47-focus-research-track-a-${{ github.run_id }}
           path: ${{ runner.temp }}/r47-focus/
-          retention-days: 90
-          if-no-files-found: warn
-
-  historical-nda-bla-backtest-evidence-research:
-    name: B — original FDA historical case discovery and leakage-controlled backtest readiness
-    if: github.repository == 'pdufa/pdufa-command-center'
-    runs-on: ubuntu-latest
-    timeout-minutes: 24
-    env:
-      PYTHONPATH: new-platform/backend
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-      - uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-      - name: Run independent source-census and historical replay safety tests
-        shell: bash
-        run: |
-          set -euo pipefail
-          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          python -m pip install pytest
-          cd new-platform/backend
-          PYTHONPATH=. python -m pytest -q tests/test_parallel_focus_historical_r47.py tests/test_hop_blinded_phase3_backtest.py tests/test_hop_fda_source_recovery_r38.py tests/test_hop_fda_action_candidate_universe.py
-          PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
-      - name: Retrieve fresh original FDA published product and selected CRL source archives
-        shell: bash
-        run: |
-          set -euo pipefail
-          mkdir -p "$RUNNER_TEMP/r47-history/approved" "$RUNNER_TEMP/r47-history/crl" "$RUNNER_TEMP/r47-history/derived"
-          python new-platform/backend/scripts/collect_hop_drugsfda.py --output-dir "$RUNNER_TEMP/r47-history/approved"
-          python new-platform/backend/scripts/collect_hop_openfda_crl.py --output-dir "$RUNNER_TEMP/r47-history/crl"
-      - name: Rebuild segregated historical FDA action-source research cohort candidates
-        shell: bash
-        run: |
-          set -euo pipefail
-          python new-platform/backend/scripts/refresh_hop_fda_action_candidates.py \
-            --approved "$RUNNER_TEMP/r47-history/approved/drugsfda_approved_registry_quarantined.json" \
-            --crl "$RUNNER_TEMP/r47-history/crl/fda_crl_published_quarantined.json" \
-            --out "$RUNNER_TEMP/r47-history/derived" \
-            --as-of "$(date -u +%Y-%m-%d)"
-      - name: Evaluate strict original-publication historical replay readiness; do not invent accuracy
-        shell: bash
-        run: |
-          set -euo pipefail
-          python new-platform/backend/scripts/build_historical_source_checkpoint_r47.py \
-            --candidates "$RUNNER_TEMP/r47-history/derived/r38_fda_source_candidates.json" \
-            --receipt "$RUNNER_TEMP/r47-history/derived/r38_fda_source_receipt.json" \
-            --output "$RUNNER_TEMP/r47-history/historical_replay_readiness.json"
-          python - <<'PY'
-          import os,json
-          from pathlib import Path
-          p=Path(os.environ["RUNNER_TEMP"])/"r47-history/historical_replay_readiness.json"
-          r=json.loads(p.read_bytes())
-          assert r["completeConsecutiveOriginalFilingCohort"] is False
-          assert r["exactCycleOutcomesAdjudicated"]==0
-          assert r["pairedIndependentHistory"]==0
-          assert r["prospectiveAccuracy"] is None
-          assert r["calibration"] is None
-          assert r["automaticAccuracyOrHundredPercentClaimAuthorized"] is False
-          assert r["productionWriteAuthorized"] is False
-          line=f'Track B: {r["researchSourceActionCandidates"]} FDA publication-source candidates; 0 adjudicated complete-case backtests, real accuracy UNKNOWN, cohort qualification outstanding.'
-          print(line)
-          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write("## Concurrent Track B: historical original FDA evidence\n"+line+"\n")
-          PY
-      - name: Preserve historical original published FDA source and segregated unqualified cases
-        if: always()
-        uses: actions/upload-artifact@v4
-        with:
-          name: main-r47-history-research-track-b-${{ github.run_id }}
-          path: ${{ runner.temp }}/r47-history/
           retention-days: 90
           if-no-files-found: warn
