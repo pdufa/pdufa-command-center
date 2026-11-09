@@ -108,6 +108,14 @@ def confirm_provisional_score_page(client):
            'SAP_AND_HF_SOURCE_RECONCILIATION_PANEL_NOT_RENDERED')
     demand(b'actions/runs/42555289486' in page,
            'SOURCE_RECONCILIATION_RECEIPT_LINK_NOT_RENDERED')
+    demand('Original evidence acquisition' in normalized and
+           'Expand six original evidence requests' in normalized and
+           'Download unsent inquiry draft' in normalized and
+           'Open versioned acquisition packet' in normalized and
+           'No request has been sent' in normalized,
+           'ORIGINAL_EVIDENCE_HANDOFF_NOT_RENDERED')
+    demand(b'/api/predictions/medical-evidence-acquisition?nct=NCT06081894' in page,
+           'ORIGINAL_EVIDENCE_ACQUISITION_ENDPOINT_NOT_LINKED')
     demand('Alternative source recovery' in normalized and
            'final locked primary SAP' in normalized and
            'no request has been sent' in normalized and
@@ -193,6 +201,8 @@ def main():
     demand(status == 401, 'ANONYMOUS_REVIEWER_HANDOFF_NOT_REJECTED')
     status, _ = request(anon, '/api/predictions/medical-phase3-review-queue?nct=' + PILOT)
     demand(status == 401, 'ANONYMOUS_REVIEW_QUEUE_NOT_REJECTED')
+    status, _ = request(anon, '/api/predictions/medical-evidence-acquisition?nct=' + PILOT)
+    demand(status == 401, 'ANONYMOUS_ACQUISITION_PACKET_NOT_REJECTED')
     status, _ = request(anon, '/api/internal/medical-assessments/coverage', backend=True)
     demand(status == 401, 'ANONYMOUS_BACKEND_NOT_REJECTED')
     client = build_opener(NoRedirect(), HTTPCookieProcessor(http.cookiejar.CookieJar()))
@@ -202,6 +212,45 @@ def main():
     demand(status == 200, 'AUTHORIZED_TEST_LOGIN_FAILED')
     print(json.dumps({'stage':'NORMAL_DASHBOARD_LOGIN','status':'PASS'}), flush=True)
     confirm_provisional_score_page(client)
+    status, evidence = request(client, '/api/predictions/medical-evidence-acquisition?nct=' + PILOT)
+    demand(status == 200 and evidence.get('schema') == 'MAIN_ACACIA_EVIDENCE_ACQUISITION_HANDOFF_V1'
+           and evidence.get('nct') == PILOT
+           and evidence.get('protocol') == 'CY 6033'
+           and evidence.get('requestCount') == 6
+           and evidence.get('mappedMethodPositionsCovered') == 18
+           and evidence.get('unmappedPositionsUnreviewed') == 782
+           and evidence.get('requestDeliveryStatus') == 'DRAFT_ONLY_NOT_SENT'
+           and evidence.get('approvedClinicalGrades') == 0
+           and evidence.get('independentPhaseSignoffs') == 0
+           and evidence.get('externallyAuthenticatedNewDocuments') == 0
+           and evidence.get('fdaPrediction') == 'ABSTAIN'
+           and evidence.get('accuracy') == 'NOT_CALIBRATED',
+           'EVIDENCE_ACQUISITION_HANDOFF_SCHEMA_OR_SAFETY_FAILED')
+    requests = evidence.get('requests',[])
+    all_positions = set(sum((x.get('mappedMethodPositions',[]) for x in requests),[]))
+    demand(len(requests) == 6 and len(all_positions) == 18
+           and len({x.get('requestId') for x in requests}) == 6
+           and all(x.get('acquisitionState') == 'DRAFT_NOT_SENT'
+              and x.get('evidenceState') == 'NOT_AUTHENTICATED_FOR_CURRENT_REVIEW'
+              and x.get('independentReviewerSigned') is False
+              and x.get('officialClinicalGrade') is None for x in requests),
+           'SOURCE_REQUEST_NOT_SIX_COMPLETE_UNSCORED_REQUIREMENTS')
+    status, _ = request(client, '/api/predictions/medical-evidence-acquisition?nct=NCT00000000')
+    demand(status == 422,'WRONG_TRIAL_ACQUISITION_ACCEPTED')
+    request_url = SITE + '/api/predictions/medical-evidence-acquisition?nct=' + PILOT + '&format=txt'
+    with client.open(Request(request_url, headers={'Accept':'text/plain'}), timeout=30) as response:
+        text_blob = response.read(30_001)
+        demand(response.code == 200 and len(text_blob) <= 30_000
+               and 'text/plain' in response.headers.get('content-type','')
+               and b'DRAFT' in text_blob and b'NOT SENT' in text_blob
+               and b'1. Final locked' in text_blob
+               and b'6. Source-verified FDA' in text_blob
+               and b'medicalaffairs@cytokinetics.com' in text_blob,
+               'ACQUISITION_UNSENT_TEXT_DRAFT_INVALID')
+    print(json.dumps({'stage':'ORIGINAL_EVIDENCE_ACQUISITION_HANDOFF','status':'PASS',
+       'trial':PILOT,'requestedOriginalEvidenceGates':6,
+       'methodsCovered':18,'sourceDocumentsAuthenticated':0,'emailsSent':0,
+       'officialClinicalGrades':0,'fdaPrediction':'ABSTAIN'}),flush=True)
     status, review_queue = request(client, '/api/predictions/medical-phase3-review-queue?nct=' + PILOT)
     demand(status == 200 and review_queue.get('schema') == 'MAIN_ACACIA_PHASE3_REVIEW_QUEUE_V1'
            and review_queue.get('nct') == PILOT and
