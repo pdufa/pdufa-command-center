@@ -10,7 +10,7 @@ import http.cookiejar,json,os,re,sys
 from urllib.error import HTTPError,URLError
 from urllib.request import HTTPCookieProcessor,HTTPRedirectHandler,Request,build_opener
 
-SITE="https://pdufa-new-dashboard-6e5ucrhl3-pdufa.vercel.app"
+SITE="https://pdufa-new-dashboard-i28lt92el-pdufa.vercel.app"
 ROSTER="/api/predictions/focus-preliminary"
 SOURCES="/api/predictions/focus-source-readiness"
 URL="/predictions"
@@ -122,6 +122,29 @@ def main():
         "otherEventTermRows":202,"armGroups":28,
         "originalSourceArtifactId":13695013486,"clinicalGrades":0,
         "releasedFdaProbability":None,"readOnly":True}),flush=True)
+
+    # R45: the source retrieval proves CURRENT registry text equivalence only.
+    # Do not treat current registered endpoints as a frozen pre-readout locked SAP.
+    for phrase in [
+        "Current registry primary endpoint reconciliation",
+        "registered primary outcomes",
+        "posted result tables",
+        "exact current title/time-frame matches",
+        "Expand all 29 trial-level current registered / posted primary outcome counts",
+        "Not a locked SAP validation",
+        "Original pre-readout registry history",
+        "clinical signoffs: 0",
+        "validated FDA forecasts: 0/23",
+    ]:
+        check(phrase.lower() in rendered.lower(),
+              "R45_ENDPOINT_PROVENANCE_NOT_VISIBLE_"+re.sub(r"\\W+","_",phrase).upper())
+    check("13697545092" in raw.decode("utf-8","replace"),
+          "R45_PINNED_ORIGINAL_ENDPOINT_RECEIPT_NOT_LINKED")
+    print(json.dumps({"stage":"R45_CURRENT_ENDPOINT_TEXT_READ","status":"PASS",
+         "exactNcts":29,"provisionalApplications":23,
+         "registeredCurrentPrimary":45,"postedPrimary":16,"exactCurrentTextMatches":16,
+         "lockedSapVerified":False,"independentClinicalScores":0,
+         "validatedFdaForecasts":0,"historicalBacktests":0,"readOnly":True}),flush=True)
     print(json.dumps({"stage":"FOCUS_29_23_SIGNED_IN_HTML","status":"PASS",
         "researchOnly":True,"futureModelStatus":"ABSTAIN"}),flush=True)
     code,kind,raw=get(client,ROSTER,"application/json")
