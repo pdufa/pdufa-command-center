@@ -9,9 +9,11 @@ on:
       - new-platform/backend/tests/test_parallel_focus_historical_r47.py
       - new-platform/backend/scripts/build_historical_source_identity_audit_r48.py
       - new-platform/backend/tests/test_historical_source_identity_r48.py
+      - new-platform/backend/scripts/crosscheck_historical_fda_action_sources_r49.py
+      - new-platform/backend/tests/test_historical_fda_action_source_crosscheck_r49.py
       - new-platform/backend/scripts/research_workstream_history.py
       - new-platform/backend/scripts/select_research_history_run.py
-      - new-platform/backend/tests/test_research_workstream_history.py
+      - new-platform/backend/tests/test_research_workstream_history.py tests/test_historical_fda_action_source_crosscheck_r49.py
       - new-platform/backend/app/hop_probability_calibration.py
       - new-platform/backend/tests/test_hop_probability_calibration.py
   workflow_dispatch:
@@ -102,6 +104,17 @@ jobs:
             --candidates "$RUNNER_TEMP/r47-history/derived/r38_fda_source_candidates.json" \
             --receipt "$RUNNER_TEMP/r47-history/derived/r38_fda_source_receipt.json" \
             --out-dir "$RUNNER_TEMP/r47-history/derived"
+      - name: Cross-check original FDA submission and selected published CRL source records
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/crosscheck_historical_fda_action_sources_r49.py \
+            --candidates "$RUNNER_TEMP/r47-history/derived/r38_fda_source_candidates.json" \
+            --receipt "$RUNNER_TEMP/r47-history/derived/r38_fda_source_receipt.json" \
+            --approved "$RUNNER_TEMP/r47-history/approved/drugsfda_approved_registry_quarantined.json" \
+            --crl "$RUNNER_TEMP/r47-history/crl/fda_crl_published_quarantined.json" \
+            --identity "$RUNNER_TEMP/r47-history/derived/postdecision_fda_source_identity_audit.json" \
+            --output "$RUNNER_TEMP/r47-history/derived/r49_postdecision_fda_original_source_crosscheck.json"
       - name: Append Track B research history and source-change review receipts
         shell: bash
         run: |
