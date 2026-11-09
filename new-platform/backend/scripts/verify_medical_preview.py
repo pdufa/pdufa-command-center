@@ -19,6 +19,9 @@ SITE = 'https://pdufa-new-dashboard-gpi564weg-pdufa.vercel.app'
 BACKEND = 'https://pdufa-medical-intelligence-preview.onrender.com'
 PILOT = 'NCT06081894'
 
+# Sanitized network-stage diagnostics only; do not print credentials or response bodies.
+LAST_CHECK = 'NOT_STARTED'
+
 class VerificationError(RuntimeError):
     pass
 
@@ -27,6 +30,8 @@ class NoRedirect(HTTPRedirectHandler):
         raise VerificationError('UNEXPECTED_REDIRECT')
 
 def request(client, path, *, body=None, origin=None, backend=False):
+    global LAST_CHECK
+    LAST_CHECK = ('BACKEND_' if backend else 'PREVIEW_') + path.split('?')[0]
     base = BACKEND if backend else SITE
     if not path.startswith('/') or path.startswith('//'):
         raise VerificationError('INVALID_FIXED_ORIGIN_PATH')
@@ -111,6 +116,8 @@ def confirm_provisional_score_page(client):
         demand('text/html' in reply.headers.get('content-type', ''), 'PREDICTIONS_PAGE_NOT_HTML')
         page = reply.read(5_000_001)
         demand(len(page) <= 5_000_000, 'PREDICTIONS_PAGE_TOO_LARGE')
+    global LAST_CHECK
+    LAST_CHECK = 'PREVIEW_PREDICTIONS_HTML'
     parser = VisibleText()
     parser.feed(page.decode('utf-8', 'replace'))
     visible = ' '.join(parser.parts)
@@ -535,6 +542,7 @@ if __name__ == '__main__':
     except VerificationError as exc:
         print(json.dumps({'status':'BLOCKED','code':str(exc)}))
         sys.exit(1)
-    except (URLError, TimeoutError, ValueError, KeyError, TypeError):
-        print(json.dumps({'status':'BLOCKED','code':'ISOLATED_READ_VERIFICATION_FAILED'}))
+    except (URLError, TimeoutError, ValueError, KeyError, TypeError) as exc:
+        print(json.dumps({'status':'BLOCKED','code':'ISOLATED_READ_VERIFICATION_FAILED',
+            'stage':LAST_CHECK,'errorType':type(exc).__name__}))
         sys.exit(1)
