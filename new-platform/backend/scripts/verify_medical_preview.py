@@ -108,6 +108,13 @@ def confirm_provisional_score_page(client):
            'SAP_AND_HF_SOURCE_RECONCILIATION_PANEL_NOT_RENDERED')
     demand(b'actions/runs/42555289486' in page,
            'SOURCE_RECONCILIATION_RECEIPT_LINK_NOT_RENDERED')
+    demand('Alternative source recovery' in normalized and
+           'final locked primary SAP' in normalized and
+           'no request has been sent' in normalized and
+           'medicalaffairs@cytokinetics.com' in normalized,
+           'ALTERNATIVE_RESEARCH_ACCESS_ROUTE_NOT_RENDERED')
+    demand(b'actions/runs/42556948533' in page,
+           'ALTERNATIVE_PUBLIC_SOURCE_AUDIT_LINK_MISSING')
     demand('Phase III scientific review queue' in normalized and
            'Open all 18 research method leads' in normalized and
            'Export all 18 source leads as CSV' in normalized and
@@ -218,6 +225,18 @@ def main():
                x.get('qualifiedReviewerSignoff') is False and
                x.get('fdaProbability') is None for x in positions),
            'SOURCE_REVIEW_QUEUE_COUNTS_OR_SAFETY_INVALID')
+    alternative=review_queue.get('alternativeSourceRecovery', {})
+    source_states=alternative.get('publicRetrievalStatuses', {})
+    demand(alternative.get('archivedAuditRun') == 42556948533 and
+           alternative.get('sourceCheckDate') == '2026-11-09' and
+           len(source_states) == 3 and
+           set(source_states.values()) == {'UNAVAILABLE'} and
+           alternative.get('sponsorResearchContact') == 'medicalaffairs@cytokinetics.com' and
+           alternative.get('finalLockedPrimarySapAuthenticated') is False and
+           alternative.get('primarySensitivityRecalculated') is False and
+           alternative.get('hfSafetySourcesReconciled') is False and
+           alternative.get('automaticRequestSent') is False,
+           'ALTERNATIVE_SOURCE_AUDIT_OR_ACCESS_POLICY_INVALID')
     audited=[x for x in positions if x.get('sourceGapAuditRun') == 42555289486]
     demand(len(audited) == 12 and
            all(isinstance(x.get('sourceGapAuditNote'),str) and
@@ -243,6 +262,8 @@ def main():
       'nct':PILOT,'sourceMappedLeads':18,'researchCheckedPositions':5,
       'sourceOnlyLeads':13,'notSourceMapped':782,
       'auditedSourceGapPositions':len(audited),
+      'alternateAuditRun':42556948533,'unavailableAlternativeSourceCount':3,
+      'automaticSponsorRequestsSent':0,
       'authorizedClinicalGrades':0,'exportLines':19,'fdaPrediction':'ABSTAIN'}),flush=True)
     status, rubric = request(client, '/api/predictions/medical-phase3-reviewer-handoff?nct=' + PILOT)
     demand(status == 200 and rubric.get('schema') == 'MAIN_PHASE3_REVIEWER_HANDOFF_V1'
