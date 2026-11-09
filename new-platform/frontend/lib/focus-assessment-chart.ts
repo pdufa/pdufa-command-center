@@ -30,6 +30,8 @@ export type PredictionDecisionRecord={
   actualDecisionAt:string|null;
   actualDecisionSourceUrl:string|null;
   actualDecisionVerified:boolean;
+  researchOnly?:boolean;
+  sourceFreezeUrl?:string;
 };
 
 export type PieSlice={
@@ -51,6 +53,8 @@ export type CompletedPrediction={
   decisionVerdict:"ACCURATE"|"NOT_ACCURATE"|"AWAITING_DECISION";
   decisionComparisonSlices:PieSlice[];
   probabilitySlices:PieSlice[];
+  researchOnly:boolean;
+  sourceFreezeUrl:string|null;
 };
 
 export type OverallAccuracyTrendPoint={
@@ -177,6 +181,8 @@ export function summarizeFdaPredictionAccuracy(
     })):[];
   const latest:CompletedPrediction|null=current?{
     predictionId:current.predictionId,
+    researchOnly:current.researchOnly===true,
+    sourceFreezeUrl:validHttps(current.sourceFreezeUrl)?current.sourceFreezeUrl!:null,
     applicationCycleId:current.applicationCycleId,
     ticker:current.ticker,
     ncts:current.ncts,

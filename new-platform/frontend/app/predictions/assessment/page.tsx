@@ -36,6 +36,42 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
       The first step in every actual review is to verify current trial phase, status, intervention and indication.
     </p>
     <AssessmentStatusPies {...pies}/>
+    {pies.latest?.researchOnly&&pies.latest.ticker==="SMMT"&&
+      <section style={{...section,margin:"0 0 22px",background:"#f7faf9"}} aria-label="First prospective 2026 FDA research prediction">
+        <div style={{...label,marginBottom:7}}>FIRST PROSPECTIVE 2026 PDUFA PREDICTION PILOT</div>
+        <h2 style={{fontSize:21,margin:"0 0 5px"}}>SMMT · HARMONi · NCT06396065</h2>
+        <p style={{fontSize:14,lineHeight:1.6,margin:"5px 0"}}>
+          <strong>Predecision research call: CRL lean.</strong> Ivonescimab + chemotherapy
+          for EGFR-mutated advanced nonsquamous NSCLC after EGFR TKI.
+          FDA target action: <strong>November 14, 2026</strong>.
+          Actual FDA decision: <strong>pending verification</strong>.
+        </p>
+        <p style={{fontSize:13,lineHeight:1.6,margin:"7px 0",color:"#516764"}}>
+          Primary OS: HR 0.79, p=0.057 (not statistically significant).
+          Follow-up OS: HR 0.76, nominal p=0.0151.
+          FDA reportedly requires a statistically significant survival benefit;
+          positive PFS and follow-up OS temper uncertainty.
+          This is an uncalibrated, research-only directional forecast, not a completed
+          independent scientific review, signed clinical determination or trading signal.
+        </p>
+        <p style={{fontSize:12,lineHeight:1.7,margin:"9px 0 0"}}>
+          <a href="https://www.sec.gov/Archives/edgar/data/1599298/000159929826000090/smmt-20260930.htm" target="_blank" rel="noopener noreferrer">
+            SEC evidence and FDA-review disclosures
+          </a>
+          {" · "}
+          <a href="https://clinicaltrials.gov/study/NCT06396065" target="_blank" rel="noopener noreferrer">
+            Exact ClinicalTrials.gov trial
+          </a>
+          {" · "}
+          <a href="https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/docs/2026-harmoni-first-prospective-forecast.md" target="_blank" rel="noopener noreferrer">
+            Frozen assessment dossier
+          </a>
+        </p>
+        <p style={{fontSize:12,lineHeight:1.5,color:"#895923",margin:"8px 0 0"}}>
+          This pilot is outside the preserved 29-trial FOCUS list.
+          The roster-gated automatic source worker was not started; no FOCUS membership changed.
+        </p>
+      </section>}
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:10,margin:"15px 0 20px"}}>
       {[
         ["Exact FOCUS trials",FOCUS_SPECIALTY_SUMMARY.ncts],
@@ -54,7 +90,8 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
         All {FOCUS_SPECIALTY_SUMMARY.ncts} current FOCUS NCTs are in the intake queue.
         The {FOCUS_SPECIALTY_SUMMARY.partialClinicalDimensions} specialty positions are authored research interpretations,
         not individually independently reverified findings. Signed clinical adjudications: 0 recorded.
-        Approved numerical FDA forecasts: 0. Approval, CRL and delay remain <strong>ABSTAIN</strong>;
+        For the FOCUS research queue only: approved numerical FDA forecasts: 0.
+        Approval, CRL and delay remain <strong>ABSTAIN</strong>;
         certainty remains <strong>NOT VALIDATED</strong>. Roster snapshot: {FOCUS_SPECIALTY_SUMMARY.rosterAsOf}.
       </p>
       <p style={{fontSize:13,margin:"9px 0 0"}}>

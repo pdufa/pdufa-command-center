@@ -110,7 +110,8 @@ export default function AssessmentStatusPies({
         <p style={{fontSize:13,lineHeight:1.55,color:"#4b655d",margin:"0 0 12px"}}>
           <strong>{latest.ticker} · {latest.applicationCycleId}</strong><br/>
           {latest.drug} · {latest.indication}<br/>
-          Frozen: {new Date(latest.completedAt).toLocaleString("en-US",{timeZone:"America/Los_Angeles"})}
+          Frozen: {new Date(latest.completedAt).toLocaleString("en-US",{timeZone:"America/Los_Angeles"})}<br/>
+          Forecast ID: {latest.predictionId}
         </p>
         <Pie
           slices={latest.decisionVerdict!=="AWAITING_DECISION"?latest.decisionComparisonSlices:latest.probabilitySlices}
@@ -119,7 +120,8 @@ export default function AssessmentStatusPies({
             latest.probabilitySlices.length?
               `Calibrated approval versus CRL probabilities for the most recent completed prediction`:
               `The most recent completed prediction awaits a verified FDA decision and has no validated probability breakdown`}
-          emptyTitle="0" emptySubtitle="verified decisions"
+          emptyTitle={latest.researchOnly?(latest.predictedOutcome==="CRL"?"CRL":"FDA"):"0"}
+          emptySubtitle={latest.researchOnly?"research call":"verified decisions"}
         />
         {latest.decisionVerdict!=="AWAITING_DECISION"?
           <Legend slices={latest.decisionComparisonSlices} unit="count"/>:
@@ -128,6 +130,9 @@ export default function AssessmentStatusPies({
             <p style={{textAlign:"center",fontSize:13,fontWeight:800,color:"#637078"}}>
               No independently validated probabilities yet
             </p>}
+        {latest.researchOnly?<p style={{fontSize:12,color:"#8a5b20",fontWeight:800,lineHeight:1.5}}>
+          RESEARCH-ONLY DIRECTIONAL CALL · NOT INDEPENDENTLY ADJUDICATED · NO VALIDATED PROBABILITY
+        </p>:null}
         <p style={{fontSize:13,margin:"10px 0 3px"}}>
           <strong>Predicted outcome:</strong> {latest.predictedOutcome==="APPROVAL"?"FDA approval":"Complete Response Letter (CRL)"}
         </p>
@@ -144,8 +149,16 @@ export default function AssessmentStatusPies({
           for this one completed prediction. Before that, it shows the calibrated approval/CRL
           probability split if one exists, or a clearly labeled empty-data state.
         </p>
-        <Link href={`/predictions/assessment?nct=${encodeURIComponent(latest.ncts[0])}`}
-          style={{fontSize:12,fontWeight:700}}>Open exact-NCT assessment</Link>
+        {latest.sourceFreezeUrl?<p style={{...muted,margin:"9px 0"}}>
+          <a href={latest.sourceFreezeUrl} target="_blank" rel="noopener noreferrer">
+            View timestamped predecision forecast and research evidence
+          </a>
+        </p>:null}
+        {latest.researchOnly?<p style={{...muted,margin:"9px 0"}}>
+          This case was researched outside the saved FOCUS roster. The gated automatic
+          medical assessment worker has not run or independently certified this forecast.
+        </p>:<Link href={`/predictions/assessment?nct=${encodeURIComponent(latest.ncts[0])}`}
+          style={{fontSize:12,fontWeight:700}}>Open exact-NCT assessment</Link>}
       </>:<>
         <p style={{fontSize:13,lineHeight:1.55,color:"#4b655d",margin:"0 0 12px"}}>
           No independently completed and frozen FDA decision prediction is recorded

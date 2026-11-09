@@ -31,14 +31,24 @@ const create=(overrides={})=>({
   ...overrides
 });
 
-test("current production audit does not invent completed predictions or historical accuracy",()=>{
+test("first frozen prospective 2026 qualitative forecast is source-backed and produces no invented accuracy",()=>{
   const model=getAssessmentPieData();
-  assert.equal(model.totalCompleted,0);
+  assert.equal(model.totalCompleted,1);
   assert.equal(model.compared,0);
   assert.equal(model.correct,0);
   assert.equal(model.incorrect,0);
+  assert.equal(model.awaitingDecision,1);
   assert.equal(model.accuracyPercent,null);
-  assert.equal(model.latest,null);
+  assert.equal(model.latest.ticker,"SMMT");
+  assert.equal(model.latest.applicationCycleId,"SMMT-HARMONI-US-BLA-2026-NOV14");
+  assert.deepEqual(model.latest.ncts,["NCT06396065"]);
+  assert.equal(model.latest.completedAt,"2026-11-09T20:44:09Z");
+  assert.equal(model.latest.predictedOutcome,"CRL");
+  assert.equal(model.latest.calibrationStatus,"NOT_VALIDATED");
+  assert.equal(model.latest.researchOnly,true);
+  assert.equal(model.latest.decisionVerdict,"AWAITING_DECISION");
+  assert.deepEqual(model.latest.probabilitySlices,[]);
+  assert.match(model.latest.sourceFreezeUrl,/80254f5644dfab055bcca0eec28617888caeb293/);
   assert.deepEqual(model.overallTrend,[]);
   assert.deepEqual(model.latestTrend,[]);
   assert.equal(model.comparisonSlices.reduce((sum,slice)=>sum+slice.value,0),0);
@@ -106,7 +116,7 @@ test("last completed prediction shows only valid calibrated probabilities",()=>{
   }
 });
 
-test("two chart panels show real accuracy semantics and fail closed on empty audit",()=>{
+test("two chart panels show a frozen research pilot but no invented validation or FDA decision",()=>{
   const html=renderToStaticMarkup(React.createElement(Pies,getAssessmentPieData()));
   assert.match(html,/data-testid="total-assessments-pie"/);
   assert.match(html,/data-testid="latest-prediction-pie"/);
@@ -123,9 +133,12 @@ test("two chart panels show real accuracy semantics and fail closed on empty aud
   assert.match(html,/Accurate: 0/);
   assert.match(html,/Not Accurate: 0/);
   assert.match(html,/FDA decisions/);
-  assert.match(html,/No independently validated probabilities yet|NO COMPLETED PREDICTION/);
+  assert.match(html,/No independently validated probabilities yet/);
   assert.match(html,/Last completed prediction/);
-  assert.match(html,/NO COMPLETED PREDICTION/);
+  assert.match(html,/SMMT/);
+  assert.match(html,/RESEARCH-ONLY DIRECTIONAL CALL/);
+  assert.match(html,/HARMONI-SMMT-PDUFA-2026-11-14-V1/);
+  assert.doesNotMatch(html,/NO COMPLETED PREDICTION/);
   assert.doesNotMatch(html,/203 evidence checks/);
   const page=fs.readFileSync(path.join(root,"app/predictions/assessment/page.tsx"),"utf8");
   assert.match(page,/<AssessmentStatusPies \{\.\.\.pies\}\/>/);
@@ -241,4 +254,25 @@ test("a single calibrated prediction snapshot is not a manufactured line trend",
   assert.match(html,/Latest prediction outlook trend/);
   assert.match(html,/No verified trend yet/);
   assert.doesNotMatch(html,/<polyline /);
+});
+
+test("prospective forecast freeze precedes PDUFA and did not mutate 29-trial FOCUS eligibility",()=>{
+  const record=JSON.parse(fs.readFileSync(path.join(root,"data/fdaPredictionDecisionAudit.json"),"utf8")).records[0];
+  const focus=JSON.parse(fs.readFileSync(path.join(root,"../backend/app/data/focus_snapshot.json"),"utf8"));
+  assert.equal(focus.records.length,29);
+  assert.equal(focus.records.some(x=>x.nct==="NCT06396065"),false);
+  assert.equal(record.researchOnly,true);
+  assert.equal(record.actualDecisionVerified,false);
+  assert.equal(record.actualDecisionAt,null);
+  assert.equal(record.actualDecisionSourceUrl,null);
+  assert.equal(record.actualOutcome,"PENDING");
+  assert.equal(record.approvalProbability,null);
+  assert.equal(record.crlProbability,null);
+  assert.equal(record.status,"COMPLETED");
+  assert.equal(record.evaluationCohort,"PROSPECTIVE");
+  assert.ok(Date.parse(record.completedAt)<Date.parse(record.pdufaDate+"T00:00:00Z"));
+  const page=fs.readFileSync(path.join(root,"app/predictions/assessment/page.tsx"),"utf8");
+  assert.match(page,/FIRST PROSPECTIVE 2026 PDUFA PREDICTION PILOT/);
+  assert.match(page,/2026-harmoni-first-prospective-forecast.md/);
+  assert.match(page,/roster-gated automatic source worker was not started/);
 });
