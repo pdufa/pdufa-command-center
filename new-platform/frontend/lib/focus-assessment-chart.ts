@@ -182,7 +182,7 @@ export function summarizeFdaPredictionAccuracy(
   const latest:CompletedPrediction|null=current?{
     predictionId:current.predictionId,
     researchOnly:current.researchOnly===true,
-    sourceFreezeUrl:validHttps(current.sourceFreezeUrl)?current.sourceFreezeUrl:null,
+    sourceFreezeUrl:validHttps(current.sourceFreezeUrl)?current.sourceFreezeUrl!:null,
     applicationCycleId:current.applicationCycleId,
     ticker:current.ticker,
     ncts:current.ncts,
