@@ -96,6 +96,11 @@ def confirm_provisional_score_page(client):
            'Check sources now' in normalized and
            'every 15 minutes' in normalized,
            'AUTO_REFRESH_PANEL_NOT_RENDERED')
+    demand('Archived evidence checks and overnight monitoring' in normalized and
+           'Nightly schedule: PREPARED, NOT ACTIVE' in normalized,
+           'INACTIVE_NIGHTLY_SOURCE_ARCHIVE_STATUS_NOT_VISIBLE')
+    demand(b'main-acacia-public-evidence-nightly.yml' in page,
+           'EVIDENCE_HISTORY_ARCHIVE_LINK_MISSING')
     demand('Assessment 5.1' in normalized and 'Assessment 4.2' in normalized and
            'Assessment 5.3' in normalized, 'PILOT_CHECKLIST_IDENTITIES_NOT_RENDERED')
     # Require values adjacent to the associated assessment, not just a stray
