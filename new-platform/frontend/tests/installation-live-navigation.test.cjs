@@ -132,7 +132,7 @@ test("LOCATE LIVE opens the real GitHub source link rather than scrolling",()=>{
  assert.match(link,/<span>LOCATE LIVE<\/span>/);
  assert.doesNotMatch(link,/onClick=|goToLive|locateSnapshot|scrollIntoView/);
  assert.match(ui,/const githubActionsUrl="https:\/\/github\.com\/pdufa\/pdufa-command-center\/actions";/);
- assert.match(ui,/const liveSourceUrl=activeGithub &&/);
+ assert.match(ui,/const liveSourceUrl=active\?\.evidenceUrl\?\?\(activeGithub &&/);
  assert.match(ui,/\.test\(activeGithub\.url\)/);
  assert.match(ui,/\?activeGithub\.url:githubActionsUrl/);
  assert.match(ui,/VIEW LIVE STATUS ON THIS PAGE/);
