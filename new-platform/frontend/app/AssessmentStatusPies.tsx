@@ -1,4 +1,5 @@
 import Link from "next/link";
+import AssessmentTrendLines from "./AssessmentTrendLines";
 import type {PieSlice,PredictionAccuracySummary} from "../lib/focus-assessment-chart";
 
 const panel={
@@ -66,9 +67,10 @@ function Legend({slices,unit}:{slices:readonly PieSlice[];unit:"count"|"probabil
  */
 export default function AssessmentStatusPies({
   totalCompleted,compared,correct,incorrect,awaitingDecision,accuracyPercent,
-  comparisonSlices,latest,auditAsOf
+  comparisonSlices,latest,auditAsOf,overallTrend,latestTrend
 }:PredictionAccuracySummary){
-  return <section aria-label="FDA prediction accuracy and most recent completed prediction" style={{
+  return <>
+  <section aria-label="FDA prediction accuracy and most recent completed prediction" style={{
     display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,330px),1fr))",
     gap:14,margin:"16px 0 22px"
   }}>
@@ -159,5 +161,7 @@ export default function AssessmentStatusPies({
         </p>
       </>}
     </div>
-  </section>;
+  </section>
+  <AssessmentTrendLines overallTrend={overallTrend} latestTrend={latestTrend} latestCycle={latest?.applicationCycleId??null}/>
+  </>;
 }
