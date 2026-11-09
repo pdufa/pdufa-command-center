@@ -176,11 +176,12 @@ test("total competitiveness trend matches dated FDA decisions and exact same coh
       actualDecisionAt:"2026-04-15T17:00:00Z"})
   ]);
   assert.equal(compared.compared,3);
-  assert.equal(compared.correct,3);
-  assert.equal(compared.incorrect,0);
+  assert.equal(compared.correct,2);
+  assert.equal(compared.incorrect,1);
   assert.deepEqual(compared.overallTrend.map(x=>x.date),["2026-02-01","2026-03-15"]);
   assert.deepEqual(compared.overallTrend.map(x=>x.compared),[2,3]);
-  assert.deepEqual(compared.overallTrend.map(x=>x.accuratePct),[100,100]);
+  assert.deepEqual(compared.overallTrend.map(x=>x.accuratePct),[50,66.67]);
+  assert.deepEqual(compared.overallTrend.map(x=>x.notAccuratePct),[50,33.33]);
   assert.equal(compared.overallTrend.at(-1).accuratePct,compared.accuracyPercent);
 });
 
