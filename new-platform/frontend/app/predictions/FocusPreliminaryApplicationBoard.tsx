@@ -2,6 +2,7 @@
 import {useMemo,useState} from "react";
 import Link from "next/link";
 import {FOCUS_PRELIMINARY_R39} from "../../lib/focus-preliminary-application-research";
+import {FOCUS_R40_SOURCE_STATUS} from "../../lib/focus-r40-source-readiness";
 import {FOCUS_SOURCE_R40,sourceStatusForCycle,verifyR40ResearchReadiness} from "../../lib/focus-source-access-rev40";
 const card={border:"1px solid #b9d4ca",borderRadius:12,padding:15,background:"#fff"} as const;
 const small={fontSize:12,color:"#475e55",lineHeight:1.65} as const;
@@ -18,6 +19,9 @@ function sortedApps(a:readonly AppRow[]){
 }
 export default function FocusPreliminaryApplicationBoard(){
   const data=FOCUS_PRELIMINARY_R39;
+  const sourceAudit=FOCUS_R40_SOURCE_STATUS;
+  const byNct=new Map((sourceAudit?.trialStatus??[]).map(x=>[x.nct,x] as const));
+  const byCycle=new Map((sourceAudit?.groupStatus??[]).map(x=>[x.cycleId,x] as const));
   const publicSource=verifyR40ResearchReadiness();
   const [needle,setNeedle]=useState("");
   const [kind,setKind]=useState("ALL");
@@ -55,6 +59,30 @@ export default function FocusPreliminaryApplicationBoard(){
         <strong style={{fontSize:22}}>{v}</strong>
       </div>)}
     </div>
+    <section aria-label="Revision 40 live source-access audit" style={{background:"#fff",border:"1px solid #aac5b9",borderRadius:9,padding:12,margin:"12px 0 14px"}}>
+      <strong style={{fontSize:14}}>Revision 40 · Verified source retrieval (not clinical review)</strong>
+      {!sourceAudit?<p style={{fontSize:12,color:"#9a3b2c"}}>Source receipt identity changed. Coverage is withheld until it is verified.</p>:<>
+        <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(120px,1fr))",gap:8,marginTop:10}}>
+          {[
+            ["Trial registry IDs retrieved",sourceAudit.counts.registryRetrieved+"/29"],
+            ["23 application groups with source access",sourceAudit.counts.applicationGroupsWithPublicSource+"/23"],
+            ["Registry results section present",sourceAudit.counts.registryResultsSectionPresent+"/29"],
+            ["Unique source URLs retrieved",sourceAudit.counts.uniqueUrlsFetched+"/"+sourceAudit.counts.uniqueUrlsAttempted],
+          ].map(([key,val])=><div key={key} style={{padding:8,border:"1px solid #c3d8cd",borderRadius:7}}>
+            <div style={{fontSize:11,color:"#45675d"}}>{key}</div>
+            <strong style={{fontSize:19}}>{val}</strong>
+          </div>)}
+        </div>
+        <p style={{fontSize:12,margin:"10px 0 5px"}}>
+          A missing current ClinicalTrials.gov results section does not mean Phase 3 findings are unpublished elsewhere.
+          Achieve's issuer link redirected; an official SEC 10-Q alternative was retrieved. Original publication versions and current FDA cycle facts are <strong>not independently authenticated</strong>.
+        </p>
+        <p style={{fontSize:12,margin:"3px 0"}}>
+          <strong>No original clinical grades or validated FDA probabilities were added.</strong> 
+          <a href={sourceAudit.sourceArtifactUrl} target="_blank" rel="noopener noreferrer" style={{marginLeft:7,color:"#126b56",fontWeight:800}}>Inspect original dated source-receipt archive</a>
+        </p>
+      </>}
+    </section>
     <p style={{...small,margin:"11px 0 10px"}}>
       <strong>Official model approval / CRL / delay predictions:</strong> ABSTAIN for all future cycles. Accuracy: NOT CALIBRATED.
       Clinical adjudications: 0. Outcome timing and formal extensions are separate from efficacy judgments.
@@ -110,13 +138,16 @@ export default function FocusPreliminaryApplicationBoard(){
     <div style={{overflowX:"auto",background:"#fff",borderRadius:9}}>
       <table style={{borderCollapse:"collapse",minWidth:780,width:"100%",fontSize:12}}>
         <thead><tr style={{background:"#e8f3ed",textAlign:"left"}}>
-          {["Ticker","Exact NCT","Recorded Phase 3 readout","Application group(s)","FDA outcome model"].map(x=>
+          {["Ticker","Exact NCT","Recorded Phase 3 readout","Registry results section","Application group(s)","FDA outcome model"].map(x=>
             <th key={x} style={{padding:"9px 8px",borderBottom:"2px solid #bed2c8"}}>{x}</th>)}
         </tr></thead>
         <tbody>{trials.map(t=><tr key={t.nct}>
           <td style={{padding:8,borderBottom:"1px solid #e0ebe5",fontWeight:800}}>{t.ticker}</td>
           <td style={{padding:8,borderBottom:"1px solid #e0ebe5"}}><Link href={"/predictions/assessment?nct="+t.nct} style={{color:"#14695b"}}>{t.nct}</Link></td>
           <td style={{padding:8,borderBottom:"1px solid #e0ebe5"}}>{t.recordedReleaseDate??"Not verified"}<div style={{fontSize:10}}><a href={t.registrySource} target="_blank" rel="noopener noreferrer">Trial registry</a></div></td>
+          <td style={{padding:8,borderBottom:"1px solid #e0ebe5"}}>
+            {!sourceAudit?"Source receipt not verified":byNct.get(t.nct)?.currentRegistryResultsSectionPresent?"Present in current record":"Not in current registry record"}
+          </td>
           <td style={{padding:8,borderBottom:"1px solid #e0ebe5"}}>{t.applicationCycleIds.filter(id=>ids.has(id)).map(id=>
             <div key={id}><a href={"#research-"+id} style={{color:"#14695b",fontWeight:650}}>{id}</a></div>)}</td>
           <td style={{padding:8,borderBottom:"1px solid #e0ebe5",fontWeight:750}}>{t.FDAForecast}</td>
@@ -136,6 +167,14 @@ export default function FocusPreliminaryApplicationBoard(){
           <div style={{fontSize:11,color:"#65766d"}}>{a.ncts.join(" + ")} · {a.applicationType} · {a.reportedGoal?"Recorded target "+a.reportedGoal:"Target not confirmed"} · Source status: {a.originalStage.replaceAll("_"," ")}</div>
         </summary>
         <div style={{padding:"10px 2px 2px"}}>
+          <p style={{fontSize:12,background:"#ecf6f0",padding:8,borderRadius:6}}>
+            <strong>Source-access receipt:</strong> {byCycle.get(a.id)?.retrievedPublicSource
+              ?byCycle.get(a.id)?.sourceRoute==="OFFICIAL_SEC_FALLBACK"
+                ?"Official SEC alternative retrieved; original issuer URL inaccessible."
+                :"Canonical public source link retrieved."
+              :"Receipt not verified."}
+            {" "}Exact first-publication timing, FDA application identity and clinical conclusions remain unverified.
+          </p>
           <p style={small}><strong>Clinical efficacy and supporting signal:</strong> {a.clinicalEvidence.observation}</p>
           <p style={small}><strong>Counterevidence or limitations:</strong> {a.opposingEvidence.observation}</p>
           <p style={small}><strong>Public source availability:</strong> {sourceStatusForCycle(a.id)==="ISSUER_LINK_REDIRECTED_OFFICIAL_SEC_FALLBACK_FETCHED"?
