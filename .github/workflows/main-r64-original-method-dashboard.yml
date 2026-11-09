@@ -15,6 +15,7 @@ on:
       - new-platform/frontend/app/predictions/assessment/OriginalMethodSourceLadderR64.module.css
       - new-platform/frontend/app/predictions/assessment/page.tsx
       - new-platform/frontend/tests/focus-r64-original-method-page-view.test.cjs
+      - new-platform/frontend/scripts/verify-r64-method-page-browser.cjs
   workflow_dispatch:
 
 permissions:
@@ -71,6 +72,47 @@ jobs:
           node --test tests/focus-r64-original-method-page-view.test.cjs
           npm run typecheck
           npm run build
+      - name: Install isolated Chromium browser-test dependency
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify desktop and iPhone-sized scientific source page expansion and PDF links
+        working-directory: new-platform/frontend
+        shell: bash
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/r64-browser
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECEIPT_DIR"
+          npm run start -- --port 3157 > "$RECEIPT_DIR/next.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 50); do
+            if curl -fsS --max-time 5 http://127.0.0.1:3157/predictions/assessment?nct=NCT04544293 -o /dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$ready" != 1 ]]; then
+            echo "::error::Local Next.js assessment page did not become healthy."
+            tail -n 70 "$RECEIPT_DIR/next.log"
+            exit 1
+          fi
+          node scripts/verify-r64-method-page-browser.cjs
+          cat "$RECEIPT_DIR/R64_BROWSER_VERIFICATION.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Archive local browser receipt and viewport screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r64-method-page-browser-${{ github.run_id }}
+          path: ${{ runner.temp }}/r64-browser/
+          retention-days: 30
+          if-no-files-found: warn
       - name: Persist exact nonclinical success receipt
         shell: bash
         run: |
