@@ -65,6 +65,55 @@ export default function PilotResearchReviewQueue({nct}:{nct:string}){
           No clinical grades, FDA outcome probabilities, or accuracy values were created.
         </p>
       </details>
+      <details style={{border:"1px solid #b7cad6",borderRadius:9,padding:11,background:"#f3f8fb",marginBottom:12}}
+        aria-label="Alternate public sources and formal study data request route">
+        <summary style={{cursor:"pointer",fontWeight:800}}>
+          Alternative source recovery · original SAP, secondary analyses and data access
+        </summary>
+        <p style={{fontSize:12,margin:"9px 0"}}>
+          <strong>Archived November 9 alternative retrieval:</strong> the NEJM publisher article endpoint
+          and two Europe PMC full-text API endpoints were unavailable to the isolated automated checker.
+          These are <strong>access failures, not evidence that the source articles or supplements do not exist</strong>.
+          The publisher publicly lists a protocol supplement, appendix, and data-sharing statement,
+          but an exact final locked primary SAP has <strong>not been authenticated</strong>.
+        </p>
+        <p style={{fontSize:12,margin:"9px 0"}}>
+          The secondary responder analysis describes prespecified statistical methods and missing-data
+          handling, but these are <strong>secondary research methods</strong>, not full original co-primary
+          missingness/sensitivity results. Serious-heart-failure comparisons across the sponsor and
+          secondary study are <strong>still unreconciled</strong>.
+        </p>
+        <ul style={{fontSize:12,paddingLeft:20,margin:"10px 0"}}>
+          <li><a href={queue.alternativeSourceRecovery.originalArticleUrl} target="_blank" rel="noopener noreferrer">
+            Original NEJM article and listed supplements
+          </a></li>
+          <li><a href={queue.alternativeSourceRecovery.officialDataSharingUrl} target="_blank" rel="noopener noreferrer">
+            Published study data-sharing statement
+          </a></li>
+          <li><a href={queue.alternativeSourceRecovery.secondaryResponderUrl} target="_blank" rel="noopener noreferrer">
+            Public responder-analysis article
+          </a></li>
+          <li><a href={queue.alternativeSourceRecovery.secondaryEchoUrl} target="_blank" rel="noopener noreferrer">
+            Public echocardiography-analysis article
+          </a></li>
+          <li><a href={"https://github.com/pdufa/pdufa-command-center/actions/runs/"+queue.alternativeSourceRecovery.archivedAuditRun}
+            target="_blank" rel="noopener noreferrer">Audited automated retrieval receipt and source statuses</a></li>
+        </ul>
+        <p style={{fontSize:12,margin:"9px 0"}}>
+          <strong>Original data-access route:</strong> the study's published statement describes a
+          qualified-researcher application reviewed by sponsor advisers, subject to access timing and
+          marketing-authorization conditions. Contact{" "}
+          <a href={"mailto:"+queue.alternativeSourceRecovery.sponsorResearchContact}>
+            {queue.alternativeSourceRecovery.sponsorResearchContact}
+          </a>{" "}to inquire about eligibility and the final SAP. This link opens an email composer;
+          <strong> no request has been sent</strong> by MAIN.
+        </p>
+        <p style={{fontSize:11,margin:"8px 0 0"}}>
+          Research access status dated {queue.alternativeSourceRecovery.sourceCheckDate}.
+          Official clinical grades: 0/800. Final FDA prediction: ABSTAIN. A retrieved protocol, paper,
+          supplementary title, or email response must still be verified against the correct trial and version.
+        </p>
+      </details>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(115px,1fr))",gap:8}}>
         {[
           ["18","Mapped source leads"],
