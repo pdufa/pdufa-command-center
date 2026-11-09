@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "dataset": "OUTCOME_EXPOSED_HISTORICAL_LEVEL3_RECONSTRUCTION",
+  "asOf": "2026-11-09T22:10:25Z",
+  "records": [
+    {
+      "assessmentId": "HIST-2026-10-26-BEPIROVIRSEN-LEVEL3-001",
+      "company": "GSK",
+      "ticker": "GSK",
+      "partnerTicker": "IONS",
+      "drug": "bepirovirsen",
+      "indication": "chronic hepatitis B in adults",
+      "applicationType": "NDA",
+      "ncts": [
+        "NCT05630807",
+        "NCT05630820"
+      ],
+      "clinicalPhase": "PHASE_3",
+      "originalPdufaDate": "2026-10-26",
+      "evidenceCutoff": "2026-05-28",
+      "authoredAt": "2026-11-09T22:10:25Z",
+      "retrospective": true,
+      "outcomeExposedBeforeAssessment": true,
+      "status": "HISTORICAL_RECONSTRUCTION_NOT_BLIND",
+      "stage": "MANUAL_THREE_LAYER_PREDECISION_EVIDENCE_REVIEW",
+      "level3Prediction": "APPROVAL",
+      "predictionStrength": "LEAN",
+      "probability": null,
+      "certainty": "NOT_VALIDATED",
+      "outcomeAssessment": "EXCLUDED_FROM_PERFORMANCE_METRICS",
+      "actualOutcome": null,
+      "outcomeCompared": false,
+      "excludedFromProspectiveAccuracy": true,
+      "excludedFromRetrospectiveBlindValidation": true,
+      "excludedFromCalibration": true,
+      "confidenceStatement": "No independently calibrated approval or CRL probability; cannot measure blind accuracy due to outcome awareness",
+      "designEvidence": "Two randomized, double-blind Phase 3 B-Well studies met functional cure endpoint, approximately 19-20% versus 0%",
+      "benefitRiskEvidence": "Functionally meaningful cure in a minority; serious AEs 7% versus 4% and grade >=3 during active treatment 16% versus 3%",
+      "regulatoryEvidence": "Accepted NDA, priority review and breakthrough therapy designation documented April 28 2026; unknown CMC and original FDA correspondence",
+      "sourceFreezeCommit": "63e1fbd8eb645c17e635608a03921f319b3d00ba",
+      "sourceFreezeUrl": "https://github.com/pdufa/pdufa-command-center/commit/63e1fbd8eb645c17e635608a03921f319b3d00ba",
+      "dossierPath": "new-platform/frontend/docs/2026-oct26-bepirovirsen-level3-reconstruction.md",
+      "pivotalPaperUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2515131",
+      "fdaAcceptedPdufaSourceUrl": "https://ir.ionispharma.com/news-releases/news-release-details/ionis-partner-gsk-announces-bepirovirsen-accepted-priority"
+    }
+  ]
+}
