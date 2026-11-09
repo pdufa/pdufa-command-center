@@ -23,6 +23,9 @@ export default function BepirovirsenHistoricalLevelThreePanel(){
       NEXT EARLIER PDUFA · THREE-LEVEL HISTORICAL RECONSTRUCTION
     </div>
     <h2 style={{fontSize:21,margin:"8px 0 6px"}}>GSK / IONS · Bepirovirsen · Chronic hepatitis B</h2>
+    <p data-testid="bepirovirsen-assessment-level" style={{fontSize:13,margin:"7px 0",fontWeight:700,color:"#285e56"}}>
+      Assessment level: <strong>Level 3-style · Manual three-part evidence review</strong> (not a validated engine level).
+    </p>
     <p style={{fontSize:14,lineHeight:1.6,margin:"6px 0"}}>
       <strong>Reconstructed direction: Approval lean.</strong>
       {" "}Original FDA action target: <strong>October 26, 2026</strong>.
