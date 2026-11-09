@@ -15,6 +15,8 @@ on:
       - new-platform/backend/scripts/research_workstream_history.py
       - new-platform/backend/scripts/select_research_history_run.py
       - new-platform/backend/tests/test_research_workstream_history.py
+      - new-platform/backend/scripts/build_focus_source_change_review_r49.py
+      - new-platform/backend/tests/test_focus_source_change_review_r49.py
       - new-platform/backend/scripts/refresh_focus_public_sources_r40.py
       - new-platform/backend/tests/test_focus_source_recovery_r40.py
   workflow_dispatch:
@@ -53,7 +55,7 @@ jobs:
           test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
           python -m pip install pytest
           cd new-platform/backend
-          PYTHONPATH=. python -m pytest -q tests/test_parallel_focus_historical_r47.py tests/test_focus_registry_results_r42.py tests/test_focus_registry_safety_r44.py tests/test_focus_protocol_index_r46.py tests/test_research_workstream_history.py tests/test_focus_source_recovery_r40.py
+          PYTHONPATH=. python -m pytest -q tests/test_parallel_focus_historical_r47.py tests/test_focus_registry_results_r42.py tests/test_focus_registry_safety_r44.py tests/test_focus_protocol_index_r46.py tests/test_research_workstream_history.py tests/test_focus_source_recovery_r40.py tests/test_focus_source_change_review_r49.py
           PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
       - name: Locate the latest completed Track A history without changing either workstream
         id: previous_history
@@ -149,6 +151,35 @@ jobs:
             --track A --snapshot "$RUNNER_TEMP/r47-focus/evidence_readiness.json" \
             --output "$RUNNER_TEMP/r47-focus/history/research-history.json" \
             --run-id "$GITHUB_RUN_ID" --commit "$GITHUB_SHA" "${prior[@]}"
+      - name: Triage source bytes without inventing material clinical changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/build_focus_source_change_review_r49.py \
+            --reassessment "$RUNNER_TEMP/r47-focus/history/reassessment.json" \
+            --output "$RUNNER_TEMP/r47-focus/history/source-change-triage.json" \
+            --run-id "$GITHUB_RUN_ID"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          path=Path(os.environ["RUNNER_TEMP"])/"r47-focus/history/source-change-triage.json"
+          r=json.loads(path.read_text())
+          assert r["schema"]=="MAIN_R49_RESEARCH_ORIGINAL_SOURCE_BYTE_CHANGE_TRIAGE"
+          assert r["applicationResearchRecords"]==23
+          assert r["scientificallyAdjudicatedMaterialChanges"]==0
+          assert r["independentScientificReviewerSignoffs"]==0
+          assert r["newValidatedApplicationPredictions"]==0
+          assert r["calibratedAccuracy"] is None
+          assert r["automaticMaterialClinicalChangeInference"] is False
+          assert r["automaticPredictionOrGradeWriteAuthorized"] is False
+          assert r["productionWriteAuthorized"] is False
+          summary=(f'R49: {r["applicationsFlaggedForSourceReview"]}/23 applications have raw-source review flags; '
+                   f'{r["uniqueSponsorSecOrFdaSourceChanges"]} distinct sponsor/FDA/SEC document byte or availability changes; '
+                   f'{r["registryNctSourceChangeReferences"]} NCT source-change references. '
+                   'Actual clinically material changes and new validated predictions: 0, not inferred.')
+          print(summary,flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write("\n## Research-source review ≠ scientific materiality\n"+summary+"\n")
+          PY
       - name: Preserve separate Track A append-only history
         uses: actions/upload-artifact@v4
         with:
