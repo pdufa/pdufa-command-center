@@ -694,7 +694,24 @@ async def lifespan(app: FastAPI):
                             "PDUFA_MEDICAL_PHASE_MATRIX status=ERROR error_type=%s",
                             type(matrix_exc).__name__,
                         )
-                                # Stage 4: one exact canary's reproducible scientific SOURCE triage.
+                # Separately enabled research receipts: schema only at startup.
+                # No run, source examination, research recommendation or clinical
+                # reviewer event is created by this infrastructure gate.
+                app.state.medical_research_execution_ready = False
+                if os.getenv("PDUFA_MEDICAL_RESEARCH_EXECUTION_ENABLED", "").lower() in ("1", "true", "yes"):
+                    try:
+                        from .medical_research_execution import activate as activate_research_execution
+                        app.state.medical_research_execution_ready = activate_research_execution(
+                            ENGINE, ledger_ready=getattr(app.state, "medical_phase_matrix_ready", False))
+                        logging.getLogger(__name__).warning(
+                            "PDUFA_MEDICAL_RESEARCH_EXECUTION_READY status=%s "
+                            "startupRunsCreated=0 examinationsWritten=0 gradesWritten=0 prediction=ABSTAIN",
+                            "PASS" if app.state.medical_research_execution_ready else "BLOCKED")
+                    except Exception as research_exc:
+                        logging.getLogger(__name__).error(
+                            "PDUFA_MEDICAL_RESEARCH_EXECUTION_READY status=ERROR error_type=%s",
+                            type(research_exc).__name__)
+                # Stage 4: one exact canary's reproducible scientific SOURCE triage.
                 # Only new append-only snapshots; never assign clinical grades.
                 if (os.getenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_ENABLED", "").lower() in ("1", "true", "yes")
                         and getattr(app.state, "medical_phase_matrix_ready", False)):
@@ -976,6 +993,24 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes
     install_medical_phase_matrix_routes(app, lambda: ENGINE,
                                         require_medical_review_read_key,
                                         require_medical_phase_matrix_storage)
+
+# Research execution exposes observation only; no HTTP examination writer or
+# automatic research driver is installed by this separate opt-in gate.
+def require_medical_research_execution_storage() -> None:
+    from .medical_research_execution import enabled_for_service
+    require_medical_phase_matrix_storage()
+    if not enabled_for_service() or not getattr(app.state, "medical_research_execution_ready", False):
+        raise HTTPException(status_code=503, detail="Isolated research execution infrastructure is not ready")
+
+
+if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_RESEARCH_EXECUTION_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("RENDER_SERVICE_ID", "") == "srv-dbntrkpsrm7s73aec3lg"):
+    from .medical_research_execution import install_routes as install_medical_research_execution_routes
+    install_medical_research_execution_routes(app, lambda: ENGINE,
+                                              require_medical_review_read_key,
+                                              require_medical_research_execution_storage)
+
 
 # Stage-4 source triage has independent storage gate, authenticated GET only.
 def require_medical_scientific_triage_storage() -> None:
