@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "dataset": "OUTCOME_AWARE_POST_FREEZE_HISTORICAL_COMPARISON_NOT_BLIND",
+  "asOf": "2026-11-09",
+  "records": [
+    {
+      "assessmentId": "HIST-AZN-ULTOMIRIS-2026-10-21-LEVEL3-V1",
+      "frozenRecordCommit": "0f1b06505535199e9ef8804fb195fa0c3e468620",
+      "frozenRecordUrl": "https://github.com/pdufa/pdufa-command-center/commit/0f1b06505535199e9ef8804fb195fa0c3e468620",
+      "frozenResearchCommit": "e4c5a0221019075b03769781b4b3394178d9fd75",
+      "applicationType": "SUPPLEMENTAL_BLA",
+      "fdaApplicationId": "BLA 761108/S-046",
+      "ticker": "AZN",
+      "ncts": [
+        "NCT06291376"
+      ],
+      "drug": "Ultomiris (ravulizumab-cwvz)",
+      "indication": "Primary IgA nephropathy in adults",
+      "assessmentLevelStyle": 3,
+      "assessmentMethod": "MANUAL_THREE_LAYER_PREDECISION_EVIDENCE_RECONSTRUCTION",
+      "predictedOutcome": "APPROVAL",
+      "predictedApprovalType": "ACCELERATED_APPROVAL_LEAN",
+      "actualOutcome": "APPROVAL",
+      "actualApprovalType": "ACCELERATED",
+      "actualFdaActionDate": "2026-10-21",
+      "outcomeMatch": true,
+      "outcomeScoreEligibility": "EXCLUDED_PREVIOUSLY_EXPOSED_RESULT",
+      "pdufaGoalDisclosure": "Q4 2026",
+      "exactGoalDayConfirmedPredecision": false,
+      "outcomeExposedBeforeFreeze": true,
+      "blind": false,
+      "retrospective": true,
+      "excludedFromProspectiveAccuracy": true,
+      "excludedFromRetrospectiveBlindValidation": true,
+      "excludedFromCalibration": true,
+      "officialDecisionSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/125166Orig1s455%2C%20761108Orig1s046ltr.pdf",
+      "sponsorDecisionAnnouncementUrl": "https://www.astrazeneca.com/media-centre/press-releases/2026/ultomiris-approved-in-us-in-igan.html",
+      "outcomeNote": "Official FDA letter confirms accelerated approval for reduction of proteinuria; long-term kidney function preservation not yet established; follow-up confirmation required.",
+      "disclaimer": "A historical result appeared in selection searches before the frozen review. Although the GitHub freeze predates formal verification of the FDA approval letter, this cannot be scored as blind prediction success."
+    }
+  ]
+}

@@ -1,0 +1,51 @@
+{
+  "schemaVersion": 1,
+  "dataset": "FROZEN_MANUAL_LEVEL3_HISTORICAL_RECONSTRUCTION",
+  "asOf": "2026-11-09",
+  "records": [
+    {
+      "assessmentId": "HIST-AZN-ULTOMIRIS-2026-10-21-LEVEL3-V1",
+      "company": "AstraZeneca / Alexion",
+      "ticker": "AZN",
+      "drug": "Ultomiris (ravulizumab-cwvz)",
+      "indication": "Primary IgA nephropathy in adults at risk for disease progression",
+      "applicationType": "SUPPLEMENTAL_BLA",
+      "ncts": [
+        "NCT06291376"
+      ],
+      "clinicalPhase": "PHASE_3",
+      "trialName": "I CAN",
+      "sourceOnlyEvidenceCutoff": "2026-06-15",
+      "pdufaGoalDisclosure": "Q4 2026",
+      "exactPdufaDateVerifiedPredecision": false,
+      "assumedDecisionChronologyDate": "2026-10-21",
+      "decisionDateSource": "HISTORICAL_TRACKER_NOT_PREDECISION_GOAL",
+      "assessmentLevelStyle": 3,
+      "assessmentMethod": "MANUAL_THREE_LAYER_PREDECISION_EVIDENCE_RECONSTRUCTION",
+      "predictedOutcome": "APPROVAL",
+      "predictedApprovalType": "ACCELERATED_APPROVAL_LEAN",
+      "predictionStrength": "LEAN",
+      "approvalProbability": null,
+      "crlProbability": null,
+      "certainty": "NOT_VALIDATED",
+      "frozenResearchCommit": "e4c5a0221019075b03769781b4b3394178d9fd75",
+      "frozenResearchUrl": "https://github.com/pdufa/pdufa-command-center/commit/e4c5a0221019075b03769781b4b3394178d9fd75",
+      "researchDossierPath": "new-platform/frontend/docs/2026-oct21-azn-ultomiris-level3-frozen-reconstruction.md",
+      "originalOutcomeExposedBeforeFreeze": true,
+      "blind": false,
+      "retrospective": true,
+      "actualOutcome": null,
+      "actualDecisionDate": null,
+      "actualDecisionSourceUrl": null,
+      "officialDecisionCompared": false,
+      "excludedFromProspectiveAccuracy": true,
+      "excludedFromRetrospectiveBlindValidation": true,
+      "excludedFromCalibration": true,
+      "sourceEvidence": [
+        "https://www.astrazeneca-us.com/media/press-releases/2026/ULTOMIRIS-ravulizumab-cwvz-demonstrated-statistically-significant-and-clinically-meaningful-reduction-of-proteinuria-in-adults-with-immunoglobulin-A-nephropathy-in-I-CAN-Phase-III-trial.html",
+        "https://www.astrazeneca-us.com/media/press-releases/2026/ULTOMIRIS-ravulizumab-cwvz-demonstrated-43-point-4-percent-reduction-in-proteinuria-vs-placebo-in-adults-with-immunoglobulin-A-nephropathy-at-34-weeks-in-I-CAN-Phase-III-trial.html",
+        "https://www.astrazeneca.com/media-centre/press-releases/2026/ultomiris-granted-priority-review-in-the-us-as-treatment-for-adults-with-immunoglobulin-a-nephropathy.html"
+      ]
+    }
+  ]
+}

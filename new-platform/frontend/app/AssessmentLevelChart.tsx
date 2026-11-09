@@ -3,6 +3,8 @@ import originalIno from "../data/blindHistoricalForecasts2026.json";
 import retrospectiveBepirovirsen from "../data/levelThreeHistoricalReconstruction2026.json";
 import retrospectiveJoenja from "../data/levelThreePharHistorical2026.json";
 import retrospectiveSkyrizi from "../data/levelThreeAbbvieHistorical2026.json";
+import frozenUltomiris from "../data/levelThreeAznFrozen2026.json";
+import actualUltomiris from "../data/levelThreeAznHistoricalComparison2026.json";
 
 type LevelRow={
   id:string;
@@ -19,7 +21,15 @@ export default function AssessmentLevelChart(){
   const bepi=retrospectiveBepirovirsen.records.find(r=>r.assessmentId==="HIST-2026-10-26-BEPIROVIRSEN-LEVEL3-001");
   const phar=retrospectiveJoenja.records.find(r=>r.assessmentId==="HIST-PHAR-JOENJA-2026-10-24-LEVEL3-001");
   const abbv=retrospectiveSkyrizi.records.find(r=>r.assessmentId==="HIST-ABBV-SKYRIZI-2026-10-23-LEVEL3-001");
-  if(!smmt||!ino||!bepi||!phar||!abbv||
+  const azn=frozenUltomiris.records.find(r=>r.assessmentId==="HIST-AZN-ULTOMIRIS-2026-10-21-LEVEL3-V1");
+  const aznCompared=actualUltomiris.records.find(r=>r.assessmentId==="HIST-AZN-ULTOMIRIS-2026-10-21-LEVEL3-V1");
+  if(!smmt||!ino||!bepi||!phar||!abbv||!azn||!aznCompared||
+     azn.predictedOutcome!=="APPROVAL"||azn.actualOutcome!==null||
+     azn.assessmentLevelStyle!==3||aznCompared.actualOutcome!=="APPROVAL"||
+     aznCompared.frozenRecordCommit!=="0f1b06505535199e9ef8804fb195fa0c3e468620"||
+     aznCompared.outcomeExposedBeforeFreeze!==true||
+     aznCompared.excludedFromProspectiveAccuracy!==true||
+     aznCompared.excludedFromRetrospectiveBlindValidation!==true||
      abbv.assessmentLevelStyle!==3||abbv.assessmentDirection!=="APPROVAL"||
      abbv.actualOutcome!=="APPROVAL"||abbv.outcomeExposedBeforeAssessment!==true||
      abbv.excludedFromProspectiveAccuracy!==true||
@@ -45,7 +55,9 @@ export default function AssessmentLevelChart(){
     {id:phar.assessmentId,trial:"PHAR · Joenja",stage:"Historical review (FDA outcome known)",
       level:3,result:"Approval lean · FDA approved",hindsight:true},
     {id:abbv.assessmentId,trial:"ABBV · SKYRIZI",stage:"Historical review (FDA outcome known)",
-      level:3,result:"Approval lean · FDA approved",hindsight:true}
+      level:3,result:"Approval lean · FDA approved",hindsight:true},
+    {id:azn.assessmentId,trial:"AZN · Ultomiris",stage:"Historical frozen then verified (outcome exposed)",
+      level:3,result:"Approval lean · FDA accelerated approval",hindsight:true}
   ];
   return <section data-testid="research-assessment-level-chart" aria-label="Assessment level chart by FDA review"
     style={{background:"#fff",border:"1px solid #b8d1c9",borderRadius:14,
@@ -58,7 +70,7 @@ export default function AssessmentLevelChart(){
       Manual-style review levels shown separately from FDA accuracy.
       A later reassessment is a separate row, never a rewrite of the frozen original.
     </p>
-    <div role="img" aria-label="SMMT original Level 1; INO original Level 1; INO revised after FDA outcome Level 3; GSK bepirovirsen historical Level 3; PHAR Joenja historical Level 3; ABBV SKYRIZI historical Level 3"
+    <div role="img" aria-label="SMMT original Level 1; INO original Level 1; INO revised after FDA outcome Level 3; GSK bepirovirsen historical Level 3; PHAR Joenja historical Level 3; ABBV SKYRIZI historical Level 3; AZN Ultomiris Level 3"
       style={{display:"grid",gap:11}}>
       {rows.map(row=><div key={row.id} data-testid={"assessment-level-row-"+(row.hindsight?"hindsight-":"")+row.id}
         style={{display:"grid",gridTemplateColumns:"minmax(0,1fr) minmax(120px,1.3fr)",columnGap:13,alignItems:"center",rowGap:5}}>
@@ -84,8 +96,8 @@ export default function AssessmentLevelChart(){
     <p style={{fontSize:12,color:"#895e2c",lineHeight:1.5,margin:"14px 0 0"}}>
       These are approximate manual review-depth labels, <strong>not certified engine levels</strong>
       or completion percentages toward the planned 20-level / 800-assessment framework.
-      The INO revised, GSK historical, PHAR historical and ABBV historical rows
-      are outcome-aware, and none counts as a blind prediction or prospective accuracy.
+      The INO revised, GSK historical, PHAR historical, ABBV historical and AZN historical
+      rows are outcome-aware, and none counts as a blind prediction or prospective accuracy.
     </p>
   </section>;
 }
