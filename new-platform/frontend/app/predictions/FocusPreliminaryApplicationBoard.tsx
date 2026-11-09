@@ -73,7 +73,7 @@ export default function FocusPreliminaryApplicationBoard(){
           </div>)}
         </div>
         <p style={{fontSize:12,margin:"10px 0 5px"}}>
-          A missing current ClinicalTrials.gov results section does not mean Phase 3 findings are unpublished elsewhere.
+          A missing current ClinicalTrials.gov results section does not mean Phase 3 findings are unpublished elsewhere. Source retrieval does not establish clinical efficacy, original clinical source version timing, CMC adequacy or FDA application acceptance.
           Achieve's issuer link redirected; an official SEC 10-Q alternative was retrieved. Original publication versions and current FDA cycle facts are <strong>not independently authenticated</strong>.
         </p>
         <p style={{fontSize:12,margin:"3px 0"}}>
