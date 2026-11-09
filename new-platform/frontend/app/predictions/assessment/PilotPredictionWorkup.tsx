@@ -1,5 +1,6 @@
 import {evaluateAdditionalPilotReadiness,evaluatePilotReadiness} from "../../../lib/pilot-research-readiness";
 import PilotLiveEvidenceRefresh from "./PilotLiveEvidenceRefresh";
+import PilotScientificSignalPanel from "./PilotScientificSignalPanel";
 import pilot from "../../../data/acacia-pilot-prediction-workup-20261108.json";
 
 const frame={border:"1px solid #8bb4a8",background:"#fff",borderRadius:12,padding:16,margin:"12px 0"} as const;
@@ -16,6 +17,7 @@ export default function PilotPredictionWorkup({nct}:{nct:string}){
     <h2 style={{margin:"2px 0 10px"}}>ACACIA-HCM · Pilot prediction workup</h2>
     <p style={{fontSize:12,color:"#476258"}}>Historical evidence snapshot — the live prediction, grade counts and accuracy state are shown in the monitor above.</p>
     <p style={{marginTop:12}}><strong>Research-only directional finding:</strong> published pivotal efficacy is positive, while meaningful-benefit thresholds, safety, protocol statistics and indication-specific regulatory review remain uncertain. This is a qualitative scientific synthesis, <strong>not a validated FDA forecast</strong>.</p>
+    <PilotScientificSignalPanel nct={nct}/>
     <section aria-label="First provisional research score" style={{...frame,background:"#eef7fc",border:"1px solid #8ab4cc"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
         <div>
