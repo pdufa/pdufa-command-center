@@ -1,87 +1,159 @@
 /**
- * Read-only presentation data for the ASSESMENTS tab.
- * Evidence-check proportions are NOT clinical assessment completion, FDA
- * outcome probabilities, or predictive accuracy.
+ * Exact FDA application-cycle prediction audit.
+ *
+ * The current source registry intentionally has no synthetic predictions or
+ * retrospective guesses. A completed and frozen prediction alone does not
+ * establish accuracy; accuracy requires a later, verified FDA decision.
+ * Approval vs CRL is a binary primary-decision comparison. A review delay
+ * may precede either one and must be evaluated separately, never as a third
+ * mutually exclusive wedge of this pie chart.
  */
-import {FOCUS_FINAL_TRIAL_AUDIT} from "./focus-final-gate-checks";
-import {FOCUS_SPECIALTY_ASSESSMENT_QUEUE} from "./focus-specialty-assessment";
+import registry from "../data/fdaPredictionDecisionAudit.json";
 
-export type EvidencePieSlice = {
-  key:"verified"|"pointer"|"review"|"missing";
-  label:string;
-  value:number;
-  color:string;
-};
-export type EvidencePieCounts = {
-  verified:number;
-  pointer:number;
-  review:number;
-  missing:number;
-};
-export type LatestReleasedTrial = {
+export type Decision="APPROVAL"|"CRL";
+export type CalibrationStatus="VALIDATED"|"NOT_VALIDATED";
+export type PredictionDecisionRecord={
+  predictionId:string;
+  applicationCycleId:string;
   ticker:string;
-  nct:string;
-  releasedAt:string;
-  decision:string;
-  counts:EvidencePieCounts;
+  ncts:string[];
+  drug:string;
+  indication:string;
+  status:"COMPLETED"|"DRAFT";
+  completedAt:string|null;
+  predictedOutcome:Decision|"ABSTAIN";
+  calibrationStatus:CalibrationStatus;
+  approvalProbability:number|null;
+  crlProbability:number|null;
+  evaluationCohort:"PROSPECTIVE"|"HISTORICAL_LOCKED";
+  actualOutcome:Decision|"PENDING"|"OTHER"|null;
+  actualDecisionAt:string|null;
+  actualDecisionSourceUrl:string|null;
+  actualDecisionVerified:boolean;
 };
-export type PublishedPredictionCandidate = {
-  nct:string;
+
+export type PieSlice={
+  key:string;label:string;value:number;color:string;
+};
+export type CompletedPrediction={
+  predictionId:string;
+  applicationCycleId:string;
   ticker:string;
-  prediction:string;
-  certainty:string;
-  releasedAt?:string|null;
-  releaseStatus?:string|null;
+  ncts:string[];
+  drug:string;
+  indication:string;
+  completedAt:string;
+  predictedOutcome:Decision;
+  calibrationStatus:CalibrationStatus;
+  actualOutcome:Decision|"PENDING";
+  actualDecisionAt:string|null;
+  actualSourceUrl:string|null;
+  probabilitySlices:PieSlice[];
 };
 
-export const evidencePieSlices = (counts:EvidencePieCounts):EvidencePieSlice[] => [
-  {key:"verified",label:"Independently verified",value:counts.verified,color:"#168a6d"},
-  {key:"pointer",label:"Recorded source pointers",value:counts.pointer,color:"#317bb1"},
-  {key:"review",label:"Source review required",value:counts.review,color:"#db9c35"},
-  {key:"missing",label:"Missing evidence",value:counts.missing,color:"#97a5b1"},
-];
+export type PredictionAccuracySummary={
+  totalCompleted:number;
+  compared:number;
+  correct:number;
+  incorrect:number;
+  awaitingDecision:number;
+  accuracyPercent:number|null;
+  comparisonSlices:PieSlice[];
+  latest:CompletedPrediction|null;
+  auditAsOf:string|null;
+  cohortScope:"PROSPECTIVE_AND_PREDECISION_LOCKED_HISTORICAL";
+};
 
-const isoTimestamp=(value:unknown):value is string=>
-  typeof value==="string"&&/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/.test(value)&&
-  Number.isFinite(Date.parse(value));
+const matchIso=(s:unknown):s is string=>
+  typeof s==="string"&&
+  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2})$/.test(s)&&
+  Number.isFinite(Date.parse(s));
+const decision=(x:unknown):x is Decision=>x==="APPROVAL"||x==="CRL";
+const validNct=(x:unknown)=>typeof x==="string"&&/^NCT\d{8}$/.test(x);
+const validHttps=(x:unknown)=>typeof x==="string"&&/^https:\/\/[^\s/]+(?:\/[^\s]*)?$/.test(x);
+const validProbability=(x:unknown)=>typeof x==="number"&&Number.isFinite(x)&&x>=0&&x<=1;
 
-/** Do not confuse a completed source scan with an explicitly published forecast. */
-export function findLatestReleasedTrial(
-  candidates:readonly PublishedPredictionCandidate[],
-  audit=FOCUS_FINAL_TRIAL_AUDIT
-):LatestReleasedTrial|null {
-  const ordered=candidates.filter(row=>
-    row.releaseStatus==="PUBLISHED"&&
-    row.prediction!=="ABSTAIN"&&
-    row.certainty!=="NOT_VALIDATED"&&
-    isoTimestamp(row.releasedAt)
-  ).sort((a,b)=>Date.parse(b.releasedAt!)-Date.parse(a.releasedAt!));
-  for(const item of ordered){
-    const gate=audit.rows.find(row=>row.nct===item.nct&&row.ticker===item.ticker);
-    if(!gate)continue;
-    return {
-      nct:item.nct,ticker:item.ticker,releasedAt:item.releasedAt!,
-      decision:item.prediction,
-      counts:{verified:gate.independentlyVerified,pointer:gate.pointers,review:gate.review,missing:gate.missing}
-    };
+export function summarizeFdaPredictionAccuracy(
+  rows:readonly PredictionDecisionRecord[],
+  auditAsOf:string|null=null
+):PredictionAccuracySummary{
+  const frozen=rows.filter(row=>
+    row&&row.status==="COMPLETED"&&
+    typeof row.predictionId==="string"&&row.predictionId.length>0&&
+    typeof row.applicationCycleId==="string"&&row.applicationCycleId.length>0&&
+    typeof row.ticker==="string"&&row.ticker.length>0&&
+    Array.isArray(row.ncts)&&row.ncts.length>0&&row.ncts.every(validNct)&&
+    matchIso(row.completedAt)&&decision(row.predictedOutcome)&&
+    ["PROSPECTIVE","HISTORICAL_LOCKED"].includes(row.evaluationCohort)
+  ).sort((a,b)=>Date.parse(a.completedAt!)-Date.parse(b.completedAt!)||
+      a.predictionId.localeCompare(b.predictionId));
+
+  // Evaluate only the FIRST completed/frozen forecast for each application
+  // cycle. Later revised forecasts must not inflate accuracy or cherry-pick
+  // the version nearest to the already-known decision.
+  const primaryByCycle=new Map<string,PredictionDecisionRecord>();
+  for(const row of frozen){
+    if(!primaryByCycle.has(row.applicationCycleId))
+      primaryByCycle.set(row.applicationCycleId,row);
   }
-  return null;
+  let correct=0,incorrect=0,awaitingDecision=0;
+  for(const row of primaryByCycle.values()){
+    const matched=decision(row.actualOutcome)&&
+      matchIso(row.actualDecisionAt)&&
+      Date.parse(row.actualDecisionAt)>Date.parse(row.completedAt!)&&
+      row.actualDecisionVerified===true&&validHttps(row.actualDecisionSourceUrl);
+    if(!matched){awaitingDecision++;continue;}
+    if(row.actualOutcome===row.predictedOutcome)correct++;
+    else incorrect++;
+  }
+  const compared=correct+incorrect;
+  const current=frozen.length?frozen[frozen.length-1]:null;
+  const calibrated=current?.calibrationStatus==="VALIDATED"&&
+    validProbability(current.approvalProbability)&&
+    validProbability(current.crlProbability)&&
+    Math.abs(current.approvalProbability+current.crlProbability-1)<0.0001;
+  const latest:CompletedPrediction|null=current?{
+    predictionId:current.predictionId,
+    applicationCycleId:current.applicationCycleId,
+    ticker:current.ticker,
+    ncts:current.ncts,
+    drug:current.drug,
+    indication:current.indication,
+    completedAt:current.completedAt!,
+    predictedOutcome:current.predictedOutcome as Decision,
+    calibrationStatus:current.calibrationStatus,
+    actualOutcome:decision(current.actualOutcome)&&
+      current.actualDecisionVerified===true&&
+      matchIso(current.actualDecisionAt)&&
+      Date.parse(current.actualDecisionAt)>Date.parse(current.completedAt!)&&
+      validHttps(current.actualDecisionSourceUrl)
+      ?current.actualOutcome:"PENDING",
+    actualDecisionAt:current.actualDecisionAt,
+    actualSourceUrl:validHttps(current.actualDecisionSourceUrl)?current.actualDecisionSourceUrl:null,
+    probabilitySlices:calibrated?[
+      {key:"approval",label:"FDA approval",value:current.approvalProbability!,color:"#168a6d"},
+      {key:"crl",label:"Complete Response Letter",value:current.crlProbability!,color:"#c86b50"}
+    ]:[]
+  }:null;
+  return {
+    totalCompleted:primaryByCycle.size,
+    compared,correct,incorrect,awaitingDecision,
+    accuracyPercent:compared?100*correct/compared:null,
+    comparisonSlices:[
+      {key:"correct",label:"Prediction matched FDA decision",value:correct,color:"#168a6d"},
+      {key:"incorrect",label:"Prediction differed from FDA decision",value:incorrect,color:"#c86b50"}
+    ],
+    latest,
+    auditAsOf,
+    cohortScope:"PROSPECTIVE_AND_PREDECISION_LOCKED_HISTORICAL"
+  };
 }
 
 export function getAssessmentPieData(){
-  const audit=FOCUS_FINAL_TRIAL_AUDIT;
-  return {
-    asOf:audit.asOf,
-    totalTrials:audit.trialCount,
-    totalChecks:audit.totalChecks,
-    overall:evidencePieSlices({
-      verified:audit.independentlyVerified,
-      pointer:audit.pointers,
-      review:audit.review,
-      missing:audit.missing
-    }),
-    // The current intake is research-only, ABSTAIN, NOT_VALIDATED and has
-    // no published-release timestamps. Never substitute a source revision.
-    latest:findLatestReleasedTrial(FOCUS_SPECIALTY_ASSESSMENT_QUEUE),
-  };
+  if(registry.schemaVersion!==1||registry.provenance!=="INDEPENDENT_FDA_DECISION_AUDIT"||
+    !Array.isArray(registry.records))throw Error("FDA_DECISION_AUDIT_UNAVAILABLE");
+  return summarizeFdaPredictionAccuracy(
+    registry.records as PredictionDecisionRecord[],
+    registry.asOf
+  );
 }
