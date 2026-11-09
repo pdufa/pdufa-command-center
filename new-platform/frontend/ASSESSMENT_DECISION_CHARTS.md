@@ -18,3 +18,33 @@ The chart legends always display **Accurate** (green) and **Not Accurate** (oran
 The current registry is deliberately empty because the present medical analysis output records evidence collection and ABSTAIN outcomes, **not** verified frozen FDA predictions. The charts must remain empty until real records pass these gates. This frontend ledger is an interim display contract, not an automatic database sync. A future backend integration must use the same data provenance and immutable event controls; never count registry source scans, archived RAAS material, or retrospective forecasts created after actual decisions as successes.
 
 The overall chart measures crude directional hit rate, not probabilistic calibration, performance against a baseline, sensitivity, specificity, or a guarantee of future FDA prediction reliability.
+
+## Line charts below the pies
+
+Two separate responsive, SVG-based line charts sit directly below their
+matching pie-chart panels.
+
+- **Total · overall competitiveness trend:** cumulative **Accurate %** (green)
+  against **Not Accurate %** (orange) after each *dated, independently verified*
+  FDA action. The exact first frozen prediction per application cycle is
+  used, so repeated revisions and post-decision forecasts cannot inflate the
+  historical hit rate. Multiple FDA decisions on the same calendar date form
+  a single dated checkpoint. The final point must equal the accuracy pie's
+  fraction. Both percentages use the same resolved-case denominator; pending
+  decisions are excluded and listed separately above.
+- **Latest · outlook trend:** **Approval %** (green) against **CRL %** (orange)
+  over independently validated and chronologically saved versions of the
+  *same FDA application cycle* as the latest completed prediction. Distinct
+  NCTs or company tickers are not silently pooled; uncalibrated, incomplete,
+  non-complementary or post-action versions are excluded. The trend measures
+  movement in predicted outcomes, **not** a trend in FDA decision accuracy
+  for one trial. Delays are separate from binary approval-versus-CRL outcomes.
+
+At least **two distinct dated observations** are required to draw each line.
+When none or only one exists, display the axes, legend and an explicit
+insufficient-history explanation. No synthetic baseline, fabricated 50/50
+probability, or interpolated historical result is supplied.
+
+These are presentation-only computations over the same existing read-only
+audit registry. A completed frontend installation is not evidence that the
+clinical assessment workers or prediction calibration have finished.
