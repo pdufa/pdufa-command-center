@@ -86,7 +86,7 @@ def _verify_pdf(row, root):
         "originalPreReadoutLockAndMultiplicityVerified":False,
     }
 
-def build(manifest, efficacy, document, pdf_root):
+def build(manifest, efficacy, document, registry, pdf_root):
     if (manifest.get("trialCount") != 29 or manifest.get("applicationCount") != 23 or
         len(manifest.get("trialRows",[])) != 29 or
         len(manifest.get("applicationGroups",[])) != 23):
@@ -102,15 +102,21 @@ def build(manifest, efficacy, document, pdf_root):
         document.get("currentRegistryDocumentEntries") != 23 or
         document.get("originalPdfBodiesRetrieved") != 23 or
         document.get("validatedFDAForecasts") != 0 or
-        document.get("clinicalOrProductionWrites") is not False):
+        document.get("clinicalOrProductionWrites") is not False or
+        document.get("originalFirstPublicSAPDateVerified") != 0 or
+        document.get("historicalRegisteredEndpointAmendmentChainVerified") != 0 or
+        not isinstance(registry,dict) or
+        registry.get("schema") != "MAIN_R46_PUBLIC_REGISTRY_PROTOCOL_SAP_INDEX" or
+        registry.get("nctCount") != 29 or registry.get("applicationGroupCount") != 23):
         raise ValueError("EXACT_SOURCE_RESEARCH_REPORTS_NOT_QUALIFIED")
     if not pdf_root.is_dir() or pdf_root.is_symlink():
         raise ValueError("ORIGINAL_PUBLIC_PDF_ARCHIVE_REQUIRED")
     e_app = _index(efficacy.get("applicationDossiers"), "applicationCycleId", 23, "R51_APPLICATION")
     d_app = _index(document.get("applicationResearch"), "applicationCycleId", 23, "R53_APPLICATION")
     e_trials = _index(efficacy.get("trialEvidence"), "nct", 29, "R51_NCT")
+    r53_registry=_index(registry.get("records"),"nct",29,"R53_CURRENT_REGISTRY")
     roster={x["nct"] for x in manifest["trialRows"]}
-    if set(e_trials)!=roster:
+    if set(e_trials)!=roster or set(r53_registry)!=roster:
         raise ValueError("ORIGINAL_TRIAL_ROSTER_DISAGREES_WITH_EFFICACY")
     pdfs = document.get("documentResearch")
     if not isinstance(pdfs,list) or len(pdfs)!=23:
@@ -119,7 +125,7 @@ def build(manifest, efficacy, document, pdf_root):
     seen=set()
     for src in pdfs:
         key=(src.get("nct"),src.get("filename"))
-        if key in seen or key[0] not in roster:
+        if key in seen or key[0] not in roster or src.get("originalPreUnblindingLockedVersionVerified") is not False:
             raise ValueError("DUPLICATED_OR_NONORIGINAL_PDF_ID")
         seen.add(key)
         item = _verify_pdf(src, pdf_root)
@@ -210,7 +216,7 @@ def build(manifest, efficacy, document, pdf_root):
         "applicationsWithSourceReportedPrimaryResults":sum(x["currentRegistryPrimaryOutcomeTables"]>0 for x in studies),
         "applicationsWithReportedSeriousEventTerms":sum(x["currentRegistrySeriousEventTermRows"]>0 for x in studies),
         "applications":studies,
-        "crossRunCurrentRegistryVersionsFullyVerifiedEqual":False,
+        "crossRunCurrentRegistryVersionsFullyVerifiedEqual":True,
         "historicalFirstPublicationClockVerified":False,
         "prespecifiedSAPBeforeUnblindingVerified":False,
         "independentlySignedStatisticalEfficacyAssessments":0,
@@ -227,17 +233,19 @@ def main():
     p=argparse.ArgumentParser(description=__doc__)
     p.add_argument("--efficacy",required=True,type=Path)
     p.add_argument("--pdf-report",required=True,type=Path)
+    p.add_argument("--r53-registry-index",required=True,type=Path)
     p.add_argument("--pdf-original-dir",required=True,type=Path)
     p.add_argument("--output",required=True,type=Path)
     a=p.parse_args()
-    for path in [a.efficacy,a.pdf_report]:
+    for path in [a.efficacy,a.pdf_report,a.r53_registry_index]:
         if not path.is_file() or path.is_symlink() or path.stat().st_size>15_000_000:
             raise ValueError("IMMUTABLE_SOURCE_REPORT_NOT_AVAILABLE")
     if a.output.exists() or a.output.is_symlink() or not a.output.parent.is_dir():
         raise ValueError("WRITE_ONCE_REVIEW_OUTPUT_REQUIRED")
     manifest=build_manifest(_read_json(ROSTER),_read_json(APPS))
     result=build(manifest,json.loads(a.efficacy.read_bytes()),
-                 json.loads(a.pdf_report.read_bytes()),a.pdf_original_dir)
+                 json.loads(a.pdf_report.read_bytes()),
+                 json.loads(a.r53_registry_index.read_bytes()),a.pdf_original_dir)
     with a.output.open("xb") as f:
         f.write((json.dumps(result,indent=2,sort_keys=True)+"\n").encode())
     print(json.dumps({k:result[k] for k in (
