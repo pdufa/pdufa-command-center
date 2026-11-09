@@ -1,0 +1,549 @@
+{
+  "schemaVersion": 1,
+  "dataset": "OCTOBER_2026_EXPOSED_EVIDENCE_CUTOFF_ASSESSMENT_FREEZE",
+  "createdAt": "2026-11-09",
+  "cohortDefinition": "All 15 unique applications in pdufa.bio October 2026 calendar plus predecision verified Oct4 MRK Welireg/Lenvima goal and Oct23 ABBV SKYRIZI action case from prior study; full named-source 17-case audit, NOT exhaustive FDA industry-wide PDUFA calendar",
+  "sourceCalendar": "https://www.pdufa.bio/calendar",
+  "sourceCalendarSnapshotObservedOn": "2026-11-09",
+  "predecisionEvidenceCutoff": "2026-08-31",
+  "independentOutcomeBlind": false,
+  "sourceDocumentsDatedPredecisionOnly": true,
+  "knownOutcomeLeakage": true,
+  "originalFourCaseRecordsPreserved": true,
+  "forecastsAreOutcomeAwareReconstruction": true,
+  "validForAccuracy": false,
+  "validForCalibration": false,
+  "phaseFirstResearchLevel": "MANUAL_LEVEL_3_STYLE",
+  "totalCases": 17,
+  "predecisionAssessmentCases": [
+    {
+      "id": "OCT26-01-LLY",
+      "ticker": "LLY",
+      "drug": "Jaypirca (pirtobrutinib)",
+      "indication": "First-line CLL/SLL without 17p deletion",
+      "trackedOctoberDate": "2026-10-02",
+      "predecisionGoal": null,
+      "calendarRole": "OCTOBER_ACTION_NO_EXACT_GOAL_VERIFIED",
+      "phaseFirstVerified": "PHASE_3_RANDOMIZED",
+      "nct": [
+        "NCT05023980"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "BRUIN CLL-313 randomized active-controlled PFS benefit; June 2026 CHMP recommendation tied to 2025 data.",
+        "level2ClinicalBenefitAndSafety": "Clinically substantial PFS signal in previously untreated CLL; established product safety, infection and atrial fibrillation risk.",
+        "level3RegulatoryFit": "Existing licensed molecule, strong phase 3 and no reported major FDA gating concerns."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://lilly.gcs-web.com/news-releases/news-release-details/lillys-jaypirca-pirtobrutinib-recommended-chmp-approval-0"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-02-MRK",
+      "ticker": "MRK",
+      "drug": "Welireg + Lenvima (belzutifan + lenvatinib)",
+      "indication": "Previously treated advanced clear-cell RCC",
+      "trackedOctoberDate": "2026-10-04",
+      "predecisionGoal": "2026-10-04",
+      "calendarRole": "SOURCE_VERIFIED_GOAL_OR_DISCLOSED_WINDOW",
+      "phaseFirstVerified": "PHASE_3_RANDOMIZED",
+      "nct": [
+        "NCT04586231"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "LITESPARK-011 randomized versus cabozantinib: PFS HR approx 0.74, primary PFS positive; OS not statistically established.",
+        "level2ClinicalBenefitAndSafety": "Meaningful progression benefit and ORR 53% versus 40%; overlapping toxicities of two active agents.",
+        "level3RegulatoryFit": "Two sNDAs accepted for an existing two-drug combination, with verified October 4 goal."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://www.merck.com/news/welireg-belzutifan-plus-lenvima-lenvatinib-reduced-the-risk-of-disease-progression-or-death-by-30-compared-to-cabozantinib-in-certain-previously-treated-patients-with-advanced-renal-ce/"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-03-NVS",
+      "ticker": "NVS",
+      "drug": "Rhapsido (remibrutinib)",
+      "indication": "Symptomatic dermographism despite H1 antihistamines",
+      "trackedOctoberDate": "2026-10-06",
+      "predecisionGoal": null,
+      "calendarRole": "OCTOBER_ACTION_NO_EXACT_GOAL_VERIFIED",
+      "phaseFirstVerified": "PHASE_3_RANDOMIZED",
+      "nct": [
+        "NCT05976243"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "RemIND positive placebo-controlled Phase 3 on complete hive responses at week 12 in symptomatic dermographism.",
+        "level2ClinicalBenefitAndSafety": "Symptom relief addresses unmet need; no liver safety signal disclosed; already approved in CSU.",
+        "level3RegulatoryFit": "Existing licensed oral BTKi, positive pivotal RemIND cohort; label expansion plausible."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://www.novartis.com/news/media-releases/novartis-remibrutinib-first-therapy-achieve-phase-iii-primary-endpoint-chronic-inducible-urticaria-cindu"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-04-PFE",
+      "ticker": "PFE",
+      "drug": "Tukysa + trastuzumab + pertuzumab",
+      "indication": "HER2+ metastatic breast cancer maintenance",
+      "trackedOctoberDate": "2026-10-07",
+      "predecisionGoal": null,
+      "calendarRole": "OCTOBER_ACTION_NO_EXACT_GOAL_VERIFIED",
+      "phaseFirstVerified": "PHASE_3_RANDOMIZED",
+      "nct": [
+        "NCT05132582"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "HER2CLIMB-05 randomized: PFS HR 0.641, p<0.0001, median 24.9 vs 16.3 mo.",
+        "level2ClinicalBenefitAndSafety": "Clinically useful progression-free survival; hepatic injury and diarrhea require stringent risk labeling.",
+        "level3RegulatoryFit": "Existing anticancer drug and large positive phase 3, awaiting FDA review of increased liver toxicity."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://www.pfizer.com/news/press-release/press-release-detail/tukysa-added-first-line-maintenance-therapy-extends-median"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-05-TEVA",
+      "ticker": "TEVA",
+      "drug": "Weltruza (TEV-749 olanzapine LAI)",
+      "indication": "Monthly SC schizophrenia treatment",
+      "trackedOctoberDate": "2026-10-08",
+      "predecisionGoal": null,
+      "calendarRole": "OCTOBER_ACTION_NO_EXACT_GOAL_VERIFIED",
+      "phaseFirstVerified": "PHASE_3_RANDOMIZED",
+      "nct": [],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "SOLARIS Phase 3 placebo-controlled PANSS primary endpoint achieved at all three monthly doses.",
+        "level2ClinicalBenefitAndSafety": "Adherence convenience; metabolic/weight risk of olanzapine and injection safety must be managed.",
+        "level3RegulatoryFit": "NDA accepted; known oral active substance and route-specific efficacy; possible depot CMC/device risk unknown."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://ir.tevapharm.com/news-and-events/press-releases/press-release-details/2026/U-S--Food-and-Drug-Administration-FDA-Accepts-Tevas-New-Drug-Application-NDA-for-Olanzapine-Extended-Release-Injectable-Suspension-TEV-749-for-the-Once-Monthly-Treatment-of-Schizophrenia-in-Adults/default.aspx",
+        "https://www.tevausa.com/news-and-media/press-releases/teva-and-medincell-announce-positive-phase-3-efficacy-results-from-solaris-trial-evaluating-tev-749-ola/"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-06-AMGN",
+      "ticker": "AMGN",
+      "drug": "Repatha (evolocumab)",
+      "indication": "CV risk-reduction label expansion, VESALIUS-CV",
+      "trackedOctoberDate": "2026-10-09",
+      "predecisionGoal": null,
+      "calendarRole": "OCTOBER_ACTION_NO_EXACT_GOAL_VERIFIED",
+      "phaseFirstVerified": "PHASE_3_RANDOMIZED",
+      "nct": [
+        "NCT03872401"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "VESALIUS-CV >12,000 randomized; 3-point MACE HR 0.75 with both co-primary outcomes significant.",
+        "level2ClinicalBenefitAndSafety": "Prevents serious first vascular events; established LDL and safety evidence with no new safety signal.",
+        "level3RegulatoryFit": "Licensed PCSK9 therapy plus major positive CV outcomes study supports supplement."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://www.amgen.com/newsroom/press-releases/2025/11/amgens-repatha-cuts-risk-of-first-major-adverse-cardiovascular-events-by-25-in-landmark-phase-3-vesaliuscv-trial"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-07-RHHBY",
+      "ticker": "RHHBY",
+      "drug": "Tecentriq / Tecentriq Hybreza + FOLFOX",
+      "indication": "Adjuvant stage III dMMR colon cancer",
+      "trackedOctoberDate": "2026-10-09",
+      "predecisionGoal": "2026-10-09",
+      "calendarRole": "SOURCE_VERIFIED_GOAL_OR_DISCLOSED_WINDOW",
+      "phaseFirstVerified": "PHASE_3_RANDOMIZED",
+      "nct": [
+        "NCT02912559"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "ATOMIC randomization: disease-free survival HR approximately 0.50, 3-year DFS around 86% vs 76%.",
+        "level2ClinicalBenefitAndSafety": "Clear recurrence-risk reduction but immune toxicities and combined chemo toxicity need monitoring.",
+        "level3RegulatoryFit": "Priority-reviewed supplement for an existing checkpoint drug supported by favorable randomized Phase 3."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://www.roche.com/investors/updates/inv-update-2026-06-11"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-08-MRK",
+      "ticker": "MRK",
+      "drug": "Ifinatamab deruxtecan (I-DXd)",
+      "indication": "Previously treated extensive-stage SCLC",
+      "trackedOctoberDate": "2026-10-10",
+      "predecisionGoal": "2026-10-10",
+      "calendarRole": "OCTOBER_GOAL_WITH_WITHDRAWAL",
+      "phaseFirstVerified": "PHASE_2_SINGLE_ARM",
+      "nct": [
+        "NCT05280470"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "IDeate-Lung01 Phase 2, response-based accelerated-approval application; randomized confirmatory Phase 3 not yet ready.",
+        "level2ClinicalBenefitAndSafety": "Antibody-drug conjugate shows an activity signal, but durability, safety and comparative benefit uncertain.",
+        "level3RegulatoryFit": "Priority Review and Breakthrough status favor review, but single-arm accelerated indication and unmet confirmatory evidence create a high legal-efficacy gate."
+      },
+      "prediction": "CRL",
+      "predictionStrength": "CRL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://www.merck.com/news/ifinatamab-deruxtecan-granted-priority-review-in-the-u-s-for-adult-patients-with-previously-treated-extensive-stage-small-cell-lung-cancer-who-experienced-disease-progression-on-or-after-platinum-bas/"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-09-IBRX",
+      "ticker": "IBRX",
+      "drug": "Anktiva (N-803) + BCG",
+      "indication": "Papillary-only BCG-unresponsive NMIBC expansion",
+      "trackedOctoberDate": "2026-10-14",
+      "predecisionGoal": "2027-01-06",
+      "calendarRole": "OCTOBER_FDA_ACTION_NOT_OCTOBER_GOAL",
+      "phaseFirstVerified": "PHASE_2_3_SINGLE_ARM",
+      "nct": [
+        "NCT03022825"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "QUILT-3.032 single-arm activity in existing CIS indication; papillary-only extension relies partly on biological overlap and clinical evidence.",
+        "level2ClinicalBenefitAndSafety": "Avoidance of further bladder interventions valuable; no direct randomized papillary-only comparator, known infection and local BCG risks.",
+        "level3RegulatoryFit": "sBLA accepted August 4 for January 2027 goal, existing ANKTIVA combination approval supports pathway but extrapolation uncertainty remains."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://www.sec.gov/Archives/edgar/data/1326110/000132611026000077/ibrx-202684x8kexhibit991.htm"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-10-RHHBY",
+      "ticker": "RHHBY",
+      "drug": "Enspryng (satralizumab)",
+      "indication": "Thyroid eye disease",
+      "trackedOctoberDate": "2026-10-15",
+      "predecisionGoal": "2026-10-15",
+      "calendarRole": "SOURCE_VERIFIED_GOAL_OR_DISCLOSED_WINDOW",
+      "phaseFirstVerified": "PHASE_3_RANDOMIZED",
+      "nct": [
+        "NCT05987423",
+        "NCT06106828"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "SatraGO-2 significant proptosis response 53% vs 23%; SatraGO-1 numerical 49% vs 31%, not significant.",
+        "level2ClinicalBenefitAndSafety": "Potential improvement in diplopia, eye bulging and at-home access; no new safety signals but one pivotal failed primary.",
+        "level3RegulatoryFit": "Priority Review and supportive totality may permit approval despite imperfect replication; risk from failed one study."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://www.gene.com/media/press-releases/15118/2026-06-29/fda-grants-priority-review-to-genentechs"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-11-IRDVTRS",
+      "ticker": "IRD / VTRS",
+      "drug": "Ryzumvi (phentolamine ophthalmic solution 0.75%)",
+      "indication": "Presbyopia adults",
+      "trackedOctoberDate": "2026-10-17",
+      "predecisionGoal": "2026-10-17",
+      "calendarRole": "SOURCE_VERIFIED_GOAL_OR_DISCLOSED_WINDOW",
+      "phaseFirstVerified": "PHASE_3_RANDOMIZED",
+      "nct": [
+        "NCT05646719",
+        "NCT06542497"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "VEGA-2/3 randomized Phase 3 trials both met primary and key secondary near-visual-acuity endpoints.",
+        "level2ClinicalBenefitAndSafety": "Near vision improvement without serious treatment-related AEs; eye discomfort and variable duration are manageable.",
+        "level3RegulatoryFit": "sNDA accepted Feb25, existing molecule approved for reversal of mydriasis; two positive pivotal trials."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://newsroom.viatris.com/2026-02-25-FDA-Accepts-Viatris-Supplemental-New-Drug-Application-for-MR-141-Phentolamine-Ophthalmic-Solution-0-75-for-the-Treatment-of-Presbyopia"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-12-GSK",
+      "ticker": "GSK",
+      "drug": "Jemperli (dostarlimab)",
+      "indication": "dMMR/MSI-H locally advanced rectal cancer",
+      "trackedOctoberDate": "2026-10-19",
+      "predecisionGoal": "FEBRUARY_2027",
+      "calendarRole": "OCTOBER_FDA_ACTION_NOT_OCTOBER_GOAL",
+      "phaseFirstVerified": "PHASE_2_SINGLE_ARM",
+      "nct": [
+        "NCT05723562"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "AZUR-1 Phase 2 single-arm unusually sustained clinical complete responses for 12 months in a biomarker-defined setting.",
+        "level2ClinicalBenefitAndSafety": "Organ-preserving treatment could avoid surgery/chemoradiation morbidity; small uncontrolled trial and immature long-term data.",
+        "level3RegulatoryFit": "Breakthrough and Priority Review with Project Orbis; accelerated pathway reasonable but traditional evidentiary standard unmet."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://us.gsk.com/en-us/media/press-releases/jemperli-dostarlimab-gxly-accepted-for-priority-review-by-the-us-fda"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-13-AZN",
+      "ticker": "AZN",
+      "drug": "Ultomiris (ravulizumab)",
+      "indication": "Primary IgA nephropathy",
+      "trackedOctoberDate": "2026-10-21",
+      "predecisionGoal": "Q4_2026",
+      "calendarRole": "SOURCE_VERIFIED_GOAL_OR_DISCLOSED_WINDOW",
+      "phaseFirstVerified": "PHASE_3_RANDOMIZED",
+      "nct": [
+        "NCT06291376"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "I CAN prespecified interim randomized week-34 proteinuria: 43.4% placebo-adjusted reduction (p<0.0001).",
+        "level2ClinicalBenefitAndSafety": "Surrogate reduction important, final eGFR pending; serious meningococcal infection risk.",
+        "level3RegulatoryFit": "Priority Review; existing C5-blocker and accelerated-approval pathway support benefit-risk."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "ACCELERATED_APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://www.astrazeneca.com/media-centre/press-releases/2026/ultomiris-granted-priority-review-in-the-us-as-treatment-for-adults-with-immunoglobulin-a-nephropathy.html"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-14-ABBV",
+      "ticker": "ABBV",
+      "drug": "SKYRIZI (risankizumab-rzaa)",
+      "indication": "Crohn's disease subcutaneous induction",
+      "trackedOctoberDate": "2026-10-23",
+      "predecisionGoal": null,
+      "calendarRole": "OCTOBER_ACTION_NO_EXACT_GOAL_VERIFIED",
+      "phaseFirstVerified": "PHASE_3_RANDOMIZED",
+      "nct": [
+        "NCT06063967"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "AFFIRM randomized placebo-controlled Phase 3 met week-12 clinical remission and endoscopic response co-primaries.",
+        "level2ClinicalBenefitAndSafety": "Home SC induction could avoid initial IV infusions; existing risankizumab safety profile supports benefit-risk.",
+        "level3RegulatoryFit": "Previously approved Crohn's drug with route-specific positive pivotal; device/CMC and labeling risk unknown."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://news.abbvie.com/2026-03-02-AbbVie-Announces-Positive-Topline-Results-from-Phase-3-AFFIRM-Study-Evaluating-SKYRIZI-R-Risankizumab-Subcutaneous-Induction-in-Patients-with-Crohns-Disease"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-15-PHAR",
+      "ticker": "PHAR",
+      "drug": "Joenja (leniolisib)",
+      "indication": "Pediatric APDS ages 4–11 weighing at least 27kg",
+      "trackedOctoberDate": "2026-10-24",
+      "predecisionGoal": "2026-10-24",
+      "calendarRole": "SOURCE_VERIFIED_GOAL_OR_DISCLOSED_WINDOW",
+      "phaseFirstVerified": "PHASE_3_PEDIATRIC_SINGLE_ARM",
+      "nct": [
+        "NCT05438407"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "Small open-label pediatric PK/PD/safety study with prior efficacy precedent in older patients.",
+        "level2ClinicalBenefitAndSafety": "Unmet need and pharmacology support pediatric extrapolation; underexposure and small trial risk.",
+        "level3RegulatoryFit": "January 2026 CRL concerned under-27kg exposures and manufacturing tests; narrowed resubmission includes analytical method."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://www.pharming.com/our-news/pharming-announces-u-s-fda-acceptance-of-snda-resubmission-for-joenja"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-16-GSK",
+      "ticker": "GSK",
+      "drug": "Bepirovirsen (Hibsago)",
+      "indication": "Chronic hepatitis B functional cure",
+      "trackedOctoberDate": "2026-10-26",
+      "predecisionGoal": "2026-10-26",
+      "calendarRole": "SOURCE_VERIFIED_GOAL_OR_DISCLOSED_WINDOW",
+      "phaseFirstVerified": "TWO_PHASE_3_RANDOMIZED",
+      "nct": [
+        "NCT05630807",
+        "NCT05630820"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "Two B-Well pivotal randomized trials: functional cure around 19% vs 0% placebo.",
+        "level2ClinicalBenefitAndSafety": "Meaningful functional cure albeit most do not respond; ALT flares and serious AEs require monitoring.",
+        "level3RegulatoryFit": "Priority Review and breakthrough with two positive trials, no known critical FDA gating failure."
+      },
+      "prediction": "APPROVAL",
+      "predictionStrength": "APPROVAL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://www.gsk.com/en-gb/media/press-releases/bepirovirsen-achieves-unprecedented-functional-cure-rates-with-potential-to-redefine-treatment-for-chronic-hepatitis-b"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    },
+    {
+      "id": "OCT26-17-INO",
+      "ticker": "INO",
+      "drug": "INO-3107 (Voceryq)",
+      "indication": "Recurrent respiratory papillomatosis",
+      "trackedOctoberDate": "2026-10-30",
+      "predecisionGoal": "2026-10-30",
+      "calendarRole": "SOURCE_VERIFIED_GOAL_OR_DISCLOSED_WINDOW",
+      "phaseFirstVerified": "PHASE_1_2_SINGLE_ARM",
+      "nct": [
+        "NCT04398433"
+      ],
+      "levels": {
+        "level1TrialDesignAndEfficacy": "32-patient uncontrolled study: 26/32 fewer surgeries; durable effect signal but no randomized comparison.",
+        "level2ClinicalBenefitAndSafety": "High clinical burden of repeat airway surgeries; safety/response evidence small.",
+        "level3RegulatoryFit": "FDA explicitly flagged accelerated-approval eligibility after prior PAPZIMEOS approval; incomplete evidence for traditional route."
+      },
+      "prediction": "CRL",
+      "predictionStrength": "CRL_LEAN",
+      "evidenceCutoff": "2026-08-31",
+      "predecisionUrls": [
+        "https://www.sec.gov/Archives/edgar/data/1055726/000105572626000023/ino-20260630.htm"
+      ],
+      "actualFdaDecision": null,
+      "actualFdaActionDate": null,
+      "officialPostdecisionSource": null,
+      "scoreEligibleForBlindAccuracy": false,
+      "calibratedApprovalProbability": null,
+      "levelStyle": 3,
+      "knownOutcomesExposedToAuthorBeforeResearch": true
+    }
+  ]
+}
