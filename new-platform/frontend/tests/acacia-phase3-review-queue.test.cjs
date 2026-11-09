@@ -118,6 +118,32 @@ test("CSV preserves exactly 18 research leads, makes gaps transparent and protec
   assert.ok(formulaQueue);
   assert.match(queueModule.reviewQueueCsv(formulaQueue),/'=HYPERLINK\(/);
 });
+test("original-source receipt provenance is mapped to SAP and HF safety work, never grades",()=>{
+  const q=evaluate(clone());
+  assert.ok(q);
+  for(const id of ["4.2:L1","4.3:L1","5.1:L12","5.2:L1","8.2:L1"]){
+    const p=q.positions.find(x=>x.id===id);
+    assert.ok(p);
+    assert.equal(p.sourceGapAuditRun,42555289486);
+    assert.match(p.sourceGapAuditNote,/final locked SAP remains unverified/);
+    assert.equal(p.clinicalGrade,null);
+  }
+  for(const id of ["5.3:L1","5.3:L19"]){
+    const p=q.positions.find(x=>x.id===id);
+    assert.equal(p.sourceGapAuditRun,42555289486);
+    assert.match(p.sourceGapAuditNote,/12 versus 3 placebo/);
+    assert.match(p.sourceGapAuditNote,/11\/1 source definition remains unreconciled/);
+    assert.equal(p.fdaProbability,null);
+  }
+  const unrelated=q.positions.find(x=>x.id==="4.1:L1");
+  assert.equal(unrelated.sourceGapAuditRun,null);
+  assert.equal(unrelated.sourceGapAuditNote,null);
+  const csv=queueModule.reviewQueueCsv(q);
+  assert.match(csv,/Public source gap \(dated audit\)/);
+  assert.match(csv,/final locked SAP remains unverified/);
+  assert.match(csv,/secondary 11\/1 source definition remains unreconciled/);
+  assert.equal(csv.trimEnd().split("\r\n").length,19);
+});
 test("queue is authenticated, GET-only, and downloadable from the iPhone pilot screen",()=>{
   const api=fs.readFileSync(path.join(root,"app/api/predictions/medical-phase3-review-queue/route.ts"),"utf8");
   const ui=fs.readFileSync(path.join(root,"app/predictions/assessment/PilotResearchReviewQueue.tsx"),"utf8");
@@ -130,6 +156,12 @@ test("queue is authenticated, GET-only, and downloadable from the iPhone pilot s
   assert.match(api,/text\/csv/);
   assert.match(api,/reviewQueueCsv\(queue\)/);
   assert.doesNotMatch(api,/export async function POST/);
+  assert.match(ui,/Original-source gap audit/);
+  assert.match(ui,/42555289486/);
+  assert.match(ui,/NOT RECONCILED/);
+  assert.match(ui,/did not list a statistical analysis plan/);
+  assert.match(ui,/automated fetch of both NEJM supplements was unavailable/);
+  assert.match(ui,/Source audit finding \(dated\)/);
   assert.match(ui,/Open all 18 research method leads/);
   assert.match(ui,/Search scientific research queue/);
   assert.match(ui,/Filter research queue status/);
