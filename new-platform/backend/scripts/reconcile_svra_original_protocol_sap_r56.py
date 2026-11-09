@@ -68,7 +68,7 @@ def page_match(raw:bytes,filename:str):
     expected=EXPECTED[filename]
     if pdf.needs_pass or pdf.is_encrypted or len(pdf)!=expected["pages"]:
         raise ValueError("ORIGINAL_VERIFIED_PDF_PAGE_COUNT_DRIFT")
-    required={page for _,_,evidence in ITEMS for doc,page,phrase in evidence if doc==filename}
+    required={page for _,_,_,evidence in ITEMS for doc,page,phrase in evidence if doc==filename}
     text={}
     for page in required:
         if not 1<=page<=len(pdf):raise ValueError("INVALID_PHYSICAL_PDF_PAGE")
