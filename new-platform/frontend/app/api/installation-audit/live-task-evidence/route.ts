@@ -1,4 +1,6 @@
 import { NextResponse } from "next/server";
+import { COOKIE_NAME, hasSession } from "../../../../lib/auth";
+import { fetchLiveGithubActions, type LiveGithubEvidence } from "../../../../lib/installation-live-github";
 import { masterBuildTasks } from "../../../installation-audit/master-build-tasks";
 import { activeInstallationTasks } from "../../../../lib/installation-active-requirements";
 import evidenceRegistry from "../../../../public/installation-audit/task-evidence.json";
@@ -19,6 +21,17 @@ function hasTaskAcceptance(row:Evidence):boolean {
 const ids=activeInstallationTasks(masterBuildTasks).map(task=>task.id);
 export async function GET(request: Request) {
  const checkedAt = new Date().toISOString();
+ const cookieHeader=request.headers.get("cookie")??"";
+ const sessionCookie=cookieHeader.split(";").map(part=>part.trim()).find(part=>part.startsWith(COOKIE_NAME+"="))?.slice(COOKIE_NAME.length+1);
+ const githubAuthorized=hasSession(sessionCookie);
+ // Initiate independent authenticated workflow reads concurrently with existing health probes.
+ // Never expose private repository execution metadata to anonymous visitors.
+ const githubRead:Promise<LiveGithubEvidence>=githubAuthorized
+  ?fetchLiveGithubActions(process.env.PDUFA_GITHUB_TOKEN,checkedAt)
+  :Promise.resolve({state:"AUTH_REQUIRED",checkedAt,
+    sourceUrl:"https://github.com/pdufa/pdufa-command-center/actions",running:[],queued:[],recent:[],
+    scope:"Authenticated GitHub Actions readback, separate from task-level Codex execution",
+    note:"A signed-in dashboard session is required to show live workflow execution."});
  const origin = new URL(request.url).origin;
  const saved = evidenceRegistry as {tasks?:Record<string,Evidence>;updatedAt?:string};
  const tasks:Record<string,Evidence>={};
@@ -122,5 +135,6 @@ export async function GET(request: Request) {
  // Runtime failures do not erase previously dated acceptance evidence. Live checks
  // are observations only; no requirement is auto-certified without a test contract.
  const counts=ids.reduce((acc,id)=>{const status=tasks[id].status;acc[status]=(acc[status]??0)+1;return acc;},{} as Record<string,number>);
- return NextResponse.json({schemaVersion:1,checkedAt,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,historicalTaskCount:masterBuildTasks.reduce((n,tasks)=>n+tasks.length,0)-ids.length,rejectedVerified,counts,tasks,checks,observations:mappedObservations,observationSummary,automatedAcceptanceCoverage:0,unverifiedCount:counts.Unverified??0,verifiedCount:counts.Verified??0,liveChecksPassing:observationSummary.probesHealthy,liveChecksTotal:Object.keys(checks).length,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
+ const githubActions=await githubRead;
+ return NextResponse.json({schemaVersion:1,checkedAt,githubActions,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,historicalTaskCount:masterBuildTasks.reduce((n,tasks)=>n+tasks.length,0)-ids.length,rejectedVerified,counts,tasks,checks,observations:mappedObservations,observationSummary,automatedAcceptanceCoverage:0,unverifiedCount:counts.Unverified??0,verifiedCount:counts.Verified??0,liveChecksPassing:observationSummary.probesHealthy,liveChecksTotal:Object.keys(checks).length,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
 }
