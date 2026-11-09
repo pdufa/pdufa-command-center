@@ -15,7 +15,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, HTTPCookieProcessor, Request, build_opener
 
 # Pin the verified Revision36 preview; the branch alias can lag asynchronous builds.
-SITE = 'https://pdufa-new-dashboard-2rz1u59ty-pdufa.vercel.app'
+SITE = 'https://pdufa-new-dashboard-gpi564weg-pdufa.vercel.app'
 BACKEND = 'https://pdufa-medical-intelligence-preview.onrender.com'
 PILOT = 'NCT06081894'
 
@@ -116,6 +116,21 @@ def confirm_provisional_score_page(client):
     visible = ' '.join(parser.parts)
     normalized = re.sub(r'\s+', ' ', visible)
     confirm_original_registry_panel(normalized)
+    demand('Revision 37 · Evidence-to-reviewer gates · 800 methods' in normalized and
+           'Original registry references' in normalized and
+           'Other mapped leads' in normalized and
+           'Not source mapped' in normalized and
+           'Authorized grades' in normalized and
+           'Inspect all 18 prioritized method handoffs' in normalized and
+           'clinical grade unassigned' in normalized and
+           'FDA approval/CRL/delay ABSTAIN' in normalized and
+           'NOT CALIBRATED' in normalized,
+           'REVISION37_METHOD_EVIDENCE_HANDOFF_NOT_RENDERED')
+    print(json.dumps({'stage':'REVISION37_METHOD_EVIDENCE_HANDOFF_READ',
+       'status':'PASS','nct':PILOT,'sourceDocumentMappings':3,
+       'additionalSourceLeads':15,'notMapped':782,'methodPositions':800,
+       'clinicalGrades':0,'predictions':'ABSTAIN',
+       'accuracy':'NOT_CALIBRATED','writesPerformed':False}),flush=True)
     demand('Source-specific safety uncertainty' in normalized and
            'Investigate sponsor 12/3 versus secondary paper 11/1' in normalized and
            '14 (2.7%)' in normalized and '5.43' in normalized and
