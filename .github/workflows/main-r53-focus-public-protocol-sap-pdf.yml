@@ -11,6 +11,8 @@ on:
       - new-platform/backend/tests/test_focus_protocol_pdf_text_r53.py
       - new-platform/backend/scripts/build_focus_methods_crosswalk_r54.py
       - new-platform/backend/tests/test_focus_methods_crosswalk_r54.py
+      - new-platform/backend/scripts/assemble_focus_clinical_review_packets_r55.py
+      - new-platform/backend/tests/test_focus_clinical_review_packets_r55.py
   workflow_dispatch:
 
 permissions:
@@ -41,7 +43,7 @@ jobs:
           test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
           python -m pip install pytest pymupdf
           cd new-platform/backend
-          PYTHONPATH=. python -m pytest -q tests/test_focus_protocol_pdf_text_r53.py tests/test_focus_methods_crosswalk_r54.py tests/test_focus_protocol_index_r46.py tests/test_focus_application_efficacy_safety_r51.py
+          PYTHONPATH=. python -m pytest -q tests/test_focus_protocol_pdf_text_r53.py tests/test_focus_methods_crosswalk_r54.py tests/test_focus_clinical_review_packets_r55.py tests/test_focus_protocol_index_r46.py tests/test_focus_application_efficacy_safety_r51.py
           PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
       - name: Capture all 29 current registry records and current document metadata
         shell: bash
@@ -183,6 +185,66 @@ jobs:
           print(msg,flush=True)
           with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
             f.write("\n## R54 page-cited methods audit; no clinical scoring\n\n"+msg+"\n")
+          PY
+      - name: Assemble all 23 case packets with original posted primary efficacy analyses, safety-arm denominators and methods evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/assemble_focus_clinical_review_packets_r55.py \
+            --r46-index "$RUNNER_TEMP/r53-original/current_registry_document_index.json" \
+            --r54-matrix "$RUNNER_TEMP/r53-original/FOCUS_23_APPLICATION_METHOD_SOURCE_CROSSWALK_R54.json" \
+            --registry-dir "$RUNNER_TEMP/r53-original/public-registry-original" \
+            --output "$RUNNER_TEMP/r53-original/FOCUS_23_APPLICATION_EFFICACY_SAFETY_SOURCE_REVIEW_PACKETS_R55.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"r53-original/FOCUS_23_APPLICATION_EFFICACY_SAFETY_SOURCE_REVIEW_PACKETS_R55.json"
+          r=json.loads(p.read_bytes())
+          assert r["schema"]=="MAIN_R55_EXACT_23_APPLICATION_SOURCE_REPORTED_EFFICACY_SAFETY_METHOD_PACKETS"
+          assert r["nctTrials"]==29 and r["applicationGroups"]==23
+          assert len(r["originalUniqueTrialEvidence"])==29
+          assert len(r["currentSourceCasePackets"])==23
+          assert r["sourceVerifiedCurrentProtocolSAPDocuments"]==23
+          assert r["uniqueTrialsWithPostedPrimary"]==12
+          assert r["uniqueTrialsWithPostedAdverseEvents"]==12
+          assert r["postedPrimaryTables"]==16
+          assert r["reportedPrimaryStatisticalComparisons"]==20
+          assert r["seriousAeTermRows"]==244 and r["otherAeTermRows"]==202
+          assert r["currentPublicRegistryResultsAreNotOriginalPredecisionData"] is True
+          assert r["reportedPValueNotIndependentlyMultiplicityAdjusted"] is True
+          assert r["safetyArmsNotCausalOrPooled"] is True
+          assert r["historicalLockedSAPsIndependentlyVerified"]==0
+          assert r["signedScientificReviews"]==0
+          assert r["independentlyValidatedFDAApplicationForecasts"]==0
+          assert r["realHistoricalPredictionBacktests"]==0
+          assert r["measuredAccuracy"] is None
+          assert r["modelTrainingAuthorized"] is False
+          assert r["clinicalOrProductionWrites"] is False
+          assert r["officialPendingFDAOutcome"]=="ABSTAIN"
+          svra=next(x for x in r["originalUniqueTrialEvidence"] if x["nct"]=="NCT04544293")
+          assert len(svra["sourceMethodsPageReferences"])==2
+          primary=svra["postedPrimaryOutcomeTables"][0]["statisticalComparisons"][0]
+          assert primary["reportedPValueLiteral"]=="0.0007"
+          assert primary["reportedEstimateLiteral"]=="6.0"
+          assert primary["reportedLowerBoundLiteral"]=="2.5"
+          assert primary["reportedUpperBoundLiteral"]=="9.4"
+          assert primary["independentStatisticalRecalculationComplete"] is False
+          groups=svra["postedAdverseEventArmCountsAsReported"]
+          assert [(g["seriousAffected"],g["seriousAtRisk"]) for g in groups]==[(14,81),(20,83)]
+          assert all(case["scientificGrade"] is None and case["fdaProbability"] is None
+                  and case["officialFDAOutcomePrediction"]=="ABSTAIN"
+                  for case in r["currentSourceCasePackets"])
+          line=(f'R55 complete: {r["applicationGroups"]} evidence packets from {r["nctTrials"]} exact trials; '
+            f'{r["postedPrimaryTables"]} posted primary tables, '
+            f'{r["reportedPrimaryStatisticalComparisons"]} source-reported comparison entries, '
+            f'{r["seriousAeTermRows"]} original SAE term rows, '
+            f'{r["otherAeTermRows"]} other AE term rows; 23 source-linked PDF methods files. '
+            'Savara current registry p=0.0007, difference 6.0 (reported 95% CI 2.5 to 9.4), '
+            '14/81 vs 20/83 serious AE affected as reported, not independently adjudicated. '
+            'No independent science signoffs or FDA forecasts.')
+          print(line,flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write(
+             "\n## R55 23 source-bound efficacy/safety/methods packets\n\n"+line+"\n")
           PY
       - name: Retain unmodified public PDF originals, registry receipts and read-only review notes
         if: always()
