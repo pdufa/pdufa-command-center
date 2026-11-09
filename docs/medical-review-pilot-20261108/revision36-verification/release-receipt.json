@@ -1,0 +1,52 @@
+{
+  "schema": "MAIN_REV36_ISOLATED_RELEASE_ACCEPTANCE_V1",
+  "observedAt": "2026-11-09T14:04:12.768680+00:00",
+  "workflowRun": "https://github.com/pdufa/pdufa-command-center/actions/runs/42630127667",
+  "workflowEvent": "workflow_dispatch",
+  "exactCommit": "d580b966a4f28d64f1878a9a5e9f6f5713e181b3",
+  "serviceId": "srv-dbntrkpsrm7s73aec3lg",
+  "serviceName": "pdufa-medical-intelligence-preview",
+  "deploymentId": "dep-dbot3n8u01pc738b6bq0",
+  "deploymentState": "live",
+  "deploymentFinishedAt": "2026-11-09T14:01:20.207298Z",
+  "backendGate": "PASS",
+  "frontendGate": "PASS",
+  "retirementGate": "PASS",
+  "authenticatedPostRolloutGate": "PASS",
+  "postgresqlHealth": "READY",
+  "vaultHttpStatus": 404,
+  "beforeAndAfterMatrixSha256": "c5833e1315f64c19c2b5b1f857534b6eff6dbdda69189637e5f8275cf28e9dad",
+  "clinicalGrades": 0,
+  "humanPhaseReviews": 0,
+  "focusTrials": 29,
+  "sourcePackets": 29,
+  "sourceStages": 348,
+  "methodPositions": 23200,
+  "pilotSourceAudits": 800,
+  "startupResearchRunsCreated": 0,
+  "startupExaminationsWritten": 0,
+  "startupGradesWritten": 0,
+  "persistentSourceHistory": {
+    "stageCount": 12,
+    "revision": 2,
+    "historyCount": 2
+  },
+  "fdaPredictions": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "certainty": "NOT_VALIDATED",
+  "accuracy": "NOT_CALIBRATED",
+  "productionOperations": false,
+  "environmentOrDatabaseSecurityChanges": false,
+  "vaultActivated": false,
+  "clinicalReviewerWritesActivated": false,
+  "rolloutSafetyReview": "Startup delta inspected; no automatic vault initialization or destructive migration. Exact-SHA existing workflow used without environment changes.",
+  "evidenceFiles": {
+    "render-deployment.json": "b965ce5b0039c598dbf70442f08640f60242a954de571a42e4f04ac538a9a822",
+    "render-startup-logs.json": "e410f8fa03d6ea90a43b75fdfb3724cf19f142ac24028c4476fd6f6cb03842ff",
+    "post-rollout-health.json": "b570403ec09978bffc8e78c3d5d5a81aee41874d81b4b23e6bd9e4be0013ce50",
+    "post-rollout-authenticated-summary.json": "566aaed41927ce800ad2fe9bd83aacb5e612b3b6eab30fa5c4d3d0dff58b6aca"
+  }
+}

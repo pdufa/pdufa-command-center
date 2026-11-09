@@ -1,6 +1,6 @@
 {
   "schema": "MAIN_REV36_ENGINEERING_ACCEPTANCE_V1",
-  "observedAt": "2026-11-09T13:52:39Z",
+  "observedAt": "2026-11-09T14:01:01.618597+00:00",
   "nct": "NCT06081894",
   "pr": 965,
   "branch": "feature/medical-stage4-verified-method-matrix-20261108",
@@ -94,5 +94,6 @@
     "iphone-history.png": "dfa76eb17bdc5d5f98bb729f66f885e38848ab7e96a6a0339d67cd5566101d59",
     "iphone-task.png": "98fdbc4631b0860e58fcd653719d1c119e3541cdc73c54480940f71563115fc3",
     "local-browser-receipt.json": "97157e52a1ceac9efebbe707756a58bc86964caa56cc77613a5760426c2f5dab"
-  }
+  },
+  "observationTimeMeaning": "Compilation time; original source, CI and browser timestamps remain in their individual receipts."
 }

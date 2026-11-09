@@ -54,6 +54,7 @@ test('Revision 36 documentary checkpoint traces exact original captures without 
   assert.match(checkpoint.tasks.find(task => task.id === 'r36.source-reconciliation').acceptance, /does not resolve 516 versus 517/);
   assert.equal(checkpoint.tasks.find(task => task.id === 'r36.independent-grading').status, 'BLOCKED');
   assert.equal(checkpoint.tasks.find(task => task.id === 'r36.preview-runtime').status, 'VERIFIED');
+  assert.equal(checkpoint.tasks.find(task => task.id === 'r36.backend-rollout').status, 'VERIFIED');
   assert.equal(validateMedicalInstallation(unknown()).installation.counts, null);
 });
 test('missing ledger observations remain unknown counts, never zeros', () => {

@@ -22,7 +22,7 @@ export type MedicalInstallationSnapshot = {observedAt: string; installation: Med
  */
 export const MAIN_RESEARCH_CHECKPOINT = {
   revision: 36,
-  observedAt: "2026-11-09T13:52:39Z",
+  observedAt: "2026-11-09T14:02:19.203666+00:00",
   baseCommit: "13b3dae5cd8bfb003430e03f56bff58caf1da70c",
   nct: "NCT06081894",
   currentTaskId: "r36.source-reconciliation",
@@ -46,8 +46,11 @@ export const MAIN_RESEARCH_CHECKPOINT = {
       acceptance: "Independent evidence assessment, locked historical outcomes, temporal holdout and outcome-specific calibration release gates remain unmet. Pointwise calibration-bin uncertainty code is an engineering component, not a validated FDA probability.",
       evidencePath: "revision36-protocol-safety/reviewer-packet.json"},
     {id: "r36.preview-runtime", title: "Verify this revision's preview and authenticated readback", status: "VERIFIED",
-      acceptance: "Protected CI run 42628975006 passed normal login, all 40 assessments and 800 methods, unchanged history, original source receipts and zero official grades through unique preview deployment dpl_ARC5XDy19zhsmLX5qLCKc9YHZzSj. Local browser acceptance passed at 390px and 1440px. The observed Render backend remains 7c35253f; new backend metrics are not implied deployed. The existing preview alias still targets an earlier revision.",
-      evidencePath: "revision36-verification/authenticated-readback-summary.json"},
+      acceptance: "Protected CI runs 42628975006 and 42630127667 passed normal login, all 40 assessments and 800 methods, unchanged history, original source receipts and zero official grades. Local browser acceptance passed at 390px and 1440px. Use the verified unique preview; the existing preview alias still targets an earlier revision.",
+      evidencePath: "revision36-verification/post-rollout-authenticated-summary.json"},
+    {id: "r36.backend-rollout", title: "Verify the isolated backend rollout and PostgreSQL restart", status: "VERIFIED",
+      acceptance: "Render deployment dep-dbot3n8u01pc738b6bq0 is live at d580b966a4f28d64f1878a9a5e9f6f5713e181b3. Existing exact-commit release gates passed. Startup and health confirmed PostgreSQL ready, 29 source packets, 23,200 positions, preserved source history and zero clinical grades. Post-rollout 800-method readback retained the same ledger hash. Vault route remains uninstalled; no production or database-security change was performed.",
+      evidencePath: "revision36-verification/release-receipt.json"},
   ],
 } as const;
 

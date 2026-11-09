@@ -1,0 +1,20 @@
+{
+  "observedAt": "2026-11-09T14:02:19.203666+00:00",
+  "origin": "https://pdufa-medical-intelligence-preview.onrender.com",
+  "checks": [
+    {
+      "path": "/health",
+      "http": 200,
+      "status": "ok",
+      "storage_ready": true,
+      "storage_reason": "READY",
+      "storage_kind": "postgresql",
+      "production_scans_enabled": false,
+      "startup_source_verification_enabled": false
+    },
+    {
+      "path": "/api/internal/medical-original-evidence-vault/NCT06081894",
+      "http": 404
+    }
+  ]
+}

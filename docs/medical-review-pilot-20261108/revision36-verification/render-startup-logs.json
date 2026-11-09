@@ -1,0 +1,386 @@
+{
+  "hasMore": false,
+  "logs": [
+    {
+      "id": "4b66d6fb-f1d2-4d01-a61a-b51d700ce3a3",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "\u001b[34m\u001b[1m==>\u001b(B\u001b[m \u001b[1mCloning from https://github.com/pdufa/pdufa-command-center\u001b(B\u001b[m",
+      "timestamp": "2026-11-09T14:00:00.277893819Z"
+    },
+    {
+      "id": "58843080-59f9-4922-9cc6-11721fe08dca",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA staging storage mode: postgresql; postgres_required: True; persistent database ready: True",
+      "timestamp": "2026-11-09T14:01:04.494561494Z"
+    },
+    {
+      "id": "4cbd6c27-8153-4b5c-89a7-4d08d1940e1c",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA checklist write freeze active: False",
+      "timestamp": "2026-11-09T14:01:04.620771953Z"
+    },
+    {
+      "id": "0a9c5346-3100-404e-b9f9-cccde7c773be",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA_MEDICAL_ASSESSMENT_LEDGER status=PASS sourceComplete=29/29 sourceStages=348 phaseVerified=0 reviewEvents=0 scientificSignoff=False prediction=ABSTAIN certainty=NOT_VALIDATED",
+      "timestamp": "2026-11-09T14:01:06.002145309Z"
+    },
+    {
+      "id": "a0fcea9e-feea-4be3-9b18-4e946b3d628f",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA_MEDICAL_PHASE_MATRIX status=PASS sourceComplete=29/29 potentialPositions=23200 phaseVerified=0 savedReviews=0 scientificSignoff=False prediction=ABSTAIN certainty=NOT_VALIDATED",
+      "timestamp": "2026-11-09T14:01:06.014013646Z"
+    },
+    {
+      "id": "f778aae2-3860-45fe-8a5f-f20246b51cbf",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA_MEDICAL_RESEARCH_EXECUTION_READY status=PASS startupRunsCreated=0 examinationsWritten=0 gradesWritten=0 prediction=ABSTAIN",
+      "timestamp": "2026-11-09T14:01:06.106999276Z"
+    },
+    {
+      "id": "7356afae-a5d9-43fa-a370-31636c256d45",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_COVERAGE status=PASS saved=29/29 methodPositions=23200 researchStages=348 reviewerEvents=0 prediction=ABSTAIN certainty=NOT_VALIDATED",
+      "timestamp": "2026-11-09T14:01:06.230703565Z"
+    },
+    {
+      "id": "57029eb0-851d-471c-bd75-5aab6d4af6e0",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_READY status=PASS canarySnapshot=NOT_RUN tailCount=0 scientificSignoff=False prediction=ABSTAIN certainty=NOT_VALIDATED",
+      "timestamp": "2026-11-09T14:01:06.230734177Z"
+    },
+    {
+      "id": "78d3d084-3521-4f23-8f3f-5ef22a5fe899",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA_MEDICAL_METHOD_AUDIT_CANARY status=COMPLETE sourceAuditOnly=True reviewGradesWritten=0",
+      "timestamp": "2026-11-09T14:01:06.482969154Z"
+    },
+    {
+      "id": "bf16c989-8683-451a-87de-948cd3fe8277",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA_MEDICAL_METHOD_AUDIT_READY status=PASS resumed=0 gradesWritten=0 prediction=ABSTAIN",
+      "timestamp": "2026-11-09T14:01:06.483014337Z"
+    },
+    {
+      "id": "1c5ad2be-13ea-4c8f-b58e-b3e4e0cfa6e6",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA_MEDICAL_REGISTRY_RECONCILE_COVERAGE status=PASS saved=29/29 new=0 humanPhaseReviews=0 scientificSignoff=False prediction=ABSTAIN certainty=NOT_VALIDATED",
+      "timestamp": "2026-11-09T14:01:06.513898387Z"
+    },
+    {
+      "id": "a86655a4-729f-439d-b155-d631963ae5d8",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA_MEDICAL_PRIMARY_REVIEW_QUEUE_ITEMS status=PASS total=29 phaseReview=1 postedPrimary=12 missingPrimary=16 registeredOutcomeMeasures=45 postedOutcomeMeasures=16 clinicalSignoff=False prediction=ABSTAIN certainty=NOT_VALIDATED",
+      "timestamp": "2026-11-09T14:01:11.700847152Z"
+    },
+    {
+      "id": "cd545e5e-dea7-461e-9b33-86c68738ab34",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA_MEDICAL_PRIMARY_REVIEW_QUEUE status=PASS registry=29/29 sourceTriage=29/29 humanReviewEvents=0 scientificSignoff=False prediction=ABSTAIN certainty=NOT_VALIDATED",
+      "timestamp": "2026-11-09T14:01:11.700866273Z"
+    },
+    {
+      "id": "db14be00-22c2-4d1a-963a-132e5d8f1d4c",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA_MEDICAL_RESTART_READBACK status=PASS stages=12 revision=2 historyCount=2",
+      "timestamp": "2026-11-09T14:01:11.831470834Z"
+    },
+    {
+      "id": "9cc40cf8-7716-429a-bee1-f5b11202441e",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "INFO:     Application startup complete.",
+      "timestamp": "2026-11-09T14:01:11.831489845Z"
+    },
+    {
+      "id": "a8c4e716-c68f-4bac-a4f1-a27e3e6a82a4",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "instance",
+          "value": "srv-dbntrkpsrm7s73aec3lg-bvndh"
+        },
+        {
+          "name": "level",
+          "value": "info"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "PDUFA_STAGE1_BACKEND_VERIFICATION status=NOT_APPLICABLE reason=SCIENTIFIC_DOSSIER_TABLES_NOT_INSTALLED",
+      "timestamp": "2026-11-09T14:01:13.091201503Z"
+    },
+    {
+      "id": "dbot4krrjlhs73c7m2sg",
+      "labels": [
+        {
+          "name": "resource",
+          "value": "srv-dbntrkpsrm7s73aec3lg"
+        },
+        {
+          "name": "type",
+          "value": "app"
+        }
+      ],
+      "message": "\u001b[0;32m\u001b[1m==> \u001b[0m\u001b[1mAvailable at your primary URL https://pdufa-medical-intelligence-preview.onrender.com\u001b[0m",
+      "timestamp": "2026-11-09T14:01:20.671321278Z"
+    }
+  ],
+  "nextEndTime": "2026-11-09T14:01:55.181011684Z",
+  "nextStartTime": "2026-11-09T14:01:20.671321279Z"
+}
