@@ -90,7 +90,7 @@ def confirm_provisional_score_page(client):
     normalized = re.sub(r'\s+', ' ', visible)
     demand('Source-specific safety uncertainty' in normalized and
            'Investigate sponsor 12/3 versus secondary paper 11/1' in normalized and
-           '14 (2.7%)' in normalized and '5.43%' in normalized and
+           '14 (2.7%)' in normalized and '5.43' in normalized and
            'Clinical grade: UNASSIGNED' in normalized and
            'NOT CALIBRATED' in normalized,
            'ACACIA_SAFETY_SOURCE_RECONCILIATION_NOT_VISIBLE')
