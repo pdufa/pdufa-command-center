@@ -64,8 +64,13 @@ jobs:
       - run: npm run build
 
   authenticated-medical-preview:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.verify_medical_preview && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108' }}
-    needs: [permanent-retirement, backend, frontend]
+    if: >-
+      ${{ always() && github.event_name == 'workflow_dispatch' && inputs.verify_medical_preview &&
+          github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108' &&
+          needs.permanent-retirement.result == 'success' && needs.backend.result == 'success' &&
+          needs.frontend.result == 'success' &&
+          (needs.deploy-isolated-medical-preview.result == 'success' || needs.deploy-isolated-medical-preview.result == 'skipped') }}
+    needs: [permanent-retirement, backend, frontend, deploy-isolated-medical-preview]
     runs-on: ubuntu-latest
     timeout-minutes: 8
     steps:

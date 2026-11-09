@@ -80,8 +80,9 @@ def main():
     demand(status == 403, 'CROSS_ORIGIN_LOGIN_NOT_REJECTED')
     status, _ = request(client, '/api/auth', body={'password':password}, origin=SITE)
     demand(status == 200, 'AUTHORIZED_TEST_LOGIN_FAILED')
+    print(json.dumps({'stage':'NORMAL_DASHBOARD_LOGIN','status':'PASS'}), flush=True)
     status, data = request(client, endpoint)
-    demand(status == 200, 'AUTHENTICATED_MATRIX_UNAVAILABLE')
+    demand(status == 200, 'AUTHENTICATED_MATRIX_UNAVAILABLE_HTTP_' + str(status))
     before = matrix_snapshot(data)
     positions = set()
     for assessment in range(1,41):
@@ -98,6 +99,8 @@ def main():
                 demand(method.get('grade') is None, 'UNREVIEWED_METHOD_GRADED')
             positions.add((assessment,index))
     demand(len(positions) == 800, 'INCOMPLETE_800_METHOD_COVERAGE')
+    print(json.dumps({'stage':'AUTHENTICATED_MATRIX_READ','status':'PASS','assessments':40,
+                      'methodPositions':len(positions),'historyUnchanged':True}), flush=True)
     for invalid in ('&assessmentIndex=41', '&assessmentIndex=0'):
         status, _ = request(client, endpoint + invalid)
         demand(status == 422, 'INVALID_POSITION_NOT_REJECTED')
