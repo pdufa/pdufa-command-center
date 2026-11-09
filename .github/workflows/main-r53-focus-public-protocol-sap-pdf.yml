@@ -1,0 +1,134 @@
+name: MAIN R53 original publicly posted protocol SAP PDF evidence
+
+# Read-only, draft development run. Does not enable background production
+# scheduling or train a forecasting model.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r53-focus-public-protocol-sap-pdf.yml
+      - new-platform/backend/scripts/collect_focus_protocol_pdf_text_r53.py
+      - new-platform/backend/tests/test_focus_protocol_pdf_text_r53.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r53-original-public-protocol-sap-pdfs
+  cancel-in-progress: false
+
+jobs:
+  reconstruct-original-public-pdf-source-text:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run exact source-identity and synthetic protocol/SAP PDF safety tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python -m pip install pytest pymupdf
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_focus_protocol_pdf_text_r53.py tests/test_focus_protocol_index_r46.py tests/test_focus_application_efficacy_safety_r51.py
+          PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
+      - name: Capture all 29 current registry records and current document metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r53-original/public-registry-original"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_focus_protocol_index_r46.py \
+            --output "$RUNNER_TEMP/r53-original/current_registry_document_index.json" \
+            --raw-dir "$RUNNER_TEMP/r53-original/public-registry-original"
+      - name: Independently re-extract document names from every original registry response
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=new-platform/backend python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          from scripts.build_focus_protocol_index_r46 import extract
+          root=Path(os.environ["RUNNER_TEMP"])/"r53-original"
+          doc=json.loads((root/"current_registry_document_index.json").read_bytes())
+          assert doc["nctCount"]==29 and doc["applicationGroupCount"]==23
+          assert doc["registryRecordsFetched"]==29
+          assert doc["attachmentEntries"]==23
+          assert doc["trialsWithCurrentSap"]==12
+          assert doc["trialsWithCurrentProtocol"]==12
+          for row in doc["records"]:
+            nct=row["nct"]
+            raw=(root/"public-registry-original"/(nct+".json")).read_bytes()
+            assert hashlib.sha256(raw).hexdigest()==row["sourceResponseSha256"]
+            assert len(raw)==row["sourceResponseBytes"]
+            study=json.loads(raw)
+            receipt={"url":row["sourceApiUrl"],"sha256":row["sourceResponseSha256"],"bytes":len(raw)}
+            reconstructed=extract(study,nct,receipt,row["applicationCycleIds"])
+            assert reconstructed==row, "REGISTRY_SOURCE_DERIVATION_MISMATCH"
+          PY
+      - name: Download and page-index exact original public attached protocol and SAP PDFs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r53-original/public-pdfs"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/collect_focus_protocol_pdf_text_r53.py \
+            --index "$RUNNER_TEMP/r53-original/current_registry_document_index.json" \
+            --raw-dir "$RUNNER_TEMP/r53-original/public-pdfs" \
+            --output "$RUNNER_TEMP/r53-original/source_protocol_sap_research.json"
+      - name: Verify PDF archive original hash, source method excerpts and no medical/prediction release
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"r53-original"
+          r=json.loads((root/"source_protocol_sap_research.json").read_bytes())
+          assert r["schema"]=="MAIN_R53_FOCUS_CURRENT_ORIGINAL_PROTOCOL_SAP_PDF_RESEARCH"
+          assert r["nctRosterCount"]==29 and r["applicationGroupCount"]==23
+          assert r["currentRegistryDocumentEntries"]==23
+          assert r["trialNctsWithDocumentEntries"]==12
+          assert len(r["applicationResearch"])==23
+          assert r["originalFirstPublicSAPDateVerified"]==0
+          assert r["historicalRegisteredEndpointAmendmentChainVerified"]==0
+          assert r["independentScientificGrades"]==0
+          assert r["validatedFDAForecasts"]==0
+          assert r["measuredApprovalAccuracy"] is None
+          assert r["actualHistoricalBacktests"]==0
+          assert r["trainingAuthorized"] is False
+          assert r["clinicalOrProductionWrites"] is False
+          assert r["officialFutureFDAOutcome"]=="ABSTAIN"
+          for pdf in r["documentResearch"]:
+            if pdf["sourceSha256"] is None:continue
+            original=(root/"public-pdfs"/pdf["archivedPdfFilename"]).read_bytes()
+            assert hashlib.sha256(original).hexdigest()==pdf["sourceSha256"]
+            assert len(original)==pdf["sourceBytes"]
+            assert original.startswith(b"%PDF-")
+            assert pdf["pdfResearch"]["statisticalPrespecificationValidated"] is False
+            assert pdf["pdfResearch"]["regulatoryConclusionAuthorized"] is False
+          msg=(f'R53: {r["originalPdfBodiesRetrieved"]}/23 current public protocol/SAP PDF files verified, '
+               f'{r["currentProtocolPdfBodiesRetrieved"]} protocol-bearing files, '
+               f'{r["currentSapPdfBodiesRetrieved"]} SAP-bearing files, '
+               f'originally attached to {r["trialNctsWithDocumentEntries"]}/29 trial records, '
+               'with exact original bytes and page-anchored statistical review leads. '
+               '0 locked pre-readout SAPs validated, 0 FDA forecasts or accuracy.')
+          print(msg,flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+            f.write("## R53 public original protocol/SAP PDF body research\n\n"+msg+"\n")
+          PY
+      - name: Retain unmodified public PDF originals, registry receipts and read-only review notes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r53-original-public-protocol-sap-pdf-${{ github.run_id }}
+          path: ${{ runner.temp }}/r53-original/
+          retention-days: 90
+          if-no-files-found: warn
