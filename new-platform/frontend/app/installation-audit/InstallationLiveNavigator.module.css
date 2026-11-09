@@ -53,6 +53,8 @@
   letter-spacing: .055em;
   box-shadow: 0 0 0 2px rgba(58,243,185,.12);
 }
+.navigator a.liveButton { color: #eafffc !important; text-decoration: none; }
+.navigator a.liveButton:hover { background: #175b55; text-decoration: none; }
 .liveButton:hover:not(:disabled) { background: #175b55; }
 .liveButton:disabled { cursor: wait; opacity: .65; }
 .liveIndicator {

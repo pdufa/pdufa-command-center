@@ -52,7 +52,7 @@ test("scientific drilldown preserves the original catalog and labels 800 as a ta
 });
 
 
-test("LIVE arrow jumps immediately and refreshes in the background",()=>{
+test("on-page status jump remains separate from the external LOCATE LIVE link",()=>{
  const css=fs.readFileSync(path.join(app,"installation-audit/InstallationLiveNavigator.module.css"),"utf8");
  assert.match(ui,/<span>LOCATE LIVE<\/span> <span className=\{styles\.liveArrow\}/);
  assert.match(ui,/onClick=\{\(\)=>\{void goToLive\(\);\}\}/);
@@ -101,7 +101,7 @@ test("installation timeline and scientific assessments collapse under independen
  assert.match(css,/\.scienceSummary::marker/);
 });
 
-test("LOCATE LIVE still opens the caret before scrolling to the task",()=>{
+test("VIEW LIVE STATUS still opens the caret before scrolling to the task",()=>{
  assert.match(ui,/setInstallationExpanded\(true\);/);
  assert.match(ui,/if\(!liveJump\|\|!installationExpanded\)return/);
  assert.match(ui,/\[liveJump,section,installationExpanded\]/);
@@ -122,4 +122,20 @@ test("verified GitHub runs are independently observable, never certified as Code
  assert.match(ui,/jobStatus/);
  assert.match(ui,/not a Codex task-level heartbeat/);
  assert.doesNotMatch(ui,/Located last documented checkpoint/);
+});
+
+test("LOCATE LIVE opens the real GitHub source link rather than scrolling",()=>{
+ const css=fs.readFileSync(path.join(app,"installation-audit/InstallationLiveNavigator.module.css"),"utf8");
+ const link=ui.slice(ui.indexOf('<a className={styles.liveButton}'),ui.indexOf('</a>',ui.indexOf('<a className={styles.liveButton}'))+4);
+ assert.match(link,/href=\{liveSourceUrl\}/);
+ assert.match(link,/target="_blank" rel="noopener noreferrer"/);
+ assert.match(link,/<span>LOCATE LIVE<\/span>/);
+ assert.doesNotMatch(link,/onClick=|goToLive|locateSnapshot|scrollIntoView/);
+ assert.match(ui,/const githubActionsUrl="https:\/\/github\.com\/pdufa\/pdufa-command-center\/actions";/);
+ assert.match(ui,/const liveSourceUrl=activeGithub &&/);
+ assert.match(ui,/\.test\(activeGithub\.url\)/);
+ assert.match(ui,/\?activeGithub\.url:githubActionsUrl/);
+ assert.match(ui,/VIEW LIVE STATUS ON THIS PAGE/);
+ assert.match(ui,/LOCATE LIVE opens/);
+ assert.match(css,/\.navigator a\.liveButton/);
 });
