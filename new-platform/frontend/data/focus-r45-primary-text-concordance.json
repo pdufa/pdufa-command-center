@@ -1,0 +1,215 @@
+{
+  "schema": "MAIN_R45_PINNED_CURRENT_REGISTRY_PRIMARY_TEXT",
+  "asOf": "2026-11-09",
+  "observedAtUtc": "2026-11-09T17:35:22+00:00",
+  "sourceRunId": 42666046282,
+  "sourceArtifactId": 13697545092,
+  "sourceArtifactUrl": "https://github.com/pdufa/pdufa-command-center/actions/runs/42666046282/artifacts/13697545092",
+  "sourceArtifactExpiresAt": "2027-02-07T17:35:07Z",
+  "sourceReceiptSha256": "5ca01f7ded8ba26939d520284ae1ecda908a155087af3e397f77c4a9fc0cc60e",
+  "counts": {
+    "trialNcts": 29,
+    "applicationGroups": 23,
+    "currentRegistryRecordsFetched": 29,
+    "withRegistryResults": 12,
+    "withoutRegistryResults": 17,
+    "currentRegisteredPrimaryTitles": 45,
+    "postedPrimaryTables": 16,
+    "exactCurrentTitleTimeframeMatches": 16,
+    "unmatchedPostedPrimaryTables": 0,
+    "titleOnlyTimeframeDifferences": 0,
+    "qualifiedClinicalReviews": 0,
+    "validatedFDAForecasts": 0,
+    "independentHistoricalBacktests": 0
+  },
+  "columns": [
+    "nct",
+    "currentRegisteredPrimaryCount",
+    "postedPrimaryCount",
+    "exactCurrentTitleTimeframeMatchCount"
+  ],
+  "rows": [
+    [
+      "NCT05507203",
+      1,
+      1,
+      1
+    ],
+    [
+      "NCT05507216",
+      1,
+      1,
+      1
+    ],
+    [
+      "NCT04576949",
+      2,
+      2,
+      2
+    ],
+    [
+      "NCT05206370",
+      2,
+      2,
+      2
+    ],
+    [
+      "NCT05811247",
+      1,
+      1,
+      1
+    ],
+    [
+      "NCT05813275",
+      1,
+      1,
+      1
+    ],
+    [
+      "NCT05059223",
+      1,
+      0,
+      0
+    ],
+    [
+      "NCT05113745",
+      2,
+      0,
+      0
+    ],
+    [
+      "NCT05244304",
+      1,
+      0,
+      0
+    ],
+    [
+      "NCT05126758",
+      1,
+      0,
+      0
+    ],
+    [
+      "NCT06445023",
+      1,
+      0,
+      0
+    ],
+    [
+      "NCT06455202",
+      1,
+      0,
+      0
+    ],
+    [
+      "NCT05208047",
+      8,
+      0,
+      0
+    ],
+    [
+      "NCT03697109",
+      2,
+      2,
+      2
+    ],
+    [
+      "NCT04308590",
+      2,
+      2,
+      2
+    ],
+    [
+      "NCT05767346",
+      1,
+      1,
+      1
+    ],
+    [
+      "NCT06081894",
+      2,
+      0,
+      0
+    ],
+    [
+      "NCT04871282",
+      2,
+      0,
+      0
+    ],
+    [
+      "NCT06411379",
+      1,
+      0,
+      0
+    ],
+    [
+      "NCT06411899",
+      1,
+      0,
+      0
+    ],
+    [
+      "NCT06153693",
+      1,
+      0,
+      0
+    ],
+    [
+      "NCT06343779",
+      1,
+      0,
+      0
+    ],
+    [
+      "NCT06669754",
+      1,
+      0,
+      0
+    ],
+    [
+      "NCT06087276",
+      3,
+      0,
+      0
+    ],
+    [
+      "NCT02500381",
+      1,
+      0,
+      0
+    ],
+    [
+      "NCT04544293",
+      1,
+      1,
+      1
+    ],
+    [
+      "NCT06331299",
+      1,
+      1,
+      1
+    ],
+    [
+      "NCT04716231",
+      1,
+      1,
+      1
+    ],
+    [
+      "NCT05662241",
+      1,
+      0,
+      0
+    ]
+  ],
+  "originalPreReadoutRegistryVersionVerified": false,
+  "lockedSapAndMultiplicityVerified": false,
+  "independentClinicalReviewSigned": false,
+  "scientificScoresWritten": 0,
+  "officialFdaPrediction": "ABSTAIN",
+  "reviewDelayPrediction": "ABSTAIN",
+  "numericProbability": null,
+  "caution": "EXACT match means only the SAME CURRENT ClinicalTrials.gov snapshot's registered/posted title and time frame agree. It does not prove prespecification before trial readout, locked SAP, multiplicity adjustment, efficacy, safety, FDA approvability, or historical source availability."
+}
