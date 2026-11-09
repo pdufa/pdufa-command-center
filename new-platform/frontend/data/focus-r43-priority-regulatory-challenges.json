@@ -63,9 +63,11 @@
       "observations": [
         "May 27, 2025 FDA action was a Refusal to File (RTF) over insufficient CMC documentation, not a Complete Response Letter after substantive review. This is a material outcome-taxonomy correction.",
         "Savara reported Phase 3 IMPALA-2 primary DLCO endpoint p=0.0007 at Week 24 and a 2.5% treatment discontinuation rate due to AEs, with those discontinuations described as unrelated to study drug.",
-        "Savara's December 2025 BLA was accepted for Priority Review in February 2026. On April 15, 2026, responses classified as a major amendment prompted an observed three-month extension to November 22."
+        "Savara's December 2025 BLA was accepted for Priority Review in February 2026. On April 15, 2026, responses classified as a major amendment prompted an observed three-month extension to November 22.",
+        "The current ClinicalTrials.gov attachment contains Savara's IMPALA-2 statistical analysis plan v1.0, effective April 24, 2024. It specifies a Week 24 adjusted DLCO primary hypothesis at two-sided alpha 0.05; later Week 48 DLCO and patient-reported/exercise secondary families use conditional sequential testing, alpha splitting and Hochberg. These plan rules are not a substitute for independently checked locked pre-unblinding chronology or actual FDA statistical review.",
+        "The SAP's Section 11 explicitly documents departures or clarifications from the earlier protocol, including DLCO averaging of acceptable maneuvers, correction of the hypothesis-testing schematic and safety endpoint reporting; this requires independent protocol-versus-SAP amendment reconciliation rather than assuming perfect prespecification."
       ],
-      "challenge": "Independently verify resubmitted commercial-scale CMC, batch comparability and complete safety/benefit data; a positive pulmonary endpoint does not establish approvability. Explicitly keep the 2025 RTF outside the CRL backtest outcome class.",
+      "challenge": "Independently verify resubmitted commercial-scale CMC, batch comparability and complete safety/benefit data; a positive pulmonary endpoint does not establish approvability. Explicitly keep the 2025 RTF outside the CRL backtest outcome class. Cross-check SAP v1.0 Section 5.3 and Section 11 against signed original protocol versions and the actual Week 24/48 endpoint results. Its document effective date does not prove when the SAP was first public or locked before unblinding.",
       "historicalStatusCorrection": "2025-05-27_RTF_NOT_CRL",
       "sources": [
         {
@@ -91,6 +93,12 @@
           "date": "2024-06-26",
           "url": "https://investors.savarapharma.com/news/news-details/2024/Savara-Announces-Molgramostim-Nebulizer-Solution-Molgramostim-Achieved-Statistical-Significance-for-Primary-Endpoint-and-Multiple-Secondary-Endpoints-in-IMPALA-2-a-Pivotal-Phase-3-Clinical-Trial-in-Autoimmune-Pulmonary-Alveolar--06-26-2024/default.aspx",
           "type": "SPONSOR"
+        },
+        {
+          "label": "Original ClinicalTrials.gov SAP v1.0 (document effective Apr 24, 2024; first-public date unverified), sections 5.3 and 11",
+          "date": "2024-04-24",
+          "url": "https://cdn.clinicaltrials.gov/large-docs/93/NCT04544293/SAP_001.pdf",
+          "type": "PUBLIC_REGISTRY_SAP"
         }
       ],
       "officialOutcomeForecast": "ABSTAIN",
