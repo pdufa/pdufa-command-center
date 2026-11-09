@@ -86,6 +86,22 @@ def test_unavailable_history_is_not_approvability_or_source_absence(tmp_path):
     assert a["qualifiedHistoricalFDAForecastInput"] is False
     assert a["officialFdaForecast"]=="ABSTAIN"
 
+def test_alternate_official_host_restores_original_history_without_bypassing_source_identity(tmp_path):
+    def first_host_blocked(url):
+        if "www.clinicaltrials.gov/api/int/" in url:
+            return {"url":url,"status":"HTTP_UNAVAILABLE","httpStatus":404},None
+        return make_fetcher()(url)
+    report=run(first_host_blocked,tmp_path)
+    assert report["historyIndexesRetrieved"]==3
+    assert report["originalFirstVersionTextRecovered"]==3
+    for row in report["priorityTrials"]:
+        assert row["historySourceAttempts"][0]["httpStatus"]==404
+        assert row["historySourceAttempts"][1]["status"]=="FETCHED"
+        assert row["firstVersionSourceAttempts"][0]["status"]=="HTTP_UNAVAILABLE"
+        assert row["firstVersionInfo"]["status"]=="FETCHED"
+        assert row["preUnblindingLockedSapVerified"] is False
+    assert report["modelTrainingAuthorized"] is False
+
 def test_same_outcome_text_still_not_locked_sap_proof(tmp_path):
     r=run(make_fetcher(change_first=False),tmp_path)
     assert all(x["firstVsCurrentPrimaryWordingExactMatch"] is True for x in r["priorityTrials"])
