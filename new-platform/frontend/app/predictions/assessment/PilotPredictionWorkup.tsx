@@ -3,6 +3,7 @@ import PilotLiveEvidenceRefresh from "./PilotLiveEvidenceRefresh";
 import PilotScientificSignalPanel from "./PilotScientificSignalPanel";
 import PilotResearchReviewQueue from "./PilotResearchReviewQueue";
 import PilotEvidenceAcquisitionPacket from "./PilotEvidenceAcquisitionPacket";
+import PilotEvidenceIntakePrecheck from "./PilotEvidenceIntakePrecheck";
 import pilot from "../../../data/acacia-pilot-prediction-workup-20261108.json";
 
 const frame={border:"1px solid #8bb4a8",background:"#fff",borderRadius:12,padding:16,margin:"12px 0"} as const;
@@ -22,6 +23,7 @@ export default function PilotPredictionWorkup({nct}:{nct:string}){
     <PilotScientificSignalPanel nct={nct}/>
     <PilotResearchReviewQueue nct={nct}/>
     <PilotEvidenceAcquisitionPacket nct={nct}/>
+    <PilotEvidenceIntakePrecheck nct={nct}/>
     <section aria-label="First provisional research score" style={{...frame,background:"#eef7fc",border:"1px solid #8ab4cc"}}>
       <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",gap:12,flexWrap:"wrap"}}>
         <div>
