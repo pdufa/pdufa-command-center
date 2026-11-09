@@ -38,8 +38,8 @@ export function validateFocusR44Safety(data:unknown=pinned){
      !trialMap.has(r.nct)||!Array.isArray(r.groups)||r.groups.length<1||
      r.groups.length>20||r.groups.some(g=>!Array.isArray(g)||g.length!==7||
        typeof g[0]!=="string"||g[0].length<1||
-       g.slice(1).some(v=>!Number.isSafeInteger(v)||v<0)||
-       g[1]>g[2]||g[3]>g[4]||g[5]>g[6])||
+       g.slice(1).some(v=>typeof v!=="number"||!Number.isSafeInteger(v)||v<0)||
+       Number(g[1])>Number(g[2])||Number(g[3])>Number(g[4])||Number(g[5])>Number(g[6]))||
      !Number.isInteger(r.seriousEventTerms)||r.seriousEventTerms<0||
      !Number.isInteger(r.otherEventTerms)||r.otherEventTerms<0))return null;
  if(new Set(x.posted.map(r=>r.nct)).size!==12||
