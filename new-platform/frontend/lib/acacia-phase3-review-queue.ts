@@ -21,6 +21,8 @@ export type QueuePosition={
   sourceIds:string[];
   sourceUrls:string[];
   missingOriginalEvidence:string;
+  sourceGapAuditNote:string|null;
+  sourceGapAuditRun:number|null;
   reviewPriority:"CRITICAL_PHASE3_RESEARCH";
   clinicalGrade:null;
   qualifiedReviewerSignoff:false;
@@ -74,6 +76,15 @@ const ORIGINAL_PROTOCOL_SHA="853ffd80a547df8a7b813b8985c7116dd6168a640f18521f61b
 const ORDER=["5.3","5.1","4.2","5.2","4.3","4.4","4.5","5.4","8.2","8.1","4.1"] as const;
 const DOCUMENTED=new Set(["5.1:L1","4.2:L1","5.3:L1"]);
 const NUMERIC=new Set(["5.1:L12","5.3:L19"]);
+// Archived exact-run research findings. A live registry record may later differ.
+// These are evidence-search observations, never clinical grades or file absence proof.
+const AUDIT_RUN=42555289486;
+const SAP_AUDIT_AS_OF="2026-11-09T03:14Z";
+const SAP_GAP="2026-11-09 archived source audit: current official registry response did not list an SAP; final locked SAP remains unverified, and journal supplement fetches were unavailable to the automated checker.";
+const SAFETY_GAP="2026-11-09 archived sponsor source: 2 HF SAE cases associated with LVEF below 50% plus 10 other treated HF SAE cases = 12 versus 3 placebo; secondary 11/1 source definition remains unreconciled.";
+const evidenceAuditNote=(assessment:string):string|null=>
+  assessment==="5.3"?SAFETY_GAP:
+  ["4.2","4.3","5.1","5.2","8.2"].includes(assessment)?SAP_GAP:null;
 const sourceOK=(sources:Snapshot["sources"])=>{
   if(!sources||typeof sources!=="object"||
      !Object.entries(SOURCE_URLS).every(([id,url])=>
@@ -130,6 +141,8 @@ export function buildPhase3ReviewQueue(p:Snapshot):Phase3ReviewQueue|null {
         sourceIds:[...group.sourceLeadIds],
         sourceUrls:group.sourceLeadIds.map(k=>SOURCE_URLS[k]),
         missingOriginalEvidence:group.remaining,
+        sourceGapAuditNote:evidenceAuditNote(group.id),
+        sourceGapAuditRun:evidenceAuditNote(group.id)?AUDIT_RUN:null,
         reviewPriority:"CRITICAL_PHASE3_RESEARCH",
         clinicalGrade:null,qualifiedReviewerSignoff:false,
         fdaProbability:null,sourceSnapshotAsOf:p.asOf
@@ -165,10 +178,10 @@ export function reviewQueueCsv(q:Phase3ReviewQueue):string{
   };
   const columns=["Research order","Trial","Method position","Assessment",
     "Research status","Original evidence needed","Source references",
-    "Official clinical grade","Qualified reviewer","FDA prediction","Evidence snapshot"];
+    "Public source gap (dated audit)","Official clinical grade","Qualified reviewer","FDA prediction","Evidence snapshot"];
   const rows=q.positions.map(p=>[
     p.reviewOrder,q.nct,p.id,p.assessmentLabel,p.evidenceStatus,
-    p.missingOriginalEvidence,p.sourceUrls.join(" ; "),"UNSCORED",
+    p.missingOriginalEvidence,p.sourceUrls.join(" ; "),p.sourceGapAuditNote,"UNSCORED",
     "NOT SIGNED",q.fdaPrediction,p.sourceSnapshotAsOf
   ]);
   return [columns,...rows].map(row=>row.map(cell).join(",")).join("\r\n")+"\r\n";
