@@ -16,6 +16,7 @@ require.extensions[".tsx"]=(module,filename)=>module._compile(
 
 const blind=require("../data/blindHistoricalForecasts2026.json");
 const prospective=require("../data/fdaPredictionDecisionAudit.json");
+const comparisons=require("../data/blindHistoricalOutcomeComparisons2026.json");
 const Panel=require("../app/BlindHistoricalPredictionPanel.tsx").default;
 
 test("the first historical challenge is immutable directional research with outcome sealed",()=>{
@@ -53,14 +54,18 @@ test("SMMT prospectively frozen forecast and FOCUS 29 roster remain unchanged",(
   assert.equal(focus.records.some(r=>r.nct==="NCT04398433"),false);
 });
 
-test("historical challenge panel is readable, clearly sealed, and is outside performance pies",()=>{
+test("historical challenge panel shows outcome comparison separately from original sealed forecast",()=>{
   const html=renderToStaticMarkup(React.createElement(Panel));
   assert.match(html,/data-testid="blind-2026-pdufa-forecast"/);
   assert.match(html,/INO-3107/);
   assert.match(html,/NCT04398433/);
   assert.match(html,/CRL lean/);
   assert.match(html,/October 30, 2026/);
-  assert.match(html,/OUTCOME SEALED/);
+  assert.match(html,/NOT ACCURATE/);
+  assert.match(html,/Accelerated Approval, October 30, 2026/);
+  assert.match(html,/BLA 125825/);
+  assert.match(html,/0 correct of 1 retrospective blind reconstruction/);
+  assert.match(html,/Read the official FDA announcement/);
   assert.match(html,/6eacacd2728ac265f1b4b23571e8edb1108d5afe/);
   assert.match(html,/after the original target date/);
   assert.doesNotMatch(html,/\d+\.\d+% probability|FDA APPROVED|PDUFA ACTUAL ACTION/);
@@ -69,4 +74,29 @@ test("historical challenge panel is readable, clearly sealed, and is outside per
   const page=fs.readFileSync(path.join(root,"app/predictions/assessment/page.tsx"),"utf8");
   assert.match(page,/<BlindHistoricalPredictionPanel\/>/);
   assert.match(page,/<AssessmentStatusPies \{\.\.\.pies\}\/>/);
+});
+
+test("outcome adjudication records an FDA-backed actual approval and an incorrect historical call",()=>{
+  assert.equal(comparisons.dataset,"RETROSPECTIVE_BLIND_CHALLENGE_OUTCOME_ADJUDICATION");
+  assert.equal(comparisons.comparisons.length,1);
+  const result=comparisons.comparisons[0];
+  const original=blind.records[0];
+  assert.equal(result.forecastId,original.forecastId);
+  assert.equal(result.originalPredictionCommit,original.sourceFreezeCommit);
+  assert.equal(result.predictedOutcome,"CRL");
+  assert.equal(result.actualOutcome,"APPROVAL");
+  assert.equal(result.actualDecisionDate,"2026-10-30");
+  assert.equal(result.applicationId,"BLA 125825");
+  assert.equal(result.verdict,"NOT_ACCURATE");
+  assert.equal(result.verified,true);
+  assert.equal(result.retrospective,true);
+  assert.equal(result.prospectiveScoringEligible,false);
+  assert.equal(result.originalForecastUnchanged,true);
+  assert.ok(Date.parse(original.forecastCreatedAt)>Date.parse(result.actualDecisionDate+"T23:59:59Z"));
+  assert.match(result.officialFdaAnnouncement,/^https:\/\/www\.fda\.gov\/news-events\/press-announcements\//);
+  assert.match(result.officialFdaProductPage,/^https:\/\/www\.fda\.gov\/vaccines-blood-biologics\//);
+  assert.equal(original.actualOutcome,null);
+  assert.equal(original.outcomeViewed,false);
+  assert.equal(prospective.records.length,1);
+  assert.equal(prospective.records[0].ticker,"SMMT");
 });
