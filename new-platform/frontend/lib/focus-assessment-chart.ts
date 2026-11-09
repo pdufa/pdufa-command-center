@@ -53,6 +53,13 @@ export type CompletedPrediction={
   probabilitySlices:PieSlice[];
 };
 
+export type OverallAccuracyTrendPoint={
+  date:string;compared:number;correct:number;incorrect:number;
+  accuratePct:number;notAccuratePct:number;
+};
+export type LastPredictionTrendPoint={
+  predictionId:string;recordedAt:string;approvalPct:number;crlPct:number;
+};
 export type PredictionAccuracySummary={
   totalCompleted:number;
   compared:number;
@@ -61,6 +68,8 @@ export type PredictionAccuracySummary={
   awaitingDecision:number;
   accuracyPercent:number|null;
   comparisonSlices:PieSlice[];
+  overallTrend:OverallAccuracyTrendPoint[];
+  latestTrend:LastPredictionTrendPoint[];
   latest:CompletedPrediction|null;
   auditAsOf:string|null;
   cohortScope:"PROSPECTIVE_AND_PREDECISION_LOCKED_HISTORICAL";
@@ -98,17 +107,43 @@ export function summarizeFdaPredictionAccuracy(
     if(!primaryByCycle.has(row.applicationCycleId))
       primaryByCycle.set(row.applicationCycleId,row);
   }
-  let correct=0,incorrect=0,awaitingDecision=0;
-  for(const row of primaryByCycle.values()){
-    const matched=decision(row.actualOutcome)&&
-      matchIso(row.actualDecisionAt)&&
-      Date.parse(row.actualDecisionAt)>Date.parse(row.completedAt!)&&
-      row.actualDecisionVerified===true&&validHttps(row.actualDecisionSourceUrl);
-    if(!matched){awaitingDecision++;continue;}
+  // An actual FDA outcome must occur AFTER the originally frozen forecast;
+  // revised forecasts are never allowed to re-score that same application.
+  const matchedDecision=(row:PredictionDecisionRecord)=>
+    decision(row.actualOutcome)&&matchIso(row.actualDecisionAt)&&
+    Date.parse(row.actualDecisionAt)>Date.parse(row.completedAt!)&&
+    row.actualDecisionVerified===true&&validHttps(row.actualDecisionSourceUrl);
+  const resolved=Array.from(primaryByCycle.values()).filter(matchedDecision);
+  let correct=0,incorrect=0;
+  for(const row of resolved){
     if(row.actualOutcome===row.predictedOutcome)correct++;
     else incorrect++;
   }
+  const awaitingDecision=primaryByCycle.size-resolved.length;
   const compared=correct+incorrect;
+
+  // Cumulative accuracy at each *actual FDA action date*, using the same
+  // independently verified applications and denominator as the accuracy pie.
+  // Multiple actions on the same date form a single timeline checkpoint.
+  const sortedDecisions=[...resolved].sort((a,b)=>
+    Date.parse(a.actualDecisionAt!)-Date.parse(b.actualDecisionAt!)||
+    a.applicationCycleId.localeCompare(b.applicationCycleId));
+  const overallTrend:OverallAccuracyTrendPoint[]=[];
+  let runningCorrect=0,runningIncorrect=0;
+  for(const row of sortedDecisions){
+    if(row.predictedOutcome===row.actualOutcome)runningCorrect++;
+    else runningIncorrect++;
+    const date=row.actualDecisionAt!.slice(0,10);
+    const count=runningCorrect+runningIncorrect;
+    const point={
+      date,compared:count,correct:runningCorrect,incorrect:runningIncorrect,
+      accuratePct:Number((100*runningCorrect/count).toFixed(2)),
+      notAccuratePct:Number((100*runningIncorrect/count).toFixed(2))
+    };
+    if(overallTrend.length&&overallTrend[overallTrend.length-1].date===date)
+      overallTrend[overallTrend.length-1]=point;
+    else overallTrend.push(point);
+  }
   const current=frozen.length?frozen[frozen.length-1]:null;
   const calibrated=current?.calibrationStatus==="VALIDATED"&&
     validProbability(current.approvalProbability)&&
@@ -120,6 +155,26 @@ export function summarizeFdaPredictionAccuracy(
     Date.parse(current.actualDecisionAt)>Date.parse(current.completedAt!)&&
     validHttps(current.actualDecisionSourceUrl));
   const latestMatched=latestDecisionVerified&&current?.predictedOutcome===current?.actualOutcome;
+  // The last trial's competition is the Approval-vs-CRL outlook history
+  // for that exact FDA application cycle, never another ticker or trial.
+  // Only already-completed and calibrated snapshots can contribute.
+  const latestCutoff=current&&matchIso(current.actualDecisionAt)
+    ?Date.parse(current.actualDecisionAt):Infinity;
+  const latestTrend:LastPredictionTrendPoint[]=current?
+    frozen.filter(row=>
+      row.applicationCycleId===current.applicationCycleId&&
+      row.calibrationStatus==="VALIDATED"&&
+      validProbability(row.approvalProbability)&&
+      validProbability(row.crlProbability)&&
+      Math.abs(row.approvalProbability!+row.crlProbability!-1)<0.0001&&
+      Date.parse(row.completedAt!)<latestCutoff&&
+      (!matchIso(row.actualDecisionAt)||
+        Date.parse(row.completedAt!)<Date.parse(row.actualDecisionAt))
+    ).map(row=>({
+      predictionId:row.predictionId,recordedAt:row.completedAt!,
+      approvalPct:Number((row.approvalProbability!*100).toFixed(2)),
+      crlPct:Number((row.crlProbability!*100).toFixed(2))
+    })):[];
   const latest:CompletedPrediction|null=current?{
     predictionId:current.predictionId,
     applicationCycleId:current.applicationCycleId,
@@ -152,6 +207,7 @@ export function summarizeFdaPredictionAccuracy(
       {key:"accurate",label:"Accurate",value:correct,color:"#168a6d"},
       {key:"notAccurate",label:"Not Accurate",value:incorrect,color:"#c86b50"}
     ],
+    overallTrend,latestTrend,
     latest,
     auditAsOf,
     cohortScope:"PROSPECTIVE_AND_PREDECISION_LOCKED_HISTORICAL"
