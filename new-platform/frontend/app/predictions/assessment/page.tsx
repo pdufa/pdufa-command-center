@@ -10,6 +10,7 @@ import BepirovirsenHistoricalLevelThreePanel from "../../BepirovirsenHistoricalL
 import AssessmentLevelChart from "../../AssessmentLevelChart";
 import JoenjaHistoricalLevelThreePanel from "../../JoenjaHistoricalLevelThreePanel";
 import SkyriziHistoricalLevelThreePanel from "../../SkyriziHistoricalLevelThreePanel";
+import UltomirisHistoricalLevelThreePanel from "../../UltomirisHistoricalLevelThreePanel";
 import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
 
 export const metadata:Metadata={
@@ -85,6 +86,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
     <BepirovirsenHistoricalLevelThreePanel/>
     <JoenjaHistoricalLevelThreePanel/>
     <SkyriziHistoricalLevelThreePanel/>
+    <UltomirisHistoricalLevelThreePanel/>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:10,margin:"15px 0 20px"}}>
       {[
         ["Exact FOCUS trials",FOCUS_SPECIALTY_SUMMARY.ncts],
