@@ -117,6 +117,10 @@ def reconcile(r54,r55,pdf_dir):
     if (len(groupids)!=23 or {x["applicationCycleId"] for x in cases}!=groupids or
         {x["applicationCycleId"] for x in apps}!=groupids):
         raise ValueError("ORIGINAL_EXACT_APPLICATION_ROSTER_VIOLATION")
+    if (sum(len(x.get("documents",[])) for x in trials)!=23 or
+        sum(bool(x.get("documents")) for x in trials)!=12 or
+        sum(len(x.get("sourceMethodsPageReferences",[])) for x in evidence)!=23):
+        raise ValueError("R54_R55_CURRENT_EXACT_23_DOCUMENT_CENSUS_MISMATCH")
     by_nct={x["nct"]:x for x in trials}
     original_by_nct={x["nct"]:x for x in evidence}
     group_by_nct={n:[] for n in member}
