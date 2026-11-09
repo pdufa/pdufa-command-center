@@ -270,9 +270,11 @@ def build(manifest, r54, r55, r60, *, hashes):
         })
     require(len(output_trials) == 29 and len(applications) == 23
             and sum(bool(t["currentPostedPrimaryTables"]) for t in output_trials) ==
-                r60.get("sourceVerifiedCurrentPrimaryTrialCount") == 12
+                r60.get("sourceVerifiedCurrentPrimaryTrialCount") ==
+                r55.get("uniqueTrialsWithPostedPrimary")
             and sum(bool(t["currentReportedSafetyArmCount"]) for t in output_trials) ==
-                r60.get("sourceVerifiedCurrentSafetyArmTrialCount") == 12,
+                r60.get("sourceVerifiedCurrentSafetyArmTrialCount") ==
+                r55.get("uniqueTrialsWithPostedAdverseEvents"),
             "ORIGINAL_RESULTS_OR_METHODS_COVERAGE_CHANGED")
 
     return {
