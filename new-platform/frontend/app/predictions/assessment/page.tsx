@@ -5,6 +5,7 @@ import {CLINICAL_SPECIALTY_PROFILES,getSpecialtyProfile,getSpecialtyTasks} from 
 import {getFullSpecialistCase} from "../../../lib/medical-intelligence-specialist-all";
 import {FOCUS_SPECIALTY_ASSESSMENT_QUEUE,FOCUS_SPECIALTY_SUMMARY} from "../../../lib/focus-specialty-assessment";
 import ScientificMethodMatrix from "./ScientificMethodMatrix";
+import OriginalMethodSourceLadderR64 from "./OriginalMethodSourceLadderR64";
 
 export const metadata:Metadata={
   title:"FOCUS Scientific Assessment Readiness | PDUFA",
@@ -81,6 +82,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
           </table>
         </div>
       </section>
+      {selected ? <OriginalMethodSourceLadderR64 key={"r64-"+selected.nct} nct={selected.nct}/> : null}
       {selected ? <ScientificMethodMatrix key={selected.nct} nct={selected.nct} /> : null}
       {selected&&<section style={section} aria-label={"Selected trial "+selected.nct}>
         <span style={label}>SELECTED EXACT TRIAL</span>
