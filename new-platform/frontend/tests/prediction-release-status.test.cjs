@@ -39,7 +39,7 @@ test('task locator opens and focuses the task named by the observed currentTaskI
     await renderer.act(async () => {root = renderer.create(React.createElement(InstallationStatus), {
       createNodeMock: element => element.type === 'details' ? detailsNode : null,
     });});
-    const button = root.root.findByType('button');
+    const button = root.root.findByProps({'aria-label': 'Locate current installation task'});
     assert.equal(button.props.disabled, false);
     await renderer.act(async () => button.props.onClick());
     assert.equal(detailsNode.open, true);
@@ -63,11 +63,41 @@ test('missing installation observations never invent a task to locate', async ()
   global.fetch = async () => Response.json({error: 'Sign in required'}, {status: 401});
   try {
     await renderer.act(async () => {root = renderer.create(React.createElement(InstallationStatus));});
-    assert.equal(root.root.findByType('button').props.disabled, true);
+    assert.equal(root.root.findByProps({'aria-label': 'Locate current installation task'}).props.disabled, true);
     assert.equal(root.root.findAllByType('article').length, 0);
     assert.ok(root.root.findByProps({role: 'alert'}).children.join('').includes('No completion count is inferred.'));
   } finally {
     if (root) await renderer.act(async () => root.unmount());
     global.fetch = fetchBefore; global.IS_REACT_ACT_ENVIRONMENT = actBefore;
+  }
+});
+
+test('dated source checkpoint locator opens its actual task while live ledger observations stay unavailable', async () => {
+  const original = {fetch: global.fetch, document: global.document, window: global.window, act: global.IS_REACT_ACT_ENVIRONMENT};
+  const detailsNode = {open: false}, calls = [];
+  let root;
+  global.IS_REACT_ACT_ENVIRONMENT = true;
+  global.fetch = async () => Response.json({error: 'Ledger unavailable'}, {status: 503});
+  global.document = {getElementById(id) {calls.push(['target', id]); return {
+    focus(options) {calls.push(['focus', options]);}, scrollIntoView(options) {calls.push(['scroll', options]);},
+  };}};
+  global.window = {matchMedia: () => ({matches: true})};
+  try {
+    await renderer.act(async () => {root = renderer.create(React.createElement(InstallationStatus), {
+      createNodeMock: element => element.type === 'details' ? detailsNode : null,
+    });});
+    assert.equal(root.root.findByProps({'aria-label': 'Locate current installation task'}).props.disabled, true);
+    const sourceTask = root.root.findByProps({id: 'r36.source-reconciliation'});
+    assert.equal(sourceTask.props['aria-current'], 'step');
+    await renderer.act(async () => root.root.findByProps({'aria-label': 'Locate Revision 36 source task'}).props.onClick());
+    assert.equal(detailsNode.open, true);
+    assert.deepEqual(calls, [['target', 'r36.source-reconciliation'],
+      ['focus', {preventScroll: true}], ['scroll', {behavior: 'auto', block: 'center'}]]);
+    assert.equal(root.root.findAllByType('article').length, 0);
+    assert.ok(root.root.findByProps({role: 'alert'}).children.join('').includes('No completion count is inferred.'));
+  } finally {
+    if (root) await renderer.act(async () => root.unmount());
+    global.fetch = original.fetch; global.document = original.document; global.window = original.window;
+    global.IS_REACT_ACT_ENVIRONMENT = original.act;
   }
 });

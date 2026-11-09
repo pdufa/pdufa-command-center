@@ -2,7 +2,7 @@ const test = require('node:test'), assert = require('node:assert/strict'), fs = 
 require.extensions['.ts'] = (m, f) => m._compile(ts.transpileModule(fs.readFileSync(f, 'utf8'), {
   compilerOptions: {target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS, esModuleInterop: true}
 }).outputText, f);
-const {validateMedicalInstallation} = require('../lib/medical-installation-status.ts');
+const {validateMedicalInstallation, MAIN_RESEARCH_CHECKPOINT, researchCheckpointEvidenceUrl} = require('../lib/medical-installation-status.ts');
 const {NextRequest} = require('next/server');
 const {GET} = require('../app/api/predictions/medical-installation/route.ts');
 const auth = require('../lib/auth.ts');
@@ -25,6 +25,37 @@ function observed() {
     sourceCollectionDates: {oldest: '2026-11-08T18:00:00Z', newest: '2026-11-08T18:00:00Z', freshnessValidation: 'NOT_ADJUDICATED'}});
   return root;
 }
+test('Revision 36 documentary checkpoint traces exact original captures without promoting clinical counts', () => {
+  const path = require('node:path'), crypto = require('node:crypto');
+  const packetDir = path.resolve(__dirname, '../../../docs/medical-review-pilot-20261108');
+  const receipt = JSON.parse(fs.readFileSync(path.join(packetDir, 'revision36-original-history/public_browser_receipt.json')));
+  const comparison = JSON.parse(fs.readFileSync(path.join(packetDir, 'revision36-original-history/validated_comparison.json')));
+  const checkpoint = MAIN_RESEARCH_CHECKPOINT;
+  assert.equal(checkpoint.nct, receipt.nct);
+  assert.equal(checkpoint.candidateMethodPositions, 18);
+  assert.equal(checkpoint.unexaminedMethodPositions, 782);
+  assert.equal(checkpoint.officialMethodGrades, 0);
+  assert.equal(checkpoint.candidateMethodPositions + checkpoint.unexaminedMethodPositions, 800);
+  assert.equal(checkpoint.tasks.find(task => task.id === checkpoint.currentTaskId).status, 'ACTIVE');
+  assert.equal(new Set(checkpoint.tasks.map(task => task.id)).size, checkpoint.tasks.length);
+  for (const capture of receipt.versions) {
+    const bytes = fs.readFileSync(path.join(packetDir, 'revision36-original-history', capture.artifact));
+    const original = JSON.parse(bytes);
+    assert.equal(capture.httpStatus, 200);
+    assert.equal(original.studyVersion, capture.apiIndex);
+    assert.equal(crypto.createHash('sha256').update(bytes).digest('hex'), capture.sha256);
+    assert.equal(comparison.versionData['v' + capture.version].sourceSha256, capture.sha256);
+  }
+  for (const task of checkpoint.tasks.filter(task => task.status === 'VERIFIED')) {
+    assert.ok(task.evidencePath);
+    assert.ok(fs.existsSync(path.join(packetDir, task.evidencePath)));
+    assert.ok(researchCheckpointEvidenceUrl(task.evidencePath).startsWith('https://github.com/pdufa/pdufa-command-center/blob/'));
+  }
+  assert.match(checkpoint.tasks.find(task => task.id === 'r36.source-reconciliation').acceptance, /does not resolve 516 versus 517/);
+  assert.equal(checkpoint.tasks.find(task => task.id === 'r36.independent-grading').status, 'BLOCKED');
+  assert.equal(checkpoint.tasks.find(task => task.id === 'r36.preview-runtime').status, 'PENDING');
+  assert.equal(validateMedicalInstallation(unknown()).installation.counts, null);
+});
 test('missing ledger observations remain unknown counts, never zeros', () => {
   const value = unknown();
   assert.equal(validateMedicalInstallation(value).installation.counts, null);

@@ -16,6 +16,44 @@ export type MedicalInstallation = {
   sourceCollectionDates?: {oldest: string | null; newest: string | null; freshnessValidation: "NOT_ADJUDICATED"};
 };
 export type MedicalInstallationSnapshot = {observedAt: string; installation: MedicalInstallation};
+
+/** Dated documentary checkpoint, separate from live PostgreSQL observations.
+ * Appending research evidence never advances a clinical ledger task or grade.
+ */
+export const MAIN_RESEARCH_CHECKPOINT = {
+  revision: 36,
+  observedAt: "2026-11-09T13:35:54.703823+00:00",
+  baseCommit: "13b3dae5cd8bfb003430e03f56bff58caf1da70c",
+  nct: "NCT06081894",
+  currentTaskId: "r36.source-reconciliation",
+  candidateMethodPositions: 18,
+  unexaminedMethodPositions: 782,
+  officialMethodGrades: 0,
+  tasks: [
+    {id: "r36.registry-history", title: "Recover original registry versions 26, 27, 29 and 30", status: "VERIFIED",
+      acceptance: "Four exact-NCT original JSON responses passed version, submission-date, byte-count and SHA-256 checks. One primary endpoint in v26; two in v27/v29/v30. Submitted and public posting dates remain separate.",
+      evidencePath: "revision36-original-history/validated_comparison.json"},
+    {id: "r36.protocol-multiplicity", title: "Examine the preserved AM04 multiplicity graph", status: "VERIFIED",
+      acceptance: "Original protocol page 66 was visually transcribed; the previously captured PDF hash was rechecked. This is documentary examination, not final locked SAP verification or independent statistical adjudication.",
+      evidencePath: "revision36-protocol-safety/reviewer-packet.json"},
+    {id: "r36.source-reconciliation", title: "Resolve the pilot's original-document and population discrepancies", status: "ACTIVE",
+      acceptance: "Next: final dated locked SAP, amendment/lock chronology, original CONSORT accounting, matched HF SAE definitions/windows and treatment-interruption denominators. Estimated enrollment 420 → 500 does not resolve 516 versus 517 actual participants. HF 11/1 versus 12/3 and 14 interruptions remain unresolved.",
+      evidencePath: "revision36-protocol-safety/source-avenues.json"},
+    {id: "r36.independent-grading", title: "Obtain authorized independent phase and method review", status: "BLOCKED",
+      acceptance: "Original evidence and qualified authorized independent review are required before official scored events. Documentary checks, source leads and provisional research panels are separate from clinical grades.",
+      evidencePath: "revision36-protocol-safety/reviewer-packet.json"},
+    {id: "r36.prediction-validation", title: "Validate approval, CRL and review-delay forecasts", status: "BLOCKED",
+      acceptance: "Independent evidence assessment, locked historical outcomes, temporal holdout and outcome-specific calibration release gates remain unmet. Pointwise calibration-bin uncertainty code is an engineering component, not a validated FDA probability.",
+      evidencePath: "revision36-protocol-safety/reviewer-packet.json"},
+    {id: "r36.preview-runtime", title: "Verify this revision's preview and authenticated readback", status: "PENDING",
+      acceptance: "A new build and read-only runtime acceptance must be observed separately. The last read-only Render observation was deployment dep-dbogvaoqr7gs73ava440, commit 7c35253f8f6fa58714738c3619336380fb974d03; automatic deployment was off. New backend metrics have not been deployed there.",
+      evidencePath: null},
+  ],
+} as const;
+
+export function researchCheckpointEvidenceUrl(path: string): string {
+  return "https://github.com/pdufa/pdufa-command-center/blob/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/" + path;
+}
 const states = ["VERIFIED", "ACTIVE", "BLOCKED", "UNKNOWN"] as const;
 function rec(value: unknown): Record<string, unknown> {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw Error("INVALID_INSTALLATION_OBSERVATION");
