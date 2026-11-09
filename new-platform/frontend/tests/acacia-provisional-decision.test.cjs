@@ -4,9 +4,9 @@ const root=path.resolve(__dirname,"..");
 const src=fs.readFileSync(path.join(root,"lib/acacia-provisional-decision.ts"),"utf8");
 const compiled=ts.transpileModule(src,{compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022},reportDiagnostics:true});
 assert.equal((compiled.diagnostics||[]).filter(x=>x.category===ts.DiagnosticCategory.Error).length,0);
-const module={exports:{}};
-vm.runInNewContext(compiled.outputText,{module,exports:module.exports});
-const evaluate=module.exports.evaluateProvisionalEvidence, simulate=module.exports.simulateHypotheticalPath;
+const vmModule={exports:{}};
+vm.runInNewContext(compiled.outputText,{module:vmModule,exports:vmModule.exports});
+const evaluate=vmModule.exports.evaluateProvisionalEvidence, simulate=vmModule.exports.simulateHypotheticalPath;
 const pilot=JSON.parse(fs.readFileSync(path.join(root,"data/acacia-pilot-prediction-workup-20261108.json"),"utf8"));
 const clone=()=>structuredClone(pilot);
 test("first exact trial produces source-gated direction but no FDA probability or official grades",()=>{
