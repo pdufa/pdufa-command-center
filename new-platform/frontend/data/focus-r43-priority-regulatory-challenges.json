@@ -21,7 +21,7 @@
       "title": "Deramiocel · Duchenne muscular dystrophy",
       "researchOnly": true,
       "observations": [
-        "FDA's July 29, 2026 advisory-committee staff briefing described an original BLA Complete Response Letter, multiple post-study SAP revisions, and a prespecified-analysis sensitivity concern; its prior-SAP primary PUL 2.0 comparison did not establish robust statistical significance (FDA cites p=0.21 in the sensitivity comparison). This FDA briefing predates the August 24 amended application.",
+        "FDA's July 29, 2026 advisory-committee staff briefing described an earlier Complete Response Letter, post-study SAP revisions, and FDA's p=0.21 reanalysis using SAP 1.1 missing-data handling with the SAP 3.0 model. This sensitivity result challenges robustness; the briefing predates the August 24 amended application.",
         "In FDA's HOPE-3 randomized-phase safety summary, hypersensitivity reactions affected 22/53 deramiocel subjects (41.5%) versus 8/52 placebo subjects (15.4%); serious adverse events were 1 versus 5, respectively. These are source-specific descriptive counts, not a net benefit-risk determination.",
         "Sponsor separately reported PUL 2.0 p=0.029 under SAP 3.0, and an August 24 major amendment narrowed the proposed indication toward upper-limb function with a November 22 target."
       ],
@@ -76,7 +76,7 @@
         },
         {
           "label": "2025 Form 10-K recounting RTF, December resubmission and February acceptance",
-          "date": "2026-03-01",
+          "date": "2026-03-13",
           "url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526105076/svra-20251231.htm",
           "type": "OFFICIAL_SEC_SPONSOR"
         },
