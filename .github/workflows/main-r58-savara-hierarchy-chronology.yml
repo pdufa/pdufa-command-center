@@ -1,0 +1,72 @@
+name: MAIN R58 Savara regional multiplicity research arithmetic
+
+# Research-only, exact development branch. Never writes clinical grades,
+# trains a prediction model, changes production or touches historical Track B.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r58-savara-hierarchy-chronology.yml
+      - docs/medical-review-pilot-20261108/revision58-savara-regional-multiplicity-amendment-crosswalk-20261109.md
+      - new-platform/backend/scripts/audit_svra_source_hierarchy_r58.py
+      - new-platform/backend/tests/test_svra_source_hierarchy_r58.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r58-savara-source-research
+  cancel-in-progress: false
+
+jobs:
+  evaluate-public-secondary-hierarchy-only:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run deterministic source arithmetic and permanent retirement tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install pytest
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_svra_source_hierarchy_r58.py
+          PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
+          PYTHONPATH=. python scripts/audit_svra_source_hierarchy_r58.py > "$RUNNER_TEMP/SVRA_SECONDARY_HIERARCHY_R58.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          r=json.loads((Path(os.environ["RUNNER_TEMP"])/"SVRA_SECONDARY_HIERARCHY_R58.json").read_text())
+          assert r["nct"]=="NCT04544293" and r["applicationCycleId"]=="svra-molgramostim"
+          assert r["outsideJapanSouthKorea"]["week24HochbergNamesPassingPublishedThresholds"]==["SGRQ_TOTAL"]
+          assert r["outsideJapanSouthKorea"]["week48HochbergNamesPassingPublishedThresholds"]==[]
+          assert r["japanSouthKorea"]["confirmedFamilyVerdict"]=="UNDETERMINED"
+          assert r["originalSignedSapAndUnblindingChronologyIndependentlyVerified"] is False
+          assert r["clinicalReviewerSignoff"] is False
+          assert r["independentlyValidatedFdaPredictions"]==0
+          assert r["officialApprovalCrlForecast"]=="ABSTAIN"
+          assert r["officialReviewTimingForecast"]=="ABSTAIN"
+          assert r["fdaApprovalProbability"] is None
+          assert r["measuredHistoricalAccuracy"] is None
+          assert r["modelTrainingAuthorized"] is False
+          assert r["clinicalOrProductionWritesAuthorized"] is False
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+              f.write("R58: arithmetic-only published secondary hierarchy reproduced; "
+                      "no Japanese/Korean adjudicated result, clinical signoff, "
+                      "FDA prediction or accuracy released.\n")
+          PY
+      - name: Archive research-only arithmetic
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r58-savara-secondary-hierarchy
+          path: ${{ runner.temp }}/SVRA_SECONDARY_HIERARCHY_R58.json
+          retention-days: 90
+          if-no-files-found: error
