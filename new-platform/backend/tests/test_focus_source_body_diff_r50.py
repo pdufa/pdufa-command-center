@@ -80,6 +80,26 @@ def test_actual_non_script_source_edit_remains_review_not_dismissed(tmp_path):
     assert changed["differenceClassification"]=="NON_SCRIPT_OR_OTHER_ORIGINAL_HTML_BYTES_CHANGED_REVIEW_REQUIRED"
     assert changed["materialScientificImpactIndependentlyAdjudicated"] is False
 
+def test_markup_changed_but_html_text_nodes_same_remains_review_required(tmp_path):
+    before,after,o,n=fixture(tmp_path)
+    src=after["applicationGroups"][2]["applicationSource"]
+    name=src["rawArtifact"]
+    original=(n/name).read_bytes()
+    newer=original.replace(b"<main>Clinical endpoint stated</main>",
+                           b'<main data-runtime="2026-11-09">Clinical endpoint stated</main>')
+    assert newer!=original
+    (n/name).write_bytes(newer)
+    src["sha256"]=hashlib.sha256(newer).hexdigest()
+    src["bytes"]=len(newer)
+    for row in after["applicationGroups"][3:]:
+        row["applicationSource"]=deepcopy(src)
+    outcome=compare(before,after,o,n,"123456")
+    item=next(x for x in outcome["sourceComparisons"] if x["url"]==PH_URL)
+    assert item["differenceClassification"]=="HTML_TEXT_NODES_IDENTICAL_OTHER_MARKUP_CHANGED_REVIEW_REQUIRED"
+    assert item["htmlTextNodesUnchangedOtherMarkupReviewRequired"] is True
+    assert item["materialScientificImpactIndependentlyAdjudicated"] is False
+    assert outcome["newValidatedFdaOutcomePredictions"]==0
+
 def test_tampered_raw_sha_archive_cannot_be_classified(tmp_path):
     before,after,o,n=fixture(tmp_path)
     sec_url=after["applicationGroups"][0]["applicationSource"]
