@@ -58,6 +58,9 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
         certainty remains <strong>NOT VALIDATED</strong>. Roster snapshot: {FOCUS_SPECIALTY_SUMMARY.rosterAsOf}.
       </p>
       <p style={{fontSize:13,margin:"9px 0 0"}}>
+        <Link href="/predictions/evidence-gaps" style={{color:"#08695c",fontWeight:750}}>
+          Open original evidence recovery queue (R68)
+        </Link>{" · "}
         <Link href="/api/focus-assessment-intake" style={{color:"#08695c",fontWeight:750}}>Download machine-readable 29-trial intake manifest</Link>
         {" · "}<Link href="/predictions" style={{color:"#08695c"}}>Back to FDA predictions</Link>
       </p>
