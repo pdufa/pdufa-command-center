@@ -147,3 +147,17 @@ def test_predecision_source_retrieved_today_allowed_only_with_original_publicati
     c["evidenceSources"][0]["as_published_version_verified"]=False
     with pytest.raises(ValueError):
         freeze_predecision_evidence(c)
+
+
+def test_refusal_to_file_is_not_a_final_fda_approval_or_crl_decision():
+    """A pre-review RTF (as in Savara 2025) must stay outside final-action labels.
+
+    RTF documents may be captured as dated regulatory/CMC risk sources, but are
+    never converted to an independently adjudicated CRL or approval outcome.
+    """
+    frozen=freeze_predecision_evidence(case())
+    with pytest.raises(ValueError,match="UNVERIFIED_FDA_ACTION_SOURCE"):
+        evaluate_replay_protocol(frozen_packets=[frozen],
+            provisional_predictions=[sealed(frozen,lean="CRL_LEAN")],
+            outcome_vault=[outcome(action="REFUSAL_TO_FILE")],
+            as_of=date(2026,11,9))
