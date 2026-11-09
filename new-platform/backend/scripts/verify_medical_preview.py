@@ -88,6 +88,17 @@ def confirm_provisional_score_page(client):
     parser.feed(page.decode('utf-8', 'replace'))
     visible = ' '.join(parser.parts)
     normalized = re.sub(r'\s+', ' ', visible)
+    demand('Source-specific safety uncertainty' in normalized and
+           'Investigate sponsor 12/3 versus secondary paper 11/1' in normalized and
+           '14 (2.7%)' in normalized and '5.43%' in normalized and
+           'Clinical grade: UNASSIGNED' in normalized and
+           'NOT CALIBRATED' in normalized,
+           'ACACIA_SAFETY_SOURCE_RECONCILIATION_NOT_VISIBLE')
+    print(json.dumps({'stage':'ACACIA_SAFETY_SOURCE_RECONCILIATION','status':'PASS',
+       'nct':PILOT,'hfSponsor':[12,3],'hfSecondary':[11,1],
+       'interruptionPercentUsingRandomizedDenominator':5.43,
+       'crossSourceReconciled':False,'clinicalGradesWritten':0,
+       'fdaPrediction':'ABSTAIN'}),flush=True)
     demand('PROVISIONAL RESEARCH ASSESSMENT' in normalized and
            'Initial scientific evidence direction' in normalized and
            'Hypothetical FDA pathway simulator' in normalized and
