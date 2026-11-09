@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "dataset": "OFFICIAL_FDA_OUTCOME_COMPARISON_AFTER_PREDECISION_EVIDENCE_FREEZE",
+  "assessmentFreezeCommit": "19aefeff35590a32f6ca9e6988c536368c421b2c",
+  "assessmentFreezeUrl": "https://github.com/pdufa/pdufa-command-center/commit/19aefeff35590a32f6ca9e6988c536368c421b2c",
+  "outcomeDisclosureContext": "Although official FDA records were reopened after the 4-case rerun freeze, author had already seen all FDA outcomes during prior conversation; this is NOT blind prediction accuracy.",
+  "notBlind": true,
+  "notValidForAccuracy": true,
+  "notValidForCalibration": true,
+  "caseComparisons": [
+    {
+      "caseId": "INO-RRP-2026-L3-R2",
+      "ticker": "INO",
+      "frozenPrediction": "CRL",
+      "fdaDecision": "APPROVAL",
+      "approvalType": "ACCELERATED",
+      "fdaActionDate": "2026-10-30",
+      "originalPdufaDate": "2026-10-30",
+      "didMatch": false,
+      "fdaProduct": "Voceryq",
+      "fdaSource": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-plasmid-dna-based-immunotherapy-adults-recurrent-respiratory-papillomatosis"
+    },
+    {
+      "caseId": "GSK-CHB-2026-L3-R2",
+      "ticker": "GSK",
+      "frozenPrediction": "APPROVAL",
+      "fdaDecision": "APPROVAL",
+      "approvalType": "STANDARD",
+      "fdaActionDate": "2026-10-20",
+      "originalPdufaDate": "2026-10-26",
+      "didMatch": true,
+      "fdaProduct": "Hibsago",
+      "fdaSource": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-its-kind-chronic-hepatitis-b-treatment"
+    },
+    {
+      "caseId": "PHAR-APDS-2026-L3-R2",
+      "ticker": "PHAR",
+      "frozenPrediction": "APPROVAL",
+      "fdaDecision": "APPROVAL",
+      "approvalType": "SUPPLEMENTAL_LABEL_EXPANSION",
+      "fdaActionDate": "2026-09-11",
+      "originalPdufaDate": "2026-10-24",
+      "didMatch": true,
+      "fdaProduct": "Joenja",
+      "fdaSource": "https://www.fda.gov/drugs/news-events-human-drugs/fda-approves-first-treatment-children-aged-4-11-years-apds-rare-genetic-disorder-immune-system"
+    },
+    {
+      "caseId": "ABBV-CD-2026-L3-R2",
+      "ticker": "ABBV",
+      "frozenPrediction": "APPROVAL",
+      "fdaDecision": "APPROVAL",
+      "approvalType": "SUPPLEMENTAL_REGIMEN_APPROVAL",
+      "fdaActionDate": "2026-10-23",
+      "originalPdufaDate": null,
+      "didMatch": true,
+      "fdaProduct": "SKYRIZI",
+      "fdaSource": "https://news.abbvie.com/2026-10-23-U-S-FDA-Approves-Subcutaneous-Induction-Regimen-for-AbbVies-SKYRIZI-R-risankizumab-rzaa-for-Adults-With-Moderately-to-Severely-Active-Crohns-Disease"
+    }
+  ],
+  "rawMatches": 3,
+  "total": 4,
+  "validBlindMatches": null,
+  "validBlindAccuracy": null,
+  "activeProgramChanges": false,
+  "archiveOnly": true,
+  "quarantineRetained": true
+}

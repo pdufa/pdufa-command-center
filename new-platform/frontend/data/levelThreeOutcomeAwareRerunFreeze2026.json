@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "dataset": "POST_OUTCOME_EVIDENCE_CUTOFF_LEVEL3_REASSESSMENTS_EXCLUDED",
+  "createdOn": "2026-11-09",
+  "studyCount": 4,
+  "assessmentDepth": "MANUAL_LEVEL_3_STYLE",
+  "phaseFirst": true,
+  "sourceBasis": "PREDECISION_DATED_ONLY",
+  "knownOutcomeContamination": "AUTHOR_ALREADY_KNEW_ALL_FOUR_FDA_OUTCOMES_FROM_PRIOR_CHAT_AND_RETRIEVAL",
+  "blind": false,
+  "strictBlind": false,
+  "validForIndependentPredictionAccuracy": false,
+  "validForCalibration": false,
+  "actualOutcomesInThisFile": false,
+  "originalHistoricalQuarantineRetained": true,
+  "caseStudies": [
+    {
+      "caseId": "INO-RRP-2026-L3-R2",
+      "ticker": "INO",
+      "drug": "INO-3107",
+      "trialIds": [
+        "NCT04398433"
+      ],
+      "application": "Original BLA for adult recurrent respiratory papillomatosis",
+      "cutoff": "2026-08-10",
+      "phase": "Phase 1/2, single-arm, 32 treated patients at year one",
+      "evidence": "Sponsor-reported 26/32 experienced fewer surgical interventions and 23/32 had reductions of 50% or more; durability with variable denominators. No randomized comparison.",
+      "benefitRisk": "Reduced repeated airway surgeries would matter clinically; uncertainty from uncontrolled efficacy and variability in response.",
+      "regulatory": "FDA accepted accelerated-review BLA but explicitly flagged eligibility; FDA had already approved PAPZIMEOS for RRP. Sponsor warned eligibility might fail without evidence of meaningful advantage over available therapy. Unknown inspection/CMC evidence treated as unknown, not failure.",
+      "prediction": "CRL",
+      "lean": "CRL_LEAN",
+      "rationale": "A sponsor-disclosed, unresolved accelerated-approval pathway challenge is more immediately decisive than an uncontrolled surgery-benefit signal, even though approval remains possible.",
+      "predecisionLinks": [
+        "https://www.sec.gov/Archives/edgar/data/1055726/000105572626000023/ino-20260630.htm",
+        "https://clinicaltrials.gov/study/NCT04398433"
+      ],
+      "actualOutcome": null,
+      "actualActionDate": null,
+      "officialOutcomeSource": null,
+      "independentProbability": null,
+      "excludedFromProspectiveAccuracy": true,
+      "excludedFromRetrospectiveBlindValidation": true,
+      "excludedFromCalibration": true
+    },
+    {
+      "caseId": "GSK-CHB-2026-L3-R2",
+      "ticker": "GSK",
+      "drug": "bepirovirsen",
+      "trialIds": [
+        "NCT05630807",
+        "NCT05630820"
+      ],
+      "application": "Original NDA, adult chronic hepatitis B",
+      "cutoff": "2026-05-28",
+      "phase": "Two randomized, double-blind pivotal Phase 3 studies (B-Well 1 / B-Well 2), replication across trials.",
+      "evidence": "Sustained functional cure at week 72 occurred in approximately 19-20% of active-treated versus no placebo patients. Replication and statistically positive trial endpoints support efficacy.",
+      "benefitRisk": "Functional cure is consequential, although most treated patients did not reach cure. Liver enzyme elevations and higher severe adverse events require monitoring and careful labeling.",
+      "regulatory": "Priority Review and breakthrough designation, with two pivotal efficacy trials. Unknown FDA inspections and manufacturing review are missing evidence, not assumed failures.",
+      "prediction": "APPROVAL",
+      "lean": "APPROVAL_LEAN",
+      "rationale": "Two independent positive pivotal trials on a clinically meaningful endpoint outweigh the manageable but nontrivial safety signal, without evidence of a known disqualifying regulatory issue.",
+      "predecisionLinks": [
+        "https://www.gsk.com/en-gb/media/press-releases/bepirovirsen-achieves-unprecedented-functional-cure-rates-with-potential-to-redefine-treatment-for-chronic-hepatitis-b",
+        "https://ir.ionispharma.com/news-releases/news-release-details/ionis-partner-gsk-announces-bepirovirsen-accepted-priority",
+        "https://www.nejm.org/doi/full/10.1056/NEJMoa2515131"
+      ],
+      "actualOutcome": null,
+      "actualActionDate": null,
+      "officialOutcomeSource": null,
+      "independentProbability": null,
+      "excludedFromProspectiveAccuracy": true,
+      "excludedFromRetrospectiveBlindValidation": true,
+      "excludedFromCalibration": true
+    },
+    {
+      "caseId": "PHAR-APDS-2026-L3-R2",
+      "ticker": "PHAR",
+      "drug": "Joenja (leniolisib)",
+      "trialIds": [
+        "NCT05438407"
+      ],
+      "application": "Supplemental NDA 217759/S-006, ages 4–11 weighing at least 27kg",
+      "cutoff": "2026-07-30",
+      "phase": "Single-arm, open-label pediatric Phase 3 study; earlier randomized clinical evidence and approval for ages 12+ already established.",
+      "evidence": "Pediatric 12-week study reported improvements in naïve B cells and lymphadenopathy consistent with mechanistic activity. Trial lacks randomized pediatric control.",
+      "benefitRisk": "Meaningful rare-disease unmet need and established benefit in older patients support exposure-bridged pediatric labeling; pediatric dataset is small.",
+      "regulatory": "Earlier Jan 2026 CRL concerned underexposure in lighter children and an analytical production-test method. Subsequent resubmission specifically excluded under-27kg patients and included additional analytical-method data after FDA meeting. Complete CMC approval evidence unavailable.",
+      "prediction": "APPROVAL",
+      "lean": "APPROVAL_LEAN",
+      "rationale": "Resubmission directly narrowed the population implicated by exposure concerns, with added CMC test data and prior drug approval. Residual manufacturing/PK risk prevents stronger than approval lean.",
+      "predecisionLinks": [
+        "https://www.pharming.com/our-news/pharming-announces-u-s-fda-acceptance-of-snda-resubmission-for-joenja",
+        "https://www.pharming.com/our-news/pharming-reports-second-quarter-and-first-half-2026-financial-results",
+        "https://clinicaltrials.gov/study/NCT05438407"
+      ],
+      "actualOutcome": null,
+      "actualActionDate": null,
+      "officialOutcomeSource": null,
+      "independentProbability": null,
+      "excludedFromProspectiveAccuracy": true,
+      "excludedFromRetrospectiveBlindValidation": true,
+      "excludedFromCalibration": true
+    },
+    {
+      "caseId": "ABBV-CD-2026-L3-R2",
+      "ticker": "ABBV",
+      "drug": "SKYRIZI (risankizumab-rzaa)",
+      "trialIds": [
+        "NCT06063967"
+      ],
+      "application": "Supplemental BLA 761105/S-053, subcutaneous induction for Crohn's disease",
+      "cutoff": "2026-10-13",
+      "phase": "AFFIRM randomized placebo-controlled double-blind Phase 3 study, 289 patients.",
+      "evidence": "Week 12 clinical remission approximately 55% versus 30%, and endoscopic response 44% versus 14%; both co-primary endpoints strongly significant.",
+      "benefitRisk": "Self-administered SC route avoids infusion initiation; efficacy is demonstrated, with no new safety risks in sponsor's controlled trial disclosure.",
+      "regulatory": "Existing FDA-approved molecule for Crohn's disease plus route-specific positive pivotal study. New device, pharmacokinetics, labeling, immunogenicity or inspections remain private evidence gaps.",
+      "prediction": "APPROVAL",
+      "lean": "APPROVAL_LEAN",
+      "rationale": "Positive randomized route-specific efficacy and established safety support adding SC induction; no disclosed unresolved critical regulatory objections.",
+      "predecisionLinks": [
+        "https://news.abbvie.com/2026-03-02-AbbVie-Announces-Positive-Topline-Results-from-Phase-3-AFFIRM-Study-Evaluating-SKYRIZI-R-Risankizumab-Subcutaneous-Induction-in-Patients-with-Crohns-Disease",
+        "https://news.abbvie.com/2026-10-13-AbbVie-Presents-New-Phase-3-AFFIRM-Data-Showing-Clinical-and-Endoscopic-Outcomes-With-Subcutaneous-SKYRIZI-R-risankizumab-rzaa-in-Patients-With-Moderately-to-Severely-Active-Crohns-Disease"
+      ],
+      "actualOutcome": null,
+      "actualActionDate": null,
+      "officialOutcomeSource": null,
+      "independentProbability": null,
+      "excludedFromProspectiveAccuracy": true,
+      "excludedFromRetrospectiveBlindValidation": true,
+      "excludedFromCalibration": true
+    }
+  ]
+}
