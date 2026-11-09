@@ -16,9 +16,10 @@ def probe():
     if m["trialCount"]!=29 or m["applicationCount"]!=23 or not set(NCTS)<=names:
         raise ValueError("ORIGINAL_29_23_REGISTRY_VERSION_ROSTER_CHANGED")
     for nct in NCTS:
-        for label,path in [("history",f"/api/int/studies/{nct}/history"),
-                           ("first_version",f"/api/int/studies/{nct}/history/0")]:
-            url="https://clinicaltrials.gov"+path
+        for label,path in [("www-history-query",f"/api/int/studies/{nct}?history=true"),
+                           ("www-first-version",f"/api/int/studies/{nct}/history/0"),
+                           ("www-history-index",f"/api/int/studies/{nct}/history")]:
+            url="https://www.clinicaltrials.gov"+path
             receipt,payload=retrieve_url(url)
             result={"nct":nct,"kind":label,"http":receipt.get("status"),
                     "bytes":receipt.get("bytes"),"sha256":receipt.get("sha256"),
