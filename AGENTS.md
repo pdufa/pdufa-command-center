@@ -122,3 +122,28 @@ without the outcome; use an independent evaluator with no access to answer
 sources, freeze its predicted result first, and reveal outcomes only afterward.
 Expose any accidental answer leakage and exclude the run from hit-rate and
 calibration. Do not fabricate a clean rerun when these conditions are unmet.
+
+## Owner-authorized standalone historical testing display — November 9, 2026
+
+The owner subsequently approved adding the **four archived Level 3-style FDA
+re-evaluations** (INO, GSK, PHAR, ABBV) to a **separate, explicitly labeled
+Historical Testing** chart and data table on the ASSESMENTS page, plus a
+separate `Historical Testing` tab in PDUFA Master Scan Data. This narrowly
+amends the display quarantine above; it does **not** reactivate the prior
+individual trial review components, add rows to the active
+`AssessmentLevelChart`, or authorize adding these cases to FOCUS/POOL or
+operational science/prediction model state.
+
+The isolated panel may read the archived two-file sequence
+`levelThreeOutcomeAwareRerunFreeze2026.json` and
+`levelThreeOutcomeAwareRerunComparison2026.json` **read-only** and show the
+three matching directions and one miss, always prominently labeling
+**75% retrospective agreement NOT BLIND prediction accuracy**. All four
+were assessed after their FDA outcomes were already known. There are zero
+valid blind predictions in this four-case subset. Never count them in
+prospective accuracy, blind backtests, scientific certainty, probability
+calibration, or active selection/rankings, and preserve the previous
+quarantine manifest and original freeze commits.
+
+Future historical audits must follow independent outcome-unexposed evaluation
+for legitimate accuracy testing.
