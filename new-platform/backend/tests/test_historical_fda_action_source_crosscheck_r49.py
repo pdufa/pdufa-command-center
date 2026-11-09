@@ -75,6 +75,24 @@ def evaluate(parts):
     return crosscheck(rows,receipt,raws["candidates"],approved,raws["approved"],
         crl,raws["crl"],identity,"2026-11-09T19:40:00Z")
 
+def refresh_original_snapshot_after_intentional_source_update(parts,kind):
+    # An intentional new original source snapshot must be carried through the
+    # raw archive and its SHA-256 receipt, unlike an in-memory forgery.
+    idx=3 if kind=="approved" else 4
+    receipt_key="approvedRegistry" if kind=="approved" else "selectedCrl"
+    raw=json.dumps(parts[idx],sort_keys=True).encode()
+    parts[2][kind]=raw
+    parts[1]["sourceProvenance"][receipt_key]["sha256"]=hashlib.sha256(raw).hexdigest()
+    parts[1]["sourceProvenance"][receipt_key]["bytes"]=len(raw)
+
+def refresh_candidate_source_and_identity_after_intentional_update(parts):
+    # A modified example postdecision source lead gets a NEW matching source
+    # receipt and R48 identity audit; no model eligibility is introduced.
+    raw=json.dumps(parts[0],sort_keys=True).encode()
+    parts[2]["candidates"]=raw
+    parts[1]["candidateFileSha256"]=hashlib.sha256(raw).hexdigest()
+    parts[5],_=triage(parts[0],parts[1],raw,"2026-11-09T19:40:00Z")
+
 def test_original_source_crosscheck_accepts_both_published_action_dates_without_cycle_certification():
     r=evaluate(fixture())
     assert r["sourceRecordRows"]==2
@@ -94,6 +112,7 @@ def test_original_source_crosscheck_accepts_both_published_action_dates_without_
 def test_original_source_fields_cannot_silently_upgrade_source_matches():
     parts=fixture()
     parts[3]["records"][0]["submissions_as_published"][0]["submission_status_date_as_published"]="20240417"
+    refresh_original_snapshot_after_intentional_source_update(parts,"approved")
     r=evaluate(parts)
     assert r["unreconciledSourceActionRows"]==1
     assert "ORIGINAL_SUBMISSION_DATE_NUMBER_NOT_UNIQUE_OR_MISMATCH" in r["sourceLinkageProblems"]
@@ -102,6 +121,7 @@ def test_original_source_fields_cannot_silently_upgrade_source_matches():
 def test_supplement_approval_cannot_be_promoted_into_original_submission_match():
     parts=fixture()
     parts[3]["records"][0]["submissions_as_published"][0]["submission_type_as_published"]="SUPPL"
+    refresh_original_snapshot_after_intentional_source_update(parts,"approved")
     r=evaluate(parts)
     assert r["reconciledOriginalApplicationApprovalRows"]==0
     assert r["reconciledPublishedCrlRows"]==1
@@ -109,6 +129,7 @@ def test_supplement_approval_cannot_be_promoted_into_original_submission_match()
 def test_mismatch_original_crl_letter_date_is_evidence_gap_not_negative_outcome():
     parts=fixture()
     parts[4]["records"][0]["letter_date_as_published"]="10/12/2023"
+    refresh_original_snapshot_after_intentional_source_update(parts,"crl")
     r=evaluate(parts)
     assert r["unreconciledSourceActionRows"]==1
     assert r["sourceLinkageProblems"]=={"ORIGINAL_CRL_LETTER_DATE_MISMATCH":1}
@@ -130,6 +151,8 @@ def test_forged_archive_provenance_or_parent_research_identity_fails_closed(chan
 def test_explicit_original_number_mismatch_is_not_certified():
     p=fixture();p[4]["records"][0]["application_numbers"]=["BLA 761343"]
     p[0][1]["sourceApplicationReferences"]=["BLA 761343"]
+    refresh_original_snapshot_after_intentional_source_update(p,"crl")
+    refresh_candidate_source_and_identity_after_intentional_update(p)
     r=evaluate(p)
     assert r["reconciledPublishedCrlRows"]==0
     assert r["sourceLinkageProblems"]=={"EXPLICIT_ORIGINAL_UNIT_NOT_SUPPORTED_BY_SOURCE":1}
