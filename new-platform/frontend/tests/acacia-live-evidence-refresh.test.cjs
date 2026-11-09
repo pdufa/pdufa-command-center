@@ -155,6 +155,11 @@ test("preview UI refreshes on visibility and every 15 minutes without pretending
   assert.match(ui,/REVIEW_REQUIRED/);
   assert.match(ui,/automaticClinicalRescore===false/);
   assert.match(ui,/while nobody has the page open/);
+  assert.match(ui,/Archived evidence checks and overnight monitoring/);
+  assert.match(ui,/Nightly schedule: PREPARED, NOT ACTIVE/);
+  assert.match(ui,/up to 90 days/);
+  assert.match(ui,/main-acacia-public-evidence-nightly\.yml/);
+  assert.match(ui,/while PREDICTIONS remains open/);
   assert.match(ui,/official scientific grades remain/i);
   assert.match(ui,/newEvidenceCandidates/);
   assert.match(ui,/independent review required/);
