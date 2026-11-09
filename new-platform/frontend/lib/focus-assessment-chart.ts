@@ -111,7 +111,7 @@ export function summarizeFdaPredictionAccuracy(
   const calibrated=current?.calibrationStatus==="VALIDATED"&&
     validProbability(current.approvalProbability)&&
     validProbability(current.crlProbability)&&
-    Math.abs(current.approvalProbability+current.crlProbability-1)<0.0001;
+    Math.abs(current.approvalProbability!+current.crlProbability!-1)<0.0001;
   const latest:CompletedPrediction|null=current?{
     predictionId:current.predictionId,
     applicationCycleId:current.applicationCycleId,
