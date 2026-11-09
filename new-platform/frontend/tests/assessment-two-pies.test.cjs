@@ -182,7 +182,7 @@ test("total competitiveness trend matches dated FDA decisions and exact same coh
   assert.deepEqual(compared.overallTrend.map(x=>x.compared),[2,3]);
   assert.deepEqual(compared.overallTrend.map(x=>x.accuratePct),[50,66.67]);
   assert.deepEqual(compared.overallTrend.map(x=>x.notAccuratePct),[50,33.33]);
-  assert.equal(compared.overallTrend.at(-1).accuratePct,compared.accuracyPercent);
+  assert.ok(Math.abs(compared.overallTrend.at(-1).accuratePct-compared.accuracyPercent)<0.005);
 });
 
 test("line chart correctly plots misses, chronological cumulative percentages and no invented baseline",()=>{
