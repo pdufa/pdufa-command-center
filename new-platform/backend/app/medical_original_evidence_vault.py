@@ -148,6 +148,7 @@ def initialize(engine, *, test_only: bool = False) -> None:
             receipt_id TEXT PRIMARY KEY,
             nct_id TEXT NOT NULL CHECK(nct_id = 'NCT06081894'),
             request_id TEXT NOT NULL,
+            document_version TEXT NOT NULL,
             content_sha256 TEXT NOT NULL,
             metadata_json TEXT NOT NULL,
             encrypted_data {binary_type} NOT NULL,
@@ -158,7 +159,8 @@ def initialize(engine, *, test_only: bool = False) -> None:
             deposited_at TEXT NOT NULL,
             previous_receipt_sha256 TEXT,
             receipt_sha256 TEXT NOT NULL UNIQUE,
-            UNIQUE(nct_id,request_id,content_sha256)
+            UNIQUE(nct_id,request_id,content_sha256),
+            UNIQUE(nct_id,request_id,document_version)
         )"""))
         c.execute(text("""CREATE INDEX IF NOT EXISTS medical_evidence_vault_nct_request
           ON medical_original_evidence_vault(nct_id,request_id,deposited_at)"""))
@@ -210,6 +212,7 @@ def deposit(engine, *, metadata: dict, original_bytes: bytes,
           {"nct":EXACT_NCT,"request":metadata["requestId"]}).scalar()
         fields = {
             "receiptId":rid,"nct":EXACT_NCT,"requestId":metadata["requestId"],
+            "documentVersion":metadata["documentVersion"],
             "sourceSha256":source_sha,"metadataSha256":hashlib.sha256(canonical_metadata.encode()).hexdigest(),
             "aadSha256":hashlib.sha256(aad).hexdigest(),"byteCount":len(original_bytes),
             "uploadedBy":uploaded_by,"depositedAt":deposited_at,
@@ -218,19 +221,20 @@ def deposit(engine, *, metadata: dict, original_bytes: bytes,
         receipt = _receipt_hash(fields)
         try:
             c.execute(text("""INSERT INTO medical_original_evidence_vault
-                (receipt_id,nct_id,request_id,content_sha256,metadata_json,
+                (receipt_id,nct_id,request_id,document_version,content_sha256,metadata_json,
                 encrypted_data,nonce,aad_sha256,byte_count,uploaded_by,
                 deposited_at,previous_receipt_sha256,receipt_sha256)
-                VALUES (:rid,:nct,:request,:sha,:metadata,:encrypted,:nonce,
+                VALUES (:rid,:nct,:request,:version,:sha,:metadata,:encrypted,:nonce,
                 :aad,:size,:uploader,:at,:previous,:receipt)"""),
                 {"rid":rid,"nct":EXACT_NCT,"request":metadata["requestId"],
+                 "version":metadata["documentVersion"],
                  "sha":source_sha,"metadata":canonical_metadata,
                  "encrypted":ciphertext,"nonce":nonce,
                  "aad":hashlib.sha256(aad).hexdigest(),
                  "size":len(original_bytes),"uploader":uploaded_by,
                  "at":deposited_at,"previous":prior,"receipt":receipt})
         except IntegrityError:
-            raise VaultError("An identical source version is already archived") from None
+            raise VaultError("The source hash or declared document version is already archived") from None
     # No plaintext or decryption key is included in a response or log.
     return {**fields,"receiptSha256":receipt,"encrypted":True,
             "receivedOriginalBytes":len(original_bytes),
@@ -246,7 +250,7 @@ def list_receipts(engine, *, nct: str) -> list[dict]:
         raise VaultError("Wrong trial")
     with engine.connect() as c:
         rows = c.execute(text("""SELECT receipt_id,request_id,content_sha256,
-             metadata_json,byte_count,uploaded_by,deposited_at,
+             metadata_json,document_version,byte_count,uploaded_by,deposited_at,
              previous_receipt_sha256,receipt_sha256 FROM medical_original_evidence_vault
              WHERE nct_id=:nct ORDER BY request_id,deposited_at,receipt_id"""),
              {"nct":nct}).mappings().all()
@@ -258,6 +262,7 @@ def list_receipts(engine, *, nct: str) -> list[dict]:
                     "uploadedBy":r["uploaded_by"],"depositedAt":r["deposited_at"],
                     "previousReceiptSha256":r["previous_receipt_sha256"],
                     "receiptSha256":r["receipt_sha256"],
+                    "documentVersion":r["document_version"],
                     "metadata":json.loads(r["metadata_json"]),
                     "clinicalReviewerSigned":False,"medicalGrade":None})
     return out
@@ -274,7 +279,7 @@ def audit_version_chain(engine, *, request_id: str) -> dict:
     with engine.connect() as c:
         rows=c.execute(text("""SELECT receipt_id,nct_id,request_id,content_sha256,
             metadata_json,aad_sha256,byte_count,uploaded_by,deposited_at,
-            previous_receipt_sha256,receipt_sha256
+            previous_receipt_sha256,receipt_sha256,document_version
             FROM medical_original_evidence_vault WHERE nct_id=:nct AND request_id=:id
             ORDER BY deposited_at,receipt_id"""),
             {"nct":EXACT_NCT,"id":request_id}).mappings().all()
@@ -284,7 +289,8 @@ def audit_version_chain(engine, *, request_id: str) -> dict:
             raise VaultError("Evidence version history has an invalid previous receipt")
         h=_receipt_hash({
             "receiptId":row["receipt_id"],"nct":row["nct_id"],
-            "requestId":row["request_id"],"sourceSha256":row["content_sha256"],
+            "requestId":row["request_id"],"documentVersion":row["document_version"],
+            "sourceSha256":row["content_sha256"],
             "metadataSha256":hashlib.sha256(row["metadata_json"].encode()).hexdigest(),
             "aadSha256":row["aad_sha256"],"byteCount":row["byte_count"],
             "uploadedBy":row["uploaded_by"],"depositedAt":row["deposited_at"],
@@ -312,7 +318,8 @@ def verify_at_rest(engine, *, receipt_id: str, encryption_key: bytes) -> dict:
     meta=json.loads(row["metadata_json"])
     expected_receipt = _receipt_hash({
         "receiptId":row["receipt_id"],"nct":EXACT_NCT,
-        "requestId":row["request_id"],"sourceSha256":row["content_sha256"],
+        "requestId":row["request_id"],"documentVersion":row["document_version"],
+        "sourceSha256":row["content_sha256"],
         "metadataSha256":hashlib.sha256(row["metadata_json"].encode()).hexdigest(),
         "aadSha256":row["aad_sha256"],"byteCount":row["byte_count"],
         "uploadedBy":row["uploaded_by"],"depositedAt":row["deposited_at"],
