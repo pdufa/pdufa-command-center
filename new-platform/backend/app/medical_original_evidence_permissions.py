@@ -104,8 +104,11 @@ def verify_runtime(engine) -> dict:
             has_schema_privilege(current_user,'public','CREATE') AS can_create,
             has_database_privilege(current_user,current_database(),'CREATE') AS can_create_db
         """),{"table":TABLE}).mappings().one()
+        owner_membership=c.execute(text("SELECT pg_has_role(current_user,:owner,'MEMBER')"),
+            {"owner":owner}).scalar() if owner else True
         enabled=c.execute(text("""SELECT t.tgenabled, t.tgtype,
-                   pg_get_userbyid(p.proowner) AS function_owner
+                   pg_get_userbyid(p.proowner) AS function_owner,
+                   p.proname AS function_name
             FROM pg_trigger t
             JOIN pg_class cl ON cl.oid=t.tgrelid
             JOIN pg_proc p ON p.oid=t.tgfoid
@@ -114,15 +117,18 @@ def verify_runtime(engine) -> dict:
             {"table":TABLE,"name":TRIGGER}).mappings().all()
     if not state or not state["rolcanlogin"] or any(state[k] for k in (
         "rolsuper","rolcreatedb","rolcreaterole","rolreplication","rolbypassrls"
-    )) or owner is None or owner in (RUNTIME_ROLE,db_owner) and owner==RUNTIME_ROLE:
+    )) or owner is None or owner==RUNTIME_ROLE:
         raise PrivilegeBoundaryError("Vault database role is not least privileged")
-    if db_owner==RUNTIME_ROLE or flags["can_create"] or flags["can_create_db"]:
+    if owner_membership or db_owner==RUNTIME_ROLE or flags["can_create"] or flags["can_create_db"]:
         raise PrivilegeBoundaryError("Vault runtime has schema or database creation permission")
     if not flags["can_select"] or not flags["can_insert"] or any(flags[k] for k in (
         "can_update","can_delete","can_truncate","can_reference","can_trigger"
     )):
         raise PrivilegeBoundaryError("Vault runtime table grants are not SELECT plus INSERT only")
-    if len(enabled)!=1 or enabled[0]["tgenabled"]!="O" or enabled[0]["function_owner"]==RUNTIME_ROLE:
+    if (len(enabled)!=1 or enabled[0]["tgenabled"]!="O"
+            or enabled[0]["tgtype"]!=58
+            or enabled[0]["function_name"]!="medical_evidence_vault_reject_change"
+            or enabled[0]["function_owner"]==RUNTIME_ROLE):
         raise PrivilegeBoundaryError("Vault immutability trigger is absent or untrusted")
     return {"runtimeRole":RUNTIME_ROLE,"tableOwnerIsSeparate":True,
             "schemaCreateDenied":True,"databaseCreateDenied":True,
