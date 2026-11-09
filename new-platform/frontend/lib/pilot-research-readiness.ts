@@ -3,11 +3,11 @@
  * a biological efficacy strength grade or an FDA outcome probability.
  */
 export type SourceRecord = {url:string; label:string; retrieved?:boolean; sha256?:string};
-export type ResearchGate = {id:string;title:string;state:"RESEARCH_OBSERVED"|"NOT_VERIFIED";
+export type ResearchGate = {id:string;title:string;state:string;
   sourceId:string|null;detail:string};
 export type PilotReadiness = {schema:string;assessmentId:string;methodIndex:number;
   asOf:string;label:string;basis:string;gates:ResearchGate[];
-  officialClinicalGrade:null;reviewerSignedOff:false;approvalProbability:null;interpretation:string};
+  officialClinicalGrade:number|null;reviewerSignedOff:boolean;approvalProbability:number|null;interpretation:string};
 type ResearchSnapshot={nct:string;phaseIndependentReviewerVerified:boolean;
   scientificFramework:{independentlyGradedMethodPositions:number; positions:number};
   finalDecision:{approval:string;crl:string;reviewDelay:string;certainty:string;calibratedAccuracy:null};
