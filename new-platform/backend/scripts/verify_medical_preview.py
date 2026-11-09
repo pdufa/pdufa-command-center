@@ -121,6 +121,13 @@ def confirm_provisional_score_page(client):
            'Check metadata only' in normalized and
            'No file upload' in normalized,
            'CLIENT_LOCAL_SHA256_INTAKE_FORM_NOT_RENDERED')
+    demand('Encrypted original-document vault' in normalized and
+           'STAGED IN BACKEND CODE' in normalized and
+           'NOT ACTIVATED' in normalized and
+           'NOT ACTIVE' in normalized and
+           'Original documents deposited' in normalized and
+           'AES-256-GCM' in normalized,
+           'STAGED_ENCRYPTED_VAULT_NOT_TRUTHFULLY_VISIBLE')
     demand('Alternative source recovery' in normalized and
            'final locked primary SAP' in normalized and
            'no request has been sent' in normalized and
