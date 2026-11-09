@@ -13,6 +13,7 @@ export type Probe={
   observedAt:string;
   sourceUrl:string;
   message:string;
+  candidateSignals?:string[];
 };
 export const ACACIA_NCT="NCT06081894";
 export const REGISTRY_API_URL="https://clinicaltrials.gov/api/v2/studies/NCT06081894";
@@ -55,6 +56,28 @@ export function publicationIdentityValid(input:unknown):boolean{
       /aficamten/i.test(title)&&/hypertrophic cardiomyopathy/i.test(title);
   });
 }
+/** Original registry snapshot was last updated 2026-09-22. New record
+ * versions, result modules or SAP-titled attachments trigger RESEARCH LEADS.
+ * They are never accepted as an independently verified clinical finding.
+ */
+export function registryResearchSignals(input:unknown):string[]{
+  if(!registryIdentityValid(input))return [];
+  const found:string[]=[];
+  const protocol=inner(input,"protocolSection");
+  const status=inner(protocol,"statusModule");
+  const date=inner(status,"studyLastUpdatePostDateStruct")?.date;
+  if(typeof date==="string"&&/^20\\d{2}-\\d{2}-\\d{2}$/.test(date)&&date>"2026-09-22")
+    found.push("REGISTRY_RECORD_UPDATED_SINCE_BASELINE");
+  const results=inner(input,"resultsSection");
+  if(results&&Object.keys(results).length>0)found.push("NEW_REGISTRY_RESULTS_CANDIDATE");
+  const documents=inner(inner(input,"documentSection"),"largeDocumentModule");
+  const largeDocs=documents?.largeDocs;
+  if(Array.isArray(largeDocs)&&largeDocs.some((d:unknown)=>{
+    const row=object(d),title=String(row?.title??"");
+    return /\\bSAP\\b|statistical analysis plan/i.test(title);
+  }))found.push("PUBLIC_SAP_TITLE_CANDIDATE_UNREVIEWED");
+  return found;
+}
 export const pinnedSourceUrls={REGISTRY:REGISTRY_API_URL,NEJM_PIVOTAL:PUBMED_INDEX_API_URL} as const;
 
 export function evaluateSourceRefresh(snapshot:SourceSnapshot,probes:Probe[],verifiedAt:string){
@@ -80,6 +103,7 @@ export function evaluateSourceRefresh(snapshot:SourceSnapshot,probes:Probe[],ver
     mode:"ON_VIEW_REFRESH_NOT_BACKGROUND_SCAN" as const,
     currentness,
     probes,
+    newEvidenceCandidates:probes.flatMap(p=>p.candidateSignals??[]),
     cards,
     researchOnly:true as const,
     officialClinicalMethodGrades:0 as const,
