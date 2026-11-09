@@ -263,6 +263,41 @@ def list_receipts(engine, *, nct: str) -> list[dict]:
     return out
 
 
+def audit_version_chain(engine, *, request_id: str) -> dict:
+    """Verify linked, append-only metadata receipts for a source request.
+
+    A database administrator may still change/drop SQL triggers; the receipt
+    chain is an audit aid, not tamper-proof protection against a DB owner.
+    """
+    if request_id not in REQUEST_TYPES:
+        raise VaultError("Unknown source evidence requirement")
+    with engine.connect() as c:
+        rows=c.execute(text("""SELECT receipt_id,nct_id,request_id,content_sha256,
+            metadata_json,aad_sha256,byte_count,uploaded_by,deposited_at,
+            previous_receipt_sha256,receipt_sha256
+            FROM medical_original_evidence_vault WHERE nct_id=:nct AND request_id=:id
+            ORDER BY deposited_at,receipt_id"""),
+            {"nct":EXACT_NCT,"id":request_id}).mappings().all()
+    previous=None
+    for row in rows:
+        if row["previous_receipt_sha256"] != previous:
+            raise VaultError("Evidence version history has an invalid previous receipt")
+        h=_receipt_hash({
+            "receiptId":row["receipt_id"],"nct":row["nct_id"],
+            "requestId":row["request_id"],"sourceSha256":row["content_sha256"],
+            "metadataSha256":hashlib.sha256(row["metadata_json"].encode()).hexdigest(),
+            "aadSha256":row["aad_sha256"],"byteCount":row["byte_count"],
+            "uploadedBy":row["uploaded_by"],"depositedAt":row["deposited_at"],
+            "previousReceiptSha256":row["previous_receipt_sha256"],
+        })
+        if not secrets.compare_digest(h,row["receipt_sha256"]):
+            raise VaultError("Evidence version history receipt digest invalid")
+        previous=row["receipt_sha256"]
+    return {"nct":EXACT_NCT,"requestId":request_id,"immutableReceiptCount":len(rows),
+            "lastReceiptSha256":previous,"receiptChainVerified":True,
+            "clinicalGradesWritten":0,"fdaPrediction":"ABSTAIN"}
+
+
 def verify_at_rest(engine, *, receipt_id: str, encryption_key: bytes) -> dict:
     """Internal audit only. Never return decrypted original document bytes."""
     if not isinstance(receipt_id, str) or not re.fullmatch(r"[0-9a-f-]{36}",receipt_id):
