@@ -42,6 +42,9 @@ def _verify_pdf(row, root):
         or not PDF.fullmatch(filename)
         or not filename.startswith(nct + "-")):
         raise ValueError("PDF_IDENTITY_OR_PATH_UNSAFE")
+    expected_url = f"https://cdn.clinicaltrials.gov/large-docs/{nct[-2:]}/{nct}/{row.get('filename')}"
+    if row.get("sourceUrl") != expected_url or row.get("originalSAPFirstPublicDateVerified") is not False:
+        raise ValueError("NONCANONICAL_OR_FALSE_PUBLIC_PROTOCOL_SOURCE")
     digest = row.get("sourceSha256")
     if not isinstance(digest,str) or not HEX.fullmatch(digest):
         raise ValueError("PDF_ORIGINAL_SHA_MISSING")
@@ -137,7 +140,13 @@ def build(manifest, efficacy, document, registry, pdf_root):
     for original in manifest["applicationGroups"]:
         cid=original["cycleId"]
         current=e_app.get(cid);research=d_app.get(cid)
-        if not current or not research or current.get("exactNctIds")!=original["ncts"] or research.get("exactNcts")!=original["ncts"]:
+        if (not current or not research or current.get("exactNctIds")!=original["ncts"] or
+            research.get("exactNcts")!=original["ncts"] or
+            research.get("officialFdaPrediction")!="ABSTAIN" or
+            research.get("statisticalReviewerSigned") is not False or
+            current.get("independentReviewerSignoff") is not False or
+            current.get("scientificGrade") is not None or
+            current.get("numericalFdaProbability") is not None):
             raise ValueError("APPLICATION_TRIAL_CROSSWALK_CHANGED")
         rows=[]
         for n in original["ncts"]:
