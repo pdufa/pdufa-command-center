@@ -102,6 +102,13 @@ def confirm_provisional_score_page(client):
        'publishedDirectionalPrimaryResults':'2/2',
        'unadjustedSafetyRiskDifferencePp':[9.69,5.48],
        'independentClinicalGrades':0,'fdaPrediction':'ABSTAIN'}),flush=True)
+    demand('Phase III scientific review queue' in normalized and
+           'Open all 18 research method leads' in normalized and
+           'Export all 18 source leads as CSV' in normalized and
+           'Authorized clinical grades' in normalized,
+           'PILOT_SOURCE_REVIEW_QUEUE_NOT_RENDERED')
+    demand(b'/api/predictions/medical-phase3-review-queue?nct=NCT06081894' in page,
+           'SOURCE_REVIEW_QUEUE_LINK_MISSING')
     demand('Evidence-quality rubric' in normalized and
            'Show grading anchors for 0, 1, 2, 3, 4, 5' in normalized and
            'Current numerical grade: not assigned' in normalized,
@@ -171,6 +178,8 @@ def main():
     demand(status == 401, 'ANONYMOUS_PROVISIONAL_REFRESH_NOT_REJECTED')
     status, _ = request(anon, '/api/predictions/medical-phase3-reviewer-handoff?nct=' + PILOT)
     demand(status == 401, 'ANONYMOUS_REVIEWER_HANDOFF_NOT_REJECTED')
+    status, _ = request(anon, '/api/predictions/medical-phase3-review-queue?nct=' + PILOT)
+    demand(status == 401, 'ANONYMOUS_REVIEW_QUEUE_NOT_REJECTED')
     status, _ = request(anon, '/api/internal/medical-assessments/coverage', backend=True)
     demand(status == 401, 'ANONYMOUS_BACKEND_NOT_REJECTED')
     client = build_opener(NoRedirect(), HTTPCookieProcessor(http.cookiejar.CookieJar()))
@@ -180,6 +189,45 @@ def main():
     demand(status == 200, 'AUTHORIZED_TEST_LOGIN_FAILED')
     print(json.dumps({'stage':'NORMAL_DASHBOARD_LOGIN','status':'PASS'}), flush=True)
     confirm_provisional_score_page(client)
+    status, review_queue = request(client, '/api/predictions/medical-phase3-review-queue?nct=' + PILOT)
+    demand(status == 200 and review_queue.get('schema') == 'MAIN_ACACIA_PHASE3_REVIEW_QUEUE_V1'
+           and review_queue.get('nct') == PILOT and
+           review_queue.get('fdaPrediction') == 'ABSTAIN' and
+           review_queue.get('calibratedAccuracy') is None and
+           review_queue.get('status') == 'RESEARCH_WORKLIST_NOT_CLINICAL_GRADE',
+           'PILOT_RESEARCH_QUEUE_NOT_READ_ONLY')
+    summary = review_queue.get('summary', {})
+    positions = review_queue.get('positions', [])
+    demand(summary.get('mappedSourceLeads') == 18 and
+           summary.get('documentChecklist') == 3 and
+           summary.get('quantitativeMethods') == 2 and
+           summary.get('sourceLeadOnly') == 13 and
+           summary.get('positionsNotSourceMapped') == 782 and
+           summary.get('officialClinicalGrades') == 0 and
+           summary.get('qualifiedPhaseSignoffs') == 0 and
+           len(positions) == 18 and
+           len(set(x.get('id') for x in positions)) == 18 and
+           [x.get('reviewOrder') for x in positions] == list(range(1, 19)) and
+           all(x.get('clinicalGrade') is None and
+               x.get('qualifiedReviewerSignoff') is False and
+               x.get('fdaProbability') is None for x in positions),
+           'SOURCE_REVIEW_QUEUE_COUNTS_OR_SAFETY_INVALID')
+    status, _ = request(client, '/api/predictions/medical-phase3-review-queue?nct=NCT00000000')
+    demand(status == 422,'WRONG_TRIAL_REVIEW_QUEUE_ACCEPTED')
+    csv_req = Request(SITE + '/api/predictions/medical-phase3-review-queue?nct=' + PILOT + '&format=csv',
+                      headers={'Accept':'text/csv'})
+    with client.open(csv_req, timeout=30) as csv_response:
+        csv_blob = csv_response.read(250_001)
+        demand(csv_response.code == 200 and
+               'text/csv' in csv_response.headers.get('content-type','') and
+               len(csv_blob) <= 250_000 and
+               csv_blob.count(b'\r\n') == 19 and
+               b'UNSCORED' in csv_blob and b'ABSTAIN' in csv_blob,
+               'SCIENTIFIC_REVIEW_QUEUE_CSV_INVALID')
+    print(json.dumps({'stage':'PHASE3_REVIEW_QUEUE_READ','status':'PASS',
+      'nct':PILOT,'sourceMappedLeads':18,'researchCheckedPositions':5,
+      'sourceOnlyLeads':13,'notSourceMapped':782,
+      'authorizedClinicalGrades':0,'exportLines':19,'fdaPrediction':'ABSTAIN'}),flush=True)
     status, rubric = request(client, '/api/predictions/medical-phase3-reviewer-handoff?nct=' + PILOT)
     demand(status == 200 and rubric.get('schema') == 'MAIN_PHASE3_REVIEWER_HANDOFF_V1'
            and rubric.get('exactNct') == PILOT and rubric.get('protocolCode') == 'CY 6033'
