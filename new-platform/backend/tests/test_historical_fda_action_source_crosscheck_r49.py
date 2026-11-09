@@ -68,7 +68,7 @@ def fixture():
       }
     }
     identity,_=triage(rows,receipt,raws["candidates"],"2026-11-09T19:40:00Z")
-    return rows,receipt,raws,ap,crl,identity
+    return [rows,receipt,raws,ap,crl,identity]
 
 def evaluate(parts):
     rows,receipt,raws,approved,crl,identity=parts
