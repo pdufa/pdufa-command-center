@@ -28,7 +28,7 @@ KEYWORDS=(
     "protocol amendment","version history","treatment-emergent",
     "adverse event","safety population","alpha"
 )
-MAX_BYTES=25_000_000
+MAX_BYTES=55_000_000
 MAX_PAGES=1800
 MAX_EXTRACT_PAGES=120
 ALLOWED={"cdn.clinicaltrials.gov"}
