@@ -86,13 +86,18 @@ def build(raw_map:dict[str,bytes],r53:dict,r54:dict,r55:dict):
     if (not isinstance(r53,dict) or r53.get("schema")!="MAIN_R53_FOCUS_CURRENT_ORIGINAL_PROTOCOL_SAP_PDF_RESEARCH" or
         r53.get("nctRosterCount")!=29 or r53.get("applicationGroupCount")!=23 or
         r53.get("originalPdfBodiesRetrieved")!=23 or
+        len(r53.get("documentResearch",[]))!=23 or
         r53.get("validatedFDAForecasts")!=0 or
         not isinstance(r54,dict) or r54.get("schema")!="MAIN_R54_EIGHT_DOMAIN_PAGE_CITED_METHODS_EVIDENCE_MATRIX" or
         r54.get("canonicalTrials")!=29 or r54.get("applicationGroups")!=23 or
+        len(r54.get("trialMethodsReview",[]))!=29 or
+        len(r54.get("applicationMethodsReview",[]))!=23 or
         r54.get("independentlyValidatedApplicationFdaPredictions")!=0 or
         not isinstance(r55,dict) or r55.get("schema")!="MAIN_R55_EXACT_23_APPLICATION_SOURCE_REPORTED_EFFICACY_SAFETY_METHOD_PACKETS" or
         r55.get("nctTrials")!=29 or r55.get("applicationGroups")!=23 or
         r55.get("sourceVerifiedCurrentProtocolSAPDocuments")!=23 or
+        len(r55.get("originalUniqueTrialEvidence",[]))!=29 or
+        len(r55.get("currentSourceCasePackets",[]))!=23 or
         r55.get("independentlyValidatedFDAApplicationForecasts")!=0 or
         r55.get("clinicalOrProductionWrites") is not False):
         raise ValueError("UNQUALIFIED_R53_R54_R55_ORIGINAL_SOURCE_CHAIN")
@@ -109,6 +114,10 @@ def build(raw_map:dict[str,bytes],r53:dict,r54:dict,r55:dict):
         record=source_docs[filename]
         expectation=EXPECTED[filename]
         raw=raw_map[filename]
+        if record.get("sourceUrl")!=(
+            "https://cdn.clinicaltrials.gov/large-docs/93/NCT04544293/"+filename
+        ):
+            raise ValueError("SAVARA_DOCUMENT_SOURCE_URL_NOT_ORIGINAL")
         if (not isinstance(raw,bytes) or not 100<len(raw)<=MAX_PDF or
             hashlib.sha256(raw).hexdigest()!=expectation["sha256"] or
             len(raw)!=record.get("sourceBytes") or
