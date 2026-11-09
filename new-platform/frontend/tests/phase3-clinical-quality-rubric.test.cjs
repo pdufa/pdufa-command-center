@@ -115,3 +115,24 @@ test("UI has 0–5 anchors, explicitly labels missing evidence as unknown, and l
   assert.match(ledger,/method.grade === null \? "Unscored"/);
   assert.doesNotMatch(ui,/reviewerSignature\s*=/);
 });
+
+test("reviewer handoff is exact NCT, authenticated, read-only and explicitly excludes grades",()=>{
+  const api=fs.readFileSync(path.join(root,
+    "app/api/predictions/medical-phase3-reviewer-handoff/route.ts"),"utf8");
+  const ui=fs.readFileSync(path.join(root,
+    "app/predictions/assessment/PilotScientificSignalPanel.tsx"),"utf8");
+  assert.match(api,/authConfigured\(\)/);
+  assert.match(api,/hasSession\(/);
+  assert.match(api,/getAll\("nct"\)/);
+  assert.match(api,/MAIN_PHASE3_REVIEWER_HANDOFF_V1/);
+  assert.match(api,/INDEPENDENT_EVIDENCE_REVIEW_NOT_SCORE_PUBLICATION/);
+  assert.match(api,/missingDataAreNotZeroGrades:true/);
+  assert.match(api,/officialMethodGradeEventsWritten:0/);
+  assert.match(api,/finalFdaPrediction:"ABSTAIN"/);
+  assert.match(api,/authorizedForClinicalWrite:false/);
+  assert.match(api,/private, no-store/);
+  assert.doesNotMatch(api,/export async function POST/);
+  assert.doesNotMatch(api,/REVIEW_WRITES_ENABLED/);
+  assert.match(ui,/Open versioned independent-review handoff \(JSON\)/);
+  assert.match(ui,/Requires dashboard sign-in/);
+});
