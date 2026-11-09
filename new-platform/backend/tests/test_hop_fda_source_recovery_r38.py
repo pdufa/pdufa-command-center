@@ -89,7 +89,7 @@ def test_duplicate_json_properties_and_unapproved_source_paths_refused(tmp_path)
     cr=tmp_path/module.CRL
     out=tmp_path/"derived"
     out.mkdir()
-    ap.write_text('{"records":[],"records":[]}')
+    ap.write_text('{"records":[],"records":[],"padding":"invalid repeated keys"}')
     cr.write_text(json.dumps(c))
     with pytest.raises(ValueError,match="DUPLICATE_FDA_SOURCE_JSON_PROPERTY"):
         module.write_snapshot(ap,cr,out,CUTOFF)
@@ -98,3 +98,15 @@ def test_duplicate_json_properties_and_unapproved_source_paths_refused(tmp_path)
     fake.write_text(json.dumps(c))
     with pytest.raises(ValueError,match="INVALID_FDA_SOURCE_PATH"):
         module.write_snapshot(ap,fake,out,CUTOFF)
+
+
+def test_distinct_original_units_same_action_day_not_collapsed():
+    a,c=snapshots()
+    second=deepcopy(a["records"][0]["submissions_as_published"][0])
+    second["submission_number"]="2"
+    a["records"][0]["submissions_as_published"].append(second)
+    report,rows=module.research_refresh(a,c,BENCH,CUTOFF)
+    assert report["researchCandidateRows"]==3
+    assert sorted(str(x.get("sourceOriginalSubmissionNo")) for x in rows
+                  if x["sourceAction"]=="AP")==["1","2"]
+    assert report["modelEligibleHistoricalCases"]==0

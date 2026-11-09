@@ -55,7 +55,9 @@ def research_refresh(approved:dict,crl:dict,benchmarks:dict,as_of:date)->tuple[d
                 "modelEligible","exactReviewCycleIndependentlyVerified",
                 "publicOutcomeLabelDateIndependentlyVerified","predecisionEvidenceVerified")):
             raise ValueError("UNVERIFIED_CANDIDATE_PROMOTED_TO_MODEL_LABEL")
-        key=(row.get("source"),row.get("sourceRecordSha256"),row.get("reportedActionDate"))
+        key=(row.get("source"),row.get("sourceRecordSha256"),row.get("reportedActionDate"),
+             row.get("sourceAction"),row.get("sourceOriginalSubmissionNo"),
+             row.get("sourceOriginalOrSupplementUnit"))
         if key in seen:raise ValueError("DUPLICATE_FDA_SOURCE_CANDIDATE")
         seen.add(key)
     report={
