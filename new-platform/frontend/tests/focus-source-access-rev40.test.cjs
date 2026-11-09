@@ -59,7 +59,7 @@ test("PREDICTIONS keeps R40 public retrieval distinct from 23 research leans and
   assert.ok(ui.includes("Revision 40 live source-access audit"));
   assert.ok(ui.includes("FOCUS_SOURCE_R40.blockedCanonicalSource.fallback"));
   assert.ok(ui.includes("byCycle.get(a.id)"));
-  assert.ok(ui.includes("does not establish"));
+  assert.ok(ui.includes("Exact first-publication timing, FDA application identity and clinical conclusions remain unverified."));
   assert.ok(ui.includes("Official FDA prediction"));
   assert.ok(ui.includes("Review delay/extension prediction"));
   assert.equal(research.summary.sourceBasedPreliminaryResearchProfiles,23);
