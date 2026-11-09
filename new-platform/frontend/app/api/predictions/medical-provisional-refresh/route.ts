@@ -1,7 +1,7 @@
 import {NextRequest,NextResponse} from "next/server";
 import {authConfigured,COOKIE_NAME,hasSession} from "../../../../lib/auth";
 import pilot from "../../../../data/acacia-pilot-prediction-workup-20261108.json";
-import {ACACIA_NCT,pinnedSourceUrls,registryIdentityValid,publicationIdentityValid,
+import {ACACIA_NCT,pinnedSourceUrls,registryIdentityValid,publicationIdentityValid,registryResearchSignals,
  evaluateSourceRefresh,type Probe} from "../../../../lib/acacia-live-evidence-refresh";
 
 export const runtime="nodejs";
@@ -47,8 +47,10 @@ async function probeSource(
       ...(force?{cache:"no-store" as const}:{next:{revalidate:900}}),
     });
     const body=await readBoundedJson(resp);
-    return {sourceId,status:check(body)?"MATCH":"CHANGED",observedAt,sourceUrl,
-      message:check(body)?"Exact public source identity matches the pinned pilot":"Public source identity differs; require evidence review"};
+    const matched=check(body);
+    return {sourceId,status:matched?"MATCH":"CHANGED",observedAt,sourceUrl,
+      candidateSignals:matched&&sourceId==="REGISTRY"?registryResearchSignals(body):[],
+      message:matched?"Exact public source identity matches the pinned pilot":"Public source identity differs; require evidence review"};
   }catch{
     return {sourceId,status:"UNAVAILABLE",observedAt,sourceUrl,
       message:"Public source could not be rechecked; original dated evidence unchanged"};
