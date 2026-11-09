@@ -73,7 +73,9 @@ def safe_get(url,fetcher):
     receipt,body=fetcher(url)
     status=receipt.get("status")
     if status!="FETCHED":
-        return {"status":status or "UNKNOWN_REGISTRY_FETCH_STATUS","sourceUrl":url},None
+        return {"status":status or "UNKNOWN_REGISTRY_FETCH_STATUS",
+                "sourceUrl":url,"httpStatus":receipt.get("httpStatus"),
+                "errorClass":receipt.get("errorClass")},None
     if not isinstance(body,bytes) or not 0<len(body)<=MAX_BYTES:
         raise ValueError("REGISTRY_FETCHED_SOURCE_BODY_NOT_ARCHIVED_OR_TOO_LARGE")
     if receipt.get("sha256")!=hashlib.sha256(body).hexdigest() or receipt.get("bytes")!=len(body):
@@ -103,8 +105,16 @@ def run(fetcher,raw_dir:Path)->dict:
     for nct in NCTS:
         history_url=f"{HOST}/api/int/studies/{nct}?history=true"
         overview,overview_bytes=safe_get(history_url,fetcher)
+        overview_attempts=[overview]
+        if overview_bytes is None and overview.get("status")=="HTTP_UNAVAILABLE":
+            alternate_url=f"{CURRENT}/api/int/studies/{nct}?history=true"
+            alternate,alternate_bytes=safe_get(alternate_url,fetcher)
+            overview_attempts.append(alternate)
+            if alternate_bytes is not None:
+                overview,overview_bytes=alternate,alternate_bytes
         row={"nct":nct,"currentNctUrl":"https://clinicaltrials.gov/study/"+nct,
-             "historyIndex":overview,"historicalVersionsCount":None,
+             "historyIndex":overview,"historySourceAttempts":overview_attempts,
+             "historicalVersionsCount":None,
              "firstVersionInfo":None,"firstVersionPrimaryOutcomes":None,
              "currentRegisteredPrimaryOutcomes":None,
              "firstVsCurrentPrimaryWordingExactMatch":None,
@@ -125,6 +135,14 @@ def run(fetcher,raw_dir:Path)->dict:
             row["earliestHistoryDateFromRegistry"]=first["registryHistoryDateAsReported"]
             version_url=f"{HOST}/api/int/studies/{nct}/history/{first['version']}"
             first_rec,first_raw=safe_get(version_url,fetcher)
+            version_attempts=[first_rec]
+            if first_raw is None and first_rec.get("status")=="HTTP_UNAVAILABLE":
+                alternative=f"{CURRENT}/api/int/studies/{nct}/history/{first['version']}"
+                alt_info,alt_raw=safe_get(alternative,fetcher)
+                version_attempts.append(alt_info)
+                if alt_raw is not None:
+                    first_rec,first_raw=alt_info,alt_raw
+            row["firstVersionSourceAttempts"]=version_attempts
             row["firstVersionInfo"]={**first_rec,"registryVersionAsReported":first["version"],
                                       "registryHistoryDateAsReported":first["registryHistoryDateAsReported"]}
             if first_raw is not None:
