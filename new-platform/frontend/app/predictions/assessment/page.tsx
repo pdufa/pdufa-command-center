@@ -6,6 +6,7 @@ import {getFullSpecialistCase} from "../../../lib/medical-intelligence-specialis
 import {FOCUS_SPECIALTY_ASSESSMENT_QUEUE,FOCUS_SPECIALTY_SUMMARY} from "../../../lib/focus-specialty-assessment";
 import AssessmentStatusPies from "../../AssessmentStatusPies";
 import AssessmentLevelChart from "../../AssessmentLevelChart";
+import HistoricalTestingChart from "../../HistoricalTestingChart";
 import UltomirisHistoricalLevelThreePanel from "../../UltomirisHistoricalLevelThreePanel";
 import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
 
@@ -39,6 +40,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
     </p>
     <AssessmentStatusPies {...pies}/>
     <AssessmentLevelChart/>
+    <HistoricalTestingChart/>
     {pies.latest?.researchOnly&&pies.latest.ticker==="SMMT"&&
       <section style={{...section,margin:"0 0 22px",background:"#f7faf9"}} aria-label="First prospective 2026 FDA research prediction">
         <div style={{...label,marginBottom:7}}>FIRST PROSPECTIVE 2026 PDUFA PREDICTION PILOT</div>
