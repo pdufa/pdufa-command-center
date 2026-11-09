@@ -35,7 +35,7 @@ export function validateFocusR43(data:unknown=raw){
        !Array.isArray(item.observations)||item.observations.length<2||
        !Array.isArray(item.sources)||item.sources.length<2||
        item.sources.some(s=>!s.url.startsWith("https://")||!s.date||
-         !s.label||!["FDA_STAFF_PRE_AMENDMENT","OFFICIAL_SEC_SPONSOR","SPONSOR"].includes(s.type)))return null;
+         !s.label||!["FDA_STAFF_PRE_AMENDMENT","OFFICIAL_SEC_SPONSOR","SPONSOR","PUBLIC_REGISTRY_SAP"].includes(s.type)))return null;
     seen.add(item.cycleId);
   }
   return seen.size===3?v:null;
