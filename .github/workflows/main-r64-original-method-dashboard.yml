@@ -1,0 +1,84 @@
+name: MAIN R64 original 8-domain page-linked method dashboard
+
+# Draft development branch only. Every displayed page reference must equal
+# previously archived R63 original-source evidence. Eight source domains and
+# 232 positions do not constitute 800 graded scientific assessments.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r64-original-method-dashboard.yml
+      - new-platform/backend/scripts/verify_r64_original_method_page_snapshot.py
+      - new-platform/frontend/data/focus-r64-original-method-pages.json
+      - new-platform/frontend/lib/focus-r64-original-method-page-view.ts
+      - new-platform/frontend/app/predictions/assessment/OriginalMethodSourceLadderR64.tsx
+      - new-platform/frontend/app/predictions/assessment/OriginalMethodSourceLadderR64.module.css
+      - new-platform/frontend/app/predictions/assessment/page.tsx
+      - new-platform/frontend/tests/focus-r64-original-method-page-view.test.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r64-original-source-8-domain-preview
+  cancel-in-progress: false
+
+jobs:
+  exact-source-page-parity-and-dashboard:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Guard unchanged 29-NCT and 23-application FOCUS scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Recover exactly successful R63 original method matrix archive
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42713443428
+          name: main-r63-eight-domain-source-ladder-42713443428
+          path: ${{ runner.temp }}/r64/original
+      - name: Demand byte-exact original-source-to-frontend PDF citation parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/verify_r64_original_method_page_snapshot.py \
+            --original "$RUNNER_TEMP/r64/original/FOCUS_29_TRIAL_EIGHT_DOMAIN_SOURCE_REVIEW_R63.json" \
+            --frontend new-platform/frontend/data/focus-r64-original-method-pages.json
+      - name: Test fail-closed source details, run full frontend typecheck and optimized build
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r64-original-method-page-view.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Persist exact nonclinical success receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "## MAIN R64 original eight-domain page reference acceptance"
+            echo
+            echo "Exactly 29 unique FOCUS trials, 23 provisional FDA application groups, eight unscored scientific source-review domains per trial, 232 ungraded positions, 466 original machine PDF page leads from 22 PDFs within 23 attached research documents. All source page numbers matched original R63 archived bytes."
+            echo
+            echo "No independent scientific grades, trained 800-method model, validated FDA forecasts, numerical certainty, historical backtesting or production changes. Trial assessment level: UNASSESSED SOURCE ONLY; research installation stage: 4."
+          } >> "$GITHUB_STEP_SUMMARY"
