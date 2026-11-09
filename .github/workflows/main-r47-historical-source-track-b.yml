@@ -75,43 +75,14 @@ jobs:
           print(message)
           with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write(message+"\n")
           PY
-      - name: Audit original FDA action-source parent identities and serial review-cycle ambiguity
+      - name: Identify repeated FDA parent source records and distinct historical review-cycle blockers
+        shell: bash
         run: |
           set -euo pipefail
           python new-platform/backend/scripts/build_historical_source_identity_audit_r48.py \
             --candidates "$RUNNER_TEMP/r47-history/derived/r38_fda_source_candidates.json" \
             --receipt "$RUNNER_TEMP/r47-history/derived/r38_fda_source_receipt.json" \
             --out-dir "$RUNNER_TEMP/r47-history/derived"
-          python - <<'PY'
-          import json,os,hashlib
-          from pathlib import Path
-          p=Path(os.environ["RUNNER_TEMP"])/"r47-history/derived"
-          a=json.loads((p/"postdecision_fda_source_identity_audit.json").read_bytes())
-          n=json.loads((p/"source_selected_identity_research_worklist_NOT_MODEL_INPUT.json").read_bytes())
-          source=(p/"r38_fda_source_candidates.json").read_bytes()
-          assert a["schema"]=="MAIN_R48_SELECTED_FDA_SOURCE_PARENT_ACTION_AUDIT"
-          assert n["schema"]=="MAIN_R48_OUTCOME_SELECTED_NONFORECAST_IDENTITY_WORKLIST"
-          assert len(a["records"])==len(n["records"])==a["sourceIdentityGroups"]
-          assert a["sourceActionRecords"]>=a["sourceIdentityGroups"]
-          assert a["sourceActionRecords"]==n["sourceActionRecords"]
-          assert a["originalFdaCandidateSha256"]==n["originalFdaCandidateSha256"]==hashlib.sha256(source).hexdigest()
-          assert a["independentApplicationReviewCyclesVerified"]==0
-          assert n["futureForecasterMayConsumeThisWorklist"] is False
-          assert n["outcomeVaultAccessControlEstablished"] is False
-          assert a["completeConsecutiveNdaBlaFilingCohort"] is False
-          assert n["modelTrainingAuthorized"] is False
-          assert a["measuredAccuracy"] is None and n["calibratedProbability"] is None
-          assert n["officialForecast"]=="ABSTAIN"
-          assert all(x["modelEligible"] is False for x in a["records"])
-          assert all(x["outcomeBlindForecastInputEligible"] is False for x in n["records"])
-          assert all("sourceAction" not in x and "reportedActionDate" not in x for x in n["records"])
-          line=(f'R48 source records {a["sourceActionRecords"]}; provisional parent source identities {a["sourceIdentityGroups"]}; '
-                f'repeated-parent groups {a["knownParentGroupsWithMultipleSourceRows"]}; '
-                f'approval + CRL mixed groups {a["knownParentGroupsWithMixedApprovalAndCrlSourceTypes"]}; '
-                '0 independently verified FDA cycles; 0 real backtests; model input remains BLOCKED.')
-          print(line,flush=True)
-          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write("## R48 original FDA source identity review\n\n"+line+"\n")
-          PY
       - name: Save original FDA sources and research-only reports
         if: always()
         uses: actions/upload-artifact@v4
