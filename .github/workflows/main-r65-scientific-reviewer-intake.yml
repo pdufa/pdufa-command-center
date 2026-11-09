@@ -12,6 +12,12 @@ on:
       - .github/workflows/main-r65-scientific-reviewer-intake.yml
       - new-platform/backend/scripts/build_focus_reviewer_adjudication_intake_r65.py
       - new-platform/backend/tests/test_focus_reviewer_adjudication_intake_r65.py
+      - new-platform/frontend/lib/focus-r65-independent-review-gates.ts
+      - new-platform/frontend/app/predictions/assessment/IndependentReviewerReadinessR65.tsx
+      - new-platform/frontend/app/predictions/assessment/IndependentReviewerReadinessR65.module.css
+      - new-platform/frontend/app/predictions/assessment/page.tsx
+      - new-platform/frontend/tests/focus-r65-independent-review-gates.test.cjs
+      - new-platform/frontend/tests/focus-r65-original-worklist-parity.test.cjs
   workflow_dispatch:
 
 permissions:
@@ -112,3 +118,69 @@ jobs:
           path: ${{ runner.temp }}/r65/research/
           retention-days: 90
           if-no-files-found: error
+
+  verify-readonly-assessment-checklist-and-unsigned-original-parity:
+    needs: [build-read-only-independent-adjudication-worklist]
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve exact independently source-verified original R65 intake artifact
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42717833879
+          name: main-r65-source-linked-unsigned-review-worklist-42717833879
+          path: ${{ runner.temp }}/r65-ui/original
+      - name: Require byte-exact original 232-item reviewer docket and unsigned counters
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          src=Path(os.environ["RUNNER_TEMP"])/"r65-ui/original/FOCUS_29_TRIAL_232_HUMAN_REVIEW_INTAKE_R65.json"
+          raw=src.read_bytes()
+          assert hashlib.sha256(raw).hexdigest()=="1238d5a0ed120cd47d05dec12486e59e2bf8dbd6e7b73b989372955db622127a"
+          report=json.loads(raw)
+          assert report["scientificReviewerTasks"]==232
+          assert report["originalMachinePdfPageLeads"]==466
+          assert report["qualifiedReviewerAttestationsRecorded"]==0
+          assert report["independentlyCompletedMethodGrades"]==0
+          assert report["independentlyValidatedFDAApplicationPredictions"]==0
+          assert report["measuredOutOfTimeForecastAccuracy"] is None
+          assert report["officialFDAOutcome"]=="ABSTAIN"
+          assert report["productionOrLedgerWrites"] is False
+          PY
+      - name: Verify every rendered research checklist against the archived R65 source
+        shell: bash
+        working-directory: new-platform/frontend
+        env:
+          R65_ORIGINAL_OUTPUT: ${{ runner.temp }}/r65-ui/original/FOCUS_29_TRIAL_232_HUMAN_REVIEW_INTAKE_R65.json
+          R65_ORIGINAL_SHA: "1238d5a0ed120cd47d05dec12486e59e2bf8dbd6e7b73b989372955db622127a"
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r65-independent-review-gates.test.cjs tests/focus-r65-original-worklist-parity.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Record view-only human review readiness without any clinical certification
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "## MAIN R65 independent scientific reviewer intake and live-type assessment view"
+            echo
+            echo "232 original R65 unscored domain review tasks and all 29 unique NCTs were compared against the exact original R65 output SHA, with 23 application group membership and original R64 PDF source leads preserved."
+            echo
+            echo "Every method still requires human-authorized phase verification, original locked protocol/SAP version, provenance, evidence classification and independent signoff. **No reviewer signoffs, clinical scores, FDA outcome predictions, measured accuracy, production API writes or Track B historical outcome reads.**"
+          } >> "$GITHUB_STEP_SUMMARY"
