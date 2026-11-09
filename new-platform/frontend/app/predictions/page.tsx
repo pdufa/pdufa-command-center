@@ -46,6 +46,14 @@ export default function PredictionsPage(){
         Source-linked partial clinical dossiers and missing-evidence checkpoints. Not completed assessments or validated forecasts.
       </span>
     </p>
+    <p style={{margin:"11px 0 15px",fontSize:14}}>
+      <Link href="/predictions/evidence-gaps" style={{fontWeight:800,color:"#08664c",textDecoration:"underline"}}>
+        Open the 29-trial source evidence recovery and independent-review worklist (R68)
+      </Link>
+      <span style={{display:"block",fontSize:12,color:"#597267"}}>
+        Shows missing source categories and original evidence links; it is not a science grade or FDA forecast.
+      </span>
+    </p>
     <FocusPreliminaryApplicationBoard/>
     <FocusRegistryPrimaryEvidenceR42/>
     <FocusPostedSafetyR44/>
