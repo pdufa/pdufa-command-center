@@ -1,0 +1,35 @@
+{
+  "schema": "ACACIA_NEW_INSTITUTIONAL_CHANNELS_V1",
+  "examinedAt": "2026-11-09T18:36:59.852484+00:00",
+  "channels": [
+    {
+      "url": "https://pure.au.dk/portal/en/publications/aficamten-for-symptomatic-nonobstructive-hypertrophic-cardiomyopa/",
+      "sourceType": "ORIGINAL_INSTITUTIONAL_BIBLIOGRAPHY",
+      "result": "ExactDOI/title/pubdate confirmed; Access to Document section links DOI only. No manuscript,SAP,protocol orCONSORTattachment obtained.",
+      "exactBytesCaptured": false,
+      "sha256": null
+    },
+    {
+      "url": "https://library.med.nyu.edu/api/publications/?in-biosketch=true&offset=0&person=sherrm02&sort=display_rank",
+      "sourceType": "ORIGINAL_INSTITUTIONAL_BIBLIOGRAPHY",
+      "result": "Inspected first result page contains same-trial secondary publications andDOI metadata. PrimaryDOI not visible in that page; no claim of absence or original supplements.",
+      "exactBytesCaptured": false,
+      "sha256": null
+    },
+    {
+      "url": "https://eprints.gla.ac.uk/394996/",
+      "sourceType": "ORIGINAL_UNIVERSITY_REPOSITORY",
+      "result": "ExactDOI/title and accepted-version PDF link verified. ActualCCBYNCND license differs fromOpenAlexCCBYSA. Metadata acceptanceJuly16/publicationAugust28/depositOctober29/datestampSeptember15 do not establish first public full-text availability.",
+      "exactBytesCaptured": false,
+      "sha256": null,
+      "pdfReceipt": "accepted-manuscript-receipt.json"
+    }
+  ],
+  "ignoredRoutes": [
+    "Publisher NEJM403 paths",
+    "Previously challenged PMC supplemental paths",
+    "Wrong-trial MAPLE/SEQUOIA SAPs",
+    "Unauthorized full-text sharing sites",
+    "Unpaywall API requiring contact email not supplied"
+  ]
+}

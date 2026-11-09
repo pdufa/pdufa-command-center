@@ -1,0 +1,42 @@
+{
+  "version": "6.9",
+  "hitCount": 1,
+  "request": {
+    "queryString": "DOI:10.1056/NEJMoa2603021",
+    "resultType": "lite",
+    "cursorMark": "*",
+    "pageSize": 25,
+    "sort": "",
+    "synonym": false
+  },
+  "resultList": {
+    "result": [
+      {
+        "id": "42663312",
+        "source": "MED",
+        "pmid": "42663312",
+        "doi": "10.1056/nejmoa2603021",
+        "title": "Aficamten for Symptomatic Nonobstructive Hypertrophic Cardiomyopathy.",
+        "authorString": "Masri A, Maron MS, Bhatia A, Peña-Peña ML, Sherrid MV, Figueiredo EL, Arad M, Barriales-Villa R, Choudhury L, Claggett BL, Coats CJ, Correia EB, Costabel JP, Elliott PM, Silva Enciso JE, Garcia-Pavia P, Ge J, Hegde SM, Lewis GD, Lopes RD, Martinez MW, Maurer MS, Miao ZM, Michels M, Mitter SS, Pino Moreno JE, Olivotto I, Owens AT, Poulsen SH, Rader F, Rowin EJ, Schulze PC, Sepp R, Sikand N, Solomon SD, Spertus JA, Teale C, Zhao X, Divanji PH, Heitner SB, Jacoby DL, Kupfer S, Malik FI, Salazar-Mendiguchía J, Wohltman A, Zhuo S, Ho CY, ACACIA-HCM Investigators.",
+        "journalTitle": "N Engl J Med",
+        "pubYear": "2026",
+        "journalIssn": "0028-4793; 1533-4406; ",
+        "pubType": "journal article",
+        "isOpenAccess": "N",
+        "inEPMC": "N",
+        "inPMC": "N",
+        "citedByCount": 5,
+        "hasReferences": "Y",
+        "hasTextMinedTerms": "Y",
+        "hasDbCrossReferences": "N",
+        "hasPDF": "N",
+        "hasBook": "N",
+        "hasSuppl": "N",
+        "hasLabsLinks": "N",
+        "hasTMAccessionNumbers": "N",
+        "firstPublicationDate": "2026-08-28",
+        "firstIndexDate": "2026-08-30"
+      }
+    ]
+  }
+}

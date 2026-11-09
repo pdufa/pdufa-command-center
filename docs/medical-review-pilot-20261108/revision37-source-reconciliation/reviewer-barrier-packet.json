@@ -1,0 +1,275 @@
+{
+  "schema": "ACACIA_BARRIER_RECONCILIATION_FOLLOWUP_V1",
+  "requestedWork": "R37 five-barrier follow-up; appended to later verified R48 checkout without resetting revisions.",
+  "checkpointBase": "f93a49a7ea895954d09bf17a24a7f54378524f6b",
+  "nct": "NCT06081894",
+  "protocol": "CY6033",
+  "trial": "ACACIA-HCM",
+  "compiledAt": "2026-11-09T18:36:59.851970+00:00",
+  "classifications": [
+    "VERIFIED",
+    "PARTIALLY_VERIFIED",
+    "ACCESS_RESTRICTED",
+    "REVIEW_PENDING"
+  ],
+  "sourceReceipts": [
+    "accepted-manuscript-receipt.json",
+    "metadata-retrieval-receipts.json"
+  ],
+  "findings": [
+    {
+      "id": "LOCK_CHRONOLOGY",
+      "sourceId": "GLASGOW_ACCEPTED_PRIMARY_MANUSCRIPT",
+      "locator": "Printed page7, Trial Design and Oversight",
+      "finding": "Manuscript reports database lock/unblinding April 24, 2026.",
+      "positions": [
+        "4.2:L1",
+        "4.2:L2",
+        "4.5:L1",
+        "8.2:L4"
+      ],
+      "limitation": "Final approved SAP, earlier protocol revisions, data-lock audit trail and final published text are still required. An author-reported date is not independent authentication of the lock process.",
+      "classification": "PARTIALLY_VERIFIED"
+    },
+    {
+      "id": "MISSINGNESS_METHODS",
+      "sourceId": "GLASGOW_ACCEPTED_PRIMARY_MANUSCRIPT",
+      "locator": "Printed page10, Statistical Analysis",
+      "finding": "MNAR data use Jump-to-Reference; MAR uses randomized-group distributions.",
+      "positions": [
+        "4.3:L1",
+        "4.3:L4",
+        "5.1:L12"
+      ],
+      "limitation": "Narrative does not supply full imputation algorithms, implementation, sensitivity outputs or the locked primary SAP. These primary methods must not be confused with supportive responder-analysis imputation.",
+      "classification": "PARTIALLY_VERIFIED"
+    },
+    {
+      "id": "RANDOMIZED_NEVER_DOSED",
+      "sourceId": "GLASGOW_ACCEPTED_PRIMARY_MANUSCRIPT",
+      "locator": "Printed page11, Baseline Characteristics",
+      "finding": "517 randomized: 258 aficamten / 259 placebo; one placebo participant never dosed.",
+      "positions": [
+        "4.4:L1",
+        "4.5:L1",
+        "8.2:L1"
+      ],
+      "limitation": "Supports a possible randomized-versus-exposed distinction; does not authenticate complete FAS/safety populations, CONSORT Fig S2, site exclusions or per-table analysis denominators.",
+      "classification": "PARTIALLY_VERIFIED"
+    },
+    {
+      "id": "TREATMENT_PHASE_HF",
+      "sourceId": "GLASGOW_ACCEPTED_PRIMARY_MANUSCRIPT",
+      "locator": "Printed page13, Safety",
+      "finding": "During-treatment HF serious events: 11 aficamten / 1 placebo.",
+      "positions": [
+        "5.3:L1",
+        "5.3:L19",
+        "8.2:L5"
+      ],
+      "limitation": "Original primary accepted manuscript supports11/1. Sponsor12/3 remains separately attributed. Neither follow-up duration nor case definitions/counting differences are reconciled without matched original cases and windows.",
+      "classification": "PARTIALLY_VERIFIED"
+    },
+    {
+      "id": "PROTOCOL_INTERRUPTION_SEVEN",
+      "sourceId": "GLASGOW_ACCEPTED_PRIMARY_MANUSCRIPT",
+      "locator": "Printed page13, Safety",
+      "finding": "LVEF below 40% triggered interruption in 7 (2.7%); two permanently discontinued.",
+      "positions": [
+        "5.3:L1",
+        "5.3:L19",
+        "8.2:L5"
+      ],
+      "limitation": "Retain secondary 14(2.7%) as a distinct unresolved claim. No correction, replacement, pooled denominator, or clinical safety verdict is authorized by this accepted manuscript alone.",
+      "classification": "PARTIALLY_VERIFIED"
+    },
+    {
+      "id": "FOLLOWUP_SCOPE",
+      "sourceId": "GLASGOW_ACCEPTED_PRIMARY_MANUSCRIPT",
+      "locator": "Printed page7, Trial Design and Oversight",
+      "finding": "Design includes up to 72 weeks of blinded treatment, four weeks of off-treatment follow-up and 31 additional Japanese participants reported separately.",
+      "positions": [
+        "4.4:L1",
+        "5.3:L1",
+        "5.4:L1"
+      ],
+      "limitation": "Design windows and the separate cohort cannot be silently used to reconcile specific SAE cases or denominators.",
+      "classification": "PARTIALLY_VERIFIED"
+    }
+  ],
+  "barriers": [
+    {
+      "id": "FINAL_LOCKED_SAP_AND_AMENDMENTS",
+      "status": "PARTIALLY_VERIFIED",
+      "supportedFindingIds": [
+        "LOCK_CHRONOLOGY",
+        "MISSINGNESS_METHODS"
+      ],
+      "authenticatedOriginals": [
+        "R36 registry v26/v27/v29/v30",
+        "Existing CY 6033 AM04 protocol",
+        "GLASGOW_ACCEPTED_PRIMARY_MANUSCRIPT"
+      ],
+      "subgates": [
+        {
+          "id": "finalLockedSap",
+          "status": "ACCESS_RESTRICTED"
+        },
+        {
+          "id": "fullAmendmentLockAdjudication",
+          "status": "REVIEW_PENDING"
+        }
+      ],
+      "missing": [
+        "Final dated approved/locked CY6033SAP",
+        "All applicable protocol/SAP amendment effective versions",
+        "Original database-lock/unblinding audit evidence",
+        "Complete multiplicity/missing-data/sensitivity implementation and outputs"
+      ]
+    },
+    {
+      "id": "CONSORT_AND_ANALYSIS_POPULATIONS",
+      "status": "PARTIALLY_VERIFIED",
+      "supportedFindingIds": [
+        "RANDOMIZED_NEVER_DOSED",
+        "FOLLOWUP_SCOPE"
+      ],
+      "subgates": [
+        {
+          "id": "randomizedAndNonexposureNarrative",
+          "status": "VERIFIED"
+        },
+        {
+          "id": "fullConsortAndFasSafetyAccounting",
+          "status": "ACCESS_RESTRICTED"
+        },
+        {
+          "id": "populationAdjudication",
+          "status": "REVIEW_PENDING"
+        }
+      ],
+      "missing": [
+        "OriginalCONSORT Fig S2 and complete disposition table",
+        "FAS,ITT,safety and endpoint-specific analysis sets by arm",
+        "Explicit handling of never-dosed or ineligible randomization and separate Japanese cohort"
+      ]
+    },
+    {
+      "id": "HF_SERIOUS_EVENTS_11_1_VS_12_3",
+      "status": "PARTIALLY_VERIFIED",
+      "supportedFindingIds": [
+        "TREATMENT_PHASE_HF",
+        "FOLLOWUP_SCOPE"
+      ],
+      "subgates": [
+        {
+          "id": "acceptedPrimaryTreatmentPhaseCounts",
+          "status": "VERIFIED"
+        },
+        {
+          "id": "matchedEventWindowAndCaseAdjudication",
+          "status": "REVIEW_PENDING"
+        }
+      ],
+      "missing": [
+        "Matched sponsor and paper data cutoffs/windows",
+        "SAE coding definitions,case lists,first-vs-recurrent events and adjudication",
+        "Original Table S7 and any later revisions/corrections"
+      ]
+    },
+    {
+      "id": "INTERRUPTION_DENOMINATORS",
+      "status": "PARTIALLY_VERIFIED",
+      "supportedFindingIds": [
+        "PROTOCOL_INTERRUPTION_SEVEN"
+      ],
+      "subgates": [
+        {
+          "id": "acceptedPrimaryProtocolInterruptionCount",
+          "status": "VERIFIED"
+        },
+        {
+          "id": "secondary 14ClaimAndDenominatorReconciliation",
+          "status": "REVIEW_PENDING"
+        }
+      ],
+      "missing": [
+        "Original Tables S8/S9 and supportive-paper source table",
+        "Threshold/site-vs-core-lab and participant-vs-event definitions",
+        "Arm-specific exposed denominators and reasons for interruption"
+      ]
+    },
+    {
+      "id": "AUTHORIZED_INDEPENDENT_SCIENTIFIC_REVIEW",
+      "status": "REVIEW_PENDING",
+      "supportedFindingIds": [],
+      "subgates": [
+        {
+          "id": "qualifiedReviewerAuthorizationAndSignedEvidenceReview",
+          "status": "REVIEW_PENDING"
+        }
+      ],
+      "missing": [
+        "Actual qualified authorized reviewer enrollment",
+        "Exact-NCT phase verification and method-specific independent adjudication",
+        "Traceable signed official grade events through existing controlled ledger"
+      ],
+      "note": "Academic verification reported inside the paper is not authorization/signoff in this installation. No identity,credential,approval or grade is manufactured."
+    }
+  ],
+  "documentaryCalculations": [
+    {
+      "id": "EXPOSURE_COMPATIBILITY",
+      "inputs": {
+        "randomized": 517,
+        "neverDosed": 1
+      },
+      "calculation": "517-1",
+      "result": 516,
+      "meaning": "Arithmetic consistency only, not an authenticated safety/FAS population."
+    },
+    {
+      "id": "PRIMARY_INTERRUPTION_PERCENT",
+      "inputs": {
+        "participants": 7,
+        "assignedAficamten": 258
+      },
+      "calculation": "round(100*7/258,2)",
+      "result": 2.71,
+      "meaning": "Reproduces the accepted primary 7 (2.7%) after one-decimal rounding; does not correct the secondary 14claim."
+    }
+  ],
+  "currentRegistryAttachmentContext": {
+    "sourceRunId": 42668393809,
+    "sourceArtifactId": 13697642476,
+    "pilotIncludedAmong12CurrentAttachedProtocols": false,
+    "meaning": "R46 current attachment index has no ACACIA entry; no renewed registry fetch. Absence here does not prove external unavailability."
+  },
+  "scopeLimitations": [
+    "Accepted manuscript is an original investigator report, not final publisher version, protocol, locked SAP, CSR/ISS or independent clinical adjudication.",
+    "Exact full-manuscript first-publication clock is unknown; July 16 acceptance and August 28 article publication are not proof that this repository full text was public then. Repository deposit/datestamp metadata differ.",
+    "CC BY-NC-ND original repository terms override erroneous OpenAlex CC BY-SA mapping. No full licensed article or PDF imported into app/repository/training dataset.",
+    "No previously denied NEJM/PMC request was repeated; successful registry historical captures and later 29-trial source audits were not re-fetched."
+  ],
+  "coverage": {
+    "existingMappedPositionsBefore": 18,
+    "existingMappedPositionsAfter": 18,
+    "positionsNotSourceMapped": 782,
+    "newOriginalManuscriptsExamined": 1,
+    "newMetadataResponses": 3,
+    "officialMethodGradesBefore": 0,
+    "officialMethodGradesAfter": 0,
+    "qualifiedPhaseSignoffs": 0,
+    "independentAssessmentsCompleted": 0,
+    "clinicalLedgerWrites": 0,
+    "productionWrites": 0,
+    "restrictedRequestsSent": 0
+  },
+  "fdaPredictions": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "certainty": "NOT_VALIDATED",
+  "accuracy": "NOT_CALIBRATED"
+}
