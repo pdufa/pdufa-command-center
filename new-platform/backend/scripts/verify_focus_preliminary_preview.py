@@ -10,7 +10,7 @@ import http.cookiejar,json,os,re,sys
 from urllib.error import HTTPError,URLError
 from urllib.request import HTTPCookieProcessor,HTTPRedirectHandler,Request,build_opener
 
-SITE="https://pdufa-new-dashboard-moztc7ekg-pdufa.vercel.app"
+SITE="https://pdufa-new-dashboard-fsnkqhrnu-pdufa.vercel.app"
 ROSTER="/api/predictions/focus-preliminary"
 URL="/predictions"
 class NoRedirect(HTTPRedirectHandler):
@@ -63,8 +63,22 @@ def main():
         "Observed FDA approval","Official FDA prediction",
         "Review delay/extension prediction",
         "November 9 2026",
+        "Live evidence-source checkpoint",
+        "Trial records fetched",
+        "Application groups linked to an accessible public source",
+        "Distinct source URLs fetched",
+        "Registry results modules present",
+        "29 / 29","23 / 23","21 / 22","12 / 29",
+        "Achieve's issuer URL redirected",
+    
     ]:
         check(value.lower() in rendered.lower(),"FOCUS_RENDER_MISSING_"+re.sub(r"\W+","_",value).upper())
+    check("13691348436" in raw.decode("utf-8","replace"),"R40_ARTIFACT_RECEIPT_LINK_NOT_VISIBLE")
+    print(json.dumps({"stage":"R40_SOURCE_RECOVERY_BOARD_READ",
+       "status":"PASS","nctsFetched":29,"applicationGroupsWithAccessibleSource":23,
+       "sourceUrlsFetched":21,"sourceUrlsAttempted":22,"registryResultModules":12,
+       "sourceReceiptId":13691348436,"clinicalGrades":0,
+       "fdaModelPredictions":"ABSTAIN","writesPerformed":False}),flush=True)
     print(json.dumps({"stage":"FOCUS_29_23_SIGNED_IN_HTML","status":"PASS",
         "researchOnly":True,"futureModelStatus":"ABSTAIN"}),flush=True)
     code,kind,raw=get(client,ROSTER,"application/json")
