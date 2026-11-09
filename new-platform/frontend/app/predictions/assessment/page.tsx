@@ -6,6 +6,7 @@ import {getFullSpecialistCase} from "../../../lib/medical-intelligence-specialis
 import {FOCUS_SPECIALTY_ASSESSMENT_QUEUE,FOCUS_SPECIALTY_SUMMARY} from "../../../lib/focus-specialty-assessment";
 import AssessmentStatusPies from "../../AssessmentStatusPies";
 import BlindHistoricalPredictionPanel from "../../BlindHistoricalPredictionPanel";
+import BepirovirsenHistoricalLevelThreePanel from "../../BepirovirsenHistoricalLevelThreePanel";
 import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
 
 export const metadata:Metadata={
@@ -74,6 +75,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
         </p>
       </section>}
     <BlindHistoricalPredictionPanel/>
+    <BepirovirsenHistoricalLevelThreePanel/>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:10,margin:"15px 0 20px"}}>
       {[
         ["Exact FOCUS trials",FOCUS_SPECIALTY_SUMMARY.ncts],
