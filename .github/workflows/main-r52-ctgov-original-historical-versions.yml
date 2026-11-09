@@ -1,0 +1,92 @@
+name: MAIN R52 original FOCUS registry pre-readout version discovery
+
+# Read-only research probe: GitHub feature branch push only; never a
+# production or approval-prediction workflow.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r52-ctgov-original-historical-versions.yml
+      - new-platform/backend/scripts/probe_original_ctgov_history_r52.py
+      - new-platform/backend/tests/test_original_ctgov_history_r52.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r52-first-clinicaltrials-historical-versions
+  cancel-in-progress: false
+
+jobs:
+  priority-original-registry-public-history-research:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify original 29 FOCUS membership and synthetic historical version safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python -m pip install pytest
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_original_ctgov_history_r52.py tests/test_focus_protocol_index_r46.py
+          PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
+      - name: Capture source receipts and original first-version primary outcome text where public route works
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r52-original-ctgov-history"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/probe_original_ctgov_history_r52.py \
+            --out-dir "$RUNNER_TEMP/r52-original-ctgov-history"
+          python - <<'PY'
+          import json,os,hashlib
+          from pathlib import Path
+          base=Path(os.environ["RUNNER_TEMP"])/"r52-original-ctgov-history"
+          d=json.loads((base/"research_history_probe.json").read_bytes())
+          assert d["schema"]=="MAIN_R52_PRIORITY_3_ORIGINAL_REGISTRY_HISTORICAL_VERSION_PROBE"
+          assert d["canonicalNctRosterCount"]==29 and d["applicationCycleCount"]==23
+          assert d["priorityTrialCount"]==3
+          assert {r["nct"] for r in d["priorityTrials"]}=={
+            "NCT04544293","NCT05126758","NCT05208047"}
+          assert d["originalPreReadoutEndpointHierarchyVerified"]==0
+          assert d["originalLockedStatisticalAnalysisPlansVerified"]==0
+          assert d["applicationFdaOutcomePredictionsValidated"]==0
+          assert d["independentHistoricalBacktests"]==0
+          assert d["calibratedAccuracy"] is None
+          assert d["modelTrainingAuthorized"] is False
+          assert d["productionOrClinicalLedgerWrites"] is False
+          assert d["officialFdaForecast"]=="ABSTAIN"
+          for rec in d["priorityTrials"]:
+            for source_key in ("historyIndex","firstVersionInfo","currentVersionInfo"):
+              source=rec.get(source_key)
+              if not source or not source.get("archiveFile"):continue
+              original=(base/source["archiveFile"]).read_bytes()
+              assert hashlib.sha256(original).hexdigest()==source["sourceSha256"]
+          summary=("R52 current/archived FOCUS original registry historical versions: "+
+            str(d["historyIndexesRetrieved"])+"/3 overview sources, "+
+            str(d["originalFirstVersionTextRecovered"])+"/3 original versions, "+
+            str(d["oldAndCurrentOutcomesCompared"])+"/3 outcomes compared; "+
+            "0 original locked SAPs verified, 0 predictions/accuracy. "+
+            "These are research-only as-of-date source checks.")
+          print(summary,flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write(
+              "## R52 FOCUS original ClinicalTrials.gov version research\n\n"+summary+"\n")
+          PY
+      - name: Preserve original history source bytes and synthetic gating evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r52-priority-registry-original-history-${{ github.run_id }}
+          path: ${{ runner.temp }}/r52-original-ctgov-history/
+          retention-days: 90
+          if-no-files-found: warn
