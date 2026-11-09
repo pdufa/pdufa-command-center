@@ -48,7 +48,7 @@ def test_missing_reported_percentages_remain_unknown_not_automatically_zero():
         None,None,"Synthetic counts for purely arithmetic verification, not actual results")
     audit=arithmetic_audit(example)
     assert audit["reportedPercentages"]==[None,None]
-    assert audit["status"]=="ARITHMETIC_CONSISTENT_NOT_CLINICALLY_ADJUDICATED"
+    assert audit["status"]=="PRINTED_PERCENTAGES_PARTIALLY_UNAVAILABLE"
 
 
 @pytest.mark.parametrize("bad", [
