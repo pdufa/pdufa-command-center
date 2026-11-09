@@ -1,0 +1,52 @@
+{
+  "schema": "HOP_CALIBRATION_READINESS_V1",
+  "sourceActionLeads": 412,
+  "sourceArchiveUrl": "https://github.com/pdufa/pdufa-command-center/actions/runs/42642513960/artifacts/13685223999",
+  "sourceArchiveExpiresAt": "2027-02-07T15:13:43Z",
+  "sourceReceiptAsOf": "2026-11-09",
+  "sourceCountBasis": "PINNED_R38_RECEIPT_METADATA_REPLAY",
+  "sourceCountIsFreshRetrieval": false,
+  "permanentSourceArchiveVerified": false,
+  "calibrationProtocolHealth": "VALIDATION_ONLY_ISOTONIC_IMPLEMENTED",
+  "fitStatus": "NOT_RUN_NO_MODEL_ELIGIBLE_CASES",
+  "realCases": 0,
+  "cohortSelection": "OUTCOME_SELECTED_NOT_COMPLETE_CONSECUTIVE_FILING_COHORT",
+  "newHistoricalRecordsObtained": 0,
+  "independentlyVerifiedCycles": 0,
+  "modelEligibleCases": 0,
+  "realTrainingCases": 0,
+  "realValidationCases": 0,
+  "realUntouchedTestCases": 0,
+  "actualCalibrationFits": 0,
+  "calibrationInfrastructure": "VALIDATION_ONLY_ISOTONIC_WITH_FROZEN_TEMPORAL_TEST",
+  "modelValidationStatus": "BLOCKED",
+  "accuracyAvailable": false,
+  "measuredAccuracy": null,
+  "brierScore": null,
+  "logLoss": null,
+  "perTargetModelEligibleCases": {
+    "APPROVAL": 0,
+    "CRL": 0,
+    "REVIEW_DELAY": 0
+  },
+  "blockers": [
+    "Complete consecutive filing denominator including negative/pending/withdrawn cases",
+    "Exact application, indication and independently adjudicated review-cycle outcomes",
+    "Original predecision source versions and first-publication clocks",
+    "Independent outcome-vault custody and frozen program-disjoint partitions",
+    "Sufficient independently assessed validation and untouched-test cases"
+  ],
+  "trainingAuthorized": false,
+  "prediction": "ABSTAIN",
+  "certainty": "NOT_VALIDATED",
+  "accuracy": "NOT_CALIBRATED",
+  "generatedAtUtc": "2026-11-09T18:41:12.125249+00:00",
+  "generationScope": "LOCAL_EXISTING_RECEIPT_REPLAY_NOT_NEW_FDA_COLLECTION",
+  "implementation": {
+    "module": "new-platform/backend/app/hop_probability_calibration.py",
+    "tests": "new-platform/backend/tests/test_hop_probability_calibration.py",
+    "baseModelTrainingPerformed": false,
+    "realCalibrationFitPerformed": false,
+    "httpRoutesAdded": false
+  }
+}
