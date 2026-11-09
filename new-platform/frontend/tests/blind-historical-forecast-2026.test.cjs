@@ -68,7 +68,7 @@ test("historical challenge shows verified incorrect verdict without changing pro
   assert.match(html,/FDA announcement/);
   assert.doesNotMatch(html,/OUTCOME SEALED/);
   assert.match(html,/6eacacd2728ac265f1b4b23571e8edb1108d5afe/);
-  assert.match(html,/after the original target date/);
+  assert.match(html,/made after the FDA action/);
   assert.doesNotMatch(html,/\d+\.\d+% probability|PDUFA ACTUAL ACTION/);
   const chartSource=fs.readFileSync(path.join(root,"lib/focus-assessment-chart.ts"),"utf8");
   assert.doesNotMatch(chartSource,/blindHistoricalForecasts2026/);
