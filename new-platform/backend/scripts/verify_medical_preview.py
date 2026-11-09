@@ -87,7 +87,7 @@ def confirm_provisional_score_page(client):
     parser = VisibleText()
     parser.feed(page.decode('utf-8', 'replace'))
     visible = ' '.join(parser.parts)
-    normalized = re.sub(r'\\s+', ' ', visible)
+    normalized = re.sub(r'\s+', ' ', visible)
     demand('FIRST PRELIMINARY RESEARCH SCORE' in normalized,
            'FIRST_RESEARCH_CHECKLIST_NOT_RENDERED')
     demand('Additional preliminary research scores' in normalized,
@@ -97,7 +97,7 @@ def confirm_provisional_score_page(client):
     # Require values adjacent to the associated assessment, not just a stray
     # number elsewhere in the 800-row page.
     for assessment, expected in [('5.1', '3'), ('4.2', '3'), ('5.3', '2')]:
-        pattern = r'Assessment ' + re.escape(assessment) + r'.{0,350}?' + expected + r'\\s*/\\s*5'
+        pattern = r'Assessment ' + re.escape(assessment) + r'.{0,350}?' + expected + r'\s*/\s*5'
         demand(re.search(pattern, normalized, re.DOTALL) is not None,
                'EXPECTED_PROVISIONAL_SCORE_NOT_RENDERED_' + assessment.replace('.', '_'))
     demand('NOT CALIBRATED' in normalized and 'ABSTAIN' in normalized,
