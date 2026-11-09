@@ -17,6 +17,8 @@ on:
       - new-platform/backend/tests/test_research_workstream_history.py
       - new-platform/backend/scripts/build_focus_source_change_review_r49.py
       - new-platform/backend/tests/test_focus_source_change_review_r49.py
+      - new-platform/backend/scripts/compare_original_focus_source_bodies_r50.py
+      - new-platform/backend/tests/test_focus_source_body_diff_r50.py
       - new-platform/backend/scripts/refresh_focus_public_sources_r40.py
       - new-platform/backend/tests/test_focus_source_recovery_r40.py
   workflow_dispatch:
@@ -55,7 +57,7 @@ jobs:
           test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
           python -m pip install pytest
           cd new-platform/backend
-          PYTHONPATH=. python -m pytest -q tests/test_parallel_focus_historical_r47.py tests/test_focus_registry_results_r42.py tests/test_focus_registry_safety_r44.py tests/test_focus_protocol_index_r46.py tests/test_research_workstream_history.py tests/test_focus_source_recovery_r40.py tests/test_focus_source_change_review_r49.py
+          PYTHONPATH=. python -m pytest -q tests/test_parallel_focus_historical_r47.py tests/test_focus_registry_results_r42.py tests/test_focus_registry_safety_r44.py tests/test_focus_protocol_index_r46.py tests/test_research_workstream_history.py tests/test_focus_source_recovery_r40.py tests/test_focus_source_change_review_r49.py tests/test_focus_source_body_diff_r50.py
           PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
       - name: Locate the latest completed Track A history without changing either workstream
         id: previous_history
@@ -179,6 +181,52 @@ jobs:
                    'Actual clinically material changes and new validated predictions: 0, not inferred.')
           print(summary,flush=True)
           with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write("\n## Research-source review ≠ scientific materiality\n"+summary+"\n")
+          PY
+      - name: Restore previous exact raw sponsor SEC and FDA source archive
+        if: steps.previous_history.outputs.run_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.previous_history.outputs.run_id }}
+          name: main-r47-focus-research-track-a-${{ steps.previous_history.outputs.run_id }}
+          path: ${{ runner.temp }}/r47-focus/previous-source-bytes
+      - name: Compare original document bodies and isolate SEC response-injected scripts
+        shell: bash
+        run: |
+          set -euo pipefail
+          prior=()
+          if [[ -n "${{ steps.previous_history.outputs.run_id }}" ]]; then
+            test -f "$RUNNER_TEMP/r47-focus/previous-source-bytes/applications.json"
+            test -d "$RUNNER_TEMP/r47-focus/previous-source-bytes/application-original"
+            prior=(--previous "$RUNNER_TEMP/r47-focus/previous-source-bytes/applications.json"
+                   --previous-source-dir "$RUNNER_TEMP/r47-focus/previous-source-bytes/application-original")
+          fi
+          python new-platform/backend/scripts/compare_original_focus_source_bodies_r50.py \
+            --current "$RUNNER_TEMP/r47-focus/applications.json" \
+            --current-source-dir "$RUNNER_TEMP/r47-focus/application-original" \
+            --run-id "$GITHUB_RUN_ID" \
+            --output "$RUNNER_TEMP/r47-focus/history/original-source-body-comparison.json" "${prior[@]}"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"r47-focus/history/original-source-body-comparison.json"
+          r=json.loads(p.read_bytes())
+          assert r["schema"]=="MAIN_R50_ORIGINAL_APPLICATION_BODY_COMPARISON"
+          assert r["exactFocusTrialCount"]==29 and r["applicationCycleCount"]==23
+          assert r["scientificMaterialityVerified"]==0
+          assert r["newValidatedFdaOutcomePredictions"]==0
+          assert r["numericalAccuracy"] is None
+          assert r["sourceBodiesNotRewritten"] is True
+          assert r["modelTrainingAuthorized"] is False
+          assert r["predictionWriteAuthorized"] is False
+          assert r["productionWriteAuthorized"] is False
+          classes=r["differenceClasses"]
+          msg=("R50 independently compared current and prior raw source bodies: "+
+              str(classes)+". These are source delivery/content signals only, "+
+              "not scientific efficacy, clinical grade, or FDA decision changes.")
+          print(msg,flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write(
+              "\n## R50 original-source content versus response-delivery variation\n\n"+msg+"\n")
           PY
       - name: Preserve separate Track A append-only history
         uses: actions/upload-artifact@v4
