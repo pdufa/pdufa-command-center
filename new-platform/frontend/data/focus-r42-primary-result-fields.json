@@ -1,0 +1,193 @@
+{
+  "schema": "MAIN_R42_PINNED_SOURCE_REPORTED_PRIMARY_FIELDS",
+  "asOf": "2026-11-09",
+  "observedAtUtc": "2026-11-09T16:49:39+00:00",
+  "sourceRunId": 42658620560,
+  "sourceArtifactId": 13693571338,
+  "sourceReceiptSha256": "9ebfac62e6d99e105d63c107bc0aa9a52803293eba915ba4a43be3fba93f15cf",
+  "sourceArtifactUrl": "https://github.com/pdufa/pdufa-command-center/actions/runs/42658620560/artifacts/13693571338",
+  "sourceArtifactExpiresAt": "2027-02-07T16:49:25Z",
+  "counts": {
+    "trials": 29,
+    "applications": 23,
+    "primaryOutcomeTables": 16,
+    "trialsWithPrimaryTables": 12,
+    "trialsWithoutRegistryResultsSection": 17,
+    "authorizedScientificGrades": 0,
+    "validatedFdaForecasts": 0,
+    "historicalBacktests": 0
+  },
+  "trialPrimaryResults": [
+    {
+      "nct": "NCT05507203",
+      "reportedPostedOn": "2026-09-10",
+      "endpoints": [
+        {
+          "title": "Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8",
+          "pValuesAsReported": []
+        }
+      ]
+    },
+    {
+      "nct": "NCT05507216",
+      "reportedPostedOn": "2026-09-10",
+      "endpoints": [
+        {
+          "title": "Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8",
+          "pValuesAsReported": []
+        }
+      ]
+    },
+    {
+      "nct": "NCT04576949",
+      "reportedPostedOn": "2024-11-14",
+      "endpoints": [
+        {
+          "title": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+          "pValuesAsReported": [
+            "< 0.0001",
+            "<0.0001",
+            "<0.0001"
+          ]
+        },
+        {
+          "title": "Percentage of Participants With Smoking Abstinence From Weeks 9 to Week 12",
+          "pValuesAsReported": [
+            "< 0.0001",
+            "<0.0001",
+            "<0.0001"
+          ]
+        }
+      ]
+    },
+    {
+      "nct": "NCT05206370",
+      "reportedPostedOn": "2026-01-14",
+      "endpoints": [
+        {
+          "title": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+          "pValuesAsReported": [
+            "0.0008",
+            "0.0010",
+            "0.0006"
+          ]
+        },
+        {
+          "title": "Percentage of Participants With Smoking Abstinence From Weeks 9 to Week 12",
+          "pValuesAsReported": [
+            "< 0.0001",
+            "< 0.0001",
+            "< 0.0001"
+          ]
+        }
+      ]
+    },
+    {
+      "nct": "NCT05811247",
+      "reportedPostedOn": "2026-11-03",
+      "endpoints": [
+        {
+          "title": "Change From Baseline in Apnea-Hypopnea Index (AHI)",
+          "pValuesAsReported": [
+            "<0.001",
+            "<0.0001"
+          ]
+        }
+      ]
+    },
+    {
+      "nct": "NCT05813275",
+      "reportedPostedOn": "2026-09-11",
+      "endpoints": [
+        {
+          "title": "Change From Baseline in Apnea-Hypopnea Index (AHI)",
+          "pValuesAsReported": [
+            "0.001",
+            "<0.0001"
+          ]
+        }
+      ]
+    },
+    {
+      "nct": "NCT03697109",
+      "reportedPostedOn": "2025-04-24",
+      "endpoints": [
+        {
+          "title": "Number of Patients With Loss of Response With Respect to Hypertension During the RW Phase.",
+          "pValuesAsReported": [
+            "0.0215"
+          ]
+        },
+        {
+          "title": "Number of Patients With 1 or More Treatment-emergent Adverse Events (TEAEs) as Graded by CTCAE v5.0.",
+          "pValuesAsReported": []
+        }
+      ]
+    },
+    {
+      "nct": "NCT04308590",
+      "reportedPostedOn": "2025-08-03",
+      "endpoints": [
+        {
+          "title": "Change in Average 24-hour SBP",
+          "pValuesAsReported": [
+            "0.4160"
+          ]
+        },
+        {
+          "title": "Number of Patients With 1 or More Treatment-emergent Adverse Events (TEAEs) as Graded by CTCAE v5.0.",
+          "pValuesAsReported": []
+        }
+      ]
+    },
+    {
+      "nct": "NCT05767346",
+      "reportedPostedOn": "2026-06-09",
+      "endpoints": [
+        {
+          "title": "Change in Peak Oxygen Uptake (pVO2) by Cardiopulmonary Exercise Testing (CPET)",
+          "pValuesAsReported": [
+            "<0.0001"
+          ]
+        }
+      ]
+    },
+    {
+      "nct": "NCT04544293",
+      "reportedPostedOn": "2025-08-07",
+      "endpoints": [
+        {
+          "title": "Change From Baseline in Percent (%) Predicted Diffusing Capacity of the Lung for Carbon Monoxide (DLCO) Adjusted for Hemoglobin Concentration to Week 24",
+          "pValuesAsReported": [
+            "0.0007"
+          ]
+        }
+      ]
+    },
+    {
+      "nct": "NCT06331299",
+      "reportedPostedOn": "2026-09-28",
+      "endpoints": [
+        {
+          "title": "Complete Response Rate (CRR)",
+          "pValuesAsReported": []
+        }
+      ]
+    },
+    {
+      "nct": "NCT04716231",
+      "reportedPostedOn": "2026-10-01",
+      "endpoints": [
+        {
+          "title": "Percentage Change From Baseline in Urine Protein to Creatinine Ratio (UPCR)",
+          "pValuesAsReported": []
+        }
+      ]
+    }
+  ],
+  "clinicalMeaning": "UNREVIEWED_REGISTRY_POSTED_PRIMARY_RESULT_FIELDS",
+  "officialFutureFdaForecast": "ABSTAIN",
+  "accuracy": "NOT_CALIBRATED",
+  "sourcePublicationChronologyIndependentlyVerified": false,
+  "clinicalReviewerSigned": false
+}
