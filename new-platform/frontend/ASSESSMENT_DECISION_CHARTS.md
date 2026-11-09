@@ -3,7 +3,7 @@
 The two pie panels on /predictions/assessment represent **different measures**:
 
 1. **Overall prediction validity against actual FDA action**: correct versus incorrect, only among a predecision-frozen, completed approval-or-CRL prediction whose exact FDA application cycle has a later independently verified FDA decision. The denominator excludes pending, other, unavailable and unverified actions. Each cycle contributes the **first** frozen completed prediction, even if later revisions exist, to prevent cherry-picking.
-2. **Most recently completed prediction**: identifies the last completed/frozen prediction by its timestamp, exact application cycle, ticker, linked NCT(s), drug and indication. If its independently calibrated approval/CRL probabilities were saved, its pie displays those two complementary probabilities. Without that calibration, the pie is blank rather than fabricating proportions. FDA review-delay risk is separate from this binary outcome.
+2. **Most recently completed prediction**: identifies the last completed/frozen prediction by its timestamp, exact application cycle, ticker, linked NCT(s), drug and indication. After a verified FDA decision, its pie shows a one-case comparison as **Accurate** or **Not Accurate**. Before the actual decision is verified, it displays an independently calibrated approval/CRL probability split only if one exists. Otherwise it displays a neutral, labeled zero-data placeholder. FDA review-delay risk is separate from this binary outcome.
 
 **Evidence required** to add rows to `frontend/data/fdaPredictionDecisionAudit.json`:
 
@@ -12,6 +12,8 @@ The two pie panels on /predictions/assessment represent **different measures**:
 - Verified official FDA outcome source URL, actual decision timestamp and explicit verification flag. A sponsor filing target, ClinicalTrials.gov status, PDUFA date, press speculation, and result posting are *not* a decision.
 - Numerical probabilities only when independently calibrated and validated. Approval and CRL components must each be between 0 and 1 and sum to 1. Delay forecasts must be tracked separately.
 - Cohort origin `PROSPECTIVE` or `HISTORICAL_LOCKED`. Historical predictions must be reproducibly frozen using only information available before the FDA decision; hindsight reconstruction does not qualify.
+
+The chart legends always display **Accurate** (green) and **Not Accurate** (orange), including when the real audited counts are both zero. A neutral placeholder with explicit zero comparison count is not a 50/50 accuracy pie and does not imply any accuracy percentage. Historical retrospective-development counts from old models are **not** ingested into the live accuracy report.
 
 The current registry is deliberately empty because the present medical analysis output records evidence collection and ABSTAIN outcomes, **not** verified frozen FDA predictions. The charts must remain empty until real records pass these gates. This frontend ledger is an interim display contract, not an automatic database sync. A future backend integration must use the same data provenance and immutable event controls; never count registry source scans, archived RAAS material, or retrospective forecasts created after actual decisions as successes.
 

@@ -48,6 +48,8 @@ export type CompletedPrediction={
   actualOutcome:Decision|"PENDING";
   actualDecisionAt:string|null;
   actualSourceUrl:string|null;
+  decisionVerdict:"ACCURATE"|"NOT_ACCURATE"|"AWAITING_DECISION";
+  decisionComparisonSlices:PieSlice[];
   probabilitySlices:PieSlice[];
 };
 
@@ -112,6 +114,12 @@ export function summarizeFdaPredictionAccuracy(
     validProbability(current.approvalProbability)&&
     validProbability(current.crlProbability)&&
     Math.abs(current.approvalProbability!+current.crlProbability!-1)<0.0001;
+  const latestDecisionVerified=Boolean(current&&decision(current.actualOutcome)&&
+    current.actualDecisionVerified===true&&
+    matchIso(current.actualDecisionAt)&&
+    Date.parse(current.actualDecisionAt)>Date.parse(current.completedAt!)&&
+    validHttps(current.actualDecisionSourceUrl));
+  const latestMatched=latestDecisionVerified&&current?.predictedOutcome===current?.actualOutcome;
   const latest:CompletedPrediction|null=current?{
     predictionId:current.predictionId,
     applicationCycleId:current.applicationCycleId,
@@ -122,14 +130,15 @@ export function summarizeFdaPredictionAccuracy(
     completedAt:current.completedAt!,
     predictedOutcome:current.predictedOutcome as Decision,
     calibrationStatus:current.calibrationStatus,
-    actualOutcome:decision(current.actualOutcome)&&
-      current.actualDecisionVerified===true&&
-      matchIso(current.actualDecisionAt)&&
-      Date.parse(current.actualDecisionAt)>Date.parse(current.completedAt!)&&
-      validHttps(current.actualDecisionSourceUrl)
+    actualOutcome:latestDecisionVerified&&decision(current.actualOutcome)
       ?current.actualOutcome:"PENDING",
     actualDecisionAt:current.actualDecisionAt,
-    actualSourceUrl:validHttps(current.actualDecisionSourceUrl)?current.actualDecisionSourceUrl:null,
+    actualSourceUrl:latestDecisionVerified&&validHttps(current.actualDecisionSourceUrl)?current.actualDecisionSourceUrl:null,
+    decisionVerdict:!latestDecisionVerified?"AWAITING_DECISION":latestMatched?"ACCURATE":"NOT_ACCURATE",
+    decisionComparisonSlices:[
+      {key:"accurate",label:"Accurate",value:latestMatched?1:0,color:"#168a6d"},
+      {key:"notAccurate",label:"Not Accurate",value:latestDecisionVerified&&!latestMatched?1:0,color:"#c86b50"}
+    ],
     probabilitySlices:calibrated?[
       {key:"approval",label:"FDA approval",value:current.approvalProbability!,color:"#168a6d"},
       {key:"crl",label:"Complete Response Letter",value:current.crlProbability!,color:"#c86b50"}
@@ -140,8 +149,8 @@ export function summarizeFdaPredictionAccuracy(
     compared,correct,incorrect,awaitingDecision,
     accuracyPercent:compared?100*correct/compared:null,
     comparisonSlices:[
-      {key:"correct",label:"Prediction matched FDA decision",value:correct,color:"#168a6d"},
-      {key:"incorrect",label:"Prediction differed from FDA decision",value:incorrect,color:"#c86b50"}
+      {key:"accurate",label:"Accurate",value:correct,color:"#168a6d"},
+      {key:"notAccurate",label:"Not Accurate",value:incorrect,color:"#c86b50"}
     ],
     latest,
     auditAsOf,

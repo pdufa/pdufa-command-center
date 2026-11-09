@@ -7,7 +7,12 @@ const panel={
 } as const;
 const muted={fontSize:12,lineHeight:1.6,color:"#536b67"} as const;
 
-function Pie({slices,description}:{slices:readonly PieSlice[];description:string}){
+function Pie({
+  slices,description,emptyTitle="0",emptySubtitle="verified decisions"
+}:{
+  slices:readonly PieSlice[];description:string;
+  emptyTitle?:string;emptySubtitle?:string;
+}){
   const total=slices.reduce((sum,part)=>sum+Math.max(0,part.value),0);
   const shown=slices.filter(part=>part.value>0);
   let angle=-90;
@@ -30,7 +35,11 @@ function Pie({slices,description}:{slices:readonly PieSlice[];description:string
   return <svg role="img" aria-label={description} viewBox="0 0 220 220"
     style={{width:"min(100%,230px)",height:"auto",display:"block",margin:"0 auto"}}>
     <title>{description}</title>
-    {total===0?<circle cx="110" cy="110" r="91" fill="#e2e8ed" stroke="#c3cbd2" strokeWidth="2"/>:
+    {total===0?<g>
+      <circle cx="110" cy="110" r="91" fill="#f3f6f7" stroke="#b6c6cd" strokeWidth="5"/>
+      <text x="110" y="110" textAnchor="middle" fill="#3e555c" fontSize="36" fontWeight="800">{emptyTitle}</text>
+      <text x="110" y="133" textAnchor="middle" fill="#607780" fontSize="12">{emptySubtitle}</text>
+    </g>:
       paths.map(part=>part.d?
         <path key={part.key} d={part.d} fill={part.color} stroke="#fff" strokeWidth="1.5"/>:
         <circle key={part.key} cx="110" cy="110" r="91" fill={part.color}/>)}
@@ -71,14 +80,16 @@ export default function AssessmentStatusPies({
       <p style={{fontSize:13,lineHeight:1.55,color:"#4b655d",margin:"0 0 12px"}}>
         Comparing frozen, completed FDA outcome predictions against subsequently verified FDA approval or CRL decisions.
       </p>
-      <Pie slices={comparisonSlices} description={`${correct} correct predictions and ${incorrect} incorrect predictions compared with verified FDA decisions`}/>
+      <Pie slices={comparisonSlices} description={`${correct} accurate predictions and ${incorrect} not accurate predictions compared with verified FDA decisions`} emptyTitle={String(compared)} emptySubtitle="FDA decisions"/>
       <Legend slices={comparisonSlices} unit="count"/>
       <p style={{fontWeight:800,textAlign:"center",margin:"12px 0 5px",fontSize:18}}>
         {accuracyPercent===null?"No verified comparisons yet":`${accuracyPercent.toFixed(1)}% correct`}
       </p>
       <p style={{...muted,margin:"0"}}>
-        {compared} decided application cycles compared · {awaitingDecision} awaiting a comparable verified decision
-        · {totalCompleted} completed prediction cycles recorded.
+        <strong>Accurate: {correct}</strong> · <strong>Not Accurate: {incorrect}</strong>
+        {" · "}{compared} decided application cycles compared
+        {" · "}{awaitingDecision} awaiting a comparable verified decision
+        {" · "}{totalCompleted} completed prediction cycles recorded.
       </p>
       <p style={{...muted,margin:"10px 0 0"}}>
         Accuracy uses only decisions after the first frozen prediction for each FDA application cycle.
@@ -99,16 +110,27 @@ export default function AssessmentStatusPies({
           {latest.drug} · {latest.indication}<br/>
           Frozen: {new Date(latest.completedAt).toLocaleString("en-US",{timeZone:"America/Los_Angeles"})}
         </p>
-        <Pie slices={latest.probabilitySlices} description={latest.probabilitySlices.length?
-          `Calibrated FDA approval versus CRL prediction for ${latest.ticker} ${latest.applicationCycleId}`:
-          `Last completed prediction ${latest.predictionId} has no validated probability breakdown`}/>
-        {latest.probabilitySlices.length?
-          <Legend slices={latest.probabilitySlices} unit="probability"/>:
-          <p style={{textAlign:"center",fontSize:13,fontWeight:800,color:"#637078"}}>
-            Numerical probability NOT VALIDATED
-          </p>}
+        <Pie
+          slices={latest.decisionVerdict!=="AWAITING_DECISION"?latest.decisionComparisonSlices:latest.probabilitySlices}
+          description={latest.decisionVerdict!=="AWAITING_DECISION"?
+            `The most recent completed prediction was ${latest.decisionVerdict==="ACCURATE"?"accurate":"not accurate"} compared with the FDA decision`:
+            latest.probabilitySlices.length?
+              `Calibrated approval versus CRL probabilities for the most recent completed prediction`:
+              `The most recent completed prediction awaits a verified FDA decision and has no validated probability breakdown`}
+          emptyTitle="0" emptySubtitle="verified decisions"
+        />
+        {latest.decisionVerdict!=="AWAITING_DECISION"?
+          <Legend slices={latest.decisionComparisonSlices} unit="count"/>:
+          latest.probabilitySlices.length?
+            <Legend slices={latest.probabilitySlices} unit="probability"/>:
+            <p style={{textAlign:"center",fontSize:13,fontWeight:800,color:"#637078"}}>
+              No independently validated probabilities yet
+            </p>}
         <p style={{fontSize:13,margin:"10px 0 3px"}}>
           <strong>Predicted outcome:</strong> {latest.predictedOutcome==="APPROVAL"?"FDA approval":"Complete Response Letter (CRL)"}
+        </p>
+        <p style={{fontSize:13,margin:"4px 0",fontWeight:800,color:latest.decisionVerdict==="ACCURATE"?"#147456":latest.decisionVerdict==="NOT_ACCURATE"?"#aa503e":"#687781"}}>
+          Prediction validity: {latest.decisionVerdict==="ACCURATE"?"Accurate":latest.decisionVerdict==="NOT_ACCURATE"?"Not Accurate":"Awaiting FDA Decision"}
         </p>
         <p style={{...muted,margin:"0"}}>
           <strong>Actual FDA decision:</strong> {latest.actualOutcome==="PENDING"?"Pending or not independently verified":latest.actualOutcome}
@@ -116,8 +138,9 @@ export default function AssessmentStatusPies({
             <> · <a href={latest.actualSourceUrl} rel="noopener noreferrer" target="_blank">Official decision source</a></>:null}
         </p>
         <p style={{...muted,margin:"10px 0 0"}}>
-          This chart shows the prediction's approval/CRL probability split only when
-          a calibrated distribution was saved with the completed forecast. It is not a pie of historical accuracy.
+          Once the actual FDA decision is independently verified, the chart shows Accurate or Not Accurate
+          for this one completed prediction. Before that, it shows the calibrated approval/CRL
+          probability split if one exists, or a clearly labeled empty-data state.
         </p>
         <Link href={`/predictions/assessment?nct=${encodeURIComponent(latest.ncts[0])}`}
           style={{fontSize:12,fontWeight:700}}>Open exact-NCT assessment</Link>
@@ -126,7 +149,7 @@ export default function AssessmentStatusPies({
           No independently completed and frozen FDA decision prediction is recorded
           in the verified audit registry.
         </p>
-        <Pie slices={[]} description="No completed FDA prediction is recorded for the most recent prediction chart"/>
+        <Pie slices={[]} description="No completed FDA prediction is recorded for the most recent prediction chart" emptyTitle="0" emptySubtitle="completed"/>
         <div style={{textAlign:"center",fontSize:14,fontWeight:800,color:"#546e76",marginTop:12}}>
           NO COMPLETED PREDICTION
         </div>
