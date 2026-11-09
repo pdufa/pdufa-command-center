@@ -17,7 +17,12 @@ export default function PilotPredictionWorkup({nct}:{nct:string}){
       <strong>Descriptive safety signal — not a risk-adjusted prediction</strong>
       <p style={{fontSize:13}}>LVEF below 50%: {pilot.descriptiveSafety[0].treated}/{pilot.descriptiveSafety[0].treatedN} ({pilot.descriptiveSafety[0].treatedPct}%) vs {pilot.descriptiveSafety[0].control}/{pilot.descriptiveSafety[0].controlN} ({pilot.descriptiveSafety[0].controlPct}%) — unadjusted difference +{pilot.descriptiveSafety[0].unadjustedRiskDifferencePp} percentage points. All-cause serious adverse events: {pilot.descriptiveSafety[1].treatedPct}% vs {pilot.descriptiveSafety[1].controlPct}%. Source-discordant heart-failure SAE reporting requires separate review.</p>
     </div>
-    <p style={{fontSize:13,marginTop:12}}><strong>Investigation coverage:</strong> source leads for {pilot.scientificFramework.criticalHeadingsWithSourceLeads}/{pilot.scientificFramework.criticalPhase3AssessmentHeadings} critical Phase 3 assessment headings; {pilot.scientificFramework.mappedCandidateMethodLeads}/{pilot.scientificFramework.positions} method positions have a mapped source-research lead. <strong>Independent clinical grades: {pilot.scientificFramework.independentlyGradedMethodPositions}/{pilot.scientificFramework.positions} as of this research snapshot.</strong> Mapped leads are not graded or completed methods; see the live ledger below for current counts.</p>
+    <div style={{border:"1px solid #8bb4a8",borderRadius:9,padding:12,margin:"12px 0",background:"#edf8f4"}} aria-label="Research source handoff progress">
+      <strong>Phase III research source handoffs · {pilot.scientificFramework.mappedCandidateMethodLeads} of {pilot.scientificFramework.positions} method positions</strong>
+      <p style={{fontSize:13,margin:"6px 0"}}>Source leads in {pilot.scientificFramework.criticalHeadingsWithSourceLeads}/{pilot.scientificFramework.criticalPhase3AssessmentHeadings} priority assessment headings; <strong>{pilot.scientificFramework.methodPositionsUnexamined} positions still unexamined</strong> and {pilot.scientificFramework.researchBoundedFindings} bounded research findings. The evidence packet contains {pilot.scientificFramework.packetSourceReceiptCount} captured source responses and {pilot.scientificFramework.packetBlockedOriginalSourceRequests} blocked retrieval.</p>
+      <p style={{fontSize:13,margin:"6px 0"}}><strong>{pilot.scientificFramework.methodGradeRecommendations} numeric grade recommendations; {pilot.scientificFramework.independentlyGradedMethodPositions} authorized scientific grades.</strong> These counts are from the dated research packet, not from a completed live analysis. A mapped research handoff is neither an independently examined clinical test nor an FDA prediction.</p>
+      <a href={pilot.scientificFramework.revision16Packet} target="_blank" rel="noopener noreferrer">Open the original Revision 16 evidence packet and all 800 research positions</a>
+    </div>
     <details style={frame}>
       <summary style={{fontWeight:800,cursor:"pointer"}}>Open 11 critical assessment evidence leads and gaps</summary>
       <div style={{display:"grid",gap:8,marginTop:12}}>
@@ -27,6 +32,12 @@ export default function PilotPredictionWorkup({nct}:{nct:string}){
         <div style={{fontSize:13,marginTop:5}}>Needs review: {a.remaining}</div>
       </article>)}
       </div>
+    </details>
+    <details style={frame}>
+      <summary style={{fontWeight:800,cursor:"pointer"}}>Safety discrepancy audit — source counts require independent reconciliation</summary>
+      <p style={{fontSize:13}}>The peer-reviewed secondary responder analysis reports serious heart-failure adverse events in 11 treated participants and 1 placebo participant; later sponsor disclosures report 12 and 3. The exact time windows, analysis populations and event definitions have not been reconciled. Neither figure should be silently substituted for the other.</p>
+      <p style={{fontSize:13}}>The secondary report also prints treatment-interruption values of 14 (2.7%) and 1 (0.8%), which do not match the corresponding 258/259 randomized denominators by simple percentage arithmetic. That may reflect a separate denominator or reporting/transcription issue; the original safety populations and correction notices require review.</p>
+      <p style={{fontSize:12}}>Sources: <a href={pilot.sources.RESPONDER_ANALYSIS.url} target="_blank" rel="noopener noreferrer">peer-reviewed secondary analysis</a> and <a href={pilot.sources.SEC_10Q.url} target="_blank" rel="noopener noreferrer">sponsor SEC filing</a>. Both are research evidence; no clinical grade or causal conclusion is issued here.</p>
     </details>
     <details style={frame}>
       <summary style={{fontWeight:800,cursor:"pointer"}}>Conditional regulatory scenarios (not forecast probabilities)</summary>
