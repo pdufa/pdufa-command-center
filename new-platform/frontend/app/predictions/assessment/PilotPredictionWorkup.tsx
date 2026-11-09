@@ -1,4 +1,5 @@
 import {evaluateAdditionalPilotReadiness,evaluatePilotReadiness} from "../../../lib/pilot-research-readiness";
+import PilotLiveEvidenceRefresh from "./PilotLiveEvidenceRefresh";
 import pilot from "../../../data/acacia-pilot-prediction-workup-20261108.json";
 
 const frame={border:"1px solid #8bb4a8",background:"#fff",borderRadius:12,padding:16,margin:"12px 0"} as const;
@@ -71,6 +72,7 @@ export default function PilotPredictionWorkup({nct}:{nct:string}){
         An unverified documentary criterion counts zero **for this checklist only**. It does not mean the drug or trial failed that scientific method. No source completeness points are carried into the FDA forecast.
       </p>
     </section>
+    <PilotLiveEvidenceRefresh nct={nct}/>
     <p style={{fontSize:13}}><strong>Phase 3 evidence:</strong> week-36 KCCQ-CSS placebo-adjusted difference +{pilot.publishedPrimary.kccq.difference.toFixed(1)} points (95% CI {pilot.publishedPrimary.kccq.ci95[0]}–{pilot.publishedPrimary.kccq.ci95[1]}); peak VO₂ +{pilot.publishedPrimary.peakVo2.difference} mL/kg/min (95% CI {pilot.publishedPrimary.peakVo2.ci95[0]}–{pilot.publishedPrimary.peakVo2.ci95[1]}). Both met the sponsor-reported initial statistical criteria, which is not the same as validated clinical benefit or FDA approval.</p>
     <div style={{padding:12,border:"1px solid #d8c1a4",borderRadius:8,background:"#fffaf2"}}>
       <strong>Descriptive safety signal — not a risk-adjusted prediction</strong>
