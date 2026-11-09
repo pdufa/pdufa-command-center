@@ -1,0 +1,135 @@
+{
+  "schema": "MAIN_R43_PRIORITY_REGULATORY_CHALLENGE_RESEARCH_ONLY",
+  "asOf": "2026-11-09",
+  "sourceCheckedOn": "2026-11-09",
+  "rosterNcts": 29,
+  "provisionalApplicationCycles": 23,
+  "scope": "THREE_EARLIEST_SOURCE_RISK_TRIAGE_CASES_ONLY",
+  "independentClinicalReview": false,
+  "historicalBacktestingValidated": false,
+  "numericalApprovalProbability": null,
+  "officialFdaOutcomeForecast": "ABSTAIN",
+  "officialReviewDelayForecast": "UNKNOWN",
+  "records": [
+    {
+      "cycleId": "capr-deramiocel",
+      "ticker": "CAPR",
+      "ncts": [
+        "NCT05126758"
+      ],
+      "reportedPdufaDate": "2026-11-22",
+      "title": "Deramiocel · Duchenne muscular dystrophy",
+      "researchOnly": true,
+      "observations": [
+        "FDA's July 29, 2026 advisory-committee staff briefing described an original BLA Complete Response Letter, multiple post-study SAP revisions, and a prespecified-analysis sensitivity concern; its prior-SAP primary PUL 2.0 comparison did not establish robust statistical significance (FDA cites p=0.21 in the sensitivity comparison). This FDA briefing predates the August 24 amended application.",
+        "In FDA's HOPE-3 randomized-phase safety summary, hypersensitivity reactions affected 22/53 deramiocel subjects (41.5%) versus 8/52 placebo subjects (15.4%); serious adverse events were 1 versus 5, respectively. These are source-specific descriptive counts, not a net benefit-risk determination.",
+        "Sponsor separately reported PUL 2.0 p=0.029 under SAP 3.0, and an August 24 major amendment narrowed the proposed indication toward upper-limb function with a November 22 target."
+      ],
+      "challenge": "Reconcile original SAP 1.1/2.0/3.0 timing and missing-data assumptions against the final amended indication, PUL effect relevance, FDA BIMO observation response, FDA CMC record, and 24-month open-label evidence. The July FDA staff briefing is not the later FDA final decision.",
+      "historicalStatusCorrection": "The prior July 2025 Capricor CRL is a historical observed action; do not label it as the outcome of the currently pending amended BLA.",
+      "sources": [
+        {
+          "label": "FDA July 29, 2026 staff briefing, BLA 125842 (pages 38–47)",
+          "date": "2026-07-29",
+          "url": "https://www.fda.gov/media/193839/download",
+          "type": "FDA_STAFF_PRE_AMENDMENT"
+        },
+        {
+          "label": "July 29 sponsor SEC 8-K: revised LVEF and SAP",
+          "date": "2026-07-29",
+          "url": "https://www.sec.gov/Archives/edgar/data/1133869/000110465926087891/capr-20260729x8k.htm",
+          "type": "OFFICIAL_SEC_SPONSOR"
+        },
+        {
+          "label": "August 24 FDA review extension announcement",
+          "date": "2026-08-24",
+          "url": "https://www.capricor.com/investors/news-events/press-releases/detail/354/capricor-therapeutics-announces-extension-of-pdufa-target",
+          "type": "SPONSOR"
+        }
+      ],
+      "officialOutcomeForecast": "ABSTAIN",
+      "reviewTimingForecast": "UNKNOWN",
+      "observedFormalExtension": "2026-08-24_MAJOR_AMENDMENT"
+    },
+    {
+      "cycleId": "svra-molgramostim",
+      "ticker": "SVRA",
+      "ncts": [
+        "NCT04544293"
+      ],
+      "reportedPdufaDate": "2026-11-22",
+      "title": "Molgramostim inhalation solution · autoimmune PAP",
+      "researchOnly": true,
+      "observations": [
+        "May 27, 2025 FDA action was a Refusal to File (RTF) over insufficient CMC documentation, not a Complete Response Letter after substantive review. This is a material outcome-taxonomy correction.",
+        "Savara reported Phase 3 IMPALA-2 primary DLCO endpoint p=0.0007 at Week 24 and a 2.5% treatment discontinuation rate due to AEs, with those discontinuations described as unrelated to study drug.",
+        "Savara's December 2025 BLA was accepted for Priority Review in February 2026. On April 15, 2026, responses classified as a major amendment prompted an observed three-month extension to November 22."
+      ],
+      "challenge": "Independently verify resubmitted commercial-scale CMC, batch comparability and complete safety/benefit data; a positive pulmonary endpoint does not establish approvability. Explicitly keep the 2025 RTF outside the CRL backtest outcome class.",
+      "historicalStatusCorrection": "2025-05-27_RTF_NOT_CRL",
+      "sources": [
+        {
+          "label": "May 2025 SEC 8-K confirming FDA RTF",
+          "date": "2025-05-27",
+          "url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312525126273/d845572d8k.htm",
+          "type": "OFFICIAL_SEC_SPONSOR"
+        },
+        {
+          "label": "2025 Form 10-K recounting RTF, December resubmission and February acceptance",
+          "date": "2026-03-01",
+          "url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526105076/svra-20251231.htm",
+          "type": "OFFICIAL_SEC_SPONSOR"
+        },
+        {
+          "label": "April 2026 FDA review-extension announcement",
+          "date": "2026-04-15",
+          "url": "https://investors.savarapharma.com/news/news-details/2026/Savara-Announces-the-U-S--Food--Drug-Administration-FDA-Has-Extended-the-Review-Period-for-the-Molgramostim-Inhalation-Solution-Molgramostim-Biologics-License-Application-BLA-in-Autoimmune-Pulmonary-Alveolar-Proteinosis-Autoimmune-PAP/default.aspx",
+          "type": "SPONSOR"
+        },
+        {
+          "label": "2024 IMPALA-2 Phase 3 top-line outcomes and AE counts",
+          "date": "2024-06-26",
+          "url": "https://investors.savarapharma.com/news/news-details/2024/Savara-Announces-Molgramostim-Nebulizer-Solution-Molgramostim-Achieved-Statistical-Significance-for-Primary-Endpoint-and-Multiple-Secondary-Endpoints-in-IMPALA-2-a-Pivotal-Phase-3-Clinical-Trial-in-Autoimmune-Pulmonary-Alveolar--06-26-2024/default.aspx",
+          "type": "SPONSOR"
+        }
+      ],
+      "officialOutcomeForecast": "ABSTAIN",
+      "reviewTimingForecast": "UNKNOWN",
+      "observedFormalExtension": "2026-04-15_MAJOR_AMENDMENT"
+    },
+    {
+      "cycleId": "cogt-gist",
+      "ticker": "COGT",
+      "ncts": [
+        "NCT05208047"
+      ],
+      "reportedPdufaDate": "2026-11-30",
+      "title": "Bezuclastinib + sunitinib · gastrointestinal stromal tumors",
+      "researchOnly": true,
+      "observations": [
+        "Sponsor-reported PEAK trial: blinded-central-review median PFS 16.5 months with combination versus 9.2 months with sunitinib; HR 0.50 (95% CI 0.39–0.65), p<0.0001. This is a pivotal efficacy signal but is not an independent SAP audit.",
+        "Sponsor-reported Grade 3+ ALT/AST increase was 10.8% with the combination versus 1.4% for sunitinib; treatment-related AE discontinuation 7.4% versus 3.8%. Liver monitoring and label applicability are material safety review items.",
+        "May 28, 2026 NDA acceptance and Priority Review set the November 30, 2026 target, corroborated by the sponsor's November 5 SEC exhibit."
+      ],
+      "challenge": "Verify locked PEAK SAP and event adjudication, hepatic-event denominator and severity, final label/REMS if any, completeness of treatment exposure and nonpublic CMC/inspection questions. No absent public deficiency may be inferred as FDA clearance.",
+      "historicalStatusCorrection": null,
+      "sources": [
+        {
+          "label": "May 2026 original PEAK study disclosure with efficacy and safety arms",
+          "date": "2026-05-30",
+          "url": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+          "type": "SPONSOR"
+        },
+        {
+          "label": "November 5, 2026 SEC exhibit / current review targets",
+          "date": "2026-11-05",
+          "url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526449926/cogt-ex99_1.htm",
+          "type": "OFFICIAL_SEC_SPONSOR"
+        }
+      ],
+      "officialOutcomeForecast": "ABSTAIN",
+      "reviewTimingForecast": "UNKNOWN",
+      "observedFormalExtension": null
+    }
+  ]
+}
