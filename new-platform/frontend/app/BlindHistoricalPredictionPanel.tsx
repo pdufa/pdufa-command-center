@@ -33,6 +33,10 @@ export default function BlindHistoricalPredictionPanel(){
     <h2 style={{fontSize:22,margin:"7px 0 5px"}}>
       INOVIO (INO) · INO-3107 · RRP
     </h2>
+    <p data-testid="ino-assessment-level" style={{fontSize:13,margin:"7px 0",fontWeight:700,color:"#285e56"}}>
+      Assessment level: <strong>Level 1-style · Preliminary original forecast</strong>.
+      {" "}Later Level 3-style reassessment followed the known FDA outcome; neither is a validated engine level.
+    </p>
     <p style={{fontSize:14,lineHeight:1.65,margin:"7px 0"}}>
       <strong>Frozen prediction: CRL lean</strong>. Original reported FDA goal:
       {" "}<strong>October 30, 2026</strong>.

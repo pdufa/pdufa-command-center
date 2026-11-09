@@ -9,10 +9,10 @@ const panel={
 const muted={fontSize:12,lineHeight:1.6,color:"#536b67"} as const;
 
 function Pie({
-  slices,description,emptyTitle="0",emptySubtitle="verified decisions"
+  slices,description,emptyTitle="0",emptySubtitle="verified decisions",assessmentLevelLabel
 }:{
   slices:readonly PieSlice[];description:string;
-  emptyTitle?:string;emptySubtitle?:string;
+  emptyTitle?:string;emptySubtitle?:string;assessmentLevelLabel?:string;
 }){
   const total=slices.reduce((sum,part)=>sum+Math.max(0,part.value),0);
   const shown=slices.filter(part=>part.value>0);
@@ -44,6 +44,8 @@ function Pie({
       paths.map(part=>part.d?
         <path key={part.key} d={part.d} fill={part.color} stroke="#fff" strokeWidth="1.5"/>:
         <circle key={part.key} cx="110" cy="110" r="91" fill={part.color}/>)}
+    {assessmentLevelLabel?<text x="110" y="157" textAnchor="middle" fill="#2d6359"
+      fontSize="12" fontWeight="800">{assessmentLevelLabel}</text>:null}
   </svg>;
 }
 
@@ -113,7 +115,13 @@ export default function AssessmentStatusPies({
           Frozen: {new Date(latest.completedAt).toLocaleString("en-US",{timeZone:"America/Los_Angeles"})}<br/>
           Forecast ID: {latest.predictionId}
         </p>
+        <p data-testid="latest-chart-assessment-level" style={{fontSize:13,margin:"3px 0 8px",color:"#285e56",fontWeight:800}}>
+          Assessment level: {latest.researchOnly&&latest.predictionId==="HARMONI-SMMT-PDUFA-2026-11-14-V1"?
+            "Level 1-style · Preliminary research":"Not independently certified"}
+        </p>
         <Pie
+          assessmentLevelLabel={latest.researchOnly&&latest.predictionId==="HARMONI-SMMT-PDUFA-2026-11-14-V1"?
+            "Level 1-style":undefined}
           slices={latest.decisionVerdict!=="AWAITING_DECISION"?latest.decisionComparisonSlices:latest.probabilitySlices}
           description={latest.decisionVerdict!=="AWAITING_DECISION"?
             `The most recent completed prediction was ${latest.decisionVerdict==="ACCURATE"?"accurate":"not accurate"} compared with the FDA decision`:

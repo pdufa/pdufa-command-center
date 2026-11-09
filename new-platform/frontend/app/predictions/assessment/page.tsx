@@ -7,6 +7,7 @@ import {FOCUS_SPECIALTY_ASSESSMENT_QUEUE,FOCUS_SPECIALTY_SUMMARY} from "../../..
 import AssessmentStatusPies from "../../AssessmentStatusPies";
 import BlindHistoricalPredictionPanel from "../../BlindHistoricalPredictionPanel";
 import BepirovirsenHistoricalLevelThreePanel from "../../BepirovirsenHistoricalLevelThreePanel";
+import AssessmentLevelChart from "../../AssessmentLevelChart";
 import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
 
 export const metadata:Metadata={
@@ -38,10 +39,14 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
       The first step in every actual review is to verify current trial phase, status, intervention and indication.
     </p>
     <AssessmentStatusPies {...pies}/>
+    <AssessmentLevelChart/>
     {pies.latest?.researchOnly&&pies.latest.ticker==="SMMT"&&
       <section style={{...section,margin:"0 0 22px",background:"#f7faf9"}} aria-label="First prospective 2026 FDA research prediction">
         <div style={{...label,marginBottom:7}}>FIRST PROSPECTIVE 2026 PDUFA PREDICTION PILOT</div>
         <h2 style={{fontSize:21,margin:"0 0 5px"}}>SMMT · HARMONi · NCT06396065</h2>
+        <p data-testid="smmt-assessment-level" style={{fontSize:13,margin:"7px 0",fontWeight:700,color:"#285e56"}}>
+          Assessment level: <strong>Level 1-style · Preliminary original forecast</strong> (not a validated engine level).
+        </p>
         <p style={{fontSize:14,lineHeight:1.6,margin:"5px 0"}}>
           <strong>Predecision research call: CRL lean.</strong> Ivonescimab + chemotherapy
           for EGFR-mutated advanced nonsquamous NSCLC after EGFR TKI.
@@ -113,13 +118,14 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
         <div style={{overflowX:"auto"}}>
           <table style={{borderCollapse:"collapse",width:"100%",minWidth:650,fontSize:13}}>
             <thead><tr style={{background:"#eaf3ef",textAlign:"left"}}>
-              {["Ticker","Exact NCT","Reported application cycle(s)","Partial evidence dimensions","Clinical review"].map(h=><th key={h} style={{padding:"11px 9px",borderBottom:"2px solid #a3c7bb"}}>{h}</th>)}
+              {["Ticker","Exact NCT","Reported application cycle(s)","Partial evidence dimensions","Assessment level","Clinical review"].map(h=><th key={h} style={{padding:"11px 9px",borderBottom:"2px solid #a3c7bb"}}>{h}</th>)}
             </tr></thead>
             <tbody>{FOCUS_SPECIALTY_ASSESSMENT_QUEUE.map(item=><tr key={item.nct} style={{background:item.nct===selected?.nct?"#e3f7ec":"transparent"}}>
               <td style={{padding:"10px 9px",borderBottom:"1px solid #d5e4df"}}><strong>{item.ticker}</strong></td>
               <td style={{padding:"10px 9px",borderBottom:"1px solid #d5e4df"}}><Link style={{fontWeight:700,color:"#086b60"}} href={link(item.nct)}>{item.nct}</Link></td>
               <td style={{padding:"10px 9px",borderBottom:"1px solid #d5e4df"}}>{item.applications.length?item.applications.map(a=>a.drug+" — "+a.indication).join(" / "):"Application mapping missing"}</td>
               <td style={{padding:"10px 9px",borderBottom:"1px solid #d5e4df"}}>{item.applications.reduce((n,a)=>n+a.partialCaseDimensions,0)} · research only</td>
+              <td style={{padding:"10px 9px",borderBottom:"1px solid #d5e4df",fontWeight:700,color:"#6d7772"}}>Not yet assessed</td>
               <td style={{padding:"10px 9px",borderBottom:"1px solid #d5e4df",color:"#8b5b20",fontWeight:700}}>NOT ADJUDICATED</td>
             </tr>)}</tbody>
           </table>
@@ -131,6 +137,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
         <p style={{color:"#496765",marginTop:2}}>{selected.company} · <a href={selected.registryUrl} target="_blank" rel="noopener noreferrer">ClinicalTrials.gov original study</a></p>
         <div style={{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center",marginBottom:15}}>
           <span style={badge}>PHASE / STATUS: VERIFY AT SOURCE</span>
+          <span style={badge}>ASSESSMENT LEVEL: NOT YET ASSESSED</span>
           <span style={badge}>ASSESSMENT: INSUFFICIENT VERIFIED EVIDENCE</span>
           <span style={badge}>FDA PREDICTION: ABSTAIN</span>
         </div>
