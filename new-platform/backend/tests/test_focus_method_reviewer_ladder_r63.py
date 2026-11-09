@@ -95,16 +95,26 @@ def test_shared_trial_not_double_counted_as_independent_pdf_science(tmp_path):
     assert sum(trial in a["linkedNcts"] for a in report["applicationMethodReviewerQueue"])==2
 
 
+def trial_with_pdf(report):
+    return next(t for t in report["trialMethodsReview"]
+                if t["nct"]=="NCT04544293")
+
+
+def packet_with_pdf(report):
+    return next(t for t in report["originalUniqueTrialEvidence"]
+                if t["nct"]=="NCT04544293")
+
+
 @pytest.mark.parametrize("change",[
     lambda m,p,o: m.update(independentlySignedClinicalMethodGrades=1),
     lambda m,p,o: m.update(independentHistoricalFDAOutcomeBacktests=1),
     lambda m,p,o: m["trialMethodsReview"].pop(),
     lambda m,p,o: m["trialMethodsReview"][0].update(independentStatisticalReviewComplete=True),
-    lambda m,p,o: m["trialMethodsReview"][0]["documents"][0]["machineTextEvidence"].update(statisticalReviewerSigned=True),
-    lambda m,p,o: m["trialMethodsReview"][0]["documents"][0].update(sourceSha256="0"*64),
-    lambda m,p,o: m["trialMethodsReview"][0]["documents"][0]["machineTextEvidence"]["eightSourceReviewDomains"]["PRIMARY_ENDPOINT"]["pageLinkedSourceLeads"][0].update(pdfPageOneBased=9999),
+    lambda m,p,o: trial_with_pdf(m)["documents"][0]["machineTextEvidence"].update(statisticalReviewerSigned=True),
+    lambda m,p,o: trial_with_pdf(m)["documents"][0].update(sourceSha256="0"*64),
+    lambda m,p,o: trial_with_pdf(m)["documents"][0]["machineTextEvidence"]["eightSourceReviewDomains"]["PRIMARY_ENDPOINT"]["pageLinkedSourceLeads"][0].update(pdfPageOneBased=9999),
     lambda m,p,o: p["originalUniqueTrialEvidence"][0].update(scientificScore=91),
-    lambda m,p,o: p["originalUniqueTrialEvidence"][0]["sourceMethodsPageReferences"][0]["eightScientificMethodPageLeads"]["PRIMARY_ENDPOINT"].append(99),
+    lambda m,p,o: packet_with_pdf(p)["sourceMethodsPageReferences"][0]["eightScientificMethodPageLeads"]["PRIMARY_ENDPOINT"].append(99),
     lambda m,p,o: o["uniqueTrialOriginalResultChallenges"][0].update(independentlyQualifiedStatisticalJudgment="APPROVED"),
     lambda m,p,o: o.update(independentlyValidatedFdaForecasts=23),
 ])
