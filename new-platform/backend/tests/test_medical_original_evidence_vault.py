@@ -14,12 +14,12 @@ KEY = b"x"*32
 RAW = b"%PDF-1.7\n" + b"Original public Phase III source evidence report for NCT06081894. " * 10
 
 
-def meta(*, request_id="LOCKED_PRIMARY_SAP", raw=RAW):
+def meta(*, request_id="LOCKED_PRIMARY_SAP", raw=RAW, version="Final 1.0"):
     return {
         "nct":"NCT06081894","requestId":request_id,
         "documentType":vault.REQUEST_TYPES[request_id],
         "documentTitle":"Original ACACIA HCM analysis source candidate",
-        "documentVersion":"Final 1.0","documentDate":"2026-11-01",
+        "documentVersion":version,"documentDate":"2026-11-01",
         "sourceUrl":"https://clinicaltrials.gov/study/NCT06081894",
         "claimedSha256":hashlib.sha256(raw).hexdigest(),
         "contentType":"application/pdf"
@@ -86,7 +86,7 @@ def test_original_bytes_are_hash_checked_and_encrypted_before_persistence(engine
 def test_two_versions_append_chain_without_overwrite(engine):
     a=deposit(engine)
     raw=RAW+b"v2 new verifiable public source revision"
-    b=deposit(engine,raw=raw)
+    b=deposit(engine,raw=raw,version="Final 2.0")
     assert a["previousReceiptSha256"] is None
     assert b["previousReceiptSha256"]==a["receiptSha256"]
     assert b["receiptSha256"]!=a["receiptSha256"]
@@ -97,7 +97,7 @@ def test_two_versions_append_chain_without_overwrite(engine):
 def test_chain_audit_verifies_distinct_versions_and_no_scientific_grade(engine):
     assert vault.audit_version_chain(engine,request_id="LOCKED_PRIMARY_SAP")["immutableReceiptCount"]==0
     first=deposit(engine)
-    second=deposit(engine,raw=RAW+b"\nVersion-2 original public research appendix")
+    second=deposit(engine,raw=RAW+b"\nVersion-2 original public research appendix",version="Final 2.0")
     audit=vault.audit_version_chain(engine,request_id="LOCKED_PRIMARY_SAP")
     assert audit["immutableReceiptCount"]==2
     assert audit["lastReceiptSha256"]==second["receiptSha256"]
@@ -109,9 +109,20 @@ def test_chain_audit_verifies_distinct_versions_and_no_scientific_grade(engine):
         vault.audit_version_chain(engine,request_id="UNKNOWN")
 
 
+def test_version_identity_cannot_be_reused_for_modified_original_bytes(engine):
+    first=deposit(engine)
+    changed=RAW+b"\nNew bytes but falsely reused original version identity"
+    with pytest.raises(vault.VaultError,match="declared document version"):
+        deposit(engine,raw=changed)
+    rows=vault.list_receipts(engine,nct="NCT06081894")
+    assert len(rows)==1
+    assert rows[0]["documentVersion"]=="Final 1.0"
+    assert rows[0]["receiptSha256"]==first["receiptSha256"]
+
+
 def test_duplicates_rejected_without_rewriting_history(engine):
     a=deposit(engine)
-    with pytest.raises(vault.VaultError,match="identical source"):
+    with pytest.raises(vault.VaultError,match="source hash or declared document version"):
         deposit(engine)
     assert len(vault.list_receipts(engine,nct="NCT06081894"))==1
     assert vault.list_receipts(engine,nct="NCT06081894")[0]["receiptSha256"]==a["receiptSha256"]
