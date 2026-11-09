@@ -101,3 +101,26 @@ then repeat normal-session acceptance. Current scientific action remains
 `medical.phase-verification`, followed by the pilot's phase-prioritized evidence
 examinations. Do not enable reviewer writes, expand clinical grading or promote
 production based on passing engineering tests.
+
+
+## Verified authenticated readback — 2026-11-09 04:58 UTC
+
+This section **supersedes only** the earlier `AUTHENTICATED_MATRIX_UNAVAILABLE` engineering blocker above. The old failed-run evidence is intentionally retained for history. [GitHub Actions authenticated readback #42564594358](https://github.com/pdufa/pdufa-command-center/actions/runs/42564594358), on exact branch commit `6492e28e196b5c7701699c1b61b0e2ce6f5d3cbc`, completed **SUCCESS** at 2026-11-09 04:58 UTC (November 8, 8:58 PM Pacific). The job used the protected dashboard test secret with normal login cookies, and its read-only script verified the signed-in Vercel proxy to the isolated Render source. No browser-session impersonation, review write, secret disclosure, or production promotion was involved.
+
+Observed nonsecret receipts from job `authenticated-medical-preview`:
+
+| Observation | Live result |
+| --- | --- |
+| Normal dashboard login | PASS |
+| Signed-in matrix and phase/catalog read | PASS |
+| Exact NCT identity | NCT06081894 / ACACIA-HCM |
+| Clinical assessment groups / method positions | 40 / 800 |
+| Source-classification audit positions | 800 / 800, **not clinical grades** |
+| Scientific grade and historical review events | 0 / 0 |
+| Persisted history continuity | PASS, history unchanged |
+| FDA outcome and accuracy | ABSTAIN / NOT_CALIBRATED |
+| Independent clinical signoff | false |
+
+This closes the **read-only authenticated preview-connection acceptance** gate at the observed version and time; it does not prove an interactive iPhone session, enable the independent scientific grade worker, activate the original-document vault, or validate FDA probabilities. The exact measured snapshot digest is present in the linked CI record, not a newly created clinical result.
+
+**Next engineering gate:** isolated original-evidence vault activation remains blocked on independently authorized PostgreSQL migration/runtime role provisioning, real encryption-key escrow and recovery, source/document security, and manual exact-SHA isolated rollout. **Next scientific gate:** independent current-phase verification and original protocol/SAP/safety reconciliation for the pilot, followed by reviewer-attested per-method assessments and external outcome calibration. Do not promote this draft to production, expand FOCUS scoring, or replace missing scores with zero.
