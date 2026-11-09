@@ -50,6 +50,37 @@ def safe_outcomes(study):
        "lastUpdatePosted":date.get("lastUpdatePostDateStruct"),
        "phase":dm.get("phases"),"overallStatus":date.get("overallStatus")}
 
+
+def verified_primary_endpoint_delta(before, after):
+    """Compare exact official version texts, never infer causal or clinical validity."""
+    if not isinstance(before,dict) or not isinstance(after,dict):
+        raise ValueError("MISSING_ORIGINAL_VERSION_DATA")
+    old,new=before.get("primary"),after.get("primary")
+    if not isinstance(old,list) or not isinstance(new,list):
+        raise ValueError("MISSING_ORIGINAL_PRIMARY_OUTCOMES")
+    def keys(items):
+        result=[]
+        for item in items:
+            if not isinstance(item,dict) or not isinstance(item.get("measure"),str) or not item["measure"].strip():
+                raise ValueError("UNVERIFIED_ENDPOINT_DEFINITION")
+            key=(item["measure"].strip(),str(item.get("timeFrame","")).strip())
+            if key in result:raise ValueError("DUPLICATE_ENDPOINT")
+            result.append(key)
+        return result
+    b,a=keys(old),keys(new)
+    added=[{"measure":n,"timeFrame":t} for (n,t) in a if (n,t) not in b]
+    removed=[{"measure":n,"timeFrame":t} for (n,t) in b if (n,t) not in a]
+    return {
+        "primaryBefore":len(old),"primaryAfter":len(new),
+        "primaryBeforeDefinitions":old,"primaryAfterDefinitions":new,
+        "primaryMeasureAdded":added,"primaryMeasureRemoved":removed,
+        "enrollmentBefore":before.get("enrollment"),
+        "enrollmentAfter":after.get("enrollment"),
+        "originalVersionTextsVerifiedByApi":True,
+        "clinicalIntegrityJudgment":"AWAITING_FULL_PROTOCOL_SAP_TIMELINE_ADJUDICATION",
+        "interpretation":"OFFICIAL_HISTORICAL_TEXT_DIFF_NOT_A_POST_HOC_INTEGRITY_VERDICT"
+    }
+
 def main():
     OUT.mkdir(exist_ok=True)
     final={"schema":"MAIN_OFFICIAL_CLINICALTRIALS_VERSION_CROSSWALK_V1",
@@ -104,18 +135,36 @@ def main():
                 "errorClass":type(error).__name__}
             if isinstance(error,urllib.error.HTTPError):final["versionData"][label]["httpStatus"]=error.code
             print("CTGV_VERSION "+label+" unavailable "+type(error).__name__)
+    final["originalV26V27ComparisonVerified"]=False
+    final["originalV26V27Status"]="NOT_VERIFIED"
+    # A direct original v26/v27 comparison is useful independently of whether
+    # later v29/v30 endpoints are retrievable. Require the official version index
+    # and exact submitted-date crosswalk for both versions first.
+    index=final.get("overviewTargets",{})
+    version_check=(final["overviewStatus"]=="OFFICIAL_HISTORY_RETRIEVED" and
+        all(index.get(name,{}).get("dateMatched") is True for name in ["v26","v27"]) and
+        all(final["versionData"].get(name,{}).get("status")=="OFFICIAL_VERSION_RETRIEVED"
+            for name in ["v26","v27"]))
+    if version_check:
+        try:
+            before=final["versionData"]["v26"]["outcomes"]
+            after=final["versionData"]["v27"]["outcomes"]
+            delta=verified_primary_endpoint_delta(before,after)
+            final["directV26V27"]=delta
+            final["originalV26V27ComparisonVerified"]=True
+            final["originalV26V27Status"]="OFFICIAL_PRIMARY_OUTCOME_TEXT_COMPARED"
+            print("CTGV_ORIGINAL_DIFF official v26 to v27, primary="+
+                  str(delta["primaryBefore"])+" -> "+str(delta["primaryAfter"])+
+                  "; added="+str(len(delta["primaryMeasureAdded"]))+
+                  "; removed="+str(len(delta["primaryMeasureRemoved"])))
+        except (KeyError,TypeError,ValueError) as exc:
+            final["originalV26V27Status"]="ORIGINAL_OUTCOME_VALIDATION_FAILED"
+            final["originalV26V27ErrorClass"]=type(exc).__name__
     if all(final["versionData"].get(name,{}).get("status")=="OFFICIAL_VERSION_RETRIEVED"
            for name in ["v26","v27","v29","v30"]):
         final["sourceVersionCompleteness"]=final["overviewStatus"]=="OFFICIAL_HISTORY_RETRIEVED"
-        if final["sourceVersionCompleteness"]:
-            before,after=final["versionData"]["v26"]["outcomes"],final["versionData"]["v27"]["outcomes"]
-            final["directV26V27"]={"primaryBefore":len(before["primary"]),"primaryAfter":len(after["primary"]),
-                "enrollmentBefore":before["enrollment"],"enrollmentAfter":after["enrollment"],
-                "primaryBeforeDefinitions":before["primary"],"primaryAfterDefinitions":after["primary"],
-                "originalVersionTextsVerifiedByApi":True,
-                "clinicalIntegrityJudgment":"AWAITING_FULL_PROTOCOL_SAP_TIMELINE_ADJUDICATION"}
-            print("CTGV_SUCCESS direct official v26 to v27 primary count="+
-                  str(len(before["primary"]))+" -> "+str(len(after["primary"])))
+    # Even a verified official endpoint change is not evidence of post hoc
+    # manipulation, alpha error, or a defensible regulatory prediction.
     (OUT/"source_receipt.json").write_text(json.dumps(final,indent=2)+"\n",encoding="utf-8")
     return 0
 
