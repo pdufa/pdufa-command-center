@@ -10,7 +10,8 @@ from scripts.refresh_focus_public_sources_r40 import (
 )
 
 def sec(tag):
-    head=(f'<script >bazadebezolkohpepadr="{tag}"</script>'
+    sensor="487029093" if tag=="1d077bdb" else "717730921"
+    head=(f'<script >bazadebezolkohpepadr="{sensor}"</script>'
           f'<script type="text/javascript" src="https://www.sec.gov/akam/13/{tag}"  defer></script>')
     tail=(f'<noscript><img src="https://www.sec.gov/akam/13/pixel_{tag}?a=YmFzZTY0" '
           f'style="visibility: hidden; position: absolute; left: -999px; top: -999px;" /></noscript>')
