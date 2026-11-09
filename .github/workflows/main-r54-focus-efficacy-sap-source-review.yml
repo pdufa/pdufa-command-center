@@ -1,0 +1,111 @@
+name: MAIN R54 join original efficacy safety and protocol SAP PDF research
+
+# One-time feature branch research; no production, no clinical score writes.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r54-focus-efficacy-sap-source-review.yml
+      - new-platform/backend/scripts/build_focus_scientific_review_queue_r54.py
+      - new-platform/backend/tests/test_focus_scientific_review_queue_r54.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r54-original-current-source-review
+  cancel-in-progress: false
+
+jobs:
+  exact-29-23-clinical-source-pdf-join:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run exact source join tests and permanent retirement guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python -m pip install pytest
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_focus_scientific_review_queue_r54.py
+          PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
+      - name: Restore independently verified R51 all-23 application results source archive
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42688300979
+          name: main-r47-focus-research-track-a-42688300979
+          path: ${{ runner.temp }}/r54/track-a
+      - name: Restore independently verified R53 all-23 original public protocol SAP PDFs
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42692763297
+          name: main-r53-original-public-protocol-sap-pdf-42692763297
+          path: ${{ runner.temp }}/r54/pdf-and-registry
+      - name: Validate exact original PDF SHA and current registry versions before source linking
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f "$RUNNER_TEMP/r54/track-a/application-efficacy-safety-research.json"
+          test -f "$RUNNER_TEMP/r54/pdf-and-registry/source_protocol_sap_research.json"
+          test -f "$RUNNER_TEMP/r54/pdf-and-registry/current_registry_document_index.json"
+          test -d "$RUNNER_TEMP/r54/pdf-and-registry/public-pdfs"
+          mkdir -p "$RUNNER_TEMP/r54/review"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_focus_scientific_review_queue_r54.py \
+            --efficacy "$RUNNER_TEMP/r54/track-a/application-efficacy-safety-research.json" \
+            --pdf-report "$RUNNER_TEMP/r54/pdf-and-registry/source_protocol_sap_research.json" \
+            --r53-registry-index "$RUNNER_TEMP/r54/pdf-and-registry/current_registry_document_index.json" \
+            --pdf-original-dir "$RUNNER_TEMP/r54/pdf-and-registry/public-pdfs" \
+            --output "$RUNNER_TEMP/r54/review/all_23_application_source_review_packets.json"
+          python - <<'PY'
+          import os,json,hashlib
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"r54"
+          path=root/"review/all_23_application_source_review_packets.json"
+          r=json.loads(path.read_bytes())
+          assert r["schema"]=="MAIN_R54_23_FOCUS_APPLICATION_EFFICACY_SAFETY_AND_PDF_SOURCE_REVIEW"
+          assert r["trialCount"]==29 and r["applicationCount"]==23
+          assert r["protocolSapOriginalPdfFilesShaVerified"]==23
+          assert r["crossRunCurrentRegistryVersionsFullyVerifiedEqual"] is True
+          assert len(r["applications"])==23
+          assert r["independentlySignedStatisticalEfficacyAssessments"]==0
+          assert r["independentlySignedBenefitRiskAssessments"]==0
+          assert r["historicalIndependentBacktests"]==0
+          assert r["validatedFDAOutcomePredictions"]==0
+          assert r["measuredCalibration"] is None
+          assert r["approvalProbability"] is None
+          assert r["trainOrAutopredictAuthorized"] is False
+          assert r["productionMutationAuthorized"] is False
+          assert all(x["fdaForecastStatus"]=="ABSTAIN" and x["quantitativeFdaProbability"] is None
+                     for x in r["applications"])
+          message=(f'R54: 23 source-linked FOCUS application research packets and 29 original NCTs; '
+             f'{r["protocolSapOriginalPdfFilesShaVerified"]} original public protocol/SAP PDFs rehashed; '
+             f'{r["applicationsWithCurrentSapPdf"]} application groups with current SAP PDFs; '
+             f'{r["applicationsWithSourceReportedPrimaryResults"]} application groups with current primary results; '
+             'independent clinical efficacy/benefit-risk signoffs and FDA approval forecasts 0.')
+          print(message,flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+            f.write("## R54 exact clinical source linked research packets\n\n"+message+
+             "\n\nThis is not historical pre-unblinding version evidence or verified FDA probabilities.\n")
+          PY
+      - name: Archive review packets only; original source archives remain in referenced runs
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r54-23-application-source-linked-research-${{ github.run_id }}
+          path: ${{ runner.temp }}/r54/review/
+          retention-days: 90
+          if-no-files-found: error
