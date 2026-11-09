@@ -28,7 +28,7 @@ export async function GET(request: Request) {
  // Never expose private repository execution metadata to anonymous visitors.
  const githubRead:Promise<LiveGithubEvidence>=githubAuthorized
   ?fetchLiveGithubActions(process.env.PDUFA_GITHUB_TOKEN,checkedAt)
-  :Promise.resolve({state:"AUTH_REQUIRED",checkedAt,
+  :Promise.resolve<LiveGithubEvidence>({state:"AUTH_REQUIRED",checkedAt,
     sourceUrl:"https://github.com/pdufa/pdufa-command-center/actions",running:[],queued:[],recent:[],
     scope:"Authenticated GitHub Actions readback, separate from task-level Codex execution",
     note:"A signed-in dashboard session is required to show live workflow execution."});
