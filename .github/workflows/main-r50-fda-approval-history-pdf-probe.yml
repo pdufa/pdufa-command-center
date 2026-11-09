@@ -5,6 +5,8 @@ on:
     paths:
       - .github/workflows/main-r50-fda-approval-history-pdf-probe.yml
       - new-platform/backend/scripts/probe_fda_pdufa_appendix_r50.py
+      - new-platform/backend/scripts/build_fda_fy2024_cycle_events_r50.py
+      - new-platform/backend/tests/test_fda_fy2024_cycle_events_r50.py
   workflow_dispatch:
 permissions:
   contents: read
@@ -30,9 +32,36 @@ jobs:
       - name: Extract shape of source-approved-only original FDA FY2024 application review-cycle table
         run: |
           set -euo pipefail
-          python -m pip install pymupdf
+          python -m pip install pymupdf pytest
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_fda_fy2024_cycle_events_r50.py
+          cd ../..
           mkdir -p "$RUNNER_TEMP/r50-fda-appendix"
           PYTHONPATH=new-platform/backend python new-platform/backend/scripts/probe_fda_pdufa_appendix_r50.py --out "$RUNNER_TEMP/r50-fda-appendix"
+      - name: Extract all page-anchored original FDA FY2024 approved-only review-cycle actions
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_fda_fy2024_cycle_events_r50.py \
+            --pdf "$RUNNER_TEMP/r50-fda-appendix/original_fda_fy2024_pdufa_report.pdf" \
+            --output "$RUNNER_TEMP/r50-fda-appendix/source_approved_only_cycle_events.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"r50-fda-appendix/source_approved_only_cycle_events.json"
+          r=json.loads(p.read_bytes())
+          assert r["sourceTableActionEvents"]==186
+          assert r["sourceActionCounts"]=={"AP":126,"CR":43,"TA":17}
+          assert r["sourceCycleOrdinalCounts"]=={"1":133,"2":38,"3":12,"4":3}
+          assert r["modelEligibleIndependentHistoricalCases"]==0
+          assert r["trueIndependentHistoricalBacktests"]==0
+          assert r["measuredAccuracy"] is None
+          assert r["forecasterInputAuthorized"] is False
+          assert r["productionStateMutated"] is False
+          print("R50 FDA original report: 186 original PDF-column action events; 0 eligible forecast cases",flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write(
+            "FDA FY2024 **approved-only** source: 186 cycle action rows (126 AP, 43 CR, 17 TA), 133 First-cycle rows. This is not a complete filing cohort, application identity or historical prediction accuracy.\\n")
+          PY
       - name: Preserve official report PDF and immutable shape inspection
         if: always()
         uses: actions/upload-artifact@v4
