@@ -22,7 +22,7 @@ export type MedicalInstallationSnapshot = {observedAt: string; installation: Med
  */
 export const MAIN_RESEARCH_CHECKPOINT = {
   revision: 36,
-  observedAt: "2026-11-09T13:35:54.703823+00:00",
+  observedAt: "2026-11-09T13:52:39Z",
   baseCommit: "13b3dae5cd8bfb003430e03f56bff58caf1da70c",
   nct: "NCT06081894",
   currentTaskId: "r36.source-reconciliation",
@@ -45,9 +45,9 @@ export const MAIN_RESEARCH_CHECKPOINT = {
     {id: "r36.prediction-validation", title: "Validate approval, CRL and review-delay forecasts", status: "BLOCKED",
       acceptance: "Independent evidence assessment, locked historical outcomes, temporal holdout and outcome-specific calibration release gates remain unmet. Pointwise calibration-bin uncertainty code is an engineering component, not a validated FDA probability.",
       evidencePath: "revision36-protocol-safety/reviewer-packet.json"},
-    {id: "r36.preview-runtime", title: "Verify this revision's preview and authenticated readback", status: "PENDING",
-      acceptance: "A new build and read-only runtime acceptance must be observed separately. The last read-only Render observation was deployment dep-dbogvaoqr7gs73ava440, commit 7c35253f8f6fa58714738c3619336380fb974d03; automatic deployment was off. New backend metrics have not been deployed there.",
-      evidencePath: null},
+    {id: "r36.preview-runtime", title: "Verify this revision's preview and authenticated readback", status: "VERIFIED",
+      acceptance: "Protected CI run 42628975006 passed normal login, all 40 assessments and 800 methods, unchanged history, original source receipts and zero official grades through unique preview deployment dpl_ARC5XDy19zhsmLX5qLCKc9YHZzSj. Local browser acceptance passed at 390px and 1440px. The observed Render backend remains 7c35253f; new backend metrics are not implied deployed. The existing preview alias still targets an earlier revision.",
+      evidencePath: "revision36-verification/authenticated-readback-summary.json"},
   ],
 } as const;
 

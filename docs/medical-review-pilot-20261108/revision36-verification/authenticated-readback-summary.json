@@ -1,0 +1,196 @@
+[
+  {
+    "stage": "NORMAL_DASHBOARD_LOGIN",
+    "status": "PASS"
+  },
+  {
+    "stage": "REVISION36_ORIGINAL_REGISTRY_AND_CHECKPOINT_READ",
+    "status": "PASS",
+    "nct": "NCT06081894",
+    "originalVersions": [
+      26,
+      27,
+      29,
+      30
+    ],
+    "primaryEndpointCounts": [
+      1,
+      2,
+      2,
+      2
+    ],
+    "newIndependentGrades": 0,
+    "sourceLeads": 18,
+    "positionsNotSourceMapped": 782,
+    "clinicalSignoff": false,
+    "fdaPrediction": "ABSTAIN"
+  },
+  {
+    "stage": "ACACIA_SAFETY_SOURCE_RECONCILIATION",
+    "status": "PASS",
+    "nct": "NCT06081894",
+    "hfSponsor": [
+      12,
+      3
+    ],
+    "hfSecondary": [
+      11,
+      1
+    ],
+    "interruptionPercentUsingRandomizedDenominator": 5.43,
+    "crossSourceReconciled": false,
+    "clinicalGradesWritten": 0,
+    "fdaPrediction": "ABSTAIN"
+  },
+  {
+    "stage": "PROVISIONAL_FDA_PATHWAY_UI_READ",
+    "status": "PASS",
+    "nct": "NCT06081894",
+    "researchOnly": true,
+    "publishedPrimaryPositive": 2,
+    "sourceMappedMethods": 18,
+    "authorizedGrades": 0,
+    "hypotheticalOnly": true,
+    "fdaOutcome": "ABSTAIN",
+    "accuracy": "NOT_CALIBRATED"
+  },
+  {
+    "stage": "QUANTITATIVE_SCIENCE_PAGE_READ",
+    "status": "PASS",
+    "nct": "NCT06081894",
+    "efficacyMethod": "5.1/L12",
+    "safetyMethod": "5.3/L19",
+    "publishedDirectionalPrimaryResults": "2/2",
+    "unadjustedSafetyRiskDifferencePp": [
+      9.69,
+      5.48
+    ],
+    "independentClinicalGrades": 0,
+    "fdaPrediction": "ABSTAIN"
+  },
+  {
+    "stage": "PROVISIONAL_SCORE_PAGE_READ",
+    "status": "PASS",
+    "nct": "NCT06081894",
+    "publishedResearchScores": [
+      {
+        "assessment": "5.1",
+        "documentaryReadiness": "3/5"
+      },
+      {
+        "assessment": "4.2",
+        "documentaryReadiness": "3/5"
+      },
+      {
+        "assessment": "5.3",
+        "documentaryReadiness": "2/5"
+      }
+    ],
+    "documentSnapshotDate": "2026-11-08",
+    "automaticSourceReassessment": false,
+    "clinicalGradesCertified": false,
+    "fdaPrediction": "ABSTAIN"
+  },
+  {
+    "stage": "ORIGINAL_EVIDENCE_ACQUISITION_HANDOFF",
+    "status": "PASS",
+    "trial": "NCT06081894",
+    "requestedOriginalEvidenceGates": 6,
+    "methodsCovered": 18,
+    "sourceDocumentsAuthenticated": 0,
+    "emailsSent": 0,
+    "officialClinicalGrades": 0,
+    "fdaPrediction": "ABSTAIN"
+  },
+  {
+    "stage": "EVIDENCE_INTAKE_METADATA_PREFLIGHT",
+    "status": "PASS",
+    "nct": "NCT06081894",
+    "methodLinks": 8,
+    "originalDocumentBytesUploaded": 0,
+    "sourceAuthentications": 0,
+    "reviewSignatures": 0,
+    "clinicalGradeEvents": 0,
+    "fdaPrediction": "ABSTAIN"
+  },
+  {
+    "stage": "PHASE3_REVIEW_QUEUE_READ",
+    "status": "PASS",
+    "nct": "NCT06081894",
+    "sourceMappedLeads": 18,
+    "researchCheckedPositions": 5,
+    "sourceOnlyLeads": 13,
+    "notSourceMapped": 782,
+    "auditedSourceGapPositions": 12,
+    "alternateAuditRun": 42556948533,
+    "unavailableAlternativeSourceCount": 3,
+    "automaticSponsorRequestsSent": 0,
+    "authorizedClinicalGrades": 0,
+    "exportLines": 19,
+    "fdaPrediction": "ABSTAIN"
+  },
+  {
+    "stage": "SIGNED_CLINICAL_QUALITY_RUBRIC_READ",
+    "status": "PASS",
+    "nct": "NCT06081894",
+    "rubricMethods": [
+      "5.1/L12",
+      "5.3/L19"
+    ],
+    "sixPointGradesAssigned": 0,
+    "requiredEvidenceChecks": 12,
+    "authorization": "READ_ONLY",
+    "fdaPrediction": "ABSTAIN"
+  },
+  {
+    "stage": "PROVISIONAL_SOURCE_REFRESH",
+    "status": "PASS",
+    "researchOnly": true,
+    "sourceStatuses": {
+      "REGISTRY": "MATCH",
+      "NEJM_PIVOTAL": "MATCH"
+    },
+    "currentness": "SOURCE_IDENTITIES_MATCH",
+    "newEvidenceCandidates": [],
+    "documentaryScores": [
+      [
+        "5.1",
+        3,
+        5
+      ],
+      [
+        "4.2",
+        3,
+        5
+      ],
+      [
+        "5.3",
+        2,
+        5
+      ]
+    ],
+    "clinicalGrades": 0,
+    "fdaPrediction": "ABSTAIN"
+  },
+  {
+    "stage": "AUTHENTICATED_MATRIX_READ",
+    "status": "PASS",
+    "assessments": 40,
+    "methodPositions": 800,
+    "historyUnchanged": true
+  },
+  {
+    "status": "PASS",
+    "kind": "AUTHENTICATED_ISOLATED_HTTP_READBACK",
+    "nct": "NCT06081894",
+    "assessments": 40,
+    "methodPositions": 800,
+    "recordedGrades": 0,
+    "historicalReviewEvents": 0,
+    "sourceAuditPositions": 800,
+    "snapshotSha256": "c5833e1315f64c19c2b5b1f857534b6eff6dbdda69189637e5f8275cf28e9dad",
+    "scientificSignoff": false,
+    "predictions": "ABSTAIN",
+    "accuracy": "NOT_CALIBRATED"
+  }
+]
