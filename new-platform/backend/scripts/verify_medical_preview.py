@@ -137,6 +137,8 @@ def main():
     endpoint = '/api/predictions/medical-matrix?nct=' + PILOT
     status, _ = request(anon, endpoint)
     demand(status == 401, 'ANONYMOUS_MATRIX_NOT_REJECTED')
+    status, _ = request(anon, '/api/predictions/medical-provisional-refresh?nct=' + PILOT)
+    demand(status == 401, 'ANONYMOUS_PROVISIONAL_REFRESH_NOT_REJECTED')
     status, _ = request(anon, '/api/internal/medical-assessments/coverage', backend=True)
     demand(status == 401, 'ANONYMOUS_BACKEND_NOT_REJECTED')
     client = build_opener(NoRedirect(), HTTPCookieProcessor(http.cookiejar.CookieJar()))
@@ -146,6 +148,25 @@ def main():
     demand(status == 200, 'AUTHORIZED_TEST_LOGIN_FAILED')
     print(json.dumps({'stage':'NORMAL_DASHBOARD_LOGIN','status':'PASS'}), flush=True)
     confirm_provisional_score_page(client)
+    status, refreshed = request(client, '/api/predictions/medical-provisional-refresh?nct=' + PILOT)
+    demand(status == 200 and refreshed.get('schema') == 'MAIN_PILOT_DOCUMENTARY_REFRESH_V1' and
+           refreshed.get('nct') == PILOT and refreshed.get('fdaPrediction') == 'ABSTAIN' and
+           refreshed.get('accuracy') == 'NOT_CALIBRATED' and
+           refreshed.get('officialClinicalMethodGrades') == 0 and
+           refreshed.get('independentPhaseVerified') is False and
+           refreshed.get('automaticClinicalRescore') is False,
+           'PROVISIONAL_REFRESH_GATE_FAILED')
+    pairs = [(x.get('assessmentId'), x.get('points'), x.get('outOf')) for x in refreshed.get('cards', [])]
+    demand(pairs == [('5.1',3,5),('4.2',3,5),('5.3',2,5)],
+           'PROVISIONAL_REFRESH_SCORE_DRIFT')
+    source_states = {p.get('sourceId'):p.get('status') for p in refreshed.get('probes',[])}
+    demand(set(source_states)=={'REGISTRY','NEJM_PIVOTAL'} and
+           all(x in ('MATCH','CHANGED','UNAVAILABLE') for x in source_states.values()),
+           'PUBLIC_SOURCE_REFRESH_MALFORMED')
+    print(json.dumps({'stage':'PROVISIONAL_SOURCE_REFRESH','status':'PASS',
+         'researchOnly':True,'sourceStatuses':source_states,
+         'currentness':refreshed.get('currentness'),
+         'documentaryScores':pairs,'clinicalGrades':0,'fdaPrediction':'ABSTAIN'}),flush=True)
     status, data = request(client, endpoint)
     demand(status == 200, 'AUTHENTICATED_MATRIX_UNAVAILABLE_HTTP_' + str(status))
     before = matrix_snapshot(data)
