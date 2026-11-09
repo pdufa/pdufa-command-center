@@ -67,6 +67,11 @@ export default function PilotScientificSignalPanel({nct}:{nct:string}){
         {!rubrics?<p role="alert" style={{fontSize:13,fontWeight:750}}>Rubric source state invalid; all prospective grades withheld.</p>:
         <>
           <p style={{fontSize:12,margin:"7px 0"}}><strong>5 of {rubrics.sourceMappedPositions}</strong> mapped method positions now have research calculations or documentary checklists. This rubric covers two of those positions, not the complete 800-method clinical ledger.</p>
+          <p style={{fontSize:12,margin:"4px 0 11px"}}>
+            <a href="/api/predictions/medical-phase3-reviewer-handoff?nct=NCT06081894" target="_blank" rel="noopener noreferrer" style={{fontWeight:750}}>
+              Open versioned independent-review handoff (JSON)
+            </a>{" "}— contains the published quantitative facts, 0–5 grading anchors, missing evidence and explicit ungraded status. Requires dashboard sign-in; never submits or authorizes grades.
+          </p>
           <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:10}}>
             {rubrics.methods.map(m=><article key={m.assessmentId} style={{...soft,background:"#fff"}}>
               <div style={{display:"flex",justifyContent:"space-between",gap:8,flexWrap:"wrap"}}>
