@@ -1,0 +1,119 @@
+name: MAIN R57 Savara primary efficacy and safety original-source audit
+
+# One-time research-only Stage 4 source check. No clinical reviewer, prediction,
+# production or model-training mutations. Historical Track B remains separate.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r57-svra-primary-safety-sap-evidence.yml
+      - new-platform/backend/scripts/build_svra_primary_safety_sap_evidence_r57.py
+      - new-platform/backend/tests/test_svra_primary_safety_sap_evidence_r57.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r57-original-savara-primary-safety-sap-review
+  cancel-in-progress: false
+
+jobs:
+  verify-source-reported-efficacy-safety-and-SAP:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run source-byte and clinical non-promotion safety tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python -m pip install pytest pymupdf
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_svra_primary_safety_sap_evidence_r57.py tests/test_svra_protocol_sap_reconciliation_r56.py
+          PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
+      - name: Restore verified 29-NCT original registry/SAP PDF and 23 case dossiers
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42696796318
+          name: main-r53-original-public-protocol-sap-pdf-42696796318
+          path: ${{ runner.temp }}/r57/original
+      - name: Restore separately executed source-anchored Savara discrepancy review
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42698835077
+          name: main-r56-savara-original-protocol-sap-review-42698835077
+          path: ${{ runner.temp }}/r57/r56
+      - name: Verify exact original results, posted p-values, SAP test hierarchy and safety arm denominators
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r57/review"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_svra_primary_safety_sap_evidence_r57.py \
+            --r53 "$RUNNER_TEMP/r57/original/source_protocol_sap_research.json" \
+            --r55 "$RUNNER_TEMP/r57/original/FOCUS_23_APPLICATION_EFFICACY_SAFETY_SOURCE_REVIEW_PACKETS_R55.json" \
+            --r56 "$RUNNER_TEMP/r57/r56/SVRA_ORIGINAL_PROTOCOL_SAP_RECONCILIATION_R56.json" \
+            --registry "$RUNNER_TEMP/r57/original/public-registry-original/NCT04544293.json" \
+            --pdf-dir "$RUNNER_TEMP/r57/original/public-pdfs" \
+            --output "$RUNNER_TEMP/r57/review/SVRA_PRIMARY_SAFETY_SAP_ORIGINAL_SOURCE_FACTS_R57.json"
+          python - <<'PY'
+          import json,hashlib,os
+          from pathlib import Path
+          path=Path(os.environ["RUNNER_TEMP"])/"r57/review/SVRA_PRIMARY_SAFETY_SAP_ORIGINAL_SOURCE_FACTS_R57.json"
+          payload=path.read_bytes()
+          r=json.loads(payload)
+          assert r["schema"]=="MAIN_R57_SAVARA_SOURCE_PRIMARY_SAFETY_SAP_HIERARCHY_EVIDENCE"
+          assert r["nct"]=="NCT04544293" and r["applicationCycleId"]=="svra-molgramostim"
+          assert r["original29TrialAnd23ApplicationChainPreserved"] is True
+          primary=r["sourceReportedPrimaryEndpoint"]
+          assert primary["reportedPValue"]=="0.0007"
+          assert primary["reportedDifferenceVersusPlacebo"]=="6.0"
+          assert primary["reported95Ci"]==["2.5","9.4"]
+          assert primary["independentNumericalRecalculation"] is False
+          assert primary["familyWiseAdjustedSignificanceValidated"] is False
+          assert r["sourceReportedPValuesNotIndependentFwerValidation"] is True
+          assert r["aeArmDenominatorsNotCausalTreatmentComparisons"] is True
+          assert r["verifiedProspectiveSapAndAmendmentTimeline"] is False
+          assert r["independentSignedEfficacyAssessment"] is False
+          assert r["independentSignedBenefitRiskAssessment"] is False
+          assert r["independentlyValidatedFdaPrediction"] is False
+          assert r["approvalProbability"] is None and r["scientificGrade"] is None
+          assert r["realHistoricalBacktests"]==0 and r["measuredAccuracy"] is None
+          assert r["modelTrainingAuthorized"] is False
+          assert r["clinicalOrProductionWrites"] is False
+          assert r["officialFdaOutcomeAndDelayPrediction"]=="ABSTAIN"
+          arms={q["groupName"]:q for q in r["sourceReportedSafetyExposureArms"]}
+          assert arms["Molgramostim"]["sourceReportedAffectedAndDenominators"]["seriousNumAffected"]==14
+          assert arms["Molgramostim"]["sourceReportedAffectedAndDenominators"]["seriousNumAtRisk"]==81
+          assert arms["Placebo"]["sourceReportedAffectedAndDenominators"]["seriousNumAffected"]==20
+          assert arms["Placebo"]["sourceReportedAffectedAndDenominators"]["seriousNumAtRisk"]==83
+          summary=("R57 source-verified SVRA Week24 DLCO as reported: +6.0 (95% CI 2.5 to 9.4), p=0.0007. "+
+            f'{r["secondaryComparisonCount"]} secondary reported-statistics rows; SAE arms 14/81 vs 20/83. '+
+            "All p-values are as published, without a validated family-wise statistical or FDA conclusion. "+
+            "No original prospectively locked SAP authenticated. "+
+            "No scientific grades, validation forecast or historical accuracy. "+
+            "Review SHA: "+hashlib.sha256(payload).hexdigest())
+          print(summary,flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+            f.write("## R57 source-reported Savara clinical results versus SAP review\n\n"+summary+"\n")
+          PY
+      - name: Save unmodified clinical readout and SAP source-anchored review facts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r57-savara-primary-safety-sap-source-facts-${{ github.run_id }}
+          path: ${{ runner.temp }}/r57/review/
+          retention-days: 90
+          if-no-files-found: error
