@@ -59,26 +59,13 @@ const idOf=(taskId:string)=>"install-task-"+taskId;
 const safeTime=(value:string|undefined|null)=>value&&Number.isFinite(Date.parse(value))?
  new Date(value).toLocaleString():"Not recorded";
 const status=(row:TaskEvidence|undefined):TaskState=>row?.status??"Unverified";
-type JumpTarget={taskId:string|null;kind:"live"|"documented"|"workflow"|"status";sequence:number};
+type JumpTarget={taskId:string|null;kind:"live"|"workflow"|"status";sequence:number};
 function getRunningGithub(snapshot:TaskResponse|null):WorkflowEvidence|null{
  const source=snapshot?.githubActions;
  if(!source||!["VERIFIED","PARTIAL"].includes(source.state))return null;
  const stamp=Date.parse(source.checkedAt);
  if(!Number.isFinite(stamp)||Math.abs(Date.now()-stamp)>90000)return null;
  return source.running[0]??null;
-}
-
-/** A dated In Progress registry record is a historical implementation checkpoint, never a live worker. */
-function getDocumentedCheckpoint(snapshot:TaskResponse|null):string|null{
- if(!snapshot)return null;
- const candidates=taskList.filter(t=>
-  snapshot.tasks[t.id]?.status==="In Progress" &&
-  Number.isFinite(Date.parse(snapshot.tasks[t.id]?.checkedAt??"")));
- if(!candidates.length)return null;
- const newest=candidates.reduce((best,current)=>
-  Date.parse(snapshot.tasks[current.id].checkedAt??"") >
-  Date.parse(snapshot.tasks[best.id].checkedAt??"")?current:best);
- return newest.id;
 }
 
 /** Only a fresh, specifically identified RUNNING worker event is a live position. */
@@ -168,12 +155,18 @@ export default function InstallationLiveNavigator(){
   });
  },[audit,fetchData,locateSnapshot]);
  useEffect(()=>{
-  if(!following||!installationExpanded||!active?.taskId)return;
-  setSection("present");
-  setChosenTask(active.taskId);
-  setLiveJump(previous=>previous?.taskId===active.taskId&&previous.kind==="live"?previous:
-   {taskId:active.taskId,kind:"live",sequence:(previous?.sequence??0)+1});
- },[active?.taskId,following,installationExpanded]);
+  if(!following||!installationExpanded)return;
+  if(active?.taskId){
+   setSection("present");
+   setChosenTask(active.taskId);
+   setLiveJump(previous=>previous?.taskId===active.taskId&&previous.kind==="live"?previous:
+    {taskId:active.taskId,kind:"live",sequence:(previous?.sequence??0)+1});
+  }else if(activeGithub){
+   setSection("present");
+   setLiveJump(previous=>previous?.kind==="workflow"&&previous.taskId===null?previous:
+    {taskId:null,kind:"workflow",sequence:(previous?.sequence??0)+1});
+  }
+ },[active?.taskId,activeGithub?.id,following,installationExpanded]);
  useEffect(()=>{
   if(!liveJump||!installationExpanded)return;
   // Wait for the opened caret and selected row to exist. Safari can ignore
@@ -224,7 +217,7 @@ export default function InstallationLiveNavigator(){
    </button>
    <button type="button" className={styles.liveButton}
     onClick={()=>{void goToLive();}}
-    aria-label="Locate installation: jump to the current live task or last documented checkpoint">
+    aria-label="Locate verified current execution or show explicit no-live status">
     <svg className={styles.locateIcon} width="22" height="22" viewBox="0 0 24 24"
      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
      aria-hidden="true">
