@@ -75,7 +75,7 @@ def crosscheck(rows,receipt,raw,approved,approved_raw,crl,crl_raw,identity,at):
         ok=False;reason=None
         detail={}
         if kind=="DRUGSFDA_APPROVED_PRODUCT_REGISTRY":
-            if source is None:reason="ORIGINAL_APPROVAL_RECORD_SHA_NOT_FOUND"
+            if source is None:raise ValueError("ORIGINAL_APPROVAL_RECORD_HASH_NOT_FOUND_IN_ARCHIVE")
             elif (row.get("applicationId")!=source.get("application_number_as_published") or
                   row.get("sourceAction") not in ("AP","TA") or
                   row.get("researchClass") not in ("AP_SOURCE_REGISTRY","TA_NONBINARY_SOURCE_REGISTRY")):
@@ -97,7 +97,7 @@ def crosscheck(rows,receipt,raw,approved,approved_raw,crl,crl_raw,identity,at):
                       "originalSourceRegistryRecordIndex":source.get("source_record_index"),
                       "originalSourceSponsorAsPublished":source.get("sponsor_name_as_published")}
         elif kind=="OPENFDA_SELECTED_PUBLIC_CRL_LETTERS":
-            if source is None:reason="ORIGINAL_CRL_RECORD_SHA_NOT_FOUND"
+            if source is None:raise ValueError("ORIGINAL_CRL_RECORD_HASH_NOT_FOUND_IN_ARCHIVE")
             elif source.get("letter_type_as_published")!="COMPLETE RESPONSE" or row.get("sourceAction")!="COMPLETE RESPONSE":
                 reason="ORIGINAL_CRL_LETTER_TYPE_MISMATCH"
             elif row.get("sourceApplicationReferences")!=source.get("application_numbers"):
@@ -105,7 +105,7 @@ def crosscheck(rows,receipt,raw,approved,approved_raw,crl,crl_raw,identity,at):
             elif _iso(source.get("letter_date_as_published"),r"\d{2}/\d{2}/\d{4}")!=row.get("reportedActionDate"):
                 reason="ORIGINAL_CRL_LETTER_DATE_MISMATCH"
             else:
-                ok=True;matched["publishedCrlRecord"]+=1
+                ok=True
                 detail={"originalSourceFileNameAsPublished":source.get("file_name_as_published"),
                   "originalSourceIndex":source.get("source_record_index"),
                   "originalSourceCompanyAsPublished":source.get("company_name_as_published")}
@@ -114,6 +114,7 @@ def crosscheck(rows,receipt,raw,approved,approved_raw,crl,crl_raw,identity,at):
                     if not any(ref in x for x in source["application_numbers"]):
                         ok=False;reason="EXPLICIT_ORIGINAL_UNIT_NOT_SUPPORTED_BY_SOURCE"
                     else:matched["crlReferenceWithExplicitOriginalUnit"]+=1
+                if ok:matched["publishedCrlRecord"]+=1
         else:reason="FDA_ACTION_SOURCE_CATEGORY_UNRECOGNIZED"
         if ok:matched["total"]+=1
         else:issues[reason]+=1
