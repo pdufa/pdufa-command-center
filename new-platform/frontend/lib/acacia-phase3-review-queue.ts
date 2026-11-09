@@ -100,10 +100,10 @@ export function buildPhase3ReviewQueue(p:Snapshot):Phase3ReviewQueue|null {
     p.finalDecision.calibratedAccuracy!==null||
     p.finalDecision.calibratedProbabilities!==null||
     !sourceOK(p.sources))return null;
-  const statistical=evaluatePilotScientificSignals(p as Parameters<typeof evaluatePilotScientificSignals>[0]);
-  const rubric=evaluateClinicalRubricReadiness(statistical,p as Parameters<typeof evaluateClinicalRubricReadiness>[1]);
-  const first=evaluatePilotReadiness(p as Parameters<typeof evaluatePilotReadiness>[0]);
-  const others=evaluateAdditionalPilotReadiness(p as Parameters<typeof evaluateAdditionalPilotReadiness>[0]);
+  const statistical=evaluatePilotScientificSignals(p as unknown as Parameters<typeof evaluatePilotScientificSignals>[0]);
+  const rubric=evaluateClinicalRubricReadiness(statistical,p as unknown as Parameters<typeof evaluateClinicalRubricReadiness>[1]);
+  const first=evaluatePilotReadiness(p as unknown as Parameters<typeof evaluatePilotReadiness>[0]);
+  const others=evaluateAdditionalPilotReadiness(p as unknown as Parameters<typeof evaluateAdditionalPilotReadiness>[0]);
   if(!statistical||!rubric||!first||!others||
     first.points!==3||others[0]?.points!==3||others[1]?.points!==2)return null;
   const assessments=p.criticalAssessmentEvidence;
