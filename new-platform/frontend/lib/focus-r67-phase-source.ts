@@ -40,7 +40,7 @@ export function buildR67PhaseSource(input:unknown=source){
   const records=[];
   for(const r of value.rows){
     if(!Array.isArray(r)||r.length!==11||
-       !r.every((x,i)=>i===7?Number.isSafeInteger(x)&&x>0&&x<=100000:
+       !r.every((x,i)=>i===7?typeof x==="number"&&Number.isSafeInteger(x)&&x>0&&x<=100000:
          typeof x==="string"&&x.length<=120)||
        !NCT.test(r[0])||seen.has(r[0])||
        !originalByNct.has(r[0])||!docketByNct.has(r[0]))return null;
