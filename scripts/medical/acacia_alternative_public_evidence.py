@@ -101,7 +101,7 @@ def europe_pmc_xml(raw,kind):
     if node.tag.split("}")[-1]!="article":
         return {"sourceIdentity":"WRONG_ROOT"}
     text=normalized(" ".join(node.itertext()))
-    title=normalized(" ".join(n.itertext() for n in node.findall(".//article-title")))
+    title=normalized(" ".join(" ".join(n.itertext()) for n in node.findall(".//article-title")))
     # Exact trial and exact *article* avoid misclassifying adjacent HCM datasets.
     correct=(NCT in text and "aficamten" in title.lower() and
              "nonobstructive" in title.lower() and
