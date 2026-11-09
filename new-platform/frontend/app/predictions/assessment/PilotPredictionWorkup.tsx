@@ -1,4 +1,4 @@
-import {evaluatePilotReadiness} from "../../../lib/pilot-research-readiness";
+import {evaluateAdditionalPilotReadiness,evaluatePilotReadiness} from "../../../lib/pilot-research-readiness";
 import pilot from "../../../data/acacia-pilot-prediction-workup-20261108.json";
 
 const frame={border:"1px solid #8bb4a8",background:"#fff",borderRadius:12,padding:16,margin:"12px 0"} as const;
@@ -10,6 +10,7 @@ export default function PilotPredictionWorkup({nct}:{nct:string}){
   if(nct!==facts.nct || nct!==pilot.nct)return null;
   const sourceList=Object.entries(pilot.sources);
   const readiness=evaluatePilotReadiness(pilot);
+  const additionalReadiness=evaluateAdditionalPilotReadiness(pilot);
   return <section aria-label="ACACIA preliminary scientific prediction workup" style={{...frame,background:"#f6fbf8"}}>
     <h2 style={{margin:"2px 0 10px"}}>ACACIA-HCM · Pilot prediction workup</h2>
     <p style={{fontSize:12,color:"#476258"}}>Historical evidence snapshot — the live prediction, grade counts and accuracy state are shown in the monitor above.</p>
@@ -37,6 +38,38 @@ export default function PilotPredictionWorkup({nct}:{nct:string}){
         </li>)}</ol>
       </details>:<p role="alert">Incomplete or inconsistent pilot evidence: provisional number withheld.</p>}
       <p style={{fontSize:12,marginBottom:0}}>The live 800-method ledger below remains the sole source of independently authorized clinical grades. Its current grade count is separate.</p>
+    </section>
+    <section aria-label="Additional provisional documentary research scores" style={{...frame,background:"#f2f9fc",border:"1px solid #83b1c4"}}>
+      <h3 style={{margin:"0 0 8px"}}>Additional preliminary research scores</h3>
+      <p style={{fontSize:13,margin:"0 0 12px"}}>
+        {readiness&&additionalReadiness?"3 of 18 source-mapped research positions have documentary checklists; the other 15 are not scored.": "Additional research scorecards withheld until their exact public evidence checks pass."}
+        {" "}These are <strong>document availability/readiness indices</strong>, not official scientific method grades.
+        The independent clinical ledger still has its own scores and history below.
+      </p>
+      {additionalReadiness?additionalReadiness.map(card=><article key={card.assessmentId} style={{
+        padding:12,border:"1px solid #9fc3d4",borderRadius:9,background:"#fff",marginTop:10}}>
+        <div style={{display:"flex",flexWrap:"wrap",gap:12,justifyContent:"space-between",alignItems:"center"}}>
+          <div>
+            <strong>Assessment {card.assessmentId} · Method {card.methodIndex}</strong>
+            <p style={{fontSize:13,margin:"4px 0"}}>{card.label}</p>
+          </div>
+          <div style={{fontSize:27,fontWeight:900,color:"#153e5a"}}>{card.points} / {card.outOf}</div>
+        </div>
+        <p style={{fontSize:12,margin:"5px 0 9px"}}>As-of: {card.sourceDate} · Not verified clinically · FDA prediction remains ABSTAIN</p>
+        <details style={{...frame,margin:0,padding:10}}>
+          <summary style={{cursor:"pointer",fontWeight:700}}>View the five documented criteria and source gaps</summary>
+          <ol style={{paddingLeft:20,marginBottom:0}}>{card.checks.map(g=><li key={g.id} style={{margin:"8px 0"}}>
+            <strong>{g.state==="RESEARCH_OBSERVED"?"Source observed · +1 documentary point":"Not verified · 0 documentary points"}</strong>
+            <div>{g.title}</div>
+            <p style={{fontSize:12,margin:"3px 0"}}>{g.detail}</p>
+            {g.sourceId&&Object.hasOwn(pilot.sources,g.sourceId)?
+              <a target="_blank" rel="noopener noreferrer" href={pilot.sources[g.sourceId as keyof typeof pilot.sources].url}>Open original source</a>:null}
+          </li>)}</ol>
+        </details>
+      </article>):null}
+      <p style={{fontSize:12,marginBottom:0}}>
+        An unverified documentary criterion counts zero **for this checklist only**. It does not mean the drug or trial failed that scientific method. No source completeness points are carried into the FDA forecast.
+      </p>
     </section>
     <p style={{fontSize:13}}><strong>Phase 3 evidence:</strong> week-36 KCCQ-CSS placebo-adjusted difference +{pilot.publishedPrimary.kccq.difference.toFixed(1)} points (95% CI {pilot.publishedPrimary.kccq.ci95[0]}–{pilot.publishedPrimary.kccq.ci95[1]}); peak VO₂ +{pilot.publishedPrimary.peakVo2.difference} mL/kg/min (95% CI {pilot.publishedPrimary.peakVo2.ci95[0]}–{pilot.publishedPrimary.peakVo2.ci95[1]}). Both met the sponsor-reported initial statistical criteria, which is not the same as validated clinical benefit or FDA approval.</p>
     <div style={{padding:12,border:"1px solid #d8c1a4",borderRadius:8,background:"#fffaf2"}}>
