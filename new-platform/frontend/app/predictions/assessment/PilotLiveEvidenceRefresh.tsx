@@ -2,11 +2,11 @@
 import {useCallback,useEffect,useRef,useState} from "react";
 
 type SourceProbe={sourceId:string;status:"MATCH"|"CHANGED"|"UNAVAILABLE";
-  observedAt:string;sourceUrl:string;message:string};
+  observedAt:string;sourceUrl:string;message:string;candidateSignals?:string[]};
 type Report={schema:"MAIN_PILOT_DOCUMENTARY_REFRESH_V1";nct:string;
   observedAt:string;evidenceSnapshotAsOf:string;mode:string;
   currentness:"SOURCE_IDENTITIES_MATCH"|"PARTIALLY_UNAVAILABLE"|"REVIEW_REQUIRED";
-  probes:SourceProbe[];
+  probes:SourceProbe[];newEvidenceCandidates:string[];
   cards:Array<{assessmentId:string;methodIndex:number;points:number;outOf:number;label:string}>;
   researchOnly:true;officialClinicalMethodGrades:0;independentPhaseVerified:false;
   fdaPrediction:"ABSTAIN";accuracy:"NOT_CALIBRATED";automaticClinicalRescore:false;note:string};
@@ -21,6 +21,8 @@ function valid(input:unknown):input is Report{
     v.accuracy==="NOT_CALIBRATED"&&v.automaticClinicalRescore===false&&
     ["SOURCE_IDENTITIES_MATCH","PARTIALLY_UNAVAILABLE","REVIEW_REQUIRED"].includes(v.currentness)&&
     Array.isArray(v.probes)&&v.probes.length===2&&
+    Array.isArray(v.newEvidenceCandidates)&&
+    v.newEvidenceCandidates.every(x=>typeof x==="string"&&x.length<=100)&&
     v.probes.every(p=>["MATCH","CHANGED","UNAVAILABLE"].includes(p.status))&&
     Array.isArray(v.cards)&&v.cards.length===3&&
     ["5.1","4.2","5.3"].every((id,i)=>v.cards[i]?.assessmentId===id&&
@@ -104,6 +106,14 @@ export default function PilotLiveEvidenceRefresh({nct}:{nct:string}){
           <div style={caption}>{c.label}</div>
         </div>)}
       </div>
+      {result.newEvidenceCandidates.length>0?<div style={{marginTop:10,padding:10,
+        background:"#fff7ed",border:"1px solid #d2a579",borderRadius:8,fontSize:13}}>
+        <strong>New public evidence candidates detected — independent review required</strong>
+        <ul style={{margin:"7px 0",paddingLeft:20}}>
+          {result.newEvidenceCandidates.map(candidate=><li key={candidate}>{candidate.replaceAll("_"," ")}</li>)}
+        </ul>
+        These discoveries do not increase the research-document checks or publish official clinical grades.
+      </div>:null}
       <details style={{marginTop:10,fontSize:13}}>
         <summary style={{cursor:"pointer",fontWeight:700}}>Show live source identity checks and limitations</summary>
         {result.probes.map(p=><p key={p.sourceId}>
@@ -114,7 +124,7 @@ export default function PilotLiveEvidenceRefresh({nct}:{nct:string}){
       </details>
     </div>:null}
     <p style={{...caption,margin:"9px 0 0"}}>
-      Important: the official scientific grades remain **unscored**; FDA prediction ABSTAIN and accuracy NOT CALIBRATED.
+      Important: the official scientific grades remain unscored; FDA prediction ABSTAIN and accuracy NOT CALIBRATED.
       Newly appearing SAPs, corrected safety counts or changed regulatory filings require independent review, not automatic score increases.
       This preview does not run a background job while nobody has the page open.
     </p>
