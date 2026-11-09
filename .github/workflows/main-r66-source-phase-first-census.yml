@@ -1,0 +1,117 @@
+name: MAIN R66 original registry phase-first census
+
+# Research only. The ClinicalTrials.gov record's study phases and status are
+# source-reported, not independently clinically or FDA-cycle adjudicated.
+# No production, method-score, phase-signoff, Track B, or retired-scanner writes.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r66-source-phase-first-census.yml
+      - new-platform/backend/scripts/build_focus_source_phase_census_r66.py
+      - new-platform/backend/tests/test_focus_source_phase_census_r66.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r66-source-registry-phase-census
+  cancel-in-progress: false
+
+jobs:
+  verify-original-registry-reported-phase-first:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Preserve unchanged 29-trial/23-application FOCUS scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Recover pinned original 29 ClinicalTrials.gov public JSON responses
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42696796318
+          name: main-r53-original-public-protocol-sap-pdf-42696796318
+          path: ${{ runner.temp }}/r66/original
+      - name: Recover archived unsigned R65 scientific reviewer intake
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42717833879
+          name: main-r65-source-linked-unsigned-review-worklist-42717833879
+          path: ${{ runner.temp }}/r66/r65
+      - name: Reject fabricated source phase signoffs, FDA statuses and modified original registry bytes
+        working-directory: new-platform/backend
+        shell: bash
+        env:
+          R66_R46: ${{ runner.temp }}/r66/original/current_registry_document_index.json
+          R66_R65: ${{ runner.temp }}/r66/r65/FOCUS_29_TRIAL_232_HUMAN_REVIEW_INTAKE_R65.json
+          R66_REGISTRY_DIR: ${{ runner.temp }}/r66/original/public-registry-original
+        run: |
+          set -euo pipefail
+          python -m pip install 'pytest>=8,<10'
+          PYTHONPATH=. python -m pytest -q tests/test_focus_source_phase_census_r66.py
+      - name: Create immutable write-once original-phase evidence census
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r66/research"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_focus_source_phase_census_r66.py \
+            --r46 "$RUNNER_TEMP/r66/original/current_registry_document_index.json" \
+            --r65 "$RUNNER_TEMP/r66/r65/FOCUS_29_TRIAL_232_HUMAN_REVIEW_INTAKE_R65.json" \
+            --original-registry-dir "$RUNNER_TEMP/r66/original/public-registry-original" \
+            --output "$RUNNER_TEMP/r66/research/FOCUS_29_ORIGINAL_REGISTRY_PHASE_EVIDENCE_R66.json" \
+            --summary "$RUNNER_TEMP/r66/research/FOCUS_29_ORIGINAL_REGISTRY_PHASE_EVIDENCE_R66.md"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          base=Path(os.environ["RUNNER_TEMP"])/"r66/research"
+          r=json.loads((base/"FOCUS_29_ORIGINAL_REGISTRY_PHASE_EVIDENCE_R66.json").read_bytes())
+          assert r["schema"]=="MAIN_R66_EXACT_ORIGINAL_29_TRIAL_PHASE_SOURCE_CENSUS"
+          assert r["exactNcts"]==29 and r["provisionalApplicationCycles"]==23
+          assert r["registryReportedPhase3Only"]==28
+          assert r["registryReportedPhase2Phase3"]==1
+          assert r["registryReportedCompleted"]==19
+          assert r["registryReportedActiveNotRecruiting"]==8
+          assert r["registryReportedRecruiting"]==2
+          assert r["registryReportedRandomized"]==28
+          assert r["registryReportedAllocationNA"]==1
+          assert len(r["originalRegistryPhaseEvidence"])==29
+          assert len(r["provisionalApplicationPhaseEvidence"])==23
+          assert r["independentlyQualifiedPhaseReviews"]==0
+          assert r["signedScientificMethodGrades"]==0
+          assert r["futureFDAOutcomePredictionsValidated"]==0
+          assert r["measuredForecastAccuracy"] is None
+          assert r["officialFutureFDAOutcome"]=="ABSTAIN"
+          assert r["officialFDAReviewDelay"]=="ABSTAIN"
+          assert r["productionOrReviewerLedgerWrites"] is False
+          assert r["historicalOutcomesInspected"] is False
+          assert r["phaseFieldsFromSourceAreNotClinicalOrRegulatoryAdjudications"] is True
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+            f.write("## R66 original current public registry phase-first source audit\n\n")
+            f.write("29 exact original-source NCT records; 28 Phase 3 only, 1 combined Phase 2/3; 19 completed, 8 active-not-recruiting, 2 recruiting; one registry allocation N/A.\n\n")
+            f.write("**Registry-reported labels, NOT qualified independent phase reviews or FDA application statuses.** 0 clinical signoffs, 0 method grades, 0 validated future FDA predictions; no historical outcomes consulted or production writes.\n\n")
+            f.write((base/"FOCUS_29_ORIGINAL_REGISTRY_PHASE_EVIDENCE_R66.md").read_text())
+          PY
+      - name: Archive original-phase source research only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r66-exact-29-registry-phase-evidence-${{ github.run_id }}
+          path: ${{ runner.temp }}/r66/research/
+          retention-days: 90
+          if-no-files-found: error
