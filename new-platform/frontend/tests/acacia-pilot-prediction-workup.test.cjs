@@ -42,8 +42,10 @@ test("all critical phase 3 assessment headings and method leads exist in current
       unique.add(position);
     }
   }
-  assert.equal(unique.size,15);
-  assert.equal(pilot.scientificFramework.mappedCandidateMethodLeads,15);
+  assert.equal(unique.size,18);
+  assert.equal(pilot.scientificFramework.mappedCandidateMethodLeads,18);
+  assert.equal(pilot.scientificFramework.methodPositionsUnexamined,782);
+  assert.equal(pilot.scientificFramework.researchBoundedFindings,9);
   assert.match(pilot.scientificFramework.candidateMeaning,/NOT_A_REVIEW_EVENT_OR_GRADE/);
   assert.equal(pilot.scientificFramework.everyMappedMethodGraded,false);
 });
@@ -71,8 +73,8 @@ test("prediction and accuracy appear above installation but never as invented ca
   assert.match(live,/NOT CALIBRATED/);
   assert.match(widget,/Historical evidence snapshot/);
   assert.match(widget,/Conditional regulatory scenarios/);
-  assert.match(widget,/source leads for/);
-  assert.match(widget,/Mapped leads are not graded or completed methods/);
+  assert.match(widget,/Source leads in/);
+  assert.match(widget,/A mapped research handoff is neither an independently examined clinical test nor an FDA prediction/);
   assert.match(widget,/if\(nct!==facts.nct \|\| nct!==pilot.nct\)return null/);
   assert.ok(parent.indexOf("<PilotPredictionWorkup nct={nct} />")<parent.indexOf("<ScientificInstallationStatus />"));
   assert.ok(parent.indexOf("<PilotPredictionWorkup nct={nct} />")<parent.indexOf("<PhaseVerificationPanel nct={nct} />"));
