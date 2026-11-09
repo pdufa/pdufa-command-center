@@ -10,20 +10,18 @@ import binascii
 import json
 import os
 import secrets
-import threading
 
 from fastapi import APIRouter, HTTPException, Request
 from fastapi.responses import JSONResponse
 
 from . import medical_original_evidence_vault as vault
+from . import medical_original_evidence_permissions as permissions
 
 ENABLED = ("1", "true", "yes")
 ISOLATED_SERVICE = "srv-dbntrkpsrm7s73aec3lg"
 LIMIT_JSON_BYTES = 2_850_000
 RIGHTS = "I_HAVE_THE_RIGHT_TO_STORE_THIS_PUBLIC_RESEARCH_DOCUMENT"
 ROLES = ("read", "write")
-_INIT_LOCK = threading.Lock()
-_INITIALIZED = False
 
 
 def feature_enabled() -> bool:
@@ -54,18 +52,24 @@ def require_role(request: Request, role: str) -> None:
 
 
 def _initialize(engine, require_storage) -> None:
-    global _INITIALIZED
+    # NO migration DDL on the HTTP path. A separate administrator must
+    # pre-create the vault, immutability trigger and least-privilege grants.
     require_storage()
-    if engine.dialect.name != "postgresql":
-        raise HTTPException(503, "Durable isolated PostgreSQL is required")
-    with _INIT_LOCK:
-        if not _INITIALIZED:
-            try:
-                vault.initialize(engine)
-            except Exception:
-                raise HTTPException(503, "Isolated evidence storage is unavailable") from None
-            _INITIALIZED = True
+    try:
+        permissions.verify_runtime(engine)
+    except permissions.PrivilegeBoundaryError:
+        raise HTTPException(503, "Isolated vault runtime privileges are not verified") from None
+    except Exception:
+        raise HTTPException(503, "Isolated vault runtime database is unavailable") from None
 
+
+def _authorized_runtime_engine(engine_provider, require_storage):
+    try:
+        engine=engine_provider()
+    except Exception:
+        raise HTTPException(503, "Dedicated evidence runtime connection is not configured") from None
+    _initialize(engine,require_storage)
+    return engine
 
 async def _bounded_payload(request: Request) -> dict:
     if not (request.headers.get("content-type", "").lower().startswith("application/json")):
@@ -112,8 +116,7 @@ def install_routes(app, engine_provider, require_storage) -> None:
         if len(raw)>vault.MAX_DOCUMENT_BYTES:
             raise HTTPException(413,"Original source exceeds encrypted size limit")
         officer=request.headers.get("x-pdufa-evidence-officer","")
-        engine=engine_provider()
-        _initialize(engine,require_storage)
+        engine=_authorized_runtime_engine(engine_provider,require_storage)
         try:
             key=vault.parse_encryption_key(os.getenv("PDUFA_EVIDENCE_ENCRYPTION_KEY_B64"))
             receipt=vault.deposit(engine,metadata=payload["metadata"],original_bytes=raw,
@@ -125,8 +128,7 @@ def install_routes(app, engine_provider, require_storage) -> None:
     @router.get("/NCT06081894")
     def list_receipts(request: Request):
         require_role(request,"read")
-        engine=engine_provider()
-        _initialize(engine,require_storage)
+        engine=_authorized_runtime_engine(engine_provider,require_storage)
         try:
             entries=vault.list_receipts(engine,nct=vault.EXACT_NCT)
         except Exception:
