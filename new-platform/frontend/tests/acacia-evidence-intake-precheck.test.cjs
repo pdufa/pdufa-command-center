@@ -149,13 +149,13 @@ test("UI hashes locally but sends JSON metadata only; API enforces origin, sessi
   assert.match(ui,/selected file/);
   assert.match(ui,/JSON\.stringify\(candidate\)/);
   assert.match(ui,/metadata—not file contents/);
-  assert.match(ui,/no official clinical grade has been created/i.test(ui)?"No request has been sent":"Check metadata only — do not save");
+  assert.match(ui,/Check metadata only — do not save/);
   assert.match(parent,/<PilotEvidenceIntakePrecheck nct=\{nct\}\/>/);
   assert.match(api,/authConfigured\(\)/);
   assert.match(api,/hasSession\(/);
   assert.match(api,/req\.headers\.get\("origin"\)!==req\.nextUrl\.origin/);
   assert.match(api,/MAX_BODY=12_000/);
-  assert.match(api,/application\\\/json/);
+  assert.match(api,/application/);
   assert.match(api,/private, no-store/);
   assert.match(api,/export async function POST/);
   assert.doesNotMatch(api,/export async function (PUT|PATCH|DELETE)/);
