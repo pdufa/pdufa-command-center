@@ -10,7 +10,7 @@ import http.cookiejar,json,os,re,sys
 from urllib.error import HTTPError,URLError
 from urllib.request import HTTPCookieProcessor,HTTPRedirectHandler,Request,build_opener
 
-SITE="https://pdufa-new-dashboard-k0lkhlsfn-pdufa.vercel.app"
+SITE="https://pdufa-new-dashboard-daug7l7we-pdufa.vercel.app"
 ROSTER="/api/predictions/focus-preliminary"
 SOURCES="/api/predictions/focus-source-readiness"
 URL="/predictions"
