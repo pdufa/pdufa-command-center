@@ -13,6 +13,18 @@ _Z95 = 1.959963984540054
 _EPS = 1e-15
 
 
+def _wilson95(successes: int, total: int) -> list[float]:
+    """Pointwise binomial interval, conditional on independently sampled rows.
+
+    This does not account for source-label uncertainty, correlated programs,
+    adaptive bins/model selection, multiplicity, or distribution shift.
+    """
+    rate = successes / total
+    center = (rate + _Z95**2/(2*total))/(1 + _Z95**2/total)
+    half_width = _Z95*sqrt(rate*(1-rate)/total + _Z95**2/(4*total*total))/(1+_Z95**2/total)
+    return [max(0.0, center-half_width), min(1.0, center+half_width)]
+
+
 def _auc_rank(pairs: list[tuple[float, int]]) -> float | None:
     """Tie-correct AUROC as Mann-Whitney U, O(n log n) instead of O(n^2)."""
     pos = sum(y for _, y in pairs)
@@ -80,6 +92,14 @@ def summarize_binary_forecasts(
         "brierScore": None, "logLoss": None, "accuracy": None,
         "balancedAccuracy": None, "rocAuc": None,
         "expectedCalibrationError": None, "calibrationBins": [],
+        "calibrationUncertainty": {
+            "method": "POINTWISE_WILSON_BINOMIAL_95",
+            "fixedBins": 5,
+            "simultaneousCoverage": False,
+            "independentRowsAssumed": True,
+            "includesLabelOrModelUncertainty": False,
+            "note": "Observed event-rate intervals within prespecified bins only; not a confidence interval for ECE or a calibrated FDA probability.",
+        },
         "accuracyWilson95": None,
         "baselineBrierScore": None, "brierSkillScore": None,
         "modelHistoricallyValidated": False,
@@ -114,9 +134,8 @@ def summarize_binary_forecasts(
             "lowInclusive": index/5, "highExclusiveExceptOne": (index+1)/5,
             "count": len(segment), "meanProbability": mean_p,
             "observedApprovalRate": observed,
+            "observedEventRateWilson95": _wilson95(sum(y for _, y in segment), len(segment)),
         })
-    center = (accuracy + _Z95**2/(2*n))/(1 + _Z95**2/n)
-    half_width = _Z95*sqrt(accuracy*(1-accuracy)/n + _Z95**2/(4*n*n))/(1+_Z95**2/n)
     baseline_brier = (sum((p-y)**2 for p, (_, y) in zip(baselines, clean)) / n
                       if baseline_probabilities is not None else None)
     empty.update({
@@ -127,7 +146,7 @@ def summarize_binary_forecasts(
         "rocAuc": _auc_rank(clean),
         "expectedCalibrationError": ece,
         "calibrationBins": calibration,
-        "accuracyWilson95": [max(0.0, center-half_width), min(1.0, center+half_width)],
+        "accuracyWilson95": _wilson95(correct, n),
         "baselineBrierScore": baseline_brier,
         "brierSkillScore": (1 - brier/baseline_brier
                             if baseline_brier is not None and baseline_brier > 0
