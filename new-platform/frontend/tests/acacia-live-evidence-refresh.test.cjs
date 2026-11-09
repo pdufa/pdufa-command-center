@@ -53,6 +53,28 @@ test("exact Phase 3 pilot registry identity matches; wrong trial and phase are r
   assert.equal(live.registryIdentityValid(wrong),false);
   assert.equal(live.registryIdentityValid(null),false);
 });
+test("updated official registry and SAP-titled attachments are research leads, not automatic grades",()=>{
+  const original={protocolSection:{
+    identificationModule:{nctId:"NCT06081894",officialTitle:"A Phase 3 Trial in Non-Obstructive Hypertrophic Cardiomyopathy"},
+    designModule:{phases:["PHASE3"]},
+    statusModule:{studyLastUpdatePostDateStruct:{date:"2026-11-08"}}
+  },resultsSection:{participantFlowModule:{groups:[]}},
+    documentSection:{largeDocumentModule:{largeDocs:[{title:"Final Statistical Analysis Plan (SAP)"}]}}
+  };
+  const alerts=live.registryResearchSignals(original);
+  assert.deepEqual(Array.from(alerts),[
+    "REGISTRY_RECORD_UPDATED_SINCE_BASELINE",
+    "NEW_REGISTRY_RESULTS_CANDIDATE",
+    "PUBLIC_SAP_TITLE_CANDIDATE_UNREVIEWED"
+  ]);
+  const old=structuredClone(original);
+  old.protocolSection.statusModule.studyLastUpdatePostDateStruct.date="2026-09-22";
+  delete old.resultsSection;delete old.documentSection;
+  assert.deepEqual(Array.from(live.registryResearchSignals(old)),[]);
+  const wrong=structuredClone(original);
+  wrong.protocolSection.identificationModule.nctId="NCT00000000";
+  assert.deepEqual(Array.from(live.registryResearchSignals(wrong)),[]);
+});
 test("publication identity rechecked against exact original PMID and research topic",()=>{
   const paper={resultList:{result:[{
     id:"42663312",pmid:"42663312",
@@ -82,6 +104,7 @@ test("automatic source check recalculates all 3 prior documentary scores, not cl
   assert.equal(r.fdaPrediction,"ABSTAIN");
   assert.equal(r.accuracy,"NOT_CALIBRATED");
   assert.equal(r.automaticClinicalRescore,false);
+  assert.deepEqual(Array.from(r.newEvidenceCandidates),[]);
 });
 test("unavailable public API is neither an adverse clinical finding nor a green source check",()=>{
   const r=live.evaluateSourceRefresh(clone(),probes("UNAVAILABLE","MATCH"),now);
@@ -132,6 +155,8 @@ test("preview UI refreshes on visibility and every 15 minutes without pretending
   assert.match(ui,/REVIEW_REQUIRED/);
   assert.match(ui,/automaticClinicalRescore===false/);
   assert.match(ui,/while nobody has the page open/);
-  assert.match(ui,/Official scientific grades remain/i);
+  assert.match(ui,/official scientific grades remain/i);
+  assert.match(ui,/newEvidenceCandidates/);
+  assert.match(ui,/independent review required/);
   assert.match(parent,/<PilotLiveEvidenceRefresh nct=\{nct\}/);
 });
