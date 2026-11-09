@@ -5,6 +5,8 @@ Normal session authentication is used; no session forging or reviewer writes.
 """
 from __future__ import annotations
 import hashlib
+import re
+from html.parser import HTMLParser
 import http.cookiejar
 import json
 import os
@@ -49,6 +51,68 @@ def demand(condition, code):
     if not condition:
         raise VerificationError(code)
 
+
+class VisibleText(HTMLParser):
+    """Collect server-rendered visible text; never print authentication cookies."""
+    def __init__(self):
+        super().__init__()
+        self.parts = []
+        self.suppressed = 0
+    def handle_starttag(self, tag, attrs):
+        if tag in ('script', 'style', 'noscript'):
+            self.suppressed += 1
+    def handle_endtag(self, tag):
+        if tag in ('script', 'style', 'noscript'):
+            self.suppressed = max(0, self.suppressed - 1)
+    def handle_data(self, data):
+        if not self.suppressed:
+            self.parts.append(data)
+
+
+def confirm_provisional_score_page(client):
+    """Live HTTP/HTML proof of published, NOT automatically updated, scores."""
+    path = '/predictions/assessment?nct=' + PILOT
+    req = Request(SITE + path, headers={
+        'Accept': 'text/html', 'User-Agent': 'MAIN-provisional-score-page-acceptance/1'
+    })
+    try:
+        reply = client.open(req, timeout=40)
+    except HTTPError as exc:
+        reply = exc
+    with reply:
+        demand(reply.code == 200, 'SIGNED_IN_PREDICTIONS_PAGE_UNAVAILABLE_HTTP_' + str(reply.code))
+        demand('text/html' in reply.headers.get('content-type', ''), 'PREDICTIONS_PAGE_NOT_HTML')
+        page = reply.read(5_000_001)
+        demand(len(page) <= 5_000_000, 'PREDICTIONS_PAGE_TOO_LARGE')
+    parser = VisibleText()
+    parser.feed(page.decode('utf-8', 'replace'))
+    visible = ' '.join(parser.parts)
+    normalized = re.sub(r'\\s+', ' ', visible)
+    demand('FIRST PRELIMINARY RESEARCH SCORE' in normalized,
+           'FIRST_RESEARCH_CHECKLIST_NOT_RENDERED')
+    demand('Additional preliminary research scores' in normalized,
+           'ADDITIONAL_RESEARCH_CHECKLISTS_NOT_RENDERED')
+    demand('Assessment 5.1' in normalized and 'Assessment 4.2' in normalized and
+           'Assessment 5.3' in normalized, 'PILOT_CHECKLIST_IDENTITIES_NOT_RENDERED')
+    # Require values adjacent to the associated assessment, not just a stray
+    # number elsewhere in the 800-row page.
+    for assessment, expected in [('5.1', '3'), ('4.2', '3'), ('5.3', '2')]:
+        pattern = r'Assessment ' + re.escape(assessment) + r'.{0,350}?' + expected + r'\\s*/\\s*5'
+        demand(re.search(pattern, normalized, re.DOTALL) is not None,
+               'EXPECTED_PROVISIONAL_SCORE_NOT_RENDERED_' + assessment.replace('.', '_'))
+    demand('NOT CALIBRATED' in normalized and 'ABSTAIN' in normalized,
+           'UNVALIDATED_FDA_OUTPUT_RELEASED')
+    demand('document' in normalized.lower() and 'not' in normalized.lower() and
+           'clinical' in normalized.lower(), 'RESEARCH_SCORE_LABEL_MISSING')
+    print(json.dumps({'stage':'PROVISIONAL_SCORE_PAGE_READ','status':'PASS',
+       'nct':PILOT,'publishedResearchScores':[
+          {'assessment':'5.1','documentaryReadiness':'3/5'},
+          {'assessment':'4.2','documentaryReadiness':'3/5'},
+          {'assessment':'5.3','documentaryReadiness':'2/5'}],
+       'documentSnapshotDate':'2026-11-08',
+       'automaticSourceReassessment':False,
+       'clinicalGradesCertified':False,'fdaPrediction':'ABSTAIN'}), flush=True)
+
 def matrix_snapshot(data):
     review = data.get('review', {})
     demand(review.get('nct') == PILOT and review.get('totalPositions') == 800, 'WRONG_MATRIX_IDENTITY')
@@ -81,6 +145,7 @@ def main():
     status, _ = request(client, '/api/auth', body={'password':password}, origin=SITE)
     demand(status == 200, 'AUTHORIZED_TEST_LOGIN_FAILED')
     print(json.dumps({'stage':'NORMAL_DASHBOARD_LOGIN','status':'PASS'}), flush=True)
+    confirm_provisional_score_page(client)
     status, data = request(client, endpoint)
     demand(status == 200, 'AUTHENTICATED_MATRIX_UNAVAILABLE_HTTP_' + str(status))
     before = matrix_snapshot(data)
