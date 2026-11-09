@@ -97,7 +97,8 @@ def confirm_provisional_score_page(client):
            'every 15 minutes' in normalized,
            'AUTO_REFRESH_PANEL_NOT_RENDERED')
     demand('Archived evidence checks and overnight monitoring' in normalized and
-           'Nightly schedule: PREPARED, NOT ACTIVE' in normalized,
+           'Nightly schedule: CONFIGURED ON MAIN' in normalized and
+           'first clock-triggered' in normalized,
            'INACTIVE_NIGHTLY_SOURCE_ARCHIVE_STATUS_NOT_VISIBLE')
     demand(b'main-acacia-public-evidence-nightly.yml' in page,
            'EVIDENCE_HISTORY_ARCHIVE_LINK_MISSING')
