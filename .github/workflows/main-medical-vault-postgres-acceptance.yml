@@ -80,8 +80,6 @@ jobs:
           echo "No Render/Neon schema change, no active vault, 0 clinical grades."
       - name: Record nonsecret acceptance status
         if: success()
-        env:
-          STEP_SUMMARY: ${{ github.step_summary }}
         shell: bash
         run: |
           {
@@ -92,4 +90,4 @@ jobs:
             echo "- Separate synthetic key recovery envelope restored encryption key without publishing secrets"
             echo "- No original trial documents, Neon/Render writes, reviewer events or FDA grades"
             echo "- Source branch remains draft and Render vault flag remains disabled"
-          } >> "$STEP_SUMMARY"
+          } >> "$GITHUB_STEP_SUMMARY"
