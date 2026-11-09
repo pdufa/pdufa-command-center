@@ -143,7 +143,7 @@ def test_rejects_mismatched_or_unsafe_source_records(engine,change):
 
 
 def test_named_role_and_key_security(engine):
-    with pytest.raises(vault.VaultError,match="256-bit"):
+    with pytest.raises(vault.VaultError,match="Invalid independently provisioned encryption key"):
         vault.deposit(engine,metadata=meta(),original_bytes=RAW,
                       uploaded_by="research.intake",encryption_key=b"y")
     with pytest.raises(vault.VaultError,match="named"):
