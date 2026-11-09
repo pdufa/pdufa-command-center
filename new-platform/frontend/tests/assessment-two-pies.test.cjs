@@ -16,56 +16,100 @@ for(const ext of [".ts",".tsx"]){
   );
 }
 
-const {getAssessmentPieData,findLatestReleasedTrial}=require("../lib/focus-assessment-chart.ts");
-const {FOCUS_FINAL_TRIAL_AUDIT}=require("../lib/focus-final-gate-checks.ts");
+const {getAssessmentPieData,summarizeFdaPredictionAccuracy}=require("../lib/focus-assessment-chart.ts");
 const Pies=require("../app/AssessmentStatusPies.tsx").default;
-
-test("total pie reconciles exact FOCUS evidence checks without claiming clinical completion",()=>{
-  const model=getAssessmentPieData();
-  assert.equal(model.totalTrials,FOCUS_FINAL_TRIAL_AUDIT.trialCount);
-  assert.equal(model.totalChecks,model.totalTrials*7);
-  assert.equal(model.totalChecks,203);
-  assert.equal(model.overall.reduce((total,slice)=>total+slice.value,0),model.totalChecks);
-  assert.equal(model.overall.find(slice=>slice.key==="verified").value,0);
-  assert.equal(model.overall.find(slice=>slice.key==="review").value,FOCUS_FINAL_TRIAL_AUDIT.review);
-  assert.equal(model.overall.find(slice=>slice.key==="missing").value,FOCUS_FINAL_TRIAL_AUDIT.missing);
-  assert.equal(model.latest,null,"Research-only intake must never invent a released prediction");
+const create=(overrides={})=>({
+  predictionId:"frozen-a",applicationCycleId:"cycle-a",ticker:"AAA",
+  ncts:["NCT12345678"],drug:"Study A",indication:"Disease A",
+  status:"COMPLETED",completedAt:"2026-01-10T18:00:00Z",
+  predictedOutcome:"APPROVAL",calibrationStatus:"VALIDATED",
+  approvalProbability:0.72,crlProbability:0.28,
+  evaluationCohort:"PROSPECTIVE",
+  actualOutcome:"APPROVAL",actualDecisionAt:"2026-05-10T18:00:00Z",
+  actualDecisionSourceUrl:"https://www.fda.gov/drugs/decision-a",
+  actualDecisionVerified:true,
+  ...overrides
 });
 
-test("latest pie requires explicit release status, timestamp and a matched exact NCT",()=>{
-  const row=FOCUS_FINAL_TRIAL_AUDIT.rows[0];
-  const next=FOCUS_FINAL_TRIAL_AUDIT.rows[1];
-  const make=(overrides={})=>({
-    nct:row.nct,ticker:row.ticker,prediction:"APPROVAL",
-    certainty:"VALIDATED",releaseStatus:"PUBLISHED",
-    releasedAt:"2026-11-09T18:00:00Z",...overrides
-  });
-  assert.equal(findLatestReleasedTrial([make({prediction:"ABSTAIN"})]),null);
-  assert.equal(findLatestReleasedTrial([make({certainty:"NOT_VALIDATED"})]),null);
-  assert.equal(findLatestReleasedTrial([make({releaseStatus:"DRAFT"})]),null);
-  assert.equal(findLatestReleasedTrial([make({releasedAt:null})]),null);
-  assert.equal(findLatestReleasedTrial([make({releasedAt:"invalid"})]),null);
-  assert.equal(findLatestReleasedTrial([make({nct:"NCT99999999"})]),null);
-  const result=findLatestReleasedTrial([
-    make(),
-    make({nct:next.nct,ticker:next.ticker,decision:"CRL",prediction:"CRL",releasedAt:"2026-11-10T18:00:00Z"})
+test("current production audit does not invent completed predictions or historical accuracy",()=>{
+  const model=getAssessmentPieData();
+  assert.equal(model.totalCompleted,0);
+  assert.equal(model.compared,0);
+  assert.equal(model.correct,0);
+  assert.equal(model.incorrect,0);
+  assert.equal(model.accuracyPercent,null);
+  assert.equal(model.latest,null);
+  assert.equal(model.comparisonSlices.reduce((sum,slice)=>sum+slice.value,0),0);
+});
+
+test("overall FDA validity counts only earliest predecision completed prediction per cycle",()=>{
+  const model=summarizeFdaPredictionAccuracy([
+    create(),
+    create({predictionId:"revised-a",completedAt:"2026-03-10T18:00:00Z",predictedOutcome:"CRL"}),
+    create({predictionId:"frozen-b",applicationCycleId:"cycle-b",ticker:"BBB",
+      completedAt:"2026-02-10T18:00:00Z",predictedOutcome:"CRL",
+      actualOutcome:"APPROVAL",actualDecisionAt:"2026-06-10T18:00:00Z"}),
+    create({predictionId:"frozen-c",applicationCycleId:"cycle-c",ticker:"CCC",
+      completedAt:"2026-03-20T18:00:00Z",actualOutcome:"PENDING",
+      actualDecisionAt:null,actualDecisionSourceUrl:null,actualDecisionVerified:false}),
+    create({predictionId:"after-outcome",applicationCycleId:"cycle-d",ticker:"DDD",
+      completedAt:"2026-09-10T18:00:00Z",actualDecisionAt:"2026-05-10T18:00:00Z"}),
   ]);
-  assert.equal(result.nct,next.nct);
-  assert.equal(result.decision,"CRL");
-  assert.equal(result.counts.review,next.review);
-  assert.equal(result.counts.missing,next.missing);
+  assert.equal(model.totalCompleted,4);
+  assert.equal(model.compared,2);
+  assert.equal(model.correct,1);
+  assert.equal(model.incorrect,1);
+  assert.equal(model.awaitingDecision,2);
+  assert.equal(model.accuracyPercent,50);
+  assert.equal(model.latest.predictionId,"after-outcome");
 });
 
-test("assessments page has two pie panels, one honest unavailable-prediction empty state",()=>{
-  const model=getAssessmentPieData();
-  const html=renderToStaticMarkup(React.createElement(Pies,model));
+test("unverified actual decisions and abstentions never become correct or incorrect",()=>{
+  const rows=[
+    create({actualDecisionVerified:false}),
+    create({predictionId:"b",applicationCycleId:"cycle-b",
+      actualDecisionSourceUrl:"http://unverified.example/decision"}),
+    create({predictionId:"c",applicationCycleId:"cycle-c",
+      predictedOutcome:"ABSTAIN"}),
+    create({predictionId:"d",applicationCycleId:"cycle-d",status:"DRAFT"}),
+  ];
+  const model=summarizeFdaPredictionAccuracy(rows);
+  assert.equal(model.compared,0);
+  assert.equal(model.totalCompleted,2);
+  assert.equal(model.awaitingDecision,2);
+  assert.equal(model.accuracyPercent,null);
+});
+
+test("last completed prediction shows only valid calibrated probabilities",()=>{
+  const validated=summarizeFdaPredictionAccuracy([
+    create({predictionId:"a",completedAt:"2026-01-01T18:00:00Z"}),
+    create({predictionId:"b",applicationCycleId:"cycle-b",ticker:"BBB",
+      completedAt:"2026-03-01T18:00:00Z",calibrationStatus:"VALIDATED",
+      approvalProbability:0.27,crlProbability:0.73,
+      predictedOutcome:"CRL",actualOutcome:"PENDING"})
+  ]);
+  assert.equal(validated.latest.predictionId,"b");
+  assert.deepEqual(validated.latest.probabilitySlices.map(x=>x.value),[0.27,0.73]);
+  for(const changed of [
+    {calibrationStatus:"NOT_VALIDATED"},
+    {approvalProbability:null},
+    {approvalProbability:0.8,crlProbability:0.7}
+  ]){
+    const candidate=summarizeFdaPredictionAccuracy([create(changed)]);
+    assert.deepEqual(candidate.latest.probabilitySlices,[]);
+  }
+});
+
+test("two chart panels show real accuracy semantics and fail closed on empty audit",()=>{
+  const html=renderToStaticMarkup(React.createElement(Pies,getAssessmentPieData()));
   assert.match(html,/data-testid="total-assessments-pie"/);
   assert.match(html,/data-testid="latest-prediction-pie"/);
   assert.equal((html.match(/role="img"/g)||[]).length,2);
-  assert.match(html,/203 evidence checks/);
-  assert.match(html,/NO PREDICTION RELEASED/);
-  assert.match(html,/ABSTAIN \/ NOT VALIDATED/);
-  assert.doesNotMatch(html,/FDA approval probability:\s*\d+%/);
+  assert.match(html,/Overall prediction accuracy/);
+  assert.match(html,/No verified comparisons yet/);
+  assert.match(html,/Last completed prediction/);
+  assert.match(html,/NO COMPLETED PREDICTION/);
+  assert.doesNotMatch(html,/203 evidence checks/);
   const page=fs.readFileSync(path.join(root,"app/predictions/assessment/page.tsx"),"utf8");
   assert.match(page,/<AssessmentStatusPies \{\.\.\.pies\}\/>/);
 });

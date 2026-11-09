@@ -1,12 +1,13 @@
-import type {EvidencePieSlice,LatestReleasedTrial} from "../lib/focus-assessment-chart";
-import {evidencePieSlices} from "../lib/focus-assessment-chart";
+import Link from "next/link";
+import type {PieSlice,PredictionAccuracySummary} from "../lib/focus-assessment-chart";
 
 const panel={
   background:"#fff",border:"1px solid #bfd6d0",borderRadius:14,
   padding:"clamp(14px,2.3vw,22px)",minWidth:0
 } as const;
+const muted={fontSize:12,lineHeight:1.6,color:"#536b67"} as const;
 
-function Pie({slices,description}:{slices:readonly EvidencePieSlice[];description:string}){
+function Pie({slices,description}:{slices:readonly PieSlice[];description:string}){
   const total=slices.reduce((sum,part)=>sum+Math.max(0,part.value),0);
   const shown=slices.filter(part=>part.value>0);
   let angle=-90;
@@ -36,9 +37,8 @@ function Pie({slices,description}:{slices:readonly EvidencePieSlice[];descriptio
   </svg>;
 }
 
-function Legend({slices}:{slices:readonly EvidencePieSlice[]}){
-  const total=slices.reduce((sum,row)=>sum+row.value,0);
-  return <div aria-label="Evidence-check categories" style={{display:"grid",gap:8,marginTop:10}}>
+function Legend({slices,unit}:{slices:readonly PieSlice[];unit:"count"|"probability"}){
+  return <div aria-label="Chart categories" style={{display:"grid",gap:8,marginTop:10}}>
     {slices.map(slice=><div key={slice.key}
       style={{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,fontSize:12}}>
       <span style={{display:"flex",alignItems:"center",gap:7,minWidth:0}}>
@@ -46,57 +46,93 @@ function Legend({slices}:{slices:readonly EvidencePieSlice[]}){
         {slice.label}
       </span>
       <strong style={{whiteSpace:"nowrap",fontVariantNumeric:"tabular-nums"}}>
-        {slice.value.toLocaleString("en-US")}{total>0?` · ${Math.round(slice.value*100/total)}%`:""}
+        {unit==="count"?slice.value.toLocaleString("en-US"):`${(slice.value*100).toFixed(1)}%`}
       </strong>
     </div>)}
   </div>;
 }
 
+/** Two different units: observed accuracy across decided cycles, and the most
+ * recent completed cycle's prediction distribution if independently calibrated.
+ */
 export default function AssessmentStatusPies({
-  asOf,totalTrials,totalChecks,overall,latest
-}:{
-  asOf:string;totalTrials:number;totalChecks:number;
-  overall:EvidencePieSlice[];latest:LatestReleasedTrial|null;
-}){
-  const latestSlices=latest?evidencePieSlices(latest.counts):[];
-  return <section aria-label="Assessment pie-chart summary" style={{
+  totalCompleted,compared,correct,incorrect,awaitingDecision,accuracyPercent,
+  comparisonSlices,latest,auditAsOf
+}:PredictionAccuracySummary){
+  return <section aria-label="FDA prediction accuracy and most recent completed prediction" style={{
     display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,330px),1fr))",
     gap:14,margin:"16px 0 22px"
   }}>
     <div style={panel} data-testid="total-assessments-pie">
-      <div style={{fontSize:11,letterSpacing:".08em",fontWeight:800,color:"#45645c"}}>TOTAL · FOCUS EVIDENCE</div>
-      <h2 style={{fontSize:20,margin:"7px 0 3px"}}>All assessment checks</h2>
+      <div style={{fontSize:11,letterSpacing:".08em",fontWeight:800,color:"#45645c"}}>
+        OVERALL · ACTUAL FDA DECISIONS
+      </div>
+      <h2 style={{fontSize:20,margin:"7px 0 3px"}}>Overall prediction accuracy</h2>
       <p style={{fontSize:13,lineHeight:1.55,color:"#4b655d",margin:"0 0 12px"}}>
-        <strong>{totalChecks} evidence checks</strong> across {totalTrials} exact-NCT trials.
-        The slices show evidence readiness, not completed scientific assessments.
+        Comparing frozen, completed FDA outcome predictions against subsequently verified FDA approval or CRL decisions.
       </p>
-      <Pie slices={overall} description={`All ${totalChecks} FOCUS evidence checks by source status`}/>
-      <Legend slices={overall}/>
-      <p style={{fontSize:11,color:"#597268",margin:"13px 0 0"}}>Saved FOCUS snapshot: {asOf}. Source pointers are not independently verified.</p>
+      <Pie slices={comparisonSlices} description={`${correct} correct predictions and ${incorrect} incorrect predictions compared with verified FDA decisions`}/>
+      <Legend slices={comparisonSlices} unit="count"/>
+      <p style={{fontWeight:800,textAlign:"center",margin:"12px 0 5px",fontSize:18}}>
+        {accuracyPercent===null?"No verified comparisons yet":`${accuracyPercent.toFixed(1)}% correct`}
+      </p>
+      <p style={{...muted,margin:"0"}}>
+        {compared} decided application cycles compared · {awaitingDecision} awaiting a comparable verified decision
+        · {totalCompleted} completed prediction cycles recorded.
+      </p>
+      <p style={{...muted,margin:"10px 0 0"}}>
+        Accuracy uses only decisions after the first frozen prediction for each FDA application cycle.
+        Pending, withdrawn or unverified FDA actions do not count as wrong predictions.
+        Review delays are a separate forecasting outcome.
+        {auditAsOf?` Audit updated: ${auditAsOf}.`:""}
+      </p>
     </div>
+
     <div style={panel} data-testid="latest-prediction-pie">
-      <div style={{fontSize:11,letterSpacing:".08em",fontWeight:800,color:"#45645c"}}>LATEST · PREDICTED TRIAL</div>
-      <h2 style={{fontSize:20,margin:"7px 0 3px"}}>Last published prediction</h2>
+      <div style={{fontSize:11,letterSpacing:".08em",fontWeight:800,color:"#45645c"}}>
+        MOST RECENT · COMPLETED PREDICTION
+      </div>
+      <h2 style={{fontSize:20,margin:"7px 0 3px"}}>Last completed prediction</h2>
       {latest?<>
         <p style={{fontSize:13,lineHeight:1.55,color:"#4b655d",margin:"0 0 12px"}}>
-          <strong>{latest.ticker} · {latest.nct}</strong> · {latest.decision}.
-          Published {latest.releasedAt}. The pie shows that trial's evidence-check
-          disposition, <strong>not FDA outcome probabilities</strong>.
+          <strong>{latest.ticker} · {latest.applicationCycleId}</strong><br/>
+          {latest.drug} · {latest.indication}<br/>
+          Frozen: {new Date(latest.completedAt).toLocaleString("en-US",{timeZone:"America/Los_Angeles"})}
         </p>
-        <Pie slices={latestSlices} description={`Evidence-check breakdown for last published prediction: ${latest.ticker} ${latest.nct}`}/>
-        <Legend slices={latestSlices}/>
+        <Pie slices={latest.probabilitySlices} description={latest.probabilitySlices.length?
+          `Calibrated FDA approval versus CRL prediction for ${latest.ticker} ${latest.applicationCycleId}`:
+          `Last completed prediction ${latest.predictionId} has no validated probability breakdown`}/>
+        {latest.probabilitySlices.length?
+          <Legend slices={latest.probabilitySlices} unit="probability"/>:
+          <p style={{textAlign:"center",fontSize:13,fontWeight:800,color:"#637078"}}>
+            Numerical probability NOT VALIDATED
+          </p>}
+        <p style={{fontSize:13,margin:"10px 0 3px"}}>
+          <strong>Predicted outcome:</strong> {latest.predictedOutcome==="APPROVAL"?"FDA approval":"Complete Response Letter (CRL)"}
+        </p>
+        <p style={{...muted,margin:"0"}}>
+          <strong>Actual FDA decision:</strong> {latest.actualOutcome==="PENDING"?"Pending or not independently verified":latest.actualOutcome}
+          {latest.actualOutcome!=="PENDING"&&latest.actualSourceUrl?
+            <> · <a href={latest.actualSourceUrl} rel="noopener noreferrer" target="_blank">Official decision source</a></>:null}
+        </p>
+        <p style={{...muted,margin:"10px 0 0"}}>
+          This chart shows the prediction's approval/CRL probability split only when
+          a calibrated distribution was saved with the completed forecast. It is not a pie of historical accuracy.
+        </p>
+        <Link href={`/predictions/assessment?nct=${encodeURIComponent(latest.ncts[0])}`}
+          style={{fontSize:12,fontWeight:700}}>Open exact-NCT assessment</Link>
       </>:<>
         <p style={{fontSize:13,lineHeight:1.55,color:"#4b655d",margin:"0 0 12px"}}>
-          <strong>No FDA prediction has been independently validated and published.</strong>
-          The current 29-trial intake remains ABSTAIN / NOT VALIDATED.
+          No independently completed and frozen FDA decision prediction is recorded
+          in the verified audit registry.
         </p>
-        <Pie slices={[]} description="No published prediction exists, so no latest-trial pie data are available"/>
+        <Pie slices={[]} description="No completed FDA prediction is recorded for the most recent prediction chart"/>
         <div style={{textAlign:"center",fontSize:14,fontWeight:800,color:"#546e76",marginTop:12}}>
-          NO PREDICTION RELEASED
+          NO COMPLETED PREDICTION
         </div>
-        <p style={{fontSize:12,lineHeight:1.6,color:"#597268",margin:"9px 0 0"}}>
-          No percentages are shown until a saved trial-specific prediction has
-          an explicit publication record. A completed source scan does not qualify.
+        <p style={{...muted,margin:"9px 0 0"}}>
+          Source collection and partial clinical research do not count as a completed
+          FDA prediction. The 29-trial intake currently remains ABSTAIN / NOT VALIDATED.
         </p>
       </>}
     </div>
