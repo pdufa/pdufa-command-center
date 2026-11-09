@@ -13,6 +13,8 @@ on:
       - new-platform/backend/tests/test_focus_methods_crosswalk_r54.py
       - new-platform/backend/scripts/assemble_focus_clinical_review_packets_r55.py
       - new-platform/backend/tests/test_focus_clinical_review_packets_r55.py
+      - new-platform/backend/scripts/reconcile_savara_methods_r56.py
+      - new-platform/backend/tests/test_savara_methods_reconciliation_r56.py
   workflow_dispatch:
 
 permissions:
@@ -43,7 +45,7 @@ jobs:
           test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
           python -m pip install pytest pymupdf
           cd new-platform/backend
-          PYTHONPATH=. python -m pytest -q tests/test_focus_protocol_pdf_text_r53.py tests/test_focus_methods_crosswalk_r54.py tests/test_focus_clinical_review_packets_r55.py tests/test_focus_protocol_index_r46.py tests/test_focus_application_efficacy_safety_r51.py
+          PYTHONPATH=. python -m pytest -q tests/test_focus_protocol_pdf_text_r53.py tests/test_focus_methods_crosswalk_r54.py tests/test_focus_clinical_review_packets_r55.py tests/test_savara_methods_reconciliation_r56.py tests/test_focus_protocol_index_r46.py tests/test_focus_application_efficacy_safety_r51.py
           PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
       - name: Capture all 29 current registry records and current document metadata
         shell: bash
@@ -245,6 +247,52 @@ jobs:
           print(line,flush=True)
           with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write(
              "\n## R55 23 source-bound efficacy/safety/methods packets\n\n"+line+"\n")
+          PY
+      - name: Reconcile Savara current source primary methods, archived SAP amendments, and safety figures
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/reconcile_savara_methods_r56.py \
+            --r54-matrix "$RUNNER_TEMP/r53-original/FOCUS_23_APPLICATION_METHOD_SOURCE_CROSSWALK_R54.json" \
+            --r55-packets "$RUNNER_TEMP/r53-original/FOCUS_23_APPLICATION_EFFICACY_SAFETY_SOURCE_REVIEW_PACKETS_R55.json" \
+            --pdf-dir "$RUNNER_TEMP/r53-original/public-pdfs" \
+            --output "$RUNNER_TEMP/r53-original/SAVARA_PRIMARY_METHODS_AND_SAP_EXCEPTIONS_R56.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          f=Path(os.environ["RUNNER_TEMP"])/"r53-original/SAVARA_PRIMARY_METHODS_AND_SAP_EXCEPTIONS_R56.json"
+          report=json.loads(f.read_bytes())
+          assert report["schema"]=="MAIN_R56_SAVARA_PROTOCOL_SAP_CLINICAL_METHOD_EXCEPTION_REVIEW"
+          assert report["canonicalTrials"]==29 and report["applicationGroups"]==23
+          assert len(report["trialDocumentChronologyResearch"])==29
+          assert report["trialCasesWithCurrentProtocolAndSap"]==12
+          case=report["savara"]
+          assert case["nct"]=="NCT04544293" and case["applicationCycleId"]=="svra-molgramostim"
+          assert case["laterProtocolDateThanSap"] is True
+          assert len(case["pairedMethodDescriptionFindings"])==6
+          assert len(case["explicitSapReportedProtocolDifferences"])==3
+          assert case["currentRegistryPrimaryOutcome"]["pValueAsPublished"]=="0.0007"
+          assert case["currentRegistryPrimaryOutcome"]["estimatedDifferenceAsPublished"]=="6.0"
+          assert case["currentRegistryPrimaryOutcome"]["originalProspectiveMultiplicityAndEndpointAdequacyValidated"] is False
+          assert case["originalPublicReleaseOfSapBeforeReadoutIndependentlyVerified"] is False
+          assert case["independentStatisticalAnalystSigned"] is False
+          assert case["scientificGrade"] is None
+          assert case["numericalFDAProbability"] is None
+          assert case["officialOutcomeAndDelayPrediction"]=="ABSTAIN"
+          assert report["independentScientificSignoffs"]==0
+          assert report["validatedFDAForecasts"]==0
+          assert report["realHistoricalPredictionBacktests"]==0
+          assert report["measuredFDAAccuracy"] is None
+          assert report["modelTrainingAuthorized"] is False
+          assert report["productionOrClinicalLedgerWrites"] is False
+          msg=("R56: source-verified Savara method comparison across 6 protocol/SAP topics, "
+               "3 explicit SAP-described protocol differences and current reported Week 24 "
+               "primary p=0.0007, estimate 6.0, 95% CI 2.5 to 9.4; primary population and "
+               "safety numerator/denominator preserved. Amendment chronology and prospectively "
+               "locked SAP unverified; 0 graded or validated FDA forecasts.")
+          print(msg,flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+            f.write("\n## R56 Savara document-text reconciliation and source-acknowledged SAP discrepancies\n\n"+msg+"\n")
           PY
       - name: Retain unmodified public PDF originals, registry receipts and read-only review notes
         if: always()
