@@ -66,7 +66,7 @@ export function registryResearchSignals(input:unknown):string[]{
   const protocol=inner(input,"protocolSection");
   const status=inner(protocol,"statusModule");
   const date=inner(status,"studyLastUpdatePostDateStruct")?.date;
-  if(typeof date==="string"&&/^20\\d{2}-\\d{2}-\\d{2}$/.test(date)&&date>"2026-09-22")
+  if(typeof date==="string"&&/^20\d{2}-\d{2}-\d{2}$/.test(date)&&date>"2026-09-22")
     found.push("REGISTRY_RECORD_UPDATED_SINCE_BASELINE");
   const results=inner(input,"resultsSection");
   if(results&&Object.keys(results).length>0)found.push("NEW_REGISTRY_RESULTS_CANDIDATE");
@@ -74,7 +74,7 @@ export function registryResearchSignals(input:unknown):string[]{
   const largeDocs=documents?.largeDocs;
   if(Array.isArray(largeDocs)&&largeDocs.some((d:unknown)=>{
     const row=object(d),title=String(row?.title??"");
-    return /\\bSAP\\b|statistical analysis plan/i.test(title);
+    return /\bSAP\b|statistical analysis plan/i.test(title);
   }))found.push("PUBLIC_SAP_TITLE_CANDIDATE_UNREVIEWED");
   return found;
 }
