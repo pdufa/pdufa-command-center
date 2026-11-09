@@ -156,7 +156,9 @@ test("preview UI refreshes on visibility and every 15 minutes without pretending
   assert.match(ui,/automaticClinicalRescore===false/);
   assert.match(ui,/while nobody has the page open/);
   assert.match(ui,/Archived evidence checks and overnight monitoring/);
-  assert.match(ui,/Nightly schedule: PREPARED, NOT ACTIVE/);
+  assert.match(ui,/Nightly schedule: CONFIGURED ON MAIN/);
+  assert.match(ui,/first clock-triggered/);
+  assert.match(ui,/42550358445/);
   assert.match(ui,/up to 90 days/);
   assert.match(ui,/main-acacia-public-evidence-nightly\.yml/);
   assert.match(ui,/while PREDICTIONS remains open/);
