@@ -2,6 +2,7 @@ import Link from "next/link";
 import type {Metadata} from "next";
 import FocusPredictionNavigator from "./FocusPredictionNavigator";
 import FullRosterSourceScan from "./FullRosterSourceScan";
+import FocusPreliminaryApplicationBoard from "./FocusPreliminaryApplicationBoard";
 import PredictionReleaseStatus from "./PredictionReleaseStatus";
 
 export const metadata:Metadata={
@@ -38,6 +39,7 @@ export default function PredictionsPage(){
         Source-linked partial clinical dossiers and missing-evidence checkpoints. Not completed assessments or validated forecasts.
       </span>
     </p>
+    <FocusPreliminaryApplicationBoard/>
     <FullRosterSourceScan/>
     <p style={{fontSize:13,margin:"12px 0"}}><Link href="/analyze-now?nct=NCT06081894" style={{color:"#075c4b",fontWeight:700}}>Open saved research pilot and exact-NCT revision history (PostgreSQL required)</Link> · The pilot fails closed until its secure backend is explicitly ready.</p>
     <FocusPredictionNavigator/>
