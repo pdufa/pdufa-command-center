@@ -13,47 +13,52 @@ require.extensions[".tsx"]=(module,filename)=>module._compile(
   }).outputText,filename
 );
 
-test("assessment level is visible inside comparison chart without changing accuracy statistics",()=>{
+test("only retained AZN and original prospective SMMT appear on the active level chart",()=>{
   const Chart=require("../app/AssessmentLevelChart.tsx").default;
   const html=renderToStaticMarkup(React.createElement(Chart));
   assert.match(html,/data-testid="research-assessment-level-chart"/);
   assert.match(html,/Scientific review depth/);
+  assert.match(html,/SMMT · HARMONi/);
+  assert.match(html,/AZN · Ultomiris/);
   assert.match(html,/Level 1-style/);
   assert.match(html,/Level 3-style/);
-  assert.match(html,/SMMT/);
-  assert.match(html,/INO/);
-  assert.match(html,/Bepirovirsen/);
-  assert.match(html,/Later reassessment/);
-  assert.match(html,/not certified engine levels/);
-  assert.match(html,/outcome-aware/);
+  assert.match(html,/FDA accelerated approval/);
+  assert.match(html,/outcome-aware, not blind/);
+  for(const hidden of ["INO · INO-3107","GSK \/ IONS","Bepirovirsen","PHAR · Joenja","ABBV · SKYRIZI"]){
+    assert.equal(html.includes(hidden),false,"Quarantined assessment leaked into active chart: "+hidden);
+  }
   const page=fs.readFileSync(path.join(root,"app/predictions/assessment/page.tsx"),"utf8");
   assert.match(page,/<AssessmentLevelChart\/>/);
+  assert.match(page,/<UltomirisHistoricalLevelThreePanel\/>/);
+  assert.match(page,/data-testid="smmt-assessment-level"/);
   assert.match(page,/Assessment level","Clinical review/);
   assert.match(page,/ASSESSMENT LEVEL: NOT YET ASSESSED/);
+  for(const retired of ["BlindHistoricalPredictionPanel","BepirovirsenHistoricalLevelThreePanel",
+      "JoenjaHistoricalLevelThreePanel","SkyriziHistoricalLevelThreePanel"]){
+    assert.equal(page.includes(retired),false,retired+" must not load in the active page");
+  }
   const pie=fs.readFileSync(path.join(root,"app/AssessmentStatusPies.tsx"),"utf8");
   assert.match(pie,/assessmentLevelLabel/);
   assert.match(pie,/data-testid="latest-chart-assessment-level"/);
-  assert.match(pie,/Level 1-style/);
   const model=fs.readFileSync(path.join(root,"lib/focus-assessment-chart.ts"),"utf8");
-  assert.doesNotMatch(model,/AssessmentLevelChart|researchAssessmentLevels2026|levelThreeHistoricalReconstruction2026/);
+  assert.doesNotMatch(model,/levelThree(HistoricalReconstruction|PharHistorical|AbbvieHistorical)2026/);
 });
 
-test("individual trial displays show distinct original and retrospective research levels",()=>{
-  const Ino=require("../app/BlindHistoricalPredictionPanel.tsx").default;
-  const Bepi=require("../app/BepirovirsenHistoricalLevelThreePanel.tsx").default;
-  const inoHtml=renderToStaticMarkup(React.createElement(Ino));
-  const bepiHtml=renderToStaticMarkup(React.createElement(Bepi));
-  assert.match(inoHtml,/data-testid="ino-assessment-level"/);
-  assert.match(inoHtml,/Level 1-style/);
-  assert.match(inoHtml,/Later Level 3-style reassessment/);
-  assert.match(bepiHtml,/data-testid="bepirovirsen-assessment-level"/);
-  assert.match(bepiHtml,/Level 3-style/);
-  const page=fs.readFileSync(path.join(root,"app/predictions/assessment/page.tsx"),"utf8");
-  assert.match(page,/data-testid="smmt-assessment-level"/);
+test("previously exposed assessments are archived and barred from active predictions",()=>{
+  const manifest=require("../data/historicalOutcomeAwareQuarantine2026.json");
+  assert.equal(manifest.policy,"RETAIN_FROZEN_HISTORY_EXCLUDE_FROM_ACTIVE_PROGRAM");
+  assert.deepEqual(manifest.quarantined.map(r=>r.ticker),["INO","GSK","PHAR","ABBV"]);
+  assert.equal(manifest.activeExceptions.length,1);
+  assert.equal(manifest.activeExceptions[0].ticker,"AZN");
+  assert.equal(manifest.activeExceptions[0].outcomeAware,true);
+  assert.equal(manifest.activeExceptions[0].allowedInAccuracy,false);
+  assert.equal(manifest.activeExceptions[0].allowedInCalibration,false);
+  assert.equal(manifest.redoPolicy.status,"BLOCKED_UNTIL_INDEPENDENT_UNEXPOSED_EVALUATOR_AVAILABLE");
   const prospective=require("../data/fdaPredictionDecisionAudit.json");
-  const retrospective=require("../data/blindHistoricalComparisons2026.json");
   assert.equal(prospective.records.length,1);
+  assert.equal(prospective.records[0].ticker,"SMMT");
   assert.equal(prospective.records[0].actualOutcome,"PENDING");
-  assert.equal(retrospective.records.length,1);
-  assert.equal(retrospective.records[0].outcomeMatch,"NOT_ACCURATE");
+  const originalIno=require("../data/blindHistoricalForecasts2026.json");
+  assert.equal(originalIno.records.length,1);
+  assert.equal(originalIno.records[0].predictedOutcome,"CRL");
 });

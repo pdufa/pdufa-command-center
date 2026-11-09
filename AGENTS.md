@@ -91,3 +91,34 @@ Retired public URLs may permanently redirect to FOCUS; never run the old page as
 an independent active list. Preserve research provenance and historical records.
 Make sure installation progress excludes the retired P3/P3 POST-DATA branches,
 without counting their removal as completed active work.
+
+## Historical outcome-exposure quarantine — owner directive November 9, 2026
+
+The owner has removed earlier historical FDA assessments that were authored or
+revised after their outcomes were known from active charts and displays. The
+active ASSESMENTS page may show only the original SMMT prospective pilot and
+the single explicitly retained Ultomiris (AZN) historical example while these
+are the only reviewed cases. The AZN result is **outcome-aware, NOT blind**;
+keeping it visible is not permission to count it as an accurate prediction.
+
+**Quarantined from all active research assessment charts and displays:**
+INO-3107 historical/revised assessments, GSK/IONS bepirovirsen, PHAR Joenja,
+and ABBV SKYRIZI. Preserve their frozen evidence, comparisons, and historical
+commit provenance as read-only archives; do not overwrite, delete archival
+audit records, or quietly relabel a historical match as a blind success.
+
+Do not import archived assessments into active frontend charts, normal trial
+displays, FOCUS membership, production prediction probabilities, prospective
+accuracy, calibration, screening, or automatic research workers. Their archived
+source JSON and dossiers are historical references only, not active outputs.
+Do not rebuild the old display components or add these rows back without a
+new explicit owner request.
+
+**Reassessments after the outcome is known cannot become genuinely blind by
+hiding the result, using predecision sources, or freezing a new file.** Any
+such re-analysis is labeled outcome-aware. For a valid blind study, have
+someone who has not seen the result assemble a point-in-time source bundle
+without the outcome; use an independent evaluator with no access to answer
+sources, freeze its predicted result first, and reveal outcomes only afterward.
+Expose any accidental answer leakage and exclude the run from hit-rate and
+calibration. Do not fabricate a clean rerun when these conditions are unmet.

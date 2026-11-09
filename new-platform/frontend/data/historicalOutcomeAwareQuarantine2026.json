@@ -1,0 +1,76 @@
+{
+  "schemaVersion": 1,
+  "updatedAt": "2026-11-09",
+  "policy": "RETAIN_FROZEN_HISTORY_EXCLUDE_FROM_ACTIVE_PROGRAM",
+  "reason": "Owner directed removal of historical assessments whose FDA outcomes were known during assessment, while retaining the last AZN example",
+  "activeExceptions": [
+    {
+      "id": "HIST-AZN-ULTOMIRIS-2026-10-21-LEVEL3-V1",
+      "ticker": "AZN",
+      "display": "RETAINED_BY_OWNER_REQUEST",
+      "outcomeAware": true,
+      "allowedInAccuracy": false,
+      "allowedInCalibration": false
+    }
+  ],
+  "prospectiveUnchanged": [
+    {
+      "ticker": "SMMT",
+      "id": "HARMONI-SMMT-PDUFA-2026-11-14-V1"
+    }
+  ],
+  "quarantined": [
+    {
+      "ticker": "INO",
+      "id": "BLIND-INO3107-2026-10-30-V1",
+      "scope": "ENTIRE_HISTORICAL_PANEL_AND_LATER_REASSESSMENT",
+      "originalFrozenResultPreserved": true,
+      "sourceFiles": [
+        "new-platform/frontend/data/blindHistoricalForecasts2026.json",
+        "new-platform/frontend/data/blindHistoricalComparisons2026.json"
+      ],
+      "requiredRedo": "INDEPENDENT_OUTCOME_MASKED_EVALUATOR_ONLY"
+    },
+    {
+      "ticker": "GSK",
+      "id": "HIST-2026-10-26-BEPIROVIRSEN-LEVEL3-001",
+      "scope": "HINDSIGHT_LEVEL3",
+      "sourceFiles": [
+        "new-platform/frontend/data/levelThreeHistoricalReconstruction2026.json"
+      ],
+      "requiredRedo": "INDEPENDENT_OUTCOME_MASKED_EVALUATOR_ONLY"
+    },
+    {
+      "ticker": "PHAR",
+      "id": "HIST-PHAR-JOENJA-2026-10-24-LEVEL3-001",
+      "scope": "HINDSIGHT_LEVEL3",
+      "sourceFiles": [
+        "new-platform/frontend/data/levelThreePharHistorical2026.json"
+      ],
+      "requiredRedo": "INDEPENDENT_OUTCOME_MASKED_EVALUATOR_ONLY"
+    },
+    {
+      "ticker": "ABBV",
+      "id": "HIST-ABBV-SKYRIZI-2026-10-23-LEVEL3-001",
+      "scope": "HINDSIGHT_LEVEL3",
+      "sourceFiles": [
+        "new-platform/frontend/data/levelThreeAbbvieHistorical2026.json"
+      ],
+      "requiredRedo": "INDEPENDENT_OUTCOME_MASKED_EVALUATOR_ONLY"
+    }
+  ],
+  "redoPolicy": {
+    "status": "BLOCKED_UNTIL_INDEPENDENT_UNEXPOSED_EVALUATOR_AVAILABLE",
+    "researchInput": "Evidence dated on or before the original FDA decision, with target application and phase confirmed",
+    "requiredIsolation": "No access to FDA outcome sources, existing case comparison files or decision-bearing text",
+    "steps": [
+      "CASE_SELECTED_BY_INDEPENDENT_CUSTODIAN",
+      "POINT_IN_TIME_EVIDENCE_BUNDLE_FREEZE",
+      "UNEXPOSED_EVALUATOR_WRITES_PREDICTION",
+      "PREDICTION_IMMUTABLE_FREEZE",
+      "CUSTODIAN_REVEALS_OFFICIAL_FDA_RESULT",
+      "POSTFREEZE_COMPARISON"
+    ],
+    "noReintegrationToActiveUntilOwnerExplicitlyApproves": true
+  }
+}
