@@ -1,0 +1,95 @@
+name: MAIN Original Evidence Vault — disposable PostgreSQL 16 acceptance
+
+# This job creates an EPHEMERAL PostgreSQL service container in GitHub Actions.
+# No Neon, Render, production database, storage key, patient data, deployment,
+# or external persistence access. Feature flags on Render remain OFF.
+on:
+  push:
+    branches:
+      - feature/medical-stage4-verified-method-matrix-20261108
+    paths:
+      - 'new-platform/backend/app/medical_original_evidence_vault.py'
+      - 'new-platform/backend/app/medical_original_evidence_vault_http.py'
+      - 'new-platform/backend/app/medical_original_evidence_key_recovery.py'
+      - 'new-platform/backend/tests/test_medical_original_evidence_vault*.py'
+      - 'new-platform/backend/requirements.txt'
+      - '.github/workflows/main-medical-vault-postgres-acceptance.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-vault-postgres-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  disposable-postgresql-acceptance:
+    if: ${{ github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16.6
+        env:
+          POSTGRES_USER: pdufa_vault_test
+          POSTGRES_PASSWORD: EPHEMERAL_TEST_NOT_PRODUCTION_PASS_2026
+          POSTGRES_DB: pdufa_vault_ephemeral
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U pdufa_vault_test -d pdufa_vault_ephemeral"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    steps:
+      - name: Checkout exact feature commit without stored credentials
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Python 3.12
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+        with:
+          python-version: '3.12'
+      - name: Enforce exact branch, repository and ephemeral-only database
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REPOSITORY" = "pdufa/pdufa-command-center"
+          test "$GITHUB_REF" = "refs/heads/feature/medical-stage4-verified-method-matrix-20261108"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          echo "Isolated runner and exact source verified. No production DB credentials are available."
+      - name: Install isolated backend dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          pip install -r new-platform/backend/requirements.txt
+      - name: Verify actual PostgreSQL DDL, ciphertext, triggers, key restore and refusal cases
+        shell: bash
+        env:
+          PDUFA_VAULT_EPHEMERAL_POSTGRES_TEST: "1"
+          PDUFA_VAULT_TEST_DSN: "postgresql+psycopg://pdufa_vault_test:EPHEMERAL_TEST_NOT_PRODUCTION_PASS_2026@127.0.0.1:5432/pdufa_vault_ephemeral"
+        run: |
+          set -euo pipefail
+          PYTHONPATH=new-platform/backend pytest -q \
+            new-platform/backend/tests/test_medical_original_evidence_vault_postgres.py \
+            new-platform/backend/tests/test_medical_original_evidence_key_recovery.py \
+            new-platform/backend/tests/test_medical_original_evidence_vault.py \
+            new-platform/backend/tests/test_medical_original_evidence_vault_http.py
+          echo "All evidence materials and cryptographic keys were synthetic and ephemeral."
+          echo "No Render/Neon schema change, no active vault, 0 clinical grades."
+      - name: Record nonsecret acceptance status
+        if: success()
+        env:
+          STEP_SUMMARY: ${{ github.step_summary }}
+        shell: bash
+        run: |
+          {
+            echo "## MAIN encrypted evidence vault — disposable PostgreSQL 16"
+            echo ""
+            echo "- PostgreSQL 16 real DDL, immutable UPDATE/DELETE/TRUNCATE triggers and version uniqueness verified"
+            echo "- AES-256-GCM authenticated original-byte encryption/decryption and SHA-256 verified"
+            echo "- Separate synthetic key recovery envelope restored encryption key without publishing secrets"
+            echo "- No original trial documents, Neon/Render writes, reviewer events or FDA grades"
+            echo "- Source branch remains draft and Render vault flag remains disabled"
+          } >> "$STEP_SUMMARY"
