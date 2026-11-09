@@ -88,6 +88,20 @@ def confirm_provisional_score_page(client):
     parser.feed(page.decode('utf-8', 'replace'))
     visible = ' '.join(parser.parts)
     normalized = re.sub(r'\s+', ' ', visible)
+    demand('Quantitative scientific evidence' in normalized and
+           'Assessment 5.1 · Scientific method 12' in normalized and
+           'Assessment 5.3 · Scientific method 19' in normalized,
+           'QUANTITATIVE_SCIENTIFIC_METHODS_NOT_RENDERED')
+    demand('9.69 pp' in normalized and '5.48 pp' in normalized,
+           'QUANTITATIVE_SAFETY_ARITHMETIC_NOT_RENDERED')
+    demand('not a 0–5 efficacy grade' in normalized and
+           'Final FDA prediction: ABSTAIN' in normalized,
+           'QUANTITATIVE_CLINICAL_GRADE_FIREWALL_MISSING')
+    print(json.dumps({'stage':'QUANTITATIVE_SCIENCE_PAGE_READ','status':'PASS',
+       'nct':PILOT,'efficacyMethod':'5.1/L12','safetyMethod':'5.3/L19',
+       'publishedDirectionalPrimaryResults':'2/2',
+       'unadjustedSafetyRiskDifferencePp':[9.69,5.48],
+       'independentClinicalGrades':0,'fdaPrediction':'ABSTAIN'}),flush=True)
     demand('FIRST PRELIMINARY RESEARCH SCORE' in normalized,
            'FIRST_RESEARCH_CHECKLIST_NOT_RENDERED')
     demand('Additional preliminary research scores' in normalized,
