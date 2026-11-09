@@ -2,6 +2,7 @@
 import {useMemo,useState} from "react";
 import Link from "next/link";
 import {FOCUS_PRELIMINARY_R39} from "../../lib/focus-preliminary-application-research";
+import {FOCUS_SOURCE_R40,sourceStatusForCycle,verifyR40ResearchReadiness} from "../../lib/focus-source-access-rev40";
 const card={border:"1px solid #b9d4ca",borderRadius:12,padding:15,background:"#fff"} as const;
 const small={fontSize:12,color:"#475e55",lineHeight:1.65} as const;
 type AppRow=(typeof FOCUS_PRELIMINARY_R39.applications)[number];
@@ -17,6 +18,7 @@ function sortedApps(a:readonly AppRow[]){
 }
 export default function FocusPreliminaryApplicationBoard(){
   const data=FOCUS_PRELIMINARY_R39;
+  const publicSource=verifyR40ResearchReadiness();
   const [needle,setNeedle]=useState("");
   const [kind,setKind]=useState("ALL");
   const n=needle.trim().toLowerCase();
@@ -57,6 +59,34 @@ export default function FocusPreliminaryApplicationBoard(){
       <strong>Official model approval / CRL / delay predictions:</strong> ABSTAIN for all future cycles. Accuracy: NOT CALIBRATED.
       Clinical adjudications: 0. Outcome timing and formal extensions are separate from efficacy judgments.
     </p>
+    <section aria-label="Revision 40 real public-source recovery status"
+      style={{border:"1px solid #b8d3c7",background:"#fff",borderRadius:10,padding:12,margin:"12px 0"}}>
+      <strong style={{fontSize:14}}>Live evidence-source checkpoint · November 9, 2026</strong>
+      <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(130px,1fr))",gap:9,marginTop:9}}>
+        {[
+          ["Trial records fetched",publicSource.trialRegistryFetched+" / "+publicSource.trials],
+          ["Application groups linked to an accessible public source",publicSource.groupsWithAtLeastOnePublicSourceRetrieved+" / "+publicSource.provisionalApplicationGroups],
+          ["Distinct source URLs fetched",publicSource.totalUniqueUrlsFetched+" / "+publicSource.totalUniqueUrlsAttempted],
+          ["Registry results modules present",publicSource.trialResultsModulePresent+" / "+publicSource.trials],
+          ["Independent clinical reviews",publicSource.qualifiedClinicalReviews]
+        ].map(([label,value])=><div key={String(label)} style={{border:"1px solid #e0ebe3",background:"#f8fbf8",padding:9,borderRadius:7}}>
+          <div style={{fontSize:11,color:"#4b6759"}}>{label}</div>
+          <strong style={{fontSize:20}}>{value}</strong>
+        </div>)}
+      </div>
+      <p style={{...small,margin:"9px 0 3px"}}>
+        Public links and exact registry IDs were retrieved and SHA-256 fingerprinted; <strong>this does not establish
+        original as-published source timing, validated clinical results, FDA review-cycle identity or approval odds.</strong>
+        Achieve's issuer URL redirected, so the original SEC 10-Q was recovered separately. Sarepta's larger SEC document was hashed
+        without archiving the copyrighted page body. Registry results absent for 17 studies does not mean a failed trial.
+      </p>
+      <a href={FOCUS_SOURCE_R40.artifactUrl} target="_blank" rel="noopener noreferrer"
+        style={{fontSize:12,color:"#087260",fontWeight:750}}>Inspect dated 29/23 public-source receipt and missing-source details</a>
+      <p style={{fontSize:10,color:"#5a6d64",margin:"7px 0 0"}}>
+        Source capture {publicSource.capturedAtUtc} · receipt SHA-256 {publicSource.jsonReceiptSha256.slice(0,16)}… ·
+        {" "}Source archive expires {publicSource.artifactExpiryUtc.slice(0,10)}.
+      </p>
+    </section>
     <div style={{display:"flex",alignItems:"center",flexWrap:"wrap",gap:9,margin:"12px 0"}}>
       <label style={{fontSize:13,fontWeight:700}}>
         Find ticker, drug, indication or NCT
@@ -108,6 +138,12 @@ export default function FocusPreliminaryApplicationBoard(){
         <div style={{padding:"10px 2px 2px"}}>
           <p style={small}><strong>Clinical efficacy and supporting signal:</strong> {a.clinicalEvidence.observation}</p>
           <p style={small}><strong>Counterevidence or limitations:</strong> {a.opposingEvidence.observation}</p>
+          <p style={small}><strong>Public source availability:</strong> {sourceStatusForCycle(a.id)==="ISSUER_LINK_REDIRECTED_OFFICIAL_SEC_FALLBACK_FETCHED"?
+            "Issuer link redirected; exact SEC original filing retrieved as alternate":
+            "Public application source retrieved (not independently verified for clinical content)"}.
+            {a.id==="achv-cytisinicline"?
+              <> {" "}<a href={FOCUS_SOURCE_R40.blockedCanonicalSource.fallback} target="_blank" rel="noopener noreferrer">Open verified-access SEC source</a></>:null}
+          </p>
           <p style={small}><strong>Regulatory / CMC question:</strong> {a.regulatoryRisk}</p>
           <p style={small}><strong>Scientific checks still required:</strong> {a.uncertaintyReasons.join(" | ")}</p>
           <p style={small}><strong>Approval / CRL research lean:</strong> {text[a.preliminaryResearchLean]}. <strong>Official FDA prediction:</strong> {a.releasedRegulatoryPrediction}.
