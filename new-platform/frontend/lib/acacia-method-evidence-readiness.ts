@@ -112,3 +112,34 @@ export function buildAcaciaMethodReadiness(pilot:unknown,history:unknown){
     originalVersionPublicPostingDates:h.versions.map((v:Record<string,any>)=>String(v.posted)),
   };
 }
+
+/** Download-ready 800-row reviewer *research* worksheet, not a clinical grade ledger.
+ * All statuses are explicitly sourced from an exact-NCT, fail-closed snapshot.
+ */
+export function exportAcaciaMethodReadinessCsv(
+  report:ReturnType<typeof buildAcaciaMethodReadiness>
+):string{
+  if(!report||report.methodPositions.length!==800||report.nct!=="NCT06081894"||
+     report.counts.clinicallyGraded!==0||report.fdaPrediction!=="ABSTAIN"||
+     report.reviewWritesAuthorized!==false)throw Error("UNVERIFIED_REVIEW_HANDOFF");
+  const csvCell=(value:string|number|null):string=>{
+    let s=value===null?"":String(value).replace(/[\r\n\t]+/g," ");
+    if(/^\s*[=+\-@]/.test(s))s="'"+s;
+    return '"'+s.replace(/"/g,'""')+'"';
+  };
+  const columns=[
+    "Exact NCT","Method position","Assessment ID","Method index",
+    "Source state","Research-only category","Missing original evidence",
+    "Original preserved registry references","Other research source leads",
+    "Public posting dates of recovered versions","Independent reviewer gate",
+    "Authorized clinical grade","FDA forecast","Forecast accuracy"
+  ];
+  const rows=report.methodPositions.map(p=>[
+    report.nct,p.id,p.assessmentId,p.methodIndex,p.sourceState,
+    p.researchEvidenceStatus??"NOT_MAPPED",
+    p.missingOriginalEvidence,p.originalDocumentLinks.join(" ; "),
+    p.sourceLeads.join(" ; "),report.originalVersionPublicPostingDates.join(" ; "),
+    p.reviewerStatus,"UNASSIGNED",report.fdaPrediction,report.accuracy
+  ]);
+  return [columns,...rows].map(row=>row.map(csvCell).join(",")).join("\r\n")+"\r\n";
+}

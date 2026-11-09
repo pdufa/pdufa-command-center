@@ -49,6 +49,30 @@ test("changed original receipts, forged independent review or other trial fail c
     assert.equal(buildAcaciaMethodReadiness(p,h),null,"tamper case "+i);
   }
 });
+test("800-method reviewer worksheet exports every position without fake scientific grades",()=>{
+  const {exportAcaciaMethodReadinessCsv}=require("../lib/acacia-method-evidence-readiness.ts");
+  const report=buildAcaciaMethodReadiness(clone(pilot),clone(history));
+  const csv=exportAcaciaMethodReadinessCsv(report);
+  const lines=csv.trimEnd().split("\r\n");
+  assert.equal(lines.length,801);
+  assert.match(lines[0],/"Method position"/);
+  assert.match(lines[0],/"Missing original evidence"/);
+  assert.equal(lines.filter(x=>x.includes("ORIGINAL_REGISTRY_RECEIPT_AVAILABLE")).length,3);
+  assert.equal(lines.filter(x=>x.includes("RESEARCH_LEAD_ONLY")).length,15);
+  assert.equal(lines.filter(x=>x.includes("NO_MAPPED_SOURCE")).length,782);
+  assert.equal(lines.filter(x=>x.includes('"UNASSIGNED"')).length,800);
+  assert.equal(lines.filter(x=>x.includes('"ABSTAIN"')).length,800);
+  assert.equal(lines.filter(x=>x.includes('"NOT_CALIBRATED"')).length,800);
+  assert.ok(lines.every((line,i)=>!i||line.startsWith('"NCT06081894"')));
+  assert.ok(lines.find(x=>x.includes('"4.2:L1"'))?.includes("v26_original_registry.json"));
+  assert.ok(lines.find(x=>x.includes('"4.2:L1"'))?.includes("v30_original_registry.json"));
+  assert.equal(csv.includes("file://"),false);
+  report.methodPositions[0].missingOriginalEvidence="=HYPERLINK('bad')";
+  const injection=exportAcaciaMethodReadinessCsv(report);
+  assert.ok(injection.includes('"\'=HYPERLINK(\'bad\')"'));
+  assert.throws(()=>exportAcaciaMethodReadinessCsv(null),/UNVERIFIED_REVIEW_HANDOFF/);
+});
+
 test("method evidence interface must remain a no-write source handoff",()=>{
   const component=fs.readFileSync(path.join(root,"app/predictions/assessment/PilotMethodEvidenceReadiness.tsx"),"utf8");
   const parent=fs.readFileSync(path.join(root,"app/predictions/assessment/PilotResearchReviewQueue.tsx"),"utf8");

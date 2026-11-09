@@ -19,3 +19,10 @@ The original historical endpoint transition from one to two primary outcomes is 
 The parallel HOP/FDA historical outcome pipeline remains **quarantined** from probability release because a complete, independently adjudicated approval/CRL cohort with documented predecision feature clocks, program-disjoint temporal holdout and calibration has not been established. Existing mathematical calibration tests must not be mistaken for observed FDA performance.
 
 Changes: `new-platform/frontend/lib/acacia-method-evidence-readiness.ts`, `PilotMethodEvidenceReadiness.tsx`, existing `PilotResearchReviewQueue.tsx` insertion and `acacia-method-evidence-readiness.test.cjs`. All read-only, no API writes or reviewer credential changes. Next: qualified independent review, original source reconciliation, and a complete FDA outcome cohort verified independently. FDA APPROVAL/CRL/REVIEW_DELAY: **ABSTAIN**; accuracy **NOT_CALIBRATED**.
+
+
+## Revision 37 — full 800-method CSV reviewer worksheet
+
+A new client-only export control downloads 800 rows plus one header, from the same exact-trial evidence mapping shown on the page. Each row includes its method identity, source status, dated original-version references where available, other source leads, missing original documents, review gate, UNASSIGNED clinical grade and ABSTAIN/NOT_CALIBRATED outcome. All 782 unmapped methods remain visible instead of being omitted. The CSV prefixes potentially executable spreadsheet formula values to mitigate injection. No backend endpoint, database write, reviewer credential, score or release action is added.
+
+The export is an **unverified research worksheet**, not a signed clinical report. Reviewer authorization, final locked SAP, actual CONSORT and safety definitions, and independent FDA cohort validation remain unmet.

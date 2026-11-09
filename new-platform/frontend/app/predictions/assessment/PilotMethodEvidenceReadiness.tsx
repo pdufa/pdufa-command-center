@@ -1,10 +1,25 @@
+"use client";
 import pilot from "../../../data/acacia-pilot-prediction-workup-20261108.json";
 import history from "../../../data/acacia-original-history-revision36.json";
-import {buildAcaciaMethodReadiness} from "../../../lib/acacia-method-evidence-readiness";
+import {buildAcaciaMethodReadiness,exportAcaciaMethodReadinessCsv} from "../../../lib/acacia-method-evidence-readiness";
 
 const panel={border:"1px solid #aac9c4",background:"#f0f9f8",borderRadius:11,padding:13,margin:"10px 0"} as const;
 export default function PilotMethodEvidenceReadiness(){
   const ready=buildAcaciaMethodReadiness(pilot,history);
+  const downloadAll=()=>{
+    if(!ready)return;
+    const csv=exportAcaciaMethodReadinessCsv(ready);
+    const url=URL.createObjectURL(new Blob(["\uFEFF",csv],{type:"text/csv;charset=utf-8"}));
+    try{
+      const a=document.createElement("a");
+      a.href=url;
+      a.download="ACACIA-HCM-800-method-evidence-research-only.csv";
+      document.body.appendChild(a);
+      try{a.click();}finally{a.remove();}
+    }finally{
+      URL.revokeObjectURL(url);
+    }
+  };
   return <section aria-label="Revision 37 evidence-to-reviewer handoff for all 800 pilot methods" style={panel}>
     <h4 style={{margin:"2px 0 8px",fontSize:17}}>Revision 37 · Evidence-to-reviewer gates · 800 methods</h4>
     {!ready?<p role="alert"><strong>Source identity or original-history packet changed — method readiness withheld.</strong></p>:<>
@@ -20,6 +35,15 @@ export default function PilotMethodEvidenceReadiness(){
           <div style={{fontSize:11}}>{label}</div>
         </div>)}
       </div>
+      <button type="button" onClick={downloadAll}
+        style={{display:"inline-flex",padding:"9px 13px",margin:"11px 0 4px",
+          border:"1px solid #2c8578",background:"#11675d",color:"#fff",
+          borderRadius:8,fontSize:13,fontWeight:800,cursor:"pointer"}}>
+        Export all 800 method evidence statuses (CSV)
+      </button>
+      <p style={{fontSize:11,margin:"2px 0 9px"}}>
+        Research-only worksheet: no clinical grades, reviewer signatures or FDA probabilities.
+      </p>
       <p style={{fontSize:12,lineHeight:1.6}}>
         The three verified original registry references are linked to <strong>existing research positions</strong>, not three completed clinical tests. All 800 clinical method grades remain <strong>UNASSIGNED</strong>. Original SAP, safety/CONSORT reconciliation, independent phase signoff and authorized medical review are still required.
       </p>
