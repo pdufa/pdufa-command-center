@@ -47,7 +47,7 @@ def require_role(request: Request, role: str) -> None:
         raise HTTPException(403, "Browser-origin storage requests are not supported")
     offered = request.headers.get("x-pdufa-evidence-key", "")
     target = os.getenv("PDUFA_EVIDENCE_VAULT_" + role.upper() + "_KEY", "")
-    if not offered or not secrets.compare_digest(offered, target):
+    if not offered or not offered.isascii() or not secrets.compare_digest(offered, target):
         raise HTTPException(401, "Evidence vault role authorization required")
 
 

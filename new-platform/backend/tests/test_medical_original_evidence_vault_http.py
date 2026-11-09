@@ -141,3 +141,27 @@ def test_rejects_malformed_base64_and_large_bodies_before_storage(isolated):
     altered=candidate();altered["originalBytesBase64"]=base64.b64encode(b"%PDF-1.7\n"+b"A"*(core.MAX_DOCUMENT_BYTES+1)).decode()
     assert client.post(path,json=altered,headers=h).status_code in (413,422)
     assert client.get(path,headers={"X-PDUFA-Evidence-Key":READER}).json()["receipts"]==[]
+
+
+@pytest.mark.parametrize("method", ["GET", "POST"])
+@pytest.mark.parametrize("offered", [b"\xff" * 40, "invalid-\u00e9-key".encode("utf-8")])
+def test_non_ascii_presented_keys_are_denied_before_database_access(isolated, monkeypatch, method, offered):
+    # HTTP headers are bytes. Passing them as bytes exercises Starlette's
+    # real header decoding instead of failing httpx's ASCII string encoder.
+    def no_storage():
+        pytest.fail("Unauthorized evidence keys must not reach a storage provider")
+
+    app = FastAPI()
+    http.install_routes(app, no_storage, no_storage)
+    path = "/api/internal/medical-original-evidence-vault/NCT06081894"
+    headers = [(b"X-PDUFA-Evidence-Key", offered)]
+    with TestClient(app) as client:
+        response = client.request(method, path, headers=headers,
+                                  json=candidate() if method == "POST" else None)
+        assert response.status_code == 401
+        assert response.json() == {"detail": "Evidence vault role authorization required"}
+        monkeypatch.setenv("PDUFA_ORIGINAL_EVIDENCE_VAULT_ENABLED", "false")
+        disabled = client.request(method, path, headers=headers,
+                                  json=candidate() if method == "POST" else None)
+        assert disabled.status_code == 503
+        assert disabled.json() == {"detail": "Isolated original evidence vault is disabled"}
