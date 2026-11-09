@@ -10,8 +10,9 @@ import http.cookiejar,json,os,re,sys
 from urllib.error import HTTPError,URLError
 from urllib.request import HTTPCookieProcessor,HTTPRedirectHandler,Request,build_opener
 
-SITE="https://pdufa-new-dashboard-fsnkqhrnu-pdufa.vercel.app"
+SITE="https://pdufa-new-dashboard-k0lkhlsfn-pdufa.vercel.app"
 ROSTER="/api/predictions/focus-preliminary"
+SOURCES="/api/predictions/focus-source-readiness"
 URL="/predictions"
 class NoRedirect(HTTPRedirectHandler):
     def redirect_request(self,req,fp,code,msg,headers,newurl):
@@ -63,13 +64,14 @@ def main():
         "Observed FDA approval","Official FDA prediction",
         "Review delay/extension prediction",
         "November 9 2026",
-        "Live evidence-source checkpoint",
-        "Trial records fetched",
-        "Application groups linked to an accessible public source",
-        "Distinct source URLs fetched",
-        "Registry results modules present",
-        "29 / 29","23 / 23","21 / 22","12 / 29",
-        "Achieve's issuer URL redirected",
+        "Revision 40 · Verified source retrieval (not clinical review)",
+        "Trial registry IDs retrieved",
+        "23 application groups with source access",
+        "Unique source URLs retrieved",
+        "Registry results section present",
+        "29/29","23/23","21/22","12/29",
+        "Achieve's issuer link redirected",
+        "No original clinical grades",
     
     ]:
         check(value.lower() in rendered.lower(),"FOCUS_RENDER_MISSING_"+re.sub(r"\W+","_",value).upper())
@@ -116,6 +118,39 @@ def main():
           all(any(a["id"]==id and x["nct"] in a["ncts"] for a in apps)
               for id in x["applicationCycleIds"]) for x in trials),
           "FOCUS_NCT_APPLICATION_MEMBERSHIP_CORRUPTED")
+    code,kind,raw=get(client,SOURCES,"application/json")
+    check(code==200 and "json" in kind,"R40_PUBLIC_SOURCE_READINESS_JSON_NOT_AVAILABLE")
+    x=json.loads(raw)
+    rc=x.get("counts",{})
+    trial=x.get("trialStatus",[])
+    apps2=x.get("groupStatus",[])
+    check(x.get("schema")=="MAIN_FOCUS_R40_PUBLIC_SOURCE_METADATA_PIN_20261109" and
+       x.get("asOf")=="2026-11-09" and
+       x.get("sourceReceiptSha256")=="0601058cd65f62380c3f3242b408f95ca13408f21d2845e589e9e4f5faf7d32c" and
+       rc.get("registryRetrieved")==29 and
+       rc.get("applicationGroupsWithPublicSource")==23 and
+       rc.get("registryResultsSectionPresent")==12 and
+       rc.get("registryResultsSectionNotPresent")==17 and
+       rc.get("uniqueUrlsFetched")==21 and
+       rc.get("uniqueUrlsAttempted")==22 and
+       len(trial)==29 and len(apps2)==23 and
+       sum(bool(t.get("currentRegistryResultsSectionPresent")) for t in trial)==12 and
+       sum(a.get("sourceRoute")=="OFFICIAL_SEC_FALLBACK" for a in apps2)==1 and
+       all(a.get("qualifiedReviewerSignoff") is False for a in apps2) and
+       all(a.get("regulatorApplicationCycleVerified") is False for a in apps2) and
+       x.get("independentlyValidatedFdaForecasts")==0 and
+       x.get("qualifiedClinicalReviews")==0 and
+       x.get("historicalRealBacktests")==0 and
+       x.get("reviewOrScoringWrites") is False and
+       x.get("officialFutureFdaForecast")=="ABSTAIN" and
+       x.get("accuracy")=="NOT_CALIBRATED",
+       "R40_SOURCE_METADATA_AUTHENTICATED_READBACK_MISMATCH")
+    print(json.dumps({"stage":"R40_PINNED_SOURCE_READINESS_JSON",
+       "status":"PASS","ncts":29,"applications":23,
+       "registryResultsSections":12,
+       "publicSourceAccessibleApplicationGroups":23,
+       "researchOnly":True,"independentFDAForecasts":0,
+       "clinicalGradesWritten":0,"writesPerformed":False}),flush=True)
     print(json.dumps({"stage":"FOCUS_29_23_SIGNED_IN_JSON","status":"PASS",
         "trials":len(trials),"applications":len(apps),
         "researchApprovalLeans":5,"researchCrlLeans":1,
