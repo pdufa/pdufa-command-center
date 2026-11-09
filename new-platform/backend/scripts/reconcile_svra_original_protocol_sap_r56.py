@@ -115,7 +115,7 @@ def build(raw_map:dict[str,bytes],r53:dict,r54:dict,r55:dict):
         expectation=EXPECTED[filename]
         raw=raw_map[filename]
         if record.get("sourceUrl")!=(
-            "https://cdn.clinicaltrials.gov/large-docs/93/NCT04544293/"+filename
+            "https://cdn.clinicaltrials.gov/large-docs/93/NCT04544293/"+filename.removeprefix("NCT04544293-")
         ):
             raise ValueError("SAVARA_DOCUMENT_SOURCE_URL_NOT_ORIGINAL")
         if (not isinstance(raw,bytes) or not 100<len(raw)<=MAX_PDF or
