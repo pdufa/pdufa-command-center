@@ -42,6 +42,8 @@ function validPvalue(v:unknown){
 export function validateR60OriginalTrialResearch(input:unknown=snapshot){
   if(!input||typeof input!=="object"||Array.isArray(input))return null;
   const data=input as Snapshot;
+  const rootFields=new Set(["rev","run","artifact","utc","sourceHashes","trials"]);
+  if(Object.keys(data).some(k=>!rootFields.has(k)))return null;
   if(data.rev!==60||data.run!==R60_ORIGINAL_RUN||
     data.artifact!==R60_ORIGINAL_ARTIFACT||data.utc!==R60_OBSERVED_UTC||
     !data.sourceHashes||Object.keys(R60_SOURCE_SHA).some(key=>
@@ -54,8 +56,11 @@ export function validateR60OriginalTrialResearch(input:unknown=snapshot){
   const byNct=new Map(original.map(x=>[x.nct,x]));
   const unique=new Set<string>();
   let tables=0,comparisons=0,withPrimary=0,withSafety=0;
+  const trialFields=new Set(["n","h","p","q","a","e","m","s"]);
   for(const item of data.trials){
-    if(!item||typeof item!=="object"||!NCT.test(item.n)||unique.has(item.n)||
+    if(!item||typeof item!=="object"||
+       Object.keys(item).some(k=>!trialFields.has(k))||
+       !NCT.test(item.n)||unique.has(item.n)||
        !byNct.has(item.n)||typeof item.h!=="string"||!HASH.test(item.h)||
        !integer(item.p)||!integer(item.q)||!integer(item.a)||
        item.p>20||item.q>100||item.a>30||
