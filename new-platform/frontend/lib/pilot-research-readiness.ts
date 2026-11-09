@@ -16,6 +16,12 @@ type ResearchSnapshot={nct:string;phaseIndependentReviewerVerified:boolean;
 const IDs=["TRIAL_IDENTITY","ORIGINAL_PROTOCOL","PUBLISHED_PRIMARY","FINAL_LOCKED_SAP","PRIMARY_SENSITIVITY"];
 const SOURCES:Record<string,string>={TRIAL_IDENTITY:"REGISTRY",
   ORIGINAL_PROTOCOL:"CTIS_AM04",PUBLISHED_PRIMARY:"NEJM_PIVOTAL"};
+const FIXED_URLS:Record<string,string>={
+  REGISTRY:"https://clinicaltrials.gov/study/NCT06081894",
+  NEJM_PIVOTAL:"https://pubmed.ncbi.nlm.nih.gov/42663312/",
+  CTIS_AM04:"https://github.com/pdufa/pdufa-command-center/actions/runs/42525291355/artifacts/13634488398"
+};
+const FIXED_PROTOCOL_SHA256="853ffd80a547df8a7b813b8985c7116dd6168a640f18521f61b95cf33a8ca5f8";
 const PATTERN=/^[a-f0-9]{64}$/;
 
 function validLink(src:SourceRecord|undefined):boolean {
@@ -47,11 +53,13 @@ export function evaluatePilotReadiness(value:ResearchSnapshot):{points:number;ou
     if(!g||g.id!==expected||!g.title||!g.detail||
       !["RESEARCH_OBSERVED","NOT_VERIFIED"].includes(g.state))return null;
     if(g.state==="RESEARCH_OBSERVED"){
-      if(!g.sourceId||g.sourceId!==SOURCES[expected]||!validLink(value.sources[g.sourceId]))return null;
+      if(!g.sourceId||g.sourceId!==SOURCES[expected]||!validLink(value.sources[g.sourceId])||
+         value.sources[g.sourceId].url!==FIXED_URLS[g.sourceId])return null;
       // The official protocol must retain its content digest and capture receipt.
       if(g.id==="ORIGINAL_PROTOCOL"&&
         (value.sources[g.sourceId].retrieved!==true||
-         !PATTERN.test(value.sources[g.sourceId].sha256||"")))return null;
+         !PATTERN.test(value.sources[g.sourceId].sha256||"")||
+         value.sources[g.sourceId].sha256!==FIXED_PROTOCOL_SHA256))return null;
     }else if(g.sourceId!==null)return null;
   }
   // Research-only availability count, intentionally not a clinical 0–5 grade.
