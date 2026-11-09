@@ -169,6 +169,11 @@ test("encrypted vault is accurately labeled staged-only and never falsely claims
     "app/predictions/assessment/PilotPredictionWorkup.tsx"),"utf8");
   assert.match(ui,/STAGED IN BACKEND CODE — NOT ACTIVATED/);
   assert.match(ui,/Disposable PostgreSQL 16 acceptance: PASSED/);
+  assert.match(ui,/Separate database migration and runtime roles: PASSED/);
+  assert.match(ui,/42564391773/);
+  assert.match(ui,/SELECT and INSERT only/);
+  assert.match(ui,/HTTP vault cannot create its own tables/);
+  assert.match(ui,/No corresponding production or Render accounts/);
   assert.match(ui,/offline synthetic key-recovery drill/);
   assert.match(ui,/42562929833/);
   assert.match(ui,/not a deployment, offsite key backup/);
