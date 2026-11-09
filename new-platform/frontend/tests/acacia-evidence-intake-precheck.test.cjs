@@ -168,6 +168,10 @@ test("encrypted vault is accurately labeled staged-only and never falsely claims
   const parent=fs.readFileSync(path.join(root,
     "app/predictions/assessment/PilotPredictionWorkup.tsx"),"utf8");
   assert.match(ui,/STAGED IN BACKEND CODE — NOT ACTIVATED/);
+  assert.match(ui,/Disposable PostgreSQL 16 acceptance: PASSED/);
+  assert.match(ui,/offline synthetic key-recovery drill/);
+  assert.match(ui,/42562929833/);
+  assert.match(ui,/not a deployment, offsite key backup/);
   assert.match(ui,/AES-256-GCM/);
   assert.match(ui,/not connected to this browser or storing documents yet/);
   assert.match(ui,/NOT ACTIVE/);
