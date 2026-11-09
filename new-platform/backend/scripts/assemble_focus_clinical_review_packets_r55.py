@@ -126,6 +126,10 @@ def assemble(manifest:dict,source_r46:dict,source_r54:dict,registry_dir:Path):
         source_r54.get("canonicalTrials")!=29 or source_r54.get("applicationGroups")!=23 or
         source_r54.get("currentPdfDocumentsSourceVerified")!=23 or
         source_r54.get("independentlySignedClinicalMethodGrades")!=0 or
+        source_r54.get("independentlyValidatedApplicationFdaPredictions")!=0 or
+        source_r54.get("historicalLockedSapVersionsIndependentlyVerified")!=0 or
+        source_r54.get("modelTrainingAuthorized") is not False or
+        source_r54.get("officialPendingFDAOutcomePrediction")!="ABSTAIN" or
         source_r54.get("clinicalOrProductionWrites") is not False or
         not registry_dir.is_dir() or registry_dir.is_symlink()):
         raise ValueError("R54_AND_ORIGINAL_REGISTRY_29_23_IMMUTABLE_SOURCE_REQUIRED")
