@@ -26,10 +26,16 @@ ALTERNATE_APPLICATION_SOURCES={
   "achv-cytisinicline":"https://www.sec.gov/Archives/edgar/data/949858/000119312526344624/achv-20260630.htm"
 }
 
+# Existing original FDA sources are kept in their proper historical scope.
+FDA_APPLICATION_SOURCES={
+ "capr-deramiocel":("https://www.fda.gov/media/193839/download","FDA_STAFF_PRE_AMENDMENT_NOT_FINAL_ACTION"),
+ "cytk-aficamten-ohcm":("https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219083Orig1s000ltr.pdf","PRIOR_OBSTRUCTIVE_APPROVAL_NOT_CURRENT_TRIAL_REVIEW_CYCLE")
+}
+
 # Strictly known public hosts used by *this snapshot*; never fetch arbitrary
 # user-supplied URLs or internal/service endpoints, even after a redirect.
 ALLOWED_HOSTS=frozenset({
- "clinicaltrials.gov","www.clinicaltrials.gov","www.sec.gov",
+ "clinicaltrials.gov","www.clinicaltrials.gov","www.sec.gov","www.fda.gov","www.accessdata.fda.gov",
  "abivax.gcs-web.com","ir.achievelifesciences.com",
  "ir.apnimed.com","www.axsome.com","www.capricor.com",
  "ir.capricor.com","investors.belitebio.com","belitebio.gcs-web.com",
@@ -127,7 +133,7 @@ def build_manifest(roster:dict,application:dict)->dict:
         "modelTrainingAuthorized":False,
     }
 
-def retrieve_url(url:str,*,timeout:int=15)->tuple[dict,bytes|None]:
+def retrieve_url(url:str,*,timeout:int=15,preserve_body:bool=False)->tuple[dict,bytes|None]:
     if not _valid_url(url):
         return {"status":"UNSAFE_URL_REJECTED","url":url},None
     opener=build_opener(SafeRedirect())
@@ -142,7 +148,7 @@ def retrieve_url(url:str,*,timeout:int=15)->tuple[dict,bytes|None]:
             limit=MAX_BYTES if is_registry else MAX_EXTERNAL_DOCUMENT_BYTES
             digest=hashlib.sha256()
             consumed=0
-            body=[] if is_registry else None
+            body=[] if is_registry or preserve_body else None
             while True:
                 part=reply.read(65536)
                 if not part:break
@@ -188,19 +194,32 @@ def _registry_read(nct:str,obs:dict,body:bytes|None)->dict:
                 **fields,"scientificPhaseIndependentlyVerified":False}
     return {**obs,"nct":nct,**fields,"scientificPhaseIndependentlyVerified":False}
 
-def perform_capture(manifest:dict,fetcher=retrieve_url)->dict:
+def perform_capture(manifest:dict,fetcher=retrieve_url,*,raw_dir:Path|None=None,include_fda_addenda:bool=False)->dict:
+    if raw_dir is not None and (raw_dir.is_symlink() or not raw_dir.is_dir() or any(raw_dir.iterdir())):
+        raise ValueError("NEW_EMPTY_ORIGINAL_SOURCE_DIRECTORY_REQUIRED")
+    if raw_dir is not None and fetcher is retrieve_url:
+        fetcher=lambda url:retrieve_url(url,preserve_body=True)
     groups=manifest["applicationGroups"];trials=manifest["trialRows"]
     sources={g["sourceUrl"] for g in groups}
     fallback={k:v for k,v in ALTERNATE_APPLICATION_SOURCES.items()
               if any(g["cycleId"]==k for g in groups)}
     if any(not _valid_url(url) for url in fallback.values()):
         raise ValueError("UNSAFE_ALTERNATIVE_FDA_SOURCE")
-    all_sources=sources|set(fallback.values())
+    fda={k:v for k,v in FDA_APPLICATION_SOURCES.items() if include_fda_addenda and any(g["cycleId"]==k for g in groups)}
+    all_sources=sources|set(fallback.values())|{v[0] for v in fda.values()}
     registry={t["registryUrl"]:t["nct"] for t in trials}
     jobs=sorted(all_sources|set(registry))
     observations={}
     def one(url):
         obs,body=fetcher(url)
+        if raw_dir is not None and obs.get("status")=="FETCHED" and body is None:
+            raise ValueError("FETCHED_SOURCE_BYTES_NOT_AVAILABLE_FOR_ARCHIVE")
+        if raw_dir is not None and body is not None:
+            if hashlib.sha256(body).hexdigest()!=obs.get("sha256"):
+                raise ValueError("ORIGINAL_SOURCE_BYTE_DIGEST_MISMATCH")
+            filename=hashlib.sha256(url.encode()).hexdigest()+".body"
+            with (raw_dir/filename).open("xb") as file:file.write(body)
+            obs={**obs,"rawArtifact":filename,"originalByteDigestVerified":True,"sourceBodyPreserved":True}
         if url in registry:
             return url,_registry_read(registry[url],obs,body)
         return url,{**obs,"sourceDocumentDateIndependentlyVerified":False,
@@ -219,10 +238,12 @@ def perform_capture(manifest:dict,fetcher=retrieve_url)->dict:
        "applicationSource":observations[g["sourceUrl"]],
        "alternateOfficialSecSource":observations[fallback[g["cycleId"]]]
          if g["cycleId"] in fallback else None,
+       "additionalOfficialFdaSources":[{**observations[fda[g["cycleId"]][0]],"sourceRole":fda[g["cycleId"]][1]}] if g["cycleId"] in fda else [],
        "atLeastOneApplicationSourceFetched":
          observations[g["sourceUrl"]]["status"]=="FETCHED" or
          (g["cycleId"] in fallback and
-          observations[fallback[g["cycleId"]]]["status"]=="FETCHED"),
+          observations[fallback[g["cycleId"]]]["status"]=="FETCHED") or
+         (g["cycleId"] in fda and observations[fda[g["cycleId"]][0]]["status"]=="FETCHED"),
        "supportingNctRegistryReceipts":[{
            "nct":n,"status":observations["https://clinicaltrials.gov/api/v2/studies/"+n+"?format=json"]["status"]
        } for n in g["ncts"]],
@@ -243,6 +264,7 @@ def perform_capture(manifest:dict,fetcher=retrieve_url)->dict:
         "trialRoster":29,"provisionalApplicationGroups":23,
         "canonicalApplicationSourceUrls":len(sources),
         "additionalOfficialSecSourceUrls":len(fallback),
+        "additionalOriginalFdaSourceUrls":len(fda),
         "uniqueApplicationSourceUrls":len(all_sources),
         "applicationSourceUrlsFetched":fetched_sources,
         "applicationGroupsWithAvailablePublicSource":app_groups_fetched,
@@ -262,9 +284,26 @@ def perform_capture(manifest:dict,fetcher=retrieve_url)->dict:
 def main()->int:
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output",type=Path,required=True)
+    parser.add_argument("--include-fda-addenda",action="store_true")
+    parser.add_argument("--raw-dir",type=Path)
+    parser.add_argument("--registry-raw-dir",type=Path,help="Reuse this same run original registry captures; never retry an unavailable same-run record")
     a=parser.parse_args()
     manifest=build_manifest(_read_json(ROSTER),_read_json(APPS))
-    result=perform_capture(manifest)
+    fetcher=lambda url:retrieve_url(url,preserve_body=a.raw_dir is not None)
+    if a.registry_raw_dir is not None:
+        if not a.registry_raw_dir.is_dir() or a.registry_raw_dir.is_symlink():raise ValueError("INVALID_SAME_RUN_REGISTRY_DIRECTORY")
+        def fetcher(url):
+            if "clinicaltrials.gov/api/v2/studies/" not in url:return retrieve_url(url,preserve_body=a.raw_dir is not None)
+            nct=url.split("?")[0].rsplit("/",1)[-1]
+            if not NCT.fullmatch(nct):raise ValueError("EXACT_REGISTRY_ID_REQUIRED")
+            path=a.registry_raw_dir/(nct+".json")
+            if not path.exists():return {"url":url,"status":"SAME_RUN_REGISTRY_ORIGINAL_UNAVAILABLE_NO_RETRY"},None
+            if path.is_symlink() or not path.is_file() or path.stat().st_size>MAX_BYTES:raise ValueError("UNSAFE_SAME_RUN_REGISTRY_ORIGINAL")
+            body=path.read_bytes()
+            return {"url":url,"resolvedUrl":url,"status":"FETCHED","contentType":"application/json",
+                    "bytes":len(body),"sha256":hashlib.sha256(body).hexdigest(),
+                    "captureBasis":"REUSED_SAME_RUN_PRIMARY_REGISTRY_ORIGINAL"},body
+    result=perform_capture(manifest,fetcher=fetcher,raw_dir=a.raw_dir,include_fda_addenda=a.include_fda_addenda)
     if a.output.exists() or a.output.is_symlink() or not a.output.parent.is_dir():
         raise ValueError("OUTPUT_MUST_BE_NEW_FILE_IN_EXISTING_DIRECTORY")
     output=(json.dumps(result,sort_keys=True,indent=2)+"\n").encode()

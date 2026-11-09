@@ -10,6 +10,7 @@ import argparse,hashlib,json
 from datetime import date,datetime,timezone
 from pathlib import Path
 from app.hop_blinded_phase3_backtest import evaluate_replay_protocol
+from app.hop_probability_calibration import calibration_readiness_status
 
 def verify(candidate_doc,receipt,raw_candidates:bytes,at:str)->dict:
     if (not isinstance(candidate_doc,list) or not isinstance(receipt,dict)
@@ -36,7 +37,7 @@ def verify(candidate_doc,receipt,raw_candidates:bytes,at:str)->dict:
         measured["measuredProspectiveAccuracy"] is not None or
         measured["fdaProbability"] is not None or measured["trainingAuthorized"] is not False):
         raise ValueError("INVALID_HISTORICAL_CALIBRATION_RELEASE")
-    return {
+    report={
      "schema":"MAIN_R47_HISTORICAL_SOURCE_BUILD_CHECKPOINT",
      "generatedAtUtc":at,"originalFdaSourceReceiptSha256":hashlib.sha256(
        json.dumps(receipt,sort_keys=True,separators=(",",":")).encode()).hexdigest(),
@@ -63,6 +64,8 @@ def verify(candidate_doc,receipt,raw_candidates:bytes,at:str)->dict:
      "status":"LIVE_HISTORICAL_FDA_CANDIDATE_SOURCE_RESEARCH_NOT_REAL_BACKTEST",
      "warning":"This checks the actual fresh FDA source candidates and backtest leakage guard. It does not issue retrospective predictions, calculate real historical accuracy or improve a model automatically."
     }
+    report["calibrationProtocol"]=calibration_readiness_status(source_checkpoint=report)
+    return report
 
 def main():
     p=argparse.ArgumentParser(description=__doc__)
@@ -78,7 +81,7 @@ def main():
     raw=a.candidates.read_bytes()
     report=verify(json.loads(raw),json.loads(a.receipt.read_bytes()),raw,
        datetime.now(timezone.utc).isoformat(timespec="seconds"))
-    a.output.write_text(json.dumps(report,sort_keys=True,indent=2)+"\n")
+    with a.output.open("x") as file:file.write(json.dumps(report,sort_keys=True,indent=2)+"\n")
     print(json.dumps({k:report[k] for k in ("researchSourceActionCandidates",
        "pairedIndependentHistory","prospectiveAccuracy","replayProtocolHealth","status")},sort_keys=True))
 

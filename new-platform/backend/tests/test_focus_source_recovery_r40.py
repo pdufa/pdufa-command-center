@@ -155,3 +155,30 @@ def test_issuer_and_alternate_both_blocked_leave_application_in_research_not_crl
     assert result["applicationGroupsWithAvailablePublicSource"]==22
     assert a["formalFdaActionPrediction"]=="ABSTAIN"
     assert result["independentlyValidatedApplicationForecasts"]==0
+
+
+def test_raw_source_capture_is_exact_and_digest_mismatches_fail_closed(tmp_path):
+    import hashlib
+    manifest=build_manifest(*current())
+    def actual_bytes(url):
+        receipt,body=simulated_fetch(url)
+        return {**receipt,"sha256":hashlib.sha256(body).hexdigest()},body
+    raw=tmp_path/"raw";raw.mkdir()
+    result=perform_capture(manifest,fetcher=actual_bytes,raw_dir=raw)
+    assert len(list(raw.iterdir()))==51
+    assert all(r["originalByteDigestVerified"] for r in result["trialSources"])
+    with pytest.raises(ValueError,match="NEW_EMPTY"):perform_capture(manifest,fetcher=actual_bytes,raw_dir=raw)
+    other=tmp_path/"other";other.mkdir()
+    with pytest.raises(ValueError,match="DIGEST_MISMATCH"):perform_capture(manifest,fetcher=simulated_fetch,raw_dir=other)
+
+
+def test_optional_original_fda_records_keep_prior_actions_separate_from_new_predictions():
+    manifest=build_manifest(*current())
+    result=perform_capture(manifest,fetcher=simulated_fetch,include_fda_addenda=True)
+    assert result['additionalOriginalFdaSourceUrls']==2
+    assert result['uniqueApplicationSourceUrls']==24
+    groups={g['cycleId']:g for g in result['applicationGroups']}
+    assert groups['capr-deramiocel']['additionalOfficialFdaSources'][0]['sourceRole']=='FDA_STAFF_PRE_AMENDMENT_NOT_FINAL_ACTION'
+    assert groups['capr-deramiocel']['formalFdaActionPrediction']=='ABSTAIN'
+    assert groups['cytk-aficamten-ohcm']['additionalOfficialFdaSources'][0]['sourceRole']=='PRIOR_OBSTRUCTIVE_APPROVAL_NOT_CURRENT_TRIAL_REVIEW_CYCLE'
+    assert result['scientificMethodGradesWritten']==0 and result['calibratedAccuracy'] is None

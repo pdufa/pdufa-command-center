@@ -2,10 +2,12 @@
 import hashlib,json
 from copy import deepcopy
 import pytest
-from scripts.build_focus_research_checkpoint_r47 import collect
+from scripts.build_focus_research_checkpoint_r47 import collect,canonical_manifest
 from scripts.build_historical_source_checkpoint_r47 import verify
 
-NCTS=[f"NCT{i:08d}" for i in range(1,30)]
+MANIFEST=canonical_manifest()
+NCTS=sorted(r["nct"] for r in MANIFEST["trialRows"])
+CROSSWALK={n:sorted(g["cycleId"] for g in MANIFEST["applicationGroups"] if n in g["ncts"]) for n in NCTS}
 HASHES={"primary":"a"*64,"safety":"b"*64,"documents":"c"*64}
 def source_bundle():
     p={"schema":"MAIN_R42_29_TRIAL_REGISTRY_PRIMARY_EVIDENCE",
@@ -21,7 +23,7 @@ def source_bundle():
           "currentRegistryAdverseEventsModulePresent":i<12,
           "seriousEventTermCount":3 if i<12 else 0})
         d["records"].append({"nct":nct,"sourceResponseSha256":"3"*64,
-          "applicationCycleIds":["a-"+str(i%23)],
+          "applicationCycleIds":CROSSWALK[nct],
           "currentAttachedDocumentCount":2 if i<12 else 0,
           "currentSapAttachmentPresent":i<12})
     return {"primary":p,"safety":s,"documents":d}
@@ -95,3 +97,20 @@ def test_historical_source_label_or_accuracy_promotion_is_blocked(mutate):
     rows,receipt,raw=history_fixture()
     mutate(rows,receipt)
     with pytest.raises(ValueError):verify(rows,receipt,raw,"2026-11-09T19:00:00Z")
+
+
+def test_same_size_forged_roster_or_application_groups_are_rejected():
+    data=source_bundle()
+    for doc in data.values():doc["records"][0]["nct"]="NCT99999999"
+    with pytest.raises(ValueError,match="DISAGREEING"):collect(data,HASHES,"2026-11-09T19:00:00Z")
+    data=source_bundle();data["documents"]["records"][0]["applicationCycleIds"]=["different-application"]
+    with pytest.raises(ValueError,match="MISSING_APP"):collect(data,HASHES,"2026-11-09T19:00:00Z")
+
+
+def test_all23_application_records_preserve_cutoff_counterevidence_and_abstention():
+    r=collect(source_bundle(),HASHES,"2026-11-09T19:00:00Z")
+    assert len(r["applicationResearchRecords"])==23
+    assert {n for a in r["applicationResearchRecords"] for n in a["ncts"]}==set(NCTS)
+    assert all(a["counterevidenceAndGaps"] and a["numericalProbability"] is None for a in r["applicationResearchRecords"])
+    assert sum(a["prediction"]=="ABSTAIN" for a in r["applicationResearchRecords"])==22
+    assert r["newScientificallyQualifiedResearchPredictions"]==0

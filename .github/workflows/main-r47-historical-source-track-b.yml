@@ -1,4 +1,4 @@
-name: MAIN R47 historical FDA research track B
+name: MAIN Historical FDA Backtesting and Calibration
 on:
   push:
     branches:
@@ -9,13 +9,19 @@ on:
       - new-platform/backend/tests/test_parallel_focus_historical_r47.py
       - new-platform/backend/scripts/build_historical_source_identity_audit_r48.py
       - new-platform/backend/tests/test_historical_source_identity_r48.py
+      - new-platform/backend/scripts/research_workstream_history.py
+      - new-platform/backend/scripts/select_research_history_run.py
+      - new-platform/backend/tests/test_research_workstream_history.py
+      - new-platform/backend/app/hop_probability_calibration.py
+      - new-platform/backend/tests/test_hop_probability_calibration.py
   workflow_dispatch:
   schedule:
     - cron: '28 10 * * *'
 permissions:
   contents: read
+  actions: read
 concurrency:
-  group: main-r47-history-track-b
+  group: main-r47-history-track-b-${{ github.ref }}
   cancel-in-progress: false
 jobs:
   historical-research:
@@ -37,8 +43,21 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           python -m pip install pytest
           cd new-platform/backend
-          PYTHONPATH=. python -m pytest -q tests/test_parallel_focus_historical_r47.py tests/test_hop_blinded_phase3_backtest.py tests/test_hop_fda_source_recovery_r38.py tests/test_historical_source_identity_r48.py
+          PYTHONPATH=. python -m pytest -q tests/test_parallel_focus_historical_r47.py tests/test_hop_blinded_phase3_backtest.py tests/test_hop_fda_source_recovery_r38.py tests/test_historical_source_identity_r48.py tests/test_hop_probability_calibration.py tests/test_research_workstream_history.py
           PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
+      - name: Locate the latest completed Track B history without changing either workstream
+        id: previous_history
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python new-platform/backend/scripts/select_research_history_run.py --track B
+      - name: Restore the immutable Track B history artifact
+        if: steps.previous_history.outputs.run_id != ''
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: ${{ steps.previous_history.outputs.run_id }}
+          name: ${{ steps.previous_history.outputs.artifact_name }}
+          path: ${{ runner.temp }}/r47-history/previous-history
       - name: Capture current original FDA approval and CRL publication sources
         run: |
           set -euo pipefail
@@ -83,6 +102,27 @@ jobs:
             --candidates "$RUNNER_TEMP/r47-history/derived/r38_fda_source_candidates.json" \
             --receipt "$RUNNER_TEMP/r47-history/derived/r38_fda_source_receipt.json" \
             --out-dir "$RUNNER_TEMP/r47-history/derived"
+      - name: Append Track B research history and source-change review receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r47-history/history"
+          prior=()
+          if [[ -n "${{ steps.previous_history.outputs.run_id }}" ]]; then
+            test -f "$RUNNER_TEMP/r47-history/previous-history/research-history.json"
+            prior=(--previous "$RUNNER_TEMP/r47-history/previous-history/research-history.json")
+          fi
+          python new-platform/backend/scripts/research_workstream_history.py \
+            --track B --snapshot "$RUNNER_TEMP/r47-history/historical_replay_readiness.json" \
+            --output "$RUNNER_TEMP/r47-history/history/research-history.json" \
+            --run-id "$GITHUB_RUN_ID" --commit "$GITHUB_SHA" "${prior[@]}"
+      - name: Preserve separate Track B append-only history
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-historical-research-history-${{ github.run_id }}
+          path: ${{ runner.temp }}/r47-history/history/
+          retention-days: 90
+          if-no-files-found: error
       - name: Save original FDA sources and research-only reports
         if: always()
         uses: actions/upload-artifact@v4
@@ -91,3 +131,9 @@ jobs:
           path: ${{ runner.temp }}/r47-history/
           retention-days: 90
           if-no-files-found: warn
+      - name: Report independent Track B failure
+        if: failure()
+        shell: bash
+        run: |
+          echo "::error title=Track B research failed::Inspect this workflow's source/history receipts. No prediction or clinical grade was released; the other track is independent."
+          echo "## Track B FAILED — separate run $GITHUB_RUN_ID; source gaps are not negative clinical findings. See the retained partial artifact and failed step." >> "$GITHUB_STEP_SUMMARY"
