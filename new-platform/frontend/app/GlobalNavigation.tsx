@@ -6,6 +6,7 @@ const links=[
  {label:"POOL",href:"/pool"},
  {label:"FOCUS",href:"/focus"},
  {label:"PREDICTIONS",href:"/predictions"},
+ {label:"ASSESMENTS",href:"/predictions/assessment"},
  {label:"TOOLS",href:"/tools"},
  {label:"INSTALLATION",href:"/installation-audit"},
 ];
