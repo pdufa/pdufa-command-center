@@ -123,6 +123,24 @@ export default function PilotLiveEvidenceRefresh({nct}:{nct:string}){
         <p>{result.note}</p>
       </details>
     </div>:null}
+    <details style={{marginTop:12,padding:10,border:"1px solid #b6d5d9",borderRadius:9,background:"#fff"}} aria-label="Archived public evidence source checks">
+      <summary style={{cursor:"pointer",fontWeight:750,fontSize:13}}>Archived evidence checks and overnight monitoring</summary>
+      <p style={{...caption,margin:"9px 0"}}>
+        A separate read-only GitHub Actions checkpoint records dated source identity, SHA-256 digests,
+        source changes and possible new research documents. Successful runs retain downloadable
+        JSON receipt artifacts for up to 90 days. These are research-source receipts, not clinical grades.
+      </p>
+      <a href="https://github.com/pdufa/pdufa-command-center/actions/workflows/main-acacia-public-evidence-nightly.yml"
+        target="_blank" rel="noopener noreferrer" style={{fontSize:13,fontWeight:750}}>
+        Open evidence-check run history and archived receipts
+      </a>
+      <p style={{...caption,margin:"9px 0 0"}}>
+        <strong>Nightly schedule: PREPARED, NOT ACTIVE.</strong> The 8:17 PM Pacific schedule runs
+        only after separately approved activation on GitHub's default branch.
+        Current draft-branch checks run when the relevant code changes or by authorized manual launch.
+        The on-screen 15-minute refresh works separately while PREDICTIONS remains open.
+      </p>
+    </details>
     <p style={{...caption,margin:"9px 0 0"}}>
       Important: the official scientific grades remain unscored; FDA prediction ABSTAIN and accuracy NOT CALIBRATED.
       Newly appearing SAPs, corrected safety counts or changed regulatory filings require independent review, not automatic score increases.
