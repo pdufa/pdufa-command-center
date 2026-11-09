@@ -67,7 +67,7 @@ test("historical challenge panel shows outcome comparison separately from origin
   assert.match(html,/0 correct of 1 retrospective blind reconstruction/);
   assert.match(html,/Read the official FDA announcement/);
   assert.match(html,/6eacacd2728ac265f1b4b23571e8edb1108d5afe/);
-  assert.match(html,/after the original target date/);
+  assert.match(html,/after the historical FDA date/);
   assert.doesNotMatch(html,/\d+\.\d+% probability|FDA APPROVED|PDUFA ACTUAL ACTION/);
   const chartSource=fs.readFileSync(path.join(root,"lib/focus-assessment-chart.ts"),"utf8");
   assert.doesNotMatch(chartSource,/blindHistoricalForecasts2026/);
