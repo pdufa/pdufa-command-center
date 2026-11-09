@@ -94,6 +94,21 @@ def test_two_versions_append_chain_without_overwrite(engine):
     assert vault.verify_at_rest(engine,receipt_id=b["receiptId"],encryption_key=KEY)["sha256Verified"]
 
 
+def test_chain_audit_verifies_distinct_versions_and_no_scientific_grade(engine):
+    assert vault.audit_version_chain(engine,request_id="LOCKED_PRIMARY_SAP")["immutableReceiptCount"]==0
+    first=deposit(engine)
+    second=deposit(engine,raw=RAW+b"\nVersion-2 original public research appendix")
+    audit=vault.audit_version_chain(engine,request_id="LOCKED_PRIMARY_SAP")
+    assert audit["immutableReceiptCount"]==2
+    assert audit["lastReceiptSha256"]==second["receiptSha256"]
+    assert audit["receiptChainVerified"] is True
+    assert audit["clinicalGradesWritten"]==0
+    assert first["previousReceiptSha256"] is None
+    assert second["previousReceiptSha256"]==first["receiptSha256"]
+    with pytest.raises(vault.VaultError,match="Unknown source"):
+        vault.audit_version_chain(engine,request_id="UNKNOWN")
+
+
 def test_duplicates_rejected_without_rewriting_history(engine):
     a=deposit(engine)
     with pytest.raises(vault.VaultError,match="identical source"):
