@@ -1,0 +1,42 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-09T21:06:42Z",
+  "dataset": "BLIND_RETROSPECTIVE_RESEARCH_ONLY",
+  "disclaimer": "Do not use for prospective accuracy; events passed before forecast creation. Outcome intentionally not consulted.",
+  "records": [
+    {
+      "forecastId": "BLIND-INO3107-2026-10-30-V1",
+      "ticker": "INO",
+      "company": "INOVIO Pharmaceuticals",
+      "drug": "INO-3107",
+      "indication": "Adults with recurrent respiratory papillomatosis",
+      "exactNcts": [
+        "NCT04398433"
+      ],
+      "clinicalPhase": "PHASE_1_2",
+      "applicationType": "BLA",
+      "applicationCycleKey": "INO-3107-RRP-US-BLA-ORIGINAL-OCT30-2026",
+      "originalPdufaDate": "2026-10-30",
+      "originalDateActionOccurred": "UNKNOWN_OUTCOME_SEALED",
+      "reviewedEvidenceCutoff": "AUGUST_2026_10Q",
+      "forecastCreatedAt": "2026-11-09T21:06:42Z",
+      "retrospective": true,
+      "predictedOutcome": "CRL",
+      "directionalStrength": "LEAN",
+      "approvalProbability": null,
+      "crlProbability": null,
+      "independentCalibration": "NOT_VALIDATED",
+      "actualOutcome": null,
+      "actualDecisionDate": null,
+      "actualDecisionSourceUrl": null,
+      "outcomeViewed": false,
+      "status": "FROZEN_BLIND_AWAITING_USER_AUTHORIZED_COMPARISON",
+      "primaryEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1055726/000105572626000023/ino-20260630.htm",
+      "clinicalTrialsUrl": "https://clinicaltrials.gov/study/NCT04398433",
+      "researchDossierPath": "new-platform/frontend/docs/2026-blind-ino3107-historical-challenge.md",
+      "sourceFreezeCommit": "6eacacd2728ac265f1b4b23571e8edb1108d5afe",
+      "sourceFreezeUrl": "https://github.com/pdufa/pdufa-command-center/commit/6eacacd2728ac265f1b4b23571e8edb1108d5afe",
+      "rationale": "CRL lean: small single-arm Phase 1/2; new RRP competitor with existing FDA approval; unresolved accelerated approval eligibility disclosed by sponsor; meaningful declines in surgery burden are favorable."
+    }
+  ]
+}

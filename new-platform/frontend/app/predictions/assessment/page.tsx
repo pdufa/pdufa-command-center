@@ -5,6 +5,7 @@ import {CLINICAL_SPECIALTY_PROFILES,getSpecialtyProfile,getSpecialtyTasks} from 
 import {getFullSpecialistCase} from "../../../lib/medical-intelligence-specialist-all";
 import {FOCUS_SPECIALTY_ASSESSMENT_QUEUE,FOCUS_SPECIALTY_SUMMARY} from "../../../lib/focus-specialty-assessment";
 import AssessmentStatusPies from "../../AssessmentStatusPies";
+import BlindHistoricalPredictionPanel from "../../BlindHistoricalPredictionPanel";
 import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
 
 export const metadata:Metadata={
@@ -72,6 +73,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
           The roster-gated automatic source worker was not started; no FOCUS membership changed.
         </p>
       </section>}
+    <BlindHistoricalPredictionPanel/>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:10,margin:"15px 0 20px"}}>
       {[
         ["Exact FOCUS trials",FOCUS_SPECIALTY_SUMMARY.ncts],
