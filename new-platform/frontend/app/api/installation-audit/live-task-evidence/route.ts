@@ -30,6 +30,7 @@ export async function GET(request: Request) {
   ?fetchLiveGithubActions(process.env.PDUFA_GITHUB_TOKEN,checkedAt)
   :Promise.resolve<LiveGithubEvidence>({state:"AUTH_REQUIRED",checkedAt,
     sourceUrl:"https://github.com/pdufa/pdufa-command-center/actions",running:[],queued:[],recent:[],
+    taskExecution:null,lastTaskExecution:null,
     scope:"Authenticated GitHub Actions readback, separate from task-level Codex execution",
     note:"A signed-in dashboard session is required to show live workflow execution."});
  const origin = new URL(request.url).origin;
@@ -136,5 +137,20 @@ export async function GET(request: Request) {
  // are observations only; no requirement is auto-certified without a test contract.
  const counts=ids.reduce((acc,id)=>{const status=tasks[id].status;acc[status]=(acc[status]??0)+1;return acc;},{} as Record<string,number>);
  const githubActions=await githubRead;
- return NextResponse.json({schemaVersion:1,checkedAt,githubActions,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,historicalTaskCount:masterBuildTasks.reduce((n,tasks)=>n+tasks.length,0)-ids.length,rejectedVerified,counts,tasks,checks,observations:mappedObservations,observationSummary,automatedAcceptanceCoverage:0,unverifiedCount:counts.Unverified??0,verifiedCount:counts.Verified??0,liveChecksPassing:observationSummary.probesHealthy,liveChecksTotal:Object.keys(checks).length,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
+ // Accept a live cursor only when GitHub confirms the exact known workflow,
+ // running job and checked step AND the task-ID/label pair still belongs to
+ // the active master catalog. No task is marked accepted by this observation.
+ const task=githubActions.taskExecution;
+ const known=task && activeInstallationTasks(masterBuildTasks).some(
+  row=>row.id===task.taskId&&row.label===task.label);
+ const activeExecution=known&&task?.state==="RUNNING"
+  ?{state:"RUNNING" as const,taskId:task.taskId,observedAt:githubActions.checkedAt,
+    runId:String(task.runId),operation:task.step,source:"GITHUB_ACTIONS_STEP" as const,
+    evidenceUrl:task.runUrl,acceptanceGranted:false as const}
+  :null;
+ const prior=githubActions.lastTaskExecution;
+ const lastVerifiedTaskExecution=prior&&activeInstallationTasks(masterBuildTasks).some(
+  row=>row.id===prior.taskId&&row.label===prior.label)?prior:null;
+ return NextResponse.json({schemaVersion:1,checkedAt,githubActions,activeExecution,
+  lastVerifiedTaskExecution,registryUpdatedAt:saved.updatedAt,taskCount:ids.length,historicalTaskCount:masterBuildTasks.reduce((n,tasks)=>n+tasks.length,0)-ids.length,rejectedVerified,counts,tasks,checks,observations:mappedObservations,observationSummary,automatedAcceptanceCoverage:0,unverifiedCount:counts.Unverified??0,verifiedCount:counts.Verified??0,liveChecksPassing:observationSummary.probesHealthy,liveChecksTotal:Object.keys(checks).length,notice:"Live observations are separate from task-specific acceptance evidence. Unverified does not mean incomplete."},{headers:{"Cache-Control":"no-store, max-age=0"}});
 }
