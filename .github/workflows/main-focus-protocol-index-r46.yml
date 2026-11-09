@@ -1,0 +1,98 @@
+name: MAIN R46 original FOCUS public protocol/SAP document index
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-focus-protocol-index-r46.yml
+      - new-platform/backend/scripts/build_focus_protocol_index_r46.py
+      - new-platform/backend/tests/test_focus_protocol_index_r46.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: main-r46-protocol-sap-research
+  cancel-in-progress: false
+
+jobs:
+  source-only-protocol-sap-document-index:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify original immutable NCT and application membership and synthetic guards
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python -m pip install pytest
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_focus_protocol_index_r46.py tests/test_focus_registry_endpoint_concordance_r45.py tests/test_hop_blinded_phase3_backtest.py
+          PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
+      - name: Download original 29 current registry records and extract public protocol and SAP index
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r46-protocol/original"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_focus_protocol_index_r46.py \
+            --output "$RUNNER_TEMP/r46-protocol/reviewer_current_protocol_index.json" \
+            --raw-dir "$RUNNER_TEMP/r46-protocol/original"
+      - name: Verify original byte hashes and safe review-only status
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,hashlib,os
+          from pathlib import Path
+          d=Path(os.environ["RUNNER_TEMP"])/"r46-protocol"
+          payload=(d/"reviewer_current_protocol_index.json").read_bytes()
+          r=json.loads(payload)
+          assert r["schema"]=="MAIN_R46_PUBLIC_REGISTRY_PROTOCOL_SAP_INDEX"
+          assert r["nctCount"]==29 and r["applicationGroupCount"]==23
+          assert len(r["records"])==29 and len({x["nct"] for x in r["records"]})==29
+          assert r["preReadoutSapVersionsIndependentlyVerified"]==0
+          assert r["scientificGradesWritten"]==0
+          assert r["signedIndependentReviews"]==0
+          assert r["validatedApplicationFdaForecasts"]==0
+          assert r["historicalBacktests"]==0
+          assert r["approvalProbability"] is None
+          assert r["historicalAccuracy"] is None
+          assert r["futureFdaForecast"]=="ABSTAIN"
+          assert r["futureReviewDelayForecast"]=="ABSTAIN"
+          assert r["modelTrainingAuthorized"] is False
+          assert r["productionOrReviewerWrites"] is False
+          for x in r["records"]:
+            if x.get("sourceResponseSha256"):
+              raw=(d/"original"/(x["nct"]+".json")).read_bytes()
+              assert hashlib.sha256(raw).hexdigest()==x["sourceResponseSha256"]
+          lines=[
+             "# MAIN R46 current original registry protocol / SAP public index",
+             f'Exact original NCT registry records fetched: {r["registryRecordsFetched"]}/29',
+             f'Current registry attached-document trials: {r["trialsWithCurrentAttachments"]}/29',
+             f'Current registry protocol-document trials: {r["trialsWithCurrentProtocol"]}/29',
+             f'Current registry SAP-document trials: {r["trialsWithCurrentSap"]}/29',
+             f'Original current document entries: {r["attachmentEntries"]}',
+             f'Trials without current registry documents: {r["missingCurrentAttachments"]}/29',
+             f'Receipt SHA-256: {hashlib.sha256(payload).hexdigest()}',
+             "CURRENT DOCUMENT METADATA IS NOT THE ORIGINAL LOCKED SAP OR SOURCE PUBLICATION CLOCK.",
+             "Independent clinical grades, validated forecasts, historical backtests: 0."
+          ]
+          print("\n".join(lines))
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write("\n\n".join(lines)+"\n")
+          PY
+      - name: Preserve immutable original current-registry response and document index
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r46-current-protocol-sap-document-index-${{ github.run_id }}
+          path: ${{ runner.temp }}/r46-protocol/
+          retention-days: 90
+          if-no-files-found: error
