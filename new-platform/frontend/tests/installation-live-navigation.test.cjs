@@ -52,26 +52,33 @@ test("scientific drilldown preserves the original catalog and labels 800 as a ta
 });
 
 
-test("LIVE arrow refreshes the current execution position before jumping",()=>{
+test("LIVE arrow jumps immediately and refreshes in the background",()=>{
  const css=fs.readFileSync(path.join(app,"installation-audit/InstallationLiveNavigator.module.css"),"utf8");
  assert.match(ui,/<span>LOCATE LIVE<\/span> <span className=\{styles\.liveArrow\}/);
  assert.match(ui,/onClick=\{\(\)=>\{void goToLive\(\);\}\}/);
- assert.match(ui,/const latest=await fetchData\(\)/);
- assert.match(ui,/const cursor=getActiveExecution\(latest\)/);
+ assert.match(ui,/locateSnapshot\(audit\);\s*void fetchData\(\)\.then\(latest=>/);
+ assert.ok(ui.indexOf("locateSnapshot(audit);") < ui.indexOf("void fetchData().then(latest=>"));
+ assert.doesNotMatch(ui,/onClick=\{\(\)=>\{void goToLive\(\);\}\} disabled=\{busy\}/);
+ assert.match(ui,/const cursor=getActiveExecution\(snapshot\)/);
  assert.match(ui,/setSection\("present"\)/);
  assert.match(ui,/setChosenTask\(destination\)/);
  assert.match(ui,/requestAnimationFrame/);
+ assert.match(ui,/second=window\.requestAnimationFrame/);
+ assert.match(ui,/data-installation-task-list/);
+ assert.match(ui,/list\.scrollTop\+=/);
+ assert.match(ui,/target\.focus\(\{preventScroll:true\}\)/);
  assert.match(ui,/document\.getElementById\(idOf\(liveJump\.taskId\)\)/);
  assert.match(ui,/document\.getElementById\("installation-active-cursor"\)/);
  assert.match(ui,/id="installation-active-cursor"/);
  assert.match(ui,/Live location unavailable: no fresh, verified running task or dated checkpoint/);
+ assert.match(ui,/No verified live location has loaded yet/);
  assert.match(ui,/90000/);
  assert.match(css,/\.liveButton/);
  assert.match(css,/\.liveArrow/);
  assert.match(css,/\.cursorTarget/);
  assert.match(css,/\.locateIcon/);
  assert.match(css,/\.checkpointMarker/);
- assert.match(ui,/const documented=cursor\?null:getDocumentedCheckpoint\(latest\)/);
+ assert.match(ui,/const documented=cursor\?null:getDocumentedCheckpoint\(snapshot\)/);
  assert.match(ui,/aria-current=\{located\?"location":undefined\}/);
  assert.match(ui,/last documented checkpoint/);
  assert.match(ui,/Historical implementation evidence only/);

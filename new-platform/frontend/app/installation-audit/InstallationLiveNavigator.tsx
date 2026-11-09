@@ -114,27 +114,37 @@ export default function InstallationLiveNavigator(){
   return()=>{mounted.current=false;window.clearInterval(interval);document.removeEventListener("visibilitychange",visible);};
  },[fetchData]);
  const active=useMemo(()=>getActiveExecution(audit),[audit]);
- const goToLive=useCallback(async()=>{
-  // The button refreshes first; a stale saved registry never becomes a live cursor.
-  setBusy(true);
-  const latest=await fetchData();
-  const cursor=getActiveExecution(latest);
-  const documented=cursor?null:getDocumentedCheckpoint(latest);
+ const locateSnapshot=useCallback((snapshot:TaskResponse|null)=>{
+  // Always respond to a tap immediately, even if slow health probes are pending.
+  // A checkpoint is dated historical evidence, never a claimed live Codex task.
+  const cursor=getActiveExecution(snapshot);
+  const documented=cursor?null:getDocumentedCheckpoint(snapshot);
   const destination=cursor?.taskId??documented;
   setFollowing(true);
-  setInstallationExpanded(true); // A location jump opens its hidden destination first.
+  setInstallationExpanded(true);
   setSection("present");
   setChosenTask(destination);
   setLiveNotice(cursor
     ?"Located current LIVE installation task "+cursor.taskId+"."
     :documented
      ?"Located last documented checkpoint "+documented+". Historical implementation evidence only — NOT a verified running task."
-     :"Live location unavailable: no fresh, verified running task or dated checkpoint. Showing active cursor status instead.");
+     :snapshot
+      ?"Live location unavailable: no fresh, verified running task or dated checkpoint. Showing active cursor status instead."
+      :"No verified live location has loaded yet. Showing active cursor status; refreshing task evidence.");
   setLiveJump(previous=>({
    taskId:destination??null,kind:cursor?"live":documented?"documented":"status",
    sequence:(previous?.sequence??0)+1
   }));
- },[fetchData]);
+ },[]);
+ const goToLive=useCallback(()=>{
+  // First open and scroll from the latest known snapshot; never await the audit
+  // endpoint before making the button visibly work on mobile Safari.
+  locateSnapshot(audit);
+  void fetchData().then(latest=>{
+   if(latest)locateSnapshot(latest);
+   else setLiveNotice(previous=>previous+" Refresh failed; showing last recorded information.");
+  });
+ },[audit,fetchData,locateSnapshot]);
  useEffect(()=>{
   if(!following||!installationExpanded||!active?.taskId)return;
   setSection("present");
@@ -144,17 +154,24 @@ export default function InstallationLiveNavigator(){
  },[active?.taskId,following,installationExpanded]);
  useEffect(()=>{
   if(!liveJump||!installationExpanded)return;
-  // React must render the PRESENT list and expand the caret before scrolling.
-  const frame=window.requestAnimationFrame(()=>{
-   const target=liveJump.taskId?
-    document.getElementById(idOf(liveJump.taskId)):
-    document.getElementById("installation-active-cursor");
-   target?.scrollIntoView({
-    behavior:window.matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth",
-    block:"center"
+  // Wait for the opened caret and selected row to exist. Safari can ignore
+  // a same-frame scroll into newly mounted content, especially nested scrollers.
+  let second=0;
+  const first=window.requestAnimationFrame(()=>{
+   second=window.requestAnimationFrame(()=>{
+    const target=(liveJump.taskId&&document.getElementById(idOf(liveJump.taskId)))||
+     document.getElementById("installation-active-cursor");
+    if(!target)return;
+    const list=target.closest("[data-installation-task-list]");
+    if(list instanceof HTMLElement){
+     const row=target.getBoundingClientRect(),bounds=list.getBoundingClientRect();
+     list.scrollTop+=row.top-bounds.top-Math.max(0,(bounds.height-row.height)/2);
+    }
+    target.scrollIntoView({behavior:"auto",block:"center"});
+    target.focus({preventScroll:true});
    });
   });
-  return()=>window.cancelAnimationFrame(frame);
+  return()=>{window.cancelAnimationFrame(first);if(second)window.cancelAnimationFrame(second);};
  },[liveJump,section,installationExpanded]);
  const past=taskList.filter(t=>status(audit?.tasks[t.id])==="Verified");
  const progress=taskList.filter(t=>status(audit?.tasks[t.id])==="In Progress");
@@ -183,7 +200,7 @@ export default function InstallationLiveNavigator(){
     {busy?"Checking…":"Check installation now"}
    </button>
    <button type="button" className={styles.liveButton}
-    onClick={()=>{void goToLive();}} disabled={busy}
+    onClick={()=>{void goToLive();}}
     aria-label="Locate installation: jump to the current live task or last documented checkpoint">
     <svg className={styles.locateIcon} width="22" height="22" viewBox="0 0 24 24"
      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
@@ -201,7 +218,7 @@ export default function InstallationLiveNavigator(){
   {error&&<p role="alert" style={{color:"#ffd4bb"}}>{error}. Previous data may be stale.</p>}
   {liveNotice&&<p role="status" aria-live="polite" className={styles.liveNotice}>{liveNotice}</p>}
   {installationExpanded&&<div id="installation-tracker-details" className={styles.trackerDetails}>
-  <div id="installation-active-cursor" className={liveJump?.kind==="status"?styles.cursorTarget:undefined}
+  <div id="installation-active-cursor" tabIndex={-1} className={liveJump?.kind==="status"?styles.cursorTarget:undefined}
    style={{...panel,border:"2px solid #5aa9ae",marginBottom:12,scrollMarginTop:92}}>
    <strong>ACTIVE CURSOR</strong>
    {active?<>
@@ -242,12 +259,12 @@ export default function InstallationLiveNavigator(){
    </summary>
    {section==="present"&&!active&&<p style={info}>There is no verified executing task.
     Below are tasks labeled In Progress in the saved registry; these are <strong>not</strong> real-time worker positions.</p>}
-   <div style={{maxHeight:390,overflowY:"auto",display:"grid",gap:5}}>
+   <div data-installation-task-list style={{maxHeight:390,overflowY:"auto",display:"grid",gap:5}}>
     {visible.length===0&&<p style={info}>No items with independently supported status in this category.</p>}
     {visible.map(task=>{
      const row=audit?.tasks[task.id];
      const located=task.id===liveJump?.taskId;
-     return <div key={task.id} id={idOf(task.id)}
+     return <div key={task.id} id={idOf(task.id)} tabIndex={-1}
       className={located||task.id===active?.taskId?styles.cursorTarget:undefined}
       aria-current={located?"location":undefined}
       style={{padding:"9px 10px",scrollMarginTop:92,border:"1px solid #39717b",borderRadius:8,
