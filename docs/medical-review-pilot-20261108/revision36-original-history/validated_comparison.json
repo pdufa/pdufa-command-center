@@ -1,0 +1,386 @@
+{
+  "schema": "MAIN_OFFICIAL_PUBLIC_UI_HISTORY_RECONCILIATION_V1",
+  "nct": "NCT06081894",
+  "retrievedAt": "2026-11-09T13:31:09.288Z",
+  "accessMethod": "STANDARD_PUBLIC_HISTORY_UI",
+  "officialHistoryDatesVerified": true,
+  "sourceVersionCompleteness": true,
+  "versionData": {
+    "v26": {
+      "apiIndex": 25,
+      "submitted": "2025-01-11",
+      "sourceUrl": "https://clinicaltrials.gov/api/int/studies/NCT06081894/history/25",
+      "sourceSha256": "a9d32776b234ac19c45a2184bf2844f18992450d729f8b51a0ec7c2d7b5a1dcc",
+      "outcomes": {
+        "primary": [
+          {
+            "measure": "Change in Kansas City Cardiomyopathy Questionnaire - Clinical Summary Score (KCCQ-CSS)",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on participant health status"
+          }
+        ],
+        "secondary": [
+          {
+            "measure": "Change in composite of two Z-scores of CPET parameters (pVO2 and VE&#x2F;VCO2 slope)",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on global exercise capacity based on maximal and sub-maximal exercise performance"
+          },
+          {
+            "measure": "Proportion of participants with ≥ 1 class improvement in NYHA Functional Class",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on NYHA Functional Classification"
+          },
+          {
+            "measure": "Change in NT-proBNP",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on a biomarker of cardiac wall stress"
+          },
+          {
+            "measure": "Change in LAVI",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on echocardiographic measures of structural remodeling"
+          },
+          {
+            "measure": "Time to first CV event (CV death; heart transplantation or left ventricular assist device; aborted sudden cardiac death; non-fatal stroke; heart failure hospitalization; or cardiac arrhythmia requiring treatment or hospitalization)",
+            "timeFrame": "Baseline to End of Study, Week 72",
+            "description": "Effect of aficamten compared with placebo on cardiovascular events"
+          }
+        ],
+        "enrollment": {
+          "count": 420,
+          "type": "ESTIMATED"
+        },
+        "studyDesign": {
+          "allocation": "RANDOMIZED",
+          "interventionModel": "PARALLEL",
+          "primaryPurpose": "TREATMENT",
+          "maskingInfo": {
+            "masking": "DOUBLE",
+            "whoMasked": [
+              "PARTICIPANT",
+              "INVESTIGATOR"
+            ]
+          }
+        },
+        "lastUpdateSubmitted": "2025-01-11",
+        "lastUpdatePosted": {
+          "date": "2025-01-14",
+          "type": "ACTUAL"
+        },
+        "phase": [
+          "PHASE3"
+        ],
+        "overallStatus": "RECRUITING"
+      }
+    },
+    "v27": {
+      "apiIndex": 26,
+      "submitted": "2025-05-15",
+      "sourceUrl": "https://clinicaltrials.gov/api/int/studies/NCT06081894/history/26",
+      "sourceSha256": "357cdf145aaf982e6370ba6a37fe6d054caa86d2d4af409c11b24bcad9b40cab",
+      "outcomes": {
+        "primary": [
+          {
+            "measure": "Change in Kansas City Cardiomyopathy Questionnaire - Clinical Summary Score (KCCQ-CSS)",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on participant health status"
+          },
+          {
+            "measure": "Change in pVO2",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on maximal exercise capacity"
+          }
+        ],
+        "secondary": [
+          {
+            "measure": "Change in composite of two Z-scores of CPET parameters (pVO2 and VE&#x2F;VCO2 slope)",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on global exercise capacity based on maximal and sub-maximal exercise performance"
+          },
+          {
+            "measure": "Proportion of participants with ≥ 1 class improvement in NYHA Functional Class",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on NYHA Functional Classification"
+          },
+          {
+            "measure": "Change in NT-proBNP",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on a biomarker of cardiac wall stress"
+          },
+          {
+            "measure": "Change in LAVI",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on echocardiographic measures of structural remodeling"
+          },
+          {
+            "measure": "Time to first CV event",
+            "timeFrame": "Baseline to End of Study, Week 72",
+            "description": "Effect of aficamten compared with placebo on cardiovascular events (ie, CV death, heart transplantation or left ventricular assist device, aborted sudden cardiac death, non-fatal stroke, heart failure hospitalization, or cardiac arrhythmia (atrial fibrillation or ventricular tachyarrhythmia) requiring treatment or hospitalization)"
+          }
+        ],
+        "enrollment": {
+          "count": 500,
+          "type": "ESTIMATED"
+        },
+        "studyDesign": {
+          "allocation": "RANDOMIZED",
+          "interventionModel": "PARALLEL",
+          "primaryPurpose": "TREATMENT",
+          "maskingInfo": {
+            "masking": "DOUBLE",
+            "whoMasked": [
+              "PARTICIPANT",
+              "INVESTIGATOR"
+            ]
+          }
+        },
+        "lastUpdateSubmitted": "2025-05-15",
+        "lastUpdatePosted": {
+          "date": "2025-05-20",
+          "type": "ACTUAL"
+        },
+        "phase": [
+          "PHASE3"
+        ],
+        "overallStatus": "RECRUITING"
+      }
+    },
+    "v29": {
+      "apiIndex": 28,
+      "submitted": "2026-01-29",
+      "sourceUrl": "https://clinicaltrials.gov/api/int/studies/NCT06081894/history/28",
+      "sourceSha256": "c3bd369a3f996a0744fbc29480c2768362447f93c48f8810f9345000bb21c3d8",
+      "outcomes": {
+        "primary": [
+          {
+            "measure": "Change in Kansas City Cardiomyopathy Questionnaire - Clinical Summary Score (KCCQ-CSS)",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on participant health status"
+          },
+          {
+            "measure": "Change in pVO2",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on maximal exercise capacity"
+          }
+        ],
+        "secondary": [
+          {
+            "measure": "Change in composite of two Z-scores of CPET parameters (pVO2 and VE&#x2F;VCO2 slope)",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on global exercise capacity based on maximal and sub-maximal exercise performance"
+          },
+          {
+            "measure": "Proportion of participants with ≥ 1 class improvement in NYHA Functional Class",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on NYHA Functional Classification"
+          },
+          {
+            "measure": "Change in NT-proBNP",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on a biomarker of cardiac wall stress"
+          },
+          {
+            "measure": "Change in LAVI in participants without atrial fibrillation or flutter at baseline on ECG",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on echocardiographic measures of structural remodeling"
+          },
+          {
+            "measure": "Time to first CV event",
+            "timeFrame": "Baseline to End of Study, Week 72",
+            "description": "Effect of aficamten compared with placebo on cardiovascular events (ie, CV death, heart transplantation or left ventricular assist device, aborted sudden cardiac death, non-fatal stroke, heart failure hospitalization, or cardiac arrhythmia (atrial fibrillation or ventricular tachyarrhythmia) requiring treatment or hospitalization)"
+          }
+        ],
+        "enrollment": {
+          "count": 500,
+          "type": "ESTIMATED"
+        },
+        "studyDesign": {
+          "allocation": "RANDOMIZED",
+          "interventionModel": "PARALLEL",
+          "primaryPurpose": "TREATMENT",
+          "maskingInfo": {
+            "masking": "DOUBLE",
+            "whoMasked": [
+              "PARTICIPANT",
+              "INVESTIGATOR"
+            ]
+          }
+        },
+        "lastUpdateSubmitted": "2026-01-29",
+        "lastUpdatePosted": {
+          "date": "2026-02-02",
+          "type": "ACTUAL"
+        },
+        "phase": [
+          "PHASE3"
+        ],
+        "overallStatus": "ACTIVE_NOT_RECRUITING"
+      }
+    },
+    "v30": {
+      "apiIndex": 29,
+      "submitted": "2026-08-03",
+      "sourceUrl": "https://clinicaltrials.gov/api/int/studies/NCT06081894/history/29",
+      "sourceSha256": "ab34c765bfb5597f61c736d07076afd8ec3845085946024e03dd04646936a3cd",
+      "outcomes": {
+        "primary": [
+          {
+            "measure": "Change in Kansas City Cardiomyopathy Questionnaire - Clinical Summary Score (KCCQ-CSS)",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on participant health status"
+          },
+          {
+            "measure": "Change in pVO2",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on maximal exercise capacity"
+          }
+        ],
+        "secondary": [
+          {
+            "measure": "Change in composite of two Z-scores of CPET parameters (pVO2 and VE&#x2F;VCO2 slope)",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on global exercise capacity based on maximal and sub-maximal exercise performance"
+          },
+          {
+            "measure": "Proportion of participants with ≥ 1 class improvement in New York Heart Association (NYHA) Functional Class",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on NYHA Functional Classification"
+          },
+          {
+            "measure": "Change in N-terminal prohormone brain natriuretic peptide (NT-proBNP)",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on a biomarker of cardiac wall stress"
+          },
+          {
+            "measure": "Change in Left Atrial Volume Index (LAVI) in participants without atrial fibrillation or flutter at baseline on ECG",
+            "timeFrame": "Baseline to Week 36",
+            "description": "Effect of aficamten compared with placebo on echocardiographic measures of structural remodeling"
+          },
+          {
+            "measure": "Time to first cardiovascular (CV) event",
+            "timeFrame": "Baseline to End of Study, Week 72",
+            "description": "Effect of aficamten compared with placebo on cardiovascular events (ie, CV death, heart transplantation or left ventricular assist device, aborted sudden cardiac death, non-fatal stroke, heart failure hospitalization, or cardiac arrhythmia (atrial fibrillation or ventricular tachyarrhythmia) requiring treatment or hospitalization)"
+          }
+        ],
+        "enrollment": {
+          "count": 500,
+          "type": "ESTIMATED"
+        },
+        "studyDesign": {
+          "allocation": "RANDOMIZED",
+          "interventionModel": "PARALLEL",
+          "primaryPurpose": "TREATMENT",
+          "maskingInfo": {
+            "masking": "DOUBLE",
+            "whoMasked": [
+              "PARTICIPANT",
+              "INVESTIGATOR"
+            ]
+          }
+        },
+        "lastUpdateSubmitted": "2026-08-03",
+        "lastUpdatePosted": {
+          "date": "2026-08-05",
+          "type": "ACTUAL"
+        },
+        "phase": [
+          "PHASE3"
+        ],
+        "overallStatus": "ACTIVE_NOT_RECRUITING"
+      }
+    }
+  },
+  "directV26V27": {
+    "primaryBefore": 1,
+    "primaryAfter": 2,
+    "primaryBeforeDefinitions": [
+      {
+        "measure": "Change in Kansas City Cardiomyopathy Questionnaire - Clinical Summary Score (KCCQ-CSS)",
+        "timeFrame": "Baseline to Week 36",
+        "description": "Effect of aficamten compared with placebo on participant health status"
+      }
+    ],
+    "primaryAfterDefinitions": [
+      {
+        "measure": "Change in Kansas City Cardiomyopathy Questionnaire - Clinical Summary Score (KCCQ-CSS)",
+        "timeFrame": "Baseline to Week 36",
+        "description": "Effect of aficamten compared with placebo on participant health status"
+      },
+      {
+        "measure": "Change in pVO2",
+        "timeFrame": "Baseline to Week 36",
+        "description": "Effect of aficamten compared with placebo on maximal exercise capacity"
+      }
+    ],
+    "primaryMeasureAdded": [
+      {
+        "measure": "Change in pVO2",
+        "timeFrame": "Baseline to Week 36"
+      }
+    ],
+    "primaryMeasureRemoved": [],
+    "primaryDescriptionChanges": [],
+    "enrollmentBefore": {
+      "count": 420,
+      "type": "ESTIMATED"
+    },
+    "enrollmentAfter": {
+      "count": 500,
+      "type": "ESTIMATED"
+    },
+    "originalVersionTextsVerifiedByApi": true,
+    "clinicalIntegrityJudgment": "AWAITING_FULL_PROTOCOL_SAP_TIMELINE_ADJUDICATION",
+    "interpretation": "OFFICIAL_HISTORICAL_TEXT_DIFF_NOT_A_POST_HOC_INTEGRITY_VERDICT"
+  },
+  "directV29V30": {
+    "primaryBefore": 2,
+    "primaryAfter": 2,
+    "primaryBeforeDefinitions": [
+      {
+        "measure": "Change in Kansas City Cardiomyopathy Questionnaire - Clinical Summary Score (KCCQ-CSS)",
+        "timeFrame": "Baseline to Week 36",
+        "description": "Effect of aficamten compared with placebo on participant health status"
+      },
+      {
+        "measure": "Change in pVO2",
+        "timeFrame": "Baseline to Week 36",
+        "description": "Effect of aficamten compared with placebo on maximal exercise capacity"
+      }
+    ],
+    "primaryAfterDefinitions": [
+      {
+        "measure": "Change in Kansas City Cardiomyopathy Questionnaire - Clinical Summary Score (KCCQ-CSS)",
+        "timeFrame": "Baseline to Week 36",
+        "description": "Effect of aficamten compared with placebo on participant health status"
+      },
+      {
+        "measure": "Change in pVO2",
+        "timeFrame": "Baseline to Week 36",
+        "description": "Effect of aficamten compared with placebo on maximal exercise capacity"
+      }
+    ],
+    "primaryMeasureAdded": [],
+    "primaryMeasureRemoved": [],
+    "primaryDescriptionChanges": [],
+    "enrollmentBefore": {
+      "count": 500,
+      "type": "ESTIMATED"
+    },
+    "enrollmentAfter": {
+      "count": 500,
+      "type": "ESTIMATED"
+    },
+    "originalVersionTextsVerifiedByApi": true,
+    "clinicalIntegrityJudgment": "AWAITING_FULL_PROTOCOL_SAP_TIMELINE_ADJUDICATION",
+    "interpretation": "OFFICIAL_HISTORICAL_TEXT_DIFF_NOT_A_POST_HOC_INTEGRITY_VERDICT"
+  },
+  "clinicalSignoff": false,
+  "gradedMethods": 0,
+  "phaseReviewerVerified": false,
+  "fdaPredictions": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "accuracy": "NOT_CALIBRATED"
+}

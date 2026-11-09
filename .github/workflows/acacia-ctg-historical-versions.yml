@@ -6,6 +6,7 @@ on:
     paths:
       - scripts/medical/acacia_ctg_historical_versions.py
       - tests/test_acacia_ctg_historical_versions.py
+      - docs/medical-review-pilot-20261108/revision36-original-history/**
       - .github/workflows/acacia-ctg-historical-versions.yml
   workflow_dispatch:
 
@@ -30,44 +31,40 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           python3 -m py_compile scripts/medical/acacia_ctg_historical_versions.py
           python3 -m unittest discover -s tests -p test_acacia_ctg_historical_versions.py -v
-          grep -Fq 'NCT="NCT06081894"' scripts/medical/acacia_ctg_historical_versions.py
-          grep -Fq 'www.clinicaltrials.gov/api/int/studies/' scripts/medical/acacia_ctg_historical_versions.py
-      - name: Retrieve original exact version 26 27 29 30 and record integrity
+      - name: Reproduce retained original public-UI version comparison offline
         shell: bash
-        timeout-minutes: 4
-        run: python3 scripts/medical/acacia_ctg_historical_versions.py
-      - name: Describe retrieved originals without clinical signoff
+        run: >-
+          python3 scripts/medical/acacia_ctg_historical_versions.py
+          --public-browser-capture docs/medical-review-pilot-20261108/revision36-original-history
+      - name: Describe retained source verification separately from live freshness
         if: always()
         shell: bash
         run: |
           python3 - <<'PY'
           import json,os
           from pathlib import Path
-          p=Path("acacia-original-ctg-versions/source_receipt.json")
-          if p.exists():
-              x=json.loads(p.read_text())
-              assert x["nct"]=="NCT06081894"
-              assert x["clinicalSignoff"] is False
-              assert x["gradedMethods"]==0
-              assert x["fdaPredictions"]=={"APPROVAL":"ABSTAIN","CRL":"ABSTAIN","REVIEW_DELAY":"ABSTAIN"}
-              y=x.get("directV26V27",{})
-              summary=(
-                  "## ACACIA original official historical version audit\n\n"+
-                  "Original v26/v27 endpoint text verified: "+str(x.get("originalV26V27ComparisonVerified",False))+"\n\n"+
-                  "Original primary outcomes: "+str(y.get("primaryBefore","UNKNOWN"))+" -> "+str(y.get("primaryAfter","UNKNOWN"))+"\n\n"+
-                  "Full 4-version source completeness: "+str(x["sourceVersionCompleteness"])+"\n\n"+
-                  "Original SAP authenticated: NO; clinical grades: 0; FDA: ABSTAIN.\n"
-              )
-          else:
-              summary="## ACACIA official historical version check\n\nNo audit receipt was produced. No scientific status changed.\n"
-          with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as file:
-              file.write(summary)
+          p=Path("docs/medical-review-pilot-20261108/revision36-original-history/validated_comparison.json")
+          x=json.loads(p.read_text())
+          assert x["nct"]=="NCT06081894"
+          assert x["clinicalSignoff"] is False and x["gradedMethods"]==0
+          assert x["fdaPredictions"]=={"APPROVAL":"ABSTAIN","CRL":"ABSTAIN","REVIEW_DELAY":"ABSTAIN"}
+          y=x["directV26V27"]
+          summary=(
+              "## ACACIA retained original public-UI history verification\n\n"+
+              "Capture date: "+x["retrievedAt"]+"; this CI run is offline replay, not a fresh source retrieval.\n\n"+
+              "Raw byte digests, exact NCT, API version IDs and official date crosswalk checked.\n\n"+
+              "Original primary outcomes v26 -> v27: "+str(y["primaryBefore"])+" -> "+str(y["primaryAfter"])+".\n\n"+
+              "Full 4-version source completeness: "+str(x["sourceVersionCompleteness"])+".\n\n"+
+              "Earlier direct-API 403 receipts preserved; no denied requests repeated.\n\n"+
+              "Final locked SAP authenticated: NO; clinical grades: 0; FDA: ABSTAIN.\n"
+          )
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as file:file.write(summary)
           PY
-      - name: Upload public source original versions and receipt
+      - name: Upload retained originals and validation receipt
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: acacia-original-ctg-history-receipt-${{ github.run_id }}-${{ github.run_attempt }}
-          path: acacia-original-ctg-versions/
+          path: docs/medical-review-pilot-20261108/revision36-original-history/
           retention-days: 30
-          if-no-files-found: warn
+          if-no-files-found: error

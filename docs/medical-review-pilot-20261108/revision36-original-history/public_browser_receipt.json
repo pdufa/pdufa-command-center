@@ -1,0 +1,115 @@
+{
+  "schema": "MAIN_CTG_PUBLIC_UI_CAPTURE_V1",
+  "nct": "NCT06081894",
+  "retrievedAt": "2026-11-09T13:31:09.288Z",
+  "accessMethod": "STANDARD_PUBLIC_HISTORY_UI",
+  "credentialsUsed": false,
+  "customUserAgent": false,
+  "accessRestrictionBypass": false,
+  "clinicalSignoff": false,
+  "gradedMethods": 0,
+  "fdaPrediction": "ABSTAIN",
+  "versions": [
+    {
+      "version": 26,
+      "apiIndex": 25,
+      "pageUrl": "https://clinicaltrials.gov/study/NCT06081894?a=26&tab=history",
+      "startedAt": "2026-11-09T13:31:10.205Z",
+      "status": "ORIGINAL_BYTES_CAPTURED_NOT_YET_VALIDATED",
+      "pageHttpStatus": 200,
+      "sourceUrl": "https://clinicaltrials.gov/api/int/studies/NCT06081894/history/25",
+      "httpStatus": 200,
+      "retrievedAt": "2026-11-09T13:31:12.252Z",
+      "artifact": "v26_original_registry.json",
+      "sha256": "a9d32776b234ac19c45a2184bf2844f18992450d729f8b51a0ec7c2d7b5a1dcc",
+      "bytes": 56618,
+      "renderedPage": {
+        "artifact": "v26_public_page.txt",
+        "sha256": "959aca063b65d304ca11010a404061c611f8c64348507371dc8f51061a943781",
+        "bytes": 28103
+      }
+    },
+    {
+      "version": 27,
+      "apiIndex": 26,
+      "pageUrl": "https://clinicaltrials.gov/study/NCT06081894?a=27&tab=history",
+      "startedAt": "2026-11-09T13:31:14.324Z",
+      "status": "ORIGINAL_BYTES_CAPTURED_NOT_YET_VALIDATED",
+      "pageHttpStatus": 200,
+      "sourceUrl": "https://clinicaltrials.gov/api/int/studies/NCT06081894/history/26",
+      "httpStatus": 200,
+      "retrievedAt": "2026-11-09T13:31:16.359Z",
+      "artifact": "v27_original_registry.json",
+      "sha256": "357cdf145aaf982e6370ba6a37fe6d054caa86d2d4af409c11b24bcad9b40cab",
+      "bytes": 57038,
+      "renderedPage": {
+        "artifact": "v27_public_page.txt",
+        "sha256": "6b4786abdc12fe4cfe8f63d962ee2ce85631010c08538745dd948bcb411038f9",
+        "bytes": 28282
+      }
+    },
+    {
+      "version": 29,
+      "apiIndex": 28,
+      "pageUrl": "https://clinicaltrials.gov/study/NCT06081894?a=29&tab=history",
+      "startedAt": "2026-11-09T13:31:18.844Z",
+      "status": "ORIGINAL_BYTES_CAPTURED_NOT_YET_VALIDATED",
+      "pageHttpStatus": 200,
+      "sourceUrl": "https://clinicaltrials.gov/api/int/studies/NCT06081894/history/28",
+      "httpStatus": 200,
+      "retrievedAt": "2026-11-09T13:31:20.488Z",
+      "artifact": "v29_original_registry.json",
+      "sha256": "c3bd369a3f996a0744fbc29480c2768362447f93c48f8810f9345000bb21c3d8",
+      "bytes": 64712,
+      "renderedPage": {
+        "artifact": "v29_public_page.txt",
+        "sha256": "b56e5f9896df9f726c04e6aacff3c7074c9f82a447da264d678a1813ec8045de",
+        "bytes": 29371
+      }
+    },
+    {
+      "version": 30,
+      "apiIndex": 29,
+      "pageUrl": "https://clinicaltrials.gov/study/NCT06081894?a=30&tab=history",
+      "startedAt": "2026-11-09T13:31:21.846Z",
+      "status": "ORIGINAL_BYTES_CAPTURED_NOT_YET_VALIDATED",
+      "pageHttpStatus": 200,
+      "sourceUrl": "https://clinicaltrials.gov/api/int/studies/NCT06081894/history/29",
+      "httpStatus": 200,
+      "retrievedAt": "2026-11-09T13:31:23.840Z",
+      "artifact": "v30_original_registry.json",
+      "sha256": "ab34c765bfb5597f61c736d07076afd8ec3845085946024e03dd04646936a3cd",
+      "bytes": 64875,
+      "renderedPage": {
+        "artifact": "v30_public_page.txt",
+        "sha256": "acc18fe4f6b669dc95506a6ef03d1d2a990912ba11714a65382c7be699385ba8",
+        "bytes": 29534
+      }
+    }
+  ],
+  "index": {
+    "sourceUrl": "https://clinicaltrials.gov/api/int/studies/NCT06081894?history=true",
+    "httpStatus": 200,
+    "retrievedAt": "2026-11-09T13:29:23.640772+00:00",
+    "timestampBasis": "LOCAL_CAPTURE_COMPLETION_FILE_MTIME_UTC",
+    "artifact": "original_history_index.json",
+    "sha256": "bd48e64735f866f9db0ef6d1f2596d902397948b6ccdba3e470e500ad3b432aa",
+    "bytes": 48234,
+    "status": "ORIGINAL_BYTES_CAPTURED_NOT_YET_VALIDATED",
+    "pageUrl": "https://clinicaltrials.gov/study/NCT06081894?a=26&tab=history",
+    "capture": "INITIAL_STANDARD_BROWSER_PROBE"
+  },
+  "indexAttempts": [
+    {
+      "sourceUrl": "https://clinicaltrials.gov/api/int/studies/NCT06081894?history=true",
+      "httpStatus": 403,
+      "retrievedAt": "2026-11-09T13:31:11.961Z",
+      "status": "PUBLIC_UI_SOURCE_UNAVAILABLE"
+    }
+  ],
+  "receiptComposition": {
+    "source": "Initial successful public-UI index receipt plus subsequent four-version public-UI capture; intermittent index 403 preserved.",
+    "secondCaptureReceipt": "public_browser_attempt_2_receipt.json",
+    "secondCaptureReceiptSha256": "6896e5acec788a6b5e774886ff7066e250f327c22a2892c1097daba7672eee94"
+  }
+}

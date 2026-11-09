@@ -1,0 +1,180 @@
+{
+  "schema": "MAIN_ACACIA_REV36_PROTOCOL_SAFETY_RESEARCH_PACKET_V1",
+  "checkpointBase": "13b3dae5cd8bfb003430e03f56bff58caf1da70c",
+  "examinedAt": "2026-11-09T13:32:58Z",
+  "identity": {
+    "nct": "NCT06081894",
+    "protocol": "CY 6033",
+    "euTrial": "2023-505797-15-00",
+    "trial": "ACACIA-HCM",
+    "indication": "SYMPTOMATIC_NONOBSTRUCTIVE_HCM"
+  },
+  "status": "AUTOMATED_DOCUMENTARY_RESEARCH_REQUIRES_AUTHORIZED_INDEPENDENT_REVIEW",
+  "sourceExaminations": [
+    {
+      "id": "REV36_EXISTING_CTIS_AM04_REEXAMINATION",
+      "title": "Protocol CY 6033, Amendment 04",
+      "publicationDate": "2025-10-28",
+      "version": "AMENDMENT_04",
+      "url": "https://euclinicaltrials.eu/ctis-public/view/2023-505797-15-00?lang=en",
+      "existingArchiveUrl": "https://github.com/pdufa/pdufa-command-center/actions/runs/42525291355/artifacts/13634488398",
+      "previousReceipt": "../authenticated-am4-original-protocol-revision5-20261108.json",
+      "originalCaptureDate": "2026-11-08",
+      "status": "EXISTING_ORIGINAL_BYTES_REEXAMINED_HASH_MATCH",
+      "sha256": "853ffd80a547df8a7b813b8985c7116dd6168a640f18521f61b95cf33a8ca5f8",
+      "bytes": 701086,
+      "pdfPages": 90,
+      "visualExamination": {
+        "performedBy": "AUTOMATED_ASSISTANT",
+        "physicalPdfPage": 66,
+        "printedPage": "66 of 88",
+        "figure": "2",
+        "scope": "Graph nodes, initial weights, arrow directions and edge labels; section 9.4.2 models",
+        "independentClinicalReview": false
+      },
+      "limitations": [
+        "Reexamination of the preserved original is not a newly collected document or a new independently graded test.",
+        "The protocol summary and figure are not the dated final locked SAP or evidence that its implementation matched this version.",
+        "No raw PDF or extracted full text is duplicated in this repository packet."
+      ]
+    },
+    {
+      "id": "REV36_HFSA_DOSING_SAFETY_PUBLIC_DECK",
+      "title": "Dose Titration and Safety Profile of Aficamten in Nonobstructive Hypertrophic Cardiomyopathy: Findings from ACACIA-HCM",
+      "publicationDate": "2026-10-11",
+      "publicationDateBasis": "Sponsor publications index, page 2",
+      "version": "Filename FINAL_V3; final SAP status not implied",
+      "url": "https://cytokinetics.com/wp-content/uploads/2026/10/HFSA26-ACACIA-Dosing-and-Safety-Rapid-Fire-Presentation_FINAL_V3.pdf",
+      "discoveredFrom": "https://cytokinetics.com/medicines-research/pipeline/publications/page/2/",
+      "status": "PUBLIC_PDF_TEXT_INSPECTED_BYTES_NOT_CAPTURED",
+      "retrievalDate": "2026-11-09",
+      "pdfPagesReportedByWebReader": 12,
+      "sha256": null,
+      "bytes": null,
+      "directDownloadHttpStatus": 403,
+      "ordinaryPublicBrowser": {
+        "listingHttpStatus": 200,
+        "originalLinkedPdfHttpStatus": 200,
+        "exactResponseBytesCaptured": false,
+        "downloadCount": 0,
+        "credentialsUsed": false,
+        "accessRestrictionBypass": false,
+        "linkReceipt": "./public-browser-link-receipt.json",
+        "downloadReceipt": "./public-browser-download-receipt.json"
+      },
+      "visualExaminationCompleted": false,
+      "exactNctAssociation": "ACACIA-HCM title, same aficamten/placebo arms 258/259; NCT text not independently seen in this PDF. Association uses the preserved exact-trial source map and original protocol.",
+      "limitations": [
+        "Original sponsor-hosted investigator presentation; not a CSR, event line listing, independently adjudicated dataset, final SAP, or FDA review.",
+        "Web reader returned original PDF text. Its screenshot calls returned textual image placeholders only, so no visual verification is claimed.",
+        "A standard direct request returned HTTP 403. No altered headers, challenge-solving or restricted copies were used. Original file hash is unknown until exact bytes are lawfully captured.",
+        "A subsequent ordinary browser click from the public sponsor listing returned HTTP 200 for both listing and linked PDF. Response bytes were inaccessible to the browser integration; a standard browser-download preference produced no download. This confirms ordinary public link access, but not file capture or visual verification. No retries or access bypass followed.",
+        "No full presentation or licensed dataset is imported; only bounded factual research notes and source metadata are preserved."
+      ]
+    }
+  ],
+  "protocolGraph": {
+    "sourceId": "REV36_EXISTING_CTIS_AM04_REEXAMINATION",
+    "section": "9.4.1.1 / Figure 2",
+    "printedPages": [65, 66],
+    "familywiseTwoSidedAlpha": 0.05,
+    "nodes": [
+      {"id": "H1", "endpoint": "Week-36 KCCQ-CSS change", "initialWeight": 0.5},
+      {"id": "H2", "endpoint": "Week-36 pVO2 change", "initialWeight": 0.5},
+      {"id": "H3", "endpoint": "Week-36 NYHA class improvement", "initialWeight": 0},
+      {"id": "H4", "endpoint": "Week-36 CPET composite z-score change", "initialWeight": 0},
+      {"id": "H5", "endpoint": "Week-36 NT-proBNP change", "initialWeight": 0},
+      {"id": "H6", "endpoint": "Week-36 LAVI change without baseline ECG atrial fibrillation/flutter", "initialWeight": 0},
+      {"id": "H7", "endpoint": "Time to first cardiovascular event", "initialWeight": 0}
+    ],
+    "visibleEdgesWithinGroup": [
+      {"from": "H1", "to": "H2", "weight": 0.5},
+      {"from": "H1", "to": "H3", "weight": 0.5},
+      {"from": "H2", "to": "H3", "weight": 1},
+      {"from": "H3", "to": "H4", "weight": 1},
+      {"from": "H4", "to": "H5", "weight": 1},
+      {"from": "H5", "to": "H1", "weight": 1}
+    ],
+    "visibleGroupExit": {"fromGroup": ["H1", "H2", "H3", "H4", "H5"], "to": "H6", "weight": 1},
+    "visibleDownstreamEdge": {"from": "H6", "to": "H7", "weight": 1},
+    "interpretationLimit": "The outer-box exit is transcribed as a group edge. Detailed transition/recycling algorithms, exact gate semantics, lock timing and actual testing implementation still require the final SAP and authorized statistical review.",
+    "finalLockedSapVerified": false,
+    "grade": null
+  },
+  "methodHandoffs": [
+    {
+      "positions": ["4.2:L1", "4.2:L2", "5.2:L1", "8.2:L4"],
+      "sourceId": "REV36_EXISTING_CTIS_AM04_REEXAMINATION",
+      "finding": "AM04 p4 states graphical alpha recycling and the LAVI baseline-AF restriction were amendment changes. The p66 original graph now has a page-level visual transcription.",
+      "remaining": "Reconcile prior amendments and official registry versions with final dated SAP and database-lock/unblinding chronology. Do not infer misconduct or prespecification solely from later amendment text.",
+      "grade": null
+    },
+    {
+      "positions": ["4.3:L1", "4.3:L4", "5.1:L12"],
+      "sourceId": "REV36_EXISTING_CTIS_AM04_REEXAMINATION",
+      "finding": "Sections 9.3-9.4.2 distinguish all-randomized FAS from at-least-one-dose safety set. KCCQ uses MMRM; pVO2 uses ANCOVA. Missing-data and sensitivity detail is explicitly deferred to the SAP on p67.",
+      "remaining": "Final SAP/version lock, analysis populations, model diagnostics, exact missingness algorithms and sensitivity outputs are not authenticated. Protocol populations do not resolve actual 516/517 accounting.",
+      "grade": null
+    },
+    {
+      "positions": ["5.3:L1", "5.3:L19"],
+      "sourceId": "REV36_EXISTING_CTIS_AM04_REEXAMINATION",
+      "finding": "Protocol p44 separates temporary interruption, permanent IP discontinuation and consent withdrawal. Permanent-discontinuation criteria include LVEF below 40% with concurrent HF SAE. Temporary LVEF-triggered interruption resumes only after LVEF reaches at least 60%.",
+      "remaining": "Protocol intervention rules do not establish observed interruption counts, denominators, safety-set allocation, SAE coding or causality.",
+      "grade": null
+    },
+    {
+      "positions": ["5.3:L1", "5.3:L19", "5.4:L1"],
+      "sourceId": "REV36_HFSA_DOSING_SAFETY_PUBLIC_DECK",
+      "finding": "PDF index7 reports HF SAEs 12/3 and LVEF<40% 7/0; index9 says all treated HF events occurred before week12 during titration, with two associated with LVEF<50%. Index6 lists first-composite-event HF4/1; this is a different endpoint numerator.",
+      "remaining": "11/1 versus12/3 remains unresolved: later reporting alone cannot prove later events. Need matched SAE definitions, cutoff, case listings and independent adjudication. 7/0 LVEF threshold events do not resolve the separately reported 14(2.7%) interruptions.",
+      "grade": null
+    }
+  ],
+  "arithmeticQuestions": [
+    {
+      "id": "REV36_HFSA_PLACEBO_AE_PERCENTAGE",
+      "sourceId": "REV36_HFSA_DOSING_SAFETY_PUBLIC_DECK",
+      "locator": "PDF zero-based index7, Adverse Events",
+      "reported": {"placeboAnyAe": 217, "printedPercent": 84.1, "printedArmN": 259},
+      "calculation": "100 * 217 / 259",
+      "calculatedPercentRounded2": 83.78,
+      "interpretation": "Printed numerator, percent and header do not reproduce using the printed arm N. No corrected denominator is assigned. Requires exact-byte/visual confirmation and original safety-population accounting.",
+      "clinicalGrade": null
+    }
+  ],
+  "unresolved": [
+    {"id": "FINAL_LOCKED_SAP", "status": "NOT_OBTAINED", "required": "Dated final CY6033 SAP, version approval and lock/unblinding chronology, full graphical-testing algorithm, missing-data/sensitivity specifications and results."},
+    {"id": "CONSORT_516_517", "status": "NOT_RECONCILED", "required": "Original CONSORT and FAS/safety counts by arm, cutoff, geographic cohort and actual exposure; no inference from secondary 516-treated summaries."},
+    {"id": "HF_SAE_11_1_12_3", "status": "NOT_RECONCILED", "required": "Original matched case definitions, coded event listings, reporting windows, recurrent versus first events, safety population and adjudication."},
+    {"id": "INTERRUPTION_14_2_7", "status": "NOT_RECONCILED", "required": "Original table/correction, participant versus event count, reason-specific interruptions, denominators, site/core-lab criteria and timing."}
+  ],
+  "coverage": {
+    "baseline": "Existing revision25 exact-position queue; this packet enriches existing source leads only.",
+    "mappedSourceLeadPositionsBefore": 18,
+    "mappedSourceLeadPositionsAfter": 18,
+    "unmappedPositionsBefore": 782,
+    "unmappedPositionsAfter": 782,
+    "officialMethodGradesBefore": 0,
+    "officialMethodGradesAfter": 0,
+    "independentAssessmentCompletionsAdded": 0,
+    "newIndependentSourceVerificationsAdded": 0,
+    "newOriginalDocumentsByteCaptured": 0,
+    "existingOriginalDocumentsHashReverified": 1,
+    "newOriginalPublicPresentationsTextInspected": 1,
+    "comment": "A source-to-method association, arithmetic check or visual document examination is not an independently reviewed scientific test. No source-run or ledger completion count is incremented by this documentation."
+  },
+  "safeguards": {
+    "clinicalReviewerIdentity": null,
+    "clinicalReviewerAuthorization": false,
+    "clinicalSignoff": false,
+    "ledgerWrites": 0,
+    "productionWrites": 0,
+    "restrictedRequestsSent": 0,
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN",
+    "certainty": "NOT_VALIDATED",
+    "accuracy": "NOT_CALIBRATED"
+  }
+}
