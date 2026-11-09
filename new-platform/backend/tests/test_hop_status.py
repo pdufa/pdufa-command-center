@@ -505,3 +505,39 @@ def test_fda_worksheet_requires_corresponding_pdf_evidence_inventory(tmp_path: P
     result = hop_readiness_status(page_candidate_audit_path=path)
     assert result["fda_page_review_worksheet"] is None
     assert result["prediction_probability"] is None
+
+
+def test_rev38_recaptured_source_receipt_is_visible_but_never_model_eligible():
+    source=hop_readiness_status()["fda_fresh_source_recapture"]
+    assert source["status"]=="FRESH_FDA_SOURCE_PRESERVED_RESEARCH_ONLY"
+    assert source["asOf"]=="2026-11-09"
+    assert source["candidateRows"]==412
+    assert source["approvedProductRegistryRecords"]==29446
+    assert source["selectedPublishedLetterRecords"]==458
+    assert source["archiveExpiresAt"]=="2027-02-07T15:13:43Z"
+    assert source["permanentBackup"] is False
+    assert source["completeApplicationCohort"] is False
+    assert source["independentlyAdjudicatedModelCases"]==0
+    assert source["approvalProbability"] is None
+    assert source["measuredAccuracy"] is None
+    assert hop_readiness_status()["historical_model_eligible"]==0
+
+def test_rev38_source_receipt_fail_closed_on_forged_probability_and_cohort_claim(tmp_path):
+    from app.hop_status import FRESH_SOURCE_R38_PATH
+    original=json.loads(FRESH_SOURCE_R38_PATH.read_text())
+    file=tmp_path/"fda.json"
+    for transform in [
+        lambda x:x.update(trainingAuthorized=True),
+        lambda x:x.update(completeApplicationFilingCohortVerified=True),
+        lambda x:x.update(candidateRows=413),
+        lambda x:x.update(approvalProbability=0.85),
+        lambda x:x.update(permanentBackup=True),
+        lambda x:x["sourceExports"]["drugsfda"].update(records=29500),
+    ]:
+        altered=json.loads(json.dumps(original))
+        transform(altered)
+        file.write_text(json.dumps(altered))
+        result=hop_readiness_status(fresh_source_path=file)
+        assert result["fda_fresh_source_recapture"] is None
+        assert result["prediction_probability"] is None
+        assert result["historical_model_eligible"]==0

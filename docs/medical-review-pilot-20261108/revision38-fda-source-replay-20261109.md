@@ -19,3 +19,18 @@ The workflow rejects any source or output marked as training eligible or indepen
 **Next scientific step:** independently construct a complete consecutive filing-year application census and adjudicate its action history across all outcomes, with separate dates for event, public disclosure and features. Preserve blinded chronological and program-family-disjoint validation sets. Do not use a selective CRL/approval survivor list to train the FDA prediction model.
 
 **Storage:** GitHub Actions artifacts expire at the configured retention limit (90 days when allowed). Permanent offsite archival, legal rights, credential setup and regulated storage are separate infrastructure decisions requiring authorization.
+
+
+## Live result — November 9, 2026
+
+[Source-recapture run 42642513960](https://github.com/pdufa/pdufa-command-center/actions/runs/42642513960) passed **48 tests**, collected the freshly exported source material and created [artifact 13685223999](https://github.com/pdufa/pdufa-command-center/actions/runs/42642513960/artifacts/13685223999), expiring February 7, 2027 at 15:13:43 UTC.
+
+| Source collection | Verified retrospective research count | Export date | SHA-256 |
+| --- | ---: | --- | --- |
+| Drugs@FDA approved-product registry | 29,446 | 2026-11-06 | 46e820abefd38fd714a9424026cc79b19675a1d8e5acce8ab4f39927f55df7fb |
+| Selectively published FDA letter records | 458 | 2026-11-02 | 9c8842d6991d0bacfa224f1b7063cdfdc6b3c3e748f4b9779189f40f0749d2fc |
+| Recomputed FY2024–FY2025 research candidates | **412** | 2026-11-09 analysis | c549a5af3aaef038d75917a96367d1e3fea84afd63ac505af806f239347be72c |
+
+The source artifact ZIP digest is 1eb68f5a9f92a0438e81b418f76a3b34202f3edf39672ade12eb9442a650c150. Original source bytes are contained in the time-limited artifact, **not** the API runtime. Exact source digest and outcome-restriction metadata are now preserved in a separate revision-38 receipt, exposed read-only in HOP readiness after strict validation.
+
+**All historical rows remain research leads, 0 independently adjudicated model cases and 0 measured out-of-sample accuracy.** No numerical FDA prediction is released. The record does not claim permanent archival, completed original filing census or independently verified predecision features.
