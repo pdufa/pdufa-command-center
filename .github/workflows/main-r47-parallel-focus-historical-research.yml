@@ -19,6 +19,8 @@ on:
       - new-platform/backend/tests/test_focus_source_change_review_r49.py
       - new-platform/backend/scripts/compare_original_focus_source_bodies_r50.py
       - new-platform/backend/tests/test_focus_source_body_diff_r50.py
+      - new-platform/backend/scripts/build_focus_application_efficacy_safety_r51.py
+      - new-platform/backend/tests/test_focus_application_efficacy_safety_r51.py
       - new-platform/backend/scripts/refresh_focus_public_sources_r40.py
       - new-platform/backend/tests/test_focus_source_recovery_r40.py
   workflow_dispatch:
@@ -57,7 +59,7 @@ jobs:
           test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
           python -m pip install pytest
           cd new-platform/backend
-          PYTHONPATH=. python -m pytest -q tests/test_parallel_focus_historical_r47.py tests/test_focus_registry_results_r42.py tests/test_focus_registry_safety_r44.py tests/test_focus_protocol_index_r46.py tests/test_research_workstream_history.py tests/test_focus_source_recovery_r40.py tests/test_focus_source_change_review_r49.py tests/test_focus_source_body_diff_r50.py
+          PYTHONPATH=. python -m pytest -q tests/test_parallel_focus_historical_r47.py tests/test_focus_registry_results_r42.py tests/test_focus_registry_safety_r44.py tests/test_focus_protocol_index_r46.py tests/test_research_workstream_history.py tests/test_focus_source_recovery_r40.py tests/test_focus_source_change_review_r49.py tests/test_focus_source_body_diff_r50.py tests/test_focus_application_efficacy_safety_r51.py
           PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
       - name: Locate the latest completed Track A history without changing either workstream
         id: previous_history
@@ -138,6 +140,56 @@ jobs:
           line=f'Track A: {status["exactNctCount"]} NCTs, {status["provisionalApplicationCount"]} application groups, primary posted tables on {status["trialsWithCurrentPostedPrimaryTables"]} NCTs, SAP attachment on {status["trialsWithCurrentRegistrySap"]} NCTs; 0 independent grades, 0 validated forecasts.'
           print(line)
           with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write("## Concurrent Track A: FOCUS scientific source triage\n"+line+"\n")
+          PY
+      - name: Reconstruct exact primary and safety evidence for the 23 current FDA application dossiers
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/build_focus_application_efficacy_safety_r51.py \
+            --primary "$RUNNER_TEMP/r47-focus/primary.json" \
+            --safety "$RUNNER_TEMP/r47-focus/safety.json" \
+            --documents "$RUNNER_TEMP/r47-focus/documents.json" \
+            --original-raw-dir "$RUNNER_TEMP/r47-focus/primary-original" \
+            --output "$RUNNER_TEMP/r47-focus/application-efficacy-safety-research.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"r47-focus"
+          d=json.loads((root/"application-efficacy-safety-research.json").read_bytes())
+          p=json.loads((root/"primary.json").read_bytes())
+          s=json.loads((root/"safety.json").read_bytes())
+          assert d["schema"]=="MAIN_R51_FOCUS_23_SOURCE_REPORTED_EFFICACY_AND_SAFETY_DOSSIERS"
+          assert d["trialRosterCount"]==29 and len(d["trialEvidence"])==29
+          assert d["applicationDossierCount"]==23 and len(d["applicationDossiers"])==23
+          assert len({x["nct"] for x in d["trialEvidence"]})==29
+          assert len({x["applicationCycleId"] for x in d["applicationDossiers"]})==23
+          assert d["currentPostedPrimaryTableCount"]==p["postedPrimaryOutcomeTableCount"]
+          assert d["currentReportedSeriousAeTermRows"]==s["seriousEventTermRows"]
+          assert d["currentReportedOtherAeTermRows"]==s["otherEventTermRows"]
+          assert d["independentScientificGrades"]==0
+          assert d["validatedFDAForecasts"]==0
+          assert d["historicalRealBacktests"]==0
+          assert d["measuredApprovalAccuracy"] is None
+          assert d["reportedPValuesAreNotMultiplicityValidated"] is True
+          assert d["currentRegistryVersionNotOriginalPredecisionVersion"] is True
+          assert d["armSpecificSafetyNoPoolingOrCausality"] is True
+          assert d["modelTrainingAuthorized"] is False
+          assert d["productionOrClinicalLedgerWrites"] is False
+          assert d["officialPendingFdaOutcomeAndTiming"]=="ABSTAIN"
+          assert all(x["numericalFdaProbability"] is None and x["scientificGrade"] is None
+                     and x["independentReviewerSignoff"] is False
+                     for x in d["applicationDossiers"])
+          msg=(f'R51: {d["applicationDossierCount"]} original FDA application research dossiers; '
+               f'{d["uniqueTrialsWithCurrentPrimaryTables"]}/29 NCTs with posted primary tables, '
+               f'{d["currentPostedPrimaryTableCount"]} reported primary tables, '
+               f'{d["currentReportedPrimaryStatisticalAnalysisCount"]} published p-value/method records, '
+               f'{d["uniqueTrialsWithCurrentAeModule"]}/29 NCTs with AE modules, '
+               f'{d["currentReportedSeriousAeTermRows"]} source SAE term rows and '
+               f'{d["currentReportedOtherAeTermRows"]} other AE term rows. '
+               'No clinical efficacy or safety causal verdict, independent forecast or accuracy.')
+          print(msg,flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+            f.write("\n## R51 clinical endpoint and safety current-source evidence\n\n"+msg+"\n")
           PY
       - name: Append Track A research history and source-change review receipts
         shell: bash
