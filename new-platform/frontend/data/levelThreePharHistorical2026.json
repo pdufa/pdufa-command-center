@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "dataset": "OUTCOME_AWARE_HISTORICAL_LEVEL3_COMPARISON_NOT_BLIND",
+  "asOf": "2026-11-09",
+  "records": [
+    {
+      "assessmentId": "HIST-PHAR-JOENJA-2026-10-24-LEVEL3-001",
+      "ticker": "PHAR",
+      "company": "Pharming Group N.V.",
+      "drug": "Joenja (leniolisib)",
+      "indication": "Activated PI3K delta syndrome in children ages 4-11 weighing at least 27 kg",
+      "applicationType": "SUPPLEMENTAL_NDA",
+      "fdaApplicationId": "NDA 217759/S-006",
+      "ncts": [
+        "NCT05438407"
+      ],
+      "clinicalPhase": "PHASE_3_PEDIATRIC_OPEN_LABEL",
+      "originalPdufaDate": "2026-10-24",
+      "evidenceCutoff": "2026-08-31",
+      "assessmentLevelStyle": 3,
+      "assessmentMethod": "MANUAL_THREE_LAYER_PREDECISION_EVIDENCE_RECONSTRUCTION",
+      "assessmentDirection": "APPROVAL",
+      "assessmentStrength": "LEAN",
+      "calibratedProbability": null,
+      "certainty": "NOT_VALIDATED",
+      "outcomeExposedBeforeAssessment": true,
+      "retrospective": true,
+      "blind": false,
+      "actualOutcome": "APPROVAL",
+      "actualFdaActionDate": "2026-09-11",
+      "daysBeforePdufa": 43,
+      "outcomeCompared": true,
+      "directionMatch": true,
+      "outcomeAssessment": "DIRECTION_MATCHED_BUT_NOT_PREDICTIVE",
+      "excludedFromProspectiveAccuracy": true,
+      "excludedFromRetrospectiveBlindValidation": true,
+      "excludedFromCalibration": true,
+      "firstPriorCRL": "2026-01-30",
+      "assessmentReasons": [
+        "Open-label single-arm pediatric Phase 3 study NCT05438407; adult/adolescent drug already approved",
+        "Rare-disease mechanistic benefit, but small pediatric safety base and dose/exposure uncertainty",
+        "Prior CRL cited low-weight PK and analytical production tests; June 2026 resubmission narrowed to children >=27 kg and included analytical-method data"
+      ],
+      "predecisionSources": [
+        "https://www.sec.gov/Archives/edgar/data/1828316/000182831626000004/pharminggroupreceivescompl.htm",
+        "https://www.pharming.com/our-news/pharming-announces-u-s-fda-acceptance-of-snda-resubmission-for-joenja",
+        "https://www.pharming.com/our-news/pharming-reports-second-quarter-and-first-half-2026-financial-results",
+        "https://clinicaltrials.gov/study/NCT05438407"
+      ],
+      "fdaOutcomeSourceUrl": "https://www.fda.gov/drugs/news-events-human-drugs/fda-approves-first-treatment-children-aged-4-11-years-apds-rare-genetic-disorder-immune-system",
+      "officialFdaLetterUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/217759Orig1s006ltr.pdf",
+      "dossierPath": "new-platform/frontend/docs/2026-oct24-phar-joenja-level3-retrospective.md",
+      "disclaimer": "Prediction was reconstructed November 9 after September 11 FDA approval had been seen. Comparison matches but cannot count as a blind or prospective prediction."
+    }
+  ]
+}
