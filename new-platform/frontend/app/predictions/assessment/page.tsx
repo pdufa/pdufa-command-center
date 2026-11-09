@@ -4,6 +4,8 @@ import {APPLICATION_CYCLES} from "../../../lib/medical-intelligence-applications
 import {CLINICAL_SPECIALTY_PROFILES,getSpecialtyProfile,getSpecialtyTasks} from "../../../lib/medical-intelligence-specialty";
 import {getFullSpecialistCase} from "../../../lib/medical-intelligence-specialist-all";
 import {FOCUS_SPECIALTY_ASSESSMENT_QUEUE,FOCUS_SPECIALTY_SUMMARY} from "../../../lib/focus-specialty-assessment";
+import AssessmentStatusPies from "../../AssessmentStatusPies";
+import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
 
 export const metadata:Metadata={
   title:"FOCUS Scientific Assessment Readiness | PDUFA",
@@ -16,6 +18,7 @@ const label={fontSize:11,letterSpacing:".075em",fontWeight:800,color:"#216258"} 
 
 export default async function AssessmentPage({searchParams}:{searchParams:Promise<Params>}){
   const q=await searchParams;
+  const pies=getAssessmentPieData();
   const selected=FOCUS_SPECIALTY_ASSESSMENT_QUEUE.find(x=>x.nct===q.nct)??FOCUS_SPECIALTY_ASSESSMENT_QUEUE[0];
   const cycle=selected?.applications.find(x=>x.cycleId===q.cycle)??selected?.applications[0]??null;
   const specialty=cycle?getSpecialtyProfile(cycle.cycleId):null;
@@ -32,6 +35,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
       and partial specialty-style investigations. <strong>This is assessment preparation, not 29 completed scientific reviews.</strong>
       The first step in every actual review is to verify current trial phase, status, intervention and indication.
     </p>
+    <AssessmentStatusPies {...pies}/>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:10,margin:"15px 0 20px"}}>
       {[
         ["Exact FOCUS trials",FOCUS_SPECIALTY_SUMMARY.ncts],
