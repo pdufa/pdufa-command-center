@@ -123,7 +123,7 @@ def test_r57_source_recorded_primary_and_two_real_ae_denominators(monkeypatch):
  (lambda r53,r55,r56,raw,docs:r55["originalUniqueTrialEvidence"][0]["postedPrimaryOutcomeTables"][0]["statisticalComparisons"][0].update(reportedPValueLiteral="0.01"),"R55_PRIMARY_STATISTICS"),
  (lambda r53,r55,r56,raw,docs:r55["originalUniqueTrialEvidence"][0]["postedAdverseEventArmCountsAsReported"][0].update(seriousAffected=1),"R55_AE_DENOMINATOR"),
  (lambda r53,r55,r56,raw,docs:r55["originalUniqueTrialEvidence"][0].update(currentRegistrySourceSha256="f"*64),"SVRA_CURRENT_REGISTRY_ORIGINAL_SHA"),
- (lambda r53,r55,r56,raw,docs:docs.update({r57.SAP:docs[r57.SAP]+b"spoof"}),"SVRA_SOURCE_PDF_SHA"),
+ (lambda r53,r55,r56,raw,docs:docs.update({r57.SAP:docs[r57.SAP]+b"spoof"}),"R56_SOURCE_DOCUMENT_OR_FIRST_PUBLIC_CERTIFICATION_INVALID"),
  ])
 def test_no_forged_clinical_provenance_or_statistical_result(monkeypatch,edit,expect):
     params=list(source_bundle(monkeypatch))
