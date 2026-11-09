@@ -17,9 +17,16 @@
     "criticalHeadingsWithSourceLeads": 11,
     "independentlyGradedMethodPositions": 0,
     "independentlyCompletedAssessments": 0,
-    "mappedCandidateMethodLeads": 15,
+    "mappedCandidateMethodLeads": 18,
     "candidateMeaning": "SOURCE_TO_METHOD_RESEARCH_LEAD_ONLY_NOT_A_REVIEW_EVENT_OR_GRADE",
-    "everyMappedMethodGraded": false
+    "everyMappedMethodGraded": false,
+    "methodPositionsUnexamined": 782,
+    "researchBoundedFindings": 9,
+    "methodGradeRecommendations": 0,
+    "currentPhaseReviewSignoffs": 0,
+    "packetSourceReceiptCount": 7,
+    "packetBlockedOriginalSourceRequests": 1,
+    "revision16Packet": "https://github.com/pdufa/pdufa-command-center/tree/feature/medical-stage4-verified-method-matrix-20261108/docs/medical-review-pilot-20261108/revision16-source-packet"
   },
   "finalDecision": {
     "approval": "ABSTAIN",
@@ -141,11 +148,13 @@
       "id": "4.3",
       "label": "Estimands, intercurrent events and missingness",
       "sourceLeadIds": [
-        "CTIS_AM04"
+        "CTIS_AM04",
+        "HCMS_KCCQ_OSS_20261106"
       ],
-      "remaining": "Final locked SAP, intercurrent event and missing-data sensitivity tables",
+      "remaining": "Original locked SAP and pivotal missing-data sensitivity tables; November 6 KCCQ-OSS secondary methods are not pivotal KCCQ-CSS.",
       "candidateMethodIndices": [
-        1
+        1,
+        4
       ]
     },
     {
@@ -216,11 +225,13 @@
       "label": "Subgroups, effect modification and robustness",
       "sourceLeadIds": [
         "NEJM_PIVOTAL",
-        "RESPONDER_ANALYSIS"
+        "RESPONDER_ANALYSIS",
+        "HCMS_CMR_20261106"
       ],
-      "remaining": "Independent subgroup effects, CI interaction and nonrandom missingness",
+      "remaining": "Prespecified subgroup interactions and missing data; same-trial CMR paired subset has 61 scans, not 517 independent observations.",
       "candidateMethodIndices": [
-        1
+        1,
+        4
       ]
     },
     {
@@ -241,11 +252,13 @@
       "sourceLeadIds": [
         "NEJM_PIVOTAL",
         "CTIS_AM04",
-        "SEC_10Q"
+        "SEC_10Q",
+        "FDA_ORIGINAL_OHCM_2025"
       ],
-      "remaining": "Final SAP, safety discrepancy correction and independent reviewer signoff",
+      "remaining": "Reconcile the original FDA oHCM label versus unverified ACACIA nHCM filing, final SAP and discordant heart-failure event counts.",
       "candidateMethodIndices": [
         1,
+        4,
         5
       ]
     }
@@ -280,6 +293,30 @@
     "RESPONDER_ANALYSIS": {
       "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674601/",
       "label": "ACACIA responder secondary analysis"
+    },
+    "HCMS_KCCQ_OSS_20261106": {
+      "url": "https://cytokinetics.com/wp-content/uploads/2026/11/AHA-HCMS26-ACACIA-KCCQ_PRO-oral_final.pdf",
+      "label": "Same-trial HCMS secondary KCCQ-OSS presentation, November 6",
+      "sha256": "c96b4f8e1699871472a3a0c356e143b0d994a2366100b1b66c08a520df57e5fd",
+      "retrieved": true
+    },
+    "HCMS_CMR_20261106": {
+      "url": "https://cytokinetics.com/wp-content/uploads/2026/11/Masri_2026_HCMS_ACACIA-HCM-CMR.pdf",
+      "label": "Same-trial HCMS CMR exploratory subset, November 6",
+      "sha256": "4dc9238de7e221dd94356eeab8a1aafc97f858e48c53b940bc34f7c912cb2b81",
+      "retrieved": true
+    },
+    "FDA_ORIGINAL_OHCM_2025": {
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/219083s000lbl.pdf",
+      "label": "FDA original MYQORZO label, obstructive HCM only",
+      "sha256": "d90aed5fdec2ba10979194c950d9ca10444976b658156ac07847fe0be073f753",
+      "retrieved": true
+    },
+    "INVIMA_ACACIA_2025": {
+      "url": "https://www.invima.gov.co/estudio/20241173982-un-estudio-multic%C3%A9ntrico-aleatorizado-doble-ciego-de-fase-3-para-evaluar-la-eficacia-y-s",
+      "label": "Colombian trial authorization record (not marketing approval)",
+      "sha256": "2821f922c6548e8963b455752dd5a87917d217051bd5908a07fd96404d385475",
+      "retrieved": true
     }
   },
   "mandatoryForecastGate": [
@@ -292,5 +329,5 @@
     "INDICATION_SPECIFIC_FILING"
   ],
   "nextHighestValueStep": "Independent clinical review of authenticated CY 6033 protocol and trial data; obtain final SAP and safety tables; construct historical outcome validation set before calculating probabilities.",
-  "sourceVersion": "research_pilot_1"
+  "sourceVersion": "research_pilot_revision17_display_of_revision16_packet"
 }
