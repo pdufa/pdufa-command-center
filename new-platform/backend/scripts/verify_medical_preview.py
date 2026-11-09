@@ -15,7 +15,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, HTTPCookieProcessor, Request, build_opener
 
 # Pin the verified Revision36 preview; the branch alias can lag asynchronous builds.
-SITE = 'https://pdufa-new-dashboard-ljnrkkg3e-pdufa.vercel.app'
+SITE = 'https://pdufa-new-dashboard-2rz1u59ty-pdufa.vercel.app'
 BACKEND = 'https://pdufa-medical-intelligence-preview.onrender.com'
 PILOT = 'NCT06081894'
 
@@ -77,7 +77,10 @@ def confirm_original_registry_panel(normalized):
     data=json.loads(source.read_text())
     demand(data.get('nct')==PILOT and data.get('officialClinicalGrades')==0,
            'INVALID_ORIGINAL_HISTORY_EXPECTATION')
-    required=['Original registry evidence recovered', 'v26, v27, v29 and v30',
+    release=json.loads((source.parents[3]/'docs/medical-review-pilot-20261108/revision36-verification/release-receipt.json').read_text())
+    demand(release.get('serviceId')=='srv-dbntrkpsrm7s73aec3lg' and release.get('deploymentState')=='live',
+           'INVALID_ISOLATED_ROLLOUT_EXPECTATION')
+    required=[release['exactCommit'],release['deploymentId'],'r36.backend-rollout','Original registry evidence recovered', 'v26, v27, v29 and v30',
               'do not resolve the reported 516 versus 517', 'ESTIMATED',
               '18 mapped source leads', '782 positions not source mapped', '0/800',
               'independent review before a clinical integrity judgment or grade',

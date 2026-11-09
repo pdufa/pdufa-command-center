@@ -47,7 +47,8 @@ def test_redirects_and_absolute_paths_cannot_forward_credentials():
 def test_revision36_panel_requires_each_original_digest_and_unresolved_population_label():
     import json
     data=json.loads((SCRIPT.parents[3]/'new-platform/frontend/data/acacia-original-history-revision36.json').read_text())
-    text=' '.join(['Original registry evidence recovered', 'v26, v27, v29 and v30',
+    release=json.loads((SCRIPT.parents[3]/'docs/medical-review-pilot-20261108/revision36-verification/release-receipt.json').read_text())
+    text=' '.join([release['exactCommit'],release['deploymentId'],'r36.backend-rollout','Original registry evidence recovered', 'v26, v27, v29 and v30',
                   'do not resolve the reported 516 versus 517', 'ESTIMATED',
                   '18 mapped source leads', '782 positions not source mapped', '0/800',
                   'independent review before a clinical integrity judgment or grade',
