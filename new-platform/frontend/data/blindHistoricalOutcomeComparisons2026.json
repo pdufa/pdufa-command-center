@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "dataset": "RETROSPECTIVE_BLIND_CHALLENGE_OUTCOME_ADJUDICATION",
+  "comparedAsOf": "2026-11-09",
+  "source": "FDA_OFFICIAL_ACTION",
+  "comparisons": [
+    {
+      "forecastId": "BLIND-INO3107-2026-10-30-V1",
+      "originalPredictionCommit": "6eacacd2728ac265f1b4b23571e8edb1108d5afe",
+      "originalPredictionCreatedAt": "2026-11-09T21:06:42Z",
+      "predictedOutcome": "CRL",
+      "originalPdufaDate": "2026-10-30",
+      "actualOutcome": "APPROVAL",
+      "actionType": "ACCELERATED_APPROVAL",
+      "actualDecisionDate": "2026-10-30",
+      "applicationId": "BLA 125825",
+      "sponsor": "INOVIO Pharmaceuticals",
+      "product": "VOCERYQ (previously INO-3107)",
+      "indication": "Reduction in frequency of surgical papilloma excisions in adults with recurrent respiratory papillomatosis",
+      "verified": true,
+      "officialFdaAnnouncement": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-plasmid-dna-based-immunotherapy-adults-recurrent-respiratory-papillomatosis",
+      "officialFdaProductPage": "https://www.fda.gov/vaccines-blood-biologics/cellular-gene-therapy-products/voceryq",
+      "sponsorSecFiling": "https://www.sec.gov/Archives/edgar/data/1055726/000119312526442648/d150457d8k.htm",
+      "verdict": "NOT_ACCURATE",
+      "retrospective": true,
+      "prospectiveScoringEligible": false,
+      "validAccuracyDenominator": "HISTORICAL_CHALLENGE_ONLY",
+      "mismatchCause": "The FDA accepted an intermediate surgical-burden endpoint and approved the biologic under accelerated-approval provisions with a required confirmatory study. The forecast overstated pathway eligibility as a barrier.",
+      "originalForecastUnchanged": true
+    }
+  ]
+}
