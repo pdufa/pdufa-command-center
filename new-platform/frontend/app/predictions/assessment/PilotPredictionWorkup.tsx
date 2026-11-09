@@ -1,6 +1,7 @@
 import {evaluateAdditionalPilotReadiness,evaluatePilotReadiness} from "../../../lib/pilot-research-readiness";
 import PilotLiveEvidenceRefresh from "./PilotLiveEvidenceRefresh";
 import PilotScientificSignalPanel from "./PilotScientificSignalPanel";
+import PilotSafetyReconciliationPanel from "./PilotSafetyReconciliationPanel";
 import PilotProvisionalResearchModel from "./PilotProvisionalResearchModel";
 import PilotResearchReviewQueue from "./PilotResearchReviewQueue";
 import PilotEvidenceAcquisitionPacket from "./PilotEvidenceAcquisitionPacket";
@@ -24,6 +25,7 @@ export default function PilotPredictionWorkup({nct}:{nct:string}){
     <p style={{marginTop:12}}><strong>Research-only directional finding:</strong> published pivotal efficacy is positive, while meaningful-benefit thresholds, safety, protocol statistics and indication-specific regulatory review remain uncertain. This is a qualitative scientific synthesis, <strong>not a validated FDA forecast</strong>.</p>
     <PilotProvisionalResearchModel nct={nct}/>
     <PilotScientificSignalPanel nct={nct}/>
+    <PilotSafetyReconciliationPanel nct={nct}/>
     <PilotResearchReviewQueue nct={nct}/>
     <PilotEvidenceAcquisitionPacket nct={nct}/>
     <PilotEvidenceIntakePrecheck nct={nct}/>
