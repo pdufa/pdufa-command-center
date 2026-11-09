@@ -10,7 +10,7 @@ import http.cookiejar,json,os,re,sys
 from urllib.error import HTTPError,URLError
 from urllib.request import HTTPCookieProcessor,HTTPRedirectHandler,Request,build_opener
 
-SITE="https://pdufa-new-dashboard-8zds6q6r3-pdufa.vercel.app"
+SITE="https://pdufa-new-dashboard-6e5ucrhl3-pdufa.vercel.app"
 ROSTER="/api/predictions/focus-preliminary"
 SOURCES="/api/predictions/focus-source-readiness"
 URL="/predictions"
@@ -99,6 +99,29 @@ def main():
          "originalPrimaryTables":16,"withoutRegistryResultsSection":17,
          "qualifiedClinicalGrades":0,"validatedFDAForecasts":0,
          "modelAccuracy":"NOT_CALIBRATED","readOnly":True}),flush=True)
+    for evidence_text in [
+        "ClinicalTrials.gov original safety tables",
+        "12/29",
+        "244",
+        "202",
+        "28",
+        "Inspect all 12 posted safety trial records and their 28 source-reported arms",
+        "Show 17 other exact FOCUS NCTs without current registry result modules",
+        "no FDA probability",
+        "clinical reviewer signoffs 0",
+        "Molgramostim",
+        "NCT04544293",
+        "Original trial record",
+    ]:
+        check(evidence_text.lower() in rendered.lower(),
+              "R44_SAFETY_EVIDENCE_NOT_RENDERED_"+re.sub(r"\\W+","_",evidence_text).upper())
+    check("13695013486" in raw.decode("utf-8","replace"),
+          "R44_ORIGINAL_SAFETY_ARTIFACT_NOT_LINKED")
+    print(json.dumps({"stage":"R44_29_SAFETY_SOURCE_READ","status":"PASS",
+        "ncts":29,"trialWithCurrentPostedSafety":12,"saeTermRows":244,
+        "otherEventTermRows":202,"armGroups":28,
+        "originalSourceArtifactId":13695013486,"clinicalGrades":0,
+        "releasedFdaProbability":None,"readOnly":True}),flush=True)
     print(json.dumps({"stage":"FOCUS_29_23_SIGNED_IN_HTML","status":"PASS",
         "researchOnly":True,"futureModelStatus":"ABSTAIN"}),flush=True)
     code,kind,raw=get(client,ROSTER,"application/json")
