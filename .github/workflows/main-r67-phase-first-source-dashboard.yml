@@ -71,6 +71,47 @@ jobs:
           node --test tests/focus-r67-original-phase-first.test.cjs
           npm run typecheck
           npm run build
+      - name: Install isolated headless browser test dependency
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify phase-first exact NCT panels in real desktop and 390px phone Chromium
+        working-directory: new-platform/frontend
+        shell: bash
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/r67-browser
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECEIPT_DIR"
+          npm run start -- --port 3157 > "$RECEIPT_DIR/next.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 50); do
+            if curl -fsS --max-time 5 'http://127.0.0.1:3157/predictions/assessment?nct=NCT04544293' -o /dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$ready" != 1 ]]; then
+            echo "::error::Local phase-first assessment page never became healthy."
+            tail -n 80 "$RECEIPT_DIR/next.log"
+            exit 1
+          fi
+          node scripts/verify-r67-phase-browser.cjs
+          cat "$RECEIPT_DIR/R67_BROWSER_VERIFICATION.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve local real browser checks and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r67-phase-first-mobile-desktop-${{ github.run_id }}
+          path: ${{ runner.temp }}/r67-browser/
+          retention-days: 30
+          if-no-files-found: warn
       - name: Archive R67 source and checks receipt
         shell: bash
         run: |
