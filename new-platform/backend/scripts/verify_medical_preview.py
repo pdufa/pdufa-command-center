@@ -102,6 +102,12 @@ def confirm_provisional_score_page(client):
        'publishedDirectionalPrimaryResults':'2/2',
        'unadjustedSafetyRiskDifferencePp':[9.69,5.48],
        'independentClinicalGrades':0,'fdaPrediction':'ABSTAIN'}),flush=True)
+    demand('Evidence-quality rubric' in normalized and
+           'Show grading anchors for 0, 1, 2, 3, 4, 5' in normalized and
+           'Current numerical grade: not assigned' in normalized,
+           'CLINICAL_GRADE_RUBRIC_NOT_RENDERED')
+    demand('Open versioned independent-review handoff (JSON)' in normalized,
+           'SCIENTIFIC_REVIEW_HANDOFF_LINK_NOT_VISIBLE')
     demand('FIRST PRELIMINARY RESEARCH SCORE' in normalized,
            'FIRST_RESEARCH_CHECKLIST_NOT_RENDERED')
     demand('Additional preliminary research scores' in normalized,
@@ -163,6 +169,8 @@ def main():
     demand(status == 401, 'ANONYMOUS_MATRIX_NOT_REJECTED')
     status, _ = request(anon, '/api/predictions/medical-provisional-refresh?nct=' + PILOT)
     demand(status == 401, 'ANONYMOUS_PROVISIONAL_REFRESH_NOT_REJECTED')
+    status, _ = request(anon, '/api/predictions/medical-phase3-reviewer-handoff?nct=' + PILOT)
+    demand(status == 401, 'ANONYMOUS_REVIEWER_HANDOFF_NOT_REJECTED')
     status, _ = request(anon, '/api/internal/medical-assessments/coverage', backend=True)
     demand(status == 401, 'ANONYMOUS_BACKEND_NOT_REJECTED')
     client = build_opener(NoRedirect(), HTTPCookieProcessor(http.cookiejar.CookieJar()))
@@ -172,6 +180,26 @@ def main():
     demand(status == 200, 'AUTHORIZED_TEST_LOGIN_FAILED')
     print(json.dumps({'stage':'NORMAL_DASHBOARD_LOGIN','status':'PASS'}), flush=True)
     confirm_provisional_score_page(client)
+    status, rubric = request(client, '/api/predictions/medical-phase3-reviewer-handoff?nct=' + PILOT)
+    demand(status == 200 and rubric.get('schema') == 'MAIN_PHASE3_REVIEWER_HANDOFF_V1'
+           and rubric.get('exactNct') == PILOT and rubric.get('protocolCode') == 'CY 6033'
+           and rubric.get('officialMethodGradeEventsWritten') == 0
+           and rubric.get('finalFdaPrediction') == 'ABSTAIN'
+           and rubric.get('authorizedForClinicalWrite') is False
+           and rubric.get('missingDataAreNotZeroGrades') is True,
+           'SCIENTIFIC_RUBRIC_HANDOFF_NOT_READ_ONLY')
+    methods = rubric.get('clinicalQualityRubric',{}).get('methods',[])
+    demand(len(methods) == 2
+           and [(m.get('assessmentId'),m.get('methodIndex')) for m in methods] == [('5.1',12),('5.3',19)]
+           and all(len(m.get('gradeBands',[])) == 6 and
+                   len(m.get('requirements',[])) == 6 and
+                   m.get('numericGrade') is None and
+                   m.get('reviewerSignature') is None for m in methods),
+           'CLINICAL_METHOD_RUBRIC_NOT_COMPLETE_OR_UNVERIFIED_GRADE')
+    print(json.dumps({'stage':'SIGNED_CLINICAL_QUALITY_RUBRIC_READ','status':'PASS',
+         'nct':PILOT,'rubricMethods':['5.1/L12','5.3/L19'],
+         'sixPointGradesAssigned':0,'requiredEvidenceChecks':12,
+         'authorization':'READ_ONLY','fdaPrediction':'ABSTAIN'}),flush=True)
     status, refreshed = request(client, '/api/predictions/medical-provisional-refresh?nct=' + PILOT)
     demand(status == 200 and refreshed.get('schema') == 'MAIN_PILOT_DOCUMENTARY_REFRESH_V1' and
            refreshed.get('nct') == PILOT and refreshed.get('fdaPrediction') == 'ABSTAIN' and
