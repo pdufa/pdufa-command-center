@@ -1,0 +1,55 @@
+{
+  "schemaVersion": 1,
+  "dataset": "OUTCOME_AWARE_HISTORICAL_LEVEL3_COMPARISON_NOT_BLIND",
+  "asOf": "2026-11-09",
+  "records": [
+    {
+      "assessmentId": "HIST-ABBV-SKYRIZI-2026-10-23-LEVEL3-001",
+      "ticker": "ABBV",
+      "company": "AbbVie Inc.",
+      "drug": "SKYRIZI (risankizumab-rzaa)",
+      "indication": "Subcutaneous induction in adults with moderately to severely active Crohn's disease",
+      "applicationType": "SUPPLEMENTAL_BLA",
+      "fdaApplicationId": "BLA 761105/S-053",
+      "ncts": [
+        "NCT06063967"
+      ],
+      "clinicalPhase": "PHASE_3_RANDOMIZED_DOUBLE_BLIND",
+      "trackerListedPdufaDate": "2026-10-23",
+      "pdufaDateVerification": "THIRD_PARTY_TRACKER_ONLY_PREDECISION_SPONSOR_GOAL_NOT_CONFIRMED",
+      "evidenceCutoff": "2026-10-13",
+      "assessmentLevelStyle": 3,
+      "assessmentMethod": "MANUAL_THREE_LAYER_PREDECISION_EVIDENCE_RECONSTRUCTION",
+      "assessmentDirection": "APPROVAL",
+      "assessmentStrength": "LEAN",
+      "calibratedProbability": null,
+      "certainty": "NOT_VALIDATED",
+      "outcomeExposedBeforeAssessment": true,
+      "retrospective": true,
+      "blind": false,
+      "actualOutcome": "APPROVAL",
+      "actualFdaActionDate": "2026-10-23",
+      "outcomeCompared": true,
+      "directionMatch": true,
+      "outcomeAssessment": "DIRECTION_MATCHED_BUT_NOT_PREDICTIVE",
+      "excludedFromProspectiveAccuracy": true,
+      "excludedFromRetrospectiveBlindValidation": true,
+      "excludedFromCalibration": true,
+      "assessmentReasons": [
+        "Phase 3 AFFIRM NCT06063967 randomized placebo-controlled trial met both co-primary week-12 clinical remission and endoscopic response endpoints",
+        "Subcutaneous induction could avoid infusions and had a known safety profile from approved Crohn's indication; sponsor reported no new safety risks",
+        "New route and device/regimen review atop already approved molecule; CMC and human factors were nonpublic evidence gaps"
+      ],
+      "predecisionSources": [
+        "https://news.abbvie.com/2026-03-02-AbbVie-Announces-Positive-Topline-Results-from-Phase-3-AFFIRM-Study-Evaluating-SKYRIZI-R-Risankizumab-Subcutaneous-Induction-in-Patients-with-Crohns-Disease",
+        "https://news.abbvie.com/2026-10-13-AbbVie-Presents-New-Phase-3-AFFIRM-Data-Showing-Clinical-and-Endoscopic-Outcomes-With-Subcutaneous-SKYRIZI-R-risankizumab-rzaa-in-Patients-With-Moderately-to-Severely-Active-Crohns-Disease",
+        "https://clinicaltrials.gov/study/NCT06063967"
+      ],
+      "fdaOutcomeSourceUrl": "https://news.abbvie.com/2026-10-23-U-S-FDA-Approves-Subcutaneous-Induction-Regimen-for-AbbVies-SKYRIZI-R-risankizumab-rzaa-for-Adults-With-Moderately-to-Severely-Active-Crohns-Disease",
+      "fdaLabelUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761105s053lbl.pdf",
+      "calendarSourceUrl": "https://catalystalert.io/pdufa/october-2026",
+      "dossierPath": "new-platform/frontend/docs/2026-oct23-abbv-skyrizi-level3-retrospective.md",
+      "disclaimer": "Outcome was already known at authoring; this matched Level 3-style reconstruction is not blind and cannot be used for accuracy or calibration. October 23 tracked as scheduled date by third-party calendar, original PDUFA target not independently verified."
+    }
+  ]
+}
