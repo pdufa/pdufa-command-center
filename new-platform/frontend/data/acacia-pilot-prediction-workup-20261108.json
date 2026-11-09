@@ -329,5 +329,54 @@
     "INDICATION_SPECIFIC_FILING"
   ],
   "nextHighestValueStep": "Independent clinical review of authenticated CY 6033 protocol and trial data; obtain final SAP and safety tables; construct historical outcome validation set before calculating probabilities.",
-  "sourceVersion": "research_pilot_revision17_display_of_revision16_packet"
+  "sourceVersion": "research_pilot_revision17_display_of_revision16_packet",
+  "provisionalResearchScore": {
+    "schema": "MAIN_RESEARCH_DOCUMENT_READINESS_V1",
+    "assessmentId": "5.1",
+    "methodIndex": 1,
+    "label": "Pivotal efficacy source-readiness checklist",
+    "asOf": "2026-11-08",
+    "basis": "FIVE_EQUALLY_WEIGHTED_DOCUMENTARY_CHECKS_NOT_CLINICAL_METHOD_QUALITY",
+    "gates": [
+      {
+        "id": "TRIAL_IDENTITY",
+        "title": "Exact NCT and protocol identity crosschecked",
+        "state": "RESEARCH_OBSERVED",
+        "sourceId": "REGISTRY",
+        "detail": "NCT06081894 / CY 6033 / EU 2023-505797-15-00 crosswalk; registry phase is not signed off"
+      },
+      {
+        "id": "ORIGINAL_PROTOCOL",
+        "title": "Versioned original Phase III protocol captured and hashed",
+        "state": "RESEARCH_OBSERVED",
+        "sourceId": "CTIS_AM04",
+        "detail": "90-page public CY 6033 Amendment 04; hash available, independent medical review pending"
+      },
+      {
+        "id": "PUBLISHED_PRIMARY",
+        "title": "Peer-reviewed co-primary estimates and confidence intervals available",
+        "state": "RESEARCH_OBSERVED",
+        "sourceId": "NEJM_PIVOTAL",
+        "detail": "KCCQ-CSS +3.0 (95% CI 0.5 to 5.5); pVO2 +0.67 (95% CI 0.22 to 1.11); indexing is not a full SAP audit"
+      },
+      {
+        "id": "FINAL_LOCKED_SAP",
+        "title": "Final locked prespecified statistical analysis plan authenticated",
+        "state": "NOT_VERIFIED",
+        "sourceId": null,
+        "detail": "Final signed SAP, amendment dates and primary multiplicity graph not obtained"
+      },
+      {
+        "id": "PRIMARY_SENSITIVITY",
+        "title": "Full primary sensitivity, estimands and missing-data analyses audited",
+        "state": "NOT_VERIFIED",
+        "sourceId": null,
+        "detail": "Original primary appendix/CSR, full analysis-set denominator and sensitivity results not yet independently checked"
+      }
+    ],
+    "officialClinicalGrade": null,
+    "reviewerSignedOff": false,
+    "approvalProbability": null,
+    "interpretation": "Fraction of documentary research checks observed; equal checklist weights are not a validated scientific grading rubric, a treatment-effect probability, a clinical-grade recommendation or an FDA prediction."
+  }
 }
