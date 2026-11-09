@@ -1,11 +1,13 @@
 import pilot from "../../../data/acacia-pilot-prediction-workup-20261108.json";
 import {evaluatePilotScientificSignals} from "../../../lib/acacia-quantitative-science";
+import {evaluateClinicalRubricReadiness} from "../../../lib/phase3-clinical-quality-rubric";
 
 const frame={border:"1px solid #a5c3bc",borderRadius:12,padding:14,background:"#fff",margin:"12px 0"} as const;
 const soft={border:"1px solid #d0e0dc",borderRadius:9,padding:10,background:"#f6faf9"} as const;
 export default function PilotScientificSignalPanel({nct}:{nct:string}){
   if(nct!=="NCT06081894"||pilot.nct!==nct)return null;
   const report=evaluatePilotScientificSignals(pilot);
+  const rubrics=evaluateClinicalRubricReadiness(report,pilot);
   return <section style={{...frame,background:"#f3f9f7"}} aria-label="Provisional quantitative scientific evidence analysis">
     <h3 style={{margin:"2px 0 8px"}}>Quantitative scientific evidence · first two research methods</h3>
     <p style={{fontSize:13,margin:"4px 0 12px"}}>
@@ -54,6 +56,51 @@ export default function PilotScientificSignalPanel({nct}:{nct:string}){
           <a href={report.safety[0].sourceUrl} target="_blank" rel="noopener noreferrer" style={{fontSize:12}}>Read published safety outcomes</a>
         </article>
       </div>
+      <section aria-label="Method-specific evidence quality rubric" style={{...frame,background:"#fff"}}>
+        <h4 style={{margin:"0 0 8px"}}>Evidence-quality rubric · 0–5 grading framework</h4>
+        <p style={{fontSize:13,margin:"5px 0 10px"}}>
+          Two Phase III scientific methods now have <strong>method-specific
+          grading definitions and six independent evidence verification requirements</strong>.
+          Grade 0 does <strong>not</strong> mean missing evidence. Every clinical grade remains
+          <strong> UNASSIGNED</strong> until the original evidence and qualified review gates pass.
+        </p>
+        {!rubrics?<p role="alert" style={{fontSize:13,fontWeight:750}}>Rubric source state invalid; all prospective grades withheld.</p>:
+        <>
+          <p style={{fontSize:12,margin:"7px 0"}}><strong>5 of {rubrics.sourceMappedPositions}</strong> mapped method positions now have research calculations or documentary checklists. This rubric covers two of those positions, not the complete 800-method clinical ledger.</p>
+          <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(230px,1fr))",gap:10}}>
+            {rubrics.methods.map(m=><article key={m.assessmentId} style={{...soft,background:"#fff"}}>
+              <div style={{display:"flex",justifyContent:"space-between",gap:8,flexWrap:"wrap"}}>
+                <div>
+                  <strong>Method {m.assessmentId} / L{m.methodIndex}</strong>
+                  <p style={{fontSize:12,margin:"4px 0"}}>{m.methodName}</p>
+                </div>
+                <div style={{fontSize:18,fontWeight:900,color:"#855321"}}>Unscored</div>
+              </div>
+              <p style={{fontSize:12,margin:"5px 0 9px"}}>
+                <strong>{m.documentedPublicChecks} / {m.requirementsTotal}</strong> evidence-verification checks have publicly documented inputs.
+                This is <strong>coverage, not a quality score</strong>.
+              </p>
+              <details style={{fontSize:12}}>
+                <summary style={{cursor:"pointer",fontWeight:700}}>Expand six evidence requirements and missing analyses</summary>
+                <ol style={{paddingLeft:18}}>
+                  {m.requirements.map(c=><li key={c.id} style={{margin:"8px 0"}}>
+                    <strong>{c.state.replaceAll("_"," ")} · {c.label}</strong>
+                    <div>{c.why}</div>
+                    {c.sourceUrl?<a href={c.sourceUrl} target="_blank" rel="noopener noreferrer">Open public source</a>:null}
+                  </li>)}
+                </ol>
+              </details>
+              <details style={{fontSize:12,marginTop:9}}>
+                <summary style={{cursor:"pointer",fontWeight:700}}>Show grading anchors for 0, 1, 2, 3, 4, 5</summary>
+                <ol start={0} style={{paddingLeft:18}}>
+                  {m.gradeBands.map(b=><li key={b.grade} value={b.grade} style={{margin:"7px 0"}}>{b.meaning}</li>)}
+                </ol>
+                <p><strong>Current numerical grade: not assigned.</strong> Ratings require original-data reconciliation, defined source versions and independent authorized review.</p>
+              </details>
+            </article>)}
+          </div>
+        </>}
+      </section>
       <details style={{...frame,marginBottom:0,background:"#fff"}} aria-label="Scientific signal validation gates">
         <summary style={{fontWeight:750,cursor:"pointer"}}>Why official 0–5 scientific grades are still withheld</summary>
         <ul>{report.limitations.map((v,i)=><li key={i} style={{fontSize:13,margin:"5px 0"}}>{v}</li>)}</ul>
