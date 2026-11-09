@@ -143,19 +143,26 @@ def build(manifest, efficacy, document, registry, pdf_root):
         for n in original["ncts"]:
             t=e_trials[n]
             pdf_rows=sorted(grouped.get(n,[]),key=lambda x:x["filename"])
+            registry_row=r53_registry[n]
+            recorded=t.get("currentRegistrySourceSha256")
+            if (not isinstance(recorded,str) or not HEX.fullmatch(recorded)
+                or recorded!=registry_row.get("sourceResponseSha256")):
+                raise ValueError("R51_R53_CROSS_RUN_CURRENT_REGISTRY_SHA_MISMATCH")
+            required_app_ids=[g["cycleId"] for g in manifest["applicationGroups"] if n in g["ncts"]]
+            if registry_row.get("applicationCycleIds")!=required_app_ids:
+                raise ValueError("R53_REGISTRY_CROSSWALK_INVALID")
             declared={(x.get("filenameAsRegistry"),x.get("documentDateAsRegistry")):
                       (x.get("hasProtocolFlagAsRegistry"),x.get("hasSapFlagAsRegistry"))
                       for x in t.get("currentProtocolSapAttachments",[])}
             expected={(x["filename"].split(n+"-",1)[-1],x["documentDateFromCurrentRegistryMetadata"]):
                       (x["hasProtocolFlag"],x["hasSapFlag"]) for x in pdf_rows}
-            if len(declared)!=len(t.get("currentProtocolSapAttachments",[])) or declared!=expected:
+            original_declared={(x.get("filenameAsRegistry"),x.get("documentDateAsRegistry")):
+                      (x.get("hasProtocolFlagAsRegistry"),x.get("hasSapFlagAsRegistry"))
+                      for x in registry_row.get("currentDocumentIndex",[])}
+            if (len(declared)!=len(t.get("currentProtocolSapAttachments",[])) or
+                declared!=expected or declared!=original_declared):
                 raise ValueError("R51_R53_PDF_METADATA_AND_ATTACHMENT_CROSSWALK_MISMATCH")
-            recorded=t.get("currentRegistrySourceSha256")
-            if recorded is not None and (not isinstance(recorded,str) or not HEX.fullmatch(recorded)):
-                raise ValueError("R51_REGISTRY_SHA_MALFORMED")
-            # A source-version comparison across two independent runs needs the R46
-            # original-registry SHA in a separate input; until then mark unverified.
-            current_source_versions_proven_same=False
+            current_source_versions_proven_same=True
             if t.get("postedPrimaryOutcomeCount",0)<0 or t.get("postedSafetyEventGroups",0)<0:
                 raise ValueError("R51_POSTED_MODULE_COUNT_INVALID")
             rows.append({
@@ -226,7 +233,7 @@ def build(manifest, efficacy, document, registry, pdf_root):
         "measuredCalibration":None,"approvalProbability":None,
         "trainOrAutopredictAuthorized":False,"productionMutationAuthorized":False,
         "status":"SOURCE_LINKED_HUMAN_RESEARCH_QUEUE_NOT_ADJUDICATED",
-        "note":"Verified 23 downloaded PDF hashes and per-NCT document metadata, but R51 current registry and R53 captured current document metadata are independent-run snapshots. A common original registry byte fingerprint is not available in this join; all statistical review leads remain research-only. A PDF's document date is not first-publication date."
+        "note":"Verified 23 downloaded PDF hashes and per-NCT document metadata, but R51 current registry and R53 captured current document metadata are independent-run snapshots. All original current registry SHA-256 fingerprints across the two separately executed source captures must match before joined research. This does not establish original prespecified statistical analysis. A PDF's document date is not first-publication date."
     }
 
 def main():
