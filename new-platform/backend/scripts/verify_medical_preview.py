@@ -92,6 +92,10 @@ def confirm_provisional_score_page(client):
            'FIRST_RESEARCH_CHECKLIST_NOT_RENDERED')
     demand('Additional preliminary research scores' in normalized,
            'ADDITIONAL_RESEARCH_CHECKLISTS_NOT_RENDERED')
+    demand('AUTOMATIC DOCUMENTARY SCORE RECHECK' in normalized and
+           'Check sources now' in normalized and
+           'every 15 minutes' in normalized,
+           'AUTO_REFRESH_PANEL_NOT_RENDERED')
     demand('Assessment 5.1' in normalized and 'Assessment 4.2' in normalized and
            'Assessment 5.3' in normalized, 'PILOT_CHECKLIST_IDENTITIES_NOT_RENDERED')
     # Require values adjacent to the associated assessment, not just a stray
@@ -160,12 +164,17 @@ def main():
     demand(pairs == [('5.1',3,5),('4.2',3,5),('5.3',2,5)],
            'PROVISIONAL_REFRESH_SCORE_DRIFT')
     source_states = {p.get('sourceId'):p.get('status') for p in refreshed.get('probes',[])}
+    candidates = refreshed.get('newEvidenceCandidates', [])
+    demand(isinstance(candidates,list) and
+           all(isinstance(item,str) and len(item) <= 100 for item in candidates),
+           'UNSAFE_RESEARCH_CANDIDATE_FEED')
     demand(set(source_states)=={'REGISTRY','NEJM_PIVOTAL'} and
            all(x in ('MATCH','CHANGED','UNAVAILABLE') for x in source_states.values()),
            'PUBLIC_SOURCE_REFRESH_MALFORMED')
     print(json.dumps({'stage':'PROVISIONAL_SOURCE_REFRESH','status':'PASS',
          'researchOnly':True,'sourceStatuses':source_states,
          'currentness':refreshed.get('currentness'),
+         'newEvidenceCandidates':candidates,
          'documentaryScores':pairs,'clinicalGrades':0,'fdaPrediction':'ABSTAIN'}),flush=True)
     status, data = request(client, endpoint)
     demand(status == 200, 'AUTHENTICATED_MATRIX_UNAVAILABLE_HTTP_' + str(status))
