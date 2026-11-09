@@ -89,6 +89,45 @@ async function verifyProfile(browser, profile) {
     const ncts = await panel.locator("details summary strong").allTextContents();
     assert.equal(new Set(ncts.map(s=>s.match(/NCT\d{8}/)?.[0])).size,29);
 
+    // The independent R62 application source-review section is a distinct
+    // 23-cycle worklist. Test its actual client-side filtering and exact
+    // registry-to-application crosswalk without treating it as an FDA forecast.
+    const applications = page.locator(
+      'section[aria-label="R62 provisional application source review"]');
+    await applications.waitFor({state:"visible"});
+    assert.equal(await applications.locator("details").count(),23,
+      "23 provisional application groups must render exactly once");
+    assert.match(await applications.innerText(),/Validated FDA forecasts\\s*0/);
+    const applicationSearch=applications.getByRole("searchbox",{
+      name:"Find application source evidence"});
+    const applicationFilter=applications.getByRole("combobox",{
+      name:"Filter application source evidence"});
+    await applicationFilter.selectOption("POSTED");
+    const appPosted=await applications.locator("details").count();
+    assert.ok(appPosted>0&&appPosted<23,
+      "application posted-primary filter changes actual rendered rows");
+    await applicationFilter.selectOption("RECOVERY");
+    const appRecovery=await applications.locator("details").count();
+    assert.ok(appRecovery>0&&appRecovery<=23);
+    await applicationFilter.selectOption("ALL");
+    await applicationSearch.fill("SVRA");
+    assert.equal(await applications.locator("details").count(),1,
+      "SVRA must identify one exact provisional application cycle");
+    const savaraApplication=applications.locator("details").first();
+    await savaraApplication.locator("summary").click();
+    await savaraApplication.getByText("NCT04544293",{exact:true}).waitFor();
+    assert.equal(await savaraApplication.getByRole("link",{name:"Original trial record"}).getAttribute("href"),
+      "https://clinicaltrials.gov/study/NCT04544293");
+    assert.equal(await savaraApplication.getByRole("link",{name:"Scientific assessment"}).getAttribute("href"),
+      "/predictions/assessment?nct=NCT04544293&cycle=svra-molgramostim");
+    await page.screenshot({path:path.join(OUT,profile.label+"-application-evidence.png"),
+      fullPage:false});
+    await applicationSearch.fill("");
+    assert.equal(await applications.locator("details").count(),23);
+    await applicationFilter.selectOption("EXCEPTIONS");
+    assert.ok(await applications.locator("details").count()>0);
+    await applicationFilter.selectOption("ALL");
+
     const fullText=await page.locator("main").innerText();
     assert.match(fullText,/NOT CALIBRATED/);
     assert.match(fullText,/ABSTAIN/);
@@ -106,8 +145,8 @@ async function verifyProfile(browser, profile) {
 
     RESULTS.push({
       profile:profile.label,viewport:[profile.width,profile.height],
-      pageHttpStatus:response.status(),nctRows:29,postedRows:12,recoveryRows:17,
-      originalSourceLinksExact:true,reactiveSearchAndExpand:true,
+      pageHttpStatus:response.status(),nctRows:29,postedRows:12,recoveryRows:17,applicationRows:23,
+      originalSourceLinksExact:true,reactiveSearchAndExpand:true,applicationCrosswalkInteractions:true,
       independentClinicalSignoffs:0,validatedFDAForecasts:0,
       browserPageErrors:pageErrors,
     });
