@@ -1,4 +1,5 @@
 import blind from "../data/blindHistoricalForecasts2026.json";
+import compared from "../data/blindHistoricalComparisons2026.json";
 
 const ink="#173c3a";
 const muted="#516b69";
@@ -11,12 +12,23 @@ export default function BlindHistoricalPredictionPanel(){
      record.actualDecisionSourceUrl!==null||record.outcomeViewed!==false){
     throw new Error("BLIND_HISTORICAL_RESEARCH_SEAL_INVALID");
   }
-  return <section aria-label="Sealed blind historical PDUFA challenge"
+  const result=compared.records.find(x=>x.forecastId===record.forecastId);
+  if(!result||result.originalFreezeCommit!==record.sourceFreezeCommit||
+     result.frozenPredictedOutcome!==record.predictedOutcome||
+     result.trialId!==record.exactNcts[0]||
+     result.actualOutcome!=="APPROVAL"||result.outcomeMatch!=="NOT_ACCURATE"||
+     result.actualFdaActionDate!=="2026-10-30"||
+     result.excludedFromProspectiveAccuracy!==true||
+     result.excludedFromProspectiveCalibration!==true||
+     Date.parse(result.originalForecastCreatedAt)<=Date.parse(result.actualFdaActionDate+"T23:59:59Z")){
+    throw new Error("BLIND_HISTORICAL_COMPARISON_INTEGRITY_ERROR");
+  }
+  return <section aria-label="Retrospective blind historical PDUFA outcome comparison"
     data-testid="blind-2026-pdufa-forecast"
     style={{border:"1px solid #9cb7b3",borderRadius:13,padding:"clamp(14px,2vw,20px)",
       background:"#f6faf9",margin:"0 0 20px",color:ink}}>
     <div style={{fontSize:11,letterSpacing:".09em",fontWeight:800,color:"#285e56"}}>
-      BLIND 2026 FDA REVIEW · HISTORICAL RESEARCH CHALLENGE
+      BLIND 2026 FDA REVIEW · HISTORICAL RESEARCH CHALLENGE · REVEALED
     </div>
     <h2 style={{fontSize:22,margin:"7px 0 5px"}}>
       INOVIO (INO) · INO-3107 · RRP
@@ -32,11 +44,23 @@ export default function BlindHistoricalPredictionPanel(){
       treatment and an unresolved accelerated-approval eligibility issue
       created significant FDA review risk.
     </p>
-    <p style={{fontSize:13,lineHeight:1.6,fontWeight:750,color:"#895923",margin:"9px 0"}}>
-      FDA OUTCOME SEALED — NOT CONSULTED. This prediction was reconstructed
-      after the original target date from earlier documents. It must not be
-      included in the prospectively validated accuracy pie or performance line.
-      No numerical confidence is assigned.
+    <p style={{fontSize:14,lineHeight:1.7,fontWeight:800,color:"#aa4b38",margin:"9px 0"}} data-testid="ino-blind-comparison-verdict">
+      NOT ACCURATE — FDA APPROVED VOCERYQ on October 30, 2026.
+    </p>
+    <p style={{fontSize:13,lineHeight:1.6,color:"#516b69",margin:"9px 0"}}>
+      FDA application: <strong>{result.fdaApplicationId}</strong>.
+      This was <strong>accelerated approval</strong> for reducing surgical
+      papilloma excisions in adults with RRP. The original frozen research
+      call was CRL lean and was made after the FDA action, so its error
+      is only a <strong>retrospective blind-test miss (0 correct of 1)</strong>.
+      It does not affect prospective hit-rate pies or performance lines.
+    </p>
+    <p style={{fontSize:12,color:muted,margin:"9px 0"}}>
+      <a href={result.actualFdaDecisionSourceUrl} target="_blank" rel="noopener noreferrer"
+        style={{color:primary,fontWeight:700}}>FDA announcement (October 30)</a>
+      {" · "}
+      <a href={result.officialFdaProductUrl} target="_blank" rel="noopener noreferrer"
+        style={{color:primary,fontWeight:700}}>Official FDA product and approval record</a>
     </p>
     <p style={{fontSize:12,color:muted,margin:"9px 0 0",lineHeight:1.7}}>
       <a href={record.sourceFreezeUrl} target="_blank" rel="noopener noreferrer"
@@ -51,8 +75,8 @@ export default function BlindHistoricalPredictionPanel(){
         style={{color:primary,fontWeight:700}}>Predecision SEC filing</a>
     </p>
     <p style={{fontSize:12,lineHeight:1.5,color:muted,margin:"9px 0 0"}}>
-      The SMMT prospective case remains separate and unchanged. Actual
-      FDA outcome comparison requires your later explicit instruction.
+      The original INO-3107 freeze remains unchanged; this verified result is
+      stored separately following your request to compare. SMMT remains pending.
     </p>
   </section>;
 }

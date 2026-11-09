@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "dataset": "USER_AUTHORIZED_RETROSPECTIVE_BLIND_COMPARISONS",
+  "asOf": "2026-11-09",
+  "records": [
+    {
+      "forecastId": "BLIND-INO3107-2026-10-30-V1",
+      "originalFreezeCommit": "6eacacd2728ac265f1b4b23571e8edb1108d5afe",
+      "originalForecastCreatedAt": "2026-11-09T21:06:42Z",
+      "originalForecastRelativeToDecision": "AFTER_FDA_ACTION_RETROSPECTIVE",
+      "applicationName": "INO-3107 / VOCERYQ",
+      "fdaApplicationId": "STN BL 125825/0",
+      "ticker": "INO",
+      "trialId": "NCT04398433",
+      "indication": "To reduce frequency of surgical papilloma excisions in adults with recurrent respiratory papillomatosis",
+      "frozenPredictedOutcome": "CRL",
+      "actualOutcome": "APPROVAL",
+      "approvalType": "ACCELERATED",
+      "actualFdaActionDate": "2026-10-30",
+      "outcomeMatch": "NOT_ACCURATE",
+      "comparedOn": "2026-11-09",
+      "sourceType": "OFFICIAL_FDA_PRESS_RELEASE_AND_FDA_PRODUCT_PAGE",
+      "actualFdaDecisionSourceUrl": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-plasmid-dna-based-immunotherapy-adults-recurrent-respiratory-papillomatosis",
+      "officialFdaProductUrl": "https://www.fda.gov/vaccines-blood-biologics/cellular-gene-therapy-products/voceryq",
+      "officialFdaOrphanApprovalUrl": "https://www.accessdata.fda.gov/scripts/opdlisting/oopd/detailedIndex.cfm?cfgridkey=751220",
+      "comparisonUse": "DESCRIPTIVE_ONE_CASE_RETROSPECTIVE_BLIND_EVALUATION_ONLY",
+      "excludedFromProspectiveAccuracy": true,
+      "excludedFromProspectiveCalibration": true,
+      "note": "The user asked whether the frozen CRL-lean call was correct, authorizing retrospective outcome comparison. FDA actually granted accelerated approval October 30, 2026. Original forecast file remains unchanged; this is a separate result record."
+    }
+  ]
+}

@@ -15,6 +15,7 @@ require.extensions[".tsx"]=(module,filename)=>module._compile(
 );
 
 const blind=require("../data/blindHistoricalForecasts2026.json");
+const revealed=require("../data/blindHistoricalComparisons2026.json");
 const prospective=require("../data/fdaPredictionDecisionAudit.json");
 const Panel=require("../app/BlindHistoricalPredictionPanel.tsx").default;
 
@@ -53,20 +54,53 @@ test("SMMT prospectively frozen forecast and FOCUS 29 roster remain unchanged",(
   assert.equal(focus.records.some(r=>r.nct==="NCT04398433"),false);
 });
 
-test("historical challenge panel is readable, clearly sealed, and is outside performance pies",()=>{
+test("historical challenge shows verified incorrect verdict without changing prospective accuracy",()=>{
   const html=renderToStaticMarkup(React.createElement(Panel));
   assert.match(html,/data-testid="blind-2026-pdufa-forecast"/);
   assert.match(html,/INO-3107/);
   assert.match(html,/NCT04398433/);
   assert.match(html,/CRL lean/);
   assert.match(html,/October 30, 2026/);
-  assert.match(html,/OUTCOME SEALED/);
+  assert.match(html,/NOT ACCURATE/);
+  assert.match(html,/FDA APPROVED VOCERYQ/);
+  assert.match(html,/October 30, 2026/);
+  assert.match(html,/0 correct of 1/);
+  assert.match(html,/FDA announcement/);
+  assert.doesNotMatch(html,/OUTCOME SEALED/);
   assert.match(html,/6eacacd2728ac265f1b4b23571e8edb1108d5afe/);
-  assert.match(html,/after the original target date/);
-  assert.doesNotMatch(html,/\d+\.\d+% probability|FDA APPROVED|PDUFA ACTUAL ACTION/);
+  assert.match(html,/made after the FDA action/);
+  assert.doesNotMatch(html,/\d+\.\d+% probability|PDUFA ACTUAL ACTION/);
   const chartSource=fs.readFileSync(path.join(root,"lib/focus-assessment-chart.ts"),"utf8");
   assert.doesNotMatch(chartSource,/blindHistoricalForecasts2026/);
   const page=fs.readFileSync(path.join(root,"app/predictions/assessment/page.tsx"),"utf8");
   assert.match(page,/<BlindHistoricalPredictionPanel\/>/);
   assert.match(page,/<AssessmentStatusPies \{\.\.\.pies\}\/>/);
+});
+
+test("separate, sourced outcome comparison preserves the frozen blind call and its retrospective status",()=>{
+  assert.equal(revealed.dataset,"USER_AUTHORIZED_RETROSPECTIVE_BLIND_COMPARISONS");
+  assert.equal(revealed.records.length,1);
+  const o=revealed.records[0],p=blind.records[0];
+  assert.equal(o.forecastId,p.forecastId);
+  assert.equal(o.originalFreezeCommit,p.sourceFreezeCommit);
+  assert.equal(o.frozenPredictedOutcome,p.predictedOutcome);
+  assert.equal(o.originalForecastCreatedAt,p.forecastCreatedAt);
+  assert.equal(o.trialId,p.exactNcts[0]);
+  assert.equal(o.fdaApplicationId,"STN BL 125825/0");
+  assert.equal(o.actualFdaActionDate,"2026-10-30");
+  assert.equal(o.actualOutcome,"APPROVAL");
+  assert.equal(o.approvalType,"ACCELERATED");
+  assert.equal(o.outcomeMatch,"NOT_ACCURATE");
+  assert.equal(o.excludedFromProspectiveAccuracy,true);
+  assert.equal(o.excludedFromProspectiveCalibration,true);
+  assert.ok(Date.parse(o.originalForecastCreatedAt)>Date.parse(o.actualFdaActionDate+"T23:59:59Z"));
+  assert.match(o.actualFdaDecisionSourceUrl,/^https:\/\/www\.fda\.gov\/news-events\/press-announcements\/fda-approves-/);
+  assert.match(o.officialFdaProductUrl,/^https:\/\/www\.fda\.gov\/vaccines-blood-biologics\//);
+  assert.equal(p.actualOutcome,null);
+  assert.equal(p.outcomeViewed,false);
+  assert.equal(p.predictedOutcome,"CRL");
+  assert.equal(prospective.records.length,1);
+  assert.equal(prospective.records[0].actualOutcome,"PENDING");
+  const model=fs.readFileSync(path.join(root,"lib/focus-assessment-chart.ts"),"utf8");
+  assert.doesNotMatch(model,/blindHistoricalComparisons2026/);
 });
