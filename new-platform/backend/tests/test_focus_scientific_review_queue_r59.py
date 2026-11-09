@@ -11,12 +11,12 @@ from scripts.build_focus_scientific_review_queue_r59 import build, markdown_repo
 
 def fixture(tmp_path):
     manifest, r54, r46, registry = scenario(tmp_path)
-    return manifest, assemble(manifest, r46, r54, registry)
+    return manifest, assemble(manifest, r46, r54, registry), r46
 
 
 def test_canonical_29_trial_23_cycle_review_queue_and_zero_predictions(tmp_path):
-    manifest, packets = fixture(tmp_path)
-    report = build(manifest, packets, r55_sha256="a" * 64)
+    manifest, packets, r46 = fixture(tmp_path)
+    report = build(manifest, packets, r46, r55_sha256="a" * 64)
     assert report["canonicalUniqueNctTrials"] == 29
     assert report["provisionalApplicationCycles"] == 23
     assert len(report["uniqueTrialSourceTasks"]) == 29
@@ -41,8 +41,8 @@ def test_canonical_29_trial_23_cycle_review_queue_and_zero_predictions(tmp_path)
 
 
 def test_missing_registry_results_only_emits_alternative_original_recovery_tasks(tmp_path):
-    manifest, packets = fixture(tmp_path)
-    report = build(manifest, packets, r55_sha256="b" * 64)
+    manifest, packets, r46 = fixture(tmp_path)
+    report = build(manifest, packets, r46, r55_sha256="b" * 64)
     capr = next(a for a in report["applicationReviewQueue"]
                 if a["applicationCycleId"] == "capr-deramiocel")
     assert capr["currentPrimaryTables"] == 0
@@ -56,8 +56,8 @@ def test_missing_registry_results_only_emits_alternative_original_recovery_tasks
 
 
 def test_shared_trial_not_double_counted_as_evidence_record(tmp_path):
-    manifest, packets = fixture(tmp_path)
-    report = build(manifest, packets, r55_sha256="c" * 64)
+    manifest, packets, r46 = fixture(tmp_path)
+    report = build(manifest, packets, r46, r55_sha256="c" * 64)
     shared = "NCT02500381"
     assert len([x for x in report["uniqueTrialSourceTasks"] if x["nct"] == shared]) == 1
     assert sum(shared in a["supportingExactNcts"] for a in report["applicationReviewQueue"]) == 2
@@ -77,14 +77,22 @@ def test_shared_trial_not_double_counted_as_evidence_record(tmp_path):
     lambda p: p["currentSourceCasePackets"][0].update(linkedCurrentProtocolSAPDocs=777),
 ])
 def test_forged_evidence_source_or_false_forecast_fails_closed(tmp_path, tamper):
-    manifest, packets = fixture(tmp_path)
+    manifest, packets, r46 = fixture(tmp_path)
     poisoned = deepcopy(packets)
     tamper(poisoned)
     with pytest.raises(ValueError):
-        build(manifest, poisoned, r55_sha256="d" * 64)
+        build(manifest, poisoned, r46, r55_sha256="d" * 64)
+
+
+def test_source_record_mutation_without_matching_separate_r46_receipt_fails(tmp_path):
+    manifest, packets, r46 = fixture(tmp_path)
+    tampered = deepcopy(r46)
+    tampered["records"][0]["sourceResponseSha256"] = "e" * 64
+    with pytest.raises(ValueError, match="R46_VERSUS_R55_ORIGINAL_REGISTRY_RECEIPT_CHANGED"):
+        build(manifest, packets, tampered, r55_sha256="a" * 64)
 
 
 def test_invalid_original_source_sha_is_rejected(tmp_path):
-    manifest, packets = fixture(tmp_path)
+    manifest, packets, r46 = fixture(tmp_path)
     with pytest.raises(ValueError):
-        build(manifest, packets, r55_sha256="not-an-original-source-hash")
+        build(manifest, packets, r46, r55_sha256="not-an-original-source-hash")
