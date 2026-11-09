@@ -378,5 +378,105 @@
     "reviewerSignedOff": false,
     "approvalProbability": null,
     "interpretation": "Fraction of documentary research checks observed; equal checklist weights are not a validated scientific grading rubric, a treatment-effect probability, a clinical-grade recommendation or an FDA prediction."
-  }
+  },
+  "additionalProvisionalResearchScores": [
+    {
+      "schema": "MAIN_RESEARCH_DOCUMENT_READINESS_V1",
+      "assessmentId": "4.2",
+      "methodIndex": 1,
+      "asOf": "2026-11-08",
+      "label": "Endpoint-design documentary readiness",
+      "basis": "FIVE_EQUALLY_WEIGHTED_DOCUMENTARY_CHECKS_NOT_CLINICAL_METHOD_QUALITY",
+      "gates": [
+        {
+          "id": "SOURCE_DESIGN_AMENDMENT",
+          "title": "Sponsor's dated endpoint-redesign explanation available",
+          "state": "RESEARCH_OBSERVED",
+          "sourceId": "ISSUER_MAY_2025",
+          "detail": "May 2025 sponsor disclosure explains elevation of peak VO2 as a second primary endpoint; sponsor-reported regulator discussions are not verified FDA correspondence."
+        },
+        {
+          "id": "CURRENT_PROTOCOL_ENDPOINTS",
+          "title": "Amended Phase III dual-primary protocol captured",
+          "state": "RESEARCH_OBSERVED",
+          "sourceId": "CTIS_AM04",
+          "detail": "Original CY 6033 Amendment 04 protocol is publicly captured with exact SHA-256; independently locked SAP remains absent."
+        },
+        {
+          "id": "PUBLISHED_ENDPOINT_ESTIMATES",
+          "title": "Both published primary endpoint estimates and confidence intervals available",
+          "state": "RESEARCH_OBSERVED",
+          "sourceId": "NEJM_PIVOTAL",
+          "detail": "KCCQ-CSS +3.0 points (95% CI 0.5–5.5) and peak VO2 +0.67 mL/kg/min (95% CI 0.22–1.11); this does not establish clinical importance."
+        },
+        {
+          "id": "FINAL_ENDPOINT_SAP",
+          "title": "Final signed SAP confirms testing graph, endpoint hierarchy and version",
+          "state": "NOT_VERIFIED",
+          "sourceId": null,
+          "detail": "No authenticated final locked statistical analysis plan, pre-unblinding version history or complete alpha-allocation graph."
+        },
+        {
+          "id": "ENDPOINT_CLINICAL_MEANING",
+          "title": "Clinical-important-difference and FDA endpoint acceptability independently assessed",
+          "state": "NOT_VERIFIED",
+          "sourceId": null,
+          "detail": "Published numerical benefit is known; independent patient-meaningfulness threshold and indication-specific FDA acceptability not adjudicated."
+        }
+      ],
+      "officialClinicalGrade": null,
+      "reviewerSignedOff": false,
+      "approvalProbability": null,
+      "interpretation": "3/5 means three endpoint DOCUMENT SOURCES available, not three favorable scientific findings or an FDA success probability."
+    },
+    {
+      "schema": "MAIN_RESEARCH_DOCUMENT_READINESS_V1",
+      "assessmentId": "5.3",
+      "methodIndex": 1,
+      "asOf": "2026-11-08",
+      "label": "Safety-source reconciliation documentary readiness",
+      "basis": "FIVE_EQUALLY_WEIGHTED_DOCUMENTARY_CHECKS_NOT_CLINICAL_METHOD_QUALITY",
+      "gates": [
+        {
+          "id": "PIVOTAL_SAFETY_RESULTS",
+          "title": "Peer-reviewed original pivotal safety summary available",
+          "state": "RESEARCH_OBSERVED",
+          "sourceId": "NEJM_PIVOTAL",
+          "detail": "LVEF under 50% reported 27/258 versus 2/259, and all-cause serious adverse events 52/258 versus 38/259; not adjudicated causal estimates."
+        },
+        {
+          "id": "SUBSEQUENT_ISSUER_SAFETY",
+          "title": "Subsequent sponsor serious-heart-failure adverse-event disclosure located",
+          "state": "RESEARCH_OBSERVED",
+          "sourceId": "SEC_10Q",
+          "detail": "Issuer's November 4 10-Q reports serious heart-failure adverse events 12/258 versus 3/259; differs from secondary publication 11 versus 1."
+        },
+        {
+          "id": "HF_EVENT_ACCOUNTING",
+          "title": "Heart-failure SAE 11/1 versus 12/3 reconciled by definition and window",
+          "state": "NOT_VERIFIED",
+          "sourceId": null,
+          "detail": "Safety-set cutoff, SAE definition, coding, individual events and follow-up windows remain unreconciled; absence of proof is not a negative clinical result."
+        },
+        {
+          "id": "INTERRUPTION_DENOMINATORS",
+          "title": "Treatment-interruption reported rates reconciled with exact denominators",
+          "state": "NOT_VERIFIED",
+          "sourceId": null,
+          "detail": "Secondary publication prints 14 (2.7%) and 1 (0.8%); randomized denominators 258/259 do not reproduce those percentages and may not be the correct safety-set denominator."
+        },
+        {
+          "id": "ADJUDICATED_SAFETY_PACKAGE",
+          "title": "Complete AE tables, causality and reversibility independently assessed",
+          "state": "NOT_VERIFIED",
+          "sourceId": null,
+          "detail": "Original blinded event coding, adverse-event line listings and prespecified reversibility analyses not independently signed off."
+        }
+      ],
+      "officialClinicalGrade": null,
+      "reviewerSignedOff": false,
+      "approvalProbability": null,
+      "interpretation": "2/5 reflects two accessible source summaries and three unresolved reconciliation steps; it is not safety efficacy, risk score or FDA approval probability."
+    }
+  ]
 }
