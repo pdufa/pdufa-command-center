@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse,hashlib,json,re
 from collections import defaultdict,Counter
 from datetime import datetime,timezone
+from html.parser import HTMLParser
 from pathlib import Path
 from urllib.parse import urlsplit
 from scripts.refresh_focus_public_sources_r40 import (
@@ -30,6 +31,32 @@ SEC_PIXEL=re.compile(
 HTML_SCRIPT=re.compile(rb"<script\b[^>]*>.*?</script\s*>",re.I|re.S)
 HEX=re.compile(r"[0-9a-f]{64}\Z")
 MAX_FILE=50_000_000
+
+class _NonScriptTextNodes(HTMLParser):
+    # Text-node comparison is a research signal only; HTML attributes, metadata,
+    # data-* links, structured results and script-generated pages are not proved
+    # equivalent by this extractor.
+    def __init__(self):
+        super().__init__(convert_charrefs=True)
+        self.in_noncontent=0
+        self.nodes=[]
+    def handle_starttag(self,tag,attrs):
+        if tag in ("script","style","noscript","svg"):self.in_noncontent+=1
+    def handle_endtag(self,tag):
+        if tag in ("script","style","noscript","svg"):
+            self.in_noncontent=max(0,self.in_noncontent-1)
+    def handle_data(self,text):
+        if self.in_noncontent==0:
+            value=" ".join(text.split())
+            if value:self.nodes.append(value)
+
+def _text_nodes_digest(raw:bytes)->str|None:
+    # Large filings need source-by-source review; do not silently fast-match.
+    if len(raw)>6_000_000:return None
+    parser=_NonScriptTextNodes()
+    try:parser.feed(raw.decode("utf-8","replace"))
+    except (ValueError,AssertionError,UnicodeError):return None
+    return hashlib.sha256(" ".join(parser.nodes).encode()).hexdigest()
 
 def _parent_ids():
     manifest=build_manifest(_read_json(ROSTER),_read_json(APPS))
@@ -123,6 +150,10 @@ def _kind(url:str,a:dict,b:dict,x:bytes|None,y:bytes|None):
     new_without=HTML_SCRIPT.sub(b"",y)
     if (old_without==new_without and old_without!=x and new_without!=y):
         return "SCRIPT_BYTES_CHANGED_NON_SCRIPT_HTML_IDENTICAL_REVIEW_REQUIRED"
+    old_text=_text_nodes_digest(x)
+    new_text=_text_nodes_digest(y)
+    if old_text is not None and old_text==new_text:
+        return "HTML_TEXT_NODES_IDENTICAL_OTHER_MARKUP_CHANGED_REVIEW_REQUIRED"
     return "NON_SCRIPT_OR_OTHER_ORIGINAL_HTML_BYTES_CHANGED_REVIEW_REQUIRED"
 
 def compare(previous:dict|None,current:dict,previous_root:Path|None,
@@ -161,6 +192,8 @@ def compare(previous:dict|None,current:dict,previous_root:Path|None,
           "wholeNonScriptMarkupUnchanged":
             status in ("SEC_AKAMAI_SCRIPT_AND_PIXEL_ONLY_FILING_MARKUP_IDENTICAL",
               "SCRIPT_BYTES_CHANGED_NON_SCRIPT_HTML_IDENTICAL_REVIEW_REQUIRED"),
+          "htmlTextNodesUnchangedOtherMarkupReviewRequired":
+            status=="HTML_TEXT_NODES_IDENTICAL_OTHER_MARKUP_CHANGED_REVIEW_REQUIRED",
           "materialScientificImpactIndependentlyAdjudicated":False,
           "automatedPredictionChangeAuthorized":False
         })
