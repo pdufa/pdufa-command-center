@@ -10,7 +10,7 @@ import http.cookiejar,json,os,re,sys
 from urllib.error import HTTPError,URLError
 from urllib.request import HTTPCookieProcessor,HTTPRedirectHandler,Request,build_opener
 
-SITE="https://pdufa-new-dashboard-daug7l7we-pdufa.vercel.app"
+SITE="https://pdufa-new-dashboard-8zds6q6r3-pdufa.vercel.app"
 ROSTER="/api/predictions/focus-preliminary"
 SOURCES="/api/predictions/focus-source-readiness"
 URL="/predictions"
@@ -81,6 +81,24 @@ def main():
        "sourceUrlsFetched":21,"sourceUrlsAttempted":22,"registryResultModules":12,
        "sourceReceiptId":13691348436,"clinicalGrades":0,
        "fdaModelPredictions":"ABSTAIN","writesPerformed":False}),flush=True)
+    for evidence_text in [
+        "New original registry results",
+        "12/29",
+        "16 primary outcome tables",
+        "Inspect all 12 trials with posted primary results",
+        "Show 17 other trials without a current registry results section",
+        "not independently graded clinical endpoints",
+        "NOT CALIBRATED"
+    ]:
+        check(evidence_text.lower() in rendered.lower(),
+              "R42_PRIMARY_RESEARCH_NOT_RENDERED_"+re.sub(r"\W+","_",evidence_text).upper())
+    check("13693571338" in raw.decode("utf-8","replace"),
+          "R42_ORIGINAL_REGISTRY_ARTIFACT_NOT_LINKED")
+    print(json.dumps({"stage":"R42_29_PRIMARY_SOURCE_READ",
+         "status":"PASS","exactNcts":29,"withRegistryResults":12,
+         "originalPrimaryTables":16,"withoutRegistryResultsSection":17,
+         "qualifiedClinicalGrades":0,"validatedFDAForecasts":0,
+         "modelAccuracy":"NOT_CALIBRATED","readOnly":True}),flush=True)
     print(json.dumps({"stage":"FOCUS_29_23_SIGNED_IN_HTML","status":"PASS",
         "researchOnly":True,"futureModelStatus":"ABSTAIN"}),flush=True)
     code,kind,raw=get(client,ROSTER,"application/json")
