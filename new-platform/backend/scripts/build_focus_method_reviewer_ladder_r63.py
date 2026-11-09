@@ -147,7 +147,7 @@ def build(manifest, r54, r55, r60, *, hashes):
         require(type(docs) is list and type(receipt_docs) is list
                 and len(docs) == methods.get("sourceDocumentCount") == len(receipt_docs)
                 and len(docs) <= 8, "TRIAL_ORIGINAL_DOCUMENT_CENSUS_CHANGED")
-        receipts = {d.get("sha256"): d for d in receipt_docs}
+        receipts = {(d.get("filename"),d.get("sha256")): d for d in receipt_docs}
         require(len(receipts) == len(docs), "DUPLICATE_ORIGINAL_PDF_RECEIPTS")
         total_attached += len(docs)
         domains = []
@@ -155,7 +155,7 @@ def build(manifest, r54, r55, r60, *, hashes):
             leads = []
             for d in docs:
                 sha = d.get("sourceSha256")
-                receipt = receipts.get(sha)
+                receipt = receipts.get((d.get("filename"),sha))
                 require(type(sha) is str and SHA.fullmatch(sha)
                         and type(receipt) is dict and
                         receipt.get("sourceUrl") == d.get("sourceUrl") and
