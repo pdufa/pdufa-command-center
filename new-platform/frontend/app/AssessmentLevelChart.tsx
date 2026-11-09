@@ -2,6 +2,7 @@ import prospective from "../data/fdaPredictionDecisionAudit.json";
 import originalIno from "../data/blindHistoricalForecasts2026.json";
 import retrospectiveBepirovirsen from "../data/levelThreeHistoricalReconstruction2026.json";
 import retrospectiveJoenja from "../data/levelThreePharHistorical2026.json";
+import retrospectiveSkyrizi from "../data/levelThreeAbbvieHistorical2026.json";
 
 type LevelRow={
   id:string;
@@ -17,7 +18,13 @@ export default function AssessmentLevelChart(){
   const ino=originalIno.records.find(r=>r.forecastId==="BLIND-INO3107-2026-10-30-V1");
   const bepi=retrospectiveBepirovirsen.records.find(r=>r.assessmentId==="HIST-2026-10-26-BEPIROVIRSEN-LEVEL3-001");
   const phar=retrospectiveJoenja.records.find(r=>r.assessmentId==="HIST-PHAR-JOENJA-2026-10-24-LEVEL3-001");
-  if(!smmt||!ino||!bepi||!phar||phar.assessmentDirection!=="APPROVAL"||
+  const abbv=retrospectiveSkyrizi.records.find(r=>r.assessmentId==="HIST-ABBV-SKYRIZI-2026-10-23-LEVEL3-001");
+  if(!smmt||!ino||!bepi||!phar||!abbv||
+     abbv.assessmentLevelStyle!==3||abbv.assessmentDirection!=="APPROVAL"||
+     abbv.actualOutcome!=="APPROVAL"||abbv.outcomeExposedBeforeAssessment!==true||
+     abbv.excludedFromProspectiveAccuracy!==true||
+     abbv.excludedFromRetrospectiveBlindValidation!==true||
+     abbv.excludedFromCalibration!==true||phar.assessmentDirection!=="APPROVAL"||
      phar.actualOutcome!=="APPROVAL"||phar.outcomeExposedBeforeAssessment!==true||
      phar.excludedFromProspectiveAccuracy!==true||
      phar.excludedFromRetrospectiveBlindValidation!==true||
@@ -36,6 +43,8 @@ export default function AssessmentLevelChart(){
     {id:bepi.assessmentId,trial:"GSK / IONS · Bepirovirsen",stage:"Historical review (FDA outcome exposed)",
       level:3,result:"Approval lean",hindsight:true},
     {id:phar.assessmentId,trial:"PHAR · Joenja",stage:"Historical review (FDA outcome known)",
+      level:3,result:"Approval lean · FDA approved",hindsight:true},
+    {id:abbv.assessmentId,trial:"ABBV · SKYRIZI",stage:"Historical review (FDA outcome known)",
       level:3,result:"Approval lean · FDA approved",hindsight:true}
   ];
   return <section data-testid="research-assessment-level-chart" aria-label="Assessment level chart by FDA review"
@@ -49,7 +58,7 @@ export default function AssessmentLevelChart(){
       Manual-style review levels shown separately from FDA accuracy.
       A later reassessment is a separate row, never a rewrite of the frozen original.
     </p>
-    <div role="img" aria-label="SMMT original Level 1; INO original Level 1; INO revised after FDA outcome Level 3; GSK bepirovirsen historical Level 3; PHAR Joenja historical Level 3"
+    <div role="img" aria-label="SMMT original Level 1; INO original Level 1; INO revised after FDA outcome Level 3; GSK bepirovirsen historical Level 3; PHAR Joenja historical Level 3; ABBV SKYRIZI historical Level 3"
       style={{display:"grid",gap:11}}>
       {rows.map(row=><div key={row.id} data-testid={"assessment-level-row-"+(row.hindsight?"hindsight-":"")+row.id}
         style={{display:"grid",gridTemplateColumns:"minmax(0,1fr) minmax(120px,1.3fr)",columnGap:13,alignItems:"center",rowGap:5}}>
@@ -75,8 +84,8 @@ export default function AssessmentLevelChart(){
     <p style={{fontSize:12,color:"#895e2c",lineHeight:1.5,margin:"14px 0 0"}}>
       These are approximate manual review-depth labels, <strong>not certified engine levels</strong>
       or completion percentages toward the planned 20-level / 800-assessment framework.
-      The INO revised, GSK historical and PHAR historical rows are outcome-aware,
-      and none counts as a blind prediction or prospective accuracy.
+      The INO revised, GSK historical, PHAR historical and ABBV historical rows
+      are outcome-aware, and none counts as a blind prediction or prospective accuracy.
     </p>
   </section>;
 }
