@@ -1,0 +1,43 @@
+name: MAIN R50 original FDA FY2024 review-cycle appendix probe
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r50-fda-approval-history-pdf-probe.yml
+      - new-platform/backend/scripts/probe_fda_pdufa_appendix_r50.py
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: main-r50-fda-cycle-appendix-source-pilot
+  cancel-in-progress: false
+jobs:
+  source-only-fda-review-cycle-layout-probe:
+    if: github.repository == 'pdufa/pdufa-command-center'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify no retired analysis or altered 29 NCT roster
+        run: |
+          set -euo pipefail
+          python scripts/audit_raas_retirement.py --check >/dev/null
+      - name: Extract shape of source-approved-only original FDA FY2024 application review-cycle table
+        run: |
+          set -euo pipefail
+          python -m pip install pymupdf
+          mkdir -p "$RUNNER_TEMP/r50-fda-appendix"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/probe_fda_pdufa_appendix_r50.py --out "$RUNNER_TEMP/r50-fda-appendix"
+      - name: Preserve official report PDF and immutable shape inspection
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r50-fda-original-approved-review-cycle-source-${{ github.run_id }}
+          path: ${{ runner.temp }}/r50-fda-appendix/
+          retention-days: 90
+          if-no-files-found: warn
