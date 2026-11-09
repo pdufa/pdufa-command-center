@@ -45,7 +45,7 @@ async function verify(browser,p){
   await boxes.first().locator("summary").click();
   assert.equal(await boxes.first().evaluate(el=>el.open),false);
   await boxes.nth(1).locator("summary").click();
-  assert.match(await boxes.nth(1).innerText(),/source requires independent verification/i);
+  assert.match(await boxes.nth(1).innerText(),/Registry-reported phase requires independent verification/i);
   const phase=await page.locator('section[aria-label="R67 original registry phase source evidence"]').evaluate(el=>el.getBoundingClientRect().y+scrollY);
   const methods=await page.locator('section[aria-label="R64 original method page review"]').evaluate(el=>el.getBoundingClientRect().y+scrollY);
   const reviewers=await page.locator('section[aria-label="R65 independent reviewer readiness"]').evaluate(el=>el.getBoundingClientRect().y+scrollY);
