@@ -1,0 +1,41 @@
+{
+  "schema": "MAIN_HOP_PHASE3_HISTORICAL_BACKTEST_READINESS_R39",
+  "asOf": "2026-11-09",
+  "engine": "INDEPENDENT_MEDICAL_INTELLIGENCE_NOT_RETIRED_RAAS",
+  "status": "TIME_LOCKED_REPLAY_INFRASTRUCTURE_ONLY_HISTORICAL_COHORT_NOT_VERIFIED",
+  "sourceInputs": {
+    "latestFdaSourceRun": "https://github.com/pdufa/pdufa-command-center/actions/runs/42642513960",
+    "selectedActionResearchCandidates": 412,
+    "totalOfficialOriginalFilingApplicationsEnumerated": false,
+    "independentActionCycleIdsAdjudicated": 0,
+    "originalSignedPhase3EvidenceChronologyEstablished": 0,
+    "completeFilingCensusVerified": false
+  },
+  "liveMetrics": {
+    "frozenHistoricalApplicationCycles": 0,
+    "trulyBlindedRetrospectiveResearchPredictions": 0,
+    "independentlyAdjudicatedHistoricalOutcomes": 0,
+    "verifiedHistoricalCaseBacktests": 0,
+    "untouchedTemporalHoldoutCases": 0,
+    "measuredHistoricalAccuracy": null,
+    "probabilityCalibration": null,
+    "brierScore": null,
+    "predictiveCoverage": null
+  },
+  "delivery": {
+    "codeModule": "new-platform/backend/app/hop_blinded_phase3_backtest.py",
+    "testModule": "new-platform/backend/tests/test_hop_blinded_phase3_backtest.py",
+    "mode": "SYNTHETIC_TESTS_ONLY_NO_REAL_FDA_CASES_RELEASED",
+    "actualForecastsReleased": false,
+    "modelTrainingAuthorized": false
+  },
+  "pending": [
+    "Obtain complete consecutive original NDA/BLA filing cohort including pending and withdrawn",
+    "Independently verify exact application/review-cycle identities and regulator action labels",
+    "Build original as-published clinical evidence snapshots with cutoff after phase3 and before each decision",
+    "Split development and later validation by nonoverlapping program family and chronological windows",
+    "Separate outcome vault from prediction code with auditable custody and immutable seals",
+    "Authorize independent historical reviewers and run first real blinded retrospective case",
+    "Only after sufficient observed cases report numerator-denominator accuracy, coverage and calibration"
+  ]
+}
