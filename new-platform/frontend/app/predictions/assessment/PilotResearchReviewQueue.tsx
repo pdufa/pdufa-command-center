@@ -31,6 +31,40 @@ export default function PilotResearchReviewQueue({nct}:{nct:string}){
   return <section style={{...card,background:"#f3f9f6"}} aria-label="Prioritized Phase III scientific research review queue">
     <h3 style={{margin:"0 0 8px"}}>Phase III scientific review queue · 18 research method leads</h3>
     {!queue?<p role="alert" style={{fontWeight:800}}>Research source queue withheld: evidence identity, original source or clinical review status changed.</p>:<>
+      <details style={{border:"1px solid #c9b98b",borderRadius:9,padding:11,background:"#fffaf0",marginBottom:12}}
+        aria-label="Original source gap audit and scientific safety reconciliation">
+        <summary style={{cursor:"pointer",fontWeight:800}}>
+          Original-source gap audit · final SAP and heart-failure safety
+        </summary>
+        <p style={{fontSize:12,margin:"9px 0"}}>
+          <strong>Archived November 9 UTC research check:</strong> the official registry and sponsor safety
+          disclosure were retrieved. The registry response did not list a statistical analysis plan.
+          The automated fetch of both NEJM supplements was unavailable. Neither observation establishes
+          that an original final locked SAP or supplement does not exist elsewhere.
+        </p>
+        <p style={{fontSize:12,margin:"9px 0"}}>
+          <strong>Safety source detail:</strong> the sponsor describes two treated serious heart-failure
+          cases associated with reduced LVEF and ten additional treated cases, totaling
+          <strong> 12 versus 3 on placebo</strong>. The secondary report's <strong>11 versus 1</strong>
+          comparison is <strong>NOT RECONCILED</strong> by this breakdown. Original event definitions,
+          observation windows and treatment populations remain required.
+        </p>
+        <p style={{fontSize:12,margin:"9px 0"}}>
+          <a href="https://github.com/pdufa/pdufa-command-center/actions/runs/42555289486"
+            target="_blank" rel="noopener noreferrer" style={{fontWeight:750}}>
+            View audited source receipts and statuses
+          </a>{" "}·{" "}
+          <a href="https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Additional-Data-from-ACACIA-HCM-Presented-at-the-HFSA-Annual-Scientific-Meeting-2026/default.aspx"
+            target="_blank" rel="noopener noreferrer">October 12 sponsor statement</a>
+          {" "}·{" "}
+          <a href="https://clinicaltrials.gov/study/NCT06081894"
+            target="_blank" rel="noopener noreferrer">Original registry</a>
+        </p>
+        <p style={{fontSize:11,margin:"9px 0 0"}}>
+          This is a dated source-discovery receipt, not a live independent SAP or safety adjudication.
+          No clinical grades, FDA outcome probabilities, or accuracy values were created.
+        </p>
+      </details>
       <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(115px,1fr))",gap:8}}>
         {[
           ["18","Mapped source leads"],
@@ -76,6 +110,12 @@ export default function PilotResearchReviewQueue({nct}:{nct:string}){
               <span style={{fontSize:11,fontWeight:800}}>{name(p.evidenceStatus)}</span>
             </div>
             <p style={{fontSize:12,margin:"6px 0"}}><strong>Required next:</strong> {p.missingOriginalEvidence}</p>
+            {p.sourceGapAuditNote?<p style={{fontSize:12,margin:"6px 0",padding:7,
+              border:"1px solid #d8c594",background:"#fffaf1",borderRadius:6}}>
+              <strong>Source audit finding (dated):</strong> {p.sourceGapAuditNote}{" "}
+              <a href={"https://github.com/pdufa/pdufa-command-center/actions/runs/"+p.sourceGapAuditRun}
+                target="_blank" rel="noopener noreferrer">Original receipt</a>
+            </p>:null}
             <div style={{fontSize:12,margin:"5px 0"}}>
               <strong>Official 0–5 grade:</strong> Unscored · <strong>Reviewer:</strong> Not signed
             </div>
