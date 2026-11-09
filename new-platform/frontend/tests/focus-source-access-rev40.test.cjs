@@ -56,9 +56,9 @@ test("Achieve only exception has official SEC fallback not new FDA review label"
 });
 test("PREDICTIONS keeps R40 public retrieval distinct from 23 research leans and actual FDA model",()=>{
   const ui=fs.readFileSync(path.join(root,"app/predictions/FocusPreliminaryApplicationBoard.tsx"),"utf8");
-  assert.ok(ui.includes("Revision 40 real public-source recovery status"));
-  assert.ok(ui.includes("FOCUS_SOURCE_R40.artifactUrl"));
-  assert.ok(ui.includes("sourceStatusForCycle(a.id)"));
+  assert.ok(ui.includes("Revision 40 live source-access audit"));
+  assert.ok(ui.includes("FOCUS_SOURCE_R40.blockedCanonicalSource.fallback"));
+  assert.ok(ui.includes("byCycle.get(a.id)"));
   assert.ok(ui.includes("does not establish"));
   assert.ok(ui.includes("Official FDA prediction"));
   assert.ok(ui.includes("Review delay/extension prediction"));
