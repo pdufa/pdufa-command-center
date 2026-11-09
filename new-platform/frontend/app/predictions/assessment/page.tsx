@@ -44,6 +44,9 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
       <section style={{...section,margin:"0 0 22px",background:"#f7faf9"}} aria-label="First prospective 2026 FDA research prediction">
         <div style={{...label,marginBottom:7}}>FIRST PROSPECTIVE 2026 PDUFA PREDICTION PILOT</div>
         <h2 style={{fontSize:21,margin:"0 0 5px"}}>SMMT · HARMONi · NCT06396065</h2>
+        <p data-testid="smmt-assessment-level" style={{fontSize:13,margin:"7px 0",fontWeight:700,color:"#285e56"}}>
+          Assessment level: <strong>Level 1-style · Preliminary original forecast</strong> (not a validated engine level).
+        </p>
         <p style={{fontSize:14,lineHeight:1.6,margin:"5px 0"}}>
           <strong>Predecision research call: CRL lean.</strong> Ivonescimab + chemotherapy
           for EGFR-mutated advanced nonsquamous NSCLC after EGFR TKI.
