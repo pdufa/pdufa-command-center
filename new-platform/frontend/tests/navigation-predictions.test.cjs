@@ -23,7 +23,7 @@ test("global navigation includes a working FDA prediction destination",()=>{
 
 test("ASSESMENTS tab opens the existing FOCUS scientific review ledger without claiming scores are complete",()=>{
   const nav=fs.readFileSync(path.join(app,"GlobalNavigation.tsx"),"utf8");
-  assert.match(nav,/label:"ASSESMENTS",href:"\\/predictions\\/assessment"/);
+  assert.ok(nav.includes('label:"ASSESMENTS",href:"/predictions/assessment"'));
   assert.ok(nav.indexOf('label:"PREDICTIONS"')<nav.indexOf('label:"ASSESMENTS"'));
   assert.ok(nav.indexOf('label:"ASSESMENTS"')<nav.indexOf('label:"TOOLS"'));
   const page=fs.readFileSync(path.join(app,"predictions/assessment/page.tsx"),"utf8");
