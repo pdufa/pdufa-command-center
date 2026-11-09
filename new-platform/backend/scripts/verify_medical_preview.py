@@ -127,11 +127,15 @@ def confirm_provisional_score_page(client):
            'NOT ACTIVE' in normalized and
            'Original documents deposited' in normalized and
            'Disposable PostgreSQL 16 acceptance' in normalized and
+           'Separate database migration and runtime roles' in normalized and
+           'SELECT and INSERT only' in normalized and
            'offline synthetic key-recovery drill' in normalized and
            'AES-256-GCM' in normalized,
            'STAGED_ENCRYPTED_VAULT_NOT_TRUTHFULLY_VISIBLE')
     demand(b'actions/runs/42562929833' in page,
            'DISPOSABLE_POSTGRES_RECEIPT_NOT_LINKED')
+    demand(b'actions/runs/42564391773' in page,
+           'DISPOSABLE_POSTGRES_LEAST_PRIVILEGE_RECEIPT_NOT_LINKED')
     demand('Alternative source recovery' in normalized and
            'final locked primary SAP' in normalized and
            'no request has been sent' in normalized and
