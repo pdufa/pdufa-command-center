@@ -150,6 +150,16 @@ def previous_index(previous: dict | None):
             or {row.get("sourceId") for row in sources
                 if isinstance(row, dict)} != set(SOURCES)):
         return None, None, "PREVIOUS_INVALID"
+    for row in sources:
+        if (not isinstance(row, dict) or row.get("sourceUrl") != SOURCES.get(row.get("sourceId"))
+                or row.get("status") not in {"MATCH", "CHANGED", "UNAVAILABLE"}):
+            return None, None, "PREVIOUS_INVALID"
+        digest = row.get("responseSha256")
+        if digest is not None and (not isinstance(digest, str)
+                or not re.fullmatch(r"[a-f0-9]{64}", digest)):
+            return None, None, "PREVIOUS_INVALID"
+        if row["status"] == "UNAVAILABLE" and digest is not None:
+            return None, None, "PREVIOUS_INVALID"
     return {x["sourceId"]: x for x in sources}, previous["receiptSha256"], "PREVIOUS_VALID"
 
 
