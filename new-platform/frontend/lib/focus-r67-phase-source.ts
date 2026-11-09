@@ -48,7 +48,7 @@ export function buildR67PhaseSource(input:unknown=source){
       enrollment,enrollmentType,primaryDate,primaryType]=r;
     if(!(phase==="PHASE3"||phase==="PHASE2,PHASE3")||
        !["COMPLETED","ACTIVE_NOT_RECRUITING","RECRUITING"].includes(status)||
-       !DATE.test(updated)||!DATE.test(verified)||verified.length!==7||
+       !DATE.test(updated)||updated>"2026-11-09"||!DATE.test(verified)||verified.length!==7||
        verified>updated.slice(0,7)||
        !DATE.test(primaryDate)||!["RANDOMIZED","NA"].includes(allocation)||
        !["NONE","DOUBLE","TRIPLE","QUADRUPLE"].includes(masking)||
