@@ -1,0 +1,102 @@
+name: MAIN Rev42 FOCUS registry posted outcomes research extraction
+
+on:
+  push:
+    branches:
+      - feature/medical-stage4-verified-method-matrix-20261108
+    paths:
+      - .github/workflows/main-focus-registryposted-r42.yml
+      - new-platform/backend/scripts/extract_focus_registry_outcomes_r42.py
+      - new-platform/backend/tests/test_focus_registry_outcomes_r42.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-focus-registryposted-r42-draft
+  cancel-in-progress: false
+
+jobs:
+  extract-public-registry-research:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 17
+    env:
+      PYTHONPATH: new-platform/backend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify exact repository SHA, canonical roster and anti-fabrication tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install pytest
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q \
+            tests/test_focus_registry_outcomes_r42.py \
+            tests/test_focus_source_recovery_r40.py
+      - name: Capture current exact-NCT trial outcome modules
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r42-focus-outcomes"
+          python new-platform/backend/scripts/extract_focus_registry_outcomes_r42.py \
+            --output "$RUNNER_TEMP/r42-focus-outcomes/r42-posted-registry-outcomes-research.json"
+      - name: Cross-check every exact NCT and censor unverified FDA inferences
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib, json, os
+          from pathlib import Path
+          src=Path(os.environ["RUNNER_TEMP"])/"r42-focus-outcomes/r42-posted-registry-outcomes-research.json"
+          raw=src.read_bytes()
+          d=json.loads(raw)
+          trials=d["trials"]
+          assert d["schema"]=="MAIN_FOCUS_R42_POSTED_REGISTRY_RESULTS_RESEARCH"
+          assert d["trialCount"]==29 and d["applicationCycleCount"]==23
+          assert len(trials)==29 and len({x["nct"] for x in trials})==29
+          assert d["registryRecordsFetched"]==29, "One or more original NCT records unavailable"
+          assert d["registryResultsSectionsPresent"]+d["registryResultsSectionsAbsent"]==29
+          assert d["registryResultsMembershipUnknown"]==0
+          assert all(x["registry"]["status"]=="FETCHED" for x in trials)
+          assert all(x["noScoresWritten"] is True and x["independentReviewerSignoff"] is False for x in trials)
+          assert all(x["registry"]["sha256"] is not None for x in trials)
+          assert d["independentClinicalReviews"]==0
+          assert d["officialFdaForecastsIndependentlyValidated"]==0
+          assert d["historicalFdaBacktestsCompleted"]==0
+          assert d["fdaApprovalProbability"] is None
+          assert d["calibratedAccuracy"] is None
+          assert d["predictionsAuthorized"] is False
+          assert d["clinicalGradingAuthorized"] is False
+          assert d["noClinicalOrProductionWrites"] is True
+          report=(
+            "## Rev42 posted ClinicalTrials.gov outcome research (read-only)\n\n"
+            f"Exact trial records fetched: {d['registryRecordsFetched']}/29\n\n"
+            f"Current posted results sections: {d['registryResultsSectionsPresent']}/29\n\n"
+            f"Trials with a posted primary outcome: {d['trialsWithPostedPrimaryOutcomeRecords']}/29\n\n"
+            f"Individual primary outcome records: {d['postedPrimaryOutcomeRecords']}\n\n"
+            "Original source date/reviewer or FDA forecast grades: 0\n\n"
+            "Medical, safety and CMC judgment: NOT AUTHORIZED\n\n"
+            "Historical model cases backtested: 0\n\n"
+            f"Receipt SHA-256: {hashlib.sha256(raw).hexdigest()}\n\n"
+            "Posted registry values are neither complete Phase 3 evidence nor an as-published predecision source.\n"
+          )
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as f:
+              f.write(report)
+          print(report,flush=True)
+          PY
+      - name: Store 29 exact-NCT source-fingerprinted research receipt
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r42-focus-registry-outcome-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/r42-focus-outcomes/r42-posted-registry-outcomes-research.json
+          retention-days: 90
+          if-no-files-found: warn
