@@ -34,6 +34,25 @@ export type Phase3ReviewQueue={
   nct:"NCT06081894";
   phaseBasis:"REGISTRY_REPORTED_PHASE3_NOT_INDEPENDENTLY_VERIFIED";
   sourceSnapshotAsOf:string;
+  alternativeSourceRecovery:{
+    archivedAuditRun:42556948533;
+    sourceCheckDate:"2026-11-09";
+    publicRetrievalStatuses:{
+      NEJM_ARTICLE_LANDING:"UNAVAILABLE";
+      EUROPEPMC_RESPONDER_FULLTEXT:"UNAVAILABLE";
+      EUROPEPMC_ECHO_FULLTEXT:"UNAVAILABLE";
+    };
+    originalArticleUrl:string;
+    officialDataSharingUrl:string;
+    secondaryResponderUrl:string;
+    secondaryEchoUrl:string;
+    sponsorResearchContact:string;
+    finalLockedPrimarySapAuthenticated:false;
+    primarySensitivityRecalculated:false;
+    hfSafetySourcesReconciled:false;
+    automaticRequestSent:false;
+    originalDataRequestPolicy:"SUBJECT_TO_RESEARCH_ELIGIBILITY_AND_SPONSOR_REVIEW";
+  };
   positions:QueuePosition[];
   summary:{mappedSourceLeads:18;documentChecklist:3;quantitativeMethods:2;
     sourceLeadOnly:13;positionsNotSourceMapped:782;
@@ -158,7 +177,27 @@ export function buildPhase3ReviewQueue(p:Snapshot):Phase3ReviewQueue|null {
   return {
     schema:"MAIN_ACACIA_PHASE3_REVIEW_QUEUE_V1",nct:"NCT06081894",
     phaseBasis:"REGISTRY_REPORTED_PHASE3_NOT_INDEPENDENTLY_VERIFIED",
-    sourceSnapshotAsOf:p.asOf,positions:items,
+    sourceSnapshotAsOf:p.asOf,
+    alternativeSourceRecovery:{
+      archivedAuditRun:42556948533,
+      sourceCheckDate:"2026-11-09",
+      publicRetrievalStatuses:{
+        NEJM_ARTICLE_LANDING:"UNAVAILABLE",
+        EUROPEPMC_RESPONDER_FULLTEXT:"UNAVAILABLE",
+        EUROPEPMC_ECHO_FULLTEXT:"UNAVAILABLE"
+      },
+      originalArticleUrl:"https://www.nejm.org/doi/10.1056/NEJMoa2603021",
+      officialDataSharingUrl:"https://www.nejm.org/doi/suppl/10.1056/NEJMoa2603021/suppl_file/nejmoa2603021_data-sharing.pdf",
+      secondaryResponderUrl:"https://pmc.ncbi.nlm.nih.gov/articles/PMC13674601/",
+      secondaryEchoUrl:"https://pmc.ncbi.nlm.nih.gov/articles/PMC13674599/",
+      sponsorResearchContact:"medicalaffairs@cytokinetics.com",
+      finalLockedPrimarySapAuthenticated:false,
+      primarySensitivityRecalculated:false,
+      hfSafetySourcesReconciled:false,
+      automaticRequestSent:false,
+      originalDataRequestPolicy:"SUBJECT_TO_RESEARCH_ELIGIBILITY_AND_SPONSOR_REVIEW"
+    },
+    positions:items,
     summary:{
       mappedSourceLeads:18,documentChecklist:3,quantitativeMethods:2,
       sourceLeadOnly:13,positionsNotSourceMapped:782,
