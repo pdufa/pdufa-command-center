@@ -62,6 +62,10 @@ jobs:
           assert r["schema"]=="MAIN_FOCUS_PUBLIC_SOURCE_RECAPTURE_R40"
           assert r["trialRoster"]==29
           assert r["provisionalApplicationGroups"]==23
+          assert r["canonicalApplicationSourceUrls"]==21
+          assert r["additionalOfficialSecSourceUrls"]==1
+          assert r["uniqueApplicationSourceUrls"]==22
+          assert 0<=r["applicationGroupsWithAvailablePublicSource"]<=23
           assert len(r["trialSources"])==29
           assert len(r["applicationGroups"])==23
           assert r["independentlyValidatedApplicationForecasts"]==0
@@ -80,6 +84,9 @@ jobs:
             "FOCUS NCTs: 29",
             "Provisional FDA application groups: 23",
             f'Application source URLs fetched: {r["applicationSourceUrlsFetched"]}/{r["uniqueApplicationSourceUrls"]}',
+            f'Application groups with at least one accessible public source: {r["applicationGroupsWithAvailablePublicSource"]}/23',
+            'Achieve SEC original 10-Q fallback is separate from redirected issuer URL',
+            'Sarepta oversized HTML is hashed by bounded streaming without archiving source bodies',
             f'Official exact-NCT registry records fetched: {r["clinicalTrialsGovRecordsFetched"]}/29',
             "Independently signed scientific reviews: 0",
             "Verified FDA approval/CRL forecast accuracy: unavailable",
