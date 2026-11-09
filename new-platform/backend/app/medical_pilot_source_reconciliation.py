@@ -57,6 +57,9 @@ def arithmetic_audit(report: CountCitation) -> dict:
         name for name, value, expected in zip(("TREATED", "PLACEBO"), computed, printed)
         if expected is not None and abs(value - expected) > Decimal("0.1")
     ]
+    status = ("PERCENT_DENOMINATOR_RECHECK" if mismatch else
+              "PRINTED_PERCENTAGES_PARTIALLY_UNAVAILABLE" if None in printed else
+              "ARITHMETIC_CONSISTENT_NOT_CLINICALLY_ADJUDICATED")
     return {"sourceUrl":report.source_url, "outcomeDefinition":report.outcome_definition,
             "populationWindowCaveat":report.source_context,
             "recordedCounts":[report.treated,report.control],
@@ -64,7 +67,7 @@ def arithmetic_audit(report: CountCitation) -> dict:
             "reportedPercentages":[str(v) if v is not None else None for v in printed],
             "arithmeticFromProvidedDenominators":[str(v) for v in computed],
             "needsOriginalDenominatorReview":mismatch,
-            "status":"PERCENT_DENOMINATOR_RECHECK" if mismatch else "ARITHMETIC_CONSISTENT_NOT_CLINICALLY_ADJUDICATED"}
+            "status":status}
 
 
 def cross_source_counts(first: CountCitation, second: CountCitation) -> dict:
