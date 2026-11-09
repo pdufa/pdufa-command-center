@@ -1,0 +1,98 @@
+name: MAIN Rev38 FDA fresh public source candidate replay
+
+on:
+  push:
+    branches:
+      - feature/medical-stage4-verified-method-matrix-20261108
+    paths:
+      - .github/workflows/main-rev38-fda-source-replay.yml
+      - new-platform/backend/scripts/refresh_hop_fda_action_candidates.py
+      - new-platform/backend/tests/test_hop_fda_source_recovery_r38.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-rev38-fda-source-replay-draft-only
+  cancel-in-progress: false
+
+jobs:
+  recapture-public-fda-sources:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    env:
+      PYTHONPATH: new-platform/backend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate exact branch SHA and source-source audit regressions
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install pytest
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q \
+            tests/test_hop_fda_source_recovery_r38.py \
+            tests/test_hop_fda_action_candidate_universe.py \
+            tests/test_hop_drugsfda_snapshot.py \
+            tests/test_hop_openfda_snapshot.py
+      - name: Collect current original FDA bulk source observations
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r38-approved" "$RUNNER_TEMP/r38-crl" "$RUNNER_TEMP/r38-derived"
+          python new-platform/backend/scripts/collect_hop_drugsfda.py --output-dir "$RUNNER_TEMP/r38-approved"
+          python new-platform/backend/scripts/collect_hop_openfda_crl.py --output-dir "$RUNNER_TEMP/r38-crl"
+      - name: Compute research-only source-action candidates and source receipts
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/refresh_hop_fda_action_candidates.py \
+            --approved "$RUNNER_TEMP/r38-approved/drugsfda_approved_registry_quarantined.json" \
+            --crl "$RUNNER_TEMP/r38-crl/fda_crl_published_quarantined.json" \
+            --out "$RUNNER_TEMP/r38-derived" \
+            --as-of "$(date -u +%Y-%m-%d)"
+      - name: Check candidate-file hashes, source selection bias and no model release
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,json,hashlib
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"r38-derived"
+          r=json.loads((p/"r38_fda_source_receipt.json").read_text())
+          raw=(p/"r38_fda_source_candidates.json").read_bytes()
+          rows=json.loads(raw)
+          assert hashlib.sha256(raw).hexdigest()==r["candidateFileSha256"]
+          assert r["researchCandidateRows"]==len(rows)
+          assert r["modelEligibleHistoricalCases"]==0
+          assert r["trainingAuthorized"] is False
+          assert r["approvalProbability"] is None
+          assert r["completeOriginalApplicationFilingRosterVerified"] is False
+          assert all(x["modelEligible"] is False for x in rows)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as f:
+              f.write("## Rev38 FDA source recapture (research only)\n\n"+
+                f"Fresh FDA publication-source candidates: {len(rows)}\n\n"+
+                "Complete original filing denominator: NO\n\n"+
+                "Independently verified model-eligible FDA cycles: 0\n\n"+
+                "FDA calibration and probability: UNAVAILABLE\n\n"+
+                "Artifact is retained temporarily, not a permanent source backup.\n")
+          PY
+      - name: Archive both fresh official source snapshots and derived candidates
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r38-fda-sources-candidates-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/r38-approved/
+            ${{ runner.temp }}/r38-crl/
+            ${{ runner.temp }}/r38-derived/
+          retention-days: 90
+          if-no-files-found: error
