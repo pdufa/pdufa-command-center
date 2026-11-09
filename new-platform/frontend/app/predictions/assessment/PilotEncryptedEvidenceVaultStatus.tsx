@@ -20,13 +20,24 @@ export default function PilotEncryptedEvidenceVaultStatus({nct}:{nct:string}){
         target="_blank" rel="noopener noreferrer">View audited test run</a>.
       This was not a deployment, offsite key backup, or test against the real Render database.
     </p>
+    <p style={{fontSize:12,margin:"10px 0",padding:9,background:"#fff",border:"1px solid #bdd4c8",borderRadius:8}}>
+      <strong>Separate database migration and runtime roles: PASSED in disposable PostgreSQL.</strong>
+      The staged backend now requires a dedicated nonowner PostgreSQL login that may
+      <strong> SELECT and INSERT only</strong>. Actual PostgreSQL tests denied
+      UPDATE, DELETE, TRUNCATE, schema changes, trigger disabling and role escalation.
+      The HTTP vault cannot create its own tables.{" "}
+      <a href="https://github.com/pdufa/pdufa-command-center/actions/runs/42564391773"
+        target="_blank" rel="noopener noreferrer">Review least-privilege verification</a>.
+      No corresponding production or Render accounts, schema grants or credentials
+      have been provisioned.
+    </p>
     <details style={{border:"1px solid #ddceb2",background:"#fff",padding:10,borderRadius:9}}>
       <summary style={{cursor:"pointer",fontWeight:750,fontSize:13}}>
         Show storage activation and independent-review requirements
       </summary>
       <ol style={{fontSize:12,paddingLeft:20}}>
         <li>Disposable PostgreSQL 16 tests passed. Still verify the isolated Render backend uses durable PostgreSQL and test the additive vault schema on an authorized separate preview database.</li>
-        <li>Provision a separate 256-bit encryption key and two distinct reader/writer access secrets. No keys are stored in the source repository.</li>
+        <li>Provision a separate 256-bit encryption key, offline recovery custody and two distinct reader/writer access secrets, plus a dedicated least-privileged PostgreSQL runtime account on an approved isolated database. No keys are stored in the source repository.</li>
         <li>Manually authorize and deploy the isolated Render service. The vault is off by default and has no public dashboard upload proxy.</li>
         <li>Verify the original public source bytes, SHA-256, trial identity, exact document rights, document version and uploader. Public, authorized files only; no patient-level or confidential records.</li>
         <li>The synthetic immutable receipt and offline key-recovery drills passed. Still establish independent real-key backups, tested recovery ownership, document malware controls, and qualified clinical review before scoring.</li>
