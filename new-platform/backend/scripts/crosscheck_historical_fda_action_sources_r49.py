@@ -56,6 +56,14 @@ def crosscheck(rows,receipt,raw,approved,approved_raw,crl,crl_raw,identity,at):
         if (not isinstance(v,dict) or v.get("sha256")!=hashlib.sha256(original).hexdigest()
             or v.get("bytes")!=len(original) or not isinstance(v.get("retrievedOn"),str)):
             raise ValueError("OFFICIAL_ARCHIVE_SHA_OR_LENGTH_MISMATCH")
+    # Parsed FDA source objects must match the immutable originally retrieved
+    # source bytes. The source snapshot SHA receipts alone are insufficient if
+    # caller-owned parsed objects can be replaced before reconciliation.
+    try:
+        if json.loads(approved_raw)!=approved or json.loads(crl_raw)!=crl:
+            raise ValueError("FDA_PARSED_SOURCE_DIFFERS_FROM_IMMUTABLE_ARCHIVE_BYTES")
+    except (TypeError,UnicodeDecodeError,json.JSONDecodeError):
+        raise ValueError("UNPARSEABLE_ORIGINAL_FDA_ARCHIVE_BYTES")
     ap=_source(approved,"approved")
     cp=_source(crl,"crl")
     events=[];matched=Counter();issues=Counter()
