@@ -102,6 +102,12 @@ def confirm_provisional_score_page(client):
        'publishedDirectionalPrimaryResults':'2/2',
        'unadjustedSafetyRiskDifferencePp':[9.69,5.48],
        'independentClinicalGrades':0,'fdaPrediction':'ABSTAIN'}),flush=True)
+    demand('Original-source gap audit' in normalized and
+           'did not list a statistical analysis plan' in normalized and
+           'NOT RECONCILED' in normalized,
+           'SAP_AND_HF_SOURCE_RECONCILIATION_PANEL_NOT_RENDERED')
+    demand(b'actions/runs/42555289486' in page,
+           'SOURCE_RECONCILIATION_RECEIPT_LINK_NOT_RENDERED')
     demand('Phase III scientific review queue' in normalized and
            'Open all 18 research method leads' in normalized and
            'Export all 18 source leads as CSV' in normalized and
@@ -212,6 +218,13 @@ def main():
                x.get('qualifiedReviewerSignoff') is False and
                x.get('fdaProbability') is None for x in positions),
            'SOURCE_REVIEW_QUEUE_COUNTS_OR_SAFETY_INVALID')
+    audited=[x for x in positions if x.get('sourceGapAuditRun') == 42555289486]
+    demand(len(audited) == 12 and
+           all(isinstance(x.get('sourceGapAuditNote'),str) and
+               (('SAP' in x['sourceGapAuditNote']) or
+                ('12 versus 3 placebo' in x['sourceGapAuditNote'])) for x in audited) and
+           all(x.get('clinicalGrade') is None for x in audited),
+           'PUBLIC_SOURCE_GAP_NOT_ATTACHED_TO_METHOD_WORKLIST')
     status, _ = request(client, '/api/predictions/medical-phase3-review-queue?nct=NCT00000000')
     demand(status == 422,'WRONG_TRIAL_REVIEW_QUEUE_ACCEPTED')
     csv_req = Request(SITE + '/api/predictions/medical-phase3-review-queue?nct=' + PILOT + '&format=csv',
@@ -222,11 +235,14 @@ def main():
                'text/csv' in csv_response.headers.get('content-type','') and
                len(csv_blob) <= 250_000 and
                csv_blob.count(b'\r\n') == 19 and
-               b'UNSCORED' in csv_blob and b'ABSTAIN' in csv_blob,
+               b'UNSCORED' in csv_blob and b'ABSTAIN' in csv_blob and
+               b'Public source gap (dated audit)' in csv_blob and
+               b'final locked SAP remains unverified' in csv_blob,
                'SCIENTIFIC_REVIEW_QUEUE_CSV_INVALID')
     print(json.dumps({'stage':'PHASE3_REVIEW_QUEUE_READ','status':'PASS',
       'nct':PILOT,'sourceMappedLeads':18,'researchCheckedPositions':5,
       'sourceOnlyLeads':13,'notSourceMapped':782,
+      'auditedSourceGapPositions':len(audited),
       'authorizedClinicalGrades':0,'exportLines':19,'fdaPrediction':'ABSTAIN'}),flush=True)
     status, rubric = request(client, '/api/predictions/medical-phase3-reviewer-handoff?nct=' + PILOT)
     demand(status == 200 and rubric.get('schema') == 'MAIN_PHASE3_REVIEWER_HANDOFF_V1'
