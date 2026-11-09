@@ -10,7 +10,7 @@ import http.cookiejar,json,os,re,sys
 from urllib.error import HTTPError,URLError
 from urllib.request import HTTPCookieProcessor,HTTPRedirectHandler,Request,build_opener
 
-SITE="https://pdufa-new-dashboard-i28lt92el-pdufa.vercel.app"
+SITE="https://pdufa-new-dashboard-hmw272wvd-pdufa.vercel.app"
 ROSTER="/api/predictions/focus-preliminary"
 SOURCES="/api/predictions/focus-source-readiness"
 URL="/predictions"
@@ -145,6 +145,33 @@ def main():
          "registeredCurrentPrimary":45,"postedPrimary":16,"exactCurrentTextMatches":16,
          "lockedSapVerified":False,"independentClinicalScores":0,
          "validatedFdaForecasts":0,"historicalBacktests":0,"readOnly":True}),flush=True)
+
+    # R46: current public attached-documents research; no original locked SAP release.
+    for phrase in [
+        "Protocol and SAP documents",
+        "23",
+        "document entries",
+        "Expand all 29 NCTs",
+        "Original locked version unverified",
+        "CAPR",
+        "SVRA",
+        "COGT",
+        "No current protocol/SAP attachment",
+        "Original publication and locked SAP NOT VERIFIED",
+        "validated application forecasts 0/23"
+    ]:
+        check(phrase.lower() in rendered.lower(),
+              "R46_PROTOCOL_DOCUMENT_INDEX_MISSING_"+re.sub(r"\\W+","_",phrase).upper())
+    check("13697642476" in raw.decode("utf-8","replace"),
+          "R46_PINNED_PROTOCOL_SOURCE_ARTIFACT_NOT_LINKED")
+    check("SAP v1.0" in rendered and "2024" in rendered,
+          "SVRA_ORIGINAL_SAP_RESEARCH_SOURCE_NOT_VISIBLE")
+    print(json.dumps({"stage":"R46_CURRENT_PROTOCOL_SAP_INDEX",
+          "status":"PASS","exactNcts":29,"applications":23,
+          "currentTrialsWithSap":12,"documentEntries":23,
+          "originalLockedSapVerified":False,
+          "scientificGrades":0,"validatedFdaForecasts":0,
+          "backtests":0,"writesPerformed":False}),flush=True)
     print(json.dumps({"stage":"FOCUS_29_23_SIGNED_IN_HTML","status":"PASS",
         "researchOnly":True,"futureModelStatus":"ABSTAIN"}),flush=True)
     code,kind,raw=get(client,ROSTER,"application/json")
