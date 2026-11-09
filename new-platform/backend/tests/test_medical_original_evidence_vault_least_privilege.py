@@ -63,7 +63,6 @@ def _doc(version="v1"):
       "contentType":"application/pdf",
     }
 
-@pytest.mark.postgres_privileges
 def test_restricted_postgresql_user_owns_no_schema_and_can_only_append_source_receipts(monkeypatch):
     url=_admin_url()
     admin=create_engine(url,pool_pre_ping=True)
@@ -116,15 +115,23 @@ def test_restricted_postgresql_user_owns_no_schema_and_can_only_append_source_re
                 with runtime.begin() as c:
                     c.execute(text(sql))
 
-        # Cannot disable immutable trigger, escalate via SET ROLE, or grant.
+        # Cannot disable the trigger or escalate into the migration owner.
         for sql in (
           f"ALTER TABLE {table} DISABLE TRIGGER medical_original_evidence_vault_immutable",
           "SET ROLE pdufa_vault_test",
-          f"GRANT UPDATE ON {table} TO pdufa_vault_runtime",
         ):
             with pytest.raises(DBAPIError):
                 with runtime.begin() as c:
                     c.execute(text(sql))
+        # PostgreSQL may WARNING (not error) for an unauthorized GRANT:
+        # security must be checked as effective privileges, never by whether
+        # the attempted GRANT statement returned an exception.
+        with runtime.begin() as c:
+            c.execute(text(f"GRANT UPDATE ON {table} TO pdufa_vault_runtime"))
+        assert perms.verify_runtime(runtime)["selectInsertOnly"] is True
+        with pytest.raises(DBAPIError):
+            with runtime.begin() as c:
+                c.execute(text(f"UPDATE {table} SET uploaded_by='attacker'"))
 
         # Exact public source bytes encrypt and append, despite no owner power.
         key=os.urandom(32)
@@ -141,10 +148,12 @@ def test_restricted_postgresql_user_owns_no_schema_and_can_only_append_source_re
             for row in vault.list_receipts(runtime,nct="NCT06081894"))
 
         # The ordinary runtime cannot grant itself extra permissions.
+        with runtime.begin() as c:
+            c.execute(text("GRANT DELETE ON public.medical_original_evidence_vault TO pdufa_vault_runtime"))
+        assert perms.verify_runtime(runtime)["selectInsertOnly"]
         with pytest.raises(DBAPIError):
             with runtime.begin() as c:
-                c.execute(text("GRANT DELETE ON public.medical_original_evidence_vault TO pdufa_vault_runtime"))
-        assert perms.verify_runtime(runtime)["selectInsertOnly"]
+                c.execute(text("DELETE FROM public.medical_original_evidence_vault"))
         print("VAULT_POSTGRES_SEPARATE_ROLE_PASS: real PostgreSQL role, no owner/DDL/UPDATE/DELETE/TRUNCATE/GRANT, encrypted append, 0 grades")
     finally:
         if runtime is not None: runtime.dispose()
