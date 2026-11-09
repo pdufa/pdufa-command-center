@@ -57,6 +57,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/r59/review"
           PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_focus_scientific_review_queue_r59.py \
             --r55 "$RUNNER_TEMP/r59/original/FOCUS_23_APPLICATION_EFFICACY_SAFETY_SOURCE_REVIEW_PACKETS_R55.json" \
+            --r46 "$RUNNER_TEMP/r59/original/current_registry_document_index.json" \
             --output "$RUNNER_TEMP/r59/review/FOCUS_29_TRIAL_23_APPLICATION_REVIEW_QUEUE_R59.json" \
             --summary "$RUNNER_TEMP/r59/review/FOCUS_REVIEW_QUEUE_R59.md"
           python - <<'PY'
