@@ -42,7 +42,7 @@ export function registryIdentityValid(input:unknown):boolean{
   const name=String(id?.briefTitle??"")+" "+String(id?.officialTitle??"");
   return id?.nctId===ACACIA_NCT&&
     Array.isArray(design?.phases)&&design.phases.includes("PHASE3")&&
-    /(?:ACACIA|nonobstructive)/i.test(name);
+    /(?:ACACIA|non[\\s-]?obstructive)/i.test(name);
 }
 export function publicationIdentityValid(input:unknown):boolean{
   const list=inner(input,"resultList")?.result;
