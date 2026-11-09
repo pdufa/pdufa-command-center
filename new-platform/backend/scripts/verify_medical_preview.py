@@ -14,7 +14,8 @@ import sys
 from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, HTTPCookieProcessor, Request, build_opener
 
-SITE = 'https://pdufa-new-dashboard-git-feature-medical-stage4-ver-efe117-pdufa.vercel.app'
+# Pin the verified Revision36 preview; the branch alias can lag asynchronous builds.
+SITE = 'https://pdufa-new-dashboard-ljnrkkg3e-pdufa.vercel.app'
 BACKEND = 'https://pdufa-medical-intelligence-preview.onrender.com'
 PILOT = 'NCT06081894'
 
@@ -69,6 +70,29 @@ class VisibleText(HTMLParser):
             self.parts.append(data)
 
 
+def confirm_original_registry_panel(normalized):
+    """Hosted HTML proof of the retained documentary panel, never a clinical signoff."""
+    from pathlib import Path
+    source=Path(__file__).resolve().parents[3]/'new-platform/frontend/data/acacia-original-history-revision36.json'
+    data=json.loads(source.read_text())
+    demand(data.get('nct')==PILOT and data.get('officialClinicalGrades')==0,
+           'INVALID_ORIGINAL_HISTORY_EXPECTATION')
+    required=['Original registry evidence recovered', 'v26, v27, v29 and v30',
+              'do not resolve the reported 516 versus 517', 'ESTIMATED',
+              '18 mapped source leads', '782 positions not source mapped', '0/800',
+              'independent review before a clinical integrity judgment or grade',
+              'NOT CALIBRATED', 'ABSTAIN']
+    for version in data['versions']:
+        required.extend([version['submitted'],version['posted'],version['sourceSha256']])
+    demand(all(text in normalized for text in required), 'REVISION36_ORIGINAL_REGISTRY_PANEL_INCOMPLETE')
+    demand('r36.source-reconciliation' in normalized and 'Locate active source task' in normalized,
+           'REVISION36_ACTIVE_SOURCE_TASK_NOT_VISIBLE')
+    print(json.dumps({'stage':'REVISION36_ORIGINAL_REGISTRY_AND_CHECKPOINT_READ','status':'PASS',
+       'nct':PILOT,'originalVersions':[26,27,29,30],'primaryEndpointCounts':[1,2,2,2],
+       'newIndependentGrades':0,'sourceLeads':18,'positionsNotSourceMapped':782,
+       'clinicalSignoff':False,'fdaPrediction':'ABSTAIN'}),flush=True)
+
+
 def confirm_provisional_score_page(client):
     """Live HTTP/HTML proof of published, NOT automatically updated, scores."""
     path = '/predictions/assessment?nct=' + PILOT
@@ -88,6 +112,7 @@ def confirm_provisional_score_page(client):
     parser.feed(page.decode('utf-8', 'replace'))
     visible = ' '.join(parser.parts)
     normalized = re.sub(r'\s+', ' ', visible)
+    confirm_original_registry_panel(normalized)
     demand('Source-specific safety uncertainty' in normalized and
            'Investigate sponsor 12/3 versus secondary paper 11/1' in normalized and
            '14 (2.7%)' in normalized and '5.43' in normalized and

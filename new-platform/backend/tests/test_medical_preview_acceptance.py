@@ -42,3 +42,20 @@ def test_redirects_and_absolute_paths_cannot_forward_credentials():
         acceptance.NoRedirect().redirect_request(None, None, 302, '', {}, 'https://other.example')
     with pytest.raises(acceptance.VerificationError, match='INVALID_FIXED_ORIGIN_PATH'):
         acceptance.request(None, '//other.example/steal')
+
+
+def test_revision36_panel_requires_each_original_digest_and_unresolved_population_label():
+    import json
+    data=json.loads((SCRIPT.parents[3]/'new-platform/frontend/data/acacia-original-history-revision36.json').read_text())
+    text=' '.join(['Original registry evidence recovered', 'v26, v27, v29 and v30',
+                  'do not resolve the reported 516 versus 517', 'ESTIMATED',
+                  '18 mapped source leads', '782 positions not source mapped', '0/800',
+                  'independent review before a clinical integrity judgment or grade',
+                  'NOT CALIBRATED', 'ABSTAIN', 'r36.source-reconciliation', 'Locate active source task']+
+                 [value for version in data['versions'] for value in
+                  [version['submitted'],version['posted'],version['sourceSha256']]])
+    acceptance.confirm_original_registry_panel(text)
+    with pytest.raises(acceptance.VerificationError,match='ORIGINAL_REGISTRY_PANEL_INCOMPLETE'):
+        acceptance.confirm_original_registry_panel(text.replace(data['versions'][2]['sourceSha256'],''))
+    with pytest.raises(acceptance.VerificationError,match='ORIGINAL_REGISTRY_PANEL_INCOMPLETE'):
+        acceptance.confirm_original_registry_panel(text.replace('do not resolve the reported 516 versus 517','resolved'))
