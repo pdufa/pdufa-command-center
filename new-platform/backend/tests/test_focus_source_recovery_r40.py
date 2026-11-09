@@ -54,6 +54,10 @@ def test_synthetic_capture_produces_29_registry_and_complete_23_app_source_recei
     assert result["provisionalApplicationGroups"]==23
     assert result["clinicalTrialsGovRecordsFetched"]==29
     assert result["applicationSourceUrlsFetched"]==result["uniqueApplicationSourceUrls"]
+    assert result["canonicalApplicationSourceUrls"]==21
+    assert result["additionalOfficialSecSourceUrls"]==1
+    assert result["uniqueApplicationSourceUrls"]==22
+    assert result["applicationGroupsWithAvailablePublicSource"]==23
     assert len(result["applicationGroups"])==23
     assert len(result["trialSources"])==29
     assert all(x["registryIdentityMatches"] is True for x in result["trialSources"])
@@ -119,3 +123,35 @@ def test_roster_or_application_drift_fails_closed(kind):
     elif kind=="changed_stage":apps["records"][0]["candidateApplications"][0]["stage"]="FDA_APPROVED_CERTIFIED"
     elif kind=="future_source":apps["records"][0]["candidateApplications"][0]["sourceDate"]="2026-12-01"
     with pytest.raises(ValueError):build_manifest(roster,apps)
+
+
+def test_achieve_recovered_using_official_sec_10q_if_issuer_redirects():
+    manifest=build_manifest(*current())
+    achieve=next(g for g in manifest["applicationGroups"] if g["cycleId"]=="achv-cytisinicline")
+    assert achieve["sourceUrl"].startswith("https://ir.achievelifesciences.com/")
+    def blocked_issuer(url):
+        if url==achieve["sourceUrl"]:
+            return {"url":url,"status":"HTTP_UNAVAILABLE","httpStatus":301},None
+        return simulated_fetch(url)
+    result=perform_capture(manifest,fetcher=blocked_issuer)
+    achv=next(a for a in result["applicationGroups"] if a["cycleId"]=="achv-cytisinicline")
+    assert achv["applicationSource"]["status"]=="HTTP_UNAVAILABLE"
+    assert achv["alternateOfficialSecSource"]["status"]=="FETCHED"
+    assert achv["alternateOfficialSecSource"]["url"]=="https://www.sec.gov/Archives/edgar/data/949858/000119312526344624/achv-20260630.htm"
+    assert achv["atLeastOneApplicationSourceFetched"] is True
+    assert result["applicationGroupsWithAvailablePublicSource"]==23
+    assert result["qualifiedClinicalReviews"]==0
+
+def test_issuer_and_alternate_both_blocked_leave_application_in_research_not_crl():
+    manifest=build_manifest(*current())
+    achieve=next(g for g in manifest["applicationGroups"] if g["cycleId"]=="achv-cytisinicline")
+    def blocked_both(url):
+        if url==achieve["sourceUrl"] or "949858/000119312526344624" in url:
+            return {"url":url,"status":"HTTP_UNAVAILABLE","httpStatus":403},None
+        return simulated_fetch(url)
+    result=perform_capture(manifest,fetcher=blocked_both)
+    a=next(x for x in result["applicationGroups"] if x["cycleId"]=="achv-cytisinicline")
+    assert a["atLeastOneApplicationSourceFetched"] is False
+    assert result["applicationGroupsWithAvailablePublicSource"]==22
+    assert a["formalFdaActionPrediction"]=="ABSTAIN"
+    assert result["independentlyValidatedApplicationForecasts"]==0
