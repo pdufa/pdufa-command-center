@@ -28,10 +28,10 @@ export default function FocusOriginalSourceChallengeR60(){
   const trials=review?.trials??[];
   const matching=useMemo(()=>trials.filter(row=>{
     const byQuery=!normalized||[row.nct,row.ticker,...row.cycles].join(" ").toLowerCase().includes(normalized);
-    const byKind=kind==="ALL"||
+    const byKind=kind==="ALL"?true:
       kind==="POSTED"?row.primaryTables>0:
       kind==="RECOVERY"?row.primaryTables===0:
-      kind==="EXCEPTION"?row.reviewExceptions.length>0:true;
+      kind==="EXCEPTION"?row.reviewExceptions.length>0:false;
     return byQuery&&byKind;
   }),[trials,normalized,kind]);
   if(!review)return <section className={styles.panel} aria-label="R60 original scientific source audit">
