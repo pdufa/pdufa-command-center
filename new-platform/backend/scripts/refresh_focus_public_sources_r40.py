@@ -19,6 +19,13 @@ ROSTER=ROOT/"app/data/focus_snapshot.json"
 APPS=ROOT/"app/data/focus_application_snapshot.json"
 NCT=re.compile(r"NCT[0-9]{8}\Z")
 MAX_BYTES=5_000_000
+MAX_EXTERNAL_DOCUMENT_BYTES=50_000_000
+ALTERNATE_APPLICATION_SOURCES={
+  # Exact original 2026-08-11 ACHV 10-Q from official SEC filing index.
+  # Keep issuer redirect and alternative evidence as distinct receipts.
+  "achv-cytisinicline":"https://www.sec.gov/Archives/edgar/data/949858/000119312526344624/achv-20260630.htm"
+}
+
 # Strictly known public hosts used by *this snapshot*; never fetch arbitrary
 # user-supplied URLs or internal/service endpoints, even after a redirect.
 ALLOWED_HOSTS=frozenset({
@@ -131,15 +138,27 @@ def retrieve_url(url:str,*,timeout:int=15)->tuple[dict,bytes|None]:
             content_type=reply.headers.get("Content-Type","").split(";")[0].lower().strip()
             if content_type not in SUPPORTED_TYPES:
                 return {"status":"UNSUPPORTED_CONTENT_TYPE","url":url,"contentType":content_type},None
-            b=reply.read(MAX_BYTES+1)
-            if len(b)>MAX_BYTES:
-                return {"status":"SOURCE_OVER_SIZE_LIMIT","url":url,"contentType":content_type},None
+            is_registry="/api/v2/studies/" in url
+            limit=MAX_BYTES if is_registry else MAX_EXTERNAL_DOCUMENT_BYTES
+            digest=hashlib.sha256()
+            consumed=0
+            body=[] if is_registry else None
+            while True:
+                part=reply.read(65536)
+                if not part:break
+                consumed+=len(part)
+                if consumed>limit:
+                    return {"status":"SOURCE_OVER_SIZE_LIMIT","url":url,
+                         "contentType":content_type,"byteLimit":limit},None
+                digest.update(part)
+                if body is not None:body.append(part)
             final=reply.geturl()
             if not _valid_url(final):
                 return {"status":"UNSAFE_REDIRECT_REJECTED","url":url},None
             return {"status":"FETCHED","url":url,"resolvedUrl":final,
-                    "contentType":content_type,"bytes":len(b),
-                    "sha256":hashlib.sha256(b).hexdigest()},b
+                    "contentType":content_type,"bytes":consumed,
+                    "sha256":digest.hexdigest(),
+                    "sourceBodyPreserved":False},b"".join(body) if body is not None else None
     except HTTPError as exc:
         return {"status":"HTTP_UNAVAILABLE","url":url,"httpStatus":exc.code},None
     except (OSError,URLError,TimeoutError,ValueError) as exc:
@@ -161,7 +180,7 @@ def _registry_read(nct:str,obs:dict,body:bytes|None)->dict:
         d=p.get("designModule",{})
         fields.update(registryPhase=d.get("phases",[]),
             registryStatus=s.get("overallStatus"),
-            lastPostedUpdate=s.get("studyFirstPostDateStruct",{}).get("date"),
+            lastPostedUpdate=s.get("lastUpdatePostDateStruct",{}).get("date"),
             registryResultsPresent=isinstance(v.get("resultsSection"),dict),
             registryIdentityMatches=True)
     except (ValueError,KeyError,TypeError):
@@ -172,8 +191,13 @@ def _registry_read(nct:str,obs:dict,body:bytes|None)->dict:
 def perform_capture(manifest:dict,fetcher=retrieve_url)->dict:
     groups=manifest["applicationGroups"];trials=manifest["trialRows"]
     sources={g["sourceUrl"] for g in groups}
+    fallback={k:v for k,v in ALTERNATE_APPLICATION_SOURCES.items()
+              if any(g["cycleId"]==k for g in groups)}
+    if any(not _valid_url(url) for url in fallback.values()):
+        raise ValueError("UNSAFE_ALTERNATIVE_FDA_SOURCE")
+    all_sources=sources|set(fallback.values())
     registry={t["registryUrl"]:t["nct"] for t in trials}
-    jobs=sorted(sources|set(registry))
+    jobs=sorted(all_sources|set(registry))
     observations={}
     def one(url):
         obs,body=fetcher(url)
@@ -193,6 +217,12 @@ def perform_capture(manifest:dict,fetcher=retrieve_url)->dict:
        "reportedGoal":g["reportedGoal"],
        "sourceDateFromSnapshot":g["sourceDate"],
        "applicationSource":observations[g["sourceUrl"]],
+       "alternateOfficialSecSource":observations[fallback[g["cycleId"]]]
+         if g["cycleId"] in fallback else None,
+       "atLeastOneApplicationSourceFetched":
+         observations[g["sourceUrl"]]["status"]=="FETCHED" or
+         (g["cycleId"] in fallback and
+          observations[fallback[g["cycleId"]]]["status"]=="FETCHED"),
        "supportingNctRegistryReceipts":[{
            "nct":n,"status":observations["https://clinicaltrials.gov/api/v2/studies/"+n+"?format=json"]["status"]
        } for n in g["ncts"]],
@@ -203,15 +233,19 @@ def perform_capture(manifest:dict,fetcher=retrieve_url)->dict:
        "originalRegulatorReviewCycleVerified":False
     } for g in groups]
     trial_out=[observations[t["registryUrl"]] for t in trials]
-    fetched_sources=sum(r["status"]=="FETCHED" for r in observations.values() if r["url"] in sources)
+    fetched_sources=sum(r["status"]=="FETCHED" for r in observations.values() if r["url"] in all_sources)
     fetched_trials=sum(r["status"]=="FETCHED" for r in trial_out)
+    app_groups_fetched=sum(a["atLeastOneApplicationSourceFetched"] for a in app_out)
     return {"schema":"MAIN_FOCUS_PUBLIC_SOURCE_RECAPTURE_R40",
         "status":"PUBLIC_LINK_BYTES_RECOVERED_RESEARCH_ONLY_NO_CLINICAL_SIGNOFF",
         "asOf":manifest["asOf"],
         "capturedAtUtc":datetime.now(timezone.utc).isoformat(timespec="seconds"),
         "trialRoster":29,"provisionalApplicationGroups":23,
-        "uniqueApplicationSourceUrls":len(sources),
+        "canonicalApplicationSourceUrls":len(sources),
+        "additionalOfficialSecSourceUrls":len(fallback),
+        "uniqueApplicationSourceUrls":len(all_sources),
         "applicationSourceUrlsFetched":fetched_sources,
+        "applicationGroupsWithAvailablePublicSource":app_groups_fetched,
         "clinicalTrialsGovRecordsFetched":fetched_trials,
         "clinicalTrialsGovRecordsAttempted":29,
         "originalPublicSourceVersionsIndependentlyAuthenticated":0,
@@ -239,6 +273,7 @@ def main()->int:
         "trials":29,"applications":23,
         "uniqueApplicationSourceUrls":result["uniqueApplicationSourceUrls"],
         "applicationSourceUrlsFetched":result["applicationSourceUrlsFetched"],
+        "applicationGroupsWithAvailablePublicSource":result["applicationGroupsWithAvailablePublicSource"],
         "clinicalTrialsGovRecordsFetched":result["clinicalTrialsGovRecordsFetched"],
         "sourceDigest":hashlib.sha256(output).hexdigest(),
         "independentlyValidatedForecasts":0,"clinicalGradesWritten":0,
