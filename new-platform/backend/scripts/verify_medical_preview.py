@@ -15,7 +15,7 @@ from urllib.error import HTTPError, URLError
 from urllib.request import HTTPRedirectHandler, HTTPCookieProcessor, Request, build_opener
 
 # Pin the verified Revision36 preview; the branch alias can lag asynchronous builds.
-SITE = 'https://pdufa-new-dashboard-gpi564weg-pdufa.vercel.app'
+SITE = 'https://pdufa-new-dashboard-g9x120puu-pdufa.vercel.app'
 BACKEND = 'https://pdufa-medical-intelligence-preview.onrender.com'
 PILOT = 'NCT06081894'
 
@@ -123,6 +123,12 @@ def confirm_provisional_score_page(client):
     visible = ' '.join(parser.parts)
     normalized = re.sub(r'\s+', ' ', visible)
     confirm_original_registry_panel(normalized)
+    demand('Export all 800 method evidence statuses (CSV)' in normalized and
+           'Research-only worksheet: no clinical grades' in normalized,
+           'REVISION37_FULL_800_METHOD_EXPORT_NOT_VISIBLE')
+    print(json.dumps({'stage':'REVISION37_FULL_800_METHOD_EXPORT',
+       'status':'PASS','nct':PILOT,'exportScope':'ALL_800',
+       'clinicalGrades':0,'reviewWrites':False}),flush=True)
     demand('Revision 37 · Evidence-to-reviewer gates · 800 methods' in normalized and
            'Original registry references' in normalized and
            'Other mapped leads' in normalized and
