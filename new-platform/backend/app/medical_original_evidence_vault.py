@@ -77,10 +77,13 @@ def _allowlisted_url(value: Any) -> bool:
         u = urlparse(value)
     except ValueError:
         return False
-    return (u.scheme == "https" and u.hostname in SOURCE_HOSTS
-            and not u.username and not u.password and u.port in (None, 443)
-            and not u.query and not u.fragment and bool(u.path)
-            and not re.search(r"%2f|%5c|%00|\\", u.path, re.I))
+    try:
+        return (u.scheme == "https" and u.hostname in SOURCE_HOSTS
+                and not u.username and not u.password and u.port in (None, 443)
+                and not u.query and not u.fragment and bool(u.path)
+                and not re.search(r"%2f|%5c|%00|\\", u.path, re.I))
+    except ValueError:
+        return False
 
 
 def _check_document(meta: dict, raw: bytes, uploader: str) -> None:
@@ -272,6 +275,16 @@ def verify_at_rest(engine, *, receipt_id: str, encryption_key: bytes) -> dict:
     if not row:
         raise VaultError("Unknown evidence receipt")
     meta=json.loads(row["metadata_json"])
+    expected_receipt = _receipt_hash({
+        "receiptId":row["receipt_id"],"nct":EXACT_NCT,
+        "requestId":row["request_id"],"sourceSha256":row["content_sha256"],
+        "metadataSha256":hashlib.sha256(row["metadata_json"].encode()).hexdigest(),
+        "aadSha256":row["aad_sha256"],"byteCount":row["byte_count"],
+        "uploadedBy":row["uploaded_by"],"depositedAt":row["deposited_at"],
+        "previousReceiptSha256":row["previous_receipt_sha256"],
+    })
+    if not secrets.compare_digest(expected_receipt,row["receipt_sha256"]):
+        raise VaultError("Evidence receipt manifest integrity failed")
     aad=_canonical({"nct":EXACT_NCT,"requestId":row["request_id"],
                     "receiptId":row["receipt_id"],
                     "sourceSha256":row["content_sha256"],
