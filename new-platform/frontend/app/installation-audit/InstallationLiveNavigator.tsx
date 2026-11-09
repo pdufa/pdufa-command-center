@@ -121,6 +121,10 @@ export default function InstallationLiveNavigator(){
  },[fetchData]);
  const active=useMemo(()=>getActiveExecution(audit),[audit]);
  const activeGithub=useMemo(()=>getRunningGithub(audit),[audit]);
+ const githubActionsUrl="https://github.com/pdufa/pdufa-command-center/actions";
+ const liveSourceUrl=activeGithub &&
+  /^https:\/\/github\.com\/pdufa\/pdufa-command-center\/actions\/runs\/[1-9]\d*$/.test(activeGithub.url)
+   ?activeGithub.url:githubActionsUrl;
  const locateSnapshot=useCallback((snapshot:TaskResponse|null)=>{
   // A GitHub workflow proves actual GitHub Actions execution only. Never
   // fabricate a Codex worker ID or a verified scientific grading task.
@@ -215,22 +219,33 @@ export default function InstallationLiveNavigator(){
     style={{padding:"9px 12px",borderRadius:8,border:"1px solid #5aa9ae",background:"#0b625c",color:"#fff"}}>
     {busy?"Checking…":"Check installation now"}
    </button>
-   <button type="button" className={styles.liveButton}
-    onClick={()=>{void goToLive();}}
-    aria-label="Locate verified current execution or show explicit no-live status">
+   <a className={styles.liveButton}
+    href={liveSourceUrl} target="_blank" rel="noopener noreferrer"
+    aria-label={activeGithub?"LOCATE LIVE: open verified running GitHub workflow "+activeGithub.name+
+     " in a new tab":"LOCATE LIVE: open GitHub Actions workflow page in a new tab; no verified running workflow link"}>
     <svg className={styles.locateIcon} width="22" height="22" viewBox="0 0 24 24"
      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
      aria-hidden="true">
      <circle cx="12" cy="12" r="5"/>
      <path d="M12 2v5M12 17v5M2 12h5M17 12h5"/>
     </svg>
-    <span>LOCATE LIVE</span> <span className={styles.liveArrow} aria-hidden="true">→</span>
+    <span>LOCATE LIVE</span> <span className={styles.liveArrow} aria-hidden="true">↗</span>
+   </a>
+   <button type="button" onClick={()=>{void goToLive();}}
+    style={{padding:"9px 12px",borderRadius:8,border:"1px solid #5aa9ae",background:"#0b3040",color:"#e7f9fc"}}>
+    VIEW LIVE STATUS ON THIS PAGE
    </button>
    <label style={{display:"flex",gap:8,alignItems:"center",fontWeight:600,fontSize:13}}>
     <input type="checkbox" checked={following} onChange={event=>setFollowing(event.target.checked)}/>
     Follow live execution cursor
    </label>
   </div>
+  <p style={{...info,margin:"5px 0 12px"}}>
+   LOCATE LIVE opens {activeGithub?
+    <><strong>the observed running workflow</strong> ({activeGithub.name})</>:
+    <><strong>GitHub Actions</strong> (no verified active run link available)</>}
+   {" "}in a new tab. VIEW LIVE STATUS is the separate on-page jump.
+  </p>
   {error&&<p role="alert" style={{color:"#ffd4bb"}}>{error}. Previous data may be stale.</p>}
   {liveNotice&&<p role="status" aria-live="polite" className={styles.liveNotice}>{liveNotice}</p>}
   {installationExpanded&&<div id="installation-tracker-details" className={styles.trackerDetails}>
