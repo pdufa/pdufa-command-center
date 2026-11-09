@@ -1,0 +1,223 @@
+{
+  "schema": "MAIN_R46_PUBLIC_CURRENT_PROTOCOL_SAP_DOCUMENT_INDEX_PIN",
+  "asOf": "2026-11-09",
+  "capturedAtUtc": "2026-11-09T17:50:01+00:00",
+  "sourceRunId": 42668393809,
+  "sourceArtifactId": 13697642476,
+  "sourceArtifactUrl": "https://github.com/pdufa/pdufa-command-center/actions/runs/42668393809/artifacts/13697642476",
+  "sourceArtifactExpiresAt": "2027-02-07T17:49:44Z",
+  "originalResearchReceiptSha256": "05e7dbe734795018503e7b3751ff1b0b93fa34311ba5183d6c96ab9f0cac0614",
+  "counts": {
+    "sourceNcts": 29,
+    "provisionalApplications": 23,
+    "registryNctsRetrieved": 29,
+    "withCurrentProtocolAndSapAttachments": 12,
+    "withoutCurrentRegistryAttachments": 17,
+    "protocolDocumentsPresentForNcts": 12,
+    "sapDocumentsPresentForNcts": 12,
+    "documentEntries": 23,
+    "independentlyVerifiedLockedSap": 0,
+    "qualifiedIndependentScientificGrades": 0,
+    "independentlyValidatedFdaForecasts": 0,
+    "historicalIndependentBacktests": 0
+  },
+  "attached": [
+    {
+      "nct": "NCT05507203",
+      "applicationCycleId": "abvx-uc",
+      "documents": [
+        {
+          "kind": "Prot",
+          "filename": "Prot_000.pdf",
+          "registryDocumentDate": "2024-04-10"
+        },
+        {
+          "kind": "SAP",
+          "filename": "SAP_001.pdf",
+          "registryDocumentDate": "2025-07-15"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05507216",
+      "applicationCycleId": "abvx-uc",
+      "documents": [
+        {
+          "kind": "Prot",
+          "filename": "Prot_000.pdf",
+          "registryDocumentDate": "2024-04-10"
+        },
+        {
+          "kind": "SAP",
+          "filename": "SAP_001.pdf",
+          "registryDocumentDate": "2025-07-15"
+        }
+      ]
+    },
+    {
+      "nct": "NCT04576949",
+      "applicationCycleId": "achv-cytisinicline",
+      "documents": [
+        {
+          "kind": "Prot",
+          "filename": "Prot_000.pdf",
+          "registryDocumentDate": "2021-03-08"
+        },
+        {
+          "kind": "SAP",
+          "filename": "SAP_001.pdf",
+          "registryDocumentDate": "2022-03-25"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05206370",
+      "applicationCycleId": "achv-cytisinicline",
+      "documents": [
+        {
+          "kind": "Prot",
+          "filename": "Prot_000.pdf",
+          "registryDocumentDate": "2021-11-15"
+        },
+        {
+          "kind": "SAP",
+          "filename": "SAP_001.pdf",
+          "registryDocumentDate": "2023-04-27"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05811247",
+      "applicationCycleId": "apmd-ad109",
+      "documents": [
+        {
+          "kind": "Prot",
+          "filename": "Prot_000.pdf",
+          "registryDocumentDate": "2025-06-11"
+        },
+        {
+          "kind": "SAP",
+          "filename": "SAP_001.pdf",
+          "registryDocumentDate": "2025-06-11"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05813275",
+      "applicationCycleId": "apmd-ad109",
+      "documents": [
+        {
+          "kind": "Prot",
+          "filename": "Prot_000.pdf",
+          "registryDocumentDate": "2025-04-17"
+        },
+        {
+          "kind": "SAP",
+          "filename": "SAP_001.pdf",
+          "registryDocumentDate": "2025-04-22"
+        }
+      ]
+    },
+    {
+      "nct": "NCT03697109",
+      "applicationCycleId": "cort-relacorilant",
+      "documents": [
+        {
+          "kind": "Prot",
+          "filename": "Prot_002.pdf",
+          "registryDocumentDate": "2024-05-17"
+        },
+        {
+          "kind": "SAP",
+          "filename": "SAP_001.pdf",
+          "registryDocumentDate": "2024-05-17"
+        }
+      ]
+    },
+    {
+      "nct": "NCT04308590",
+      "applicationCycleId": "cort-relacorilant",
+      "documents": [
+        {
+          "kind": "Prot",
+          "filename": "Prot_000.pdf",
+          "registryDocumentDate": "2024-10-11"
+        },
+        {
+          "kind": "SAP",
+          "filename": "SAP_001.pdf",
+          "registryDocumentDate": "2024-10-11"
+        }
+      ]
+    },
+    {
+      "nct": "NCT05767346",
+      "applicationCycleId": "cytk-aficamten-ohcm",
+      "documents": [
+        {
+          "kind": "Prot",
+          "filename": "Prot_000.pdf",
+          "registryDocumentDate": "2024-03-14"
+        },
+        {
+          "kind": "SAP",
+          "filename": "SAP_001.pdf",
+          "registryDocumentDate": "2025-03-20"
+        }
+      ]
+    },
+    {
+      "nct": "NCT04544293",
+      "applicationCycleId": "svra-molgramostim",
+      "documents": [
+        {
+          "kind": "Prot",
+          "filename": "Prot_000.pdf",
+          "registryDocumentDate": "2024-10-09"
+        },
+        {
+          "kind": "SAP",
+          "filename": "SAP_001.pdf",
+          "registryDocumentDate": "2024-04-24"
+        }
+      ]
+    },
+    {
+      "nct": "NCT06331299",
+      "applicationCycleId": "urgn-ugn103",
+      "documents": [
+        {
+          "kind": "Prot",
+          "filename": "Prot_000.pdf",
+          "registryDocumentDate": "2025-08-06"
+        },
+        {
+          "kind": "SAP",
+          "filename": "SAP_001.pdf",
+          "registryDocumentDate": "2026-02-23"
+        }
+      ]
+    },
+    {
+      "nct": "NCT04716231",
+      "applicationCycleId": "vera-trutakna",
+      "documents": [
+        {
+          "kind": "Prot_SAP",
+          "filename": "Prot_SAP_000.pdf",
+          "registryDocumentDate": "2023-02-23"
+        }
+      ]
+    }
+  ],
+  "originalFirstPublicDocumentDateVerified": false,
+  "originalLockedSapAndMultiplicityVerified": false,
+  "documentBodiesReviewed": false,
+  "currentlyRegisteredDocumentMetadataOnly": true,
+  "clinicalReviewerSigned": false,
+  "officialFutureFdaPrediction": "ABSTAIN",
+  "officialFutureDelayPrediction": "ABSTAIN",
+  "numericalFdaProbability": null,
+  "calibratedAccuracy": null,
+  "caution": "An attached file in the current registry and its document date do not verify original first-publication timing, original locked SAP, statistical validity, CMC, FDA review status or approvability. Records without current attached documents may have source documents elsewhere."
+}
