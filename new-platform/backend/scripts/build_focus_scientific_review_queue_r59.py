@@ -43,8 +43,8 @@ def _read_guarded(path: Path) -> tuple[dict, str]:
     return payload, hashlib.sha256(raw).hexdigest()
 
 
-def build(manifest: dict, r55: dict, *, r55_sha256: str) -> dict:
-    _integrity(isinstance(manifest, dict) and isinstance(r55, dict)
+def build(manifest: dict, r55: dict, r46: dict, *, r55_sha256: str) -> dict:
+    _integrity(isinstance(manifest, dict) and isinstance(r55, dict) and isinstance(r46, dict)
                and isinstance(r55_sha256, str) and SHA.fullmatch(r55_sha256),
                "SOURCE_OR_RECEIPT_INVALID")
     _integrity(manifest.get("trialCount") == 29 and manifest.get("applicationCount") == 23
@@ -60,6 +60,16 @@ def build(manifest: dict, r55: dict, *, r55_sha256: str) -> dict:
                and r55.get("officialPendingFDAOutcome") == "ABSTAIN",
                "INVALID_OR_CERTIFIED_R55_RESEARCH_SOURCE")
 
+    _integrity(r46.get("schema") == "MAIN_R46_PUBLIC_REGISTRY_PROTOCOL_SAP_INDEX"
+               and r46.get("nctCount") == 29 and r46.get("applicationGroupCount") == 23
+               and isinstance(r46.get("records"), list) and len(r46["records"]) == 29,
+               "ORIGINAL_R46_REGISTRY_INDEX_REQUIRED")
+    receipt_rows = r46["records"]
+    _integrity(all(isinstance(row, dict) and isinstance(row.get("nct"), str)
+                   for row in receipt_rows)
+               and len({row["nct"] for row in receipt_rows}) == 29,
+               "R46_ORIGINAL_SOURCE_DUPLICATE_NCT")
+    indexed_registry = {row["nct"]: row for row in receipt_rows}
     trials = manifest["trialRows"]
     groups = manifest["applicationGroups"]
     source_trials = r55.get("originalUniqueTrialEvidence")
@@ -71,7 +81,8 @@ def build(manifest: dict, r55: dict, *, r55_sha256: str) -> dict:
                "DUPLICATE_OR_MISSING_SOURCE_MEMBERS")
     expected_ncts = [t["nct"] for t in trials]
     expected_groups = [g["cycleId"] for g in groups]
-    _integrity(set(expected_ncts) == {t["nct"] for t in source_trials}
+    _integrity(set(expected_ncts) == set(indexed_registry)
+               and set(expected_ncts) == {t["nct"] for t in source_trials}
                and set(expected_groups) == {a["applicationCycleId"] for a in source_cases},
                "ROSTER_MEMBERSHIP_CHANGED")
 
@@ -88,6 +99,13 @@ def build(manifest: dict, r55: dict, *, r55_sha256: str) -> dict:
     for meta in trials:
         n = meta["nct"]
         x = trial_map[n]
+        source_receipt = indexed_registry[n]
+        _integrity(source_receipt.get("sourceResponseSha256") ==
+                   x.get("currentRegistrySourceSha256") and
+                   source_receipt.get("applicationCycleIds") == relationships[n] and
+                   isinstance(source_receipt.get("sourceResponseBytes"), int) and
+                   source_receipt["sourceResponseBytes"] > 0,
+                   "R46_VERSUS_R55_ORIGINAL_REGISTRY_RECEIPT_CHANGED")
         _integrity(isinstance(n, str) and NCT.fullmatch(n)
                    and x.get("applicationCycleIds") == sorted(relationships[n])
                    and x.get("currentRegistryOriginalUrl") == "https://clinicaltrials.gov/study/" + n
@@ -285,6 +303,7 @@ def markdown_report(doc: dict) -> str:
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--r55", required=True, type=Path)
+    parser.add_argument("--r46", required=True, type=Path)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--summary", required=True, type=Path)
     args = parser.parse_args()
@@ -292,8 +311,10 @@ def main() -> None:
                all(not p.exists() and not p.is_symlink() and p.parent.is_dir()
                    for p in (args.output, args.summary)), "WRITE_ONCE_RESEARCH_OUTPUT_REQUIRED")
     r55, sha = _read_guarded(args.r55)
+    r46, r46sha = _read_guarded(args.r46)
     manifest = build_manifest(_read_json(ROSTER), _read_json(APPS))
-    output = build(manifest, r55, r55_sha256=sha)
+    output = build(manifest, r55, r46, r55_sha256=sha)
+    output["inputOriginalR46Sha256"] = r46sha
     with args.output.open("xb") as file:
         file.write((json.dumps(output, indent=2, sort_keys=True) + "\n").encode())
     with args.summary.open("xb") as file:
