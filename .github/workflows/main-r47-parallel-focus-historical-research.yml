@@ -57,7 +57,7 @@ jobs:
           mkdir -p "$RUNNER_TEMP/r47-focus/primary-original" "$RUNNER_TEMP/r47-focus/safety-original" "$RUNNER_TEMP/r47-focus/docs-original"
           python new-platform/backend/scripts/build_focus_registry_results_r42.py --output "$RUNNER_TEMP/r47-focus/primary.json" --raw-dir "$RUNNER_TEMP/r47-focus/primary-original"
           python new-platform/backend/scripts/build_focus_registry_safety_r44.py --output "$RUNNER_TEMP/r47-focus/safety.json" --raw-dir "$RUNNER_TEMP/r47-focus/safety-original"
-          python new-platform/backend/scripts/build_focus_protocol_index_r46.py --output "$RUNNER_TEMP/r47-focus/docs.json" --raw-dir "$RUNNER_TEMP/r47-focus/docs-original"
+          python new-platform/backend/scripts/build_focus_protocol_index_r46.py --output "$RUNNER_TEMP/r47-focus/documents.json" --raw-dir "$RUNNER_TEMP/r47-focus/docs-original"
       - name: Generate per-trial evidence-readiness checkpoint WITHOUT grade or FDA prediction
         shell: bash
         run: |
@@ -65,7 +65,7 @@ jobs:
           python new-platform/backend/scripts/build_focus_research_checkpoint_r47.py \
             --primary "$RUNNER_TEMP/r47-focus/primary.json" \
             --safety "$RUNNER_TEMP/r47-focus/safety.json" \
-            --documents "$RUNNER_TEMP/r47-focus/docs.json" \
+            --documents "$RUNNER_TEMP/r47-focus/documents.json" \
             --output "$RUNNER_TEMP/r47-focus/evidence_readiness.json"
       - name: Verify original raw receipt SHA-256 and safe output claims
         shell: bash
