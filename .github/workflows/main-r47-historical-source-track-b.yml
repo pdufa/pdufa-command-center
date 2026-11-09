@@ -10,10 +10,14 @@ on:
       - new-platform/backend/scripts/build_historical_source_identity_audit_r48.py
       - new-platform/backend/tests/test_historical_source_identity_r48.py
       - new-platform/backend/scripts/crosscheck_historical_fda_action_sources_r49.py
+      - new-platform/backend/scripts/probe_fda_pdufa_appendix_r50.py
+      - new-platform/backend/scripts/build_fda_fy2024_cycle_events_r50.py
+      - new-platform/backend/tests/test_fda_fy2024_cycle_events_r50.py
       - new-platform/backend/tests/test_historical_fda_action_source_crosscheck_r49.py
       - new-platform/backend/scripts/research_workstream_history.py
       - new-platform/backend/scripts/select_research_history_run.py
-      - new-platform/backend/tests/test_research_workstream_history.py tests/test_historical_fda_action_source_crosscheck_r49.py
+      - new-platform/backend/tests/test_research_workstream_history.py
+      - new-platform/backend/tests/test_historical_fda_action_source_crosscheck_r49.py
       - new-platform/backend/app/hop_probability_calibration.py
       - new-platform/backend/tests/test_hop_probability_calibration.py
   workflow_dispatch:
@@ -43,9 +47,9 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
-          python -m pip install pytest
+          python -m pip install pytest pymupdf
           cd new-platform/backend
-          PYTHONPATH=. python -m pytest -q tests/test_parallel_focus_historical_r47.py tests/test_hop_blinded_phase3_backtest.py tests/test_hop_fda_source_recovery_r38.py tests/test_historical_source_identity_r48.py tests/test_hop_probability_calibration.py tests/test_research_workstream_history.py
+          PYTHONPATH=. python -m pytest -q tests/test_parallel_focus_historical_r47.py tests/test_hop_blinded_phase3_backtest.py tests/test_hop_fda_source_recovery_r38.py tests/test_historical_source_identity_r48.py tests/test_hop_probability_calibration.py tests/test_research_workstream_history.py tests/test_historical_fda_action_source_crosscheck_r49.py tests/test_fda_fy2024_cycle_events_r50.py
           PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
       - name: Locate the latest completed Track B history without changing either workstream
         id: previous_history
@@ -115,6 +119,35 @@ jobs:
             --crl "$RUNNER_TEMP/r47-history/crl/fda_crl_published_quarantined.json" \
             --identity "$RUNNER_TEMP/r47-history/derived/postdecision_fda_source_identity_audit.json" \
             --output "$RUNNER_TEMP/r47-history/derived/r49_postdecision_fda_original_source_crosscheck.json"
+      - name: Original FDA FY2024 approved-only review-cycle action history source
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r47-history/fda2024"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/probe_fda_pdufa_appendix_r50.py \
+            --out "$RUNNER_TEMP/r47-history/fda2024"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_fda_fy2024_cycle_events_r50.py \
+            --pdf "$RUNNER_TEMP/r47-history/fda2024/original_fda_fy2024_pdufa_report.pdf" \
+            --output "$RUNNER_TEMP/r47-history/fda2024/approved_only_regulator_review_cycle_actions.json"
+          python - <<'PY'
+          import json,os,hashlib
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"r47-history/fda2024"
+          r=json.loads((root/"approved_only_regulator_review_cycle_actions.json").read_bytes())
+          sha=hashlib.sha256((root/"original_fda_fy2024_pdufa_report.pdf").read_bytes()).hexdigest()
+          assert r["sourceOriginalPdfSha256"]==sha
+          assert r["sourceTableActionEvents"]==186
+          assert r["sourceActionCounts"]=={"AP":126,"CR":43,"TA":17}
+          assert r["modelEligibleIndependentHistoricalCases"]==0
+          assert r["trueIndependentHistoricalBacktests"]==0
+          assert r["measuredAccuracy"] is None
+          assert r["forecasterInputAuthorized"] is False
+          assert r["productionStateMutated"] is False
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+              f.write("### Regulator review cycle evidence: FY2024 FDA **approved-only** cohort\\n"
+                      "186 page-anchored cycle rows (126 AP, 43 CR, 17 TA). "
+                      "These are NOT 186 independent cases; no prospective accuracy released.\\n")
+          PY
       - name: Append Track B research history and source-change review receipts
         shell: bash
         run: |
