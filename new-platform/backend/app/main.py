@@ -989,7 +989,8 @@ if (os.getenv("PDUFA_ORIGINAL_EVIDENCE_VAULT_ENABLED", "").lower() in ("1", "tru
         and os.getenv("PDUFA_REQUIRE_POSTGRES", "").lower() in ("1", "true", "yes")
         and os.getenv("RENDER_SERVICE_ID", "") == "srv-dbntrkpsrm7s73aec3lg"):
     from .medical_original_evidence_vault_http import install_routes as install_original_evidence_vault
-    install_original_evidence_vault(app, lambda: ENGINE, require_storage)
+    from .medical_original_evidence_permissions import get_runtime_engine as get_dedicated_evidence_engine
+    install_original_evidence_vault(app, get_dedicated_evidence_engine, require_storage)
 
 # Phase-aware review is separately opt-in and uses ONLY authenticated GETs.
 def require_medical_phase_matrix_storage() -> None:
