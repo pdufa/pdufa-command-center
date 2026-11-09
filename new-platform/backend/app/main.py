@@ -980,6 +980,17 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes
                                    require_medical_assessment_storage,
                                    require_medical_reviewer_writes)
 
+# The new ORIGINAL PUBLIC DOCUMENT vault is separately opt-in, independent
+# of source monitor and clinical reviewer writer. It is NEVER mounted on
+# production, shared preview, local/dev, or without a named isolated Render
+# service with required durable PostgreSQL. It does not issue medical grades.
+if (os.getenv("PDUFA_ORIGINAL_EVIDENCE_VAULT_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_REQUIRE_POSTGRES", "").lower() in ("1", "true", "yes")
+        and os.getenv("RENDER_SERVICE_ID", "") == "srv-dbntrkpsrm7s73aec3lg"):
+    from .medical_original_evidence_vault_http import install_routes as install_original_evidence_vault
+    install_original_evidence_vault(app, lambda: ENGINE, require_storage)
+
 # Phase-aware review is separately opt-in and uses ONLY authenticated GETs.
 def require_medical_phase_matrix_storage() -> None:
     require_medical_assessment_storage()
