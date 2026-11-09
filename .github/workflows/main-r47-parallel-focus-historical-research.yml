@@ -1,0 +1,180 @@
+name: MAIN R47 parallel FOCUS and historical original-source research
+
+# Both independent jobs are eligible to run at the same time: no needs edges.
+# Scheduled triggers are only active on GitHub's DEFAULT branch (main) if/when
+# this draft change is deliberately accepted and merged. This feature-branch
+# installation is run immediately by its isolated push event; it does NOT
+# silently enable a production schedule.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r47-parallel-focus-historical-research.yml
+      - new-platform/backend/scripts/build_focus_research_checkpoint_r47.py
+      - new-platform/backend/scripts/build_historical_source_checkpoint_r47.py
+      - new-platform/backend/tests/test_parallel_focus_historical_r47.py
+  workflow_dispatch:
+  schedule:
+    - cron: '28 10 * * *'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r47-parallel-research-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  focus-29-current-scientific-evidence-research:
+    name: A — FOCUS 29 / 23 current source and scientific-evidence gap review
+    if: github.repository == 'pdufa/pdufa-command-center'
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    env:
+      PYTHONPATH: new-platform/backend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate canonical 29/23 roster and independent research rules
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python -m pip install pytest
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_parallel_focus_historical_r47.py tests/test_focus_registry_results_r42.py tests/test_focus_registry_safety_r44.py tests/test_focus_protocol_index_r46.py
+          PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
+      - name: Collect original present-day public primary results, posted safety and protocol document index
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r47-focus/primary-original" "$RUNNER_TEMP/r47-focus/safety-original" "$RUNNER_TEMP/r47-focus/docs-original"
+          python new-platform/backend/scripts/build_focus_registry_results_r42.py --output "$RUNNER_TEMP/r47-focus/primary.json" --raw-dir "$RUNNER_TEMP/r47-focus/primary-original"
+          python new-platform/backend/scripts/build_focus_registry_safety_r44.py --output "$RUNNER_TEMP/r47-focus/safety.json" --raw-dir "$RUNNER_TEMP/r47-focus/safety-original"
+          python new-platform/backend/scripts/build_focus_protocol_index_r46.py --output "$RUNNER_TEMP/r47-focus/docs.json" --raw-dir "$RUNNER_TEMP/r47-focus/docs-original"
+      - name: Generate per-trial evidence-readiness checkpoint WITHOUT grade or FDA prediction
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/build_focus_research_checkpoint_r47.py \
+            --primary "$RUNNER_TEMP/r47-focus/primary.json" \
+            --safety "$RUNNER_TEMP/r47-focus/safety.json" \
+            --documents "$RUNNER_TEMP/r47-focus/docs.json" \
+            --output "$RUNNER_TEMP/r47-focus/evidence_readiness.json"
+      - name: Verify original raw receipt SHA-256 and safe output claims
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os,json,hashlib
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"r47-focus"
+          status=json.loads((p/"evidence_readiness.json").read_bytes())
+          assert status["exactNctCount"]==29 and status["provisionalApplicationCount"]==23
+          assert len(status["rows"])==29
+          assert status["independentlyVerifiedScientificGrades"]==0
+          assert status["validatedFdaApplicationForecasts"]==0
+          assert status["independentHistoricalBacktests"]==0
+          assert status["calibratedAccuracy"] is None
+          assert status["probabilityOrCertainty"] is None
+          assert status["officialFDAOutcomeForecast"]=="ABSTAIN"
+          assert status["automaticClinicalGradeWriteAuthorized"] is False
+          assert status["productionWriteAuthorized"] is False
+          for typ,folder in [("primary","primary-original"),("safety","safety-original"),("documents","docs-original")]:
+            data=(p/(typ+".json")).read_bytes()
+            assert hashlib.sha256(data).hexdigest()==status["sourceReceiptSha256"][typ]
+            original=json.loads(data)
+            for r in original["records"]:
+              if r.get("sourceResponseSha256"):
+                src=(p/folder/(r["nct"]+".json")).read_bytes()
+                assert hashlib.sha256(src).hexdigest()==r["sourceResponseSha256"]
+          line=f'Track A: {status["exactNctCount"]} NCTs, {status["provisionalApplicationCount"]} application groups, primary posted tables on {status["trialsWithCurrentPostedPrimaryTables"]} NCTs, SAP attachment on {status["trialsWithCurrentRegistrySap"]} NCTs; 0 independent grades, 0 validated forecasts.'
+          print(line)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write("## Concurrent Track A: FOCUS scientific source triage\n"+line+"\n")
+          PY
+      - name: Preserve FOCUS original public source captures and independent gaps
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r47-focus-research-track-a-${{ github.run_id }}
+          path: ${{ runner.temp }}/r47-focus/
+          retention-days: 90
+          if-no-files-found: warn
+
+  historical-nda-bla-backtest-evidence-research:
+    name: B — original FDA historical case discovery and leakage-controlled backtest readiness
+    if: github.repository == 'pdufa/pdufa-command-center'
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    env:
+      PYTHONPATH: new-platform/backend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run independent source-census and historical replay safety tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m pip install pytest
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_parallel_focus_historical_r47.py tests/test_hop_blinded_phase3_backtest.py tests/test_hop_fda_source_recovery_r38.py tests/test_hop_fda_action_candidate_universe.py
+          PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
+      - name: Retrieve fresh original FDA published product and selected CRL source archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r47-history/approved" "$RUNNER_TEMP/r47-history/crl" "$RUNNER_TEMP/r47-history/derived"
+          python new-platform/backend/scripts/collect_hop_drugsfda.py --output-dir "$RUNNER_TEMP/r47-history/approved"
+          python new-platform/backend/scripts/collect_hop_openfda_crl.py --output-dir "$RUNNER_TEMP/r47-history/crl"
+      - name: Rebuild segregated historical FDA action-source research cohort candidates
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/refresh_hop_fda_action_candidates.py \
+            --approved "$RUNNER_TEMP/r47-history/approved/drugsfda_approved_registry_quarantined.json" \
+            --crl "$RUNNER_TEMP/r47-history/crl/fda_crl_published_quarantined.json" \
+            --out "$RUNNER_TEMP/r47-history/derived" \
+            --as-of "$(date -u +%Y-%m-%d)"
+      - name: Evaluate strict original-publication historical replay readiness; do not invent accuracy
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/build_historical_source_checkpoint_r47.py \
+            --candidates "$RUNNER_TEMP/r47-history/derived/r38_fda_source_candidates.json" \
+            --receipt "$RUNNER_TEMP/r47-history/derived/r38_fda_source_receipt.json" \
+            --output "$RUNNER_TEMP/r47-history/historical_replay_readiness.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"r47-history/historical_replay_readiness.json"
+          r=json.loads(p.read_bytes())
+          assert r["completeConsecutiveOriginalFilingCohort"] is False
+          assert r["exactCycleOutcomesAdjudicated"]==0
+          assert r["pairedIndependentHistory"]==0
+          assert r["prospectiveAccuracy"] is None
+          assert r["calibration"] is None
+          assert r["automaticAccuracyOrHundredPercentClaimAuthorized"] is False
+          assert r["productionWriteAuthorized"] is False
+          line=f'Track B: {r["researchSourceActionCandidates"]} FDA publication-source candidates; 0 adjudicated complete-case backtests, real accuracy UNKNOWN, cohort qualification outstanding.'
+          print(line)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write("## Concurrent Track B: historical original FDA evidence\n"+line+"\n")
+          PY
+      - name: Preserve historical original published FDA source and segregated unqualified cases
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r47-history-research-track-b-${{ github.run_id }}
+          path: ${{ runner.temp }}/r47-history/
+          retention-days: 90
+          if-no-files-found: warn
