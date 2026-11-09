@@ -6,6 +6,7 @@ import FocusPreliminaryApplicationBoard from "./FocusPreliminaryApplicationBoard
 import FocusRegistryPrimaryEvidenceR42 from "./FocusRegistryPrimaryEvidenceR42";
 import FocusRegulatorySourceChallengesR43 from "./FocusRegulatorySourceChallengesR43";
 import FocusPostedSafetyR44 from "./FocusPostedSafetyR44";
+import FocusCurrentEndpointConcordanceR45 from "./FocusCurrentEndpointConcordanceR45";
 import PredictionReleaseStatus from "./PredictionReleaseStatus";
 
 export const metadata:Metadata={
@@ -45,6 +46,7 @@ export default function PredictionsPage(){
     <FocusPreliminaryApplicationBoard/>
     <FocusRegistryPrimaryEvidenceR42/>
     <FocusPostedSafetyR44/>
+    <FocusCurrentEndpointConcordanceR45/>
     <FocusRegulatorySourceChallengesR43/>
     <FullRosterSourceScan/>
     <p style={{fontSize:13,margin:"12px 0"}}><Link href="/analyze-now?nct=NCT06081894" style={{color:"#075c4b",fontWeight:700}}>Open saved research pilot and exact-NCT revision history (PostgreSQL required)</Link> · The pilot fails closed until its secure backend is explicitly ready.</p>
