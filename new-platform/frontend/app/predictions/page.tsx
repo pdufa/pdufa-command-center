@@ -9,6 +9,7 @@ import FocusPostedSafetyR44 from "./FocusPostedSafetyR44";
 import FocusCurrentEndpointConcordanceR45 from "./FocusCurrentEndpointConcordanceR45";
 import FocusProtocolDocumentIndexR46 from "./FocusProtocolDocumentIndexR46";
 import FocusOriginalSourceChallengeR60 from "./FocusOriginalSourceChallengeR60";
+import FocusApplicationSourceReviewR62 from "./FocusApplicationSourceReviewR62";
 import PredictionReleaseStatus from "./PredictionReleaseStatus";
 
 export const metadata:Metadata={
@@ -50,6 +51,7 @@ export default function PredictionsPage(){
     <FocusPostedSafetyR44/>
     <FocusCurrentEndpointConcordanceR45/>
     <FocusProtocolDocumentIndexR46/>
+    <FocusApplicationSourceReviewR62/>
     <FocusOriginalSourceChallengeR60/>
     <FocusRegulatorySourceChallengesR43/>
     <FullRosterSourceScan/>
