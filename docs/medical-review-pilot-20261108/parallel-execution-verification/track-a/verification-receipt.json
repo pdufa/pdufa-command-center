@@ -1,0 +1,74 @@
+{
+  "all23GroupsHaveAtLeastOneRetrievedPublicSource": true,
+  "applicationResearchRecords": 23,
+  "applicationSourceStatuses": {
+    "FETCHED": 23,
+    "HTTP_UNAVAILABLE": 1
+  },
+  "artifactExpiresAtUtc": "2027-02-07T18:54:49Z",
+  "artifactRetentionDays": 90,
+  "calibration": null,
+  "canonicalApplicationGroups": 23,
+  "canonicalNcts": 29,
+  "commit": "f42605f7228960386e7fce207327c7a996391cb7",
+  "historyArtifactId": 13701591373,
+  "historyArtifactSha256": "efb3043cf290d18a11747186a1f5129e2e9de4fe53527651e72040143b1c8c6c",
+  "historyHeadSha256": "a466c7453380c29175d03a62bfab7efd323e8c433a0a305f9ae0b21d8ec0a43f",
+  "historyRevisions": 1,
+  "independentScientificGrades": 0,
+  "jobCompletedAtUtc": "2026-11-09T18:55:22Z",
+  "jobId": 129365556705,
+  "jobStartedAtUtc": "2026-11-09T18:54:52Z",
+  "liveHistoryRestoreExercised": false,
+  "liveHistoryRestoreReason": "First history artifact; prior source artifacts preserved. Restore step skipped, not operationally proven by this initial run.",
+  "meaning": "Actual public source retrieval and versioned unscored research records; not independently verified clinical or prediction performance.",
+  "measuredAccuracy": null,
+  "modelTrainingAuthorized": false,
+  "nctsWithCurrentPostedPrimaryTables": 12,
+  "nctsWithCurrentSapAttachmentMetadata": 12,
+  "nctsWithRequiredIndependentEvidenceGaps": 29,
+  "originalFdaPdfBodyCaptures": [
+    {
+      "applicationCycleId": "capr-deramiocel",
+      "bytes": 1599256,
+      "pdfMagicVerified": true,
+      "role": "FDA_STAFF_PRE_AMENDMENT_NOT_FINAL_ACTION",
+      "sha256": "4b101fa03e803eeebb029f90c24a776c2e070e7bc72e12a9f24d847b7ec34eac",
+      "url": "https://www.fda.gov/media/193839/download"
+    },
+    {
+      "applicationCycleId": "cytk-aficamten-ohcm",
+      "bytes": 566112,
+      "pdfMagicVerified": true,
+      "role": "PRIOR_OBSTRUCTIVE_APPROVAL_NOT_CURRENT_TRIAL_REVIEW_CYCLE",
+      "sha256": "3ce1cc6015101d23bd8fa6def9cfe317249720cda1dfd20a2fe0b50f1c197b9c",
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219083Orig1s000ltr.pdf"
+    }
+  ],
+  "predictionStates": {
+    "ABSTAIN": 22,
+    "NOT_APPLICABLE_ALREADY_OBSERVED_IN_SNAPSHOT": 1
+  },
+  "productionWrites": false,
+  "qualifiedScientificPredictions": 0,
+  "rawDigestChecksIncludingApplicationReferences": 112,
+  "reassessmentStates": {
+    "INITIAL_REVIEW_REQUIRED": 23
+  },
+  "registryIdentityAndRawDigestChecks": 87,
+  "registryRecordsCaptured": 29,
+  "schema": "MAIN_ACTUAL_TRACK_A_ARTIFACT_VERIFICATION_V1",
+  "sourceArtifactId": 13702050485,
+  "sourceArtifactSha256": "e9962faad6974121a535aa8bd7699ac2131c59bad88d1c08f455e85e0a4f1664",
+  "sourceUnavailable": [
+    {
+      "httpStatus": 301,
+      "url": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-344624/achv-20260630.htm"
+    }
+  ],
+  "uniqueApplicationSourceUrls": 24,
+  "validatedFdaForecasts": 0,
+  "verification": "PASS",
+  "workflowConclusion": "success",
+  "workflowRunId": 42678294690
+}

@@ -1,0 +1,144 @@
+{
+  "schema": "MAIN_PARALLEL_EXECUTION_AND_RECOVERY_CHECKPOINT_V1",
+  "verifiedAtUtc": "2026-11-09T19:11:44.535483+00:00",
+  "userTimezone": "America/Los_Angeles",
+  "codeCommit": "f42605f7228960386e7fce207327c7a996391cb7",
+  "recoveredCommits": [
+    "41b8fc6fe780addde11bfc381a1c606f6cd8b723",
+    "c55f376e28f40c85e0baa694991a71da2070b7ec",
+    "f42605f7228960386e7fce207327c7a996391cb7"
+  ],
+  "recoveryGitFacts": {
+    "allThreeCommitsPushed": true,
+    "localAndRemoteMatchedBeforeEvidenceCommit": true,
+    "implementationChangedFiles": 26,
+    "insertions": 2178,
+    "deletions": 31,
+    "note": "The earlier approximate four-file count does not describe the final committed installation; Git is the acceptance evidence."
+  },
+  "initialPushRuns": {
+    "trackA": 42678294690,
+    "trackB": 42678295071,
+    "executionOverlapVerified": true,
+    "overlapSeconds": 29.0,
+    "overlapStartPacific": "2026-11-09T10:54:53-08:00",
+    "overlapEndPacific": "2026-11-09T10:55:22-08:00"
+  },
+  "manualRestorationRuns": {
+    "trackA": 42679838862,
+    "trackB": 42679836978,
+    "executionOverlapVerified": true,
+    "overlapSeconds": 25.0,
+    "overlapStartPacific": "2026-11-09T11:04:40-08:00",
+    "overlapEndPacific": "2026-11-09T11:05:05-08:00"
+  },
+  "trackA": {
+    "ncts": 29,
+    "applicationGroups": 23,
+    "versionedApplicationResearchRecords": 23,
+    "ABSTAIN": 22,
+    "previouslyObservedNonforecastCase": 1,
+    "qualifiedScientificPredictionsGenerated": 0,
+    "independentlyValidatedPredictions": 0,
+    "independentScientificGrades": 0,
+    "sourcesFetched": 23,
+    "sourceUrlsAttempted": 24,
+    "all23GroupsHaveAtLeastOnePublicSource": true,
+    "currentPrimaryTableNcts": 12,
+    "currentSapMetadataNcts": 12,
+    "originalFdaPdfResponses": 2,
+    "rawReferenceDigestChecks": 112,
+    "historyRevisionsBefore": 1,
+    "historyRevisionsAfter": 2,
+    "priorEventPreservedExactly": true,
+    "sourceByteVersionChangesAwaitingMaterialityReview": 19,
+    "independentlyAdjudicatedMaterialChanges": 0,
+    "measuredAccuracy": null
+  },
+  "trackB": {
+    "selectedFdaSourceActionCandidates": 412,
+    "sourceIdentityGroups": 376,
+    "standardParentApplicationIds": 369,
+    "unresolvedIdentityGroups": 7,
+    "repeatedParentGroups": 33,
+    "mixedApprovalCrlParentGroups": 15,
+    "independentlyVerifiedReviewCycles": 0,
+    "realBacktests": 0,
+    "realCalibrationFits": 0,
+    "modelTrainingAuthorized": false,
+    "historyRevisionsBefore": 1,
+    "historyRevisionsAfter": 2,
+    "measuredAccuracy": null,
+    "calibration": null
+  },
+  "verification": {
+    "fullCIRun": "https://github.com/pdufa/pdufa-command-center/actions/runs/42678295235",
+    "skipBasis": "Optional environment-dependent tests were skipped; local and CI counts are preserved separately. A skip is not an accepted clinical or scientific review.",
+    "typecheck": "PASS",
+    "productionBuild": "PASS",
+    "retirementUnitTestsPassed": 20,
+    "retirementEntrypoints": 262,
+    "retirementViolations": 0,
+    "sourcePacketChecksPassed": 21,
+    "trackATargetedTestsPassed": 58,
+    "trackBTargetedTestsPassed": 78,
+    "outstandingTestFailures": 0,
+    "localBackend": {
+      "passed": 1491,
+      "skipped": 8,
+      "warnings": 6
+    },
+    "ciBackend": {
+      "passed": 1493,
+      "skipped": 6,
+      "warnings": 7,
+      "jobId": 129365562215
+    },
+    "backendCountBasis": "Local and CI environments execute different optional fixtures. Both passed at the exact code commit; no counts substituted for clinical validation.",
+    "localFrontendTestFilesPassed": 158,
+    "ciFrontend": {
+      "passed": 868,
+      "failed": 0,
+      "skipped": 0,
+      "jobId": 129365562125,
+      "typecheck": "PASS",
+      "productionBuild": "PASS"
+    }
+  },
+  "recurringExecution": {
+    "cronConfiguredOnFeatureBranch": true,
+    "automaticPushTriggerVerified": true,
+    "manualTriggerVerified": true,
+    "scheduledRecurringOperational": false,
+    "defaultBranch": "main",
+    "bothWorkflowFilesOnDefaultBranch": false,
+    "defaultBranchLookup": "Both original workflow paths returned HTTP404 on main.",
+    "activationDependency": "Explicit production approval and reviewed default-branch rollout; PR965 remains draft/unmerged."
+  },
+  "artifactRetentionDays": 90,
+  "permanentArtifactBackupClaimed": false,
+  "productionChangesPerformed": false,
+  "clinicalWritesEnabled": false,
+  "restrictedVaultActivated": false,
+  "fdaPredictions": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "certainty": "NOT_VALIDATED",
+  "accuracy": "NOT_CALIBRATED",
+  "remainingBlockersRanked": [
+    "No independently verified complete consecutive filing denominator including negative, pending and withdrawn cases.",
+    "No independently adjudicated exact application/indication/review-cycle labels and original public-availability clocks.",
+    "No sealed predecision evidence cohort with qualified program-disjoint temporal development/validation/test samples.",
+    "Current clinical methods require independent authorized review and original SAP/population/safety reconciliation.",
+    "Recurring scheduled execution awaits explicit approved default-branch installation."
+  ],
+  "nextAction": "Construct and independently verify a denominator-complete historical filing cohort and exact-cycle/source-clock crosswalk before any real model fitting or accuracy claim.",
+  "evidenceReceiptSha256": {
+    "track-a/restart-verification-receipt.json": "b6ce3d26d23066e2d22e6e35ca405f884cd190e40ff89dc2ed488bbfb63ecf83",
+    "track-a/verification-receipt.json": "a2eec32afbb207e992c12b848262f0a48191b3191eb7179c72beeeb1c8d9003c",
+    "track-b/second-run-restore-receipt.json": "03b69e70be51c3b9f0f178651d8a1dbc47e2c34449ebbeca008384794535178e",
+    "track-b/verification-receipt.json": "2f33bf378dd929d08898c8642a416e82116a3e8f4cbee5bd35414f46054ad710"
+  }
+}

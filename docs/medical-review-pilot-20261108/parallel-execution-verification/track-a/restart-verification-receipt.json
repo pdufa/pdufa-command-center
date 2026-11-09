@@ -1,0 +1,43 @@
+{
+  "applicationResearchRecords": 23,
+  "artifactDigestMatchesGitHubMetadata": true,
+  "artifactExpiresAtUtc": "2027-02-07T19:04:37Z",
+  "artifactSha256": "14b4f515fa5ca50792795a94443ccac0cd4bc7ff0c8600f15b4be98e5ea7e414",
+  "calibration": null,
+  "canonicalApplicationGroups": 23,
+  "canonicalNcts": 29,
+  "commit": "f42605f7228960386e7fce207327c7a996391cb7",
+  "conclusion": "success",
+  "currentHeadSha256": "7d86b1c080b97b4b4fd3ff211724673b3209b2f4a9d39475478147a360bfe596",
+  "firstEventEntirelyPreserved": true,
+  "gradeOrPredictionReleasesChanged": 0,
+  "historyArtifactId": 13702370831,
+  "historyHashChainValidation": "PASS",
+  "historyRevisions": 2,
+  "independentScientificGrades": 0,
+  "jobCompletedAtUtc": "2026-11-09T19:05:05Z",
+  "jobId": 129371094058,
+  "jobStartedAtUtc": "2026-11-09T19:04:40Z",
+  "liveRestoreStep": "success",
+  "materialScientificChangesAdjudicated": 0,
+  "meaning": "Source-response byte changes reopen documentary review; no count represents new clinical findings or validated FDA predictions.",
+  "measuredAccuracy": null,
+  "predictionStates": {
+    "ABSTAIN": 22,
+    "NOT_APPLICABLE_ALREADY_OBSERVED_IN_SNAPSHOT": 1
+  },
+  "previousHeadSha256": "a466c7453380c29175d03a62bfab7efd323e8c433a0a305f9ae0b21d8ec0a43f",
+  "previousHistoryLocated": "FOUND",
+  "qualifiedPredictions": 0,
+  "rawSourceVerificationBasis": "Actual workflow source-byte verification step passed; local independent verification here covers the complete downloaded second history ZIP and unchanged first event.",
+  "reassessmentRequiredApplications": 19,
+  "reassessmentStates": {
+    "SOURCE_VERSIONS_UNCHANGED": 4,
+    "SOURCE_VERSION_CHANGED_REVIEW_REQUIRED": 19
+  },
+  "schema": "MAIN_ACTUAL_TRACK_A_HISTORY_RESTORE_VERIFICATION_V1",
+  "secondEventPreviousSha256": "a466c7453380c29175d03a62bfab7efd323e8c433a0a305f9ae0b21d8ec0a43f",
+  "secondRawSourceZipIndependentlyDownloaded": false,
+  "verification": "PASS",
+  "workflowRunId": 42679838862
+}
