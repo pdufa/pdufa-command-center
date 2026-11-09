@@ -101,6 +101,22 @@ class PilotMonitorTests(unittest.TestCase):
         self.assertIsNone(next_run["previousReceiptSha256"])
         self.assertTrue(all(x["changedSincePrevious"] is None for x in next_run["sources"]))
 
+    def test_prior_receipt_cannot_substitute_an_unapproved_source_url(self):
+        original=self.checkpoint(fetcher=fake_fetch())
+        original["sources"][0]["sourceUrl"]="https://untrusted.example/replacement"
+        original["receiptSha256"]=audit.receipt_hash(original)
+        checked=self.checkpoint(fetcher=fake_fetch(),prior=original)
+        self.assertEqual(checked["historyStatus"],"PREVIOUS_INVALID")
+        self.assertIsNone(checked["previousReceiptSha256"])
+
+    def test_prior_receipt_status_cannot_be_unknown_even_with_consistent_hash(self):
+        original=self.checkpoint(fetcher=fake_fetch())
+        original["sources"][1]["status"]="SCORED"
+        original["receiptSha256"]=audit.receipt_hash(original)
+        checked=self.checkpoint(fetcher=fake_fetch(),prior=original)
+        self.assertEqual(checked["historyStatus"],"PREVIOUS_INVALID")
+        self.assertEqual(checked["officialClinicalGradeEventsWritten"],0)
+
     def test_source_unavailable_is_not_false_success_or_clinical_failure(self):
         result=self.checkpoint(fetcher=fake_fetch(unavailable=("REGISTRY",)))
         self.assertEqual(result["status"],"PARTIAL_UNAVAILABLE")
