@@ -14,9 +14,21 @@ type ExecutionCursor={
  state:"RUNNING"|"STOPPED"|"UNKNOWN";taskId:string|null;
  observedAt:string|null;runId?:string|null;operation?:string|null;
 };
+type WorkflowEvidence={
+ id:number;name:string;branch:string;status:string;conclusion:string|null;
+ startedAt:string|null;updatedAt:string|null;url:string;
+ job:string|null;step:string|null;jobStatus:string|null;
+ stepCoverage:"OBSERVED"|"NOT_CHECKED"|"UNAVAILABLE";
+};
+type LiveGithubEvidence={
+ state:"VERIFIED"|"PARTIAL"|"UNAVAILABLE"|"AUTH_REQUIRED";
+ checkedAt:string;sourceUrl:string;running:WorkflowEvidence[];queued:WorkflowEvidence[];
+ recent:WorkflowEvidence[];scope:string;note:string;
+};
 type TaskResponse={
  schemaVersion:number;checkedAt:string;registryUpdatedAt?:string;
  tasks:Record<string,TaskEvidence>;activeExecution?:ExecutionCursor|null;
+ githubActions?:LiveGithubEvidence;checks?:Record<string,{status:string;checkedAt:string;note:string}>;
 };
 type ScienceQuestion={
  id:string;layer:number;layerName:string;question:string;requiredEvidence:string;
@@ -47,19 +59,13 @@ const idOf=(taskId:string)=>"install-task-"+taskId;
 const safeTime=(value:string|undefined|null)=>value&&Number.isFinite(Date.parse(value))?
  new Date(value).toLocaleString():"Not recorded";
 const status=(row:TaskEvidence|undefined):TaskState=>row?.status??"Unverified";
-type JumpTarget={taskId:string|null;kind:"live"|"documented"|"status";sequence:number};
-
-/** A dated In Progress registry record is a historical implementation checkpoint, never a live worker. */
-function getDocumentedCheckpoint(snapshot:TaskResponse|null):string|null{
- if(!snapshot)return null;
- const candidates=taskList.filter(t=>
-  snapshot.tasks[t.id]?.status==="In Progress" &&
-  Number.isFinite(Date.parse(snapshot.tasks[t.id]?.checkedAt??"")));
- if(!candidates.length)return null;
- const newest=candidates.reduce((best,current)=>
-  Date.parse(snapshot.tasks[current.id].checkedAt??"") >
-  Date.parse(snapshot.tasks[best.id].checkedAt??"")?current:best);
- return newest.id;
+type JumpTarget={taskId:string|null;kind:"live"|"workflow"|"status";sequence:number};
+function getRunningGithub(snapshot:TaskResponse|null):WorkflowEvidence|null{
+ const source=snapshot?.githubActions;
+ if(!source||!["VERIFIED","PARTIAL"].includes(source.state))return null;
+ const stamp=Date.parse(source.checkedAt);
+ if(!Number.isFinite(stamp)||Math.abs(Date.now()-stamp)>90000)return null;
+ return source.running[0]??null;
 }
 
 /** Only a fresh, specifically identified RUNNING worker event is a live position. */
@@ -114,25 +120,28 @@ export default function InstallationLiveNavigator(){
   return()=>{mounted.current=false;window.clearInterval(interval);document.removeEventListener("visibilitychange",visible);};
  },[fetchData]);
  const active=useMemo(()=>getActiveExecution(audit),[audit]);
+ const activeGithub=useMemo(()=>getRunningGithub(audit),[audit]);
  const locateSnapshot=useCallback((snapshot:TaskResponse|null)=>{
-  // Always respond to a tap immediately, even if slow health probes are pending.
-  // A checkpoint is dated historical evidence, never a claimed live Codex task.
+  // A GitHub workflow proves actual GitHub Actions execution only. Never
+  // fabricate a Codex worker ID or a verified scientific grading task.
   const cursor=getActiveExecution(snapshot);
-  const documented=cursor?null:getDocumentedCheckpoint(snapshot);
-  const destination=cursor?.taskId??documented;
+  const workflow=cursor?null:getRunningGithub(snapshot);
+  const destination=cursor?.taskId??null;
   setFollowing(true);
   setInstallationExpanded(true);
   setSection("present");
   setChosenTask(destination);
   setLiveNotice(cursor
     ?"Located current LIVE installation task "+cursor.taskId+"."
-    :documented
-     ?"Located last documented checkpoint "+documented+". Historical implementation evidence only — NOT a verified running task."
-     :snapshot
-      ?"Live location unavailable: no fresh, verified running task or dated checkpoint. Showing active cursor status instead."
-      :"No verified live location has loaded yet. Showing active cursor status; refreshing task evidence.");
+    :workflow
+     ?"Located an active GitHub Actions workflow: "+workflow.name+". Exact Codex / scientific task identity is not verified."
+     :snapshot?.githubActions?.state==="VERIFIED"
+      ?"No active GitHub Actions workflow or task-specific live heartbeat was observed at "+safeTime(snapshot.githubActions.checkedAt)+". Showing evidence status."
+      :snapshot
+       ?"Live location not verified. GitHub status: "+(snapshot.githubActions?.state??"not connected")+". Showing evidence status, not a historical checkpoint."
+       :"No verified live location has loaded yet. Showing evidence status; refreshing task evidence.");
   setLiveJump(previous=>({
-   taskId:destination??null,kind:cursor?"live":documented?"documented":"status",
+   taskId:destination,kind:cursor?"live":workflow?"workflow":"status",
    sequence:(previous?.sequence??0)+1
   }));
  },[]);
@@ -146,12 +155,18 @@ export default function InstallationLiveNavigator(){
   });
  },[audit,fetchData,locateSnapshot]);
  useEffect(()=>{
-  if(!following||!installationExpanded||!active?.taskId)return;
-  setSection("present");
-  setChosenTask(active.taskId);
-  setLiveJump(previous=>previous?.taskId===active.taskId&&previous.kind==="live"?previous:
-   {taskId:active.taskId,kind:"live",sequence:(previous?.sequence??0)+1});
- },[active?.taskId,following,installationExpanded]);
+  if(!following||!installationExpanded)return;
+  if(active?.taskId){
+   setSection("present");
+   setChosenTask(active.taskId);
+   setLiveJump(previous=>previous?.taskId===active.taskId&&previous.kind==="live"?previous:
+    {taskId:active.taskId,kind:"live",sequence:(previous?.sequence??0)+1});
+  }else if(activeGithub){
+   setSection("present");
+   setLiveJump(previous=>previous?.kind==="workflow"&&previous.taskId===null?previous:
+    {taskId:null,kind:"workflow",sequence:(previous?.sequence??0)+1});
+  }
+ },[active?.taskId,activeGithub?.id,following,installationExpanded]);
  useEffect(()=>{
   if(!liveJump||!installationExpanded)return;
   // Wait for the opened caret and selected row to exist. Safari can ignore
@@ -160,6 +175,7 @@ export default function InstallationLiveNavigator(){
   const first=window.requestAnimationFrame(()=>{
    second=window.requestAnimationFrame(()=>{
     const target=(liveJump.taskId&&document.getElementById(idOf(liveJump.taskId)))||
+     (liveJump.kind==="workflow"&&document.getElementById("installation-github-execution"))||
      document.getElementById("installation-active-cursor");
     if(!target)return;
     const list=target.closest("[data-installation-task-list]");
@@ -201,7 +217,7 @@ export default function InstallationLiveNavigator(){
    </button>
    <button type="button" className={styles.liveButton}
     onClick={()=>{void goToLive();}}
-    aria-label="Locate installation: jump to the current live task or last documented checkpoint">
+    aria-label="Locate verified current execution or show explicit no-live status">
     <svg className={styles.locateIcon} width="22" height="22" viewBox="0 0 24 24"
      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"
      aria-hidden="true">
@@ -232,6 +248,47 @@ export default function InstallationLiveNavigator(){
      {" "}{safeTime(audit?.registryUpdatedAt)}.</p>
    </>}
   </div>
+  <section id="installation-github-execution" tabIndex={-1}
+   className={liveJump?.kind==="workflow"?styles.cursorTarget:undefined}
+   style={{...panel,marginBottom:12,border:"2px solid #5aa9ae",scrollMarginTop:92}}>
+   <h3 style={{margin:"0 0 8px"}}>LIVE WORKFLOW EXECUTION · GitHub Actions</h3>
+   <p style={info}>Verified repository workflow activity only; not a Codex task-level heartbeat,
+    scientific assessment completion, or FDA prediction. No master task is marked accepted by this feed.</p>
+   <p style={info}>Source: <a href={audit?.githubActions?.sourceUrl??"https://github.com/pdufa/pdufa-command-center/actions"}
+    target="_blank" rel="noopener noreferrer">GitHub Actions</a> · Checked:
+    {" "}{safeTime(audit?.githubActions?.checkedAt)} ·
+    Status: <strong>{audit?.githubActions?.state??"LOADING"}</strong></p>
+   {audit?.githubActions?.state==="AUTH_REQUIRED"?<p role="status">Signed-in dashboard session required for live execution details.</p>:null}
+   {audit?.githubActions?.state==="UNAVAILABLE"?<p role="status">GitHub execution status unavailable; running or stopped cannot be concluded.</p>:null}
+   {audit?.githubActions?.state==="PARTIAL"?<p role="status">Some workflow observations are incomplete; absence of other runs cannot be confirmed.</p>:null}
+   {audit?.githubActions?.state==="VERIFIED"&&audit.githubActions.running.length===0?
+    <p role="status">No in-progress GitHub Actions workflows observed in this repository at the last check.
+     Codex or other providers may still be working.</p>:null}
+   {activeGithub?<p style={{fontWeight:700,color:"#6af8cf"}}>Observed active workflow:
+    {" "}{activeGithub.name}</p>:null}
+   {audit?.githubActions?.running.map(run=><div key={run.id}
+     style={{border:"1px solid #39717b",borderRadius:8,padding:10,margin:"8px 0",background:"#0b3040"}}>
+     <strong>RUNNING · {run.name}</strong>
+     <p style={info}>Branch: {run.branch} · Run #{run.id} · Started: {safeTime(run.startedAt)}</p>
+     <p style={info}>Current job: {run.job??"Not verified"} ·
+      Current step: {run.step??"Not verified"} · Step readback: {run.stepCoverage}</p>
+     <a href={run.url} target="_blank" rel="noopener noreferrer">Inspect verified workflow run</a>
+    </div>)}
+   {Boolean(audit?.githubActions?.queued.length)&&
+     <details style={{margin:"10px 0"}}><summary>Queued workflows · {audit?.githubActions?.queued.length} (not running)</summary>
+       {audit?.githubActions?.queued.map(run=><p key={run.id}><a href={run.url} target="_blank" rel="noopener noreferrer">
+         {run.name} · {run.branch}</a> · {run.status}</p>)}
+     </details>}
+   {Boolean(audit?.githubActions?.recent.length)&&
+     <details style={{margin:"10px 0"}}><summary>Recently completed workflows · {audit?.githubActions?.recent.length} (history only)</summary>
+       {audit?.githubActions?.recent.map(run=><p key={run.id}><a href={run.url} target="_blank" rel="noopener noreferrer">
+         {run.name} · {run.branch}</a> · {run.conclusion??"Result not reported"} · {safeTime(run.updatedAt)}</p>)}
+     </details>}
+   {audit?.githubActions?.note&&<p style={info}>{audit.githubActions.note}</p>}
+   <p style={info}>Separate health probes: website route {audit?.checks?.dashboard?.status??"unavailable"};
+    {" "}backend storage {audit?.checks?.backendDatabase?.status??"unavailable"}.
+    These are reachability observations, not deployment progress.</p>
+  </section>
   <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(155px,1fr))",gap:8,marginBottom:12}}>
    <button type="button" onClick={()=>setSection("past")}
     aria-pressed={section==="past"} style={{...panel,textAlign:"left",borderColor:section==="past"?"#45ebba":"#39717b"}}>

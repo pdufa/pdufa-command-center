@@ -70,7 +70,9 @@ test("LIVE arrow jumps immediately and refreshes in the background",()=>{
  assert.match(ui,/document\.getElementById\(idOf\(liveJump\.taskId\)\)/);
  assert.match(ui,/document\.getElementById\("installation-active-cursor"\)/);
  assert.match(ui,/id="installation-active-cursor"/);
- assert.match(ui,/Live location unavailable: no fresh, verified running task or dated checkpoint/);
+ assert.match(ui,/Live location not verified/);
+ assert.match(ui,/getRunningGithub\(snapshot\)/);
+ assert.match(ui,/installation-github-execution/);
  assert.match(ui,/No verified live location has loaded yet/);
  assert.match(ui,/90000/);
  assert.match(css,/\.liveButton/);
@@ -78,11 +80,11 @@ test("LIVE arrow jumps immediately and refreshes in the background",()=>{
  assert.match(css,/\.cursorTarget/);
  assert.match(css,/\.locateIcon/);
  assert.match(css,/\.checkpointMarker/);
- assert.match(ui,/const documented=cursor\?null:getDocumentedCheckpoint\(snapshot\)/);
+ assert.match(ui,/const workflow=cursor\?null:getRunningGithub\(snapshot\)/);
  assert.match(ui,/aria-current=\{located\?"location":undefined\}/);
- assert.match(ui,/last documented checkpoint/);
- assert.match(ui,/Historical implementation evidence only/);
- assert.match(ui,/kind:cursor\?"live":documented\?"documented":"status"/);
+ assert.match(ui,/Exact Codex \/ scientific task identity is not verified/);
+ assert.match(ui,/kind:cursor\?"live":workflow\?"workflow":"status"/);
+ assert.doesNotMatch(ui,/getDocumentedCheckpoint\(snapshot\)/);
  assert.doesNotMatch(ui,/status\(row\)==="In Progress".*setLiveJump/);
 });
 
@@ -103,8 +105,21 @@ test("LOCATE LIVE still opens the caret before scrolling to the task",()=>{
  assert.match(ui,/setInstallationExpanded\(true\);/);
  assert.match(ui,/if\(!liveJump\|\|!installationExpanded\)return/);
  assert.match(ui,/\[liveJump,section,installationExpanded\]/);
- assert.match(ui,/if\(!following\|\|!installationExpanded\|\|!active\?\.taskId\)return/);
+ assert.match(ui,/if\(!following\|\|!installationExpanded\)return/);
  assert.match(ui,/document\.getElementById\(idOf\(liveJump\.taskId\)\)/);
  assert.match(ui,/document\.getElementById\("installation-active-cursor"\)/);
- assert.match(ui,/no fresh, verified running task or dated checkpoint/);
+ assert.match(ui,/No active GitHub Actions workflow or task-specific live heartbeat/);
+});
+
+test("verified GitHub runs are independently observable, never certified as Codex tasks",()=>{
+ const route=fs.readFileSync(path.join(app,"api/installation-audit/live-task-evidence/route.ts"),"utf8");
+ assert.match(route,/hasSession\(sessionCookie\)/);
+ assert.match(route,/fetchLiveGithubActions\(process\.env\.PDUFA_GITHUB_TOKEN,checkedAt\)/);
+ assert.match(route,/githubActions,/);
+ assert.match(ui,/GitHub Actions workflow/);
+ assert.match(ui,/No in-progress GitHub Actions workflows observed/);
+ assert.match(ui,/running\.map\(run=>/);
+ assert.match(ui,/jobStatus/);
+ assert.match(ui,/not a Codex task-level heartbeat/);
+ assert.doesNotMatch(ui,/Located last documented checkpoint/);
 });
