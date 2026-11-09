@@ -116,6 +116,11 @@ def confirm_provisional_score_page(client):
            'ORIGINAL_EVIDENCE_HANDOFF_NOT_RENDERED')
     demand(b'/api/predictions/medical-evidence-acquisition?nct=NCT06081894' in page,
            'ORIGINAL_EVIDENCE_ACQUISITION_ENDPOINT_NOT_LINKED')
+    demand('Original document intake' in normalized and
+           'Open original-document metadata precheck' in normalized and
+           'Check metadata only' in normalized and
+           'No file upload' in normalized,
+           'CLIENT_LOCAL_SHA256_INTAKE_FORM_NOT_RENDERED')
     demand('Alternative source recovery' in normalized and
            'final locked primary SAP' in normalized and
            'no request has been sent' in normalized and
@@ -203,6 +208,9 @@ def main():
     demand(status == 401, 'ANONYMOUS_REVIEW_QUEUE_NOT_REJECTED')
     status, _ = request(anon, '/api/predictions/medical-evidence-acquisition?nct=' + PILOT)
     demand(status == 401, 'ANONYMOUS_ACQUISITION_PACKET_NOT_REJECTED')
+    status, _ = request(anon, '/api/predictions/medical-evidence-intake-precheck?nct=' + PILOT,
+                        body={'nct':PILOT}, origin=SITE)
+    demand(status == 401, 'ANONYMOUS_EVIDENCE_INTAKE_PRECHECK_NOT_REJECTED')
     status, _ = request(anon, '/api/internal/medical-assessments/coverage', backend=True)
     demand(status == 401, 'ANONYMOUS_BACKEND_NOT_REJECTED')
     client = build_opener(NoRedirect(), HTTPCookieProcessor(http.cookiejar.CookieJar()))
@@ -251,6 +259,51 @@ def main():
        'trial':PILOT,'requestedOriginalEvidenceGates':6,
        'methodsCovered':18,'sourceDocumentsAuthenticated':0,'emailsSent':0,
        'officialClinicalGrades':0,'fdaPrediction':'ABSTAIN'}),flush=True)
+    # Synthetic metadata only; no source file upload or medical ledger write.
+    metadata = {
+      'nct':PILOT,'requestId':'LOCKED_PRIMARY_SAP',
+      'documentType':'STATISTICAL_ANALYSIS_PLAN',
+      'documentTitle':'Original ACACIA HCM analysis plan metadata example',
+      'documentVersion':'Draft 1.0','documentDate':'2026-11-01',
+      'sourceUrl':'https://clinicaltrials.gov/study/NCT06081894',
+      'claimedSha256':'a'*64
+    }
+    intake_url='/api/predictions/medical-evidence-intake-precheck?nct=' + PILOT
+    status, precheck = request(client, intake_url, body=metadata, origin=SITE)
+    demand(status == 200 and precheck.get('schema') == 'MAIN_ACACIA_EVIDENCE_INTAKE_PRECHECK_V1'
+           and precheck.get('requestId') == 'LOCKED_PRIMARY_SAP'
+           and precheck.get('inputCheck') == 'METADATA_FORMAT_CHECKED_ONLY'
+           and precheck.get('issueCodes') == []
+           and len(precheck.get('linkedMethodPositions',[])) == 8
+           and precheck.get('sourceContentRetrieved') is False
+           and precheck.get('claimedDocumentHashVerifiedFromOriginalBytes') is False
+           and precheck.get('documentVersionAuthenticated') is False
+           and precheck.get('sponsorDataSharingAuthorizationVerified') is False
+           and precheck.get('clinicalReviewerSignedOff') is False
+           and precheck.get('acceptedForClinicalScoring') is False
+           and precheck.get('gradeEventsWritten') == 0
+           and precheck.get('persisted') is False
+           and precheck.get('uploadsReceived') == 0
+           and precheck.get('emailSent') is False
+           and precheck.get('fdaPrediction') == 'ABSTAIN'
+           and precheck.get('accuracy') == 'NOT_CALIBRATED',
+           'EVIDENCE_INTAKE_PRECHECK_NOT_SAFE_OR_MISSING')
+    status, _ = request(client, intake_url, body=metadata, origin='https://invalid.example')
+    demand(status == 403,'CROSS_ORIGIN_INTAKE_PRECHECK_ACCEPTED')
+    wrong=dict(metadata,sourceUrl='https://127.0.0.1/private')
+    status, bad = request(client, intake_url, body=wrong, origin=SITE)
+    demand(status == 422 and 'UNSUPPORTED_OR_UNSAFE_SOURCE_URL' in bad.get('issueCodes',[])
+           and bad.get('gradeEventsWritten') == 0
+           and bad.get('acceptedForClinicalScoring') is False,
+           'UNSAFE_EVIDENCE_SOURCE_ACCEPTED')
+    wrong=dict(metadata,nct='NCT00000000')
+    status, bad = request(client, intake_url, body=wrong, origin=SITE)
+    demand(status == 422 and 'WRONG_TRIAL' in bad.get('issueCodes',[]),
+           'WRONG_TRIAL_EVIDENCE_INTAKE_ACCEPTED')
+    print(json.dumps({'stage':'EVIDENCE_INTAKE_METADATA_PREFLIGHT','status':'PASS',
+      'nct':PILOT,'methodLinks':8,'originalDocumentBytesUploaded':0,
+      'sourceAuthentications':0,'reviewSignatures':0,
+      'clinicalGradeEvents':0,'fdaPrediction':'ABSTAIN'}),flush=True)
     status, review_queue = request(client, '/api/predictions/medical-phase3-review-queue?nct=' + PILOT)
     demand(status == 200 and review_queue.get('schema') == 'MAIN_ACACIA_PHASE3_REVIEW_QUEUE_V1'
            and review_queue.get('nct') == PILOT and
