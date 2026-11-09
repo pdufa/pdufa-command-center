@@ -41,7 +41,7 @@ def inputs(monkeypatch):
          "documentResearch":[
             {"nct":r56.NCT,"archivedPdfFilename":fn,
              "sourceBytes":len(blob),"sourceSha256":exp[fn]["sha256"],
-             "sourceUrl":"https://cdn.clinicaltrials.gov/large-docs/93/NCT04544293/"+fn,
+             "sourceUrl":"https://cdn.clinicaltrials.gov/large-docs/93/NCT04544293/"+fn.removeprefix("NCT04544293-"),
              "currentRegistryDocumentDate":exp[fn]["date"],
              "retrievalStatus":"FETCHED",
              "pdfResearch":{"pageCount":3}}
