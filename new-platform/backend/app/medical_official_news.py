@@ -24,7 +24,10 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy import text
 
 LOG = logging.getLogger(__name__)
-OFFICIAL_FEED = "https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/press-releases/rss.xml"
+OFFICIAL_FEEDS = (
+    "https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/press-releases/rss.xml",
+    "https://www.fda.gov/about-fda/contact-fda/stay-informed/rss-feeds/drugs/rss.xml",
+)
 WATCH_ID = "official-fda-rss-v1"
 _MAX_XML = 800_000
 
@@ -60,9 +63,11 @@ def canonical_fda_article(url: str):
         return None
 
 
-def download_official_feed():
+def download_official_feed(url):
+    if url not in OFFICIAL_FEEDS:
+        raise ValueError("Unknown FDA source feed")
     opener = urllib.request.build_opener(_NoRedirect)
-    request = urllib.request.Request(OFFICIAL_FEED, headers={
+    request = urllib.request.Request(url, headers={
         "Accept": "application/rss+xml, application/xml, text/xml",
         "User-Agent": "PDUFACommandCenter-NewsMonitor/1.0 (research-only)"
     })
@@ -169,8 +174,20 @@ def check_once(engine, *, fetch=None):
 
     if engine.dialect.name != "postgresql":
         raise RuntimeError("Official news automation requires durable PostgreSQL")
-    content = fetch() if fetch else download_official_feed()
-    items = parse_fda_feed(content)
+    if fetch:
+        items = parse_fda_feed(fetch())
+    else:
+        items = []
+        for url in OFFICIAL_FEEDS:
+            try:
+                items.extend(parse_fda_feed(download_official_feed(url)))
+            except Exception as exc:
+                LOG.warning("Official FDA RSS source unavailable feed=%s error_type=%s",
+                            url.rsplit("/", 2)[-2],type(exc).__name__)
+        if not items:
+            raise ValueError("No verified official FDA RSS items available")
+    # Duplicate FDA articles across feeds must never schedule duplicate runs.
+    items = list({article["url"]: article for article in items}.values())
     path = core.APPLICATIONS
     snapshot = json.loads(path.read_text(encoding="utf-8"))
     if snapshot.get("schemaVersion") != 1 or not isinstance(snapshot.get("records"), list):
