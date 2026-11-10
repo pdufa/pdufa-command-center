@@ -36,6 +36,8 @@ on:
       - new-platform/frontend/app/predictions/source-recovery/history/route.ts
       - new-platform/frontend/tests/focus-r89-historical-source-recovery.test.cjs
       - new-platform/frontend/lib/focus-r89-acacia-prior-original-history.ts
+      - new-platform/frontend/lib/focus-r89-new-public-source-leads.ts
+      - new-platform/frontend/data/focus-r89-new-public-original-source-leads-20261110.json
   workflow_dispatch:
 
 permissions:
@@ -81,7 +83,7 @@ jobs:
         shell: bash
         run: |
           {
-            echo "## Revisions 83-89: exact-NCT source recovery, public journal leads and prior verified original history"
+            echo "## Revisions 83-89: 17-NCT source recovery, R36 originals and three newly discovered publisher/issuer research leads"
             echo "29 exact FOCUS NCT rows, with all 23 provisional application cycle links and original-source absence explicitly described."
             echo "Source and schema integrity validated; source-reported application goals are not FDA verified. CSV has no scientific grade, calibrated probability or production write."
             echo "Readback blocked by official historical API is not absent original evidence; archived R36 versions are separate signed-off-by-scientific-review=FALSE original source receipts. Public document and upload dates versus primary completion are not unblinding or locked-SAP proof; posted protocol/SAP metadata is not signed chronology or science; live registry field matching is not phase signoff. 0 independent clinical signoffs; 0 validated future FDA forecasts. Scientific installation remains incomplete."
