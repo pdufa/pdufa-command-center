@@ -52,6 +52,7 @@ export async function GET(req:Request):Promise<Response>{
   objectMap.set(m[1]+" "+m[2]+" R",m[3].slice(0,1000000));
   if(objectMap.size>6000)break;
  }
+ const pageTreeNodeCount=[...objectMap.values()].filter(body=>/\/Type\s*\/Pages\b/.test(body)).length;
  const pages:Array<{pdfPageDictionaryIndex:number,pageObject:string,
   referencedContentStreams:number,decodedContentStreams:number,
   textFragments:number,termHits:Array<{term:string,fragment:string}>}>=[];
@@ -97,6 +98,8 @@ export async function GET(req:Request):Promise<Response>{
   docKey:item.key,nct:"NCT06081894",protocol:"CY 6033",
   sha256:sha,sourceOriginalPdfBytes:bytes.length,
   detectedPageDictionaries:pages.length,
+  detectedUncompressedPageTreeNodes:pageTreeNodeCount,
+  verifiedPageTreeTraversalPerformed:false,
   pagesWithTextFragments:pages.filter(p=>p.textFragments>0).length,
   unsupportedFilters,
   pages:pages.map(p=>({...p,termHits:p.termHits.slice(0,13)})),
@@ -107,6 +110,6 @@ export async function GET(req:Request):Promise<Response>{
   signedProspectiveSAPAuthenticated:false,
   independentScientificReviewSigned:false,
   FDAForecast:"ABSTAIN",
-  limitations:"Page dictionary indices reflect object scan order, NOT verified PDF page-tree order or viewer page numbers. Uncompressed page dictionaries and directly referenced content streams only. Compressed object streams, font ToUnicode mappings, embedded text and inherited page content may be missing. Diagnostic snippets are not verified endpoint or SAP evidence."
+  limitations:"Page-tree node count is an uncompressed-object structural diagnostic, not a traversed or certified page tree. Page dictionary indices reflect object scan order, NOT verified PDF page-tree order or viewer page numbers. Uncompressed page dictionaries and directly referenced content streams only. Compressed object streams, font ToUnicode mappings, embedded text and inherited page content may be missing. Diagnostic snippets are not verified endpoint or SAP evidence."
  },{headers:H});
 }
