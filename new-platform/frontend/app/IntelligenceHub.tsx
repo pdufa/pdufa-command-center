@@ -73,9 +73,9 @@ function CompanyDetails({ticker,calendar,cycleId,onCycle,onNews,onCal}:{ticker:s
     </>}
   </div>;
 }
-function NewsDetails({payload,ticker,cycleId,newsFilter,setNewsFilter,automation}:{payload:NewsPayload|null;
+function NewsDetails({payload,ticker,cycleId,newsFilter,setNewsFilter,automation,onSelectCompany}:{payload:NewsPayload|null;
   ticker:string;cycleId:string;newsFilter:string;setNewsFilter:(s:string)=>void;
-  automation:AutomationStatus|null}){
+  automation:AutomationStatus|null;onSelectCompany:(ticker:string,cycleId:string|null)=>void}){
   const [expanded,setExpanded]=useState<string|null>(null);
   const all=useMemo(()=>[...(payload?.articles||[]),...(payload?.records||[])], [payload]);
   const filtered=all.filter(x=>{
@@ -107,6 +107,10 @@ function NewsDetails({payload,ticker,cycleId,newsFilter,setNewsFilter,automation
       <h3><a href={entry.sourceUrl} target="_blank" rel="noopener noreferrer">{entry.title}</a></h3>
       <p>{entry.description}</p>
       <p className={styles.meta}>{entry.sourceName} · {entry.ticker||"Not linked to a FOCUS company"}{entry.cycleId?" · "+entry.cycleId:""}</p>
+      {entry.ticker&&entry.cycleId&&<button type="button" className={styles.companyJump}
+        onClick={()=>onSelectCompany(entry.ticker!,entry.cycleId)}>
+        Open {entry.ticker} COMPANY record ↗
+      </button>}
       <div className={styles.verifiedLine}>
         <span>{entry.verification==="OFFICIAL_FDA_PUBLICATION"?"FDA-hosted publication":"Source link recorded, independently unverified"}</span>
         <span>{entry.matchStatus==="UNREVIEWED_EXACT_DRUG_MENTION"?"Automatic drug-name match — unreviewed":entry.matchStatus==="CYCLE_SOURCE_RECORD"?"Dated cycle source record":"No exact application linkage"}</span>
@@ -130,6 +134,8 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
   const [layout,setLayout]=useState<Layout>("single");
   const [ticker,setTicker]=useState("");
   const [cycleId,setCycleId]=useState("");
+  const [focusDate,setFocusDate]=useState("");
+  const [focusKey,setFocusKey]=useState(0);
   const [calendar,setCalendar]=useState<CalendarEvent[]>([]);
   const [news,setNews]=useState<NewsPayload|null>(null);
   const [automation,setAutomation]=useState<AutomationStatus|null>(null);
@@ -165,6 +171,7 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
     if(!validTicker(nextTicker))return;
     setTicker(nextTicker);
     const event=calendar.find(e=>e.id===eventId);
+    if (event) {setFocusDate(event.date);setFocusKey(key=>key+1);}
     const possible=APPLICATION_CYCLES.filter(c=>c.ticker===nextTicker&&event &&
       c.ncts.some(n=>event.ncts.includes(n))&&
       (!event.drug||c.drug.toLowerCase()===event.drug.toLowerCase()));
@@ -173,13 +180,31 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
     setView("company");
     if(!popup.current?.open)popup.current?.showModal();
   };
+  const goCal=()=>{
+    const active=APPLICATION_CYCLES.find(c=>c.id===resolvedCycle);
+    const candidate=calendar.filter(e=>e.ticker===ticker&&
+      (!active||e.ncts.some(n=>active.ncts.includes(n))))
+      .sort((a,b)=>a.date.localeCompare(b.date));
+    const future=candidate.find(e=>e.date>=new Date().toISOString().slice(0,10));
+    setFocusDate((future||candidate[0])?.date||"");
+    setFocusKey(k=>k+1);
+    setView("cal");
+  };
+  const jumpFromNews=(nextTicker:string,nextCycle:string|null)=>{
+    if(!validTicker(nextTicker))return;
+    setTicker(nextTicker);
+    setCycleId(nextCycle||"");
+    setView("company");
+  };
   const panelOrder:View[]=view==="company"?["company","news","cal"]:view==="news"?["news","company","cal"]:["cal","company","news"];
   const visible=layout==="all"?panelOrder:layout==="dual"?panelOrder.slice(0,2):[view];
-  const panel=(name:View)=>name==="cal"?<CalCalendar embedded onSelectCompany={onCompany}/>:
+  const panel=(name:View)=>name==="cal"?<CalCalendar embedded onSelectCompany={onCompany}
+      focusDate={focusDate} focusKey={focusKey}/>:
     name==="company"?<CompanyDetails ticker={ticker} calendar={calendar} cycleId={resolvedCycle}
-      onCycle={setCycleId} onNews={()=>{setView("news");setNewsFilter("related");}} onCal={()=>setView("cal")}/>:
+      onCycle={setCycleId} onNews={()=>{setView("news");setNewsFilter("related");}} onCal={goCal}/>:
     <NewsDetails payload={news} ticker={ticker} cycleId={resolvedCycle}
-      newsFilter={newsFilter} setNewsFilter={setNewsFilter} automation={automation}/>;
+      newsFilter={newsFilter} setNewsFilter={setNewsFilter} automation={automation}
+      onSelectCompany={jumpFromNews}/>;
   return <main className={styles.page}>
     <header className={styles.pageHeader}><div><span className={styles.eyebrow}>PDUFA RESEARCH INTELLIGENCE</span>
       <h1>CAL · COMPANY · NEWS</h1><p>Linked by exact ticker, drug, application cycle and NCT. Source-reported information only.</p></div>
@@ -220,7 +245,7 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
         <button type="button" onClick={()=>popup.current?.close()} aria-label="Close company popup">×</button></div>
       <CompanyDetails ticker={ticker} calendar={calendar} cycleId={resolvedCycle}
         onCycle={setCycleId} onNews={()=>{popup.current?.close();setView("news");setNewsFilter("related");}}
-        onCal={()=>{popup.current?.close();setView("cal");}}/>
+        onCal={()=>{popup.current?.close();goCal();}}/>
     </dialog>
   </main>;
 }
