@@ -157,12 +157,12 @@ function extractOutcome(value:unknown){
  for(const val of rawAnalyses){
   const a=obj(val);
   if(!a)return null;
-  const groupIds=array(a.groups??[],30);
+  const groupIds=array(a.groupIds??[],30);
   if(groupIds===null||groupIds.some(v=>typeof v!=="string"||!ids.has(v)))return null;
   analyses.push({
    groupIds:groupIds as string[],
-   pValue:s(a.pValue,110),pValueMethod:s(a.pValueMethod,150),
-   ciPct:num(a.ciPct),ciLowerLimit:s(a.ciLowerLimit,120),
+   pValue:s(a.pValue,110),pValueMethod:s(a.statisticalMethod,150),
+   ciPct:num(a.ciPctValue),ciLowerLimit:s(a.ciLowerLimit,120),
    ciUpperLimit:s(a.ciUpperLimit,120),estimateComment:s(a.estimateComment,450)
   });
  }
@@ -239,7 +239,7 @@ export function inspectR91CurrentPostedResults(row:RosterRow,body:unknown){
  if(!results||!flow||!outcomes||!adverse)return null;
  const flowRaw=array(flow.groups,60);
  const outcomeRaw=array(outcomes.outcomeMeasures,600);
- const eventGroupsRaw=array(adverse.groups,50);
+ const eventGroupsRaw=array(adverse.eventGroups,50);
  if(!flowRaw||!outcomeRaw||!eventGroupsRaw)return null;
  const flowGroups=flowRaw.map(sourceGroup);
  const eventGroups=eventGroupsRaw.map(aggregateEvents);
