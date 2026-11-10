@@ -104,6 +104,24 @@ async function profile(browser,config){
     "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000142/mlys2026q38kex991.htm");
   await publicChronology.scrollIntoViewIfNeeded();
   await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-r78-public-chronology.png"),fullPage:false});
+  const authenticity=board.locator('section[aria-label="R79 Launch-HTN SAP and unblinding evidence authentication"]');
+  await authenticity.waitFor({state:"visible",timeout:12000});
+  let authText=await authenticity.innerText();
+  assert.match(authText,/Original proof requirements authenticated/);
+  assert.match(authText,/0 \/ 7/);
+  assert.match(authText,/none configured/);
+  assert.match(authText,/ABSTAIN/);
+  assert.match(authText,/0\/23/);
+  assert.match(authText,/first unblinding|first unblinded|unblinding/i);
+  await authenticity.locator("details").first().locator("summary").click();
+  assert.equal(await authenticity.locator("details").first().locator("li").count(),7,
+    "exact seven original source-authentication requirements");
+  await authenticity.locator("details").nth(1).locator("summary").click();
+  assert.equal(await authenticity.locator("details").nth(1).locator('a[href^="https://"]').count(),2,
+    "original FDA/ICH E9 and E6R3 standards remain clickable");
+  await authenticity.scrollIntoViewIfNeeded();
+  await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-r79-authentication-gate.png"),fullPage:false});
+
   await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-research.png"),fullPage:false});
   p=await inspect("NCT06081894");
   assert.match(await p.innerText(),/Two primary endpoints/);
