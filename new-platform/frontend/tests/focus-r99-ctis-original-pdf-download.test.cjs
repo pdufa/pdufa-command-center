@@ -1,0 +1,30 @@
+"use strict";
+const test=require("node:test"),assert=require("node:assert/strict");
+const fs=require("node:fs"),path=require("node:path");
+const root=path.resolve(__dirname,"..");
+const route=fs.readFileSync(path.join(root,"app/predictions/scientific-reconciliation/priority-gates/ctis-pdf-check/route.ts"),"utf8");
+const page=fs.readFileSync(path.join(root,"app/predictions/scientific-reconciliation/priority-gates/page.tsx"),"utf8");
+test("R99 only serves original CTIS PDF if exact byte length and SHA match frozen R98 receipt",()=>{
+ assert.match(route,/R98_ACACIA_CTIS_ORIGINAL_PDF_RECEIPTS/);
+ assert.match(route,/matching\.sha256!==digest/);
+ assert.match(route,/matching\.byteCount!==bytes\.length/);
+ assert.match(route,/ORIGINAL_PDF_SHA256_DOES_NOT_MATCH_INDEPENDENT_CTIS_RECEIPT/);
+ assert.match(route,/downloadValue!=="1"/);
+ assert.match(route,/Content-Type":"application\/pdf"/);
+ assert.match(route,/Content-Disposition/);
+ assert.match(route,/X-Original-PDF-SHA256/);
+ assert.match(route,/X-Scientific-Review-Status":"UNVERIFIED"/);
+ assert.match(route,/FDAForecast:"ABSTAIN"/);
+ assert.match(route,/storageUrl\.hostname!=="ctis-publication-engine-doc-storage-prod\.s3\.eu-central-1\.amazonaws\.com"/);
+ assert.match(route,/!storageUrl\.pathname\.includes\(doc\.uuid\)/);
+ assert.match(route,/DOCUMENT_KEY_OUTSIDE_ORIGINAL_CTIS_ACACIA_ROSTER/);
+});
+test("R99 four source PDF links appear on scientific review with no invented signed SAP or completed analysis",()=>{
+ assert.match(page,/REVISION 99/);
+ assert.match(page,/Download SHA-256 verified original PDF for independent review/);
+ assert.match(page,/ctis-pdf-check\?doc=/);
+ assert.match(page,/&download=1/);
+ assert.match(page,/NOT COMPLETED/);
+ assert.match(page,/Signed prospective SAP: NOT VERIFIED/);
+ assert.match(page,/FDA forecast: ABSTAIN/);
+});
