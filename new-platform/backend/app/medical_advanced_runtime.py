@@ -209,24 +209,29 @@ def start_watch(engine):
         # First check on start, then at six-hour intervals; each NCT checked
         # separately so individual source outages cannot falsely reset others.
         while not _WATCH_STOP.is_set():
+            # Check primary FDA source first: slow registry pulls should not
+            # prevent baselining or detection of a material FDA publication.
+            try:
+                from .medical_official_news import check_once as check_fda_news
+                result=check_fda_news(engine)
+                LOG.warning(
+                    "PDUFA_OFFICIAL_NEWS_WATCH status=CHECKED articles=%d matched=%d baselined=%d queued=%d deferred=%d",
+                    result["articlesChecked"],result["matchedCycles"],result["baselined"],
+                    result["queued"],result["deferred"])
+            except Exception as news_exc:
+                LOG.warning("PDUFA_OFFICIAL_NEWS_WATCH status=SOURCE_UNAVAILABLE type=%s",
+                            type(news_exc).__name__)
             try:
                 check_registry_updates_once(engine)
-                # Source changes and newly operational components share this
-                # existing opt-in worker; no second polling service or scan.
+                # Continue the pre-existing opt-in component-change watcher.
                 from .medical_on_demand import check_operational_component_changes
                 check_operational_component_changes(engine)
-                # Official FDA headlines are provenance leads, not adjudicated FDA outcomes.
-                # Reuse the existing medically gated source worker and immutable revisions.
-                try:
-                    from .medical_official_news import check_once as check_fda_news
-                    check_fda_news(engine)
-                except Exception as news_exc:
-                    LOG.warning("Official FDA news watch unavailable type=%s",type(news_exc).__name__)
             except Exception as exc:
                 LOG.warning("medical registry/component watch skipped error_type=%s",type(exc).__name__)
             _WATCH_STOP.wait(WATCH_INTERVAL_SECONDS)
     _WATCH_THREAD=threading.Thread(target=loop,daemon=True,name="medical-registry-watch")
     _WATCH_THREAD.start()
+    LOG.warning("PDUFA_MEDICAL_AUTO_WATCH status=STARTED interval_seconds=%d source=FDA_AND_REGISTRY",WATCH_INTERVAL_SECONDS)
     return True
 
 
