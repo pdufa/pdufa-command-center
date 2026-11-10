@@ -25,9 +25,11 @@ heartbeat and not an unrestricted autonomous production deployer.
 - GitHub Actions polls every **15 minutes** on the default branch, when the
   repository variable is enabled. GitHub can delay scheduled jobs; this is not
   a guaranteed continuously executing 24/7 process or a one-second interval.
-- The selector picks one approved, source-controlled scope and refuses to
-  repeat any task that already has an open/closed/merged PR on its stable head
-  branch. Add a new approved scope ID explicitly to continue to the next task.
+- The selector picks one approved, source-controlled scope and reserves its
+  dedicated Git branch **before** invoking a billed Codex agent. A failed
+  attempt is not retried every 15 minutes; the owner must inspect the error,
+  decide on a new approved task ID, and then requeue deliberately. Existing
+  open/closed/merged PRs also prevent duplicate runs.
 - The Codex action runs with repository read access and a workspace-write
   sandbox. Only approved file changes are exported as a patch artifact.
 - A **separate** job with GitHub write permissions validates and applies
