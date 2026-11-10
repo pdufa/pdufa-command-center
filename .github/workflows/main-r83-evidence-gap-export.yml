@@ -1,4 +1,4 @@
-name: MAIN R83-R88 source gaps, original PDF and SAP chronology acceptance
+name: MAIN R83-R89 source gaps, originals, historical versions and SAP chronology acceptance
 # Read-only source status and documented reviewer handoff; not clinical validation.
 on:
   push:
@@ -30,6 +30,11 @@ on:
       - new-platform/frontend/lib/focus-r88-source-chronology-triage.ts
       - new-platform/frontend/app/predictions/original-documents/chronology/page.tsx
       - new-platform/frontend/tests/focus-r88-source-chronology-triage.test.cjs
+      - new-platform/frontend/lib/focus-r89-historical-source-recovery.ts
+      - new-platform/frontend/app/predictions/source-recovery/page.tsx
+      - new-platform/frontend/app/predictions/source-recovery/OriginalHistoryRecoveryR89Client.tsx
+      - new-platform/frontend/app/predictions/source-recovery/history/route.ts
+      - new-platform/frontend/tests/focus-r89-historical-source-recovery.test.cjs
   workflow_dispatch:
 
 permissions:
@@ -67,7 +72,7 @@ jobs:
         run: |
           set -euo pipefail
           npm install --no-audit --no-fund
-          node --test tests/focus-r81-all-source-readiness.test.cjs tests/focus-r83-evidence-gap-export.test.cjs tests/focus-r84-application-verification.test.cjs tests/focus-r85-registry-phase-crosscheck.test.cjs tests/focus-r86-original-document-inventory.test.cjs tests/focus-r87-public-original-pdf-receipt.test.cjs tests/focus-r88-source-chronology-triage.test.cjs
+          node --test tests/focus-r81-all-source-readiness.test.cjs tests/focus-r83-evidence-gap-export.test.cjs tests/focus-r84-application-verification.test.cjs tests/focus-r85-registry-phase-crosscheck.test.cjs tests/focus-r86-original-document-inventory.test.cjs tests/focus-r87-public-original-pdf-receipt.test.cjs tests/focus-r88-source-chronology-triage.test.cjs tests/focus-r89-historical-source-recovery.test.cjs
           npm run typecheck
           npm run build
       - name: Report limited scientific status
@@ -75,7 +80,7 @@ jobs:
         shell: bash
         run: |
           {
-            echo "## Revisions 83-88: exact-NCT original PDF SHA256 and dated SAP document chronology worklist"
+            echo "## Revisions 83-89: exact-NCT public PDF SHA256, SAP dates and official historical source research"
             echo "29 exact FOCUS NCT rows, with all 23 provisional application cycle links and original-source absence explicitly described."
             echo "Source and schema integrity validated; source-reported application goals are not FDA verified. CSV has no scientific grade, calibrated probability or production write."
             echo "Public document and upload dates versus primary completion are not unblinding or locked-SAP proof; posted protocol/SAP metadata is not signed chronology or science; live registry field matching is not phase signoff. 0 independent clinical signoffs; 0 validated future FDA forecasts. Scientific installation remains incomplete."
