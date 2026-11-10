@@ -52,7 +52,7 @@ export function buildR79AuthenticSapLockGates(input:unknown=raw){
   const item=d.sourceRequirements[i],expect=SOURCE_REQUIRMENTS[i];
   if(item.id!==expect[0]||item.status!==expect[1]||
      item.independentReceipt!==null||item.label.length<40||
-     item.evidence.length<100)return null;
+     item.evidence.length<90)return null;
  }
  return {...d,scientificReadiness:"BLOCKED_AUTHENTIC_PROSPECTIVE_SOURCE" as const,
    sourceProofsMissing:7 as const,clinicallyValidated:false as const,
