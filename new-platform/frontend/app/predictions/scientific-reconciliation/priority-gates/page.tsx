@@ -2,6 +2,8 @@ import {R93_PRIORITY_SCIENTIFIC_GATES} from
  "../../../../lib/focus-r93-priority-scientific-gates";
 import {R94_ACACIA_COHORT_SAFETY_SOURCE} from
  "../../../../lib/focus-r94-acacia-cross-source-reconciliation";
+import {R95_EU_ACACIA_PROTOCOL_IDENTITY} from
+ "../../../../lib/focus-r95-eu-protocol-identity-gates";
 import styles from "../../evidence-gaps/EvidenceRecoveryBoardR68.module.css";
 
 export const metadata={
@@ -12,14 +14,15 @@ export const metadata={
 export default function PriorityOriginalScientificGatesR93(){
  const d=R93_PRIORITY_SCIENTIFIC_GATES;
  const acacia=R94_ACACIA_COHORT_SAFETY_SOURCE;
- if(!d||!acacia)return <main className={styles.coverage}>
+ const sourceIdentity=R95_EU_ACACIA_PROTOCOL_IDENTITY;
+ if(!d||!acacia||!sourceIdentity)return <main className={styles.coverage}>
   <h1>Priority original scientific evidence review</h1>
   <p role="alert">Original FOCUS evidence and exact scientific blockers did not
    pass locked source integrity checks. No reviewer, SAP, score or FDA
    conclusion is represented as verified.</p>
  </main>;
  return <main className={styles.coverage}>
-  <div className={styles.eyebrow}>MAIN · REVISION 93 · STAGE 4 INDEPENDENT SCIENCE EVIDENCE GATES</div>
+  <div className={styles.eyebrow}>MAIN · REVISION 95 · STAGE 4 INDEPENDENT SCIENCE EVIDENCE GATES</div>
   <h1>Priority original scientific evidence checklist</h1>
   <p className={styles.intro}>{d.notice} Evidence baseline:
    {" "}<strong>{d.datedSourceReview} UTC</strong>.</p>
@@ -68,6 +71,61 @@ export default function PriorityOriginalScientificGatesR93(){
      {" "}{d.launchPublicToplineDate} public topline disclosure. This does not
      establish the real database-lock or blind-break date.
    </p>}
+   {c.trial==="ACACIA_HCM"&&
+    <details className={styles.coverageDetails} open>
+     <summary>Revision 95: correct original EU protocol identity, amendment records and unresolved participant-count conflict</summary>
+     <p><b>Exact study identity:</b> {sourceIdentity.exactNct}
+      {" · "} EU CTIS {sourceIdentity.euTrialNumber}
+      {" · "} Sponsor protocol <strong>{sourceIdentity.sponsorProtocolCode}</strong>
+      {" · "} aficamten versus {sourceIdentity.correctComparator.toLowerCase()}.
+      The EU record lists {sourceIdentity.CTISPublicDocumentEntries} public
+      document <b>entries</b>, including
+      {" "}{sourceIdentity.ctisAmendment4ProtocolEntries} Amendment 4 protocol
+      listings and {sourceIdentity.ctisAmendment3SynopsisEntries} Amendment 3
+      synopsis listing. Their original PDF bytes have <b>not</b> been retrieved.</p>
+     <p><a href={sourceIdentity.officialEUHistorySource}
+        target="_blank" rel="noopener noreferrer">
+         Official EU Clinical Trials Information System study
+      </a>
+      {" · "}
+      <a href={sourceIdentity.publicDocumentIndexSource}
+       target="_blank" rel="noopener noreferrer">
+       Public CTIS document names and amendment submission chronology
+      </a>
+     </p>
+     <p>The CTIS document index reports {sourceIdentity.plannedInCTIS}
+      {" "}planned participants (
+      {sourceIdentity.plannedEUMemberStates} in listed EU countries and
+      {" "}{sourceIdentity.plannedRestOfWorld} elsewhere). This was a
+      <b> planning target</b>, not the 517 later randomized participants.
+      CTIS SM-3 submitted {sourceIdentity.ctisSubstantialModification3Submitted}
+      {" "}and decided {sourceIdentity.ctisSubstantialModification3Decision}.
+      CTIS SM-4 submitted {sourceIdentity.ctisSubstantialModification4Submitted}
+      {" "}and decided {sourceIdentity.ctisSubstantialModification4Decision}.
+      These EU regulatory records cannot substitute for source-controlled
+      final SAP and first-unblinded-access audit.</p>
+     <p><b>Wrong-trial safeguard:</b> another public aficamten protocol,
+       <code> {sourceIdentity.wrongProtocolCodeExcluded}</code>, concerns
+       obstructive HCM versus metoprolol. It is <b>not</b> ACACIA-HCM.
+       {" "}<a href={sourceIdentity.confusingOtherTrialProtocolSource}
+          target="_blank" rel="noopener noreferrer">
+        View distinct journal protocol source (not usable for ACACIA)
+       </a>.
+     </p>
+     <p><b>Participant accounting correction:</b> public sponsor and
+      publication descriptions are not yet reconciled. The later August
+      sponsor release reports <b>517 randomized and treated</b>, whereas
+      an earlier May sponsor release reports <b>516 randomized and treated</b>
+      and a secondary publication describes 517 randomized and 516 treated.
+      The one-person treatment explanation remains <b>unproven</b>.</p>
+     <ul>{sourceIdentity.sourcePublishedCohortClaims.map(v=>
+      <li key={v.source}><b>{v.source}:</b> {v.claim}</li>)}</ul>
+     <p><a href={sourceIdentity.laterSponsorCohortSource}
+       target="_blank" rel="noopener noreferrer">
+       Later sponsor source reporting 517 randomized and treated
+      </a>. Original CONSORT/first-dose listings, original signed SAP and
+       blind-break logs: NOT VERIFIED. FDA forecast: ABSTAIN.</p>
+    </details>}
    {c.trial==="ACACIA_HCM"&&<details className={styles.coverageDetails}>
     <summary>Revision 94: cross-source cohort and heart-failure case-definition audit</summary>
     <p>New public-source comparison checked on {acacia.originalSourceDateUtc} UTC.
@@ -75,8 +133,10 @@ export default function PriorityOriginalScientificGatesR93(){
      {" "}({acacia.aficamtenRandomized} aficamten,
      {" "}{acacia.placeboRandomized} placebo). A later published clinical appraisal
      describes <b>{acacia.secondaryPaperReportedTreated} treated</b>.
-     The one-person difference is a plausible randomized-versus-treated
-     explanation, <b>not yet confirmed by original CONSORT or patient listings</b>.
+     Earlier research suggested randomized-versus-treated cohorts might
+     explain the difference, but the newer sponsor 517 randomized-and-treated
+     statement conflicts with that explanation. The counts are
+     <b> not reconciled without original CONSORT and first-dose listings</b>.
     </p>
     <p>For heart-failure serious adverse events, the earlier case figures
      retained for review were
