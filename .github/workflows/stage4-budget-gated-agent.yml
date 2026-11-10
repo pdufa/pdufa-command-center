@@ -15,4 +15,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate development queue and budget gate
-        run: python scripts/stage4_budget_gate.py
+        run: |
+          python -m unittest discover -s tests -p 'test_stage4_budget_gate.py' -v
+          python scripts/stage4_budget_gate.py
