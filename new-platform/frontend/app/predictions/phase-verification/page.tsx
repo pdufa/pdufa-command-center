@@ -34,6 +34,9 @@ export default function PhaseVerificationR85Page(){
    A mismatch is a <strong>review request</strong>, never an automatic
    clinical pass or fail. API errors do not silently count as matches.
    Full SAP authentication and qualified independent phase review remain outstanding.
+   {" "}<a href="/predictions/original-documents">
+     Open Step 2 original document and posted-result inventory
+   </a>.
   </p>
   <div className={styles.coverageGrid}>
    {manifest.rows.map(x=><article className={styles.coverageGroup} key={x.nct}>
