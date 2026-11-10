@@ -7,6 +7,7 @@ import {FOCUS_R69_REGISTRY_PUBLICATION_LEADS} from "../../../lib/focus-r69-origi
 import {FOCUS_R70_ARTICLE_SOURCE} from "../../../lib/focus-r70-pubmed-article-source";
 import {FOCUS_R70_PUBLICATION_TRIAGE} from "../../../lib/focus-r70-publication-abstract-triage";
 import OriginalPublicationLeadsR69 from "./OriginalPublicationLeadsR69";
+import FocusSourceReadinessR81 from "./FocusSourceReadinessR81";
 import styles from "./EvidenceRecoveryBoardR68.module.css";
 
 /** Source availability queue only: not a clinical grade, time-priority
@@ -97,6 +98,7 @@ export default function EvidenceRecoveryBoardR68(){
       independently adjudicated. Open a case to inspect the article titles,
       indexed study types and outstanding review flags.
     </p>}
+    <FocusSourceReadinessR81 />
     <div className={styles.controls}>
       <label>Search ticker, NCT or application
         <input type="search" aria-label="Search source recovery trials"
