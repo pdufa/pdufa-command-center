@@ -66,3 +66,9 @@
 
 .companyJump{display:inline-block;background:#e1f1e5;color:#115f3b;border:1px solid #b9d2c1;border-radius:7px;padding:7px 9px;font-size:11px;text-align:left;margin:2px 0 8px;cursor:pointer}
 .companyJump:hover{background:#cdebd7}
+
+.researchForecast{margin:13px 0;padding:11px 13px;border:1px solid #ddc38a;
+  border-radius:9px;background:#fff9eb;color:#4f411e}
+.researchForecast p{font-size:12px;line-height:1.6;margin:7px 0}
+.researchForecast summary{cursor:pointer;font-weight:850;color:#6b4c19}
+.researchForecast a{color:#095a46;text-decoration:underline}

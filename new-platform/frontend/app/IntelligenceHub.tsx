@@ -7,7 +7,14 @@ import styles from "./IntelligenceHub.module.css";
 
 type View="cal"|"company"|"news";
 type Layout="single"|"dual"|"all";
-type CalendarEvent={id:string;ticker:string;company:string;date:string;drug:string;marketCapUsd:number;ncts:string[];sourceUrl:string|null};
+type ResearchPrediction={cycleId:string;call:"APPROVAL_LEAN"|"CRL_LEAN"|"ABSTAIN"|"ALREADY_APPROVED";
+  label:string;level:number;asOf:string;independentlyValidated:false;calibratedProbability:null;
+  clinicalRationale:string;benefitRiskRationale:string;fdaCmcRationale:string;
+  evidenceGap:string;sourceUrl:string;evidenceUrl:string;};
+type CalendarEvent={id:string;ticker:string;company:string;date:string;drug:string;marketCapUsd:number;
+  ncts:string[];sourceUrl:string|null;cycleId?:string|null;prediction?:ResearchPrediction|null;dateStatus?:string};
+type UndatedCycle={id:string;ticker:string;company:string;marketCapUsd:number;ncts:string[];
+  prediction:ResearchPrediction;date:null;dateStatus:string};
 type NewsEntry={id:string;title:string;publishedAt:string|null;sourceUrl:string;sourceName:string;
   kind:"FDA_ARTICLE"|"APPLICATION_SOURCE_RECORD";ticker:string|null;cycleId:string|null;drug:string|null;
   ncts:string[];verification:"OFFICIAL_FDA_PUBLICATION"|"SOURCE_LINK_RECORDED";
@@ -21,14 +28,18 @@ const date=(s:string|null|undefined)=>s?new Date(s.length===10?s+"T12:00:00Z":s)
 const cap=(n:number)=>n>=1e9?"$"+(n/1e9).toFixed(2)+"B":"$"+Math.round(n/1e6)+"M";
 const validTicker=(s:string)=>/^[A-Z0-9.-]{1,10}$/.test(s);
 const kinds={cal:"CAL",company:"COMPANY",news:"NEWS"} as const;
-function CompanyDetails({ticker,calendar,cycleId,onCycle,onNews,onCal}:{ticker:string;calendar:CalendarEvent[];cycleId:string;
+function CompanyDetails({ticker,calendar,undated,cycleId,onCycle,onNews,onCal}:{ticker:string;
+  calendar:CalendarEvent[];undated:UndatedCycle[];cycleId:string;
   onCycle:(id:string)=>void;onNews:()=>void;onCal:()=>void}){
   const events=calendar.filter(e=>e.ticker===ticker).sort((a,b)=>a.date.localeCompare(b.date));
+  const pending=undated.filter(e=>e.ticker===ticker);
   const cycles=APPLICATION_CYCLES.filter(c=>c.ticker===ticker);
-  const profile=events[0];
+  const profile=events[0]||pending[0];
   const current=cycles.find(c=>c.id===cycleId)||cycles[0];
+  const currentResearch=events.find(e=>e.cycleId===current?.id)?.prediction ||
+    pending.find(e=>e.id===current?.id)?.prediction || null;
   const now=new Date().toISOString().slice(0,10);
-  const next=events.find(e=>e.date>=now);
+  const next=events.find(e=>e.date>=now && e.prediction?.call!=="ALREADY_APPROVED");
   return <div className={styles.companyDetails}>
     {!ticker?<p>Select a ticker from CAL to view the company and all recorded application cycles.</p>:<>
       <h2>{ticker} <span className={styles.companyName}>{profile?.company||ticker}</span></h2>
@@ -53,6 +64,23 @@ function CompanyDetails({ticker,calendar,cycleId,onCycle,onNews,onCal}:{ticker:s
           {" · "}<Link href={"/analyze-now?nct="+nct}>Saved revision history</Link>
         </span>)}</p>
         <p><strong>Scientific question:</strong> {current.criticalQuestion}</p>
+        {currentResearch?<div className={styles.researchForecast}>
+          <p><strong>Level {currentResearch.level} research prediction:</strong>{" "}
+            <strong>{currentResearch.label}</strong> · frozen {date(currentResearch.asOf)}</p>
+          <p><strong>Preliminary, not independently validated.</strong> No calibrated FDA
+            approval probability or clinical review signoff is available.</p>
+          <details><summary>Evidence, safety, regulatory risks and sources</summary>
+            <p><strong>Clinical:</strong> {currentResearch.clinicalRationale}</p>
+            <p><strong>Benefit-risk:</strong> {currentResearch.benefitRiskRationale}</p>
+            <p><strong>FDA / CMC:</strong> {currentResearch.fdaCmcRationale}</p>
+            <p><strong>Missing:</strong> {currentResearch.evidenceGap}</p>
+            <p><a href={currentResearch.evidenceUrl} target="_blank" rel="noopener noreferrer">
+              Clinical source</a>{" · "}
+              <a href={currentResearch.sourceUrl} target="_blank" rel="noopener noreferrer">
+                Application source</a></p>
+          </details>
+        </div>:<p className={styles.caveat}>No matched provisional research call is available
+          for this exact FDA application cycle.</p>}
         <p><strong>Source dated:</strong> {date(current.sourceDate)} · <a href={current.sourceUrl} target="_blank" rel="noopener noreferrer">Original sponsor / SEC source</a></p>
         <p className={styles.caveat}>Cycle status is a source-linked research record, not FDA adjudication. No clinical outcome or approval probability is inferred.</p>
       </section>}
@@ -60,8 +88,12 @@ function CompanyDetails({ticker,calendar,cycleId,onCycle,onNews,onCal}:{ticker:s
         <h3>Published PDUFA timeline ({events.length})</h3>
         {events.length===0?<p>No published PDUFA dates for this issuer in the $300M–$10B feed.</p>:
           events.map(e=><article className={styles.dateRow} key={e.id}>
-            <strong>{date(e.date)}</strong><span>{e.drug||"Drug not recorded"}</span>
-            <small>{e.id===next?.id?"Next recorded target":e.date<now?"Past target — outcome unverified":"Additional future target"}</small>
+            <strong>{date(e.date)}</strong><span>{e.drug||"Drug not recorded"}
+              {e.prediction&&<small> · L3 provisional: {e.prediction.label}</small>}</span>
+            <small>{e.prediction?.call==="ALREADY_APPROVED"?
+              "Already approved · not a pending FDA decision":
+              e.id===next?.id?"Next recorded target":
+              e.date<now?"Past target — outcome unverified":"Additional future target"}</small>
           </article>)}
       </section>
       <div className={styles.actions}>
@@ -137,6 +169,7 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
   const [focusDate,setFocusDate]=useState("");
   const [focusKey,setFocusKey]=useState(0);
   const [calendar,setCalendar]=useState<CalendarEvent[]>([]);
+  const [undated,setUndated]=useState<UndatedCycle[]>([]);
   const [news,setNews]=useState<NewsPayload|null>(null);
   const [automation,setAutomation]=useState<AutomationStatus|null>(null);
   const [newsFilter,setNewsFilter]=useState("related");
@@ -155,7 +188,10 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
       if(results[0].status==="fulfilled"&&Array.isArray(results[0].value.events)){
         const records=results[0].value.events as CalendarEvent[];
         setCalendar(records);
-        setTicker(prev=>prev||records[0]?.ticker||"");
+        const pending=Array.isArray(results[0].value.unscheduled)?
+          results[0].value.unscheduled as UndatedCycle[]:[];
+        setUndated(pending);
+        setTicker(prev=>prev||records[0]?.ticker||pending[0]?.ticker||"");
       }else setError("Published CAL data unavailable; no dates invented.");
       if(results[1].status==="fulfilled")setNews(results[1].value as NewsPayload);
       else setError(prev=>prev+" NEWS feed unavailable.");
@@ -164,18 +200,22 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
     return ()=>controller.abort();
   },[]);
 
-  const tickers=useMemo(()=>[...new Set(calendar.map(e=>e.ticker))].sort(),[calendar]);
+  const tickers=useMemo(()=>[...new Set([...calendar.map(e=>e.ticker),
+    ...undated.map(e=>e.ticker)])].sort(),[calendar,undated]);
   const selectedCycles=APPLICATION_CYCLES.filter(c=>c.ticker===ticker);
   const resolvedCycle=selectedCycles.find(c=>c.id===cycleId)?.id || selectedCycles[0]?.id||"";
   const onCompany=(nextTicker:string,eventId?:string)=>{
     if(!validTicker(nextTicker))return;
     setTicker(nextTicker);
     const event=calendar.find(e=>e.id===eventId);
+    const pending=undated.find(c=>c.id===eventId);
     if (event) {setFocusDate(event.date);setFocusKey(key=>key+1);}
     const possible=APPLICATION_CYCLES.filter(c=>c.ticker===nextTicker&&event &&
       c.ncts.some(n=>event.ncts.includes(n))&&
       (!event.drug||c.drug.toLowerCase()===event.drug.toLowerCase()));
-    setCycleId(possible.length===1?possible[0].id:"");
+    const matchedId=event?.cycleId || pending?.prediction.cycleId ||
+      (possible.length===1?possible[0].id:"");
+    setCycleId(matchedId);
     setNewsFilter("related");
     setView("company");
     if(!popup.current?.open)popup.current?.showModal();
@@ -200,7 +240,7 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
   const visible=layout==="all"?panelOrder:layout==="dual"?panelOrder.slice(0,2):[view];
   const panel=(name:View)=>name==="cal"?<CalCalendar embedded onSelectCompany={onCompany}
       focusDate={focusDate} focusKey={focusKey}/>:
-    name==="company"?<CompanyDetails ticker={ticker} calendar={calendar} cycleId={resolvedCycle}
+    name==="company"?<CompanyDetails ticker={ticker} calendar={calendar} undated={undated} cycleId={resolvedCycle}
       onCycle={setCycleId} onNews={()=>{setView("news");setNewsFilter("related");}} onCal={goCal}/>:
     <NewsDetails payload={news} ticker={ticker} cycleId={resolvedCycle}
       newsFilter={newsFilter} setNewsFilter={setNewsFilter} automation={automation}
@@ -243,7 +283,7 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
       onClick={e=>{if(e.target===e.currentTarget)e.currentTarget.close();}}>
       <div className={styles.modalHead}><strong>COMPANY · {ticker}</strong>
         <button type="button" onClick={()=>popup.current?.close()} aria-label="Close company popup">×</button></div>
-      <CompanyDetails ticker={ticker} calendar={calendar} cycleId={resolvedCycle}
+      <CompanyDetails ticker={ticker} calendar={calendar} undated={undated} cycleId={resolvedCycle}
         onCycle={setCycleId} onNews={()=>{popup.current?.close();setView("news");setNewsFilter("related");}}
         onCal={()=>{popup.current?.close();goCal();}}/>
     </dialog>
