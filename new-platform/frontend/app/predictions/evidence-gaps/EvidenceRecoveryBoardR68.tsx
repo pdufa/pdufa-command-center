@@ -4,6 +4,7 @@ import {useMemo,useState} from "react";
 import Link from "next/link";
 import {FOCUS_R68_EVIDENCE_RECOVERY} from "../../../lib/focus-r68-evidence-recovery";
 import {FOCUS_R69_REGISTRY_PUBLICATION_LEADS} from "../../../lib/focus-r69-original-publication-leads";
+import {FOCUS_R70_PUBLICATION_TRIAGE} from "../../../lib/focus-r70-publication-abstract-triage";
 import OriginalPublicationLeadsR69 from "./OriginalPublicationLeadsR69";
 import styles from "./EvidenceRecoveryBoardR68.module.css";
 
@@ -64,6 +65,25 @@ export default function EvidenceRecoveryBoardR68(){
       </strong> of the 17 NCTs without posted primary tables. They are
       <strong> unverified references, not accepted exact-NCT trial results</strong>.
       The remaining 10 have no PubMed reference in the retained registry copy.
+    </p>}
+    {FOCUS_R70_PUBLICATION_TRIAGE&&<p className={styles.notice}
+      aria-label="R70 publication abstract role counts">
+      Phase 3 primary result candidates from article abstracts:
+      <strong> {FOCUS_R70_PUBLICATION_TRIAGE.abstractPrimaryReportCandidates}</strong>
+      {" "}publications for{" "}
+      <strong>{FOCUS_R70_PUBLICATION_TRIAGE.uniqueTrialsWithPrimaryReportCandidates}</strong>
+      {" "}exact NCTs. Other roles:{" "}
+      <strong>{FOCUS_R70_PUBLICATION_TRIAGE.additionalSameTrialAnalyses}</strong>
+      {" "}same-trial secondary analyses,{" "}
+      <strong>{FOCUS_R70_PUBLICATION_TRIAGE.protocolPapers}</strong>
+      {" "}protocol,{" "}
+      <strong>{FOCUS_R70_PUBLICATION_TRIAGE.phase2NotPhase3}</strong>
+      {" "}Phase 2 component,{" "}
+      <strong>{FOCUS_R70_PUBLICATION_TRIAGE.earlierPhaseOtherCohort}</strong>
+      {" "}earlier-phase cohort and{" "}
+      <strong>{FOCUS_R70_PUBLICATION_TRIAGE.backgroundNotPivotal}</strong>
+      {" "}background paper. None has passed independent full-text
+      statistical adjudication; no scientific grades or FDA probabilities.
     </p>}
     <div className={styles.controls}>
       <label>Search ticker, NCT or application
