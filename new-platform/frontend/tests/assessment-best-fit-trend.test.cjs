@@ -2,12 +2,12 @@ const test=require("node:test");
 const assert=require("node:assert/strict");
 const fs=require("node:fs");
 const ts=require("typescript");
-require.extensions[".ts"]=(module,filename)=>module._compile(
+require.extensions[".tsx"]=(module,filename)=>module._compile(
   ts.transpileModule(fs.readFileSync(filename,"utf8"),{
     compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,esModuleInterop:true}
   }).outputText,filename
 );
-const {bestFitTrend}=require("../lib/assessment-best-fit-trend.ts");
+const {bestFitTrend}=require("../lib/assessment-best-fit-trend.tsx");
 
 test("least-squares regression is a straight best fit, not connected monthly points",()=>{
   const fit=bestFitTrend([{x:2,y:5},{x:0,y:1},{x:1,y:3}]);
