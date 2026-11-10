@@ -10,7 +10,7 @@ type Cohort = {
 };
 type LevelRun = {
   runId:string;cohortId:string;assessmentLevel:number;assessmentType:string;
-  runDate:string;assessmentBlind:boolean;priorOutcomeExposure:boolean;
+  runDate:string;methodVersion:string;assessmentBlind:boolean;priorOutcomeExposure:boolean;
   validatedBlindCases:number;validatedBlindAccuracy:null;
   comparisonType:string;predictionFreezeUrl:string;comparisonSourceUrl:string;
   caseCalls:{caseId:string;call:string}[];
@@ -55,7 +55,7 @@ export default function HistoricalMonthlyLevelTrend(){
     const cohort=months.find(c=>c.cohortId===run.cohortId);
     if(!cohort||run.assessmentBlind!==false||run.priorOutcomeExposure!==true||
       run.validatedBlindCases!==0||run.validatedBlindAccuracy!==null||
-      run.assessmentLevel<1||run.assessmentLevel>20||
+      run.assessmentLevel<1||run.assessmentLevel>20||!run.methodVersion||
       run.comparisonType!=="RETROSPECTIVE_DIRECTIONAL_AGREEMENT_ONLY"||
       run.caseCalls.length!==cohort.benchmarkCaseIds.length||
       !run.predictionFreezeUrl.startsWith("https://")||
@@ -217,8 +217,8 @@ export default function HistoricalMonthlyLevelTrend(){
     </details>
     <p style={{fontSize:12,lineHeight:1.6,color:"#906426",fontWeight:750,margin:"12px 0 0"}}>
       INTEGRITY: All five Level 3 results were reconstructed after FDA outcomes became public.
-      This chart cannot be used as calibrated prediction accuracy, a verified blind test,
-      or a live FOCUS ranking signal.
+      They are never added to prospective accuracy or calibration. This chart cannot be used
+      as validated prediction accuracy, a verified blind test, or a live FOCUS ranking signal.
     </p>
   </section>;
 }
