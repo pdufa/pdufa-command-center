@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-11-10T04:14:52.388Z",
+  "source": "FOCUS Google Sheet: cap-screened $300M-$10B trial population",
+  "sourceSheetId": "1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU",
+  "events": [
+    {
+      "ticker": "CYTK",
+      "company": "Cytokinetics",
+      "date": "2026-11-14",
+      "marketCapUsd": 7479196915,
+      "id": "focus-cytk-nct05767346",
+      "ncts": [
+        "NCT05767346"
+      ],
+      "drug": "MYQORZO (aficamten)",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm"
+    },
+    {
+      "ticker": "CAPR",
+      "company": "Capricor Therapeutics, Inc.",
+      "date": "2026-11-22",
+      "marketCapUsd": 572670000,
+      "id": "focus-capr-nct05126758",
+      "ncts": [
+        "NCT05126758"
+      ],
+      "drug": "Deramiocel",
+      "sourceUrl": "https://www.capricor.com/investors/sec-filings/all-sec-filings/content/0001104659-26-100071/capr-20260824xex99d1.htm"
+    },
+    {
+      "ticker": "SVRA",
+      "company": "Savara Inc.",
+      "date": "2026-11-22",
+      "marketCapUsd": 992371872,
+      "id": "focus-svra-nct04544293",
+      "ncts": [
+        "NCT04544293"
+      ],
+      "drug": "Molgramostim inhalation solution",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526344585/svra-20260630.htm"
+    },
+    {
+      "ticker": "COGT",
+      "company": "Cogent Biosciences, Inc.",
+      "date": "2026-11-30",
+      "marketCapUsd": 5491198055,
+      "id": "focus-cogt-nct05208047",
+      "ncts": [
+        "NCT05208047"
+      ],
+      "drug": "Bezuclastinib + sunitinib",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526449926/cogt-ex99_1.htm"
+    },
+    {
+      "ticker": "CORT",
+      "company": "Corcept Therapeutics",
+      "date": "2026-12-17",
+      "marketCapUsd": 7964175042,
+      "id": "focus-cort-nct03697109",
+      "ncts": [
+        "NCT03697109",
+        "NCT04308590"
+      ],
+      "drug": "Relacorilant",
+      "sourceUrl": "https://ir.corcept.com/news-releases/news-release-details/corcept-resubmits-new-drug-application-relacorilant-treatment"
+    },
+    {
+      "ticker": "MLYS",
+      "company": "Mineralys Therapeutics, Inc.",
+      "date": "2026-12-22",
+      "marketCapUsd": 1357580297,
+      "id": "focus-mlys-nct06153693",
+      "ncts": [
+        "NCT06153693"
+      ],
+      "drug": "Lorundrostat",
+      "sourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/127/mineralys-therapeutics-reports-third-quarter-2026-financial"
+    },
+    {
+      "ticker": "PRAX",
+      "company": "Praxis Precision Medicines, Inc.",
+      "date": "2027-01-29",
+      "marketCapUsd": 7751147069,
+      "id": "focus-prax-nct06087276",
+      "ncts": [
+        "NCT06087276"
+      ],
+      "drug": "Ulixacaltamide",
+      "sourceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-provides-corporate-update-and-20"
+    },
+    {
+      "ticker": "BLTE",
+      "company": "Belite Bio, Inc.",
+      "date": "2027-02-12",
+      "marketCapUsd": 6209561883,
+      "id": "focus-blte-nct05244304",
+      "ncts": [
+        "NCT05244304"
+      ],
+      "drug": "Tinlarebant",
+      "sourceUrl": "https://belitebio.gcs-web.com/news-releases/news-release-details/belite-bio-reports-unaudited-second-quarter-2026-financial"
+    },
+    {
+      "ticker": "APMD",
+      "company": "Apnimed",
+      "date": "2027-02-28",
+      "marketCapUsd": 628624763,
+      "id": "focus-apmd-nct05811247",
+      "ncts": [
+        "NCT05811247",
+        "NCT05813275"
+      ],
+      "drug": "AD109 (aroxybutynin + atomoxetine)",
+      "sourceUrl": "https://ir.apnimed.com/news-releases/news-release-details/apnimed-reports-second-quarter-2026-financial-results-and"
+    },
+    {
+      "ticker": "SRPT",
+      "company": "Sarepta Therapeutics, Inc.",
+      "date": "2027-02-28",
+      "marketCapUsd": 1882273514,
+      "id": "focus-srpt-nct02500381",
+      "ncts": [
+        "NCT02500381"
+      ],
+      "drug": "",
+      "sourceUrl": "https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-announces-fda-acceptance-sndas-amondys-45r-and-vyondys"
+    },
+    {
+      "ticker": "PHVS",
+      "company": "Pharvaris N.V.",
+      "date": "2027-04-23",
+      "marketCapUsd": 2420000000,
+      "id": "focus-phvs-nct06343779",
+      "ncts": [
+        "NCT06343779"
+      ],
+      "drug": "Deucrictibant immediate-release",
+      "sourceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-fda-acceptance-new-drug-application"
+    },
+    {
+      "ticker": "IMNM",
+      "company": "Immunome, Inc.",
+      "date": "2027-04-28",
+      "marketCapUsd": 2207838300,
+      "id": "focus-imnm-nct04871282",
+      "ncts": [
+        "NCT04871282"
+      ],
+      "drug": "Varegacestat",
+      "sourceUrl": "https://investors.immunome.com/immunome-announces-u-s-fda-acceptance-of-new-drug-application-for-varegacestat-for-the-treatment-of-adults-with-desmoid-tumors/"
+    },
+    {
+      "ticker": "AXSM",
+      "company": "Axsome Therapeutics, Inc.",
+      "date": "2027-05-01",
+      "marketCapUsd": 6962660014,
+      "id": "focus-axsm-nct05059223",
+      "ncts": [
+        "NCT05059223",
+        "NCT05113745"
+      ],
+      "drug": "AXS-12 (reboxetine)",
+      "sourceUrl": "https://www.axsome.com/news/axsome-therapeutics-announces-fda-acceptance-of-new-drug-app-13191"
+    },
+    {
+      "ticker": "ZBIO",
+      "company": "Zenas BioPharma, Inc.",
+      "date": "2027-05-27",
+      "marketCapUsd": 1930000000,
+      "id": "focus-zbio-nct05662241",
+      "ncts": [
+        "NCT05662241"
+      ],
+      "drug": "Obexelimab",
+      "sourceUrl": "https://zenasbio.gcs-web.com/news-releases/news-release-details/zenas-biopharma-reports-third-quarter-2026-financial-results-and"
+    },
+    {
+      "ticker": "URGN",
+      "company": "UroGen Pharma Ltd.",
+      "date": "2027-06-14",
+      "marketCapUsd": 1213933619,
+      "id": "focus-urgn-nct06331299",
+      "ncts": [
+        "NCT06331299"
+      ],
+      "drug": "UGN-103 (mitomycin)",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1668243/000143774926034769/ex_1036873.htm"
+    }
+  ]
+}
