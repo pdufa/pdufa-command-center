@@ -76,7 +76,7 @@ test("Manual or injected source falsification never becomes a published approval
   x=>x.rows.push(x.rows[0]),
   x=>x.rows.pop(),
   x=>x.rows[0][1]="99999999",
-  x=>x.rows[3][2]="PRIMARY_PHASE3_ABSTRACT",
+  x=>x.rows[2][2]="PRIMARY_PHASE3_ABSTRACT",
   x=>x.rows[1][2]="PRIMARY_PHASE3_ABSTRACT",
   x=>x.rows[0][0]="NCT99999999",
   x=>x.rows[0][3]="",
@@ -103,7 +103,7 @@ test("The source recovery page includes R70 article-level roles but not FDA fore
  const css=read("app/predictions/evidence-gaps/PublicationEvidenceRoleR70.module.css");
  assert.match(board,/FOCUS_R70_PUBLICATION_TRIAGE/);
  assert.match(old,/PublicationEvidenceRoleR70/);
- assert.match(panel,/title\/abstract/);
+ assert.match(panel,/title and abstract/);
  assert.match(panel,/Full original methods/);
  assert.match(panel,/ABSTAIN/);
  assert.match(panel,/Signed grades: 0|Independently signed grades: 0/);
