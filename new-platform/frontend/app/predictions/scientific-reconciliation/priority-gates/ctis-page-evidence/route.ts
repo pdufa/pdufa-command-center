@@ -125,6 +125,11 @@ export async function GET(req:Request):Promise<Response>{
   detectedDirectKidsMatchingPageDictionaries:pageTreeDirectKidsMatchingPageDictionaries,
   detectedDirectKidsMatchingNestedPageNodes:pageTreeDirectKidsMatchingNestedPageNodes,
   provisionalDirectLeafKidsInArrayOrder:directLeafPageOrder,
+  provisionalDirectLeafOrderToObjectScanIndex:directLeafPageOrder.map((ref,index)=>({
+   provisionalPageTreePosition:index+1,
+   pageObject:ref,
+   pdfPageDictionaryObjectScanIndex:pages.find(p=>p.pageObject===ref)?.pdfPageDictionaryIndex??null
+  })),
   provisionalDirectLeafKidsOrderNotScientificallyCertified:true,
   verifiedPageTreeTraversalPerformed:false,
   pagesWithTextFragments:pages.filter(p=>p.textFragments>0).length,
