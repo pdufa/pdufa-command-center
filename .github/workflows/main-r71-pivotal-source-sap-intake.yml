@@ -1,0 +1,130 @@
+name: MAIN R71 five original pivotal journal source and SAP intake
+
+# Draft research branch ONLY. Statistical claims in journal abstracts are
+# reported claims, not independently reproduced estimand/SAP conformity,
+# clinical effectiveness ratings, FDA application decisions or probabilities.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r71-pivotal-source-sap-intake.yml
+      - new-platform/backend/scripts/verify_r71_original_publication_source_intake.py
+      - new-platform/frontend/data/focus-r71-five-main-publication-source-review.json
+      - new-platform/frontend/lib/focus-r71-pivotal-evidence-intake.ts
+      - new-platform/frontend/app/predictions/evidence-gaps/ScientificOriginalsIntakeR71.tsx
+      - new-platform/frontend/app/predictions/evidence-gaps/ScientificOriginalsIntakeR71.module.css
+      - new-platform/frontend/app/predictions/evidence-gaps/OriginalPublicationLeadsR69.tsx
+      - new-platform/frontend/tests/focus-r71-pivotal-evidence-intake.test.cjs
+      - new-platform/frontend/scripts/verify-r71-five-source-review-browser.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r71-five-original-journal-sap-source-intake
+  cancel-in-progress: false
+
+jobs:
+  exact-original-five-trial-intake-and-responsive-acceptance:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Preserve 29 exact FOCUS NCT and 23 application-cycle memberships
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Restore pinned original 11 PubMed NLM article XML metadata research
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42729546458
+          name: main-r70-original-11-pubmed-article-xml-42729546458
+          path: ${{ runner.temp }}/r71/original
+      - name: Reject altered PMID, wrong NCT, DOI, publication date, false SAP or scientific signatures
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/verify_r71_original_publication_source_intake.py \
+            --original-nlm "$RUNNER_TEMP/r71/original/FOCUS_11_PUBMED_ARTICLE_METADATA_REVIEW_R70.json" \
+            --frontend new-platform/frontend/data/focus-r71-five-main-publication-source-review.json
+      - name: Test five-source citation and 40 unscored scientific method gates and preserve prior source research
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r71-pivotal-evidence-intake.test.cjs \
+            tests/focus-r70-publication-abstract-triage.test.cjs \
+            tests/focus-r70-original-pubmed-article-source.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Install real Chromium for local desktop and iPhone-sized display checks
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify five source cases and exact original PDF/SAP readiness in real browser
+        working-directory: new-platform/frontend
+        shell: bash
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/r71-browser
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECEIPT_DIR"
+          npm run start -- --port 3157 > "$RECEIPT_DIR/next.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 50); do
+            if curl -fsS --max-time 5 http://127.0.0.1:3157/predictions/evidence-gaps -o /dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$ready" != 1 ]]; then
+            echo "::error::Local scientific evidence preview did not become healthy"
+            tail -n 80 "$RECEIPT_DIR/next.log"
+            exit 1
+          fi
+          node scripts/verify-r71-five-source-review-browser.cjs
+          cat "$RECEIPT_DIR/R71_SOURCE_REVIEW_BROWSER.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Archive source-only browser receipt and responsive screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r71-five-source-method-browser-${{ github.run_id }}
+          path: ${{ runner.temp }}/r71-browser/
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Explain scientific source limitations
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo "## MAIN R71 five candidate publication source-and-method intake"
+            echo
+            echo "Five exact NCT primary-result publication candidates cross-linked by immutable NLM DOI, PMID, and electronic publication date when available. Five trials times eight methodology source-review requirements = 40 unsigned domain positions."
+            echo
+            echo "For Launch-HTN, the publicly accessible full JAMA article and published supplementary list contain protocol revisions, imputation details, multipicity hypotheses and serious safety concerns requiring independent study-specific review. The publisher lists INDIGO and ACACIA protocols and appendices; these were not adjudicated. Two Lancet papers have public abstracts, but no independently checked complete protocol/SAP reports in this revision."
+            echo
+            echo "**Zero qualified, independent, signed pivotal statistical reviews or original pre-unblinding SAP versions verified; 0/23 validated FDA forecasts; approval and CRL ABSTAIN.** Historical outcomes and production unchanged."
+          } >> "$GITHUB_STEP_SUMMARY"
