@@ -1,7 +1,7 @@
 {
-  "schemaVersion": 1,
-  "dataset": "HISTORICAL_MONTHLY_LEVEL_COMPARISONS_2026_V1",
-  "chartPurpose": "Historical Level 3 research retrospectives only, structured to append a new level's case-by-case calls for the same exact fixed benchmark cases without overwriting earlier levels.",
+  "schemaVersion": 2,
+  "dataset": "HISTORICAL_MONTHLY_LEVEL_COMPARISONS_2026_V2",
+  "chartPurpose": "Ten month source-linked Level3-style retrospective research series, with fixed case ID/benchmark denominators for each future Level 4–20 rerun. Cumulative trend and summary are selected-level dependent; never a true blind test.",
   "methodGuardrails": {
     "maxResearchLevel": 20,
     "notLiveAccuracy": true,
@@ -10,9 +10,329 @@
     "originalOutcomesWereKnownBeforeRetrospectiveCalls": true,
     "doNotAggregateIntoLiveForecasts": true,
     "cohortsNotPopulationComparable": true,
-    "requiredRepeat": "For each cohortId, preserve benchmarkCaseIds and the originally observed FDA decisions; add new runId with assessmentLevel, method version, assessment date and a case call for every locked ID. Explicitly keep any nonblind repeat classified as nonblind."
+    "requiredRepeat": "Retain each cohort’s exact benchmark IDs and FDA decision types. Append only case-level calls for a new recorded assessment level with the methodology version, outcome-exposure status, timestamps and traceable predecision evidence. Different levels can have incomplete month coverage. Never fabricate missing results; genuine blind performance tracked separately.",
+    "historicalOutcomeLeakageKnown": true,
+    "doNotPromoteHistoricalToLiveAccuracy": true,
+    "predecisionSourceVersionsNotAllAuthenticated": true
   },
   "cohorts": [
+    {
+      "cohortId": "historical-2026-01-v1",
+      "yearMonth": "2026-01",
+      "monthLabel": "January",
+      "color": "#0B65E5",
+      "lockedAt": "2026-11-09",
+      "cohortSelection": "Selected January–May preannounced application cycles grouped by source-calendar month (JAN); FDA actions sometimes occur in other months; outcomes known before November reconstruction; not a complete FDA action census.",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-postfreeze-fda-comparison.json",
+      "sourceBlobSha": "a11407aaae42c1f596de5f9f3bddff43cc627d0a",
+      "sourceListedCount": 8,
+      "benchmarkCaseIds": [
+        "2026-JAN-01",
+        "2026-JAN-02",
+        "2026-JAN-03",
+        "2026-JAN-04",
+        "2026-JAN-05",
+        "2026-JAN-07",
+        "2026-JAN-08"
+      ],
+      "benchmarkCases": [
+        {
+          "id": "2026-JAN-01",
+          "ticker": "DNLI",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-JAN-02",
+          "ticker": "ATRA/PF",
+          "actualDecision": "CRL"
+        },
+        {
+          "id": "2026-JAN-03",
+          "ticker": "TVTX",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-JAN-04",
+          "ticker": "SNY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-JAN-05",
+          "ticker": "FBIO",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-JAN-07",
+          "ticker": "AQST",
+          "actualDecision": "CRL"
+        },
+        {
+          "id": "2026-JAN-08",
+          "ticker": "PHAR",
+          "actualDecision": "CRL"
+        }
+      ],
+      "excludedCases": [
+        {
+          "id": "2026-JAN-06",
+          "ticker": "AZN",
+          "originalCall": "EXCLUDE_ALREADY_DECIDED",
+          "reason": "FROZEN_EXCLUDE_OR_ABSTAIN"
+        }
+      ],
+      "alwaysApproveMatches": 4
+    },
+    {
+      "cohortId": "historical-2026-02-v1",
+      "yearMonth": "2026-02",
+      "monthLabel": "February",
+      "color": "#159447",
+      "lockedAt": "2026-11-09",
+      "cohortSelection": "Selected January–May preannounced application cycles grouped by source-calendar month (FEB); FDA actions sometimes occur in other months; outcomes known before November reconstruction; not a complete FDA action census.",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-postfreeze-fda-comparison.json",
+      "sourceBlobSha": "a11407aaae42c1f596de5f9f3bddff43cc627d0a",
+      "sourceListedCount": 8,
+      "benchmarkCaseIds": [
+        "2026-FEB-09",
+        "2026-FEB-10",
+        "2026-FEB-11",
+        "2026-FEB-12",
+        "2026-FEB-13",
+        "2026-FEB-14",
+        "2026-FEB-15",
+        "2026-FEB-16"
+      ],
+      "benchmarkCases": [
+        {
+          "id": "2026-FEB-09",
+          "ticker": "RGNX",
+          "actualDecision": "CRL"
+        },
+        {
+          "id": "2026-FEB-10",
+          "ticker": "MRK",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-FEB-11",
+          "ticker": "VNDA",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-FEB-12",
+          "ticker": "ETON",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-FEB-13",
+          "ticker": "TAIHO",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-FEB-14",
+          "ticker": "REGN/SNY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-FEB-15",
+          "ticker": "ASND",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-FEB-16",
+          "ticker": "BMRN",
+          "actualDecision": "APPROVAL"
+        }
+      ],
+      "excludedCases": [],
+      "alwaysApproveMatches": 7
+    },
+    {
+      "cohortId": "historical-2026-03-v1",
+      "yearMonth": "2026-03",
+      "monthLabel": "March",
+      "color": "#C58A00",
+      "lockedAt": "2026-11-09",
+      "cohortSelection": "Selected January–May preannounced application cycles grouped by source-calendar month (MAR); FDA actions sometimes occur in other months; outcomes known before November reconstruction; not a complete FDA action census.",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-postfreeze-fda-comparison.json",
+      "sourceBlobSha": "a11407aaae42c1f596de5f9f3bddff43cc627d0a",
+      "sourceListedCount": 7,
+      "benchmarkCaseIds": [
+        "2026-MAR-17",
+        "2026-MAR-18",
+        "2026-MAR-19",
+        "2026-MAR-20",
+        "2026-MAR-21",
+        "2026-MAR-22"
+      ],
+      "benchmarkCases": [
+        {
+          "id": "2026-MAR-17",
+          "ticker": "LNTH",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-MAR-18",
+          "ticker": "BMY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-MAR-19",
+          "ticker": "ALDX",
+          "actualDecision": "CRL"
+        },
+        {
+          "id": "2026-MAR-20",
+          "ticker": "RYTM",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-MAR-21",
+          "ticker": "GSK",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-MAR-22",
+          "ticker": "RCKT",
+          "actualDecision": "APPROVAL"
+        }
+      ],
+      "excludedCases": [
+        {
+          "id": "2026-MAR-23",
+          "ticker": "LNTH",
+          "originalCall": "ABSTAIN",
+          "reason": "FROZEN_EXCLUDE_OR_ABSTAIN"
+        }
+      ],
+      "alwaysApproveMatches": 5
+    },
+    {
+      "cohortId": "historical-2026-04-v1",
+      "yearMonth": "2026-04",
+      "monthLabel": "April",
+      "color": "#E46B15",
+      "lockedAt": "2026-11-09",
+      "cohortSelection": "Selected January–May preannounced application cycles grouped by source-calendar month (APR); FDA actions sometimes occur in other months; outcomes known before November reconstruction; not a complete FDA action census.",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-postfreeze-fda-comparison.json",
+      "sourceBlobSha": "a11407aaae42c1f596de5f9f3bddff43cc627d0a",
+      "sourceListedCount": 10,
+      "benchmarkCaseIds": [
+        "2026-APR-24",
+        "2026-APR-26",
+        "2026-APR-27",
+        "2026-APR-29",
+        "2026-APR-30",
+        "2026-APR-31",
+        "2026-APR-32",
+        "2026-APR-33"
+      ],
+      "benchmarkCases": [
+        {
+          "id": "2026-APR-24",
+          "ticker": "BIIB",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-APR-26",
+          "ticker": "BMY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-APR-27",
+          "ticker": "REPL",
+          "actualDecision": "CRL"
+        },
+        {
+          "id": "2026-APR-29",
+          "ticker": "GRCE",
+          "actualDecision": "CRL"
+        },
+        {
+          "id": "2026-APR-30",
+          "ticker": "REGN/SNY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-APR-31",
+          "ticker": "MRK",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-APR-32",
+          "ticker": "SNY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-APR-33",
+          "ticker": "AXSM",
+          "actualDecision": "APPROVAL"
+        }
+      ],
+      "excludedCases": [
+        {
+          "id": "2026-APR-25",
+          "ticker": "PFE/MRK",
+          "originalCall": "EXCLUDE_ALREADY_DECIDED",
+          "reason": "FROZEN_EXCLUDE_OR_ABSTAIN"
+        },
+        {
+          "id": "2026-APR-28",
+          "ticker": "SNY",
+          "originalCall": "APPROVAL",
+          "reason": "FDA_DECIDED_AFTER_MAY_2026"
+        }
+      ],
+      "alwaysApproveMatches": 6
+    },
+    {
+      "cohortId": "historical-2026-05-v1",
+      "yearMonth": "2026-05",
+      "monthLabel": "May",
+      "color": "#DA345B",
+      "lockedAt": "2026-11-09",
+      "cohortSelection": "Selected January–May preannounced application cycles grouped by source-calendar month (MAY); FDA actions sometimes occur in other months; outcomes known before November reconstruction; not a complete FDA action census.",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-postfreeze-fda-comparison.json",
+      "sourceBlobSha": "a11407aaae42c1f596de5f9f3bddff43cc627d0a",
+      "sourceListedCount": 5,
+      "benchmarkCaseIds": [
+        "2026-MAY-34",
+        "2026-MAY-35",
+        "2026-MAY-37",
+        "2026-MAY-38"
+      ],
+      "benchmarkCases": [
+        {
+          "id": "2026-MAY-34",
+          "ticker": "ARGX",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-MAY-35",
+          "ticker": "AZN/DSNKY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-MAY-37",
+          "ticker": "MNKD",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "2026-MAY-38",
+          "ticker": "CING",
+          "actualDecision": "CRL"
+        }
+      ],
+      "excludedCases": [
+        {
+          "id": "2026-MAY-36",
+          "ticker": "BIIB/ESALY",
+          "originalCall": "APPROVAL",
+          "reason": "FDA_DECIDED_AFTER_MAY_2026"
+        }
+      ],
+      "alwaysApproveMatches": 3
+    },
     {
       "cohortId": "historical-2026-06-v1",
       "yearMonth": "2026-06",
@@ -584,6 +904,228 @@
     }
   ],
   "runs": [
+    {
+      "runId": "historical-2026-01-v1-manual-level-3-2026-11-09",
+      "cohortId": "historical-2026-01-v1",
+      "assessmentLevel": 3,
+      "assessmentType": "MANUAL_LEVEL3_STYLE_RECONSTRUCTION",
+      "runDate": "2026-11-09",
+      "methodVersion": "JAN_MAY_MANUAL_LEVEL3_RECONSTRUCTION_V1_OUTCOME_AWARE",
+      "assessmentBlind": false,
+      "priorOutcomeExposure": true,
+      "validatedBlindCases": 0,
+      "validatedBlindAccuracy": null,
+      "comparisonType": "RETROSPECTIVE_DIRECTIONAL_AGREEMENT_ONLY",
+      "predictionFreezeUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-outcome-null-replay.json",
+      "comparisonSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-postfreeze-fda-comparison.json",
+      "comparisonSourceBlobSha": "a11407aaae42c1f596de5f9f3bddff43cc627d0a",
+      "caseCalls": [
+        {
+          "caseId": "2026-JAN-01",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-JAN-02",
+          "call": "CRL"
+        },
+        {
+          "caseId": "2026-JAN-03",
+          "call": "CRL"
+        },
+        {
+          "caseId": "2026-JAN-04",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-JAN-05",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-JAN-07",
+          "call": "CRL"
+        },
+        {
+          "caseId": "2026-JAN-08",
+          "call": "CRL"
+        }
+      ]
+    },
+    {
+      "runId": "historical-2026-02-v1-manual-level-3-2026-11-09",
+      "cohortId": "historical-2026-02-v1",
+      "assessmentLevel": 3,
+      "assessmentType": "MANUAL_LEVEL3_STYLE_RECONSTRUCTION",
+      "runDate": "2026-11-09",
+      "methodVersion": "JAN_MAY_MANUAL_LEVEL3_RECONSTRUCTION_V1_OUTCOME_AWARE",
+      "assessmentBlind": false,
+      "priorOutcomeExposure": true,
+      "validatedBlindCases": 0,
+      "validatedBlindAccuracy": null,
+      "comparisonType": "RETROSPECTIVE_DIRECTIONAL_AGREEMENT_ONLY",
+      "predictionFreezeUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-outcome-null-replay.json",
+      "comparisonSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-postfreeze-fda-comparison.json",
+      "comparisonSourceBlobSha": "a11407aaae42c1f596de5f9f3bddff43cc627d0a",
+      "caseCalls": [
+        {
+          "caseId": "2026-FEB-09",
+          "call": "CRL"
+        },
+        {
+          "caseId": "2026-FEB-10",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-FEB-11",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-FEB-12",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-FEB-13",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-FEB-14",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-FEB-15",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-FEB-16",
+          "call": "APPROVAL"
+        }
+      ]
+    },
+    {
+      "runId": "historical-2026-03-v1-manual-level-3-2026-11-09",
+      "cohortId": "historical-2026-03-v1",
+      "assessmentLevel": 3,
+      "assessmentType": "MANUAL_LEVEL3_STYLE_RECONSTRUCTION",
+      "runDate": "2026-11-09",
+      "methodVersion": "JAN_MAY_MANUAL_LEVEL3_RECONSTRUCTION_V1_OUTCOME_AWARE",
+      "assessmentBlind": false,
+      "priorOutcomeExposure": true,
+      "validatedBlindCases": 0,
+      "validatedBlindAccuracy": null,
+      "comparisonType": "RETROSPECTIVE_DIRECTIONAL_AGREEMENT_ONLY",
+      "predictionFreezeUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-outcome-null-replay.json",
+      "comparisonSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-postfreeze-fda-comparison.json",
+      "comparisonSourceBlobSha": "a11407aaae42c1f596de5f9f3bddff43cc627d0a",
+      "caseCalls": [
+        {
+          "caseId": "2026-MAR-17",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-MAR-18",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-MAR-19",
+          "call": "CRL"
+        },
+        {
+          "caseId": "2026-MAR-20",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-MAR-21",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-MAR-22",
+          "call": "APPROVAL"
+        }
+      ]
+    },
+    {
+      "runId": "historical-2026-04-v1-manual-level-3-2026-11-09",
+      "cohortId": "historical-2026-04-v1",
+      "assessmentLevel": 3,
+      "assessmentType": "MANUAL_LEVEL3_STYLE_RECONSTRUCTION",
+      "runDate": "2026-11-09",
+      "methodVersion": "JAN_MAY_MANUAL_LEVEL3_RECONSTRUCTION_V1_OUTCOME_AWARE",
+      "assessmentBlind": false,
+      "priorOutcomeExposure": true,
+      "validatedBlindCases": 0,
+      "validatedBlindAccuracy": null,
+      "comparisonType": "RETROSPECTIVE_DIRECTIONAL_AGREEMENT_ONLY",
+      "predictionFreezeUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-outcome-null-replay.json",
+      "comparisonSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-postfreeze-fda-comparison.json",
+      "comparisonSourceBlobSha": "a11407aaae42c1f596de5f9f3bddff43cc627d0a",
+      "caseCalls": [
+        {
+          "caseId": "2026-APR-24",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-APR-26",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-APR-27",
+          "call": "CRL"
+        },
+        {
+          "caseId": "2026-APR-29",
+          "call": "CRL"
+        },
+        {
+          "caseId": "2026-APR-30",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-APR-31",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-APR-32",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-APR-33",
+          "call": "APPROVAL"
+        }
+      ]
+    },
+    {
+      "runId": "historical-2026-05-v1-manual-level-3-2026-11-09",
+      "cohortId": "historical-2026-05-v1",
+      "assessmentLevel": 3,
+      "assessmentType": "MANUAL_LEVEL3_STYLE_RECONSTRUCTION",
+      "runDate": "2026-11-09",
+      "methodVersion": "JAN_MAY_MANUAL_LEVEL3_RECONSTRUCTION_V1_OUTCOME_AWARE",
+      "assessmentBlind": false,
+      "priorOutcomeExposure": true,
+      "validatedBlindCases": 0,
+      "validatedBlindAccuracy": null,
+      "comparisonType": "RETROSPECTIVE_DIRECTIONAL_AGREEMENT_ONLY",
+      "predictionFreezeUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-outcome-null-replay.json",
+      "comparisonSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-jan-may-level3-outcome-restricted-replay/docs/historical-testing/jan-may-2026-level3-postfreeze-fda-comparison.json",
+      "comparisonSourceBlobSha": "a11407aaae42c1f596de5f9f3bddff43cc627d0a",
+      "caseCalls": [
+        {
+          "caseId": "2026-MAY-34",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-MAY-35",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-MAY-37",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "2026-MAY-38",
+          "call": "CRL"
+        }
+      ]
+    },
     {
       "runId": "historical-2026-06-v1-manual-level-3-2026-11-09",
       "cohortId": "historical-2026-06-v1",
