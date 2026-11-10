@@ -134,3 +134,23 @@ test("No-args CLI writes metadata-only audit receipt with mode 0600, no private 
   remainUncertified(out);
  }finally{t.cleanup();}
 });
+
+test("Existing research receipt and symlink cannot be overwritten or followed",()=>{
+ const t=setup();try{
+  const report=path.join(t.dir,"immutable-receipt.json");
+  const script=path.join(__dirname,"../scripts/intake_r80_original_sap_evidence_offline.cjs");
+  fs.writeFileSync(report,"OWNER_EXISTING_ORIGINAL_RECEIPT",{mode:0o600});
+  const cmd=[script,"--report",report];
+  let child=spawnSync(process.execPath,cmd,{encoding:"utf8",env:{...process.env,[PIN_ENV]:""}});
+  assert.equal(child.status,2);
+  assert.match(child.stderr,/REPORT_WRITE_FAILED/);
+  assert.equal(fs.readFileSync(report,"utf8"),"OWNER_EXISTING_ORIGINAL_RECEIPT");
+  const symlink=path.join(t.dir,"linked-receipt.json");
+  fs.symlinkSync(report,symlink);
+  child=spawnSync(process.execPath,[script,"--report",symlink],{encoding:"utf8",
+    env:{...process.env,[PIN_ENV]:""}});
+  assert.equal(child.status,2);
+  assert.match(child.stderr,/REPORT_WRITE_FAILED/);
+  assert.equal(fs.readFileSync(report,"utf8"),"OWNER_EXISTING_ORIGINAL_RECEIPT");
+ }finally{t.cleanup();}
+});
