@@ -39,7 +39,7 @@ export default function October2026HistoricalAuditPanel(){
       October FDA review comparisons
     </h2>
     <p style={{fontSize:13,lineHeight:1.6,color:muted,margin:"0 0 15px"}}>
-      Sourced October-tracked cases with clinical/regulatory evidence review and
+      <strong>NOT BLIND.</strong> Sourced October-tracked cases with clinical/regulatory evidence review and
       separately recorded FDA outcomes. This is an <strong>outcome-aware historical reconstruction,
       not a genuine blind prediction test</strong>. Not all rows are independently verified October
       PDUFA target dates; some FDA decisions occurred early or followed non-October goals.
