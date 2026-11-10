@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "dataset": "OCTOBER_2026_ILUMYA_ADDITIONAL_OUTCOME_KNOWN_PREDECISION_EVIDENCE_ONLY",
+  "caseId": "OCT26-18-SUN",
+  "ticker": "SUNPHARMA",
+  "drug": "ILUMYA (tildrakizumab-asmn)",
+  "indication": "Active psoriatic arthritis in adults",
+  "trackedOctoberDate": "2026-10-29",
+  "predecisionGoal": "2026-10-29",
+  "calendarRole": "SOURCE_VERIFIED_OCTOBER_GOAL",
+  "phaseFirstVerified": "TWO_PHASE_3_RANDOMIZED",
+  "trialProgram": "INSPIRE-1 and INSPIRE-2",
+  "assessedAfterDecision": true,
+  "authorHadSeenOutcomePriorToFreeze": true,
+  "blind": false,
+  "levelStyle": 3,
+  "predecisionEvidenceCutoff": "2026-03-16",
+  "levels": {
+    "level1TrialDesignAndEfficacy": "Two phase 3 randomized trials INSPIRE-1 and INSPIRE-2 met ACR20 primary endpoint at 24 weeks with p<0.05 versus placebo; prior July 21 2025 topline report.",
+    "level2ClinicalBenefitAndSafety": "Meaningful joint symptom reduction for active psoriatic arthritis. Established tildrakizumab profile in plaque psoriasis; company reported no new signals in phase 3 studies. Public data lacks final clinical dossier.",
+    "level3RegulatoryFit": "Sponsor announced FDA acceptance March 16 2026 with Oct 29 target; existing approved biologic plus two positive pivotal studies favors supplemental label expansion, but inspection/CMC and FDA complete review unknown."
+  },
+  "prediction": "APPROVAL",
+  "predictionStrength": "APPROVAL_LEAN",
+  "actualFdaDecision": null,
+  "actualFdaActionDate": null,
+  "officialPostdecisionSource": null,
+  "predecisionUrls": [
+    "https://www.prnewswire.com/news-releases/sun-pharma-announces-us-fda-acceptance-of-supplemental-biologics-license-sbla-application-for-ilumya-tildrakizumab-asmn-for-the-treatment-of-adults-with-active-psoriatic-arthritis-302714083.html",
+    "https://sunpharma.com/wp-content/uploads/2025/07/Press-Release-Phase-3-Clinical-Studies-PsA-ILUMYA-Topline.pdf"
+  ],
+  "validForAccuracy": false,
+  "validForCalibration": false,
+  "scoreEligibleForBlindAccuracy": false
+}
