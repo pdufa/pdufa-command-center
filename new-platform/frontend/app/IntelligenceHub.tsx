@@ -52,8 +52,10 @@ function CompanyDetails({ticker,calendar,undated,clinicalPhases,phaseCheckedAt,p
   const current=cycles.find(c=>c.id===cycleId)||cycles[0];
   const currentResearch=events.find(e=>e.cycleId===current?.id)?.prediction ||
     pending.find(e=>e.id===current?.id)?.prediction || null;
-  const now=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Los_Angeles",
-    year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
+  const nowParts=new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",
+    year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
+  const nowPart=(type:string)=>nowParts.find(part=>part.type===type)?.value||"01";
+  const now=nowPart("year")+"-"+nowPart("month")+"-"+nowPart("day");
   const next=events.find(e=>e.date>=now && e.prediction?.call!=="ALREADY_APPROVED");
   const phaseByNct=new Map(clinicalPhases.map(t=>[t.nct,t]));
   const nextCandidates=cycles.filter(c=>c.stage!=="APPROVED_ALREADY" &&
