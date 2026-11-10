@@ -1,0 +1,81 @@
+name: MAIN R76 publisher original supplement PDF byte hash source research
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r76-launch-htn-publisher-pdf-source.yml
+      - new-platform/backend/scripts/capture_launch_htn_jama_publisher_pdfs_r76.py
+      - new-platform/backend/tests/test_r76_launch_htn_publisher_pdf_capture.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r76-jama-publisher-original-pdf-hash
+  cancel-in-progress: false
+
+jobs:
+  public-publisher-source-hash-research:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install PDF structure reader only in disposable source-probe runner
+        run: python -m pip install 'pypdf==6.1.1'
+      - name: Preserve canonical FOCUS and permanently retire RAAS/GEM scoring
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+          python new-platform/backend/scripts/verify_focus_r73_launch_htn_document_index.py
+      - name: Test strictly public JAMA signed-link parsing and anti-grade behavior
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/tests/test_r76_launch_htn_publisher_pdf_capture.py -v
+      - name: Read live public publisher page and try original PDF bytes without saving copies
+        shell: bash
+        env:
+          R76_RECEIPT: ${{ runner.temp }}/r76-publisher/R76_JAMA_7_PDF_ORIGINAL_HASH_RECEIPTS.json
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/capture_launch_htn_jama_publisher_pdfs_r76.py --output "$R76_RECEIPT"
+      - name: Print actual publisher retrieval count and failures; no clinical prediction
+        if: always()
+        shell: bash
+        env:
+          R76_RECEIPT: ${{ runner.temp }}/r76-publisher/R76_JAMA_7_PDF_ORIGINAL_HASH_RECEIPTS.json
+        run: |
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["R76_RECEIPT"])
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+              f.write("## MAIN R76 original JAMA public publisher PDF research\n")
+              if not p.exists():
+                  f.write("**Source capture failed to produce a valid report.** No verified document bytes.\n")
+              else:
+                  x=json.loads(p.read_text())
+                  f.write(f"Actual original JAMA publisher PDF bytes SHA-verified in ephemeral runner: **{x['pdfSourceByteHashReceipts']}/7**; remaining unverified: {x['unverifiedPdfSources']}/7.\n")
+                  for y in x['records']:
+                      f.write(f"- Supplement {y['supplementNumber']}: {y['retrievalStatus']}")
+                      if "failureCode" in y:f.write(f" ({y['failureCode']})")
+                      f.write("\n")
+                  f.write("\nThis records source integrity only. No source files/signature token URLs are archived; no authenticated SAP chronology, reviewer signoff, clinical probability or FDA prediction. **FDA ABSTAIN.**\n")
+          PY
+      - name: Save only source SHA/hash count receipts, not signed URL or copyrighted PDF bytes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r76-publisher-seven-source-hash-receipts-${{ github.run_id }}
+          path: ${{ runner.temp }}/r76-publisher/R76_JAMA_7_PDF_ORIGINAL_HASH_RECEIPTS.json
+          if-no-files-found: warn
+          retention-days: 90
