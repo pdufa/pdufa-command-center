@@ -65,6 +65,32 @@ export default function PriorityOriginalScientificGatesR93(){
      {" "}{d.launchPublicToplineDate} public topline disclosure. This does not
      establish the real database-lock or blind-break date.
    </p>}
+   {c.newlyIndexedPublisherProtocolAttachmentLead&&
+     <details className={styles.coverageDetails}>
+      <summary>New publisher-indexed ACACIA-HCM original protocol and appendix leads</summary>
+      <p>The original New England Journal of Medicine article published
+       {" "}{c.newlyIndexedPublisherProtocolAttachmentLead.sourcePublished}
+       {" "}lists a downloadable <b>trial protocol</b>
+       {" "}(<code>{c.newlyIndexedPublisherProtocolAttachmentLead.advertisedProtocolPdfFilename}</code>)
+       and a <b>supplementary appendix</b>
+       {" "}(<code>{c.newlyIndexedPublisherProtocolAttachmentLead.advertisedAppendixPdfFilename}</code>).
+       These are newly indexed public attachment leads, not authenticated final
+       signed SAP files. Exact supplement bytes have not been captured
+       in this revision.</p>
+      <p>The paper reports randomized assignment to
+       {" "}{c.newlyIndexedPublisherProtocolAttachmentLead.sourceReportedRandomizedAficamten}
+       {" "}aficamten and
+       {" "}{c.newlyIndexedPublisherProtocolAttachmentLead.sourceReportedRandomizedPlacebo}
+       {" "}placebo participants, totaling
+       {" "}{c.newlyIndexedPublisherProtocolAttachmentLead.sourceReportedTotalRandomized}.
+       The earlier 516-versus-517 reporting question remains open until
+       original analysis-set and treated-population listings are reconciled.</p>
+      <p><a href={c.newlyIndexedPublisherProtocolAttachmentLead.sourceArticle}
+       target="_blank" rel="noopener noreferrer">
+       Open original NEJM article and its advertised supplementary documents
+      </a>. Final controlled SAP signatures, blind-break audit and independent
+       clinical adjudication: NOT VERIFIED.</p>
+     </details>}
    <div className={styles.coverageGrid}>
     {c.gates.map(g=><article className={styles.coverageGroup}
       key={c.nct+":"+g.id}>
