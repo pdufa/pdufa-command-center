@@ -86,6 +86,24 @@ async function profile(browser,config){
   await methods.scrollIntoViewIfNeeded();
   await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-r77-method-gates.png"),fullPage:false});
   await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-r73-seven-documents.png"),fullPage:false});
+  const publicChronology=board.locator('section[aria-label="R78 Launch-HTN public readout and FDA review chronology"]');
+  await publicChronology.waitFor({state:"visible",timeout:12000});
+  const chronologyText=await publicChronology.innerText();
+  assert.match(chronologyText,/2025-03-10/);
+  assert.match(chronologyText,/2026-12-22/);
+  assert.match(chronologyText,/database lock/);
+  assert.match(chronologyText,/0\/23/);
+  assert.match(chronologyText,/ABSTAIN/);
+  await publicChronology.locator("details").first().locator("summary").click();
+  assert.equal(await publicChronology.locator("details").first().locator("li").count(),9);
+  const originalPublicLinks=publicChronology.locator('details').first().locator('a[href^="https://"]');
+  assert.equal(await originalPublicLinks.count(),9);
+  assert.equal(await originalPublicLinks.nth(5).getAttribute("href"),
+    "https://ir.mineralystx.com/sec-filings/all-sec-filings/content/0001628280-25-011459/mlys-20250310.htm");
+  assert.equal(await originalPublicLinks.nth(8).getAttribute("href"),
+    "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000142/mlys2026q38kex991.htm");
+  await publicChronology.scrollIntoViewIfNeeded();
+  await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-r78-public-chronology.png"),fullPage:false});
   await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-research.png"),fullPage:false});
   p=await inspect("NCT06081894");
   assert.match(await p.innerText(),/Two primary endpoints/);
