@@ -22,7 +22,7 @@
       "supplementUrl": null,
       "supplementStatus": "NO_VERIFIED_ORIGINAL_SUPPLEMENT_DOCUMENT_OPENED",
       "primaryEndpoint": "Total PUL2.0 percentage change from baseline at 12 months",
-      "reportedEffect": "Least-squares mean difference +4.55 percentage points; 95% CI 0.47 to 8.63; reported p=0.029",
+      "reportedEffect": "Reported between-group difference +4.55% in PUL2.0 percentage change; 95% CI 0.47 to 8.63; reported p=0.029",
       "analysisPopulation": "106 randomized (deramiocel 54; placebo 52); article abstract describes intention-to-treat",
       "safetyObservation": "Authors described a similar safety profile to placebo; full adverse-event denominators not independently reconciled",
       "specificReviewNeeds": [
