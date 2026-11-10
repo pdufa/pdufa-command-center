@@ -70,7 +70,21 @@ export async function GET(req:Request):Promise<Response>{
   if(bytes.length<1024||bytes.length>LIMIT)
    return fail("ORIGINAL_CTIS_PDF_INVALID_SIZE");
   const prefix=String.fromCharCode(...bytes.slice(0,8));
-  if(!prefix.startsWith("%PDF-"))return fail("ORIGINAL_CTIS_RESPONSE_NOT_PDF");
+  if(!prefix.startsWith("%PDF-"))return Response.json({
+    error:"ORIGINAL_CTIS_RESPONSE_NOT_PDF",
+    exactEUCT:EUCT,documentKey:key,documentUUID:doc.uuid,
+    originalOfficialUrl:url,
+    upstreamContentType:res.headers.get("content-type"),
+    upstreamContentDisposition:res.headers.get("content-disposition"),
+    byteCount:bytes.length,
+    originalSourceSHA256:createHash("sha256").update(bytes).digest("hex"),
+    byteHeaderHex:Buffer.from(bytes.slice(0,24)).toString("hex"),
+    publicWrapperPrefixUtf8:Buffer.from(bytes.slice(0,240)).toString("utf8").replace(
+       /[\\x00-\\x1f]/gu," "),
+    originalPdfBytesAuthenticated:false,
+    signedFinalSAPAuthenticated:false,
+    FDAForecast:"ABSTAIN"
+   },{status:502,headers:{"Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff"}});
   const digest=createHash("sha256").update(bytes).digest("hex");
   const tail=String.fromCharCode(...bytes.slice(-2048));
   return Response.json({
