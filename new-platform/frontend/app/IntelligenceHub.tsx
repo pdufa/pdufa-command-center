@@ -15,6 +15,17 @@ type CalendarEvent={id:string;ticker:string;company:string;date:string;drug:stri
   ncts:string[];sourceUrl:string|null;cycleId?:string|null;prediction?:ResearchPrediction|null;dateStatus?:string};
 type UndatedCycle={id:string;ticker:string;company:string;marketCapUsd:number;ncts:string[];
   prediction:ResearchPrediction;date:null;dateStatus:string};
+type ClinicalPhaseRow={nct:string;ticker:string;phase:string[]|null;registryStatus:string|null;
+  sourceStatus:"OFFICIAL_REGISTRY_RETRIEVED"|"OFFICIAL_SOURCE_UNAVAILABLE";
+  registryUpdated:string|null;sourceUrl:string};
+type ClinicalPhasePayload={checkedAt:string;ageStatus:"RECENT"|"STALE";
+  records:ClinicalPhaseRow[]};
+const phaseLabel=(phases:string[]|null)=>!phases||phases.length===0?"Phase not reported":
+  phases.includes("PHASE2")&&phases.includes("PHASE3")?"Phase 2/3":
+  phases.map(p=>p==="EARLY_PHASE1"?"Early Phase 1":
+    p==="NA"?"Not applicable":p.replace("PHASE","Phase ")).join(" · ");
+const registryStatusLabel=(status:string|null)=>status?
+  status.toLowerCase().replaceAll("_"," "):"Registry status unavailable";
 type NewsEntry={id:string;title:string;publishedAt:string|null;sourceUrl:string;sourceName:string;
   kind:"FDA_ARTICLE"|"APPLICATION_SOURCE_RECORD";ticker:string|null;cycleId:string|null;drug:string|null;
   ncts:string[];verification:"OFFICIAL_FDA_PUBLICATION"|"SOURCE_LINK_RECORDED";
@@ -28,9 +39,12 @@ const date=(s:string|null|undefined)=>s?new Date(s.length===10?s+"T12:00:00Z":s)
 const cap=(n:number)=>n>=1e9?"$"+(n/1e9).toFixed(2)+"B":"$"+Math.round(n/1e6)+"M";
 const validTicker=(s:string)=>/^[A-Z0-9.-]{1,10}$/.test(s);
 const kinds={cal:"CAL",company:"COMPANY",news:"NEWS"} as const;
-function CompanyDetails({ticker,calendar,undated,cycleId,onCycle,onNews,onCal}:{ticker:string;
-  calendar:CalendarEvent[];undated:UndatedCycle[];cycleId:string;
-  onCycle:(id:string)=>void;onNews:()=>void;onCal:()=>void}){
+function CompanyDetails({ticker,calendar,undated,clinicalPhases,phaseCheckedAt,phaseAgeStatus,
+  phaseLoadState,cycleId,onCycle,onNews,onCal}:{ticker:string;
+  calendar:CalendarEvent[];undated:UndatedCycle[];
+  clinicalPhases:ClinicalPhaseRow[];phaseCheckedAt:string|null;
+  phaseAgeStatus:"RECENT"|"STALE"|null;phaseLoadState:"LOADING"|"AVAILABLE"|"UNAVAILABLE";
+  cycleId:string;onCycle:(id:string)=>void;onNews:()=>void;onCal:()=>void}){
   const events=calendar.filter(e=>e.ticker===ticker).sort((a,b)=>a.date.localeCompare(b.date));
   const pending=undated.filter(e=>e.ticker===ticker);
   const cycles=APPLICATION_CYCLES.filter(c=>c.ticker===ticker);
@@ -38,8 +52,15 @@ function CompanyDetails({ticker,calendar,undated,cycleId,onCycle,onNews,onCal}:{
   const current=cycles.find(c=>c.id===cycleId)||cycles[0];
   const currentResearch=events.find(e=>e.cycleId===current?.id)?.prediction ||
     pending.find(e=>e.id===current?.id)?.prediction || null;
-  const now=new Date().toISOString().slice(0,10);
+  const now=new Intl.DateTimeFormat("en-CA",{timeZone:"America/Los_Angeles",
+    year:"numeric",month:"2-digit",day:"2-digit"}).format(new Date());
   const next=events.find(e=>e.date>=now && e.prediction?.call!=="ALREADY_APPROVED");
+  const phaseByNct=new Map(clinicalPhases.map(t=>[t.nct,t]));
+  const nextCandidates=cycles.filter(c=>c.stage!=="APPROVED_ALREADY" &&
+    (!c.reportedGoal||c.reportedGoal>=now)).sort((a,b)=>
+    (a.reportedGoal===null?1:0)-(b.reportedGoal===null?1:0) ||
+    (a.reportedGoal||"").localeCompare(b.reportedGoal||"") || a.drug.localeCompare(b.drug));
+  const completedOrPast=cycles.length-nextCandidates.length;
   return <div className={styles.companyDetails}>
     {!ticker?<p>Select a ticker from CAL to view the company and all recorded application cycles.</p>:<>
       <h2>{ticker} <span className={styles.companyName}>{profile?.company||ticker}</span></h2>
@@ -48,6 +69,65 @@ function CompanyDetails({ticker,calendar,undated,cycleId,onCycle,onNews,onCal}:{
         <div><small>Next published PDUFA</small><strong>{next?date(next.date):"No future target recorded"}</strong></div>
         <div><small>Recorded application cycles</small><strong>{cycles.length}</strong></div>
       </div>
+      <section className={styles.nextCandidates} aria-label="Next PDUFA candidates and clinical phases">
+        <div className={styles.nextCandidatesHeader}>
+          <h3>Next PDUFA candidates <small>({nextCandidates.length} FOCUS application cycles)</small></h3>
+          <p>Tracked FOCUS candidates only · next source-reported FDA targets first,
+            then applications without assigned PDUFA dates.</p>
+        </div>
+        {phaseLoadState==="AVAILABLE"?
+          <p className={styles.phaseStamp}>Clinical phase source: ClinicalTrials.gov,
+            checked {date(phaseCheckedAt)}{phaseAgeStatus==="STALE"?
+              " · STALE (older than 72 hours)":""}.</p>:
+          <p className={styles.phaseStamp}>Clinical phase records {
+            phaseLoadState==="LOADING"?"loading":"unavailable; not inferred"}.</p>}
+        {nextCandidates.length===0&&<p className={styles.caveat}>
+          No upcoming or undated candidate application is recorded for this company in FOCUS.
+          This does not establish that the company has no other pipeline programs.
+        </p>}
+        <div className={styles.candidateList}>
+          {nextCandidates.map((c,i)=>{
+            const research=events.find(e=>e.cycleId===c.id)?.prediction||
+              pending.find(e=>e.id===c.id)?.prediction;
+            return <article className={styles.candidateCard} key={c.id}>
+              <button className={styles.candidateChoose} type="button"
+                aria-pressed={current?.id===c.id} onClick={()=>onCycle(c.id)}>
+                <strong>{i===0?"NEXT · ":""}{c.drug}</strong>
+                <span>{c.indication}</span>
+              </button>
+              <div className={styles.candidateMeta}>
+                <div><small>Next PDUFA goal</small><strong>{
+                  c.reportedGoal?date(c.reportedGoal):"Not assigned"}</strong></div>
+                <div><small>FDA application stage</small><strong>{
+                  c.stage.replaceAll("_"," ").toLowerCase()} · {c.applicationType}</strong></div>
+                <div><small>Preliminary Level 3</small><strong>{
+                  research?.label||"No research call recorded"}</strong></div>
+              </div>
+              <div className={styles.candidatePhases}>
+                <strong>Clinical trial phases</strong>
+                {c.ncts.map(nct=>{
+                  const entry=phaseByNct.get(nct);
+                  const verified=phaseLoadState==="AVAILABLE" &&
+                    entry?.sourceStatus==="OFFICIAL_REGISTRY_RETRIEVED";
+                  return <div key={nct} className={styles.phaseRow}>
+                    <a href={"https://clinicaltrials.gov/study/"+nct}
+                      target="_blank" rel="noopener noreferrer">{nct}</a>
+                    <b>{verified?phaseLabel(entry.phase):"Unverified / unavailable"}</b>
+                    <small>{verified?registryStatusLabel(entry.registryStatus):
+                      "No current verified registry phase"}</small>
+                  </div>;
+                })}
+              </div>
+              <button className={styles.candidateDetailLink} type="button"
+                onClick={()=>onCycle(c.id)}>View application assessment and source details</button>
+            </article>;
+          })}
+        </div>
+        <p className={styles.caveat}>{completedOrPast>0?
+          completedOrPast+" past-goal or already-approved cycle(s) are excluded from this upcoming list. ":""}
+          Phase 3 clinical evidence is not an FDA filing stage or an assigned PDUFA date.
+          Company pipeline programs outside FOCUS are not asserted to be included.</p>
+      </section>
       {cycles.length>1&&<label className={styles.cycleSelector}>Drug / indication — choose exact FDA cycle
         <select value={current?.id||""} onChange={e=>onCycle(e.target.value)}>
           {cycles.map(c=><option key={c.id} value={c.id}>{c.drug} · {c.indication}</option>)}
@@ -170,6 +250,8 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
   const [focusKey,setFocusKey]=useState(0);
   const [calendar,setCalendar]=useState<CalendarEvent[]>([]);
   const [undated,setUndated]=useState<UndatedCycle[]>([]);
+  const [phasePayload,setPhasePayload]=useState<ClinicalPhasePayload|null>(null);
+  const [phaseLoadState,setPhaseLoadState]=useState<"LOADING"|"AVAILABLE"|"UNAVAILABLE">("LOADING");
   const [news,setNews]=useState<NewsPayload|null>(null);
   const [automation,setAutomation]=useState<AutomationStatus|null>(null);
   const [newsFilter,setNewsFilter]=useState("related");
@@ -182,7 +264,11 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
     Promise.allSettled([
       fetch("/api/cal",{cache:"no-store",signal:controller.signal}).then(async r=>{if(!r.ok)throw Error("CAL unavailable");return r.json();}),
       fetch("/api/news",{cache:"no-store",signal:controller.signal}).then(async r=>{if(!r.ok)throw Error("NEWS unavailable");return r.json();}),
-      fetch("/api/news-automation-status",{cache:"no-store",signal:controller.signal}).then(async r=>{if(!r.ok)throw Error("Automated research not connected");return r.json();})
+      fetch("/api/news-automation-status",{cache:"no-store",signal:controller.signal}).then(async r=>{if(!r.ok)throw Error("Automated research not connected");return r.json();}),
+      fetch("/api/company-phase-status",{cache:"no-store",signal:controller.signal}).then(async r=>{
+        if(!r.ok)throw Error("Clinical phase registry source unavailable");
+        return r.json() as Promise<ClinicalPhasePayload>;
+      })
     ]).then(results=>{
       if(controller.signal.aborted)return;
       if(results[0].status==="fulfilled"&&Array.isArray(results[0].value.events)){
@@ -196,6 +282,10 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
       if(results[1].status==="fulfilled")setNews(results[1].value as NewsPayload);
       else setError(prev=>prev+" NEWS feed unavailable.");
       if(results[2].status==="fulfilled")setAutomation(results[2].value as AutomationStatus);
+      if(results[3].status==="fulfilled"&&Array.isArray(results[3].value.records)){
+        setPhasePayload(results[3].value as ClinicalPhasePayload);
+        setPhaseLoadState("AVAILABLE");
+      }else setPhaseLoadState("UNAVAILABLE");
     });
     return ()=>controller.abort();
   },[]);
@@ -238,9 +328,13 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
   };
   const panelOrder:View[]=view==="company"?["company","news","cal"]:view==="news"?["news","company","cal"]:["cal","company","news"];
   const visible=layout==="all"?panelOrder:layout==="dual"?panelOrder.slice(0,2):[view];
+  const phaseProps={
+    clinicalPhases:phasePayload?.records||[],phaseCheckedAt:phasePayload?.checkedAt||null,
+    phaseAgeStatus:phasePayload?.ageStatus||null,phaseLoadState
+  };
   const panel=(name:View)=>name==="cal"?<CalCalendar embedded onSelectCompany={onCompany}
       focusDate={focusDate} focusKey={focusKey}/>:
-    name==="company"?<CompanyDetails ticker={ticker} calendar={calendar} undated={undated} cycleId={resolvedCycle}
+    name==="company"?<CompanyDetails ticker={ticker} calendar={calendar} undated={undated} {...phaseProps} cycleId={resolvedCycle}
       onCycle={setCycleId} onNews={()=>{setView("news");setNewsFilter("related");}} onCal={goCal}/>:
     <NewsDetails payload={news} ticker={ticker} cycleId={resolvedCycle}
       newsFilter={newsFilter} setNewsFilter={setNewsFilter} automation={automation}
@@ -283,7 +377,7 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
       onClick={e=>{if(e.target===e.currentTarget)e.currentTarget.close();}}>
       <div className={styles.modalHead}><strong>COMPANY · {ticker}</strong>
         <button type="button" onClick={()=>popup.current?.close()} aria-label="Close company popup">×</button></div>
-      <CompanyDetails ticker={ticker} calendar={calendar} undated={undated} cycleId={resolvedCycle}
+      <CompanyDetails ticker={ticker} calendar={calendar} undated={undated} {...phaseProps} cycleId={resolvedCycle}
         onCycle={setCycleId} onNews={()=>{popup.current?.close();setView("news");setNewsFilter("related");}}
         onCal={()=>{popup.current?.close();goCal();}}/>
     </dialog>
