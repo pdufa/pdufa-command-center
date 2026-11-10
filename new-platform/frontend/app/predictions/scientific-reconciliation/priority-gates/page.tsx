@@ -92,6 +92,7 @@ export default function PriorityOriginalScientificGatesR93(){
       {" "}FDA forecast: {R106_REVIEW_QUEUE.FDAForecast}.</p>
      <a href={"/predictions/scientific-reconciliation/priority-gates/ctis-page-evidence?doc="+R106_REVIEW_QUEUE.sourceDocument}
       target="_blank" rel="noopener noreferrer">Inspect live source-linked diagnostic</a>
+     <p><a href="/predictions/scientific-reconciliation/priority-gates/review-queue/csv">Export six-row uncertified page-review CSV</a></p>
     </details>}
    {c.trial==="ACACIA_HCM"&&
     R103_PAGE_CENSUS.nct==="NCT06081894"&&
