@@ -59,6 +59,22 @@ jobs:
           python -m pip install pytest
           python -m pytest -q tests/test_score_input_audit.py tests/test_nightly_scoring_audit.py tests/test_scoring_tab_navigation.py
 
+  level4-protocol-audit:
+    name: Level 4 protocol inventory safety tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run Level 4 protocol audit regression tests
+        run: python -m unittest discover -s tests -p 'test_level4_protocol_audit.py' -v
+      - name: Test original registry field extraction and provenance
+        run: |
+          python -m unittest discover -s tests -p 'test_level4_registry_extraction.py' -v
+          python -m unittest discover -s tests -p 'test_level4_focus_checkpoint.py' -v
+
   backup-archive-integrity:
     name: Offline ZIP backup integrity regressions
     runs-on: ubuntu-latest
