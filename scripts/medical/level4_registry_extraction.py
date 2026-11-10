@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 
 FIELDS = {
+    "conditions": ("conditionsModule", "conditions"),
     "phase": ("designModule", "phases"),
     "allocation": ("designModule", "designInfo", "allocation"),
     "masking": ("designModule", "designInfo", "maskingInfo", "masking"),
