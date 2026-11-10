@@ -1,0 +1,75 @@
+name: MAIN R79 original SAP-lock evidence authenticity and independent-source gate
+# Adds a *technical* research gate, never a qualified medical review or a
+# claimed signed/prospectively locked SAP. No production trusted signer keys.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r79-launch-htn-authentic-sap-lock.yml
+      - new-platform/backend/scripts/verify_r79_sap_lock_provenance_packet.cjs
+      - new-platform/backend/tests/test_r79_sap_lock_provenance_packet.cjs
+      - new-platform/frontend/data/focus-r79-launch-htn-sap-lock-evidence-gates.json
+      - new-platform/frontend/lib/focus-r79-launch-htn-sap-lock-evidence-gates.ts
+      - new-platform/frontend/app/predictions/evidence-gaps/LaunchHtnProspectiveSapGateR79.tsx
+      - new-platform/frontend/app/predictions/evidence-gaps/ScientificOriginalsIntakeR71.tsx
+      - new-platform/frontend/tests/focus-r79-launch-htn-sap-lock-evidence-gates.test.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r79-sap-lock-technical-authentication
+  cancel-in-progress: false
+
+jobs:
+  original-evidence-source-integrity-research:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Guard canonical 29 FOCUS studies, 23 provisional review cycles, and retired analysis
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Test source-file SHA receipt, independent Ed25519 keys and temporal evidence ordering
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test new-platform/backend/tests/test_r79_sap_lock_provenance_packet.cjs
+      - name: Verify seven missing authentic research facts, original source links and fail closed FDA decisions
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r79-launch-htn-sap-lock-evidence-gates.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Record source-authenticity engineering acceptance only
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo "## MAIN R79 original SAP-finalization, DB lock and unblinding evidence gate"
+            echo
+            echo "**Technical verifier passed synthetic cryptographic fixtures only.** Actual case: 7 required original evidence packets, **0 independently verified**; 0 original PDF SHA receipts; 0 approved trust anchors; 0 authentic DB lock timestamps and first unblinding log."
+            echo
+            echo "Tests reject altered source files, cross-NCT/false sponsor versions, untrusted keys, same-organization reviewer keys, tampered signed payloads and SAP or lock timestamps not earlier than first blind break."
+            echo
+            echo "FDA/ICH E9 5.1 expects SAP finalization before unblinding with formal records of both events. ICH E6(R3) requires traceable statistical change controls. Published PDF signature imprints and later sponsor public disclosures are **not** these records."
+            echo
+            echo "**Authentic prospective SAP status BLOCKED; qualified reviewer signatures 0; validated 23-cycle FDA application outcomes 0; ABSTAIN/UNKNOWN; no clinical grade, source-roster change, production or training writes.**"
+          } >> "$GITHUB_STEP_SUMMARY"
