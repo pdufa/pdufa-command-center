@@ -75,7 +75,8 @@ export default function EvidenceRecoveryBoardR68(){
       No source category filter changes clinical assessment status.
     </p>
     <div className={styles.list}>
-      {rows.map(trial=><details className={styles.case} key={trial.nct}>
+      {rows.map(trial=><details className={styles.case} key={trial.nct}
+        aria-label={"R68 evidence for "+trial.nct}>
         <summary>
           <div className={styles.identity}><strong>{trial.ticker} · {trial.nct}</strong>
             <small>{trial.registryReportedPhase} · {trial.registryReportedStatus}</small>
