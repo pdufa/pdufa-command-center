@@ -25,9 +25,18 @@ function field(xml:string,name:string):string {
   return decode(xml.match(new RegExp("<"+name+"(?:\\s[^>]*)?>([\\s\\S]*?)<\\/"+name+">","i"))?.[1]||"");
 }
 function officialFdaLink(value:string) {
-  try {const url=new URL(value);return url.protocol==="https:" &&
-    (url.hostname==="www.fda.gov"||url.hostname==="fda.gov") ? url.href : null;}
-  catch {return null;}
+  try {
+    const url=new URL(value);
+    if(!["http:","https:"].includes(url.protocol) ||
+       !["www.fda.gov","fda.gov"].includes(url.hostname) ||
+       url.username || url.password || url.port) return null;
+    // The official FDA RSS feed currently publishes http:// links. Upgrade
+    // *only* exact FDA hosts to HTTPS; never follow offsite redirects.
+    url.protocol="https:";
+    url.hostname="www.fda.gov";
+    url.hash="";
+    return url.href;
+  }catch{return null;}
 }
 function aliases(drug:string) {
   const cleaned=drug.replace(/\s*\(.*$/,"").replace(/\s*\+.*$/,"").trim().toLowerCase();
