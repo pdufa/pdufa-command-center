@@ -57,7 +57,7 @@ function verifyPacket(packet,{sourceFiles={},trustedKeys={}}={}){
         return fail("EVENT_SCHEMA_OR_SOURCE_PROVENANCE");
       const time=Date.parse(e.atUtc);
       const actual=Number.isFinite(time)?new Date(time).toISOString():null;
-      if(!actual||(e.atUtc!==actual&&e.atUtc!==actual.replace(/\\.000Z$/,"Z")))
+      if(!actual||(e.atUtc!==actual&&e.atUtc!==actual.replace(/\.000Z$/,"Z")))
         return fail("INVALID_AUDIT_TIMESTAMP");
       times.push(time);
       const bytes=sourceFiles[e.sourceFileKey];
