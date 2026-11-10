@@ -66,6 +66,8 @@ class ContinuousCodexSetupTests(unittest.TestCase):
         self.assertIn("persist-credentials: false", workflow)
         self.assertIn("sandbox: workspace-write", workflow)
         self.assertIn("draft: true", workflow)
+        self.assertIn("gh workflow run ci.yml --ref", workflow)
+        self.assertIn("actions: write", workflow)
         self.assertIn("cancel-in-progress: false", workflow)
         self.assertNotIn("pull_request_target", workflow)
         self.assertNotIn("enable-auto-merge", workflow)
