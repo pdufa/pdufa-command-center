@@ -52,6 +52,23 @@ async function profile(browser,config){
   assert.match(await p.innerText(),/protocol versions 2.1, 3.0 and 3.1/);
   assert.equal(await p.getByRole("link",{name:"Publisher protocol and supplemental materials listing"}).getAttribute("href"),
     "https://jamanetwork.com/journals/jama/fullarticle/2835763");
+  const sapIndex=board.locator('section[aria-label="R73 Launch-HTN published protocol and SAP document index"]');
+  await sapIndex.waitFor({state:"visible",timeout:12000});
+  const sapText=await sapIndex.innerText();
+  assert.match(sapText,/0\/7/);
+  assert.match(sapText,/ABSTAIN/);
+  assert.match(sapText,/NOT/);
+  assert.equal(await sapIndex.getByRole("link",{name:"Open original public JAMA supplement index"}).getAttribute("href"),
+    "https://pmc.ncbi.nlm.nih.gov/articles/PMC12210145/");
+  await sapIndex.locator("details").first().locator("summary").click();
+  const links=sapIndex.locator('a[href*="/articles/instance/12210145/bin/jama-e259413-s"]');
+  assert.equal(await links.count(),7,"exact original indexed protocol and SAP document links");
+  for(let i=1;i<=7;i++){
+    const expected="https://pmc.ncbi.nlm.nih.gov/articles/instance/12210145/bin/jama-e259413-s"+
+      String(i).padStart(3,"0")+".pdf";
+    assert.equal(await links.nth(i-1).getAttribute("href"),expected);
+  }
+  await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-r73-seven-documents.png"),fullPage:false});
   await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-research.png"),fullPage:false});
   p=await inspect("NCT06081894");
   assert.match(await p.innerText(),/Two primary endpoints/);
