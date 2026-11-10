@@ -21,6 +21,7 @@ on:
       - new-platform/frontend/app/predictions/original-documents/OriginalSourceDocumentsR86Client.tsx
       - new-platform/frontend/app/predictions/original-documents/check/route.ts
       - new-platform/frontend/tests/focus-r86-original-document-inventory.test.cjs
+      - new-platform/frontend/data/focus-r86-live-source-census-20261110.json
   workflow_dispatch:
 
 permissions:
