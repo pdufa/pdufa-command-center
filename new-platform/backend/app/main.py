@@ -696,6 +696,8 @@ if os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes"
     from .medical_on_demand import install_routes as install_analyze_now_routes
     install_medical_continuous_routes(app, lambda: ENGINE, require_medical_internal_key, require_medical_pilot_storage)
     install_analyze_now_routes(app, lambda: ENGINE, require_medical_internal_key, require_medical_pilot_storage)
+    from .medical_official_news import install_routes as install_news_automation_routes
+    install_news_automation_routes(app, lambda: ENGINE, require_medical_internal_key, require_medical_pilot_storage)
 
 @app.get("/api/internal/medical-canary-preflight", dependencies=[Depends(require_medical_internal_key)])
 def medical_canary_preflight():
