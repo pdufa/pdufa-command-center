@@ -67,6 +67,13 @@ export default function OriginalDocumentsR86Page(){
    science reviews, current official FDA application statuses, or
    authenticated pre-unblinding SAPs. One record lists a combined protocol/SAP
    document. Use the check button to re-query the official registry on demand.</p>
+  <p className={styles.footer}>
+    <a href="/predictions/original-documents/chronology">
+      Open Step 2 original SAP document-date and upload chronology for all 29 trials
+    </a>
+    {" · "} This compares public file dates to registry primary completion,
+    not verified unblinding, final database lock, or signed SAP certification.
+  </p>
   <OriginalSourceDocumentsR86Client rows={d.rows}/>
   <p className={styles.disclaimer}><a href="/predictions/phase-verification">
    Back to Step 1 phase-source checks
