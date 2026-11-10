@@ -23,7 +23,7 @@ function pacificToday():string {
   return part("year")+"-"+part("month")+"-"+part("day");
 }
 
-export default function CalCalendar(){
+export default function CalCalendar({onSelectCompany,embedded=false}:{onSelectCompany?:(ticker:string,eventId?:string)=>void;embedded?:boolean}={}){
   const [payload,setPayload] = useState<CalendarPayload|null>(null);
   const [error,setError] = useState("");
   const [loading,setLoading] = useState(true);
@@ -93,19 +93,20 @@ export default function CalCalendar(){
   const latestActive = activeEvents[activeEvents.length-1];
   const past = events.filter(e=>e.date<today).length;
   const ahead = events.length-past;
-  const openCompany = (ticker:string) => {
+  const openCompany = (ticker:string,eventId?:string) => {
     setActiveTicker(ticker);
-    if (!dialogRef.current?.open) dialogRef.current?.showModal();
+    onSelectCompany?.(ticker,eventId);
+    if (!embedded && !dialogRef.current?.open) dialogRef.current?.showModal();
   };
 
-  return <main className={styles.page}>
-    <header className={styles.heading}>
+  return <main className={embedded?styles.page+" "+styles.embedded:styles.page}>
+    {!embedded&&<header className={styles.heading}>
       <div><span className={styles.eyebrow}>FOCUS · RESEARCH CALENDAR</span>
         <h1>CAL</h1>
         <p>PDUFA target dates for published issuers within the selected market-cap band. Click a ticker for the company pop-up and every recorded application date.</p>
       </div>
       <a href="/focus" className={styles.focusLink}>View FOCUS source</a>
-    </header>
+    </header>}
     <section className={styles.toolbar} aria-label="CAL controls">
       <div className={styles.capGroup}>
         <label>Minimum market cap
@@ -162,7 +163,7 @@ export default function CalCalendar(){
                   {dayEntries.map(event=><button type="button" key={event.id}
                     title={event.company+" · "+(event.drug||"Drug not recorded")+" · "+displayDate(event.date)}
                     aria-label={event.ticker+", "+event.company+", "+displayDate(event.date)+", open company details"}
-                    onClick={()=>openCompany(event.ticker)}
+                    onClick={()=>openCompany(event.ticker,event.id)}
                     className={styles.eventChip+(sequence.get(event.id)==="NEXT"?" "+styles.nextChip:"")}>
                     <span aria-hidden="true" className={styles.dot}>●</span>
                     <span>{event.ticker}</span>
@@ -180,7 +181,7 @@ export default function CalCalendar(){
         {events.filter(e=>monthNumber(e.date)===month).length===0 && <p>No published PDUFA targets for this month in the current market-cap filter.</p>}
         {events.filter(e=>monthNumber(e.date)===month).map(event=>
           <button type="button" key={event.id} className={styles.agendaRow}
-            onClick={()=>openCompany(event.ticker)}>
+            onClick={()=>openCompany(event.ticker,event.id)}>
             <span>{displayDate(event.date)}</span>
             <strong>{event.ticker}</strong>
             <span>{event.drug||event.company}</span>
@@ -188,7 +189,7 @@ export default function CalCalendar(){
           </button>)}
       </div>
     </section>
-    <dialog className={styles.dialog} ref={dialogRef} aria-label="Company PDUFA details"
+    {!embedded&&<dialog className={styles.dialog} ref={dialogRef} aria-label="Company PDUFA details"
       onClick={e=>{if(e.target===e.currentTarget)e.currentTarget.close();}}>
       <div className={styles.dialogInner}>
         <div className={styles.modalTop}><div><span className={styles.eyebrow}>COMPANY PDUFA CYCLES</span>
@@ -216,6 +217,6 @@ export default function CalCalendar(){
         </div>
         <p className={styles.modalFoot}>Dates may change. A passed target is not a confirmed approval, CRL, or closed PDUFA cycle.</p>
       </div>
-    </dialog>
+    </dialog>}
   </main>;
 }
