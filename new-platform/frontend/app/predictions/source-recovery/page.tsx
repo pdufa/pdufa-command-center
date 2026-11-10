@@ -63,6 +63,13 @@ export default function OriginalSourceRecoveryR89Page(){
     original prospective SAPs or clinical study reports. The historical
     original-version endpoint is still inaccessible from the preview server;
     use the public record-history links.</p>
+   <p className={styles.footer}>
+    <a href="/predictions/scientific-reconciliation">
+      Reconcile exact trial original reported primary outcome and adverse-event groups
+    </a>
+    {" · "} 12 have current public registry aggregate results; issuer/publisher links
+    for the others are source reports only.
+   </p>
    <OriginalHistoryRecoveryR89Client rows={d.rows}
      newLeads={R89_NEW_PUBLIC_SOURCE_LEADS.rows}
      canonicalSourceLeads={R90_CANONICAL_RESULTS_RECOVERY.rows}/>
