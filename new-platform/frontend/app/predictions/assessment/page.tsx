@@ -9,6 +9,7 @@ import AssessmentLevelChart from "../../AssessmentLevelChart";
 import HistoricalTestingChart from "../../HistoricalTestingChart";
 import HistoricalMonthlyLevelTrend from "../../HistoricalMonthlyLevelTrend";
 import Focus29Level3ProvisionalPanel from "../../Focus29Level3ProvisionalPanel";
+import FocusNearTermPdufaSourceChecks from "../../FocusNearTermPdufaSourceChecks";
 import October2026HistoricalAuditPanel from "../../October2026HistoricalAuditPanel";
 import UltomirisHistoricalLevelThreePanel from "../../UltomirisHistoricalLevelThreePanel";
 import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
@@ -41,6 +42,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
       and partial specialty-style investigations. <strong>This is assessment preparation, not 29 completed scientific reviews.</strong>
       The first step in every actual review is to verify current trial phase, status, intervention and indication.
     </p>
+    <FocusNearTermPdufaSourceChecks/>
     <Focus29Level3ProvisionalPanel/>
     <HistoricalMonthlyLevelTrend/>
     <section aria-label="Future prospective FDA predictions"
