@@ -4,6 +4,7 @@ import {R94_ACACIA_COHORT_SAFETY_SOURCE} from
  "../../../../lib/focus-r94-acacia-cross-source-reconciliation";
 import {R95_EU_ACACIA_PROTOCOL_IDENTITY} from
  "../../../../lib/focus-r95-eu-protocol-identity-gates";
+import R106_REVIEW_QUEUE from "../../../../data/focus-r106-acacia-source-evidence-review-queue-20261110.json";
 import R103_PAGE_CENSUS from "../../../../data/focus-r103-acacia-original-pdf-structural-census-20261110.json";
 import R101_TEXT_DIAGNOSTICS from "../../../../data/focus-r101-acacia-pdf-text-diagnostic-readback-20261110.json";
 import {R98_ACACIA_CTIS_ORIGINAL_PDF_RECEIPTS} from "../../../../lib/focus-r98-ctis-original-pdf-receipts";
@@ -75,6 +76,23 @@ export default function PriorityOriginalScientificGatesR93(){
      {" "}{d.launchPublicToplineDate} public topline disclosure. This does not
      establish the real database-lock or blind-break date.
    </p>}
+   {c.trial==="ACACIA_HCM"&&
+    R106_REVIEW_QUEUE.nct==="NCT06081894"&&
+    R106_REVIEW_QUEUE.FDAForecast==="ABSTAIN"&&
+    <details className={styles.coverageDetails}>
+     <summary>Revision 107: original-source KCCQ page review queue — pending verification</summary>
+     <p>Six English Amendment 4 PDF page-object candidates for KCCQ:
+      {" "}{R106_REVIEW_QUEUE.candidatePageObjectIndices.join(", ")}.
+      These are internal object indices, not verified printed page numbers.</p>
+     <p>Original PDF SHA-256: <code>{R106_REVIEW_QUEUE.sourceSha256}</code>.</p>
+     <ol>{R106_REVIEW_QUEUE.reviewSteps.map(step=><li key={step}>{step}</li>)}</ol>
+     <p><b>{R106_REVIEW_QUEUE.status}</b>. No endpoint efficacy,
+      SAP chronology, independent signoff, or FDA forecast is certified.
+      {" "}Open scientific gates: {R106_REVIEW_QUEUE.openScienceGates};
+      {" "}FDA forecast: {R106_REVIEW_QUEUE.FDAForecast}.</p>
+     <a href={"/predictions/scientific-reconciliation/priority-gates/ctis-page-evidence?doc="+R106_REVIEW_QUEUE.sourceDocument}
+      target="_blank" rel="noopener noreferrer">Inspect live source-linked diagnostic</a>
+    </details>}
    {c.trial==="ACACIA_HCM"&&
     R103_PAGE_CENSUS.nct==="NCT06081894"&&
     R103_PAGE_CENSUS.protocol==="CY 6033"&&
