@@ -1,0 +1,35 @@
+name: Continuous Development Validation
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '15 5 * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/fetch_focus_registry_record.py'
+      - 'tests/test_focus_registry_fetch.py'
+      - 'research/focus/**'
+      - '.github/workflows/continuous-development-validation.yml'
+permissions:
+  contents: read
+jobs:
+  stage4-evidence-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run fail-closed registry provenance regression tests
+        run: python -m unittest discover -s tests -p 'test_focus_registry_fetch.py' -v
+      - name: Save execution report
+        if: always()
+        shell: bash
+        run: |
+          mkdir -p development-reports
+          printf 'commit=%s\nrun=%s\nstatus=%s\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" "${{ job.status }}" > development-reports/stage4-validation.txt
+      - name: Upload report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: stage4-validation-report
+          path: development-reports/
+          retention-days: 30
