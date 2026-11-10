@@ -190,7 +190,7 @@ def parse_pubmed_xml(data:bytes,mapping:dict[str,str],*,source_url:str):
         if doi is not None:
             require(len(doi)<180 and doi.startswith("10."),"PUBMED_DOI_UNTRUSTED")
         ncts_in_accessions=set()
-        for bank in med.findall("./DataBankList/DataBank"):
+        for bank in med.findall(".//DataBankList/DataBank"):
             if text(bank.find("./DataBankName")).lower()=="clinicaltrials.gov":
                 for accession in bank.findall("./AccessionNumberList/AccessionNumber"):
                     ncts_in_accessions.update(x.upper() for x in NCT_RE.findall(text(accession)))
@@ -223,6 +223,8 @@ def parse_pubmed_xml(data:bytes,mapping:dict[str,str],*,source_url:str):
           "nctIdentifiersFromArticleTitle":sorted(ncts_in_title),
           "nctIdentifiersFromAbstract":sorted(ncts_in_abstract),
           "exactFocusNctIdentifierPresentInPubmedMetadataOrAbstract":exact,
+          "exactFocusNctIdentifierInArticleTitleOrAbstract":nct in (ncts_in_abstract|ncts_in_title),
+          "exactFocusNctLinkedOnlyAsPubmedDatabankAccession":exact and nct not in (ncts_in_abstract|ncts_in_title),
           "literalSourceTextScopeFlags":scope,
           "sourceEvidentiaryClassification":"EXACT_NCT_ARTICLE_METADATA_LEAD_REQUIRES_SCIENTIFIC_REVIEW"
              if exact else "NO_EXACT_NCT_IDENTIFIER_IN_RETRIEVED_PUBMED_METADATA_ABSTRACT",
@@ -256,6 +258,10 @@ def build_report(r69_sha,rows,source_url):
       "articleMetadataRecordsRetrieved":11,
       "exactNctIdentifiersFoundInRetrievedMetadataOrAbstract":present,
       "noExactNctIdentifierFoundInRetrievedMetadataOrAbstract":no_match,
+      "exactNctMentionedInArticleTitleOrAbstract":sum(
+          r["exactFocusNctIdentifierInArticleTitleOrAbstract"] for r in rows),
+      "exactNctLinkedOnlyAsPubmedDatabankAccession":sum(
+          r["exactFocusNctLinkedOnlyAsPubmedDatabankAccession"] for r in rows),
       "articlesWithIndependentlyAdjudicatedPivotalOutcomes":0,
       "qualifiedReviewerSignoffs":0,
       "scoredScientificMethods":0,
@@ -279,7 +285,9 @@ def summary(report):
       "",
       f'- Original PubMed article metadata rows: **{report["articleMetadataRecordsRetrieved"]}/11**.',
       f'- Exact NCT literal identifier found in PubMed metadata/abstract: **{report["exactNctIdentifiersFoundInRetrievedMetadataOrAbstract"]}/11**.',
-      f'- Exact NCT identifier not found in this metadata/abstract: **{report["noExactNctIdentifierFoundInRetrievedMetadataOrAbstract"]}/11**.',
+      f'- Exact NCT identifier not found anywhere in this metadata/abstract: **{report["noExactNctIdentifierFoundInRetrievedMetadataOrAbstract"]}/11**.',
+      f'- Exact NCT explicitly in article title or abstract: **{report["exactNctMentionedInArticleTitleOrAbstract"]}/11**.',
+      f'- Exact NCT linked only as PubMed databank accession: **{report["exactNctLinkedOnlyAsPubmedDatabankAccession"]}/11**.',
       "- Independence reviewed pivotal Phase 3 primary results: **0**.",
       "",
       "| Exact FOCUS NCT | PubMed ID | Article title from PubMed | Source-only literal article scope flags | Exact NCT string found? |",
