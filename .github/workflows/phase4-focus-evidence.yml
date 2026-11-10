@@ -59,6 +59,9 @@ jobs:
       - name: Inventory evidence gaps across all FOCUS trials
         run: |
           python scripts/medical/subspecialty_evidence_gap_report.py --input phase4-artifacts/subspecialty-evidence-leads.json --output phase4-artifacts/subspecialty-evidence-gaps.json
+      - name: Prepare specialist research work queue
+        run: |
+          python scripts/medical/subspecialty_research_queue.py --gaps phase4-artifacts/subspecialty-evidence-gaps.json --output phase4-artifacts/subspecialty-research-queue.json
       - name: Summarize research status
         if: always()
         run: |
@@ -82,5 +85,6 @@ jobs:
             phase4-artifacts/subspecialty-dossiers.json
             phase4-artifacts/subspecialty-evidence-leads.json
             phase4-artifacts/subspecialty-evidence-gaps.json
+            phase4-artifacts/subspecialty-research-queue.json
           if-no-files-found: warn
           retention-days: 90
