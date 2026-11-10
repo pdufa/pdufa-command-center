@@ -1,0 +1,46 @@
+name: FOCUS Primary Registry Evidence Capture
+
+on:
+  workflow_dispatch:
+    inputs:
+      nct:
+        description: "Canonical FOCUS NCT identifier"
+        required: true
+        default: "NCT05507203"
+
+permissions:
+  contents: read
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate requested trial is in canonical FOCUS roster
+        env:
+          NCT: ${{ inputs.nct }}
+        run: |
+          python - <<'PY'
+          import json, os, re
+          from pathlib import Path
+          nct=os.environ["NCT"]
+          assert re.fullmatch(r"NCT[0-9]{8}", nct), "Invalid NCT identifier"
+          records=json.loads(Path("new-platform/frontend/data/p3PostDataActive.json").read_text())["records"]
+          assert nct in {r["nct"] for r in records}, "NCT is not on canonical FOCUS roster"
+          PY
+      - name: Fetch registry evidence (fail closed)
+        env:
+          NCT: ${{ inputs.nct }}
+        run: python scripts/fetch_focus_registry_evidence.py "$NCT" --out-dir registry-evidence
+      - name: Upload source record and provenance
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-registry-${{ inputs.nct }}
+          path: registry-evidence/
+          retention-days: 30
+          if-no-files-found: error
