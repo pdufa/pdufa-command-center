@@ -24,6 +24,23 @@ async function profile(browser,config){
   assert.equal(response?.status(),200);
   const board=page.locator('section[aria-label="R68 scientific evidence recovery board"]');
   await board.waitFor({state:"visible",timeout:18000});
+  const allCoverage=board.locator('section[aria-label="R81 all FOCUS source readiness"]');
+  await allCoverage.waitFor({state:"visible",timeout:12000});
+  const coverageText=await allCoverage.innerText();
+  assert.match(coverageText,/Exact FOCUS trials/);
+  assert.match(coverageText,/Provisional FDA cycles/);
+  assert.match(coverageText,/Pivotal original paper leads in R71/);
+  assert.match(coverageText,/Not indexed in five-study R71/);
+  assert.match(coverageText,/ABSTAIN/);
+  await allCoverage.locator("details").first().locator("summary").click();
+  assert.equal(await allCoverage.locator("article").count(),23,
+    "exact 23 provisional FDA-cycle evidence groups");
+  const trialLinks=allCoverage.locator('a[href^="/predictions/assessment?nct="]');
+  assert.ok(await trialLinks.count()>=29,"all original 29 source NCTs represented across cycles");
+  assert.equal(await trialLinks.filter({hasText:"NCT06153693"}).count(),1,
+    "MLYS original NCT must appear in one application group");
+  await allCoverage.scrollIntoViewIfNeeded();
+  await page.screenshot({path:path.join(OUT,config.name+"-focus-r81-29-trial-23-cycle-coverage.png"),fullPage:false});
   const find=board.getByRole("searchbox",{name:"Search source recovery trials"});
   const cases=()=>board.locator('details[aria-label^="R68 evidence for"]');
   async function inspect(nct){
