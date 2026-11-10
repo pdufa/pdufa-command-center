@@ -1,0 +1,46 @@
+{
+  "schema": "MAIN_R103_ORIGINAL_CTIS_PDF_STRUCTURE_READBACK_NOT_FULL_TEXT",
+  "date": "2026-11-10",
+  "nct": "NCT06081894",
+  "protocol": "CY 6033",
+  "euct": "2023-505797-15-00",
+  "documents": [
+    {
+      "key": "am4-protocol",
+      "structuralPageDictionariesFound": 90,
+      "pageTreeHint": 0,
+      "objectStreams": 5,
+      "structurallyConsistent": false
+    },
+    {
+      "key": "am4-protocol-greek",
+      "structuralPageDictionariesFound": 102,
+      "pageTreeHint": 102,
+      "objectStreams": 0,
+      "structurallyConsistent": true
+    },
+    {
+      "key": "am3-synopsis",
+      "structuralPageDictionariesFound": 2,
+      "pageTreeHint": 2,
+      "objectStreams": 1,
+      "structurallyConsistent": false
+    },
+    {
+      "key": "protocol-addendum-a",
+      "structuralPageDictionariesFound": 5,
+      "pageTreeHint": 0,
+      "objectStreams": 20,
+      "structurallyConsistent": false
+    }
+  ],
+  "source": "Four HTTP 200 readbacks from R102 Vercel preview; exact original PDF SHA checked server-side",
+  "fullPageTextAvailable": false,
+  "pageCitationsCertified": false,
+  "signedFinalSAPAuthenticated": false,
+  "independentScientificSignoff": false,
+  "ACACIAGatesOpen": 4,
+  "LaunchGatesOpen": 7,
+  "FDAForecast": "ABSTAIN",
+  "caution": "90/102/2/5 are detected uncompressed /Type /Page dictionaries, not necessarily complete actual page counts where object streams are present. Only Greek protocol structural count is consistent; no pages scientifically reviewed."
+}
