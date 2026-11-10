@@ -10,7 +10,7 @@ import type {inspectR86CurrentStudy} from "./focus-r86-original-document-invento
 type Inspection=NonNullable<ReturnType<typeof inspectR86CurrentStudy>>;
 const NCT=/^NCT\d{8}$/u;
 const NAME=/^[A-Za-z0-9][A-Za-z0-9_.() -]{0,129}\.pdf$/u;
-export const R87_MAX_SOURCE_PDF_BYTES=15_000_000;
+export const R87_MAX_SOURCE_PDF_BYTES=40_000_000;
 export const R87_SOURCE_CAVEAT=
  "Public CDN byte receipt, not an independently authenticated signed original, approval of statistical methods, proof of pre-unblinding SAP finalization, database-lock timeline, scientific assessment, or FDA forecast.";
 
