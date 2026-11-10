@@ -16,6 +16,9 @@ test("CAL COMPANY NEWS are direct destinations and synchronized UI panels",()=>{
  assert.match(hub,/showModal\(\)/);
  assert.match(hub,/newsFilter/);
  assert.match(hub,/automation\?\.state/);
+ assert.match(hub,/jumpFromNews/);
+ assert.match(hub,/focusDate=\{focusDate\}/);
+ assert.match(hub,/goCal/);
  assert.match(get("app","CalCalendar.tsx"),/onSelectCompany\?\.\(ticker,eventId\)/);
 });
 test("NEWS distinguishes official news from recorded document leads",()=>{
