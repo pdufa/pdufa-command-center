@@ -37,7 +37,7 @@ function selectedRun(first:Run,second:Run){
 /** Snapshot data is compiled from outcome-exposed manual research, NOT blind FDA forecasts.
  * Display is selected-level dependent; exact FDA benchmark case identities never change.
  */
-export default function HistoricalMonthlyLevelTrend(){
+export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:boolean}){
   const [choice,setChoice]=useState("3");
   if(data.schemaVersion!==2||
     data.dataset!=="HISTORICAL_MONTHLY_LEVEL_COMPARISONS_2026_V2"||
@@ -115,19 +115,28 @@ export default function HistoricalMonthlyLevelTrend(){
   const ticks=Array.from({length:Math.round((100-bottom)/10)+1},(_,i)=>bottom+i*10);
   const px=(i:number)=>L+i*(W-L-R)/(cohorts.length-1);
   const py=(v:number)=>T+(100-v)*(H-T-B)/(100-bottom);
+  // Mobile chart uses a dedicated small viewport, not a clipped 650px desktop SVG.
+  const MW=360,MH=244,ML=34,MR=10,MT=26,MB=47;
+  const mx=(i:number)=>ML+i*(MW-ML-MR)/(cohorts.length-1);
+  const my=(v:number)=>MT+(100-v)*(MH-MT-MB)/(100-bottom);
   const lines=["#168267","#415F9D","#9C4B8E","#B07813"];
   const lineColor=(i:number)=>lines[i%lines.length];
   const panel={border:"1px solid #d7d5ea",borderRadius:11,background:"#f8f7ff",padding:"13px 15px"} as const;
-  return <section data-testid="historical-monthly-level-trend"
+  return <section id="historical-performance" data-testid="historical-monthly-level-trend"
     aria-label="Level-dependent historical FDA assessment dashboard January through October 2026"
     style={{border:"1px solid #c7bddf",borderRadius:14,background:"#fff",
       padding:"clamp(14px,2vw,22px)",margin:"0 0 22px",color:dark}}>
     <div style={{background:"#4a277f",color:"#fff",borderRadius:9,padding:"11px 14px",
       fontSize:15,fontWeight:850}}>◴ OLD PREDICTIONS · HISTORICAL LEVEL COMPARISONS</div>
-    <p style={{color:muted,fontSize:13,lineHeight:1.6}}>
+    {compact?<p style={{fontSize:13,color:"#304e47",margin:"9px 0 4px"}}>
+      <strong>Historical trend — Level 3:</strong> 100 of 106 retrospective matches
+      (94.3%). The line below shows cumulative agreement, not monthly accuracy or
+      verified blind performance.
+    </p>:null}
+    {!compact?<p style={{color:muted,fontSize:13,lineHeight:1.6}}>
       Outcome-aware Level 3-style research reconstructed after FDA decisions, not genuine blind accuracy.
       The level selector updates every historical metric on this panel; live forecasts are separate.
-    </p>
+    </p>:null}
     <div style={{display:"flex",flexWrap:"wrap",alignItems:"end",gap:14,margin:"14px 0"}}>
       <div style={{display:"grid",gap:5,minWidth:230,flex:"0 1 285px"}}>
         <label htmlFor="historical-assessment-level-select"
@@ -173,18 +182,23 @@ export default function HistoricalMonthlyLevelTrend(){
       </div>
     </div>
     <h2 style={{fontSize:20,margin:"12px 0 6px"}}>Cumulative FDA agreement trend · Jan–Oct 2026</h2>
+    <p data-testid="historical-trend-key" style={{fontSize:13,fontWeight:800,color:"#096C56",margin:"4px 0 8px"}}>
+      <span aria-hidden="true" style={{display:"inline-block",width:35,height:5,
+        borderRadius:4,verticalAlign:"middle",background:"#096C56",marginRight:7}}/>
+      Solid green line = cumulative historical agreement
+    </p>
     <p style={{fontSize:12,color:muted,lineHeight:1.5,margin:"0 0 12px"}}>
       Each plotted point includes all scored applications up to that month within its recorded level.
       This is a case-count-weighted cumulative trend, not a line connecting isolated monthly percentages.
     </p>
-    <div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:10}}>
+    {!compact?<div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:10}}>
       {cohorts.map(cohort=><div key={cohort.cohortId}
         data-testid={"month-color-"+cohort.yearMonth}
         style={{display:"flex",alignItems:"center",gap:6,fontSize:12,color:dark}}>
         <span style={{width:11,height:11,borderRadius:"50%",background:cohort.color}}/>
         {cohort.monthLabel}
       </div>)}
-    </div>
+    </div>:null}
     <div style={{display:"flex",gap:14,flexWrap:"wrap",marginBottom:8}}>
       {series.map((s,i)=><div key={s.level}
         data-testid={"historical-level-tag-"+s.level}
@@ -195,13 +209,13 @@ export default function HistoricalMonthlyLevelTrend(){
         </svg>Level {s.level}
       </div>)}
     </div>
-    <div style={{overflowX:"auto",background:"#f8faf9",borderRadius:10,padding:7}}>
+    <div className="historical-trend-desktop" style={{overflowX:"auto",background:"#f8faf9",borderRadius:10,padding:7}}>
       <svg data-testid="historical-monthly-level-line-chart" role="img"
         aria-label={"Case-weighted cumulative historical agreement trend: "+
           series.map(s=>"Level "+s.level+" "+rate(s.matches,s.total)+
           " across "+s.covered+" recorded months").join("; ")+". Not blind."}
         viewBox={"0 0 "+W+" "+H}
-        style={{display:"block",minWidth:650,width:"100%",height:"auto"}}>
+        style={{display:"block",width:"100%",height:"auto"}}>
         {ticks.map(t=><g key={t}>
           <line x1={L} y1={py(t)} x2={W-R} y2={py(t)} stroke="#dce7e0"/>
           <text x={L-12} y={py(t)+4} textAnchor="end" fontSize="13" fill="#5a6e66">{t}%</text>
@@ -211,7 +225,7 @@ export default function HistoricalMonthlyLevelTrend(){
             const next=s.months[index+1];
             return point&&next?<line key={index} x1={px(index)} y1={py(point.cumulativeRate)}
               x2={px(index+1)} y2={py(next.cumulativeRate)}
-              stroke={lineColor(seriesIndex)} strokeWidth={3}
+              stroke={lineColor(seriesIndex)} strokeWidth={6} strokeLinecap="round"
               strokeDasharray={seriesIndex===0?undefined:"8 5"}/>:null;
           })}
           {s.months.map((point,index)=>point?<g key={point.cohort.cohortId}>
@@ -233,11 +247,56 @@ export default function HistoricalMonthlyLevelTrend(){
         </text>)}
       </svg>
     </div>
+    <div className="historical-trend-mobile" data-testid="historical-trend-mobile-view"
+      style={{display:"none",background:"#f8faf9",borderRadius:10,padding:"8px 2px"}}>
+      <svg data-testid="historical-mobile-trend-line-chart" role="img"
+        aria-label={"Mobile cumulative FDA historical agreement Jan through Oct 2026. "+
+          series.map(s=>"Level "+s.level+": "+rate(s.matches,s.total)).join("; ")+
+          ". Not verified blind accuracy."}
+        viewBox={"0 0 "+MW+" "+MH}
+        style={{display:"block",width:"100%",maxWidth:520,height:"auto",margin:"0 auto"}}>
+        {ticks.filter((_,i)=>i%2===0||i===ticks.length-1).map(t=><g key={t}>
+          <line x1={ML} x2={MW-MR} y1={my(t)} y2={my(t)} stroke="#d8e5dc" strokeWidth="1"/>
+          <text x={ML-5} y={my(t)+3} fill="#527167" fontSize="10" textAnchor="end">{t}%</text>
+        </g>)}
+        {series.map((s,i)=>{
+          const plotted=s.months.flatMap((point,index)=>
+            point?[{x:mx(index),y:my(point.cumulativeRate),index,point}]:[]);
+          return <g key={s.level} data-testid={"mobile-level-line-"+s.level}>
+            {plotted.length>1&&<polyline
+              data-testid={"mobile-cumulative-path-"+s.level}
+              points={plotted.map(pt=>pt.x.toFixed(2)+","+pt.y.toFixed(2)).join(" ")}
+              fill="none" stroke={lineColor(i)} strokeWidth="4.5"
+              strokeLinecap="round" strokeLinejoin="round"
+              strokeDasharray={i>0?"8 5":undefined}/>}
+            {plotted.map(pt=><circle key={pt.index} cx={pt.x} cy={pt.y} r="4.5"
+              fill={pt.point.cohort.color} stroke="#fff" strokeWidth="1.5"/>)}
+            {choice!=="all"&&plotted.length>0&&<g>
+              <text x={Math.max(ML+17,plotted[0].x)}
+                y={Math.min(MH-MB-12,plotted[0].y+21)}
+                fontSize="11" fontWeight="800" textAnchor="start" fill="#155F50">
+                {rate(plotted[0].point.cumulativeMatches,plotted[0].point.cumulativeTotal)}
+              </text>
+              <text x={Math.min(MW-17,plotted[plotted.length-1].x)}
+                y={Math.max(16,plotted[plotted.length-1].y-11)}
+                fontSize="11" fontWeight="850" textAnchor="end" fill="#096C56">
+                {rate(plotted[plotted.length-1].point.cumulativeMatches,plotted[plotted.length-1].point.cumulativeTotal)}
+              </text>
+            </g>}
+          </g>;
+        })}
+        {cohorts.map((c,i)=><text key={c.cohortId} x={mx(i)} y={MH-MB+22}
+          textAnchor="middle" fontSize="10" fontWeight="800" fill={c.color}>
+          {c.monthLabel.slice(0,3)}
+        </text>)}
+      </svg>
+    </div>
     <p style={{color:muted,fontSize:11,lineHeight:1.5,margin:"7px 0 10px"}}>
       Gaps mean that level has no recorded run for that month. The result changes with level,
       but differences between calendar months can reflect different drug cohorts and selection rules.
       An improved historical curve does not establish improved prospective prediction accuracy.
     </p>
+    {!compact?<>
     <div style={{overflowX:"auto",border:"1px solid #e2e9e5",borderRadius:9}}>
       <table data-testid="historical-monthly-level-table"
         style={{borderCollapse:"collapse",width:"100%",minWidth:930,fontSize:12}}>
@@ -294,6 +353,12 @@ export default function HistoricalMonthlyLevelTrend(){
     <p style={{fontSize:12,color:"#815b27",fontWeight:800,lineHeight:1.55}}>
       All results here are OUTCOME-AWARE RECONSTRUCTIONS. They must never enter live FDA
       forecast accuracy, active FOCUS ranking, or probability calibration.
-    </p>
+    </p></>:
+      <p style={{fontSize:13,margin:"9px 0 2px",fontWeight:800}}>
+        <a href="/predictions/assessment#historical-performance"
+          style={{color:"#08725d",textDecoration:"underline"}}>
+          Full Level 3–20 historical chart, source table and review methods
+        </a>
+      </p>}
   </section>;
 }
