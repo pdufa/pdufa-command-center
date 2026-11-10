@@ -105,7 +105,10 @@ export function inspectR92CurrentProtocolResults(row:Row,body:unknown){
  },body);
  if(!sourceResult||sourceResult.sourceStatus!=="ORIGINAL_PUBLIC_AGGREGATE_RESULTS_POSTED_NOT_ADJUDICATED")
   return null;
- const planned=[];
+ const planned:Array<{
+  key:string;title:string;timeFrame:string|null;description:string|null;
+  normalizedTitle:string;normalizedTimeFrame:string
+ }> = [];
  for(let i=0;i<plannedRaw.length;i++){
   const p=obj(plannedRaw[i]);
   const title=str(p?.measure,900);
