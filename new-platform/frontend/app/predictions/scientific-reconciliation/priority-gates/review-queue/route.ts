@@ -8,7 +8,7 @@ const headers={"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"} as
  */
 export async function GET(){
  const source=R98_ACACIA_CTIS_ORIGINAL_PDF_RECEIPTS;
- const original=source.originalDocuments.find(x=>x.key==="am4-protocol");
+ const original=source?.originalDocuments.find(x=>x.key==="am4-protocol");
  const diagnostic=READBACK.documents.find(x=>x.key==="am4-protocol");
  if(!original||!diagnostic||
   QUEUE.nct!=="NCT06081894"||QUEUE.protocol!=="CY 6033"||
