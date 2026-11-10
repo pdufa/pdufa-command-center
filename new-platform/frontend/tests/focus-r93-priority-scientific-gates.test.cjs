@@ -67,6 +67,20 @@ test("R93 prior original ACACIA registry versions correctly frame one-to-two pri
  assert.ok(acacia.gates.some(x=>x.id==="DUAL_PRIMARY_HISTORY"));
  assert.match(acacia.timelineSummary,/SAP signature and first-unblinding chronology are NOT/);
  assert.ok(acacia.gates.every(x=>x.resolvedByAuthenticatedOriginals===false));
+ const article=acacia.newlyIndexedPublisherProtocolAttachmentLead;
+ assert.ok(article);
+ assert.equal(article.sourcePublished,"2026-08-28");
+ assert.match(article.sourceArticle,/nejm\.org\/doi\/full\/10\.1056\/NEJMoa2603021/);
+ assert.equal(article.publisherSupplementProtocolListed,true);
+ assert.equal(article.advertisedProtocolPdfFilename,"nejmoa2603021_protocol.pdf");
+ assert.equal(article.publisherSupplementaryAppendixListed,true);
+ assert.equal(article.advertisedAppendixPdfFilename,"nejmoa2603021_appendix.pdf");
+ assert.equal(article.sourceReportedRandomizedAficamten,258);
+ assert.equal(article.sourceReportedRandomizedPlacebo,259);
+ assert.equal(article.sourceReportedTotalRandomized,517);
+ assert.equal(article.originalPublisherSupplementPdfBytesAuthenticated,false);
+ assert.equal(article.originalControlledFinalSAPAuthenticated,false);
+ assert.equal(article.trialSafetyIndependentlyAdjudicated,false);
 });
 test("R93 original Launch SAP imprint versus public topline does not counterfeit true database lock or unblinding chronology",()=>{
  const d=R93_PRIORITY_SCIENTIFIC_GATES;
@@ -171,6 +185,8 @@ test("R93 page is linked from previous original scientific work, with original s
  assert.match(page,/NOT AUTHENTICATED/);
  assert.match(page,/Regulatory outcome: ABSTAIN/);
  assert.match(page,/11 original-evidence requirements to CSV/);
+ assert.match(page,/New publisher-indexed ACACIA-HCM original protocol and appendix leads/);
+ assert.match(page,/Exact supplement bytes have not been captured/);
  assert.match(prev,/\/predictions\/scientific-reconciliation\/priority-gates/);
  assert.match(route,/safeCell/);
  assert.match(route,/FDAForecast:"ABSTAIN"/);
