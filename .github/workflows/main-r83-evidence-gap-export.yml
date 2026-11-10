@@ -46,6 +46,8 @@ on:
       - new-platform/frontend/app/predictions/scientific-reconciliation/PostedResultsR91Client.tsx
       - new-platform/frontend/app/predictions/scientific-reconciliation/check/route.ts
       - new-platform/frontend/tests/focus-r91-posted-results-reconciliation.test.cjs
+      - new-platform/frontend/lib/focus-r91-source-audit-readiness.ts
+      - new-platform/frontend/data/focus-r91-posted-original-results-readbacks-20261110.json
   workflow_dispatch:
 
 permissions:
@@ -91,7 +93,7 @@ jobs:
         shell: bash
         run: |
           {
-            echo "## Revisions 83-91: 29 exact NCT sources, 12 original posted efficacy/safety reports, zero adjudication"
+            echo "## Revisions 83-91: 12 exact original posted outcome and safety reads; 16 primary results, 244 AE terms; zero review signoffs"
             echo "29 exact FOCUS NCT rows, with all 23 provisional application cycle links and original-source absence explicitly described."
             echo "Source and schema integrity validated; source-reported application goals are not FDA verified. CSV has no scientific grade, calibrated probability or production write."
             echo "Readback blocked by official historical API is not absent original evidence; archived R36 versions are separate signed-off-by-scientific-review=FALSE original source receipts. Public document and upload dates versus primary completion are not unblinding or locked-SAP proof; posted protocol/SAP metadata is not signed chronology or science; live registry field matching is not phase signoff. 0 independent clinical signoffs; 0 validated future FDA forecasts. Scientific installation remains incomplete."
