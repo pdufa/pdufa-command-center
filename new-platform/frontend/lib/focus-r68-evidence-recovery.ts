@@ -127,7 +127,7 @@ export function buildR68EvidenceRecovery(
       ...(p.sourcePhase==="Combined Phase 2/3"?
         ["Combined Phase 2/3 label: verify pivotal design suitability"]:[]),
       ...(p.allocation==="NA"?
-        ["Registry allocation N/A: do not infer randomization"]:[]),
+        ["Allocation N/A in registry: do not infer randomization"]:[]),
       ...x.reviewExceptions.map(s=>s.replaceAll("_"," ").toLowerCase())
     ];
     rows.push({
