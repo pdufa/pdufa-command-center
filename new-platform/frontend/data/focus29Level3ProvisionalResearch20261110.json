@@ -1,0 +1,1336 @@
+{
+  "schemaVersion": 1,
+  "kind": "FOCUS_29_LEVEL3_STYLE_PROVISIONAL_APPLICATION_RESEARCH_NOT_PRODUCTION_FORECAST",
+  "asOf": "2026-11-10",
+  "rosterAsOf": "2026-11-09",
+  "trialRosterGitHubUrl": "https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/data/p3PostDataActive.json",
+  "registryScanGitHubUrl": "https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/data/focus-29-registry-source-scan-20261108.json",
+  "applicationCycleSourceGitHubUrl": "https://github.com/pdufa/pdufa-command-center/blob/main/new-platform/frontend/lib/medical-intelligence-applications.ts",
+  "policy": {
+    "independentLevel3ScientificReviewsComplete": false,
+    "approvedNumericProbabilities": 0,
+    "validatedFDAForecasts": 0,
+    "verifiedBlindForecasts": 0,
+    "notPastHistoricalAccuracy": true,
+    "notActivePredictionEngine": true,
+    "notEligibleForLiveProspectiveAccuracy": true,
+    "notEligibleForTradingExecution": true,
+    "preserveExistingCanonicalForecasts": true,
+    "requiresIndependentSourceVerificationAndReviewerGate": true,
+    "description": "Date-frozen prospective research hypotheses based on three qualitative research layers: clinical evidence, patient benefit-risk, and FDA/CMC. These are not the full independently audited 800-method Level3 assessment, no verified Clinical Study Report/SAP adjudication, and no calibrated probabilities."
+  },
+  "summary": {
+    "exactNcts": 29,
+    "applicationCycles": 23,
+    "linkedTrialApplicationPairs": 30,
+    "approvalLeans": 12,
+    "crlLeans": 5,
+    "abstentions": 5,
+    "alreadyApprovedApplications": 1,
+    "validatedPredictions": 0
+  },
+  "cycles": [
+    {
+      "cycleId": "abvx-uc",
+      "ticker": "ABVX",
+      "drug": "Obefazimod",
+      "indication": "Ulcerative colitis",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "PLANNED",
+      "reportedPdufaGoal": null,
+      "associatedNcts": [
+        "NCT05507203",
+        "NCT05507216"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "APPROVAL_LEAN",
+      "confidenceDescription": "MODERATE",
+      "level1ClinicalEvidence": "Positive ABTECT randomized induction/maintenance program: clinically meaningful Week-44 remission and endoscopic endpoints.",
+      "level2BenefitRisk": "Long-term infection, malignancy and tolerability denominator and proposed dose require full review.",
+      "level3RegulatoryManufacturing": "Planned NDA, not yet an FDA-reviewed application; confirm filing, protocol/SAP and manufacturing clearance.",
+      "sourceDate": "2026-06-01",
+      "applicationReferenceUrl": "https://abivax.gcs-web.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial",
+      "clinicalEvidenceReferenceUrl": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-landmark-phase-3-abtect-maintenance-trial",
+      "additionalEvidenceNeeded": "Which dose and ABTECT induction/maintenance analyses are in the proposed NDA, and does FDA agree on the full safety package?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "achv-cytisinicline",
+      "ticker": "ACHV",
+      "drug": "Cytisinicline",
+      "indication": "Nicotine dependence / smoking cessation",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "PRIOR_CRL_RESUBMISSION_PLANNED",
+      "reportedPdufaGoal": null,
+      "associatedNcts": [
+        "NCT04576949",
+        "NCT05206370"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "ABSTAIN",
+      "confidenceDescription": "NOT_RATED",
+      "level1ClinicalEvidence": "Two positive smoking-cessation trials support efficacy; this is not itself proof of approvable CMC.",
+      "level2BenefitRisk": "Third-party manufacturing failure led to a June 2026 CRL, and replacement-site validation is not adjudicated.",
+      "level3RegulatoryManufacturing": "No confirmed accepted resubmission at snapshot; FDA manufacturing clearance and labeling required before directional new-cycle call.",
+      "sourceDate": "2026-08-11",
+      "applicationReferenceUrl": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-344624/achv-20260630.htm",
+      "clinicalEvidenceReferenceUrl": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-344624/achv-20260630.htm",
+      "additionalEvidenceNeeded": "Has replacement manufacturing facility validation and labeling resolved the June 2026 CRL deficiencies?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "apmd-ad109",
+      "ticker": "APMD",
+      "drug": "AD109 (aroxybutynin + atomoxetine)",
+      "indication": "Obstructive sleep apnea",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "UNDER_REVIEW",
+      "reportedPdufaGoal": "2027-02-28",
+      "associatedNcts": [
+        "NCT05811247",
+        "NCT05813275"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "APPROVAL_LEAN",
+      "confidenceDescription": "LOW",
+      "level1ClinicalEvidence": "Two pivotal Phase 3 obstructive sleep apnea trials support reduction in apnea-hypopnea index.",
+      "level2BenefitRisk": "Cardiovascular risk, anticholinergic effects and adherence/functional benefit need scrutiny.",
+      "level3RegulatoryManufacturing": "NDA accepted for February 2027 target, but agency safety/CMC review is not independently available.",
+      "sourceDate": "2026-07-14",
+      "applicationReferenceUrl": "https://ir.apnimed.com/news-releases/news-release-details/apnimed-announces-fda-acceptance-new-drug-application-ad109",
+      "clinicalEvidenceReferenceUrl": "https://ir.apnimed.com/news-releases/news-release-details/apnimed-reports-second-quarter-2026-financial-results-and",
+      "additionalEvidenceNeeded": "Do dual pivotal AHI effects and intercurrent-event sensitivity outweigh cardiovascular, anticholinergic and adherence concerns?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "axsm-axs12",
+      "ticker": "AXSM",
+      "drug": "AXS-12 (reboxetine)",
+      "indication": "Cataplexy in narcolepsy",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "UNDER_REVIEW",
+      "reportedPdufaGoal": "2027-05-01",
+      "associatedNcts": [
+        "NCT05059223",
+        "NCT05113745"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "APPROVAL_LEAN",
+      "confidenceDescription": "LOW",
+      "level1ClinicalEvidence": "Reported cataplexy benefit from controlled narcolepsy studies supports the submitted indication.",
+      "level2BenefitRisk": "Dose-related adrenergic tolerability, long-term durability, dropouts and source statistical analysis remain unresolved.",
+      "level3RegulatoryManufacturing": "FDA accepted NDA with May 2027 PDUFA target; no final inspections or label available.",
+      "sourceDate": "2026-07-15",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526304039/axsm-ex99_1.htm",
+      "clinicalEvidenceReferenceUrl": "https://www.axsome.com/news/axsome-therapeutics-announces-fda-acceptance-of-new-drug-app-13191",
+      "additionalEvidenceNeeded": "Are cataplexy efficacy, long-term safety and relapse findings acceptable for the accepted NDA?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "blte-stargardt",
+      "ticker": "BLTE",
+      "drug": "Tinlarebant",
+      "indication": "Stargardt disease type 1",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "UNDER_REVIEW",
+      "reportedPdufaGoal": "2027-02-12",
+      "associatedNcts": [
+        "NCT05244304"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "APPROVAL_LEAN",
+      "confidenceDescription": "LOW",
+      "level1ClinicalEvidence": "Phase 3 DRAGON reported reduction in retinal lesion growth; priority review accepted.",
+      "level2BenefitRisk": "Imaging surrogate clinical meaningfulness, visual-function preservation and ocular safety remain uncertain.",
+      "level3RegulatoryManufacturing": "First-in-disease NDA receives FDA priority review for February 2027; review risks remain.",
+      "sourceDate": "2026-08-11",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/1889109/000110465926094040/tm2622827d1_ex99-1.htm",
+      "clinicalEvidenceReferenceUrl": "https://investors.belitebio.com/news-releases/news-release-details/belite-bio-announces-us-food-and-drug-administration-acceptance",
+      "additionalEvidenceNeeded": "Is imaging-based retinal lesion-growth benefit sufficiently clinically meaningful and robust, with tolerable ocular adverse effects?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "capr-deramiocel",
+      "ticker": "CAPR",
+      "drug": "Deramiocel",
+      "indication": "Duchenne muscular dystrophy",
+      "applicationType": "BLA",
+      "applicationStatusAsRecorded": "UNDER_REVIEW",
+      "reportedPdufaGoal": "2026-11-22",
+      "associatedNcts": [
+        "NCT05126758"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "CRL_LEAN",
+      "confidenceDescription": "LOW",
+      "level1ClinicalEvidence": "Later HOPE-3 analyses offer a potential positive signal, but FDA's earlier primary PUL analysis and review objections were substantive.",
+      "level2BenefitRisk": "Clinical meaningfulness of original upper-limb endpoint and patient-level durability unclear; cell product safety requires review.",
+      "level3RegulatoryManufacturing": "2025 FDA CRL and July 2026 FDA advisory briefing identified material efficacy/statistical issues; current-cycle resolution not verified.",
+      "sourceDate": "2026-08-24",
+      "applicationReferenceUrl": "https://www.capricor.com/investors/news-events/press-releases/detail/354/capricor-therapeutics-announces-extension-of-pdufa-target",
+      "clinicalEvidenceReferenceUrl": "https://www.fda.gov/media/193839/download",
+      "additionalEvidenceNeeded": "Have FDA's documented efficacy/statistical objections and inspection observations been resolved for the refined proposed indication?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "cldx-barzolvolimab",
+      "ticker": "CLDX",
+      "drug": "Barzolvolimab",
+      "indication": "Chronic spontaneous urticaria",
+      "applicationType": "BLA",
+      "applicationStatusAsRecorded": "PLANNED",
+      "reportedPdufaGoal": null,
+      "associatedNcts": [
+        "NCT06445023",
+        "NCT06455202"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "ABSTAIN",
+      "confidenceDescription": "NOT_RATED",
+      "level1ClinicalEvidence": "Two Phase 3 EMBARQ studies reportedly met primary and key secondary UAS7 endpoints with strong effects.",
+      "level2BenefitRisk": "52-week exposure, immunologic adverse effects and completion of the full safety dataset still under development.",
+      "level3RegulatoryManufacturing": "BLA only planned for 2027; no accepted application cycle or PDUFA target exists at this cutoff.",
+      "sourceDate": "2026-11-05",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/744218/000110465926123322/cldx-20260930x10q.htm",
+      "clinicalEvidenceReferenceUrl": "https://ir.celldex.com/news-releases/news-release-details/celldex-announces-positive-results-phase-3-embarq-csu1-and",
+      "additionalEvidenceNeeded": "Will durable response, immunologic safety, 52-week follow-up and CMC support the 2027 BLA filing?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "cogt-gist",
+      "ticker": "COGT",
+      "drug": "Bezuclastinib + sunitinib",
+      "indication": "GIST after prior imatinib",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "UNDER_REVIEW",
+      "reportedPdufaGoal": "2026-11-30",
+      "associatedNcts": [
+        "NCT05208047"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "APPROVAL_LEAN",
+      "confidenceDescription": "MODERATE",
+      "level1ClinicalEvidence": "PEAK randomized Phase 3 PFS 16.5 versus 9.2 months, HR 0.50 with strong significance.",
+      "level2BenefitRisk": "Grade 3+ hepatic laboratory abnormality imbalance and mutation-stratum effects need full assessment.",
+      "level3RegulatoryManufacturing": "NDA accepted with Priority Review and November 30 2026 PDUFA goal; manufacturing and label unresolved.",
+      "sourceDate": "2026-11-05",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526449926/cogt-ex99_1.htm",
+      "clinicalEvidenceReferenceUrl": "https://investors.cogentbio.com/news-releases/news-release-details/cogent-biosciences-announces-detailed-clinical-data-peak-phase-3",
+      "additionalEvidenceNeeded": "Do safety, mutational subgroup consistency, and manufacturing support approval despite strong PEAK progression-free-survival results?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "cort-relacorilant",
+      "ticker": "CORT",
+      "drug": "Relacorilant",
+      "indication": "Cushing syndrome / hypercortisolism",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "UNDER_REVIEW",
+      "reportedPdufaGoal": "2026-12-17",
+      "associatedNcts": [
+        "NCT03697109",
+        "NCT04308590"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "CRL_LEAN",
+      "confidenceDescription": "LOW",
+      "level1ClinicalEvidence": "GRACE randomized withdrawal and amended global statistics may support a meaningful effect, but pivotal interpretation is contested.",
+      "level2BenefitRisk": "Response-enriched trial, placebo-adjusted blood pressure, symptom generalizability and adrenal risks are incompletely reconciled.",
+      "level3RegulatoryManufacturing": "Earlier Cushing indication efficacy CRL; June 2026 resubmission relies on analyses requested by FDA, with December 17 goal.",
+      "sourceDate": "2026-11-03",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/1088856/000162828026069501/cort-20260930.htm",
+      "clinicalEvidenceReferenceUrl": "https://ir.corcept.com/node/18326/html",
+      "additionalEvidenceNeeded": "Does FDA's requested global statistical analysis directly cure the prior efficacy CRL?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "cytk-aficamten-ohcm",
+      "ticker": "CYTK",
+      "drug": "MYQORZO (aficamten)",
+      "indication": "Obstructive HCM",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "APPROVED_ALREADY",
+      "reportedPdufaGoal": null,
+      "associatedNcts": [
+        "NCT05767346"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "ALREADY_APPROVED",
+      "confidenceDescription": "NOT_APPLICABLE",
+      "level1ClinicalEvidence": "Obstructive HCM product approval is a completed historical FDA event, not a future trial prediction.",
+      "level2BenefitRisk": "Do not transfer label to the separate nonobstructive HCM application.",
+      "level3RegulatoryManufacturing": "Roster contains stale apparent November 2026 goal for oHCM; already approved December 2025.",
+      "sourceDate": "2026-11-04",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm",
+      "clinicalEvidenceReferenceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm",
+      "additionalEvidenceNeeded": "Reconcile FOCUS's recorded November 14 2026 PDUFA event: the oHCM product was approved in December 2025.",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "cytk-aficamten-nhcm",
+      "ticker": "CYTK",
+      "drug": "Aficamten",
+      "indication": "Non-obstructive HCM",
+      "applicationType": "sNDA",
+      "applicationStatusAsRecorded": "PLANNED",
+      "reportedPdufaGoal": null,
+      "associatedNcts": [
+        "NCT06081894"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "ABSTAIN",
+      "confidenceDescription": "NOT_RATED",
+      "level1ClinicalEvidence": "ACACIA-HCM reported improved exercise capacity and symptoms against placebo in symptomatic nonobstructive HCM.",
+      "level2BenefitRisk": "LVEF below 50% occurred in 10.5% versus 0.8%; serious heart-failure-event imbalance requires FDA-focused assessment.",
+      "level3RegulatoryManufacturing": "sNDA was still planned, not accepted; separate from the previously approved oHCM indication.",
+      "sourceDate": "2026-11-04",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm",
+      "clinicalEvidenceReferenceUrl": "https://doi.org/10.1056/NEJMoa2603021",
+      "additionalEvidenceNeeded": "Will FDA accept a non-obstructive indication despite LVEF reductions and heart-failure event imbalance?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "imnm-desmoid",
+      "ticker": "IMNM",
+      "drug": "Varegacestat",
+      "indication": "Progressing desmoid tumors",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "UNDER_REVIEW",
+      "reportedPdufaGoal": "2027-04-28",
+      "associatedNcts": [
+        "NCT04871282"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "APPROVAL_LEAN",
+      "confidenceDescription": "MODERATE",
+      "level1ClinicalEvidence": "RINGSIDE randomized Phase 3 PFS HR 0.16, with pain and response improvements.",
+      "level2BenefitRisk": "Gamma-secretase inhibition may carry chronic gastrointestinal, dermatologic and reproductive risks.",
+      "level3RegulatoryManufacturing": "NDA accepted with reported April 28 2027 goal; FDA current-cycle CMC and label not verified.",
+      "sourceDate": "2026-08-11",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/1472012/000119312526344577/imnm-ex99_1.htm",
+      "clinicalEvidenceReferenceUrl": "https://investors.immunome.com/immunome-announces-detailed-phase-3-ringside-data-for-varegacestat-in-adults-with-progressing-desmoid-tumors-at-the-2026-asco-annual-meeting/",
+      "additionalEvidenceNeeded": "Do durable PFS benefit and clinical symptom improvement outweigh long-term gamma-secretase inhibitor risks?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "mltx-sonelokimab",
+      "ticker": "MLTX",
+      "drug": "Sonelokimab",
+      "indication": "Hidradenitis suppurativa",
+      "applicationType": "BLA",
+      "applicationStatusAsRecorded": "SUBMITTED_PENDING_ACCEPTANCE",
+      "reportedPdufaGoal": null,
+      "associatedNcts": [
+        "NCT06411379",
+        "NCT06411899"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "CRL_LEAN",
+      "confidenceDescription": "LOW",
+      "level1ClinicalEvidence": "Combined VELA program showed meaningful HiSCR75 benefits, with VELA-1 clearly positive.",
+      "level2BenefitRisk": "VELA-2 failed the Week-16 composite primary endpoint at p=0.053, risking insufficient corroboration despite other positive estimands.",
+      "level3RegulatoryManufacturing": "BLA submitted but acceptance/goal unconfirmed; FDA endpoint/estimand acceptance may reverse this cautious lean.",
+      "sourceDate": "2026-11-04",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/1821586/000182158626000013/moonlake-pressreleasexq320.htm",
+      "clinicalEvidenceReferenceUrl": "https://ir.moonlaketx.com/news-releases/news-release-details/moonlake-reports-third-quarter-2026-financial-results-and",
+      "additionalEvidenceNeeded": "Can the application reconcile VELA-2's composite primary p=0.053 and demonstrate consistent FDA-acceptable evidence?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "mlys-lorundrostat",
+      "ticker": "MLYS",
+      "drug": "Lorundrostat",
+      "indication": "Resistant or uncontrolled hypertension",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "UNDER_REVIEW",
+      "reportedPdufaGoal": "2026-12-22",
+      "associatedNcts": [
+        "NCT06153693"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "APPROVAL_LEAN",
+      "confidenceDescription": "MODERATE",
+      "level1ClinicalEvidence": "Randomized blood-pressure lowering and longer-term maintained effects in Phase 3 support clinical benefit.",
+      "level2BenefitRisk": "Aldosterone-synthase inhibition causes potassium elevations and eGFR changes; selection, monitoring and long-term safety require review.",
+      "level3RegulatoryManufacturing": "NDA review with December 22 2026 target; final FDA safety and manufacturing findings unavailable.",
+      "sourceDate": "2026-11-04",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000142/mlys2026q38kex991.htm",
+      "clinicalEvidenceReferenceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/129/mineralys-therapeutics-presents-new-late-breaking-data-from",
+      "additionalEvidenceNeeded": "Are clinical blood-pressure effects and aldosterone-related hyperkalemia/renal safety acceptable?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "phvs-ondemand",
+      "ticker": "PHVS",
+      "drug": "Deucrictibant immediate-release",
+      "indication": "On-demand hereditary angioedema attacks",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "UNDER_REVIEW",
+      "reportedPdufaGoal": "2027-04-23",
+      "associatedNcts": [
+        "NCT06343779"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "APPROVAL_LEAN",
+      "confidenceDescription": "LOW",
+      "level1ClinicalEvidence": "Pivotal immediate-release HAE attack study supports rapid patient-perceived symptom relief.",
+      "level2BenefitRisk": "Attacks and rescue-treatment imbalances, rare safety events and sustained relief need clinical adjudication.",
+      "level3RegulatoryManufacturing": "FDA accepted NDA for April 23 2027 action; CMC/label not independently reviewed.",
+      "sourceDate": "2026-10-08",
+      "applicationReferenceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-fda-acceptance-new-drug-application",
+      "clinicalEvidenceReferenceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-reports-second-quarter-2026-financial-results-and",
+      "additionalEvidenceNeeded": "Are repeat-attack efficacy, rescue-medication handling, safety and immediate-release CMC adequate?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "phvs-prophylaxis",
+      "ticker": "PHVS",
+      "drug": "Deucrictibant extended-release",
+      "indication": "Prophylaxis of hereditary angioedema attacks",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "PLANNED",
+      "reportedPdufaGoal": null,
+      "associatedNcts": [
+        "NCT06669754"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "ABSTAIN",
+      "confidenceDescription": "NOT_RATED",
+      "level1ClinicalEvidence": "CHAPTER-3 reported 83% reduction in investigator-confirmed HAE attack rate versus placebo, p<0.0001.",
+      "level2BenefitRisk": "Only 85 randomized; rare HAE subtype confidence intervals, safety and long-term exposure unresolved.",
+      "level3RegulatoryManufacturing": "Separate prophylaxis NDA planned for 2027, not currently accepted; must not borrow approval probability from on-demand application.",
+      "sourceDate": "2026-09-08",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm",
+      "clinicalEvidenceReferenceUrl": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-positive-topline-data-chapter-3-pivotal",
+      "additionalEvidenceNeeded": "Is the small randomized prevention trial and HAE subtype evidence adequate for a distinct prophylaxis NDA?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "prax-ulixacaltamide",
+      "ticker": "PRAX",
+      "drug": "Ulixacaltamide",
+      "indication": "Essential tremor",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "UNDER_REVIEW",
+      "reportedPdufaGoal": "2027-01-29",
+      "associatedNcts": [
+        "NCT06087276"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "APPROVAL_LEAN",
+      "confidenceDescription": "LOW",
+      "level1ClinicalEvidence": "Essential3 pivotal efficacy and accepted NDA support a symptomatic essential-tremor benefit.",
+      "level2BenefitRisk": "Long-term neurological tolerability and final multiplicity/analyses require independent review.",
+      "level3RegulatoryManufacturing": "FDA accepted NDA with January 29 2027 goal; no planned advisory committee reported.",
+      "sourceDate": "2026-08-06",
+      "applicationReferenceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-provides-corporate-update-and-20",
+      "clinicalEvidenceReferenceUrl": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-announces-fda-acceptance-new-drug",
+      "additionalEvidenceNeeded": "Do pivotal efficacy, adverse effects, CMC and final inspection findings align with favorable mid-cycle feedback?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "srpt-casimersen",
+      "ticker": "SRPT",
+      "drug": "AMONDYS 45 (casimersen)",
+      "indication": "DMD mutation amenable to exon 45 skipping",
+      "applicationType": "sNDA",
+      "applicationStatusAsRecorded": "SUPPLEMENT_UNDER_REVIEW",
+      "reportedPdufaGoal": "2027-02-28",
+      "associatedNcts": [
+        "NCT02500381"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "CRL_LEAN",
+      "confidenceDescription": "MODERATE",
+      "level1ClinicalEvidence": "Existing accelerated approval relied on dystrophin biomarker; ESSENCE confirmatory clinical trial missed its primary endpoint.",
+      "level2BenefitRisk": "Failed functional confirmation creates unresolved evidence of patient benefit and potential label restrictions.",
+      "level3RegulatoryManufacturing": "sNDA for traditional approval is under review with February 28 2027 goal; this is a risk of denying conversion, NOT an assertion of automatic withdrawal.",
+      "sourceDate": "2026-11-05",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/873303/000119312526449721/srpt-20260930.htm",
+      "clinicalEvidenceReferenceUrl": "https://www.sec.gov/Archives/edgar/data/873303/000119312526449721/srpt-20260930.htm",
+      "additionalEvidenceNeeded": "Can total evidence verify benefit for traditional approval despite failed ESSENCE confirmatory primary endpoint?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "srpt-golodirsen",
+      "ticker": "SRPT",
+      "drug": "VYONDYS 53 (golodirsen)",
+      "indication": "DMD mutation amenable to exon 53 skipping",
+      "applicationType": "sNDA",
+      "applicationStatusAsRecorded": "SUPPLEMENT_UNDER_REVIEW",
+      "reportedPdufaGoal": "2027-02-28",
+      "associatedNcts": [
+        "NCT02500381"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "CRL_LEAN",
+      "confidenceDescription": "MODERATE",
+      "level1ClinicalEvidence": "Existing accelerated approval relied on dystrophin biomarker; ESSENCE failed the prespecified confirmatory primary clinical endpoint.",
+      "level2BenefitRisk": "Failed confirmation raises uncertainty of meaningful clinical benefit for this exon 53 mutation subgroup.",
+      "level3RegulatoryManufacturing": "Distinct sNDA for traditional approval despite same NCT; denial of conversion is not automatic rescission of accelerated approval.",
+      "sourceDate": "2026-11-05",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/873303/000119312526449721/srpt-20260930.htm",
+      "clinicalEvidenceReferenceUrl": "https://www.sec.gov/Archives/edgar/data/873303/000119312526449721/srpt-20260930.htm",
+      "additionalEvidenceNeeded": "What consequences follow from failed ESSENCE significance for this separately reviewed exon-skipping product?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "svra-molgramostim",
+      "ticker": "SVRA",
+      "drug": "Molgramostim inhalation solution",
+      "indication": "Autoimmune pulmonary alveolar proteinosis",
+      "applicationType": "BLA",
+      "applicationStatusAsRecorded": "UNDER_REVIEW",
+      "reportedPdufaGoal": "2026-11-22",
+      "associatedNcts": [
+        "NCT04544293"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "APPROVAL_LEAN",
+      "confidenceDescription": "LOW",
+      "level1ClinicalEvidence": "IMPALA-2 clinically relevant lung gas-exchange effect and treatment durability favor aPAP efficacy.",
+      "level2BenefitRisk": "Long-term infection/pulmonary tolerability and subgroup clinical relevance require source-level confirmation.",
+      "level3RegulatoryManufacturing": "FDA priority-review extension to November 22 2026 was attributed to a major amendment without stated efficacy/safety/CMC concern; residual risk exists.",
+      "sourceDate": "2026-04-15",
+      "applicationReferenceUrl": "https://investors.savarapharma.com/news/news-details/2026/Savara-Announces-the-U-S--Food--Drug-Administration-FDA-Has-Extended-the-Review-Period-for-the-Molgramostim-Inhalation-Solution-Molgramostim-Biologics-License-Application-BLA-in-Autoimmune-Pulmonary-Alveolar-Proteinosis-Autoimmune-PAP/default.aspx",
+      "clinicalEvidenceReferenceUrl": "https://investors.savarapharma.com/news/news-details/2026/Savara-Announces-the-U-S--Food--Drug-Administration-FDA-Has-Extended-the-Review-Period-for-the-Molgramostim-Inhalation-Solution-Molgramostim-Biologics-License-Application-BLA-in-Autoimmune-Pulmonary-Alveolar-Proteinosis-Autoimmune-PAP/default.aspx",
+      "additionalEvidenceNeeded": "Does longer-term disease/function benefit support approval after the already confirmed major-amendment extension?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "urgn-ugn103",
+      "ticker": "URGN",
+      "drug": "UGN-103 (mitomycin)",
+      "indication": "Recurrent low-grade intermediate-risk NMIBC",
+      "applicationType": "NDA",
+      "applicationStatusAsRecorded": "UNDER_REVIEW",
+      "reportedPdufaGoal": "2027-06-14",
+      "associatedNcts": [
+        "NCT06331299"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "APPROVAL_LEAN",
+      "confidenceDescription": "LOW",
+      "level1ClinicalEvidence": "Single-arm UTOPIA response and durability appear consistent with approved mitomycin product ZUSDURI.",
+      "level2BenefitRisk": "Single-arm response and formulation changes may not fully resolve long-term recurrence control or CMC.",
+      "level3RegulatoryManufacturing": "FDA accepted NDA for June 14 2027; drug and disease precedent favors plausibility but device/sterility questions remain.",
+      "sourceDate": "2026-11-04",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/1668243/000143774926034769/ex_1036873.htm",
+      "clinicalEvidenceReferenceUrl": "https://investors.urogen.com/news-releases/news-release-details/urogen-announces-fda-acceptance-new-drug-application-ugn-103",
+      "additionalEvidenceNeeded": "Does the single-arm response, durability and novel formulation provide adequate efficacy and quality evidence?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "vera-trutakna",
+      "ticker": "VERA",
+      "drug": "TRUTAKNA (atacicept)",
+      "indication": "IgA nephropathy",
+      "applicationType": "sBLA",
+      "applicationStatusAsRecorded": "SUBMITTED_PENDING_ACCEPTANCE",
+      "reportedPdufaGoal": null,
+      "associatedNcts": [
+        "NCT04716231"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "ABSTAIN",
+      "confidenceDescription": "NOT_RATED",
+      "level1ClinicalEvidence": "ORIGIN 3 met prespecified eGFR and kidney progression endpoints; accelerated approval already obtained.",
+      "level2BenefitRisk": "Long-term B-cell immunologic and infection safety, subgroup and label scope require confirmation.",
+      "level3RegulatoryManufacturing": "This is a future full-approval sBLA, not the already approved accelerated indication; filing acceptance not recorded.",
+      "sourceDate": "2026-11-05",
+      "applicationReferenceUrl": "https://veratherapeutics.gcs-web.com/news-releases/news-release-details/vera-therapeutics-provides-business-update-and-reports-third-3",
+      "clinicalEvidenceReferenceUrl": "https://ir.veratx.com/news-releases/news-release-details/vera-therapeutics-announces-trutaknatm-atacicept-vymj-stabilized",
+      "additionalEvidenceNeeded": "For an already accelerated-approved product, is the confirmatory ORIGIN 3 evidence sufficient for full approval?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    },
+    {
+      "cycleId": "zbio-obexelimab",
+      "ticker": "ZBIO",
+      "drug": "Obexelimab",
+      "indication": "IgG4-related disease",
+      "applicationType": "BLA",
+      "applicationStatusAsRecorded": "UNDER_REVIEW",
+      "reportedPdufaGoal": "2027-05-27",
+      "associatedNcts": [
+        "NCT05662241"
+      ],
+      "assessmentStyleLevel": 3,
+      "scientificStatus": "PRELIMINARY_SOURCE_LINKED_RESEARCH_NOT_INDEPENDENTLY_VALIDATED",
+      "call": "APPROVAL_LEAN",
+      "confidenceDescription": "MODERATE",
+      "level1ClinicalEvidence": "INDIGO randomized IgG4-related disease trial reported fewer flares (HR 0.44), more remission and steroid sparing.",
+      "level2BenefitRisk": "Immunosuppression, infection, hypersensitivity and variable organ-subtype benefit require review.",
+      "level3RegulatoryManufacturing": "BLA accepted with May 27 2027 PDUFA goal; no final FDA CMC clearance available.",
+      "sourceDate": "2026-11-05",
+      "applicationReferenceUrl": "https://www.sec.gov/Archives/edgar/data/1953926/000110465926123040/zbio-20260930x10q.htm",
+      "clinicalEvidenceReferenceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2601337",
+      "additionalEvidenceNeeded": "Does flare reduction remain persuasive across organ systems and does long-term immunologic safety support approval?",
+      "proposedForecastProbability": null,
+      "calibratedConfidence": null,
+      "independentSignoff": false,
+      "validatedAsProspectivePrediction": false
+    }
+  ],
+  "trials": [
+    {
+      "ticker": "ABVX",
+      "nct": "NCT05507203",
+      "company": "Abivax S.A.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT05507203",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8.",
+      "postedResultsSummary": "Record reports results; 4 outcome result measure(s) were found.",
+      "analysisBlockSummary": "4 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "abvx-uc"
+      ],
+      "calls": [
+        {
+          "cycleId": "abvx-uc",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "ABVX",
+      "nct": "NCT05507216",
+      "company": "Abivax S.A.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT05507216",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8.",
+      "postedResultsSummary": "Record reports results; 4 outcome result measure(s) were found.",
+      "analysisBlockSummary": "4 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "abvx-uc"
+      ],
+      "calls": [
+        {
+          "cycleId": "abvx-uc",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "ACHV",
+      "nct": "NCT04576949",
+      "company": "Achieve Life Sciences",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT04576949",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "2 registered primary outcome(s). Example: Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6.",
+      "postedResultsSummary": "Record reports results; 5 outcome result measure(s) were found.",
+      "analysisBlockSummary": "5 posted result outcome(s); 15 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "achv-cytisinicline"
+      ],
+      "calls": [
+        {
+          "cycleId": "achv-cytisinicline",
+          "call": "ABSTAIN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "ACHV",
+      "nct": "NCT05206370",
+      "company": "Achieve Life Sciences",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT05206370",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "2 registered primary outcome(s). Example: Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6.",
+      "postedResultsSummary": "Record reports results; 5 outcome result measure(s) were found.",
+      "analysisBlockSummary": "5 posted result outcome(s); 15 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "achv-cytisinicline"
+      ],
+      "calls": [
+        {
+          "cycleId": "achv-cytisinicline",
+          "call": "ABSTAIN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "APMD",
+      "nct": "NCT05811247",
+      "company": "Apnimed",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT05811247",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Change From Baseline in Apnea-Hypopnea Index (AHI).",
+      "postedResultsSummary": "Record reports results; 1 outcome result measure(s) were found.",
+      "analysisBlockSummary": "1 posted result outcome(s); 2 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "apmd-ad109"
+      ],
+      "calls": [
+        {
+          "cycleId": "apmd-ad109",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "APMD",
+      "nct": "NCT05813275",
+      "company": "Apnimed",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT05813275",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Change From Baseline in Apnea-Hypopnea Index (AHI).",
+      "postedResultsSummary": "Record reports results; 1 outcome result measure(s) were found.",
+      "analysisBlockSummary": "1 posted result outcome(s); 2 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "apmd-ad109"
+      ],
+      "calls": [
+        {
+          "cycleId": "apmd-ad109",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "AXSM",
+      "nct": "NCT05059223",
+      "company": "Axsome Therapeutics, Inc.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT05059223",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Frequency of cataplexy attacks.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "axsm-axs12"
+      ],
+      "calls": [
+        {
+          "cycleId": "axsm-axs12",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "AXSM",
+      "nct": "NCT05113745",
+      "company": "Axsome Therapeutics, Inc.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT05113745",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "2 registered primary outcome(s). Example: Long-term safety as measured by the incidence of treatment-emergent adverse events.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "axsm-axs12"
+      ],
+      "calls": [
+        {
+          "cycleId": "axsm-axs12",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "BLTE",
+      "nct": "NCT05244304",
+      "company": "Belite Bio, Inc.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT05244304",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: To measure change in atrophic lesion size (definitely decreased autofluorescence, DDAF) by fundus autofluorescence (FAF) photograp.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "blte-stargardt"
+      ],
+      "calls": [
+        {
+          "cycleId": "blte-stargardt",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "CAPR",
+      "nct": "NCT05126758",
+      "company": "Capricor Therapeutics, Inc.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT05126758",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "ACTIVE_NOT_RECRUITING",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Change in the upper limb function.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "capr-deramiocel"
+      ],
+      "calls": [
+        {
+          "cycleId": "capr-deramiocel",
+          "call": "CRL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "CLDX",
+      "nct": "NCT06445023",
+      "company": "Celldex Therapeutics",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT06445023",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "ACTIVE_NOT_RECRUITING",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Mean change from baseline to Week 12 of UAS7 (Urticaria Activity Score).",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "cldx-barzolvolimab"
+      ],
+      "calls": [
+        {
+          "cycleId": "cldx-barzolvolimab",
+          "call": "ABSTAIN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "CLDX",
+      "nct": "NCT06455202",
+      "company": "Celldex Therapeutics",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT06455202",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "ACTIVE_NOT_RECRUITING",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Mean change from baseline to Week 12 of UAS7 (Urticaria Activity Score).",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "cldx-barzolvolimab"
+      ],
+      "calls": [
+        {
+          "cycleId": "cldx-barzolvolimab",
+          "call": "ABSTAIN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "COGT",
+      "nct": "NCT05208047",
+      "company": "Cogent Biosciences, Inc.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT05208047",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "RECRUITING",
+      "registeredPrimaryOutcome": "8 registered primary outcome(s). Example: Part 1a - pharmacokinetics - Cmax.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "cogt-gist"
+      ],
+      "calls": [
+        {
+          "cycleId": "cogt-gist",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "CORT",
+      "nct": "NCT03697109",
+      "company": "Corcept Therapeutics",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT03697109",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "2 registered primary outcome(s). Example: Number of Patients With Loss of Response With Respect to Hypertension During the RW Phase..",
+      "postedResultsSummary": "Record reports results; 18 outcome result measure(s) were found.",
+      "analysisBlockSummary": "18 posted result outcome(s); 1 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "cort-relacorilant"
+      ],
+      "calls": [
+        {
+          "cycleId": "cort-relacorilant",
+          "call": "CRL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "CORT",
+      "nct": "NCT04308590",
+      "company": "Corcept Therapeutics",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT04308590",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "2 registered primary outcome(s). Example: Change in Average 24-hour SBP.",
+      "postedResultsSummary": "Record reports results; 17 outcome result measure(s) were found.",
+      "analysisBlockSummary": "17 posted result outcome(s); 1 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "cort-relacorilant"
+      ],
+      "calls": [
+        {
+          "cycleId": "cort-relacorilant",
+          "call": "CRL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "CYTK",
+      "nct": "NCT05767346",
+      "company": "Cytokinetics",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT05767346",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Change in Peak Oxygen Uptake (pVO2) by Cardiopulmonary Exercise Testing (CPET).",
+      "postedResultsSummary": "Record reports results; 7 outcome result measure(s) were found.",
+      "analysisBlockSummary": "7 posted result outcome(s); 8 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "cytk-aficamten-ohcm"
+      ],
+      "calls": [
+        {
+          "cycleId": "cytk-aficamten-ohcm",
+          "call": "ALREADY_APPROVED"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "CYTK",
+      "nct": "NCT06081894",
+      "company": "Cytokinetics, Inc.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT06081894",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "ACTIVE_NOT_RECRUITING",
+      "registeredPrimaryOutcome": "2 registered primary outcome(s). Example: Change in Kansas City Cardiomyopathy Questionnaire - Clinical Summary Score (KCCQ-CSS).",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "cytk-aficamten-nhcm"
+      ],
+      "calls": [
+        {
+          "cycleId": "cytk-aficamten-nhcm",
+          "call": "ABSTAIN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "IMNM",
+      "nct": "NCT04871282",
+      "company": "Immunome, Inc.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT04871282",
+      "reportedPhaseAtScan": "PHASE2, PHASE3",
+      "reportedStatusAtScan": "ACTIVE_NOT_RECRUITING",
+      "registeredPrimaryOutcome": "2 registered primary outcome(s). Example: Part A: Safety and Tolerability - Adverse Events.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "imnm-desmoid"
+      ],
+      "calls": [
+        {
+          "cycleId": "imnm-desmoid",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "MLTX",
+      "nct": "NCT06411379",
+      "company": "MoonLake Immunotherapeutics AG",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT06411379",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Hidradenitis Suppurativa Clinical Response 75.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "mltx-sonelokimab"
+      ],
+      "calls": [
+        {
+          "cycleId": "mltx-sonelokimab",
+          "call": "CRL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "MLTX",
+      "nct": "NCT06411899",
+      "company": "MoonLake Immunotherapeutics AG",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT06411899",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Hidradenitis Suppurativa Clinical Response 75.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "mltx-sonelokimab"
+      ],
+      "calls": [
+        {
+          "cycleId": "mltx-sonelokimab",
+          "call": "CRL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "MLYS",
+      "nct": "NCT06153693",
+      "company": "Mineralys Therapeutics, Inc.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT06153693",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Change from baseline in automated office BP (AOBP) SBP at Week 6 in subjects randomized to lorundrostat 50 mg QD compared to subje.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "mlys-lorundrostat"
+      ],
+      "calls": [
+        {
+          "cycleId": "mlys-lorundrostat",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "PHVS",
+      "nct": "NCT06343779",
+      "company": "Pharvaris N.V.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT06343779",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Time to onset of symptom relief, defined as Patient Global Impression of Change (PGI-C) rating of at least \"a little better\" for 2.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "phvs-ondemand"
+      ],
+      "calls": [
+        {
+          "cycleId": "phvs-ondemand",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "PHVS",
+      "nct": "NCT06669754",
+      "company": "Pharvaris N.V.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT06669754",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Time-normalized (per 4 weeks) number of Investigator-confirmed HAE attacks during the 24-week Treatment Period.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "phvs-prophylaxis"
+      ],
+      "calls": [
+        {
+          "cycleId": "phvs-prophylaxis",
+          "call": "ABSTAIN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "PRAX",
+      "nct": "NCT06087276",
+      "company": "Praxis Precision Medicines, Inc.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT06087276",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "RECRUITING",
+      "registeredPrimaryOutcome": "3 registered primary outcome(s). Example: Parallel Design: Change from Baseline (CFB) to Week 8 (Day 56) on mADL11 score.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "prax-ulixacaltamide"
+      ],
+      "calls": [
+        {
+          "cycleId": "prax-ulixacaltamide",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "SRPT",
+      "nct": "NCT02500381",
+      "company": "Sarepta Therapeutics, Inc.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT02500381",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Change From Baseline in the 4-Step Ascend Velocity at Week 96.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "srpt-casimersen",
+        "srpt-golodirsen"
+      ],
+      "calls": [
+        {
+          "cycleId": "srpt-casimersen",
+          "call": "CRL_LEAN"
+        },
+        {
+          "cycleId": "srpt-golodirsen",
+          "call": "CRL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "SVRA",
+      "nct": "NCT04544293",
+      "company": "Savara Inc.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT04544293",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "ACTIVE_NOT_RECRUITING",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Change From Baseline in Percent (%) Predicted Diffusing Capacity of the Lung for Carbon Monoxide (DLCO) Adjusted for Hemoglobin Co.",
+      "postedResultsSummary": "Record reports results; 14 outcome result measure(s) were found.",
+      "analysisBlockSummary": "14 posted result outcome(s); 9 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "svra-molgramostim"
+      ],
+      "calls": [
+        {
+          "cycleId": "svra-molgramostim",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "URGN",
+      "nct": "NCT06331299",
+      "company": "UroGen Pharma Ltd.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT06331299",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "COMPLETED",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Complete Response Rate (CRR).",
+      "postedResultsSummary": "Record reports results; 8 outcome result measure(s) were found.",
+      "analysisBlockSummary": "8 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "urgn-ugn103"
+      ],
+      "calls": [
+        {
+          "cycleId": "urgn-ugn103",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "VERA",
+      "nct": "NCT04716231",
+      "company": "Vera Therapeutics, Inc.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT04716231",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "ACTIVE_NOT_RECRUITING",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Percentage Change From Baseline in Urine Protein to Creatinine Ratio (UPCR).",
+      "postedResultsSummary": "Record reports results; 1 outcome result measure(s) were found.",
+      "analysisBlockSummary": "1 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "vera-trutakna"
+      ],
+      "calls": [
+        {
+          "cycleId": "vera-trutakna",
+          "call": "ABSTAIN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    },
+    {
+      "ticker": "ZBIO",
+      "nct": "NCT05662241",
+      "company": "Zenas BioPharma, Inc.",
+      "sourceRegistryUrl": "https://clinicaltrials.gov/study/NCT05662241",
+      "reportedPhaseAtScan": "PHASE3",
+      "reportedStatusAtScan": "ACTIVE_NOT_RECRUITING",
+      "registeredPrimaryOutcome": "1 registered primary outcome(s). Example: Primary outcome measure.",
+      "postedResultsSummary": "No posted registry-results section was returned; a sponsor press release is not equivalent to posted tabular registry results.",
+      "analysisBlockSummary": "0 posted result outcome(s); 0 recorded analysis block(s). Presence does not establish statistical significance or efficacy.",
+      "applicationCycleIds": [
+        "zbio-obexelimab"
+      ],
+      "calls": [
+        {
+          "cycleId": "zbio-obexelimab",
+          "call": "APPROVAL_LEAN"
+        }
+      ],
+      "assessmentLevelStyle": 3,
+      "independentScientificReviewComplete": false,
+      "probabilityCalibrated": false
+    }
+  ]
+}
