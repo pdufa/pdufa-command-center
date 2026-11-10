@@ -16,12 +16,12 @@ export default function September2026HistoricalAuditPanel(){
   const abstains=rows.filter(x=>x.reconstructedLevel3Call==="ABSTAIN").length;
   const percent=(100*matches/directional.length).toFixed(1);
   if(ledger.dataset!=="SEPTEMBER_2026_FDA_ACTION_DATE_SOURCE_LEDGER_UNSCORED_LEVEL3"||
-    rows.length!==20||expected.level3AssessedCases!==20||
-    expected.level3ReconstructedCalls!==20||directional.length!==16||
-    matches!==15||misses!==1||abstains!==4||
-    expected.level3ApprovalLeans!==15||expected.level3CrlLeans!==1||
+    rows.length!==20||expected.level3ReconstructedCalls!==20||
+    directional.length!==20||
+    matches!==19||misses!==1||abstains!==0||
+    expected.retrospectiveMatches!==19||expected.retrospectiveMisses!==1||
     expected.retrospectiveMatches!==matches||expected.retrospectiveMisses!==misses||
-    expected.alwaysApproveBaselineMatches!==directional.length||
+    expected.alwaysApproveComparatorMatches!==directional.length||expected.validBlindCases!==0||
     ledger.accuracy!==null||ledger.researchBlind!==false||
     ledger.validatedBlindForecasts!==0||ledger.affectsActiveForecasts!==false||
     rows.some(x=>!x.actionDate.startsWith("2026-09-")||
@@ -54,7 +54,7 @@ export default function September2026HistoricalAuditPanel(){
       border:"1px solid #e1eae7",borderRadius:12,background:"#f7faf8",
       padding:"15px 18px",marginBottom:15}}>
       <div role="img" data-testid="september-historical-direction-chart"
-        aria-label={`Of 16 outcome-aware September Level 3 directional research leans, 15 match and 1 miss; four abstain. Not a blind prediction accuracy metric.`}
+        aria-label={`Of 20 outcome-aware September Level 3 directional research leans, 19 match and 1 miss; none abstain. Not a blind prediction accuracy metric.`}
         style={{height:146,width:146,flex:"0 0 146px",borderRadius:"50%",
           background:`conic-gradient(${forest} 0 ${100*matches/directional.length}%, ${amber} ${100*matches/directional.length}% 100%)`,
           display:"grid",placeItems:"center"}}>
@@ -65,15 +65,15 @@ export default function September2026HistoricalAuditPanel(){
         </div>
       </div>
       <div style={{display:"grid",gap:7,flex:"1 1 240px"}}>
-        <strong style={{fontSize:15}}>20 research reviews · 16 directional calls</strong>
-        <div style={{fontSize:13}}><span style={{color:forest,fontWeight:800}}>15 matched</span>
+        <strong style={{fontSize:15}}>20 research reviews · 20 directional calls</strong>
+        <div style={{fontSize:13}}><span style={{color:forest,fontWeight:800}}>19 matched</span>
           {" · "}<span style={{color:amber,fontWeight:800}}>1 missed</span>
-          {" · "}<span style={{color:muted}}>4 abstained</span></div>
+          {" · "}<span style={{color:muted}}>0 abstained</span></div>
         <div style={{fontSize:12,color:"#98631d",lineHeight:1.5,fontWeight:800}}>
           Historical agreement only; valid blind forecast accuracy: NOT MEASURABLE.
         </div>
         <div style={{fontSize:12,color:muted}}>
-          Simple always-APPROVAL baseline: 16/16 (100%) among these same
+          Simple always-APPROVAL baseline: 20/20 (100%) among these same
           directional comparison cases. The Level 3 result does not outperform it.
         </div>
       </div>
