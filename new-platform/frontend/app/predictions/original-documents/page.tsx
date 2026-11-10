@@ -2,6 +2,7 @@ import {R86_ORIGINAL_DOCUMENT_MANIFEST} from
  "../../../lib/focus-r86-original-document-inventory";
 import OriginalSourceDocumentsR86Client from "./OriginalSourceDocumentsR86Client";
 import datedSourceAudit from "../../../data/focus-r86-live-source-census-20261110.json";
+import datedPdfByteAudit from "../../../data/focus-r87-public-pdf-byte-receipts-20261110.json";
 import styles from "../evidence-gaps/EvidenceRecoveryBoardR68.module.css";
 
 export const metadata={
@@ -45,6 +46,21 @@ export default function OriginalDocumentsR86Page(){
     <div><small>Records with posted aggregate results</small>
       <strong>{datedSourceAudit.trialsWithPostedAggregateResults}</strong></div>
   </div>
+  <div className={styles.stats} aria-label="Dated public PDF byte receipts">
+   <div><small>Public protocol/SAP PDF files SHA-256 fingerprinted</small>
+     <strong>{datedPdfByteAudit.publiclyDownloadedAndSha256Fingerprinted}/{datedPdfByteAudit.exactCurrentPublicDocumentListings}</strong></div>
+   <div><small>Trials with fingerprinted source PDFs</small>
+     <strong>{datedPdfByteAudit.distinctNctsWithFingerprintedPdf}/29</strong></div>
+   <div><small>Authenticated signed original SAPs</small>
+     <strong>{datedPdfByteAudit.originalSignedProspectiveSAPVersionsAuthenticated}</strong></div>
+  </div>
+  <p className={styles.footer}>Source-byte fingerprint receipt dated
+   <strong> {datedPdfByteAudit.observationDateUtc} UTC</strong>.
+   Across the listed public PDFs, <strong>
+   {datedPdfByteAudit.records.reduce((sum,row)=>sum+row.byteCount,0).toLocaleString()}
+   </strong> bytes were retrieved and SHA-256-fingerprinted. That is a
+   public source-byte check only, not prospective signing, source-custodian
+   attestation, scientific review, or FDA prediction.</p>
   <p className={styles.footer}>Dated source-observation receipt:
    <strong> {datedSourceAudit.observationDateUtc} UTC</strong>.
    These are observed public document and results listings, not independent
