@@ -923,6 +923,8 @@ if os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes"
     from .medical_on_demand import install_routes as install_analyze_now_routes
     install_medical_continuous_routes(app, lambda: ENGINE, require_medical_internal_key, require_medical_pilot_storage)
     install_analyze_now_routes(app, lambda: ENGINE, require_medical_internal_key, require_medical_pilot_storage)
+    from .medical_official_news import install_routes as install_news_automation_routes
+    install_news_automation_routes(app, lambda: ENGINE, require_medical_internal_key, require_medical_pilot_storage)
 
 # Ledger visibility and storage gate are distinct from the source worker.
 # Never expose a review write route until independent reviewer authorization exists.
