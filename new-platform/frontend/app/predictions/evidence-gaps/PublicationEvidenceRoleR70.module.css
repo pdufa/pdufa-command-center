@@ -1,0 +1,13 @@
+.shell{padding:12px;border:1px solid #b9d3c4;background:#f9fcf8;border-radius:9px;margin:12px 0;min-width:0}
+.kicker{font-size:10px;color:#21684e;letter-spacing:.08em;font-weight:850}
+.shell h3{font-size:15px;margin:7px 0}
+.shell>p{font-size:12px;line-height:1.7;color:#40594b;margin:8px 0 12px}
+.entries{display:grid;gap:9px;grid-template-columns:repeat(auto-fit,minmax(min(100%,240px),1fr))}
+.entry{border:1px solid #d1e1d7;background:#fff;border-radius:9px;padding:11px;min-width:0}
+.entry .role{display:block;font-size:12px;color:#195840}
+.entry .title{font-size:13px;font-weight:650;margin:5px 0;line-height:1.45}
+.entry p{font-size:12px;margin:6px 0;color:#576659;line-height:1.55}
+.entry a{display:inline-block;font-size:12px;font-weight:750;color:#0c6b53;text-decoration:underline;margin:5px 0}
+.entry small{font-size:11px;color:#6a786d;display:block;line-height:1.5}
+.shell .limit{background:#fff6e6;border:1px solid #edd8b2;padding:10px;border-radius:8px;margin-top:12px}
+@media(max-width:470px){.shell{padding:10px}.entries{grid-template-columns:1fr}}
