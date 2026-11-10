@@ -1,3 +1,6 @@
+"use client";
+
+import {useState} from "react";
 import data from "../data/historicalMonthlyLevelRuns2026.json";
 
 type BenchmarkCase = {id:string;ticker:string;actualDecision:string};
@@ -29,6 +32,7 @@ function percent(n:number,d:number){return (100*n/d).toFixed(1)+"%";}
  * Level 4+ reruns can be overlaid without overwriting the Level 3 archive.
  */
 export default function HistoricalMonthlyLevelTrend(){
+  const [selectedLevel,setSelectedLevel]=useState("3");
   if(data.schemaVersion!==1||data.dataset!=="HISTORICAL_MONTHLY_LEVEL_COMPARISONS_2026_V1"||
     data.methodGuardrails.notLiveAccuracy!==true||
     data.methodGuardrails.validatedBlindPredictionCount!==0||
@@ -82,16 +86,18 @@ export default function HistoricalMonthlyLevelTrend(){
   }
   const levels=Array.from(new Set(runs.map(r=>r.assessmentLevel))).sort((a,b)=>a-b);
   const series=levels.map(level=>({level,points:months.map(c=>byKey.get(c.cohortId+"|"+level)??null)}));
+  const visibleSeries=selectedLevel==="all"?series:series.filter(s=>String(s.level)===selectedLevel);
   const allPoints=series.flatMap(s=>s.points.filter((p):p is Point=>p!==null));
+  const visiblePoints=visibleSeries.flatMap(s=>s.points.filter((p):p is Point=>p!==null));
   if(allPoints.length!==runs.length)throw new Error("INVALID_MONTHLY_LEVEL_POINT_COUNT");
-  const allRates=allPoints.flatMap(p=>[p.rate,p.baselineRate]);
+  const allRates=visiblePoints.flatMap(p=>[p.rate,p.baselineRate]);
   const minRate=Math.min(...allRates),minY=Math.max(0,Math.floor((minRate-8)/10)*10);
   const ticks=Array.from({length:Math.round((100-minY)/10)+1},(_,i)=>minY+i*10);
   const x=(index:number)=>L+index*(W-L-R)/(months.length-1);
   const y=(rate:number)=>T+(100-rate)*(H-T-B)/(100-minY);
   const levelDash=(index:number)=>index===0?undefined:index%2===1?"9 5":"3 5";
   return <section data-testid="historical-monthly-level-trend"
-    aria-label="June through October historical FDA retrospective Level 3 comparison trend"
+    aria-label="June through October historical FDA retrospective comparison by selectable assessment level"
     style={{background:"#fff",border:"1px solid #c3d8d1",borderRadius:14,
       padding:"clamp(14px,2vw,22px)",margin:"0 0 22px",color:ink}}>
     <div style={{fontSize:11,fontWeight:850,letterSpacing:".09em",color:"#28685e"}}>
@@ -103,8 +109,34 @@ export default function HistoricalMonthlyLevelTrend(){
       for the indicated assessment level; this is not blind prediction accuracy.
       The exact case population is frozen for comparisons when the assessment level rises.
     </p>
+    <div style={{display:"flex",alignItems:"end",flexWrap:"wrap",gap:12,margin:"12px 0 15px"}}>
+      <div style={{display:"grid",gap:5,minWidth:220}}>
+        <label htmlFor="historical-assessment-level-select"
+          style={{fontSize:13,fontWeight:850,color:"#29594f"}}>Assessment Level</label>
+        <select id="historical-assessment-level-select"
+          data-testid="historical-assessment-level-dropdown"
+          value={selectedLevel}
+          onChange={event=>setSelectedLevel(event.currentTarget.value)}
+          style={{fontSize:15,fontWeight:750,padding:"11px 12px",
+            border:"1px solid #9cbbb0",background:"#fff",color:ink,
+            borderRadius:9,width:"100%",minHeight:44}}>
+          {Array.from({length:data.methodGuardrails.maxResearchLevel},(_,i)=>i+1).map(level=>
+            <option key={level} value={String(level)} disabled={!levels.includes(level)}>
+              {"Level "+level+(levels.includes(level)?" — recorded":" — not yet assessed")}
+            </option>)}
+          <option value="all">Compare all recorded levels</option>
+        </select>
+      </div>
+      <div role="status" aria-live="polite" data-testid="historical-selected-level-status"
+        style={{fontSize:12,lineHeight:1.5,color:muted,maxWidth:530}}>
+        {selectedLevel==="all"?
+          "Comparing all recorded historical assessment levels. Month colors remain consistent.":
+          "Displaying Level "+selectedLevel+" historical assessment results for June–October 2026. "+
+          "Unassessed levels cannot show scores until their case-by-case assessments are saved."}
+      </div>
+    </div>
     <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
-      {levels.map((level,i)=><span key={level} data-testid={"historical-level-tag-"+level}
+      {visibleSeries.map((group,i)=><span key={group.level} data-testid={"historical-level-tag-"+group.level}
         style={{display:"inline-flex",alignItems:"center",gap:8,
           padding:"6px 11px",fontSize:12,fontWeight:800,
           border:"1px solid #bfd2cb",borderRadius:8,background:"#f5faf7"}}>
@@ -112,7 +144,7 @@ export default function HistoricalMonthlyLevelTrend(){
           <line x1="0" y1="4" x2="27" y2="4" stroke="#304c50"
             strokeWidth="3" strokeDasharray={levelDash(i)}/>
         </svg>
-        Assessment Level {level} · manual research
+        Assessment Level {group.level} · recorded research
       </span>)}
       <span style={{padding:"6px 11px",fontSize:12,color:"#895d25",fontWeight:800,
         background:"#fff7e9",borderRadius:8}}>Blind accuracy: N/A</span>
@@ -126,7 +158,7 @@ export default function HistoricalMonthlyLevelTrend(){
     </div>
     <div style={{overflowX:"auto",background:"#f9fbfa",borderRadius:10,padding:"10px 5px"}}>
       <svg data-testid="historical-monthly-level-line-chart" role="img"
-        aria-label={series.map(s=>"Level "+s.level+": "+s.points.map(p=>p?
+        aria-label={visibleSeries.map(s=>"Level "+s.level+": "+s.points.map(p=>p?
           p.cohort.monthLabel+" "+percent(p.matches,p.denominator):"not assessed").join(", ")).join("; ")+
           ". June through October month colors are distinct. Not blind."}
         viewBox={"0 0 "+W+" "+H} style={{display:"block",width:"100%",minWidth:540,height:"auto"}}>
@@ -134,13 +166,13 @@ export default function HistoricalMonthlyLevelTrend(){
           <line x1={L} x2={W-R} y1={y(t)} y2={y(t)} stroke="#dce8e3" strokeWidth="1"/>
           <text x={L-11} y={y(t)+4} textAnchor="end" fill="#647c75" fontSize="13">{t}%</text>
         </g>)}
-        {series.map((s,levelIndex)=><g key={s.level} data-testid={"level-line-"+s.level}>
+        {visibleSeries.map((s,levelIndex)=><g key={s.level} data-testid={"level-line-"+s.level}>
           {s.points.slice(0,-1).map((point,index)=>{
             const next=s.points[index+1];
             return point&&next?<line key={index} x1={x(index)} y1={y(point.rate)}
               x2={x(index+1)} y2={y(next.rate)}
               stroke={months[index].color} strokeWidth={levelIndex===0?3:2.5}
-              strokeDasharray={levelDash(levelIndex)} opacity={levelIndex===0?1:.8}/>:null;
+              strokeDasharray={levelDash(levels.indexOf(s.level))} opacity={levelIndex===0?1:.8}/>:null;
           })}
           {s.points.map((point,index)=>point?<g key={point.cohort.cohortId}>
             <circle cx={x(index)} cy={y(point.rate)} r={levelIndex===0?9:6}
@@ -150,7 +182,7 @@ export default function HistoricalMonthlyLevelTrend(){
                 percent(point.matches,point.denominator)+" ("+
                 point.matches+"/"+point.denominator+"). Nonblind retrospective agreement."}</title>
             </circle>
-            {levelIndex===0?<text x={x(index)} y={y(point.rate)-16}
+            {(selectedLevel!=="all"||levelIndex===0)?<text x={x(index)} y={y(point.rate)-16}
               fontSize="15" fontWeight="800" textAnchor="middle" fill="#253f3b">
               {percent(point.matches,point.denominator)}
             </text>:null}
@@ -166,7 +198,7 @@ export default function HistoricalMonthlyLevelTrend(){
     </div>
     <p style={{fontSize:11,lineHeight:1.5,color:muted,margin:"7px 0 12px"}}>
       Y-axis: matched cases / locked cases (%); it adjusts to display the recorded levels.
-      Future levels appear as additional dashed or dotted lines; month colors remain fixed.
+      Choose a level from the dropdown, or compare all recorded levels with additional dashed lines; month colors remain fixed.
       Abstentions on a later level cannot artificially increase its fixed-cohort match rate.
     </p>
     <div style={{overflowX:"auto",border:"1px solid #e0e9e5",borderRadius:9}}>
@@ -176,7 +208,7 @@ export default function HistoricalMonthlyLevelTrend(){
           {["Month","Assessment level","Matched","Missed","Rate","Always approve baseline","Method / sources"].map(h=>
             <th key={h} scope="col" style={{padding:"10px 9px",borderBottom:"1px solid #d6e4dc"}}>{h}</th>)}
         </tr></thead>
-        <tbody>{allPoints.map((p,i)=><tr key={p.run.runId} style={{background:i%2?"#f9fcfa":"#fff"}}>
+        <tbody>{visiblePoints.map((p,i)=><tr key={p.run.runId} style={{background:i%2?"#f9fcfa":"#fff"}}>
           <td style={{padding:9,fontWeight:850,color:p.cohort.color}}>
             {p.cohort.monthLabel} 2026</td>
           <td style={{padding:9}}>Level {p.level} · {p.run.assessmentType==="MANUAL_LEVEL3_STYLE_RECONSTRUCTION"?"manual":p.run.assessmentType}</td>
