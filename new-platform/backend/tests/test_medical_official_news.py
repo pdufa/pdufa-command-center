@@ -1,10 +1,10 @@
 """Official-source news watch must never manufacture FDA decisions or overwrite revisions."""
 import pytest
-from app.medical_official_news import official_link, parse_fda_feed, unique_cycle_match, exact_drug_alias
+from app.medical_official_news import official_link, canonical_fda_article, parse_fda_feed, unique_cycle_match, exact_drug_alias
 
 SAMPLE = b"""<?xml version="1.0"?><rss version="2.0"><channel>
 <item><title>FDA announces findings on aficamten</title>
-<link>https://www.fda.gov/news-events/test-article</link>
+<link>http://www.fda.gov/news-events/test-article</link>
 <pubDate>Mon, 09 Nov 2026 18:00:00 GMT</pubDate></item>
 <item><title>Untrusted item</title><link>https://attacker.example/news</link>
 <pubDate>Mon, 09 Nov 2026 18:00:00 GMT</pubDate></item>
@@ -12,6 +12,8 @@ SAMPLE = b"""<?xml version="1.0"?><rss version="2.0"><channel>
 
 def test_only_official_fda_host_is_admitted():
     assert official_link("https://www.fda.gov/news-events/test")
+    assert canonical_fda_article("http://www.fda.gov/news-events/test") == "https://www.fda.gov/news-events/test"
+    assert canonical_fda_article("http://fda.gov.attacker.example/test") is None
     for link in ("https://fda.gov.attacker.example/news",
                  "http://www.fda.gov/news",
                  "https://www.fda.gov@attacker.example/news",
