@@ -7,7 +7,7 @@ import {FOCUS_SPECIALTY_ASSESSMENT_QUEUE,FOCUS_SPECIALTY_SUMMARY} from "../../..
 import AssessmentStatusPies from "../../AssessmentStatusPies";
 import AssessmentLevelChart from "../../AssessmentLevelChart";
 import HistoricalTestingChart from "../../HistoricalTestingChart";
-import October2026HistoricalAudit from "../../October2026HistoricalAudit";
+import October2026HistoricalAuditPanel from "../../October2026HistoricalAuditPanel";
 import UltomirisHistoricalLevelThreePanel from "../../UltomirisHistoricalLevelThreePanel";
 import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
 
@@ -42,7 +42,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
     <AssessmentStatusPies {...pies}/>
     <AssessmentLevelChart/>
     <HistoricalTestingChart/>
-    <October2026HistoricalAudit/>
+    <October2026HistoricalAuditPanel/>
     {pies.latest?.researchOnly&&pies.latest.ticker==="SMMT"&&
       <section style={{...section,margin:"0 0 22px",background:"#f7faf9"}} aria-label="First prospective 2026 FDA research prediction">
         <div style={{...label,marginBottom:7}}>FIRST PROSPECTIVE 2026 PDUFA PREDICTION PILOT</div>
