@@ -47,6 +47,19 @@ class _NoRedirect(urllib.request.HTTPRedirectHandler):
         return None
 
 
+def canonical_fda_article(url: str):
+    """FDA's own RSS XML uses http links; upgrade exact FDA hosts to HTTPS."""
+    try:
+        parsed = urlparse(url)
+        if (parsed.scheme not in ("http", "https") or
+            parsed.hostname not in ("www.fda.gov", "fda.gov") or
+            parsed.username or parsed.password or parsed.port):
+            return None
+        return "https://www.fda.gov" + (parsed.path or "/") + (("?" + parsed.query) if parsed.query else "")
+    except ValueError:
+        return None
+
+
 def download_official_feed():
     opener = urllib.request.build_opener(_NoRedirect)
     request = urllib.request.Request(OFFICIAL_FEED, headers={
@@ -78,7 +91,8 @@ def parse_fda_feed(content: bytes):
         title = (item.findtext("title") or "").strip()
         link = (item.findtext("link") or "").strip()
         raw_date = (item.findtext("pubDate") or "").strip()
-        if not title or len(title) > 320 or not official_link(link) or not raw_date:
+        canonical = canonical_fda_article(link)
+        if not title or len(title) > 320 or not canonical or not raw_date:
             continue
         try:
             published = parsedate_to_datetime(raw_date)
@@ -89,7 +103,7 @@ def parse_fda_feed(content: bytes):
                 continue
         except (ValueError, TypeError):
             continue
-        items.append({"title": title, "url": link, "publishedAt": published.isoformat()})
+        items.append({"title": title, "url": canonical, "publishedAt": published.isoformat()})
     if not items:
         raise ValueError("FDA RSS contains no valid official articles")
     return items[:150]
