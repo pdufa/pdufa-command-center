@@ -40,6 +40,9 @@ export default function FocusSourceReadinessR81(){
     <strong>{group.ticker} · {group.cycleId}</strong>
     <div>{group.trialCount} linked NCT{group.trialCount===1?"":"s"} ·
      {group.originalPublishedMainReportLeads} published pivotal source lead{group.originalPublishedMainReportLeads===1?"":"s"} in R71</div>
+    <div>Retained registry primary tables: {group.currentRegistryPrimaryNcts.length}/{group.trialCount}
+     {" · "}method PDF page leads: {group.currentMethodPageLeadNcts.length}/{group.trialCount}.
+     These count source access, not positive outcomes.</div>
     <ul>{group.ncts.map(nct=>{
       const trial=d.rows.find(x=>x.nct===nct);
       return <li key={nct}>
@@ -47,6 +50,17 @@ export default function FocusSourceReadinessR81(){
        <span> · {trial?.indexedOriginalPivotalPublication?
         "Pivotal publication indexed — not adjudicated":
         "No pivotal report indexed in five-case R71; other public sources may exist"}</span>
+       {trial&&<>
+        <div className={styles.sourceCounts} aria-label={nct+" retained-source availability"}>
+         <span>Primary: {trial.currentRegistryPrimaryTable?"table available":"not posted here"}</span>
+         <span>Safety: {trial.currentRegistrySafetyArms?"arm data available":"not posted here"}</span>
+         <span>Method PDFs: {trial.retainedMethodPageLeads?"lead indexed":"no lead in snapshot"}</span>
+        </div>
+        <small>Next evidence step: {trial.currentRegistryPrimaryTable?
+          "verify endpoint statistics, analysis population and adverse-event windows against dated original protocol/SAP":
+          "seek original sponsor or journal pivotal results and dated protocol/SAP; missing registry tables do not imply trial failure"}.
+          Independent reviewer signoff is still required.</small>
+       </>}
       </li>;
     })}</ul>
     <small>Authenticated original SAPs 0 · signed reviews 0 · FDA ABSTAIN</small>
