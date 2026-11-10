@@ -179,3 +179,30 @@ live FOCUS roster, active assessment-level chart, official outcome-history
 records, worker predictions, probability calibration or retired scoring
 systems. The earlier 4-case Historical Testing subset must remain intact
 and distinct from the larger October audit.
+
+## October 2026 owner-directed historical review display — November 9, 2026
+
+The owner requested an October 2026 FDA prediction/outcome assessment in the
+separate historical-testing area. Add only the October source-tracked research
+cohort's **outcome-aware** comparison file and manual Level 3-style panel to
+the existing historical display, and add a distinct `October 2026 Testing` tab
+in PDUFA Master Scan Data. This does not alter the four-case study, individual
+archived freezes, prospectively frozen SMMT case, live trial scores, or the
+FOCUS 29 roster. Two-stage evidence and outcome sources must remain separate.
+
+The source-defined October subset is **18 cases**: 17 in the original date-tracked
+research freeze plus one independently sourced October 29 ILUMYA goal. There
+are 17 observed FDA approvals, one pre-action withdrawal and no actual CRL in
+this selected cohort; thus 16/17 retrospective matches (94.1%) reflects an
+outcome-aware reconstruction, not predictive accuracy. The always-approve
+baseline is 17/17 (100%). A withdrawal is never automatically scored as a CRL.
+Cases without independently proven original October goal dates, and FDA actions
+in September or dates originating in 2027, must be labeled and not silently
+counted as verified October goal dates. This is not a claim of covering every
+FDA action across the drug industry for October.
+
+Never feed monthly reconstructed assessments, historical success rates, or
+retrospective chart data into active scientific scores, accuracy, model weights,
+calibration, screening, trade decisions, or the production forecasting engine.
+A legitimately blind evaluation requires an outcome-unexposed independent
+assessor as specified in the earlier quarantine policy.
