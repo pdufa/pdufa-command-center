@@ -82,6 +82,11 @@ export default function ScientificReconciliationR91Page(){
    </a>. Exact textual comparisons are neither original signed SAP verification
    nor independent scientific endpoint adjudication.
   </p>
+  <p className={styles.footer}>
+   <a href="/predictions/scientific-reconciliation/priority-gates">
+    Priority independent source review: ACACIA-HCM and Launch-HTN, 11 outstanding original proof gates
+   </a>. None is signed or certified.
+  </p>
   <PostedResultsR91Client rows={d.rows}/>
   <p className={styles.footer}>
    <a href="/predictions/source-recovery">
