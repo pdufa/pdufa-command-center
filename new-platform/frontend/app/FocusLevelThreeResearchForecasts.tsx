@@ -19,6 +19,32 @@ const colors:Record<LabelKey,{background:string;color:string;border:string}>={
   ABSTAIN:{background:"#fff6df",color:"#795512",border:"1px solid #e5ce91"},
   ALREADY_APPROVED:{background:"#edf1f5",color:"#556678",border:"1px solid #c0cdd7"}
 };
+/** Subjective agreement estimates from November 10 conversation; not calibrated probabilities. */
+const subjectiveAgreement:Record<string,number|null>={
+  "abvx-uc": 75,
+  "achv-cytisinicline": 80,
+  "apmd-ad109": 60,
+  "axsm-axs12": 65,
+  "blte-stargardt": 60,
+  "capr-deramiocel": 60,
+  "cldx-barzolvolimab": 80,
+  "cogt-gist": 75,
+  "cort-relacorilant": 60,
+  "cytk-aficamten-ohcm": null,
+  "cytk-aficamten-nhcm": 80,
+  "imnm-desmoid": 75,
+  "mltx-sonelokimab": 60,
+  "mlys-lorundrostat": 75,
+  "phvs-ondemand": 60,
+  "phvs-prophylaxis": 80,
+  "prax-ulixacaltamide": 60,
+  "srpt-casimersen": 75,
+  "srpt-golodirsen": 75,
+  "svra-molgramostim": 60,
+  "urgn-ugn103": 60,
+  "vera-trutakna": 80,
+  "zbio-obexelimab": 75
+};
 const box={background:"#fff",border:"1px solid #d2dcd5",borderRadius:9,padding:"12px 11px"} as const;
 const linkTo=(nct:string,cycleId:string)=>
   "/predictions/assessment?nct="+encodeURIComponent(nct)+"&cycle="+encodeURIComponent(cycleId);
@@ -96,7 +122,7 @@ export default function FocusLevelThreeResearchForecasts({selectedCycleId}:{
     </h2>
     <p style={{fontSize:13,lineHeight:1.65,color:"#5d503a",margin:"8px 0 13px"}}>
       <strong>Directional hypotheses only; NOT independently validated FDA forecasts.</strong>
-      These are source-linked three-layer research calls about clinical efficacy,
+      Agreement percentages are subjective estimates, not independently reviewed or calibrated. These are source-linked three-layer research calls about clinical efficacy,
       benefit/risk, and FDA/manufacturing issues. They are <strong>not</strong> completed
       800-assessment scientific grades, calibrated probabilities, verified FDA outcomes,
       or buy/sell signals. The production engine and verified-accuracy charts remain
@@ -126,7 +152,7 @@ export default function FocusLevelThreeResearchForecasts({selectedCycleId}:{
         <thead>
           <tr style={{background:"#f2efe6",textAlign:"left"}}>
             {["Ticker","FDA drug/application","Reported PDUFA target",
-              "Level 3 preliminary call","Exact supporting trials","Scientific evidence"].map(head=>
+              "Level 3 preliminary call","My agreement","Exact supporting trials","Scientific evidence"].map(head=>
               <th key={head} scope="col"
                 style={{padding:"11px 9px",borderBottom:"2px solid #c9cfbf"}}>{head}</th>)}
           </tr>
@@ -148,6 +174,7 @@ export default function FocusLevelThreeResearchForecasts({selectedCycleId}:{
               Research confidence: {c.confidenceDescription.replaceAll("_"," ").toLowerCase()}
             </div>
           </td>
+          <td style={cell}><strong>{subjectiveAgreement[c.cycleId] == null ? "N/A" : `${subjectiveAgreement[c.cycleId]}%`}</strong><div style={{fontSize:10,color:"#6c7468",marginTop:5}}>Subjective agreement · not FDA approval probability</div></td>
           <td style={cell}>{c.associatedNcts.map(nct=><div key={nct} style={{marginBottom:5}}>
             <Link href={linkTo(nct,c.cycleId)}
               style={{color:"#075a50",fontWeight:700}}>{nct}</Link>
