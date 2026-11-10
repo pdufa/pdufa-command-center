@@ -106,7 +106,12 @@ test("Cross-NCT, forged source hashes, missing original bytes, untrusted signers
   t=>{t.packet.attestations[1].keyId=t.packet.attestations[0].keyId},
   t=>{t.packet.attestations[1].signatureBase64="Z".repeat(88)},
   t=>{t.packet.attestations[1].role="SPONSOR_RECORD_CUSTODIAN"},
-  t=>{t.packet.attestations.pop()}
+  t=>{t.packet.attestations.pop()},
+  t=>{t.packet.clinicalGrade=20},
+  t=>{t.packet.events[0].FDAOutcome="APPROVED"},
+  t=>{t.packet.attestations[0].sourceIsOfficial=true},
+  t=>{t.packet.events[0].atUtc="2025-02-30T09:00:00Z"},
+  t=>{t.packet.events[0].atUtc="2025-13-13T09:00:00Z"}
  ];
  attacks.forEach((attack,i)=>{
   const t=fixture();attack(t);
