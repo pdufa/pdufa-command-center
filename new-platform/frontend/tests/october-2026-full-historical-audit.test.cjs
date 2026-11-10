@@ -75,8 +75,8 @@ test("isolated October audit renders 17 cases, 93.75 percent and the all-approve
   assert.match(html,/data-testid="october-2026-historical-case-data"/);
   assert.match(html,/93\.75%/);
   assert.match(html,/15 matched/);
-  assert.match(html,/1 missed/);
-  assert.match(html,/1 voluntarily withdrawn/);
+  assert.match(html,/Missed directions/);
+  assert.match(html,/voluntarily withdrawn/);
   assert.match(html,/0 valid blind/i);
   assert.match(html,/NOT MEASURABLE/);
   assert.match(html,/always guessing APPROVAL/);
