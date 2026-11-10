@@ -27,7 +27,7 @@ async function verify(browser,profile){
   await board.waitFor({state:"visible",timeout:15000});
   await board.getByRole("heading",{name:"Scientific evidence recovery · 29 FOCUS trials"}).waitFor();
   assert.equal(await board.locator('details[aria-label^="R68 evidence for"]').count(),29);
-  assert.match(await board.innerText(),/Source availability/);
+  assert.match(await board.innerText(),/Current posted primary/);
   assert.match(await board.innerText(),/ABSTAIN/);
   assert.match(await board.innerText(),/NOT CALIBRATED/);
   const query=board.getByRole("searchbox",{name:"Search source recovery trials"});
