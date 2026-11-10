@@ -159,6 +159,10 @@ export async function GET(req:Request):Promise<Response>{
   detectedDirectKidsMatchingPageDictionaries:pageTreeDirectKidsMatchingPageDictionaries,
   detectedDirectKidsMatchingNestedPageNodes:pageTreeDirectKidsMatchingNestedPageNodes,
   provisionalNestedPageTreeOrder,
+  provisionalNestedPageTreeCoverageMatchesDetectedPages:
+   nestedPageTreeTraversalError===null&&provisionalNestedPageTreeOrder.length===pages.length,
+  provisionalNestedPageTreeCoverageMismatch:
+   nestedPageTreeTraversalError===null&&provisionalNestedPageTreeOrder.length!==pages.length,
   provisionalNestedPageTreeTraversalError:nestedPageTreeTraversalError,
   provisionalNestedPageTreeOrderNotScientificallyCertified:true,
   provisionalDirectLeafKidsInArrayOrder:directLeafPageOrder,
