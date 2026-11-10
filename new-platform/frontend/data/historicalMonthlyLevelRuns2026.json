@@ -667,7 +667,8 @@
           "caseId": "JUN26-19",
           "call": "CRL"
         }
-      ]
+      ],
+      "methodVersion": "MANUAL_LEVEL3_RECONSTRUCTION_V1"
     },
     {
       "runId": "historical-2026-07-v1-manual-level-3-2026-11-09",
@@ -720,7 +721,8 @@
           "caseId": "JUL26-12",
           "call": "APPROVAL"
         }
-      ]
+      ],
+      "methodVersion": "MANUAL_LEVEL3_RECONSTRUCTION_V1"
     },
     {
       "runId": "historical-2026-08-v1-manual-level-3-2026-11-09",
@@ -777,7 +779,8 @@
           "caseId": "AUG26-11",
           "call": "APPROVAL"
         }
-      ]
+      ],
+      "methodVersion": "MANUAL_LEVEL3_RECONSTRUCTION_V1"
     },
     {
       "runId": "historical-2026-09-v1-manual-level-3-2026-11-09",
@@ -874,7 +877,8 @@
           "caseId": "SEP26-ACTION-20",
           "call": "APPROVAL"
         }
-      ]
+      ],
+      "methodVersion": "MANUAL_LEVEL3_RECONSTRUCTION_V1"
     },
     {
       "runId": "historical-2026-10-v1-manual-level-3-2026-11-09",
@@ -959,7 +963,8 @@
           "caseId": "OCT26-18-SUN",
           "call": "APPROVAL"
         }
-      ]
+      ],
+      "methodVersion": "MANUAL_LEVEL3_RECONSTRUCTION_V1"
     }
   ]
 }
