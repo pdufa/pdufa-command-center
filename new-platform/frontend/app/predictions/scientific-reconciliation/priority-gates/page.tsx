@@ -1,5 +1,7 @@
 import {R93_PRIORITY_SCIENTIFIC_GATES} from
  "../../../../lib/focus-r93-priority-scientific-gates";
+import {R94_ACACIA_COHORT_SAFETY_SOURCE} from
+ "../../../../lib/focus-r94-acacia-cross-source-reconciliation";
 import styles from "../../evidence-gaps/EvidenceRecoveryBoardR68.module.css";
 
 export const metadata={
@@ -9,7 +11,8 @@ export const metadata={
 
 export default function PriorityOriginalScientificGatesR93(){
  const d=R93_PRIORITY_SCIENTIFIC_GATES;
- if(!d)return <main className={styles.coverage}>
+ const acacia=R94_ACACIA_COHORT_SAFETY_SOURCE;
+ if(!d||!acacia)return <main className={styles.coverage}>
   <h1>Priority original scientific evidence review</h1>
   <p role="alert">Original FOCUS evidence and exact scientific blockers did not
    pass locked source integrity checks. No reviewer, SAP, score or FDA
@@ -65,6 +68,55 @@ export default function PriorityOriginalScientificGatesR93(){
      {" "}{d.launchPublicToplineDate} public topline disclosure. This does not
      establish the real database-lock or blind-break date.
    </p>}
+   {c.trial==="ACACIA_HCM"&&<details className={styles.coverageDetails}>
+    <summary>Revision 94: cross-source cohort and heart-failure case-definition audit</summary>
+    <p>New public-source comparison checked on {acacia.originalSourceDateUtc} UTC.
+     The primary NEJM article lists <b>{acacia.randomizedFromNEJM} randomized</b>
+     {" "}({acacia.aficamtenRandomized} aficamten,
+     {" "}{acacia.placeboRandomized} placebo). A later published clinical appraisal
+     describes <b>{acacia.secondaryPaperReportedTreated} treated</b>.
+     The one-person difference is a plausible randomized-versus-treated
+     explanation, <b>not yet confirmed by original CONSORT or patient listings</b>.
+    </p>
+    <p>For heart-failure serious adverse events, the earlier case figures
+     retained for review were
+     {" "}<b>{acacia.earlySourceReportedHfSAECasesAficamten}/
+      {acacia.earlySourceReportedHfSAECasesPlacebo}</b>.
+     The later October sponsor report describes
+     {" "}<b>{acacia.octoberSponsorHfSAECasesAficamten}/
+      {acacia.octoberSponsorHfSAECasesPlacebo}</b>.
+     Within the later aficamten count,
+     {" "}{acacia.octoberSponsorHFWithLVEFBelow50}
+     {" "}cases were reported with LVEF below 50%, and
+     {" "}{acacia.octoberSponsorHFWithoutLVEFBelow50}
+     {" "}without that association. These later subcategories
+     add up internally but do <b>not</b> reconcile the earlier 11/1 source.
+     Original event/cutoff and exposure evidence remains missing.</p>
+    <p>A published responder-analysis author statement says the analysis
+     entered the SAP before database lock and unblinding. That claim is
+     <b> not</b> independently authenticated signatory or access-log evidence.
+     Original public NEJM protocol/appendix PDF bytes were not retrieved
+     in this pass.</p>
+    <details className={styles.coverageDetails}>
+     <summary>See all {acacia.numberOfOriginalResearchSourceLinks} dated publication and sponsor claims</summary>
+     <ul>{acacia.sourceLinks.map(s=><li key={s.id}>
+       <b>{s.type}</b> · {s.published}
+       <p>{s.claim}</p>
+       <a href={s.url} target="_blank" rel="noopener noreferrer">
+        Open original publication or issuer statement
+       </a>
+     </li>)}</ul>
+    </details>
+    <details className={styles.coverageDetails}>
+     <summary>Required original cohort, SAE and SAP authenticity follow-ups</summary>
+     <ul>{acacia.reviewNeeded.map(s=><li key={s}>{s}</li>)}</ul>
+    </details>
+    <p><b>Evidence classification:</b> public reported-source comparison.
+     Cohort case-level accounting: UNVERIFIED. HF clinical adjudication:
+     UNVERIFIED. Original prospectively signed SAP: UNVERIFIED.
+     Qualified independent review: NOT SIGNED.
+     FDA outcome forecast: ABSTAIN.</p>
+   </details>}
    {c.newlyIndexedPublisherProtocolAttachmentLead&&
      <details className={styles.coverageDetails}>
       <summary>New publisher-indexed ACACIA-HCM original protocol and appendix leads</summary>
