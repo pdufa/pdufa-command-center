@@ -25,6 +25,8 @@ def inspect_queue(path):
     tasks = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(tasks, list):
         raise ValueError("Task queue must be a list")
+    if len(tasks) > 100:
+        raise ValueError("Development queue exceeds 100 tasks")
     seen_ids = set()
     for index, task in enumerate(tasks):
         if not isinstance(task, dict):
