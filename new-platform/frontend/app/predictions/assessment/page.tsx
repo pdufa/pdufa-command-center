@@ -5,6 +5,7 @@ import {CLINICAL_SPECIALTY_PROFILES,getSpecialtyProfile,getSpecialtyTasks} from 
 import {getFullSpecialistCase} from "../../../lib/medical-intelligence-specialist-all";
 import {FOCUS_SPECIALTY_ASSESSMENT_QUEUE,FOCUS_SPECIALTY_SUMMARY} from "../../../lib/focus-specialty-assessment";
 import AssessmentStatusPies from "../../AssessmentStatusPies";
+import FocusLevelThreeResearchForecasts from "../../FocusLevelThreeResearchForecasts";
 import AssessmentLevelChart from "../../AssessmentLevelChart";
 import HistoricalTestingChart from "../../HistoricalTestingChart";
 import HistoricalMonthlyLevelTrend from "../../HistoricalMonthlyLevelTrend";
@@ -14,7 +15,7 @@ import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
 
 export const metadata:Metadata={
   title:"FOCUS Scientific Assessment Readiness | PDUFA",
-  description:"Source-linked, phase-first clinical subspecialty research queue for each exact FOCUS trial, with evidence gaps and no unvalidated predictions."
+  description:"Source-linked FOCUS scientific assessment intake, with frozen, clearly labeled provisional Level 3 FDA application research calls and evidence gaps."
 };
 type Params={nct?:string;cycle?:string};
 const section={border:"1px solid #c3d9d5",background:"#fff",borderRadius:13,padding:"clamp(13px,2vw,20px)"} as const;
@@ -53,6 +54,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
         decisions does not mean zero historical research.
       </p>
     </section>
+    <FocusLevelThreeResearchForecasts selectedCycleId={cycle?.cycleId}/>
     <AssessmentStatusPies {...pies}/>
     <AssessmentLevelChart/>
     {pies.latest?.researchOnly&&pies.latest.ticker==="SMMT"&&
@@ -127,8 +129,10 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
         The {FOCUS_SPECIALTY_SUMMARY.partialClinicalDimensions} specialty positions are authored research interpretations,
         not individually independently reverified findings. Signed clinical adjudications: 0 recorded.
         For the FOCUS research queue only: approved numerical FDA forecasts: 0.
-        Approval, CRL and delay remain <strong>ABSTAIN</strong>;
-        certainty remains <strong>NOT VALIDATED</strong>. Roster snapshot: {FOCUS_SPECIALTY_SUMMARY.rosterAsOf}.
+        The validated production engine remains <strong>ABSTAIN</strong>;
+        certainty remains <strong>NOT VALIDATED</strong>.
+        Separate provisional approval/CRL research calls are listed above and do not
+        enter validated production predictions or accuracy. Roster snapshot: {FOCUS_SPECIALTY_SUMMARY.rosterAsOf}.
       </p>
       <p style={{fontSize:13,margin:"9px 0 0"}}>
         <Link href="/api/focus-assessment-intake" style={{color:"#08695c",fontWeight:750}}>Download machine-readable 29-trial intake manifest</Link>
