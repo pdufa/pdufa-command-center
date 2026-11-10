@@ -1,0 +1,11 @@
+services:
+  - type: worker
+    name: pdufa-stage4-second-worker
+    runtime: python
+    plan: starter
+    region: oregon
+    buildCommand: echo "Python standard library only"
+    startCommand: python scripts/stage4_second_worker.py
+    envVars:
+      - key: PDUFA_POLL_SECONDS
+        value: "1"
