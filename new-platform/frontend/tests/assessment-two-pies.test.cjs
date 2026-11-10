@@ -210,7 +210,8 @@ test("line chart correctly plots misses, chronological cumulative percentages an
   assert.deepEqual(model.overallTrend.map(p=>p.notAccuratePct),[100,50]);
   assert.equal(model.accuracyPercent,50);
   const markup=renderToStaticMarkup(React.createElement(Pies,model));
-  assert.equal((markup.match(/<polyline /g)||[]).length,2);
+  assert.equal((markup.match(/<polyline /g)||[]).length,3);
+  assert.match(markup,/data-testid="overall-accuracy-pie-trend-line"/);
   assert.match(markup,/data-testid="overall-accuracy-line"/);
   assert.match(markup,/0%/);
   assert.match(markup,/100%/);
@@ -238,7 +239,8 @@ test("last competitiveness trend is exact-cycle, time-ordered, calibrated, exclu
   assert.deepEqual(trend.latestTrend.map(x=>x.approvalPct),[80,60,45]);
   assert.deepEqual(trend.latestTrend.map(x=>x.crlPct),[20,40,55]);
   const html=renderToStaticMarkup(React.createElement(Pies,trend));
-  assert.equal((html.match(/<polyline /g)||[]).length,2);
+  assert.equal((html.match(/<polyline /g)||[]).length,3);
+  assert.match(html,/data-testid="latest-prediction-pie-trend-line"/);
   const late=summarizeFdaPredictionAccuracy([...rows,create({
     predictionId:"after-fda",completedAt:"2026-05-15T12:00:00Z",
     actualDecisionAt:"2026-05-10T12:00:00Z",
