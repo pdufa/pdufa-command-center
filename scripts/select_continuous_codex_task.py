@@ -6,6 +6,7 @@ import re
 import sys
 import urllib.parse
 import urllib.request
+import urllib.error
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -44,6 +45,39 @@ def existing_pr(token, branch):
     return len(rows) > 0
 
 
+def branch_reserved(token, branch):
+    url = API + "/git/ref/heads/" + urllib.parse.quote(branch, safe="/")
+    req = urllib.request.Request(url, headers={
+        "Accept": "application/vnd.github+json",
+        "Authorization": "Bearer " + token,
+        "X-GitHub-Api-Version": "2022-11-28",
+    })
+    try:
+        with urllib.request.urlopen(req, timeout=20) as response:
+            return response.status == 200
+    except urllib.error.HTTPError as error:
+        if error.code == 404:
+            return False
+        raise
+
+
+def reserve_once(token, branch):
+    """Reserving an approved branch prevents repeated billed attempts on failure."""
+    sha = os.environ.get("GITHUB_SHA", "")
+    if not re.fullmatch(r"[0-9a-f]{40}", sha):
+        raise ValueError("Trusted GitHub source SHA missing")
+    body = json.dumps({"ref": "refs/heads/" + branch, "sha": sha}).encode()
+    req = urllib.request.Request(API + "/git/refs", data=body, method="POST", headers={
+        "Accept": "application/vnd.github+json",
+        "Authorization": "Bearer " + token,
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Content-Type": "application/json",
+    })
+    with urllib.request.urlopen(req, timeout=20) as response:
+        if response.status != 201:
+            raise RuntimeError("GitHub branch reservation not confirmed")
+
+
 def main():
     data = json.loads(QUEUE.read_text(encoding="utf-8"))
     if data.get("schemaVersion") != 1 or not isinstance(data.get("tasks"), list):
@@ -55,8 +89,11 @@ def main():
     for task in data["tasks"]:
         if not eligible(task):
             continue
-        if existing_pr(token, task["branch"]):
+        if existing_pr(token, task["branch"]) or branch_reserved(token, task["branch"]):
             continue
+        # Reserve before invoking the paid agent. A failed/no-patch attempt is
+        # never automatically retried on the next scheduled tick.
+        reserve_once(token, task["branch"])
         output = {"task_id": task["id"], "prompt_file": task["promptFile"], "branch": task["branch"]}
         break
     output_file = os.environ.get("GITHUB_OUTPUT")
