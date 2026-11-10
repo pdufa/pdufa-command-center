@@ -54,13 +54,13 @@ class ContinuousCodexSetupTests(unittest.TestCase):
         select = load("select_continuous_codex_task")
         with TemporaryDirectory() as directory:
             output = Path(directory) / "output"
-            with patch.dict(os.environ, {"GH_TOKEN": "fake", "GITHUB_OUTPUT": str(output)}), \\
-                 patch.object(select, "existing_pr", return_value=False), \\
-                 patch.object(select, "branch_reserved", return_value=True), \\
+            with patch.dict(os.environ, {"GH_TOKEN": "fake", "GITHUB_OUTPUT": str(output)}), \
+                 patch.object(select, "existing_pr", return_value=False), \
+                 patch.object(select, "branch_reserved", return_value=True), \
                  patch.object(select, "reserve_once") as reserve:
                 select.main()
                 reserve.assert_not_called()
-            self.assertIn("task_id=\\n", output.read_text())
+            self.assertIn("task_id=\n", output.read_text())
 
     def test_patch_scope_rejects_unapproved_and_symlink_paths(self):
         guard = load("check_continuous_codex_patch")
