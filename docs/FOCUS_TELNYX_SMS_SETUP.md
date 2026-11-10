@@ -31,16 +31,16 @@ Official instructions:
 At https://github.com/pdufa/pdufa-command-center/settings/secrets/actions
 configure the following *repository secrets*; do not save values in the repo:
 
-- \`TELNYX_API_KEY\` — your API v2 key
-- \`TELNYX_FROM_NUMBER\` — the verified, Telnyx SMS-enabled sender in
-  E.164 format (e.g. \`+1XXXXXXXXXX\`)
-- \`PDUFA_SMS_TO_NUMBER\` — the user-approved destination in E.164 format,
+- `TELNYX_API_KEY` — your API v2 key
+- `TELNYX_FROM_NUMBER` — the verified, Telnyx SMS-enabled sender in
+  E.164 format (e.g. `+1XXXXXXXXXX`)
+- `PDUFA_SMS_TO_NUMBER` — the user-approved destination in E.164 format,
   already supplied in the conversation; keep the actual number private
-- \`TELNYX_MESSAGING_PROFILE_ID\` — optional; use if your Telnyx account
+- `TELNYX_MESSAGING_PROFILE_ID` — optional; use if your Telnyx account
   requires explicit outbound profile selection
 
-Do **not** create \`PDUFA_TELNYX_SMS_VERIFIED\` yet. The separate
-\`PDUFA_SMS_TO_NUMBER\` secret may already be present from old Twilio tests,
+Do **not** create `PDUFA_TELNYX_SMS_VERIFIED` yet. The separate
+`PDUFA_SMS_TO_NUMBER` secret may already be present from old Twilio tests,
 but it must be independently confirmed to point at the intended handset.
 
 ## 3. Run a single, manual connectivity test
@@ -48,8 +48,8 @@ but it must be independently confirmed to point at the intended handset.
 After registration is approved, go to:
 https://github.com/pdufa/pdufa-command-center/actions/workflows/focus-telnyx-sms-test.yml
 
-Select **Run workflow** for the \`main\` branch. The workflow invokes only
-\`python -m scripts.focus_telnyx_sms --test\`. There is no schedule or push
+Select **Run workflow** for the `main` branch. The workflow invokes only
+`python -m scripts.focus_telnyx_sms --test`. There is no schedule or push
 trigger, and no clinical/financial scan runs. The test sends a single short
 ASCII SMS with no personal or financial details.
 
@@ -61,11 +61,11 @@ network result must not be retried blindly.
 
 After confirming the test on the handset:
 
-- Set GitHub secret \`PDUFA_TELNYX_SMS_VERIFIED\` to exactly \`true\` as the
+- Set GitHub secret `PDUFA_TELNYX_SMS_VERIFIED` to exactly `true` as the
   opt-in safeguard for the alert-sending path.
-- The sender's \`--alert\` mode requires that flag and checks every requested
+- The sender's `--alert` mode requires that flag and checks every requested
   ticker against the checked-out canonical FOCUS roster
-  \`new-platform/frontend/data/p3PostDataActive.json\`.
+  `new-platform/frontend/data/p3PostDataActive.json`.
 - **Connecting actual news signals to this sender is still a separate,
   outstanding integration.** The hourly ChatGPT alert does not itself call a
   GitHub Action or the Telnyx API. Do not interpret the manual SMS test or
