@@ -70,7 +70,7 @@ test("R84 read-only interface displays dates, grouped exact trials, blockers and
  assert.match(board,/<ApplicationVerificationR84\s*\/>/);
  assert.match(ui,/Source-reported target/);
  assert.match(ui,/Already-observed status claims/);
- assert.match(ui,/link.*exact supporting NCTs/);
+ assert.match(ui,/linked\s+to its exact supporting NCTs/);
  assert.match(ui,/ABSTAIN/);
  assert.match(ui,/Original source/);
  assert.doesNotMatch(ui,/setGrade\(|submitClinicalScore|POST\s*\/api/);
