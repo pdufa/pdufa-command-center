@@ -19,10 +19,17 @@ def validate(package):
             errors.append("MISSING_" + field)
     if package.get("assessmentLevel") not in range(1, 21):
         errors.append("INVALID_LEVEL")
-    if package.get("reviewer") == package.get("independentChallenge", {}).get("reviewer"):
+    challenge = package.get("independentChallenge")
+    if not isinstance(challenge, dict) or not challenge.get("reviewer") or not challenge.get("critique"):
+        errors.append("INDEPENDENT_CHALLENGE_INCOMPLETE")
+    elif package.get("reviewer") == challenge["reviewer"]:
         errors.append("CHALLENGER_NOT_INDEPENDENT")
-    if package.get("outcomeProbability") is not None and not package.get("calibrationReference"):
-        errors.append("UNCALIBRATED_PROBABILITY")
+    probability = package.get("outcomeProbability")
+    if probability is not None:
+        if isinstance(probability, bool) or not isinstance(probability, (int, float)) or not 0 <= probability <= 1:
+            errors.append("INVALID_PROBABILITY")
+        if not package.get("calibrationReference"):
+            errors.append("UNCALIBRATED_PROBABILITY")
     if package.get("outcomeJudgment") == package.get("timingJudgment"):
         errors.append("OUTCOME_AND_TIMING_NOT_DISTINGUISHED")
     evidence = package.get("evidence")
@@ -35,6 +42,8 @@ def validate(package):
                 break
     if package.get("historicalOutcomeExposed") is True:
         errors.append("OUTCOME_EXPOSED_NOT_PROSPECTIVE")
+    if package.get("prospective") is True and package.get("historicalOutcomeExposed") is not False:
+        errors.append("PROSPECTIVE_BLINDING_UNVERIFIED")
     if not package.get("predictionHistoryAppendOnly", False):
         errors.append("IMMUTABLE_HISTORY_NOT_ATTESTED")
     return {"accepted": not errors, "errors": errors,
