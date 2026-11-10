@@ -21,6 +21,8 @@ jobs:
     if: ${{ vars.PDUFA_CONTINUOUS_CODEX_ENABLED == 'true' }}
     runs-on: ubuntu-latest
     timeout-minutes: 3
+    permissions:
+      contents: write
     outputs:
       task_id: ${{ steps.pick.outputs.task_id }}
       prompt_file: ${{ steps.pick.outputs.prompt_file }}
