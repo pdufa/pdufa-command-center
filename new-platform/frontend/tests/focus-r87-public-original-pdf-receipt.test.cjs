@@ -61,6 +61,7 @@ test("R87 rejects incorrect PDF body magic, length and oversized source",()=>{
  assert.ok(selected);
  assert.equal(digestR87PublicPdf(selected,Buffer.from("not-a-pdf".padEnd(original.length))),null);
  assert.equal(digestR87PublicPdf(selected,Buffer.from("%PDF-1.7")),null);
+ assert.ok(R87_MAX_SOURCE_PDF_BYTES>33_306_177);
  const huge={...selected,registryReportedSize:R87_MAX_SOURCE_PDF_BYTES+1};
  assert.equal(digestR87PublicPdf(huge,original),null);
 });
