@@ -7,6 +7,7 @@ import {FOCUS_SPECIALTY_ASSESSMENT_QUEUE,FOCUS_SPECIALTY_SUMMARY} from "../../..
 import AssessmentStatusPies from "../../AssessmentStatusPies";
 import AssessmentLevelChart from "../../AssessmentLevelChart";
 import HistoricalTestingChart from "../../HistoricalTestingChart";
+import HistoricalMonthlyLevelTrend from "../../HistoricalMonthlyLevelTrend";
 import October2026HistoricalAuditPanel from "../../October2026HistoricalAuditPanel";
 import UltomirisHistoricalLevelThreePanel from "../../UltomirisHistoricalLevelThreePanel";
 import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
@@ -42,6 +43,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
     <AssessmentStatusPies {...pies}/>
     <AssessmentLevelChart/>
     <HistoricalTestingChart/>
+    <HistoricalMonthlyLevelTrend/>
     <October2026HistoricalAuditPanel/>
     {pies.latest?.researchOnly&&pies.latest.ticker==="SMMT"&&
       <section style={{...section,margin:"0 0 22px",background:"#f7faf9"}} aria-label="First prospective 2026 FDA research prediction">
