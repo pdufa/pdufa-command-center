@@ -204,6 +204,22 @@ export function buildR93PriorityScientificGates(
    protocolOrSapPdfListedInCurrentRegistry:false as const,
    historicalOriginalRegistryVersionsCaptured:kind==="ACACIA_HCM"?4:0,
    currentRegistryAggregateResultsPosted:false as const,
+   newlyIndexedPublisherProtocolAttachmentLead:kind==="ACACIA_HCM"?{
+     study:"ACACIA-HCM" as const,
+     sourceArticle:"https://www.nejm.org/doi/full/10.1056/NEJMoa2603021?query=featured_home",
+     sourcePublished:"2026-08-28" as const,
+     publisherSupplementProtocolListed:true as const,
+     publisherSupplementaryAppendixListed:true as const,
+     advertisedProtocolPdfFilename:"nejmoa2603021_protocol.pdf" as const,
+     advertisedAppendixPdfFilename:"nejmoa2603021_appendix.pdf" as const,
+     sourceReportedRandomizedAficamten:258 as const,
+     sourceReportedRandomizedPlacebo:259 as const,
+     sourceReportedTotalRandomized:517 as const,
+     originalPublisherSupplementPdfBytesAuthenticated:false as const,
+     originalControlledFinalSAPAuthenticated:false as const,
+     trialSafetyIndependentlyAdjudicated:false as const,
+     sourceType:"PUBLISHER_INDEXED_ATTACHMENT_LEAD_NOT_CAPTURED_SIGNED_SAP" as const
+   }:null,
    timelineSummary:kind==="ACACIA_HCM"?
      "Registry source v26 posted Jan 14 2025 lists one primary; v27 posted May 20 2025 lists two. SAP signature and first-unblinding chronology are NOT independently authenticated.":
      "Published SAP main imprint Feb 13 2025 and windowing addendum imprint Feb 23 2025 precede the Mar 10 2025 public topline, but real database-lock and first-unblinded-access timestamps remain unknown.",
