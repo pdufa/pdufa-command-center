@@ -79,6 +79,7 @@ jobs:
     permissions:
       contents: write
       pull-requests: write
+      actions: write
     steps:
       - uses: actions/checkout@v4
         with:
@@ -95,6 +96,7 @@ jobs:
           python scripts/audit_raas_retirement.py --check
           python -m py_compile new-platform/backend/app/medical_method_projection.py new-platform/backend/app/medical_grading_policy.py
       - name: Open draft PR for separate review and required CI
+        id: open
         uses: peter-evans/create-pull-request@v7
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -111,3 +113,10 @@ jobs:
             prediction, scientific grade, clinical signoff or validated outcome.
           draft: true
           delete-branch: false
+      # GITHUB_TOKEN-authored PRs do not automatically trigger ordinary
+      # pull_request workflows; explicitly dispatch the existing trusted CI.
+      - name: Start required CI on the proposed branch
+        if: ${{ steps.open.outputs.pull-request-number != '' }}
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: gh workflow run ci.yml --ref "${{ needs.select.outputs.branch }}"
