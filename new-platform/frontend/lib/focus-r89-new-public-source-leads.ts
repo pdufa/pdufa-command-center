@@ -38,7 +38,16 @@ export function buildR89NewPublicResearchLeads(input:typeof raw=raw){
 
  const byNct=new Map(base.rows.map(r=>[r.nct,r]));
  const seen=new Set<string>();
- const rows=[];
+ const rows:Array<{
+  nct:string;ticker:string;trial:string;evidenceClass:string;sourceDate:string;
+  sourceUrl:string;sourceTitle:string;sourceReportedObservation:string;
+  preliminarySourceLevel:string;
+  originalFullManuscriptIndependentlyReviewed:false;
+  sourceOriginalBytesCaptured:false;
+  prospectivelySignedSAPIndependentlyVerified:false;
+  qualifiedClinicalScienceReviewSigned:false;
+  clinicalGrade:null;FDAOutcome:"ABSTAIN"
+ }> = [];
  for(const x of input.sourceCases){
   const id=x.nct as keyof typeof EXPECTED;
   const want=EXPECTED[id],baseRow=byNct.get(x.nct);
