@@ -68,7 +68,7 @@ class ContinuousCodexSetupTests(unittest.TestCase):
         self.assertIn("draft: true", workflow)
         self.assertIn("cancel-in-progress: false", workflow)
         self.assertNotIn("pull_request_target", workflow)
-        self.assertNotIn("auto-merge", workflow)
+        self.assertNotIn("enable-auto-merge", workflow)
 
 
 if __name__ == "__main__":
