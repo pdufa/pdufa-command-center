@@ -62,6 +62,9 @@ jobs:
       - name: Prepare specialist research work queue
         run: |
           python scripts/medical/subspecialty_research_queue.py --gaps phase4-artifacts/subspecialty-evidence-gaps.json --output phase4-artifacts/subspecialty-research-queue.json
+      - name: Discover exact-NCT PubMed publication leads
+        run: |
+          python scripts/medical/focus_pubmed_discovery.py --output phase4-artifacts/focus-pubmed-leads.json
       - name: Summarize research status
         if: always()
         run: |
@@ -86,5 +89,6 @@ jobs:
             phase4-artifacts/subspecialty-evidence-leads.json
             phase4-artifacts/subspecialty-evidence-gaps.json
             phase4-artifacts/subspecialty-research-queue.json
+            phase4-artifacts/focus-pubmed-leads.json
           if-no-files-found: warn
           retention-days: 90
