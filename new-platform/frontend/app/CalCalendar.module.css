@@ -82,3 +82,10 @@
   .dialogInner{padding:14px}
   .modalTop h2{font-size:19px}
 }
+
+.embedded{padding:0;max-width:none}
+.embedded .heading{display:none}
+.embedded .calendarPanel{padding:9px;box-shadow:none}
+.embedded .toolbar{padding:9px}
+.embedded .monthTitle{min-width:0}
+.embedded .grid{grid-template-columns:repeat(7,minmax(82px,1fr));min-width:600px}
