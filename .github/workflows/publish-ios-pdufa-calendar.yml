@@ -1,5 +1,10 @@
 name: Publish Apple PDUFA FOCUS Calendar
 on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-ios-pdufa-calendar.yml'
+      - 'scripts/publish_ios_pdufa_calendar.py'
   schedule:
     - cron: '35 6 * * *'
   workflow_dispatch:
