@@ -40,3 +40,18 @@
 .noResults{padding:18px;background:#f8fbf9;border:1px dashed #aac9b5;border-radius:9px}
 @media(min-width:900px){.case[open]>summary{display:grid;grid-template-columns:1fr 1.4fr 1fr}.case[open] .content>ol{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:470px){.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.sourceCounts span{font-size:10px}.case summary{padding:11px}.content{padding:11px}.controls label{flex-basis:100%}}
+
+/* R81 source-only 29/23 cycle coverage: compact on desktop and iPhone. */
+.coverage{margin:14px 0 20px;border:1px solid #bad6c5;background:#f9fcfa;border-radius:11px;padding:15px;min-width:0}
+.coverage h2{font-size:18px;margin:8px 0}
+.coverageDetails{background:#fff;border:1px solid #bedbcb;border-radius:9px;margin:12px 0;min-width:0}
+.coverageDetails>summary{padding:13px;font-size:13px;font-weight:750;cursor:pointer;line-height:1.5}
+.coverageDetails[open]>summary{border-bottom:1px solid #d6e4dc;background:#eaf7ec}
+.coverageGrid{display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,315px),1fr));padding:12px}
+.coverageGroup{padding:12px;border:1px solid #d3e4d8;border-radius:8px;font-size:12px;line-height:1.6;min-width:0}
+.coverageGroup>strong{display:block;overflow-wrap:anywhere;color:#155d45}
+.coverageGroup ul{padding:0 0 0 19px;margin:9px 0}
+.coverageGroup li{margin:4px 0}
+.coverageGroup a{color:#075f47;font-weight:700;text-decoration:underline}
+.coverageGroup small{display:block;color:#735421;margin-top:8px}
+@media(max-width:470px){.coverage{padding:10px}.coverageGrid{grid-template-columns:1fr;padding:8px}.coverageGroup{padding:9px}}
