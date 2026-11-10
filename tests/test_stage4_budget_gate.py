@@ -67,6 +67,13 @@ class BudgetGateTests(unittest.TestCase):
                 with self.assertRaises(ValueError):
                     gate.inspect_queue(path)
 
+    def test_rejects_oversized_queue(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "queue.json"
+            path.write_text(json.dumps([{"id": f"task_{i}"} for i in range(101)]))
+            with self.assertRaises(ValueError):
+                gate.inspect_queue(path)
+
     def test_rejects_non_list_queue(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "queue.json"
