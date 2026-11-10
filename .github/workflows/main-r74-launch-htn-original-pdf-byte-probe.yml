@@ -1,0 +1,90 @@
+name: MAIN R74 original Launch-HTN PDF source-byte integrity research
+
+# Research-only seven-PDF retrieval; hashes/page counts, no raw-public artifacts.
+# PDFs may be copyrighted; do not redistribute binary originals or present
+# source access as a signed statistical plan, FDA outcome or forecast.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r74-launch-htn-original-pdf-byte-probe.yml
+      - new-platform/backend/scripts/capture_launch_htn_original_pdf_bytes_r74.py
+      - new-platform/backend/tests/test_r74_launch_htn_pdf_original_byte_capture.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r74-launch-htn-pdf-byte-capture
+  cancel-in-progress: false
+
+jobs:
+  original-pdf-source-research:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install isolated PDF reader
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'pypdf==6.1.1'
+      - name: Preserve canonical rosters and permanently retired scoring
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+          python new-platform/backend/scripts/verify_focus_r73_launch_htn_document_index.py
+      - name: Run synthetic source and adversarial safety checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/tests/test_r74_launch_htn_pdf_original_byte_capture.py -v
+      - name: Fetch each of seven actual public PDF sources with bounded request and validate bytes
+        shell: bash
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/r74-pdf-receipt
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECEIPT_DIR"
+          python new-platform/backend/scripts/capture_launch_htn_original_pdf_bytes_r74.py \
+            --output "$RECEIPT_DIR/LAUNCH_HTN_SEVEN_ORIGINAL_PDF_BYTE_RECEIPTS_R74.json"
+      - name: Publish exact grounded capture count without clinical misrepresentation
+        if: always()
+        shell: bash
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/r74-pdf-receipt
+        run: |
+          python - <<'PY'
+          import json, os, pathlib
+          p=pathlib.Path(os.environ["RECEIPT_DIR"])/"LAUNCH_HTN_SEVEN_ORIGINAL_PDF_BYTE_RECEIPTS_R74.json"
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+              f.write("## MAIN R74 Launch-HTN source-byte capture research\n")
+              if not p.exists():
+                  f.write("**No valid real-source receipt generated; verification failed or did not finish.**\n")
+              else:
+                  d=json.loads(p.read_text())
+                  f.write(f"**Actual source PDF SHA-256 receipts: {d['actualSourcePdfByteReceipts']}/7**, "
+                          f"unverified {d['sourceDocumentsUnverified']}/7.\n\n")
+                  for x in d['records']:
+                      f.write(f"- {x['filename']}: {x['retrievalStatus']}; ")
+                      f.write(x.get("failureCode","SHA-256 "+x["sourcePdfSha256"][:16])+"\n")
+                  f.write("\nByte-hash validation is research provenance, not signed SAP chronology, authentic historical first-public availability, full statistical adjudication or independent FDA prediction. **FDA ABSTAIN; accuracy unavailable.**\n")
+          PY
+      - name: Retain metadata-only original SHA receipts, never the copyrighted PDFs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r74-launch-htn-seven-pdf-sha-receipts-${{ github.run_id }}
+          path: ${{ runner.temp }}/r74-pdf-receipt/LAUNCH_HTN_SEVEN_ORIGINAL_PDF_BYTE_RECEIPTS_R74.json
+          if-no-files-found: warn
+          retention-days: 90
