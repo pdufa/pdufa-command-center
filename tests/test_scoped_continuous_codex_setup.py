@@ -43,9 +43,24 @@ class ContinuousCodexSetupTests(unittest.TestCase):
         with TemporaryDirectory() as directory:
             output = Path(directory) / "output"
             with patch.dict(os.environ, {"GH_TOKEN": "fake", "GITHUB_OUTPUT": str(output)}), \
-                 patch.object(select, "existing_pr", return_value=False):
+                 patch.object(select, "existing_pr", return_value=False), \
+                 patch.object(select, "branch_reserved", return_value=False), \
+                 patch.object(select, "reserve_once") as reserve:
                 select.main()
+                reserve.assert_called_once_with("fake", "autodev/medical-source-gates-01")
             self.assertIn("task_id=medical-source-gates-01\n", output.read_text())
+
+    def test_reserved_branch_blocks_unlimited_failed_agent_retries(self):
+        select = load("select_continuous_codex_task")
+        with TemporaryDirectory() as directory:
+            output = Path(directory) / "output"
+            with patch.dict(os.environ, {"GH_TOKEN": "fake", "GITHUB_OUTPUT": str(output)}), \\
+                 patch.object(select, "existing_pr", return_value=False), \\
+                 patch.object(select, "branch_reserved", return_value=True), \\
+                 patch.object(select, "reserve_once") as reserve:
+                select.main()
+                reserve.assert_not_called()
+            self.assertIn("task_id=\\n", output.read_text())
 
     def test_patch_scope_rejects_unapproved_and_symlink_paths(self):
         guard = load("check_continuous_codex_patch")
@@ -66,6 +81,7 @@ class ContinuousCodexSetupTests(unittest.TestCase):
         self.assertIn("persist-credentials: false", workflow)
         self.assertIn("sandbox: workspace-write", workflow)
         self.assertIn("draft: true", workflow)
+        self.assertIn("contents: write", workflow)
         self.assertIn("gh workflow run ci.yml --ref", workflow)
         self.assertIn("actions: write", workflow)
         self.assertIn("cancel-in-progress: false", workflow)
