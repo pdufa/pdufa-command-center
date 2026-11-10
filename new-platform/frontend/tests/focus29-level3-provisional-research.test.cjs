@@ -111,3 +111,48 @@ test("research preview renders the complete cycle roster and separate NCT mappin
   assert.equal(liveAudit.records.length,1);
   assert.equal(liveAudit.records[0].ticker,"SMMT");
 });
+
+test("near-term original-issuer PDUFA goals are the earliest three, exact-cycle mapped and never FDA decisions",()=>{
+  const sourceChecks=require("../data/focusNearTermPdufaSourceChecks20261110.json");
+  assert.equal(sourceChecks.schemaVersion,1);
+  assert.equal(sourceChecks.primaryIssuerGoalReadbacks,3);
+  assert.equal(sourceChecks.independentlyFDAConfirmedGoalDates,0);
+  assert.equal(sourceChecks.validatedBlindPredictionCount,0);
+  assert.equal(sourceChecks.entries.length,3);
+  const expected=[
+    ["capr-deramiocel","CAPR","2026-11-22","2026-08-24"],
+    ["svra-molgramostim","SVRA","2026-11-22","2026-11-09"],
+    ["cogt-gist","COGT","2026-11-30","2026-11-05"]
+  ];
+  const cycleById=new Map(manifest.cycles.map(x=>[x.cycleId,x]));
+  for(const [i,[id,ticker,goal,srcDate]] of expected.entries()){
+    const rec=sourceChecks.entries[i];
+    assert.equal(rec.cycleId,id);
+    assert.equal(rec.ticker,ticker);
+    assert.equal(rec.reportedGoalDate,goal);
+    assert.equal(rec.sourcePublicationDate,srcDate);
+    assert.equal(cycleById.get(id).reportedPdufaGoal,goal);
+    assert.equal(cycleById.get(id).ticker,ticker);
+    assert.equal(rec.sourceStatus,"ISSUER_REPORTED_GOAL_CORROBORATED");
+    assert.equal(rec.fdaDecisionObserved,false);
+    assert.equal(rec.independentlyFdaConfirmed,false);
+    assert.equal(rec.clinicalScientificSignoff,false);
+    assert.match(rec.primarySourceUrl,/^https:\/\/www\.sec\.gov\/Archives\/edgar\//);
+    assert.ok(rec.verifiedSourceClaim.length>30);
+  }
+  const upcoming=manifest.cycles.filter(c=>c.reportedPdufaGoal&&
+    c.reportedPdufaGoal>=sourceChecks.asOf)
+    .sort((a,b)=>a.reportedPdufaGoal.localeCompare(b.reportedPdufaGoal));
+  assert.deepEqual(upcoming.slice(0,3).map(c=>c.cycleId),expected.map(x=>x[0]));
+  const Dates=require("../app/FocusNearTermPdufaSourceChecks.tsx").default;
+  const html=renderToStaticMarkup(React.createElement(Dates));
+  assert.match(html,/data-testid="focus-near-term-issuer-goals"/);
+  assert.match(html,/data-testid="focus-near-term-goal-table"/);
+  assert.match(html,/3\/23 application cycles/);
+  assert.match(html,/not a direct FDA/);
+  for(const [id] of expected) assert.ok(html.includes('data-cycle="'+id+'"'));
+  const p=fs.readFileSync(path.join(root,"app/predictions/assessment/page.tsx"),"utf8");
+  assert.ok(p.includes("<FocusNearTermPdufaSourceChecks/>"));
+  assert.ok(p.indexOf("<FocusNearTermPdufaSourceChecks/>")<
+    p.indexOf("<Focus29Level3ProvisionalPanel/>"));
+});
