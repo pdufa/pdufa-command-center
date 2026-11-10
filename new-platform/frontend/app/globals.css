@@ -3268,3 +3268,9 @@ a.trial-sheet-action:hover {background:#e0f1e4;}
 .approved-sales-product p { margin: 8px 0; }
 .approved-sales-evidence { display: flex; flex-wrap: wrap; gap: 8px 16px; font-size: .9em; }
 .approved-sales-heading select { max-width: 100%; min-height: 44px; }
+
+/* Historical FDA trend: show the complete ten-month line on iPhones, without side scrolling. */
+@media (max-width: 650px) {
+  .historical-trend-desktop { display: none !important; }
+  .historical-trend-mobile { display: block !important; }
+}
