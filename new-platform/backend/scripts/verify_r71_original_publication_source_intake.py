@@ -103,8 +103,8 @@ def verify(meta,sha,data):
            "ORIGINAL_PUBMED_DATE_UNKNOWN_REQUIRES_PUBLISHER_PROVENANCE")
   require(case["articleUrl"].startswith("https://") and
           case["journalUrl"].startswith("https://") and
-          case.get("supplementUrl") is None or
-          case.get("supplementUrl","").startswith("https://"),
+          (case.get("supplementUrl") is None or
+           case["supplementUrl"].startswith("https://")),
           "INVALID_EXTERNAL_ARTICLE_OR_SUPPLEMENT_URL")
   if case.get("supplementUrl") is not None:link_counts+=1
   for key in ("primaryEndpoint","reportedEffect","analysisPopulation","safetyObservation"):
