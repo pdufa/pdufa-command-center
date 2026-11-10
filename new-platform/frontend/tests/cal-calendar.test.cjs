@@ -8,7 +8,8 @@ const source = JSON.parse(readFileSync(join(__dirname,"..","..","..","data","ios
 
 test("CAL navigation, route and company popup exist",()=>{
   assert.match(fromApp("GlobalNavigation.tsx"),/label:"CAL",href:"\/cal"/);
-  assert.match(fromApp("cal","page.tsx"),/CalCalendar/);
+  assert.match(fromApp("cal","page.tsx"),/IntelligenceHub/);
+  assert.match(fromApp("IntelligenceHub.tsx"),/CalCalendar/);
   const ui = fromApp("CalCalendar.tsx");
   assert.match(ui,/showModal\(\)/);
   assert.match(ui,/dialog/);
