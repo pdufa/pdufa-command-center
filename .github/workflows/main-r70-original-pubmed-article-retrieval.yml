@@ -83,6 +83,10 @@ jobs:
           assert j["articleMetadataRecordsRetrieved"]==11
           assert j["originalPubmedXmlSha256"]==hashlib.sha256(xml).hexdigest()
           assert j["exactNctIdentifiersFoundInRetrievedMetadataOrAbstract"]+j["noExactNctIdentifierFoundInRetrievedMetadataOrAbstract"]==11
+          assert j["exactNctMentionedInArticleTitleOrAbstract"]+j["exactNctLinkedOnlyAsPubmedDatabankAccession"]==11
+          assert j["exactNctMentionedInArticleTitleOrAbstract"]==8
+          assert j["exactNctLinkedOnlyAsPubmedDatabankAccession"]==3
+          assert j["exactNctIdentifiersFoundInRetrievedMetadataOrAbstract"]==11
           assert len(j["articleResearchLeads"])==11
           assert len({x["pmid"] for x in j["articleResearchLeads"]})==11
           assert all(x["clinicalGrade"] is None and x["scientificReviewerSigned"] is False and x["pivotalPhase3PrimaryResultsIndependentlyVerified"] is False and x["fdaApprovalOrCrlPrediction"]=="ABSTAIN" for x in j["articleResearchLeads"])
