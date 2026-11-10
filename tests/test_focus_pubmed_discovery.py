@@ -13,7 +13,7 @@ class PubMedDiscoveryTests(unittest.TestCase):
     def test_all_29_unreviewed(self):
         def fake(nct):
             return {"nct": nct, "publicationLeads": [{"pmid": "123", "reviewStatus": "UNREVIEWED"}]}
-        result = pubmed.build(self.roster(), fake)
+        result = pubmed.build(self.roster(), fake, sleep=lambda _: None)
         self.assertEqual(result["publicationLeadsFound"], 29)
         self.assertEqual(result["scientificAssessmentsCompleted"], 0)
 
@@ -30,6 +30,8 @@ class PubMedDiscoveryTests(unittest.TestCase):
             return {"nct": nct, "publicationLeads": []}
         result = pubmed.build(self.roster(), fake)
         self.assertEqual(result["rows"][0]["status"], "RETRY_REQUIRED")
+        self.assertEqual(result["queriesFailed"], 1)
+        self.assertEqual(result["status"], "PARTIAL_RETRY_REQUIRED")
         self.assertEqual(len(result["rows"]), 29)
 
 if __name__ == "__main__":
