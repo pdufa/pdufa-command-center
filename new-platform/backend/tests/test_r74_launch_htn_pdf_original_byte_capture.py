@@ -4,7 +4,10 @@ import json
 import sys
 import unittest
 from pathlib import Path
-from pypdf import PdfWriter
+try:
+    from pypdf import PdfWriter
+except ImportError:
+    PdfWriter=None  # Dedicated R74 source-only CI installs pypdf; production need not.
 
 ROOT=Path(__file__).resolve().parents[2]
 sys.path.insert(0,str(ROOT/"backend"/"scripts"))
@@ -25,6 +28,7 @@ def make_pdf():
     b=BytesIO(); p.write(b)
     return b.getvalue()
 
+@unittest.skipUnless(PdfWriter is not None,"pypdf is installed only in dedicated R74 source-research workflow")
 class PDFOriginalR74(unittest.TestCase):
     def test_mock_seven_pdfs_capture_hashes_not_original_signed_saps(self):
         man,r71=fixtures()
