@@ -35,6 +35,7 @@ export default function AssessmentLevelChart(){
      aznCompared.excludedFromCalibration!==true){
     throw new Error("ASSESSMENT_LEVEL_CHART_SOURCE_MISMATCH");
   }
+  const MAX_PLANNED_ASSESSMENT_LEVEL=20;
   const rows:LevelRow[]=[
     {id:smmt.predictionId,trial:"SMMT · HARMONi",stage:"Original preliminary research; FDA action pending",
       level:1,result:"CRL lean",outcomeAware:false},
@@ -48,10 +49,10 @@ export default function AssessmentLevelChart(){
     <div style={{fontSize:11,letterSpacing:".09em",color:"#286358",fontWeight:800}}>
       ASSESSMENT LEVEL TRACKER · ACTIVE DISPLAY ONLY
     </div>
-    <h2 style={{fontSize:21,margin:"7px 0 5px"}}>Scientific review depth</h2>
+    <h2 style={{fontSize:21,margin:"7px 0 5px"}}>Scientific review depth · Recorded trial-specific levels</h2>
     <p style={{fontSize:13,color:"#536c67",margin:"0 0 16px",lineHeight:1.5}}>
       Only the original prospective SMMT pilot and the user-retained AZN historical
-      example appear here. Earlier outcome-exposed assessments are removed from
+      example appear here. These are original trial-specific levels, not the selected historical comparison level. Earlier outcome-exposed assessments are removed from
       the program display and reserved as read-only historical files.
     </p>
     <div role="img" aria-label="SMMT original Level 1; AZN Ultomiris retained historical Level 3"
@@ -70,7 +71,7 @@ export default function AssessmentLevelChart(){
           </div>
           <div aria-hidden="true" style={{position:"relative",height:16,background:"#e7f0ed",
             borderRadius:6,overflow:"hidden"}}>
-            <div style={{height:"100%",width:`${row.level/3*100}%`,
+            <div style={{height:"100%",width:`${row.level/MAX_PLANNED_ASSESSMENT_LEVEL*100}%`,
               background:row.outcomeAware?"#9a794a":"#267f70",borderRadius:6}}/>
           </div>
         </div>
@@ -78,10 +79,10 @@ export default function AssessmentLevelChart(){
     </div>
     <div style={{display:"flex",gap:8,justifyContent:"space-between",paddingLeft:"45%",
       fontSize:11,color:"#627671",marginTop:6}}>
-      <span>Level 0</span><span>Level 3 (chart scale)</span>
+      <span>Level 0</span><span>Level 20 (planned scale)</span>
     </div>
     <p style={{fontSize:12,color:"#895e2c",lineHeight:1.5,margin:"14px 0 0"}}>
-      Levels describe approximate manual review depth, not validated 20-level engine maturity.
+      The display scale covers planned Levels 1–20; its markers show only recorded manual research depths, not proof that Level 20 is installed. Levels describe approximate manual review depth, not validated 20-level engine maturity.
       AZN remains solely by user request, is <strong>outcome-aware, not blind</strong>,
       and is excluded from prospective accuracy and calibration.
     </p>
