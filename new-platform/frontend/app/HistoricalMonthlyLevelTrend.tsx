@@ -2,6 +2,7 @@
 
 import {useState} from "react";
 import data from "../data/historicalMonthlyLevelRuns2026.json";
+import {bestFitTrend} from "../lib/assessment-best-fit-trend";
 
 type Case = {id:string;ticker:string;actualDecision:"APPROVAL"|"CRL"};
 type Cohort = {
@@ -126,17 +127,24 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
     return {level,months,total,matches,misses,abstains,covered};
   });
   const graphPoints=series.flatMap(s=>s.months.filter((v):v is MonthScore=>v!==null));
-  const minCumulative=Math.min(...graphPoints.map(x=>x.cumulativeRate));
+  // A true least-squares trend uses observed cumulative monthly values; dots remain
+  // the actual values, without a zig-zag line joining them.
+  const bestFits=series.map(s=>bestFitTrend(s.months.flatMap((point,index)=>
+    point?[{x:index,y:point.cumulativeRate}]:[])));
+  const minCumulative=Math.min(
+    ...graphPoints.map(x=>x.cumulativeRate),
+    ...bestFits.flatMap(f=>f?[f.yStart,f.yEnd]:[])
+  );
   const bottom=Math.max(0,Math.floor((minCumulative-5)/10)*10);
   const ticks=Array.from({length:Math.round((100-bottom)/10)+1},(_,i)=>bottom+i*10);
   const px=(i:number)=>yearCohorts.length===1?(L+W-R)/2:
     L+i*(W-L-R)/(yearCohorts.length-1);
-  const py=(v:number)=>T+(100-v)*(H-T-B)/(100-bottom);
+  const py=(v:number)=>T+(100-Math.max(bottom,Math.min(100,v)))*(H-T-B)/(100-bottom);
   // Mobile chart uses a dedicated small viewport, not a clipped 650px desktop SVG.
   const MW=360,MH=244,ML=34,MR=10,MT=26,MB=47;
   const mx=(i:number)=>yearCohorts.length===1?(ML+MW-MR)/2:
     ML+i*(MW-ML-MR)/(yearCohorts.length-1);
-  const my=(v:number)=>MT+(100-v)*(MH-MT-MB)/(100-bottom);
+  const my=(v:number)=>MT+(100-Math.max(bottom,Math.min(100,v)))*(MH-MT-MB)/(100-bottom);
   const lines=["#168267","#415F9D","#9C4B8E","#B07813"];
   const lineColor=(i:number)=>lines[i%lines.length];
   const panel={border:"1px solid #d7d5ea",borderRadius:11,background:"#f8f7ff",padding:"13px 15px"} as const;
@@ -152,7 +160,7 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
       {visibleChoice==="all"?"Compare recorded historical levels.":
         series[0].matches+" of "+series[0].total+" retrospective matches ("+
         rate(series[0].matches,series[0].total)+")."}
-      {" "}The line below shows cumulative agreement, not monthly accuracy or verified blind performance.
+      {" "}The straight best-fit line summarizes cumulative agreement; the colored dots are observed monthly values. Not verified blind accuracy.
     </p>:null}
     {!compact?<p style={{color:muted,fontSize:13,lineHeight:1.6}}>
       Outcome-aware Level 3-style research reconstructed after FDA decisions, not genuine blind accuracy.
@@ -221,17 +229,18 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
       </div>
     </div>
     <h2 style={{fontSize:20,margin:"12px 0 6px"}}>
-      Cumulative FDA agreement trend · {yearCohorts[0].monthLabel.slice(0,3)}
+      Best-fit trend of cumulative FDA agreement · {yearCohorts[0].monthLabel.slice(0,3)}
       {"–"}{yearCohorts.at(-1)!.monthLabel.slice(0,3)} {activeYear}
     </h2>
     <p data-testid="historical-trend-key" style={{fontSize:13,fontWeight:800,color:"#096C56",margin:"4px 0 8px"}}>
       <span aria-hidden="true" style={{display:"inline-block",width:35,height:5,
         borderRadius:4,verticalAlign:"middle",background:"#096C56",marginRight:7}}/>
-      Solid green line = cumulative historical agreement
+      Solid green line = least-squares best-fit trend; colored dots = recorded cumulative results
     </p>
     <p style={{fontSize:12,color:muted,lineHeight:1.5,margin:"0 0 12px"}}>
-      Each plotted point includes all scored applications up to that month within its recorded level.
-      This is a case-count-weighted cumulative trend, not a line connecting isolated monthly percentages.
+      Dots show cumulative agreement across all scored applications up to each month.
+      The straight line is a least-squares summary of those cumulative values,
+      not connected monthly points or a forecast of future FDA prediction accuracy.
     </p>
     {!compact?<div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:10}}>
       {yearCohorts.map(cohort=><div key={cohort.cohortId}
@@ -263,13 +272,14 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
           <text x={L-12} y={py(t)+4} textAnchor="end" fontSize="13" fill="#5a6e66">{t}%</text>
         </g>)}
         {series.map((s,seriesIndex)=><g key={s.level} data-testid={"level-line-"+s.level}>
-          {s.months.slice(0,-1).map((point,index)=>{
-            const next=s.months[index+1];
-            return point&&next?<line key={index} x1={px(index)} y1={py(point.cumulativeRate)}
-              x2={px(index+1)} y2={py(next.cumulativeRate)}
-              stroke={lineColor(seriesIndex)} strokeWidth={6} strokeLinecap="round"
-              strokeDasharray={seriesIndex===0?undefined:"8 5"}/>:null;
-          })}
+          {bestFits[seriesIndex]&&<line data-testid={"historical-best-fit-line-"+s.level}
+            x1={px(bestFits[seriesIndex]!.xStart)} y1={py(bestFits[seriesIndex]!.yStart)}
+            x2={px(bestFits[seriesIndex]!.xEnd)} y2={py(bestFits[seriesIndex]!.yEnd)}
+            stroke={lineColor(seriesIndex)} strokeWidth={6} strokeLinecap="round"
+            strokeDasharray={seriesIndex===0?undefined:"8 5"}>
+            <title>{"Level "+s.level+": least-squares best-fit across "+
+              bestFits[seriesIndex]!.observations+" observed cumulative monthly agreements."}</title>
+          </line>}
           {s.months.map((point,index)=>point?<g key={point.cohort.cohortId}>
             <circle cx={px(index)} cy={py(point.cumulativeRate)} r="7"
               stroke={lineColor(seriesIndex)} strokeWidth="2" fill={point.cohort.color}>
@@ -305,12 +315,14 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
           const plotted=s.months.flatMap((point,index)=>
             point?[{x:mx(index),y:my(point.cumulativeRate),index,point}]:[]);
           return <g key={s.level} data-testid={"mobile-level-line-"+s.level}>
-            {plotted.length>1&&<polyline
-              data-testid={"mobile-cumulative-path-"+s.level}
-              points={plotted.map(pt=>pt.x.toFixed(2)+","+pt.y.toFixed(2)).join(" ")}
-              fill="none" stroke={lineColor(i)} strokeWidth="4.5"
-              strokeLinecap="round" strokeLinejoin="round"
-              strokeDasharray={i>0?"8 5":undefined}/>}
+            {bestFits[i]&&<line
+              data-testid={"mobile-best-fit-line-"+s.level}
+              x1={mx(bestFits[i]!.xStart)} y1={my(bestFits[i]!.yStart)}
+              x2={mx(bestFits[i]!.xEnd)} y2={my(bestFits[i]!.yEnd)}
+              stroke={lineColor(i)} strokeWidth="5"
+              strokeLinecap="round" strokeDasharray={i>0?"8 5":undefined}>
+              <title>{"Level "+s.level+" best-fit trend (not a forecast)."}</title>
+            </line>}
             {plotted.map(pt=><circle key={pt.index} cx={pt.x} cy={pt.y} r="4.5"
               fill={pt.point.cohort.color} stroke="#fff" strokeWidth="1.5"/>)}
             {visibleChoice!=="all"&&plotted.length>0&&<g>
@@ -334,9 +346,10 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
       </svg>
     </div>
     <p style={{color:muted,fontSize:11,lineHeight:1.5,margin:"7px 0 10px"}}>
-      Gaps mean that level has no recorded run for that month. The result changes with level,
-      but differences between calendar months can reflect different drug cohorts and selection rules.
-      An improved historical curve does not establish improved prospective prediction accuracy.
+      Colored dots are recorded cumulative monthly results; the straight line is their
+      best-fit historical trend. With fewer than two recorded months, no trendline is drawn.
+      Month-to-month case mixes vary. A rising historical trend does not establish improved
+      prospective prediction accuracy.
     </p>
     {!compact?<>
     <div style={{overflowX:"auto",border:"1px solid #e2e9e5",borderRadius:9}}>
