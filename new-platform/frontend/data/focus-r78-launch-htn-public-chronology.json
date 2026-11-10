@@ -121,7 +121,7 @@
     "originalSAPAuthenticPreUnblindingSignatureVerified": false,
     "twoPrintedSAPCoverDateDiscrepanciesUnresolved": true,
     "originalPdfSourceByteHashesAvailable": 0,
-    "noAuthenticatedOriginalArchive": false,
+    "noAuthenticatedOriginalArchive": true,
     "interpretation": "THE_SEQUENCE_IS_CONSISTENT_WITH_BUT_DOES_NOT_ESTABLISH_PRE_UNBLINDING_SAP_SIGNOFF",
     "sourceDisclaimer": "Dates from later published original JAMA materials and issuer filings alone do not authenticate who signed the original SAP before database lock, when the unblinded database became accessible, or what SAP version governed the prespecified analysis."
   },
