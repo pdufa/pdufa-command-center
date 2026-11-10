@@ -178,7 +178,7 @@ export function buildR93PriorityScientificGates(
       ("verified" in gate&&gate.verified!==false)||
       ("independentReceipt" in gate&&gate.independentReceipt!==null))return null;
    gates.push({
-    id,clinicalStudy:kind,sourceStatus:gate.status,
+    id,title:meta.title,clinicalStudy:kind,sourceStatus:gate.status,
     existingEvidence:gate.evidence,
     sourceEvidenceLabel:meta.sourceLabel,
     sourceUrl:meta.sourceUrl,storedResearchReceiptUrl:meta.sourceRecord,
