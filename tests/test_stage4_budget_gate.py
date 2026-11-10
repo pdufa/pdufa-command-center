@@ -28,8 +28,22 @@ class BudgetGateTests(unittest.TestCase):
     def test_only_explicit_approval_counts(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "queue.json"
-            path.write_text(json.dumps([{"approved": True}, {"approved": "true"}, {}, {"approved": False}]))
+            path.write_text(json.dumps([{"approved": True}, {}, {"approved": False}]))
             self.assertEqual(gate.inspect_queue(path)["approved_tasks"], 1)
+
+    def test_rejects_string_approval(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "queue.json"
+            path.write_text(json.dumps([{"approved": "true"}]))
+            with self.assertRaises(ValueError):
+                gate.inspect_queue(path)
+
+    def test_rejects_non_object_task(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "queue.json"
+            path.write_text(json.dumps([None]))
+            with self.assertRaises(ValueError):
+                gate.inspect_queue(path)
 
     def test_rejects_non_list_queue(self):
         with tempfile.TemporaryDirectory() as tmp:
