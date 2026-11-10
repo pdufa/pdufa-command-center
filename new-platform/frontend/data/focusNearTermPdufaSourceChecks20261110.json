@@ -1,0 +1,56 @@
+{
+  "schemaVersion": 1,
+  "asOf": "2026-11-10",
+  "documentType": "ISSUER_PRIMARY_SOURCE_PDUFA_GOAL_READBACK_NOT_FDA_OUTCOME",
+  "sourceScope": "Three earliest reported future PDUFA goals across the current 23 provisional FOCUS application groups. Original issuer SEC records verify that the issuer reported each target date; they do not establish direct regulator confirmation, clinical grades, FDA outcome or scientific probability.",
+  "validatedBlindPredictionCount": 0,
+  "independentlyFDAConfirmedGoalDates": 0,
+  "primaryIssuerGoalReadbacks": 3,
+  "entries": [
+    {
+      "cycleId": "capr-deramiocel",
+      "ticker": "CAPR",
+      "drug": "Deramiocel",
+      "indication": "Duchenne muscular dystrophy",
+      "reportedGoalDate": "2026-11-22",
+      "sourcePublicationDate": "2026-08-24",
+      "sourceType": "ISSUER_SEC_8K",
+      "primarySourceUrl": "https://www.sec.gov/Archives/edgar/data/1133869/000110465926100071/capr-20260824x8k.htm",
+      "verifiedSourceClaim": "Issuer's August 24, 2026 Form 8-K reports the FDA's revised BLA goal of November 22, 2026, following a major amendment and addition of HOPE-3 extension data. This does not establish clinical or manufacturing resolution.",
+      "sourceStatus": "ISSUER_REPORTED_GOAL_CORROBORATED",
+      "fdaDecisionObserved": false,
+      "independentlyFdaConfirmed": false,
+      "clinicalScientificSignoff": false
+    },
+    {
+      "cycleId": "svra-molgramostim",
+      "ticker": "SVRA",
+      "drug": "Molgramostim (MOLBREEVI)",
+      "indication": "Autoimmune pulmonary alveolar proteinosis",
+      "reportedGoalDate": "2026-11-22",
+      "sourcePublicationDate": "2026-11-09",
+      "sourceType": "ISSUER_SEC_10Q",
+      "primarySourceUrl": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526453535/svra-20260930.htm",
+      "verifiedSourceClaim": "Issuer's November 2026 Form 10-Q reports a February 2026 Priority Review and an April 2026 three-month extension after responses classified as a major BLA amendment, with revised goal November 22, 2026. No final FDA action is established here.",
+      "sourceStatus": "ISSUER_REPORTED_GOAL_CORROBORATED",
+      "fdaDecisionObserved": false,
+      "independentlyFdaConfirmed": false,
+      "clinicalScientificSignoff": false
+    },
+    {
+      "cycleId": "cogt-gist",
+      "ticker": "COGT",
+      "drug": "Bezuclastinib plus sunitinib",
+      "indication": "GIST after prior imatinib",
+      "reportedGoalDate": "2026-11-30",
+      "sourcePublicationDate": "2026-11-05",
+      "sourceType": "ISSUER_SEC_8K_EXHIBIT",
+      "primarySourceUrl": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526449926/cogt-ex99_1.htm",
+      "verifiedSourceClaim": "Issuer's November 5, 2026 financial-results exhibit maintains the November 30, 2026 NDA goal for GIST. It separately identifies later review goals for systemic mastocytosis; this row covers GIST only.",
+      "sourceStatus": "ISSUER_REPORTED_GOAL_CORROBORATED",
+      "fdaDecisionObserved": false,
+      "independentlyFdaConfirmed": false,
+      "clinicalScientificSignoff": false
+    }
+  ]
+}
