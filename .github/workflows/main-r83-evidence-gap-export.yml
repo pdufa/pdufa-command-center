@@ -1,4 +1,4 @@
-name: MAIN R83-R89 source gaps, originals, historical versions and SAP chronology acceptance
+name: MAIN R83-R90 exact FOCUS original sources and independent-science gate acceptance
 # Read-only source status and documented reviewer handoff; not clinical validation.
 on:
   push:
@@ -38,6 +38,9 @@ on:
       - new-platform/frontend/lib/focus-r89-acacia-prior-original-history.ts
       - new-platform/frontend/lib/focus-r89-new-public-source-leads.ts
       - new-platform/frontend/data/focus-r89-new-public-original-source-leads-20261110.json
+      - new-platform/frontend/data/focus-r90-nine-existing-result-page-readbacks-20261110.json
+      - new-platform/frontend/lib/focus-r90-canonical-results-source-coverage.ts
+      - new-platform/frontend/tests/focus-r90-canonical-results-source-coverage.test.cjs
   workflow_dispatch:
 
 permissions:
@@ -75,7 +78,7 @@ jobs:
         run: |
           set -euo pipefail
           npm install --no-audit --no-fund
-          node --test tests/focus-r81-all-source-readiness.test.cjs tests/focus-r83-evidence-gap-export.test.cjs tests/focus-r84-application-verification.test.cjs tests/focus-r85-registry-phase-crosscheck.test.cjs tests/focus-r86-original-document-inventory.test.cjs tests/focus-r87-public-original-pdf-receipt.test.cjs tests/focus-r88-source-chronology-triage.test.cjs tests/focus-r89-historical-source-recovery.test.cjs
+          node --test tests/focus-r81-all-source-readiness.test.cjs tests/focus-r83-evidence-gap-export.test.cjs tests/focus-r84-application-verification.test.cjs tests/focus-r85-registry-phase-crosscheck.test.cjs tests/focus-r86-original-document-inventory.test.cjs tests/focus-r87-public-original-pdf-receipt.test.cjs tests/focus-r88-source-chronology-triage.test.cjs tests/focus-r89-historical-source-recovery.test.cjs tests/focus-r90-canonical-results-source-coverage.test.cjs
           npm run typecheck
           npm run build
       - name: Report limited scientific status
@@ -83,7 +86,7 @@ jobs:
         shell: bash
         run: |
           {
-            echo "## Revisions 83-89: 17-NCT source recovery, R36 originals and three newly discovered publisher/issuer research leads"
+            echo "## Revisions 83-90: all 17-NCT original results research leads, nine preexisting issuer/SEC source links"
             echo "29 exact FOCUS NCT rows, with all 23 provisional application cycle links and original-source absence explicitly described."
             echo "Source and schema integrity validated; source-reported application goals are not FDA verified. CSV has no scientific grade, calibrated probability or production write."
             echo "Readback blocked by official historical API is not absent original evidence; archived R36 versions are separate signed-off-by-scientific-review=FALSE original source receipts. Public document and upload dates versus primary completion are not unblinding or locked-SAP proof; posted protocol/SAP metadata is not signed chronology or science; live registry field matching is not phase signoff. 0 independent clinical signoffs; 0 validated future FDA forecasts. Scientific installation remains incomplete."
