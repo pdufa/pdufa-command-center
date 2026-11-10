@@ -94,7 +94,7 @@ export default function October2026HistoricalAudit(){
         <div><strong>{matches}</strong> matched Approval/CRL direction</div>
         <div><strong>{misses}</strong> missed Approval/CRL direction</div>
         <div><strong>{withdrawn}</strong> voluntarily withdrawn, no FDA decision, excluded</div>
-        <div style={{fontWeight:750,color:"#935c25"}}>Unbiased predictive accuracy: NOT MEASURABLE</div>
+        <div style={{fontWeight:750,color:"#935c25"}}>0 valid blind cases · Unbiased predictive accuracy: NOT MEASURABLE</div>
       </div>
     </div>
     <p style={{fontSize:12,lineHeight:1.6,color:"#90622c",fontWeight:750,
