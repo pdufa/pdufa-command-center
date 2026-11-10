@@ -3,254 +3,297 @@
 import {useState} from "react";
 import data from "../data/historicalMonthlyLevelRuns2026.json";
 
-type BenchmarkCase = {id:string;ticker:string;actualDecision:string};
+type Case = {id:string;ticker:string;actualDecision:"APPROVAL"|"CRL"};
 type Cohort = {
-  cohortId:string;yearMonth:string;monthLabel:string;color:string;
-  cohortSelection:string;sourceUrl:string;sourceBlobSha:string;
-  sourceListedCount:number;benchmarkCaseIds:string[];benchmarkCases:BenchmarkCase[];
+  cohortId:string;yearMonth:string;monthLabel:string;color:string;cohortSelection:string;
+  sourceUrl:string;sourceBlobSha:string;sourceListedCount:number;
+  benchmarkCaseIds:string[];benchmarkCases:Case[];
   excludedCases:{id:string;ticker:string;originalCall:string;reason:string}[];
   alwaysApproveMatches:number;
 };
-type LevelRun = {
+type Run = {
   runId:string;cohortId:string;assessmentLevel:number;assessmentType:string;
-  runDate:string;methodVersion:string;assessmentBlind:boolean;priorOutcomeExposure:boolean;
+  methodVersion:string;runDate:string;assessmentBlind:boolean;priorOutcomeExposure:boolean;
   validatedBlindCases:number;validatedBlindAccuracy:null;
   comparisonType:string;predictionFreezeUrl:string;comparisonSourceUrl:string;
-  caseCalls:{caseId:string;call:string}[];
+  caseCalls:{caseId:string;call:"APPROVAL"|"CRL"|"ABSTAIN"}[];
+  revisionNumber?:number;
 };
-type Point = {cohort:Cohort;run:LevelRun;level:number;matches:number;misses:number;
-  denominator:number;abstentions:number;rate:number;coverage:number;baselineRate:number};
-const months=data.cohorts as Cohort[];
-const runs=data.runs as LevelRun[];
-const ink="#23463f", muted="#5e706c";
-const W=860,H=320,L=62,R=31,T=46,B=70;
+type MonthScore = {
+  cohort:Cohort;run:Run;matches:number;misses:number;abstains:number;total:number;
+  monthlyRate:number;cumulativeMatches:number;cumulativeTotal:number;cumulativeRate:number;
+};
+type Series = {level:number;months:(MonthScore|null)[];total:number;matches:number;misses:number;abstains:number;covered:number};
+const cohorts=data.cohorts as Cohort[];
+const runs=data.runs as Run[];
+const W=960,H=340,L=64,R=26,T=40,B=67;
+const muted="#5b716a",dark="#1e4c44";
+function rate(n:number,d:number){return d?(n/d*100).toFixed(1)+"%":"N/A";}
+function selectedRun(first:Run,second:Run){
+  const a=first.revisionNumber??1,b=second.revisionNumber??1;
+  return b>a||(a===b&&second.runDate>first.runDate)?second:first;
+}
 
-function percent(n:number,d:number){return (100*n/d).toFixed(1)+"%";}
-
-/**
- * Historical-only display. Case IDs/denominators are locked by cohort so that
- * Level 4+ reruns can be overlaid without overwriting the Level 3 archive.
+/** Snapshot data is compiled from outcome-exposed manual research, NOT blind FDA forecasts.
+ * Display is selected-level dependent; exact FDA benchmark case identities never change.
  */
 export default function HistoricalMonthlyLevelTrend(){
-  const [selectedLevel,setSelectedLevel]=useState("3");
-  if(data.schemaVersion!==1||data.dataset!=="HISTORICAL_MONTHLY_LEVEL_COMPARISONS_2026_V1"||
+  const [choice,setChoice]=useState("3");
+  if(data.schemaVersion!==2||
+    data.dataset!=="HISTORICAL_MONTHLY_LEVEL_COMPARISONS_2026_V2"||
     data.methodGuardrails.notLiveAccuracy!==true||
     data.methodGuardrails.validatedBlindPredictionCount!==0||
     data.methodGuardrails.validBlindAccuracy!==null||
-    data.methodGuardrails.originalOutcomesWereKnownBeforeRetrospectiveCalls!==true||
     data.methodGuardrails.cohortsNotPopulationComparable!==true||
-    months.length!==5||new Set(months.map(c=>c.cohortId)).size!==months.length){
-    throw new Error("HISTORICAL_MONTHLY_LEVEL_TREND_QUARANTINE_MISMATCH");
+    data.methodGuardrails.doNotPromoteHistoricalToLiveAccuracy!==true||
+    cohorts.length!==10||new Set(cohorts.map(c=>c.cohortId)).size!==10||
+    new Set(cohorts.map(c=>c.color.toLowerCase())).size!==10||
+    cohorts.some((c,i)=>c.yearMonth!=="2026-"+String(i+1).padStart(2,"0"))){
+    throw new Error("HISTORICAL_TEN_MONTH_LEVEL_BENCHMARK_INVALID");
   }
-  const byKey=new Map<string,Point>();
-  for(const cohort of months){
-    if(!/^#[0-9a-f]{6}$/i.test(cohort.color)||!cohort.sourceUrl.startsWith("https://")||
-      !cohort.sourceBlobSha||cohort.sourceListedCount!==
-      cohort.benchmarkCases.length+cohort.excludedCases.length||
-      cohort.benchmarkCases.length!==cohort.benchmarkCaseIds.length||
-      new Set(cohort.benchmarkCaseIds).size!==cohort.benchmarkCaseIds.length||
-      cohort.benchmarkCases.some((c,i)=>c.id!==cohort.benchmarkCaseIds[i]||
-        !["APPROVAL","CRL"].includes(c.actualDecision))||
-      cohort.alwaysApproveMatches!==cohort.benchmarkCases.filter(c=>c.actualDecision==="APPROVAL").length){
-      throw new Error("INVALID_FROZEN_HISTORICAL_MONTH_COHORT_"+cohort.yearMonth);
+  const seenRunIds=new Set<string>();
+  const byLevel=new Map<number,Map<string,Run>>();
+  for(const c of cohorts){
+    if(!/^#[0-9a-f]{6}$/i.test(c.color)||!c.sourceUrl.startsWith("https://")||
+      !c.sourceBlobSha||c.sourceListedCount!==c.benchmarkCases.length+c.excludedCases.length||
+      c.benchmarkCaseIds.length!==c.benchmarkCases.length||
+      new Set(c.benchmarkCaseIds).size!==c.benchmarkCaseIds.length||
+      c.benchmarkCases.some((x,i)=>x.id!==c.benchmarkCaseIds[i]||
+        !["APPROVAL","CRL"].includes(x.actualDecision))||
+      c.alwaysApproveMatches!==c.benchmarkCases.filter(x=>x.actualDecision==="APPROVAL").length){
+      throw new Error("HISTORICAL_BENCHMARK_COHORT_INVALID_"+c.yearMonth);
     }
   }
   for(const run of runs){
-    const cohort=months.find(c=>c.cohortId===run.cohortId);
-    if(!cohort||run.assessmentBlind!==false||run.priorOutcomeExposure!==true||
-      run.validatedBlindCases!==0||run.validatedBlindAccuracy!==null||
-      run.assessmentLevel<1||run.assessmentLevel>20||!run.methodVersion||
+    const c=cohorts.find(x=>x.cohortId===run.cohortId);
+    if(!c||seenRunIds.has(run.runId)||
+      !Number.isInteger(run.assessmentLevel)||run.assessmentLevel<1||run.assessmentLevel>20||
+      !run.methodVersion||!run.runDate||run.assessmentBlind!==false||
+      run.priorOutcomeExposure!==true||run.validatedBlindCases!==0||
+      run.validatedBlindAccuracy!==null||
       run.comparisonType!=="RETROSPECTIVE_DIRECTIONAL_AGREEMENT_ONLY"||
-      run.caseCalls.length!==cohort.benchmarkCaseIds.length||
       !run.predictionFreezeUrl.startsWith("https://")||
-      !run.comparisonSourceUrl.startsWith("https://")){
-      throw new Error("HISTORICAL_LEVEL_RUN_INVALID_"+run.runId);
+      !run.comparisonSourceUrl.startsWith("https://")||
+      run.caseCalls.length!==c.benchmarkCaseIds.length||
+      (run.revisionNumber!==undefined&&(!Number.isInteger(run.revisionNumber)||run.revisionNumber<1))){
+      throw new Error("HISTORICAL_ASSESSMENT_LEVEL_RUN_INVALID_"+run.runId);
     }
-    const found=new Set(run.caseCalls.map(c=>c.caseId));
-    if(found.size!==run.caseCalls.length||cohort.benchmarkCaseIds.some(id=>!found.has(id))||
-      run.caseCalls.some(c=>!["APPROVAL","CRL","ABSTAIN"].includes(c.call))){
+    seenRunIds.add(run.runId);
+    const ids=new Set(run.caseCalls.map(x=>x.caseId));
+    if(ids.size!==run.caseCalls.length||c.benchmarkCaseIds.some(id=>!ids.has(id))||
+      run.caseCalls.some(x=>!["APPROVAL","CRL","ABSTAIN"].includes(x.call))){
       throw new Error("HISTORICAL_LEVEL_RUN_MUST_USE_FIXED_CASE_IDS_"+run.runId);
     }
-    const key=run.cohortId+"|"+run.assessmentLevel;
-    if(byKey.has(key)){
-      throw new Error("DUPLICATE_MONTH_AND_LEVEL_RUN_"+key);
-    }
-    const caseById=new Map(cohort.benchmarkCases.map(c=>[c.id,c.actualDecision]));
-    const matches=run.caseCalls.filter(c=>c.call!=="ABSTAIN"&&c.call===caseById.get(c.caseId)).length;
-    const abstentions=run.caseCalls.filter(c=>c.call==="ABSTAIN").length;
-    const denominator=cohort.benchmarkCaseIds.length;
-    byKey.set(key,{cohort,run,level:run.assessmentLevel,matches,
-      misses:denominator-matches-abstentions,denominator,abstentions,
-      rate:100*matches/denominator,coverage:(denominator-abstentions)/denominator,
-      baselineRate:100*cohort.alwaysApproveMatches/denominator});
+    const group=byLevel.get(run.assessmentLevel)??new Map<string,Run>();
+    const previous=group.get(run.cohortId);
+    group.set(run.cohortId,previous?selectedRun(previous,run):run);
+    byLevel.set(run.assessmentLevel,group);
   }
-  const levels=Array.from(new Set(runs.map(r=>r.assessmentLevel))).sort((a,b)=>a-b);
-  const series=levels.map(level=>({level,points:months.map(c=>byKey.get(c.cohortId+"|"+level)??null)}));
-  const visibleSeries=selectedLevel==="all"?series:series.filter(s=>String(s.level)===selectedLevel);
-  const allPoints=series.flatMap(s=>s.points.filter((p):p is Point=>p!==null));
-  const visiblePoints=visibleSeries.flatMap(s=>s.points.filter((p):p is Point=>p!==null));
-  if(allPoints.length!==runs.length)throw new Error("INVALID_MONTHLY_LEVEL_POINT_COUNT");
-  const allRates=visiblePoints.flatMap(p=>[p.rate,p.baselineRate]);
-  const minRate=Math.min(...allRates),minY=Math.max(0,Math.floor((minRate-8)/10)*10);
-  const ticks=Array.from({length:Math.round((100-minY)/10)+1},(_,i)=>minY+i*10);
-  const x=(index:number)=>L+index*(W-L-R)/(months.length-1);
-  const y=(rate:number)=>T+(100-rate)*(H-T-B)/(100-minY);
-  const levelDash=(index:number)=>index===0?undefined:index%2===1?"9 5":"3 5";
+  const levels=[...byLevel.keys()].sort((a,b)=>a-b);
+  if(!levels.includes(3))throw new Error("LEVEL_3_BASELINE_MISSING");
+  const selectedLevels=choice==="all"?levels:levels.filter(l=>String(l)===choice);
+  if(!selectedLevels.length)throw new Error("LEVEL_NOT_RECORDED");
+  const series:Series[]=selectedLevels.map(level=>{
+    let total=0,matches=0,misses=0,abstains=0,covered=0;
+    const months=cohorts.map(cohort=>{
+      const run=byLevel.get(level)?.get(cohort.cohortId);
+      if(!run)return null;
+      const actual=new Map(cohort.benchmarkCases.map(x=>[x.id,x.actualDecision]));
+      const correct=run.caseCalls.filter(x=>x.call!=="ABSTAIN"&&x.call===actual.get(x.caseId)).length;
+      const absent=run.caseCalls.filter(x=>x.call==="ABSTAIN").length;
+      const n=cohort.benchmarkCaseIds.length;
+      total+=n;matches+=correct;misses+=n-correct-absent;abstains+=absent;covered++;
+      return {cohort,run,matches:correct,misses:n-correct-absent,abstains:absent,total:n,
+        monthlyRate:100*correct/n,cumulativeMatches:matches,cumulativeTotal:total,
+        cumulativeRate:100*matches/total};
+    });
+    return {level,months,total,matches,misses,abstains,covered};
+  });
+  const graphPoints=series.flatMap(s=>s.months.filter((v):v is MonthScore=>v!==null));
+  const minCumulative=Math.min(...graphPoints.map(x=>x.cumulativeRate));
+  const bottom=Math.max(0,Math.floor((minCumulative-5)/10)*10);
+  const ticks=Array.from({length:Math.round((100-bottom)/10)+1},(_,i)=>bottom+i*10);
+  const px=(i:number)=>L+i*(W-L-R)/(cohorts.length-1);
+  const py=(v:number)=>T+(100-v)*(H-T-B)/(100-bottom);
+  const lines=["#168267","#415F9D","#9C4B8E","#B07813"];
+  const lineColor=(i:number)=>lines[i%lines.length];
+  const panel={border:"1px solid #d7d5ea",borderRadius:11,background:"#f8f7ff",padding:"13px 15px"} as const;
   return <section data-testid="historical-monthly-level-trend"
-    aria-label="June through October historical FDA retrospective comparison by selectable assessment level"
-    style={{background:"#fff",border:"1px solid #c3d8d1",borderRadius:14,
-      padding:"clamp(14px,2vw,22px)",margin:"0 0 22px",color:ink}}>
-    <div style={{fontSize:11,fontWeight:850,letterSpacing:".09em",color:"#28685e"}}>
-      HISTORICAL COMPARISONS · LEVEL-LOCKED BENCHMARK
-    </div>
-    <h2 style={{fontSize:22,margin:"8px 0 4px"}}>Monthly FDA assessment trend · June–October 2026</h2>
-    <p style={{fontSize:13,color:muted,lineHeight:1.55,margin:"6px 0 13px"}}>
-      Each month has its own color. The line connects case-level <strong>retrospective directional match rates</strong>
-      for the indicated assessment level; this is not blind prediction accuracy.
-      The exact case population is frozen for comparisons when the assessment level rises.
+    aria-label="Level-dependent historical FDA assessment dashboard January through October 2026"
+    style={{border:"1px solid #c7bddf",borderRadius:14,background:"#fff",
+      padding:"clamp(14px,2vw,22px)",margin:"0 0 22px",color:dark}}>
+    <div style={{background:"#4a277f",color:"#fff",borderRadius:9,padding:"11px 14px",
+      fontSize:15,fontWeight:850}}>◴ OLD PREDICTIONS · HISTORICAL LEVEL COMPARISONS</div>
+    <p style={{color:muted,fontSize:13,lineHeight:1.6}}>
+      Outcome-aware Level 3-style research reconstructed after FDA decisions, not genuine blind accuracy.
+      The level selector updates every historical metric on this panel; live forecasts are separate.
     </p>
-    <div style={{display:"flex",alignItems:"end",flexWrap:"wrap",gap:12,margin:"12px 0 15px"}}>
-      <div style={{display:"grid",gap:5,minWidth:220}}>
+    <div style={{display:"flex",flexWrap:"wrap",alignItems:"end",gap:14,margin:"14px 0"}}>
+      <div style={{display:"grid",gap:5,minWidth:230,flex:"0 1 285px"}}>
         <label htmlFor="historical-assessment-level-select"
-          style={{fontSize:13,fontWeight:850,color:"#29594f"}}>Assessment Level</label>
+          style={{fontSize:13,fontWeight:850}}>Assessment Level</label>
         <select id="historical-assessment-level-select"
           data-testid="historical-assessment-level-dropdown"
-          value={selectedLevel}
-          onChange={event=>setSelectedLevel(event.currentTarget.value)}
-          style={{fontSize:15,fontWeight:750,padding:"11px 12px",
-            border:"1px solid #9cbbb0",background:"#fff",color:ink,
-            borderRadius:9,width:"100%",minHeight:44}}>
+          value={choice} onChange={e=>setChoice(e.currentTarget.value)}
+          style={{background:"#fff",color:dark,border:"1px solid #a8b7b3",
+            borderRadius:8,fontWeight:750,fontSize:15,padding:"11px",minHeight:44}}>
           {Array.from({length:data.methodGuardrails.maxResearchLevel},(_,i)=>i+1).map(level=>
             <option key={level} value={String(level)} disabled={!levels.includes(level)}>
-              {"Level "+level+(levels.includes(level)?" — recorded":" — not yet assessed")}
+              {"Level "+level+(levels.includes(level)?" — recorded":" — not assessed")}
             </option>)}
           <option value="all">Compare all recorded levels</option>
         </select>
       </div>
-      <div role="status" aria-live="polite" data-testid="historical-selected-level-status"
-        style={{fontSize:12,lineHeight:1.5,color:muted,maxWidth:530}}>
-        {selectedLevel==="all"?
-          "Comparing all recorded historical assessment levels. Month colors remain consistent.":
-          "Displaying Level "+selectedLevel+" historical assessment results for June–October 2026. "+
-          "Unassessed levels cannot show scores until their case-by-case assessments are saved."}
+      <p data-testid="historical-selected-level-status" role="status" aria-live="polite"
+        style={{fontSize:12,color:muted,maxWidth:600,lineHeight:1.5,margin:0}}>
+        {choice==="all"?"Compare all recorded levels. Only independently saved level runs appear.":
+          "Displaying Level "+choice+" results. Unrecorded levels are disabled, not estimated."}
+        {" "}Future runs must retain the same case IDs for each month.
+      </p>
+    </div>
+    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(150px,1fr))",gap:10,
+      margin:"12px 0 16px"}}>
+      {series.map(s=><div key={s.level} data-testid={"historical-level-summary-"+s.level}
+        style={panel}>
+        <div style={{color:"#5e4c81",fontSize:11,fontWeight:850}}>LEVEL {s.level} · RETROSPECTIVE</div>
+        <strong data-testid={"historical-level-rate-"+s.level}
+          style={{fontSize:27,color:"#4d2788",display:"block",margin:"3px 0"}}>
+          {rate(s.matches,s.total)}
+        </strong>
+        <div style={{fontWeight:750,fontSize:13}}>{s.matches} / {s.total} matched</div>
+        <div style={{color:muted,fontSize:12,marginTop:5}}>
+          {s.misses} missed · {s.abstains} abstained<br/>
+          {s.covered} / {cohorts.length} months assessed
+        </div>
+      </div>)}
+      <div style={{...panel,background:"#f6faf8",borderColor:"#cbded4"}}>
+        <div style={{fontSize:11,fontWeight:850,color:"#286657"}}>VERIFIED BLIND ACCURACY</div>
+        <strong style={{fontSize:27,display:"block",margin:"3px 0"}}>N/A</strong>
+        <div style={{fontSize:12,color:muted}}>Historical runs cannot validate prospective accuracy</div>
       </div>
     </div>
-    <div style={{display:"flex",gap:8,flexWrap:"wrap",marginBottom:12}}>
-      {visibleSeries.map((group,i)=><span key={group.level} data-testid={"historical-level-tag-"+group.level}
-        style={{display:"inline-flex",alignItems:"center",gap:8,
-          padding:"6px 11px",fontSize:12,fontWeight:800,
-          border:"1px solid #bfd2cb",borderRadius:8,background:"#f5faf7"}}>
-        <svg width="27" height="8" viewBox="0 0 27 8" aria-hidden="true">
-          <line x1="0" y1="4" x2="27" y2="4" stroke="#304c50"
-            strokeWidth="3" strokeDasharray={levelDash(i)}/>
-        </svg>
-        Assessment Level {group.level} · recorded research
-      </span>)}
-      <span style={{padding:"6px 11px",fontSize:12,color:"#895d25",fontWeight:800,
-        background:"#fff7e9",borderRadius:8}}>Blind accuracy: N/A</span>
-    </div>
-    <div style={{display:"flex",gap:12,flexWrap:"wrap",margin:"9px 0 5px"}}>
-      {months.map(c=><div key={c.cohortId} data-testid={"month-color-"+c.yearMonth}
-        style={{display:"inline-flex",alignItems:"center",gap:6,fontSize:12,fontWeight:750}}>
-        <span aria-hidden="true" style={{width:12,height:12,borderRadius:"50%",background:c.color}}/>
-        {c.monthLabel}
+    <h2 style={{fontSize:20,margin:"12px 0 6px"}}>Cumulative FDA agreement trend · Jan–Oct 2026</h2>
+    <p style={{fontSize:12,color:muted,lineHeight:1.5,margin:"0 0 12px"}}>
+      Each plotted point includes all scored applications up to that month within its recorded level.
+      This is a case-count-weighted cumulative trend, not a line connecting isolated monthly percentages.
+    </p>
+    <div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:10}}>
+      {cohorts.map(cohort=><div key={cohort.cohortId}
+        data-testid={"month-color-"+cohort.yearMonth}
+        style={{display:"flex",alignItems:"center",gap:6,fontSize:12,color:dark}}>
+        <span style={{width:11,height:11,borderRadius:"50%",background:cohort.color}}/>
+        {cohort.monthLabel}
       </div>)}
     </div>
-    <div style={{overflowX:"auto",background:"#f9fbfa",borderRadius:10,padding:"10px 5px"}}>
+    <div style={{display:"flex",gap:14,flexWrap:"wrap",marginBottom:8}}>
+      {series.map((s,i)=><div key={s.level}
+        data-testid={"historical-level-tag-"+s.level}
+        style={{display:"flex",gap:6,alignItems:"center",fontSize:12,fontWeight:750}}>
+        <svg width="28" height="9" viewBox="0 0 28 9" aria-hidden="true">
+          <line x1="0" y1="4" x2="28" y2="4" stroke={lineColor(i)} strokeWidth="3"
+            strokeDasharray={i===0?undefined:"7 4"}/>
+        </svg>Level {s.level}
+      </div>)}
+    </div>
+    <div style={{overflowX:"auto",background:"#f8faf9",borderRadius:10,padding:7}}>
       <svg data-testid="historical-monthly-level-line-chart" role="img"
-        aria-label={visibleSeries.map(s=>"Level "+s.level+": "+s.points.map(p=>p?
-          p.cohort.monthLabel+" "+percent(p.matches,p.denominator):"not assessed").join(", ")).join("; ")+
-          ". June through October month colors are distinct. Not blind."}
-        viewBox={"0 0 "+W+" "+H} style={{display:"block",width:"100%",minWidth:540,height:"auto"}}>
+        aria-label={"Case-weighted cumulative historical agreement trend: "+
+          series.map(s=>"Level "+s.level+" "+rate(s.matches,s.total)+
+          " across "+s.covered+" recorded months").join("; ")+". Not blind."}
+        viewBox={"0 0 "+W+" "+H}
+        style={{display:"block",minWidth:650,width:"100%",height:"auto"}}>
         {ticks.map(t=><g key={t}>
-          <line x1={L} x2={W-R} y1={y(t)} y2={y(t)} stroke="#dce8e3" strokeWidth="1"/>
-          <text x={L-11} y={y(t)+4} textAnchor="end" fill="#647c75" fontSize="13">{t}%</text>
+          <line x1={L} y1={py(t)} x2={W-R} y2={py(t)} stroke="#dce7e0"/>
+          <text x={L-12} y={py(t)+4} textAnchor="end" fontSize="13" fill="#5a6e66">{t}%</text>
         </g>)}
-        {visibleSeries.map((s,levelIndex)=><g key={s.level} data-testid={"level-line-"+s.level}>
-          {s.points.slice(0,-1).map((point,index)=>{
-            const next=s.points[index+1];
-            return point&&next?<line key={index} x1={x(index)} y1={y(point.rate)}
-              x2={x(index+1)} y2={y(next.rate)}
-              stroke={months[index].color} strokeWidth={levelIndex===0?3:2.5}
-              strokeDasharray={levelDash(levels.indexOf(s.level))} opacity={levelIndex===0?1:.8}/>:null;
+        {series.map((s,seriesIndex)=><g key={s.level} data-testid={"level-line-"+s.level}>
+          {s.months.slice(0,-1).map((point,index)=>{
+            const next=s.months[index+1];
+            return point&&next?<line key={index} x1={px(index)} y1={py(point.cumulativeRate)}
+              x2={px(index+1)} y2={py(next.cumulativeRate)}
+              stroke={lineColor(seriesIndex)} strokeWidth={3}
+              strokeDasharray={seriesIndex===0?undefined:"8 5"}/>:null;
           })}
-          {s.points.map((point,index)=>point?<g key={point.cohort.cohortId}>
-            <circle cx={x(index)} cy={y(point.rate)} r={levelIndex===0?9:6}
-              fill={point.cohort.color} stroke={levelIndex===0?"#fff":"#304c50"}
-              strokeWidth={levelIndex===0?3:2}>
-              <title>{point.cohort.monthLabel+" · Level "+s.level+" · "+
-                percent(point.matches,point.denominator)+" ("+
-                point.matches+"/"+point.denominator+"). Nonblind retrospective agreement."}</title>
+          {s.months.map((point,index)=>point?<g key={point.cohort.cohortId}>
+            <circle cx={px(index)} cy={py(point.cumulativeRate)} r="7"
+              stroke={lineColor(seriesIndex)} strokeWidth="2" fill={point.cohort.color}>
+              <title>{point.cohort.monthLabel+" Level "+s.level+
+                " cumulative "+rate(point.cumulativeMatches,point.cumulativeTotal)+
+                " ("+point.cumulativeMatches+"/"+point.cumulativeTotal+")."}</title>
             </circle>
-            {(selectedLevel!=="all"||levelIndex===0)?<text x={x(index)} y={y(point.rate)-16}
-              fontSize="15" fontWeight="800" textAnchor="middle" fill="#253f3b">
-              {percent(point.matches,point.denominator)}
+            {choice!=="all"?<text x={px(index)} y={py(point.cumulativeRate)-16}
+              fontSize="12" textAnchor="middle" fill={dark} fontWeight="800">
+              {rate(point.cumulativeMatches,point.cumulativeTotal)}
             </text>:null}
           </g>:null)}
         </g>)}
-        {months.map((c,index)=><g key={c.cohortId}>
-          <text x={x(index)} y={H-B+28} textAnchor="middle" fontSize="15"
-            fontWeight="800" fill={c.color}>{c.monthLabel}</text>
-          <text x={x(index)} y={H-B+45} textAnchor="middle"
-            fontSize="11" fill="#62756e">2026</text>
-        </g>)}
+        {cohorts.map((c,i)=><text key={c.cohortId} x={px(i)} y={H-B+27}
+          textAnchor="middle" fill={c.color} fontWeight="800" fontSize="14">
+          {c.monthLabel.slice(0,3)}
+        </text>)}
       </svg>
     </div>
-    <p style={{fontSize:11,lineHeight:1.5,color:muted,margin:"7px 0 12px"}}>
-      Y-axis: matched cases / locked cases (%); it adjusts to display the recorded levels.
-      Choose a level from the dropdown, or compare all recorded levels with additional dashed lines; month colors remain fixed.
-      Abstentions on a later level cannot artificially increase its fixed-cohort match rate.
+    <p style={{color:muted,fontSize:11,lineHeight:1.5,margin:"7px 0 10px"}}>
+      Gaps mean that level has no recorded run for that month. The result changes with level,
+      but differences between calendar months can reflect different drug cohorts and selection rules.
+      An improved historical curve does not establish improved prospective prediction accuracy.
     </p>
-    <div style={{overflowX:"auto",border:"1px solid #e0e9e5",borderRadius:9}}>
+    <div style={{overflowX:"auto",border:"1px solid #e2e9e5",borderRadius:9}}>
       <table data-testid="historical-monthly-level-table"
-        style={{borderCollapse:"collapse",width:"100%",minWidth:730,fontSize:12}}>
-        <thead><tr style={{background:"#edf5f0",textAlign:"left"}}>
-          {["Month","Assessment level","Matched","Missed","Rate","Always approve baseline","Method / sources"].map(h=>
-            <th key={h} scope="col" style={{padding:"10px 9px",borderBottom:"1px solid #d6e4dc"}}>{h}</th>)}
+        style={{borderCollapse:"collapse",width:"100%",minWidth:930,fontSize:12}}>
+        <thead><tr style={{background:"#e9f3ef",textAlign:"left"}}>
+          {["Month","Level","Matched","Missed / abstain","Monthly agreement","Cumulative trend","Always approve","Run / evidence"].map(h=>
+            <th scope="col" key={h} style={{padding:"10px 8px",whiteSpace:"nowrap"}}>{h}</th>)}
         </tr></thead>
-        <tbody>{visiblePoints.map((p,i)=><tr key={p.run.runId} style={{background:i%2?"#f9fcfa":"#fff"}}>
-          <td style={{padding:9,fontWeight:850,color:p.cohort.color}}>
-            {p.cohort.monthLabel} 2026</td>
-          <td style={{padding:9}}>Level {p.level} · {p.run.assessmentType==="MANUAL_LEVEL3_STYLE_RECONSTRUCTION"?"manual":p.run.assessmentType}</td>
-          <td style={{padding:9,fontWeight:800}}>{p.matches} / {p.denominator}</td>
-          <td style={{padding:9}}>{p.misses}{p.abstentions?" · "+p.abstentions+" abstain":""}</td>
-          <td style={{padding:9,fontWeight:850}}>{percent(p.matches,p.denominator)}</td>
-          <td style={{padding:9}}>{percent(p.cohort.alwaysApproveMatches,p.denominator)}</td>
-          <td style={{padding:9,whiteSpace:"nowrap"}}>
-            <a href={p.run.predictionFreezeUrl} target="_blank" rel="noopener noreferrer"
-              style={{color:"#086f62"}}>Assessment</a>{" · "}
-            <a href={p.cohort.sourceUrl} target="_blank" rel="noopener noreferrer"
-              style={{color:"#086f62"}}>FDA comparison</a>
-          </td>
-        </tr>)}</tbody>
+        <tbody>{series.flatMap(s=>s.months.map((point,i)=>({s,point,i}))).map(({s,point,i})=>
+          <tr key={s.level+"-"+cohorts[i].cohortId}
+            style={{background:i%2?"#fbfdfa":"#fff"}}>
+            <td style={{padding:8,color:cohorts[i].color,fontWeight:850}}>
+              {cohorts[i].monthLabel} 2026</td>
+            <td style={{padding:8}}>Level {s.level}</td>
+            <td style={{padding:8,fontWeight:800}}>{point?point.matches+" / "+point.total:"—"}</td>
+            <td style={{padding:8}}>{point?point.misses+" missed · "+point.abstains+" abstain":"Not assessed"}</td>
+            <td style={{padding:8}}>{point?rate(point.matches,point.total):"N/A"}</td>
+            <td style={{padding:8,fontWeight:850}}>{point?rate(point.cumulativeMatches,point.cumulativeTotal):"N/A"}</td>
+            <td style={{padding:8}}>{point?rate(point.cohort.alwaysApproveMatches,point.total):"N/A"}</td>
+            <td style={{padding:8}}>
+              {point?<div style={{display:"grid",gap:3}}>
+                <span style={{color:muted}}>Method {point.run.methodVersion}</span>
+                <span>
+                  <a href={point.run.predictionFreezeUrl} target="_blank" rel="noopener noreferrer">Assessment</a>
+                  {" · "}
+                  <a href={point.cohort.sourceUrl} target="_blank" rel="noopener noreferrer">FDA result</a>
+                </span>
+              </div>:"Awaiting recorded assessment"}
+            </td>
+          </tr>)}</tbody>
       </table>
     </div>
-    <details style={{marginTop:14,fontSize:12,color:muted,lineHeight:1.6}}>
-      <summary style={{cursor:"pointer",fontWeight:750,color:"#295e55"}}>Locked case selection and how to repeat a level</summary>
+    <details style={{marginTop:13,fontSize:12,lineHeight:1.6,color:muted}}>
+      <summary style={{cursor:"pointer",fontWeight:850,color:dark}}>
+        Fixed-case replay rules and source limitations
+      </summary>
       <p>
-        The monthly sources cover different selected populations: June includes a May original goal,
-        July excludes three actions already decided before July, August contains some cases with
-        unverified August goals, September is an approvals-only action-date group, and October
-        includes early decisions and a withdrawal. Month-to-month changes are not evidence that
-        the engine became more or less accurate.
+        January–May comprises a selected and separately sourced historical roster, not a census.
+        June–October uses varying posthoc action-date and goal-date populations; September is
+        approval-only. Consequently, the combined cumulative slope is descriptive, not a
+        controlled measure of model improvement. All 2026 research runs were written after
+        FDA outcomes were public.
       </p>
       <p>
-        To rerun at Level 4, Level 5, etc., append a new case-by-case run for the same
-        <code>cohortId</code> and locked case IDs, record the assessment level and method version,
-        and preserve all earlier runs. A new case roster requires a new cohort version.
-        Previous FDA outcomes remain known; historical reruns remain nonblind.
+        As the analysis level advances to 4–20, save a full exact-case run with its method
+        version and timestamp. The display will offer the level once the run is present in
+        this versioned dataset and the site is redeployed. Missing levels remain disabled.
+        Further revisions may increment revisionNumber while retaining prior Git history.
       </p>
-      {months.map(c=><p key={c.cohortId}>
-        <strong style={{color:c.color}}>{c.monthLabel}:</strong> {c.cohortSelection}.
-        {" "+c.benchmarkCaseIds.length+" locked directional cases; "+
-        c.excludedCases.length+" excluded. "}
-        <a href={c.sourceUrl} target="_blank" rel="noopener noreferrer">See source.</a>
+      {cohorts.map(c=><p key={c.cohortId}>
+        <strong style={{color:c.color}}>{c.monthLabel}:</strong> {c.cohortSelection}{" "}
+        <a href={c.sourceUrl} target="_blank" rel="noopener noreferrer">Case-level source</a>
       </p>)}
     </details>
-    <p style={{fontSize:12,lineHeight:1.6,color:"#906426",fontWeight:750,margin:"12px 0 0"}}>
-      INTEGRITY: All five Level 3 results were reconstructed after FDA outcomes became public.
-      They are never added to prospective accuracy or calibration. This chart cannot be used
-      as validated prediction accuracy, a verified blind test, or a live FOCUS ranking signal.
+    <p style={{fontSize:12,color:"#815b27",fontWeight:800,lineHeight:1.55}}>
+      All results here are OUTCOME-AWARE RECONSTRUCTIONS. They must never enter live FDA
+      forecast accuracy, active FOCUS ranking, or probability calibration.
     </p>
   </section>;
 }
