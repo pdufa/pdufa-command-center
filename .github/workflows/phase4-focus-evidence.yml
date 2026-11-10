@@ -56,6 +56,9 @@ jobs:
       - name: Attach unreviewed registry evidence leads
         run: |
           python scripts/medical/subspecialty_registry_evidence_leads.py --dossiers phase4-artifacts/subspecialty-dossiers.json --checkpoint phase4-artifacts/checkpoint.json --output phase4-artifacts/subspecialty-evidence-leads.json
+      - name: Inventory evidence gaps across all FOCUS trials
+        run: |
+          python scripts/medical/subspecialty_evidence_gap_report.py --input phase4-artifacts/subspecialty-evidence-leads.json --output phase4-artifacts/subspecialty-evidence-gaps.json
       - name: Summarize research status
         if: always()
         run: |
@@ -78,5 +81,6 @@ jobs:
             phase4-artifacts/twenty-level-readiness.json
             phase4-artifacts/subspecialty-dossiers.json
             phase4-artifacts/subspecialty-evidence-leads.json
+            phase4-artifacts/subspecialty-evidence-gaps.json
           if-no-files-found: warn
           retention-days: 90
