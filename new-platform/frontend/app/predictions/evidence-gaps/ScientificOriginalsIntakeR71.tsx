@@ -1,5 +1,6 @@
 import {FOCUS_R71_PIVOTAL_EVIDENCE_INTAKE} from "../../../lib/focus-r71-pivotal-evidence-intake";
 import styles from "./ScientificOriginalsIntakeR71.module.css";
+import CaprFdaChallengeR72 from "./CaprFdaChallengeR72";
 
 /** Scientific source lead queue only. Source-reported p values do not qualify
  * a predictive approval/CRL grade or original protocol lock verification.
@@ -13,7 +14,7 @@ export default function ScientificOriginalsIntakeR71({nct}:{nct:string}){
   </p></section>;
  const trial=r.fiveRecords.find(t=>t.nct===nct);
  if(!trial)return null;
- return <section className={styles.shell}
+ return <><section className={styles.shell}
    aria-label={"R71 pivotal source method intake for "+nct}>
    <div className={styles.eyebrow}>MAIN · REVISION 71 · POST-PUBLICATION SCIENTIFIC EVIDENCE INTAKE</div>
    <h3>{trial.trial} · published primary finding and review gaps</h3>
@@ -61,5 +62,7 @@ export default function ScientificOriginalsIntakeR71({nct}:{nct:string}){
     Approved/CRL forecast validated: <strong>0/23</strong>.
     Measured calibration: <strong>UNAVAILABLE</strong>.
     Future FDA decision: <strong>ABSTAIN</strong>.</p>
- </section>;
+ </section>
+ {nct==="NCT05126758"&&<CaprFdaChallengeR72/>}
+ </>;
 }
