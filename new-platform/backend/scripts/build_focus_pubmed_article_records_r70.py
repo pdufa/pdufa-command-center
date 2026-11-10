@@ -153,10 +153,19 @@ def article_scope_flags(title,abstract):
 
 def parse_pubmed_xml(data:bytes,mapping:dict[str,str],*,source_url:str):
     require(type(data) is bytes and 100<len(data)<MAX_SOURCE_BYTES
-            and data.lstrip().startswith(b"<?xml") and
-            b"<!DOCTYPE" not in data and b"<!ENTITY" not in data,
+            and data.lstrip().startswith(b"<?xml")
+            and b"<!ENTITY" not in data,
             "UNTRUSTED_PUBMED_SOURCE_XML")
-    try:root=ET.fromstring(data)
+    # NLM's legitimate EFetch results often include a PUBLIC PubMed DTD.
+    # Never resolve it, and never accept internal subsets / custom entities.
+    parse_bytes=data
+    if b"<!DOCTYPE" in parse_bytes:
+        dtd=re.search(rb'<!DOCTYPE\s+PubmedArticleSet\s+PUBLIC\s+"[^"<>]{5,180}"\s+"https://dtd\.nlm\.nih\.gov/[^"<>]{5,160}\.dtd"\s*>',parse_bytes)
+        require(dtd is not None and parse_bytes.count(b"<!DOCTYPE")==1
+                and b"[" not in dtd.group(0) and b"]" not in dtd.group(0),
+                "UNTRUSTED_EXTERNAL_PUBMED_DTD")
+        parse_bytes=parse_bytes[:dtd.start()]+parse_bytes[dtd.end():]
+    try:root=ET.fromstring(parse_bytes)
     except ET.ParseError as err:raise ValueError("PUBMED_SOURCE_XML_PARSE_FAILED") from err
     require(root.tag=="PubmedArticleSet","PUBMED_RESPONSE_NOT_ARTICLE_SET")
     articles=root.findall("./PubmedArticle")
