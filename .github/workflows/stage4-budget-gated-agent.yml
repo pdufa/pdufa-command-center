@@ -1,0 +1,18 @@
+name: Budget-Gated Stage 4 Development Queue
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+permissions:
+  contents: read
+  issues: read
+jobs:
+  check-queue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    env:
+      AI_MONTHLY_BUDGET_USD: "10"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate development queue and budget gate
+        run: python scripts/stage4_budget_gate.py
