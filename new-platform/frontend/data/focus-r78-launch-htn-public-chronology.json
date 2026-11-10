@@ -20,7 +20,7 @@
       "eventId": "LAST_PARTICIPANT_FOLLOWUP_REPORTED",
       "date": "2025-01-24",
       "eventKind": "REPORTED_TRIAL_CONDUCT",
-      "summary": "JAMA authors report last follow-up January 24, 2025.",
+      "summary": "JAMA authors report last participant follow-up January 24, 2025; this does not establish when the trial database was locked or treatment assignments were unblinded.",
       "sourceUrl": "https://jamanetwork.com/journals/jama/fullarticle/2835763",
       "sourceDate": "2025-06-30",
       "evidenceOnly": true,
