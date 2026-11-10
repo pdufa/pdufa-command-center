@@ -5,7 +5,7 @@ export const dynamic="force-dynamic";
 const headers={"Cache-Control":"no-store","X-Content-Type-Options":"nosniff"} as const;
 /** R109 reviewer worksheet export. Never a scientific evidence signoff. */
 export async function GET(){
- const original=R98_ACACIA_CTIS_ORIGINAL_PDF_RECEIPTS.originalDocuments.find(x=>x.key==="am4-protocol");
+ const original=R98_ACACIA_CTIS_ORIGINAL_PDF_RECEIPTS?.originalDocuments.find(x=>x.key==="am4-protocol");
  const diagnostic=READBACK.documents.find(x=>x.key==="am4-protocol");
  if(!original||!diagnostic||QUEUE.nct!=="NCT06081894"||QUEUE.protocol!=="CY 6033"||
   QUEUE.sourceSha256!==original.sha256||diagnostic.sha256!==original.sha256||
