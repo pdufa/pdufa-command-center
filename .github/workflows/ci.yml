@@ -70,6 +70,8 @@ jobs:
           python-version: '3.12'
       - name: Run Level 4 protocol audit regression tests
         run: python -m unittest discover -s tests -p 'test_level4_protocol_audit.py' -v
+      - name: Test original registry field extraction and provenance
+        run: python -m unittest discover -s tests -p 'test_level4_registry_extraction.py' -v
 
   backup-archive-integrity:
     name: Offline ZIP backup integrity regressions
