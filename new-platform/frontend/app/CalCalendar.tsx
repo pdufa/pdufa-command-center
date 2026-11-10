@@ -23,7 +23,7 @@ function pacificToday():string {
   return part("year")+"-"+part("month")+"-"+part("day");
 }
 
-export default function CalCalendar({onSelectCompany,embedded=false}:{onSelectCompany?:(ticker:string,eventId?:string)=>void;embedded?:boolean}={}){
+export default function CalCalendar({onSelectCompany,embedded=false,focusDate,focusKey}:{onSelectCompany?:(ticker:string,eventId?:string)=>void;embedded?:boolean;focusDate?:string;focusKey?:number}={}){
   const [payload,setPayload] = useState<CalendarPayload|null>(null);
   const [error,setError] = useState("");
   const [loading,setLoading] = useState(true);
@@ -33,6 +33,11 @@ export default function CalCalendar({onSelectCompany,embedded=false}:{onSelectCo
   const [maxCap,setMaxCap] = useState(10);
   const [activeTicker,setActiveTicker] = useState("");
   const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(()=>{
+    if (focusDate && /^\d{4}-\d{2}-\d{2}$/.test(focusDate)) {
+      setOffset(monthNumber(focusDate)-monthNumber(pacificToday()));
+    }
+  },[focusDate,focusKey]);
 
   useEffect(()=>{
     setToday(pacificToday());
