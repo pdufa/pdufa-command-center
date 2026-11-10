@@ -81,6 +81,12 @@ export default function FocusSourceReadinessR81(){
     </a>
     {" · "} Registry field matches require independent phase and original SAP review.
   </p>
+  <p className={styles.footer}>
+   <a href="/predictions/original-documents">
+     Open Step 2: original protocol/SAP files, source chronology and results inventory
+   </a>
+   {" · "} All listings are source leads only; no signed plan or medical grade is verified.
+  </p>
   <ApplicationVerificationR84 />
   <p className={styles.disclaimer}>Application groups are research identities,
    not necessarily separate FDA dossiers. No live FDA grade, historical accuracy or
