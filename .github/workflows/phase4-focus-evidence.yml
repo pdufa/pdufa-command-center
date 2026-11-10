@@ -27,6 +27,8 @@ jobs:
           python -m unittest discover -s tests -p 'test_level4_protocol_audit.py' -v
           python -m unittest discover -s tests -p 'test_level4_registry_extraction.py' -v
           python -m unittest discover -s tests -p 'test_level4_focus_checkpoint.py' -v
+          python -m unittest discover -s tests -p 'test_twenty_level_expansion.py' -v
+          python -m unittest discover -s tests -p 'test_twenty_level_evidence_matrix.py' -v
       - name: Recover previous successful checkpoint when available
         env:
           GH_TOKEN: ${{ github.token }}
@@ -45,6 +47,9 @@ jobs:
           else
             python scripts/medical/level4_focus_checkpoint.py --output phase4-artifacts/checkpoint.json
           fi
+      - name: Generate 20-level evidence readiness matrix
+        run: |
+          python scripts/medical/twenty_level_evidence_matrix.py --checkpoint phase4-artifacts/checkpoint.json --output phase4-artifacts/twenty-level-readiness.json
       - name: Summarize research status
         if: always()
         run: |
@@ -62,6 +67,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: phase4-focus-checkpoint-${{ github.run_id }}-${{ github.run_attempt }}
-          path: phase4-artifacts/checkpoint.json
+          path: |
+            phase4-artifacts/checkpoint.json
+            phase4-artifacts/twenty-level-readiness.json
           if-no-files-found: warn
           retention-days: 90
