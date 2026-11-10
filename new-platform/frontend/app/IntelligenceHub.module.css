@@ -63,3 +63,6 @@
 
 .monitor{font-size:11px;line-height:1.5;background:#f2f7ef;border:1px solid #c7dec9;padding:9px 11px;border-radius:8px;margin:8px 0 12px;color:#2c5c3a}
 .monitor span{color:#657867}
+
+.companyJump{display:inline-block;background:#e1f1e5;color:#115f3b;border:1px solid #b9d2c1;border-radius:7px;padding:7px 9px;font-size:11px;text-align:left;margin:2px 0 8px;cursor:pointer}
+.companyJump:hover{background:#cdebd7}
