@@ -60,3 +60,6 @@
 .modalHead button{font-size:27px;background:#17452e;color:#fff;border-radius:7px;padding:2px 13px}
 @media(max-width:1150px){.all{grid-template-columns:repeat(2,minmax(0,1fr))}.all .panel:last-child{grid-column:1 / -1}}
 @media(max-width:750px){.page{padding:12px 9px 40px}.pageHeader{align-items:start;flex-direction:column;gap:7px}.pageHeader h1{font-size:24px}.dual,.all{grid-template-columns:1fr}.all .panel:last-child{grid-column:auto}.panel{padding:9px}.tabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr))}.tabs button{min-width:0;padding:9px 3px;font-size:11px}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.settings label{min-width:0;flex:1 1 145px}.modal{padding:11px}}
+
+.monitor{font-size:11px;line-height:1.5;background:#f2f7ef;border:1px solid #c7dec9;padding:9px 11px;border-radius:8px;margin:8px 0 12px;color:#2c5c3a}
+.monitor span{color:#657867}
