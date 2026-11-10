@@ -93,6 +93,7 @@ export default function PriorityOriginalScientificGatesR93(){
      <a href={"/predictions/scientific-reconciliation/priority-gates/ctis-page-evidence?doc="+R106_REVIEW_QUEUE.sourceDocument}
       target="_blank" rel="noopener noreferrer">Inspect live source-linked diagnostic</a>
      <p><a href="/predictions/scientific-reconciliation/priority-gates/review-queue/csv">Export six-row uncertified page-review CSV</a></p>
+     <p><a href="/predictions/scientific-reconciliation/priority-gates/ctis-pdf-check?doc=am4-protocol&amp;download=1">Download original SHA-verified English Amendment 4 PDF for manual page review</a></p>
     </details>}
    {c.trial==="ACACIA_HCM"&&
     R103_PAGE_CENSUS.nct==="NCT06081894"&&
