@@ -40,7 +40,49 @@ export async function GET(request:Request):Promise<Response>{
   const sourceSHA256=createHash("sha256").update(raw,"utf8").digest("hex");
   const original:unknown=JSON.parse(raw);
   const checked=inspectR91CurrentPostedResults(row,original);
-  if(!checked)return fail(502,"AGGREGATE_SOURCE_IDENTITY_OR_SCHEMA_UNVERIFIED");
+  if(!checked){
+   // Strict schema diagnostics: only public field names/types and source
+   // group ID shapes, never missing values invented or trial grades.
+   const dict=(v:unknown):Record<string,unknown>=>
+    v!==null&&typeof v==="object"&&!Array.isArray(v)?
+      v as Record<string,unknown>:{};
+   const keys=(v:unknown)=>Object.keys(dict(v));
+   const array=(v:unknown):unknown[]=>Array.isArray(v)?v:[];
+   const top=dict(original),p=dict(top.protocolSection),
+    section=dict(top.resultsSection),
+    outcomes=dict(section.outcomeMeasuresModule),
+    flow=dict(section.participantFlowModule),
+    adverse=dict(section.adverseEventsModule);
+   const firstOutcome=dict(array(outcomes.outcomeMeasures)[0]);
+   const firstClass=dict(array(firstOutcome.classes)[0]);
+   const firstCat=dict(array(firstClass.categories)[0]);
+   const firstAnalysis=dict(array(firstOutcome.analyses)[0]);
+   const firstSerious=dict(array(adverse.seriousEvents)[0]);
+   const firstStats=dict(array(firstSerious.stats)[0]);
+   return Response.json({
+    error:"AGGREGATE_SOURCE_IDENTITY_OR_SCHEMA_UNVERIFIED",
+    diagnostic:{
+     id:dict(p.identificationModule).nctId,
+     hasResults:top.hasResults,
+     resultKeys:keys(section),flowKeys:keys(flow),
+     outcomeKeys:keys(outcomes),adverseKeys:keys(adverse),
+     outcomeCount:array(outcomes.outcomeMeasures).length,
+     firstOutcomeKeys:keys(firstOutcome),
+     firstOutcomeType:firstOutcome.type,
+     firstOutcomeGroups:array(firstOutcome.groups).slice(0,2).map(keys),
+     firstMeasureKeys:keys(dict(array(firstCat.measurements)[0])),
+     firstAnalysisKeys:keys(firstAnalysis),
+     firstAnalysisGroupKinds:array(firstAnalysis.groups).slice(0,2).map(
+      v=>typeof v==="string"?"string":keys(v).join(",")),
+     flowGroupKeys:keys(dict(array(flow.groups)[0])),
+     adverseGroupKeys:keys(dict(array(adverse.groups)[0])),
+     seriousEventKeys:keys(firstSerious),
+     firstSeriousStatsKeys:keys(firstStats)
+    },
+    independentClinicalGrades:0,medicallyVerifiedSafetyReconciliations:0,
+    FDAForecast:"ABSTAIN"
+   },{status:502,headers:H});
+  }
   return Response.json({
    ...checked,
    sourceApiUrl:sourceUrl,sourceSHA256,
