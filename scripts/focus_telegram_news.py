@@ -94,7 +94,9 @@ def roster():
                 and isinstance(company, str) and len(company.strip()) >= 4):
             raise ValueError("Untrusted FOCUS identity; refusing partial run")
         item = tickers.setdefault(ticker, {"company": company, "ncts": set()})
-        if item["company"] != company:
+        # Legal suffix variants in the same ticker are safe (e.g. Cytokinetics
+        # versus Cytokinetics, Inc.); unrelated issuer names are not.
+        if issuer_alias(item["company"]).casefold() != issuer_alias(company).casefold():
             raise ValueError("Conflicting FOCUS ticker identity")
         item["ncts"].add(nct)
     if not tickers:

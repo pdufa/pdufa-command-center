@@ -29,6 +29,21 @@ class FocusTelegramNewsTests(unittest.TestCase):
                 "published": self.now.isoformat(), "drug": "", "ncts": [],
                 "priority": "HIGH — verify source"}
 
+    def test_canonical_ticker_accepts_legal_suffix_but_not_different_issuer(self):
+        with tempfile.TemporaryDirectory() as temp:
+            rfile = Path(temp) / "focus.json"
+            records = [
+                {"ticker": "CYTK", "nct": "NCT06081894", "company": "Cytokinetics"},
+                {"ticker": "CYTK", "nct": "NCT00000001", "company": "Cytokinetics, Inc."},
+            ]
+            rfile.write_text(json.dumps({"records": records}))
+            with patch.object(news, "ROSTER", rfile):
+                self.assertEqual(len(news.roster()["CYTK"]["ncts"]), 2)
+                records[-1]["company"] = "Different Biopharma Inc."
+                rfile.write_text(json.dumps({"records": records}))
+                with self.assertRaises(ValueError):
+                    news.roster()
+
     def test_ticker_specific_media_lead_never_becomes_verified_fda_news(self):
         items = news.google_rss_candidates("CYTK", "Cytokinetics, Inc.",
                                            self._rss("Cytokinetics reports Phase 3 results"), self.now)
