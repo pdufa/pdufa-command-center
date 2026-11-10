@@ -54,7 +54,7 @@ async function profile(browser,config){
   assert.match(await p.innerText(),/Two primary endpoints/);
   assert.match(await p.innerText(),/10.5% vs 0.8%/);
   p=await inspect("NCT05126758");
-  assert.match(await p.innerText(),/4.55 percentage points/);
+  assert.match(await p.innerText(),/4.55% in PUL2.0 percentage change/);
   assert.equal(await p.getByRole("link",{name:"Open original article / PubMed source"}).getAttribute("href"),
     "https://pubmed.ncbi.nlm.nih.gov/42526472/");
   p=await inspect("NCT05662241");
