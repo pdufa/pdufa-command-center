@@ -1,0 +1,17 @@
+name: Free Stage 4 Worker
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/5 * * * *'
+permissions:
+  contents: read
+jobs:
+  read-only-heartbeat:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run read-only Stage 4 heartbeat
+        run: python scripts/stage4_minute_worker.py
+      - name: Validate primary-source provenance checks
+        run: python -m unittest discover -s tests -p 'test_focus_registry_fetch.py' -v
