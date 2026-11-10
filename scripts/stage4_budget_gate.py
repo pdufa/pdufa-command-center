@@ -25,9 +25,16 @@ def inspect_queue(path):
     tasks = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(tasks, list):
         raise ValueError("Task queue must be a list")
+    seen_ids = set()
     for index, task in enumerate(tasks):
         if not isinstance(task, dict):
             raise ValueError(f"Task {index} must be an object")
+        task_id = task.get("id")
+        if not isinstance(task_id, str) or not task_id.strip():
+            raise ValueError(f"Task {index} must have a nonempty string id")
+        if task_id in seen_ids:
+            raise ValueError(f"Duplicate task id: {task_id}")
+        seen_ids.add(task_id)
         if "approved" in task and not isinstance(task["approved"], bool):
             raise ValueError(f"Task {index} approval must be a boolean")
     approved = [t for t in tasks if t.get("approved") is True]
