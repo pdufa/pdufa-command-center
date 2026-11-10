@@ -1,0 +1,56 @@
+{
+  "schema": "MAIN_R101_CTIS_PDF_TEXT_DIAGNOSTIC_READBACK_LIMITED_NOT_PAGE_SCIENCE",
+  "dateUtc": "2026-11-10",
+  "exactNct": "NCT06081894",
+  "protocol": "CY 6033",
+  "euct": "2023-505797-15-00",
+  "previewUrl": "https://pdufa-new-dashboard-bgv9rwjqn-pdufa.vercel.app/predictions/scientific-reconciliation/priority-gates/ctis-text-index",
+  "technique": "BOUNDED_PDF_TEXT_OPERATORS_WITH_FLATE_ONLY",
+  "originalDocuments": [
+    {
+      "key": "am4-protocol",
+      "streams": 172,
+      "failedFlate": 0,
+      "textOperatorChunks": 250,
+      "foundTerms": [
+        "kccq",
+        "alpha"
+      ],
+      "fullPageTextAvailable": false
+    },
+    {
+      "key": "am4-protocol-greek",
+      "streams": 176,
+      "failedFlate": 0,
+      "textOperatorChunks": 13,
+      "foundTerms": [],
+      "fullPageTextAvailable": false
+    },
+    {
+      "key": "am3-synopsis",
+      "streams": 7,
+      "failedFlate": 0,
+      "textOperatorChunks": 0,
+      "foundTerms": [],
+      "fullPageTextAvailable": false
+    },
+    {
+      "key": "protocol-addendum-a",
+      "streams": 28,
+      "failedFlate": 0,
+      "textOperatorChunks": 0,
+      "foundTerms": [],
+      "fullPageTextAvailable": false
+    }
+  ],
+  "totalTextOperatorChunks": 263,
+  "completeOriginalDocumentTextExtracted": false,
+  "originalPageMappingAvailable": false,
+  "sourcePageCitationsVerified": false,
+  "originalSAPSignaturesAuthenticated": 0,
+  "independentScientificSignoffs": 0,
+  "acaciaEvidenceGatesStillOpen": 4,
+  "launchEvidenceGatesStillOpen": 7,
+  "FDAForecast": "ABSTAIN",
+  "note": "These are direct live HTTP 200 diagnostic readbacks. Text operator chunks are not pages, sentences, endpoint results, complete extracted text or verified scientific findings. Zero chunks does not mean document has no text; PDF may use unsupported fonts, encodings or text arrays."
+}
