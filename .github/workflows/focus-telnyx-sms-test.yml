@@ -1,0 +1,39 @@
+name: FOCUS Telnyx SMS Delivery Test
+
+# Manual and one-shot ONLY. Does not trigger FOCUS scans or publish any alert.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  send-one-test:
+    name: Submit one Telnyx SMS test
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      TELNYX_API_KEY: ${{ secrets.TELNYX_API_KEY }}
+      TELNYX_FROM_NUMBER: ${{ secrets.TELNYX_FROM_NUMBER }}
+      TELNYX_MESSAGING_PROFILE_ID: ${{ secrets.TELNYX_MESSAGING_PROFILE_ID }}
+      PDUFA_SMS_TO_NUMBER: ${{ secrets.PDUFA_SMS_TO_NUMBER }}
+    steps:
+      - name: Checkout notification utilities
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Ensure private provider configuration exists
+        shell: bash
+        run: |
+          for key in TELNYX_API_KEY TELNYX_FROM_NUMBER PDUFA_SMS_TO_NUMBER; do
+            if [ -z "${!key}" ]; then
+              echo "::error::Missing GitHub Actions secret ${key}; no SMS attempted."
+              exit 1
+            fi
+          done
+      - name: Submit exactly one one-segment FOCUS SMS test
+        run: python -m scripts.focus_telnyx_sms --test
