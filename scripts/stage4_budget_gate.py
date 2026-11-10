@@ -32,6 +32,8 @@ def inspect_queue(path):
         task_id = task.get("id")
         if not isinstance(task_id, str) or not task_id.strip():
             raise ValueError(f"Task {index} must have a nonempty string id")
+        if len(task_id) > 128 or not all(c.isascii() and (c.isalnum() or c in "-_") for c in task_id):
+            raise ValueError(f"Task {index} id must use ASCII letters, digits, dash or underscore")
         if task_id in seen_ids:
             raise ValueError(f"Duplicate task id: {task_id}")
         seen_ids.add(task_id)
