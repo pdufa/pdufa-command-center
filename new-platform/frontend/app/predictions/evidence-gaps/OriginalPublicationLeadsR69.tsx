@@ -2,6 +2,7 @@ import {FOCUS_R69_REGISTRY_PUBLICATION_LEADS} from
   "../../../lib/focus-r69-original-publication-leads";
 import PublicationEvidenceRoleR70 from "./PublicationEvidenceRoleR70";
 import OriginalPubmedArticleMetadataR70 from "./OriginalPubmedArticleMetadataR70";
+import ScientificOriginalsIntakeR71 from "./ScientificOriginalsIntakeR71";
 import styles from "./OriginalPublicationLeadsR69.module.css";
 
 /** Read-only external PubMed search leads derived from archived registry
@@ -35,6 +36,7 @@ export default function OriginalPublicationLeadsR69({nct}:{nct:string}){
     <strong> does not mean no relevant study publication exists.</strong></p>}
   <PublicationEvidenceRoleR70 nct={nct}/>
   <OriginalPubmedArticleMetadataR70 nct={nct}/>
+  <ScientificOriginalsIntakeR71 nct={nct}/>
   <div className={styles.links}>
    <a href={"https://pubmed.ncbi.nlm.nih.gov/?term="+encodeURIComponent(nct)}
       target="_blank" rel="noopener noreferrer">
