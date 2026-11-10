@@ -100,6 +100,11 @@ export default function SourceChronologyR88Page(){
      </article>)}
    </div>
    <p className={styles.footer}>
+    <a href="/predictions/source-recovery">
+      Continue Step 2: recover the 17 original-source gaps from existing journals and official historical versions
+    </a>
+   </p>
+   <p className={styles.footer}>
     <a href="/predictions/original-documents">
       Return to live original protocol/SAP source inventory
     </a>
