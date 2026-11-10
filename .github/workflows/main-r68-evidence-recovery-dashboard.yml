@@ -1,0 +1,146 @@
+name: MAIN R68 exact-trial original evidence recovery dashboard
+
+# Draft development branch only; current source coverage is NOT clinical or
+# statistical truth, independent reviewer signoff, predictive accuracy or FDA
+# application outcome. No production/medical ledger/Track B/training writes.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r68-evidence-recovery-dashboard.yml
+      - new-platform/frontend/lib/focus-r68-evidence-recovery.ts
+      - new-platform/frontend/app/predictions/evidence-gaps/**
+      - new-platform/frontend/app/predictions/page.tsx
+      - new-platform/frontend/app/predictions/assessment/page.tsx
+      - new-platform/frontend/tests/focus-r68-evidence-recovery.test.cjs
+      - new-platform/frontend/scripts/verify-r68-evidence-recovery-browser.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r68-source-recovery-dashboard
+  cancel-in-progress: false
+
+jobs:
+  source-evidence-and-responsive-browser:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exact immutable 29-trial and 23-application FOCUS membership and retired-scan guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Restore original R60 archived efficacy and safety registry source
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42709199117
+          name: main-r60-original-primary-safety-review-42709199117
+          path: ${{ runner.temp }}/r68/r60
+      - name: Restore original R63 clinical method PDF source pages
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42713443428
+          name: main-r63-eight-domain-source-ladder-42713443428
+          path: ${{ runner.temp }}/r68/r63
+      - name: Restore original R66 29-trial Phase 3 registration census
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42720903307
+          name: main-r66-exact-29-registry-phase-evidence-42720903307
+          path: ${{ runner.temp }}/r68/r66
+      - name: Verify three original source snapshots still match the locked display exactly
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/verify_r61_original_dashboard_snapshot.py \
+            --original "$RUNNER_TEMP/r68/r60/FOCUS_29_ORIGINAL_PRIMARY_AND_AE_SOURCE_CHALLENGE_R60.json" \
+            --frontend new-platform/frontend/data/focus-r60-original-source-trial-detail.json
+          python new-platform/backend/scripts/verify_r64_original_method_page_snapshot.py \
+            --original "$RUNNER_TEMP/r68/r63/FOCUS_29_TRIAL_EIGHT_DOMAIN_SOURCE_REVIEW_R63.json" \
+            --frontend new-platform/frontend/data/focus-r64-original-method-pages.json
+          python new-platform/backend/scripts/verify_r67_original_phase_ui_parity.py \
+            --original "$RUNNER_TEMP/r68/r66/FOCUS_29_ORIGINAL_REGISTRY_PHASE_EVIDENCE_R66.json" \
+            --frontend new-platform/frontend/data/focus-r67-original-phase-source.json
+      - name: Install frontend and execute unscored evidence-recovery unit and mutation tests
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r68-evidence-recovery.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Install local Chromium for real desktop and iPhone-sized browser acceptance
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test search, missing-source filters, exact registry links and accordion in real browser
+        working-directory: new-platform/frontend
+        shell: bash
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/r68-browser
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECEIPT_DIR"
+          npm run start -- --port 3157 > "$RECEIPT_DIR/next.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 50); do
+            if curl -fsS --max-time 5 http://127.0.0.1:3157/predictions/evidence-gaps -o /dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$ready" != 1 ]]; then
+            echo "::error::Local Next.js evidence-recovery page never became healthy."
+            tail -n 100 "$RECEIPT_DIR/next.log"
+            exit 1
+          fi
+          node scripts/verify-r68-evidence-recovery-browser.cjs
+          cat "$RECEIPT_DIR/R68_BROWSER_RESULTS.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Archive local browser screenshots and nonclinical audit receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r68-evidence-recovery-local-browser-${{ github.run_id }}
+          path: ${{ runner.temp }}/r68-browser/
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Final recorded source-only review status
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo "## MAIN R68 exact-NCT missing public source recovery"
+            echo
+            echo "29 unique NCTs; 23 provisional application groups. The retained original archive has primary tables for 12 trials, safety-arm tables for 12, and current method PDF page leads for 12; each separate source category lacks coverage in 17 NCTs."
+            echo
+            echo "All 232 scientific review domain positions are unscored, the original 466 machine PDF page leads are research only. Reviewer signoffs 0; validated FDA future forecasts 0; historical accuracy unmeasured; official FDA outcomes ABSTAIN."
+            echo
+            echo "This source-recovery list never ranks trials by clinical success, FDA approval likelihood or regulatory status. Production, Track B and medical ledger unchanged."
+          } >> "$GITHUB_STEP_SUMMARY"
