@@ -141,7 +141,7 @@ function parseDocument(v:unknown):DocumentItem|null{
  const uploadDate=d.uploadDate===undefined?null:cleanStr(d.uploadDate,20);
  if(d.label!==undefined&&label===null||
     d.date!==undefined&&(documentDate===null||!/^\d{4}-\d{2}(?:-\d{2})?$/u.test(documentDate))||
-    d.uploadDate!==undefined&&(uploadDate===null||!/^\d{4}-\d{2}(?:-\d{2})?$/u.test(uploadDate))||
+    d.uploadDate!==undefined&&(uploadDate===null||!/^\d{4}-\d{2}-\d{2}(?:T(?:[01]\d|2[0-3]):[0-5]\d(?::[0-5]\d)?)?$/u.test(uploadDate))||
     typeof d.size!=="number"||!Number.isSafeInteger(d.size)||d.size<1||d.size>500_000_000||
     [d.hasProtocol,d.hasSap,d.hasIcf].some(x=>x!==undefined&&typeof x!=="boolean"))
     return null;
