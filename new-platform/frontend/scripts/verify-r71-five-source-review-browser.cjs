@@ -120,6 +120,11 @@ async function profile(browser,config){
   assert.equal(await authenticity.locator("details").nth(1).locator('a[href^="https://"]').count(),2,
     "original FDA/ICH E9 and E6R3 standards remain clickable");
   await authenticity.scrollIntoViewIfNeeded();
+  if(config.mobile){
+   const rect=await authenticity.evaluate(el=>({width:el.getBoundingClientRect().width,
+     viewport:document.documentElement.clientWidth}));
+   assert.ok(rect.width<=rect.viewport+2,"R79 original-proof gate must fit iPhone-sized viewport");
+  }
   await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-r79-authentication-gate.png"),fullPage:false});
 
   await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-research.png"),fullPage:false});
