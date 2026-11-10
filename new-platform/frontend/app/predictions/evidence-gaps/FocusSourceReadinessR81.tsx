@@ -1,5 +1,6 @@
 import {FOCUS_R81_SOURCE_READINESS} from "../../../lib/focus-r81-all-focus-source-readiness";
 import styles from "./EvidenceRecoveryBoardR68.module.css";
+import ApplicationVerificationR84 from "./ApplicationVerificationR84";
 
 /** Read-only crosswalk of 29 original exact NCTs and 23 provisional cycles. */
 export default function FocusSourceReadinessR81(){
@@ -33,6 +34,13 @@ export default function FocusSourceReadinessR81(){
    All <strong>{d.fullScientificSourceReviewPositions}</strong>
    source-review positions are unassessed. FDA forecast <strong>ABSTAIN</strong>;
    independently measured accuracy <strong>UNAVAILABLE</strong>.</p>
+  <p className={styles.footer}>
+   <a href="/predictions/evidence-gaps/export" download="focus-29-source-evidence-gaps-r83.csv">
+    Download all 29 trial evidence gaps (CSV)
+   </a>
+   {" · "}One exact NCT per row, with all provisional application-cycle links.
+   This is a dated source-research handoff, not FDA prediction accuracy or a clinical score.
+  </p>
   <details className={styles.coverageDetails}>
    <summary>Expand all 23 provisional application cycles and their exact NCT evidence status</summary>
    <div className={styles.coverageGrid}>
@@ -67,6 +75,19 @@ export default function FocusSourceReadinessR81(){
    </article>)}
    </div>
   </details>
+  <p className={styles.footer}>
+    <a href="/predictions/phase-verification">
+      Open Step 1: live original-registry phase comparison for all 29 trials
+    </a>
+    {" · "} Registry field matches require independent phase and original SAP review.
+  </p>
+  <p className={styles.footer}>
+   <a href="/predictions/original-documents">
+     Open Step 2: original protocol/SAP files, source chronology and results inventory
+   </a>
+   {" · "} All listings are source leads only; no signed plan or medical grade is verified.
+  </p>
+  <ApplicationVerificationR84 />
   <p className={styles.disclaimer}>Application groups are research identities,
    not necessarily separate FDA dossiers. No live FDA grade, historical accuracy or
    approval/CRL probability is established by this source-only crosswalk.</p>

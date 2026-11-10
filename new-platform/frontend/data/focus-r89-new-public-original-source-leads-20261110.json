@@ -1,0 +1,58 @@
+{
+  "schema": "MAIN_R89_THREE_NEW_PUBLIC_PUBLISHER_ISSUER_REPORT_LEADS_RESEARCH_ONLY",
+  "researchObservedOn": "2026-11-10",
+  "baseline": "Five existing R71 original journal leads remain distinct from these three newly researched source leads.",
+  "newExactTrialSourceLeads": 3,
+  "distinctUnderlyingOriginalSourcePages": 2,
+  "authenticatedOriginalSignedSAPs": 0,
+  "qualifiedIndependentScientificReviews": 0,
+  "validatedFDAOutcomeForecasts": 0,
+  "futureFDAOutcome": "ABSTAIN",
+  "sourceCases": [
+    {
+      "nct": "NCT02500381",
+      "ticker": "SRPT",
+      "trial": "ESSENCE",
+      "sourceType": "PUBLISHER_CONFERENCE_SUPPLEMENT_ABSTRACT_NOT_FULL_MANUSCRIPT",
+      "sourceDate": "2026-10",
+      "sourceUrl": "https://www.sciencedirect.com/science/article/abs/pii/S0960896626004931",
+      "reportTitle": "ESSENCE: Phase 3 results and post hoc analysis, Neuromuscular Disorders 67 Supplement 1 abstract 2.67eP",
+      "sourceReportedObservation": "Publisher abstract explicitly identifies NCT02500381 and describes ESSENCE phase 3 placebo comparison and post hoc analyses. Complete peer-reviewed original manuscript and signed prospective SAP are not independently captured.",
+      "sourceAuthenticityLevel": "PUBLISHER_ABSTRACT_TEXT_LEAD",
+      "documentBytesCaptured": false,
+      "originalProspectiveSapAuthenticated": false,
+      "independentScienceReviewed": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT06411899",
+      "ticker": "MLTX",
+      "trial": "VELA-1",
+      "sourceType": "ISSUER_REPORT_WITH_NCT_MATCH_NO_SIGNED_SAP",
+      "sourceDate": "2026-08-10",
+      "sourceUrl": "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+      "reportTitle": "MoonLake Q2 2026 issuer results update, with VELA-1 and VELA-2 study and estimand disclosures",
+      "sourceReportedObservation": "Issuer lists exact NCT06411899 as VELA-1 and states its Week 16 HiSCR75 composite-strategy endpoint met reported statistical significance. No independent original statistical plan authentication or qualified effect/safety review is established.",
+      "sourceAuthenticityLevel": "SPONSOR_PUBLIC_RESEARCH_DISCLOSURE",
+      "documentBytesCaptured": false,
+      "originalProspectiveSapAuthenticated": false,
+      "independentScienceReviewed": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT06411379",
+      "ticker": "MLTX",
+      "trial": "VELA-2",
+      "sourceType": "ISSUER_REPORT_WITH_NCT_MATCH_NO_SIGNED_SAP",
+      "sourceDate": "2026-08-10",
+      "sourceUrl": "https://moonlaketx.gcs-web.com/news-releases/news-release-details/moonlake-announces-positive-topline-results-phase-3-izar-1-trial",
+      "reportTitle": "MoonLake Q2 2026 issuer results update, with VELA-1 and VELA-2 study and estimand disclosures",
+      "sourceReportedObservation": "Issuer lists exact NCT06411379 as VELA-2 and states its Week 16 HiSCR75 composite-strategy comparison did not reach reported significance (p=0.053). An independent SAP, estimand, multiplicity, safety and FDA review is outstanding.",
+      "sourceAuthenticityLevel": "SPONSOR_PUBLIC_RESEARCH_DISCLOSURE",
+      "documentBytesCaptured": false,
+      "originalProspectiveSapAuthenticated": false,
+      "independentScienceReviewed": false,
+      "FDAForecast": "ABSTAIN"
+    }
+  ]
+}

@@ -1,0 +1,319 @@
+{
+  "schema": "MAIN_R86_DATED_PUBLIC_CLINICALTRIALS_GOV_DOCUMENT_CENSUS_NOT_MEDICAL_REVIEW",
+  "observationDateUtc": "2026-11-10",
+  "timePrecision": "DAY_ONLY",
+  "source": "Official ClinicalTrials.gov API v2, via exact-NCT-only deployed GET route",
+  "observedPreviewCommit": "4936bb8120065cc4764dd498d94916835b9d3320",
+  "sourceReadbackUrlTemplate": "https://pdufa-new-dashboard-5sf5hj4eh-pdufa.vercel.app/predictions/original-documents/check?nct=EXACT_NCT",
+  "rawOriginalPdfByteHashesCaptured": 0,
+  "independentlyAuthenticatedProspectivelySignedSAPs": 0,
+  "completedIndependentClinicalAssessments": 0,
+  "validatedFDAForecasts": 0,
+  "officialFDAOutcome": "ABSTAIN",
+  "warnings": [
+    "This receipt preserves public registry document-listing and results-section metadata only; availability may change later.",
+    "No exact uploaded PDF bytes or signed source-custody attestations were independently captured by this census.",
+    "An uploaded protocol/SAP listing does not prove prospective signature or unblinding/database-lock chronology.",
+    "Absence of documents/results from the current registry does not mean source results do not exist elsewhere.",
+    "A trial may have a combined protocol/SAP document, so protocol and SAP presence counts need not equal distinct file count."
+  ],
+  "totalExactNcts": 29,
+  "successfulHttp200": 29,
+  "trialsWithProtocolListing": 12,
+  "trialsWithSAPListing": 12,
+  "documentListings": 23,
+  "trialsWithPostedAggregateResults": 12,
+  "trialsWithoutPostedAggregateResults": 17,
+  "observedRows": [
+    {
+      "nct": "NCT05507203",
+      "docs": 2,
+      "protocolListings": 1,
+      "sapListings": 1,
+      "hasResults": true,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05507216",
+      "docs": 2,
+      "protocolListings": 1,
+      "sapListings": 1,
+      "hasResults": true,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT04576949",
+      "docs": 2,
+      "protocolListings": 1,
+      "sapListings": 1,
+      "hasResults": true,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05206370",
+      "docs": 2,
+      "protocolListings": 1,
+      "sapListings": 1,
+      "hasResults": true,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05811247",
+      "docs": 2,
+      "protocolListings": 1,
+      "sapListings": 1,
+      "hasResults": true,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05813275",
+      "docs": 2,
+      "protocolListings": 1,
+      "sapListings": 1,
+      "hasResults": true,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05059223",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05113745",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05244304",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05126758",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT06445023",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT06455202",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05208047",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT03697109",
+      "docs": 2,
+      "protocolListings": 1,
+      "sapListings": 1,
+      "hasResults": true,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT04308590",
+      "docs": 2,
+      "protocolListings": 1,
+      "sapListings": 1,
+      "hasResults": true,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05767346",
+      "docs": 2,
+      "protocolListings": 1,
+      "sapListings": 1,
+      "hasResults": true,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT06081894",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT04871282",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT06411379",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT06411899",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT06153693",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT06343779",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT06669754",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT06087276",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT02500381",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT04544293",
+      "docs": 2,
+      "protocolListings": 1,
+      "sapListings": 1,
+      "hasResults": true,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT06331299",
+      "docs": 2,
+      "protocolListings": 1,
+      "sapListings": 1,
+      "hasResults": true,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT04716231",
+      "docs": 1,
+      "protocolListings": 1,
+      "sapListings": 1,
+      "hasResults": true,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05662241",
+      "docs": 0,
+      "protocolListings": 0,
+      "sapListings": 0,
+      "hasResults": false,
+      "originalBytesAuthenticated": false,
+      "qualifiedScientificReview": false,
+      "FDAForecast": "ABSTAIN"
+    }
+  ]
+}

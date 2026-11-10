@@ -1,0 +1,129 @@
+{
+  "schema": "MAIN_R94_ACACIA_REPORTED_POPULATION_AND_HEART_FAILURE_CASES_CROSS_SOURCE_RESEARCH_ONLY",
+  "asOf": "2026-11-10",
+  "nct": "NCT06081894",
+  "ticker": "CYTK",
+  "trial": "ACACIA-HCM",
+  "purpose": "Clarify distinct published cohort and HF SAE case definitions, not to certify source custodian signed pre-unblinding SAP or independent scientific review.",
+  "sources": [
+    {
+      "id": "S1",
+      "type": "PRIMARY_PUBLISHED_ARTICLE",
+      "published": "2026-08-28",
+      "url": "https://www.nejm.org/doi/10.1056/NEJMoa2603021",
+      "nctExplicit": true,
+      "contentBytesCaptured": false,
+      "preciseClaim": "Primary NEJM report: randomized aficamten 258, placebo 259 (total 517), dual primary outcomes at week 36; LVEF below 50% occurred in 27 vs 2, and all-cause serious adverse events in 52 vs 38.",
+      "independentSignedSapProof": false
+    },
+    {
+      "id": "S2",
+      "type": "EARLIER_SPONSOR_TOPLINE",
+      "published": "2026-05",
+      "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Positive-Topline-Results-from-ACACIA-HCM-the-Pivotal-Phase-3-Clinical-Trial-of-Aficamten-in-Patients-with-Non-Obstructive-Hypertrophic-Cardiomyopathy/default.aspx",
+      "nctExplicit": false,
+      "contentBytesCaptured": false,
+      "preciseClaim": "Earlier Cytokinetics topline release describes 516 randomized and treated participants (outside Japan). Analysis population and cutoff definitions not stated well enough to reconcile the 517 randomized paper population.",
+      "independentSignedSapProof": false
+    },
+    {
+      "id": "S3",
+      "type": "AUTHORED_SECONDARY_CLINICAL_APPRAISAL",
+      "published": "2026-10-27",
+      "url": "https://opensourcecardiology.org/doi/osc.2026.0037",
+      "nctExplicit": false,
+      "contentBytesCaptured": false,
+      "preciseClaim": "Published comparison explicitly lists ACACIA-HCM as 517 randomized (258 aficamten, 259 placebo), 516 treated. This provides a plausible cohort-definition explanation but is not a signed CONSORT data-set certification.",
+      "independentSignedSapProof": false
+    },
+    {
+      "id": "S4",
+      "type": "LATER_SPONSOR_SAFETY_DISCLOSURE",
+      "published": "2026-10-12",
+      "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Additional-Data-from-ACACIA-HCM-Presented-at-the-HFSA-Annual-Scientific-Meeting-2026/default.aspx",
+      "nctExplicit": false,
+      "contentBytesCaptured": false,
+      "preciseClaim": "Sponsor-reported total heart-failure serious adverse events: 12 aficamten vs 3 placebo; 2 aficamten HF SAEs associated with LVEF below 50%, plus 10 aficamten HF SAEs not associated with LVEF below 50%; all aficamten HF events occurred before week 12 or during dose titration.",
+      "independentSignedSapProof": false
+    },
+    {
+      "id": "S5",
+      "type": "PUBLISHED_SECONDARY_RESPONDER_ANALYSIS",
+      "published": "2026-08-28",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674601/",
+      "nctExplicit": true,
+      "contentBytesCaptured": false,
+      "preciseClaim": "Circulation study authors state the multidomain responder analysis was included in the ACACIA-HCM SAP before database lock and unblinding. This is an author-reported chronology claim, not independently authenticated controlled SAP version/signatures or blind-break audit.",
+      "independentSignedSapProof": false
+    }
+  ],
+  "reportedCohorts": {
+    "primaryNEJM": {
+      "aficamtenRandomized": 258,
+      "placeboRandomized": 259,
+      "randomizedTotal": 517,
+      "sourceId": "S1"
+    },
+    "earlierTopline": {
+      "numberDescribedAsRandomizedAndTreated": 516,
+      "sourceId": "S2",
+      "originalPopulationDefinitionIndependentlyCertified": false
+    },
+    "secondaryAppraisal": {
+      "randomized": 517,
+      "treated": 516,
+      "sourceId": "S3",
+      "individualUntreatedPatientIndependentlyIdentified": false
+    },
+    "possibleInterpretation": "517 randomized versus 516 treated MAY be the explanation for the differing prior reports, but no original participant CONSORT line list or analysis-set allocation has been independently inspected.",
+    "cohortDiscrepancyDefinitivelyResolved": false
+  },
+  "reportedSafety": {
+    "primaryNEJM": {
+      "LVEFbelow50Aficamten": 27,
+      "LVEFbelow50Placebo": 2,
+      "anySAEAficamten": 52,
+      "anySAEPlacebo": 38,
+      "sourceId": "S1"
+    },
+    "OctoberSponsor": {
+      "totalHfSAEAficamten": 12,
+      "totalHfSAEPlacebo": 3,
+      "hFSAEAficamtenWithLVEFbelow50": 2,
+      "hFSAEAficamtenWithoutLVEFbelow50": 10,
+      "participantsWithLVEFbelow50Aficamten": 27,
+      "participantsWithLVEFbelow50Placebo": 2,
+      "sourceId": "S4"
+    },
+    "earlierSourceCaseCount": {
+      "hFSAEAficamten": 11,
+      "hFSAEPlacebo": 1,
+      "provenance": "Existing prior R36 research packet; exact original time window and definitions still require signed case listing."
+    },
+    "definitionInference": "The October source divides the 12 aficamten HF SAEs into two LVEF strata; this alone does not explain why another source reported 11/1. Original case listings, data cutoffs, safety populations and event adjudication must be reconciled.",
+    "actualHFExposurePopulationIndependentlyReviewed": false,
+    "safetyFindingsIndependentlyAdjudicated": false
+  },
+  "publishedSAPClaim": {
+    "sourceId": "S5",
+    "authorsStateIncludedBeforeLockAndUnblinding": true,
+    "sourceQualification": "AUTHOR_REPORTED_NOT_INDEPENDENTLY_AUTHENTICATED",
+    "originalApprovedSAPVersionCaptured": false,
+    "originalSAPSignerApprovalVerified": false,
+    "originalDatabaseLockDateVerified": false,
+    "firstUnblindedAccessDateVerified": false
+  },
+  "nejmAttachments": {
+    "protocolFilename": "nejmoa2603021_protocol.pdf",
+    "appendixFilename": "nejmoa2603021_appendix.pdf",
+    "originalNEJMPublisherAttachmentBytesReadThisRevision": false,
+    "reason": "NEJM supplement download URL could not be retrieved from available browser/container interfaces; no PDF content or signed SAP version claims are made."
+  },
+  "originalAcaciaGatesUnresolved": 4,
+  "launchOriginalGatesUnresolved": 7,
+  "newAuthenticProspectiveSignedSAPs": 0,
+  "newIndependentQualifiedScienceSignoffs": 0,
+  "newValidatedFDAPredictions": 0,
+  "FDAForecast": "ABSTAIN",
+  "noProductionWrites": true
+}
