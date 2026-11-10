@@ -1,0 +1,27 @@
+{
+  "schema": "MAIN_R109_ACACIA_LIVE_REVIEW_HANDOFF_ACCEPTANCE",
+  "deploymentCommit": "7cb0bfdd9bce86273d5cc886411228a2ca9377dc",
+  "preview": "https://pdufa-new-dashboard-ljzzxh037-pdufa.vercel.app",
+  "endpoint": "/predictions/scientific-reconciliation/priority-gates/review-queue",
+  "observedHttpStatus": 200,
+  "sourceNct": "NCT06081894",
+  "sourceProtocol": "CY 6033",
+  "sourceSha256": "853ffd80a547df8a7b813b8985c7116dd6168a640f18521f61b95cf33a8ca5f8",
+  "candidatePageObjectIndices": [
+    12,
+    14,
+    20,
+    28,
+    68,
+    84
+  ],
+  "status": "PENDING_PRIMARY_PAGE_REVIEW",
+  "printedPageNumbersVerified": false,
+  "completePageTextVerified": false,
+  "sourcePageCitationsCertified": false,
+  "originalSignedProspectiveSAPAuthenticated": false,
+  "independentScienceReviewSigned": false,
+  "openScienceGates": 11,
+  "FDAForecast": "ABSTAIN",
+  "note": "Acceptance is a live API schema/source-fingerprint readback, not PDF text certification or scientific signoff."
+}
