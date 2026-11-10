@@ -5,6 +5,8 @@ const path=require("node:path");
 const ts=require("typescript");
 const React=require("react");
 const {renderToStaticMarkup}=require("react-dom/server");
+const TestRenderer=require("react-test-renderer");
+globalThis.IS_REACT_ACT_ENVIRONMENT=true;
 require.extensions[".tsx"]=(module,filename)=>module._compile(
   ts.transpileModule(fs.readFileSync(filename,"utf8"),{
     compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,
@@ -62,6 +64,11 @@ test("Rendered monthly line chart identifies all five differently colored months
   assert.match(html,/data-testid="historical-monthly-level-line-chart"/);
   assert.match(html,/data-testid="historical-monthly-level-table"/);
   assert.match(html,/data-testid="historical-level-tag-3"/);
+  assert.match(html,/data-testid="historical-assessment-level-dropdown"/);
+  assert.match(html,/id="historical-assessment-level-select"/);
+  assert.match(html,/Level 4 — not yet assessed/);
+  assert.match(html,/Compare all recorded levels/);
+  assert.match(html,/Displaying Level 3 historical assessment results/);
   assert.match(html,/data-testid="level-line-3"/);
   for(const [month,{color}] of Object.entries(expected)){
     assert.ok(html.includes('data-testid="month-color-'+month+'"'));
@@ -73,17 +80,34 @@ test("Rendered monthly line chart identifies all five differently colored months
   assert.match(html,/never added to/i);
 });
 
-test("An added Level 4 run overlays a dashed Level 4 line while Level 3 remains",()=>{
+test("Level dropdown switches to new Level 4 and compares it against retained Level 3",()=>{
   const extra={...data.runs[0],runId:"TEST_LEVEL4_JUNE",assessmentLevel:4,
     methodVersion:"REPLAY_TEST_V1",caseCalls:data.runs[0].caseCalls.map(c=>({...c}))};
   data.runs.push(extra);
+  let renderer=null;
   try{
-    const html=renderToStaticMarkup(React.createElement(Chart));
-    assert.match(html,/data-testid="level-line-3"/);
-    assert.match(html,/data-testid="level-line-4"/);
-    assert.match(html,/data-testid="historical-level-tag-4"/);
-    assert.match(html,/stroke-dasharray="9 5"/);
-  }finally{data.runs.pop();}
+    TestRenderer.act(()=>{renderer=TestRenderer.create(React.createElement(Chart))});
+    let html=JSON.stringify(renderer.toJSON());
+    assert.match(html,/level-line-3/);
+    assert.doesNotMatch(html,/level-line-4/);
+    const select=renderer.root.findByProps({"data-testid":"historical-assessment-level-dropdown"});
+    assert.equal(select.props.value,"3");
+    TestRenderer.act(()=>select.props.onChange({currentTarget:{value:"4"}}));
+    html=JSON.stringify(renderer.toJSON());
+    assert.match(html,/level-line-4/);
+    assert.doesNotMatch(html,/level-line-3/);
+    assert.match(html,/historical-level-tag-4/);
+    assert.match(html,/Level 4 historical assessment results/);
+    TestRenderer.act(()=>select.props.onChange({currentTarget:{value:"all"}}));
+    html=JSON.stringify(renderer.toJSON());
+    assert.match(html,/level-line-3/);
+    assert.match(html,/level-line-4/);
+    assert.match(html,/strokeDasharray/);
+    assert.match(html,/Comparing all recorded historical assessment levels/);
+  }finally{
+    if(renderer){TestRenderer.act(()=>renderer.unmount())}
+    data.runs.pop();
+  }
 });
 
 test("Changed case identity cannot silently improve a future level's denominator",()=>{
