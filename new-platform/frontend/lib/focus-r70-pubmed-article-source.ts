@@ -96,7 +96,11 @@ export function buildR70SourceArticleView(input:unknown=source){
       (doi!==null&&(typeof doi!=="string"||!/^10\.[^\s]{3,170}$/.test(doi)))||
       typeof inText!=="boolean"||typeof inDbOnly!=="boolean"||
       inText===inDbOnly||!Array.isArray(pubtypes)||!Array.isArray(words)||
-      pubtypes.some(x=>typeof x!=="string"||x.length>130)||
+      pubtypes.some(x=>typeof x!=="string"||![
+       "Journal Article","Multicenter Study","Randomized Controlled Trial",
+       "Clinical Trial, Phase I","Clinical Trial, Phase II",
+       "Clinical Trial, Phase III","Research Support, Non-U.S. Gov't"
+      ].includes(x))||
       words.some(x=>typeof x!=="string"||![
        "PHASE_1_OR_2_TERM","PHASE_3_TERM","PROTOCOL_OR_METHODS_TERM",
        "PRIMARY_ENDPOINT_TERM","EXPLORATORY_OR_SECONDARY_TERM"].includes(x)))return null;
