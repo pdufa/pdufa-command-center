@@ -79,7 +79,8 @@ export async function GET(req:Request):Promise<Response>{
  const rootCandidates=pageTreeNodeRefs.filter(id=>!pageTreeNodeRefs.some(parent=>{
   if(parent===id)return false;
   const kids=(objectMap.get(parent)??"").match(/\/Kids\s*\[([\s\S]{0,10000}?)\]/)?.[1]??"";
-  return (kids.match(/\d+\s+\d+\s+R/g)??[]).includes(id);
+  const childRefs:string[]=kids.match(/\d+\s+\d+\s+R/g)??[];
+  return childRefs.includes(id);
  }));
  if(rootCandidates.length===1){
   const seen=new Set<string>();
