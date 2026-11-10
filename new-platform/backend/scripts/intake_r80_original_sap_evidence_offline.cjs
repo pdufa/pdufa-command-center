@@ -90,7 +90,8 @@ function main(){
   try{
    const output=path.resolve(args["--report"]);
    fs.mkdirSync(path.dirname(output),{recursive:true});
-   fs.writeFileSync(output,serialized,{mode:0o600});
+   const fd=fs.openSync(output,fs.constants.O_WRONLY|fs.constants.O_CREAT|fs.constants.O_EXCL,0o600);
+   try{fs.writeFileSync(fd,serialized)}finally{fs.closeSync(fd)}
   }catch(_){process.stderr.write("REPORT_WRITE_FAILED\n");process.exitCode=2;return;}
  }
  process.stdout.write(JSON.stringify({status:report.status,
