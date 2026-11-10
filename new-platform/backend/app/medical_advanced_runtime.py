@@ -215,6 +215,13 @@ def start_watch(engine):
                 # existing opt-in worker; no second polling service or scan.
                 from .medical_on_demand import check_operational_component_changes
                 check_operational_component_changes(engine)
+                # Official FDA headlines are provenance leads, not adjudicated FDA outcomes.
+                # Reuse the existing medically gated source worker and immutable revisions.
+                try:
+                    from .medical_official_news import check_once as check_fda_news
+                    check_fda_news(engine)
+                except Exception as news_exc:
+                    LOG.warning("Official FDA news watch unavailable type=%s",type(news_exc).__name__)
             except Exception as exc:
                 LOG.warning("medical registry/component watch skipped error_type=%s",type(exc).__name__)
             _WATCH_STOP.wait(WATCH_INTERVAL_SECONDS)
