@@ -101,11 +101,12 @@ export async function GET(req:Request):Promise<Response>{
   unsupportedFilters,
   pages:pages.map(p=>({...p,termHits:p.termHits.slice(0,13)})),
   pdfPageDictionaryIndexIsNotCertifiedPrintedPageNumber:true,
+  pageDictionaryIndexIsObjectScanOrderNotVerifiedPageTreeOrder:true,
   completePageTextExtraction:false,
   sourcePageCitationsScientificallyCertified:false,
   signedProspectiveSAPAuthenticated:false,
   independentScientificReviewSigned:false,
   FDAForecast:"ABSTAIN",
-  limitations:"Uncompressed page dictionaries and directly referenced content streams only. Compressed object streams, font ToUnicode mappings, embedded text and inherited page content may be missing. Diagnostic snippets are not verified endpoint or SAP evidence."
+  limitations:"Page dictionary indices reflect object scan order, NOT verified PDF page-tree order or viewer page numbers. Uncompressed page dictionaries and directly referenced content streams only. Compressed object streams, font ToUnicode mappings, embedded text and inherited page content may be missing. Diagnostic snippets are not verified endpoint or SAP evidence."
  },{headers:H});
 }
