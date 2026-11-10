@@ -37,6 +37,22 @@ export default function PredictionsPage(){
         Source-linked partial clinical dossiers and missing-evidence checkpoints. Not completed assessments or validated forecasts.
       </span>
     </p>
+    <section style={{...card,background:"#fffaf0",borderColor:"#d8bc85",marginBottom:16}}
+      aria-label="FOCUS 29 provisional Level 3 research">
+      <div style={{fontSize:11,fontWeight:850,color:"#825913",letterSpacing:".07em"}}>
+        NEW · LEVEL 3-STYLE DIRECTIONAL RESEARCH
+      </div>
+      <h2 style={{fontSize:20,margin:"6px 0"}}>29 FOCUS trials · 23 FDA application cycles</h2>
+      <p style={{fontSize:13,lineHeight:1.6,margin:"6px 0"}}>
+        Preliminary research: 12 approval leans, 5 CRL leans, 5 abstentions and 1
+        already-approved application. These are not independent completed Level 3
+        grades or calibrated engine forecasts.
+      </p>
+      <Link href="/predictions/assessment#focus-29-level3-research"
+        style={{color:"#086d5a",fontWeight:800,textDecoration:"underline"}}>
+        View every provisional Level 3 call, exact NCT, three evidence layers and sources
+      </Link>
+    </section>
     <HistoricalMonthlyLevelTrend compact/>
     <FullRosterSourceScan/>
     <p style={{fontSize:13,margin:"12px 0"}}><Link href="/analyze-now?nct=NCT06081894" style={{color:"#075c4b",fontWeight:700}}>Open saved research pilot and exact-NCT revision history (PostgreSQL required)</Link> · The pilot fails closed until its secure backend is explicitly ready.</p>
