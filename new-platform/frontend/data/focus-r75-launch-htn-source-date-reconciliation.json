@@ -1,0 +1,135 @@
+{
+  "schema": "MAIN_R75_LAUNCH_HTN_ORIGINAL_PUBLISHER_PDF_PRINTED_DATE_CHRONOLOGY_RESEARCH_ONLY",
+  "asOf": "2026-11-09",
+  "nct": "NCT06153693",
+  "ticker": "MLYS",
+  "trial": "Launch-HTN",
+  "pmid": "40587141",
+  "doi": "10.1001/jama.2025.9413",
+  "journalPage": "https://jamanetwork.com/journals/jama/fullarticle/2835763",
+  "pmcPublicIndex": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12210145/",
+  "publisherSupplementsLinked": 7,
+  "originalPublicSourcePdfPagesVisuallyRead": 9,
+  "originalSourcePdfByteHashesCaptured": 0,
+  "observedLastParticipantFollowUpDate": "2025-01-24",
+  "lastFollowUpDateEvidence": "JAMA article Trial Participants paragraph",
+  "originalJournalOnlinePublicationDate": "2025-06-30",
+  "printedOnlyEfilingSignatureDatesNotCryptographicallyVerified": 3,
+  "sameSourcePrintedYearDiscrepancies": 2,
+  "signedOriginalProspectiveStatisticalPlansIndependentlyAuthenticated": 0,
+  "databaseLockDateAuthenticated": false,
+  "firstUnblindingDateAuthenticated": false,
+  "originalPlansInEffectAtUnblindingAuthenticated": false,
+  "originalPdfFirstPublicPublicationDatesAuthenticated": false,
+  "originalSignedScienceReviewerAssessed": false,
+  "clinicalScienceGrade": null,
+  "validatedFutureFDAForecasts": 0,
+  "futureFDAOutcome": "ABSTAIN",
+  "reviewTimingForecast": "UNKNOWN",
+  "noHistoricalOutcomeLookups": true,
+  "noTrainingOrProductionWrites": true,
+  "disclaimer": "Original JAMA publisher PDF page render shows document labels and electronic signature graphics, not authenticated underlying original signed bytes or proof of prospective prespecification. Last clinical follow-up preceding SAP signatures does not independently prove post-unblinding amendment.",
+  "docs": [
+    {
+      "supplementNumber": 1,
+      "filename": "jama-e259413-s001.pdf",
+      "role": "METHODS_SUPPLEMENT",
+      "sourceRenderedPages": 37,
+      "observedPageNumbers": [
+        1
+      ],
+      "documentVersion": "NOT_STATED",
+      "printedEffectiveOrHeaderDate": null,
+      "printedSignatureDate": null,
+      "printedDateConflict": false,
+      "notes": "JAMA Supplemental Online Content covers eMethods, eFigure 2 multiplicity, sensitivity and safety tables; no signed prospective SAP shown on inspected cover"
+    },
+    {
+      "supplementNumber": 2,
+      "filename": "jama-e259413-s002.pdf",
+      "role": "PROTOCOL_VERSION",
+      "sourceRenderedPages": 80,
+      "observedPageNumbers": [
+        1
+      ],
+      "documentVersion": "3.1 EU",
+      "printedEffectiveOrHeaderDate": "2024-06-11",
+      "printedSignatureDate": null,
+      "printedDateConflict": false,
+      "notes": "Original first-page protocol v3.1 EU lists 11 Jun 2024 effective date; not independently authenticated approval chain"
+    },
+    {
+      "supplementNumber": 3,
+      "filename": "jama-e259413-s003.pdf",
+      "role": "PROTOCOL_VERSION",
+      "sourceRenderedPages": 81,
+      "observedPageNumbers": [
+        1
+      ],
+      "documentVersion": "3.0",
+      "printedEffectiveOrHeaderDate": "2024-06-11",
+      "printedSignatureDate": null,
+      "printedDateConflict": false,
+      "notes": "Original first-page protocol v3.0 Amendment 2 lists 11 Jun 2024 effective date"
+    },
+    {
+      "supplementNumber": 4,
+      "filename": "jama-e259413-s004.pdf",
+      "role": "PROTOCOL_VERSION",
+      "sourceRenderedPages": 78,
+      "observedPageNumbers": [
+        1
+      ],
+      "documentVersion": "2.1 UK",
+      "printedEffectiveOrHeaderDate": "2024-01-08",
+      "printedSignatureDate": null,
+      "printedDateConflict": false,
+      "notes": "Original first-page protocol v2.1 UK Amendment 1 lists 08 Jan 2024 effective date"
+    },
+    {
+      "supplementNumber": 5,
+      "filename": "jama-e259413-s005.pdf",
+      "role": "SAP_ADDENDUM",
+      "sourceRenderedPages": 5,
+      "observedPageNumbers": [
+        1,
+        2
+      ],
+      "documentVersion": "SAP 3.0 windowing addendum 1.0",
+      "printedEffectiveOrHeaderDate": "2025-02-22",
+      "printedSignatureDate": "2025-02-23",
+      "printedDateConflict": true,
+      "notes": "Header and signature page say Feb 2025, but cover's Document Date field says 22FEB2024; reviewer must reconcile inconsistency and signature provenance"
+    },
+    {
+      "supplementNumber": 6,
+      "filename": "jama-e259413-s006.pdf",
+      "role": "SAP_AMENDMENT",
+      "sourceRenderedPages": 70,
+      "observedPageNumbers": [
+        1,
+        2
+      ],
+      "documentVersion": "SAP version 3.0 Amendment 2",
+      "printedEffectiveOrHeaderDate": "2025-02-13",
+      "printedSignatureDate": "2025-02-13",
+      "printedDateConflict": false,
+      "notes": "Original first and signature pages show version 3.0 and multiple electronic signature imprints dated 13 Feb 2025; cryptographic signature provenance not independently validated"
+    },
+    {
+      "supplementNumber": 7,
+      "filename": "jama-e259413-s007.pdf",
+      "role": "SAP_ADDENDUM",
+      "sourceRenderedPages": 10,
+      "observedPageNumbers": [
+        1,
+        2
+      ],
+      "documentVersion": "SAP 3.0 multiple imputation addendum 1.0",
+      "printedEffectiveOrHeaderDate": "2025-02-13",
+      "printedSignatureDate": "2025-02-13",
+      "printedDateConflict": true,
+      "notes": "Header/signature say Feb 2025, but cover's Document Date field says 13FEB2024; possible source template conflict, not proof of backdating"
+    }
+  ]
+}
