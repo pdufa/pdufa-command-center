@@ -11,7 +11,7 @@ test("active site navigation preserves POOL and FOCUS populations with predictio
  const home=source("app/page.tsx");
  const tools=source("app/tools/page.tsx");
  const links=[...nav.matchAll(/\{label:"([^"]+)",href:"([^"]+)"\}/g)].map(m=>[m[1],m[2]]);
- assert.deepEqual(links,[["POOL","/pool"],["FOCUS","/focus"],["PREDICTIONS","/predictions"],["ASSESMENTS","/predictions/assessment"],["TOOLS","/tools"],["INSTALLATION","/installation-audit"]]);
+ assert.deepEqual(links,[["POOL","/pool"],["FOCUS","/focus"],["CAL","/cal"],["PREDICTIONS","/predictions"],["ASSESMENTS","/predictions/assessment"],["TOOLS","/tools"],["INSTALLATION","/installation-audit"]]);
  assert.match(home,/href:"\/pool"/);
  assert.match(home,/href:"\/focus"/);
  assert.match(home,/\/api\/auth/);

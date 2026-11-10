@@ -1,0 +1,84 @@
+.page{max-width:1240px;margin:0 auto;padding:24px 16px 70px;color:#19352a;font-family:system-ui,-apple-system,sans-serif}
+.heading{display:flex;align-items:center;justify-content:space-between;gap:24px;margin-bottom:18px}
+.heading h1{font-size:38px;margin:4px 0}
+.heading p{max-width:770px;line-height:1.55;margin:7px 0}
+.eyebrow{color:#3b7553;font-size:11px;font-weight:800;letter-spacing:.12em}
+.focusLink{background:#123b31;color:white!important;font-weight:800;text-decoration:none;border-radius:8px;padding:12px 14px;white-space:nowrap}
+.toolbar{display:flex;justify-content:space-between;align-items:end;gap:16px;flex-wrap:wrap;background:#fff;border:1px solid #b7d1bf;border-radius:12px;padding:15px;margin-bottom:14px}
+.capGroup{display:flex;gap:14px;flex-wrap:wrap}
+.capGroup label{font-weight:700;font-size:13px;display:flex;flex-direction:column;gap:6px}
+.capGroup select{min-width:155px}
+.totals{font-size:13px;color:#315642;background:#e8f5e9;border-radius:8px;padding:10px 12px}
+.disclaimer{border:1px solid #d3c58b;background:#fff7dc;color:#574515;font-size:13px;line-height:1.5;border-radius:9px;padding:12px 14px;margin:0 0 17px}
+.notice,.error{padding:10px 12px;border-radius:7px;background:#eaf2ec}
+.error{color:#8b1919;background:#fff0eb}
+.calendarPanel{background:#fff;border:1px solid #c7dccb;border-radius:14px;padding:18px;box-shadow:0 4px 18px #14362210}
+.scroller{display:flex;align-items:center;justify-content:center;gap:12px}
+.monthTitle{min-width:220px;text-align:center}
+.monthTitle h2{font-size:24px;margin:2px 0}
+.monthTitle span{font-size:12px;color:#60746c}
+.arrow,.today{border-radius:8px;background:#163e32;color:#fff;font-size:19px;padding:6px 16px;min-height:39px}
+.arrow:disabled{background:#e8eeea;color:#88988e;cursor:not-allowed}
+.today{font-size:13px;padding:8px 12px}
+.rangeLabel{display:block;font-size:12px;color:#405e4c;margin:13px 0 6px;text-align:center}
+.monthSlider{width:100%;min-width:0!important;accent-color:#237a53;cursor:pointer;padding:0!important;border:0!important}
+.rangeEnds{display:flex;justify-content:space-between;gap:8px;color:#57715d;font-size:11px;margin-bottom:16px}
+.gridScroll{width:100%;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-gutter:stable}
+.grid{display:grid;grid-template-columns:repeat(7,minmax(90px,1fr));min-width:660px;gap:5px}
+.weekday{text-align:center;font-weight:800;background:#e5f2e7;border-radius:6px;padding:10px 2px;font-size:12px}
+.dayCell{min-height:97px;min-width:0;border:1px solid #dce9df;background:#f7faf7;border-radius:7px;padding:7px 5px}
+.blank{background:#f1f5f1;border:1px dashed #e5ebe6}
+.currentDay{border:2px solid #187b55;background:#edfff0}
+.dayNumber{font-size:13px;font-weight:800;margin:0 0 7px;padding-left:3px}
+.events{display:flex;flex-direction:column;gap:4px;max-height:150px;overflow-y:auto}
+.eventChip{font-size:12px;display:flex;align-items:center;justify-content:flex-start;gap:4px;white-space:normal;overflow-wrap:anywhere;text-align:left;background:#e2ede6!important;color:#194c32!important;border:1px solid #bcdbc9!important;padding:6px 4px!important;border-radius:5px!important;min-height:29px;line-height:1.1;cursor:pointer}
+.eventChip small{font-size:9px;font-weight:900;margin-left:auto;white-space:nowrap}
+.eventChip:hover,.agendaRow:hover{outline:2px solid #25724d;outline-offset:0}
+.nextChip{background:#dbf8df!important;border:2px solid #18794f!important;color:#104e30!important}
+.nextChip .dot{color:#13794c}
+.dot{color:#6b8979;font-size:10px}
+.legend{display:flex;gap:20px;flex-wrap:wrap;padding:13px 0;color:#446352;font-size:12px}
+.legend b{color:#819486;margin-right:3px}.legend .legendNext{color:#13794c}
+.agenda{border-top:1px solid #e2e9e2;padding-top:12px}
+.agenda h3{font-size:16px;margin:4px 0 9px}
+.agenda p{font-size:13px;color:#63756a}
+.agendaRow{width:100%;display:grid;grid-template-columns:110px 90px minmax(0,1fr) 100px;align-items:center;gap:7px;background:white!important;color:#1d4030!important;border:0!important;border-bottom:1px solid #e3ede4!important;border-radius:0!important;padding:11px 8px!important;text-align:left;font-size:13px}
+.agendaRow em{font-size:11px;color:#327357;text-align:right}
+.dialog{position:fixed;inset:0;margin:auto;max-width:670px;width:calc(100% - 24px);max-height:90vh;overflow-y:auto;border:1px solid #bed4c4;border-radius:14px;padding:0;color:#163a2b;box-shadow:0 12px 48px #0004}
+.dialog::backdrop{background:rgba(7,19,13,.65)}
+.dialogInner{padding:20px}
+.modalTop{display:flex;justify-content:space-between;align-items:start;gap:14px}
+.modalTop h2{margin:7px 0 12px;font-size:23px;overflow-wrap:anywhere}
+.close{font-size:28px;line-height:1;padding:5px 11px;border-radius:7px}
+.dialog p{font-size:13px;line-height:1.5}
+.nextSummary{background:#dff6e5;padding:11px;border-radius:8px}
+.modalRows{display:flex;flex-direction:column;gap:10px}
+.companyEntry{background:#f6fbf7;border:1px solid #c8decf;border-radius:8px;padding:12px}
+.companyTitle{display:flex;justify-content:space-between;gap:6px;align-items:center}
+.companyEntry h3{font-size:15px;margin:8px 0}
+.companyEntry p{margin:5px 0}
+.companyEntry a{color:#0f603f;text-decoration:underline;overflow-wrap:anywhere}
+.tag,.tagNext{font-size:11px;font-weight:800;background:#e2eae4;padding:5px 9px;border-radius:20px}
+.tagNext{background:#c6f5d4;color:#125532}
+.modalFoot{font-size:12px!important;color:#68756d}
+@media(max-width:700px){
+  .page{padding:14px 10px 45px}
+  .heading{align-items:start;flex-direction:column;gap:9px}
+  .heading h1{font-size:30px}
+  .heading p{font-size:13px}
+  .toolbar{padding:10px}
+  .capGroup{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .capGroup select{min-width:0;width:100%}
+  .totals{width:100%}
+  .calendarPanel{padding:11px}
+  .monthTitle{min-width:0;flex:1}
+  .monthTitle h2{font-size:18px}
+  .arrow{padding:5px 11px}
+  .today{padding:6px 8px}
+  .grid{grid-template-columns:repeat(7,minmax(85px,1fr));min-width:625px}
+  .rangeEnds{font-size:10px}
+  .agendaRow{grid-template-columns:80px 58px minmax(0,1fr);font-size:12px}
+  .agendaRow em{grid-column:3;text-align:left}
+  .dialogInner{padding:14px}
+  .modalTop h2{font-size:19px}
+}

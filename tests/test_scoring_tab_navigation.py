@@ -15,6 +15,7 @@ def test_active_navigation_links_only_supported_primary_destinations():
     expected = {
         "POOL": "/pool",
         "FOCUS": "/focus",
+        "CAL": "/cal",
         "PREDICTIONS": "/predictions",
         "ASSESMENTS": "/predictions/assessment",
         "TOOLS": "/tools",
