@@ -1,0 +1,31 @@
+{
+  "schema": "MAIN_R106_ACACIA_PRIMARY_SOURCE_PAGE_REVIEW_QUEUE_NOT_SCIENTIFIC_SIGNOFF",
+  "nct": "NCT06081894",
+  "protocol": "CY 6033",
+  "euct": "2023-505797-15-00",
+  "sourceDocument": "am4-protocol",
+  "sourceSha256": "853ffd80a547df8a7b813b8985c7116dd6168a640f18521f61b95cf33a8ca5f8",
+  "candidateKeyword": "kccq",
+  "candidatePageObjectIndices": [
+    12,
+    14,
+    20,
+    28,
+    68,
+    84
+  ],
+  "reviewSteps": [
+    "Extract complete page text with validated ToUnicode font mapping and object-stream decoding",
+    "Reconcile PDF page-object order with printed and PDF viewer page numbers",
+    "Locate exact endpoint definitions and versions in signed source protocol",
+    "Compare with NCT history versions 26 27 29 30 and independently authenticated prospective SAP",
+    "Require reviewer signoff and record provenance before changing any scientific gate"
+  ],
+  "status": "PENDING_PRIMARY_PAGE_REVIEW",
+  "sourcePageCitationsCertified": false,
+  "originalSignedProspectiveSAPAuthenticated": false,
+  "independentScienceReviewSigned": false,
+  "openScienceGates": 11,
+  "FDAForecast": "ABSTAIN",
+  "caution": "This is a prioritized review queue only. KCCQ keyword hits are not evidence of endpoint validity, efficacy, or prospective SAP approval."
+}
