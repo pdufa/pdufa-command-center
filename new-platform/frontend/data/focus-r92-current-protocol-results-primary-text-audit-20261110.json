@@ -1,0 +1,746 @@
+{
+  "schema": "MAIN_R92_12_NCT_CURRENT_REGISTRY_PRIMARY_PROTOCOL_TO_POSTED_TEXT_READBACKS_NOT_PRE_UNBLINDING_SAP",
+  "observedDateUtc": "2026-11-10",
+  "source": "Current official ClinicalTrials.gov v2 public record exact-NCT read-only GET; original protocolSection.outcomesModule.primaryOutcomes vs resultsSection.outcomeMeasuresModule.outcomeMeasures filtered to PRIMARY",
+  "scope": "12 original registry aggregate results NCTs among unchanged 29 FOCUS trials and 23 provisional FDA cycles",
+  "sourceOriginalEffectiveDateBeforeUnblindingIndependentlyKnown": false,
+  "sourceRegulatoryStatus": "CURRENT_REGISTRY_TEXT_ONLY",
+  "counts": {
+    "exactFocusTrialPopulation": 29,
+    "provisionalApplicationCycles": 23,
+    "exactNctsChecked": 12,
+    "originalCurrentProtocolPrimaryEntries": 16,
+    "currentPostedResultsPrimaryEntries": 16,
+    "exactNormalizedTitleAndTimeFrameTextMatches": 16,
+    "titleMatchesWithDifferingTimeFrame": 0,
+    "lexicalOrAmbiguousReviewEntries": 0,
+    "currentRawResponseHashesMatchingR91": 12,
+    "independentlyAuthenticatedSignedFinalSAPs": 0,
+    "qualifiedClinicalStatisticalReviewSignoffs": 0,
+    "validatedFDAForecasts": 0
+  },
+  "caveats": [
+    "A current protocol primary endpoint matching a posted primary endpoint is not prospective prespecification. Both sections can reflect registry changes made after trial unblinding or reporting.",
+    "This is a literal text/timeframe source reconciliation, not a signed protocol, final SAP, analysis population audit, trial grading, effect recalculation, safety conclusion or FDA decision.",
+    "Registry p-values and denominators are source-reported, not independent statistical testing.",
+    "Original approved SAP chronology, original protocol amendments, database-lock and first unblinded-access logs remain unverified.",
+    "The trial source fingerprints here match R91; this provides source consistency at the checked time, not immutable historical evidence of endpoint timing.",
+    "All 17 FOCUS trials without current structured registry aggregate results retain R89/R90 journal/issuer/SEC research links, not missing-trial classifications."
+  ],
+  "rows": [
+    {
+      "nct": "NCT05507203",
+      "ticker": "ABVX",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05507203",
+      "currentOriginalApiSha256": "158249de91266f7f1f17544fb95a1ed25ad507e4c431a6e407956ab9e7982883",
+      "archivedR91ApiSha256": "158249de91266f7f1f17544fb95a1ed25ad507e4c431a6e407956ab9e7982883",
+      "currentApiSourceByteMatchesR91": true,
+      "checkedAtUtc": "2026-11-10T05:55:21.982Z",
+      "currentProtocolPrimaryCount": 1,
+      "postedResultsPrimaryCount": 1,
+      "exactTitleAndTimeFrameMatches": 1,
+      "matchedTitleButDifferingTimeFrame": 0,
+      "ambiguousOrLexicalResearchReview": 0,
+      "plannedPrimaryOutcomes": [
+        {
+          "key": "protocol-primary-0",
+          "title": "Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8",
+          "timeFrame": "8 weeks",
+          "description": "To compare the efficacy of ABX464 versus placebo on clinical remission. Clinical remission is defined as stool frequency subscore (SFS) = 0 or 1 and rectal bleeding subscore (RBS) = 0, and Mayo Endoscopic Score (MES) = 0 or 1 (MES of 1 modified to exclude friability)."
+        }
+      ],
+      "postedPrimaryOutcomes": [
+        {
+          "key": "results-primary-0",
+          "title": "Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8",
+          "timeFrame": "8 weeks",
+          "sourcePopulationDescription": "Full Analysis Set",
+          "originalReportedAnalysisGroupCount": 3,
+          "originalDenominatorGroupValuesCount": 3,
+          "originalPValueFieldCount": 0
+        }
+      ],
+      "textualCorrespondence": [
+        {
+          "postedOutcomeKey": "results-primary-0",
+          "postedTitle": "Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8",
+          "postedTimeFrame": "8 weeks",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-0"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        }
+      ],
+      "plannedEntriesWithoutExactText": [],
+      "originalPreUnblindingSignedSAPAuthenticated": false,
+      "originalRegulatedFinalProtocolApprovalVerified": false,
+      "independentClinicalEndpointAdjudication": false,
+      "qualifiedIndependentStatisticalReview": false,
+      "FDAOutcome": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05507216",
+      "ticker": "ABVX",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05507216",
+      "currentOriginalApiSha256": "54d9d0b1c9721c3221e90dd2a09a52d3f762a67fb5f45f72b7cf09f91489bb3e",
+      "archivedR91ApiSha256": "54d9d0b1c9721c3221e90dd2a09a52d3f762a67fb5f45f72b7cf09f91489bb3e",
+      "currentApiSourceByteMatchesR91": true,
+      "checkedAtUtc": "2026-11-10T05:55:28.162Z",
+      "currentProtocolPrimaryCount": 1,
+      "postedResultsPrimaryCount": 1,
+      "exactTitleAndTimeFrameMatches": 1,
+      "matchedTitleButDifferingTimeFrame": 0,
+      "ambiguousOrLexicalResearchReview": 0,
+      "plannedPrimaryOutcomes": [
+        {
+          "key": "protocol-primary-0",
+          "title": "Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8",
+          "timeFrame": "8 weeks",
+          "description": "To compare the efficacy of ABX464 versus placebo on clinical remission. Clinical remission is defined as stool frequency subscore (SFS) = 0 or 1 and rectal bleeding subscore (RBS) = 0, and Mayo Endoscopic Score (MES) = 0 or 1 (MES of 1 modified to exclude friability)."
+        }
+      ],
+      "postedPrimaryOutcomes": [
+        {
+          "key": "results-primary-0",
+          "title": "Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8",
+          "timeFrame": "8 weeks",
+          "sourcePopulationDescription": null,
+          "originalReportedAnalysisGroupCount": 3,
+          "originalDenominatorGroupValuesCount": 3,
+          "originalPValueFieldCount": 0
+        }
+      ],
+      "textualCorrespondence": [
+        {
+          "postedOutcomeKey": "results-primary-0",
+          "postedTitle": "Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8",
+          "postedTimeFrame": "8 weeks",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-0"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        }
+      ],
+      "plannedEntriesWithoutExactText": [],
+      "originalPreUnblindingSignedSAPAuthenticated": false,
+      "originalRegulatedFinalProtocolApprovalVerified": false,
+      "independentClinicalEndpointAdjudication": false,
+      "qualifiedIndependentStatisticalReview": false,
+      "FDAOutcome": "ABSTAIN"
+    },
+    {
+      "nct": "NCT04576949",
+      "ticker": "ACHV",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04576949",
+      "currentOriginalApiSha256": "01889969c4d5708db04d05d0b07d28eb23c252c5edfa697dda41d6e8789436c1",
+      "archivedR91ApiSha256": "01889969c4d5708db04d05d0b07d28eb23c252c5edfa697dda41d6e8789436c1",
+      "currentApiSourceByteMatchesR91": true,
+      "checkedAtUtc": "2026-11-10T05:55:31.197Z",
+      "currentProtocolPrimaryCount": 2,
+      "postedResultsPrimaryCount": 2,
+      "exactTitleAndTimeFrameMatches": 2,
+      "matchedTitleButDifferingTimeFrame": 0,
+      "ambiguousOrLexicalResearchReview": 0,
+      "plannedPrimaryOutcomes": [
+        {
+          "key": "protocol-primary-0",
+          "title": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+          "timeFrame": "Weeks 3 to 6",
+          "description": "Smoking abstinence as verified by weekly expired carbon monoxide (CO) measurements ≤10 parts per million (ppm)."
+        },
+        {
+          "key": "protocol-primary-1",
+          "title": "Percentage of Participants With Smoking Abstinence From Weeks 9 to Week 12",
+          "timeFrame": "Weeks 9 to 12",
+          "description": "Smoking abstinence as verified by weekly expired CO measurements ≤10 ppm."
+        }
+      ],
+      "postedPrimaryOutcomes": [
+        {
+          "key": "results-primary-0",
+          "title": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+          "timeFrame": "Weeks 3 to 6",
+          "sourcePopulationDescription": "All Randomized Set: all randomized participants. Placebo and 6-week treatment arms only.",
+          "originalReportedAnalysisGroupCount": 2,
+          "originalDenominatorGroupValuesCount": 2,
+          "originalPValueFieldCount": 3
+        },
+        {
+          "key": "results-primary-1",
+          "title": "Percentage of Participants With Smoking Abstinence From Weeks 9 to Week 12",
+          "timeFrame": "Weeks 9 to 12",
+          "sourcePopulationDescription": "All Randomized Set: all randomized participants. Placebo and 12-week treatment arms only.",
+          "originalReportedAnalysisGroupCount": 2,
+          "originalDenominatorGroupValuesCount": 2,
+          "originalPValueFieldCount": 3
+        }
+      ],
+      "textualCorrespondence": [
+        {
+          "postedOutcomeKey": "results-primary-0",
+          "postedTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+          "postedTimeFrame": "Weeks 3 to 6",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-0"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        },
+        {
+          "postedOutcomeKey": "results-primary-1",
+          "postedTitle": "Percentage of Participants With Smoking Abstinence From Weeks 9 to Week 12",
+          "postedTimeFrame": "Weeks 9 to 12",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-1"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        }
+      ],
+      "plannedEntriesWithoutExactText": [],
+      "originalPreUnblindingSignedSAPAuthenticated": false,
+      "originalRegulatedFinalProtocolApprovalVerified": false,
+      "independentClinicalEndpointAdjudication": false,
+      "qualifiedIndependentStatisticalReview": false,
+      "FDAOutcome": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05206370",
+      "ticker": "ACHV",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05206370",
+      "currentOriginalApiSha256": "e01dff110098578ef7bf8e2671e0f1c897a4677f84c41206156a6f9ba470663c",
+      "archivedR91ApiSha256": "e01dff110098578ef7bf8e2671e0f1c897a4677f84c41206156a6f9ba470663c",
+      "currentApiSourceByteMatchesR91": true,
+      "checkedAtUtc": "2026-11-10T05:55:34.205Z",
+      "currentProtocolPrimaryCount": 2,
+      "postedResultsPrimaryCount": 2,
+      "exactTitleAndTimeFrameMatches": 2,
+      "matchedTitleButDifferingTimeFrame": 0,
+      "ambiguousOrLexicalResearchReview": 0,
+      "plannedPrimaryOutcomes": [
+        {
+          "key": "protocol-primary-0",
+          "title": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+          "timeFrame": "Weeks 3 to 6",
+          "description": "Smoking abstinence as verified by weekly expired carbon monoxide (CO) measurements ≤ 10 parts per million (ppm)."
+        },
+        {
+          "key": "protocol-primary-1",
+          "title": "Percentage of Participants With Smoking Abstinence From Weeks 9 to Week 12",
+          "timeFrame": "Weeks 9 to 12",
+          "description": "Smoking abstinence as verified by weekly expired CO measurements ≤ 10 ppm."
+        }
+      ],
+      "postedPrimaryOutcomes": [
+        {
+          "key": "results-primary-0",
+          "title": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+          "timeFrame": "Weeks 3 to 6",
+          "sourcePopulationDescription": "All Randomized Set: all randomized participants. Placebo and 6-week treatment arms only.",
+          "originalReportedAnalysisGroupCount": 2,
+          "originalDenominatorGroupValuesCount": 2,
+          "originalPValueFieldCount": 3
+        },
+        {
+          "key": "results-primary-1",
+          "title": "Percentage of Participants With Smoking Abstinence From Weeks 9 to Week 12",
+          "timeFrame": "Weeks 9 to 12",
+          "sourcePopulationDescription": "All Randomized Set: all randomized participants, Placebo and 12-week treatment arms only.",
+          "originalReportedAnalysisGroupCount": 2,
+          "originalDenominatorGroupValuesCount": 2,
+          "originalPValueFieldCount": 3
+        }
+      ],
+      "textualCorrespondence": [
+        {
+          "postedOutcomeKey": "results-primary-0",
+          "postedTitle": "Percentage of Participants With Smoking Abstinence From Weeks 3 to Week 6",
+          "postedTimeFrame": "Weeks 3 to 6",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-0"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        },
+        {
+          "postedOutcomeKey": "results-primary-1",
+          "postedTitle": "Percentage of Participants With Smoking Abstinence From Weeks 9 to Week 12",
+          "postedTimeFrame": "Weeks 9 to 12",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-1"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        }
+      ],
+      "plannedEntriesWithoutExactText": [],
+      "originalPreUnblindingSignedSAPAuthenticated": false,
+      "originalRegulatedFinalProtocolApprovalVerified": false,
+      "independentClinicalEndpointAdjudication": false,
+      "qualifiedIndependentStatisticalReview": false,
+      "FDAOutcome": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05811247",
+      "ticker": "APMD",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05811247",
+      "currentOriginalApiSha256": "bcddadb54bd07b1d28a5e964dbeed35c403316d6874c8f6fbb85ae5d370ce7f1",
+      "archivedR91ApiSha256": "bcddadb54bd07b1d28a5e964dbeed35c403316d6874c8f6fbb85ae5d370ce7f1",
+      "currentApiSourceByteMatchesR91": true,
+      "checkedAtUtc": "2026-11-10T05:55:37.570Z",
+      "currentProtocolPrimaryCount": 1,
+      "postedResultsPrimaryCount": 1,
+      "exactTitleAndTimeFrameMatches": 1,
+      "matchedTitleButDifferingTimeFrame": 0,
+      "ambiguousOrLexicalResearchReview": 0,
+      "plannedPrimaryOutcomes": [
+        {
+          "key": "protocol-primary-0",
+          "title": "Change From Baseline in Apnea-Hypopnea Index (AHI)",
+          "timeFrame": "6 months",
+          "description": "AHI, Apnea-Hypopnea Index, is the number of apneas or hypopneas recorded via polysomnography during the study per hour of sleep. Apnea is defined as a cessation of airflow lasting at least 10 seconds, hypopnea as a decrease in airflow by at least 30% from baseline for at least 10 seconds occurring with a drop in oxygen saturation (SpO2) by at least 4%."
+        }
+      ],
+      "postedPrimaryOutcomes": [
+        {
+          "key": "results-primary-0",
+          "title": "Change From Baseline in Apnea-Hypopnea Index (AHI)",
+          "timeFrame": "6 months",
+          "sourcePopulationDescription": "The Full Analysis Set (FAS) population included all randomized participants who received at least one dose of investigational medicinal product (IMP). Participants enrolled at Site 1308 were excluded following site termination. The While-On-treatment population was the MITT set and includes participants in the FAS who had at least one post-baseline on-treatment polysomnography (PSG) assessment.",
+          "originalReportedAnalysisGroupCount": 2,
+          "originalDenominatorGroupValuesCount": 2,
+          "originalPValueFieldCount": 2
+        }
+      ],
+      "textualCorrespondence": [
+        {
+          "postedOutcomeKey": "results-primary-0",
+          "postedTitle": "Change From Baseline in Apnea-Hypopnea Index (AHI)",
+          "postedTimeFrame": "6 months",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-0"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        }
+      ],
+      "plannedEntriesWithoutExactText": [],
+      "originalPreUnblindingSignedSAPAuthenticated": false,
+      "originalRegulatedFinalProtocolApprovalVerified": false,
+      "independentClinicalEndpointAdjudication": false,
+      "qualifiedIndependentStatisticalReview": false,
+      "FDAOutcome": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05813275",
+      "ticker": "APMD",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05813275",
+      "currentOriginalApiSha256": "e81e4f7e26b4bc1147272fccf9b1361f76b6a6ef02776bc5ea8d2d9893fd37e3",
+      "archivedR91ApiSha256": "e81e4f7e26b4bc1147272fccf9b1361f76b6a6ef02776bc5ea8d2d9893fd37e3",
+      "currentApiSourceByteMatchesR91": true,
+      "checkedAtUtc": "2026-11-10T05:55:40.978Z",
+      "currentProtocolPrimaryCount": 1,
+      "postedResultsPrimaryCount": 1,
+      "exactTitleAndTimeFrameMatches": 1,
+      "matchedTitleButDifferingTimeFrame": 0,
+      "ambiguousOrLexicalResearchReview": 0,
+      "plannedPrimaryOutcomes": [
+        {
+          "key": "protocol-primary-0",
+          "title": "Change From Baseline in Apnea-Hypopnea Index (AHI)",
+          "timeFrame": "6 months",
+          "description": "AHI, Apnea-Hypopnea Index, is the number of apneas or hypopneas recorded via polysomnography during the study per hour of sleep. Apnea is defined as a cessation of airflow lasting at least 10 seconds, hypopnea as a decrease in airflow by at least 30% from baseline for at least 10 seconds occurring with a drop in oxygen saturation (SpO2) by at least 4%."
+        }
+      ],
+      "postedPrimaryOutcomes": [
+        {
+          "key": "results-primary-0",
+          "title": "Change From Baseline in Apnea-Hypopnea Index (AHI)",
+          "timeFrame": "6 months",
+          "sourcePopulationDescription": "The Primary Full Analysis Set (PFAS) population included all randomized participants in the main cohort who received at least one dose of investigational medicinal product (IMP). Participants enrolled at Site 1416 were excluded following site termination. The While-on-Treatment population is the MITT set, which includes participants in the PFAS who had at least one post-baseline on-treatment polysomnography (PSG) assessment.",
+          "originalReportedAnalysisGroupCount": 2,
+          "originalDenominatorGroupValuesCount": 2,
+          "originalPValueFieldCount": 2
+        }
+      ],
+      "textualCorrespondence": [
+        {
+          "postedOutcomeKey": "results-primary-0",
+          "postedTitle": "Change From Baseline in Apnea-Hypopnea Index (AHI)",
+          "postedTimeFrame": "6 months",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-0"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        }
+      ],
+      "plannedEntriesWithoutExactText": [],
+      "originalPreUnblindingSignedSAPAuthenticated": false,
+      "originalRegulatedFinalProtocolApprovalVerified": false,
+      "independentClinicalEndpointAdjudication": false,
+      "qualifiedIndependentStatisticalReview": false,
+      "FDAOutcome": "ABSTAIN"
+    },
+    {
+      "nct": "NCT03697109",
+      "ticker": "CORT",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT03697109",
+      "currentOriginalApiSha256": "5a4e84851a50cbd27768d66f27bac8d70fc803b64924808809e8f9688c69343c",
+      "archivedR91ApiSha256": "5a4e84851a50cbd27768d66f27bac8d70fc803b64924808809e8f9688c69343c",
+      "currentApiSourceByteMatchesR91": true,
+      "checkedAtUtc": "2026-11-10T05:55:44.141Z",
+      "currentProtocolPrimaryCount": 2,
+      "postedResultsPrimaryCount": 2,
+      "exactTitleAndTimeFrameMatches": 2,
+      "matchedTitleButDifferingTimeFrame": 0,
+      "ambiguousOrLexicalResearchReview": 0,
+      "plannedPrimaryOutcomes": [
+        {
+          "key": "protocol-primary-0",
+          "title": "Number of Patients With Loss of Response With Respect to Hypertension During the RW Phase.",
+          "timeFrame": "Week 22 (end of OL Phase) and Week 36 (Week 12 of RW Phase)",
+          "description": "Loss of response with respect to HTN was measured using 6 criteria: 1) an increase in SBP of at least 5 mm Hg, 2) an increase in DBP of at least 5 mm Hg, 3) an increase in SBP and/or DBP of at least 5 mm Hg, 4) use of HTN rescue medication, 5) treatment discontinuation, and 6) missing 24-hour ambulatory blood pressure monitoring (ABPM) measurement at the end of the RW Phase. Blood pressure was measured using ABPM. Use of rescue medication was defined as any increase, modification, or addition of antihypertensive medication due to worsening HTN. Treatment discontinuation reports the number of patients who discontinued study treatment in the RW Phase for any reason."
+        },
+        {
+          "key": "protocol-primary-1",
+          "title": "Number of Patients With 1 or More Treatment-emergent Adverse Events (TEAEs) as Graded by CTCAE v5.0.",
+          "timeFrame": "OL Phase: Up to 22 weeks; RW Phase: up to 18 weeks after completion of the OL Phase",
+          "description": null
+        }
+      ],
+      "postedPrimaryOutcomes": [
+        {
+          "key": "results-primary-0",
+          "title": "Number of Patients With Loss of Response With Respect to Hypertension During the RW Phase.",
+          "timeFrame": "Week 22 (end of OL Phase) and Week 36 (Week 12 of RW Phase)",
+          "sourcePopulationDescription": "The analysis population was patients in the Intent-to-Treat (ITT-RW) Population who met the HTN response criteria at conclusion of the OL Phase. The ITT-RW Population included all patients who were randomized in the RW Phase and received at least 1 dose of study drug post randomization.",
+          "originalReportedAnalysisGroupCount": 2,
+          "originalDenominatorGroupValuesCount": 2,
+          "originalPValueFieldCount": 1
+        },
+        {
+          "key": "results-primary-1",
+          "title": "Number of Patients With 1 or More Treatment-emergent Adverse Events (TEAEs) as Graded by CTCAE v5.0.",
+          "timeFrame": "OL Phase: Up to 22 weeks; RW Phase: up to 18 weeks after completion of the OL Phase",
+          "sourcePopulationDescription": "The analysis population was patients in the Safety Population, which included all enrolled patients who received at least 1 dose of study drug.",
+          "originalReportedAnalysisGroupCount": 3,
+          "originalDenominatorGroupValuesCount": 3,
+          "originalPValueFieldCount": 0
+        }
+      ],
+      "textualCorrespondence": [
+        {
+          "postedOutcomeKey": "results-primary-0",
+          "postedTitle": "Number of Patients With Loss of Response With Respect to Hypertension During the RW Phase.",
+          "postedTimeFrame": "Week 22 (end of OL Phase) and Week 36 (Week 12 of RW Phase)",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-0"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        },
+        {
+          "postedOutcomeKey": "results-primary-1",
+          "postedTitle": "Number of Patients With 1 or More Treatment-emergent Adverse Events (TEAEs) as Graded by CTCAE v5.0.",
+          "postedTimeFrame": "OL Phase: Up to 22 weeks; RW Phase: up to 18 weeks after completion of the OL Phase",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-1"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        }
+      ],
+      "plannedEntriesWithoutExactText": [],
+      "originalPreUnblindingSignedSAPAuthenticated": false,
+      "originalRegulatedFinalProtocolApprovalVerified": false,
+      "independentClinicalEndpointAdjudication": false,
+      "qualifiedIndependentStatisticalReview": false,
+      "FDAOutcome": "ABSTAIN"
+    },
+    {
+      "nct": "NCT04308590",
+      "ticker": "CORT",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04308590",
+      "currentOriginalApiSha256": "6f6ad5bbc0ced458d2d69b5df72ba8a611a542dd1c7f74971dc684599fbc29b7",
+      "archivedR91ApiSha256": "6f6ad5bbc0ced458d2d69b5df72ba8a611a542dd1c7f74971dc684599fbc29b7",
+      "currentApiSourceByteMatchesR91": true,
+      "checkedAtUtc": "2026-11-10T05:55:46.735Z",
+      "currentProtocolPrimaryCount": 2,
+      "postedResultsPrimaryCount": 2,
+      "exactTitleAndTimeFrameMatches": 2,
+      "matchedTitleButDifferingTimeFrame": 0,
+      "ambiguousOrLexicalResearchReview": 0,
+      "plannedPrimaryOutcomes": [
+        {
+          "key": "protocol-primary-0",
+          "title": "Change in Average 24-hour SBP",
+          "timeFrame": "Baseline and Week 22",
+          "description": "Blood pressure was measured by 24-hour ABPM. The 24-hour average SBP is reported."
+        },
+        {
+          "key": "protocol-primary-1",
+          "title": "Number of Patients With 1 or More Treatment-emergent Adverse Events (TEAEs) as Graded by CTCAE v5.0.",
+          "timeFrame": "Baseline and up to Week 26",
+          "description": null
+        }
+      ],
+      "postedPrimaryOutcomes": [
+        {
+          "key": "results-primary-0",
+          "title": "Change in Average 24-hour SBP",
+          "timeFrame": "Baseline and Week 22",
+          "sourcePopulationDescription": "The analysis population was patients in the ITT Population who had HTN with or without DM/IGT at Baseline.",
+          "originalReportedAnalysisGroupCount": 2,
+          "originalDenominatorGroupValuesCount": 2,
+          "originalPValueFieldCount": 1
+        },
+        {
+          "key": "results-primary-1",
+          "title": "Number of Patients With 1 or More Treatment-emergent Adverse Events (TEAEs) as Graded by CTCAE v5.0.",
+          "timeFrame": "Baseline and up to Week 26",
+          "sourcePopulationDescription": "The analysis population was patients in the Safety Population which included all randomized patients who received at least 1 dose of study drug.",
+          "originalReportedAnalysisGroupCount": 2,
+          "originalDenominatorGroupValuesCount": 2,
+          "originalPValueFieldCount": 0
+        }
+      ],
+      "textualCorrespondence": [
+        {
+          "postedOutcomeKey": "results-primary-0",
+          "postedTitle": "Change in Average 24-hour SBP",
+          "postedTimeFrame": "Baseline and Week 22",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-0"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        },
+        {
+          "postedOutcomeKey": "results-primary-1",
+          "postedTitle": "Number of Patients With 1 or More Treatment-emergent Adverse Events (TEAEs) as Graded by CTCAE v5.0.",
+          "postedTimeFrame": "Baseline and up to Week 26",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-1"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        }
+      ],
+      "plannedEntriesWithoutExactText": [],
+      "originalPreUnblindingSignedSAPAuthenticated": false,
+      "originalRegulatedFinalProtocolApprovalVerified": false,
+      "independentClinicalEndpointAdjudication": false,
+      "qualifiedIndependentStatisticalReview": false,
+      "FDAOutcome": "ABSTAIN"
+    },
+    {
+      "nct": "NCT05767346",
+      "ticker": "CYTK",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05767346",
+      "currentOriginalApiSha256": "dc0752a67b4b9e7bc478439bfaee99067c3cb311b238a8feaa9b280d4ec7af99",
+      "archivedR91ApiSha256": "dc0752a67b4b9e7bc478439bfaee99067c3cb311b238a8feaa9b280d4ec7af99",
+      "currentApiSourceByteMatchesR91": true,
+      "checkedAtUtc": "2026-11-10T05:55:50.214Z",
+      "currentProtocolPrimaryCount": 1,
+      "postedResultsPrimaryCount": 1,
+      "exactTitleAndTimeFrameMatches": 1,
+      "matchedTitleButDifferingTimeFrame": 0,
+      "ambiguousOrLexicalResearchReview": 0,
+      "plannedPrimaryOutcomes": [
+        {
+          "key": "protocol-primary-0",
+          "title": "Change in Peak Oxygen Uptake (pVO2) by Cardiopulmonary Exercise Testing (CPET)",
+          "timeFrame": "Baseline to Week 24",
+          "description": "Effect of aficamten compared with metoprolol succinate on exercise capacity in patients with symptomatic obstructive hypertrophic cardiomyopathy (oHCM). Exercise capacity was determined through changes in peak oxygen uptake (pVO2) after 24 weeks of treatment. pVO2 was measured by cardiopulmonary exercise testing (CPET) on a treadmill or bicycle. A higher pVO2 indicates better cardiorespiratory fitness."
+        }
+      ],
+      "postedPrimaryOutcomes": [
+        {
+          "key": "results-primary-0",
+          "title": "Change in Peak Oxygen Uptake (pVO2) by Cardiopulmonary Exercise Testing (CPET)",
+          "timeFrame": "Baseline to Week 24",
+          "sourcePopulationDescription": "Full Analysis Set: all randomized participants with available Week 24 pVO2 assessment data",
+          "originalReportedAnalysisGroupCount": 2,
+          "originalDenominatorGroupValuesCount": 2,
+          "originalPValueFieldCount": 1
+        }
+      ],
+      "textualCorrespondence": [
+        {
+          "postedOutcomeKey": "results-primary-0",
+          "postedTitle": "Change in Peak Oxygen Uptake (pVO2) by Cardiopulmonary Exercise Testing (CPET)",
+          "postedTimeFrame": "Baseline to Week 24",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-0"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        }
+      ],
+      "plannedEntriesWithoutExactText": [],
+      "originalPreUnblindingSignedSAPAuthenticated": false,
+      "originalRegulatedFinalProtocolApprovalVerified": false,
+      "independentClinicalEndpointAdjudication": false,
+      "qualifiedIndependentStatisticalReview": false,
+      "FDAOutcome": "ABSTAIN"
+    },
+    {
+      "nct": "NCT04544293",
+      "ticker": "SVRA",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04544293",
+      "currentOriginalApiSha256": "53fb95ba45adf461d4fb753e754e66013d752252616668027a5f9fe130bfa097",
+      "archivedR91ApiSha256": "53fb95ba45adf461d4fb753e754e66013d752252616668027a5f9fe130bfa097",
+      "currentApiSourceByteMatchesR91": true,
+      "checkedAtUtc": "2026-11-10T05:55:53.294Z",
+      "currentProtocolPrimaryCount": 1,
+      "postedResultsPrimaryCount": 1,
+      "exactTitleAndTimeFrameMatches": 1,
+      "matchedTitleButDifferingTimeFrame": 0,
+      "ambiguousOrLexicalResearchReview": 0,
+      "plannedPrimaryOutcomes": [
+        {
+          "key": "protocol-primary-0",
+          "title": "Change From Baseline in Percent (%) Predicted Diffusing Capacity of the Lung for Carbon Monoxide (DLCO) Adjusted for Hemoglobin Concentration to Week 24",
+          "timeFrame": "From Baseline to Week 24",
+          "description": "As a measure of pulmonary gas transfer, a standardized lung function test, DLCO, was conducted. The single-breath DLCO test was performed in accordance with American Thoracic Society/European Respiratory Society (ATS/ERS) guidelines for DLCO testing. Results reported as % predicted DLCO adjusted for hemoglobin concentration (%predicted DLCOadj)."
+        }
+      ],
+      "postedPrimaryOutcomes": [
+        {
+          "key": "results-primary-0",
+          "title": "Change From Baseline in Percent (%) Predicted Diffusing Capacity of the Lung for Carbon Monoxide (DLCO) Adjusted for Hemoglobin Concentration to Week 24",
+          "timeFrame": "From Baseline to Week 24",
+          "sourcePopulationDescription": "Full Analysis Set",
+          "originalReportedAnalysisGroupCount": 2,
+          "originalDenominatorGroupValuesCount": 2,
+          "originalPValueFieldCount": 1
+        }
+      ],
+      "textualCorrespondence": [
+        {
+          "postedOutcomeKey": "results-primary-0",
+          "postedTitle": "Change From Baseline in Percent (%) Predicted Diffusing Capacity of the Lung for Carbon Monoxide (DLCO) Adjusted for Hemoglobin Concentration to Week 24",
+          "postedTimeFrame": "From Baseline to Week 24",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-0"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        }
+      ],
+      "plannedEntriesWithoutExactText": [],
+      "originalPreUnblindingSignedSAPAuthenticated": false,
+      "originalRegulatedFinalProtocolApprovalVerified": false,
+      "independentClinicalEndpointAdjudication": false,
+      "qualifiedIndependentStatisticalReview": false,
+      "FDAOutcome": "ABSTAIN"
+    },
+    {
+      "nct": "NCT06331299",
+      "ticker": "URGN",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06331299",
+      "currentOriginalApiSha256": "5b576c525669d194a57c8d4286a9b75219cb2060ab34f3193362a779df810c4b",
+      "archivedR91ApiSha256": "5b576c525669d194a57c8d4286a9b75219cb2060ab34f3193362a779df810c4b",
+      "currentApiSourceByteMatchesR91": true,
+      "checkedAtUtc": "2026-11-10T05:55:56.295Z",
+      "currentProtocolPrimaryCount": 1,
+      "postedResultsPrimaryCount": 1,
+      "exactTitleAndTimeFrameMatches": 1,
+      "matchedTitleButDifferingTimeFrame": 0,
+      "ambiguousOrLexicalResearchReview": 0,
+      "plannedPrimaryOutcomes": [
+        {
+          "key": "protocol-primary-0",
+          "title": "Complete Response Rate (CRR)",
+          "timeFrame": "3 months",
+          "description": "CRR is defined as the proportion of patients who achieved a complete response (CR) at the 3-month Visit. A patient was considered a CR if there was no detectable disease in the bladder based on visual observation (white light cystoscopy), biopsy of remaining lesions (if applicable), and voiding urine cytology."
+        }
+      ],
+      "postedPrimaryOutcomes": [
+        {
+          "key": "results-primary-0",
+          "title": "Complete Response Rate (CRR)",
+          "timeFrame": "3 months",
+          "sourcePopulationDescription": "All patients who received any dose of UGN-103 (ITT analysis set).",
+          "originalReportedAnalysisGroupCount": 1,
+          "originalDenominatorGroupValuesCount": 1,
+          "originalPValueFieldCount": 0
+        }
+      ],
+      "textualCorrespondence": [
+        {
+          "postedOutcomeKey": "results-primary-0",
+          "postedTitle": "Complete Response Rate (CRR)",
+          "postedTimeFrame": "3 months",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-0"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        }
+      ],
+      "plannedEntriesWithoutExactText": [],
+      "originalPreUnblindingSignedSAPAuthenticated": false,
+      "originalRegulatedFinalProtocolApprovalVerified": false,
+      "independentClinicalEndpointAdjudication": false,
+      "qualifiedIndependentStatisticalReview": false,
+      "FDAOutcome": "ABSTAIN"
+    },
+    {
+      "nct": "NCT04716231",
+      "ticker": "VERA",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04716231",
+      "currentOriginalApiSha256": "04c5fa7794991f8fb9ec95d0fe5cf45d6a3a9b8cde4a498442bd64f3ec5e36bb",
+      "archivedR91ApiSha256": "04c5fa7794991f8fb9ec95d0fe5cf45d6a3a9b8cde4a498442bd64f3ec5e36bb",
+      "currentApiSourceByteMatchesR91": true,
+      "checkedAtUtc": "2026-11-10T05:55:59.075Z",
+      "currentProtocolPrimaryCount": 1,
+      "postedResultsPrimaryCount": 1,
+      "exactTitleAndTimeFrameMatches": 1,
+      "matchedTitleButDifferingTimeFrame": 0,
+      "ambiguousOrLexicalResearchReview": 0,
+      "plannedPrimaryOutcomes": [
+        {
+          "key": "protocol-primary-0",
+          "title": "Percentage Change From Baseline in Urine Protein to Creatinine Ratio (UPCR)",
+          "timeFrame": "36 Weeks",
+          "description": "Percentage reduction in UPCR was obtained from geometric mean ratios. The natural log-transformed ratio of UPCR to its baseline value was analyzed using a Mixed Model for Repeated Measures (MMRM), adjusted by baseline variables specified in the Statistical Analysis Plan (SAP), including data from baseline up to Week 36 during the Double-Blind period."
+        }
+      ],
+      "postedPrimaryOutcomes": [
+        {
+          "key": "results-primary-0",
+          "title": "Percentage Change From Baseline in Urine Protein to Creatinine Ratio (UPCR)",
+          "timeFrame": "36 Weeks",
+          "sourcePopulationDescription": "Primary endpoint refers to \"Evaluating the effect of atacicept compared to placebo on change in proteinuria in adult subjects with IgAN\" for the first 203 participants.",
+          "originalReportedAnalysisGroupCount": 2,
+          "originalDenominatorGroupValuesCount": 2,
+          "originalPValueFieldCount": 0
+        }
+      ],
+      "textualCorrespondence": [
+        {
+          "postedOutcomeKey": "results-primary-0",
+          "postedTitle": "Percentage Change From Baseline in Urine Protein to Creatinine Ratio (UPCR)",
+          "postedTimeFrame": "36 Weeks",
+          "state": "EXACT_TITLE_AND_TIME_FRAME",
+          "possibleProtocolKeys": [
+            "protocol-primary-0"
+          ],
+          "interpretation": "TEXTUAL_REGISTRY_LEAD_ONLY_NO_PRESPECIFICATION_OR_SAP_CLAIM"
+        }
+      ],
+      "plannedEntriesWithoutExactText": [],
+      "originalPreUnblindingSignedSAPAuthenticated": false,
+      "originalRegulatedFinalProtocolApprovalVerified": false,
+      "independentClinicalEndpointAdjudication": false,
+      "qualifiedIndependentStatisticalReview": false,
+      "FDAOutcome": "ABSTAIN"
+    }
+  ],
+  "researchOnly": true,
+  "FDAOutcome": "ABSTAIN"
+}
