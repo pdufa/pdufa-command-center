@@ -119,7 +119,6 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
   const MW=360,MH=244,ML=34,MR=10,MT=26,MB=47;
   const mx=(i:number)=>ML+i*(MW-ML-MR)/(cohorts.length-1);
   const my=(v:number)=>MT+(100-v)*(MH-MT-MB)/(100-bottom);
-  const firstLevel=series[0];
   const lines=["#168267","#415F9D","#9C4B8E","#B07813"];
   const lineColor=(i:number)=>lines[i%lines.length];
   const panel={border:"1px solid #d7d5ea",borderRadius:11,background:"#f8f7ff",padding:"13px 15px"} as const;
