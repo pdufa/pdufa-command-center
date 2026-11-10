@@ -1,0 +1,78 @@
+name: MAIN R78 official Launch-HTN registry history and prospective-plan boundaries
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r78-launch-htn-official-registry-history.yml
+      - new-platform/backend/scripts/verify_r78_launch_htn_official_registry_history.py
+      - new-platform/backend/tests/test_r78_launch_htn_official_registry_history.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r78-launch-htn-official-history
+  cancel-in-progress: false
+
+jobs:
+  original-clinicaltrials-history-evidence:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Protect exact original FOCUS roster and permanent score retirement
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Test adversarial wrong-NCT, change-of-endpoint and no-historical-access cases
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/tests/test_r78_launch_htn_official_registry_history.py -v
+      - name: Capture actual public ClinicalTrials.gov current and historical versions
+        shell: bash
+        env:
+          R78_RECEIPT: ${{ runner.temp }}/main-r78/R78_LAUNCH_HTN_OFFICIAL_REGISTRY_HISTORY.json
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/verify_r78_launch_htn_official_registry_history.py --output "$R78_RECEIPT"
+      - name: Record research truth without assuming sponsor SAP signoffs
+        if: always()
+        shell: bash
+        env:
+          R78_RECEIPT: ${{ runner.temp }}/main-r78/R78_LAUNCH_HTN_OFFICIAL_REGISTRY_HISTORY.json
+        run: |
+          python - <<'PY'
+          import json,os,pathlib
+          f=pathlib.Path(os.environ["R78_RECEIPT"])
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as out:
+              out.write("## MAIN R78 official NCT06153693 historical registry source\n\n")
+              if not f.exists():
+                  out.write("**Official registry history NOT VERIFIED.** Research failed before receipt generation.\n")
+              else:
+                  d=json.loads(f.read_text())
+                  out.write(f"Observed history entries: **{d['historyDatesListed']}**; exact original full history records read: **{d['registryVersionsAccessible']}**.\n")
+                  out.write(f"Research state: {d['state']}.\n")
+                  for v in d["versions"]:
+                      out.write(f"- Public registry v{v['version']} ({v['versionHistoryDate']}), early primary endpoint: ")
+                      out.write("; ".join(x['measure'] for x in v["registeredOutcomes"]["primary"])[:260]+"\n")
+                  out.write("\n**Registry change dates are not FDA/SAP signoff, encrypted original publisher document authenticity, data lock or unblinding evidence.** No signed clinical grade, no calibrated FDA forecast, **ABSTAIN/UNKNOWN**.\n")
+          PY
+      - name: Archive public registry metadata-only research receipt for independent human review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r78-original-clinicaltrials-registry-receipt-${{ github.run_id }}
+          path: ${{ runner.temp }}/main-r78/R78_LAUNCH_HTN_OFFICIAL_REGISTRY_HISTORY.json
+          if-no-files-found: warn
+          retention-days: 90
