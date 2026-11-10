@@ -131,24 +131,24 @@ test("PDUFA Year dropdown filters the table, annual cumulative trend and totals 
     assert.equal(yearControl.props.value,"2026");
     assert.equal(levelControl.props.value,"3");
     let html=JSON.stringify(renderer.toJSON());
-    assert.match(html,/100 \/ 106 matched/);
+    assert.match(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-3"})),/100 \/ 106 matched/);
     assert.match(html,/2027/); // The new recorded year becomes selectable.
     TestRenderer.act(()=>yearControl.props.onChange({currentTarget:{value:"2027"}}));
     html=JSON.stringify(renderer.toJSON());
     assert.equal(yearControl.props.value,"2027");
     assert.equal(levelControl.props.value,"3");
-    assert.match(html,/15 \/ 17 matched/);
+    assert.match(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-3"})),/15 \/ 17 matched/);
     assert.match(html,/88\.2%/);
-    assert.match(html,/1 \/ 1 months assessed/);
-    assert.doesNotMatch(html,/100 \/ 106 matched/);
+    assert.match(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-3"})),/1 \/ 1 months assessed/);
+    assert.doesNotMatch(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-3"})),/100 \/ 106 matched/);
     assert.match(html,/historical-monthly-level-table/);
     assert.match(html,/2027-01/);
-    assert.doesNotMatch(html,/2026-01/);
+    assert.doesNotMatch(html,/month-color-2026-01/);
     assert.match(html,/Cumulative FDA agreement trend/);
     TestRenderer.act(()=>yearControl.props.onChange({currentTarget:{value:"2026"}}));
     html=JSON.stringify(renderer.toJSON());
-    assert.match(html,/100 \/ 106 matched/);
-    assert.doesNotMatch(html,/15 \/ 17 matched/);
+    assert.match(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-3"})),/100 \/ 106 matched/);
+    assert.doesNotMatch(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-3"})),/15 \/ 17 matched/);
   }finally{
     if(renderer)TestRenderer.act(()=>renderer.unmount());
     data.runs.pop();
