@@ -68,6 +68,23 @@ async function profile(browser,config){
       String(i).padStart(3,"0")+".pdf";
     assert.equal(await links.nth(i-1).getAttribute("href"),expected);
   }
+  const methods=board.locator('section[aria-label="R77 Launch-HTN original H1 H7 published methods"]');
+  await methods.waitFor({state:"visible",timeout:12000});
+  const methodsText=await methods.innerText();
+  assert.match(methodsText,/7 .* 1 primary/);
+  assert.match(methodsText,/8 .* no alpha replay/);
+  assert.match(methodsText,/ABSTAIN/);
+  assert.match(methodsText,/UNASSESSED/);
+  assert.match(methodsText,/0\/23/);
+  await methods.locator("details").first().locator("summary").click();
+  assert.equal(await methods.locator("details").first().locator("article").count(),7);
+  assert.equal(await methods.locator("details").first().locator("li").count(),8);
+  assert.match(await methods.innerText(),/WITHIN-PARTICIPANT ANALYSIS/);
+  await methods.locator("details").nth(2).locator("summary").click();
+  assert.match(await methods.innerText(),/11 \/ 14 \/ 4/);
+  assert.match(await methods.innerText(),/29 \/ 38 \/ 3/);
+  await methods.scrollIntoViewIfNeeded();
+  await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-r77-method-gates.png"),fullPage:false});
   await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-r73-seven-documents.png"),fullPage:false});
   await page.screenshot({path:path.join(OUT,config.name+"-launch-htn-research.png"),fullPage:false});
   p=await inspect("NCT06081894");
