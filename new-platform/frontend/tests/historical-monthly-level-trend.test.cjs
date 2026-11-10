@@ -191,3 +191,32 @@ test("Page separates historical selected-level panel from future validated predi
   assert.equal(prospective.records[0].actualOutcome,"PENDING");
   assert.equal(prospective.records[0].actualDecisionVerified,false);
 });
+
+test("Full ten-month trend renders a mobile-safe polyline and visible cumulative legend",()=>{
+  const html=renderToStaticMarkup(React.createElement(Chart));
+  assert.match(html,/data-testid="historical-mobile-trend-line-chart"/);
+  assert.match(html,/data-testid="mobile-cumulative-path-3"/);
+  assert.match(html,/data-testid="historical-trend-key"/);
+  assert.match(html,/Solid green line = cumulative historical agreement/);
+  assert.match(html,/100 \/ 106 matched/);
+  const css=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
+  assert.match(css,/@media \(max-width: 650px\)/);
+  assert.match(css,/\.historical-trend-desktop \{ display: none !important/);
+  assert.match(css,/\.historical-trend-mobile \{ display: block !important/);
+  assert.doesNotMatch(html,/min-width:650px/);
+});
+
+test("Predictions tab shows compact cumulative trend above the source roster; assessments retains full chart",()=>{
+  const page=fs.readFileSync(path.join(__dirname,"../app/predictions/page.tsx"),"utf8");
+  assert.match(page,/import HistoricalMonthlyLevelTrend/);
+  assert.match(page,/<HistoricalMonthlyLevelTrend compact\/>/);
+  assert.ok(page.indexOf("<HistoricalMonthlyLevelTrend compact/>")<page.indexOf("<FullRosterSourceScan/>"));
+  const html=renderToStaticMarkup(React.createElement(Chart,{compact:true}));
+  assert.match(html,/data-testid="historical-mobile-trend-line-chart"/);
+  assert.match(html,/Full Level 3–20 historical chart/);
+  assert.doesNotMatch(html,/data-testid="historical-monthly-level-table"/);
+  assert.match(html,/100 of 106 retrospective matches/);
+  const full=renderToStaticMarkup(React.createElement(Chart));
+  assert.match(full,/id="historical-performance"/);
+  assert.match(full,/data-testid="historical-monthly-level-table"/);
+});
