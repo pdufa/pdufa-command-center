@@ -1,0 +1,66 @@
+name: Phase 4 FOCUS evidence checkpoint
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '35 5 * * *'
+permissions:
+  contents: read
+  actions: read
+concurrency:
+  group: phase4-focus-evidence-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  capture:
+    if: ${{ github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/main' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify independent-analysis policy and extraction tests
+        run: |
+          python scripts/audit_raas_retirement.py --check
+          python -m unittest discover -s tests -p 'test_level4_protocol_audit.py' -v
+          python -m unittest discover -s tests -p 'test_level4_registry_extraction.py' -v
+      - name: Recover previous successful checkpoint when available
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p phase4-artifacts previous
+          run="$(gh run list --repo "$GITHUB_REPOSITORY" --workflow phase4-focus-evidence.yml --branch main --status success --limit 5 --json databaseId --jq '.[0].databaseId // empty' 2>/dev/null || true)"
+          if [[ -n "$run" ]]; then
+            gh run download "$run" --repo "$GITHUB_REPOSITORY" --pattern 'phase4-focus-checkpoint-*' --dir previous || true
+          fi
+          find previous -name checkpoint.json -print -quit > phase4-artifacts/previous-path.txt
+      - name: Extract official FOCUS registry packets
+        run: |
+          previous="$(cat phase4-artifacts/previous-path.txt)"
+          if [[ -n "$previous" ]]; then
+            python scripts/medical/level4_focus_checkpoint.py --previous "$previous" --output phase4-artifacts/checkpoint.json
+          else
+            python scripts/medical/level4_focus_checkpoint.py --output phase4-artifacts/checkpoint.json
+          fi
+      - name: Summarize research status
+        if: always()
+        run: |
+          if [[ -f phase4-artifacts/checkpoint.json ]]; then
+            python - <<'PY'
+          import json,os
+          from pathlib import Path
+          d=json.loads(Path("phase4-artifacts/checkpoint.json").read_text())
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+              f.write(f"## Phase 4 FOCUS checkpoint\nCaptured: {d['captured']}/29\nRetry required: {d['retryRequired']}\nScientifically adjudicated: 0\nNo predictions or production records modified.\n")
+          PY
+          fi
+      - name: Preserve checkpoint artifact for 90 days
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: phase4-focus-checkpoint-${{ github.run_id }}-${{ github.run_attempt }}
+          path: phase4-artifacts/checkpoint.json
+          if-no-files-found: warn
+          retention-days: 90
