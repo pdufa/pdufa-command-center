@@ -68,6 +68,11 @@ export async function GET(req:Request):Promise<Response>{
  const pageTreeDirectKidsDetected=pageTreeDirectKidRefs.length;
  const pageTreeDirectKidsMatchingPageDictionaries=pageTreeDirectKidRefs.filter(id=>/\/Type\s*\/Page\b(?!s)/.test(objectMap.get(id)??"")).length;
  const pageTreeDirectKidsMatchingNestedPageNodes=pageTreeDirectKidRefs.filter(id=>/\/Type\s*\/Pages\b/.test(objectMap.get(id)??"")).length;
+ const directLeafPageOrder=pageTreeNodeRefs.length===1&&pageTreeDirectKidRefs.length>0&&
+  pageTreeNodesWithUnresolvedKids===0&&
+  pageTreeDirectKidRefs.every(id=>/\/Type\s*\/Page\b(?!s)/.test(objectMap.get(id)??""))&&
+  new Set(pageTreeDirectKidRefs).size===pageTreeDirectKidRefs.length
+  ?pageTreeDirectKidRefs:[];
  const pages:Array<{pdfPageDictionaryIndex:number,pageObject:string,
   referencedContentStreams:number,decodedContentStreams:number,
   textFragments:number,termHits:Array<{term:string,fragment:string}>}>=[];
@@ -119,6 +124,8 @@ export async function GET(req:Request):Promise<Response>{
   detectedDirectPageTreeKids:pageTreeDirectKidsDetected,
   detectedDirectKidsMatchingPageDictionaries:pageTreeDirectKidsMatchingPageDictionaries,
   detectedDirectKidsMatchingNestedPageNodes:pageTreeDirectKidsMatchingNestedPageNodes,
+  provisionalDirectLeafKidsInArrayOrder:directLeafPageOrder,
+  provisionalDirectLeafKidsOrderNotScientificallyCertified:true,
   verifiedPageTreeTraversalPerformed:false,
   pagesWithTextFragments:pages.filter(p=>p.textFragments>0).length,
   unsupportedFilters,
