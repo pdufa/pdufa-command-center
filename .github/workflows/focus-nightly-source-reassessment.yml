@@ -1,0 +1,69 @@
+name: FOCUS Nightly Source Reassessment Queue
+# Independent of the existing 8 PM Pacific POOL and PIPELINE collector.
+# 06:10 UTC is 10:10 PM Pacific standard / 11:10 PM daylight time.
+on:
+  schedule:
+    - cron: '10 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: focus-nightly-primary-source-reassessment
+  cancel-in-progress: false
+
+jobs:
+  monitor:
+    name: Exact-NCT source changes and FDA-cycle research queue
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - name: Checkout current main FOCUS roster
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: true
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify permanent retirement and independent science policy
+        run: python scripts/audit_raas_retirement.py --check
+      - name: Verify FOCUS crosswalk and change-detection regression tests
+        run: python -m unittest discover -s tests -p 'test_focus_nightly_source_monitor.py' -v
+      - name: Check official source for all current FOCUS NCTs
+        shell: bash
+        run: |
+          set -euo pipefail
+          pacific_date=$(TZ=America/Los_Angeles date +%F)
+          archive="reports/focus/nightly/$pacific_date-run${{ github.run_id }}-attempt${{ github.run_attempt }}.json"
+          python scripts/focus_nightly_source_monitor.py \
+            --archive "$archive" \
+            --current data/focus_nightly_evidence_current.json
+          echo "FOCUS_ARCHIVE=$archive" >> "$GITHUB_ENV"
+      - name: Publish read-only research evidence history
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -- data/focus_nightly_evidence_current.json "$FOCUS_ARCHIVE"
+          git diff --cached --check
+          git commit -m "Archive nightly FOCUS exact-NCT source-research receipt"
+          for attempt in 1 2 3; do
+            if git pull --rebase origin main && git push origin HEAD:main; then exit 0; fi
+            git rebase --abort || true
+            sleep 4
+          done
+          echo "::error::FOCUS evidence report could not be published to main."
+          exit 1
+      - name: Retain dated evidence report if publication fails
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-nightly-source-evidence-${{ github.run_id }}-${{ github.run_attempt }}
+          if-no-files-found: warn
+          retention-days: 90
+          path: |
+            reports/focus/nightly/*.json
+            data/focus_nightly_evidence_current.json
