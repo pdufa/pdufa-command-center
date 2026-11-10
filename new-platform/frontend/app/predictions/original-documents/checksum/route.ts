@@ -50,8 +50,24 @@ export async function GET(request:Request):Promise<Response>{
     return fail(502,"PDF_DECLARED_BYTE_LENGTH_MISMATCH");
   if(selection.registryReportedSize>R87_MAX_SOURCE_PDF_BYTES)
     return fail(413,"SOURCE_PDF_EXCEEDS_BOUNDED_RETRIEVAL_SIZE");
-  const body=await pdf.arrayBuffer();
-  const result=digestR87PublicPdf(selection,new Uint8Array(body));
+  if(!pdf.body)return fail(502,"SOURCE_PDF_BODY_UNAVAILABLE");
+  // Enforce the registry-advertised cap even for chunked/unknown-length bodies.
+  const reader=pdf.body.getReader(),parts:Uint8Array[]=[];
+  let total=0;
+  for(;;){
+   const chunk=await reader.read();
+   if(chunk.done)break;
+   total+=chunk.value.byteLength;
+   if(total>selection.registryReportedSize||total>R87_MAX_SOURCE_PDF_BYTES){
+    await reader.cancel();
+    return fail(502,"SOURCE_PDF_STREAM_EXCEEDS_REGISTRY_DECLARED_SIZE");
+   }
+   parts.push(new Uint8Array(chunk.value));
+  }
+  const body=new Uint8Array(total);
+  let offset=0;
+  for(const part of parts){body.set(part,offset);offset+=part.byteLength;}
+  const result=digestR87PublicPdf(selection,body);
   if(!result)return fail(502,"SOURCE_PDF_BYTE_LENGTH_OR_MAGIC_MISMATCH");
   return Response.json({
     ...result,retrievedAtUtc:new Date().toISOString(),
