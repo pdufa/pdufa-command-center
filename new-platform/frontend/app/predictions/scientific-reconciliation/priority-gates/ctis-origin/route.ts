@@ -66,6 +66,10 @@ export async function GET():Promise<Response>{
    version:string|null;
    uuid:string|null;
    id:string|null;
+   associatedEntityId:string|null;
+   manualVersion:string|null;
+   systemVersion:string|null;
+   fileType:string|null;
   }>=[];
   let nodes=0;
   const seen=new WeakSet<object>();
@@ -94,7 +98,11 @@ export async function GET():Promise<Response>{
     found.push({
      treePath:path.slice(0,400),fieldNames:Object.keys(x).slice(0,45),
      title:target.slice(0,250),version,uuid,
-     id:value(x.id)??value(x._id)
+     id:value(x.id)??value(x._id),
+     associatedEntityId:value(x.associatedEntityId),
+     manualVersion:value(x.manualVersion),
+     systemVersion:value(x.systemVersion),
+     fileType:value(x.fileType)
     });
    }
    for(const [k,v] of Object.entries(x)){
@@ -110,6 +118,8 @@ export async function GET():Promise<Response>{
    recordKeys:Object.keys(root).slice(0,45),
    trialIdCandidates:["id","_id","trialId","trialID","ctId"].map(k=>
     ({field:k,value:value(root[k])})),
+   authorizedApplicationKeys:Object.keys(obj(root.authorizedApplication)??{}).slice(0,55),
+   documentObjectCount:Array.isArray(root.documents)?root.documents.length:null,
    protocolRecordMatches:found,
    discoveredProtocolRecordCount:found.length,
    nodesVisited:nodes,
