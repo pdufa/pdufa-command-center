@@ -1,0 +1,965 @@
+{
+  "schemaVersion": 1,
+  "dataset": "HISTORICAL_MONTHLY_LEVEL_COMPARISONS_2026_V1",
+  "chartPurpose": "Historical Level 3 research retrospectives only, structured to append a new level's case-by-case calls for the same exact fixed benchmark cases without overwriting earlier levels.",
+  "methodGuardrails": {
+    "maxResearchLevel": 20,
+    "notLiveAccuracy": true,
+    "validatedBlindPredictionCount": 0,
+    "validBlindAccuracy": null,
+    "originalOutcomesWereKnownBeforeRetrospectiveCalls": true,
+    "doNotAggregateIntoLiveForecasts": true,
+    "cohortsNotPopulationComparable": true,
+    "requiredRepeat": "For each cohortId, preserve benchmarkCaseIds and the originally observed FDA decisions; add new runId with assessmentLevel, method version, assessment date and a case call for every locked ID. Explicitly keep any nonblind repeat classified as nonblind."
+  },
+  "cohorts": [
+    {
+      "cohortId": "historical-2026-06-v1",
+      "yearMonth": "2026-06",
+      "monthLabel": "June",
+      "color": "#2167B0",
+      "lockedAt": "2026-11-09",
+      "cohortSelection": "June posthoc tracked-action roster, including CING original May 31 PDUFA; excludes generic abstention and non-PDUFA filler PMA",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-june-level3-historical-assessment-20261109/docs/historical-testing/june-2026-fda-outcome-comparison-20261109.json",
+      "sourceBlobSha": "b883b25a52fcc15832a1990b911682cc4ec9cce2",
+      "sourceListedCount": 19,
+      "benchmarkCaseIds": [
+        "JUN26-01",
+        "JUN26-03",
+        "JUN26-04",
+        "JUN26-05",
+        "JUN26-06",
+        "JUN26-07",
+        "JUN26-09",
+        "JUN26-10",
+        "JUN26-11",
+        "JUN26-12",
+        "JUN26-13",
+        "JUN26-14",
+        "JUN26-15",
+        "JUN26-16",
+        "JUN26-17",
+        "JUN26-18",
+        "JUN26-19"
+      ],
+      "benchmarkCases": [
+        {
+          "id": "JUN26-01",
+          "ticker": "CING",
+          "actualDecision": "CRL"
+        },
+        {
+          "id": "JUN26-03",
+          "ticker": "PFE",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUN26-04",
+          "ticker": "LLY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUN26-05",
+          "ticker": "MRK-RCC",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUN26-06",
+          "ticker": "AZN",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUN26-07",
+          "ticker": "BAYRY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUN26-09",
+          "ticker": "GSK/SPRO",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUN26-10",
+          "ticker": "MRK-VACC",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUN26-11",
+          "ticker": "ACHV",
+          "actualDecision": "CRL"
+        },
+        {
+          "id": "JUN26-12",
+          "ticker": "PFE-IBRANCE",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUN26-13",
+          "ticker": "GILD/MRK",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUN26-14",
+          "ticker": "IONS",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUN26-15",
+          "ticker": "ABBV-SKY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUN26-16",
+          "ticker": "VRDN",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUN26-17",
+          "ticker": "UNCY",
+          "actualDecision": "CRL"
+        },
+        {
+          "id": "JUN26-18",
+          "ticker": "ARQT",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUN26-19",
+          "ticker": "LNTH",
+          "actualDecision": "CRL"
+        }
+      ],
+      "excludedCases": [
+        {
+          "id": "JUN26-02",
+          "ticker": "AMRX",
+          "originalCall": "ABSTAIN",
+          "reason": "ABSTAIN"
+        },
+        {
+          "id": "JUN26-08",
+          "ticker": "ABBV-PMA",
+          "originalCall": "EXCLUDE_NON_PDUFA_DEVICE",
+          "reason": "NOT_ELIGIBLE_AT_COHORT_CUTOFF_OR_NONDRUG"
+        }
+      ],
+      "alwaysApproveMatches": 13
+    },
+    {
+      "cohortId": "historical-2026-07-v1",
+      "yearMonth": "2026-07",
+      "monthLabel": "July",
+      "color": "#C05249",
+      "lockedAt": "2026-11-09",
+      "cohortSelection": "Selected July-goal calendar, excludes three actual pre-July FDA approvals",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-july-outcome-restricted-level3-audit/docs/historical-testing/july-2026-fda-outcome-comparison-20261109.json",
+      "sourceBlobSha": "e66d629f6069298d6b16cc863949a72e796fcd37",
+      "sourceListedCount": 12,
+      "benchmarkCaseIds": [
+        "JUL26-01",
+        "JUL26-03",
+        "JUL26-06",
+        "JUL26-07",
+        "JUL26-08",
+        "JUL26-09",
+        "JUL26-10",
+        "JUL26-11",
+        "JUL26-12"
+      ],
+      "benchmarkCases": [
+        {
+          "id": "JUL26-01",
+          "ticker": "ACE",
+          "actualDecision": "CRL"
+        },
+        {
+          "id": "JUL26-03",
+          "ticker": "VERA",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUL26-06",
+          "ticker": "CELC",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUL26-07",
+          "ticker": "SNY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUL26-08",
+          "ticker": "HLB/ELEVAR",
+          "actualDecision": "CRL"
+        },
+        {
+          "id": "JUL26-09",
+          "ticker": "OTSKY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUL26-10",
+          "ticker": "MNKD",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUL26-11",
+          "ticker": "OTLK",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "JUL26-12",
+          "ticker": "VTRS",
+          "actualDecision": "APPROVAL"
+        }
+      ],
+      "excludedCases": [
+        {
+          "id": "JUL26-02",
+          "ticker": "ORCA",
+          "originalCall": "APPROVAL",
+          "reason": "NOT_ELIGIBLE_AT_COHORT_CUTOFF_OR_NONDRUG"
+        },
+        {
+          "id": "JUL26-04",
+          "ticker": "AZN/DSNKY",
+          "originalCall": "APPROVAL",
+          "reason": "NOT_ELIGIBLE_AT_COHORT_CUTOFF_OR_NONDRUG"
+        },
+        {
+          "id": "JUL26-05",
+          "ticker": "CORT",
+          "originalCall": "EXCLUDE_ALREADY_DECIDED",
+          "reason": "NOT_ELIGIBLE_AT_COHORT_CUTOFF_OR_NONDRUG"
+        }
+      ],
+      "alwaysApproveMatches": 7
+    },
+    {
+      "cohortId": "historical-2026-08-v1",
+      "yearMonth": "2026-08",
+      "monthLabel": "August",
+      "color": "#8655B8",
+      "lockedAt": "2026-11-09",
+      "cohortSelection": "11 posthoc candidate programs; 10 approval leans, one abstain; only seven goals supported by pre-August material",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/august-2026-blind-test-integrity/docs/blind-testing/august-2026-level3-fda-outcomes-comparison-20261109.json",
+      "sourceBlobSha": "b82644e5880631b3f66573eef70c24d52926dc4d",
+      "sourceListedCount": 11,
+      "benchmarkCaseIds": [
+        "AUG26-01",
+        "AUG26-02",
+        "AUG26-03",
+        "AUG26-04",
+        "AUG26-05",
+        "AUG26-06",
+        "AUG26-07",
+        "AUG26-08",
+        "AUG26-09",
+        "AUG26-11"
+      ],
+      "benchmarkCases": [
+        {
+          "id": "AUG26-01",
+          "ticker": "REPL",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "AUG26-02",
+          "ticker": "MRNA",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "AUG26-03",
+          "ticker": "LNTH",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "AUG26-04",
+          "ticker": "BMY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "AUG26-05",
+          "ticker": "RARE",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "AUG26-06",
+          "ticker": "JAZZ/ZYME",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "AUG26-07",
+          "ticker": "RVMD",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "AUG26-08",
+          "ticker": "PFE/ROIV",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "AUG26-09",
+          "ticker": "GILD",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "AUG26-11",
+          "ticker": "REGN",
+          "actualDecision": "APPROVAL"
+        }
+      ],
+      "excludedCases": [
+        {
+          "id": "AUG26-10",
+          "ticker": "LLY",
+          "originalCall": "ABSTAIN",
+          "reason": "ABSTAIN"
+        }
+      ],
+      "alwaysApproveMatches": 10
+    },
+    {
+      "cohortId": "historical-2026-09-v1",
+      "yearMonth": "2026-09",
+      "monthLabel": "September",
+      "color": "#B47D14",
+      "lockedAt": "2026-11-09",
+      "cohortSelection": "Twenty September FDA approval actions selected post hoc, not a PDUFA-goal roster; all actual approvals",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-september-fda-action-audit/new-platform/frontend/data/september2026FdaActionsResearch.json",
+      "sourceBlobSha": "055f28273e76d030f8193bef979020c386190e11",
+      "sourceListedCount": 20,
+      "benchmarkCaseIds": [
+        "SEP26-ACTION-01",
+        "SEP26-ACTION-02",
+        "SEP26-ACTION-03",
+        "SEP26-ACTION-04",
+        "SEP26-ACTION-05",
+        "SEP26-ACTION-06",
+        "SEP26-ACTION-07",
+        "SEP26-ACTION-08",
+        "SEP26-ACTION-09",
+        "SEP26-ACTION-10",
+        "SEP26-ACTION-11",
+        "SEP26-ACTION-12",
+        "SEP26-ACTION-13",
+        "SEP26-ACTION-14",
+        "SEP26-ACTION-15",
+        "SEP26-ACTION-16",
+        "SEP26-ACTION-17",
+        "SEP26-ACTION-18",
+        "SEP26-ACTION-19",
+        "SEP26-ACTION-20"
+      ],
+      "benchmarkCases": [
+        {
+          "id": "SEP26-ACTION-01",
+          "ticker": "IONS",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-02",
+          "ticker": "AZN",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-03",
+          "ticker": "BFRI",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-04",
+          "ticker": "BAYRY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-05",
+          "ticker": "TLX",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-06",
+          "ticker": "SRRK",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-07",
+          "ticker": "PHAR",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-08",
+          "ticker": "BAYRY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-09",
+          "ticker": "NUVB",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-10",
+          "ticker": "RARE",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-11",
+          "ticker": "LLY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-12",
+          "ticker": "MRK",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-13",
+          "ticker": "LLY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-14",
+          "ticker": "MRK",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-15",
+          "ticker": "RHHBY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-16",
+          "ticker": "INCY/MIRM",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-17",
+          "ticker": "ABBV",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-18",
+          "ticker": "LLY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-19",
+          "ticker": "TEVA",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "SEP26-ACTION-20",
+          "ticker": "BMY",
+          "actualDecision": "APPROVAL"
+        }
+      ],
+      "excludedCases": [],
+      "alwaysApproveMatches": 20
+    },
+    {
+      "cohortId": "historical-2026-10-v1",
+      "yearMonth": "2026-10",
+      "monthLabel": "October",
+      "color": "#0B827B",
+      "lockedAt": "2026-11-09",
+      "cohortSelection": "October tracked roster with September early actions and one withdrawn case; 17 comparable approvals",
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-october-full-outcome-exposed-audit/new-platform/frontend/data/october2026RetrospectiveFdaComparison.json",
+      "sourceBlobSha": "45fc75ec9dff6e07b828fcfea319138b5db45ce2",
+      "sourceListedCount": 18,
+      "benchmarkCaseIds": [
+        "OCT26-01-LLY",
+        "OCT26-02-MRK",
+        "OCT26-03-NVS",
+        "OCT26-04-PFE",
+        "OCT26-05-TEVA",
+        "OCT26-06-AMGN",
+        "OCT26-07-RHHBY",
+        "OCT26-09-IBRX",
+        "OCT26-10-RHHBY",
+        "OCT26-11-IRDVTRS",
+        "OCT26-12-GSK",
+        "OCT26-13-AZN",
+        "OCT26-14-ABBV",
+        "OCT26-15-PHAR",
+        "OCT26-16-GSK",
+        "OCT26-17-INO",
+        "OCT26-18-SUN"
+      ],
+      "benchmarkCases": [
+        {
+          "id": "OCT26-01-LLY",
+          "ticker": "LLY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-02-MRK",
+          "ticker": "MRK",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-03-NVS",
+          "ticker": "NVS",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-04-PFE",
+          "ticker": "PFE",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-05-TEVA",
+          "ticker": "TEVA",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-06-AMGN",
+          "ticker": "AMGN",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-07-RHHBY",
+          "ticker": "RHHBY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-09-IBRX",
+          "ticker": "IBRX",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-10-RHHBY",
+          "ticker": "RHHBY",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-11-IRDVTRS",
+          "ticker": "IRD / VTRS",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-12-GSK",
+          "ticker": "GSK",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-13-AZN",
+          "ticker": "AZN",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-14-ABBV",
+          "ticker": "ABBV",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-15-PHAR",
+          "ticker": "PHAR",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-16-GSK",
+          "ticker": "GSK",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-17-INO",
+          "ticker": "INO",
+          "actualDecision": "APPROVAL"
+        },
+        {
+          "id": "OCT26-18-SUN",
+          "ticker": "SUNPHARMA",
+          "actualDecision": "APPROVAL"
+        }
+      ],
+      "excludedCases": [
+        {
+          "id": "OCT26-08-MRK",
+          "ticker": "MRK",
+          "originalCall": "CRL",
+          "reason": "WITHDRAWN_NO_FDA_DIRECTION"
+        }
+      ],
+      "alwaysApproveMatches": 17
+    }
+  ],
+  "runs": [
+    {
+      "runId": "historical-2026-06-v1-manual-level-3-2026-11-09",
+      "cohortId": "historical-2026-06-v1",
+      "assessmentLevel": 3,
+      "assessmentType": "MANUAL_LEVEL3_STYLE_RECONSTRUCTION",
+      "runDate": "2026-11-09",
+      "assessmentBlind": false,
+      "priorOutcomeExposure": true,
+      "validatedBlindCases": 0,
+      "validatedBlindAccuracy": null,
+      "comparisonType": "RETROSPECTIVE_DIRECTIONAL_AGREEMENT_ONLY",
+      "predictionFreezeUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-june-level3-historical-assessment-20261109/docs/historical-testing/june-2026-level3-outcome-null-research-freeze.json",
+      "comparisonSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-june-level3-historical-assessment-20261109/docs/historical-testing/june-2026-fda-outcome-comparison-20261109.json",
+      "comparisonSourceBlobSha": "b883b25a52fcc15832a1990b911682cc4ec9cce2",
+      "caseCalls": [
+        {
+          "caseId": "JUN26-01",
+          "call": "CRL"
+        },
+        {
+          "caseId": "JUN26-03",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUN26-04",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUN26-05",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUN26-06",
+          "call": "CRL"
+        },
+        {
+          "caseId": "JUN26-07",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUN26-09",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUN26-10",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUN26-11",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUN26-12",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUN26-13",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUN26-14",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUN26-15",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUN26-16",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUN26-17",
+          "call": "CRL"
+        },
+        {
+          "caseId": "JUN26-18",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUN26-19",
+          "call": "CRL"
+        }
+      ]
+    },
+    {
+      "runId": "historical-2026-07-v1-manual-level-3-2026-11-09",
+      "cohortId": "historical-2026-07-v1",
+      "assessmentLevel": 3,
+      "assessmentType": "MANUAL_LEVEL3_STYLE_RECONSTRUCTION",
+      "runDate": "2026-11-09",
+      "assessmentBlind": false,
+      "priorOutcomeExposure": true,
+      "validatedBlindCases": 0,
+      "validatedBlindAccuracy": null,
+      "comparisonType": "RETROSPECTIVE_DIRECTIONAL_AGREEMENT_ONLY",
+      "predictionFreezeUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-july-outcome-restricted-level3-audit/docs/historical-testing/july-2026-level3-pre-outcome-comparison-forecast-freeze.json",
+      "comparisonSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-july-outcome-restricted-level3-audit/docs/historical-testing/july-2026-fda-outcome-comparison-20261109.json",
+      "comparisonSourceBlobSha": "e66d629f6069298d6b16cc863949a72e796fcd37",
+      "caseCalls": [
+        {
+          "caseId": "JUL26-01",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUL26-03",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUL26-06",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUL26-07",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUL26-08",
+          "call": "CRL"
+        },
+        {
+          "caseId": "JUL26-09",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUL26-10",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUL26-11",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "JUL26-12",
+          "call": "APPROVAL"
+        }
+      ]
+    },
+    {
+      "runId": "historical-2026-08-v1-manual-level-3-2026-11-09",
+      "cohortId": "historical-2026-08-v1",
+      "assessmentLevel": 3,
+      "assessmentType": "MANUAL_LEVEL3_STYLE_RECONSTRUCTION",
+      "runDate": "2026-11-09",
+      "assessmentBlind": false,
+      "priorOutcomeExposure": true,
+      "validatedBlindCases": 0,
+      "validatedBlindAccuracy": null,
+      "comparisonType": "RETROSPECTIVE_DIRECTIONAL_AGREEMENT_ONLY",
+      "predictionFreezeUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/august-2026-blind-test-integrity/docs/blind-testing/august-2026-outcome-exposed-level3-research-calls-20261109.json",
+      "comparisonSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/august-2026-blind-test-integrity/docs/blind-testing/august-2026-level3-fda-outcomes-comparison-20261109.json",
+      "comparisonSourceBlobSha": "b82644e5880631b3f66573eef70c24d52926dc4d",
+      "caseCalls": [
+        {
+          "caseId": "AUG26-01",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "AUG26-02",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "AUG26-03",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "AUG26-04",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "AUG26-05",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "AUG26-06",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "AUG26-07",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "AUG26-08",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "AUG26-09",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "AUG26-11",
+          "call": "APPROVAL"
+        }
+      ]
+    },
+    {
+      "runId": "historical-2026-09-v1-manual-level-3-2026-11-09",
+      "cohortId": "historical-2026-09-v1",
+      "assessmentLevel": 3,
+      "assessmentType": "MANUAL_LEVEL3_STYLE_RECONSTRUCTION",
+      "runDate": "2026-11-09",
+      "assessmentBlind": false,
+      "priorOutcomeExposure": true,
+      "validatedBlindCases": 0,
+      "validatedBlindAccuracy": null,
+      "comparisonType": "RETROSPECTIVE_DIRECTIONAL_AGREEMENT_ONLY",
+      "predictionFreezeUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-september-fda-action-audit/new-platform/frontend/data/september2026FdaActionsResearch.json",
+      "comparisonSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-september-fda-action-audit/new-platform/frontend/data/september2026FdaActionsResearch.json",
+      "comparisonSourceBlobSha": "055f28273e76d030f8193bef979020c386190e11",
+      "caseCalls": [
+        {
+          "caseId": "SEP26-ACTION-01",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-02",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-03",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-04",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-05",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-06",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-07",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-08",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-09",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-10",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-11",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-12",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-13",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-14",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-15",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-16",
+          "call": "CRL"
+        },
+        {
+          "caseId": "SEP26-ACTION-17",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-18",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-19",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "SEP26-ACTION-20",
+          "call": "APPROVAL"
+        }
+      ]
+    },
+    {
+      "runId": "historical-2026-10-v1-manual-level-3-2026-11-09",
+      "cohortId": "historical-2026-10-v1",
+      "assessmentLevel": 3,
+      "assessmentType": "MANUAL_LEVEL3_STYLE_RECONSTRUCTION",
+      "runDate": "2026-11-09",
+      "assessmentBlind": false,
+      "priorOutcomeExposure": true,
+      "validatedBlindCases": 0,
+      "validatedBlindAccuracy": null,
+      "comparisonType": "RETROSPECTIVE_DIRECTIONAL_AGREEMENT_ONLY",
+      "predictionFreezeUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-october-full-outcome-exposed-audit/new-platform/frontend/data/october2026EvidenceCutoffFreeze.json",
+      "comparisonSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-october-full-outcome-exposed-audit/new-platform/frontend/data/october2026RetrospectiveFdaComparison.json",
+      "comparisonSourceBlobSha": "45fc75ec9dff6e07b828fcfea319138b5db45ce2",
+      "caseCalls": [
+        {
+          "caseId": "OCT26-01-LLY",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-02-MRK",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-03-NVS",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-04-PFE",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-05-TEVA",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-06-AMGN",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-07-RHHBY",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-09-IBRX",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-10-RHHBY",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-11-IRDVTRS",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-12-GSK",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-13-AZN",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-14-ABBV",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-15-PHAR",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-16-GSK",
+          "call": "APPROVAL"
+        },
+        {
+          "caseId": "OCT26-17-INO",
+          "call": "CRL"
+        },
+        {
+          "caseId": "OCT26-18-SUN",
+          "call": "APPROVAL"
+        }
+      ]
+    }
+  ]
+}
