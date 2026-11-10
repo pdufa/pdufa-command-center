@@ -1,5 +1,6 @@
 "use client";
 import {useState} from "react";
+import {R89_ARCHIVED_ACACIA_SOURCE_HISTORY} from "../../../lib/focus-r89-acacia-prior-original-history";
 import styles from "../evidence-gaps/EvidenceRecoveryBoardR68.module.css";
 type Manifest=NonNullable<typeof import(
  "../../../lib/focus-r89-historical-source-recovery").R89_HISTORICAL_SOURCE_RECOVERY>;
@@ -87,6 +88,27 @@ export default function OriginalHistoryRecoveryR89Client({rows}:{rows:Row[]}){
        Original signed SAP chronology and independent clinical assessment:
        NOT VERIFIED.</small>
      </p>}
+     {row.nct===R89_ARCHIVED_ACACIA_SOURCE_HISTORY.nct&&
+       <details className={styles.coverageDetails}>
+        <summary>Four original ACACIA-HCM registry versions already preserved and checked in Revision 36</summary>
+        <p><small>Recovered in {R89_ARCHIVED_ACACIA_SOURCE_HISTORY.recoveredInPriorRevision}
+         and retained here; not newly retrieved by this source check.
+         The change in listed primary endpoints from one to two is original
+         registry text history, not a verdict on plan prespecification.</small></p>
+        <ul>{R89_ARCHIVED_ACACIA_SOURCE_HISTORY.previousVersionFiles.map(v=><li key={v.uiVersion}>
+         Version {v.uiVersion}: submitted {v.submittedDate},
+         first posted {v.publiclyPostedDate}; {v.primaryEndpointsListed} listed
+         primary endpoint{v.primaryEndpointsListed===1?"":"s"}.
+         {" "}<a target="_blank" rel="noopener noreferrer"
+          href={"https://github.com/pdufa/pdufa-command-center/blob/feature/main-r83-evidence-gap-export-20261109/"+v.originalRepoPath}>
+          View archived exact original JSON source
+         </a>
+         <div>Source byte SHA-256: <code>{v.sourceSha256}</code></div>
+        </li>)}</ul>
+        <p><small>Original prospective SAP signatures, source custodian approvals,
+         database lock, blind break and independent scientific signoff:
+         NOT VERIFIED. FDA forecast: ABSTAIN.</small></p>
+       </details>}
      <p><button type="button" onClick={()=>{void loadHistory(row.nct);}}
         disabled={history?.status==="loading"} style={{cursor:"pointer",
           padding:"9px 12px",background:"#fff",color:"#155c47",
@@ -96,8 +118,13 @@ export default function OriginalHistoryRecoveryR89Client({rows}:{rows:Row[]}){
          "Check original registry version index"}
        </button>
        {" · "}
+       <a href={"https://clinicaltrials.gov/study/"+row.nct+"?tab=history"}
+        target="_blank" rel="noopener noreferrer">
+        Open official public study record history
+       </a>
+       {" · "}
        <a href={row.exactStudyUrl} target="_blank" rel="noopener noreferrer">
-        Original registry study
+        Current registry study
        </a>
      </p>
      {history?.status==="error"&&<p role="alert">
