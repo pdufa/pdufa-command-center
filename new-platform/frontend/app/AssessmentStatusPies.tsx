@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AssessmentTrendLines from "./AssessmentTrendLines";
+import ChartTrendInset from "./ChartTrendInset";
 import type {PieSlice,PredictionAccuracySummary} from "../lib/focus-assessment-chart";
 
 const panel={
@@ -86,6 +87,11 @@ export default function AssessmentStatusPies({
       </p>
       <Pie slices={comparisonSlices} description={`${correct} accurate predictions and ${incorrect} not accurate predictions compared with verified FDA decisions`} emptyTitle={String(compared)} emptySubtitle="FDA decisions"/>
       <Legend slices={comparisonSlices} unit="count"/>
+      <ChartTrendInset testId="overall-accuracy-pie-trend"
+        title="Cumulative verified FDA accuracy"
+        kind="prospective"
+        points={overallTrend.map(p=>({at:p.date,value:p.accuratePct,label:p.correct+" / "+p.compared+" correct"}))}
+        emptyText="There are no two distinct FDA decision dates with independently verified predecision forecasts yet. The 0 remains correct."/>
       <p style={{fontWeight:800,textAlign:"center",margin:"12px 0 5px",fontSize:18}}>
         {accuracyPercent===null?"No verified comparisons yet":`${accuracyPercent.toFixed(1)}% correct`}
       </p>
@@ -131,6 +137,11 @@ export default function AssessmentStatusPies({
           emptyTitle={latest.researchOnly?(latest.predictedOutcome==="CRL"?"CRL":"FDA"):"0"}
           emptySubtitle={latest.researchOnly?"research call":"verified decisions"}
         />
+        <ChartTrendInset testId="latest-prediction-pie-trend"
+          title="This prediction's recorded approval-probability trend"
+          kind="prospective"
+          points={latestTrend.map(p=>({at:p.recordedAt,value:p.approvalPct,label:p.predictionId}))}
+          emptyText="This application has fewer than two dated, calibrated forecasts. A single CRL lean is not a probability trend."/>
         {latest.decisionVerdict!=="AWAITING_DECISION"?
           <Legend slices={latest.decisionComparisonSlices} unit="count"/>:
           latest.probabilitySlices.length?
@@ -173,6 +184,9 @@ export default function AssessmentStatusPies({
           in the verified audit registry.
         </p>
         <Pie slices={[]} description="No completed FDA prediction is recorded for the most recent prediction chart" emptyTitle="0" emptySubtitle="completed"/>
+        <ChartTrendInset testId="latest-prediction-pie-trend" title="Latest prediction trend"
+          kind="prospective" points={[]}
+          emptyText="No dated, independently calibrated forecast history is recorded."/>
         <div style={{textAlign:"center",fontSize:14,fontWeight:800,color:"#546e76",marginTop:12}}>
           NO COMPLETED PREDICTION
         </div>

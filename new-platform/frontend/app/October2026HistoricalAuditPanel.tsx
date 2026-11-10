@@ -1,6 +1,7 @@
 import october from "../data/october2026RetrospectiveFdaComparison.json";
 import original from "../data/october2026EvidenceCutoffFreeze.json";
 import illumya from "../data/october2026IlumyaEvidenceReconstruction.json";
+import ChartTrendInset,{cumulativeDatedAgreement} from "./ChartTrendInset";
 
 const sheetLink="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit#gid=2026420899";
 const green="#2f806b", amber="#b47b3a", muted="#566e69", dark="#214d44";
@@ -28,6 +29,10 @@ export default function October2026HistoricalAuditPanel(){
   }
   const percent=(100*matches.length/scoreable).toFixed(1);
   const alwaysApproveMatches=cases.filter(x=>x.eligibleForDirectionalMatchRate&&x.actualOutcome==="APPROVAL").length;
+  const trend=cumulativeDatedAgreement(cases.map(item=>({
+    date:item.actualFdaActionDate??("decisionAnnouncementDate" in item?item.decisionAnnouncementDate:null),
+    matched:item.sameDirection
+  })));
   return <section aria-label="October 2026 historical FDA PDUFA research audit"
     data-testid="october-2026-historical-audit"
     style={{background:"#fff",border:"1px solid #c7d9d2",
@@ -74,6 +79,9 @@ export default function October2026HistoricalAuditPanel(){
         </div>
       </div>
     </div>
+    <ChartTrendInset title="October 2026 cumulative Level 3 comparison trend"
+      testId="october-historical-donut-trend" kind="retrospective" points={trend}
+      emptyText="Fewer than two separately dated FDA actions are verified in this archive."/>
     <div style={{display:"flex",justifyContent:"space-between",flexWrap:"wrap",
       gap:8,alignItems:"center",margin:"0 0 12px"}}>
       <strong style={{fontSize:13}}>All 18 case outcomes</strong>

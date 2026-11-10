@@ -1,6 +1,7 @@
 import freeze from "../data/levelThreeOutcomeAwareRerunFreeze2026.json";
 import compared from "../data/levelThreeOutcomeAwareRerunComparison2026.json";
 import quarantine from "../data/historicalOutcomeAwareQuarantine2026.json";
+import ChartTrendInset,{cumulativeDatedAgreement} from "./ChartTrendInset";
 
 const spreadsheetUrl="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit";
 const ink="#23463f";
@@ -49,6 +50,7 @@ export default function HistoricalTestingChart(){
     throw new Error("HISTORICAL_TESTING_TOTALS_INVALID");
   }
   const pct=Math.round(matches/rows.length*100);
+  const archiveTrend=cumulativeDatedAgreement(rows.map(x=>({date:x.actual.fdaActionDate,matched:x.actual.didMatch})));
   return <section aria-label="Historical Testing Level 3 retrospective chart and data"
     data-testid="historical-testing-chart"
     style={{border:"1px solid #c6d9d3",background:"#fff",borderRadius:14,
@@ -91,6 +93,9 @@ export default function HistoricalTestingChart(){
         </div>
       </div>
     </div>
+    <ChartTrendInset title="Archived four-case cumulative Level 3 trend"
+      testId="four-case-historical-donut-trend" kind="retrospective" points={archiveTrend}
+      emptyText="Fewer than two dated FDA decisions are available in this archived group."/>
     <div style={{overflowX:"auto",borderRadius:9,border:"1px solid #e2eae6"}}>
       <table data-testid="historical-testing-data"
         style={{width:"100%",borderCollapse:"collapse",fontSize:12,minWidth:760}}>
