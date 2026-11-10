@@ -77,7 +77,7 @@ jobs:
                           f"unverified {d['sourceDocumentsUnverified']}/7.\n\n")
                   for x in d['records']:
                       f.write(f"- {x['filename']}: {x['retrievalStatus']}; ")
-                      f.write(x.get("failureCode","SHA-256 "+x["sourcePdfSha256"][:16])+"\n")
+                      f.write((x["failureCode"] if "failureCode" in x else "SHA-256 "+x["sourcePdfSha256"][:16])+"\n")
                   f.write("\nByte-hash validation is research provenance, not signed SAP chronology, authentic historical first-public availability, full statistical adjudication or independent FDA prediction. **FDA ABSTAIN; accuracy unavailable.**\n")
           PY
       - name: Retain metadata-only original SHA receipts, never the copyrighted PDFs
