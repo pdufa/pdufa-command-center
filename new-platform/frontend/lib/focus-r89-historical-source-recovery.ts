@@ -43,7 +43,27 @@ export function buildR89HistoricalSourceRecovery(
  const papers=new Map(journal.fiveRecords.map(r=>[r.nct,r]));
  if(bySource.size!==29||papers.size!==5||
     FIVE.some(nct=>!papers.has(nct)))return null;
- const rows=[];
+ const rows:Array<{
+  nct:string;ticker:string;cycleIds:string[];reportedPhase:string;
+  archivedPrimaryCompletionDate:string;exactStudyUrl:string;
+  currentRegistryProtocolSapFiles:0;
+  archiveResearchLane:string;researchPilot:string|null;
+  originalIndexedPivotalPublication:{
+    title:string;pmid:string;doi:string;articleUrl:string;
+    journalUrl:string;sourceAccess:string;supplementUrl:string|null;
+    authorReportedEffect:string;
+    originalSignedSapChronologyIndependentlyVerified:false;
+    qualifiedReviewerSigned:false
+  }|null;
+  existingCurrentRegistryPrimaryTable:boolean;
+  existingCurrentRegistrySafetyArms:boolean;
+  historicalVersionsInspectedInThisNewR89Run:0;
+  historicalSourceRecordsIndependentlyAuthenticated:0;
+  nextDocumentTasks:string[];
+  independentQualifiedScienceReview:false;
+  prospectivelyAuthenticatedSignedSAP:false;
+  validatedFDAOutcome:"ABSTAIN"
+ }> = [];
  const seen=new Set<string>();
  for(const trial of timeline.rows){
   const src=bySource.get(trial.nct);
