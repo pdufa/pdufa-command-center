@@ -1,4 +1,4 @@
-name: MAIN R83-R100 CTIS original PDF checksum and text diagnostic science gates
+name: MAIN R83-R101 CTIS original PDF checksum and partial extraction evidence gates
 # Read-only source status and documented reviewer handoff; not clinical validation.
 on:
   push:
@@ -72,6 +72,8 @@ on:
       - new-platform/frontend/tests/focus-r99-ctis-original-pdf-download.test.cjs
       - new-platform/frontend/app/predictions/scientific-reconciliation/priority-gates/ctis-text-index/route.ts
       - new-platform/frontend/tests/focus-r100-ctis-text-operator-diagnostic.test.cjs
+      - new-platform/frontend/data/focus-r101-acacia-pdf-text-diagnostic-readback-20261110.json
+      - new-platform/frontend/tests/focus-r101-original-pdf-text-coverage.test.cjs
   workflow_dispatch:
 
 permissions:
@@ -109,7 +111,7 @@ jobs:
         run: |
           set -euo pipefail
           npm install --no-audit --no-fund
-          node --test tests/focus-r81-all-source-readiness.test.cjs tests/focus-r83-evidence-gap-export.test.cjs tests/focus-r84-application-verification.test.cjs tests/focus-r85-registry-phase-crosscheck.test.cjs tests/focus-r86-original-document-inventory.test.cjs tests/focus-r87-public-original-pdf-receipt.test.cjs tests/focus-r88-source-chronology-triage.test.cjs tests/focus-r89-historical-source-recovery.test.cjs tests/focus-r90-canonical-results-source-coverage.test.cjs tests/focus-r91-posted-results-reconciliation.test.cjs tests/focus-r92-protocol-results-crosswalk.test.cjs tests/focus-r93-priority-scientific-gates.test.cjs tests/focus-r94-acacia-source-claims.test.cjs tests/focus-r95-eu-protocol-identity-gates.test.cjs tests/focus-r98-ctis-original-pdf-receipts.test.cjs tests/focus-r99-ctis-original-pdf-download.test.cjs tests/focus-r100-ctis-text-operator-diagnostic.test.cjs
+          node --test tests/focus-r81-all-source-readiness.test.cjs tests/focus-r83-evidence-gap-export.test.cjs tests/focus-r84-application-verification.test.cjs tests/focus-r85-registry-phase-crosscheck.test.cjs tests/focus-r86-original-document-inventory.test.cjs tests/focus-r87-public-original-pdf-receipt.test.cjs tests/focus-r88-source-chronology-triage.test.cjs tests/focus-r89-historical-source-recovery.test.cjs tests/focus-r90-canonical-results-source-coverage.test.cjs tests/focus-r91-posted-results-reconciliation.test.cjs tests/focus-r92-protocol-results-crosswalk.test.cjs tests/focus-r93-priority-scientific-gates.test.cjs tests/focus-r94-acacia-source-claims.test.cjs tests/focus-r95-eu-protocol-identity-gates.test.cjs tests/focus-r98-ctis-original-pdf-receipts.test.cjs tests/focus-r99-ctis-original-pdf-download.test.cjs tests/focus-r100-ctis-text-operator-diagnostic.test.cjs tests/focus-r101-original-pdf-text-coverage.test.cjs
           npm run typecheck
           npm run build
       - name: Report limited scientific status
