@@ -1,6 +1,7 @@
 import {FOCUS_R69_REGISTRY_PUBLICATION_LEADS} from
   "../../../lib/focus-r69-original-publication-leads";
 import PublicationEvidenceRoleR70 from "./PublicationEvidenceRoleR70";
+import OriginalPubmedArticleMetadataR70 from "./OriginalPubmedArticleMetadataR70";
 import styles from "./OriginalPublicationLeadsR69.module.css";
 
 /** Read-only external PubMed search leads derived from archived registry
