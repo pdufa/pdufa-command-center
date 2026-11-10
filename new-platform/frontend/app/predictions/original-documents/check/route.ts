@@ -35,7 +35,39 @@ export async function GET(request:Request):Promise<Response>{
   if(raw.length>2_000_000)return fail(502,"REGISTRY_RESPONSE_TOO_LARGE");
   const body:unknown=JSON.parse(raw);
   const result=inspectR86CurrentStudy(row,body);
-  if(!result)return fail(502,"REGISTRY_SOURCE_IDENTITY_OR_STRUCTURE_INVALID");
+
+  if(!result){
+   // Strict-source failure diagnostics expose only schema/field types, not raw
+   // trial results or reviewer identities. Never manufacture a partial success.
+   const value=(body&&typeof body==="object")?body as Record<string,unknown>:{};
+   const results=value.resultsSection;
+   const section=value.documentSection;
+   const sm=(section&&typeof section==="object")?section as Record<string,unknown>:{};
+   const lm=sm.largeDocumentModule;
+   const l=(lm&&typeof lm==="object")?lm as Record<string,unknown>:{};
+   const rawDocs=Array.isArray(l.largeDocs)?l.largeDocs:[];
+   const ident=value.protocolSection;
+   const p=(ident&&typeof ident==="object")?ident as Record<string,unknown>:{};
+   const m=p.identificationModule;
+   const i=(m&&typeof m==="object")?m as Record<string,unknown>:{};
+   return Response.json({
+    error:"REGISTRY_SOURCE_IDENTITY_OR_STRUCTURE_INVALID",
+    diagnostic:{
+      recordIdentityMatches:i.nctId===row.nct,
+      hasResultsType:typeof value.hasResults,
+      hasResults:value.hasResults===true,
+      resultSectionPresent:!!results,
+      rawDocumentCount:rawDocs.length,
+      documentFieldTypes:rawDocs.slice(0,2).map((doc:unknown)=>{
+        const x=(doc&&typeof doc==="object")?doc as Record<string,unknown>:{};
+        return {keys:Object.keys(x),filename:x.filename,
+          size:x.size,date:x.date,uploadDate:x.uploadDate};
+      })
+    },
+    sourceEvidenceNotAdjudicated:true,
+    signedSAPVersionsAuthenticated:0,independentFDAForecast:"ABSTAIN"
+   },{status:502,headers:HEADERS});
+  }
   return Response.json(result,{headers:HEADERS});
  }catch{
   return fail(502,"OFFICIAL_REGISTRY_LOOKUP_FAILED");
