@@ -53,6 +53,9 @@ jobs:
       - name: Build unadjudicated subspecialty dossiers
         run: |
           python scripts/medical/subspecialty_dossier_builder.py --matrix phase4-artifacts/twenty-level-readiness.json --output phase4-artifacts/subspecialty-dossiers.json
+      - name: Attach unreviewed registry evidence leads
+        run: |
+          python scripts/medical/subspecialty_registry_evidence_leads.py --dossiers phase4-artifacts/subspecialty-dossiers.json --checkpoint phase4-artifacts/checkpoint.json --output phase4-artifacts/subspecialty-evidence-leads.json
       - name: Summarize research status
         if: always()
         run: |
@@ -74,5 +77,6 @@ jobs:
             phase4-artifacts/checkpoint.json
             phase4-artifacts/twenty-level-readiness.json
             phase4-artifacts/subspecialty-dossiers.json
+            phase4-artifacts/subspecialty-evidence-leads.json
           if-no-files-found: warn
           retention-days: 90
