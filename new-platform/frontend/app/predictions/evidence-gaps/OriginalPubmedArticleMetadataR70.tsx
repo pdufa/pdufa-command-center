@@ -20,7 +20,7 @@ export default function OriginalPubmedArticleMetadataR70({nct}:{nct:string}){
     <p className={styles.intro}>Original PubMed XML metadata and available
       abstracts retrieved for <strong>{source.originalPubmedRecordsRetrieved} references</strong>
       across the seven NCTs with registry-listed leads. For all 11 references,
-      PubMed links the NCT in its databank; only eight mention the exact NCT
+      PubMed links the ClinicalTrials.gov NCT in its databank; only eight mention the exact NCT
       within the article title or abstract. Neither proves a paper reports
       a prospectively defined pivotal Phase 3 outcome.</p>
     <div className={styles.list}>
