@@ -39,6 +39,7 @@ function selectedRun(first:Run,second:Run){
  */
 export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:boolean}){
   const [choice,setChoice]=useState("3");
+  const [yearChoice,setYearChoice]=useState("2026");
   if(data.schemaVersion!==2||
     data.dataset!=="HISTORICAL_MONTHLY_LEVEL_COMPARISONS_2026_V2"||
     data.methodGuardrails.notLiveAccuracy!==true||
@@ -46,9 +47,11 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
     data.methodGuardrails.validBlindAccuracy!==null||
     data.methodGuardrails.cohortsNotPopulationComparable!==true||
     data.methodGuardrails.doNotPromoteHistoricalToLiveAccuracy!==true||
-    cohorts.length!==10||new Set(cohorts.map(c=>c.cohortId)).size!==10||
-    new Set(cohorts.map(c=>c.color.toLowerCase())).size!==10||
-    cohorts.some((c,i)=>c.yearMonth!=="2026-"+String(i+1).padStart(2,"0"))){
+    cohorts.length<10||new Set(cohorts.map(c=>c.cohortId)).size!==cohorts.length||
+    new Set(cohorts.map(c=>c.yearMonth)).size!==cohorts.length||
+    cohorts.slice(0,10).some((c,i)=>c.yearMonth!=="2026-"+String(i+1).padStart(2,"0"))||
+    cohorts.some((c,i)=>!/^20\d{2}-(0[1-9]|1[0-2])$/.test(c.yearMonth)||
+      (i>0&&cohorts[i-1].yearMonth>=c.yearMonth))){
     throw new Error("HISTORICAL_TEN_MONTH_LEVEL_BENCHMARK_INVALID");
   }
   const seenRunIds=new Set<string>();
@@ -91,11 +94,24 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
   }
   const levels=[...byLevel.keys()].sort((a,b)=>a-b);
   if(!levels.includes(3))throw new Error("LEVEL_3_BASELINE_MISSING");
-  const selectedLevels=choice==="all"?levels:levels.filter(l=>String(l)===choice);
-  if(!selectedLevels.length)throw new Error("LEVEL_NOT_RECORDED");
+  // Only list years with actual case-level assessment runs. Switching years
+  // resets the trend and denominators rather than joining unrelated years.
+  const years=[...new Set(runs.map(r=>cohorts.find(c=>c.cohortId===r.cohortId)!.yearMonth.slice(0,4)))]
+    .sort((a,b)=>b.localeCompare(a));
+  const activeYear=years.includes(yearChoice)?yearChoice:years[0];
+  const yearCohorts=cohorts.filter(c=>c.yearMonth.startsWith(activeYear+"-"));
+  if(new Set(yearCohorts.map(c=>c.color.toLowerCase())).size!==yearCohorts.length){
+    throw new Error("DUPLICATE_COLORS_WITHIN_PDUFA_YEAR_"+activeYear);
+  }
+  const yearLevels=levels.filter(level=>yearCohorts.some(c=>byLevel.get(level)?.has(c.cohortId)));
+  if(!yearLevels.length)throw new Error("PDUFA_YEAR_HAS_NO_RECORDED_LEVELS_"+activeYear);
+  const visibleChoice=choice==="all"?"all":
+    yearLevels.includes(Number(choice))?choice:String(yearLevels[0]);
+  const selectedLevels=visibleChoice==="all"?yearLevels:
+    yearLevels.filter(l=>String(l)===visibleChoice);
   const series:Series[]=selectedLevels.map(level=>{
     let total=0,matches=0,misses=0,abstains=0,covered=0;
-    const months=cohorts.map(cohort=>{
+    const months=yearCohorts.map(cohort=>{
       const run=byLevel.get(level)?.get(cohort.cohortId);
       if(!run)return null;
       const actual=new Map(cohort.benchmarkCases.map(x=>[x.id,x.actualDecision]));
@@ -113,50 +129,73 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
   const minCumulative=Math.min(...graphPoints.map(x=>x.cumulativeRate));
   const bottom=Math.max(0,Math.floor((minCumulative-5)/10)*10);
   const ticks=Array.from({length:Math.round((100-bottom)/10)+1},(_,i)=>bottom+i*10);
-  const px=(i:number)=>L+i*(W-L-R)/(cohorts.length-1);
+  const px=(i:number)=>yearCohorts.length===1?(L+W-R)/2:
+    L+i*(W-L-R)/(yearCohorts.length-1);
   const py=(v:number)=>T+(100-v)*(H-T-B)/(100-bottom);
   // Mobile chart uses a dedicated small viewport, not a clipped 650px desktop SVG.
   const MW=360,MH=244,ML=34,MR=10,MT=26,MB=47;
-  const mx=(i:number)=>ML+i*(MW-ML-MR)/(cohorts.length-1);
+  const mx=(i:number)=>yearCohorts.length===1?(ML+MW-MR)/2:
+    ML+i*(MW-ML-MR)/(yearCohorts.length-1);
   const my=(v:number)=>MT+(100-v)*(MH-MT-MB)/(100-bottom);
   const lines=["#168267","#415F9D","#9C4B8E","#B07813"];
   const lineColor=(i:number)=>lines[i%lines.length];
   const panel={border:"1px solid #d7d5ea",borderRadius:11,background:"#f8f7ff",padding:"13px 15px"} as const;
   return <section id="historical-performance" data-testid="historical-monthly-level-trend"
-    aria-label="Level-dependent historical FDA assessment dashboard January through October 2026"
+    aria-label={"Level-dependent historical FDA assessment dashboard for PDUFA year "+activeYear}
     style={{border:"1px solid #c7bddf",borderRadius:14,background:"#fff",
       padding:"clamp(14px,2vw,22px)",margin:"0 0 22px",color:dark}}>
     <div style={{background:"#4a277f",color:"#fff",borderRadius:9,padding:"11px 14px",
       fontSize:15,fontWeight:850}}>◴ OLD PREDICTIONS · HISTORICAL LEVEL COMPARISONS</div>
     {compact?<p style={{fontSize:13,color:"#304e47",margin:"9px 0 4px"}}>
-      <strong>Historical trend — Level 3:</strong> 100 of 106 retrospective matches
-      (94.3%). The line below shows cumulative agreement, not monthly accuracy or
-      verified blind performance.
+      <strong>Historical trend — {visibleChoice==="all"?"all recorded levels":"Level "+visibleChoice}
+      {" · PDUFA "+activeYear}:</strong>{" "}
+      {visibleChoice==="all"?"Compare recorded historical levels.":
+        series[0].matches+" of "+series[0].total+" retrospective matches ("+
+        rate(series[0].matches,series[0].total)+")."}
+      {" "}The line below shows cumulative agreement, not monthly accuracy or verified blind performance.
     </p>:null}
     {!compact?<p style={{color:muted,fontSize:13,lineHeight:1.6}}>
       Outcome-aware Level 3-style research reconstructed after FDA decisions, not genuine blind accuracy.
-      The level selector updates every historical metric on this panel; live forecasts are separate.
+      The assessment level and PDUFA year selectors update every historical metric; live forecasts are separate.
     </p>:null}
     <div style={{display:"flex",flexWrap:"wrap",alignItems:"end",gap:14,margin:"14px 0"}}>
-      <div style={{display:"grid",gap:5,minWidth:230,flex:"0 1 285px"}}>
+      <div data-testid="historical-level-year-controls"
+        style={{display:"grid",gridTemplateColumns:"minmax(0,1.35fr) minmax(0,1fr)",
+          alignItems:"end",gap:10,width:"min(100%,570px)"}}>
+      <div style={{display:"grid",gap:5,minWidth:0}}>
         <label htmlFor="historical-assessment-level-select"
           style={{fontSize:13,fontWeight:850}}>Assessment Level</label>
         <select id="historical-assessment-level-select"
           data-testid="historical-assessment-level-dropdown"
-          value={choice} onChange={e=>setChoice(e.currentTarget.value)}
+          value={visibleChoice} onChange={e=>setChoice(e.currentTarget.value)}
           style={{background:"#fff",color:dark,border:"1px solid #a8b7b3",
-            borderRadius:8,fontWeight:750,fontSize:15,padding:"11px",minHeight:44}}>
+            borderRadius:8,fontWeight:750,fontSize:15,padding:"11px",minHeight:44,
+            width:"100%",minWidth:0}}>
           {Array.from({length:data.methodGuardrails.maxResearchLevel},(_,i)=>i+1).map(level=>
-            <option key={level} value={String(level)} disabled={!levels.includes(level)}>
-              {"Level "+level+(levels.includes(level)?" — recorded":" — not assessed")}
+            <option key={level} value={String(level)} disabled={!yearLevels.includes(level)}>
+              {"Level "+level+(yearLevels.includes(level)?" — recorded":" — not assessed")}
             </option>)}
           <option value="all">Compare all recorded levels</option>
         </select>
       </div>
+      <div style={{display:"grid",gap:5,minWidth:0}}>
+        <label htmlFor="historical-pdufa-year-select"
+          style={{fontSize:13,fontWeight:850}}>PDUFA Year</label>
+        <select id="historical-pdufa-year-select"
+          data-testid="historical-pdufa-year-dropdown"
+          value={activeYear} onChange={e=>setYearChoice(e.currentTarget.value)}
+          style={{background:"#fff",color:dark,border:"1px solid #a8b7b3",
+            borderRadius:8,fontWeight:750,fontSize:15,padding:"11px",minHeight:44,
+            width:"100%",minWidth:0}}>
+          {years.map(year=><option key={year} value={year}>{year}</option>)}
+        </select>
+      </div>
+      </div>
       <p data-testid="historical-selected-level-status" role="status" aria-live="polite"
         style={{fontSize:12,color:muted,maxWidth:600,lineHeight:1.5,margin:0}}>
-        {choice==="all"?"Compare all recorded levels. Only independently saved level runs appear.":
-          "Displaying Level "+choice+" results. Unrecorded levels are disabled, not estimated."}
+        {visibleChoice==="all"?"Comparing all recorded levels for PDUFA "+activeYear+".":
+          "Displaying Level "+visibleChoice+" results for PDUFA "+activeYear+"."}
+        {" "}Only years and levels with saved case assessments appear.
         {" "}Future runs must retain the same case IDs for each month.
       </p>
     </div>
@@ -172,7 +211,7 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
         <div style={{fontWeight:750,fontSize:13}}>{s.matches} / {s.total} matched</div>
         <div style={{color:muted,fontSize:12,marginTop:5}}>
           {s.misses} missed · {s.abstains} abstained<br/>
-          {s.covered} / {cohorts.length} months assessed
+          {s.covered} / {yearCohorts.length} months assessed
         </div>
       </div>)}
       <div style={{...panel,background:"#f6faf8",borderColor:"#cbded4"}}>
@@ -181,7 +220,10 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
         <div style={{fontSize:12,color:muted}}>Historical runs cannot validate prospective accuracy</div>
       </div>
     </div>
-    <h2 style={{fontSize:20,margin:"12px 0 6px"}}>Cumulative FDA agreement trend · Jan–Oct 2026</h2>
+    <h2 style={{fontSize:20,margin:"12px 0 6px"}}>
+      Cumulative FDA agreement trend · {yearCohorts[0].monthLabel.slice(0,3)}
+      {"–"}{yearCohorts.at(-1)!.monthLabel.slice(0,3)} {activeYear}
+    </h2>
     <p data-testid="historical-trend-key" style={{fontSize:13,fontWeight:800,color:"#096C56",margin:"4px 0 8px"}}>
       <span aria-hidden="true" style={{display:"inline-block",width:35,height:5,
         borderRadius:4,verticalAlign:"middle",background:"#096C56",marginRight:7}}/>
@@ -192,7 +234,7 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
       This is a case-count-weighted cumulative trend, not a line connecting isolated monthly percentages.
     </p>
     {!compact?<div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:10}}>
-      {cohorts.map(cohort=><div key={cohort.cohortId}
+      {yearCohorts.map(cohort=><div key={cohort.cohortId}
         data-testid={"month-color-"+cohort.yearMonth}
         style={{display:"flex",alignItems:"center",gap:6,fontSize:12,color:dark}}>
         <span style={{width:11,height:11,borderRadius:"50%",background:cohort.color}}/>
@@ -235,13 +277,13 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
                 " cumulative "+rate(point.cumulativeMatches,point.cumulativeTotal)+
                 " ("+point.cumulativeMatches+"/"+point.cumulativeTotal+")."}</title>
             </circle>
-            {choice!=="all"?<text x={px(index)} y={py(point.cumulativeRate)-16}
+            {visibleChoice!=="all"?<text x={px(index)} y={py(point.cumulativeRate)-16}
               fontSize="12" textAnchor="middle" fill={dark} fontWeight="800">
               {rate(point.cumulativeMatches,point.cumulativeTotal)}
             </text>:null}
           </g>:null)}
         </g>)}
-        {cohorts.map((c,i)=><text key={c.cohortId} x={px(i)} y={H-B+27}
+        {yearCohorts.map((c,i)=><text key={c.cohortId} x={px(i)} y={H-B+27}
           textAnchor="middle" fill={c.color} fontWeight="800" fontSize="14">
           {c.monthLabel.slice(0,3)}
         </text>)}
@@ -250,7 +292,7 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
     <div className="historical-trend-mobile" data-testid="historical-trend-mobile-view"
       style={{display:"none",background:"#f8faf9",borderRadius:10,padding:"8px 2px"}}>
       <svg data-testid="historical-mobile-trend-line-chart" role="img"
-        aria-label={"Mobile cumulative FDA historical agreement Jan through Oct 2026. "+
+        aria-label={"Mobile cumulative FDA historical agreement for PDUFA "+activeYear+". "+
           series.map(s=>"Level "+s.level+": "+rate(s.matches,s.total)).join("; ")+
           ". Not verified blind accuracy."}
         viewBox={"0 0 "+MW+" "+MH}
@@ -271,7 +313,7 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
               strokeDasharray={i>0?"8 5":undefined}/>}
             {plotted.map(pt=><circle key={pt.index} cx={pt.x} cy={pt.y} r="4.5"
               fill={pt.point.cohort.color} stroke="#fff" strokeWidth="1.5"/>)}
-            {choice!=="all"&&plotted.length>0&&<g>
+            {visibleChoice!=="all"&&plotted.length>0&&<g>
               <text x={Math.max(ML+17,plotted[0].x)}
                 y={Math.min(MH-MB-12,plotted[0].y+21)}
                 fontSize="11" fontWeight="800" textAnchor="start" fill="#155F50">
@@ -285,7 +327,7 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
             </g>}
           </g>;
         })}
-        {cohorts.map((c,i)=><text key={c.cohortId} x={mx(i)} y={MH-MB+22}
+        {yearCohorts.map((c,i)=><text key={c.cohortId} x={mx(i)} y={MH-MB+22}
           textAnchor="middle" fontSize="10" fontWeight="800" fill={c.color}>
           {c.monthLabel.slice(0,3)}
         </text>)}
@@ -305,10 +347,10 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
             <th scope="col" key={h} style={{padding:"10px 8px",whiteSpace:"nowrap"}}>{h}</th>)}
         </tr></thead>
         <tbody>{series.flatMap(s=>s.months.map((point,i)=>({s,point,i}))).map(({s,point,i})=>
-          <tr key={s.level+"-"+cohorts[i].cohortId}
+          <tr key={s.level+"-"+yearCohorts[i].cohortId}
             style={{background:i%2?"#fbfdfa":"#fff"}}>
-            <td style={{padding:8,color:cohorts[i].color,fontWeight:850}}>
-              {cohorts[i].monthLabel} 2026</td>
+            <td style={{padding:8,color:yearCohorts[i].color,fontWeight:850}}>
+              {yearCohorts[i].monthLabel} {activeYear}</td>
             <td style={{padding:8}}>Level {s.level}</td>
             <td style={{padding:8,fontWeight:800}}>{point?point.matches+" / "+point.total:"—"}</td>
             <td style={{padding:8}}>{point?point.misses+" missed · "+point.abstains+" abstain":"Not assessed"}</td>
@@ -333,11 +375,10 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
         Fixed-case replay rules and source limitations
       </summary>
       <p>
-        January–May comprises a selected and separately sourced historical roster, not a census.
-        June–October uses varying posthoc action-date and goal-date populations; September is
-        approval-only. Consequently, the combined cumulative slope is descriptive, not a
-        controlled measure of model improvement. All 2026 research runs were written after
-        FDA outcomes were public.
+        This PDUFA Year selector groups the tracked historical calendar year; some records
+        do not have independently verified original PDUFA goal dates.
+        The historical cases are outcome-aware reconstructions, not blind forecasts.
+        The cumulative slope is descriptive, not a controlled measure of model improvement.
       </p>
       <p>
         As the analysis level advances to 4–20, save a full exact-case run with its method
@@ -345,7 +386,7 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
         this versioned dataset and the site is redeployed. Missing levels remain disabled.
         Further revisions may increment revisionNumber while retaining prior Git history.
       </p>
-      {cohorts.map(c=><p key={c.cohortId}>
+      {yearCohorts.map(c=><p key={c.cohortId}>
         <strong style={{color:c.color}}>{c.monthLabel}:</strong> {c.cohortSelection}{" "}
         <a href={c.sourceUrl} target="_blank" rel="noopener noreferrer">Case-level source</a>
       </p>)}

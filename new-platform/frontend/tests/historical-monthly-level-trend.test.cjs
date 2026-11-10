@@ -82,7 +82,8 @@ test("Level 3 default drives old-prediction summary, cumulative weighted graph a
   const html=renderToStaticMarkup(React.createElement(Chart));
   for(const key of ["historical-monthly-level-trend","historical-monthly-level-line-chart",
     "historical-monthly-level-table","historical-level-summary-3","historical-level-rate-3",
-    "historical-assessment-level-dropdown","historical-level-tag-3"]){
+    "historical-assessment-level-dropdown","historical-pdufa-year-dropdown",
+    "historical-level-year-controls","historical-level-tag-3"]){
     assert.match(html,new RegExp('data-testid="'+key+'"'));
   }
   assert.match(html,/100 \/ 106 matched/);
@@ -93,7 +94,10 @@ test("Level 3 default drives old-prediction summary, cumulative weighted graph a
   assert.match(html,/VERIFIED BLIND ACCURACY/);
   assert.match(html,/Level 4 — not assessed/);
   assert.match(html,/Compare all recorded levels/);
-  assert.match(html,/Displaying Level 3 results/);
+  assert.match(html,/Displaying Level 3 results for PDUFA 2026/);
+  assert.match(html,/PDUFA Year/);
+  assert.match(html,/id="historical-pdufa-year-select"/);
+  assert.match(html,/Cumulative FDA agreement trend · Jan–Oct 2026/);
   for(const [month,name,,,color] of expected){
     assert.match(html,new RegExp('data-testid="month-color-'+month+'"'));
     assert.ok(html.includes(name));
@@ -102,6 +106,66 @@ test("Level 3 default drives old-prediction summary, cumulative weighted graph a
   for(const fragment of ["85.7%","88.2%","88.9%","95.0%","94.1%"]){
     assert.ok(html.includes(fragment),fragment+" monthly value absent");
   }
+});
+
+test("PDUFA Year dropdown filters the table, annual cumulative trend and totals without altering 2026",()=>{
+  const june=data.cohorts[5],run=data.runs[5];
+  const prefix="TEST_2027_";
+  const fresh={
+    ...june,cohortId:"historical-2027-01-v1",
+    yearMonth:"2027-01",monthLabel:"January",color:"#345DAA",
+    benchmarkCaseIds:june.benchmarkCaseIds.map(id=>prefix+id),
+    benchmarkCases:june.benchmarkCases.map(x=>({...x,id:prefix+x.id}))
+  };
+  const nextRun={
+    ...run,cohortId:fresh.cohortId,runId:"TEST_LEVEL3_2027_JANUARY",
+    caseCalls:run.caseCalls.map(x=>({...x,caseId:prefix+x.caseId}))
+  };
+  data.cohorts.push(fresh);
+  data.runs.push(nextRun);
+  let renderer=null;
+  try{
+    TestRenderer.act(()=>{renderer=TestRenderer.create(React.createElement(Chart))});
+    const yearControl=renderer.root.findByProps({"data-testid":"historical-pdufa-year-dropdown"});
+    const levelControl=renderer.root.findByProps({"data-testid":"historical-assessment-level-dropdown"});
+    assert.equal(yearControl.props.value,"2026");
+    assert.equal(levelControl.props.value,"3");
+    let html=JSON.stringify(renderer.toJSON());
+    assert.match(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-3"})),/100 \/ 106 matched/);
+    assert.match(html,/2027/); // The new recorded year becomes selectable.
+    TestRenderer.act(()=>yearControl.props.onChange({currentTarget:{value:"2027"}}));
+    html=JSON.stringify(renderer.toJSON());
+    assert.equal(yearControl.props.value,"2027");
+    assert.equal(levelControl.props.value,"3");
+    assert.match(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-3"})),/15 \/ 17 matched/);
+    assert.match(html,/88\.2%/);
+    assert.match(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-3"})),/1 \/ 1 months assessed/);
+    assert.doesNotMatch(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-3"})),/100 \/ 106 matched/);
+    assert.match(html,/historical-monthly-level-table/);
+    assert.match(html,/2027-01/);
+    assert.doesNotMatch(html,/month-color-2026-01/);
+    assert.match(html,/Cumulative FDA agreement trend/);
+    TestRenderer.act(()=>yearControl.props.onChange({currentTarget:{value:"2026"}}));
+    html=JSON.stringify(renderer.toJSON());
+    assert.match(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-3"})),/100 \/ 106 matched/);
+    assert.doesNotMatch(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-3"})),/15 \/ 17 matched/);
+  }finally{
+    if(renderer)TestRenderer.act(()=>renderer.unmount());
+    data.runs.pop();
+    data.cohorts.pop();
+  }
+});
+
+test("Year dropdown is not populated from an unassessed cohort, and future years do not invent scores",()=>{
+  const extra={...data.cohorts[5],
+    cohortId:"historical-2027-01-v1",yearMonth:"2027-01",color:"#345DAA"};
+  data.cohorts.push(extra);
+  try{
+    const html=renderToStaticMarkup(React.createElement(Chart));
+    assert.match(html,/id="historical-pdufa-year-select"/);
+    assert.doesNotMatch(html,/<option[^>]*value="2027"/);
+    assert.match(html,/100 \/ 106 matched/);
+  }finally{data.cohorts.pop();}
 });
 
 test("Level 4 addition updates all history widgets and compare-all without changing saved Level 3",()=>{
