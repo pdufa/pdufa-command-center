@@ -1,6 +1,7 @@
 import type {
   OverallAccuracyTrendPoint,LastPredictionTrendPoint
 } from "../lib/focus-assessment-chart";
+import {bestFitTrend} from "../lib/assessment-best-fit-trend";
 
 type Point={at:string;first:number;second:number};
 const green="#168a6d";
@@ -28,8 +29,8 @@ function PerformanceLineChart({
   const maxTime=usable?Math.max(...times):0;
   const plotX=(at:string)=>xStart+(Date.parse(at)-minTime)/(maxTime-minTime)*(xEnd-xStart);
   const plotY=(value:number)=>yBottom-(value/100)*(yBottom-yTop);
-  const coordinates=(key:"first"|"second")=>
-    points.map(point=>`${plotX(point.at).toFixed(2)},${plotY(point[key]).toFixed(2)}`).join(" ");
+  const firstFit=usable?bestFitTrend(points.map(point=>({x:Date.parse(point.at),y:point.first}))):null;
+  const secondFit=usable?bestFitTrend(points.map(point=>({x:Date.parse(point.at),y:point.second}))):null;
   const formatDate=(at:string)=>at.slice(0,10);
   return <div>
     <svg role="img" viewBox="0 0 735 250" style={{width:"100%",height:"auto",display:"block"}}
@@ -47,10 +48,18 @@ function PerformanceLineChart({
       </g>)}
       <line x1={xStart} y1={yTop} x2={xStart} y2={yBottom} stroke="#91a8ae" strokeWidth="1.5"/>
       {usable?<>
-        <polyline points={coordinates("first")} fill="none" stroke={green}
-          strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round"/>
-        <polyline points={coordinates("second")} fill="none" stroke={orange}
-          strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round"/>
+        {firstFit&&<line data-testid="performance-best-fit-first"
+          x1={xStart} y1={plotY(Math.max(0,Math.min(100,firstFit.yStart)))}
+          x2={xEnd} y2={plotY(Math.max(0,Math.min(100,firstFit.yEnd)))}
+          stroke={green} strokeWidth="4" strokeLinecap="round">
+          <title>{firstLabel+" least-squares best-fit trend across dated observations"}</title>
+        </line>}
+        {secondFit&&<line data-testid="performance-best-fit-second"
+          x1={xStart} y1={plotY(Math.max(0,Math.min(100,secondFit.yStart)))}
+          x2={xEnd} y2={plotY(Math.max(0,Math.min(100,secondFit.yEnd)))}
+          stroke={orange} strokeWidth="4" strokeLinecap="round">
+          <title>{secondLabel+" least-squares best-fit trend across dated observations"}</title>
+        </line>}
         {points.map((point,i)=><g key={point.at+"-"+i}>
           <circle cx={plotX(point.at)} cy={plotY(point.first)} r="4" fill={green} stroke="white" strokeWidth="1.5"/>
           <circle cx={plotX(point.at)} cy={plotY(point.second)} r="4" fill={orange} stroke="white" strokeWidth="1.5"/>
@@ -74,7 +83,7 @@ function PerformanceLineChart({
       </span>)}
     </div>
     <p style={{fontSize:12,color:"#596f73",lineHeight:1.55,margin:"0"}}>
-      {usable?`${points.length} dated observations. All values are recorded percentages, not predicted future performance.`:emptyText}
+      {usable?`${points.length} dated observations. Straight lines are least-squares best fits; dots are recorded values, not predicted future performance.`:emptyText}
     </p>
   </div>;
 }

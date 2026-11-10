@@ -13,6 +13,7 @@ require.extensions[".tsx"]=(module,filename)=>module._compile(
       jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}
   }).outputText,filename
 );
+require.extensions[".ts"]=require.extensions[".tsx"];
 const data=require("../data/historicalMonthlyLevelRuns2026.json");
 const Chart=require("../app/HistoricalMonthlyLevelTrend.tsx").default;
 function flattenedText(node){
@@ -98,6 +99,8 @@ test("Level 3 default drives old-prediction summary, cumulative weighted graph a
   assert.match(html,/PDUFA Year/);
   assert.match(html,/id="historical-pdufa-year-select"/);
   assert.match(html,/Cumulative FDA agreement trend · Jan–Oct 2026/);
+  assert.match(html,/least-squares best-fit trend/);
+  assert.doesNotMatch(html,/<polyline/);
   for(const [month,name,,,color] of expected){
     assert.match(html,new RegExp('data-testid="month-color-'+month+'"'));
     assert.ok(html.includes(name));
@@ -259,9 +262,9 @@ test("Page separates historical selected-level panel from future validated predi
 test("Full ten-month trend renders a mobile-safe polyline and visible cumulative legend",()=>{
   const html=renderToStaticMarkup(React.createElement(Chart));
   assert.match(html,/data-testid="historical-mobile-trend-line-chart"/);
-  assert.match(html,/data-testid="mobile-cumulative-path-3"/);
+  assert.match(html,/data-testid="mobile-best-fit-line-3"/);
   assert.match(html,/data-testid="historical-trend-key"/);
-  assert.match(html,/Solid green line = cumulative historical agreement/);
+  assert.match(html,/Solid green line = least-squares best-fit trend/);
   assert.match(html,/100 \/ 106 matched/);
   const css=fs.readFileSync(path.join(__dirname,"../app/globals.css"),"utf8");
   assert.match(css,/@media \(max-width: 650px\)/);

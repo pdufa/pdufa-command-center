@@ -1,3 +1,4 @@
+import {bestFitTrend} from "../lib/assessment-best-fit-trend";
 type TrendPoint={at:string;value:number;label?:string};
 type DatedComparison={date:string|null|undefined;matched:boolean|null|undefined};
 
@@ -45,13 +46,15 @@ export default function ChartTrendInset({
   const dedup=new Map<string,TrendPoint>();
   for(const point of valid)dedup.set(point.at,point);
   const chronological=[...dedup.values()].sort((a,b)=>Date.parse(a.at)-Date.parse(b.at));
-  const hasLine=chronological.length>=2&&Date.parse(chronological.at(-1)!.at)>Date.parse(chronological[0].at);
+  const fit=bestFitTrend(chronological.map(p=>({x:Date.parse(p.at),y:p.value})));
+  const hasLine=fit!==null;
   const W=440,H=140,L=36,R=15,T=18,B=32;
   const values=chronological.map(x=>x.value);
-  const bottom=hasLine?Math.max(0,Math.floor((Math.min(...values)-10)/20)*20):0;
+  const bottom=hasLine?Math.max(0,Math.floor((
+    Math.min(...values,fit.yStart,fit.yEnd)-10)/20)*20):0;
   const bottomY=H-B;
-  const X=(i:number)=>L+i*(W-L-R)/(chronological.length-1);
-  const Y=(v:number)=>T+(100-v)*(bottomY-T)/(100-bottom);
+  const X=(t:number)=>L+(t-fit!.xStart)*(W-L-R)/(fit!.xEnd-fit!.xStart);
+  const Y=(v:number)=>T+(100-Math.max(bottom,Math.min(100,v)))*(bottomY-T)/(100-bottom);
   return <div data-testid={testId} style={{
     border:"1px solid #d1e6dc",background:"#f7fcf9",borderRadius:10,
     padding:"10px 11px",margin:"12px 0 0",minWidth:0}}>
@@ -72,9 +75,13 @@ export default function ChartTrendInset({
         <line x1={L} x2={W-R} y1={Y(v)} y2={Y(v)} stroke="#deebe3" strokeWidth="1"/>
         <text x={L-5} y={Y(v)+3} textAnchor="end" fontSize="10" fill={grey}>{Math.round(v)}%</text>
       </g>)}
-      <polyline points={chronological.map((p,i)=>X(i).toFixed(2)+","+Y(p.value).toFixed(2)).join(" ")}
-        fill="none" stroke={accent} strokeWidth="4.2" strokeLinecap="round" strokeLinejoin="round"/>
-      {chronological.map((p,i)=><circle key={p.at} cx={X(i)} cy={Y(p.value)} r="3.5"
+      <line data-testid={testId+"-best-fit"}
+        x1={X(fit!.xStart)} y1={Y(fit!.yStart)}
+        x2={X(fit!.xEnd)} y2={Y(fit!.yEnd)}
+        stroke={accent} strokeWidth="4.2" strokeLinecap="round">
+        <title>Least-squares best-fit line across recorded observations, not future performance</title>
+      </line>
+      {chronological.map(p=><circle key={p.at} cx={X(Date.parse(p.at))} cy={Y(p.value)} r="3.5"
         fill={accent} stroke="#fff" strokeWidth="1">
         <title>{p.at+" · "+p.value.toFixed(1)+"% "+(p.label??"")}</title>
       </circle>)}
@@ -98,10 +105,10 @@ export default function ChartTrendInset({
     <p style={{fontSize:11,color:grey,lineHeight:1.5,margin:"4px 0 0"}}>
       {hasLine?
         (kind==="retrospective"?
-          "Each point is cumulative directional agreement from this archived case group; this does not validate future prediction accuracy.":
+          "Straight best-fit line: least-squares summary of cumulative directional agreement; dots show recorded values. Not validated future accuracy.":
          kind==="prospective"?
-          "Trend is based only on valid, time-stamped forecast observations for this exact chart.":
-          "Trend reflects recorded assessments for the same case, not a cross-trial level ranking."):
+          "Straight best-fit line summarizes only valid, time-stamped forecasts; dots show actual recorded versions.":
+          "Straight best-fit line summarizes recorded assessments for the same case; it does not infer other levels."):
         "A real trend requires at least two dated observations for this exact metric; no line is invented."}
     </p>
   </div>;
