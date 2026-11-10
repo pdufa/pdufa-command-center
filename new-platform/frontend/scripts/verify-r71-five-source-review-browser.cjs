@@ -58,6 +58,20 @@ async function profile(browser,config){
   assert.match(await p.innerText(),/10.5% vs 0.8%/);
   p=await inspect("NCT05126758");
   assert.match(await p.innerText(),/4.55% in PUL2.0 percentage change/);
+  const caprFda=board.locator('section[aria-label="R72 original FDA and issuer conflict for NCT05126758"]');
+  await caprFda.waitFor({state:"visible",timeout:12000});
+  const caprText=await caprFda.innerText();
+  assert.match(caprText,/FDA vs applicant analysis/);
+  assert.match(caprText,/p=0\\.24/);
+  assert.match(caprText,/p=0\\.029/);
+  assert.match(caprText,/incompatible endpoint scales/);
+  assert.match(caprText,/2026-11-22/);
+  assert.match(caprText,/ABSTAIN/);
+  assert.match(caprText,/UNKNOWN/);
+  assert.equal(await caprFda.locator("details").first().locator("article").count(),3);
+  assert.equal(await caprFda.getByRole("link",{name:/Original FDA July 29 briefing/}).getAttribute("href"),
+    "https://www.fda.gov/media/193839/download");
+  await page.screenshot({path:path.join(OUT,config.name+"-capr-fda-conflict.png"),fullPage:false});
   assert.equal(await p.getByRole("link",{name:"Open original article / PubMed source"}).getAttribute("href"),
     "https://pubmed.ncbi.nlm.nih.gov/42526472/");
   p=await inspect("NCT05662241");
