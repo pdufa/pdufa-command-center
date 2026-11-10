@@ -1,6 +1,8 @@
 import {R92_CURRENT_PROTOCOL_RESULTS_ROSTER} from
  "../../../../lib/focus-r92-protocol-results-crosswalk";
 import CurrentProtocolResultsR92Client from "./CurrentProtocolResultsR92Client";
+import {R92_DATED_CROSSWALK_AUDIT} from
+ "../../../../lib/focus-r92-dated-crosswalk-audit";
 import styles from "../../evidence-gaps/EvidenceRecoveryBoardR68.module.css";
 
 export const metadata={
@@ -9,7 +11,7 @@ export const metadata={
 };
 export default function R92CurrentProtocolResultsPage(){
  const d=R92_CURRENT_PROTOCOL_RESULTS_ROSTER;
- if(!d)return <main className={styles.coverage}>
+ if(!d||!R92_DATED_CROSSWALK_AUDIT)return <main className={styles.coverage}>
   <h1>Current protocol versus posted primary endpoints</h1>
   <p role="alert">The original 29-trial and 12-case source
   identity crosswalk failed. No clinical interpretation or forecast is permitted.</p>
@@ -29,6 +31,33 @@ export default function R92CurrentProtocolResultsPage(){
    <div><small>Independent scientific signoffs</small>
     <strong>{d.independentScientificSignoffs}</strong></div>
   </div>
+  <div className={styles.stats}>
+    <div><small>Dated official source readbacks</small>
+      <strong>{R92_DATED_CROSSWALK_AUDIT.checkedNcts}/12</strong></div>
+    <div><small>Exact current-registry title/timeframe matches</small>
+      <strong>{R92_DATED_CROSSWALK_AUDIT.exactCurrentRegistryTitleTimeframeMatches}/16</strong></div>
+    <div><small>Current registry text discrepancies</small>
+      <strong>{R92_DATED_CROSSWALK_AUDIT.observedTextDifferences}</strong></div>
+    <div><small>Original API SHA-256 receipts unchanged</small>
+      <strong>{R92_DATED_CROSSWALK_AUDIT.rawR91SourceHashesStable}/12</strong></div>
+  </div>
+  <details className={styles.coverageDetails}>
+   <summary>Review dated source-verified 12-trial current registry endpoint correspondence</summary>
+   <p>Registry snapshot: {R92_DATED_CROSSWALK_AUDIT.sourceDateUtc} UTC.
+     Zero observed wording discrepancies is not proof of original
+     pre-unblinding prespecification.</p>
+   <ul>{R92_DATED_CROSSWALK_AUDIT.rows.map(row=><li key={row.nct}>
+     <b>{row.ticker} · {row.nct}</b>
+     {" — "}{row.exactTextualMatches}/{row.postedPrimaryCount}
+     exact current registry primary title/timeframe text matches.
+     <div>{row.reportedPrimaryTitles.join("; ")}</div>
+     <div>Original public API SHA-256:
+       <code>{row.sourceSHA256}</code></div>
+     <a href={row.studyUrl} target="_blank" rel="noopener noreferrer">
+       Open official study
+     </a>
+   </li>)}</ul>
+  </details>
   <p className={styles.notice}>
    This comparison aligns today's registry protocol primary endpoint
    descriptions against today's posted aggregate-result primary
