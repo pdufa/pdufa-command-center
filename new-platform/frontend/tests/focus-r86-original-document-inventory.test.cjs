@@ -12,6 +12,7 @@ const {R85_PHASE_MANIFEST}=require("../lib/focus-r85-registry-phase-crosscheck.t
 const {FOCUS_R81_SOURCE_READINESS}=require("../lib/focus-r81-all-focus-source-readiness.ts");
 const {FOCUS_R79_LAUNCH_HTN_SAP_LOCK_GATES}=require(
  "../lib/focus-r79-launch-htn-sap-lock-evidence-gates.ts");
+const census=require("../data/focus-r86-live-source-census-20261110.json");
 const {R86_ORIGINAL_DOCUMENT_MANIFEST,buildR86OriginalDocumentManifest,
  inspectR86CurrentStudy}=require("../lib/focus-r86-original-document-inventory.ts");
 
@@ -48,6 +49,26 @@ test("R86 retains exact 29-NCT/23-cycle source identities and no clinical grades
   r.authenticatedSignedProspectiveSAP===false&&
   r.signedIndependentScientificReview===false&&/^[0-9a-f]{64}$/.test(
    r.archivedOriginalRegistrySha256)));
+});
+test("R86 dated all-29 live source receipt covers all locked NCTs without bogus certifications",()=>{
+ assert.equal(census.totalExactNcts,29);
+ assert.equal(census.successfulHttp200,29);
+ assert.equal(census.trialsWithProtocolListing,12);
+ assert.equal(census.trialsWithSAPListing,12);
+ assert.equal(census.documentListings,23);
+ assert.equal(census.trialsWithPostedAggregateResults,12);
+ assert.equal(census.trialsWithoutPostedAggregateResults,17);
+ assert.equal(census.rawOriginalPdfByteHashesCaptured,0);
+ assert.equal(census.independentlyAuthenticatedProspectivelySignedSAPs,0);
+ assert.equal(census.completedIndependentClinicalAssessments,0);
+ assert.equal(census.validatedFDAForecasts,0);
+ assert.deepEqual(new Set(census.observedRows.map(r=>r.nct)),
+  new Set(R86_ORIGINAL_DOCUMENT_MANIFEST.rows.map(r=>r.nct)));
+ assert.equal(census.observedRows.filter(r=>r.protocolListings>0).length,12);
+ assert.equal(census.observedRows.filter(r=>r.sapListings>0).length,12);
+ assert.equal(census.observedRows.reduce((sum,r)=>sum+r.docs,0),23);
+ assert.ok(census.observedRows.every(r=>r.FDAForecast==="ABSTAIN"&&
+  r.qualifiedScientificReview===false&&r.originalBytesAuthenticated===false));
 });
 test("R86 keeps original chronology and source conflicts visible for both pilots",()=>{
  const d=R86_ORIGINAL_DOCUMENT_MANIFEST;
