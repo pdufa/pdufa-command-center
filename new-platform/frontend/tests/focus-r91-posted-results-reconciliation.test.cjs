@@ -32,12 +32,12 @@ function posted(nct=row().nct){
       {groupId:"OG000",value:"12.8",spread:"2.1"},
       {groupId:"OG001",value:"9.3",spread:"2.2"}
      ]}]}],
-     analyses:[{groups:["OG000","OG001"],pValue:"0.032",pValueMethod:"ANCOVA"}]},
+     analyses:[{groupIds:["OG000","OG001"],pValue:"0.032",statisticalMethod:"ANCOVA"}]},
     {type:"SECONDARY",title:"Secondary reported endpoint",
      groups:[{id:"OG000",title:"Active"}]}
    ]},
    adverseEventsModule:{
-    groups:[
+    eventGroups:[
      {id:"EG000",title:"Active",seriousNumAffected:4,seriousNumAtRisk:122,
       otherNumAffected:40,otherNumAtRisk:122},
      {id:"EG001",title:"Control",seriousNumAffected:1,seriousNumAtRisk:117,
@@ -115,7 +115,7 @@ test("R91 rejects cross-NCT swaps, malformed original measure group IDs and unsa
   x=>{x.hasResults="true";},
   x=>{x.resultsSection.outcomeMeasuresModule.outcomeMeasures[0].type=undefined;},
   x=>{x.resultsSection.outcomeMeasuresModule.outcomeMeasures[0].groups[1].id="OG000";},
-  x=>{x.resultsSection.outcomeMeasuresModule.outcomeMeasures[0].analyses[0].groups=["OG999"];},
+  x=>{x.resultsSection.outcomeMeasuresModule.outcomeMeasures[0].analyses[0].groupIds=["OG999"];},
   x=>{x.resultsSection.outcomeMeasuresModule.outcomeMeasures[0].classes[0].categories[0].measurements[0].groupId="OG999";},
   x=>{x.resultsSection.adverseEventsModule.seriousEvents[0].stats[0].groupId="EG999";},
   x=>{delete x.resultsSection.adverseEventsModule;},
