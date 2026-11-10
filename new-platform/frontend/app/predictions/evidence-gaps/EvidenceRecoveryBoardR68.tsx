@@ -3,6 +3,8 @@
 import {useMemo,useState} from "react";
 import Link from "next/link";
 import {FOCUS_R68_EVIDENCE_RECOVERY} from "../../../lib/focus-r68-evidence-recovery";
+import {FOCUS_R69_REGISTRY_PUBLICATION_LEADS} from "../../../lib/focus-r69-original-publication-leads";
+import OriginalPublicationLeadsR69 from "./OriginalPublicationLeadsR69";
 import styles from "./EvidenceRecoveryBoardR68.module.css";
 
 /** Source availability queue only: not a clinical grade, time-priority
@@ -53,6 +55,16 @@ export default function EvidenceRecoveryBoardR68(){
       The <strong>{work.originalMachinePageLeads}</strong> original PDF
       page leads are not finished tests. FDA approval/CRL/delay: <strong>ABSTAIN</strong>.
       Historical predictive accuracy: <strong>NOT CALIBRATED</strong>.</p>
+    {FOCUS_R69_REGISTRY_PUBLICATION_LEADS&&<p className={styles.notice}
+      aria-label="R69 original publication lead coverage">
+      New original registry reference recovery: <strong>
+      {FOCUS_R69_REGISTRY_PUBLICATION_LEADS.candidateReferenceCount}
+      </strong> PubMed literature leads listed across <strong>
+      {FOCUS_R69_REGISTRY_PUBLICATION_LEADS.casesWithUnverifiedPublicationLeads}
+      </strong> of the 17 NCTs without posted primary tables. They are
+      <strong> unverified references, not accepted exact-NCT trial results</strong>.
+      The remaining 10 have no PubMed reference in the retained registry copy.
+    </p>}
     <div className={styles.controls}>
       <label>Search ticker, NCT or application
         <input type="search" aria-label="Search source recovery trials"
@@ -107,6 +119,8 @@ export default function EvidenceRecoveryBoardR68(){
             </summary><ul>{trial.designAndOriginalSourceExceptions.map((x,i)=>
               <li key={i}>{x}</li>)}</ul>
             </details>}
+          {!trial.sourcePrimaryTableAvailable&&
+            <OriginalPublicationLeadsR69 nct={trial.nct}/>}
           <div className={styles.links}>
             <Link href={trial.assessmentUrl}>Open complete scientific assessment</Link>
             <Link href={trial.originalMethodPageUrl}>Open original PDF page leads</Link>
