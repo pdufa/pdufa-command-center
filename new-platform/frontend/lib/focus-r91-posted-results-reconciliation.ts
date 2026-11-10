@@ -200,7 +200,7 @@ function eventTerms(value:unknown,groupIds:Set<string>){
   const stats=[];
   for(const v of st){
    const x=obj(v),g=s(x?.groupId,50);
-   if(!g||!groupIds.has(g))return null;
+   if(!x||!g||!groupIds.has(g))return null;
    stats.push({
     groupId:g,affected:num(x.numAffected),
     atRisk:num(x.numAtRisk),
