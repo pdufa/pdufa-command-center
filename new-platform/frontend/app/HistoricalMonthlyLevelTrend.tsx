@@ -229,8 +229,8 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
       </div>
     </div>
     <h2 style={{fontSize:20,margin:"12px 0 6px"}}>
-      Best-fit trend of cumulative FDA agreement · {yearCohorts[0].monthLabel.slice(0,3)}
-      {"–"}{yearCohorts.at(-1)!.monthLabel.slice(0,3)} {activeYear}
+      Cumulative FDA agreement trend · {yearCohorts[0].monthLabel.slice(0,3)}
+      {"–"}{yearCohorts.at(-1)!.monthLabel.slice(0,3)} {activeYear} (best-fit)
     </h2>
     <p data-testid="historical-trend-key" style={{fontSize:13,fontWeight:800,color:"#096C56",margin:"4px 0 8px"}}>
       <span aria-hidden="true" style={{display:"inline-block",width:35,height:5,
@@ -239,7 +239,7 @@ export default function HistoricalMonthlyLevelTrend({compact=false}:{compact?:bo
     </p>
     <p style={{fontSize:12,color:muted,lineHeight:1.5,margin:"0 0 12px"}}>
       Dots show cumulative agreement across all scored applications up to each month.
-      The straight line is a least-squares summary of those cumulative values,
+      This is a case-count-weighted cumulative trend. The straight line is a least-squares summary,
       not connected monthly points or a forecast of future FDA prediction accuracy.
     </p>
     {!compact?<div style={{display:"flex",gap:12,flexWrap:"wrap",marginBottom:10}}>
