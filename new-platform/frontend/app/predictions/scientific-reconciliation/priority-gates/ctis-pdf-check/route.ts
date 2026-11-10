@@ -1,4 +1,6 @@
 import {createHash} from "node:crypto";
+import {R98_ACACIA_CTIS_ORIGINAL_PDF_RECEIPTS} from
+ "../../../../../lib/focus-r98-ctis-original-pdf-receipts";
 import {R95_EU_ACACIA_PROTOCOL_IDENTITY} from
  "../../../../../lib/focus-r95-eu-protocol-identity-gates";
 
@@ -114,6 +116,28 @@ export async function GET(req:Request):Promise<Response>{
   const prefix=String.fromCharCode(...bytes.slice(0,8));
   if(!prefix.startsWith("%PDF-"))return fail("CTIS_STORAGE_RESPONSE_NOT_ORIGINAL_PDF");
   const digest=createHash("sha256").update(bytes).digest("hex");
+  const verified=R98_ACACIA_CTIS_ORIGINAL_PDF_RECEIPTS;
+  const matching=verified?.originalDocuments.find(x=>x.key===key);
+  if(!matching||matching.sha256!==digest||matching.byteCount!==bytes.length||
+     verified?.FDAForecast!=="ABSTAIN")
+   return fail("ORIGINAL_PDF_SHA256_DOES_NOT_MATCH_INDEPENDENT_CTIS_RECEIPT",409);
+  const downloadValue=new URL(req.url).searchParams.get("download");
+  if(downloadValue!==null){
+   if(downloadValue!=="1")return fail("INVALID_DOWNLOAD_MODE",400);
+   const safeName="ACACIA-HCM_CY6033_"+key+".pdf";
+   return new Response(Buffer.from(bytes),{
+    status:200,
+    headers:{
+     "Content-Type":"application/pdf",
+     "Content-Disposition":'attachment; filename="'+safeName+'"',
+     "Content-Length":String(bytes.length),
+     "Cache-Control":"private, no-store, max-age=0",
+     "X-Content-Type-Options":"nosniff",
+     "X-Original-PDF-SHA256":digest,
+     "X-Scientific-Review-Status":"UNVERIFIED"
+    }
+   });
+  }
   const tail=String.fromCharCode(...bytes.slice(-2048));
   // Explicit, bounded chunks permit evidence archivists to transfer the
   // original public CTIS PDF to durable review storage while confirming its
