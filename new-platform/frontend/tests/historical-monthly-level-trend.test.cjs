@@ -15,6 +15,12 @@ require.extensions[".tsx"]=(module,filename)=>module._compile(
 );
 const data=require("../data/historicalMonthlyLevelRuns2026.json");
 const Chart=require("../app/HistoricalMonthlyLevelTrend.tsx").default;
+function flattenedText(node){
+  if(typeof node==="string"||typeof node==="number")return String(node);
+  if(Array.isArray(node))return node.map(flattenedText).join("");
+  return node&&node.children?flattenedText(node.children):"";
+}
+
 const expected=[
  ["2026-01","January",6,7,4,"#0B65E5"],
  ["2026-02","February",8,8,7,"#159447"],
@@ -122,16 +128,16 @@ test("Level 4 addition updates all history widgets and compare-all without chang
     assert.match(html,/historical-level-summary-4/);
     assert.doesNotMatch(html,/historical-level-summary-3/);
     assert.match(html,/level-line-4/);
-    assert.match(html,/14 \/ 17 matched/);
+    assert.match(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-4"})),/14 \/ 17 matched/);
     assert.match(html,/82\.4%/);
-    assert.match(html,/1 \/ 10 months assessed/);
+    assert.match(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-4"})),/1 \/ 10 months assessed/);
     assert.match(html,/Level 4 results/);
     TestRenderer.act(()=>select.props.onChange({currentTarget:{value:"all"}}));
     html=JSON.stringify(renderer.toJSON());
     assert.match(html,/historical-level-summary-3/);
     assert.match(html,/historical-level-summary-4/);
-    assert.match(html,/100 \/ 106 matched/);
-    assert.match(html,/14 \/ 17 matched/);
+    assert.match(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-3"})),/100 \/ 106 matched/);
+    assert.match(flattenedText(renderer.root.findByProps({"data-testid":"historical-level-summary-4"})),/14 \/ 17 matched/);
     assert.match(html,/level-line-3/);
     assert.match(html,/level-line-4/);
   }finally{
