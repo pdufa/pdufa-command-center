@@ -4,6 +4,7 @@ import {R94_ACACIA_COHORT_SAFETY_SOURCE} from
  "../../../../lib/focus-r94-acacia-cross-source-reconciliation";
 import {R95_EU_ACACIA_PROTOCOL_IDENTITY} from
  "../../../../lib/focus-r95-eu-protocol-identity-gates";
+import {R98_ACACIA_CTIS_ORIGINAL_PDF_RECEIPTS} from "../../../../lib/focus-r98-ctis-original-pdf-receipts";
 import styles from "../../evidence-gaps/EvidenceRecoveryBoardR68.module.css";
 
 export const metadata={
@@ -15,14 +16,15 @@ export default function PriorityOriginalScientificGatesR93(){
  const d=R93_PRIORITY_SCIENTIFIC_GATES;
  const acacia=R94_ACACIA_COHORT_SAFETY_SOURCE;
  const sourceIdentity=R95_EU_ACACIA_PROTOCOL_IDENTITY;
- if(!d||!acacia||!sourceIdentity)return <main className={styles.coverage}>
+ const originalFiles=R98_ACACIA_CTIS_ORIGINAL_PDF_RECEIPTS;
+ if(!d||!acacia||!sourceIdentity||!originalFiles)return <main className={styles.coverage}>
   <h1>Priority original scientific evidence review</h1>
   <p role="alert">Original FOCUS evidence and exact scientific blockers did not
    pass locked source integrity checks. No reviewer, SAP, score or FDA
    conclusion is represented as verified.</p>
  </main>;
  return <main className={styles.coverage}>
-  <div className={styles.eyebrow}>MAIN · REVISION 95 · STAGE 4 INDEPENDENT SCIENCE EVIDENCE GATES</div>
+  <div className={styles.eyebrow}>MAIN · REVISION 98 · STAGE 4 INDEPENDENT SCIENCE EVIDENCE GATES</div>
   <h1>Priority original scientific evidence checklist</h1>
   <p className={styles.intro}>{d.notice} Evidence baseline:
    {" "}<strong>{d.datedSourceReview} UTC</strong>.</p>
@@ -71,6 +73,32 @@ export default function PriorityOriginalScientificGatesR93(){
      {" "}{d.launchPublicToplineDate} public topline disclosure. This does not
      establish the real database-lock or blind-break date.
    </p>}
+   {c.trial==="ACACIA_HCM"&&<details className={styles.coverageDetails} open>
+    <summary>R98 original public EU protocol PDFs: 4 byte-verified source receipts</summary>
+    <p><b>{originalFiles.originalPdfFilesAvailable}</b> genuine CTIS PDF files
+     retrieved through the official CTIS document service;
+     <b> {originalFiles.originalTotalBytesSourceVerified.toLocaleString()} bytes</b>
+     with SHA-256 checksums and original PDF header/EOF verification.
+     <b> {originalFiles.originalPdfFilesPermanentlyArchived}</b> copies
+     permanently archived in this repository;
+     <b> {originalFiles.originalDocumentsScientificallyPageReviewed}</b> documents
+     independently inspected page by page. These results verify original
+     public PDF bytes at retrieval, not an authenticated final signed SAP.</p>
+    <ul>{originalFiles.originalDocuments.map(x=><li key={x.key}>
+     <b>{x.title}</b> — version {x.manualVersion},
+     {" "}{x.byteCount.toLocaleString()} bytes.
+     <div>Original public PDF SHA-256: <code>{x.sha256}</code></div>
+     <a href={x.originalSourceUrl} target="_blank" rel="noopener noreferrer">
+      Retrieve original PDF through CTIS
+     </a>
+     <div>Permanent file archive: NO. Original PDF page-level
+      scientific assessment: NOT COMPLETED. Signed prospective SAP: NOT VERIFIED.</div>
+    </li>)}</ul>
+    <p>Acacia source gates still unresolved:
+     {" "}{originalFiles.ACACIAOriginalGatesUnresolved}.
+     Launch-HTN unresolved: {originalFiles.launchOriginalGatesUnresolved}.
+     FDA forecast: ABSTAIN.</p>
+   </details>}
    {c.trial==="ACACIA_HCM"&&
     <details className={styles.coverageDetails} open>
      <summary>Revision 95: correct original EU protocol identity, amendment records and unresolved participant-count conflict</summary>
