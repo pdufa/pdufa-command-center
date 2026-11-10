@@ -115,6 +115,32 @@ export async function GET(req:Request):Promise<Response>{
   if(!prefix.startsWith("%PDF-"))return fail("CTIS_STORAGE_RESPONSE_NOT_ORIGINAL_PDF");
   const digest=createHash("sha256").update(bytes).digest("hex");
   const tail=String.fromCharCode(...bytes.slice(-2048));
+  // Explicit, bounded chunks permit evidence archivists to transfer the
+  // original public CTIS PDF to durable review storage while confirming its
+  // full SHA-256 across independently retrieved chunks.
+  const chunkValue=new URL(req.url).searchParams.get("chunk");
+  const chunkSize=64*1024;
+  if(chunkValue!==null){
+   if(!/^(0|[1-9][0-9]{0,3})$/u.test(chunkValue))
+    return fail("INVALID_SOURCE_BYTE_CHUNK",400);
+   const index=Number(chunkValue);
+   const chunkCount=Math.ceil(bytes.length/chunkSize);
+   if(index>=chunkCount)return fail("SOURCE_BYTE_CHUNK_OUTSIDE_DOCUMENT",416);
+   const start=index*chunkSize,end=Math.min(bytes.length,start+chunkSize);
+   return Response.json({
+    schema:"MAIN_R97_PUBLIC_CTIS_ORIGINAL_PDF_BYTE_CHUNK_RESEARCH_ONLY",
+    docKey:key,nct:NCT,euct:EUCT,protocol:PROTOCOL,
+    ctisUuid:doc.uuid,manualVersion:doc.manualVersion,
+    officialOriginalUrl:url,
+    chunkIndex:index,chunkCount,byteOffset:start,chunkByteCount:end-start,
+    totalOriginalPdfBytes:bytes.length,
+    sourceSHA256:digest,
+    originalPdfChunkBase64:Buffer.from(bytes.slice(start,end)).toString("base64"),
+    FDAForecast:"ABSTAIN",
+    signedFinalSAPAuthenticated:false,
+    independentScientificReviewSigned:false
+   },{headers:{"Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff"}});
+  }
   return Response.json({
    schema:"MAIN_R97_OFFICIAL_ACACIA_CTIS_ORIGINAL_PDF_BYTE_RECEIPT_NOT_SIGNED_SAP",
    exactNct:NCT,exactEUCT:EUCT,exactProtocol:PROTOCOL,
