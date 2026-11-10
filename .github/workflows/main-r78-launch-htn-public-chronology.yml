@@ -1,0 +1,90 @@
+name: MAIN R78 Launch-HTN original public disclosure and FDA target chronology
+# Research-only reconciliation. Public topline is NOT pre-unblinding SAP proof.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r78-launch-htn-public-chronology.yml
+      - new-platform/frontend/data/focus-r78-launch-htn-public-chronology.json
+      - new-platform/frontend/lib/focus-r78-launch-htn-public-chronology.ts
+      - new-platform/frontend/app/predictions/evidence-gaps/LaunchHtnPublicChronologyR78.tsx
+      - new-platform/frontend/app/predictions/evidence-gaps/ScientificOriginalsIntakeR71.tsx
+      - new-platform/frontend/tests/focus-r78-launch-htn-public-chronology.test.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r78-launch-htn-public-chronology
+  cancel-in-progress: false
+
+jobs:
+  sec-journal-disclosure-only:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Keep exact 29 FOCUS NCT and 23 application records and retirement
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Cross-check original MLYS cycle and SEC date from frozen 23-group FOCUS roster
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,pathlib
+          root=pathlib.Path("new-platform")
+          snap=json.loads((root/"backend/app/data/focus_application_snapshot.json").read_text())
+          data=json.loads((root/"frontend/data/focus-r78-launch-htn-public-chronology.json").read_text())
+          found=[]
+          for rec in snap["records"]:
+              if rec.get("nct")!="NCT06153693":continue
+              for app in rec.get("candidateApplications",[]):
+                  if app.get("cycleId")=="mlys-lorundrostat":found.append(app)
+          assert len(found)==1, "Exact MLYS NDA cycle identity must remain unique"
+          app=found[0]
+          assert app["reportedGoal"]==data["regulatory"]["pdufaTargetDate"]=="2026-12-22"
+          assert app["sourceDate"]==data["regulatory"]["latestSourceDate"]=="2026-11-04"
+          assert app["sourceUrl"]==data["regulatory"]["pdufaSourceUrl"]
+          assert app["stage"]=="UNDER_REVIEW" and app["applicationType"]=="NDA"
+          assert data["observation"]["originalActualDatabaseLockDate"] is None
+          assert data["observation"]["originalActualUnblindingDate"] is None
+          assert data["regulatory"]["officialOutcomeForecast"]=="ABSTAIN"
+          print("R78_SEC_ROSTER_CROSSWALK_PASS 29/23 preserved MLYS NDA Dec 22 2026")
+          PY
+      - name: Verify original public event evidence, fail-closed source and FDA forecast safety
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r78-launch-htn-public-chronology.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Explain that engineering evidence is not trial SAP verification
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo "## MAIN R78 original JAMA, SEC and sponsor public readout chronology"
+            echo
+            echo "Source-dated events include Jan 24 2025 follow-up, Feb 13/23 published PDF signature imprints, Mar 7 announced results schedule, Mar 10 SEC public results, Mar 9 2026 issuer NDA acceptance and Nov 4 2026 continuing FDA review / Dec 22 2026 PDUFA target."
+            echo
+            echo "The date of the original final database lock and authorization to unblind remain unavailable from these public sources. The paper describes masking until lock but does not date it. The two internal 2024-vs-2025 addendum cover inconsistencies remain unresolved."
+            echo
+            echo "**Original prospectively signed locked SAP unverified. Qualified clinical science signatures 0. Validated FDA predictions 0/23. Outcome ABSTAIN. Timing UNKNOWN. No production, model training, or roster mutations.**"
+          } >> "$GITHUB_STEP_SUMMARY"
