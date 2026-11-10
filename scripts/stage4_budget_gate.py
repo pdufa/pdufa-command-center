@@ -25,7 +25,12 @@ def inspect_queue(path):
     tasks = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(tasks, list):
         raise ValueError("Task queue must be a list")
-    approved = [t for t in tasks if isinstance(t, dict) and t.get("approved") is True]
+    for index, task in enumerate(tasks):
+        if not isinstance(task, dict):
+            raise ValueError(f"Task {index} must be an object")
+        if "approved" in task and not isinstance(task["approved"], bool):
+            raise ValueError(f"Task {index} approval must be a boolean")
+    approved = [t for t in tasks if t.get("approved") is True]
     return {"status": "awaiting_executor_and_billing_guard", "approved_tasks": len(approved)}
 
 
