@@ -1,0 +1,71 @@
+name: MAIN R75 Launch-HTN original publisher PDF chronology and evidence gates
+
+# Original-page research: printed version dates/e-signature imprints are NOT
+# cryptographically verified signatures or proof of pre-unblinding lock.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r75-launch-htn-publisher-pdf-chronology.yml
+      - new-platform/frontend/data/focus-r75-launch-htn-source-date-reconciliation.json
+      - new-platform/frontend/lib/focus-r75-launch-htn-chronology.ts
+      - new-platform/frontend/app/predictions/evidence-gaps/LaunchHtnSourceChronologyR75.tsx
+      - new-platform/frontend/app/predictions/evidence-gaps/ScientificOriginalsIntakeR71.tsx
+      - new-platform/frontend/tests/focus-r75-launch-htn-source-chronology.test.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r75-launch-htn-source-chronology
+  cancel-in-progress: false
+
+jobs:
+  independent-publisher-source-chronology-research:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify original canonical FOCUS membership and permanently retired engine
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+          python new-platform/backend/scripts/verify_focus_r73_launch_htn_document_index.py
+      - name: Test source page numbering, signatures as PRINTED ONLY and no FDA-grade leakage
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r75-launch-htn-source-chronology.test.cjs tests/focus-r73-launch-htn-document-index.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Preserve evidence-vs-validation separation in audit summary
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo "## MAIN R75 original JAMA PDF printed chronology"
+            echo
+            echo "Seven source-indexed publisher PDFs / 10 physically visually inspected original page images are recorded for Launch-HTN NCT06153693."
+            echo "Protocol v2.1 UK header 08 Jan 2024; protocol 3.0 and 3.1 effective 11 Jun 2024."
+            echo "Main SAP v3.0 source page shows Feb 13 2025 electronic signature IMPRINTS; imputation addendum Feb 13 2025; windowing addendum Feb 23 2025."
+            echo
+            echo "Two internal cover-page YEAR discrepancies (addenda 5 and 7) are explicitly flagged. JAMA reports last follow-up Jan 24 2025."
+            echo
+            echo "**No authenticated pre-unblinding SAP / no verified lock or initial public posting / original source PDF SHA via automated runner 0/7 / no approved scientific rating / FDA ABSTAIN and timing UNKNOWN / no production writes.**"
+            echo "The CI validates source-review data/code consistency only; it is not an independent expert adjudication."
+          } >> "$GITHUB_STEP_SUMMARY"
