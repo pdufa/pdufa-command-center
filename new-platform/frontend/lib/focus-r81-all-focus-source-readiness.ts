@@ -39,6 +39,12 @@ export function buildR81SourceReadiness(
   auth.qualifiedIndependentReviewersSigned!==0||
   auth.FDAOutcome!=="ABSTAIN")return null;
 
+ // The R68 source is independently validated against the original R60/R64/R65/R67
+ // rosters. Caller-supplied evidence snapshots cannot forge an NCT/ticker,
+ // application-cycle, registry availability or scientific signoff identity.
+ const canonical=FOCUS_R68_EVIDENCE_RECOVERY;
+ if(!canonical||canonical.rows.length!==29)return null;
+ const canonicalBy=new Map(canonical.rows.map(x=>[x.nct,x]));
  const pubs=new Map(journals.fiveRecords.map(x=>[x.nct,x]));
  if(pubs.size!==5)return null;
  const seen=new Set<string>();
@@ -60,6 +66,12 @@ export function buildR81SourceReadiness(
      !Array.isArray(row.applicationCycles)||
      row.applicationCycles.length<1||row.applicationCycles.length>2||
      new Set(row.applicationCycles).size!==row.applicationCycles.length)return null;
+  const truth=canonicalBy.get(row.nct);
+  if(!truth||truth.ticker!==row.ticker||
+     JSON.stringify(truth.applicationCycles)!==JSON.stringify(row.applicationCycles)||
+     truth.sourcePrimaryTableAvailable!==row.sourcePrimaryTableAvailable||
+     truth.sourceSafetyArmsAvailable!==row.sourceSafetyArmsAvailable||
+     truth.sourcePdfPageLeadsAvailable!==row.sourcePdfPageLeadsAvailable)return null;
   seen.add(row.nct);
   const pub=pubs.get(row.nct);
   if(pub && (pub.ticker!==row.ticker||pub.scienceGrade!==null||
