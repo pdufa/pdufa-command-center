@@ -1,0 +1,150 @@
+{
+  "schema": "MAIN_R78_LAUNCH_HTN_PUBLIC_DISCLOSURE_CHRONOLOGY_NOT_DATABASE_LOCK_PROOF",
+  "asOf": "2026-11-09",
+  "nct": "NCT06153693",
+  "ticker": "MLYS",
+  "drug": "Lorundrostat",
+  "cycleId": "mlys-lorundrostat",
+  "applicationType": "NDA",
+  "focusTrialCountUnchanged": 29,
+  "provisionalApplicationCycleCountUnchanged": 23,
+  "sources": {
+    "journal": "https://jamanetwork.com/journals/jama/fullarticle/2835763",
+    "sec20250310": "https://ir.mineralystx.com/sec-filings/all-sec-filings/content/0001628280-25-011459/mlys-20250310.htm",
+    "issuer20250307": "https://ir.mineralystx.com/news-events/press-releases/detail/59/mineralys-therapeutics-to-announce-topline-data-from",
+    "issuer20260309": "https://ir.mineralystx.com/news-events/press-releases/detail/93/mineralys-therapeutics-announces-fda-acceptance-of-nda-for",
+    "sec20261104": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000142/mlys2026q38kex991.htm"
+  },
+  "sourceEvents": [
+    {
+      "eventId": "LAST_PARTICIPANT_FOLLOWUP_REPORTED",
+      "date": "2025-01-24",
+      "eventKind": "REPORTED_TRIAL_CONDUCT",
+      "summary": "JAMA authors report last follow-up January 24, 2025.",
+      "sourceUrl": "https://jamanetwork.com/journals/jama/fullarticle/2835763",
+      "sourceDate": "2025-06-30",
+      "evidenceOnly": true,
+      "provesUnblinding": false
+    },
+    {
+      "eventId": "MAIN_SAP_3_0_PRINTED_SIGNATURE_IMPRINT",
+      "date": "2025-02-13",
+      "eventKind": "PUBLISHED_DOCUMENT_PRINTED_DATE_NOT_AUTHENTICATED",
+      "summary": "R75 observed SAP version 3.0 / Amendment 2 electronic signature imprints dated February 13, 2025; cryptographic authenticity and controlled release unverified.",
+      "sourceUrl": "https://jamanetwork.com/journals/jama/fullarticle/2835763",
+      "sourceDate": "2025-06-30",
+      "evidenceOnly": true,
+      "provesUnblinding": false
+    },
+    {
+      "eventId": "MULTIPLE_IMPUTATION_ADDENDUM_PRINTED_SIGNATURE_IMPRINT",
+      "date": "2025-02-13",
+      "eventKind": "PUBLISHED_DOCUMENT_PRINTED_DATE_NOT_AUTHENTICATED",
+      "summary": "R75 observed imputation addendum signature imprint dated February 13, 2025; its cover also contains a conflicting 2024 document-date field.",
+      "sourceUrl": "https://jamanetwork.com/journals/jama/fullarticle/2835763",
+      "sourceDate": "2025-06-30",
+      "evidenceOnly": true,
+      "provesUnblinding": false
+    },
+    {
+      "eventId": "WINDOWING_ADDENDUM_PRINTED_SIGNATURE_IMPRINT",
+      "date": "2025-02-23",
+      "eventKind": "PUBLISHED_DOCUMENT_PRINTED_DATE_NOT_AUTHENTICATED",
+      "summary": "R75 observed windowing addendum signature imprint February 23, 2025; its cover contains a conflicting 2024 document-date field.",
+      "sourceUrl": "https://jamanetwork.com/journals/jama/fullarticle/2835763",
+      "sourceDate": "2025-06-30",
+      "evidenceOnly": true,
+      "provesUnblinding": false
+    },
+    {
+      "eventId": "SPONSOR_ANNOUNCED_TOPLINE_DISCLOSURE_SCHEDULE",
+      "date": "2025-03-07",
+      "eventKind": "PUBLIC_ISSUER_SCHEDULE_ANNOUNCEMENT_NOT_RESULTS",
+      "summary": "Sponsor scheduled a March 10, 2025 public release of pivotal Launch-HTN/Advance-HTN topline results; announcement alone does not disclose actual efficacy.",
+      "sourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/59/mineralys-therapeutics-to-announce-topline-data-from",
+      "sourceDate": "2025-03-07",
+      "evidenceOnly": true,
+      "provesUnblinding": false
+    },
+    {
+      "eventId": "SPONSOR_DISCLOSED_TOPLINE_IN_SEC_8K",
+      "date": "2025-03-10",
+      "eventKind": "PUBLIC_SEC_SPONSOR_EFFICACY_READOUT",
+      "summary": "SEC 8-K Item 8.01 publicly reported positive Launch-HTN Week-6 placebo-adjusted efficacy; proves public sponsor topline by March 10, not exact database-lock/unblinding dates.",
+      "sourceUrl": "https://ir.mineralystx.com/sec-filings/all-sec-filings/content/0001628280-25-011459/mlys-20250310.htm",
+      "sourceDate": "2025-03-10",
+      "evidenceOnly": true,
+      "provesUnblinding": false
+    },
+    {
+      "eventId": "JAMA_PUBLISHED_FULL_PRIMARY_REPORT_AND_SUPPLEMENTS",
+      "date": "2025-06-30",
+      "eventKind": "PUBLIC_JOURNAL_REPORT_NOT_PROSPECTIVE_SAP",
+      "summary": "Original JAMA article and named protocol/SAP supplements published online; article states outcomes and treatment assignments were masked to investigators and analysts until final database lock, but gives no lock timestamp.",
+      "sourceUrl": "https://jamanetwork.com/journals/jama/fullarticle/2835763",
+      "sourceDate": "2025-06-30",
+      "evidenceOnly": true,
+      "provesUnblinding": false
+    },
+    {
+      "eventId": "SPONSOR_ANNOUNCED_NDA_ACCEPTANCE",
+      "date": "2026-03-09",
+      "eventKind": "ISSUER_REPORTED_FDA_NDA_ACCEPTANCE",
+      "summary": "Sponsor reported FDA accepted lorundrostat NDA for hypertension in combination with other antihypertensive therapies and assigned December 22, 2026 PDUFA target.",
+      "sourceUrl": "https://ir.mineralystx.com/news-events/press-releases/detail/93/mineralys-therapeutics-announces-fda-acceptance-of-nda-for",
+      "sourceDate": "2026-03-09",
+      "evidenceOnly": true,
+      "provesUnblinding": false
+    },
+    {
+      "eventId": "SEC_EXHIBIT_REPORTED_REVIEW_CONTINUING",
+      "date": "2026-11-04",
+      "eventKind": "ISSUER_SEC_8K_PENDING_REVIEW",
+      "summary": "Original SEC Exhibit 99.1 says FDA NDA review continues and repeats December 22, 2026 goal; this is issuer-reported regulatory status, not a final FDA decision.",
+      "sourceUrl": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000142/mlys2026q38kex991.htm",
+      "sourceDate": "2026-11-04",
+      "evidenceOnly": true,
+      "provesUnblinding": false
+    }
+  ],
+  "observation": {
+    "lastFollowupReportedDate": "2025-01-24",
+    "mainSapPrintedSignatureImprint": "2025-02-13",
+    "windowingAddendumPrintedSignatureImprint": "2025-02-23",
+    "publicScheduledResultsAnnouncementDate": "2025-03-07",
+    "publicIssuerToplineSECDisclosureDate": "2025-03-10",
+    "publicationOnlineDate": "2025-06-30",
+    "journalDescribesMaskingUntilFinalDatabaseLock": true,
+    "journalDisclosesFinalDatabaseLockCalendarDate": false,
+    "originalActualDatabaseLockDate": null,
+    "originalActualUnblindingDate": null,
+    "originalSAPAuthenticPreUnblindingSignatureVerified": false,
+    "twoPrintedSAPCoverDateDiscrepanciesUnresolved": true,
+    "originalPdfSourceByteHashesAvailable": 0,
+    "noAuthenticatedOriginalArchive": false,
+    "interpretation": "THE_SEQUENCE_IS_CONSISTENT_WITH_BUT_DOES_NOT_ESTABLISH_PRE_UNBLINDING_SAP_SIGNOFF",
+    "sourceDisclaimer": "Dates from later published original JAMA materials and issuer filings alone do not authenticate who signed the original SAP before database lock, when the unblinded database became accessible, or what SAP version governed the prespecified analysis."
+  },
+  "regulatory": {
+    "reportedNdaAcceptanceDate": "2026-03-09",
+    "acceptanceEvidenceKind": "SPONSOR_ANNOUNCEMENT_NOT_PUBLIC_FDA_ACCEPTANCE_LETTER",
+    "latestSourceDate": "2026-11-04",
+    "asReportedRegulatoryStatus": "SPONSOR_REPORTS_FDA_REVIEW_ONGOING",
+    "pdufaTargetDate": "2026-12-22",
+    "pdufaSourceUrl": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000142/mlys2026q38kex991.htm",
+    "fdaIssuedDecisionDocumentIndependentlyVerified": false,
+    "officialOutcomeForecast": "ABSTAIN",
+    "officialTimingForecast": "UNKNOWN",
+    "signedQualifiedReviewerCount": 0,
+    "validatedApplicationForecasts": 0,
+    "noModelTrainingOrProductionWrites": true
+  },
+  "blockingTasks": [
+    "Obtain sponsor-controlled original SAP amendments and full audit trail to establish signatures and effective version at database lock",
+    "Obtain source-controlled final database-lock and unblinding authorization timestamps; distinguish data cleaning and soft lock",
+    "Reconcile February 2024 versus February 2025 internally printed windowing and imputation addendum cover dates",
+    "Reproduce H1–H7 graphical gatekeeping and treatment-policy MAR/MNAR analysis using verifiable locked SAP and source analysis outputs",
+    "Verify application-specific FDA CMC, labeling, benefit-risk and ongoing review facts without inferring approval from NDA acceptance",
+    "Obtain qualified independent review signatures and blind historical calibration before assigning clinical-grade FDA predictions"
+  ]
+}
