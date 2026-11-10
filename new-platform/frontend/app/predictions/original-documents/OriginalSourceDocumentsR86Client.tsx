@@ -24,8 +24,13 @@ type Current={
  independentFDAForecast:"ABSTAIN";
 };
 type Lookup={status:"loading"|"ok"|"error";result?:Current;error?:string};
+type PdfReceipt={nct:string;filename:string;sha256:string;pdfByteLength:number;
+ sourcePdfUrl:string;retrievedAtUtc:string;originalSignedSapChronologyVerified:false;
+ independentHumanReviewSigned:false};
+type PdfLookup={status:"loading"|"ok"|"error";result?:PdfReceipt;error?:string};
 export default function OriginalSourceDocumentsR86Client({rows}:{rows:Row[]}){
  const [checks,setChecks]=useState<Record<string,Lookup>>({});
+ const [fileReceipts,setFileReceipts]=useState<Record<string,PdfLookup>>({});
  const [runningAll,setRunningAll]=useState(false);
  async function checkOne(nct:string){
   setChecks(x=>({...x,[nct]:{status:"loading"}}));
@@ -47,6 +52,31 @@ export default function OriginalSourceDocumentsR86Client({rows}:{rows:Row[]}){
   }catch{
    setChecks(x=>({...x,[nct]:{status:"error",
      error:"NETWORK_ERROR_NO_SOURCE_VERIFICATION_CLAIM"}}));
+  }
+ }
+ async function hashPublicOriginal(nct:string,filename:string){
+  const key=nct+":"+filename;
+  setFileReceipts(x=>({...x,[key]:{status:"loading"}}));
+  try{
+   const r=await fetch(
+    "/predictions/original-documents/checksum?nct="+encodeURIComponent(nct)+
+    "&filename="+encodeURIComponent(filename),
+    {cache:"no-store",headers:{"Accept":"application/json"}}
+   );
+   const data:unknown=await r.json();
+   if(!r.ok||!data||typeof data!=="object"||
+      !("nct" in data)||data.nct!==nct||
+      !("filename" in data)||data.filename!==filename||
+      !("sha256" in data)||typeof data.sha256!=="string"||
+      !/^[0-9a-f]{64}$/u.test(data.sha256)){
+     const reason=data&&typeof data==="object"&&"error" in data&&
+      typeof data.error==="string"?data.error:"PUBLIC_PDF_BYTE_CHECK_FAILED";
+     setFileReceipts(x=>({...x,[key]:{status:"error",error:reason}}));return;
+   }
+   setFileReceipts(x=>({...x,[key]:{status:"ok",result:data as PdfReceipt}}));
+  }catch{
+   setFileReceipts(x=>({...x,[key]:{status:"error",
+     error:"PUBLIC_PDF_BYTE_RETRIEVAL_FAILED_NO_HASH_CLAIM"}}));
   }
  }
  async function checkAll(){
@@ -128,6 +158,29 @@ export default function OriginalSourceDocumentsR86Client({rows}:{rows:Row[]}){
         {d.listsIcf?" ICF":""}; document date {d.documentDate??"unlisted"},
         upload {d.uploadDate??"unlisted"}
         {d.label&&<div>{d.label}</div>}
+        {(d.listsProtocol||d.listsSap)&&<div>
+         <button type="button" disabled={fileReceipts[row.nct+":"+d.filename]?.status==="loading"}
+          onClick={()=>{void hashPublicOriginal(row.nct,d.filename);}}
+          style={{padding:"7px 10px",borderRadius:7,
+           border:"1px solid #75a592",background:"white",color:"#165c47",
+           cursor:"pointer",fontWeight:700}}>
+          {fileReceipts[row.nct+":"+d.filename]?.status==="loading"?
+           "Retrieving public PDF bytes…":"Read public PDF and compute SHA-256"}
+         </button>
+         {fileReceipts[row.nct+":"+d.filename]?.status==="error"&&
+           <div role="alert">Public source checksum unavailable:
+            {fileReceipts[row.nct+":"+d.filename]?.error}</div>}
+         {fileReceipts[row.nct+":"+d.filename]?.result&&<div>
+          <strong>Public source byte SHA-256 (not a signed-source attestation):</strong>
+          <code>{fileReceipts[row.nct+":"+d.filename].result?.sha256}</code>
+          <div>Read {fileReceipts[row.nct+":"+d.filename].result?.pdfByteLength.toLocaleString()} PDF bytes;
+           source retrieval {fileReceipts[row.nct+":"+d.filename].result?.retrievedAtUtc}</div>
+          <a href={fileReceipts[row.nct+":"+d.filename].result?.sourcePdfUrl}
+           target="_blank" rel="noopener noreferrer">Open public source PDF</a>
+          <small>Original prospective signature and database-lock chronology
+           remain unverified; this checksum alone is not a clinical assessment.</small>
+         </div>}
+        </div>}
        </li>)}</ul>}
       <p>No document bytes, provenance hashes, effective signed dates,
        database-lock log, or unblinding history have been authenticated by this check.
