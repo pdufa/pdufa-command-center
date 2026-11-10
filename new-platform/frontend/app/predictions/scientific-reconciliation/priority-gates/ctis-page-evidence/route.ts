@@ -53,6 +53,14 @@ export async function GET(req:Request):Promise<Response>{
   if(objectMap.size>6000)break;
  }
  const pageTreeNodeCount=[...objectMap.values()].filter(body=>/\/Type\s*\/Pages\b/.test(body)).length;
+ const pageTreeNodeRefs=[...objectMap.entries()].filter(([,body])=>/\/Type\s*\/Pages\b/.test(body)).map(([id])=>id);
+ const pageTreeNodesWithKids=pageTreeNodeRefs.filter(id=>/\/Kids\s*\[/.test(objectMap.get(id)??"")).length;
+ const pageTreeNodesWithUnresolvedKids=pageTreeNodeRefs.filter(id=>{
+  const body=objectMap.get(id)??"";
+  const kids=body.match(/\/Kids\s*\[([\s\S]{0,10000}?)\]/)?.[1];
+  if(!kids)return true;
+  return (kids.match(/\d+\s+\d+\s+R/g)??[]).some(ref=>!objectMap.has(ref));
+ }).length;
  const pages:Array<{pdfPageDictionaryIndex:number,pageObject:string,
   referencedContentStreams:number,decodedContentStreams:number,
   textFragments:number,termHits:Array<{term:string,fragment:string}>}>=[];
@@ -99,6 +107,8 @@ export async function GET(req:Request):Promise<Response>{
   sha256:sha,sourceOriginalPdfBytes:bytes.length,
   detectedPageDictionaries:pages.length,
   detectedUncompressedPageTreeNodes:pageTreeNodeCount,
+  detectedPageTreeNodesWithDirectKidsArray:pageTreeNodesWithKids,
+  detectedPageTreeNodesWithMissingOrUnresolvedKids:pageTreeNodesWithUnresolvedKids,
   verifiedPageTreeTraversalPerformed:false,
   pagesWithTextFragments:pages.filter(p=>p.textFragments>0).length,
   unsupportedFilters,
