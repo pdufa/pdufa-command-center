@@ -122,6 +122,9 @@ def main()->None:
                 json.loads(Path(args.r71).read_text()))
     Path(args.output).parent.mkdir(parents=True,exist_ok=True)
     Path(args.output).write_text(json.dumps(out,sort_keys=True,indent=2)+"\n")
+    for document in out["records"]:
+        print("R74_SOURCE_STATUS",document["filename"],document["retrievalStatus"],
+              document.get("failureCode","PDF_SHA256_VERIFIED"))
     print(json.dumps({"status":out["status"],
                       "indexed":out["originalIndexedSourceCount"],
                       "pdfByteReceipts":out["actualSourcePdfByteReceipts"],
