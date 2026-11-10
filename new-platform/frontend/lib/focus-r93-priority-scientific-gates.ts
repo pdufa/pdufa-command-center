@@ -108,12 +108,13 @@ const META:Record<string,{
 function sorted<T extends {id:string}>(xs:T[]):T[]{
  return [...xs].sort((a,b)=>a.id.localeCompare(b.id));
 }
-export function buildR93PriorityScientificGates(){
- const inventory=R86_ORIGINAL_DOCUMENT_MANIFEST;
- const launch=FOCUS_R79_LAUNCH_HTN_SAP_LOCK_GATES;
- const history=R89_ARCHIVED_ACACIA_SOURCE_HISTORY;
- const publicTime=FOCUS_R78_LAUNCH_HTN_PUBLIC_CHRONOLOGY;
- const recovery=R89_HISTORICAL_SOURCE_RECOVERY;
+export function buildR93PriorityScientificGates(
+ inventory:typeof R86_ORIGINAL_DOCUMENT_MANIFEST=R86_ORIGINAL_DOCUMENT_MANIFEST,
+ launch:typeof FOCUS_R79_LAUNCH_HTN_SAP_LOCK_GATES=FOCUS_R79_LAUNCH_HTN_SAP_LOCK_GATES,
+ history:typeof R89_ARCHIVED_ACACIA_SOURCE_HISTORY=R89_ARCHIVED_ACACIA_SOURCE_HISTORY,
+ publicTime:typeof FOCUS_R78_LAUNCH_HTN_PUBLIC_CHRONOLOGY=FOCUS_R78_LAUNCH_HTN_PUBLIC_CHRONOLOGY,
+ recovery:typeof R89_HISTORICAL_SOURCE_RECOVERY=R89_HISTORICAL_SOURCE_RECOVERY
+){
  if(!inventory||!launch||!publicTime||!recovery||
   inventory.exactTrials!==29||inventory.provisionalApplications!==23||
   inventory.rows.length!==29||
