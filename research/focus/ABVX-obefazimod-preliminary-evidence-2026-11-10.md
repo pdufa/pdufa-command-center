@@ -20,3 +20,13 @@
 - Review FDA submission status and any regulatory correspondence; no PDUFA date or approval probability is inferred.
 
 **Adjudication:** NOT_ADJUDICATED. **Independent review:** NOT_COMPLETED. **FDA prediction:** NOT_UPDATED. **Historical/outcome-awareness:** sources available after Phase 3 readouts; do not classify as prospective blind predictions.
+
+## Independent safety challenge queue (source-checked 2026-11-10)
+
+**Study 107 maintenance Part 1 (N=580, responder re-randomization):** In the company-disclosed randomized safety table, any treatment-emergent adverse event was 96/192 (50.0%) on placebo, 112/193 (58.0%) on 25 mg, and 140/195 (71.8%) on 50 mg. Serious TEAEs were 8/192 (4.2%), 5/193 (2.6%), and 11/195 (5.6%). The 50 mg arm included one each of prostate cancer, breast cancer, and colonic dysplasia, and four non-melanoma skin cancers (two basal-cell and two squamous-cell), versus one NMSC in placebo and one in 25 mg. These are **small event counts**; neither causality nor absence of a dose effect can be established from these counts alone. Primary disclosure: https://www.globenewswire.com/news-release/2026/06/01/3304711/0/en/abivax-announces-landmark-phase-3-abtect-maintenance-trial-results-evaluating-obefazimod-in-moderately-to-severely-active-ulcerative-colitis.html
+
+**Part 2/integrated follow-up:** Company's June 29, 2026 release reports 1,704 patient-years of integrated Phase 2/3 UC exposure, with non-NMSC malignancy EAIR 0.35/100 PY in all-active combined and 0.64/100 PY in 50 mg; NMSC EAIR 0.59 and 0.64/100 PY, respectively. Part 2 EAIR values differ. These are **nonrandomized exposure-adjusted descriptive rates**, not randomized risk ratios; comparisons to external background UC incidence can be confounded. Source: https://ir.abivax.com/news-releases/news-release-details/abivax-reports-positive-abtect-maintenance-part-2-results
+
+**Required before scientific adjudication:** independently review case narratives, exposure by dose and cohort, prior immunosuppressant exposure, baseline cancer risk, latency, ascertainment, trial protocol, and external comparators. Do not treat investor commentary alleging a malignancy signal or sponsor statements of no new signal as definitive adjudication.
+
+**Safety assessment:** OPEN / NOT_ADJUDICATED. **Independent challenge:** NOT_COMPLETED. **Approval probability:** NOT_CALCULATED.
