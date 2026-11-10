@@ -78,8 +78,8 @@ export async function GET(req:Request):Promise<Response>{
  let nestedPageTreeTraversalError:string|null=null;
  const rootCandidates=pageTreeNodeRefs.filter(id=>!pageTreeNodeRefs.some(parent=>{
   if(parent===id)return false;
-  const kids=(objectMap.get(parent)??"").match(/\\/Kids\\s*\\[([\\s\\S]{0,10000}?)\\]/)?.[1]??"";
-  return (kids.match(/\\d+\\s+\\d+\\s+R/g)??[]).includes(id);
+  const kids=(objectMap.get(parent)??"").match(/\/Kids\s*\[([\s\S]{0,10000}?)\]/)?.[1]??"";
+  return (kids.match(/\d+\s+\d+\s+R/g)??[]).includes(id);
  }));
  if(rootCandidates.length===1){
   const seen=new Set<string>();
@@ -91,15 +91,15 @@ export async function GET(req:Request):Promise<Response>{
    seen.add(id);
    const body=objectMap.get(id);
    if(!body){nestedPageTreeTraversalError="MISSING_TREE_OBJECT";return;}
-   if(/\\/Type\\s*\\/Page\\b(?!s)/.test(body)){
+   if(/\/Type\s*\/Page\b(?!s)/.test(body)){
     nestedPageTreeOrder.push(id);return;
    }
-   if(!/\\/Type\\s*\\/Pages\\b/.test(body)){
+   if(!/\/Type\s*\/Pages\b/.test(body)){
     nestedPageTreeTraversalError="UNSUPPORTED_TREE_OBJECT";return;
    }
-   const kids=body.match(/\\/Kids\\s*\\[([\\s\\S]{0,10000}?)\\]/)?.[1];
+   const kids=body.match(/\/Kids\s*\[([\s\S]{0,10000}?)\]/)?.[1];
    if(!kids){nestedPageTreeTraversalError="KIDS_NOT_DIRECT_ARRAY";return;}
-   const refs=kids.match(/\\d+\\s+\\d+\\s+R/g)??[];
+   const refs=kids.match(/\d+\s+\d+\s+R/g)??[];
    if(refs.length===0||refs.length>500){nestedPageTreeTraversalError="KIDS_EMPTY_OR_TOO_LARGE";return;}
    for(const child of refs)walk(child,depth+1);
   };
