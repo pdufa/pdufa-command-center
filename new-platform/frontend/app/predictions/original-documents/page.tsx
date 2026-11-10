@@ -80,6 +80,11 @@ export default function OriginalDocumentsR86Page(){
     </a>
     {" · "} Five have known original journal leads in the five-case research archive.
   </p>
+  <p className={styles.footer}>
+    <a href="/predictions/scientific-reconciliation">
+      Open Stage 4 original primary endpoints, analysis populations and safety-exposure readback
+    </a>. Posted source values are not validated medical assessments.
+  </p>
   <OriginalSourceDocumentsR86Client rows={d.rows}/>
   <p className={styles.disclaimer}><a href="/predictions/phase-verification">
    Back to Step 1 phase-source checks
