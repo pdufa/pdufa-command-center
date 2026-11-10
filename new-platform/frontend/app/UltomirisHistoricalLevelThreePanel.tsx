@@ -1,5 +1,6 @@
 import frozen from "../data/levelThreeAznFrozen2026.json";
 import compared from "../data/levelThreeAznHistoricalComparison2026.json";
+import ChartTrendInset,{cumulativeDatedAgreement} from "./ChartTrendInset";
 
 export default function UltomirisHistoricalLevelThreePanel(){
   const r=frozen.records[0],o=compared.records[0];
@@ -53,6 +54,10 @@ export default function UltomirisHistoricalLevelThreePanel(){
         <span style={{fontSize:11,color:"#627870"}}>October 21, 2026 · BLA 761108/S-046</span>
       </div>
     </div>
+    <ChartTrendInset title="Ultomiris Level 3 historical trend"
+      testId="azn-historical-single-case-trend" kind="retrospective"
+      points={cumulativeDatedAgreement([{date:o.actualFdaActionDate,matched:o.outcomeMatch}])}
+      emptyText="This archive contains only one dated FDA decision. Repeating its result would create a false trend."/>
     <p style={{fontSize:13,lineHeight:1.6,margin:"8px 0"}}>
       <strong>Exact trial:</strong> I CAN, NCT06291376 (Phase 3).
       {" "}<strong>Original disclosed PDUFA window:</strong> Q4 2026.
