@@ -8,6 +8,7 @@ excerpts, NOT independently statistically adjudicated trial outcomes.
 """
 from __future__ import annotations
 import argparse,hashlib,json,re
+import xml.etree.ElementTree as ET
 from pathlib import Path
 
 SOURCE_SHA="03434b975e511b2d603227bab3e25768dbcc3a0e7b412d479d9afbd100cd2577"
@@ -20,6 +21,22 @@ EXPECTED={
  "NCT06343779":("42849489","10.1016/S0140-6736(26)01296-1")
 }
 SCHEMA="MAIN_R71_FIVE_PIVOTAL_ABSTRACT_RESULT_AND_FULLTEXT_ACCESS_REVIEW_ONLY"
+XML_SHA="2aa5fac13c7741d7ed2d9b1c2d91101978661150c87324b566b88f75994e394b"
+# Exact strings (after decimal normalization) present BOTH in the original NLM
+# abstract and in the source-reported frontend excerpt. Their presence means
+# attribution/parity only, NEVER independent statistical adjudication.
+PUBLISHED_RESULT_LITERALS={
+ "42526472":("4.55","0.47","8.63","0.029"),
+ "42233621":("0.44","0.28","0.71","0.001"),
+ "42663312":("0.67","0.22","1.11","0.003","3.0","0.02"),
+ "40587141":("-9.1","-13.3","-4.9","0.001"),
+ "42849489":("1.28","0.0001")
+}
+
+def norm(s):
+ s=s.replace("·",".").replace("−","-").replace(" "," ").replace("–","-")
+ return re.sub(r"(?<![0-9])\.(\d+)",r"0.\1",s)
+
 
 def require(ok,code):
  if not ok: raise ValueError(code)
@@ -32,7 +49,7 @@ def safe_json(path,max_bytes=200000):
  require(type(d) is dict,"SOURCE_NOT_OBJECT")
  return d,hashlib.sha256(raw).hexdigest()
 
-def verify(meta,sha,data):
+def verify(meta,sha,data,abstracts):
  require(sha==SOURCE_SHA
          and meta.get("schema")=="MAIN_R70_ORIGINAL_PUBMED_XML_METADATA_ABSTRACT_EVIDENCE_LEADS"
          and meta.get("originalPubmedXmlSha256")==SOURCE_XML_SHA
@@ -86,6 +103,13 @@ def verify(meta,sha,data):
           len(case["specificReviewNeeds"])>=3,
           "R71_TRIAL_PAPER_OR_REVIEW_REQUIREMENT_INVALID")
   src=original[p]
+  abstract=abstracts.get(p)
+  require(type(abstract) is str and n in abstract and
+          src.get("exactFocusNctIdentifierInArticleTitleOrAbstract") is True,
+          "ORIGINAL_PIVOTAL_STUDY_NCT_ABSTRACT_NOT_EXPLICIT")
+  for literal in PUBLISHED_RESULT_LITERALS[p]:
+   require(literal in norm(abstract) and literal in norm(case["reportedEffect"]),
+           "SOURCE_REPORTED_EFFICACY_LITERAL_NOT_IN_ORIGINAL_NLM_ABSTRACT")
   require(src.get("nct")==n and src.get("doiAsPubmed")==doi
           and src.get("sourceAbstractAvailable") is True
           and src.get("scientificReviewerSigned") is False
@@ -125,8 +149,23 @@ def verify(meta,sha,data):
 if __name__=="__main__":
  p=argparse.ArgumentParser(description=__doc__)
  p.add_argument("--original-nlm",type=Path,required=True)
+ p.add_argument("--original-nlm-xml",type=Path,required=True)
  p.add_argument("--frontend",type=Path,required=True)
  args=p.parse_args()
  original,sha=safe_json(args.original_nlm)
+ require(args.original_nlm_xml.is_file() and not args.original_nlm_xml.is_symlink()
+   and 100<args.original_nlm_xml.stat().st_size<2_000_000,
+   "SOURCE_RAW_PUBMED_XML_MISSING")
+ raw_xml=args.original_nlm_xml.read_bytes()
+ require(hashlib.sha256(raw_xml).hexdigest()==XML_SHA,
+   "R71_ORIGINAL_NLM_ABSTRACT_XML_SHA_CHANGED")
+ root=ET.fromstring(raw_xml)
+ abstracts={}
+ for node in root.findall(".//PubmedArticle"):
+  pmid=node.findtext("./MedlineCitation/PMID")
+  require(pmid not in abstracts and type(pmid) is str,"ORIGINAL_PUBMED_XML_DUPLICATE")
+  abstracts[pmid]=" ".join("".join(e.itertext()) for e in
+    node.findall("./MedlineCitation/Article/Abstract/AbstractText"))
+ require(len(abstracts)==11,"R71_EXPECTED_EXACT_11_NLM_ABSTRACT_RECORDS")
  data,_=safe_json(args.frontend)
- print(json.dumps(verify(original,sha,data),sort_keys=True))
+ print(json.dumps(verify(original,sha,data,abstracts),sort_keys=True))
