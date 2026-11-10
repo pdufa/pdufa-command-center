@@ -49,9 +49,6 @@ function CompanyDetails({ticker,calendar,undated,clinicalPhases,phaseCheckedAt,p
   const pending=undated.filter(e=>e.ticker===ticker);
   const cycles=APPLICATION_CYCLES.filter(c=>c.ticker===ticker);
   const profile=events[0]||pending[0];
-  const current=cycles.find(c=>c.id===cycleId)||cycles[0];
-  const currentResearch=events.find(e=>e.cycleId===current?.id)?.prediction ||
-    pending.find(e=>e.id===current?.id)?.prediction || null;
   const nowParts=new Intl.DateTimeFormat("en-US",{timeZone:"America/Los_Angeles",
     year:"numeric",month:"2-digit",day:"2-digit"}).formatToParts(new Date());
   const nowPart=(type:string)=>nowParts.find(part=>part.type===type)?.value||"01";
@@ -63,6 +60,9 @@ function CompanyDetails({ticker,calendar,undated,clinicalPhases,phaseCheckedAt,p
     (a.reportedGoal===null?1:0)-(b.reportedGoal===null?1:0) ||
     (a.reportedGoal||"").localeCompare(b.reportedGoal||"") || a.drug.localeCompare(b.drug));
   const completedOrPast=cycles.length-nextCandidates.length;
+  const current=cycles.find(c=>c.id===cycleId)||nextCandidates[0]||cycles[0];
+  const currentResearch=events.find(e=>e.cycleId===current?.id)?.prediction ||
+    pending.find(e=>e.id===current?.id)?.prediction || null;
   return <div className={styles.companyDetails}>
     {!ticker?<p>Select a ticker from CAL to view the company and all recorded application cycles.</p>:<>
       <h2>{ticker} <span className={styles.companyName}>{profile?.company||ticker}</span></h2>
