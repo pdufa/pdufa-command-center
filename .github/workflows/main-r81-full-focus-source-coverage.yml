@@ -1,0 +1,66 @@
+name: MAIN R81 full FOCUS exact 29-trial and 23-cycle scientific source readiness
+# No claims of approval, completed clinical review or calibrated prediction.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r81-full-focus-source-coverage.yml
+      - new-platform/frontend/lib/focus-r81-all-focus-source-readiness.ts
+      - new-platform/frontend/app/predictions/evidence-gaps/FocusSourceReadinessR81.tsx
+      - new-platform/frontend/app/predictions/evidence-gaps/EvidenceRecoveryBoardR68.tsx
+      - new-platform/frontend/app/predictions/evidence-gaps/EvidenceRecoveryBoardR68.module.css
+      - new-platform/frontend/tests/focus-r81-all-source-readiness.test.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r81-focus-source-readiness
+  cancel-in-progress: false
+
+jobs:
+  exact-nct-application-evidence-coverage:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Protect canonical original 29/23 roster and permanent scientific retirement
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Test all 29 exact-NCT source stages and 23 cycle mappings with no-grade guard
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r81-all-source-readiness.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Record source-only readiness without promoting to medical decision
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo "## MAIN R81 all 29 FOCUS source readiness / 23 provisional FDA cycles"
+            echo
+            echo "Source-derived crosswalk covers 29 exact NCT identities and their 23 provisional application-cycle groups without changing either canonical roster."
+            echo "12/29 current registry primary tables, 12/29 current safety arms and 12/29 method-PDF leads are original retained-source availability."
+            echo "Five pivotal original article source leads are indexed through R71; 24 are not indexed in that five-case subset. Only Launch-HTN has detailed JAMA source-page method review."
+            echo
+            echo "**0 prospectively authenticated SAPs, 0 signed independent scientific reviews, 0/232 source-review positions adjudicated, 0/23 validated future FDA application forecasts. FDA outcome ABSTAIN, timing UNKNOWN, calibration unavailable; no production writes.**"
+            echo "Source absence from an index or retained snapshot is never a failed trial or proof no scientific publication exists."
+          } >> "$GITHUB_STEP_SUMMARY"
