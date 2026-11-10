@@ -75,8 +75,6 @@
       }
     ],
     "listedDocumentEntries": 133,
-    "EUplannedParticipants": 435,
-    "EUplannedCountIsNotGlobalRandomizedPopulation": true,
     "reportedProtocolPrimaryStructure": "Dual primary endpoints of KCCQ-CSS change and peak VO2 change at Week 36",
     "regulatorySubmissions": [
       {
@@ -107,7 +105,11 @@
     "exactApprovedSAPContainedInPublicCTISIndex": false,
     "originalApprovalPdfBytesCaptured": false,
     "authoritativePreUnblindingPlanApproved": false,
-    "note": "CTIS amendment decisions are European public submission history. They are not proof that any one FDA-relevant prospectively signed final SAP amendment, endpoint alpha plan or first-unblinding chronology is authenticated."
+    "note": "CTIS planned 435 study subjects (175 planned across listed EU countries plus 260 rest of world), a planning target, not the 517 reported later randomized participants. CTIS amendment decisions are European public submission history, not proof of prospectively signed final FDA-relevant SAP or first unblinding chronology.",
+    "CTISPlannedTotalParticipants": 435,
+    "CTISPlannedEUCountrySum": 175,
+    "CTISPlannedRestOfWorld": 260,
+    "CTISPlannedTargetNotActualRandomized": true
   },
   "wrongTrialSource": {
     "protocolCode": "CY 6032",
