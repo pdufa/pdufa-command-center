@@ -7,6 +7,8 @@ type Manifest=NonNullable<typeof import(
 type Row=Manifest["rows"][number];
 type Supplement=NonNullable<typeof import(
  "../../../lib/focus-r89-new-public-source-leads").R89_NEW_PUBLIC_SOURCE_LEADS>["rows"][number];
+type CanonicalSource=NonNullable<typeof import(
+ "../../../lib/focus-r90-canonical-results-source-coverage").R90_CANONICAL_RESULTS_RECOVERY>["rows"][number];
 type HistoryIndex={
  nct:string;historyVersionCount:number;
  versions:Array<{apiIndex:number;uiVersion:number;submittedDate:string}>;
@@ -28,7 +30,10 @@ function errMessage(value:unknown){
  return value&&typeof value==="object"&&"error" in value&&
   typeof value.error==="string"?value.error:"OFFICIAL_PUBLIC_HISTORY_UNAVAILABLE";
 }
-export default function OriginalHistoryRecoveryR89Client({rows,newLeads}:{rows:Row[];newLeads:Supplement[]}){
+export default function OriginalHistoryRecoveryR89Client(
+ {rows,newLeads,canonicalSourceLeads}:{
+ rows:Row[];newLeads:Supplement[];canonicalSourceLeads:CanonicalSource[]
+ }){
  const [histories,setHistories]=useState<Record<string,Readback>>({});
  const [versions,setVersions]=useState<Record<string,VersionReadback>>({});
  async function loadHistory(nct:string){
@@ -69,6 +74,7 @@ export default function OriginalHistoryRecoveryR89Client({rows,newLeads}:{rows:R
  {rows.map(row=>{
    const history=histories[row.nct],indexed=row.originalIndexedPivotalPublication;
    const additional=newLeads.find(x=>x.nct===row.nct);
+   const canonical=canonicalSourceLeads.find(x=>x.nct===row.nct);
    const versionList=history?.data?.versions??[];
    return <article key={row.nct} className={styles.coverageGroup}>
      <strong>{row.ticker} · {row.nct}</strong>
@@ -102,6 +108,25 @@ export default function OriginalHistoryRecoveryR89Client({rows,newLeads}:{rows:R
        <small>Publisher/sponsor reported only. Original signed SAP,
         independent efficacy/safety adjudication and FDA forecasts:
         NOT VERIFIED.</small>
+     </div>}
+     {canonical&&<div>
+       <b>Verified accessible issuer/SEC source already retained in FOCUS:</b>
+       {" "}<a href={canonical.url} target="_blank" rel="noopener noreferrer">
+        {canonical.trial} · {canonical.publicDate}
+       </a>
+       <div>{canonical.title}</div>
+       <p><small>{canonical.note}</small></p>
+       <div><b>Source-to-NCT identity:</b> {
+        canonical.verification==="REPORT_DIRECTLY_NAMES_EXACT_NCT"?
+         "This issuer/SEC page explicitly prints the exact NCT ID":
+         "Page reports sponsor trial by name; exact NCT requires separate official registry trial-name match"}
+       </div>
+       <small><a href={canonical.exactRegistryUrl}
+        target="_blank" rel="noopener noreferrer">
+        Cross-check official NCT registry identity
+       </a>. Sponsor/SEC results are not independently assessed for original SAP,
+       multipicity, safety, effect sizes, approval or rejection.
+       Final signed SAP: NOT VERIFIED. FDA forecast: ABSTAIN.</small>
      </div>}
      {row.nct===R89_ARCHIVED_ACACIA_SOURCE_HISTORY.nct&&
        <details className={styles.coverageDetails}>
