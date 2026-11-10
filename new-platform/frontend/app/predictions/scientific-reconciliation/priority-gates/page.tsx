@@ -4,6 +4,7 @@ import {R94_ACACIA_COHORT_SAFETY_SOURCE} from
  "../../../../lib/focus-r94-acacia-cross-source-reconciliation";
 import {R95_EU_ACACIA_PROTOCOL_IDENTITY} from
  "../../../../lib/focus-r95-eu-protocol-identity-gates";
+import R101_TEXT_DIAGNOSTICS from "../../../../data/focus-r101-acacia-pdf-text-diagnostic-readback-20261110.json";
 import {R98_ACACIA_CTIS_ORIGINAL_PDF_RECEIPTS} from "../../../../lib/focus-r98-ctis-original-pdf-receipts";
 import styles from "../../evidence-gaps/EvidenceRecoveryBoardR68.module.css";
 
@@ -24,7 +25,7 @@ export default function PriorityOriginalScientificGatesR93(){
    conclusion is represented as verified.</p>
  </main>;
  return <main className={styles.coverage}>
-  <div className={styles.eyebrow}>MAIN · REVISION 99 · STAGE 4 INDEPENDENT SCIENCE EVIDENCE GATES</div>
+  <div className={styles.eyebrow}>MAIN · REVISION 101 · STAGE 4 INDEPENDENT SCIENCE EVIDENCE GATES</div>
   <h1>Priority original scientific evidence checklist</h1>
   <p className={styles.intro}>{d.notice} Evidence baseline:
    {" "}<strong>{d.datedSourceReview} UTC</strong>.</p>
@@ -73,6 +74,35 @@ export default function PriorityOriginalScientificGatesR93(){
      {" "}{d.launchPublicToplineDate} public topline disclosure. This does not
      establish the real database-lock or blind-break date.
    </p>}
+   {c.trial==="ACACIA_HCM"&&
+    R101_TEXT_DIAGNOSTICS.exactNct==="NCT06081894"&&
+    R101_TEXT_DIAGNOSTICS.protocol==="CY 6033"&&
+    R101_TEXT_DIAGNOSTICS.FDAForecast==="ABSTAIN"&&
+    R101_TEXT_DIAGNOSTICS.completeOriginalDocumentTextExtracted===false&&
+    <details className={styles.coverageDetails} open>
+     <summary>Revision 101: original-PDF text extraction coverage (partial, not a scientific review)</summary>
+     <p>Four original CTIS documents are source-hash verified, but the initial
+      bounded text-operator extractor recovered only
+      {" "}<b>{R101_TEXT_DIAGNOSTICS.totalTextOperatorChunks}</b> short text
+      operator fragments across them. This is not full text, page numbering,
+      an authenticated signed SAP or a completed scientific review.</p>
+     <ul>{R101_TEXT_DIAGNOSTICS.originalDocuments.map(d=>
+      <li key={d.key}><b>{d.key}</b>:
+       {" "}{d.textOperatorChunks} text fragments;
+       {" "}{d.streams} PDF streams inspected;
+       {" "}{d.foundTerms.length?("detectable terms: "+d.foundTerms.join(", ")):"no matching terms detected"}
+       . <a href={"/predictions/scientific-reconciliation/priority-gates/ctis-text-index?doc="+encodeURIComponent(d.key)}
+          target="_blank" rel="noopener noreferrer">
+         View original PDF text-operator diagnostic
+       </a></li>)}</ul>
+     <p><b>Important:</b> zero extracted fragments is not proof of an
+      empty document. PDF text encoding, fonts and array operators may be
+      unsupported. Original page-level endpoint comparison and controlled
+      SAP approval chronology remain NOT VERIFIED.
+      {" "}Original gates still open: ACACIA {R101_TEXT_DIAGNOSTICS.acaciaEvidenceGatesStillOpen},
+      Launch {R101_TEXT_DIAGNOSTICS.launchEvidenceGatesStillOpen}.
+      FDA forecast: ABSTAIN.</p>
+    </details>}
    {c.trial==="ACACIA_HCM"&&<details className={styles.coverageDetails} open>
     <summary>R98 original public EU protocol PDFs: 4 byte-verified source receipts</summary>
     <p><b>{originalFiles.originalPdfFilesAvailable}</b> genuine CTIS PDF files
