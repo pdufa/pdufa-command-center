@@ -50,6 +50,7 @@ function CompanyDetails({ticker,calendar,cycleId,onCycle,onNews,onCal}:{ticker:s
         <p><strong>Reported FDA goal:</strong> {date(current.reportedGoal)}</p>
         <p><strong>Linked NCTs:</strong> {current.ncts.map((nct,i)=><span key={nct}>
           {i?", ":""}<a href={"https://clinicaltrials.gov/study/"+nct} target="_blank" rel="noopener noreferrer">{nct}</a>
+          {" · "}<Link href={"/analyze-now?nct="+nct}>Saved revision history</Link>
         </span>)}</p>
         <p><strong>Scientific question:</strong> {current.criticalQuestion}</p>
         <p><strong>Source dated:</strong> {date(current.sourceDate)} · <a href={current.sourceUrl} target="_blank" rel="noopener noreferrer">Original sponsor / SEC source</a></p>
