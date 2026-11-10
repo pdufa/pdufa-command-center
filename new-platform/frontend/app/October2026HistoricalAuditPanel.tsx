@@ -27,6 +27,7 @@ export default function October2026HistoricalAuditPanel(){
     throw new Error("OCTOBER_2026_AUDIT_COUNTS_OR_SEPARATION_INVALID");
   }
   const percent=(100*matches.length/scoreable).toFixed(1);
+  const alwaysApproveMatches=cases.filter(x=>x.eligibleForDirectionalMatchRate&&x.actualOutcome==="APPROVAL").length;
   return <section aria-label="October 2026 historical FDA PDUFA research audit"
     data-testid="october-2026-historical-audit"
     style={{background:"#fff",border:"1px solid #c7d9d2",
@@ -69,6 +70,7 @@ export default function October2026HistoricalAuditPanel(){
         </div>
         <div style={{fontSize:12,color:muted}}>
           Directional match = 16 ÷ 17; withdrawal excluded from the denominator.
+          An always-APPROVAL guess would match {alwaysApproveMatches} of {scoreable} decided cases ({(100*alwaysApproveMatches/scoreable).toFixed(0)}%).
         </div>
       </div>
     </div>
