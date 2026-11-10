@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-10T22:50:27Z",
+  "generatedAt": "2026-11-10T22:51:59Z",
   "source": "FOCUS Google Sheet: cap-screened $300M-$10B trial population",
   "sourceSheetId": "1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU",
   "events": [
@@ -20,7 +20,7 @@
       "ticker": "CAPR",
       "company": "Capricor Therapeutics, Inc.",
       "date": "2026-11-22",
-      "marketCapUsd": 533130000,
+      "marketCapUsd": 515690000,
       "id": "focus-capr-nct05126758",
       "ncts": [
         "NCT05126758"
@@ -130,7 +130,7 @@
       "ticker": "PHVS",
       "company": "Pharvaris N.V.",
       "date": "2027-04-23",
-      "marketCapUsd": 2350000000,
+      "marketCapUsd": 2390000000,
       "id": "focus-phvs-nct06343779",
       "ncts": [
         "NCT06343779"
@@ -167,7 +167,7 @@
       "ticker": "ZBIO",
       "company": "Zenas BioPharma, Inc.",
       "date": "2027-05-27",
-      "marketCapUsd": 1950000000,
+      "marketCapUsd": 1940000000,
       "id": "focus-zbio-nct05662241",
       "ncts": [
         "NCT05662241"
