@@ -15,6 +15,10 @@ on:
       - new-platform/frontend/app/predictions/evidence-gaps/ScientificOriginalsIntakeR71.module.css
       - new-platform/frontend/app/predictions/evidence-gaps/OriginalPublicationLeadsR69.tsx
       - new-platform/frontend/tests/focus-r71-pivotal-evidence-intake.test.cjs
+      - new-platform/frontend/data/focus-r72-capr-regulatory-source-challenge.json
+      - new-platform/frontend/lib/focus-r72-capr-regulatory-source-challenge.ts
+      - new-platform/frontend/app/predictions/evidence-gaps/CaprFdaChallengeR72.tsx
+      - new-platform/frontend/tests/focus-r72-capr-regulatory-source-challenge.test.cjs
       - new-platform/frontend/scripts/verify-r71-five-source-review-browser.cjs
   workflow_dispatch:
 
@@ -70,7 +74,8 @@ jobs:
         run: |
           set -euo pipefail
           npm install --no-audit --no-fund
-          node --test tests/focus-r71-pivotal-evidence-intake.test.cjs \
+          node --test tests/focus-r72-capr-regulatory-source-challenge.test.cjs \
+            tests/focus-r71-pivotal-evidence-intake.test.cjs \
             tests/focus-r70-publication-abstract-triage.test.cjs \
             tests/focus-r70-original-pubmed-article-source.test.cjs
           npm run typecheck
