@@ -6,6 +6,7 @@ These are unreviewed publication leads, NOT evidence of efficacy or FDA outcomes
 import argparse
 import json
 import re
+import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
@@ -32,18 +33,22 @@ def search(nct, opener=urllib.request.urlopen):
                                   "reviewStatus": "UNREVIEWED", "clinicalFinding": None}
                                  for p in pmids]}
 
-def build(roster, searcher=search):
+def build(roster, searcher=search, sleep=time.sleep):
     ncts = list(dict.fromkeys(r["nct"] for r in roster.get("records", [])))
     if len(ncts) != 29 or any(not NCT.fullmatch(n) for n in ncts):
         raise ValueError("Expected exact 29 FOCUS NCTs")
     rows = []
-    for nct in ncts:
+    for index, nct in enumerate(ncts):
+        if index:
+            sleep(0.36)  # Stay below NCBI's unauthenticated 3 requests/second limit.
         try:
             rows.append(searcher(nct))
         except (OSError, ValueError, TimeoutError) as exc:
             rows.append({"nct": nct, "status": "RETRY_REQUIRED", "publicationLeads": [],
                          "errorType": type(exc).__name__})
-    return {"schemaVersion": 1, "status": "UNREVIEWED_PUBLICATION_DISCOVERY",
+    failed = sum(r.get("status") == "RETRY_REQUIRED" for r in rows)
+    return {"schemaVersion": 1, "status": "PARTIAL_RETRY_REQUIRED" if failed else "UNREVIEWED_PUBLICATION_DISCOVERY",
+            "queriesSucceeded": len(rows) - failed, "queriesFailed": failed,
             "trialCount": 29, "publicationLeadsFound": sum(len(r["publicationLeads"]) for r in rows),
             "scientificAssessmentsCompleted": 0, "rows": rows}
 
@@ -55,7 +60,10 @@ def main():
     report = build(json.loads(a.roster.read_text()))
     a.output.parent.mkdir(parents=True, exist_ok=True)
     a.output.write_text(json.dumps(report, indent=2) + "\n")
-    print(json.dumps({"trialCount": 29, "publicationLeadsFound": report["publicationLeadsFound"]}))
+    print(json.dumps({"trialCount": 29, "publicationLeadsFound": report["publicationLeadsFound"],
+                      "queriesSucceeded": report["queriesSucceeded"], "queriesFailed": report["queriesFailed"]}))
+    if report["queriesFailed"]:
+        raise SystemExit("PubMed discovery incomplete; retry required. Partial artifact preserved.")
 
 if __name__ == "__main__":
     main()
