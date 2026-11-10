@@ -90,7 +90,10 @@ export function buildR68EvidenceRecovery(
     if(safetyAvailable)safety++;else missingSafety++;
     if(sourcePdfFound)pdf++;else missingPdf++;
     if(x.reviewExceptions.some(f=>typeof f!=="string"||f.length>150)||
-       m.totalPageLeads!==h.sourceLeads)return null;
+       m.totalPageLeads!==h.sourceLeads||
+       m.sourcePdfDocumentsWithPageLeads<0||
+       m.sourcePdfDocumentsWithPageLeads>4||
+       (m.sourcePdfDocumentsWithPageLeads===0)!==(m.totalPageLeads===0))return null;
     const blockers=[
       {key:"PHASE",label:"Independent source-phase adjudication",
         detail:"Confirm study design, stage and indication from original source and authorized reviewer",
