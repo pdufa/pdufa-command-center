@@ -1,5 +1,6 @@
 import {FOCUS_R81_SOURCE_READINESS} from "../../../lib/focus-r81-all-focus-source-readiness";
 import styles from "./EvidenceRecoveryBoardR68.module.css";
+import ApplicationVerificationR84 from "./ApplicationVerificationR84";
 
 /** Read-only crosswalk of 29 original exact NCTs and 23 provisional cycles. */
 export default function FocusSourceReadinessR81(){
@@ -74,6 +75,7 @@ export default function FocusSourceReadinessR81(){
    </article>)}
    </div>
   </details>
+  <ApplicationVerificationR84 />
   <p className={styles.disclaimer}>Application groups are research identities,
    not necessarily separate FDA dossiers. No live FDA grade, historical accuracy or
    approval/CRL probability is established by this source-only crosswalk.</p>
