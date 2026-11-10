@@ -2,6 +2,7 @@ import {R89_HISTORICAL_SOURCE_RECOVERY} from
  "../../../lib/focus-r89-historical-source-recovery";
 import OriginalHistoryRecoveryR89Client from "./OriginalHistoryRecoveryR89Client";
 import {R89_NEW_PUBLIC_SOURCE_LEADS} from "../../../lib/focus-r89-new-public-source-leads";
+import {R90_CANONICAL_RESULTS_RECOVERY} from "../../../lib/focus-r90-canonical-results-source-coverage";
 import styles from "../evidence-gaps/EvidenceRecoveryBoardR68.module.css";
 
 export const metadata={
@@ -10,13 +11,13 @@ export const metadata={
 };
 export default function OriginalSourceRecoveryR89Page(){
  const d=R89_HISTORICAL_SOURCE_RECOVERY;
- if(!d||!R89_NEW_PUBLIC_SOURCE_LEADS)return <main className={styles.coverage}>
+ if(!d||!R89_NEW_PUBLIC_SOURCE_LEADS||!R90_CANONICAL_RESULTS_RECOVERY)return <main className={styles.coverage}>
   <h1>Original source recovery queue</h1>
   <p role="alert">The exact original 29/23 FOCUS study, publication or
    trial-source crosswalk failed; no reviews or source history are released.</p>
  </main>;
  return <main className={styles.coverage}>
-   <div className={styles.eyebrow}>MAIN · REVISION 89 · STAGE 4 STEP 2</div>
+   <div className={styles.eyebrow}>MAIN · REVISIONS 89–90 · STAGE 4 STEP 2</div>
    <h1>Original scientific evidence: historical source-recovery queue</h1>
    <p className={styles.intro}>{d.notice} Baseline registry evidence dated
     {" "}<strong>{d.sourceSnapshotDate} UTC</strong>.</p>
@@ -27,11 +28,23 @@ export default function OriginalSourceRecoveryR89Page(){
      <div><small>Not indexed in five-study archive</small><strong>{d.unindexedPivotalPublicationInFiveStudyIndex}</strong></div>
      <div><small>Additional public conference/sponsor leads found</small>
       <strong>{R89_NEW_PUBLIC_SOURCE_LEADS.exactNctMatchedNewSourceLeads}</strong></div>
-     <div><small>Without new lead this research pass</small>
-      <strong>{R89_NEW_PUBLIC_SOURCE_LEADS.remainingWithoutNewPublicLeadThisPass}</strong></div>
+     <div><small>Pre-existing FOCUS issuer/SEC source links checked</small>
+      <strong>{R90_CANONICAL_RESULTS_RECOVERY.alreadyHeldNineIssuerSecResultsLinksVerified}</strong></div>
+     <div><small>Seventeen trial results-source research leads</small>
+      <strong>{R90_CANONICAL_RESULTS_RECOVERY.sourceResultLeadCoverageForSeventeen}/17</strong></div>
+     <div><small>Direct NCT text in nine issuer/SEC pages</small>
+      <strong>{R90_CANONICAL_RESULTS_RECOVERY.directExactNctInNineReports}/9</strong></div>
      <div><small>Authenticated prospectively signed SAPs</small><strong>{d.independentlyAuthenticatedSignedProspectiveSAPs}</strong></div>
      <div><small>Qualified scientific signoffs</small><strong>{d.independentQualifiedScienceReviews}</strong></div>
    </div>
+   <p className={styles.notice}>{R90_CANONICAL_RESULTS_RECOVERY.notice}
+    The earlier nine without a new lead in the R89 pass already had
+    issuer/SEC result links in the canonical 29-trial FOCUS snapshot.
+    Those nine links were checked; five pages explicitly name the NCT and
+    four rely on sponsor trial-name matching against the original registry.
+    Source coverage is not evidence of signed SAP availability or a validated
+    FDA forecast.
+   </p>
    <p className={styles.notice}>
     Existing original journal links are shown directly for the five mapped
     publications. For each of the 17 trial records, request an exact official
@@ -51,7 +64,8 @@ export default function OriginalSourceRecoveryR89Page(){
     original-version endpoint is still inaccessible from the preview server;
     use the public record-history links.</p>
    <OriginalHistoryRecoveryR89Client rows={d.rows}
-     newLeads={R89_NEW_PUBLIC_SOURCE_LEADS.rows}/>
+     newLeads={R89_NEW_PUBLIC_SOURCE_LEADS.rows}
+     canonicalSourceLeads={R90_CANONICAL_RESULTS_RECOVERY.rows}/>
    <p className={styles.footer}>
     <a href="/predictions/original-documents/chronology">
      Return to dated 23-file original SAP chronology
