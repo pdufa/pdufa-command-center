@@ -62,8 +62,8 @@ async function profile(browser,config){
   await caprFda.waitFor({state:"visible",timeout:12000});
   const caprText=await caprFda.innerText();
   assert.match(caprText,/FDA vs applicant analysis/);
-  assert.match(caprText,/p=0\\.24/);
-  assert.match(caprText,/p=0\\.029/);
+  assert.match(caprText,/p=0[.]24/);
+  assert.match(caprText,/p=0[.]029/);
   assert.match(caprText,/incompatible endpoint scales/);
   assert.match(caprText,/2026-11-22/);
   assert.match(caprText,/ABSTAIN/);
