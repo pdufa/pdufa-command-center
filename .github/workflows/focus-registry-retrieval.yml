@@ -1,0 +1,32 @@
+name: FOCUS Registry Source Retrieval
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/focus-registry-retrieval.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  retrieve-abvx:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - name: Retrieve ABVX NCT05507203 source with provenance
+        id: fetch
+        shell: bash
+        run: |
+          mkdir -p registry-artifacts
+          python scripts/fetch_focus_registry_record.py NCT05507203 > registry-artifacts/NCT05507203.json 2> registry-artifacts/fetch-error.json || echo "failed=true" >> "$GITHUB_OUTPUT"
+      - name: Upload source record or explicit error
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: abvx-nct05507203-registry-source
+          path: registry-artifacts/
+          if-no-files-found: error
+          retention-days: 30
+      - name: Fail if primary-source fetch unsuccessful
+        if: steps.fetch.outputs.failed == 'true'
+        run: exit 1
