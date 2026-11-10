@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-10T04:14:52.388Z",
+  "generatedAt": "2026-11-10T22:50:27Z",
   "source": "FOCUS Google Sheet: cap-screened $300M-$10B trial population",
   "sourceSheetId": "1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU",
   "events": [
@@ -8,7 +8,7 @@
       "ticker": "CYTK",
       "company": "Cytokinetics",
       "date": "2026-11-14",
-      "marketCapUsd": 7479196915,
+      "marketCapUsd": 7681186774,
       "id": "focus-cytk-nct05767346",
       "ncts": [
         "NCT05767346"
@@ -20,7 +20,7 @@
       "ticker": "CAPR",
       "company": "Capricor Therapeutics, Inc.",
       "date": "2026-11-22",
-      "marketCapUsd": 572670000,
+      "marketCapUsd": 533130000,
       "id": "focus-capr-nct05126758",
       "ncts": [
         "NCT05126758"
@@ -32,7 +32,7 @@
       "ticker": "SVRA",
       "company": "Savara Inc.",
       "date": "2026-11-22",
-      "marketCapUsd": 992371872,
+      "marketCapUsd": 1037573076,
       "id": "focus-svra-nct04544293",
       "ncts": [
         "NCT04544293"
@@ -44,7 +44,7 @@
       "ticker": "COGT",
       "company": "Cogent Biosciences, Inc.",
       "date": "2026-11-30",
-      "marketCapUsd": 5491198055,
+      "marketCapUsd": 5835773920,
       "id": "focus-cogt-nct05208047",
       "ncts": [
         "NCT05208047"
@@ -56,7 +56,7 @@
       "ticker": "CORT",
       "company": "Corcept Therapeutics",
       "date": "2026-12-17",
-      "marketCapUsd": 7964175042,
+      "marketCapUsd": 8210969253,
       "id": "focus-cort-nct03697109",
       "ncts": [
         "NCT03697109",
@@ -69,7 +69,7 @@
       "ticker": "MLYS",
       "company": "Mineralys Therapeutics, Inc.",
       "date": "2026-12-22",
-      "marketCapUsd": 1357580297,
+      "marketCapUsd": 1400087704,
       "id": "focus-mlys-nct06153693",
       "ncts": [
         "NCT06153693"
@@ -81,7 +81,7 @@
       "ticker": "PRAX",
       "company": "Praxis Precision Medicines, Inc.",
       "date": "2027-01-29",
-      "marketCapUsd": 7751147069,
+      "marketCapUsd": 9296518404,
       "id": "focus-prax-nct06087276",
       "ncts": [
         "NCT06087276"
@@ -93,7 +93,7 @@
       "ticker": "BLTE",
       "company": "Belite Bio, Inc.",
       "date": "2027-02-12",
-      "marketCapUsd": 6209561883,
+      "marketCapUsd": 6350514387,
       "id": "focus-blte-nct05244304",
       "ncts": [
         "NCT05244304"
@@ -105,7 +105,7 @@
       "ticker": "APMD",
       "company": "Apnimed",
       "date": "2027-02-28",
-      "marketCapUsd": 628624763,
+      "marketCapUsd": 658182616,
       "id": "focus-apmd-nct05811247",
       "ncts": [
         "NCT05811247",
@@ -118,7 +118,7 @@
       "ticker": "SRPT",
       "company": "Sarepta Therapeutics, Inc.",
       "date": "2027-02-28",
-      "marketCapUsd": 1882273514,
+      "marketCapUsd": 1848746020,
       "id": "focus-srpt-nct02500381",
       "ncts": [
         "NCT02500381"
@@ -130,7 +130,7 @@
       "ticker": "PHVS",
       "company": "Pharvaris N.V.",
       "date": "2027-04-23",
-      "marketCapUsd": 2420000000,
+      "marketCapUsd": 2350000000,
       "id": "focus-phvs-nct06343779",
       "ncts": [
         "NCT06343779"
@@ -142,7 +142,7 @@
       "ticker": "IMNM",
       "company": "Immunome, Inc.",
       "date": "2027-04-28",
-      "marketCapUsd": 2207838300,
+      "marketCapUsd": 2284540326,
       "id": "focus-imnm-nct04871282",
       "ncts": [
         "NCT04871282"
@@ -154,7 +154,7 @@
       "ticker": "AXSM",
       "company": "Axsome Therapeutics, Inc.",
       "date": "2027-05-01",
-      "marketCapUsd": 6962660014,
+      "marketCapUsd": 7046293991,
       "id": "focus-axsm-nct05059223",
       "ncts": [
         "NCT05059223",
@@ -167,7 +167,7 @@
       "ticker": "ZBIO",
       "company": "Zenas BioPharma, Inc.",
       "date": "2027-05-27",
-      "marketCapUsd": 1930000000,
+      "marketCapUsd": 1950000000,
       "id": "focus-zbio-nct05662241",
       "ncts": [
         "NCT05662241"
@@ -179,7 +179,7 @@
       "ticker": "URGN",
       "company": "UroGen Pharma Ltd.",
       "date": "2027-06-14",
-      "marketCapUsd": 1213933619,
+      "marketCapUsd": 1290448223,
       "id": "focus-urgn-nct06331299",
       "ncts": [
         "NCT06331299"
