@@ -14,6 +14,8 @@ type NewsEntry={id:string;title:string;publishedAt:string|null;sourceUrl:string;
   matchStatus:"UNREVIEWED_EXACT_DRUG_MENTION"|"NOT_MAPPED"|"CYCLE_SOURCE_RECORD";
   impact:"NOT_ASSESSED";description:string};
 type NewsPayload={feedStatus:string;fetchedAt:string;articles:NewsEntry[];records:NewsEntry[];note:string};
+type AutomationStatus={state:string;baselineAt?:string|null;lastCheckedAt?:string|null;
+  statuses?:Record<string,number>;note?:string};
 const date=(s:string|null|undefined)=>s?new Date(s.length===10?s+"T12:00:00Z":s).toLocaleDateString("en-US",
   {year:"numeric",month:"short",day:"numeric",timeZone:"UTC"}):"Not recorded";
 const cap=(n:number)=>n>=1e9?"$"+(n/1e9).toFixed(2)+"B":"$"+Math.round(n/1e6)+"M";
@@ -70,8 +72,9 @@ function CompanyDetails({ticker,calendar,cycleId,onCycle,onNews,onCal}:{ticker:s
     </>}
   </div>;
 }
-function NewsDetails({payload,ticker,cycleId,newsFilter,setNewsFilter}:{payload:NewsPayload|null;
-  ticker:string;cycleId:string;newsFilter:string;setNewsFilter:(s:string)=>void}){
+function NewsDetails({payload,ticker,cycleId,newsFilter,setNewsFilter,automation}:{payload:NewsPayload|null;
+  ticker:string;cycleId:string;newsFilter:string;setNewsFilter:(s:string)=>void;
+  automation:AutomationStatus|null}){
   const [expanded,setExpanded]=useState<string|null>(null);
   const all=useMemo(()=>[...(payload?.articles||[]),...(payload?.records||[])], [payload]);
   const filtered=all.filter(x=>{
@@ -83,6 +86,12 @@ function NewsDetails({payload,ticker,cycleId,newsFilter,setNewsFilter}:{payload:
     <header className={styles.newsTop}><h2>NEWS</h2><span className={styles.feedIndicator}>
       {payload?.feedStatus==="LIVE_FDA_RSS"?"FDA RSS available":"FDA live feed unavailable / loading"}</span></header>
     <p className={styles.intro}>Official FDA articles and source-linked issuer filings are displayed separately. A drug-name mention is <strong>not</strong> a verified application match or FDA outcome.</p>
+    <div className={styles.monitor}><strong>Automatic evidence reassessment:</strong>{" "}
+      {automation?.state==="RUNNING"?"FDA official-source watcher checked "+date(automation.lastCheckedAt):
+       automation?.state==="NOT_ENABLED"?"Not enabled on durable backend":
+       "Runtime not verified (sign-in / backend readiness may be required)"}
+      <span> · Existing source-only worker · Prior revisions retained · FDA probabilities: ABSTAIN</span>
+    </div>
     <label className={styles.feedSelect}>News scope
       <select value={newsFilter} onChange={e=>setNewsFilter(e.target.value)}>
         <option value="related">Selected company + application</option>
@@ -122,6 +131,7 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
   const [cycleId,setCycleId]=useState("");
   const [calendar,setCalendar]=useState<CalendarEvent[]>([]);
   const [news,setNews]=useState<NewsPayload|null>(null);
+  const [automation,setAutomation]=useState<AutomationStatus|null>(null);
   const [newsFilter,setNewsFilter]=useState("related");
   const [error,setError]=useState("");
   const popup=useRef<HTMLDialogElement>(null);
@@ -131,7 +141,8 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
     setLayout(window.innerWidth>=1150?"all":window.innerWidth>=760?"dual":"single");
     Promise.allSettled([
       fetch("/api/cal",{cache:"no-store",signal:controller.signal}).then(async r=>{if(!r.ok)throw Error("CAL unavailable");return r.json();}),
-      fetch("/api/news",{cache:"no-store",signal:controller.signal}).then(async r=>{if(!r.ok)throw Error("NEWS unavailable");return r.json();})
+      fetch("/api/news",{cache:"no-store",signal:controller.signal}).then(async r=>{if(!r.ok)throw Error("NEWS unavailable");return r.json();}),
+      fetch("/api/news-automation-status",{cache:"no-store",signal:controller.signal}).then(async r=>{if(!r.ok)throw Error("Automated research not connected");return r.json();})
     ]).then(results=>{
       if(controller.signal.aborted)return;
       if(results[0].status==="fulfilled"&&Array.isArray(results[0].value.events)){
@@ -141,6 +152,7 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
       }else setError("Published CAL data unavailable; no dates invented.");
       if(results[1].status==="fulfilled")setNews(results[1].value as NewsPayload);
       else setError(prev=>prev+" NEWS feed unavailable.");
+      if(results[2].status==="fulfilled")setAutomation(results[2].value as AutomationStatus);
     });
     return ()=>controller.abort();
   },[]);
@@ -166,7 +178,7 @@ export default function IntelligenceHub({initialView="cal"}:{initialView?:View})
     name==="company"?<CompanyDetails ticker={ticker} calendar={calendar} cycleId={resolvedCycle}
       onCycle={setCycleId} onNews={()=>{setView("news");setNewsFilter("related");}} onCal={()=>setView("cal")}/>:
     <NewsDetails payload={news} ticker={ticker} cycleId={resolvedCycle}
-      newsFilter={newsFilter} setNewsFilter={setNewsFilter}/>;
+      newsFilter={newsFilter} setNewsFilter={setNewsFilter} automation={automation}/>;
   return <main className={styles.page}>
     <header className={styles.pageHeader}><div><span className={styles.eyebrow}>PDUFA RESEARCH INTELLIGENCE</span>
       <h1>CAL · COMPANY · NEWS</h1><p>Linked by exact ticker, drug, application cycle and NCT. Source-reported information only.</p></div>
