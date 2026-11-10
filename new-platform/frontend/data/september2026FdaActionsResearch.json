@@ -17,7 +17,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-02",
@@ -30,7 +32,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-03",
@@ -43,7 +47,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-04",
@@ -56,7 +62,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-05",
@@ -69,7 +77,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-06",
@@ -82,7 +92,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-07",
@@ -92,10 +104,12 @@
       "applicationId": "NDA 217759 S-006",
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/217759Orig1s006ltr.pdf",
       "observedDisposition": "APPROVAL",
-      "reconstructedLevel3Call": null,
-      "level3AssessmentState": "NOT_PERFORMED",
-      "eligibleForDirectionalAgreement": false,
-      "match": null
+      "reconstructedLevel3Call": "APPROVAL",
+      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "eligibleForDirectionalAgreement": true,
+      "match": true,
+      "historicalResearchSourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/research/2026-october-full-outcome-exposed-audit/new-platform/frontend/data/october2026EvidenceCutoffFreeze.json",
+      "historicalResearchEvidenceCutoff": "2026-08-31"
     },
     {
       "id": "SEP26-ACTION-08",
@@ -108,7 +122,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-09",
@@ -121,7 +137,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-10",
@@ -134,7 +152,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-11",
@@ -147,7 +167,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-12",
@@ -160,7 +182,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-13",
@@ -173,7 +197,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-14",
@@ -186,7 +212,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-15",
@@ -199,7 +227,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-16",
@@ -212,7 +242,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-17",
@@ -225,7 +257,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-18",
@@ -238,7 +272,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-19",
@@ -251,7 +287,9 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     },
     {
       "id": "SEP26-ACTION-20",
@@ -264,18 +302,21 @@
       "reconstructedLevel3Call": null,
       "level3AssessmentState": "NOT_PERFORMED",
       "eligibleForDirectionalAgreement": false,
-      "match": null
+      "match": null,
+      "historicalResearchSourceUrl": null,
+      "historicalResearchEvidenceCutoff": null
     }
   ],
   "expected": {
     "sourceListedDecisions": 20,
     "observedApprovals": 20,
     "observedCrl": 0,
-    "level3ReconstructedCalls": 0,
-    "comparableLevel3Pairs": 0
+    "level3ReconstructedCalls": 1,
+    "comparableLevel3Pairs": 1
   },
   "researchBlind": false,
   "accuracy": null,
   "certainty": "NOT_VALIDATED",
-  "historicalControls": "The FDA results were known to the analyst before any reconstruction. Do not call later reconstructive scores blind. Never infer a predictive match, score, or probability from the decision record or an unreviewed primary source. No reviewer score event; no FOCUS membership changes."
+  "historicalControls": "The FDA results were known to the analyst before any reconstruction. Do not call later reconstructive scores blind. Never infer a predictive match, score, or probability from the decision record or an unreviewed primary source. No reviewer score event; no FOCUS membership changes. One PHAR Level 3-style outcome-exposed reconstruction is already present in the linked October study: 1/1 September ACTION-month cross-reference only, not validated forecast skill.",
+  "priorHistoricalCrossMonthNote": "PHAR Joenja FDA approval action September 11, 2026 versus October 24 target. Its already existing October Level 3-style reconstructed approval lean with evidence cutoff August 31 is reused as one September ACTION-month comparison. Outcome-aware, not blind. It must not be counted as a new distinct historical call in a combined month series."
 }
