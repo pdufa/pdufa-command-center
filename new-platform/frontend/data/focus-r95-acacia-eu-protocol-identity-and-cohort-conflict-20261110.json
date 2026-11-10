@@ -1,0 +1,147 @@
+{
+  "schema": "MAIN_R95_ACACIA_EU_CY6033_EXACT_ID_AMENDMENT_AND_COHORT_DISCREPANCY_NOT_SIGNED_SAP",
+  "reviewDateUtc": "2026-11-10",
+  "exactResearchNct": "NCT06081894",
+  "ticker": "CYTK",
+  "study": "ACACIA-HCM",
+  "exactSponsorProtocolCode": "CY 6033",
+  "exactEuTrialNumber": "2023-505797-15-00",
+  "comparator": "PLACEBO",
+  "populationDisease": "SYMPTOMATIC NON-OBSTRUCTIVE HYPERTROPHIC CARDIOMYOPATHY",
+  "documentarySourceReceipts": [
+    {
+      "id": "CTIS_EU_ORIGINAL",
+      "originalSourceAuthority": "EUROPEAN_UNION_CLINICAL_TRIAL_INFORMATION_SYSTEM",
+      "url": "https://euclinicaltrials.eu/ctis-public/view/2023-505797-15-00?lang=en",
+      "reportedNct": "NCT06081894",
+      "reportedProtocol": "CY 6033",
+      "sourceKind": "OFFICIAL_EU_REGISTRY_STUDY_IDENTITY_AND_AMENDMENT_HISTORY",
+      "sourceTextRead": true,
+      "pdfBytesObtained": false
+    },
+    {
+      "id": "CTIS_EU_INDEXED_LIST",
+      "originalSourceAuthority": "THIRD_PARTY_CTIS_PUBLIC_RECORD_INDEX",
+      "url": "https://ctis.eu/trial/2023-505797-15-00",
+      "reportedNct": "NCT06081894",
+      "reportedProtocol": "CY 6033",
+      "sourceKind": "SECONDARY_INDEX_OF_PUBLIC_EU_TRIAL_RECORD_AND_133_DOCUMENT_ENTRIES",
+      "sourceTextRead": true,
+      "pdfBytesObtained": false
+    },
+    {
+      "id": "JACC_CY6032_DIFFERENT_TRIAL",
+      "originalSourceAuthority": "JOURNAL_PUBLISHER_DIFFERENT_CLINICAL_TRIAL",
+      "url": "https://www.jacc.org/doi/suppl/10.1016/j.jacc.2025.08.022/suppl_file/mmc3.pdf",
+      "reportedNct": null,
+      "reportedProtocol": "CY 6032",
+      "sourceKind": "DIFFERENT_TRIAL_OBSTRUCTIVE_HCM_AFICAMTEN_VERSUS_METOPROLOL_NOT_ACACIA",
+      "sourceTextRead": true,
+      "pdfBytesObtained": false
+    },
+    {
+      "id": "AUG_CYTK_SPONSOR",
+      "originalSourceAuthority": "ACACIA_HCM_SPONSOR_PUBLIC_REPORT",
+      "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Additional-Results-from-ACACIA-HCM-and-MAPLE-HCM-Presented-in-Late-Breaking-Clinical-Trial-Session-at-the-European-Society-of-Cardiology-ESC-Congress-2026/default.aspx",
+      "reportedNct": null,
+      "reportedProtocol": null,
+      "sourceKind": "LATER_SPONSOR_REPORTED_RANDOMIZED_AND_TREATED_517",
+      "sourceTextRead": true,
+      "pdfBytesObtained": false
+    }
+  ],
+  "ctisCrosswalk": {
+    "officialEUCTisIdentity": "2023-505797-15-00",
+    "nct": "NCT06081894",
+    "sponsorProtocolCode": "CY 6033",
+    "amendedProtocolListing": [
+      {
+        "docTitle": "D1_2023-505797-15-00_Protocol_FP",
+        "documentVersion": "AM4",
+        "docType": "PROTOCOL_FOR_PUBLICATION",
+        "contentBytesObtained": false
+      },
+      {
+        "docTitle": "D1_2023-505797-15-00_Protocol_el_FP",
+        "documentVersion": "AM4",
+        "docType": "PROTOCOL_FOR_PUBLICATION_GREEK",
+        "contentBytesObtained": false
+      },
+      {
+        "docTitle": "D1_2023-505797-15-00_Synopsis_EN_FP",
+        "documentVersion": "AM3",
+        "docType": "PROTOCOL_SYNOPSIS_FOR_PUBLICATION",
+        "contentBytesObtained": false
+      }
+    ],
+    "listedDocumentEntries": 133,
+    "EUplannedParticipants": 435,
+    "EUplannedCountIsNotGlobalRandomizedPopulation": true,
+    "reportedProtocolPrimaryStructure": "Dual primary endpoints of KCCQ-CSS change and peak VO2 change at Week 36",
+    "regulatorySubmissions": [
+      {
+        "id": "IN",
+        "dateSubmitted": "2023-10-26",
+        "decisionDate": "2024-03-04",
+        "decision": "ACCEPTABLE_WITH_CONDITIONS"
+      },
+      {
+        "id": "SM-3",
+        "dateSubmitted": "2024-12-19",
+        "decisionDate": "2025-04-08",
+        "decision": "ACCEPTABLE"
+      },
+      {
+        "id": "SM-4",
+        "dateSubmitted": "2025-07-08",
+        "decisionDate": "2025-09-08",
+        "decision": "ACCEPTABLE"
+      },
+      {
+        "id": "SM-5",
+        "dateSubmitted": "2025-11-13",
+        "decisionDate": "2026-03-09",
+        "decision": "ACCEPTABLE"
+      }
+    ],
+    "exactApprovedSAPContainedInPublicCTISIndex": false,
+    "originalApprovalPdfBytesCaptured": false,
+    "authoritativePreUnblindingPlanApproved": false,
+    "note": "CTIS amendment decisions are European public submission history. They are not proof that any one FDA-relevant prospectively signed final SAP amendment, endpoint alpha plan or first-unblinding chronology is authenticated."
+  },
+  "wrongTrialSource": {
+    "protocolCode": "CY 6032",
+    "comparator": "METOPROLOL",
+    "condition": "OBSTRUCTIVE_HYPERTROPHIC_CARDIOMYOPATHY",
+    "distinctFromAcaciaProtocolCY6033": true,
+    "excludeFromAcaciaOriginalSourceCorpus": true,
+    "sourceCheck": "JACC journal-publication PDF index describes CY 6032, a different obstructive HCM trial, not ACACIA-HCM; no source contamination permitted."
+  },
+  "reportedCohortConflict": {
+    "earlierMaySponsor": "516 randomized and treated outside Japan",
+    "primaryAugustNEJM": "517 randomized, arms 258 aficamten and 259 placebo",
+    "laterAugustSponsor": "517 randomized and treated outside Japan",
+    "OctoberSecondaryAppraisal": "517 randomized but 516 treated",
+    "conflictIsOnlyAProvenanceAndPopulationDefinitionQuestion": true,
+    "whetherExactlyOneParticipantWasNotTreated": null,
+    "firstDoseListingAuthenticallyRead": false,
+    "definitivePopulationReconciliation": false,
+    "scientificConclusion": "NOT_VERIFIED_OR_RESOLVED",
+    "note": "The August sponsor release contradicts a simplistic 517 randomized/516 treated explanation. Do not assert that exactly one participant was untreated without original randomized, treated, modified-ITT and safety populations and data cutoffs."
+  },
+  "publicNejmSupplement": {
+    "protocolAdvertisedFilename": "nejmoa2603021_protocol.pdf",
+    "appendixAdvertisedFilename": "nejmoa2603021_appendix.pdf",
+    "officialLinkSource": "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021",
+    "exactOriginalSupplementaryPDFBytesRead": false,
+    "originalControlledSignedSAPVerified": false,
+    "attemptedDirectJournalAccessBlocked": true
+  },
+  "originalAcaciaGatesStillUnresolved": 4,
+  "originalLaunchGatesStillUnresolved": 7,
+  "newProspectivelyAuthenticatedSignedSAPs": 0,
+  "newIndependentScientificSignoffs": 0,
+  "validatedFDAForecasts": 0,
+  "prediction": "ABSTAIN",
+  "changesToProduction": false
+}
