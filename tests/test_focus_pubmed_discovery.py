@@ -23,6 +23,12 @@ class PubMedDiscoveryTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             pubmed.build(roster, lambda nct: {})
 
+    def test_duplicate_roster_rejected(self):
+        roster = self.roster()
+        roster["records"].append(roster["records"][0])
+        with self.assertRaises(ValueError):
+            pubmed.build(roster, lambda nct: {}, sleep=lambda _: None)
+
     def test_retry_single_failure(self):
         def fake(nct):
             if nct == "NCT00000000":

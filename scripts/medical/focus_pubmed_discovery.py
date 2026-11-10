@@ -25,9 +25,12 @@ def search(nct, opener=urllib.request.urlopen):
         data = json.load(response)
     result = data.get("esearchresult", {})
     pmids = result.get("idlist", [])
-    if not isinstance(pmids, list) or any(not str(p).isdigit() for p in pmids):
+    if not isinstance(pmids, list) or any(not isinstance(p, str) or not p.isdigit() for p in pmids):
         raise ValueError("Invalid PubMed response")
-    return {"nct": nct, "searchUrl": url, "totalHits": int(result.get("count", 0)),
+    count = int(result.get("count", 0))
+    if count < len(pmids) or len(set(pmids)) != len(pmids):
+        raise ValueError("Inconsistent PubMed response")
+    return {"nct": nct, "searchUrl": url, "totalHits": count,
             "resultsTruncated": int(result.get("count", 0)) > len(pmids),
             "publicationLeads": [{"pmid": str(p), "sourceUrl": f"https://pubmed.ncbi.nlm.nih.gov/{p}/",
                                   "reviewStatus": "UNREVIEWED", "clinicalFinding": None}
@@ -35,7 +38,7 @@ def search(nct, opener=urllib.request.urlopen):
 
 def build(roster, searcher=search, sleep=time.sleep):
     ncts = list(dict.fromkeys(r["nct"] for r in roster.get("records", [])))
-    if len(ncts) != 29 or any(not NCT.fullmatch(n) for n in ncts):
+    if len(roster.get("records", [])) != 29 or len(ncts) != 29 or any(not NCT.fullmatch(n) for n in ncts):
         raise ValueError("Expected exact 29 FOCUS NCTs")
     rows = []
     for index, nct in enumerate(ncts):
