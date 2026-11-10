@@ -5,6 +5,14 @@ on:
   schedule:
     - cron: '10 6 * * *'
   workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'scripts/focus_nightly_source_monitor.py'
+      - 'tests/test_focus_nightly_source_monitor.py'
+      - '.github/workflows/focus-nightly-source-reassessment.yml'
+      - 'new-platform/backend/app/data/focus_application_snapshot.json'
+      - 'new-platform/frontend/data/p3PostDataActive.json'
 
 permissions:
   contents: write
@@ -14,7 +22,23 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
+  validate:
+    name: Validate FOCUS exact-NCT and independent-analysis safety
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify retired-workflow isolation
+        run: python scripts/audit_raas_retirement.py --check
+      - name: Test exact-NCT registry monitor
+        run: python -m unittest discover -s tests -p 'test_focus_nightly_source_monitor.py' -v
+
   monitor:
+    needs: validate
+    if: github.event_name != 'pull_request'
     name: Exact-NCT source changes and FDA-cycle research queue
     runs-on: ubuntu-latest
     timeout-minutes: 28
