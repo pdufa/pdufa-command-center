@@ -100,3 +100,25 @@ test("R81 board presents 23 cycle drilldowns without grade-submission or network
  assert.match(panel,/unassessed/);
  assert.doesNotMatch(panel,/fetch\(|POST\s*\/api|setGrade\(|submitClinicalScore/);
 });
+
+test("R82 per-cycle original-source gaps remain exact-NCT linked, without backfilled conclusions",()=>{
+ const x=FOCUS_R81_SOURCE_READINESS;
+ const byNct=new Map(x.rows.map(row=>[row.nct,row]));
+ for(const group of x.applicationGroups){
+  assert.deepEqual(group.currentRegistryPrimaryNcts,
+    group.ncts.filter(nct=>byNct.get(nct).currentRegistryPrimaryTable));
+  assert.deepEqual(group.currentMethodPageLeadNcts,
+    group.ncts.filter(nct=>byNct.get(nct).retainedMethodPageLeads));
+  assert.ok(group.originalPublishedMainReportLeads<=group.trialCount);
+  assert.equal(group.validatedFDAApplicationForecasts,0);
+ }
+ const panel=fs.readFileSync(path.join(root,
+   "app/predictions/evidence-gaps/FocusSourceReadinessR81.tsx"),"utf8");
+ assert.match(panel,/Retained registry primary tables:/);
+ assert.match(panel,/Primary: /);
+ assert.match(panel,/Safety: /);
+ assert.match(panel,/Method PDFs: /);
+ assert.match(panel,/missing registry tables do not imply trial failure/);
+ assert.match(panel,/Independent reviewer signoff is still required/);
+ assert.doesNotMatch(panel,/setGrade\(|submitClinicalScore|POST\s*\/api/);
+});
