@@ -78,6 +78,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_twenty_level_evidence_matrix.py' -v
           python -m unittest discover -s tests -p 'test_twenty_level_assessment_gate.py' -v
           python -m unittest discover -s tests -p 'test_deep_clinical_subspecialty.py' -v
+          python -m unittest discover -s tests -p 'test_subspecialty_dossier_builder.py' -v
 
   backup-archive-integrity:
     name: Offline ZIP backup integrity regressions

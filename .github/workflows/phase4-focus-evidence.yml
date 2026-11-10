@@ -50,6 +50,9 @@ jobs:
       - name: Generate 20-level evidence readiness matrix
         run: |
           python scripts/medical/twenty_level_evidence_matrix.py --checkpoint phase4-artifacts/checkpoint.json --output phase4-artifacts/twenty-level-readiness.json
+      - name: Build unadjudicated subspecialty dossiers
+        run: |
+          python scripts/medical/subspecialty_dossier_builder.py --matrix phase4-artifacts/twenty-level-readiness.json --output phase4-artifacts/subspecialty-dossiers.json
       - name: Summarize research status
         if: always()
         run: |
@@ -70,5 +73,6 @@ jobs:
           path: |
             phase4-artifacts/checkpoint.json
             phase4-artifacts/twenty-level-readiness.json
+            phase4-artifacts/subspecialty-dossiers.json
           if-no-files-found: warn
           retention-days: 90
