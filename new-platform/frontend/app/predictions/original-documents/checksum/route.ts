@@ -42,7 +42,7 @@ export async function GET(request:Request):Promise<Response>{
   if(!selection)return fail(422,"NOT_AN_ELIGIBLE_CURRENT_REGISTRY_PROTOCOL_OR_SAP_FILE");
   const pdf=await fetch(selection.publicCdnUrl,{
    method:"GET",redirect:"error",cache:"no-store",
-   headers:{"Accept":"application/pdf"},signal:AbortSignal.timeout(15000)
+   headers:{"Accept":"application/pdf"},signal:AbortSignal.timeout(30000)
   });
   if(!pdf.ok)return fail(502,"OFFICIAL_SOURCE_PDF_UNAVAILABLE");
   const sizeHeader=pdf.headers.get("content-length");
