@@ -13,6 +13,7 @@ const {R86_ORIGINAL_DOCUMENT_MANIFEST,inspectR86CurrentStudy}=
  require("../lib/focus-r86-original-document-inventory.ts");
 const {selectR87PublicSourcePdf,digestR87PublicPdf,R87_MAX_SOURCE_PDF_BYTES}=
  require("../lib/focus-r87-public-original-pdf-receipt.ts");
+const digestAudit=require("../data/focus-r87-public-pdf-byte-receipts-20261110.json");
 const original=Buffer.from("%PDF-1.7\nmock source bytes; not a valid signed original\n","utf8");
 function inventory(){
  const row=R86_ORIGINAL_DOCUMENT_MANIFEST.rows.find(r=>r.nct==="NCT06331299");
@@ -27,6 +28,28 @@ function inventory(){
   ]}}};
  const result=inspectR86CurrentStudy(row,body);assert.ok(result);return result;
 }
+test("R87 preserves all 23 live byte receipts, exact NCT and zero signed original claims",()=>{
+ assert.equal(digestAudit.exactCurrentPublicDocumentListings,23);
+ assert.equal(digestAudit.publiclyDownloadedAndSha256Fingerprinted,23);
+ assert.equal(digestAudit.distinctNctsWithFingerprintedPdf,12);
+ assert.equal(digestAudit.trialsWithoutCurrentPublicDocumentListings,17);
+ assert.equal(digestAudit.originalSignedProspectiveSAPVersionsAuthenticated,0);
+ assert.equal(digestAudit.qualifiedIndependentScientificReviews,0);
+ assert.equal(digestAudit.futureFdaForecastsValidated,0);
+ const rows=digestAudit.records;
+ assert.equal(rows.length,23);
+ assert.equal(new Set(rows.map(r=>r.nct+":"+r.filename)).size,23);
+ assert.equal(new Set(rows.map(r=>r.nct)).size,12);
+ assert.equal(rows.filter(r=>r.listsProtocol).length,12);
+ assert.equal(rows.filter(r=>r.listsSap).length,12);
+ assert.equal(rows.reduce((x,r)=>x+r.byteCount,0),106287931);
+ assert.ok(rows.every(r=>r.actualPublicSourceBytesRead===true&&
+   r.originalProspectiveSignatureAuthenticated===false&&
+   r.qualifiedIndependentReviewerSigned===false&&r.FDAOutcome==="ABSTAIN"&&
+   /^[a-f0-9]{64}$/.test(r.sha256)&&
+   r.publicSourceUrl.startsWith("https://cdn.clinicaltrials.gov/large-docs/"+
+     r.nct.slice(-2)+"/"+r.nct+"/")));
+});
 test("R87 selects only a whitelisted protocol or SAP PDF from official same-NCT inventory",()=>{
  const source=inventory();
  const s=selectR87PublicSourcePdf("NCT06331299","Prot_000.pdf",source);
