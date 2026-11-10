@@ -73,6 +73,39 @@ export async function GET(req:Request):Promise<Response>{
   pageTreeDirectKidRefs.every(id=>/\/Type\s*\/Page\b(?!s)/.test(objectMap.get(id)??""))&&
   new Set(pageTreeDirectKidRefs).size===pageTreeDirectKidRefs.length
   ?pageTreeDirectKidRefs:[];
+ // R119: bounded, fail-closed traversal of visible /Pages -> /Kids references only.
+ const nestedPageTreeOrder:string[]=[];
+ let nestedPageTreeTraversalError:string|null=null;
+ const rootCandidates=pageTreeNodeRefs.filter(id=>!pageTreeNodeRefs.some(parent=>{
+  if(parent===id)return false;
+  const kids=(objectMap.get(parent)??"").match(/\\/Kids\\s*\\[([\\s\\S]{0,10000}?)\\]/)?.[1]??"";
+  return (kids.match(/\\d+\\s+\\d+\\s+R/g)??[]).includes(id);
+ }));
+ if(rootCandidates.length===1){
+  const seen=new Set<string>();
+  const walk=(id:string,depth:number):void=>{
+   if(nestedPageTreeTraversalError)return;
+   if(depth>16||seen.size>=500||seen.has(id)){
+    nestedPageTreeTraversalError="TREE_CYCLE_OR_BOUNDS";return;
+   }
+   seen.add(id);
+   const body=objectMap.get(id);
+   if(!body){nestedPageTreeTraversalError="MISSING_TREE_OBJECT";return;}
+   if(/\\/Type\\s*\\/Page\\b(?!s)/.test(body)){
+    nestedPageTreeOrder.push(id);return;
+   }
+   if(!/\\/Type\\s*\\/Pages\\b/.test(body)){
+    nestedPageTreeTraversalError="UNSUPPORTED_TREE_OBJECT";return;
+   }
+   const kids=body.match(/\\/Kids\\s*\\[([\\s\\S]{0,10000}?)\\]/)?.[1];
+   if(!kids){nestedPageTreeTraversalError="KIDS_NOT_DIRECT_ARRAY";return;}
+   const refs=kids.match(/\\d+\\s+\\d+\\s+R/g)??[];
+   if(refs.length===0||refs.length>500){nestedPageTreeTraversalError="KIDS_EMPTY_OR_TOO_LARGE";return;}
+   for(const child of refs)walk(child,depth+1);
+  };
+  walk(rootCandidates[0],0);
+ }else nestedPageTreeTraversalError="ROOT_NOT_UNIQUELY_DETECTABLE";
+ const provisionalNestedPageTreeOrder=nestedPageTreeTraversalError===null?nestedPageTreeOrder:[];
  const pages:Array<{pdfPageDictionaryIndex:number,pageObject:string,
   referencedContentStreams:number,decodedContentStreams:number,
   textFragments:number,termHits:Array<{term:string,fragment:string}>}>=[];
@@ -124,6 +157,9 @@ export async function GET(req:Request):Promise<Response>{
   detectedDirectPageTreeKids:pageTreeDirectKidsDetected,
   detectedDirectKidsMatchingPageDictionaries:pageTreeDirectKidsMatchingPageDictionaries,
   detectedDirectKidsMatchingNestedPageNodes:pageTreeDirectKidsMatchingNestedPageNodes,
+  provisionalNestedPageTreeOrder,
+  provisionalNestedPageTreeTraversalError:nestedPageTreeTraversalError,
+  provisionalNestedPageTreeOrderNotScientificallyCertified:true,
   provisionalDirectLeafKidsInArrayOrder:directLeafPageOrder,
   provisionalDirectLeafOrderToObjectScanIndex:directLeafPageOrder.map((ref,index)=>({
    provisionalPageTreePosition:index+1,
