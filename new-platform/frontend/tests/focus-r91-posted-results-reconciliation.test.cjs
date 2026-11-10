@@ -11,6 +11,9 @@ require.extensions[".ts"]=(mod,file)=>{
 const {R91_POSTED_RESULTS_ROSTER,buildR91PostedResultsSourceRoster,
  inspectR91CurrentPostedResults}=require("../lib/focus-r91-posted-results-reconciliation.ts");
 const {GET}=require("../app/predictions/scientific-reconciliation/check/route.ts");
+const datedOriginalResults=require("../data/focus-r91-posted-original-results-readbacks-20261110.json");
+const {R91_DATED_SOURCE_AUDIT,buildR91SourceAuditReadiness}=
+ require("../lib/focus-r91-source-audit-readiness.ts");
 function row(){const r=R91_POSTED_RESULTS_ROSTER.rows.find(x=>x.nct==="NCT05507203");
  assert.ok(r);return r;}
 function posted(nct=row().nct){
@@ -70,6 +73,54 @@ test("R91 exact 29/23 focus roster preserves 12 original aggregate-results recor
  assert.ok(d.rows.every(x=>x.FDAForecast==="ABSTAIN"&&
    x.independentQualifiedClinicalReview===false&&
    x.signedProspectiveSAPAuthenticated===false));
+});
+test("R91 dated public source audit is 12 exact recorded NCTs and 16 original posted PRIMARY outcome entries",()=>{
+ const x=R91_DATED_SOURCE_AUDIT;
+ assert.ok(x);
+ assert.equal(x.originalResultsSourceNcts,12);
+ assert.equal(x.unpostedOriginalResultsNcts,17);
+ assert.equal(x.reportedPrimaryOutcomeEntries,16);
+ assert.equal(x.seriousAdverseTermEntries,244);
+ assert.equal(x.safetyArmGroupEntries,28);
+ assert.equal(x.sourcePValueEntries,20);
+ assert.equal(x.primarySourceDenominatorGroupEntries,34);
+ assert.equal(x.qualifiedIndependentScientificSignoffs,0);
+ assert.equal(x.finalProspectivelySignedSAPsIndependentlyAuthenticated,0);
+ assert.equal(x.validatedFDAForecasts,0);
+ assert.equal(x.rows.length,12);
+ assert.equal(new Set(x.rows.map(r=>r.nct)).size,12);
+ assert.deepEqual(new Set(x.rows.map(r=>r.nct)),
+  new Set(R91_POSTED_RESULTS_ROSTER.rows.filter(
+   r=>r.resultsPostedInDatedRegistrySnapshot).map(r=>r.nct)));
+ assert.ok(x.rows.every(r=>r.signedQualifiedReview===false&&
+  r.sourceOnly===true&&r.FDAForecast==="ABSTAIN"&&
+  /^[a-f0-9]{64}$/.test(r.rawOriginalSourceSHA256)&&
+  r.originallyPostedPrimaryTitles.length===r.primaryOutcomeCount));
+});
+test("R91 archived original public outcome readbacks fail closed on forged effect or safety certification",()=>{
+ const attacks=[
+  x=>{x.rows[0].nct="NCT00000000";},
+  x=>{x.rows[0].ticker="BAD";},
+  x=>{x.rows[0].officialPublicRawSourceSha256="faked";},
+  x=>{x.rows[0].sourceApiUrl="https://attacker.example";},
+  x=>{x.rows[0].originalProspectiveSignedSAPAuthenticated=true;},
+  x=>{x.rows[0].qualifiedScientificAssessmentPerformed=true;},
+  x=>{x.rows[0].independentStatisticalModelVerified=true;},
+  x=>{x.rows[0].independentSafetyDenominatorsReconciled=true;},
+  x=>{x.rows[0].FDAOutcome="APPROVED";},
+  x=>{x.rows[0].originalReportedPrimaryOutcomes.pop();},
+  x=>{x.rows[0].recordedSeriousAdverseEventTermCount=999;},
+  x=>{x.rows[1].nct=x.rows[0].nct;},
+  x=>{x.rows.pop();},
+  x=>{x.census.originalReportedPrimaryOutcomeEntries=15;},
+  x=>{x.qualifiedClinicalReviewsSigned=1;},
+  x=>{x.FDAOutcome="APPROVED";}
+ ];
+ for(const attack of attacks){
+  const snapshot=structuredClone(datedOriginalResults);
+  attack(snapshot);
+  assert.equal(buildR91SourceAuditReadiness(snapshot),null);
+ }
 });
 test("R91 transcribes original posted primary measures, source p-value strings and safety exposure denominators without statistical judgment",()=>{
  const x=inspectR91CurrentPostedResults(row(),posted());
@@ -173,6 +224,7 @@ test("R91 source page is accessible from original evidence inventory and never p
  const inventory=fs.readFileSync(path.join(root,
   "app/predictions/original-documents/page.tsx"),"utf8");
  assert.match(page,/Primary endpoints, analysis groups and adverse-event denominators/);
+ assert.match(page,/R91_DATED_SOURCE_AUDIT/);
  assert.match(client,/Check all 12 publicly posted result records/);
  assert.match(client,/Independent efficacy model: NOT REANALYZED/);
  assert.match(client,/Safety adjudication: NOT SIGNED/);
