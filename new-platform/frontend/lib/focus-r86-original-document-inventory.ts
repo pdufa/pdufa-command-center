@@ -36,12 +36,15 @@ export function buildR86OriginalDocumentManifest(
     launch.scientificGrade!==null||launch.FDAOutcome!=="ABSTAIN")return null;
 
  const bySource=new Map(source.rows.map(r=>[r.nct,r]));
+ const originalManifestByNct=new Map(R85_PHASE_MANIFEST?.rows.map(r=>[r.nct,r]));
  const seen=new Set<string>();
  if(bySource.size!==29)return null;
  const rows=[];
  for(const r of phase.rows){
   const s=bySource.get(r.nct);
   if(!s||seen.has(r.nct)||r.ticker!==s.ticker||
+      !originalManifestByNct.get(r.nct)||
+      JSON.stringify(r)!==JSON.stringify(originalManifestByNct.get(r.nct))||
       JSON.stringify(r.cycleIds)!==JSON.stringify(s.cycleIds)||
       r.independentPhaseReview!=="NOT_SIGNED"||
       r.signedProspectiveSAP!=="NOT_AUTHENTICATED"||
