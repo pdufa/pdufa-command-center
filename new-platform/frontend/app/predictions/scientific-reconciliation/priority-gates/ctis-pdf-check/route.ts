@@ -66,25 +66,53 @@ export async function GET(req:Request):Promise<Response>{
   if(!res.ok)return fail("ORIGINAL_CTIS_PDF_SOURCE_HTTP_"+res.status);
   const claimed=Number(res.headers.get("content-length")??0);
   if(!Number.isFinite(claimed)||claimed>LIMIT)return fail("ORIGINAL_CTIS_PDF_TOO_LARGE");
-  const bytes=new Uint8Array(await res.arrayBuffer());
+  const upstream=new Uint8Array(await res.arrayBuffer());
+  if(upstream.length<100||upstream.length>LIMIT)
+   return fail("ORIGINAL_CTIS_DOWNLOAD_DESCRIPTOR_INVALID_SIZE");
+  const upstreamText=Buffer.from(upstream).toString("utf8");
+  let actualPdfResponse:Response=res;
+  let bytes=upstream;
+  let storageProvenance:"ORIGINAL_CTIS_DIRECT_PDF"|
+    "CTIS_SIGNED_PUBLIC_DOC_STORAGE"="ORIGINAL_CTIS_DIRECT_PDF";
+  const upstreamPrefix=String.fromCharCode(...bytes.slice(0,8));
+  if(!upstreamPrefix.startsWith("%PDF-")){
+   let documentDescription:unknown;
+   try{documentDescription=JSON.parse(upstreamText);}catch{
+    return fail("ORIGINAL_CTIS_UNKNOWN_DOCUMENT_WRAPPER");
+   }
+   if(!documentDescription||typeof documentDescription!=="object"||
+      Array.isArray(documentDescription)||!("url" in documentDescription)||
+      typeof documentDescription.url!=="string")
+    return fail("ORIGINAL_CTIS_DOCUMENT_SIGNED_LINK_MISSING");
+   let storageUrl:URL;
+   try{storageUrl=new URL(documentDescription.url);}catch{
+    return fail("ORIGINAL_CTIS_DOCUMENT_SIGNED_URL_INVALID");
+   }
+   if(storageUrl.protocol!=="https:"||
+      storageUrl.hostname!=="ctis-publication-engine-doc-storage-prod.s3.eu-central-1.amazonaws.com"||
+      !storageUrl.pathname.includes(doc.uuid)||
+      !storageUrl.searchParams.has("X-Amz-Signature")||
+      !storageUrl.searchParams.has("X-Amz-Credential")||
+      storageUrl.username!==""||storageUrl.password!==""||
+      storageUrl.port!=="")
+    return fail("ORIGINAL_CTIS_SIGNED_STORAGE_LINK_NOT_TRUSTED");
+   const stored=await fetch(storageUrl.toString(),{
+    cache:"no-store",method:"GET",redirect:"error",
+    headers:{"Accept":"application/pdf,application/octet-stream"},
+    signal:AbortSignal.timeout(20000)
+   });
+   if(!stored.ok)return fail("ORIGINAL_CTIS_STORAGE_PDF_HTTP_"+stored.status);
+   const storageLength=Number(stored.headers.get("content-length")??0);
+   if(!Number.isFinite(storageLength)||storageLength>LIMIT)
+    return fail("ORIGINAL_CTIS_STORAGE_PDF_TOO_LARGE");
+   bytes=new Uint8Array(await stored.arrayBuffer());
+   actualPdfResponse=stored;
+   storageProvenance="CTIS_SIGNED_PUBLIC_DOC_STORAGE";
+  }
   if(bytes.length<1024||bytes.length>LIMIT)
    return fail("ORIGINAL_CTIS_PDF_INVALID_SIZE");
   const prefix=String.fromCharCode(...bytes.slice(0,8));
-  if(!prefix.startsWith("%PDF-"))return Response.json({
-    error:"ORIGINAL_CTIS_RESPONSE_NOT_PDF",
-    exactEUCT:EUCT,documentKey:key,documentUUID:doc.uuid,
-    originalOfficialUrl:url,
-    upstreamContentType:res.headers.get("content-type"),
-    upstreamContentDisposition:res.headers.get("content-disposition"),
-    byteCount:bytes.length,
-    originalSourceSHA256:createHash("sha256").update(bytes).digest("hex"),
-    byteHeaderHex:Buffer.from(bytes.slice(0,24)).toString("hex"),
-    publicWrapperPrefixUtf8:Buffer.from(bytes.slice(0,240)).toString("utf8").replace(
-       /[\\x00-\\x1f]/gu," "),
-    originalPdfBytesAuthenticated:false,
-    signedFinalSAPAuthenticated:false,
-    FDAForecast:"ABSTAIN"
-   },{status:502,headers:{"Cache-Control":"private, no-store","X-Content-Type-Options":"nosniff"}});
+  if(!prefix.startsWith("%PDF-"))return fail("CTIS_STORAGE_RESPONSE_NOT_ORIGINAL_PDF");
   const digest=createHash("sha256").update(bytes).digest("hex");
   const tail=String.fromCharCode(...bytes.slice(-2048));
   return Response.json({
@@ -93,7 +121,8 @@ export async function GET(req:Request):Promise<Response>{
    docKey:key,ctisDocumentTitle:doc.title,
    manualVersion:doc.manualVersion,systemVersion:doc.systemVersion,
    ctisUuid:doc.uuid,originalOfficialUrl:url,
-   responseType:res.headers.get("content-type"),
+   responseType:actualPdfResponse.headers.get("content-type"),
+   storageProvenance,
    originalPdfBytes:bytes.length,
    pdfMagicHeaderConfirmed:true,
    pdfEofMarkerVisible:tail.includes("%%EOF"),
