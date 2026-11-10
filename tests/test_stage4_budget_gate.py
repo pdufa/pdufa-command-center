@@ -28,13 +28,13 @@ class BudgetGateTests(unittest.TestCase):
     def test_only_explicit_approval_counts(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "queue.json"
-            path.write_text(json.dumps([{"approved": True}, {}, {"approved": False}]))
+            path.write_text(json.dumps([{"id": "one", "approved": True}, {"id": "two"}, {"id": "three", "approved": False}]))
             self.assertEqual(gate.inspect_queue(path)["approved_tasks"], 1)
 
     def test_rejects_string_approval(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "queue.json"
-            path.write_text(json.dumps([{"approved": "true"}]))
+            path.write_text(json.dumps([{"id": "one", "approved": "true"}]))
             with self.assertRaises(ValueError):
                 gate.inspect_queue(path)
 
@@ -42,6 +42,20 @@ class BudgetGateTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "queue.json"
             path.write_text(json.dumps([None]))
+            with self.assertRaises(ValueError):
+                gate.inspect_queue(path)
+
+    def test_rejects_duplicate_ids(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "queue.json"
+            path.write_text(json.dumps([{"id": "a"}, {"id": "a"}]))
+            with self.assertRaises(ValueError):
+                gate.inspect_queue(path)
+
+    def test_rejects_missing_id(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "queue.json"
+            path.write_text(json.dumps([{"approved": True}]))
             with self.assertRaises(ValueError):
                 gate.inspect_queue(path)
 
