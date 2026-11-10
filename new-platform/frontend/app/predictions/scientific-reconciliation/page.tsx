@@ -76,6 +76,12 @@ export default function ScientificReconciliationR91Page(){
    exposure and treatment windows by independent qualified reviewers.
    No trial grade, probability, or FDA decision is released.
   </p>
+  <p className={styles.footer}>
+   <a href="/predictions/scientific-reconciliation/protocol-crosswalk">
+    Open Stage 4 current registry protocol-versus-posted primary endpoint crosswalk
+   </a>. Exact textual comparisons are neither original signed SAP verification
+   nor independent scientific endpoint adjudication.
+  </p>
   <PostedResultsR91Client rows={d.rows}/>
   <p className={styles.footer}>
    <a href="/predictions/source-recovery">
