@@ -5,6 +5,8 @@ import styles from "../evidence-gaps/EvidenceRecoveryBoardR68.module.css";
 type Manifest=NonNullable<typeof import(
  "../../../lib/focus-r89-historical-source-recovery").R89_HISTORICAL_SOURCE_RECOVERY>;
 type Row=Manifest["rows"][number];
+type Supplement=NonNullable<typeof import(
+ "../../../lib/focus-r89-new-public-source-leads").R89_NEW_PUBLIC_SOURCE_LEADS>["rows"][number];
 type HistoryIndex={
  nct:string;historyVersionCount:number;
  versions:Array<{apiIndex:number;uiVersion:number;submittedDate:string}>;
@@ -26,7 +28,7 @@ function errMessage(value:unknown){
  return value&&typeof value==="object"&&"error" in value&&
   typeof value.error==="string"?value.error:"OFFICIAL_PUBLIC_HISTORY_UNAVAILABLE";
 }
-export default function OriginalHistoryRecoveryR89Client({rows}:{rows:Row[]}){
+export default function OriginalHistoryRecoveryR89Client({rows,newLeads}:{rows:Row[];newLeads:Supplement[]}){
  const [histories,setHistories]=useState<Record<string,Readback>>({});
  const [versions,setVersions]=useState<Record<string,VersionReadback>>({});
  async function loadHistory(nct:string){
@@ -66,6 +68,7 @@ export default function OriginalHistoryRecoveryR89Client({rows}:{rows:Row[]}){
  return <div className={styles.coverageGrid}>
  {rows.map(row=>{
    const history=histories[row.nct],indexed=row.originalIndexedPivotalPublication;
+   const additional=newLeads.find(x=>x.nct===row.nct);
    const versionList=history?.data?.versions??[];
    return <article key={row.nct} className={styles.coverageGroup}>
      <strong>{row.ticker} · {row.nct}</strong>
@@ -88,6 +91,18 @@ export default function OriginalHistoryRecoveryR89Client({rows}:{rows:Row[]}){
        Original signed SAP chronology and independent clinical assessment:
        NOT VERIFIED.</small>
      </p>}
+     {additional&&<div>
+       <b>New public original research lead:</b>
+       {" "}<a href={additional.sourceUrl} target="_blank" rel="noopener noreferrer">
+        {additional.trial} · {additional.sourceDate}
+       </a>
+       <div>{additional.sourceTitle}</div>
+       <p><small>Evidence class: {additional.evidenceClass}.
+        {additional.sourceReportedObservation}</small></p>
+       <small>Publisher/sponsor reported only. Original signed SAP,
+        independent efficacy/safety adjudication and FDA forecasts:
+        NOT VERIFIED.</small>
+     </div>}
      {row.nct===R89_ARCHIVED_ACACIA_SOURCE_HISTORY.nct&&
        <details className={styles.coverageDetails}>
         <summary>Four original ACACIA-HCM registry versions already preserved and checked in Revision 36</summary>
