@@ -53,6 +53,8 @@ on:
       - new-platform/frontend/app/predictions/scientific-reconciliation/protocol-crosswalk/CurrentProtocolResultsR92Client.tsx
       - new-platform/frontend/app/predictions/scientific-reconciliation/protocol-crosswalk/check/route.ts
       - new-platform/frontend/tests/focus-r92-protocol-results-crosswalk.test.cjs
+      - new-platform/frontend/lib/focus-r92-dated-crosswalk-audit.ts
+      - new-platform/frontend/data/focus-r92-current-protocol-results-primary-text-audit-20261110.json
   workflow_dispatch:
 
 permissions:
@@ -98,7 +100,7 @@ jobs:
         shell: bash
         run: |
           {
-            echo "## Revisions 83-92: current protocol-to-posted primary endpoint text crosswalk across 12 NCTs; no signed SAP certification"
+            echo "## Revisions 83-92: 12/12 current-protocol-to-posted primary source reads, 16/16 exact text/timeframe matches, no SAP signoff"
             echo "29 exact FOCUS NCT rows, with all 23 provisional application cycle links and original-source absence explicitly described."
             echo "Source and schema integrity validated; source-reported application goals are not FDA verified. CSV has no scientific grade, calibrated probability or production write."
             echo "Readback blocked by official historical API is not absent original evidence; archived R36 versions are separate signed-off-by-scientific-review=FALSE original source receipts. Public document and upload dates versus primary completion are not unblinding or locked-SAP proof; posted protocol/SAP metadata is not signed chronology or science; live registry field matching is not phase signoff. 0 independent clinical signoffs; 0 validated future FDA forecasts. Scientific installation remains incomplete."
