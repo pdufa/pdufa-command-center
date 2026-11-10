@@ -17,13 +17,21 @@ class AssessmentGateTests(unittest.TestCase):
                    "assessmentLevel": 20, "evidence": [{"sourceUrl": "https://example.org",
                    "sourceDate": "2026-01-01", "claim": "documented", "locator": "p.1"}],
                    "limitations": "unknown CMC", "reviewer": "analyst1",
-                   "independentChallenge": {"reviewer": "analyst1"},
+                   "independentChallenge": {"reviewer": "analyst1", "critique": "Endpoint uncertainty reviewed"},
                    "outcomeJudgment": "ABSTAIN", "timingJudgment": "UNKNOWN",
                    "frozenAt": "2026-11-10T00:00:00Z", "predictionHistoryAppendOnly": True}
         self.assertIn("CHALLENGER_NOT_INDEPENDENT", gate.validate(package)["errors"])
         package["independentChallenge"]["reviewer"] = "analyst2"
         self.assertTrue(gate.validate(package)["accepted"])
         self.assertFalse(gate.validate(package)["scientificAccuracyVerified"])
+
+    def test_invalid_challenge_and_probability_rejected(self):
+        self.assertIn("INDEPENDENT_CHALLENGE_INCOMPLETE",
+                      gate.validate({"independentChallenge": "analyst2"})["errors"])
+        self.assertIn("INVALID_PROBABILITY",
+                      gate.validate({"outcomeProbability": 1.5})["errors"])
+        self.assertIn("PROSPECTIVE_BLINDING_UNVERIFIED",
+                      gate.validate({"prospective": True})["errors"])
 
     def test_uncalibrated_probability_rejected(self):
         package = {"outcomeProbability": 0.9}
