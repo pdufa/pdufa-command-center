@@ -75,6 +75,12 @@ export default function FocusSourceReadinessR81(){
    </article>)}
    </div>
   </details>
+  <p className={styles.footer}>
+    <a href="/predictions/phase-verification">
+      Open Step 1: live original-registry phase comparison for all 29 trials
+    </a>
+    {" · "} Registry field matches require independent phase and original SAP review.
+  </p>
   <ApplicationVerificationR84 />
   <p className={styles.disclaimer}>Application groups are research identities,
    not necessarily separate FDA dossiers. No live FDA grade, historical accuracy or
