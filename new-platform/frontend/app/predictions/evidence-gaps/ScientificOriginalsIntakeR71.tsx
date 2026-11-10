@@ -1,6 +1,7 @@
 import {FOCUS_R71_PIVOTAL_EVIDENCE_INTAKE} from "../../../lib/focus-r71-pivotal-evidence-intake";
 import styles from "./ScientificOriginalsIntakeR71.module.css";
 import CaprFdaChallengeR72 from "./CaprFdaChallengeR72";
+import LaunchHtnOriginalDocumentsR73 from "./LaunchHtnOriginalDocumentsR73";
 
 /** Scientific source lead queue only. Source-reported p values do not qualify
  * a predictive approval/CRL grade or original protocol lock verification.
@@ -64,5 +65,6 @@ export default function ScientificOriginalsIntakeR71({nct}:{nct:string}){
     Future FDA decision: <strong>ABSTAIN</strong>.</p>
  </section>
  {nct==="NCT05126758"&&<CaprFdaChallengeR72/>}
+ {nct==="NCT06153693"&&<LaunchHtnOriginalDocumentsR73/>}
  </>;
 }
