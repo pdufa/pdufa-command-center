@@ -1,4 +1,4 @@
-name: MAIN R83-R94 original source science chronology and ACACIA cohort/safety crosswalk acceptance
+name: MAIN R83-R95 exact source identity, CTIS amendment, and independent SAP gates
 # Read-only source status and documented reviewer handoff; not clinical validation.
 on:
   push:
@@ -62,6 +62,9 @@ on:
       - new-platform/frontend/lib/focus-r94-acacia-cross-source-reconciliation.ts
       - new-platform/frontend/data/focus-r94-acacia-published-population-safety-source-claims-20261110.json
       - new-platform/frontend/tests/focus-r94-acacia-source-claims.test.cjs
+      - new-platform/frontend/lib/focus-r95-eu-protocol-identity-gates.ts
+      - new-platform/frontend/data/focus-r95-acacia-eu-protocol-identity-and-cohort-conflict-20261110.json
+      - new-platform/frontend/tests/focus-r95-eu-protocol-identity-gates.test.cjs
   workflow_dispatch:
 
 permissions:
@@ -99,7 +102,7 @@ jobs:
         run: |
           set -euo pipefail
           npm install --no-audit --no-fund
-          node --test tests/focus-r81-all-source-readiness.test.cjs tests/focus-r83-evidence-gap-export.test.cjs tests/focus-r84-application-verification.test.cjs tests/focus-r85-registry-phase-crosscheck.test.cjs tests/focus-r86-original-document-inventory.test.cjs tests/focus-r87-public-original-pdf-receipt.test.cjs tests/focus-r88-source-chronology-triage.test.cjs tests/focus-r89-historical-source-recovery.test.cjs tests/focus-r90-canonical-results-source-coverage.test.cjs tests/focus-r91-posted-results-reconciliation.test.cjs tests/focus-r92-protocol-results-crosswalk.test.cjs tests/focus-r93-priority-scientific-gates.test.cjs tests/focus-r94-acacia-source-claims.test.cjs
+          node --test tests/focus-r81-all-source-readiness.test.cjs tests/focus-r83-evidence-gap-export.test.cjs tests/focus-r84-application-verification.test.cjs tests/focus-r85-registry-phase-crosscheck.test.cjs tests/focus-r86-original-document-inventory.test.cjs tests/focus-r87-public-original-pdf-receipt.test.cjs tests/focus-r88-source-chronology-triage.test.cjs tests/focus-r89-historical-source-recovery.test.cjs tests/focus-r90-canonical-results-source-coverage.test.cjs tests/focus-r91-posted-results-reconciliation.test.cjs tests/focus-r92-protocol-results-crosswalk.test.cjs tests/focus-r93-priority-scientific-gates.test.cjs tests/focus-r94-acacia-source-claims.test.cjs tests/focus-r95-eu-protocol-identity-gates.test.cjs
           npm run typecheck
           npm run build
       - name: Report limited scientific status
@@ -107,7 +110,7 @@ jobs:
         shell: bash
         run: |
           {
-            echo "## Revisions 83-94: 2 priority NCTs, 11 scientific gates; ACACIA randomized-vs-treated and SAE source triage without SAP authentication"
+            echo "## Revisions 83-95: ACACIA exact EU protocol CY6033, exclude CY6032, 133 indexed documents and 516/517 sponsor conflict without source SAP authentication"
             echo "29 exact FOCUS NCT rows, with all 23 provisional application cycle links and original-source absence explicitly described."
             echo "Source and schema integrity validated; source-reported application goals are not FDA verified. CSV has no scientific grade, calibrated probability or production write."
             echo "Readback blocked by official historical API is not absent original evidence; archived R36 versions are separate signed-off-by-scientific-review=FALSE original source receipts. Public document and upload dates versus primary completion are not unblinding or locked-SAP proof; posted protocol/SAP metadata is not signed chronology or science; live registry field matching is not phase signoff. 0 independent clinical signoffs; 0 validated future FDA forecasts. Scientific installation remains incomplete."
