@@ -24,7 +24,7 @@ export default function PriorityOriginalScientificGatesR93(){
    conclusion is represented as verified.</p>
  </main>;
  return <main className={styles.coverage}>
-  <div className={styles.eyebrow}>MAIN · REVISION 98 · STAGE 4 INDEPENDENT SCIENCE EVIDENCE GATES</div>
+  <div className={styles.eyebrow}>MAIN · REVISION 99 · STAGE 4 INDEPENDENT SCIENCE EVIDENCE GATES</div>
   <h1>Priority original scientific evidence checklist</h1>
   <p className={styles.intro}>{d.notice} Evidence baseline:
    {" "}<strong>{d.datedSourceReview} UTC</strong>.</p>
@@ -88,8 +88,12 @@ export default function PriorityOriginalScientificGatesR93(){
      <b>{x.title}</b> — version {x.manualVersion},
      {" "}{x.byteCount.toLocaleString()} bytes.
      <div>Original public PDF SHA-256: <code>{x.sha256}</code></div>
+     <a href={"/predictions/scientific-reconciliation/priority-gates/ctis-pdf-check?doc="+encodeURIComponent(x.key)+"&download=1"}>
+      Download SHA-256 verified original PDF for independent review
+     </a>
+     {" · "}
      <a href={x.originalSourceUrl} target="_blank" rel="noopener noreferrer">
-      Retrieve original PDF through CTIS
+      Official CTIS source
      </a>
      <div>Permanent file archive: NO. Original PDF page-level
       scientific assessment: NOT COMPLETED. Signed prospective SAP: NOT VERIFIED.</div>
