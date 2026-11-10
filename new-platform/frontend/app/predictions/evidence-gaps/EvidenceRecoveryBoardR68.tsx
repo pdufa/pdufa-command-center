@@ -86,6 +86,17 @@ export default function EvidenceRecoveryBoardR68(){
       {" "}background paper. None has passed independent full-text
       statistical adjudication; no scientific grades or FDA probabilities.
     </p>}
+    {FOCUS_R70_ARTICLE_SOURCE&&<p className={styles.notice}
+      aria-label="R70 PubMed original article metadata status">
+      Revision 70: original PubMed metadata and abstracts retrieved for
+      <strong> {FOCUS_R70_ARTICLE_SOURCE.originalPubmedRecordsRetrieved}/11</strong> references;
+      <strong> {FOCUS_R70_ARTICLE_SOURCE.exactNctMentionedInTitleOrAbstract}</strong>
+      explicitly mention the NCT in the article text, while
+      <strong> {FOCUS_R70_ARTICLE_SOURCE.exactNctOnlyLinkedByDatabank}</strong> are
+      PubMed databank cross-links only. <strong>0</strong> pivotal Phase 3 results
+      independently adjudicated. Open a case to inspect the article titles,
+      indexed study types and outstanding review flags.
+    </p>}
     <div className={styles.controls}>
       <label>Search ticker, NCT or application
         <input type="search" aria-label="Search source recovery trials"
