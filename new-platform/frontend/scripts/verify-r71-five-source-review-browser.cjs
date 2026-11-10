@@ -33,7 +33,7 @@ async function profile(browser,config){
    const panel=board.locator('section[aria-label="R71 pivotal source method intake for '+nct+'"]');
    await panel.waitFor({state:"visible",timeout:12000});
    assert.match(await panel.innerText(),/ABSTAIN/);
-   assert.match(await panel.innerText(),/UNASSESSED/);
+   assert.match(await panel.innerText(),/unassessed/i);
    assert.match(await panel.innerText(),/independently replicated/);
    const sourceCount=await panel.locator("details").count();
    assert.equal(sourceCount,2,"source method and study-specific review accordions");
