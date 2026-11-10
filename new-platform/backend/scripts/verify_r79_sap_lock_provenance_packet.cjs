@@ -13,6 +13,10 @@ const FILES=["controlledSapBytes","databaseLockAuditBytes","unblindAccessAuditBy
 const ROLES=["SPONSOR_RECORD_CUSTODIAN","INDEPENDENT_STATISTICAL_REVIEWER"];
 const HASH=/^[a-f0-9]{64}$/;
 const ISO=/^20\d\d-\d\d-\d\dT\d\d:\d\d:\d\d(?:\.\d{1,3})?Z$/;
+function keysMatch(value,expected){
+ if(!value||typeof value!=="object"||Array.isArray(value))return false;
+ return Object.keys(value).sort().join("|")===expected.slice().sort().join("|");
+}
 function sha(data){return crypto.createHash("sha256").update(data).digest("hex");}
 function fail(code){return {status:"BLOCKED_"+code,technicalAttestationCoherent:false,
   scientificSignedReviewReleased:false,clinicalGrade:null,FDAOutcome:"ABSTAIN",
@@ -39,18 +43,21 @@ function verifyPacket(packet,{sourceFiles={},trustedKeys={}}={}){
       packet.printedDateDiscrepanciesResolved!==true||
       packet.amendmentChainAudited!==true||
       !Array.isArray(packet.events)||packet.events.length!==3||
-      !Array.isArray(packet.attestations)||packet.attestations.length!==2)
+      !Array.isArray(packet.attestations)||packet.attestations.length!==2||
+      !keysMatch(packet,["schema","nct","cycleId","controlledSapVersion",
+        "printedDateDiscrepanciesResolved","amendmentChainAudited","events","attestations"]))
       return fail("MISSING_OR_UNVERIFIED_CONTROLLED_SOURCE");
     const times=[];
     for(let i=0;i<3;i++){
       const e=packet.events[i];
-      if(!e||e.eventType!==EVIDENCE[i]||e.sourceFileKey!==FILES[i]||
+      if(!keysMatch(e,["eventType","sourceFileKey","sourceSha256","atUtc"])||
+         e.eventType!==EVIDENCE[i]||e.sourceFileKey!==FILES[i]||
          typeof e.sourceSha256!=="string"||!HASH.test(e.sourceSha256)||
          typeof e.atUtc!=="string"||!ISO.test(e.atUtc))
         return fail("EVENT_SCHEMA_OR_SOURCE_PROVENANCE");
       const time=Date.parse(e.atUtc);
-      if(!Number.isFinite(time)||new Date(time).toISOString().slice(0,19)!==
-           new Date(e.atUtc).toISOString().slice(0,19))
+      const actual=Number.isFinite(time)?new Date(time).toISOString():null;
+      if(!actual||(e.atUtc!==actual&&e.atUtc!==actual.replace(/\\.000Z$/,"Z")))
         return fail("INVALID_AUDIT_TIMESTAMP");
       times.push(time);
       const bytes=sourceFiles[e.sourceFileKey];
@@ -65,7 +72,8 @@ function verifyPacket(packet,{sourceFiles={},trustedKeys={}}={}){
     const signers=new Set(),orgs=new Set();
     for(let i=0;i<ROLES.length;i++){
       const att=packet.attestations[i];
-      if(!att||att.role!==ROLES[i]||typeof att.keyId!=="string"||
+      if(!keysMatch(att,["keyId","role","signatureBase64"])||
+         att.role!==ROLES[i]||typeof att.keyId!=="string"||
         typeof att.signatureBase64!=="string"||att.signatureBase64.length<60)
         return fail("INDEPENDENT_ATTESTATION_MISSING");
       const anchor=Object.prototype.hasOwnProperty.call(trustedKeys,att.keyId)?
