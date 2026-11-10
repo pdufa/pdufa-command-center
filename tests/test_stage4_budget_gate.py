@@ -59,6 +59,14 @@ class BudgetGateTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 gate.inspect_queue(path)
 
+    def test_rejects_unsafe_task_ids(self):
+        for task_id in ("../escape", "with spaces", "x" * 129, "é"):
+            with self.subTest(task_id=task_id), tempfile.TemporaryDirectory() as tmp:
+                path = Path(tmp) / "queue.json"
+                path.write_text(json.dumps([{"id": task_id, "approved": True}]))
+                with self.assertRaises(ValueError):
+                    gate.inspect_queue(path)
+
     def test_rejects_non_list_queue(self):
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "queue.json"
