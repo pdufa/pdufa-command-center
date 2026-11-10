@@ -26,7 +26,7 @@ async function verify(browser,profile){
   const board=page.locator('section[aria-label="R68 scientific evidence recovery board"]');
   await board.waitFor({state:"visible",timeout:15000});
   await board.getByRole("heading",{name:"Scientific evidence recovery · 29 FOCUS trials"}).waitFor();
-  assert.equal(await board.locator("details.case").count(),29);
+  assert.equal(await board.locator('details[aria-label^="R68 evidence for"]').count(),29);
   assert.match(await board.innerText(),/Source availability/);
   assert.match(await board.innerText(),/ABSTAIN/);
   assert.match(await board.innerText(),/NOT CALIBRATED/);
@@ -34,13 +34,13 @@ async function verify(browser,profile){
   const filter=board.getByRole("combobox",{name:"Filter source recovery trials"});
   for(const kind of ["PRIMARY","SAFETY","METHODS"]){
    await filter.selectOption(kind);
-   assert.equal(await board.locator("details.case").count(),17,
+   assert.equal(await board.locator('details[aria-label^="R68 evidence for"]').count(),17,
     "17 exact trial source-recovery cases in each missing category "+kind);
   }
   await filter.selectOption("ALL");
   await query.fill("SVRA");
-  assert.equal(await board.locator("details.case").count(),1);
-  const savara=board.locator("details.case").first();
+  assert.equal(await board.locator('details[aria-label^="R68 evidence for"]').count(),1);
+  const savara=board.locator('details[aria-label^="R68 evidence for"]').first();
   await savara.locator("summary").first().click();
   assert.equal(await savara.evaluate(el=>el.open),true);
   assert.equal(await savara.locator("ol li").count(),5);
@@ -50,15 +50,15 @@ async function verify(browser,profile){
    "https://clinicaltrials.gov/study/NCT04544293");
   await page.screenshot({path:path.join(OUT,profile.name+"-savara-recovery.png"),fullPage:false});
   await query.fill("NCT05126758");
-  assert.equal(await board.locator("details.case").count(),1);
-  const capr=board.locator("details.case").first();
+  assert.equal(await board.locator('details[aria-label^="R68 evidence for"]').count(),1);
+  const capr=board.locator('details[aria-label^="R68 evidence for"]').first();
   await capr.locator("summary").first().click();
   assert.match(await capr.innerText(),/Recover original primary endpoint results/);
   assert.match(await capr.innerText(),/Recover original protocol and statistical-analysis-plan PDFs/);
   assert.equal(await capr.getByRole("link",{name:"Open original PDF page leads"}).getAttribute("href"),
    "/predictions/assessment?nct=NCT05126758#original-methods-r64");
   await query.fill("");
-  assert.equal(await board.locator("details.case").count(),29);
+  assert.equal(await board.locator('details[aria-label^="R68 evidence for"]').count(),29);
   if(profile.mobile){
    const rect=await board.evaluate(el=>({
     width:el.getBoundingClientRect().width,
