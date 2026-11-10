@@ -1,0 +1,304 @@
+name: MAIN R53 original publicly posted protocol SAP PDF evidence
+
+# Read-only, draft development run. Does not enable background production
+# scheduling or train a forecasting model.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r53-focus-public-protocol-sap-pdf.yml
+      - new-platform/backend/scripts/collect_focus_protocol_pdf_text_r53.py
+      - new-platform/backend/tests/test_focus_protocol_pdf_text_r53.py
+      - new-platform/backend/scripts/build_focus_methods_crosswalk_r54.py
+      - new-platform/backend/tests/test_focus_methods_crosswalk_r54.py
+      - new-platform/backend/scripts/assemble_focus_clinical_review_packets_r55.py
+      - new-platform/backend/tests/test_focus_clinical_review_packets_r55.py
+      - new-platform/backend/scripts/reconcile_savara_methods_r56.py
+      - new-platform/backend/tests/test_savara_methods_reconciliation_r56.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r53-original-public-protocol-sap-pdfs
+  cancel-in-progress: false
+
+jobs:
+  reconstruct-original-public-pdf-source-text:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run exact source-identity and synthetic protocol/SAP PDF safety tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python -m pip install pytest pymupdf
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_focus_protocol_pdf_text_r53.py tests/test_focus_methods_crosswalk_r54.py tests/test_focus_clinical_review_packets_r55.py tests/test_savara_methods_reconciliation_r56.py tests/test_focus_protocol_index_r46.py tests/test_focus_application_efficacy_safety_r51.py
+          PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
+      - name: Capture all 29 current registry records and current document metadata
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r53-original/public-registry-original"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_focus_protocol_index_r46.py \
+            --output "$RUNNER_TEMP/r53-original/current_registry_document_index.json" \
+            --raw-dir "$RUNNER_TEMP/r53-original/public-registry-original"
+      - name: Independently re-extract document names from every original registry response
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=new-platform/backend python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          from scripts.build_focus_protocol_index_r46 import extract
+          root=Path(os.environ["RUNNER_TEMP"])/"r53-original"
+          doc=json.loads((root/"current_registry_document_index.json").read_bytes())
+          assert doc["nctCount"]==29 and doc["applicationGroupCount"]==23
+          assert doc["registryRecordsFetched"]==29
+          assert doc["attachmentEntries"]==23
+          assert doc["trialsWithCurrentSap"]==12
+          assert doc["trialsWithCurrentProtocol"]==12
+          for row in doc["records"]:
+            nct=row["nct"]
+            raw=(root/"public-registry-original"/(nct+".json")).read_bytes()
+            assert hashlib.sha256(raw).hexdigest()==row["sourceResponseSha256"]
+            assert len(raw)==row["sourceResponseBytes"]
+            study=json.loads(raw)
+            receipt={"url":row["sourceApiUrl"],"sha256":row["sourceResponseSha256"],"bytes":len(raw)}
+            reconstructed=extract(study,nct,receipt,row["applicationCycleIds"])
+            assert reconstructed==row, "REGISTRY_SOURCE_DERIVATION_MISMATCH"
+          PY
+      - name: Download and page-index exact original public attached protocol and SAP PDFs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r53-original/public-pdfs"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/collect_focus_protocol_pdf_text_r53.py \
+            --index "$RUNNER_TEMP/r53-original/current_registry_document_index.json" \
+            --raw-dir "$RUNNER_TEMP/r53-original/public-pdfs" \
+            --output "$RUNNER_TEMP/r53-original/source_protocol_sap_research.json"
+      - name: Verify PDF archive original hash, source method excerpts and no medical/prediction release
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          root=Path(os.environ["RUNNER_TEMP"])/"r53-original"
+          r=json.loads((root/"source_protocol_sap_research.json").read_bytes())
+          assert r["schema"]=="MAIN_R53_FOCUS_CURRENT_ORIGINAL_PROTOCOL_SAP_PDF_RESEARCH"
+          assert r["nctRosterCount"]==29 and r["applicationGroupCount"]==23
+          assert r["currentRegistryDocumentEntries"]==23
+          assert r["trialNctsWithDocumentEntries"]==12
+          assert len(r["applicationResearch"])==23
+          assert r["originalFirstPublicSAPDateVerified"]==0
+          assert r["historicalRegisteredEndpointAmendmentChainVerified"]==0
+          assert r["independentScientificGrades"]==0
+          assert r["validatedFDAForecasts"]==0
+          assert r["measuredApprovalAccuracy"] is None
+          assert r["actualHistoricalBacktests"]==0
+          assert r["trainingAuthorized"] is False
+          assert r["clinicalOrProductionWrites"] is False
+          assert r["officialFutureFDAOutcome"]=="ABSTAIN"
+          for pdf in r["documentResearch"]:
+            if pdf["sourceSha256"] is None:continue
+            original=(root/"public-pdfs"/pdf["archivedPdfFilename"]).read_bytes()
+            assert hashlib.sha256(original).hexdigest()==pdf["sourceSha256"]
+            assert len(original)==pdf["sourceBytes"]
+            assert original.startswith(b"%PDF-")
+            assert pdf["pdfResearch"]["statisticalPrespecificationValidated"] is False
+            assert pdf["pdfResearch"]["regulatoryConclusionAuthorized"] is False
+          msg=(f'R53: {r["originalPdfBodiesRetrieved"]}/23 current public protocol/SAP PDF files verified, '
+               f'{r["currentProtocolPdfBodiesRetrieved"]} protocol-bearing files, '
+               f'{r["currentSapPdfBodiesRetrieved"]} SAP-bearing files, '
+               f'originally attached to {r["trialNctsWithDocumentEntries"]}/29 trial records, '
+               'with exact original bytes and page-anchored statistical review leads. '
+               '0 locked pre-readout SAPs validated, 0 FDA forecasts or accuracy.')
+          print(msg,flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+            f.write("## R53 public original protocol/SAP PDF body research\n\n"+msg+"\n")
+          PY
+      - name: Build page-cited eight-domain original protocol and SAP review matrix for all FOCUS applications
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_focus_methods_crosswalk_r54.py \
+            --r53-report "$RUNNER_TEMP/r53-original/source_protocol_sap_research.json" \
+            --pdf-dir "$RUNNER_TEMP/r53-original/public-pdfs" \
+            --registry-dir "$RUNNER_TEMP/r53-original/public-registry-original" \
+            --output "$RUNNER_TEMP/r53-original/FOCUS_23_APPLICATION_METHOD_SOURCE_CROSSWALK_R54.json"
+          python - <<'PY'
+          import os,json
+          from pathlib import Path
+          path=Path(os.environ["RUNNER_TEMP"])/"r53-original/FOCUS_23_APPLICATION_METHOD_SOURCE_CROSSWALK_R54.json"
+          r=json.loads(path.read_bytes())
+          assert r["schema"]=="MAIN_R54_EIGHT_DOMAIN_PAGE_CITED_METHODS_EVIDENCE_MATRIX"
+          assert r["canonicalTrials"]==29 and r["applicationGroups"]==23
+          assert r["currentPdfDocumentsSourceVerified"]==23
+          assert r["trialsWithCurrentSourcePdfDocuments"]==12
+          assert r["trialsWithoutCurrentAttachedProtocolSap"]==17
+          assert len(r["eightMethodsReviewDomains"])==8
+          assert len(r["trialMethodsReview"])==29
+          assert len(r["applicationMethodsReview"])==23
+          assert r["documentDatesNotFirstPublicDates"] is True
+          assert r["historicalLockedSapVersionsIndependentlyVerified"]==0
+          assert r["independentlySignedClinicalMethodGrades"]==0
+          assert r["independentlyValidatedApplicationFdaPredictions"]==0
+          assert r["independentHistoricalFDAOutcomeBacktests"]==0
+          assert r["measuredFDAApprovalAccuracy"] is None
+          assert r["modelTrainingAuthorized"] is False
+          assert r["clinicalOrProductionWrites"] is False
+          assert r["officialPendingFDAOutcomePrediction"]=="ABSTAIN"
+          assert all(x["clinicalGrade"] is None and x["fdaApprovalProbability"] is None
+                     and x["officialFDAPrediction"]=="ABSTAIN"
+                     for x in r["applicationMethodsReview"])
+          svra=next(x for x in r["trialMethodsReview"] if x["nct"]=="NCT04544293")
+          assert svra["sourceDocumentCount"]==2
+          assert ("CURRENT_SAP_DOCUMENT_DATE_EARLIER_THAN_LATEST_ATTACHED_PROTOCOL_DATE_AMENDMENT_REVIEW"
+                  in svra["reviewFlags"])
+          for trial in r["trialMethodsReview"]:
+            for doc in trial["documents"]:
+              assert len(doc["machineTextEvidence"]["eightSourceReviewDomains"])==8
+              assert doc["machineTextEvidence"]["historicalProspectiveSAPLockVerified"] is False
+              assert doc["regulatorOutcomePrediction"]=="ABSTAIN"
+              for cat in doc["machineTextEvidence"]["eightSourceReviewDomains"].values():
+                assert cat["sourceState"] in ("PAGE_LINKED_TERMS_FOUND_REVIEW_REQUIRED",
+                  "NO_EXACT_TERMS_FOUND_NOT_PROOF_OF_ABSENCE")
+                for evidence in cat["pageLinkedSourceLeads"]:
+                  assert evidence["pdfPageOneBased"]>=1
+                  assert evidence["pdfPageOneBased"]<=doc["machineTextEvidence"]["pageCount"]
+          msg=(f'R54: 8 page-linked method review domains across 23 original public PDFs, '
+               '12 NCTs with attached documents, 17 NCTs requiring another document avenue, '
+               '23 original application research dossiers; '
+               'Savara protocol-versus-SAP date reconciliation flagged; '
+               '0 reviewer signoffs, 0 pre-unblinding locked SAPs, 0 validated FDA predictions.')
+          print(msg,flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+            f.write("\n## R54 page-cited methods audit; no clinical scoring\n\n"+msg+"\n")
+          PY
+      - name: Assemble all 23 case packets with original posted primary efficacy analyses, safety-arm denominators and methods evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/assemble_focus_clinical_review_packets_r55.py \
+            --r46-index "$RUNNER_TEMP/r53-original/current_registry_document_index.json" \
+            --r54-matrix "$RUNNER_TEMP/r53-original/FOCUS_23_APPLICATION_METHOD_SOURCE_CROSSWALK_R54.json" \
+            --registry-dir "$RUNNER_TEMP/r53-original/public-registry-original" \
+            --output "$RUNNER_TEMP/r53-original/FOCUS_23_APPLICATION_EFFICACY_SAFETY_SOURCE_REVIEW_PACKETS_R55.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"r53-original/FOCUS_23_APPLICATION_EFFICACY_SAFETY_SOURCE_REVIEW_PACKETS_R55.json"
+          r=json.loads(p.read_bytes())
+          assert r["schema"]=="MAIN_R55_EXACT_23_APPLICATION_SOURCE_REPORTED_EFFICACY_SAFETY_METHOD_PACKETS"
+          assert r["nctTrials"]==29 and r["applicationGroups"]==23
+          assert len(r["originalUniqueTrialEvidence"])==29
+          assert len(r["currentSourceCasePackets"])==23
+          assert r["sourceVerifiedCurrentProtocolSAPDocuments"]==23
+          assert r["uniqueTrialsWithPostedPrimary"]==12
+          assert r["uniqueTrialsWithPostedAdverseEvents"]==12
+          assert r["postedPrimaryTables"]==16
+          assert r["reportedPrimaryStatisticalComparisons"]==20
+          assert r["seriousAeTermRows"]==244 and r["otherAeTermRows"]==202
+          assert r["currentPublicRegistryResultsAreNotOriginalPredecisionData"] is True
+          assert r["reportedPValueNotIndependentlyMultiplicityAdjusted"] is True
+          assert r["safetyArmsNotCausalOrPooled"] is True
+          assert r["historicalLockedSAPsIndependentlyVerified"]==0
+          assert r["signedScientificReviews"]==0
+          assert r["independentlyValidatedFDAApplicationForecasts"]==0
+          assert r["realHistoricalPredictionBacktests"]==0
+          assert r["measuredAccuracy"] is None
+          assert r["modelTrainingAuthorized"] is False
+          assert r["clinicalOrProductionWrites"] is False
+          assert r["officialPendingFDAOutcome"]=="ABSTAIN"
+          svra=next(x for x in r["originalUniqueTrialEvidence"] if x["nct"]=="NCT04544293")
+          assert len(svra["sourceMethodsPageReferences"])==2
+          primary=svra["postedPrimaryOutcomeTables"][0]["statisticalComparisons"][0]
+          assert primary["reportedPValueLiteral"]=="0.0007"
+          assert primary["reportedEstimateLiteral"]=="6.0"
+          assert primary["reportedLowerBoundLiteral"]=="2.5"
+          assert primary["reportedUpperBoundLiteral"]=="9.4"
+          assert primary["independentStatisticalRecalculationComplete"] is False
+          groups=svra["postedAdverseEventArmCountsAsReported"]
+          assert [(g["seriousAffected"],g["seriousAtRisk"]) for g in groups]==[(14,81),(20,83)]
+          assert all(case["scientificGrade"] is None and case["fdaProbability"] is None
+                  and case["officialFDAOutcomePrediction"]=="ABSTAIN"
+                  for case in r["currentSourceCasePackets"])
+          line=(f'R55 complete: {r["applicationGroups"]} evidence packets from {r["nctTrials"]} exact trials; '
+            f'{r["postedPrimaryTables"]} posted primary tables, '
+            f'{r["reportedPrimaryStatisticalComparisons"]} source-reported comparison entries, '
+            f'{r["seriousAeTermRows"]} original SAE term rows, '
+            f'{r["otherAeTermRows"]} other AE term rows; 23 source-linked PDF methods files. '
+            'Savara current registry p=0.0007, difference 6.0 (reported 95% CI 2.5 to 9.4), '
+            '14/81 vs 20/83 serious AE affected as reported, not independently adjudicated. '
+            'No independent science signoffs or FDA forecasts.')
+          print(line,flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write(
+             "\n## R55 23 source-bound efficacy/safety/methods packets\n\n"+line+"\n")
+          PY
+      - name: Reconcile Savara current source primary methods, archived SAP amendments, and safety figures
+        shell: bash
+        run: |
+          set -euo pipefail
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/reconcile_savara_methods_r56.py \
+            --r54-matrix "$RUNNER_TEMP/r53-original/FOCUS_23_APPLICATION_METHOD_SOURCE_CROSSWALK_R54.json" \
+            --r55-packets "$RUNNER_TEMP/r53-original/FOCUS_23_APPLICATION_EFFICACY_SAFETY_SOURCE_REVIEW_PACKETS_R55.json" \
+            --pdf-dir "$RUNNER_TEMP/r53-original/public-pdfs" \
+            --output "$RUNNER_TEMP/r53-original/SAVARA_PRIMARY_METHODS_AND_SAP_EXCEPTIONS_R56.json"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          f=Path(os.environ["RUNNER_TEMP"])/"r53-original/SAVARA_PRIMARY_METHODS_AND_SAP_EXCEPTIONS_R56.json"
+          report=json.loads(f.read_bytes())
+          assert report["schema"]=="MAIN_R56_SAVARA_PROTOCOL_SAP_CLINICAL_METHOD_EXCEPTION_REVIEW"
+          assert report["canonicalTrials"]==29 and report["applicationGroups"]==23
+          assert len(report["trialDocumentChronologyResearch"])==29
+          assert report["trialCasesWithCurrentProtocolAndSap"]==12
+          case=report["savara"]
+          assert case["nct"]=="NCT04544293" and case["applicationCycleId"]=="svra-molgramostim"
+          assert case["laterProtocolDateThanSap"] is True
+          assert len(case["pairedMethodDescriptionFindings"])==6
+          assert len(case["explicitSapReportedProtocolDifferences"])==3
+          assert case["currentRegistryPrimaryOutcome"]["pValueAsPublished"]=="0.0007"
+          assert case["currentRegistryPrimaryOutcome"]["estimatedDifferenceAsPublished"]=="6.0"
+          assert case["currentRegistryPrimaryOutcome"]["originalProspectiveMultiplicityAndEndpointAdequacyValidated"] is False
+          assert case["originalPublicReleaseOfSapBeforeReadoutIndependentlyVerified"] is False
+          assert case["independentStatisticalAnalystSigned"] is False
+          assert case["scientificGrade"] is None
+          assert case["numericalFDAProbability"] is None
+          assert case["officialOutcomeAndDelayPrediction"]=="ABSTAIN"
+          assert report["independentScientificSignoffs"]==0
+          assert report["validatedFDAForecasts"]==0
+          assert report["realHistoricalPredictionBacktests"]==0
+          assert report["measuredFDAAccuracy"] is None
+          assert report["modelTrainingAuthorized"] is False
+          assert report["productionOrClinicalLedgerWrites"] is False
+          msg=("R56: source-verified Savara method comparison across 6 protocol/SAP topics, "
+               "3 explicit SAP-described protocol differences and current reported Week 24 "
+               "primary p=0.0007, estimate 6.0, 95% CI 2.5 to 9.4; primary population and "
+               "safety numerator/denominator preserved. Amendment chronology and prospectively "
+               "locked SAP unverified; 0 graded or validated FDA forecasts.")
+          print(msg,flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+            f.write("\n## R56 Savara document-text reconciliation and source-acknowledged SAP discrepancies\n\n"+msg+"\n")
+          PY
+      - name: Retain unmodified public PDF originals, registry receipts and read-only review notes
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r53-original-public-protocol-sap-pdf-${{ github.run_id }}
+          path: ${{ runner.temp }}/r53-original/
+          retention-days: 90
+          if-no-files-found: warn

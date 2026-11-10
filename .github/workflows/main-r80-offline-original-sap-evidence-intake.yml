@@ -1,0 +1,80 @@
+name: MAIN R80 offline original SAP unblinding evidence-intake acceptance
+# No private sponsor files, trusted public keys, source PDF bytes or medical
+# findings are stored in GitHub. Synthetic security tests only.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r80-offline-original-sap-evidence-intake.yml
+      - new-platform/backend/scripts/intake_r80_original_sap_evidence_offline.cjs
+      - new-platform/backend/tests/test_r80_original_sap_intake_offline.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: main-r80-original-sap-local-intake
+  cancel-in-progress: false
+jobs:
+  source-only-local-intake-security:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Protect canonical FOCUS trials/applications and permanent scoring retirement
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Test independent Ed25519/source SHA, owner-pinned registry and zero FDA grade
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test new-platform/backend/tests/test_r79_sap_lock_provenance_packet.cjs
+          node --test new-platform/backend/tests/test_r80_original_sap_intake_offline.cjs
+      - name: Verify real runner with no private evidence correctly returns blocked, no signoff
+        shell: bash
+        env:
+          R80_RECEIPT: ${{ runner.temp }}/r80-original-source-intake/R80_BLOCKED_ORIGINAL_SAP_ATTESTATION_STATUS.json
+        run: |
+          set -euo pipefail
+          mkdir -p "$(dirname "$R80_RECEIPT")"
+          env -u MAIN_R80_OWNER_APPROVED_TRUST_REGISTRY_SHA256 \
+            node new-platform/backend/scripts/intake_r80_original_sap_evidence_offline.cjs --report "$R80_RECEIPT"
+          python - <<'PY'
+          import json,os,pathlib
+          p=pathlib.Path(os.environ["R80_RECEIPT"])
+          d=json.loads(p.read_text())
+          assert d["status"]=="BLOCKED_OWNER_APPROVED_TRUST_ANCHOR_PIN_MISSING"
+          assert d["originalSAPProspectivelyLockedCertified"] is False
+          assert d["authenticatedScientificAssessment"] is False
+          assert d["validOriginalSourceRecordsRecorded"]==0
+          assert d["FDAOutcome"]=="ABSTAIN"
+          assert d["productionOrModelTrainingWrites"] is False
+          print("MAIN_R80_REAL_NO_CREDENTIALS_BLOCKED_SAFELY")
+          PY
+      - name: Preserve actual Stage 4 truth in acceptance summary
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo "## MAIN R80 offline independently authenticated original SAP intake"
+            echo
+            echo "Research-only local CLI accepts three original source files and a signed source packet; it rejects unsigned or changed files, inappropriate event chronology and trust registries whose SHA-256 is not approved independently by the owner."
+            echo "Synthetic two-signer fixtures verified; even synthetic verified packets cannot produce FDA approval/CRL, clinician signoffs or historical calibration."
+            echo
+            echo "**Actual project:** 0/7 prospectively authenticated original evidence requirements, 0 original source PDF byte receipts, 0 approved trust anchors, 0 independent clinical reviewer grades, 0 validated FDA application forecasts. The live CI has no original sponsor evidence and returns BLOCKED as designed."
+            echo
+            echo "FDA approval/CRL forecast ABSTAIN, timing UNKNOWN, accuracy UNAVAILABLE; no personal source documents, signing secrets, source hashes or private source files uploaded to public GitHub."
+          } >> "$GITHUB_STEP_SUMMARY"

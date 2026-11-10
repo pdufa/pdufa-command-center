@@ -2,16 +2,40 @@ name: PDUFA New Platform Bootstrap Checks
 
 on:
   push:
-    branches: [new-platform-bootstrap]
+    branches:
+      - new-platform-bootstrap
+      - feature/medical-stage4-verified-method-matrix-20261108
     paths:
       - 'new-platform/**'
       - '.github/workflows/pdufa-new-platform-bootstrap-ci.yml'
   workflow_dispatch:
+    inputs:
+      deploy_isolated_medical_preview:
+        description: 'Opt in to isolated Render deployment only after all exact-SHA checks pass'
+        required: true
+        default: false
+        type: boolean
+      verify_medical_preview:
+        description: 'Read-only signed-in medical preview verification using the existing dashboard test secret'
+        required: false
+        default: false
+        type: boolean
 
 permissions:
   contents: read
 
 jobs:
+  permanent-retirement:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python scripts/audit_raas_retirement.py --check
+      - run: python -m unittest discover -s tests -p 'test_raas_retirement_guard.py' -v
+
   backend:
     runs-on: ubuntu-latest
     timeout-minutes: 10
@@ -21,6 +45,9 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r new-platform/backend/requirements.txt
+      # Source-only R50/R53–R57 PDF tests import fitz (provided by PyMuPDF).
+      # CI test dependency only; no production runtime or clinical-state change.
+      - run: python -m pip install 'PyMuPDF>=1.24,<2'
       - run: PYTHONPATH=new-platform/backend pytest -q new-platform/backend/tests
 
   frontend:
@@ -38,3 +65,159 @@ jobs:
       - run: npm run typecheck
       - run: npm test
       - run: npm run build
+
+  authenticated-medical-preview:
+    if: >-
+      ${{ always() && github.event_name == 'workflow_dispatch' && inputs.verify_medical_preview &&
+          github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108' &&
+          needs.permanent-retirement.result == 'success' && needs.backend.result == 'success' &&
+          needs.frontend.result == 'success' &&
+          (needs.deploy-isolated-medical-preview.result == 'success' || needs.deploy-isolated-medical-preview.result == 'skipped') }}
+    needs: [permanent-retirement, backend, frontend, deploy-isolated-medical-preview]
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify signed-in read-only matrix and unchanged history
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+        run: python new-platform/backend/scripts/verify_medical_preview.py
+
+  # Pushes run mandatory checks, but only a manual workflow dispatch may
+  # deploy the exact SHA to the fixed isolated medical-preview service.
+  deploy-isolated-medical-preview:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.deploy_isolated_medical_preview && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108' }}
+    needs:
+      - permanent-retirement
+      - backend
+      - frontend
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    permissions:
+      contents: read
+    env:
+      RENDER_SERVICE_ID: srv-dbntrkpsrm7s73aec3lg
+      RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Verify exact source commit and fixed preview scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$GITHUB_REF" = "refs/heads/feature/medical-stage4-verified-method-matrix-20261108"
+          test "$RENDER_SERVICE_ID" = "srv-dbntrkpsrm7s73aec3lg"
+          echo "Verified exact source commit and isolated medical-preview target."
+      - name: Confirm isolated service and deploy precise verified commit
+        id: deploy
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [[ -z "$RENDER_API_KEY" ]]; then
+            echo "::error::RENDER_API_KEY missing from Actions secrets; deployment not attempted."
+            exit 1
+          fi
+          base="https://api.render.com/v1/services/$RENDER_SERVICE_ID"
+          service="$(curl --fail --silent --show-error --retry 3 --max-time 30 \
+            -H "Authorization: Bearer $RENDER_API_KEY" "$base")"
+          if ! jq -e --arg id "$RENDER_SERVICE_ID" \
+            '.id == $id and .name == "pdufa-medical-intelligence-preview"
+             and (.repo | strings | contains("github.com/pdufa/pdufa-command-center"))
+             and (.autoDeployTrigger == "off" or .autoDeploy == "no")' \
+             >/dev/null <<< "$service"; then
+            echo "::error::Render target identity, repository, or auto-deploy-off state differs; no deployment attempted."
+            exit 1
+          fi
+          # Idempotent retry: a previous accepted deployment may have returned
+          # 202 Queued (without an ID) and must not be submitted again.
+          # Render's list endpoint wraps each entry in {deploy: ..., cursor: ...}.
+          find_existing_deploy() {
+            local list
+            list="$(curl --fail --silent --show-error --retry 3 --max-time 30 \
+              -H "Authorization: Bearer $RENDER_API_KEY" "$base/deploys?limit=30")"
+            jq -er --arg sha "$GITHUB_SHA" '
+              if type != "array" then error("Unexpected Render deploy list") else
+                [ .[] | (.deploy // .)
+                  | select(.commit.id == $sha)
+                  | select(.status == "created" or .status == "queued"
+                      or .status == "build_in_progress" or .status == "pre_deploy_in_progress"
+                      or .status == "update_in_progress" or .status == "live")
+                  | .id
+                  | select(type == "string" and test("^dep-[A-Za-z0-9]+$"))
+                ] | first // empty
+              end' <<< "$list" || test "$?" -eq 4
+          }
+          deploy_id="$(find_existing_deploy)"
+          if [[ -n "$deploy_id" ]]; then
+            echo "Reusing already submitted exact-SHA isolated deploy: $deploy_id"
+          else
+            payload="$(jq -n --arg sha "$GITHUB_SHA" '{commitId: $sha, clearCache: "do_not_clear"}')"
+            response_file="$(mktemp)"
+            trap 'rm -f "$response_file"' EXIT
+            http_code="$(curl --fail-with-body --silent --show-error --max-time 45 -X POST \
+              -o "$response_file" -w '%{http_code}' \
+              -H "Authorization: Bearer $RENDER_API_KEY" \
+              -H "Content-Type: application/json" \
+              --data "$payload" "$base/deploys")"
+            if [[ "$http_code" != "201" && "$http_code" != "202" ]]; then
+              echo "::error::Unexpected Render deploy response status $http_code; not retrying submission."
+              exit 1
+            fi
+            # The official API usually returns .id for 201; tolerate nested
+            # .deploy.id as some Render response formats use this wrapper.
+            deploy_id="$(jq -r '.id // .deploy.id // empty' "$response_file")"
+            if [[ -z "$deploy_id" && "$http_code" == "202" ]]; then
+              echo "Render queued the exact-SHA deployment without a deploy ID."
+              # Poll the safe GET list instead of submitting a duplicate POST.
+              for attempt in $(seq 1 30); do
+                sleep 6
+                deploy_id="$(find_existing_deploy)"
+                [[ -n "$deploy_id" ]] && break
+              done
+            fi
+          fi
+          if [[ ! "$deploy_id" =~ ^dep-[A-Za-z0-9]+$ ]]; then
+            echo "::error::No verifiable exact-SHA deploy ID. Inspect Render deploy history before any retry."
+            exit 1
+          fi
+          echo "deploy_id=$deploy_id" >> "$GITHUB_OUTPUT"
+          echo "Render exact-SHA isolated deployment identified: $deploy_id"
+      - name: Confirm live state and deployed commit
+        shell: bash
+        run: |
+          set -euo pipefail
+          base="https://api.render.com/v1/services/$RENDER_SERVICE_ID"
+          deploy_id="${{ steps.deploy.outputs.deploy_id }}"
+          for attempt in $(seq 1 70); do
+            response="$(curl --fail --silent --show-error --retry 2 --max-time 30 \
+              -H "Authorization: Bearer $RENDER_API_KEY" "$base/deploys/$deploy_id")"
+            status="$(jq -r '.status // empty' <<< "$response")"
+            case "$status" in
+              live)
+                actual="$(jq -r '.commit.id // empty' <<< "$response")"
+                if [[ "$actual" != "$GITHUB_SHA" ]]; then
+                  echo "::error::Live commit mismatch. Expected $GITHUB_SHA, received $actual."
+                  exit 1
+                fi
+                echo "Isolated medical-preview backend live at verified commit $actual."
+                exit 0
+                ;;
+              build_failed|update_failed|pre_deploy_failed|canceled|deactivated)
+                echo "::error::Render deploy $deploy_id ended as $status"
+                exit 1
+                ;;
+              created|queued|build_in_progress|pre_deploy_in_progress|update_in_progress)
+                sleep 10
+                ;;
+              *)
+                echo "::error::Unrecognized Render deployment state $status; failing closed."
+                exit 1
+                ;;
+            esac
+          done
+          echo "::error::Render did not report LIVE with exact matching SHA before timeout."
+          exit 1

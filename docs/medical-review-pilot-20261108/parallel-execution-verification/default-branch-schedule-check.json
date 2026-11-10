@@ -1,0 +1,13 @@
+{
+  "defaultBranch": "main",
+  "workflows": [
+    {
+      "file": "main-r47-parallel-focus-historical-research.yml",
+      "onDefaultBranch": "ABSENT_HTTP_404"
+    },
+    {
+      "file": "main-r47-historical-source-track-b.yml",
+      "onDefaultBranch": "ABSENT_HTTP_404"
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+name: MAIN isolated medical authenticated readback
+
+# A branch-isolated, read-only acceptance check. The first push of this file
+# runs it automatically; future runs require an explicit dispatch or edits
+# to the acceptance script/workflow. It never starts Render deployments.
+on:
+  push:
+    branches:
+      - feature/medical-stage4-verified-method-matrix-20261108
+    paths:
+      - .github/workflows/main-medical-preview-auth-readback.yml
+      - new-platform/backend/scripts/verify_medical_preview.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-medical-auth-readback-draft-only
+  cancel-in-progress: false
+
+jobs:
+  authenticated-medical-preview:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Confirm isolated read-only scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$GITHUB_REF" = "refs/heads/feature/medical-stage4-verified-method-matrix-20261108"
+          test -f new-platform/backend/scripts/verify_medical_preview.py
+          echo "MAIN isolated medical acceptance only: no Render deploy and no clinical writes."
+      - name: Verify normal dashboard login and 800 immutable method records
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+        run: python new-platform/backend/scripts/verify_medical_preview.py

@@ -20,6 +20,7 @@ ALL_ACTION_PDF_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fd
 SHARED_PDF_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_shared_pdf_reconciliation_index.json"
 PAGE_CANDIDATE_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_shared_pdf_page_candidate_index.json"
 PAGE_REVIEW_WORKSHEET_AUDIT_PATH = Path(__file__).parent / "research_sources" / "hop_fda_page_review_worksheet_audit_index.json"
+FRESH_SOURCE_R38_PATH = Path(__file__).parent / "research_sources" / "hop_fda_source_recovery_receipt_r38.json"
 
 
 def _published_letter_source_audit(path: Path) -> dict | None:
@@ -514,6 +515,72 @@ def _quarantined_page_review_worksheet(path: Path) -> dict | None:
     except (OSError, KeyError, ValueError, TypeError):
         return None
 
+
+def _quarantined_r38_fda_recapture(path: Path) -> dict | None:
+    """Validate the pinned CI research receipt; runtime source bytes not reread.
+
+    The CI archive is time-limited and is NOT evidence of cohort coverage.
+    Its source counts may change on another run; require a separate verified
+    receipt revision rather than automatically trusting arbitrary flags.
+    """
+    try:
+        r=json.loads(path.read_text(encoding="utf-8"))
+        s=r["sourceExports"]
+        a=s["drugsfda"]; c=s["crl"]
+        expected={
+            "runId":42642513960,
+            "commit":"595bbe57a968cc9ad60b8164375969cfa97cac84",
+            "artifactId":13685223999,
+            "archiveSha256":"1eb68f5a9f92a0438e81b418f76a3b34202f3edf39672ade12eb9442a650c150",
+            "candidateFileSha256":"c549a5af3aaef038d75917a96367d1e3fea84afd63ac505af806f239347be72c",
+            "archiveExpiresAt":"2027-02-07T15:13:43Z",
+            "asOf":"2026-11-09","candidateRows":412,
+        }
+        if (not isinstance(r,dict)
+            or r.get("schema")!="MAIN_FDA_FRESH_SOURCE_RECEIPT_R38"
+            or r.get("status")!="SOURCE_RECOVERED_RESEARCH_ONLY_NO_MODEL_COHORT"
+            or any(r.get(k)!=v for k,v in expected.items())
+            or r.get("artifactUrl")!=
+              "https://github.com/pdufa/pdufa-command-center/actions/runs/42642513960/artifacts/13685223999"
+            or a!={"exportedOn":"2026-11-06","records":29446,
+                    "sha256":"46e820abefd38fd714a9424026cc79b19675a1d8e5acce8ab4f39927f55df7fb"}
+            or c!={"exportedOn":"2026-11-02","records":458,
+                    "sha256":"9c8842d6991d0bacfa224f1b7063cdfdc6b3c3e748f4b9779189f40f0749d2fc"}
+            or any(r.get(key) is not False for key in (
+                "permanentBackup","completeApplicationFilingCohortVerified",
+                "trainingAuthorized","originalSourceBytesPresentInRuntime"))
+            or r.get("selectedActionSourceOnly") is not True
+            or any(type(r.get(key)) is not int or r[key]!=0 for key in (
+                "exactCyclesIndependentlyAdjudicated",
+                "verifiedHistoricalModelCases","historicalBacktests","reviewerSignoffsCreated"))
+            or r.get("approvalProbability") is not None
+            or r.get("measuredAccuracy") is not None
+            or r.get("softwareChecks") != {
+                "sourceRegressionTestsPassed":48,
+                "sourceCollectorSuccessful":True,
+                "sha256ReceiptChecked":True}):
+            raise ValueError("Unverified FDA source recapture receipt")
+        return {
+            "status":"FRESH_FDA_SOURCE_PRESERVED_RESEARCH_ONLY",
+            "asOf":r["asOf"],
+            "candidateRows":r["candidateRows"],
+            "approvedProductRegistryRecords":a["records"],
+            "selectedPublishedLetterRecords":c["records"],
+            "sourceExportDates":{"approvedProductRegistry":a["exportedOn"],
+                                 "publishedCrl":c["exportedOn"]},
+            "sourceArchiveUrl":r["artifactUrl"],
+            "archiveExpiresAt":r["archiveExpiresAt"],
+            "permanentBackup":False,
+            "completeApplicationCohort":False,
+            "independentlyAdjudicatedModelCases":0,
+            "measuredAccuracy":None,
+            "approvalProbability":None,
+            "trainingAuthorized":False,
+        }
+    except (OSError,ValueError,TypeError,KeyError,AttributeError):
+        return None
+
+
 def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SOURCE_AUDIT_PATH,
                          drugs_audit_path: Path = DRUGS_SOURCE_AUDIT_PATH,
                          crosswalk_audit_path: Path = CROSSWALK_AUDIT_PATH,
@@ -524,7 +591,8 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
                          all_action_pdf_audit_path: Path = ALL_ACTION_PDF_AUDIT_PATH,
                          shared_pdf_audit_path: Path = SHARED_PDF_AUDIT_PATH,
                          page_candidate_audit_path: Path = PAGE_CANDIDATE_AUDIT_PATH,
-                         page_review_worksheet_path: Path = PAGE_REVIEW_WORKSHEET_AUDIT_PATH) -> dict:
+                         page_review_worksheet_path: Path = PAGE_REVIEW_WORKSHEET_AUDIT_PATH,
+                         fresh_source_path: Path = FRESH_SOURCE_R38_PATH) -> dict:
     try:
         raw = json.loads(path.read_text(encoding="utf-8"))
         records = raw["records"]
@@ -602,6 +670,7 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
             "fda_shared_pdf_source_reconciliation": shared_pdfs,
             "fda_provisional_pdf_page_candidates": page_candidates,
             "fda_page_review_worksheet": page_worksheet,
+            "fda_fresh_source_recapture": _quarantined_r38_fda_recapture(fresh_source_path),
             "historical_quarantined": quarantined,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,
@@ -625,6 +694,7 @@ def hop_readiness_status(path: Path = STAGING_PATH, source_audit_path: Path = SO
             "fda_shared_pdf_source_reconciliation": None,
             "fda_provisional_pdf_page_candidates": None,
             "fda_page_review_worksheet": None,
+            "fda_fresh_source_recapture": None,
             "historical_quarantined": None,
             "historical_model_eligible": 0,
             "historical_training_data_connected": False,

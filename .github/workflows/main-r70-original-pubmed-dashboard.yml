@@ -1,0 +1,126 @@
+name: MAIN R70 original PubMed article source review dashboard
+
+# Research branch ONLY. All medical grades unscored, PDF full texts not
+# independently qualified, and no FDA approval/CRL probability is released.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r70-original-pubmed-dashboard.yml
+      - new-platform/backend/scripts/verify_r70_pubmed_metadata_dashboard_parity.py
+      - new-platform/frontend/data/focus-r70-verified-pubmed-metadata-source.json
+      - new-platform/frontend/lib/focus-r70-pubmed-article-source.ts
+      - new-platform/frontend/app/predictions/evidence-gaps/OriginalPubmedArticleMetadataR70.tsx
+      - new-platform/frontend/app/predictions/evidence-gaps/OriginalPubmedArticleMetadataR70.module.css
+      - new-platform/frontend/app/predictions/evidence-gaps/OriginalPublicationLeadsR69.tsx
+      - new-platform/frontend/app/predictions/evidence-gaps/EvidenceRecoveryBoardR68.tsx
+      - new-platform/frontend/tests/focus-r70-original-pubmed-article-source.test.cjs
+      - new-platform/frontend/scripts/verify-r70-pubmed-article-browser.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r70-article-metadata-development-dashboard
+  cancel-in-progress: false
+
+jobs:
+  original-pubmed-parity-and-local-real-browser:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Preserve source-scoped 29 NCTs, 23 application groups and retired scans
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Restore immutable R70 original 11 PubMed article XML and metadata/abstract source
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42729546458
+          name: main-r70-original-11-pubmed-article-xml-42729546458
+          path: ${{ runner.temp }}/r70/original
+      - name: Require byte-exact 11 article titles, DOI, source types and 8-to-3 NCT distinction
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/verify_r70_pubmed_metadata_dashboard_parity.py \
+            --original "$RUNNER_TEMP/r70/original/FOCUS_11_PUBMED_ARTICLE_METADATA_REVIEW_R70.json" \
+            --frontend new-platform/frontend/data/focus-r70-verified-pubmed-metadata-source.json
+      - name: Test article source-only safeguards and unchanged original R69/R68 review cases
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r70-original-pubmed-article-source.test.cjs tests/focus-r69-original-publication-leads.test.cjs tests/focus-r68-evidence-recovery.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Install isolated Chromium for desktop and iPhone-sized article source acceptance
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify exact DOI/PubMed source links, study type cautions, search and accordion
+        working-directory: new-platform/frontend
+        shell: bash
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/r70-browser
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECEIPT_DIR"
+          npm run start -- --port 3157 > "$RECEIPT_DIR/next.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 50); do
+            if curl -fsS --max-time 5 http://127.0.0.1:3157/predictions/evidence-gaps -o /dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$ready" != 1 ]]; then
+            echo "::error::Local Next.js evidence page never became healthy."
+            tail -n 100 "$RECEIPT_DIR/next.log"
+            exit 1
+          fi
+          node scripts/verify-r70-pubmed-article-browser.cjs
+          cat "$RECEIPT_DIR/R70_BROWSER_RESULTS.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Archive local screenshots and real browser source evidence only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r70-local-pubmed-article-browser-${{ github.run_id }}
+          path: ${{ runner.temp }}/r70-browser/
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Record nonclinical research stage and forecast abstention
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo "## MAIN R70 PubMed article source review display"
+            echo
+            echo "11 original PubMed XML records captured and linked to 7 FOCUS NCTs; 8 exact NCT identifiers in article title/abstract and 3 linked only by PubMed ClinicalTrials.gov databank. Publication types include Phase I/II, Phase III, protocol or related exploratory sources; this evidence is not interchangeable."
+            echo
+            echo "29 trials, 23 application groups, original 232 unscored method slots and historical-source isolation unchanged. Qualified signed publication reviews 0, independent pivotal FDA-efficacy adjudications 0, validated future FDA predictions 0/23 and measured accuracy null; **ABSTAIN**. No production or model training writes."
+          } >> "$GITHUB_STEP_SUMMARY"

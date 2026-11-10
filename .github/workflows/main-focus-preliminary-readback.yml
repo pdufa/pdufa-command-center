@@ -1,0 +1,35 @@
+name: MAIN FOCUS 29/23 preliminary signed-in acceptance
+
+on:
+  push:
+    branches:
+      - feature/medical-stage4-verified-method-matrix-20261108
+    paths:
+      - .github/workflows/main-focus-preliminary-readback.yml
+      - new-platform/backend/scripts/verify_focus_preliminary_preview.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  research-only-signed-in-readback:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 9
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Confirm isolated branch and exact source checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_REF" = "refs/heads/feature/medical-stage4-verified-method-matrix-20261108"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python -m py_compile new-platform/backend/scripts/verify_focus_preliminary_preview.py
+          echo "Research-only 29-NCT/23-application verification; no backend/production writes."
+      - name: Verify authenticated preliminary board, 29 source rows and 23 application JSON records
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+        run: python new-platform/backend/scripts/verify_focus_preliminary_preview.py

@@ -1,0 +1,107 @@
+name: MAIN R62 original source 23-application review dashboard
+
+# Draft-branch research only; cannot mutate backend, production, clinician
+# signoffs, FOCUS roster or historical Track B. Pinned R60 source provenance.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r62-application-source-review.yml
+      - new-platform/backend/scripts/verify_r61_view_projection_r62.py
+      - new-platform/frontend/lib/focus-r62-application-source-review.ts
+      - new-platform/frontend/app/predictions/FocusApplicationSourceReviewR62.tsx
+      - new-platform/frontend/app/predictions/page.tsx
+      - new-platform/frontend/tests/focus-r62-application-source-review.test.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r62-original-23-application-preview
+  cancel-in-progress: false
+
+jobs:
+  review-only-ui-and-original-provenance:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Enforce fixed original FOCUS roster and permanently retired guard
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Restore original immutable R60 source audit JSON
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42709199117
+          name: main-r60-original-primary-safety-review-42709199117
+          path: ${{ runner.temp }}/r62/source
+      - name: Verify source-to-UI field parity and adversarial tampering
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r62/output"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/verify_r61_view_projection_r62.py \
+            --original-r60 "$RUNNER_TEMP/r62/source/FOCUS_29_ORIGINAL_PRIMARY_AND_AE_SOURCE_CHALLENGE_R60.json" \
+            --r61-snapshot new-platform/frontend/data/focus-r60-original-source-trial-detail.json \
+            --output "$RUNNER_TEMP/r62/output/R62_29_NCT_23_APPLICATION_ORIGINAL_PROJECTION_RECEIPT.json"
+          PYTHONPATH=new-platform/backend python - <<'PY'
+          import copy,json,os
+          from pathlib import Path
+          from scripts.verify_r61_view_projection_r62 import load_original,compare
+          source=Path(os.environ["RUNNER_TEMP"])/"r62/source/FOCUS_29_ORIGINAL_PRIMARY_AND_AE_SOURCE_CHALLENGE_R60.json"
+          original=load_original(source)
+          view=json.loads(Path("new-platform/frontend/data/focus-r60-original-source-trial-detail.json").read_text())
+          assert compare(original,view)["originalEvidenceMatch"] is True
+          mutants=[]
+          m=copy.deepcopy(view);m["trials"][0]["h"]="f"*64;mutants.append(m)
+          m=copy.deepcopy(view);m["trials"][0]["p"]+=1;mutants.append(m)
+          m=copy.deepcopy(view);m["trials"][0]["s"][0][1][0]+=1;mutants.append(m)
+          m=copy.deepcopy(view);m["trials"][0]["m"][0][0]+=" (invented)";mutants.append(m)
+          m=copy.deepcopy(view);m["trials"].pop();mutants.append(m)
+          m=copy.deepcopy(view);m["validatedFdaForecasts"]=23;mutants.append(m)
+          m=copy.deepcopy(view);m["sourceHashes"]["r46"]="e"*64;mutants.append(m)
+          for i,m in enumerate(mutants):
+              try:compare(original,m)
+              except ValueError:continue
+              raise AssertionError("FORGED_R62_RESEARCH_DISPLAY_ACCEPTED_"+str(i))
+          print("R62: exact source field parity and 7 tamper cases passed")
+          PY
+      - name: Run source review UI integrity tests, types and full Next build
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r62-application-source-review.test.cjs tests/focus-r60-original-source-view.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Archive R62 verified research-only UI source parity receipt
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r62-23-application-source-preview-${{ github.run_id }}
+          path: ${{ runner.temp }}/r62/output/
+          retention-days: 90
+          if-no-files-found: error
+      - name: Document development acceptance (no FDA predictions)
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "## R62 verified provisional application research view" >> "$GITHUB_STEP_SUMMARY"
+          echo "29 unique clinical registry trials shown under 23 provisional FDA cycles, with original R60 source hashes, presence/absence tasks, independent phase/SAP/safety review still missing. No clinical grades, 0 validated FDA predictions, no calibrated reliability, no production/ledger writes." >> "$GITHUB_STEP_SUMMARY"

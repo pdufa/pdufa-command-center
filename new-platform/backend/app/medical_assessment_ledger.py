@@ -47,6 +47,17 @@ def _reviewer(value: str) -> str:
     return value
 
 
+def _source_urls(value) -> set[str]:
+    """Exact parsed source values, never substrings of a serialized document."""
+    if isinstance(value, dict):
+        return set().union(*(_source_urls(v) for v in value.values()))
+    if isinstance(value, list):
+        return set().union(*(_source_urls(v) for v in value))
+    if isinstance(value, str) and value.startswith("https://"):
+        return {value}
+    return set()
+
+
 def _position(assessment: int, method: int | None = None) -> None:
     if type(assessment) is not int or not 1 <= assessment <= ASSESSMENTS:
         raise ValueError("Assessment index must be 1–40")
@@ -111,6 +122,32 @@ def initialize(engine, *, test_only: bool = False) -> None:
             recorded_at TEXT NOT NULL)"""))
         c.execute(text("""CREATE INDEX IF NOT EXISTS medical_assessment_gaps_nct
             ON medical_assessment_gap_events(nct_id,recorded_at)"""))
+        # Guard accidental DML without rewriting any existing rows or changing
+        # database privileges. Source runs/stages remain outside this ledger's
+        # schema boundary. Owners can still alter schema; these are not a claim
+        # of protection against a privileged database administrator.
+        immutable = ("medical_assessment_trial_roster", "medical_assessment_phase_events",
+                     "medical_assessment_review_events", "medical_assessment_gap_events")
+        if engine.dialect.name == "postgresql":
+            c.execute(text("""CREATE OR REPLACE FUNCTION medical_assessment_reject_mutation()
+                RETURNS trigger LANGUAGE plpgsql AS $$ BEGIN
+                RAISE EXCEPTION 'Medical assessment history and roster attachments are append-only';
+                END; $$"""))
+            for table in immutable:
+                exists = c.execute(text("""SELECT 1 FROM pg_trigger
+                    WHERE tgname=:name AND tgrelid=CAST(:table AS regclass)"""),
+                    {"name": table + "_immutable", "table": table}).scalar()
+                if not exists:
+                    c.execute(text(f"CREATE TRIGGER {table}_immutable "
+                                   f"BEFORE UPDATE OR DELETE OR TRUNCATE ON {table} "
+                                   "FOR EACH STATEMENT EXECUTE FUNCTION medical_assessment_reject_mutation()"))
+        else:
+            # SQLite is permitted only by the explicit isolated-test flag.
+            for table in immutable:
+                for operation in ("UPDATE", "DELETE"):
+                    c.execute(text(f"CREATE TRIGGER IF NOT EXISTS {table}_{operation.lower()} "
+                                   f"BEFORE {operation} ON {table} BEGIN SELECT RAISE(ABORT, "
+                                   "'Medical assessment history and roster attachments are append-only'); END"))
 
 
 def seed_roster(engine) -> dict:
@@ -243,11 +280,22 @@ def record_verified_phase(engine, *, nct: str, run_id: str, phase: str,
     datetime.fromisoformat(verified_at.replace("Z", "+00:00"))
     _run(engine,nct,run_id)
     with engine.begin() as c:
+        # Serialize reviewer writes on the immutable roster row and refuse an
+        # alternative saved source run, even if it also has 12 stages.
+        lock = " FOR UPDATE" if engine.dialect.name == "postgresql" else ""
+        attached = c.execute(text(
+            "SELECT source_run_id FROM medical_assessment_trial_roster WHERE nct_id=:nct" + lock
+        ), {"nct":nct}).scalar()
+        if attached != run_id:
+            raise ValueError("Phase confirmation must use the roster-attached source run")
         stage = c.execute(text("""SELECT document FROM medical_continuous_stages
             WHERE run_id=:run AND stage_index=0"""), {"run":run_id}).scalar()
         if stage is None:
             raise ValueError("Original registry identity stage is missing")
         details = json.loads(stage)
+        if (details.get("nct") != nct or
+                details.get("source") != f"https://clinicaltrials.gov/study/{nct}"):
+            raise ValueError("Phase confirmation requires the exact NCT registry identity")
         if phase not in details.get("phases", []):
             raise ValueError("Verified phase must match the saved original registry phase")
         source_url = _url(details.get("source", ""))
@@ -292,10 +340,23 @@ def append_review(engine, *, nct: str, run_id: str, phase_event_id: str,
     if not isinstance(evidence,list) or len(evidence)>12:
         raise ValueError("At most twelve original source evidence links per method")
     with engine.begin() as c:
-        phase = c.execute(text("""SELECT verified_phase,nct_id FROM medical_assessment_phase_events
-            WHERE phase_event_id=:id"""), {"id":phase_event_id}).first()
-        if not phase or phase[1]!=nct:
-            raise ValueError("A matching reviewer-verified phase is required")
+        # Keep phase/review writes serialized by exact NCT. A stale verified
+        # phase event, even with the same phase label, cannot receive new grades.
+        lock = " FOR UPDATE" if engine.dialect.name == "postgresql" else ""
+        attached = c.execute(text(
+            "SELECT source_run_id FROM medical_assessment_trial_roster WHERE nct_id=:nct" + lock
+        ), {"nct":nct}).scalar()
+        if attached != run_id:
+            raise ValueError("Review must use the roster-attached source run")
+        phase = c.execute(text("""SELECT verified_phase,nct_id,source_run_id
+            FROM medical_assessment_phase_events WHERE phase_event_id=:id"""),
+            {"id":phase_event_id}).first()
+        latest_phase = c.execute(text("""SELECT phase_event_id FROM medical_assessment_phase_events
+            WHERE nct_id=:nct ORDER BY created_at DESC,phase_event_id DESC LIMIT 1"""),
+            {"nct":nct}).scalar()
+        if (not phase or phase[1]!=nct or phase[2]!=run_id
+                or latest_phase != phase_event_id):
+            raise ValueError("Review requires the latest verified phase event and source run")
         captures = []
         for item in evidence:
             if not isinstance(item,dict):
@@ -304,14 +365,33 @@ def append_review(engine, *, nct: str, run_id: str, phase_event_id: str,
             if type(index) is not int or not 0 <= index < SOURCE_RUN_STAGES:
                 raise ValueError("Source evidence must reference a recorded stage 0–11")
             url = _url(item.get("sourceUrl"))
-            document = c.execute(text("""SELECT document FROM medical_continuous_stages
-                WHERE run_id=:run AND stage_index=:idx"""),
-                {"run":run_id,"idx":index}).scalar()
-            if document is None or url not in document:
+            source_stage = c.execute(text("""SELECT document,finished_at
+                FROM medical_continuous_stages WHERE run_id=:run AND stage_index=:idx"""),
+                {"run":run_id,"idx":index}).first()
+            if source_stage is None or url not in _source_urls(json.loads(source_stage[0])):
                 raise ValueError("Source URL is not present in the immutable saved source stage")
-            captures.append({"stageIndex":index,"sourceUrl":url,
-                             "stageDocumentSha256":hashlib.sha256(
-                                 document.encode("utf-8")).hexdigest()})
+            capture = {"stageIndex":index,"sourceUrl":url,
+                       "stageDocumentSha256":hashlib.sha256(
+                           source_stage[0].encode("utf-8")).hexdigest()}
+            if source_stage[1]:
+                capture["sourceCapturedAt"] = source_stage[1]
+            # Human reviewer annotations are preserved with the captured
+            # source. They can never be inferred from a source-audit receipt.
+            annotation_keys = ("classification","sourceLocation","examinedFinding")
+            if any(k in item for k in annotation_keys):
+                if (item.get("classification") not in (
+                        "FAVORABLE","UNFAVORABLE","MISSING","CONTRADICTORY")
+                    or not isinstance(item.get("sourceLocation"),str)
+                    or not 5 <= len(item["sourceLocation"].strip()) <= 500
+                    or not isinstance(item.get("examinedFinding"),str)
+                    or not 40 <= len(item["examinedFinding"].strip()) <= 3000):
+                    raise ValueError("Independent source finding requires classification and precise source location")
+                capture.update({
+                    "classification":item["classification"],
+                    "sourceLocation":item["sourceLocation"].strip(),
+                    "examinedFinding":item["examinedFinding"].strip(),
+                })
+            captures.append(capture)
         previous = c.execute(text("""SELECT review_event_id,revision FROM medical_assessment_review_events
             WHERE nct_id=:nct AND verified_phase=:phase AND
             assessment_index=:assessment AND method_index=:method
@@ -374,6 +454,18 @@ def install_routes(app, engine_provider, require_key, require_storage) -> None:
             return trial_history(engine_provider(),nct)
         except ValueError:
             raise HTTPException(422, "Invalid exact trial identity")
+        except LookupError:
+            raise HTTPException(404, "Trial assessment roster not found")
+
+    @router.get("/{nct}/matrix")
+    def get_matrix(nct: str, assessmentIndex: int | None = None):
+        """Read-only current-phase projection; optional 20-method drill-down."""
+        from .medical_method_projection import project_trial_history
+        try:
+            return project_trial_history(trial_history(engine_provider(), nct),
+                                         assessment_index=assessmentIndex)
+        except ValueError:
+            raise HTTPException(422, "Exact trial and assessment 1–40 are required")
         except LookupError:
             raise HTTPException(404, "Trial assessment roster not found")
 

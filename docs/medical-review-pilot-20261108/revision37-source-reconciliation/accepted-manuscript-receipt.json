@@ -1,0 +1,47 @@
+{
+  "schema": "ACACIA_ORIGINAL_ACCEPTED_MANUSCRIPT_RECEIPT_V1",
+  "nct": "NCT06081894",
+  "doi": "10.1056/NEJMoa2603021",
+  "sourceUrl": "https://eprints.gla.ac.uk/394996/1/394996.pdf",
+  "repositoryLandingUrl": "https://eprints.gla.ac.uk/394996/",
+  "retrievedAt": "2026-11-09T18:34:28.803125+00:00",
+  "version": "ACCEPTED_MANUSCRIPT_NOT_FINAL_VERSION_OF_RECORD",
+  "licenseObservedAtOriginalRepository": "CC BY-NC-ND",
+  "repositoryPublishedOnlineDate": "2026-08-28",
+  "repositoryAcceptanceDate": "2026-07-16",
+  "repositoryDepositDate": "2026-10-29",
+  "repositoryDatestamp": "2026-09-15 15:39",
+  "repositoryLastModified": "2026-10-30 02:33",
+  "firstPublicFullManuscriptAvailabilityVerified": false,
+  "copiedToRepositoryOrTrainingCorpus": false,
+  "retention": "Exact PDF downloaded into temporary research workspace only. Metadata, hash and limited factual findings retained. No full licensed text/PDF imported into product or training corpus.",
+  "accessBypass": false,
+  "credentialUsed": false,
+  "clinicalGrade": null,
+  "httpStatus": 200,
+  "sourceBytes": 620808,
+  "sourceSha256": "20a804bd113bb40231aec4da466864be0834f78b86c926c8142cc6a0afc67866",
+  "exactIdentityChecks": {
+    "nctPresent": true,
+    "primaryArticleTitlePresent": true,
+    "acceptedVersionBanner": true,
+    "paperPages": 33,
+    "pageCountBasis": "pdfinfo on exact hashed response bytes; matches public PDF reader33-page result."
+  },
+  "visualDocumentChecks": {
+    "performedBy": "AUTOMATED_ASSISTANT_NOT_INDEPENDENT_CLINICAL_REVIEWER",
+    "printedPages": [
+      7,
+      11,
+      13
+    ],
+    "scope": "Page7 lock date and follow-up design; page11 randomized/never-dosed statement; page13 treatment-phase HF counts and interruption numerator.",
+    "independentClinicalSignoff": false
+  },
+  "pdfInternalMetadata": {
+    "creationDateUtc": "2026-10-29T10:51:59Z",
+    "modificationDateUtc": "2026-10-29T10:51:59Z",
+    "javascriptPresent": false,
+    "basis": "pdfinfo on exact hashed response bytes; PDF dates are not authenticated public availability timestamps."
+  }
+}

@@ -2,6 +2,15 @@ import Link from "next/link";
 import type {Metadata} from "next";
 import FocusPredictionNavigator from "./FocusPredictionNavigator";
 import FullRosterSourceScan from "./FullRosterSourceScan";
+import FocusPreliminaryApplicationBoard from "./FocusPreliminaryApplicationBoard";
+import FocusRegistryPrimaryEvidenceR42 from "./FocusRegistryPrimaryEvidenceR42";
+import FocusRegulatorySourceChallengesR43 from "./FocusRegulatorySourceChallengesR43";
+import FocusPostedSafetyR44 from "./FocusPostedSafetyR44";
+import FocusCurrentEndpointConcordanceR45 from "./FocusCurrentEndpointConcordanceR45";
+import FocusProtocolDocumentIndexR46 from "./FocusProtocolDocumentIndexR46";
+import FocusOriginalSourceChallengeR60 from "./FocusOriginalSourceChallengeR60";
+import FocusApplicationSourceReviewR62 from "./FocusApplicationSourceReviewR62";
+import PredictionReleaseStatus from "./PredictionReleaseStatus";
 
 export const metadata:Metadata={
   title:"FDA Outcome Predictions | PDUFA",
@@ -13,6 +22,7 @@ export default function PredictionsPage(){
   return <main className="shell" style={{maxWidth:1200,margin:"0 auto",padding:"24px 14px 48px"}}>
     <div className="topline">PDUFA COMMAND CENTER · INDEPENDENT OUTCOME GOVERNANCE</div>
     <h1>FDA Outcome Predictions</h1>
+    <PredictionReleaseStatus/>
     <p aria-label="Prediction analysis depth" style={{margin:"8px 0 18px",lineHeight:1.6,fontSize:17,color:"#195749"}}>
       <strong style={{color:"#075c4b",background:"linear-gradient(transparent 58%,#b6f2dd 58%)",fontWeight:850,fontSize:"clamp(17px,2.3vw,22px)",paddingBottom:3}}>
         Deep Clinical Subspecialty Intelligence
@@ -36,6 +46,22 @@ export default function PredictionsPage(){
         Source-linked partial clinical dossiers and missing-evidence checkpoints. Not completed assessments or validated forecasts.
       </span>
     </p>
+    <p style={{margin:"11px 0 15px",fontSize:14}}>
+      <Link href="/predictions/evidence-gaps" style={{fontWeight:800,color:"#08664c",textDecoration:"underline"}}>
+        Open the 29-trial source evidence recovery and independent-review worklist (R68)
+      </Link>
+      <span style={{display:"block",fontSize:12,color:"#597267"}}>
+        Shows missing source categories and original evidence links; it is not a science grade or FDA forecast.
+      </span>
+    </p>
+    <FocusPreliminaryApplicationBoard/>
+    <FocusRegistryPrimaryEvidenceR42/>
+    <FocusPostedSafetyR44/>
+    <FocusCurrentEndpointConcordanceR45/>
+    <FocusProtocolDocumentIndexR46/>
+    <FocusApplicationSourceReviewR62/>
+    <FocusOriginalSourceChallengeR60/>
+    <FocusRegulatorySourceChallengesR43/>
     <FullRosterSourceScan/>
     <p style={{fontSize:13,margin:"12px 0"}}><Link href="/analyze-now?nct=NCT06081894" style={{color:"#075c4b",fontWeight:700}}>Open saved research pilot and exact-NCT revision history (PostgreSQL required)</Link> · The pilot fails closed until its secure backend is explicitly ready.</p>
     <FocusPredictionNavigator/>

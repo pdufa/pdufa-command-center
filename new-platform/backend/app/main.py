@@ -330,6 +330,26 @@ def require_internal_key(
     if not x_pdufa_internal_key or not secrets.compare_digest(expected, x_pdufa_internal_key):
         raise HTTPException(status_code=401, detail="Unauthorized")
 
+# Scope a separate read-only preview key to the clinical review surfaces.
+# Do not rotate the general internal key: other preview branches and callers use it.
+# This dependency MUST NOT be assigned to write routes or operational workers.
+def require_medical_review_read_key(
+    x_pdufa_internal_key: Annotated[str | None, Header()] = None,
+) -> None:
+    configured = [
+        key for key in (
+            os.getenv("PDUFA_INTERNAL_API_KEY"),
+            os.getenv("PDUFA_MEDICAL_INTERNAL_API_KEY"),
+            os.getenv("PDUFA_MEDICAL_REVIEW_READ_KEY"),
+        ) if key
+    ]
+    if not configured:
+        raise HTTPException(status_code=503, detail="Scientific preview read access not configured")
+    if not x_pdufa_internal_key or not any(
+        secrets.compare_digest(key, x_pdufa_internal_key) for key in configured
+    ):
+        raise HTTPException(status_code=401, detail="Unauthorized")
+
 
 def storage_ready() -> bool:
     # Hosted staging must NEVER silently save ticker data to ephemeral SQLite.
@@ -353,6 +373,17 @@ def require_writes_enabled() -> None:
     # Opt-in freeze for a database migration. GETs remain usable for validation.
     if os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() in ("1", "true", "yes"):
         raise HTTPException(status_code=503, detail="Checklist writes paused for database migration")
+
+
+def require_medical_reviewer_writes() -> None:
+    # Feature flags and reviewer credentials alone cannot authorize another
+    # Render service. No local/test bypass belongs on the deployed write gate.
+    if os.getenv("RENDER_SERVICE_ID", "") != "srv-dbntrkpsrm7s73aec3lg":
+        raise HTTPException(
+            status_code=503,
+            detail="Independent reviewer writes require the isolated medical preview service",
+        )
+    require_writes_enabled()
 
 
 @asynccontextmanager
@@ -663,7 +694,24 @@ async def lifespan(app: FastAPI):
                             "PDUFA_MEDICAL_PHASE_MATRIX status=ERROR error_type=%s",
                             type(matrix_exc).__name__,
                         )
-                                # Stage 4: one exact canary's reproducible scientific SOURCE triage.
+                # Separately enabled research receipts: schema only at startup.
+                # No run, source examination, research recommendation or clinical
+                # reviewer event is created by this infrastructure gate.
+                app.state.medical_research_execution_ready = False
+                if os.getenv("PDUFA_MEDICAL_RESEARCH_EXECUTION_ENABLED", "").lower() in ("1", "true", "yes"):
+                    try:
+                        from .medical_research_execution import activate as activate_research_execution
+                        app.state.medical_research_execution_ready = activate_research_execution(
+                            ENGINE, ledger_ready=getattr(app.state, "medical_phase_matrix_ready", False))
+                        logging.getLogger(__name__).warning(
+                            "PDUFA_MEDICAL_RESEARCH_EXECUTION_READY status=%s "
+                            "startupRunsCreated=0 examinationsWritten=0 gradesWritten=0 prediction=ABSTAIN",
+                            "PASS" if app.state.medical_research_execution_ready else "BLOCKED")
+                    except Exception as research_exc:
+                        logging.getLogger(__name__).error(
+                            "PDUFA_MEDICAL_RESEARCH_EXECUTION_READY status=ERROR error_type=%s",
+                            type(research_exc).__name__)
+                # Stage 4: one exact canary's reproducible scientific SOURCE triage.
                 # Only new append-only snapshots; never assign clinical grades.
                 if (os.getenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_ENABLED", "").lower() in ("1", "true", "yes")
                         and getattr(app.state, "medical_phase_matrix_ready", False)):
@@ -704,6 +752,42 @@ async def lifespan(app: FastAPI):
                             "PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_READY status=ERROR error_type=%s",
                             type(triage_exc).__name__,
                         )
+                # Preview-only: durable progress receipts for the existing 800-position
+                # source triage, not a separate clinical-grade or prediction engine.
+                app.state.medical_method_audit_ready = False
+                if (os.getenv("PDUFA_MEDICAL_METHOD_AUDIT_ENABLED","").lower() in ("1","true","yes")
+                        and getattr(app.state, "medical_scientific_triage_ready", False)):
+                    try:
+                        from .medical_method_audit_worker import (
+                            initialize as initialize_method_audit,
+                            resume_pending as resume_method_audit,
+                        )
+                        initialize_method_audit(ENGINE)
+                        app.state.medical_method_audit_ready = True
+                        resumed=resume_method_audit(ENGINE)
+                        # Explicit canary-only one-shot start: idempotent per exact
+                        # saved triage snapshot. Never starts any other FOCUS NCT.
+                        if (os.getenv("PDUFA_MEDICAL_METHOD_AUDIT_CANARY_AUTORUN","").lower()
+                                in ("1","true","yes") and resumed == 0):
+                            try:
+                                from .medical_method_audit_worker import start as start_method_audit
+                                audit_job=start_method_audit(ENGINE,"NCT06081894")
+                                logging.getLogger(__name__).warning(
+                                    "PDUFA_MEDICAL_METHOD_AUDIT_CANARY status=%s "
+                                    "sourceAuditOnly=True reviewGradesWritten=0",
+                                    audit_job["status"])
+                            except Exception as pilot_start_exc:
+                                logging.getLogger(__name__).error(
+                                    "PDUFA_MEDICAL_METHOD_AUDIT_CANARY status=ERROR error_type=%s",
+                                    type(pilot_start_exc).__name__)
+                        logging.getLogger(__name__).warning(
+                            "PDUFA_MEDICAL_METHOD_AUDIT_READY status=PASS resumed=%d "
+                            "gradesWritten=0 prediction=ABSTAIN",resumed)
+                    except Exception as audit_exc:
+                        app.state.medical_method_audit_ready = False
+                        logging.getLogger(__name__).error(
+                            "PDUFA_MEDICAL_METHOD_AUDIT_READY status=ERROR error_type=%s",
+                            type(audit_exc).__name__)
                 # Registry facts are separately opt-in, fail closed and do NOT
                 # create reviewer-verified clinical phase or scientific grade events.
                 if (os.getenv("PDUFA_MEDICAL_REGISTRY_RECONCILE_ENABLED","").lower() in ("true","1","yes")
@@ -833,7 +917,7 @@ app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 from .nct_live_stream import install_routes as install_nct_stream_routes
 install_nct_stream_routes(app, lambda: ENGINE, require_internal_key, require_storage)
 
-@app.get("/api/internal/installation-monitor", dependencies=[Depends(require_internal_key)])
+@app.get("/api/internal/installation-monitor", dependencies=[Depends(require_medical_review_read_key)])
 def installation_monitor_status():
     """Authenticated, no-store, read-only evidence. No scans, alerts or predictions start on GET."""
     from .installation_monitor import collect
@@ -881,8 +965,32 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes
         and os.getenv("PDUFA_MEDICAL_ASSESSMENT_LEDGER_ENABLED", "").lower() in ("1", "true", "yes")):
     from .medical_assessment_ledger import install_routes as install_medical_assessment_routes
     install_medical_assessment_routes(app, lambda: ENGINE,
-                                     require_medical_internal_key,
+                                     require_medical_review_read_key,
                                      require_medical_assessment_storage)
+
+# These are the ONLY human review writes; they never run from the source worker.
+# Disabled by default and never usable outside the isolated preview. Distinct
+# role-bound reviewer secrets are required (general/worker/read keys do not work).
+# No browser-facing proxy, synthetic credentials or automatic method scoring.
+if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_ASSESSMENT_LEDGER_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_REVIEW_WRITES_ENABLED", "").lower() in ("1", "true", "yes")):
+    from .medical_reviewer_submission import install_routes as install_medical_reviewer_intake
+    install_medical_reviewer_intake(app, lambda: ENGINE,
+                                   require_medical_assessment_storage,
+                                   require_medical_reviewer_writes)
+
+# The new ORIGINAL PUBLIC DOCUMENT vault is separately opt-in, independent
+# of source monitor and clinical reviewer writer. It is NEVER mounted on
+# production, shared preview, local/dev, or without a named isolated Render
+# service with required durable PostgreSQL. It does not issue medical grades.
+if (os.getenv("PDUFA_ORIGINAL_EVIDENCE_VAULT_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_REQUIRE_POSTGRES", "").lower() in ("1", "true", "yes")
+        and os.getenv("RENDER_SERVICE_ID", "") == "srv-dbntrkpsrm7s73aec3lg"):
+    from .medical_original_evidence_vault_http import install_routes as install_original_evidence_vault
+    from .medical_original_evidence_permissions import get_runtime_engine as get_dedicated_evidence_engine
+    install_original_evidence_vault(app, get_dedicated_evidence_engine, require_storage)
 
 # Phase-aware review is separately opt-in and uses ONLY authenticated GETs.
 def require_medical_phase_matrix_storage() -> None:
@@ -895,8 +1003,26 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes
         and os.getenv("PDUFA_MEDICAL_PHASE_MATRIX_ENABLED", "").lower() in ("1", "true", "yes")):
     from .medical_phase_matrix import install_routes as install_medical_phase_matrix_routes
     install_medical_phase_matrix_routes(app, lambda: ENGINE,
-                                        require_medical_internal_key,
+                                        require_medical_review_read_key,
                                         require_medical_phase_matrix_storage)
+
+# Research execution exposes observation only; no HTTP examination writer or
+# automatic research driver is installed by this separate opt-in gate.
+def require_medical_research_execution_storage() -> None:
+    from .medical_research_execution import enabled_for_service
+    require_medical_phase_matrix_storage()
+    if not enabled_for_service() or not getattr(app.state, "medical_research_execution_ready", False):
+        raise HTTPException(status_code=503, detail="Isolated research execution infrastructure is not ready")
+
+
+if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("PDUFA_MEDICAL_RESEARCH_EXECUTION_ENABLED", "").lower() in ("1", "true", "yes")
+        and os.getenv("RENDER_SERVICE_ID", "") == "srv-dbntrkpsrm7s73aec3lg"):
+    from .medical_research_execution import install_routes as install_medical_research_execution_routes
+    install_medical_research_execution_routes(app, lambda: ENGINE,
+                                              require_medical_review_read_key,
+                                              require_medical_research_execution_storage)
+
 
 # Stage-4 source triage has independent storage gate, authenticated GET only.
 def require_medical_scientific_triage_storage() -> None:
@@ -913,6 +1039,21 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED", "").lower() in ("1", "true", "yes
                                     require_medical_internal_key,
                                     require_medical_scientific_triage_storage)
 
+# Evidence audit is distinct from the 800-method reviewer ledger. Preview only.
+# GET has the read key; POST requires the stronger operational canary key.
+def require_medical_method_audit_storage() -> None:
+    require_medical_scientific_triage_storage()
+    if not getattr(app.state, "medical_method_audit_ready", False):
+        raise HTTPException(status_code=503, detail="Exact-NCT pilot source-audit telemetry not initialized")
+
+if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED","").lower() in ("true","1","yes")
+        and os.getenv("PDUFA_MEDICAL_METHOD_AUDIT_ENABLED","").lower() in ("true","1","yes")
+        and os.getenv("PDUFA_MEDICAL_SCIENTIFIC_TRIAGE_ENABLED","").lower() in ("true","1","yes")):
+    from .medical_method_audit_worker import install_routes as install_medical_method_audit_routes
+    install_medical_method_audit_routes(
+        app, lambda: ENGINE, require_medical_review_read_key,
+        require_medical_internal_key, require_medical_method_audit_storage)
+
 # ClinicalTrials.gov metadata remains sponsor-reported, never reviewer signoff.
 def require_medical_registry_reconcile_storage() -> None:
     require_medical_scientific_triage_storage()
@@ -923,7 +1064,7 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED","").lower() in ("true","1","yes")
         and os.getenv("PDUFA_MEDICAL_REGISTRY_RECONCILE_ENABLED","").lower() in ("true","1","yes")):
     from .medical_registry_reconciliation import install_routes as install_registry_reconcile_routes
     install_registry_reconcile_routes(app, lambda: ENGINE,
-                                      require_medical_internal_key,
+                                      require_medical_review_read_key,
                                       require_medical_registry_reconcile_storage)
 
 # The review queue gives evidence work priorities, never a medical/FDA score.
@@ -936,7 +1077,7 @@ if (os.getenv("PDUFA_MEDICAL_PREVIEW_ENABLED","").lower() in ("true","1","yes")
         and os.getenv("PDUFA_MEDICAL_PRIMARY_REVIEW_QUEUE_ENABLED","").lower() in ("true","1","yes")):
     from .medical_primary_evidence_queue import install_routes as install_primary_review_queue_routes
     install_primary_review_queue_routes(app, lambda: ENGINE,
-                                        require_medical_internal_key,
+                                        require_medical_review_read_key,
                                         require_medical_primary_review_queue_storage)
 
 @app.get("/api/internal/medical-canary-preflight", dependencies=[Depends(require_medical_internal_key)])

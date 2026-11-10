@@ -1,0 +1,70 @@
+name: ACACIA exact official CTG historical versions
+on:
+  push:
+    branches:
+      - feature/medical-stage4-verified-method-matrix-20261108
+    paths:
+      - scripts/medical/acacia_ctg_historical_versions.py
+      - tests/test_acacia_ctg_historical_versions.py
+      - docs/medical-review-pilot-20261108/revision36-original-history/**
+      - .github/workflows/acacia-ctg-historical-versions.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  original-public-version-records:
+    runs-on: ubuntu-latest
+    timeout-minutes: 6
+    if: ${{ github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108' }}
+    steps:
+      - name: Checkout exact research branch (no persisted credentials)
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          persist-credentials: false
+      - name: Validate one-trial public historical source-only scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "${GITHUB_REF_NAME}" = "feature/medical-stage4-verified-method-matrix-20261108"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python3 -m py_compile scripts/medical/acacia_ctg_historical_versions.py
+          python3 -m unittest discover -s tests -p test_acacia_ctg_historical_versions.py -v
+      - name: Reproduce retained original public-UI version comparison offline
+        shell: bash
+        run: >-
+          python3 scripts/medical/acacia_ctg_historical_versions.py
+          --public-browser-capture docs/medical-review-pilot-20261108/revision36-original-history
+      - name: Describe retained source verification separately from live freshness
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import json,os
+          from pathlib import Path
+          p=Path("docs/medical-review-pilot-20261108/revision36-original-history/validated_comparison.json")
+          x=json.loads(p.read_text())
+          assert x["nct"]=="NCT06081894"
+          assert x["clinicalSignoff"] is False and x["gradedMethods"]==0
+          assert x["fdaPredictions"]=={"APPROVAL":"ABSTAIN","CRL":"ABSTAIN","REVIEW_DELAY":"ABSTAIN"}
+          y=x["directV26V27"]
+          summary=(
+              "## ACACIA retained original public-UI history verification\n\n"+
+              "Capture date: "+x["retrievedAt"]+"; this CI run is offline replay, not a fresh source retrieval.\n\n"+
+              "Raw byte digests, exact NCT, API version IDs and official date crosswalk checked.\n\n"+
+              "Original primary outcomes v26 -> v27: "+str(y["primaryBefore"])+" -> "+str(y["primaryAfter"])+".\n\n"+
+              "Full 4-version source completeness: "+str(x["sourceVersionCompleteness"])+".\n\n"+
+              "Earlier direct-API 403 receipts preserved; no denied requests repeated.\n\n"+
+              "Final locked SAP authenticated: NO; clinical grades: 0; FDA: ABSTAIN.\n"
+          )
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as file:file.write(summary)
+          PY
+      - name: Upload retained originals and validation receipt
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: acacia-original-ctg-history-receipt-${{ github.run_id }}-${{ github.run_attempt }}
+          path: docs/medical-review-pilot-20261108/revision36-original-history/
+          retention-days: 30
+          if-no-files-found: error

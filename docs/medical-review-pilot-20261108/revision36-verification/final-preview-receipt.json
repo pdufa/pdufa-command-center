@@ -1,0 +1,41 @@
+{
+  "schema": "MAIN_REV36_FINAL_PREVIEW_ACCEPTANCE_V1",
+  "observedAt": "2026-11-09T14:09:59.097940+00:00",
+  "codeCommit": "bf2fb5de0b2550b64301ce8bef2db917b71ed0e1",
+  "frontendDeploymentId": "dpl_FsYVRRjmgo5rXaqH7uqzJ9hPsioh",
+  "frontendUrl": "https://pdufa-new-dashboard-2rz1u59ty-pdufa.vercel.app",
+  "frontendDeploymentCommit": "62ba6bd5fd632d556a81149189214e4f60dda87c",
+  "frontendGitTreeSha": "f6ad2a52606d9f5164f7c4f2eb9de94cd0be71f2",
+  "frontendIdenticalToCurrentCode": true,
+  "frontendReady": "READY",
+  "authenticatedReadbackRun": "https://github.com/pdufa/pdufa-command-center/actions/runs/42631538008",
+  "authenticatedReadbackJob": 129208801968,
+  "authenticatedReadback": "PASS",
+  "fullRegressionRun": "https://github.com/pdufa/pdufa-command-center/actions/runs/42631538010",
+  "fullRegression": {
+    "backend": "PASS",
+    "frontend": "PASS",
+    "permanentRetirement": "PASS"
+  },
+  "renderDeployment": "dep-dbot3n8u01pc738b6bq0",
+  "renderCommit": "d580b966a4f28d64f1878a9a5e9f6f5713e181b3",
+  "renderReleaseRun": "https://github.com/pdufa/pdufa-command-center/actions/runs/42630127667",
+  "clinicalGrades": 0,
+  "phaseSignoffs": 0,
+  "fdaPredictions": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "certainty": "NOT_VALIDATED",
+  "accuracy": "NOT_CALIBRATED",
+  "currentSourceTask": "r36.source-reconciliation",
+  "remainingEvidence": [
+    "Final dated locked SAP and amendment/data-lock chronology",
+    "Original CONSORT and randomized/treated/analysis populations",
+    "Matched HF SAE definitions and observation windows for11/1vs12/3",
+    "Treatment-interruption denominators for14(2.7%)"
+  ],
+  "aliasRouting": "Unchanged; automatic approval review rejected alias mutation. Use verified unique preview.",
+  "sourceSummarySha256": "566aaed41927ce800ad2fe9bd83aacb5e612b3b6eab30fa5c4d3d0dff58b6aca"
+}

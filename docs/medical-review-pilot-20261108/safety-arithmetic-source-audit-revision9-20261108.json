@@ -1,0 +1,234 @@
+{
+  "schema": "MAIN_ACACIA_NUMERICAL_SOURCE_RECONCILIATION_V1",
+  "exactNct": "NCT06081894",
+  "revision": 9,
+  "observed": "2026-11-08",
+  "clinicalSignoff": false,
+  "scoreEvents": 0,
+  "phaseVerified": false,
+  "outcomePrediction": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "certainty": "NOT_VALIDATED",
+  "randomizedArmSize": {
+    "aficamten": 258,
+    "placebo": 259
+  },
+  "note": "Arithmetic uses published randomized arm denominators for comparison only. Actual endpoint safety populations and exposure windows remain unverified. Calculated rates are not adjudicated adverse-event incidence estimates.",
+  "observations": [
+    {
+      "id": "HF_SAE_PUBLISHED",
+      "source": "SECONDARY_PEER_REVIEWED_ANALYSIS",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674601/",
+      "endpoint": "HEART_FAILURE_SERIOUS_ADVERSE_EVENT",
+      "treatment": 11,
+      "placebo": 1,
+      "denoms": [
+        258,
+        259
+      ],
+      "reportedPct": [
+        4.3,
+        0.4
+      ],
+      "timeWindow": "PUBLISHED_ANALYSIS_UNCONFIRMED_CUTOFF",
+      "status": "SOURCE_REPORTED",
+      "calculatedPct": [
+        4.3,
+        0.4
+      ],
+      "randomizedDenominatorAssumption": true,
+      "publishedPctConsistent": [
+        true,
+        true
+      ]
+    },
+    {
+      "id": "HF_SAE_LATER",
+      "source": "ISSUER_LATER_DISCLOSURE",
+      "url": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm",
+      "endpoint": "HEART_FAILURE_SERIOUS_ADVERSE_EVENT",
+      "treatment": 12,
+      "placebo": 3,
+      "denoms": [
+        258,
+        259
+      ],
+      "reportedPct": [
+        4.7,
+        1.2
+      ],
+      "timeWindow": "LATER_DISCLOSURE_UNCONFIRMED_CUTOFF",
+      "status": "SOURCE_REPORTED",
+      "calculatedPct": [
+        4.7,
+        1.2
+      ],
+      "randomizedDenominatorAssumption": true,
+      "publishedPctConsistent": [
+        true,
+        true
+      ]
+    },
+    {
+      "id": "LVEF_LT50_PUBLISHED",
+      "source": "SECONDARY_PEER_REVIEWED_ANALYSIS",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674601/",
+      "endpoint": "REVERSIBLE_LVEF_BELOW_50_PERCENT",
+      "treatment": 27,
+      "placebo": 2,
+      "denoms": [
+        258,
+        259
+      ],
+      "reportedPct": [
+        10.5,
+        0.8
+      ],
+      "status": "SOURCE_REPORTED",
+      "calculatedPct": [
+        10.5,
+        0.8
+      ],
+      "randomizedDenominatorAssumption": true,
+      "publishedPctConsistent": [
+        true,
+        true
+      ]
+    },
+    {
+      "id": "ANY_SAE_PUBLISHED",
+      "source": "SECONDARY_PEER_REVIEWED_ANALYSIS",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674601/",
+      "endpoint": "ALL_CAUSE_SERIOUS_ADVERSE_EVENT",
+      "treatment": 52,
+      "placebo": 38,
+      "denoms": [
+        258,
+        259
+      ],
+      "reportedPct": [
+        20.2,
+        14.7
+      ],
+      "status": "SOURCE_REPORTED",
+      "calculatedPct": [
+        20.2,
+        14.7
+      ],
+      "randomizedDenominatorAssumption": true,
+      "publishedPctConsistent": [
+        true,
+        true
+      ]
+    },
+    {
+      "id": "LVEF_INTERRUPTION_PUBLISHED",
+      "source": "SECONDARY_PEER_REVIEWED_ANALYSIS",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674601/",
+      "endpoint": "PROTOCOL_DEFINED_TREATMENT_INTERRUPTION",
+      "treatment": 14,
+      "placebo": 1,
+      "denoms": [
+        258,
+        259
+      ],
+      "reportedPct": [
+        2.7,
+        0.8
+      ],
+      "status": "PUBLISHED_NUMERATOR_PERCENTAGE_DISCORDANCE_REVIEW",
+      "calculatedPct": [
+        5.4,
+        0.4
+      ],
+      "randomizedDenominatorAssumption": true,
+      "publishedPctConsistent": [
+        false,
+        false
+      ]
+    },
+    {
+      "id": "LVEF_INTERRUPTION_SPONSOR",
+      "source": "ISSUER_EARLIER_DISCLOSURE",
+      "url": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526338217/cytk-20260630.htm",
+      "endpoint": "TREATMENT_INTERRUPTION_LVEF_LT40",
+      "treatment": null,
+      "placebo": null,
+      "denoms": [
+        258,
+        259
+      ],
+      "reportedPct": [
+        3,
+        null
+      ],
+      "status": "ROUNDED_SPONSOR_PERCENTAGE_ONLY",
+      "calculatedPct": [
+        null,
+        null
+      ],
+      "randomizedDenominatorAssumption": true,
+      "publishedPctConsistent": [
+        false,
+        null
+      ]
+    }
+  ],
+  "unresolvedChecks": [
+    {
+      "id": "REV9-001",
+      "type": "SOURCE_HEART_FAILURE_SAE_DIFFERENCE",
+      "reviewIds": [
+        "5.3",
+        "8.1",
+        "8.2"
+      ],
+      "earlier": {
+        "aficamten": 11,
+        "placebo": 1
+      },
+      "later": {
+        "aficamten": 12,
+        "placebo": 3
+      },
+      "status": "OPEN",
+      "next": "Obtain exact time window, MedDRA coding, SAE definition and adverse-event listing; ascertain cutoffs and final population."
+    },
+    {
+      "id": "REV9-002",
+      "type": "PUBLISHED_INTERRUPTION_NUMERATOR_PERCENTAGE_CONFLICT",
+      "reviewIds": [
+        "5.3",
+        "8.2"
+      ],
+      "published": {
+        "aficamten": "14 (2.7%)",
+        "placebo": "1 (0.8%)"
+      },
+      "computedOnRandomizedArms": {
+        "aficamtenPct": 5.4,
+        "placeboPct": 0.4
+      },
+      "status": "OPEN",
+      "next": "Verify original journal PDF/table, safety denominators, version corrections, and protocol interruption criteria. A separate report states 7 (2.7%); do not silently substitute."
+    },
+    {
+      "id": "REV9-003",
+      "type": "MAY_TOPLINE_AUG_FULL_PARTICIPANT_DIFFERENCE",
+      "reviewIds": [
+        "4.4",
+        "4.5"
+      ],
+      "mayTopline": 516,
+      "augustPublished": 517,
+      "status": "OPEN",
+      "next": "Request dated CONSORT and population membership accounting; verify randomized versus treated and Japan exclusion."
+    }
+  ],
+  "lockedSapAvailable": false,
+  "phaseAuthorization": false,
+  "sourceSummaryStatus": "ARITHMETIC_CHECK_COMPLETED_CLINICAL_ADJUDICATION_PENDING"
+}

@@ -1,0 +1,82 @@
+{
+  "schema": "MAIN_ACACIA_SOURCE_CHRONOLOGY_V8",
+  "revision": 8,
+  "updatedOn": "2026-11-08",
+  "nct": "NCT06081894",
+  "protocolCode": "CY 6033",
+  "historicalSources": [
+    {
+      "id": "ISSUER_2023_HFSA",
+      "date": "2023-10",
+      "sourceClass": "SPONSOR_HOSTED_CONTEMPORANEOUS_POSTER",
+      "url": "https://cytokinetics.com/wp-content/uploads/2023/10/Masri_HFSA23-ACACIA-HCM-Trial_poster_dk10-UPLOAD.pdf",
+      "singlePrimaryKccq": true,
+      "pvo2PartOfSecondary": true,
+      "plannedEnrollment": 420,
+      "sourceVisualReviewed": true
+    },
+    {
+      "id": "ISSUER_MAY_6_2025_ORIGINAL_RELEASE",
+      "date": "2025-05-06",
+      "sourceClass": "FIRST_PARTY_ISSUER_BUSINESS_UPDATE",
+      "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2025/Cytokinetics-Reports-First-Quarter-2025-Financial-Results-and-Provides-Business-Update-05-06-2025/default.aspx",
+      "companyAttributedRationale": "ALIGN_WITH_NON_US_REGULATOR_FEEDBACK",
+      "newDesignDualPrimary": true,
+      "plannedEnrollmentLowerBound": 500,
+      "alphaPerPrimary": 0.025,
+      "claimIndependentRegulatorVerified": false,
+      "supportingExecutiveTranscript": "https://www.marketbeat.com/earnings/reports/2025-5-6-cytokinetics-incorporated-stock/",
+      "exactSponsorAcknowledgmentOfEndpointRedesign": true,
+      "companyClaimUnchangedConductIndependentlyVerified": false,
+      "companyClaimGlobalRegulatorFeedbackIndependentlyVerified": false
+    },
+    {
+      "id": "NCT_REGISTRY_V27_METADATA",
+      "date": "2025-05-15",
+      "sourceClass": "OFFICIAL_REGISTRY_HISTORY_INDEX",
+      "url": "https://clinicaltrials.gov/study/NCT06081894?tab=history",
+      "outcomeMeasuresChanged": true,
+      "studyDesignChanged": true,
+      "originalVersionBodyCaptured": false
+    },
+    {
+      "id": "CTIS_AM04",
+      "date": "2025-10-28",
+      "sourceClass": "CAPTURED_PUBLIC_ORIGINAL_PROTOCOL",
+      "url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42525291355/artifacts/13634488398",
+      "originalProtocolSha256": "853ffd80a547df8a7b813b8985c7116dd6168a640f18521f61b95cf33a8ca5f8",
+      "dualPrimaryKccqAndPvo2": true,
+      "finalSignedSapAttached": false
+    }
+  ],
+  "historicalApiAttempt": {
+    "urlDomain": "www.clinicaltrials.gov",
+    "overview": "HTTP_403",
+    "versionIndices": [
+      25,
+      26,
+      28,
+      29
+    ],
+    "overviewHttpStatus": 403,
+    "individualVersionHttpStatuses": "NOT_VERIFIED_FROM_LOG",
+    "originalVersionBodiesCaptured": 0,
+    "run": "https://github.com/pdufa/pdufa-command-center/actions/runs/42527582798",
+    "sourceUnretrieved": true
+  },
+  "chronologyConclusion": "SPONSOR_SOURCE_CONFIRMATION_OF_SINGLE_TO_DUAL_PRIMARY_DESIGN_CHANGE",
+  "timingOfRegulatoryApprovalConfirmed": false,
+  "finalSapObtained": false,
+  "sapDatabaseLockDateConfirmed": false,
+  "regulatoryFeedbackIndependentlyVerified": false,
+  "clinicalIntegrityAdjudicated": false,
+  "phaseVerified": false,
+  "methodGrades": 0,
+  "approvalPredictions": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "certainty": "NOT_VALIDATED",
+  "outstandingPilotEvidenceQuestions": 7
+}

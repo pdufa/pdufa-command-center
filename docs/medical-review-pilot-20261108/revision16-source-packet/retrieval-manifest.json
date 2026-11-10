@@ -1,0 +1,90 @@
+{
+  "schema": "ACACIA_R16_PUBLIC_SOURCE_RECEIPTS_V1",
+  "nct": "NCT06081894",
+  "revision": 16,
+  "supersedes": null,
+  "previousRevision": "../reviewer-intake-revision15-20261108.md",
+  "receipts": [
+    {
+      "artifact": "fda-myqorzo-label.pdf",
+      "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/219083s000lbl.pdf",
+      "retrievedAt": "2026-11-08T23:55:22.885179+00:00",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "bytes": 3125037,
+      "sha256": "d90aed5fdec2ba10979194c950d9ca10444976b658156ac07847fe0be073f753",
+      "sourceStatus": "RETRIEVED_NOT_INDEPENDENTLY_ADJUDICATED"
+    },
+    {
+      "artifact": "cytokinetics-publications.html",
+      "sourceUrl": "https://cytokinetics.com/medicines-research/pipeline/publications/",
+      "retrievedAt": "2026-11-08T23:55:23.549415+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 61427,
+      "sha256": "dac7fabfd983a1b1ac26208b44a5bfdc5c17d315c22b4bdbda0d16f46417232a",
+      "sourceStatus": "RETRIEVED_NOT_INDEPENDENTLY_ADJUDICATED"
+    },
+    {
+      "artifact": "fda-drug-trial-snapshot.html",
+      "sourceUrl": "https://www.fda.gov/drugs/drug-trials-snapshots/drug-trials-snapshots-myqorzo",
+      "retrievedAt": "2026-11-08T23:55:23.900405+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=UTF-8",
+      "bytes": 49537,
+      "sha256": "c20e2a3d61391b7d4130fb08d268cfd96817787cd9fc877a8e046394c6584b16",
+      "sourceStatus": "RETRIEVED_NOT_INDEPENDENTLY_ADJUDICATED"
+    },
+    {
+      "artifact": "openfda-aficamten-applications.json",
+      "sourceUrl": "https://api.fda.gov/drug/drugsfda.json?search=products.active_ingredients.name:%22AFICAMTEN%22&limit=100",
+      "retrievedAt": "2026-11-08T23:55:24.458143+00:00",
+      "httpStatus": 200,
+      "contentType": "application/json; charset=utf-8",
+      "bytes": 5353,
+      "sha256": "fa578c510272ac9e5524f6a722587a5882282d633ec8a6029e5fcefe8f560abd",
+      "sourceStatus": "RETRIEVED_NOT_INDEPENDENTLY_ADJUDICATED"
+    },
+    {
+      "artifact": "acacia-cmr-hcms-20261106.pdf",
+      "sourceUrl": "https://cytokinetics.com/wp-content/uploads/2026/11/Masri_2026_HCMS_ACACIA-HCM-CMR.pdf",
+      "retrievedAt": "2026-11-08T23:56:04.033739+00:00",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "bytes": 1055627,
+      "sha256": "4dc9238de7e221dd94356eeab8a1aafc97f858e48c53b940bc34f7c912cb2b81",
+      "sourceStatus": "RETRIEVED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "publicationDate": "2026-11-06"
+    },
+    {
+      "artifact": "acacia-kccq-hcms-20261106.pdf",
+      "sourceUrl": "https://cytokinetics.com/wp-content/uploads/2026/11/AHA-HCMS26-ACACIA-KCCQ_PRO-oral_final.pdf",
+      "retrievedAt": "2026-11-08T23:56:04.544639+00:00",
+      "httpStatus": 200,
+      "contentType": "application/pdf",
+      "bytes": 740130,
+      "sha256": "c96b4f8e1699871472a3a0c356e143b0d994a2366100b1b66c08a520df57e5fd",
+      "sourceStatus": "RETRIEVED_NOT_INDEPENDENTLY_ADJUDICATED",
+      "publicationDate": "2026-11-06"
+    },
+    {
+      "artifact": null,
+      "sourceUrl": "https://jrct.mhlw.go.jp/latest-detail/jRCT2031250066",
+      "retrievedAt": "2026-11-08T23:56:53.128485+00:00",
+      "httpStatus": 403,
+      "sourceStatus": "UNAVAILABLE_FROM_THIS_REQUEST"
+    },
+    {
+      "artifact": "invima-colombia-acacia.html",
+      "sourceUrl": "https://www.invima.gov.co/estudio/20241173982-un-estudio-multic%C3%A9ntrico-aleatorizado-doble-ciego-de-fase-3-para-evaluar-la-eficacia-y-s",
+      "retrievedAt": "2026-11-08T23:56:53.596130+00:00",
+      "httpStatus": 200,
+      "contentType": "text/html; charset=utf-8",
+      "bytes": 96120,
+      "sha256": "2821f922c6548e8963b455752dd5a87917d217051bd5908a07fd96404d385475",
+      "sourceStatus": "RETRIEVED_NOT_INDEPENDENTLY_ADJUDICATED"
+    }
+  ],
+  "gradeEventsWritten": 0,
+  "phaseEventsWritten": 0
+}

@@ -1,0 +1,93 @@
+name: MAIN R45 FOCUS current primary endpoint text source audit
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-focus-endpoint-concordance-r45.yml
+      - new-platform/backend/scripts/build_focus_registry_endpoint_concordance_r45.py
+      - new-platform/backend/tests/test_focus_registry_endpoint_concordance_r45.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+concurrency:
+  group: main-r45-focus-endpoint-research
+  cancel-in-progress: false
+
+jobs:
+  original-registry-current-endpoint-snapshot:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify exact source snapshot membership and current-outcome anti-overclaim tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python -m pip install pytest
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_focus_registry_endpoint_concordance_r45.py tests/test_focus_registry_safety_r44.py tests/test_hop_blinded_phase3_backtest.py
+          PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
+      - name: Retrieve 29 original current registry records and compare registered/posted primary text
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r45-primary/original"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_focus_registry_endpoint_concordance_r45.py \
+            --output "$RUNNER_TEMP/r45-primary/current_registry_primary_text_review.json" \
+            --raw-dir "$RUNNER_TEMP/r45-primary/original"
+      - name: Verify hash and keep clinical release gates closed
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,hashlib,os
+          from pathlib import Path
+          d=Path(os.environ["RUNNER_TEMP"])/"r45-primary"
+          payload=(d/"current_registry_primary_text_review.json").read_bytes()
+          r=json.loads(payload)
+          assert r["nctCount"]==29 and r["applicationCount"]==23
+          assert len(r["records"])==29 and len({x["nct"] for x in r["records"]})==29
+          assert r["qualifiedClinicalSignoffs"]==0 and r["scientificGrades"]==0
+          assert r["independentlyValidatedFdaForecasts"]==0
+          assert r["historicalIndependentBacktests"]==0
+          assert r["calibratedAccuracy"] is None and r["numericalFdaProbability"] is None
+          assert r["officialFutureOutcome"]=="ABSTAIN"
+          assert r["officialFutureReviewTiming"]=="ABSTAIN"
+          assert r["modelTrainingAuthorized"] is False
+          assert r["productionOrReviewerWrites"] is False
+          for row in r["records"]:
+            if row.get("sourceResponseSha256"):
+              original=(d/"original"/(row["nct"]+".json")).read_bytes()
+              assert hashlib.sha256(original).hexdigest()==row["sourceResponseSha256"]
+          lines=["## MAIN R45 current registry primary endpoint text audit",
+            f'Exact source NCT records: {r["sourceFetched"]}/29',
+            f'Current registry results modules: {r["trialsWithResults"]}/29',
+            f'Primary outcome entries registered CURRENTLY: {r["currentRegisteredPrimaryCount"]}',
+            f'Primary result tables posted CURRENTLY: {r["postedPrimaryCount"]}',
+            f'Exact CURRENT title and timeframe matches: {r["currentExactTitleTimeFrameCount"]}',
+            f'Current title-only timeframe discrepancies: {r["titleOnlyTimeFrameDifferences"]}',
+            f'Unmatched posted primary outcomes: {r["unmatchedPostedPrimary"]}',
+            f'Receipt SHA-256: {hashlib.sha256(payload).hexdigest()}',
+            "This is current-record concordance, NOT pre-readout locked SAP verification.",
+            "Independent clinical scores, historical backtests and validated FDA predictions: 0."]
+          print("\n".join(lines))
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:f.write("\n\n".join(lines)+"\n")
+          PY
+      - name: Archive original source bytes and source-only reconciliation
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r45-current-registered-posted-original-sources-${{ github.run_id }}
+          path: ${{ runner.temp }}/r45-primary/
+          retention-days: 90
+          if-no-files-found: error

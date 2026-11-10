@@ -1,0 +1,125 @@
+name: MAIN R69 original registry publication leads on evidence dashboard
+
+# Draft branch and source-only. A DERIVED PubMed reference is NOT a signed
+# clinical evidence grade, an exact pivotal-trial match or an FDA forecast.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r69-original-publication-dashboard.yml
+      - new-platform/backend/scripts/verify_r69_original_literature_ui_parity.py
+      - new-platform/frontend/data/focus-r69-original-pubmed-leads.json
+      - new-platform/frontend/lib/focus-r69-original-publication-leads.ts
+      - new-platform/frontend/app/predictions/evidence-gaps/OriginalPublicationLeadsR69.tsx
+      - new-platform/frontend/app/predictions/evidence-gaps/OriginalPublicationLeadsR69.module.css
+      - new-platform/frontend/app/predictions/evidence-gaps/EvidenceRecoveryBoardR68.tsx
+      - new-platform/frontend/tests/focus-r69-original-publication-leads.test.cjs
+      - new-platform/frontend/scripts/verify-r69-original-pubmed-browser.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r69-immutable-pubmed-citation-ui
+  cancel-in-progress: false
+
+jobs:
+  original-citation-parity-and-responsive-browser:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Preserve 29-NCT and 23-application identities and retired scanner safety
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Recover original R69 immutable 17-trial registry listed PubMed research
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42727350931
+          name: main-r69-exact-registry-pubmed-leads-42727350931
+          path: ${{ runner.temp }}/r69/original
+      - name: Confirm every displayed PMID, original receipt and no-science certification against original research
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/verify_r69_original_literature_ui_parity.py \
+            --original "$RUNNER_TEMP/r69/original/FOCUS_17_ORIGINAL_PUBMED_REFERENCE_RECOVERY_R69.json" \
+            --frontend new-platform/frontend/data/focus-r69-original-pubmed-leads.json
+      - name: Test fail-closed evidence leads and preserve existing R68 source-gap model
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r69-original-publication-leads.test.cjs tests/focus-r68-evidence-recovery.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Install isolated Chromium for mobile and desktop source-lead navigation
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Check research leads, linked exact PMID URLs and nonvalidated state in browser
+        working-directory: new-platform/frontend
+        shell: bash
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/r69-browser
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECEIPT_DIR"
+          npm run start -- --port 3157 > "$RECEIPT_DIR/next.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 50); do
+            if curl -fsS --max-time 5 http://127.0.0.1:3157/predictions/evidence-gaps -o /dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$ready" != 1 ]]; then
+            echo "::error::Evidence recovery Next.js route did not become healthy."
+            tail -n 80 "$RECEIPT_DIR/next.log"
+            exit 1
+          fi
+          node scripts/verify-r69-original-pubmed-browser.cjs
+          cat "$RECEIPT_DIR/R69_BROWSER_RESULTS.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Archive local browser evidence and viewport screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r69-original-pubmed-local-browser-${{ github.run_id }}
+          path: ${{ runner.temp }}/r69-browser/
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Record unverified publications, not predictions
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo "## MAIN R69 original registry-listed PubMed research leads"
+            echo
+            echo "17 original registry NCTs lacked posted primary tables; seven listed 11 DERIVED PubMed reference IDs, ten had no such publication references in those frozen copies. Exact publication-to-NCT match and pivotal efficacy relevance are NOT independently verified."
+            echo
+            echo "29 exact FOCUS NCTs; 23 provisional application groups. All original R68 source counts preserved. Zero expert review signoffs, zero verified source-derived FDA forecasts and no historical measured accuracy. ABSTAIN. No production or model changes."
+          } >> "$GITHUB_STEP_SUMMARY"

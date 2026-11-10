@@ -1,0 +1,112 @@
+name: MAIN R69 original public registry listed PubMed lead recovery
+
+# Literal DERIVED reference leads in original ClinicalTrials.gov JSON only.
+# Never auto-classifies PubMed references as exact trial primary results,
+# efficacy, regulatory review status, independent clinical signoff or forecasts.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r69-original-publication-reference-recovery.yml
+      - new-platform/backend/scripts/build_focus_original_literature_leads_r69.py
+      - new-platform/backend/tests/test_focus_original_literature_leads_r69.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r69-original-publication-lead-research
+  cancel-in-progress: false
+
+jobs:
+  source-locked-original-registry-reference-intake:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Preserve exact FOCUS 29 NCT and 23 FDA application edges
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Recover immutable original R53 ClinicalTrials.gov registry bodies and R46 receipts
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42696796318
+          name: main-r53-original-public-protocol-sap-pdf-42696796318
+          path: ${{ runner.temp }}/r69/original
+      - name: Recover independent R66 29-trial phase source SHA receipts
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42720903307
+          name: main-r66-exact-29-registry-phase-evidence-42720903307
+          path: ${{ runner.temp }}/r69/r66
+      - name: Test exact reference identity, 17 missing-primary cases and fabricated scientific claims
+        working-directory: new-platform/backend
+        env:
+          R69_R46: ${{ runner.temp }}/r69/original/current_registry_document_index.json
+          R69_R66: ${{ runner.temp }}/r69/r66/FOCUS_29_ORIGINAL_REGISTRY_PHASE_EVIDENCE_R66.json
+          R69_REGISTRY_DIR: ${{ runner.temp }}/r69/original/public-registry-original
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m pip install 'pytest>=8,<10'
+          PYTHONPATH=. python -m pytest -q tests/test_focus_original_literature_leads_r69.py
+      - name: Assemble unsigned exact-NCT original 11-registry-publication leads
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r69/research"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_focus_original_literature_leads_r69.py \
+            --r46 "$RUNNER_TEMP/r69/original/current_registry_document_index.json" \
+            --r66 "$RUNNER_TEMP/r69/r66/FOCUS_29_ORIGINAL_REGISTRY_PHASE_EVIDENCE_R66.json" \
+            --original-registry-dir "$RUNNER_TEMP/r69/original/public-registry-original" \
+            --output "$RUNNER_TEMP/r69/research/FOCUS_17_ORIGINAL_PUBMED_REFERENCE_RECOVERY_R69.json" \
+            --summary "$RUNNER_TEMP/r69/research/FOCUS_17_ORIGINAL_PUBMED_REFERENCE_RECOVERY_R69.md"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          base=Path(os.environ["RUNNER_TEMP"])/"r69/research"
+          r=json.loads((base/"FOCUS_17_ORIGINAL_PUBMED_REFERENCE_RECOVERY_R69.json").read_bytes())
+          assert r["schema"]=="MAIN_R69_ORIGINAL_REGISTRY_PUBMED_REFERENCE_LEAD_RECOVERY"
+          assert r["canonicalUniqueNcts"]==29 and r["provisionalApplicationCycles"]==23
+          assert r["originalRegistryNoCurrentPrimaryTrials"]==17
+          assert r["missingPrimaryTrialsWithPubmedReferenceLeads"]==7
+          assert r["missingPrimaryTrialsWithoutPubmedReferenceLeads"]==10
+          assert r["registryListedUnverifiedPubmedReferences"]==11
+          assert r["independentlyVerifiedArticlesReportingExactTrialPrimary"]==0
+          assert r["independentlyQualifiedReviewerAssessments"]==0
+          assert r["validatedFutureFDAForecasts"]==0
+          assert r["FDAOutcome"]=="ABSTAIN"
+          assert r["measuredPredictionAccuracy"] is None
+          assert r["registryReferenceCannotEstablishTrialEfficacy"] is True
+          assert r["externalArticlesNotFetchedOrContentAdjudicated"] is True
+          assert r["historicalBacktestDataInspected"] is False
+          assert r["modelTrainingOrProductionWrites"] is False
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+            f.write("## R69 original PubMed reference recovery\n\n")
+            f.write("17 exact NCTs with no primary result table in retained original registry copy. Seven exact NCTs have 11 registry-listed PubMed (DERIVED) leads; ten none.\n\n")
+            f.write("**No original articles were retrieved or adjudicated as exact-NCT pivotal outcome reports.** Zero signed science grades, zero qualified reviewer verifications, zero validated FDA outcome predictions, accuracy unavailable, ABSTAIN. No model or production writes.\n\n")
+            f.write((base/"FOCUS_17_ORIGINAL_PUBMED_REFERENCE_RECOVERY_R69.md").read_text())
+          PY
+      - name: Archive read-only original PubMed source lead worklist
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r69-exact-registry-pubmed-leads-${{ github.run_id }}
+          path: ${{ runner.temp }}/r69/research/
+          retention-days: 90
+          if-no-files-found: error

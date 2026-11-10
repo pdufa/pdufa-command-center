@@ -1,0 +1,92 @@
+{
+  "schema": "MAIN_ACACIA_REGULATORY_PUBLIC_SOURCE_CHECK_V1",
+  "nct": "NCT06081894",
+  "protocol": "CY 6033",
+  "indication": "adult symptomatic nonobstructive hypertrophic cardiomyopathy",
+  "retrievedAt": "2026-11-09T13:41:23.186064+00:00",
+  "sourceCutoffDate": "2026-11-09",
+  "checkpointBefore": "13b3dae5cd8bfb003430e03f56bff58caf1da70c",
+  "purpose": "Dated original-public-source regulatory crosscheck, not an independently adjudicated clinical or regulatory outcome label.",
+  "conclusion": {
+    "submission": "SPONSOR_PLAN_Q4_2026_REAFFIRMED_NOVEMBER_9",
+    "exactIndicationFilingVerified": false,
+    "exactIndicationAcceptanceVerified": false,
+    "exactIndicationActionDate": null,
+    "interpretation": "The latest inspected original sponsor disclosure still describes a future filing. No original exact-nHCM submission/acceptance document was obtained. This does not prove that no confidential submission exists or that a later public update cannot occur.",
+    "excludedDate": {"date": "2026-11-14", "reason": "Issuer's November 4 10-Q associates this PDUFA date with the MAPLE-HCM obstructive-HCM supplemental application, not ACACIA-HCM nonobstructive HCM."}
+  },
+  "documents": [
+    {
+      "id": "SPONSOR_NOVEMBER_9_ORIGINAL",
+      "url": "https://ir.cytokinetics.com/press-releases/press-release-details/2026/Cytokinetics-Announces-Additional-Data-Related-to-Aficamten-Presented-at-the-Hypertrophic-Cardiomyopathy-Medical-Society-HCMS-Scientific-Sessions-Held-in-Collaboration-with-the-American-Heart-Association-Scientific-Sessions-2026/default.aspx",
+      "title": "Cytokinetics Announces Additional Data Related to Aficamten Presented at the Hypertrophic Cardiomyopathy Medical Society (HCMS) Scientific Sessions Held in Collaboration with the American Heart Association Scientific Sessions 2026",
+      "publicationDate": "2026-11-09",
+      "publicAvailabilityTime": null,
+      "version": "Public sponsor release dated November 9, 2026; mutable webpage",
+      "sourceType": "ORIGINAL_SPONSOR_DISCLOSURE",
+      "association": "ACACIA-HCM nonobstructive HCM; separate FOREST obstructive-HCM discussion excluded from pilot safety findings",
+      "obtained": "Public web reader provided original-page text. About Cytokinetics section reaffirms the planned Q4 2026 nHCM supplemental application. This is a new dated source, rather than an independent replication of the trial.",
+      "scientificHandoff": "KCCQ-OSS is a broader reported health-status measure than the primary KCCQ-CSS. Sponsor reports a 4.0-point week-36 OSS difference and loss of between-group difference after treatment withdrawal. CMR sub-study findings require their own original methods and missingness review; no grade follows from this release.",
+      "limitations": ["Sponsor-authored summaries; not FDA acceptance, a final SAP, clinical study report, CONSORT diagram, or independently reviewed result.", "Exact original HTML bytes were not obtained by standard direct HTTP: 403. Web-reader text is not an exact-byte archive.", "No exact publication time supplied by the inspected original webpage; do not invent a time for leakage-sensitive analyses."],
+      "exactBytesCaptured": false,
+      "sha256": null,
+      "directHttpStatus": 403
+    },
+    {
+      "id": "SEC_NOVEMBER_4_10Q_RECHECK",
+      "url": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm",
+      "title": "Cytokinetics Form 10-Q, quarter ended September 30, 2026",
+      "publicationDate": "2026-11-04",
+      "publicAvailabilityTime": null,
+      "version": "SEC accession 0001193125-26-447408",
+      "sourceType": "ORIGINAL_SEC_ISSUER_FILING",
+      "association": "ACACIA-HCM nHCM plan distinguished from MAPLE-HCM oHCM accepted supplement",
+      "obtained": "Re-read original filing sections covering MYQORZO and ACACIA-HCM. Issuer plans an nHCM submission in Q4 and says filing acceptance remains subject to FDA review. November 14 action date concerns MAPLE-HCM oHCM.",
+      "limitations": ["Previously collected source, reexamined for indication association; not counted as newly recovered evidence.", "Issuer disclosure does not establish exact-nHCM FDA receipt or acceptance. No byte hash is asserted for web-reader text."],
+      "exactBytesCapturedThisCheck": false,
+      "sha256": null
+    },
+    {
+      "id": "SEC_NOVEMBER_4_EXHIBIT_RECHECK",
+      "url": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447198/cytk-ex99_1.htm",
+      "title": "Exhibit 99.1: Cytokinetics Reports Third Quarter 2026 Financial Results and Provides Business Update",
+      "publicationDate": "2026-11-04",
+      "publicAvailabilityTime": null,
+      "version": "SEC accession 0001193125-26-447198, Exhibit 99.1",
+      "sourceType": "ORIGINAL_SEC_SPONSOR_EXHIBIT",
+      "association": "ACACIA-HCM nHCM planned supplemental filing",
+      "obtained": "Original exhibit also reports a planned Q4 nHCM filing. Same sponsor and underlying program, not independent confirmation of regulatory acceptance.",
+      "limitations": ["Existing issuer evidence rechecked; no new clinical trial or FDA document. Exact bytes not captured this check."],
+      "exactBytesCapturedThisCheck": false,
+      "sha256": null
+    },
+    {
+      "id": "FDA_ORIGINAL_OBSTRUCTIVE_APPROVAL_LETTER",
+      "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219083Orig1s000ltr.pdf",
+      "title": "Myqorzo (aficamten) tablets: NDA 219083 approval letter",
+      "documentSignedDate": "2025-12-19",
+      "publicPostingDateVerified": false,
+      "publicationDate": null,
+      "version": "219083Orig1s000; FDA Reference ID 5715575",
+      "sourceType": "ORIGINAL_FDA_DOCUMENT",
+      "association": "Adults with symptomatic obstructive HCM; not the ACACIA-HCM nonobstructive indication",
+      "obtained": "Original FDA letter text specifies obstructive HCM and records approval of that application. Its signed date is December 19, 2025. It does not establish an ACACIA-HCM nHCM application outcome.",
+      "limitations": ["Original FDA regulatory context only; exclude this obstructive indication from an exact-nHCM outcome label.", "The signed date is not a verified public posting timestamp. Exact PDF bytes not captured this check; no hash asserted."],
+      "exactBytesCapturedThisCheck": false,
+      "sha256": null
+    }
+  ],
+  "searchObservations": [
+    {"query": "site.fda.gov aficamten nonobstructive ACACIA 2026 application", "result": "Inspected original FDA product material concerns obstructive HCM; no exact-nHCM receipt/acceptance record obtained. Search coverage is not proof of absence."},
+    {"query": "site.ir.cytokinetics.com non-obstructive accepted 2026 NDA", "result": "Original issuer sources distinguish the MAPLE accepted supplement and planned ACACIA nHCM filing."},
+    {"query": "site.ir.cytokinetics.com November 9, 2026 Supplemental", "result": "New same-day original release continues planned-Q4 language; no exact acceptance document acquired."}
+  ],
+  "coverage": {"existingMappedMethodLeadsBefore": 18, "existingMappedMethodLeadsAfter": 18, "officialMethodGradesBefore": 0, "officialMethodGradesAfter": 0, "phaseSignoffsCreated": 0},
+  "fdaPredictions": {"APPROVAL": "ABSTAIN", "CRL": "ABSTAIN", "REVIEW_DELAY": "ABSTAIN"},
+  "certainty": "NOT_VALIDATED",
+  "accuracy": "NOT_CALIBRATED",
+  "nextDependency": "Obtain an original exact-nHCM application receipt/filing-acceptance or subsequent public regulatory disclosure, with actual public availability date and indication association, before enabling action-date or outcome claims.",
+  "restrictedDataRequestsSent": 0,
+  "clinicalReviewerWrites": 0,
+  "productionChanges": 0
+}

@@ -1,0 +1,379 @@
+{
+  "schema": "MAIN_R44_PINNED_ORIGINAL_REGISTRY_SAFETY_PUBLICATION",
+  "asOf": "2026-11-09",
+  "observedAtUtc": "2026-11-09T17:21:54+00:00",
+  "sourceRunId": 42663832735,
+  "sourceArtifactId": 13695013486,
+  "sourceArtifactUrl": "https://github.com/pdufa/pdufa-command-center/actions/runs/42663832735/artifacts/13695013486",
+  "sourceArtifactExpiresAt": "2027-02-07T17:21:36Z",
+  "originalResearchReceiptSha256": "7cf71efffaf9cc46446e75cd4a8be60c13783b5121e8d0d4650582b3d71340ab",
+  "counts": {
+    "trials": 29,
+    "applicationCycles": 23,
+    "registryFetched": 29,
+    "registryResultSections": 12,
+    "registryAdverseEventsModules": 12,
+    "withoutCurrentRegistryResults": 17,
+    "seriousEventTermRows": 244,
+    "otherEventTermRows": 202,
+    "eventGroupRows": 28,
+    "independentlySignedClinicalGrades": 0,
+    "validatedApplicationFdaForecasts": 0,
+    "realHistoricalBacktests": 0
+  },
+  "sourceResearchOnly": true,
+  "sourcePublicationChronologyIndependentlyVerified": false,
+  "clinicalSafetyAdjudicated": false,
+  "numericalApprovalProbability": null,
+  "calibratedFdaAccuracy": null,
+  "officialFutureFdaForecast": "ABSTAIN",
+  "officialFutureReviewDelayForecast": "ABSTAIN",
+  "columns": [
+    "groupName",
+    "seriousAffected",
+    "seriousAtRisk",
+    "deathsAffected",
+    "deathsAtRisk",
+    "otherAffected",
+    "otherAtRisk"
+  ],
+  "posted": [
+    {
+      "nct": "NCT05507203",
+      "seriousEventTerms": 14,
+      "otherEventTerms": 5,
+      "groups": [
+        [
+          "ABX464 50mg",
+          14,
+          318,
+          0,
+          318,
+          90,
+          318
+        ],
+        [
+          "ABX464 25mg",
+          1,
+          160,
+          0,
+          160,
+          34,
+          160
+        ],
+        [
+          "Placebo",
+          3,
+          158,
+          0,
+          158,
+          28,
+          158
+        ]
+      ]
+    },
+    {
+      "nct": "NCT05507216",
+      "seriousEventTerms": 13,
+      "otherEventTerms": 5,
+      "groups": [
+        [
+          "ABX464 50mg",
+          6,
+          318,
+          0,
+          318,
+          115,
+          318
+        ],
+        [
+          "ABX464 25mg",
+          6,
+          159,
+          0,
+          159,
+          40,
+          159
+        ],
+        [
+          "Placebo",
+          7,
+          159,
+          0,
+          159,
+          32,
+          159
+        ]
+      ]
+    },
+    {
+      "nct": "NCT04576949",
+      "seriousEventTerms": 26,
+      "otherEventTerms": 20,
+      "groups": [
+        [
+          "Placebo + Behavioral Support",
+          3,
+          270,
+          0,
+          270,
+          98,
+          270
+        ],
+        [
+          "6 Week Cytisinicline + 6 Week Placebo + Behavioral Support",
+          10,
+          269,
+          1,
+          269,
+          114,
+          269
+        ],
+        [
+          "12 Week Cytisinicline + Behavioral Support",
+          8,
+          270,
+          0,
+          270,
+          118,
+          270
+        ]
+      ]
+    },
+    {
+      "nct": "NCT05206370",
+      "seriousEventTerms": 23,
+      "otherEventTerms": 27,
+      "groups": [
+        [
+          "Placebo + Behavioral Support",
+          8,
+          262,
+          0,
+          262,
+          110,
+          262
+        ],
+        [
+          "6-Week Cytisinicline + 6-Week Placebo + Behavioral Support",
+          8,
+          263,
+          1,
+          263,
+          132,
+          263
+        ],
+        [
+          "12-Week Cytisinicline + Behavioral Support",
+          8,
+          260,
+          3,
+          260,
+          137,
+          260
+        ]
+      ]
+    },
+    {
+      "nct": "NCT05811247",
+      "seriousEventTerms": 20,
+      "otherEventTerms": 13,
+      "groups": [
+        [
+          "AD109",
+          5,
+          328,
+          0,
+          328,
+          220,
+          328
+        ],
+        [
+          "Placebo",
+          10,
+          327,
+          0,
+          327,
+          122,
+          327
+        ]
+      ]
+    },
+    {
+      "nct": "NCT05813275",
+      "seriousEventTerms": 19,
+      "otherEventTerms": 7,
+      "groups": [
+        [
+          "AD109",
+          5,
+          325,
+          0,
+          325,
+          176,
+          325
+        ],
+        [
+          "Placebo",
+          8,
+          319,
+          0,
+          319,
+          50,
+          319
+        ]
+      ]
+    },
+    {
+      "nct": "NCT03697109",
+      "seriousEventTerms": 50,
+      "otherEventTerms": 43,
+      "groups": [
+        [
+          "Relacorilant (OL Phase)",
+          29,
+          152,
+          2,
+          152,
+          147,
+          152
+        ],
+        [
+          "Relacorilant (RW Phase)",
+          5,
+          30,
+          0,
+          30,
+          22,
+          30
+        ],
+        [
+          "Placebo (RW Phase)",
+          1,
+          32,
+          0,
+          32,
+          27,
+          32
+        ]
+      ]
+    },
+    {
+      "nct": "NCT04308590",
+      "seriousEventTerms": 17,
+      "otherEventTerms": 34,
+      "groups": [
+        [
+          "Relacorilant",
+          15,
+          68,
+          1,
+          68,
+          65,
+          68
+        ],
+        [
+          "Placebo",
+          4,
+          69,
+          0,
+          69,
+          60,
+          69
+        ]
+      ]
+    },
+    {
+      "nct": "NCT05767346",
+      "seriousEventTerms": 19,
+      "otherEventTerms": 13,
+      "groups": [
+        [
+          "Aficamten",
+          7,
+          88,
+          1,
+          88,
+          46,
+          88
+        ],
+        [
+          "Metoprolol",
+          6,
+          87,
+          0,
+          87,
+          43,
+          87
+        ]
+      ]
+    },
+    {
+      "nct": "NCT04544293",
+      "seriousEventTerms": 24,
+      "otherEventTerms": 21,
+      "groups": [
+        [
+          "Molgramostim",
+          14,
+          81,
+          0,
+          81,
+          69,
+          81
+        ],
+        [
+          "Placebo",
+          20,
+          83,
+          0,
+          83,
+          71,
+          83
+        ]
+      ]
+    },
+    {
+      "nct": "NCT06331299",
+      "seriousEventTerms": 5,
+      "otherEventTerms": 10,
+      "groups": [
+        [
+          "UGN-103",
+          2,
+          99,
+          0,
+          99,
+          59,
+          99
+        ]
+      ]
+    },
+    {
+      "nct": "NCT04716231",
+      "seriousEventTerms": 14,
+      "otherEventTerms": 4,
+      "groups": [
+        [
+          "Atacicept Dose 150mg",
+          1,
+          214,
+          0,
+          214,
+          81,
+          214
+        ],
+        [
+          "Placebo to Match Atacicept (Part C/D)",
+          11,
+          214,
+          0,
+          214,
+          34,
+          214
+        ]
+      ]
+    }
+  ],
+  "warning": "Reported source arm-level totals are not necessarily comparable, including multi-dose, crossover and open-label groups. Events are not unique patients when summed by term. ClinicalTrials.gov posted safety is not a complete integrated safety summary."
+}

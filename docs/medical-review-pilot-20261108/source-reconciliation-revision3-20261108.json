@@ -1,0 +1,194 @@
+{
+  "schema": "MAIN_MEDICAL_SOURCE_RECONCILIATION_ISSUES_V1",
+  "pilotId": "MAIN-MEDICAL-PILOT-NCT06081894-20261108",
+  "nct": "NCT06081894",
+  "revision": 3,
+  "previousRevision": 2,
+  "observedDate": "2026-11-08",
+  "state": "RESEARCH_REVIEW_ONLY_NO_SIGNOFF",
+  "originalSourceCapturePreserved": true,
+  "verifiedCurrentClinicalPhase": false,
+  "clinicalSignoff": false,
+  "gradedScientificMethods": 0,
+  "scoredAssessments": 0,
+  "fdaPredictions": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "certainty": "NOT_VALIDATED",
+  "sourceReferences": [
+    {
+      "id": "PUB-MAIN",
+      "kind": "publisher_primary_article",
+      "url": "https://www.nejm.org/doi/10.1056/NEJMoa2603021",
+      "access": "INDEXED_ABSTRACT_ONLY",
+      "contentsVerified": false
+    },
+    {
+      "id": "PUB-PROTOCOL",
+      "kind": "publisher_protocol",
+      "url": "https://www.nejm.org/doi/suppl/10.1056/NEJMoa2603021/suppl_file/nejmoa2603021_protocol.pdf",
+      "access": "LISTED_BY_PUBLISHER_DIRECT_FETCH_UNAVAILABLE",
+      "contentsVerified": false
+    },
+    {
+      "id": "PUB-APPENDIX",
+      "kind": "publisher_supplemental_appendix",
+      "url": "https://www.nejm.org/doi/suppl/10.1056/NEJMoa2603021/suppl_file/nejmoa2603021_appendix.pdf",
+      "access": "LISTED_BY_PUBLISHER_DIRECT_FETCH_UNAVAILABLE",
+      "contentsVerified": false
+    },
+    {
+      "id": "RESPONDER-OPEN",
+      "kind": "peer_reviewed_secondary_fulltext",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674601/",
+      "access": "OPEN_HTML_TEXT_INSPECTED",
+      "contentsVerified": false,
+      "independentReplication": false
+    },
+    {
+      "id": "SPONSOR-HFSA",
+      "kind": "sponsor_release",
+      "url": "https://www.globenewswire.com/news-release/2026/10/12/3379213/0/en/cytokinetics-announces-additional-data-from-acacia-hcm-presented-at-the-hfsa-annual-scientific-meeting-2026.html",
+      "access": "PUBLIC_RELEASE"
+    },
+    {
+      "id": "SPONSOR-SEC",
+      "kind": "issuer_regulatory_disclosure",
+      "url": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm",
+      "access": "PUBLIC_10Q"
+    }
+  ],
+  "issues": [
+    {
+      "id": "ACACIA-REV3-001",
+      "category": "ORIGINAL_PROTOCOL_SAP_UNAVAILABLE",
+      "priority": "CRITICAL",
+      "state": "INDEPENDENT_REVIEW_BLOCKED",
+      "assessmentIds": [
+        "4.1",
+        "4.2",
+        "4.3",
+        "4.4",
+        "4.5",
+        "5.1",
+        "5.2"
+      ],
+      "evidence": [
+        "PUB-PROTOCOL",
+        "PUB-APPENDIX"
+      ],
+      "nextAction": "Obtain publisher's legitimate original protocol, amendments, appendix and final signed SAP; validate version identity and filing dates."
+    },
+    {
+      "id": "ACACIA-REV3-002",
+      "category": "SAFETY_EVENT_COUNTS_REQUIRE_RECONCILIATION",
+      "priority": "CRITICAL",
+      "state": "UNRESOLVED_SOURCE_DIFFERENCE",
+      "assessmentIds": [
+        "5.3",
+        "8.1",
+        "8.2"
+      ],
+      "evidence": [
+        "RESPONDER-OPEN",
+        "SPONSOR-HFSA",
+        "SPONSOR-SEC"
+      ],
+      "reported": {
+        "responderPaper": {
+          "aficamten": 11,
+          "placebo": 1
+        },
+        "sponsorSubsequent": {
+          "aficamten": 12,
+          "placebo": 3
+        }
+      },
+      "nextAction": "Reconcile HF SAE coding, treatment-period cutoffs, database lock and safety populations; no assumption of sponsor error."
+    },
+    {
+      "id": "ACACIA-REV3-003",
+      "category": "SAFETY_PERCENTAGE_DENOMINATOR_MISMATCH",
+      "priority": "HIGH",
+      "state": "SOURCE_PRESENTATION_REVIEW_REQUIRED",
+      "assessmentIds": [
+        "5.3",
+        "8.2"
+      ],
+      "evidence": [
+        "RESPONDER-OPEN"
+      ],
+      "reported": {
+        "aficamten": "14 (2.7%)",
+        "placebo": "1 (0.8%)",
+        "randomizedArms": [
+          258,
+          259
+        ]
+      },
+      "nextAction": "Check original table and denominators and whether published text has correction or extraction defect; do not invent replacement percentages."
+    },
+    {
+      "id": "ACACIA-REV3-004",
+      "category": "SECONDARY_MULTIPLICITY_AND_HIERARCHY",
+      "priority": "HIGH",
+      "state": "MISSING_PRIMARY_SAP",
+      "assessmentIds": [
+        "4.2",
+        "4.3",
+        "5.1",
+        "5.2"
+      ],
+      "evidence": [
+        "RESPONDER-OPEN",
+        "PUB-MAIN"
+      ],
+      "nextAction": "Distinguish pivotal co-primary plan from secondary responder comparison with no multiplicity adjustments."
+    },
+    {
+      "id": "ACACIA-REV3-005",
+      "category": "SECONDARY_MISSING_DATA_ESTIMAND",
+      "priority": "HIGH",
+      "state": "NEEDS_INDEPENDENT_SENSITIVITY_REVIEW",
+      "assessmentIds": [
+        "4.3",
+        "5.4"
+      ],
+      "evidence": [
+        "RESPONDER-OPEN"
+      ],
+      "nextAction": "Review LOCF week 8–36 and no-data/nonresponder assignments with original sensitivity and primary-estimand analysis."
+    },
+    {
+      "id": "ACACIA-REV3-006",
+      "category": "INDEPENDENT_PHASE_EVENT_NOT_RECORDED",
+      "priority": "HIGH",
+      "state": "AWAITING_AUTHORIZED_HUMAN_REVIEW",
+      "assessmentIds": [
+        "4.1",
+        "4.4"
+      ],
+      "evidence": [
+        "PUB-MAIN"
+      ],
+      "nextAction": "Named independent reviewer verifies current exact-NCT phase and any historical phase separately, without extrapolating earlier phase completion."
+    },
+    {
+      "id": "ACACIA-REV3-007",
+      "category": "EXACT_NHCM_FDA_APPLICATION_NOT_VERIFIED",
+      "priority": "HIGH",
+      "state": "FILING_NOT_ESTABLISHED",
+      "assessmentIds": [
+        "8.1",
+        "8.2"
+      ],
+      "evidence": [
+        "SPONSOR-SEC"
+      ],
+      "nextAction": "Recheck sponsor/FDA exact nonobstructive-HCM filing and acceptance evidence when publicly available; no PDUFA date inferred."
+    }
+  ],
+  "note": "Research questions and source retrieval status only. No source web inspection is an independent clinical signoff, score or FDA forecast."
+}

@@ -1,0 +1,235 @@
+{
+  "id": "https://openalex.org/W7204536760",
+  "doi": "https://doi.org/10.1056/nejmoa2603021",
+  "title": "Aficamten for Symptomatic Nonobstructive Hypertrophic Cardiomyopathy",
+  "publication_date": "2026-08-28",
+  "open_access": {
+    "is_oa": true,
+    "oa_status": "green",
+    "oa_url": "https://eprints.gla.ac.uk/394996/1/394996.pdf",
+    "any_repository_has_fulltext": true
+  },
+  "primary_location": {
+    "id": "doi:10.1056/nejmoa2603021",
+    "doi": "https://doi.org/10.1056/nejmoa2603021",
+    "is_oa": false,
+    "landing_page_url": "https://doi.org/10.1056/nejmoa2603021",
+    "pdf_url": null,
+    "source": {
+      "id": "https://openalex.org/S62468778",
+      "display_name": "New England Journal of Medicine",
+      "issn_l": "0028-4793",
+      "issn": [
+        "0028-4793",
+        "0096-6762",
+        "1533-4406",
+        "2331-4710"
+      ],
+      "is_oa": false,
+      "is_in_doaj": false,
+      "is_core": true,
+      "listed_in": [
+        "anvur-class-a",
+        "anvur-scientific",
+        "cwts-core",
+        "dongbi-a",
+        "doyens",
+        "jufo-3",
+        "ki-jl-3",
+        "medline",
+        "norway-2",
+        "poland-200",
+        "russia-white-list-1",
+        "vabb-shw"
+      ],
+      "host_organization": "https://openalex.org/P4310320239",
+      "host_organization_name": "Massachusetts Medical Society",
+      "host_organization_lineage": [
+        "https://openalex.org/P4310320239"
+      ],
+      "host_organization_lineage_names": [
+        "Massachusetts Medical Society"
+      ],
+      "type": "journal"
+    },
+    "license": null,
+    "license_id": null,
+    "version": "publishedVersion",
+    "is_accepted": true,
+    "is_published": true,
+    "raw_source_name": "New England Journal of Medicine",
+    "raw_type": "journal-article"
+  },
+  "best_oa_location": {
+    "id": "pmh:oai:eprints.gla.ac.uk:394996",
+    "doi": null,
+    "is_oa": true,
+    "landing_page_url": "https://eprints.gla.ac.uk/view/journal_volume/New_England_Journal_of_Medicine.html>,",
+    "pdf_url": "https://eprints.gla.ac.uk/394996/1/394996.pdf",
+    "source": {
+      "id": "https://openalex.org/S4210235606",
+      "display_name": "ENLIGHTEN (Jurnal Bimbingan dan Konseling Islam)",
+      "issn_l": "2622-8912",
+      "issn": [
+        "2622-8912",
+        "2622-8920"
+      ],
+      "is_oa": true,
+      "is_in_doaj": true,
+      "is_core": false,
+      "listed_in": [
+        "doaj"
+      ],
+      "host_organization": "https://openalex.org/I4405259220",
+      "host_organization_name": "Institut Agama Islam Negeri Langsa",
+      "host_organization_lineage": [
+        "https://openalex.org/I4405259220"
+      ],
+      "host_organization_lineage_names": [],
+      "type": "journal"
+    },
+    "license": "cc-by-sa",
+    "license_id": "https://openalex.org/licenses/cc-by-sa",
+    "version": "acceptedVersion",
+    "is_accepted": true,
+    "is_published": false,
+    "raw_source_name": "0028-4793",
+    "raw_type": "Articles"
+  },
+  "locations": [
+    {
+      "id": "doi:10.1056/nejmoa2603021",
+      "doi": "https://doi.org/10.1056/nejmoa2603021",
+      "is_oa": false,
+      "landing_page_url": "https://doi.org/10.1056/nejmoa2603021",
+      "pdf_url": null,
+      "source": {
+        "id": "https://openalex.org/S62468778",
+        "display_name": "New England Journal of Medicine",
+        "issn_l": "0028-4793",
+        "issn": [
+          "0028-4793",
+          "0096-6762",
+          "1533-4406",
+          "2331-4710"
+        ],
+        "is_oa": false,
+        "is_in_doaj": false,
+        "is_core": true,
+        "listed_in": [
+          "anvur-class-a",
+          "anvur-scientific",
+          "cwts-core",
+          "dongbi-a",
+          "doyens",
+          "jufo-3",
+          "ki-jl-3",
+          "medline",
+          "norway-2",
+          "poland-200",
+          "russia-white-list-1",
+          "vabb-shw"
+        ],
+        "host_organization": "https://openalex.org/P4310320239",
+        "host_organization_name": "Massachusetts Medical Society",
+        "host_organization_lineage": [
+          "https://openalex.org/P4310320239"
+        ],
+        "host_organization_lineage_names": [
+          "Massachusetts Medical Society"
+        ],
+        "type": "journal"
+      },
+      "license": null,
+      "license_id": null,
+      "version": "publishedVersion",
+      "is_accepted": true,
+      "is_published": true,
+      "raw_source_name": "New England Journal of Medicine",
+      "raw_type": "journal-article"
+    },
+    {
+      "id": "pmid:42663312",
+      "doi": null,
+      "is_oa": false,
+      "landing_page_url": "https://pubmed.ncbi.nlm.nih.gov/42663312",
+      "pdf_url": null,
+      "source": {
+        "id": "https://openalex.org/S4306525036",
+        "display_name": "PubMed",
+        "issn_l": null,
+        "issn": null,
+        "is_oa": false,
+        "is_in_doaj": false,
+        "is_core": false,
+        "listed_in": [],
+        "host_organization": "https://openalex.org/I1299303238",
+        "host_organization_name": "National Institutes of Health",
+        "host_organization_lineage": [
+          "https://openalex.org/I1299303238"
+        ],
+        "host_organization_lineage_names": [],
+        "type": "repository"
+      },
+      "license": null,
+      "license_id": null,
+      "version": "publishedVersion",
+      "is_accepted": true,
+      "is_published": true,
+      "raw_source_name": "The New England journal of medicine",
+      "raw_type": "Journal Article"
+    },
+    {
+      "id": "pmh:oai:eprints.gla.ac.uk:394996",
+      "doi": null,
+      "is_oa": true,
+      "landing_page_url": "https://eprints.gla.ac.uk/view/journal_volume/New_England_Journal_of_Medicine.html>,",
+      "pdf_url": "https://eprints.gla.ac.uk/394996/1/394996.pdf",
+      "source": {
+        "id": "https://openalex.org/S4210235606",
+        "display_name": "ENLIGHTEN (Jurnal Bimbingan dan Konseling Islam)",
+        "issn_l": "2622-8912",
+        "issn": [
+          "2622-8912",
+          "2622-8920"
+        ],
+        "is_oa": true,
+        "is_in_doaj": true,
+        "is_core": false,
+        "listed_in": [
+          "doaj"
+        ],
+        "host_organization": "https://openalex.org/I4405259220",
+        "host_organization_name": "Institut Agama Islam Negeri Langsa",
+        "host_organization_lineage": [
+          "https://openalex.org/I4405259220"
+        ],
+        "host_organization_lineage_names": [],
+        "type": "journal"
+      },
+      "license": "cc-by-sa",
+      "license_id": "https://openalex.org/licenses/cc-by-sa",
+      "version": "acceptedVersion",
+      "is_accepted": true,
+      "is_published": false,
+      "raw_source_name": "0028-4793",
+      "raw_type": "Articles"
+    },
+    {
+      "id": "pmh:oai:pure.atira.dk:publications/7ea0db83-61d1-4aab-ac29-9d035d0e025c",
+      "doi": null,
+      "is_oa": false,
+      "landing_page_url": "https://pure.au.dk/portal/en/publications/7ea0db83-61d1-4aab-ac29-9d035d0e025c",
+      "pdf_url": null,
+      "source": null,
+      "license": null,
+      "license_id": null,
+      "version": "submittedVersion",
+      "is_accepted": false,
+      "is_published": false,
+      "raw_source_name": null,
+      "raw_type": "info:eu-repo/semantics/article"
+    }
+  ],
+  "updated_date": "2026-11-06T12:05:46.655746"
+}

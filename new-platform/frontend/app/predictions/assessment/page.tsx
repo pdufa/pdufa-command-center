@@ -4,6 +4,10 @@ import {APPLICATION_CYCLES} from "../../../lib/medical-intelligence-applications
 import {CLINICAL_SPECIALTY_PROFILES,getSpecialtyProfile,getSpecialtyTasks} from "../../../lib/medical-intelligence-specialty";
 import {getFullSpecialistCase} from "../../../lib/medical-intelligence-specialist-all";
 import {FOCUS_SPECIALTY_ASSESSMENT_QUEUE,FOCUS_SPECIALTY_SUMMARY} from "../../../lib/focus-specialty-assessment";
+import ScientificMethodMatrix from "./ScientificMethodMatrix";
+import OriginalMethodSourceLadderR64 from "./OriginalMethodSourceLadderR64";
+import IndependentReviewerReadinessR65 from "./IndependentReviewerReadinessR65";
+import OriginalRegistryPhaseR67 from "./OriginalRegistryPhaseR67";
 
 export const metadata:Metadata={
   title:"FOCUS Scientific Assessment Readiness | PDUFA",
@@ -54,6 +58,9 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
         certainty remains <strong>NOT VALIDATED</strong>. Roster snapshot: {FOCUS_SPECIALTY_SUMMARY.rosterAsOf}.
       </p>
       <p style={{fontSize:13,margin:"9px 0 0"}}>
+        <Link href="/predictions/evidence-gaps" style={{color:"#08695c",fontWeight:750}}>
+          Open original evidence recovery queue (R68)
+        </Link>{" · "}
         <Link href="/api/focus-assessment-intake" style={{color:"#08695c",fontWeight:750}}>Download machine-readable 29-trial intake manifest</Link>
         {" · "}<Link href="/predictions" style={{color:"#08695c"}}>Back to FDA predictions</Link>
       </p>
@@ -80,6 +87,22 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
           </table>
         </div>
       </section>
+      {selected ? <OriginalRegistryPhaseR67 key={"r67-"+selected.nct} nct={selected.nct}/> : null}
+      {selected ? <OriginalMethodSourceLadderR64 key={"r64-"+selected.nct} nct={selected.nct}/> : null}
+      {selected ? <IndependentReviewerReadinessR65 key={"r65-"+selected.nct} nct={selected.nct}/> : null}
+      {selected ? <section aria-label="R67 FDA prediction readiness summary" style={{...section,background:"#f7fbf9"}}>
+        <h2 style={{fontSize:18,margin:"0 0 8px"}}>FDA outcome and certainty · After independent reviewer readiness</h2>
+        <p style={{fontSize:13,lineHeight:1.65,margin:0}}>
+          Current scientific phase review: <strong>NOT INDEPENDENTLY VERIFIED</strong>.
+          Clinical grade: <strong>NOT ASSIGNED</strong>. Future FDA approval, CRL and
+          review-delay predictions: <strong>ABSTAIN</strong>. Numerical certainty and
+          measured historical accuracy: <strong>NOT VALIDATED</strong>.
+          The source-reported registry study status is not an FDA decision or a
+          regulatory submission certificate. Complete genuine signed evidence reviews
+          and separate time-frozen historical validation before forecast release.
+        </p>
+      </section> : null}
+      {selected ? <ScientificMethodMatrix key={selected.nct} nct={selected.nct} /> : null}
       {selected&&<section style={section} aria-label={"Selected trial "+selected.nct}>
         <span style={label}>SELECTED EXACT TRIAL</span>
         <h2 style={{margin:"7px 0",fontSize:24}}>{selected.ticker} · {selected.nct}</h2>

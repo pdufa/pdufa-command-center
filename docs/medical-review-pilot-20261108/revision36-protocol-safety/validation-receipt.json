@@ -1,0 +1,30 @@
+{
+  "schema": "MAIN_ACACIA_REV36_DOCUMENTARY_VALIDATION_RECEIPT_V1",
+  "checkedAt": "2026-11-09T13:41:25.421488+00:00",
+  "scope": "Local source hash, packet provenance, browser-receipt boundary, graph transcription structural checks and withheld-grade safeguards; not independent clinical adjudication.",
+  "checks": {
+    "original_pdf_hash_matches_revision5_and_packet": true,
+    "original_pdf_byte_count_matches": true,
+    "graph_initial_alpha_weights_sum_one": true,
+    "graph_H1_to_H7_unique": true,
+    "all_handoff_positions_existing_queue": true,
+    "browser_200_not_promoted_to_file_or_visual_capture": true,
+    "no_clinical_handoff_grade": true,
+    "no_official_grade_count_change": true,
+    "evidence_positions_preserved": true,
+    "no_grade_or_production_writes": true,
+    "no_forecasts": true,
+    "no_final_SAP_claim": true,
+    "no_exposed_signed_urls": true,
+    "new_safety_percentage_calculation": true,
+    "sources_unique": true
+  },
+  "passed": 15,
+  "failed": 0,
+  "packetSha256": "5678bd7eca25b3c44069af51d4d3fa1176f28a7d931baca86ab8eb961453ae21",
+  "avenuesSha256": "1229554c49d91f52d3e958f21b2afaa7535a768769ab524a513a4684eda37a33",
+  "browserLinkReceiptSha256": "1d7f98108d4b1d6bc079d3be051f15440f5bfba97fa4477f173396e9327722b1",
+  "browserDownloadReceiptSha256": "e17a343271e67bd6efaadacbff71df798bf87f2c077aa88ab99bb8b40b9c48f1",
+  "nejmBrowserReceiptSha256": "c6dca3eaa8a675ea67ab66640ec2696ca9ea225d9436876da5d3b762d5a76afe",
+  "supplementalReceiptNote": "Parent appended normal journal public-browser denial; original15checkreceipt retained, avenue hash refreshed; no new scientific test claimed."
+}

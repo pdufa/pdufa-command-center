@@ -1,0 +1,42 @@
+{
+  "schema": "MAIN_FDA_FRESH_SOURCE_RECEIPT_R38",
+  "status": "SOURCE_RECOVERED_RESEARCH_ONLY_NO_MODEL_COHORT",
+  "asOf": "2026-11-09",
+  "runId": 42642513960,
+  "commit": "595bbe57a968cc9ad60b8164375969cfa97cac84",
+  "artifactId": 13685223999,
+  "artifactUrl": "https://github.com/pdufa/pdufa-command-center/actions/runs/42642513960/artifacts/13685223999",
+  "archiveSha256": "1eb68f5a9f92a0438e81b418f76a3b34202f3edf39672ade12eb9442a650c150",
+  "archiveExpiresAt": "2027-02-07T15:13:43Z",
+  "candidateFileSha256": "c549a5af3aaef038d75917a96367d1e3fea84afd63ac505af806f239347be72c",
+  "sourceExports": {
+    "drugsfda": {
+      "exportedOn": "2026-11-06",
+      "records": 29446,
+      "sha256": "46e820abefd38fd714a9424026cc79b19675a1d8e5acce8ab4f39927f55df7fb"
+    },
+    "crl": {
+      "exportedOn": "2026-11-02",
+      "records": 458,
+      "sha256": "9c8842d6991d0bacfa224f1b7063cdfdc6b3c3e748f4b9779189f40f0749d2fc"
+    }
+  },
+  "candidateRows": 412,
+  "selectedActionSourceOnly": true,
+  "originalSourceBytesPresentInRuntime": false,
+  "permanentBackup": false,
+  "completeApplicationFilingCohortVerified": false,
+  "exactCyclesIndependentlyAdjudicated": 0,
+  "verifiedHistoricalModelCases": 0,
+  "historicalBacktests": 0,
+  "approvalProbability": null,
+  "measuredAccuracy": null,
+  "trainingAuthorized": false,
+  "reviewerSignoffsCreated": 0,
+  "sourceDescription": "Current official FDA bulk export selection, NOT all FDA NDA/BLA filings",
+  "softwareChecks": {
+    "sourceRegressionTestsPassed": 48,
+    "sourceCollectorSuccessful": true,
+    "sha256ReceiptChecked": true
+  }
+}

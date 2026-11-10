@@ -1,0 +1,30 @@
+.panel{background:#f5faf8;border:1px solid #bad3c8;border-radius:14px;padding:18px;margin:16px 0 20px;color:#1e382d}
+.panel h2{font-size:21px;margin:6px 0 10px;color:#124d40;line-height:1.3}
+.panel h3{font-size:14px;margin:13px 0 6px}
+.panel p{font-size:13px;line-height:1.6}
+.eyebrow{font-size:11px;font-weight:800;letter-spacing:.75px;color:#11624f}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:12px 0}
+.stat{border:1px solid #bfd6ca;border-radius:9px;background:#fff;padding:10px}
+.stat div{font-size:11px;color:#4b6c5e}
+.stat strong{font-size:23px;color:#155746}
+.note{font-size:11px!important;color:#4b6359;line-height:1.65!important;overflow-wrap:anywhere}
+.controls{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin:16px 0}
+.controls label{display:flex;flex-direction:column;gap:5px;font-weight:700;font-size:12px;min-width:220px;flex:1 1 200px}
+.controls input,.controls select{border:1px solid #99b9aa;border-radius:8px;background:#fff;color:#1a352b;padding:10px;font-size:14px;width:100%;min-height:42px}
+.toggle{padding:10px 13px;border:1px solid #649886;color:#115341;background:#e3f2eb;border-radius:8px;font-weight:700;cursor:pointer;min-height:42px}
+.rows{display:grid;gap:8px}
+.trial{border:1px solid #c0d6cc;border-radius:10px;background:white;overflow:hidden}
+.trial summary{list-style-position:inside;cursor:pointer;padding:12px;display:flex;flex-direction:column;gap:5px;min-height:55px}
+.trial summary strong{font-size:15px;color:#155846}
+.countLine{font-size:12px;color:#53685d}
+.status{font-size:11px;color:#276b59;font-weight:700}
+.details{padding:4px 14px 14px;border-top:1px solid #e1ece7;overflow-wrap:anywhere}
+.details ul{font-size:12px;line-height:1.75;padding-left:20px}
+.innerList{display:grid;gap:9px}
+.innerList>div{background:#f3f8f5;border:1px solid #deebe4;padding:10px;border-radius:7px;font-size:12px}
+.innerList p{margin:5px 0}
+.links{display:flex;gap:14px;flex-wrap:wrap}
+.links a,.footer a{color:#0b6954;font-weight:700;text-decoration:underline}
+.footer{font-size:11px!important;margin-top:15px;color:#566f63}
+@media(min-width:670px){.trial summary{display:grid;grid-template-columns:minmax(140px,1fr) minmax(190px,1.5fr) auto;gap:12px;align-items:center}}
+@media(max-width:480px){.panel{padding:12px}.stats{grid-template-columns:repeat(2,minmax(0,1fr))}.controls label{min-width:100%}.toggle{width:100%}}

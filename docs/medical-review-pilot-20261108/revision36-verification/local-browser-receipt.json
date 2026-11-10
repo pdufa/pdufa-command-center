@@ -1,0 +1,158 @@
+{
+  "scope": "LOCAL_PRODUCTION_BUILD_BROWSER_ACCEPTANCE",
+  "nct": "NCT06081894",
+  "startedAt": "2026-11-09T13:49:16.834Z",
+  "auth": "EPHEMERAL_LOCAL_TEST_FIXTURE_NOT_A_REVIEWER",
+  "liveRenderPostgresqlVerified": false,
+  "checks": [
+    {
+      "name": "LOCAL_SERVER_READY",
+      "passed": true
+    },
+    {
+      "name": "UNAUTHENTICATED_MATRIX_401",
+      "passed": true
+    },
+    {
+      "name": "CROSS_ORIGIN_LOGIN_403",
+      "passed": true
+    },
+    {
+      "name": "WRONG_PASSWORD_401",
+      "passed": true
+    },
+    {
+      "name": "NORMAL_LOCAL_TEST_LOGIN_200",
+      "passed": true
+    },
+    {
+      "name": "iphone_ASSESSMENT_200",
+      "passed": true
+    },
+    {
+      "name": "iphone_FOUR_ORIGINAL_VERSIONS",
+      "passed": true
+    },
+    {
+      "name": "iphone_DATES_ESTIMATES_AND_DIGEST_VISIBLE",
+      "passed": true
+    },
+    {
+      "name": "iphone_HISTORY_PANEL_FITS_VIEWPORT",
+      "passed": true
+    },
+    {
+      "name": "iphone_ACTIVE_TASK_FOCUSED",
+      "passed": true
+    },
+    {
+      "name": "iphone_NO_BROWSER_RUNTIME_ERRORS",
+      "passed": true
+    },
+    {
+      "name": "desktop_ASSESSMENT_200",
+      "passed": true
+    },
+    {
+      "name": "desktop_FOUR_ORIGINAL_VERSIONS",
+      "passed": true
+    },
+    {
+      "name": "desktop_DATES_ESTIMATES_AND_DIGEST_VISIBLE",
+      "passed": true
+    },
+    {
+      "name": "desktop_HISTORY_PANEL_FITS_VIEWPORT",
+      "passed": true
+    },
+    {
+      "name": "desktop_ACTIVE_TASK_FOCUSED",
+      "passed": true
+    },
+    {
+      "name": "desktop_NO_BROWSER_RUNTIME_ERRORS",
+      "passed": true
+    }
+  ],
+  "viewports": [
+    {
+      "name": "iphone",
+      "width": 390,
+      "height": 844,
+      "documentWidth": 390,
+      "historyPanel": {
+        "x": 61,
+        "y": -2110.59375,
+        "width": 268,
+        "height": 3146.25
+      },
+      "sourceLinks": 14,
+      "runtimeErrors": []
+    },
+    {
+      "name": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "documentWidth": 1440,
+      "historyPanel": {
+        "x": 131,
+        "y": 477.890625,
+        "width": 1178,
+        "height": 859.859375
+      },
+      "sourceLinks": 14,
+      "runtimeErrors": []
+    }
+  ],
+  "diagnostic": {
+    "bounds": {
+      "x": 131,
+      "y": 477.890625,
+      "width": 1178,
+      "height": 859.859375
+    },
+    "dimensions": {
+      "viewport": 1440,
+      "body": 1440
+    },
+    "ancestors": [
+      {
+        "tag": "DETAILS",
+        "width": 1178,
+        "style": "border:1px solid #397b82;border-radius:9px;padding:12px;background:#102434;color:#e1f2f1;margin-bottom:12px;min-width:0"
+      },
+      {
+        "tag": "SECTION",
+        "width": 1206,
+        "style": "border:1px solid #a6c8bd;border-radius:12px;padding:13px;background:#f3f9f6;margin:12px 0"
+      },
+      {
+        "tag": "SECTION",
+        "width": 1240,
+        "style": "border:1px solid #8bb4a8;background:#f6fbf8;border-radius:12px;padding:16px;margin:12px 0"
+      },
+      {
+        "tag": "SECTION",
+        "width": 1270,
+        "style": "border:1px solid #a8c9bc;border-radius:9px;padding:14px;margin:12px 0;background:#f5faf7"
+      },
+      {
+        "tag": "DIV",
+        "width": 1270,
+        "style": "display:grid;grid-template-columns:minmax(0,1fr);gap:17px"
+      },
+      {
+        "tag": "MAIN",
+        "width": 1300,
+        "style": "max-width:1300px;margin:0 auto;padding:26px 15px 60px;color:#122f32"
+      },
+      {
+        "tag": "BODY",
+        "width": 1440,
+        "style": null
+      }
+    ]
+  },
+  "status": "PASS",
+  "finishedAt": "2026-11-09T13:49:23.813Z"
+}

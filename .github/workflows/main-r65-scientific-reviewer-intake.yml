@@ -1,0 +1,228 @@
+name: MAIN R65 original-source independent reviewer intake readiness
+
+# Draft medical research only. This workflow creates a read-only 232-item
+# evidence and original-document reviewer intake queue, never signs reviews,
+# grades a method, enables the isolated existing POST API, or predicts FDA.
+# No production, original clinical ledger, FOCUS roster, retired scan, Track B
+# historical outcome, or auto-model-training writes.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r65-scientific-reviewer-intake.yml
+      - new-platform/backend/scripts/build_focus_reviewer_adjudication_intake_r65.py
+      - new-platform/backend/tests/test_focus_reviewer_adjudication_intake_r65.py
+      - new-platform/frontend/lib/focus-r65-independent-review-gates.ts
+      - new-platform/frontend/app/predictions/assessment/IndependentReviewerReadinessR65.tsx
+      - new-platform/frontend/app/predictions/assessment/IndependentReviewerReadinessR65.module.css
+      - new-platform/frontend/app/predictions/assessment/page.tsx
+      - new-platform/frontend/tests/focus-r65-independent-review-gates.test.cjs
+      - new-platform/frontend/tests/focus-r65-original-worklist-parity.test.cjs
+      - new-platform/frontend/scripts/verify-r65-human-review-gates-browser.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r65-original-reviewer-intake
+  cancel-in-progress: false
+
+jobs:
+  build-read-only-independent-adjudication-worklist:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Check exact code and independent FOCUS membership untouched
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Restore exact R63 source-checked eight-domain original PDF archive
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42713443428
+          name: main-r63-eight-domain-source-ladder-42713443428
+          path: ${{ runner.temp }}/r65/source
+      - name: Adversarial unit tests on immutable archived original R63 bytes
+        shell: bash
+        env:
+          R65_ORIGINAL_R63_PATH: ${{ runner.temp }}/r65/source/FOCUS_29_TRIAL_EIGHT_DOMAIN_SOURCE_REVIEW_R63.json
+        run: |
+          set -euo pipefail
+          python -m pip install 'pytest>=8,<10'
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_focus_reviewer_adjudication_intake_r65.py
+      - name: Build immutable, unsigned human-review docket without writing clinical data
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r65/research"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_focus_reviewer_adjudication_intake_r65.py \
+            --original-r63 "$RUNNER_TEMP/r65/source/FOCUS_29_TRIAL_EIGHT_DOMAIN_SOURCE_REVIEW_R63.json" \
+            --output "$RUNNER_TEMP/r65/research/FOCUS_29_TRIAL_232_HUMAN_REVIEW_INTAKE_R65.json" \
+            --summary "$RUNNER_TEMP/r65/research/FOCUS_HUMAN_REVIEW_READINESS_R65.md"
+          python - <<'PY'
+          from pathlib import Path
+          import json,os
+          root=Path(os.environ["RUNNER_TEMP"])/"r65/research"
+          r=json.loads((root/"FOCUS_29_TRIAL_232_HUMAN_REVIEW_INTAKE_R65.json").read_bytes())
+          assert r["schema"]=="MAIN_R65_ORIGINAL_SOURCE_HUMAN_ADJUDICATION_INTAKE_ONLY"
+          assert r["exactNctCount"]==29 and r["provisionalApplicationCount"]==23
+          assert r["scientificReviewerTasks"]==232
+          assert r["originalMachinePdfPageLeads"]==466
+          assert r["originalPdfFilesWithLeads"]==22
+          assert len(r["trialIndependentReviewPackets"])==29
+          assert len({x["nct"] for x in r["trialIndependentReviewPackets"]})==29
+          assert r["qualifiedReviewerAttestationsRecorded"]==0
+          assert r["independentVerifiedPhaseEventsRecorded"]==0
+          assert r["independentlyCompletedMethodGrades"]==0
+          assert r["independentStatisticalOrSafetySignoffs"]==0
+          assert r["independentlyValidatedFDAApplicationPredictions"]==0
+          assert r["measuredOutOfTimeForecastAccuracy"] is None
+          assert r["officialFDAOutcome"]=="ABSTAIN"
+          assert r["fdaReviewTiming"]=="ABSTAIN"
+          assert r["gradeOrProbabilityReleasePermitted"] is False
+          assert r["reviewWritesEnabled"] is False
+          assert r["productionOrLedgerWrites"] is False
+          assert r["historicalOutcomeDataAccessed"] is False
+          assert all(t["phaseVerifiedByIndependentReviewer"] is False
+                     and t["completedClinicalMethodScores"]==0
+                     and len(t["trialReviewSlots"])==8
+                     and all(s["grade"] is None and s["reviewerId"] is None
+                             and s["secondIndependentVerifier"] is None
+                             and s["readyToRecordClinicalMethodGrade"] is False
+                             for s in t["trialReviewSlots"])
+                     for t in r["trialIndependentReviewPackets"])
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+            f.write("## R65 original-source human scientific adjudication intake\n\n")
+            f.write("29 unique trials, 23 provisional FDA cycle groups, 232 eight-domain reviewer tasks linked to 466 original machine PDF page leads. Each task records the evidence needed for phase-first original pre-unblinding protocol/SAP, statistical, safety and human-role verification. **No reviewer has signed, no method has been graded, no FDA prediction is validated, and no historical outcome was consulted.**\n\n")
+            f.write((root/"FOCUS_HUMAN_REVIEW_READINESS_R65.md").read_text())
+          PY
+      - name: Preserve R65 research-only human review worklist and task summary
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r65-source-linked-unsigned-review-worklist-${{ github.run_id }}
+          path: ${{ runner.temp }}/r65/research/
+          retention-days: 90
+          if-no-files-found: error
+
+  verify-readonly-assessment-checklist-and-unsigned-original-parity:
+    needs: [build-read-only-independent-adjudication-worklist]
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 16
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve exact independently source-verified original R65 intake artifact
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42717833879
+          name: main-r65-source-linked-unsigned-review-worklist-42717833879
+          path: ${{ runner.temp }}/r65-ui/original
+      - name: Require byte-exact original 232-item reviewer docket and unsigned counters
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import hashlib,json,os
+          from pathlib import Path
+          src=Path(os.environ["RUNNER_TEMP"])/"r65-ui/original/FOCUS_29_TRIAL_232_HUMAN_REVIEW_INTAKE_R65.json"
+          raw=src.read_bytes()
+          assert hashlib.sha256(raw).hexdigest()=="1238d5a0ed120cd47d05dec12486e59e2bf8dbd6e7b73b989372955db622127a"
+          report=json.loads(raw)
+          assert report["scientificReviewerTasks"]==232
+          assert report["originalMachinePdfPageLeads"]==466
+          assert report["qualifiedReviewerAttestationsRecorded"]==0
+          assert report["independentlyCompletedMethodGrades"]==0
+          assert report["independentlyValidatedFDAApplicationPredictions"]==0
+          assert report["measuredOutOfTimeForecastAccuracy"] is None
+          assert report["officialFDAOutcome"]=="ABSTAIN"
+          assert report["productionOrLedgerWrites"] is False
+          PY
+      - name: Verify every rendered research checklist against the archived R65 source
+        shell: bash
+        working-directory: new-platform/frontend
+        env:
+          R65_ORIGINAL_OUTPUT: ${{ runner.temp }}/r65-ui/original/FOCUS_29_TRIAL_232_HUMAN_REVIEW_INTAKE_R65.json
+          R65_ORIGINAL_SHA: "1238d5a0ed120cd47d05dec12486e59e2bf8dbd6e7b73b989372955db622127a"
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r65-independent-review-gates.test.cjs tests/focus-r65-original-worklist-parity.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Install isolated local Chromium regression dependency
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify native reviewer checklist and original source links at desktop and iPhone widths
+        working-directory: new-platform/frontend
+        shell: bash
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/r65-ui/browser
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECEIPT_DIR"
+          npm run start -- --port 3158 > "$RECEIPT_DIR/next.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 50); do
+            if curl -fsS --max-time 5 "http://127.0.0.1:3158/predictions/assessment?nct=NCT04544293" -o /dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$ready" != 1 ]]; then
+            echo "::error::Local medical assessment page was not healthy."
+            tail -n 70 "$RECEIPT_DIR/next.log"
+            exit 1
+          fi
+          node scripts/verify-r65-human-review-gates-browser.cjs
+          cat "$RECEIPT_DIR/R65_LOCAL_BROWSER_ACCEPTANCE.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Archive source-verified local reviewer readiness screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r65-reviewer-gates-browser-${{ github.run_id }}
+          path: ${{ runner.temp }}/r65-ui/browser/
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Record view-only human review readiness without any clinical certification
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "## MAIN R65 independent scientific reviewer intake and live-type assessment view"
+            echo
+            echo "232 original R65 unscored domain review tasks and all 29 unique NCTs were compared against the exact original R65 output SHA, with 23 application group membership and original R64 PDF source leads preserved."
+            echo
+            echo "Every method still requires human-authorized phase verification, original locked protocol/SAP version, provenance, evidence classification and independent signoff. **No reviewer signoffs, clinical scores, FDA outcome predictions, measured accuracy, production API writes or Track B historical outcome reads.**"
+          } >> "$GITHUB_STEP_SUMMARY"

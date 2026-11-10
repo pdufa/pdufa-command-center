@@ -1,0 +1,80 @@
+name: MAIN R64 source-locked original method PDF page display
+
+# Feature/draft-only research. No source collection, clinical scoring, grading,
+# model training, browser login, production deployment, POOL/FOCUS or Track B writes.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r64-method-pdf-page-display.yml
+      - new-platform/backend/scripts/verify_r64_original_method_page_snapshot.py
+      - new-platform/frontend/data/focus-r64-original-method-pages.json
+      - new-platform/frontend/lib/focus-r64-original-method-page-view.ts
+      - new-platform/frontend/app/predictions/assessment/OriginalMethodSourceLadderR64.tsx
+      - new-platform/frontend/app/predictions/assessment/OriginalMethodSourceLadderR64.module.css
+      - new-platform/frontend/app/predictions/assessment/page.tsx
+      - new-platform/frontend/tests/focus-r64-original-method-pages.test.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r64-source-locked-trial-page-display
+  cancel-in-progress: false
+
+jobs:
+  verify-original-r63-source-parity-and-assessment-display:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Reject FOCUS membership drift or retired scan reinstatement
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Restore original R63 independently verified 8-domain 29-NCT page-source archive
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42713443428
+          name: main-r63-eight-domain-source-ladder-42713443428
+          path: ${{ runner.temp }}/r64-original
+      - name: Reject any changed original R63 scientific PDF page reference
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/verify_r64_original_method_page_snapshot.py \
+            --original "$RUNNER_TEMP/r64-original/FOCUS_29_TRIAL_EIGHT_DOMAIN_SOURCE_REVIEW_R63.json" \
+            --frontend new-platform/frontend/data/focus-r64-original-method-pages.json
+      - name: Test source citations and zero-grade guarantees then compile dashboard
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --no-audit --no-fund
+          node --test tests/focus-r64-original-method-pages.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Write exact original-source audit receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          echo "## R64 exact original PDF page leads on scientific assessment display" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Checked against original immutable R63 full JSON SHA-256 b39028e972c45949147d405c447af45ef8ceab7089d8e89247cacd1d2cef6a18. R63: 29 NCTs / 23 provisional applications / 232 unscored eight-domain positions. Display: 466 exact original-source page links across 22 PDFs with machine page leads (23 total current attached protocol/SAP PDFs), from 12 NCTs. Missing current leads for 17 trials do not imply trial failure." >> "$GITHUB_STEP_SUMMARY"
+          echo "The visible assessment level is UNASSESSED_SOURCE_ONLY and the installation stage is 4. There are 0 clinical signoffs, 0 graded scientific methods, 0 validated FDA forecasts, no measured accuracy, and no release or production writes." >> "$GITHUB_STEP_SUMMARY"

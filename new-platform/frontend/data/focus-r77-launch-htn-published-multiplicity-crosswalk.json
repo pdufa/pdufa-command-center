@@ -1,0 +1,238 @@
+{
+  "schema": "MAIN_R77_LAUNCH_HTN_PUBLISHED_H1_H7_AND_MISSINGNESS_SOURCE_CROSSWALK_NOT_SAP_LOCKED",
+  "asOf": "2026-11-09",
+  "nct": "NCT06153693",
+  "ticker": "MLYS",
+  "trial": "Launch-HTN",
+  "doi": "10.1001/jama.2025.9413",
+  "journalOriginalArticle": "https://jamanetwork.com/journals/jama/fullarticle/2835763",
+  "originalSupplementStableIndex": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12210145/",
+  "originalSupplementFilename": "jama-e259413-s001.pdf",
+  "sourceType": "PUBLISHED_JAMA_SUPPLEMENT_1_VIA_ORIGINAL_PUBLISHER_PDF_PAGES",
+  "sourcePagesPhysicalOneBased": {
+    "eFigure2": 6,
+    "eTable1": 11,
+    "imputationMethods": 12,
+    "eTable2": 13,
+    "eTable3": 15,
+    "eTable4": 17
+  },
+  "sourceEfigure2DiagramReviewed": true,
+  "publishedSourceHypotheses": [
+    {
+      "id": "H1",
+      "category": "PRIMARY",
+      "endpoint": "Week-6 change from baseline in automated office systolic BP; randomized pooled lorundrostat 50 mg versus placebo",
+      "studyComparison": "RANDOMIZED_50MG_VERSUS_PLACEBO",
+      "supplementPhysicalPage": 11,
+      "prespecifiedGraphPosition": "ROOT",
+      "clinicalResultStatus": "AUTHOR_REPORTED_NOT_INDEPENDENTLY_REPLICATED"
+    },
+    {
+      "id": "H2",
+      "category": "KEY_SECONDARY",
+      "endpoint": "Week-6 proportion with automated office systolic BP below 130 mm Hg; randomized 50 mg versus placebo",
+      "studyComparison": "RANDOMIZED_50MG_VERSUS_PLACEBO",
+      "supplementPhysicalPage": 11,
+      "prespecifiedGraphPosition": "AFTER_H3",
+      "clinicalResultStatus": "NOT_INDEPENDENTLY_REPLICATED"
+    },
+    {
+      "id": "H3",
+      "category": "KEY_SECONDARY",
+      "endpoint": "Week-12 change from baseline in automated office systolic BP; randomized 50 mg with possible escalation to 100 mg versus placebo",
+      "studyComparison": "RANDOMIZED_ESCALATION_STRATEGY_VERSUS_PLACEBO",
+      "supplementPhysicalPage": 11,
+      "prespecifiedGraphPosition": "AFTER_H4_H5",
+      "clinicalResultStatus": "NOT_INDEPENDENTLY_REPLICATED"
+    },
+    {
+      "id": "H4",
+      "category": "KEY_SECONDARY",
+      "endpoint": "Week-6 change from baseline in automated office systolic BP among participants taking two antihypertensive medications; 50 mg versus placebo",
+      "studyComparison": "RANDOMIZED_TWO_AHT_STRATUM",
+      "supplementPhysicalPage": 11,
+      "prespecifiedGraphPosition": "FIRST_SPLIT_LEFT",
+      "clinicalResultStatus": "NOT_INDEPENDENTLY_REPLICATED"
+    },
+    {
+      "id": "H5",
+      "category": "KEY_SECONDARY",
+      "endpoint": "Week-6 change from baseline in automated office systolic BP among participants taking three or more antihypertensive medications; 50 mg versus placebo",
+      "studyComparison": "RANDOMIZED_THREE_PLUS_AHT_STRATUM",
+      "supplementPhysicalPage": 11,
+      "prespecifiedGraphPosition": "FIRST_SPLIT_RIGHT",
+      "clinicalResultStatus": "NOT_INDEPENDENTLY_REPLICATED"
+    },
+    {
+      "id": "H6",
+      "category": "KEY_SECONDARY",
+      "endpoint": "Week-6 change from baseline in automated office systolic BP by obesity status; 50 mg versus placebo",
+      "studyComparison": "RANDOMIZED_OBESITY_INTERACTION",
+      "supplementPhysicalPage": 11,
+      "prespecifiedGraphPosition": "FINAL_NODE",
+      "clinicalResultStatus": "NOT_INDEPENDENTLY_REPLICATED"
+    },
+    {
+      "id": "H7",
+      "category": "KEY_SECONDARY",
+      "endpoint": "Week-12 change from baseline in automated office systolic BP among participants escalated to 100 mg at week 6; within-participant analysis",
+      "studyComparison": "WITHIN_PARTICIPANT_NONRANDOMIZED_ESCALATED_SUBSET",
+      "supplementPhysicalPage": 11,
+      "prespecifiedGraphPosition": "AFTER_H2_LEFT",
+      "clinicalResultStatus": "NOT_INDEPENDENTLY_REPLICATED"
+    }
+  ],
+  "graphEdges": [
+    {
+      "from": "H1",
+      "to": "H4",
+      "sourceDiagramTransferLabel": "HALF"
+    },
+    {
+      "from": "H1",
+      "to": "H5",
+      "sourceDiagramTransferLabel": "HALF"
+    },
+    {
+      "from": "H4",
+      "to": "H3",
+      "sourceDiagramTransferLabel": "UNSPECIFIED"
+    },
+    {
+      "from": "H5",
+      "to": "H3",
+      "sourceDiagramTransferLabel": "UNSPECIFIED"
+    },
+    {
+      "from": "H3",
+      "to": "H2",
+      "sourceDiagramTransferLabel": "UNSPECIFIED"
+    },
+    {
+      "from": "H2",
+      "to": "H7",
+      "sourceDiagramTransferLabel": "HALF"
+    },
+    {
+      "from": "H2",
+      "to": "H6",
+      "sourceDiagramTransferLabel": "HALF"
+    },
+    {
+      "from": "H7",
+      "to": "H6",
+      "sourceDiagramTransferLabel": "UNSPECIFIED"
+    }
+  ],
+  "alphaTransferDiagram": {
+    "root": "H1",
+    "numericAlphaNotEstablishedFromGraph": true,
+    "explicitHalfTransfers": [
+      [
+        "H1",
+        "H4"
+      ],
+      [
+        "H1",
+        "H5"
+      ],
+      [
+        "H2",
+        "H7"
+      ],
+      [
+        "H2",
+        "H6"
+      ]
+    ],
+    "fullMultiplicityRecalculationPerformed": false
+  },
+  "primaryPublishedEffect": {
+    "comparison": "pooled 50 mg versus placebo at 6 weeks",
+    "differenceMmHg": -9.1,
+    "confidenceIntervalMmHg": [
+      -13.3,
+      -4.9
+    ],
+    "reportedP": "<0.001",
+    "source": "JAMA main article; eTable 3 sensitivity 1 reports same point estimate",
+    "independentlyReplicated": false
+  },
+  "sensitivityPublished": {
+    "table": "eTable 3",
+    "sensitivity1DifferenceMmHg": -9.1,
+    "sensitivity1ReportedP": "<0.001",
+    "sensitivity2DifferenceMmHg": -8.6,
+    "sensitivity2ReportedP": "<0.001",
+    "sensitivity4ObservedCaseDifferenceMmHg": -9.1,
+    "sensitivity4ReportedP": "<0.001",
+    "tippingPointWithinPrespecifiedFortyMmHgShift": false,
+    "scope": "AUTHOR_REPORTED_COMPARISONS_NOT_INDEPENDENTLY_REPRODUCED"
+  },
+  "missingness": {
+    "denominatorSafetyTreated": 1078,
+    "totalTreatmentDiscontinuationOrDeathIntercurrentEvents": 24,
+    "adverseEventIntercurrentEvents": 23,
+    "deathIntercurrentEvents": 1,
+    "adverseEventRelatedMissingWeek6": 10,
+    "adverseEventRelatedMissingWeek12": 12,
+    "deathRelatedMissingWeek12": 1,
+    "otherMissingMARWeek6": 56,
+    "otherMissingMARWeek12": 67,
+    "sourceReportedMNARApproach": "retrieved-dropout treatment-policy imputation for adverse-event discontinuation",
+    "sourceReportedDeathApproach": "5% worst outcome",
+    "sourceReportedMARApproach": "randomized treatment-group distribution",
+    "imputedDatasets": 1000,
+    "sourceReportedBackup": "jump-to-reference with placebo reference if primary MNAR procedure does not converge",
+    "imputationCodeAndSeedIndependentlyExecuted": false,
+    "materialityAndOriginalProvenanceIndependentlyAdjudicated": false
+  },
+  "safetyReview": {
+    "source": "Supplement 1 eTable 4",
+    "sourcePagePhysicalOneBased": 17,
+    "safetyArmDenominators": [
+      270,
+      538,
+      270
+    ],
+    "serumSodiumBelow130": [
+      11,
+      14,
+      4
+    ],
+    "serumPotassiumObserved5Point6To6Point0": [
+      29,
+      38,
+      3
+    ],
+    "serumPotassiumConfirmed5Point6To6Point0": [
+      24,
+      31,
+      2
+    ],
+    "note": "Disjoint lab threshold severity rows are reported by treatment arm, not proof of causality or arm-exposure adjusted risk; no pooled safety score.",
+    "independentlyReviewed": false
+  },
+  "reviewGates": [
+    "Authenticate prospective exact SAP version, pre-unblinding signature dates and database lock chronology",
+    "Replicate H1 and H2 through H7 tests from original subject-level analysis outputs under signed prespecified estimands",
+    "Independently compute graphical gatekeeping and recycled alpha for all eight directed edges",
+    "Audit treatment-policy 1,000-imputation code and seeds, MNAR adverse-event assumptions, MAR remaining data and death sensitivity",
+    "Reconcile serious adverse events, sodium, potassium and eGFR harms using distinct 270/538/270 exposed-arm denominators",
+    "Document qualified independent reviewer signoffs, original FDA regulatory/CMC findings and historical calibration before any prediction"
+  ],
+  "reviewSafety": {
+    "originalPreUnblindingSAPVersionVerified": false,
+    "databaseLockAndUnblindingAuthenticated": false,
+    "fullOriginalPDFBytesSHA256Verified": false,
+    "independentStatisticalRecalculationPerformed": false,
+    "familywiseAlphaRecalculationPerformed": false,
+    "signedClinicalReviewerCount": 0,
+    "independentlyValidatedFDAApplicationForecasts": 0,
+    "finalScientificGrade": null,
+    "regulatoryForecast": "ABSTAIN",
+    "timingForecast": "UNKNOWN",
+    "trainingOrProductionWrites": false
+  }
+}

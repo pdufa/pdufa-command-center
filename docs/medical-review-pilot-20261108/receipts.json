@@ -1,0 +1,112 @@
+{
+  "schema": "PDUFA_EXACT_NCT_PILOT_SOURCE_RECEIPTS_V1",
+  "pilotId": "MAIN-MEDICAL-PILOT-NCT06081894-20261108",
+  "nct": "NCT06081894",
+  "revision": 1,
+  "supersedesRevision": null,
+  "recordedAt": "2026-11-08T18:56:10.437193+00:00",
+  "captureScope": "Additive repository evidence packet only; no database insertion, source-run restart, phase adjudication, grade or clinical signoff.",
+  "receipts": [
+    {
+      "sourceId": "CTG-1",
+      "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06081894",
+      "artifact": "NCT06081894-clinicaltrials-gov.json",
+      "artifactSha256": "833e4c6edc5a686f138835cb7094de691f74cfae679c23987081c16d43015b56",
+      "artifactBytes": 40483,
+      "retrievedAt": "2026-11-08T18:53:17.877196+00:00",
+      "publicationOrRegistryUpdateDate": "2026-09-22",
+      "sourceKind": "ORIGINAL_REGISTRY_RECORD",
+      "httpStatus": 200
+    },
+    {
+      "sourceId": "PUBMED-1",
+      "sourceUrl": "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/efetch.fcgi?db=pubmed&id=42663312,42667274,42663111&retmode=xml",
+      "artifact": "ACACIA-HCM-pubmed.xml",
+      "artifactSha256": "37aac209652354a8a2036304ef7b1cc77105e7d1eff8b790c960e97db5deec61",
+      "artifactBytes": 124130,
+      "retrievedAt": "2026-11-08T18:53:37.168903+00:00",
+      "publicationOrRegistryUpdateDate": "2026-08-28 / 2026-08-29 electronic publication dates",
+      "sourceKind": "NLM_ORIGINAL_PUBLICATION_METADATA_AND_ABSTRACTS",
+      "httpStatus": 200
+    },
+    {
+      "sourceId": "PMC-1",
+      "sourceUrl": "https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC13674599/unicode",
+      "artifact": "PMC13674599-fulltext.xml",
+      "artifactSha256": "7f7184e21972e69cd2d5c2f70d8bac0d9dee891f8e482a191d49a19780099218",
+      "artifactBytes": 106891,
+      "retrievedAt": "2026-11-08T18:54:10.876393+00:00",
+      "publicationOrRegistryUpdateDate": "2026-08-29 electronic publication / 2026-10-20 issue",
+      "sourceKind": "OFFICIAL_PMC_FULLTEXT_BIOC_REPRESENTATION",
+      "httpStatus": 200
+    },
+    {
+      "sourceId": "SPONSOR-1",
+      "sourceUrl": "https://ir.cytokinetics.com/feed/PressRelease.svc/GetPressReleaseList?LanguageId=1&pressReleaseDateFilter=3&categoryId=00000000-0000-0000-0000-000000000000&bodyType=2&includeTags=true&pressReleaseYear=2026&pageSize=-1&pageNumber=0",
+      "artifact": "cytokinetics-public-release-feed.json.gz",
+      "artifactSha256": "f2fbda9c19505dff76c053e105571fc2ddd06b898a6e8f0835fbb211a5342603",
+      "artifactBytes": 1920722,
+      "retrievedAt": "2026-11-08T18:54:44.895910+00:00",
+      "publicationOrRegistryUpdateDate": "Multiple dates; release 2347 dated 2026-08-28",
+      "sourceKind": "ORIGINAL_SPONSOR_PUBLIC_FEED",
+      "httpStatus": 200,
+      "compression": "gzip",
+      "originalResponseSha256": "356360c1099b6a171ccc9e549d2b0c257bc9a6460cc06635e59291dd9dc08577",
+      "originalResponseBytes": 11888585,
+      "responseRecordCount": 601
+    }
+  ],
+  "derivedArtifacts": [
+    {
+      "artifact": "cytokinetics-ACACIA-20260828-extracted-release.json",
+      "sha256": "5108ead721c001c9c6c0857b13087981e9186ba867ac1f512227c96a7a0b2806",
+      "derivedFromSourceId": "SPONSOR-1",
+      "selection": "GetPressReleaseListResult item with PressReleaseId=2347; exact original object, pretty-printed"
+    }
+  ],
+  "discoveryOnly": [
+    {
+      "sourceUrl": "https://ir.cytokinetics.com/press-releases",
+      "httpStatus": 200,
+      "sha256": "acb4795f2618affde79948fe22c26b3d2ce016c0f90e9077cabd1d05b1c34987",
+      "retention": "Original public discovery HTML retained in /tmp/pdufa-pilot-discovery-index.html; not used as clinical evidence and not bundled because it includes unrelated login state."
+    }
+  ],
+  "retrievalFailures": [
+    {
+      "sourceUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021",
+      "httpStatus": 403,
+      "classification": "ACCESS_BLOCKED",
+      "interpretation": "Full primary article and linked protocol/SAP have not been examined; absence of access is not unfavorable clinical evidence."
+    },
+    {
+      "sourceUrl": "https://www.ahajournals.org/doi/suppl/10.1161/CIRCULATIONAHA.126.082343",
+      "httpStatus": 403,
+      "classification": "ACCESS_BLOCKED",
+      "interpretation": "Official supplemental page linked in PMC full text unavailable in this environment."
+    },
+    {
+      "sourceUrl": "https://www.ncbi.nlm.nih.gov/pmc/utils/oa/oa.fcgi?id=PMC13674599",
+      "httpStatus": 404,
+      "classification": "ENDPOINT_UNAVAILABLE",
+      "interpretation": "This attempted OA package locator returned 404; full text was separately retrieved through official BioC API."
+    },
+    {
+      "sourceUrl": "https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pmcoa.cgi/BioC_xml/PMC13674601/unicode",
+      "httpStatus": 200,
+      "classification": "SOURCE_BODY_NOT_FULLTEXT",
+      "artifact": "PMC13674601-bioc-error-response.txt",
+      "sha256": "478f38e0765ee9c406831bb2fc27e8019ac5227c20c6b28ca0de582d8449354a",
+      "interpretation": "Official endpoint response says No result can be found; not valid XML, no full text retrieved, not counted as a successful full-text source."
+    }
+  ],
+  "reviewStatus": "SOURCE_INSPECTION_ONLY_INDEPENDENT_ADJUDICATION_REQUIRED",
+  "independentlyGradedScientificMethods": 0,
+  "clinicalSignoff": false,
+  "fdaPredictions": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "certainty": "NOT_VALIDATED"
+}

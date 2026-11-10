@@ -1,0 +1,43 @@
+{
+  "schema": "ACACIA_BARRIER_PACKET_VALIDATION_V1",
+  "checkedAt": "2026-11-09T18:39:39.510484+00:00",
+  "scope": "Documentary metadata/digest and safety-boundary checks, not independent scientific tests",
+  "passed": 21,
+  "failed": 0,
+  "checks": {
+    "exact_nct_and_doi": true,
+    "five_named_barriers": true,
+    "classification_allowlist": true,
+    "method_positions_are_existing": true,
+    "barrier_findings_are_resolvable": true,
+    "source_receipt_exact_bytes": true,
+    "accepted_not_final_version": true,
+    "visual_documentary_scope_not_clinical": true,
+    "original_license_preserved": true,
+    "no_full_licensed_document_import": true,
+    "no_backdated_full_text_clock": true,
+    "new_metadata_channels_succeeded": true,
+    "crossref_filtered_metadata_digest": true,
+    "openalex_filtered_metadata_digest": true,
+    "europepmc-doi_filtered_metadata_digest": true,
+    "population_arithmetic_not_clinical": true,
+    "coverage_and_grade_counts_preserved": true,
+    "review_authorization_still_pending": true,
+    "forecasts_abstain": true,
+    "no_restricted_or_production_writes": true,
+    "temporary_original_digest_rechecked": true
+  },
+  "temporaryOriginalAvailable": true,
+  "temporaryOriginalDigestRechecked": true,
+  "artifacts": {
+    "README.md": "360f2af5d2fab111d311fbb921d0eeb9ecbc50cf8ed363944eab5cace4129509",
+    "accepted-manuscript-receipt.json": "598dee03a0bd5b4d881fabce967ede13f12be75b9060b8c581c9d722d0388cb2",
+    "crossref-metadata.json": "7f87567cb3c0feeb80b40a2126bc0cb41649410f40fdc515dea7784bf37177ef",
+    "europepmc-doi-metadata.json": "eaade5fc0230ddc2e4391fb97b713f46cead72cdf3b76646b3ac7182f62823ce",
+    "institutional-channel-notes.json": "c32797d52e4a775d88d9aff62cbfc102e561a45d9e2ef22256ec432893597752",
+    "metadata-retrieval-receipts.json": "e2b7a91a79cddc3a52f9ee765e5472bef6da6d738710a161b6bbd76e35a050f8",
+    "openalex-metadata.json": "73c9426ba3ec93b45786e058307368a06fd6ae8a62e641629746efba7f08422e",
+    "reviewer-barrier-packet.json": "5e952c2c49e719b254b3eda998bb4c320cda82c9fb92f395897ad9fd3d331d7d",
+    "verify_source_packet.py": "ed3a62b74a8395bdc1f9543b41aee86a4c4dcb454885c49ab9dc806037e4d4c5"
+  }
+}

@@ -1,0 +1,69 @@
+name: MAIN R77 Launch-HTN H1-H7 publication method graph acceptance
+# Engineering verification only. Source p-values and arrows do not count as
+# qualified medical signoff, historic blindness, or official FDA forecast.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r77-launch-htn-hypothesis-safety-methods.yml
+      - new-platform/frontend/data/focus-r77-launch-htn-published-multiplicity-crosswalk.json
+      - new-platform/frontend/lib/focus-r77-launch-htn-published-methods.ts
+      - new-platform/frontend/app/predictions/evidence-gaps/LaunchHtnMethodsR77.tsx
+      - new-platform/frontend/app/predictions/evidence-gaps/ScientificOriginalsIntakeR71.tsx
+      - new-platform/frontend/tests/focus-r77-launch-htn-published-methods.test.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r77-hypothesis-safety-methods
+  cancel-in-progress: false
+
+jobs:
+  source-only-hypothesis-gates:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Guard exact FOCUS 29 and provisional 23 application identities, retirement
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+          python new-platform/backend/scripts/verify_focus_r73_launch_htn_document_index.py
+      - name: Test exact source H1-H7 graph, 1000 imputations, arm denominators and lack of FDA grade
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r77-launch-htn-published-methods.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Record research-only acceptance
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo "## MAIN R77 JAMA Supplement 1 source-only research"
+            echo
+            echo "Original PDF source eFigure 2 and eTables 1–4 visually reviewed at physical pages 6, 11, 12, 13, 15 and 17."
+            echo "The panel maps seven original H1–H7 published hypotheses, eight arrows, four explicit half-transfer arrows, author-reported primary sensitivity and 1000 multiple imputations."
+            echo "Adverse event MNAR, MAR, death, safety potassium and sodium are separated, with exact 270/538/270 exposed-arm denominators."
+            echo
+            echo "**Not independently signed or replicated:** original prospective SAP lock, individual PDF byte custody, actual familywise alpha gate, multiplicity propagation, dose escalation randomization, statistical code, reviewer grades or current FDA outcomes."
+            echo
+            echo "**Qualified scientific reviews 0, validated FDA forecasts 0/23, FDA ABSTAIN, timing UNKNOWN, no production/scoring writes.**"
+          } >> "$GITHUB_STEP_SUMMARY"

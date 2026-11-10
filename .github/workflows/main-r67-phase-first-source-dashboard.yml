@@ -1,0 +1,130 @@
+name: MAIN R67 dated original registry phase-first assessment display
+
+# Development only. No production deployment, scientific phase signoff,
+# regulatory action certification, model training or outcome release.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r67-phase-first-source-dashboard.yml
+      - new-platform/backend/scripts/verify_r67_original_phase_ui_parity.py
+      - new-platform/frontend/data/focus-r67-original-phase-source.json
+      - new-platform/frontend/lib/focus-r67-phase-source.ts
+      - new-platform/frontend/app/predictions/assessment/OriginalRegistryPhaseR67.tsx
+      - new-platform/frontend/app/predictions/assessment/OriginalRegistryPhaseR67.module.css
+      - new-platform/frontend/app/predictions/assessment/page.tsx
+      - new-platform/frontend/tests/focus-r67-original-phase-first.test.cjs
+      - new-platform/frontend/scripts/verify-r67-phase-browser.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r67-original-phase-first-ui
+  cancel-in-progress: false
+
+jobs:
+  source-parity-and-actual-frontend:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 22
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: No original trial/application membership, Track B, or retired scanner changes
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Restore immutable original R66 29-NCT registry phase research
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42720903307
+          name: main-r66-exact-29-registry-phase-evidence-42720903307
+          path: ${{ runner.temp }}/r67-original
+      - name: Verify all UI phase/status/design data against exact original R66 bytes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/verify_r67_original_phase_ui_parity.py \
+            --original "$RUNNER_TEMP/r67-original/FOCUS_29_ORIGINAL_REGISTRY_PHASE_EVIDENCE_R66.json" \
+            --frontend new-platform/frontend/data/focus-r67-original-phase-source.json
+      - name: Run phase source safety tests, types and optimized Next.js build
+        shell: bash
+        working-directory: new-platform/frontend
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r67-original-phase-first.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Install isolated headless browser test dependency
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify phase-first exact NCT panels in real desktop and 390px phone Chromium
+        working-directory: new-platform/frontend
+        shell: bash
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/r67-browser
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECEIPT_DIR"
+          npm run start -- --port 3157 > "$RECEIPT_DIR/next.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 50); do
+            if curl -fsS --max-time 5 'http://127.0.0.1:3157/predictions/assessment?nct=NCT04544293' -o /dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$ready" != 1 ]]; then
+            echo "::error::Local phase-first assessment page never became healthy."
+            tail -n 80 "$RECEIPT_DIR/next.log"
+            exit 1
+          fi
+          node scripts/verify-r67-phase-browser.cjs
+          cat "$RECEIPT_DIR/R67_BROWSER_VERIFICATION.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Preserve local real browser checks and screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r67-phase-first-mobile-desktop-${{ github.run_id }}
+          path: ${{ runner.temp }}/r67-browser/
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Archive R67 source and checks receipt
+        shell: bash
+        run: |
+          cat >> "$GITHUB_STEP_SUMMARY" <<'EOF'
+          ## MAIN R67 dated original trial phase-first science display
+
+          29 immutable original NCT clinical trial registry source records, 23 provisional application links.
+          Original source-reported phases: 28 Phase 3, one combined Phase 2/3.
+          Original registry recruitment/study status: 19 completed, eight active-not-recruiting, two recruiting.
+          Each trial's source phase, status, dated registry update, allocation, masking, enrollment and
+          primary completion now appear above eight original source-method domains, signed reviewer
+          readiness and FDA forecast summary. Source is NOT qualified independent phase confirmation.
+
+          Zero independent phase signoffs, zero signed scientific scores, zero validated FDA decisions
+          or measured accuracy. FDA outcome and review timing ABSTAIN. Draft development preview only.
+          EOF

@@ -1,0 +1,126 @@
+name: MAIN R64 original 8-domain page-linked method dashboard
+
+# Draft development branch only. Every displayed page reference must equal
+# previously archived R63 original-source evidence. Eight source domains and
+# 232 positions do not constitute 800 graded scientific assessments.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r64-original-method-dashboard.yml
+      - new-platform/backend/scripts/verify_r64_original_method_page_snapshot.py
+      - new-platform/frontend/data/focus-r64-original-method-pages.json
+      - new-platform/frontend/lib/focus-r64-original-method-page-view.ts
+      - new-platform/frontend/app/predictions/assessment/OriginalMethodSourceLadderR64.tsx
+      - new-platform/frontend/app/predictions/assessment/OriginalMethodSourceLadderR64.module.css
+      - new-platform/frontend/app/predictions/assessment/page.tsx
+      - new-platform/frontend/tests/focus-r64-original-method-page-view.test.cjs
+      - new-platform/frontend/scripts/verify-r64-method-page-browser.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r64-original-source-8-domain-preview
+  cancel-in-progress: false
+
+jobs:
+  exact-source-page-parity-and-dashboard:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Guard unchanged 29-NCT and 23-application FOCUS scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Recover exactly successful R63 original method matrix archive
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42713443428
+          name: main-r63-eight-domain-source-ladder-42713443428
+          path: ${{ runner.temp }}/r64/original
+      - name: Demand byte-exact original-source-to-frontend PDF citation parity
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/verify_r64_original_method_page_snapshot.py \
+            --original "$RUNNER_TEMP/r64/original/FOCUS_29_TRIAL_EIGHT_DOMAIN_SOURCE_REVIEW_R63.json" \
+            --frontend new-platform/frontend/data/focus-r64-original-method-pages.json
+      - name: Test fail-closed source details, run full frontend typecheck and optimized build
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r64-original-method-page-view.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Install isolated Chromium browser-test dependency
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Verify desktop and iPhone-sized scientific source page expansion and PDF links
+        working-directory: new-platform/frontend
+        shell: bash
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/r64-browser
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECEIPT_DIR"
+          npm run start -- --port 3157 > "$RECEIPT_DIR/next.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 50); do
+            if curl -fsS --max-time 5 http://127.0.0.1:3157/predictions/assessment?nct=NCT04544293 -o /dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$ready" != 1 ]]; then
+            echo "::error::Local Next.js assessment page did not become healthy."
+            tail -n 70 "$RECEIPT_DIR/next.log"
+            exit 1
+          fi
+          node scripts/verify-r64-method-page-browser.cjs
+          cat "$RECEIPT_DIR/R64_BROWSER_VERIFICATION.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Archive local browser receipt and viewport screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r64-method-page-browser-${{ github.run_id }}
+          path: ${{ runner.temp }}/r64-browser/
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Persist exact nonclinical success receipt
+        shell: bash
+        run: |
+          set -euo pipefail
+          {
+            echo "## MAIN R64 original eight-domain page reference acceptance"
+            echo
+            echo "Exactly 29 unique FOCUS trials, 23 provisional FDA application groups, eight unscored scientific source-review domains per trial, 232 ungraded positions, 466 original machine PDF page leads from 22 PDFs within 23 attached research documents. All source page numbers matched original R63 archived bytes."
+            echo
+            echo "No independent scientific grades, trained 800-method model, validated FDA forecasts, numerical certainty, historical backtesting or production changes. Trial assessment level: UNASSESSED SOURCE ONLY; research installation stage: 4."
+          } >> "$GITHUB_STEP_SUMMARY"

@@ -1,0 +1,129 @@
+name: MAIN R70 PubMed abstract role triage dashboard
+
+# Draft research only. Five journal abstract reports are NOT signed scientific
+# grades, validated FDA predictions, or 800 completed assessments. The two
+# ACACIA-HCM related analyses must not double count as independent trial data.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r70-publication-abstract-role-dashboard.yml
+      - new-platform/backend/scripts/verify_r70_original_abstract_roles.py
+      - new-platform/frontend/data/focus-r70-abstract-publication-triage.json
+      - new-platform/frontend/lib/focus-r70-publication-abstract-triage.ts
+      - new-platform/frontend/app/predictions/evidence-gaps/PublicationEvidenceRoleR70.tsx
+      - new-platform/frontend/app/predictions/evidence-gaps/PublicationEvidenceRoleR70.module.css
+      - new-platform/frontend/app/predictions/evidence-gaps/OriginalPublicationLeadsR69.tsx
+      - new-platform/frontend/app/predictions/evidence-gaps/EvidenceRecoveryBoardR68.tsx
+      - new-platform/frontend/tests/focus-r70-publication-abstract-triage.test.cjs
+      - new-platform/frontend/scripts/verify-r70-publication-roles-browser.cjs
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r70-source-locked-publication-role-acceptance
+  cancel-in-progress: false
+
+jobs:
+  exact-nct-pubmed-and-responsive-role-review:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Enforce exact original FOCUS 29 trials, 23 applications and retired scans
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Restore original R69 11 PubMed exact-NCT candidate reference research
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42727350931
+          name: main-r69-exact-registry-pubmed-leads-42727350931
+          path: ${{ runner.temp }}/r70/original
+      - name: Reject invented NCT citations, secondary-as-primary and false review signoffs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/verify_r70_original_abstract_roles.py \
+            --r69-original "$RUNNER_TEMP/r70/original/FOCUS_17_ORIGINAL_PUBMED_REFERENCE_RECOVERY_R69.json" \
+            --r70-frontend new-platform/frontend/data/focus-r70-abstract-publication-triage.json
+      - name: Run literature source role and previous 29-trial source recovery guards
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-audit --no-fund
+          node --test tests/focus-r70-publication-abstract-triage.test.cjs tests/focus-r69-original-publication-leads.test.cjs tests/focus-r68-evidence-recovery.test.cjs
+          npm run typecheck
+          npm run build
+      - name: Install standalone local Chromium for desktop and 390px iPhone-size
+        working-directory: new-platform/frontend
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm install --no-save --no-package-lock --no-audit --no-fund playwright@1.56.1
+          npx playwright install --with-deps chromium
+      - name: Test exact PMID links and same-trial role expansion in real browser
+        working-directory: new-platform/frontend
+        shell: bash
+        env:
+          RECEIPT_DIR: ${{ runner.temp }}/r70-browser
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECEIPT_DIR"
+          npm run start -- --port 3157 > "$RECEIPT_DIR/next.log" 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          ready=0
+          for i in $(seq 1 50); do
+            if curl -fsS --max-time 5 http://127.0.0.1:3157/predictions/evidence-gaps -o /dev/null; then
+              ready=1
+              break
+            fi
+            sleep 2
+          done
+          if [[ "$ready" != 1 ]]; then
+            echo "::error::R70 Next.js research preview never became healthy"
+            tail -n 70 "$RECEIPT_DIR/next.log"
+            exit 1
+          fi
+          node scripts/verify-r70-publication-roles-browser.cjs
+          cat "$RECEIPT_DIR/R70_BROWSER_RESULTS.json" >> "$GITHUB_STEP_SUMMARY"
+      - name: Archive source-only local browser audit and viewport screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r70-abstract-role-browser-${{ github.run_id }}
+          path: ${{ runner.temp }}/r70-browser/
+          retention-days: 30
+          if-no-files-found: warn
+      - name: Publish precise study-source limitations to build summary
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo "## MAIN R70 article-level source triage"
+            echo
+            echo "11 original PubMed references across 7 exact NCTs that lack current registry primary tables, from 29 unique FOCUS NCT records and 23 provisional application cycles."
+            echo
+            echo "**Five candidate Phase 3 main results by article abstract** in five unique NCTs. Two additional ACACIA articles are same-trial secondary analyses, not two additional pivotal trials. One protocol, one Phase 2 RINGSIDE component, one prior smaller casimersen dose-ranging cohort, and one background normative-curve publication. These classifications are research annotations, not independent full-text statistical adjudication."
+            echo
+            echo "**0 signed full clinical method reviews, 0 scientific grades, 0 calibrated FDA outcomes, official future FDA status ABSTAIN**. No historical Track B data or production writes."
+          } >> "$GITHUB_STEP_SUMMARY"

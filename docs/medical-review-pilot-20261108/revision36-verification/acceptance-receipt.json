@@ -1,0 +1,99 @@
+{
+  "schema": "MAIN_REV36_ENGINEERING_ACCEPTANCE_V1",
+  "observedAt": "2026-11-09T14:01:01.618597+00:00",
+  "nct": "NCT06081894",
+  "pr": 965,
+  "branch": "feature/medical-stage4-verified-method-matrix-20261108",
+  "frontendCodeCommit": "013f81b40344a3f485b777925f1cfd53f1f94c8d",
+  "authenticatedAcceptanceCommit": "ddc785f85a220c6c4e74d040fa0f9c062b0a3962",
+  "authenticatedRun": "https://github.com/pdufa/pdufa-command-center/actions/runs/42628975006",
+  "authenticatedJob": 129200007950,
+  "authenticatedResultSource": "Sanitized stage records extracted from original successful GitHub Actions job log; no cookies, credentials or signed storage URLs included.",
+  "postgresql": "Observed installation API passed PostgreSQL-ready projection validation; all800methodHTTPreadbacks preserved the same snapshot.",
+  "matrixSnapshotSha256": "c5833e1315f64c19c2b5b1f857534b6eff6dbdda69189637e5f8275cf28e9dad",
+  "frontendPreview": {
+    "id": "dpl_ARC5XDy19zhsmLX5qLCKc9YHZzSj",
+    "url": "https://pdufa-new-dashboard-ljnrkkg3e-pdufa.vercel.app",
+    "target": "preview",
+    "state": "READY",
+    "authenticatedRuntime": "PASS",
+    "unauthenticatedMatrixHttp": 401
+  },
+  "renderObservation": {
+    "workspace": "tea-db967i3l550s73cadem0",
+    "service": "srv-dbntrkpsrm7s73aec3lg",
+    "name": "pdufa-medical-intelligence-preview",
+    "deploy": "dep-dbogvaoqr7gs73ava440",
+    "commit": "7c35253f8f6fa58714738c3619336380fb974d03",
+    "state": "live",
+    "autoDeploy": "off",
+    "newBackendCodeDeployed": false
+  },
+  "localTests": {
+    "backend": {
+      "passed": 1373,
+      "skipped": 8,
+      "warnings": 6,
+      "skipReason": "External isolated PostgreSQL role/vault acceptance prerequisites not configured locally."
+    },
+    "frontendTestFiles": {
+      "passed": 150,
+      "failed": 0
+    },
+    "rootAcaciaTests": {
+      "passed": 41,
+      "failed": 0
+    },
+    "retirementTests": {
+      "passed": 20,
+      "failed": 0
+    },
+    "retirementEntrypoints": 248,
+    "retirementViolations": 0,
+    "frontendBuild": "PASS",
+    "typescript": "PASS",
+    "localBrowserChecks": 17,
+    "localBrowserWidths": [
+      390,
+      1440
+    ],
+    "localBrowserFixture": "Temporary local application login only; not a reviewer identity or live backend acceptance."
+  },
+  "correctedFailures": [
+    "Missing local declared cryptography dependency installed without dependency-file changes.",
+    "Build and TestClient sandbox restrictions resolved with permitted execution; no application bypass.",
+    "Malformed non-ASCII vault credential raised server error in dormant route; fixed to401 before storage access, four raw-header regression cases."
+  ],
+  "routingBlocker": {
+    "action": "Move existing feature Vercel preview alias to the tested deployment",
+    "result": "AUTOMATIC_APPROVAL_REVIEW_REJECTED",
+    "reason": "Hosted-routing mutation lacked explicit authorization; could remove alias from its prior deployment.",
+    "alternative": "Use the verified unique preview URL. No alias change or indirect workaround performed."
+  },
+  "clinicalGradesBefore": 0,
+  "clinicalGradesAfter": 0,
+  "mappedSourceLeadsBefore": 18,
+  "mappedSourceLeadsAfter": 18,
+  "unmappedPositions": 782,
+  "sourceAuditPositions": 800,
+  "scientificSignoff": false,
+  "fdaPredictions": {
+    "APPROVAL": "ABSTAIN",
+    "CRL": "ABSTAIN",
+    "REVIEW_DELAY": "ABSTAIN"
+  },
+  "certainty": "NOT_VALIDATED",
+  "accuracy": "NOT_CALIBRATED",
+  "productionOperationsPerformed": false,
+  "clinicalReviewerWritesEnabled": false,
+  "vaultActivated": false,
+  "artifactSha256": {
+    "authenticated-readback-summary.json": "566aaed41927ce800ad2fe9bd83aacb5e612b3b6eab30fa5c4d3d0dff58b6aca",
+    "desktop-history.png": "c8138ed7f78d97892414f058e9825f3b9966d8ffb717c78e1d9f02d360ef5acf",
+    "desktop-task.png": "807d39a55a5aa467b5037573905fa3f5a5101738d23d7a11080fd32ad839dd06",
+    "iphone-history.png": "dfa76eb17bdc5d5f98bb729f66f885e38848ab7e96a6a0339d67cd5566101d59",
+    "iphone-task.png": "98fdbc4631b0860e58fcd653719d1c119e3541cdc73c54480940f71563115fc3",
+    "local-browser-receipt.json": "97157e52a1ceac9efebbe707756a58bc86964caa56cc77613a5760426c2f5dab"
+  },
+  "observationTimeMeaning": "Compilation time; original source, CI and browser timestamps remain in their individual receipts."
+}

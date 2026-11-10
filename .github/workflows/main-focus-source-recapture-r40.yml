@@ -1,0 +1,103 @@
+name: MAIN Rev40 FOCUS 29/23 public clinical-source recovery
+
+# The two independent R47 workstreams own automatic source refreshes.
+# Retain this proven collector workflow for explicit diagnostic/manual use.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-focus-public-source-capture-r40-draft
+  cancel-in-progress: false
+
+jobs:
+  source-recovery-29-trials-23-applications:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    env:
+      PYTHONPATH: new-platform/backend
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Protect exact-branch source inputs and run synthetic evidence-integrity tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python -m pip install pytest
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_focus_source_recovery_r40.py \
+            tests/test_hop_blinded_phase3_backtest.py
+      - name: Fetch only allowlisted public sponsor/FDA/SEC records and all 29 ClinicalTrials.gov trial IDs
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r40-focus"
+          python new-platform/backend/scripts/refresh_focus_public_sources_r40.py \
+            --output "$RUNNER_TEMP/r40-focus/r40_focus_research_only_public_source_receipt.json"
+      - name: Verify 29/23 membership and 0 clinical/model promotions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,hashlib
+          from pathlib import Path
+          p=Path(os.environ["RUNNER_TEMP"])/"r40-focus/r40_focus_research_only_public_source_receipt.json"
+          b=p.read_bytes()
+          r=json.loads(b)
+          assert r["schema"]=="MAIN_FOCUS_PUBLIC_SOURCE_RECAPTURE_R40"
+          assert r["trialRoster"]==29
+          assert r["provisionalApplicationGroups"]==23
+          assert r["canonicalApplicationSourceUrls"]==21
+          assert r["additionalOfficialSecSourceUrls"]==1
+          assert r["uniqueApplicationSourceUrls"]==22
+          assert 0<=r["applicationGroupsWithAvailablePublicSource"]<=23
+          assert len(r["trialSources"])==29
+          assert len(r["applicationGroups"])==23
+          assert r["independentlyValidatedApplicationForecasts"]==0
+          assert r["qualifiedClinicalReviews"]==0
+          assert r["scientificMethodGradesWritten"]==0
+          assert r["historicalBacktests"]==0
+          assert r["numericalApprovalProbability"] is None
+          assert r["calibratedAccuracy"] is None
+          assert r["noClinicalOrProductionWrites"] is True
+          assert r["modelTrainingAuthorized"] is False
+          assert sum(x["formalFdaActionPrediction"]=="ABSTAIN" for x in r["applicationGroups"])==22
+          assert sum(x["formalFdaActionPrediction"]=="NOT_APPLICABLE_ALREADY_OBSERVED" for x in r["applicationGroups"])==1
+          summary=[
+            "## R40 FOCUS public-source access audit (read-only research)",
+            "Source retrieval is NOT independent scientific or regulator validation.",
+            "FOCUS NCTs: 29",
+            "Provisional FDA application groups: 23",
+            f'Application source URLs fetched: {r["applicationSourceUrlsFetched"]}/{r["uniqueApplicationSourceUrls"]}',
+            f'Application groups with at least one accessible public source: {r["applicationGroupsWithAvailablePublicSource"]}/23',
+            'Achieve SEC original 10-Q fallback is separate from redirected issuer URL',
+            'Sarepta oversized HTML is hashed by bounded streaming without archiving source bodies',
+            f'Official exact-NCT registry records fetched: {r["clinicalTrialsGovRecordsFetched"]}/29',
+            "Independently signed scientific reviews: 0",
+            "Verified FDA approval/CRL forecast accuracy: unavailable",
+            "All future official FDA forecasts and delay forecasts: ABSTAIN",
+            f'Receipt SHA-256: {hashlib.sha256(b).hexdigest()}',
+            "Blocked, redirected, unsupported or inaccessible sources remain NOT VERIFIED, not clinical failures."
+          ]
+          print("\n".join(summary),flush=True)
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as fp:
+              fp.write("\n\n".join(summary)+"\n")
+          PY
+      - name: Preserve source access and sha256 receipts (not copyrighted source bodies)
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r40-focus-29-23-source-receipts-${{ github.run_id }}
+          path: ${{ runner.temp }}/r40-focus/r40_focus_research_only_public_source_receipt.json
+          retention-days: 90
+          if-no-files-found: error

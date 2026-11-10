@@ -1,0 +1,104 @@
+name: MAIN R60 original registry primary and safety source challenge
+
+# Draft-only, read-only research. No deployment, reviewer grade, FOCUS membership,
+# prediction promotion or historical Track B mutation.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r60-original-efficacy-safety-challenge.yml
+      - new-platform/backend/scripts/build_focus_original_result_challenge_r60.py
+      - new-platform/backend/tests/test_focus_original_result_challenge_r60.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r60-original-source-review
+  cancel-in-progress: false
+
+jobs:
+  reconcile-29-original-results:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Require exact 29 / 23 roster and run source-tamper tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python -m pip install 'pytest>=8,<10' 'PyMuPDF>=1.24,<2'
+          cd new-platform/backend
+          PYTHONPATH=. python -m pytest -q tests/test_focus_original_result_challenge_r60.py
+          PYTHONPATH=. python ../../scripts/audit_raas_retirement.py --check
+      - name: Restore original 29 clinical registry bytes and R55 research report
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42696796318
+          name: main-r53-original-public-protocol-sap-pdf-42696796318
+          path: ${{ runner.temp }}/r60/original
+      - name: Restore independently accepted R59 reviewer source queue
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42708088579
+          name: main-r59-focus-29-23-review-queue-42708088579
+          path: ${{ runner.temp }}/r60/r59
+      - name: Cross-check all original primary outcomes, comparisons and AE arms
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r60/output"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_focus_original_result_challenge_r60.py \
+            --r46 "$RUNNER_TEMP/r60/original/current_registry_document_index.json" \
+            --r55 "$RUNNER_TEMP/r60/original/FOCUS_23_APPLICATION_EFFICACY_SAFETY_SOURCE_REVIEW_PACKETS_R55.json" \
+            --r59 "$RUNNER_TEMP/r60/r59/FOCUS_29_TRIAL_23_APPLICATION_REVIEW_QUEUE_R59.json" \
+            --raw-registry-dir "$RUNNER_TEMP/r60/original/public-registry-original" \
+            --output "$RUNNER_TEMP/r60/output/FOCUS_29_ORIGINAL_PRIMARY_AND_AE_SOURCE_CHALLENGE_R60.json" \
+            --summary "$RUNNER_TEMP/r60/output/FOCUS_29_ORIGINAL_PRIMARY_AND_AE_SOURCE_CHALLENGE_R60.md"
+          python - <<'PY'
+          import json,os
+          from pathlib import Path
+          folder=Path(os.environ["RUNNER_TEMP"])/"r60/output"
+          r=json.loads((folder/"FOCUS_29_ORIGINAL_PRIMARY_AND_AE_SOURCE_CHALLENGE_R60.json").read_bytes())
+          assert r["schema"]=="MAIN_R60_ORIGINAL_REGISTRY_PRIMARY_SAFETY_CHALLENGE"
+          assert r["canonicalUniqueNctCount"]==29 and r["provisionalApplicationCycleCount"]==23
+          assert r["sourceVerifiedCurrentPrimaryTrialCount"]==12
+          assert r["sourceVerifiedCurrentSafetyArmTrialCount"]==12
+          assert r["sourceReportedPrimaryTables"]==16
+          assert r["sourceReportedStatisticalComparisons"]==20
+          assert r["sourceReportedSeriousAeTermRows"]==244
+          assert r["sourceReportedOtherAeTermRows"]==202
+          assert len(r["uniqueTrialOriginalResultChallenges"])==29
+          assert len(r["applicationSourceReviewCrosswalk"])==23
+          assert r["qualifiedClinicalOrStatisticalSignoffs"]==0
+          assert r["independentlyValidatedFdaForecasts"]==0
+          assert r["fdaApprovalProbability"] is None and r["measuredPredictionAccuracy"] is None
+          assert r["officialFutureFdaOutcome"]=="ABSTAIN"
+          assert r["officialFutureReviewTiming"]=="ABSTAIN"
+          assert r["reviewerLedgerProductionWritesOrModelTraining"] is False
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+            f.write("## R60 original source primary/AE evidence challenge\n\n")
+            f.write("29 distinct original NCT records SHA-compared to R46/R55/R59 receipts; 16 posted primary tables; 20 reported statistical comparisons; 244 serious AE term rows and 202 other AE term rows; 12 NCTs with current posted primary and safety results. Source-only review issues preserved; **0 clinical signoffs, 0 FDA forecasts, no calibration.**\n\n")
+            f.write((folder/"FOCUS_29_ORIGINAL_PRIMARY_AND_AE_SOURCE_CHALLENGE_R60.md").read_text())
+          PY
+      - name: Archive original-source-checked, read-only review challenge
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r60-original-primary-safety-review-${{ github.run_id }}
+          path: ${{ runner.temp }}/r60/output/
+          retention-days: 90
+          if-no-files-found: error

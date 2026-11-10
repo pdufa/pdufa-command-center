@@ -1,0 +1,193 @@
+{
+  "meta": {
+    "disclaimer": "Do not rely on openFDA to make decisions regarding medical care. While we make every effort to ensure that data is accurate, you should assume all results are unvalidated. We may limit or otherwise restrict your access to the API in line with our Terms of Service.",
+    "terms": "https://open.fda.gov/terms/",
+    "license": "https://open.fda.gov/license/",
+    "last_updated": "2026-11-06",
+    "results": {
+      "skip": 0,
+      "limit": 100,
+      "total": 1
+    }
+  },
+  "results": [
+    {
+      "submissions": [
+        {
+          "submission_type": "ORIG",
+          "submission_number": "1",
+          "submission_status": "AP",
+          "submission_status_date": "20251219",
+          "review_priority": "STANDARD",
+          "submission_class_code": "TYPE 1",
+          "submission_class_code_description": "Type 1 - New Molecular Entity",
+          "submission_property_type": [
+            {
+              "code": "Orphan"
+            }
+          ],
+          "application_docs": [
+            {
+              "id": "84480",
+              "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/219083s000lbl.pdf",
+              "date": "20251222",
+              "type": "Label"
+            },
+            {
+              "id": "84515",
+              "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/219083Orig1s000ltr.pdf",
+              "date": "20251223",
+              "type": "Letter"
+            },
+            {
+              "id": "84774",
+              "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/219083Orig1s000TOC.html",
+              "date": "20260116",
+              "type": "Review"
+            }
+          ]
+        },
+        {
+          "submission_type": "SUPPL",
+          "submission_number": "1",
+          "submission_status": "AP",
+          "submission_status_date": "20260205",
+          "review_priority": "N/A",
+          "submission_class_code": "REMS",
+          "submission_class_code_description": "REMS",
+          "submission_property_type": [
+            {
+              "code": "Orphan"
+            }
+          ],
+          "application_docs": [
+            {
+              "id": "84959",
+              "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/219083Orig1s001ltr.pdf",
+              "date": "20260206",
+              "type": "Letter"
+            }
+          ]
+        }
+      ],
+      "application_number": "NDA219083",
+      "sponsor_name": "CYTOKINETICS",
+      "openfda": {
+        "application_number": [
+          "NDA219083"
+        ],
+        "brand_name": [
+          "MYQORZO"
+        ],
+        "generic_name": [
+          "AFICAMTEN"
+        ],
+        "manufacturer_name": [
+          "Cytokinetics Inc."
+        ],
+        "product_ndc": [
+          "82112-105",
+          "82112-110",
+          "82112-115",
+          "82112-120"
+        ],
+        "product_type": [
+          "HUMAN PRESCRIPTION DRUG"
+        ],
+        "route": [
+          "ORAL"
+        ],
+        "substance_name": [
+          "AFICAMTEN"
+        ],
+        "rxcui": [
+          "2731474",
+          "2731480",
+          "2731482",
+          "2731484",
+          "2731486",
+          "2731488",
+          "2731490",
+          "2731492"
+        ],
+        "spl_id": [
+          "f48908e6-f578-4e6c-b4ac-d4af4f01fdd6"
+        ],
+        "spl_set_id": [
+          "fd778507-1274-4d1a-a659-5431d55c543a"
+        ],
+        "package_ndc": [
+          "82112-105-30",
+          "82112-110-30",
+          "82112-115-30",
+          "82112-120-30"
+        ],
+        "unii": [
+          "B1I77MH6K1"
+        ]
+      },
+      "products": [
+        {
+          "product_number": "004",
+          "reference_drug": "Yes",
+          "brand_name": "MYQORZO",
+          "active_ingredients": [
+            {
+              "name": "AFICAMTEN",
+              "strength": "20MG"
+            }
+          ],
+          "reference_standard": "No",
+          "dosage_form": "TABLET",
+          "route": "ORAL",
+          "marketing_status": "Prescription"
+        },
+        {
+          "product_number": "002",
+          "reference_drug": "Yes",
+          "brand_name": "MYQORZO",
+          "active_ingredients": [
+            {
+              "name": "AFICAMTEN",
+              "strength": "10MG"
+            }
+          ],
+          "reference_standard": "No",
+          "dosage_form": "TABLET",
+          "route": "ORAL",
+          "marketing_status": "Prescription"
+        },
+        {
+          "product_number": "003",
+          "reference_drug": "Yes",
+          "brand_name": "MYQORZO",
+          "active_ingredients": [
+            {
+              "name": "AFICAMTEN",
+              "strength": "15MG"
+            }
+          ],
+          "reference_standard": "No",
+          "dosage_form": "TABLET",
+          "route": "ORAL",
+          "marketing_status": "Prescription"
+        },
+        {
+          "product_number": "001",
+          "reference_drug": "Yes",
+          "brand_name": "MYQORZO",
+          "active_ingredients": [
+            {
+              "name": "AFICAMTEN",
+              "strength": "5MG"
+            }
+          ],
+          "reference_standard": "Yes",
+          "dosage_form": "TABLET",
+          "route": "ORAL",
+          "marketing_status": "Prescription"
+        }
+      ]
+    }
+  ]
+}

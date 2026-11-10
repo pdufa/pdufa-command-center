@@ -1,0 +1,43 @@
+const test=require("node:test"),assert=require("node:assert/strict"),fs=require("node:fs"),path=require("node:path");
+const root=path.resolve(__dirname,"..");
+const route=fs.readFileSync(path.join(root,"app/api/predictions/medical-source-run/route.ts"),"utf8");
+const decoder=fs.readFileSync(path.join(root,"lib/medical-source-run.ts"),"utf8");
+const monitor=fs.readFileSync(path.join(root,"app/predictions/assessment/LivePredictionMonitor.tsx"),"utf8");
+const backend=fs.readFileSync(path.resolve(__dirname,"../../backend/app/medical_continuous.py"),"utf8");
+test("authenticated source run status reads only the isolated backend, never issues operational writes",()=>{
+  assert.match(route,/hasSession/);
+  assert.match(route,/authConfigured/);
+  assert.match(route,/FOCUS_SPECIALTY_ASSESSMENT_QUEUE/);
+  assert.match(route,/isolatedMedicalBackend\(process\.env\.PDUFA_MEDICAL_REVIEW_API_BASE_URL\)/);
+  assert.match(route,/process\.env\.PDUFA_MEDICAL_INTERNAL_API_KEY\?\?process\.env\.PDUFA_INTERNAL_API_KEY/);
+  assert.doesNotMatch(route,/PDUFA_API_BASE_URL/);
+  assert.doesNotMatch(route,/PDUFA_MEDICAL_REVIEW_READ_KEY/);
+  assert.match(route,/\/api\/medical-continuous\/"\+nct\+"\/runs\/latest/);
+  assert.match(route,/export async function GET/);
+  assert.doesNotMatch(route,/export async function POST/);
+});
+test("source worker decoder rejects fake approvals, wrong NCT, wrong stage totals and untrusted date formats",()=>{
+  assert.match(decoder,/v\.nct!==nct/);
+  assert.match(decoder,/!uuid\.test\(v\.runId\)/);
+  assert.match(decoder,/v\.totalStages!==12/);
+  assert.match(decoder,/v\.decision!=="ABSTAIN"/);
+  assert.match(decoder,/v\.approvalProbability!==null/);
+  assert.match(decoder,/v\.stages\.length!==12/);
+  assert.match(decoder,/completed!==v\.completedStages/);
+  assert.match(decoder,/researchOnly:true,prediction:"ABSTAIN",calibratedAccuracy:null/);
+  assert.match(backend,/def snapshot\(engine, nct, run_id\)/);
+  assert.match(backend,/\"status\": run\[\"status\"\]/);
+  assert.match(backend,/\"completedStages\": len\(completed\), \"totalStages\": len\(STAGES\)/);
+});
+test("UI polls genuine worker state without calling 12 source stages clinical scoring",()=>{
+  assert.match(monitor,/fetch\("\/api\/predictions\/medical-source-run\?nct="/);
+  assert.match(monitor,/window\.setInterval/);
+  assert.match(monitor,/document\.visibilityState==="visible"/);
+  assert.match(monitor,/Worker status last fetched/);
+  assert.match(monitor,/currentSourceStage\?\.title/);
+  assert.match(monitor,/worker\.status/);
+  assert.match(monitor,/completedStages/);
+  assert.match(monitor,/not the 800-method scientific scoring or FDA prediction engine/);
+  assert.match(monitor,/Worker telemetry could not be authenticated or reached/);
+  assert.match(monitor,/No source-research run recorded for this exact trial/);
+});

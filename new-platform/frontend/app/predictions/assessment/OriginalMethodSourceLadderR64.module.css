@@ -1,0 +1,25 @@
+.shell{border:1px solid #b8d4c5;background:#f7fbf9;border-radius:13px;padding:clamp(13px,2vw,20px);min-width:0;color:#183b34;scroll-margin-top:85px}
+.shell h2{font-size:clamp(18px,2.6vw,23px);line-height:1.35;margin:6px 0 12px}
+.eyebrow{font-size:11px;color:#166650;font-weight:850;letter-spacing:.07em}
+.statusRow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,200px),1fr));gap:9px;margin:12px 0}
+.value{border:1px solid #bbd7c9;background:#fff;border-radius:9px;padding:12px;min-width:0}
+.value span{display:block;font-size:11px;color:#516e62;margin-bottom:7px}
+.value strong{display:block;font-size:14px;line-height:1.35;overflow-wrap:anywhere}
+.explainer,.footer{line-height:1.65;color:#425d51;font-size:13px;max-width:1080px}
+.summary{background:#e9f5ee;border-radius:9px;padding:12px;font-size:12px;line-height:1.6;margin:12px 0}
+.domains{display:grid;gap:9px;margin-top:12px}
+.domain{border:1px solid #b6d3c5;background:#fff;border-radius:9px;overflow:hidden}
+.domain summary{cursor:pointer;padding:13px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 15px}
+.domain summary strong{font-size:14px;color:#125b46;flex:1 1 230px}
+.domain summary span{font-size:12px;color:#486959}
+.domain summary small{font-size:11px;color:#825425;font-weight:750}
+.domain[open] summary{border-bottom:1px solid #d6e7df;background:#eff8f2}
+.expanded{padding:12px 14px;font-size:12px;overflow-wrap:anywhere}
+.expanded p{margin:4px 0 11px;line-height:1.6}
+.expanded ul{list-style:none;padding:0;margin:7px 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:7px}
+.expanded li{border:1px solid #e1eee6;border-radius:7px;padding:10px;background:#fafdfb}
+.expanded li a{font-weight:750;color:#075f4c;text-decoration:underline;overflow-wrap:anywhere}
+.expanded li span{display:block;margin-top:5px;font-size:11px;color:#65796e}
+.footer a,.back a{color:#076f59;font-weight:750;text-decoration:underline}
+.back{font-size:12px;margin:11px 0 0}
+@media(max-width:480px){.statusRow{grid-template-columns:repeat(2,minmax(0,1fr))}.value{padding:9px}.value strong{font-size:12px}.domain summary{padding:11px}.expanded{padding:10px}}

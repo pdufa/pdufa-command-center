@@ -1,0 +1,129 @@
+{
+  "schema": "MAIN_R71_FIVE_PIVOTAL_ABSTRACT_RESULT_AND_FULLTEXT_ACCESS_REVIEW_ONLY",
+  "reviewDate": "2026-11-09",
+  "originalR70PubmedResearchRun": 42729546458,
+  "originalR70PubmedSha256": "03434b975e511b2d603227bab3e25768dbcc3a0e7b412d479d9afbd100cd2577",
+  "verificationType": "PUBLISHED_RESULTS_OR_EXCERPTS_WITH_EXPLICIT_UNREVIEWED_ORIGINAL_PROSPECTIVE_SAP",
+  "originalSignedPreunblindingStatisticalPlansVerified": 0,
+  "independentQualifiedScienceReviews": 0,
+  "validatedFutureFdaApplicationForecasts": 0,
+  "officialFDAForecast": "ABSTAIN",
+  "cases": [
+    {
+      "nct": "NCT05126758",
+      "pmid": "42526472",
+      "ticker": "CAPR",
+      "trial": "HOPE-3",
+      "doi": "10.1016/S0140-6736(26)01385-1",
+      "published": "2026-07-29",
+      "articleUrl": "https://pubmed.ncbi.nlm.nih.gov/42526472/",
+      "journalUrl": "https://doi.org/10.1016/S0140-6736(26)01385-1",
+      "sourceAccess": "PUBMED_PRIMARY_ABSTRACT_REVIEWED",
+      "supplementUrl": null,
+      "supplementStatus": "NO_VERIFIED_ORIGINAL_SUPPLEMENT_DOCUMENT_OPENED",
+      "primaryEndpoint": "Total PUL2.0 percentage change from baseline at 12 months",
+      "reportedEffect": "Reported between-group difference +4.55% in PUL2.0 percentage change; 95% CI 0.47 to 8.63; reported p=0.029",
+      "analysisPopulation": "106 randomized (deramiocel 54; placebo 52); article abstract describes intention-to-treat",
+      "safetyObservation": "Authors described a similar safety profile to placebo; full adverse-event denominators not independently reconciled",
+      "specificReviewNeeds": [
+        "Check prospectively locked PUL2.0 definition and endpoint hierarchy",
+        "Confirm unblinding date versus original SAP changes and subgroup exclusions",
+        "Reconcile all safety arm denominators and available FDA inspection/quality issues"
+      ],
+      "fullOriginalPaperIndependentlyRead": false
+    },
+    {
+      "nct": "NCT05662241",
+      "pmid": "42233621",
+      "ticker": "ZBIO",
+      "trial": "INDIGO",
+      "doi": "10.1056/NEJMoa2601337",
+      "published": "2026-06-02",
+      "articleUrl": "https://pubmed.ncbi.nlm.nih.gov/42233621/",
+      "journalUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2601337",
+      "sourceAccess": "PUBLISHER_MAIN_REPORT_ABSTRACT_AND_SUPPLEMENT_LINKS_LISTED",
+      "supplementUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2601337",
+      "supplementStatus": "PUBLISHER_LISTS_PROTOCOL_AND_APPENDIX_NOT_INDEPENDENTLY_RECONCILED",
+      "primaryEndpoint": "Time to first IgG4-related disease flare requiring rescue therapy",
+      "reportedEffect": "Hazard ratio 0.44; 95% CI 0.28 to 0.71; reported p<0.001",
+      "analysisPopulation": "194 randomized; 97 obexelimab and 97 placebo",
+      "safetyObservation": "Authors reported serious adverse events in 10.3% versus 18.6%; exposure-adjusted denominators still need independent review",
+      "specificReviewNeeds": [
+        "Verify adjudication of flare and rescue-treatment rules",
+        "Read protocol and appendix, lock date, multiplicity hierarchy and estimand",
+        "Reconcile glucocorticoid taper, missing data and safety exposure"
+      ],
+      "fullOriginalPaperIndependentlyRead": false
+    },
+    {
+      "nct": "NCT06081894",
+      "pmid": "42663312",
+      "ticker": "CYTK",
+      "trial": "ACACIA-HCM",
+      "doi": "10.1056/NEJMoa2603021",
+      "published": "2026-08-28",
+      "articleUrl": "https://pubmed.ncbi.nlm.nih.gov/42663312/",
+      "journalUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021",
+      "sourceAccess": "PUBLISHER_MAIN_REPORT_ABSTRACT_AND_SUPPLEMENT_LINKS_LISTED",
+      "supplementUrl": "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021",
+      "supplementStatus": "PUBLISHER_LISTS_PROTOCOL_AND_APPENDIX_NOT_INDEPENDENTLY_RECONCILED",
+      "primaryEndpoint": "Two primary endpoints: change in peak oxygen uptake and KCCQ-CSS at week 36",
+      "reportedEffect": "Peak VO2 least-squares difference +0.67 mL/kg/min (95% CI 0.22 to 1.11; p=0.003); KCCQ-CSS +3.0 (95% CI 0.5 to 5.5; p=0.02)",
+      "analysisPopulation": "517 randomized; 258 aficamten and 259 placebo",
+      "safetyObservation": "Authors reported LVEF below 50%: 10.5% vs 0.8%; serious adverse events: 20.2% vs 14.7%",
+      "specificReviewNeeds": [
+        "Verify dual primary statistical gate and adjustment chronology",
+        "Review clinical importance of effect size independently of p-values",
+        "Reconcile LVEF reduction, serious adverse event counts and exposure"
+      ],
+      "fullOriginalPaperIndependentlyRead": false
+    },
+    {
+      "nct": "NCT06153693",
+      "pmid": "40587141",
+      "ticker": "MLYS",
+      "trial": "Launch-HTN",
+      "doi": "10.1001/jama.2025.9413",
+      "published": "2025-06-30",
+      "articleUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12210145/",
+      "journalUrl": "https://jamanetwork.com/journals/jama/fullarticle/2835763",
+      "sourceAccess": "OPEN_PMC_FULL_ARTICLE_AND_JAMA_SUPPLEMENT_1_EXTRACTED_TEXT_REVIEWED",
+      "supplementUrl": "https://jamanetwork.com/journals/jama/fullarticle/2835763",
+      "supplementStatus": "JAMA_LISTS_PROTOCOL_VERSIONS_2_1_3_0_3_1_AND_SAP_ADDITIONS;SUPPLEMENT_1_TEXT_CHECKED_LOCK_CHRONOLOGY_PENDING",
+      "primaryEndpoint": "Change in automated office systolic blood pressure at week 6 (lorundrostat 50 mg vs placebo)",
+      "reportedEffect": "Least-squares between-group difference -9.1 mmHg; 95% CI -13.3 to -4.9; reported p<0.001",
+      "analysisPopulation": "1083 randomized (1:2:1); primary comparison uses pooled 50 mg lorundrostat versus placebo; 1078 received treatment",
+      "safetyObservation": "Hyperkalemia, hyponatremia and eGFR reductions were prespecified adverse events of special interest; denominators and discontinuations require original SAP/exposure review",
+      "specificReviewNeeds": [
+        "Compare protocol versions 2.1, 3.0 and 3.1 with final protocol and database-lock timeline",
+        "Audit source supplement 1 eFigure 2 hypotheses H1-H7 and secondary multiplicity paths",
+        "Reconcile 1000-imputation treatment-policy estimand, MAR/MNAR assumptions, jump-to-reference sensitivity and missing data",
+        "Reconcile potassium, sodium and eGFR arm-specific event denominators"
+      ],
+      "fullOriginalPaperIndependentlyRead": false
+    },
+    {
+      "nct": "NCT06343779",
+      "pmid": "42849489",
+      "ticker": "PHVS",
+      "trial": "RAPIDe-3",
+      "doi": "10.1016/S0140-6736(26)01296-1",
+      "published": "2026-10-08",
+      "articleUrl": "https://pubmed.ncbi.nlm.nih.gov/42849489/",
+      "journalUrl": "https://www.sciencedirect.com/science/article/pii/S0140673626012961",
+      "sourceAccess": "PUBLISHER_INDEXED_OPEN_ACCESS_ABSTRACT_TEXT_FULL_MANUSCRIPT_NOT_INDEPENDENTLY_READ",
+      "supplementUrl": null,
+      "supplementStatus": "NO_VERIFIED_ORIGINAL_SUPPLEMENT_DOCUMENT_OPENED",
+      "primaryEndpoint": "Time to onset of symptom relief during hereditary angioedema attacks",
+      "reportedEffect": "Median 1.28 h with deucrictibant vs >12 h placebo; reported p<0.0001",
+      "analysisPopulation": "134 randomized; 113 treated 201 attacks; efficacy comparison includes 88 patients with paired treated attacks",
+      "safetyObservation": "Authors reported no severe or serious treatment-related adverse events; attack-based exposure denominators require review",
+      "specificReviewNeeds": [
+        "Verify crossover pair inclusion/exclusion and repeated-attack estimand",
+        "Check 12-hour censoring, rescue medication, multiplicity and paired-analysis sensitivity",
+        "Separate participant and attack safety denominators"
+      ],
+      "fullOriginalPaperIndependentlyRead": false
+    }
+  ]
+}

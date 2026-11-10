@@ -1,0 +1,1283 @@
+Show glossary
+Search for terms
+Hide glossary
+
+Study record managers: refer to the Data Element Definitions if submitting registration or results information.
+
+Accepts healthy volunteers
+Active comparator arm
+Adverse event
+Age or age group
+All-cause mortality
+Allocation
+Arm
+Arm type
+Baseline characteristics
+Canceled submission
+Certain agreements
+Certification
+Certification/extension first posted
+Certification/extension first submitted
+Certification/extension first submitted that met QC criteria
+Clinical study
+Clinical trial
+ClinicalTrials.gov identifier (NCT number)
+Collaborator
+Condition/disease
+Contact
+Cross-over assignment
+Data Monitoring Committee (DMC)
+Early Phase 1 (formerly listed as Phase 0)
+Eligibility criteria
+Enrollment
+Exclusion criteria
+Expanded access
+Expanded access status
+Expanded access type
+Experimental arm
+Extension request
+Facility name
+Factorial assignment
+FDAAA 801 Violations
+First posted
+First submitted
+First submitted that met QC criteria
+Food and Drug Administration Amendments Act of 2007, Section 801 (FDAAA 801)
+Funder type
+Gender-based eligibility
+Group/cohort
+Human subjects protection review board
+Inclusion criteria
+Informed consent
+Informed consent form (ICF)
+Intervention model
+Intervention/treatment
+Interventional study (clinical trial)
+Investigator
+Last update posted
+Last update submitted
+Last update submitted that met QC criteria
+Last verified
+Location
+Location countries
+Masking
+NCT number
+No intervention arm
+Observational study
+Observational study model
+Other adverse event
+Other study IDs
+Other terms
+Outcome measure
+Parallel assignment
+Participant flow
+Patient registry
+Phase
+Phase 1
+Phase 2
+Phase 3
+Phase 4
+Phase Not Applicable
+Placebo
+Placebo comparator arm
+Primary completion date
+Primary outcome measure
+Primary purpose
+Principal investigator (PI)
+Protocol
+Quality control (QC) review
+Randomized allocation
+Recruitment status
+Registration
+Removed location countries
+Reporting group
+Responsible party
+Results database
+Results delayed
+Results first posted
+Results first posted with QC comments
+Results first submitted
+Results first submitted that met QC criteria
+Results returned after quality control review
+Results submitted to ClinicalTrials.gov
+Secondary outcome measure
+Serious adverse event
+Sex
+Sham comparator arm
+Single group assignment
+Sort studies by
+Sponsor
+Statistical analysis plan (SAP)
+Study completion date
+Study design
+Study documents
+Study IDs
+Study record
+Study registry
+Study results
+Study start date
+Study status
+Study type
+Submitted date
+Title
+Title acronym
+Type of intervention
+U.S. Agency for Healthcare Research and Quality (AHRQ)
+U.S. Food and Drug Administration (FDA)
+Unknown
+
+An official website of the United States government
+
+Here’s how you know
+Skip to main page content
+NIH Websites Are Changing
+Get the Latest Updates and FAQs on the transition
+Per Executive Order 14434, federal agencies are now using "Super Intelligence" (SI) in place of "Artificial Intelligence" (AI). You may see both terms across NIH content during this transition.
+ 
+PRS Login
+Find Studies
+Study Basics
+Submit Studies
+Data and API
+Policy
+About
+My Saved Studies (0)
+HomeSearch ResultsStudy Record
+
+The U.S. government does not review or approve the safety and science of all studies listed on this website.
+
+Read our full disclaimer for details.
+
+A Trial to Evaluate the Efficacy and Safety of Aficamten Compared to Placebo in Adults With Symptomatic Non-Obstructive Hypertrophic Cardiomyopathy (nHCM) (ACACIA-HCM)
+ClinicalTrials.gov ID NCT06081894
+Sponsor Cytokinetics
+Information provided by Cytokinetics (Responsible Party)
+Last Update Posted 2026-09-22
+Active, not recruiting  
+No longer looking for participants
+Download
+Save
+Study DetailsResearcher ViewNo Results PostedRecord History
+Study Record Versions
+This table shows all the versions of this study record arranged in order by submitted date.
+To view one version of the study record, click the submitted date.
+To compare two versions, select them using the check boxes and click "Compare" at the bottom of the list.
+Data that is changed in the study record is color coded:
+Deletions from the study record are shown crossed out in red highlights.
+Additions to the study record are shown in green highlights.
+	Version	Date submitted
+(YYYY-MM-DD)	
+Changes
+
+
+ 
+	1	2023-10-12	
+None (earliest version on record)
+
+
+ 
+	2	2023-11-08	
+Study Status
+Contacts/Locations
+
+
+ 
+	3	2023-12-17	
+Study Status
+Contacts/Locations
+
+
+ 
+	4	2023-12-21	
+Study Status
+Contacts/Locations
+
+
+ 
+	5	2024-01-08	
+Study Identification
+Study Status
+
+
+ 
+	6	2024-01-12	
+Study Status
+Contacts/Locations
+
+
+ 
+	7	2024-01-25	
+Study Status
+Contacts/Locations
+
+
+ 
+	8	2024-02-16	
+Study Status
+Contacts/Locations
+
+
+ 
+	9	2024-03-01	
+Study Status
+Contacts/Locations
+
+
+ 
+	10	2024-03-08	
+Study Status
+Contacts/Locations
+
+
+ 
+	11	2024-03-22	
+Study Status
+Contacts/Locations
+
+
+ 
+	12	2024-03-28	
+Study Status
+Contacts/Locations
+
+
+ 
+	13	2024-04-05	
+Study Status
+Contacts/Locations
+
+
+ 
+	14	2024-04-12	
+Study Status
+Contacts/Locations
+
+
+ 
+	15	2024-04-26	
+Study Status
+Contacts/Locations
+
+
+ 
+	16	2024-05-17	
+Study Status
+Contacts/Locations
+
+
+ 
+	17	2024-05-24	
+Study Status
+Contacts/Locations
+
+
+ 
+	18	2024-06-22	
+Study Status
+Contacts/Locations
+
+
+ 
+	19	2024-07-15	
+Study Status
+Contacts/Locations
+
+
+ 
+	20	2024-07-22	
+Study Status
+Contacts/Locations
+
+
+ 
+	21	2024-08-06	
+Study Status
+Contacts/Locations
+
+
+ 
+	22	2024-08-23	
+Study Status
+Contacts/Locations
+
+
+ 
+	23	2024-09-18	
+Study Status
+Contacts/Locations
+
+
+ 
+	24	2024-10-19	
+Study Status
+Contacts/Locations
+
+
+ 
+	25	2024-12-03	
+Study Status
+Contacts/Locations
+
+
+ 
+	26	2025-01-11	
+Study Status
+Contacts/Locations
+
+
+ 
+	27	2025-05-15	
+Study Status
+Sponsor/Collaborators
+Study Design
+Outcome Measures
+Eligibility
+
+
+ 
+	28	2025-10-27	
+Recruitment Status
+Study Status
+Contacts/Locations
+
+
+ 
+	29	2026-01-29	
+Study Status
+Outcome Measures
+
+
+ 
+	30	2026-08-03	
+Study Identification
+Study Status
+Outcome Measures
+
+
+ 
+	31	2026-09-21	
+Study Status
+
+Compare
+On this page
+Study Record Versions
+Study Details
+Study Identification
+Study Status
+Sponsor/Collaborators
+Oversight
+Study Description
+Conditions
+Study Design
+Arms and Interventions
+Outcome Measures
+Eligibility
+Contacts/Locations
+IPD Sharing
+References
+Document Section
+Viewing V26 (2025-01-11)
+Study Details
+Study Identification
+Unique Protocol ID
+CY 6033
+Brief Title
+Phase 3 Trial to Evaluate the Efficacy and Safety of Aficamten Compared to Placebo in Adults With Symptomatic nHCM
+Official Title
+A Phase 3, Multi-Center, Randomized, Double-Blind Trial to Evaluate the Efficacy and Safety of Aficamten Compared to Placebo in Adults With Symptomatic Non-Obstructive Hypertrophic Cardiomyopathy
+Secondary IDs
+2023-505797-15-00, 2023
+Study Status
+Record Verification
+2025-01
+Overall Status
+Recruiting
+Study Start
+2023-08-30 [Actual]
+Primary Completion
+2026-06 [Estimated]
+Study Completion
+2026-09 [Estimated]
+First Submitted
+2023-08-31
+First Submitted that Met QC Criteria
+2023-10-12
+First Posted
+2023-10-13 [Actual]
+Last Update Submitted that Met QC Criteria
+2025-01-11
+Last Update Posted
+2025-01-14 [Actual]
+Sponsor/Collaborators
+Sponsor
+Cytokinetics
+Responsible Party
+Sponsor
+Collaborators
+Oversight
+U.S. FDA-regulated Drug
+Yes
+U.S. FDA-regulated Device
+No
+Data Monitoring
+Yes
+Study Description
+Brief Summary
+This clinical trial will study the effects of aficamten (versus placebo) on the quality of life, exercise capacity, and clinical outcomes of patients with non-obstructive hypertrophic cardiomyopathy.
+Detailed Description
+Conditions
+Condition
+Symptomatic Non-Obstructive Hypertrophic Cardiomyopathy
+Keywords
+CK-3773274
+CK-274
+Aficamten
+Symptomatic Non-Obstructive Hypertrophic Cardiomyopathy
+nHCM
+ACACIA-HCM
+ACACIA
+Study Design
+Study Type
+Interventional
+Primary Purpose
+Treatment
+Study Phase
+Phase 3
+Interventional Study Model
+Parallel Assignment
+Number of Arms
+2
+Masking
+Double (Participant, Investigator)
+Allocation
+Randomized
+Enrollment
+420 [Estimated]
+Arms and Interventions
+Arms
+Assigned Interventions
+Experimental: Aficamten
+Participants in this arm will receive a single daily oral dose of 5 mg, 10 mg, 15 mg, or 20 mg of aficamten with dose levels guided by echocardiography assessments, for up to 72 weeks.
+Drug: Aficamten
+
+Oral Tablet
+
+Placebo Comparator: Placebo
+Participants in this arm will receive placebo, for up to 72 weeks.
+Drug: Placebo
+
+Oral Tablet
+
+Outcome Measures
+Primary Outcome Measures
+Change in Kansas City Cardiomyopathy Questionnaire - Clinical Summary Score (KCCQ-CSS)
+Effect of aficamten compared with placebo on participant health status
+[Time Frame: Baseline to Week 36]
+Secondary Outcome Measures
+Change in composite of two Z-scores of CPET parameters (pVO2 and VE/VCO2 slope)
+Effect of aficamten compared with placebo on global exercise capacity based on maximal and sub-maximal exercise performance
+[Time Frame: Baseline to Week 36]
+Proportion of participants with ≥ 1 class improvement in NYHA Functional Class
+Effect of aficamten compared with placebo on NYHA Functional Classification
+[Time Frame: Baseline to Week 36]
+Change in NT-proBNP
+Effect of aficamten compared with placebo on a biomarker of cardiac wall stress
+[Time Frame: Baseline to Week 36]
+Change in LAVI
+Effect of aficamten compared with placebo on echocardiographic measures of structural remodeling
+[Time Frame: Baseline to Week 36]
+Time to first CV event (CV death; heart transplantation or left ventricular assist device; aborted sudden cardiac death; non-fatal stroke; heart failure hospitalization; or cardiac arrhythmia requiring treatment or hospitalization)
+Effect of aficamten compared with placebo on cardiovascular events
+[Time Frame: Baseline to End of Study, Week 72]
+Eligibility
+Minimum Age
+18 Years
+Maximum Age
+85 Years
+Sex
+All
+Gender-based Eligibility
+Gender Eligibility Description
+Accepts Healthy Volunteers
+No
+Criteria
+
+Inclusion Criteria:
+
+Between 18-85 years of age
+Body mass index < 40 kg/m2
+
+Diagnosed with nHCM and has a screening echocardiogram with the following:
+
+End-diastolic left ventricular (LV) wall thickness:
+
+≥ 15 mm in one or more myocardial segments OR
+≥ 13 mm in one or more wall segments and a known disease-causing gene mutation or positive family history of HCM AND
+Resting LVOT-G < 30 mmHg AND Valsalva LVOT-G < 50 mmHg AND
+LVEF ≥ 60%
+Participants with a history of intracavitary obstruction are eligible.
+NYHA class II or III
+Respiratory exchange ratio of ≥ 1.00 at screening by cardiopulmonary exercise testing (CPET) and predicted peak oxygen uptake (pVO2) ≤ 90% for age and sex
+KCCQ-CSS score of ≥ 30 and ≤ 85
+
+NT-proBNP of:
+
+NT-pro BNP ≥ 300 pg/mL or NT-proBNP ≥ 900 pg/mL if in atrial fibrillation or atrial flutter OR
+For Black participants, an NT-pro BNP ≥ 225 pg/mL or NT-proBNP ≥ 675 pg/mL if in atrial fibrillation or atrial flutter
+
+Exclusion Criteria:
+
+Significant valvular heart disease (per Investigator judgment)
+
+Moderate or severe valvular aortic stenosis or fixed subaortic obstruction
+Moderate or severe mitral regurgitation
+Known or suspected infiltrative, genetic or storage disorder causing cardiac hypertrophy that mimics nHCM (eg, Noonan syndrome, Fabry disease, amyloidosis)
+Known current unrevascularized coronary artery stenosis of ≥ 70% or documented history of myocardial infarction.
+History of LV systolic dysfunction (LVEF < 45%) or stress cardiomyopathy
+Inability to exercise on a treadmill or bicycle (eg, orthopedic limitations)
+Documented room air oxygen saturation reading < 90% at screening or history of significant chronic obstructive pulmonary disease or severe/significant pulmonary hypertension
+History of syncope, symptomatic ventricular arrhythmia, or sustained ventricular tachyarrhythmia with exercise within 3 months prior to screening
+History of resistant hypertension (persistently elevated blood pressure despite maximal doses of 3 or more classes of medications for hypertension control)
+Screening diastolic blood pressure ≥ 100 mmHg
+Received prior treatment with aficamten
+Received treatment with mavacamten within 3 months prior to screening (must be discussed with the medical monitor prior to screening)
+Undergone septal reduction therapy < 6 months prior to screening
+Is being considered for or is likely to be considered for heart transplant listing or left ventricular assist device placement during the study period
+
+Paroxysmal or permanent atrial fibrillation is excluded only if:
+
+rhythm restoring treatment (e.g., direct-current cardioversion, atrial fibrillation ablation procedure, or antiarrhythmic therapy) has been required ≤ 3 months prior to screening
+rate control and anticoagulation have not been achieved for at least 3 months prior to screening.
+Contacts/Locations
+Central Contact Person
+Name
+Cytokinetics MD
+Telephone
+650-624-2929
+Email
+medicalaffairs@cytokinetics.com
+Study Officials
+Name
+Cytokinetics MD
+Role
+Study Director
+Affiliation
+Cytokinetics
+Location
+Birmingham, Alabama, United States, 35233
+Status:
+Recruiting
+Facility:
+University of Alabama at Birmingham
+Anchorage, Alaska, United States, 99508
+Status:
+Recruiting
+Facility:
+Alaska Heart and Vascular Institute
+La Jolla, California, United States, 92037
+Status:
+Recruiting
+Facility:
+UC San Diego Health - Sulpizio Cardiovascular Center
+Los Angeles, California, United States, 90048
+Status:
+Recruiting
+Facility:
+Cedars-Sinai Medical Center (Smidt Heart Institute)
+San Francisco, California, United States, 94143
+Status:
+Recruiting
+Facility:
+University of California San Francisco
+Torrance, California, United States, 90502
+Status:
+Recruiting
+Facility:
+Lundquist Institute for Biomedical Innovation at Harbor-UCLA Medical Center
+New Haven, Connecticut, United States, 06519
+Status:
+Recruiting
+Facility:
+Yale New Haven Hospital
+Washington D.C., District of Columbia, United States, 20010
+Status:
+Recruiting
+Facility:
+MedStar Washington Hospital Center
+Fort Lauderdale, Florida, United States, 33308
+Status:
+Recruiting
+Facility:
+Holy Cross Medical Group - Cardiology Associates
+Orlando, Florida, United States, 32804
+Status:
+Recruiting
+Facility:
+Investigational Drug Services, AdventHealth Orlando
+Atlanta, Georgia, United States, 30322
+Status:
+Recruiting
+Facility:
+Emory Clinic
+Fayetteville, Georgia, United States, 30214
+Status:
+Recruiting
+Facility:
+Piedmont Heart Institute (CPET)
+Honolulu, Hawaii, United States, 96813
+Status:
+Recruiting
+Facility:
+The Queen's Medical Center-Punchbowl
+Evanston, Illinois, United States, 60208
+Status:
+Recruiting
+Facility:
+Northwestern University
+Indianapolis, Indiana, United States, 46260
+Status:
+Recruiting
+Facility:
+Ascension St. Vincent
+Iowa City, Iowa, United States, 52242
+Status:
+Recruiting
+Facility:
+University of Iowa Hospitals and Clinics
+Kansas City, Kansas, United States, 66160
+Status:
+Recruiting
+Facility:
+The University of Kansas Medical Center
+Baltimore, Maryland, United States, 21218
+Status:
+Recruiting
+Facility:
+MedStar Union Memorial Hospital
+Boston, Massachusetts, United States, 02114
+Status:
+Recruiting
+Facility:
+Massachusetts General Hospital
+Boston, Massachusetts, United States, 02115
+Status:
+Recruiting
+Facility:
+Brigham and Women's Hospital
+Burlington, Massachusetts, United States, 01803
+Status:
+Recruiting
+Facility:
+Lahey Hospital & Medical Center
+Ann Arbor, Michigan, United States, 48109
+Status:
+Recruiting
+Facility:
+Michigan Medicine
+Detroit, Michigan, United States, 48202
+Status:
+Recruiting
+Facility:
+Henry Ford Hospital
+Minneapolis, Minnesota, United States, 55455
+Status:
+Recruiting
+Facility:
+M Health Fairview University of Minnesota Medical Center - East Bank
+Rochester, Minnesota, United States, 55905
+Status:
+Recruiting
+Facility:
+Mayo Clinic
+Kansas City, Missouri, United States, 64111
+Status:
+Recruiting
+Facility:
+Saint Luke's Hospital of Kansas City
+Las Vegas, Nevada, United States, 89118
+Status:
+Recruiting
+Facility:
+Arizona Cardiovascular Research Center
+Morristown, New Jersey, United States, 07960
+Status:
+Recruiting
+Facility:
+Morristown Medical Center
+New York, New York, United States, 10016
+Status:
+Recruiting
+Facility:
+NYU Langone Health
+New York, New York, United States, 10021
+Status:
+Recruiting
+Facility:
+Weill Cornell Medicine
+New York, New York, United States, 10029
+Status:
+Recruiting
+Facility:
+Mount Sinai Hospital
+New York, New York, United States, 10032
+Status:
+Recruiting
+Facility:
+Columbia University Medical Center/New York Presbyterian Hospital
+Valhalla, New York, United States, 10595
+Status:
+Recruiting
+Facility:
+Westchester Medical Center
+Charlotte, North Carolina, United States, 28204
+Status:
+Recruiting
+Facility:
+Sanger Heart & Vascular Institute - HCM Clinic
+Cincinnati, Ohio, United States, 45219
+Status:
+Recruiting
+Facility:
+The Lindner Research Center at The Christ Hospital
+Cleveland, Ohio, United States, 44195
+Status:
+Recruiting
+Facility:
+Cleveland Clinic
+Portland, Oregon, United States, 97225
+Status:
+Recruiting
+Facility:
+Providence St. Vincent Medical Center
+Portland, Oregon, United States, 97239
+Status:
+Recruiting
+Facility:
+Oregon Health & Science University
+Philadelphia, Pennsylvania, United States, 19104
+Status:
+Recruiting
+Facility:
+Hospital of the University of Pennsylvania
+Pittsburgh, Pennsylvania, United States, 15213
+Status:
+Recruiting
+Facility:
+UPMC Presbyterian
+Charleston, South Carolina, United States, 29425
+Status:
+Recruiting
+Facility:
+Medical University of South Carolina
+Greenville, South Carolina, United States, 29605-5601
+Status:
+Recruiting
+Facility:
+Greenville Memorial Hospital
+Nashville, Tennessee, United States, 37205
+Status:
+Recruiting
+Facility:
+Ascension Saint Thomas Heart West
+Nashville, Tennessee, United States, 37232
+Status:
+Recruiting
+Facility:
+Vanderbilt University Medical Center
+Houston, Texas, United States, 77030
+Status:
+Recruiting
+Facility:
+Baylor College of Medicine
+Houston, Texas, United States, 77030
+Status:
+Recruiting
+Facility:
+Houston Methodist Hospital
+Murray, Utah, United States, 84107
+Status:
+Recruiting
+Facility:
+Intermountain Medical Center
+Salt Lake City, Utah, United States, 84132
+Status:
+Recruiting
+Facility:
+University of Utah Health
+Charlottesville, Virginia, United States, 22903
+Status:
+Recruiting
+Facility:
+University of Virginia
+Falls Church, Virginia, United States, 22042
+Status:
+Recruiting
+Facility:
+Inova Health Care Services
+Roanoke, Virginia, United States, 24014
+Status:
+Recruiting
+Facility:
+Carilion Clinic Cardiology
+Seattle, Washington, United States, 98101
+Status:
+Recruiting
+Facility:
+Virginia Mason Medical Center
+Spokane, Washington, United States, 99204
+Status:
+Recruiting
+Facility:
+Providence Sacred Heart Medical Center & Children's Hospital (CPET)
+Morgantown, West Virginia, United States, 26506
+Status:
+Recruiting
+Facility:
+WVU Medicine
+Madison, Wisconsin, United States, 53792
+Status:
+Recruiting
+Facility:
+University of Wisconsin Hospitals and Clinics
+Milwaukee, Wisconsin, United States, 53226
+Status:
+Recruiting
+Facility:
+Medical College of Wisconsin/Froedtert Hospital
+Buenos Aires, Argentina, 119
+Status:
+Recruiting
+Facility:
+Hospital Italiano de Buenos Aires Juan Domingo Peron
+Chermside, Queensland, Australia, 4032
+Status:
+Recruiting
+Facility:
+The Prince Charles Hospital
+Adelaide, South Australia, Australia, 5042
+Status:
+Recruiting
+Facility:
+Flinders Medical Centre Cardiology Research
+Murdoch, Australia, 6150
+Status:
+Recruiting
+Facility:
+Fiona Stanley Hospital, AHF Unit
+Ondina, Salvador, Brazil, 40170-0130
+Status:
+Recruiting
+Facility:
+Instituto D'Or de Pesquisa e Ensino/Cardio Pulmonar da Bahia SA
+Minas Gerais, Brazil, 30110-934
+Status:
+Recruiting
+Facility:
+Fundacao Felice Rocho / Hospital Felicio Rocho
+Minas Gerais, Brazil, 30220-140
+Status:
+Recruiting
+Facility:
+NUPEC Cardio / Cardio HVC
+São Paulo, Brazil, 04012-909
+Status:
+Recruiting
+Facility:
+Instituto Dante Pazzanese de Cardiologia
+São Paulo, Brazil, 05403-900
+Status:
+Recruiting
+Facility:
+Instituto do Coracao do Hospital de Aguiar
+São Paulo, Brazil, 12916-542
+Status:
+Recruiting
+Facility:
+Associacao Lar Sao Francisco de Assis na Providencia de Deus - Hospital Universitario Sao Francisco na Providencia de Deus (HUSF)
+São Paulo, Brazil, 13060-080
+Status:
+Recruiting
+Facility:
+Saraiva & Berlinger LTDA - EPP/IPECC - Instituto de Pesquisa Clinical de Campinas
+São Paulo, Brazil, 14051-140
+Status:
+Recruiting
+Facility:
+Hospital das Clinicas de Faculdade de Medicina de Ribeirao Preto da Universidade de Sao Paulo - HCFMRP
+Halifax, Canada, B3H 3A7
+Status:
+Recruiting
+Facility:
+QEII Health Science Centre (Halifax Infirmary site)
+Beijing, China, 100034
+Status:
+Recruiting
+Facility:
+Peking University First Hospital
+Beijing, China, 100037
+Status:
+Recruiting
+Facility:
+Fuwai Hospital, CAMS & PUMC
+Guangzhou, China, 519041
+Status:
+Recruiting
+Facility:
+Guangdong Provincial People's Hospital
+Jilin City, China, 130031
+Status:
+Recruiting
+Facility:
+The First Hospital of Jilin University
+Nanjin, China, 210009
+Status:
+Recruiting
+Facility:
+Zhongda Hospital Southeast University
+Shanghai, China, 200020
+Status:
+Recruiting
+Facility:
+Shanghai Ruijin Hospital Luwan Branch
+Shanghai, China, 200032
+Status:
+Recruiting
+Facility:
+Zhongshan Hospital Fudan University
+Shenyang, China, 110067
+Status:
+Recruiting
+Facility:
+People's Hospital of Liaoning Province
+Wuhan, China, 430060
+Status:
+Recruiting
+Facility:
+Remin Hospital of Wuhan University
+Xi'an, China, 710061
+Status:
+Recruiting
+Facility:
+The 1st affi. Hospital of Xi'an Jiaotong University
+Zhenzhou, China, 450052
+Status:
+Recruiting
+Facility:
+The 1st affiliated Hospital of Zhengzhou University
+Aarhus, Denmark, 8200
+Status:
+Recruiting
+Facility:
+Aarhus University Hospital
+Copenhagen, Denmark, 2400
+Status:
+Recruiting
+Facility:
+Department of Cardiology Copenhagen University Hospital, Bispebjerg
+Odense, Denmark, 5000
+Status:
+Recruiting
+Facility:
+Odense University Hospital, Department of Cardiology
+Marseille, France, 13005
+Status:
+Recruiting
+Facility:
+Assistance Publique Hopitaux de Marseille
+Montpellier, France, 34000
+Status:
+Recruiting
+Facility:
+Clinique Du Millenaire
+Montpellier, France, 34295
+Status:
+Recruiting
+Facility:
+Centre Hospitalier Universitaire De Montpellier
+Paris, France, 75010
+Status:
+Recruiting
+Facility:
+Assistance Publique Hopitaux De Paris
+Paris, France, 75015
+Status:
+Recruiting
+Facility:
+Assistance Publique Hopitaux de Paris
+Pessac, France, 33600
+Status:
+Recruiting
+Facility:
+Centre Hospitalier Universitaire De Bordeaux
+Saint-Herblain, France, 44800
+Status:
+Recruiting
+Facility:
+Centre Hospitalier Universitaire De Nantes
+Toulouse, France, 31059
+Status:
+Recruiting
+Facility:
+Hopital Rangueil
+Berlin, Germany, 13353
+Status:
+Recruiting
+Facility:
+Charite-Universitaetsmedizin Berlin Campus Virchow-Klinikum (CVK) Medizinische Klinik mit Schwerpunkt Kardiologie
+Göttingen, Germany, 37075
+Status:
+Recruiting
+Facility:
+Herzzentrum der Universitatsmedizin Gottingen
+Heidelberg, Germany, 69120
+Status:
+Recruiting
+Facility:
+Universitaesklinkum Heidelberg Klinik fuer Kardiologie, Angeiologie und Pneumologie
+Jena, Germany, 07747
+Status:
+Recruiting
+Facility:
+Univeristy Hospital Jena Clinic for Internal Medicine I (Cardiology, Angiology, Internal Intensive Care Medicine)
+Budapest, Hungary, 1122
+Status:
+Recruiting
+Facility:
+Semmelweis Egyetem Varosmajori Sziv- es Ergyogyaszati Klinika
+Szeged, Hungary, 6725
+Status:
+Recruiting
+Facility:
+University of Szeged
+Ashkelon, Israel, 7830604
+Status:
+Recruiting
+Facility:
+The Barzilai University Medical Center 2 - Cardiology Division
+Jerusalem, Israel, 9112001
+Status:
+Recruiting
+Facility:
+Division of Cardiology Hadassah Medical Center
+Kfar Saba, Israel, 4428164
+Status:
+Recruiting
+Facility:
+Meir Medical Center
+Ramat Gan, Israel, 5265601
+Status:
+Recruiting
+Facility:
+The Chaim Sheba Medical Center
+Safed, Israel, 1311001
+Status:
+Recruiting
+Facility:
+Ziv Medical Center
+San Donato Milanese, Milano, Italy, 20097
+Status:
+Recruiting
+Facility:
+Cardiology Department IRCCS San Donato Hospital - University of Milan
+Brescia, Italy, 25123
+Status:
+Recruiting
+Facility:
+UOC Cardiologica
+Florence, Italy, 50134
+Status:
+Recruiting
+Facility:
+Azienda Ospedaliera Universitaria Careggi pad. 13 Clinica Medica II Plano Cardiologia
+Foggia, Italy, 71122
+Status:
+Recruiting
+Facility:
+Cardiologia Universitaria - UTIC - Riabilitazione Cardiologica Azienda Ospedaliero Universitaria - Ospedali Riuniti
+Naples, Italy, 80131
+Status:
+Recruiting
+Facility:
+Dipartimento di Emergenze Cardiovascolari, Medicina Clinica e dell'Invecchiamento, AOU Federico II
+Pisa, Italy, 56124
+Status:
+Recruiting
+Facility:
+Fondazione Toscana Gabriele Monasterio Per La ricerca Medica e Di Sanita Pubbliga (FTGM) Cardio-Toracic-UOC Cardiology and Cardiovasulcar Medicine San Cataldo Hospital at CNR
+Roma, Italy, 00163
+Status:
+Recruiting
+Facility:
+Dipartimento Cardiopolmonare, Istituto di Ricovero e Cura a Carattere Scientifico San Raffaele
+Trieste, Italy, 34148
+Status:
+Recruiting
+Facility:
+Azienda Sanitaria Universitaria Giuliano Isontina Trieste SC Cardiologia
+Amsterdam, Netherlands, 1105
+Status:
+Recruiting
+Facility:
+Amsterdam UMC, location AMC
+Rotterdam, Netherlands, 3015
+Status:
+Recruiting
+Facility:
+Erasmus University Medical Center
+Katowice, Poland, 40-555
+Status:
+Recruiting
+Facility:
+Kardio Brynow Sp. z o.o.
+Aveiro, Portugal, 3814-501
+Status:
+Recruiting
+Facility:
+Unidade Local de Saude da Regiao de Aveiro, E.P.E.
+Lisbon, Portugal, 1150-199
+Status:
+Recruiting
+Facility:
+Unidade Local de Saude de Sao Jose, E.P.E, - Hospital de Santa Marta Servico de Cardiologia
+Lisbon, Portugal, 1500-650
+Status:
+Recruiting
+Facility:
+Hospital da Luz
+Lisbon, Portugal, 1998-018
+Status:
+Recruiting
+Facility:
+Hospital CUF Descobertas, Lisbon, Cadiology Department
+A Coruña, Spain, 15006
+Status:
+Recruiting
+Facility:
+Complejo Hospitalario Universitario A Coruna
+Barcelona, Spain, 08025
+Status:
+Recruiting
+Facility:
+Hospital de la Santa Creu i Sant Pau
+Barcelona, Spain, 08036
+Status:
+Recruiting
+Facility:
+Hospital Clinic i Provincial de Barcelona
+Madrid, Spain, 28040
+Status:
+Recruiting
+Facility:
+Hospital Clinico San Carlos
+Madrid, Spain, 28220
+Status:
+Recruiting
+Facility:
+Hospital Universitario Puerta de Hierro
+Málaga, Spain, 29010
+Status:
+Recruiting
+Facility:
+Hospital Universitario Virgen de la Victoria Campus Universitario de Teatinos
+Murcia, Spain, 30120
+Status:
+Recruiting
+Facility:
+Hospital Clinico Universitario Virgen de la
+Palma de Mallorca, Spain, 07198
+Status:
+Recruiting
+Facility:
+Hospital Son Llatzer
+Salamanca, Spain, 37007
+Status:
+Recruiting
+Facility:
+Hospital Universitario de Salamanca
+Seville, Spain, 41009
+Status:
+Recruiting
+Facility:
+Hospital Universitario Virgen Macarena
+Seville, Spain, 41013
+Status:
+Recruiting
+Facility:
+Hospital Universitario Virgen del Rocio
+Vigo, Spain, 36312
+Status:
+Recruiting
+Facility:
+Hospital Alvaro Cunqueiro
+Dundee, Scotland, United Kingdom, DD1 9SY
+Status:
+Recruiting
+Facility:
+NHS Tayside Ninewells Hospital & Medical School
+Glasgow, United Kingdom, G51 4TF
+Status:
+Recruiting
+Facility:
+NHS Greater Glasgow and Clyde Queen Elizabeth University Hospital
+London, United Kingdom, EC1A 7BE
+Status:
+Recruiting
+Facility:
+Barts Health NHS Trust St Bartholomew's Hospital
+London, United Kingdom, SW17 0QT
+Status:
+Recruiting
+Facility:
+St George's University Hospitals NHS Foundation Trust,
+London, United Kingdom, SW3 6NP
+Status:
+Recruiting
+Facility:
+Royal Brompton Hospital
+Oxford, United Kingdom, OX3 9DU
+Status:
+Recruiting
+Facility:
+Oxford Centre for Clinical Magnetic Resonance Research (Ocmr)
+IPD Sharing
+IPD information
+Plan to Share IPD:
+No
+References
+Citations
+Links
+Available IPD/Information
+Document Section
+About
+About ClinicalTrials.gov
+Release Notes
+Site Map
+Help
+Give us feedback
+Glossary
+Customer Support
+Legal
+Disclaimer
+Terms and Conditions
+National Library of Medicine
+8600 Rockville Pike, Bethesda, MD 20894
+
+ClinicalTrials.gov
+
+An official website of the U.S. Department of Health and Human Services, National Institutes of Health, National Library of Medicine, and National Center for Biotechnology Information.
+
+About HHS
+About NIH
+About NLM
+About NCBI
+Accessibility support
+FOIA requests
+No FEAR Act Data
+Office of the Inspector General
+Privacy policy
+HHS Vulnerability Disclosure
+Looking for U.S. government information and services?Visit USA.gov
+
+Revision: v3.8.0
+
+Back to Top

@@ -1,0 +1,113 @@
+{
+  "schema": "MAIN_ACACIA_REV36_PROTOCOL_SAFETY_PUBLIC_AVENUES_V1",
+  "nct": "NCT06081894",
+  "date": "2026-11-09",
+  "meaning": "Search/access observations, not proof of document absence or independently verified scientific tests.",
+  "avenues": [
+    {
+      "id": "EXISTING_CTIS_ARCHIVE",
+      "url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42525291355/artifacts/13634488398",
+      "result": "Authorized GitHub artifact connector returned original preserved AM04 PDF; local SHA256 matched prior receipt. No original collection repeated.",
+      "hash": "853ffd80a547df8a7b813b8985c7116dd6168a640f18521f61b95cf33a8ca5f8"
+    },
+    {
+      "id": "CTIS_PUBLIC_INDEX",
+      "url": "https://euclinicaltrials.eu/ctis-public/view/2023-505797-15-00?lang=en",
+      "result": "Web text reader returned no readable lines from dynamic page. Existing exact-trial original artifact was used. No new SAP or earlier amendment acquired.",
+      "hash": null
+    },
+    {
+      "id": "PUBLISHER_PRIMARY_ARTICLE",
+      "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021",
+      "result": "Indexed publisher metadata lists protocol and appendix. Direct article web fetch returned HTTP403; alternate previously indexed article text does not establish acquisition of supplements. No access restriction bypass.",
+      "hash": null
+    },
+    {
+      "id": "PUBLISHER_PROTOCOL",
+      "url": "https://www.nejm.org/doi/suppl/10.1056/NEJMoa2603021/suppl_file/nejmoa2603021_protocol.pdf",
+      "result": "Web reader reports not accessible via this tool; no HTTP status supplied, no PDF bytes obtained. This is not proof that the supplement is absent.",
+      "hash": null
+    },
+    {
+      "id": "PUBLISHER_APPENDIX",
+      "url": "https://www.nejm.org/doi/suppl/10.1056/NEJMoa2603021/suppl_file/nejmoa2603021_appendix.pdf",
+      "result": "Web reader reports not accessible via this tool; no HTTP status supplied, no PDF bytes obtained. No assertion that this is a final locked SAP.",
+      "hash": null
+    },
+    {
+      "id": "PMC_RESPONDER_ORIGINAL",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674601/",
+      "result": "Original article HTML readable by web tool, exact ACACIA identity and supplementary links seen. Secondary analysis, not original final primary SAP. Previously recorded findings not recounted as new.",
+      "licenseLimitation": "Article displays CC BY-NC-ND. No full text or licensed dataset is imported; only source metadata and limited factual research notes.",
+      "hash": null
+    },
+    {
+      "id": "PMC_RESPONDER_SUPPLEMENT_1",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/instance/13674601/bin/cir-154-1547-s001.docx",
+      "result": "Original HTML-linked supplement navigation returned Checking your browser / reCAPTCHA. No challenge solved, no DOCX obtained.",
+      "hash": null
+    },
+    {
+      "id": "PMC_RESPONDER_SUPPLEMENT_2",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/instance/13674601/bin/cir-154-1547-s002.docx",
+      "result": "Original HTML-linked supplement navigation returned Checking your browser / reCAPTCHA. No challenge solved, no DOCX obtained.",
+      "hash": null
+    },
+    {
+      "id": "PMC_ECHO_ORIGINAL",
+      "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13674599/",
+      "result": "Web fetch returned browser/reCAPTCHA interstitial. No challenge solved, no original supplement obtained.",
+      "hash": null
+    },
+    {
+      "id": "SPONSOR_PUBLICATIONS_INDEX",
+      "url": "https://cytokinetics.com/medicines-research/pipeline/publications/page/2/",
+      "result": "Original sponsor index directly links October11 dosing/safety and October12 global efficacy HFSA presentations. Dosing/safety PDF text inspected as documented in reviewer-packet.json. No final SAP linked in inspected pages.",
+      "hash": null
+    },
+    {
+      "id": "HFSA_NORMAL_PUBLIC_BROWSER_LINK",
+      "url": "https://cytokinetics.com/wp-content/uploads/2026/10/HFSA26-ACACIA-Dosing-and-Safety-Rapid-Fire-Presentation_FINAL_V3.pdf",
+      "result": "Ordinary browser opened the sponsor's linked PDF from publications page2: listing200 and original PDF200, without credentials or bypass. Integration could not capture response bytes; one standard browser download attempt yielded zero downloads. Direct-request403 remains recorded separately. No original file hash or visual verification claimed; no further retry.",
+      "receipt": "./public-browser-link-receipt.json",
+      "downloadReceipt": "./public-browser-download-receipt.json",
+      "hash": null
+    },
+    {
+      "id": "CANADA_REGISTRY_CROSSCHECK",
+      "url": "https://recherche-essais-cliniques.canada.ca/en/clinical-trial/286240-hypertrophic-cardiomyopathy",
+      "result": "Original government HTML via web tool associates CY6033, NCT06081894, Phase3, HealthCanada trial authorization May22,2024, record update September12,2026. It contains no original SAP, protocol PDF, CONSORT or SAE line list. Direct standard byte request403; hash unknown. Canadian trial authorization is not FDA marketing approval.",
+      "hash": null
+    },
+    {
+      "id": "SEC_ORIGINAL_EXHIBIT",
+      "url": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526206420/d124879dex991.htm",
+      "result": "Original SEC exhibit readable; sponsor presentation repeats enrollment-over516 design information without original CONSORT or locked SAP. No population reconciliation inferred.",
+      "hash": null
+    },
+    {
+      "id": "TARGETED_PUBLIC_SEARCH",
+      "queries": [
+        "\"ACACIA-HCM\" \"statistical analysis plan\" final",
+        "\"CY 6033\" \"protocol\" amendment 03",
+        "\"ACACIA-HCM\" \"SAP\" filetype:pdf",
+        "\"CY6033\" \"statistical\"",
+        "\"ACACIA-HCM\" \"CONSORT\" placebo",
+        "\"ACACIA-HCM\" \"did not receive\" dose",
+        "\"ACACIA-HCM\" \"14\" \"interruptions\""
+      ],
+      "result": "No newly acquired dated final CY6033 primary SAP, complete CONSORT or denominator correction. MAPLE/SEQUOIA SAP hits excluded by exact trial identity. Secondary commentary and unauthorized supplement-request sites excluded as original evidence.",
+      "hash": null
+    },
+    {
+      "id": "PUBLISHER_NORMAL_PUBLIC_BROWSER",
+      "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2603021",
+      "result": "Normal public browser navigation returned HTTP403; no original article/supplement bytes obtained, no challenge handling or bypass attempted.",
+      "receipt": "nejm-browser-access-receipt.json",
+      "hash": null
+    }
+  ],
+  "prohibitedActionsPerformed": false,
+  "restrictedDataRequestsSent": 0,
+  "officialScientificGradesCreated": 0
+}

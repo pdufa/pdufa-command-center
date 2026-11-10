@@ -158,3 +158,40 @@ def test_insufficient_training_yields_no_calibrated_output():
     assert fold.research_metrics["predictedCount"] == 0
     assert fold.research_metrics["abstainedCount"] == 1
     assert fold.research_metrics["modelHistoricallyValidated"] is False
+
+
+def test_fixed_bin_observed_event_interval_matches_wilson_reference():
+    # Synthetic Bernoulli observations; these are not FDA outcomes or forecasts.
+    result = summarize_binary_forecasts([(0.5, 1)] * 5 + [(0.5, 0)] * 5, eligible_count=10)
+    bucket = result["calibrationBins"][0]
+    assert bucket["count"] == 10
+    assert bucket["observedApprovalRate"] == 0.5
+    assert bucket["observedEventRateWilson95"] == pytest.approx([0.236593090512564, 0.763406909487436])
+    assumptions = result["calibrationUncertainty"]
+    assert assumptions["fixedBins"] == 5
+    assert assumptions["simultaneousCoverage"] is False
+    assert assumptions["independentRowsAssumed"] is True
+    assert assumptions["includesLabelOrModelUncertainty"] is False
+    assert result["modelHistoricallyValidated"] is False
+
+
+def test_bin_boundary_intervals_do_not_claim_zero_uncertainty():
+    result = summarize_binary_forecasts([(0.1, 0)] * 4 + [(0.9, 1)] * 4, eligible_count=8)
+    zero, one = result["calibrationBins"]
+    assert zero["observedEventRateWilson95"][0] == pytest.approx(0)
+    assert 0 < zero["observedEventRateWilson95"][1] < 1
+    assert 0 < one["observedEventRateWilson95"][0] < 1
+    assert one["observedEventRateWilson95"][1] == pytest.approx(1)
+    more = summarize_binary_forecasts([(0.9, 1)] * 40, eligible_count=40)
+    assert more["calibrationBins"][0]["observedEventRateWilson95"][0] > one["observedEventRateWilson95"][0]
+
+
+def test_abstained_rows_never_fill_calibration_bins_or_intervals():
+    result = summarize_binary_forecasts([(0.5, 1)], eligible_count=30)
+    assert result["abstainedCount"] == 29
+    assert sum(bucket["count"] for bucket in result["calibrationBins"]) == 1
+    assert result["calibrationBins"][0]["observedEventRateWilson95"][0] < 0.21
+    empty = summarize_binary_forecasts([], eligible_count=30)
+    assert empty["calibrationBins"] == []
+    assert empty["accuracyWilson95"] is None
+    assert empty["modelHistoricallyValidated"] is False

@@ -1,0 +1,140 @@
+{
+  "schema": "MAIN_TRACK_B_LIVE_ARTIFACT_VERIFICATION_V1",
+  "verifiedAtUtc": "2026-11-09T19:03:58.778510+00:00",
+  "runId": 42678295071,
+  "runUrl": "https://github.com/pdufa/pdufa-command-center/actions/runs/42678295071",
+  "jobId": 129365561726,
+  "jobStartedAtUtc": "2026-11-09T18:54:53Z",
+  "jobCompletedAtUtc": "2026-11-09T18:55:24Z",
+  "jobConclusion": "success",
+  "sourceCommit": "f42605f7228960386e7fce207327c7a996391cb7",
+  "sourceArtifact": {
+    "id": 13700269130,
+    "url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42678295071/artifacts/13700269130",
+    "sha256": "c9b0dcfd0b56dd15f3f9b60e222e6117887f7ca5bad2f74a60faa8fcdda00ec5",
+    "expiresAt": "2027-02-07T18:54:50Z"
+  },
+  "historyArtifact": {
+    "id": 13700378894,
+    "url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42678295071/artifacts/13700378894",
+    "sha256": "e326260cd736ddf100e2b5219c4fcee9e340dee43955b2f870998345b1a0ba51",
+    "expiresAt": "2027-02-07T18:54:50Z"
+  },
+  "records": {
+    "originalApprovedProductRegistry": 29446,
+    "publishedFdaLetters": 458,
+    "selectedSourceActionCandidates": 412,
+    "sourceClasses": {
+      "AP_SOURCE_REGISTRY": 292,
+      "CRL_EXPLICIT_ORIGINAL": 2,
+      "CRL_LEGACY_OR_UNRESOLVED_IDENTIFIER": 6,
+      "CRL_MULTIPLE_OR_MISSING_IDENTIFIERS": 1,
+      "CRL_PARENT_APPLICATION_ONLY": 97,
+      "CRL_SUPPLEMENT_NOT_ORIGINAL": 4,
+      "TA_NONBINARY_SOURCE_REGISTRY": 10
+    },
+    "sourceIdentityGroups": 376,
+    "standardParentApplicationIds": 369,
+    "unresolvedGroups": 7,
+    "repeatedParentGroups": 33,
+    "mixedApprovalCrlParentGroups": 15,
+    "repeatedCrlParentGroups": 10,
+    "sameDayCollisionGroups": 4
+  },
+  "sourceExports": {
+    "approvedRegistry": {
+      "bytes": 72586150,
+      "exportedOn": "2026-11-06",
+      "file": "drugsfda_approved_registry_quarantined.json",
+      "retrievedOn": "2026-11-09",
+      "sha256": "46e820abefd38fd714a9424026cc79b19675a1d8e5acce8ab4f39927f55df7fb"
+    },
+    "selectedCrl": {
+      "bytes": 362656,
+      "exportedOn": "2026-11-02",
+      "file": "fda_crl_published_quarantined.json",
+      "retrievedOn": "2026-11-09",
+      "sha256": "9c8842d6991d0bacfa224f1b7063cdfdc6b3c3e748f4b9779189f40f0749d2fc"
+    }
+  },
+  "candidateFileSha256": "c549a5af3aaef038d75917a96367d1e3fea84afd63ac505af806f239347be72c",
+  "historyRevisionCount": 1,
+  "historyHeadSha256": "817ab41e1a311482b56fffadf8fdd2f6d2e1f65dc54ee1950e9211f9628f6b5a",
+  "restoredPriorHistory": false,
+  "restoreNote": "First live chain initialization; prior history restore step was skipped because no earlier chain artifact existed. Earlier source archives were retained. Live second-run restoration is not claimed.",
+  "independentlyVerifiedCycles": 0,
+  "realHistoricalBacktests": 0,
+  "realCalibrationFits": 0,
+  "measuredAccuracy": null,
+  "calibration": null,
+  "calibrationProtocol": {
+    "accuracy": "NOT_CALIBRATED",
+    "accuracyAvailable": false,
+    "actualCalibrationFits": 0,
+    "blockers": [
+      "Complete consecutive filing denominator including negative/pending/withdrawn cases",
+      "Exact application, indication and independently adjudicated review-cycle outcomes",
+      "Original predecision source versions and first-publication clocks",
+      "Independent outcome-vault custody and frozen program-disjoint partitions",
+      "Sufficient independently assessed validation and untouched-test cases"
+    ],
+    "brierScore": null,
+    "calibrationInfrastructure": "VALIDATION_ONLY_ISOTONIC_WITH_FROZEN_TEMPORAL_TEST",
+    "calibrationProtocolHealth": "VALIDATION_ONLY_ISOTONIC_IMPLEMENTED",
+    "candidateFileSha256": "c549a5af3aaef038d75917a96367d1e3fea84afd63ac505af806f239347be72c",
+    "certainty": "NOT_VALIDATED",
+    "cohortSelection": "OUTCOME_SELECTED_NOT_COMPLETE_CONSECUTIVE_FILING_COHORT",
+    "fitStatus": "NOT_RUN_NO_MODEL_ELIGIBLE_CASES",
+    "independentlyVerifiedCycles": 0,
+    "logLoss": null,
+    "measuredAccuracy": null,
+    "modelEligibleCases": 0,
+    "modelValidationStatus": "BLOCKED",
+    "newHistoricalRecordsObtained": 0,
+    "originalFdaSourceReceiptSha256": "c259fd263f8366edd08be42a99d3d958338ea5b19af8dedaa602216d28362e0f",
+    "perTargetModelEligibleCases": {
+      "APPROVAL": 0,
+      "CRL": 0,
+      "REVIEW_DELAY": 0
+    },
+    "permanentSourceArchiveVerified": false,
+    "prediction": "ABSTAIN",
+    "realCases": 0,
+    "realTrainingCases": 0,
+    "realUntouchedTestCases": 0,
+    "realValidationCases": 0,
+    "schema": "HOP_CALIBRATION_READINESS_V1",
+    "sourceActionLeads": 412,
+    "sourceArchiveExpiresAt": null,
+    "sourceArchiveUrl": null,
+    "sourceCheckpointGeneratedAt": "2026-11-09T18:55:18+00:00",
+    "sourceCountBasis": "CURRENT_VALIDATED_TRACK_B_CANDIDATE_CHECKPOINT",
+    "sourceCountIsFreshRetrieval": false,
+    "sourceReceiptAsOf": null,
+    "trainingAuthorized": false
+  },
+  "checks": {
+    "sourceArchiveGithubDigestMatches": true,
+    "historyArchiveGithubDigestMatches": true,
+    "candidateDigestMatches": true,
+    "historicalCheckpointReproducedExactly": true,
+    "identityAuditAndQuarantinedWorklistReproducedExactly": true,
+    "historyChainValidated": true,
+    "historyLastSnapshotMatchesActualCheckpoint": true,
+    "approvedRegistryOriginalBytesMatch": true,
+    "selectedCrlOriginalBytesMatch": true,
+    "separateHistoryArtifactsAgree": true
+  },
+  "checksPassed": 10,
+  "checksFailed": 0,
+  "productionWrites": false,
+  "trainingAuthorized": false,
+  "prediction": "ABSTAIN",
+  "certainty": "NOT_VALIDATED",
+  "accuracy": "NOT_CALIBRATED",
+  "limitations": [
+    "Selected postdecision source actions are not a complete filing denominator or independently adjudicated FDA cycles.",
+    "Pending/withdrawn/never-approved applications, original first-public predecision clocks, independently qualified labels and actual outcome-vault custody remain missing.",
+    "Artifacts retain original bytes for90days; no permanent archive or recurring default-branch schedule is proved by this run."
+  ]
+}
