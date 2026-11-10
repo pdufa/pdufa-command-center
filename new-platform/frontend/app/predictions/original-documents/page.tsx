@@ -74,6 +74,12 @@ export default function OriginalDocumentsR86Page(){
     {" · "} This compares public file dates to registry primary completion,
     not verified unblinding, final database lock, or signed SAP certification.
   </p>
+  <p className={styles.footer}>
+    <a href="/predictions/source-recovery">
+      Source recovery for 17 FOCUS trials without current registry protocol/SAP files
+    </a>
+    {" · "} Five have known original journal leads in the five-case research archive.
+  </p>
   <OriginalSourceDocumentsR86Client rows={d.rows}/>
   <p className={styles.disclaimer}><a href="/predictions/phase-verification">
    Back to Step 1 phase-source checks
