@@ -16,6 +16,8 @@ def test_active_navigation_links_only_supported_primary_destinations():
         "POOL": "/pool",
         "FOCUS": "/focus",
         "CAL": "/cal",
+        "COMPANY": "/company",
+        "NEWS": "/news",
         "PREDICTIONS": "/predictions",
         "ASSESMENTS": "/predictions/assessment",
         "TOOLS": "/tools",
