@@ -91,7 +91,7 @@ test("isolated October audit renders 17 cases, 93.75 percent and the all-approve
 test("monthly historical view only appears in the separated section, leaving original 4-case subset and live metrics untouched",()=>{
   const page=fs.readFileSync(path.join(root,"app/predictions/assessment/page.tsx"),"utf8");
   assert.match(page,/<HistoricalTestingChart\/>/);
-  assert.match(page,/<October2026HistoricalAudit\/>/);
+  assert.match(page,/<October2026HistoricalAuditPanel\/>/);
   assert.match(page,/<AssessmentLevelChart\/>/);
   assert.match(page,/<UltomirisHistoricalLevelThreePanel\/>/);
   const older=require("../data/levelThreeOutcomeAwareRerunComparison2026.json");
