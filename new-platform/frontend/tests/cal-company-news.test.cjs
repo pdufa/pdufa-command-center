@@ -22,7 +22,8 @@ test("NEWS distinguishes official news from recorded document leads",()=>{
  const route=get("app","api","news","route.ts");
  for(const marker of ["OFFICIAL_FDA_PUBLICATION","SOURCE_LINK_RECORDED","UNREVIEWED_EXACT_DRUG_MENTION","CYCLE_SOURCE_RECORD","FDA_RSS_UNAVAILABLE"])
   assert.ok(route.includes(marker),marker);
- assert.match(route,/url\.hostname==="www\.fda\.gov"/);
+ assert.match(route,/\["www\.fda\.gov","fda\.gov"\]\.includes\(url\.hostname\)/);
+ assert.match(route,/url\.protocol="https:"/);
  assert.match(route,/impact:"NOT_ASSESSED"/);
  assert.doesNotMatch(route,/approvalProbability\s*:/);
 });
