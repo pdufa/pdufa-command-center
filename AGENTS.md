@@ -147,3 +147,35 @@ quarantine manifest and original freeze commits.
 
 Future historical audits must follow independent outcome-unexposed evaluation
 for legitimate accuracy testing.
+
+## Owner-requested October 2026 monthly retrospective research audit
+
+The owner requested coverage of the October 2026 PDUFA/FDA calendar, with
+predecision-evidence Level 3-style forecasts frozen before the official
+decision comparison. Because the author has already seen some historic FDA
+results, every one of these reconstructions is **outcome-exposed**, not
+independently blind. The permitted output is a separately labeled
+`October2026HistoricalAudit` chart and table and a separate
+`October 2026 Audit` sheet in the master Google Sheet.
+
+The dataset consists of 15 unique source-calendar October entries, plus
+two explicitly identified supplemental October goal/action cases; it is a
+source-defined cohort, not a comprehensive regulatory census. Distinguish
+original PDUFA goal dates from actual FDA action dates. A voluntarily
+withdrawn filing without an FDA Approval or CRL is not an adjudicated
+binary FDA decision and must be excluded from the Approval-v-CRL
+denominator. Never allow postdecision information into the frozen
+predecision source evidence file; record postdecision outcomes separately.
+
+The October cohort may display the proportion of outcome-aware
+*direction matches* but never be described as validated prediction
+accuracy, cross-validated skill, certainty, or a genuine blind
+backtest. Show the naive always-approve comparator, which is especially
+important for approval-heavy cohorts, and a zero count of genuine blind
+tests.
+
+This is a **visual-only historical audit exception**, not a modification of
+live FOCUS roster, active assessment-level chart, official outcome-history
+records, worker predictions, probability calibration or retired scoring
+systems. The earlier 4-case Historical Testing subset must remain intact
+and distinct from the larger October audit.
