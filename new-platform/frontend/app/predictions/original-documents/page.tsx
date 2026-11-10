@@ -1,6 +1,7 @@
 import {R86_ORIGINAL_DOCUMENT_MANIFEST} from
  "../../../lib/focus-r86-original-document-inventory";
 import OriginalSourceDocumentsR86Client from "./OriginalSourceDocumentsR86Client";
+import datedSourceAudit from "../../../data/focus-r86-live-source-census-20261110.json";
 import styles from "../evidence-gaps/EvidenceRecoveryBoardR68.module.css";
 
 export const metadata={
@@ -31,6 +32,25 @@ export default function OriginalDocumentsR86Page(){
    <strong> {d.knownAcaciaDocumentaryBlockers} open source/denominator questions</strong>.
    Neither has independently authenticated pre-unblinding SAP chronology.
    The remaining trials still need original document acquisition and qualified review.</p>
+
+  <div className={styles.stats} aria-label="Dated original-source readback">
+    <div><small>2026-11-10 live registry reads</small>
+      <strong>{datedSourceAudit.successfulHttp200}/{datedSourceAudit.totalExactNcts}</strong></div>
+    <div><small>Trial records listing a protocol</small>
+      <strong>{datedSourceAudit.trialsWithProtocolListing}</strong></div>
+    <div><small>Trial records listing an SAP</small>
+      <strong>{datedSourceAudit.trialsWithSAPListing}</strong></div>
+    <div><small>Distinct uploaded file listings</small>
+      <strong>{datedSourceAudit.documentListings}</strong></div>
+    <div><small>Records with posted aggregate results</small>
+      <strong>{datedSourceAudit.trialsWithPostedAggregateResults}</strong></div>
+  </div>
+  <p className={styles.footer}>Dated source-observation receipt:
+   <strong> {datedSourceAudit.observationDateUtc} UTC</strong>.
+   These are observed public document and results listings, not independent
+   science reviews, current official FDA application statuses, or
+   authenticated pre-unblinding SAPs. One record lists a combined protocol/SAP
+   document. Use the check button to re-query the official registry on demand.</p>
   <OriginalSourceDocumentsR86Client rows={d.rows}/>
   <p className={styles.disclaimer}><a href="/predictions/phase-verification">
    Back to Step 1 phase-source checks
