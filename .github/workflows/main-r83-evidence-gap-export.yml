@@ -1,4 +1,4 @@
-name: MAIN R83 exact-NCT evidence-gap export acceptance
+name: MAIN R83-R84 source-gap export and application-cycle verification acceptance
 # Read-only source status and documented reviewer handoff; not clinical validation.
 on:
   push:
@@ -9,6 +9,9 @@ on:
       - new-platform/frontend/app/predictions/evidence-gaps/export/route.ts
       - new-platform/frontend/app/predictions/evidence-gaps/FocusSourceReadinessR81.tsx
       - new-platform/frontend/tests/focus-r83-evidence-gap-export.test.cjs
+      - new-platform/frontend/lib/focus-r84-application-verification-queue.ts
+      - new-platform/frontend/app/predictions/evidence-gaps/ApplicationVerificationR84.tsx
+      - new-platform/frontend/tests/focus-r84-application-verification.test.cjs
   workflow_dispatch:
 
 permissions:
@@ -46,7 +49,7 @@ jobs:
         run: |
           set -euo pipefail
           npm install --no-audit --no-fund
-          node --test tests/focus-r81-all-source-readiness.test.cjs tests/focus-r83-evidence-gap-export.test.cjs
+          node --test tests/focus-r81-all-source-readiness.test.cjs tests/focus-r83-evidence-gap-export.test.cjs tests/focus-r84-application-verification.test.cjs
           npm run typecheck
           npm run build
       - name: Report limited scientific status
@@ -54,8 +57,8 @@ jobs:
         shell: bash
         run: |
           {
-            echo "## Revision 83 exact-NCT evidence-gap export"
+            echo "## Revisions 83-84: exact-NCT evidence-gap and issuer date verification"
             echo "29 exact FOCUS NCT rows, with all 23 provisional application cycle links and original-source absence explicitly described."
-            echo "Source and schema integrity validated; CSV has no scientific grade, calibrated probability or production write."
+            echo "Source and schema integrity validated; source-reported application goals are not FDA verified. CSV has no scientific grade, calibrated probability or production write."
             echo "0 independent clinical signoffs; 0 validated future FDA forecasts. Scientific installation remains incomplete."
           } >> "$GITHUB_STEP_SUMMARY"
