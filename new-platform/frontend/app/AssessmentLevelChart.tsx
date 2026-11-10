@@ -1,6 +1,7 @@
 import prospective from "../data/fdaPredictionDecisionAudit.json";
 import frozenUltomiris from "../data/levelThreeAznFrozen2026.json";
 import actualUltomiris from "../data/levelThreeAznHistoricalComparison2026.json";
+import ChartTrendInset from "./ChartTrendInset";
 
 type LevelRow={
   id:string;
@@ -81,6 +82,9 @@ export default function AssessmentLevelChart(){
       fontSize:11,color:"#627671",marginTop:6}}>
       <span>Level 0</span><span>Level 20 (planned scale)</span>
     </div>
+    <ChartTrendInset title="Recorded analysis-level progression for the same trial"
+      testId="trial-analysis-depth-trend" kind="level" points={[]}
+      emptyText="Each displayed trial currently has only one recorded review level. Levels from different trials cannot be connected into a performance trend."/>
     <p style={{fontSize:12,color:"#895e2c",lineHeight:1.5,margin:"14px 0 0"}}>
       The display scale covers planned Levels 1–20; its markers show only recorded manual research depths, not proof that Level 20 is installed. Levels describe approximate manual review depth, not validated 20-level engine maturity.
       AZN remains solely by user request, is <strong>outcome-aware, not blind</strong>,
