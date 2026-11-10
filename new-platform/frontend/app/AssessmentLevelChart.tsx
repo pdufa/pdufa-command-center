@@ -49,7 +49,7 @@ export default function AssessmentLevelChart(){
     <div style={{fontSize:11,letterSpacing:".09em",color:"#286358",fontWeight:800}}>
       ASSESSMENT LEVEL TRACKER · ACTIVE DISPLAY ONLY
     </div>
-    <h2 style={{fontSize:21,margin:"7px 0 5px"}}>Recorded trial-specific review depth</h2>
+    <h2 style={{fontSize:21,margin:"7px 0 5px"}}>Scientific review depth · Recorded trial-specific levels</h2>
     <p style={{fontSize:13,color:"#536c67",margin:"0 0 16px",lineHeight:1.5}}>
       Only the original prospective SMMT pilot and the user-retained AZN historical
       example appear here. These are original trial-specific levels, not the selected historical comparison level. Earlier outcome-exposed assessments are removed from
