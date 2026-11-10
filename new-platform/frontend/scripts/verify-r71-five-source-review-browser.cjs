@@ -34,6 +34,9 @@ async function profile(browser,config){
    await panel.waitFor({state:"visible",timeout:12000});
    assert.match(await panel.innerText(),/ABSTAIN/);
    assert.match(await panel.innerText(),/unassessed/i);
+   // Visible safeguards must survive rendering, not merely exist in source data.
+   assert.match(await panel.innerText(),/Qualified scientific reviews:\s*0/);
+   assert.match(await panel.innerText(),/Future FDA decision:\s*ABSTAIN/);
    assert.match(await panel.innerText(),/independently replicated/);
    const sourceCount=await panel.locator("details").count();
    assert.equal(sourceCount,2,"source method and study-specific review accordions");
