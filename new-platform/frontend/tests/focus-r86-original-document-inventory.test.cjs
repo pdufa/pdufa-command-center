@@ -24,9 +24,9 @@ function response(row){
    },documentSection:{largeDocumentModule:{largeDocs:[
     {typeAbbrev:"Prot",hasProtocol:true,hasSap:false,hasIcf:false,
       label:"Original trial protocol in registry listing",date:"2025-01-31",
-      uploadDate:"2025-02-03",filename:"Prot_000.pdf",size:812496},
+      uploadDate:"2026-09-01T15:17",filename:"Prot_000.pdf",size:812496},
     {typeAbbrev:"SAP",hasProtocol:false,hasSap:true,hasIcf:false,
-      label:"Study SAP listing",date:"2025-02",uploadDate:"2025-02-10",
+      label:"Study SAP listing",date:"2025-02",uploadDate:"2026-09-01T10:48",
       filename:"SAP_001.pdf",size:504746}
    ]}}};
 }
