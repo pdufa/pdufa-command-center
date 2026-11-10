@@ -1,4 +1,4 @@
-name: MAIN R83-R91 original science sources and qualified-review acceptance
+name: MAIN R83-R92 original sources, current protocol endpoints and science signoff gates
 # Read-only source status and documented reviewer handoff; not clinical validation.
 on:
   push:
@@ -48,6 +48,11 @@ on:
       - new-platform/frontend/tests/focus-r91-posted-results-reconciliation.test.cjs
       - new-platform/frontend/lib/focus-r91-source-audit-readiness.ts
       - new-platform/frontend/data/focus-r91-posted-original-results-readbacks-20261110.json
+      - new-platform/frontend/lib/focus-r92-protocol-results-crosswalk.ts
+      - new-platform/frontend/app/predictions/scientific-reconciliation/protocol-crosswalk/page.tsx
+      - new-platform/frontend/app/predictions/scientific-reconciliation/protocol-crosswalk/CurrentProtocolResultsR92Client.tsx
+      - new-platform/frontend/app/predictions/scientific-reconciliation/protocol-crosswalk/check/route.ts
+      - new-platform/frontend/tests/focus-r92-protocol-results-crosswalk.test.cjs
   workflow_dispatch:
 
 permissions:
@@ -85,7 +90,7 @@ jobs:
         run: |
           set -euo pipefail
           npm install --no-audit --no-fund
-          node --test tests/focus-r81-all-source-readiness.test.cjs tests/focus-r83-evidence-gap-export.test.cjs tests/focus-r84-application-verification.test.cjs tests/focus-r85-registry-phase-crosscheck.test.cjs tests/focus-r86-original-document-inventory.test.cjs tests/focus-r87-public-original-pdf-receipt.test.cjs tests/focus-r88-source-chronology-triage.test.cjs tests/focus-r89-historical-source-recovery.test.cjs tests/focus-r90-canonical-results-source-coverage.test.cjs tests/focus-r91-posted-results-reconciliation.test.cjs
+          node --test tests/focus-r81-all-source-readiness.test.cjs tests/focus-r83-evidence-gap-export.test.cjs tests/focus-r84-application-verification.test.cjs tests/focus-r85-registry-phase-crosscheck.test.cjs tests/focus-r86-original-document-inventory.test.cjs tests/focus-r87-public-original-pdf-receipt.test.cjs tests/focus-r88-source-chronology-triage.test.cjs tests/focus-r89-historical-source-recovery.test.cjs tests/focus-r90-canonical-results-source-coverage.test.cjs tests/focus-r91-posted-results-reconciliation.test.cjs tests/focus-r92-protocol-results-crosswalk.test.cjs
           npm run typecheck
           npm run build
       - name: Report limited scientific status
@@ -93,7 +98,7 @@ jobs:
         shell: bash
         run: |
           {
-            echo "## Revisions 83-91: 12 exact original posted outcome and safety reads; 16 primary results, 244 AE terms; zero review signoffs"
+            echo "## Revisions 83-92: current protocol-to-posted primary endpoint text crosswalk across 12 NCTs; no signed SAP certification"
             echo "29 exact FOCUS NCT rows, with all 23 provisional application cycle links and original-source absence explicitly described."
             echo "Source and schema integrity validated; source-reported application goals are not FDA verified. CSV has no scientific grade, calibrated probability or production write."
             echo "Readback blocked by official historical API is not absent original evidence; archived R36 versions are separate signed-off-by-scientific-review=FALSE original source receipts. Public document and upload dates versus primary completion are not unblinding or locked-SAP proof; posted protocol/SAP metadata is not signed chronology or science; live registry field matching is not phase signoff. 0 independent clinical signoffs; 0 validated future FDA forecasts. Scientific installation remains incomplete."
