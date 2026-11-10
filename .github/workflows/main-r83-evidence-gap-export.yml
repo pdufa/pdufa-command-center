@@ -82,6 +82,8 @@ on:
       - new-platform/frontend/tests/focus-r104-page-linked-pdf-diagnostic.test.cjs
       - new-platform/frontend/data/focus-r105-acacia-page-linked-diagnostic-readback-20261110.json
       - new-platform/frontend/tests/focus-r105-page-linked-readback.test.cjs
+      - new-platform/frontend/data/focus-r105-acacia-page-linked-diagnostic-readback-20261110.json
+      - new-platform/frontend/tests/focus-r105-page-linked-readback.test.cjs
   workflow_dispatch:
 
 permissions:
