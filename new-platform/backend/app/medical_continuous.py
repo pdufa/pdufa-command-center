@@ -87,6 +87,8 @@ def initialize(engine):
     initialize_advanced(engine)
     from .medical_on_demand import initialize as initialize_analyze_now
     initialize_analyze_now(engine)
+    from .medical_official_news import initialize as initialize_official_news
+    initialize_official_news(engine)
 
 
 def _read(engine, run_id):
