@@ -24,11 +24,12 @@
       "level1PhaseFirst": "505b2_FORMULATION_NDA",
       "level1Clinical": "505(b)(2) dexmethylphenidate extended-release formulation seeks once-daily ADHD coverage; clinical efficacy is not a new molecular mechanism.",
       "level2RiskBenefit": "March 2026 10-K disclosed February preapproval CMO inspection and Form 483 with three observations, one CTx-1301-specific.",
-      "level3Regulatory": "CRL",
-      "researchCall": "MODERATE",
-      "researchStrength": "May 31 was the original PDUFA goal, so classify as June FDA action, not June original-goal case.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the identified regulatory/manufacturing concern is sufficient for a conservative CRL lean. Independent decision risk: March 2026 10-K disclosed February preapproval CMO inspection and Form 483 with three observations, one CTx-1301-specific.",
+      "researchCall": "CRL",
+      "researchStrength": "MODERATE",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "May 31 was the original PDUFA goal, so classify as June FDA action, not June original-goal case."
     },
     {
       "id": "JUN26-02",
@@ -40,11 +41,12 @@
       "level1PhaseFirst": "ANDA_CGT_READY_TO_USE",
       "level1Clinical": "Known romidepsin pharmacology, but no authenticated pre-June application-specific clinical/bioequivalence and CMC dossier in this review.",
       "level2RiskBenefit": "Generic CGT ready-to-use formulation could be approved or fail sterility and manufacturing review; lack of filing-specific facts.",
-      "level3Regulatory": "ABSTAIN",
-      "researchCall": "INSUFFICIENT",
-      "researchStrength": "Do not manufacture a predecision source or a directional FDA forecast.",
+      "level3Regulatory": "Regulatory Level 3 judgment: published case-specific evidence is insufficient to assign a defensible FDA direction. Independent decision risk: Generic CGT ready-to-use formulation could be approved or fail sterility and manufacturing review; lack of filing-specific facts.",
+      "researchCall": "ABSTAIN",
+      "researchStrength": "INSUFFICIENT",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Do not manufacture a predecision source or a directional FDA forecast."
     },
     {
       "id": "JUN26-03",
@@ -56,11 +58,12 @@
       "level1PhaseFirst": "PHASE_3_BASIS_AND_BASIS_KIDS",
       "level1Clinical": "Phase 3 BASIS met annualized bleed-rate endpoint; pediatric BASIS KIDS supportive extension, expanding preapproved antibody.",
       "level2RiskBenefit": "Marked unmet inhibitor need and regulatory priority review; pediatric sample, development safety and thrombosis remain concerns.",
-      "level3Regulatory": "APPROVAL",
-      "researchCall": "MODERATE_HIGH",
-      "researchStrength": "Exact pediatric population must not be inferred from adult inhibitor results alone.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the positive development evidence and known regulatory precedents favor an approval lean, subject to unresolved inspections, labeling and data review. Independent decision risk: Marked unmet inhibitor need and regulatory priority review; pediatric sample, development safety and thrombosis remain concerns.",
+      "researchCall": "APPROVAL",
+      "researchStrength": "MODERATE_HIGH",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Exact pediatric population must not be inferred from adult inhibitor results alone."
     },
     {
       "id": "JUN26-04",
@@ -72,11 +75,12 @@
       "level1PhaseFirst": "MAINTENANCE_DOSE_EXTENSION",
       "level1Clinical": "Existing licensed IL-13 biologic with published long-term extension supporting durable response every eight weeks.",
       "level2RiskBenefit": "Smaller injection burden; long-term rescue-treatment data, bias in maintenance cohorts and original SAP remain incomplete.",
-      "level3Regulatory": "APPROVAL",
-      "researchCall": "MODERATE_HIGH",
-      "researchStrength": "Bridging/label update rather than new-molecule efficacy.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the positive development evidence and known regulatory precedents favor an approval lean, subject to unresolved inspections, labeling and data review. Independent decision risk: Smaller injection burden; long-term rescue-treatment data, bias in maintenance cohorts and original SAP remain incomplete.",
+      "researchCall": "APPROVAL",
+      "researchStrength": "MODERATE_HIGH",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Bridging/label update rather than new-molecule efficacy."
     },
     {
       "id": "JUN26-05",
@@ -88,11 +92,12 @@
       "level1PhaseFirst": "PHASE_3_LITESPARK_022",
       "level1Clinical": "Randomized Phase 3 adjuvant ccRCC DFS 28% relative recurrence/death risk reduction vs pembrolizumab alone.",
       "level2RiskBenefit": "OS immature; added belzutifan hypoxia/anemia and adjuvant exposure burden compared with existing active regimen.",
-      "level3Regulatory": "APPROVAL",
-      "researchCall": "MODERATE_HIGH",
-      "researchStrength": "Benefit-risk favorable on prespecified DFS but verify full safety and final hierarchical alpha.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the positive development evidence and known regulatory precedents favor an approval lean, subject to unresolved inspections, labeling and data review. Independent decision risk: OS immature; added belzutifan hypoxia/anemia and adjuvant exposure burden compared with existing active regimen.",
+      "researchCall": "APPROVAL",
+      "researchStrength": "MODERATE_HIGH",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Benefit-risk favorable on prespecified DFS but verify full safety and final hierarchical alpha."
     },
     {
       "id": "JUN26-06",
@@ -104,11 +109,12 @@
       "level1PhaseFirst": "PHASE_3_CAPITELLO_281",
       "level1Clinical": "Phase 3 rPFS HR 0.81, p=.034, modest 7.5-month median gain; immature OS HR .90 p=.401.",
       "level2RiskBenefit": "FDA ODAC April 2026 briefing questioned whether rPFS clinical effect was sufficiently meaningful in asymptomatic early mHSPC, and additive toxicity.",
-      "level3Regulatory": "CRL",
-      "researchCall": "MODERATE_LOW",
-      "researchStrength": "Conservative risk lean despite statistically positive primary; this may be a misjudgment if FDA accepts narrower PTEN-deficient indication.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the identified regulatory/manufacturing concern is sufficient for a conservative CRL lean. Independent decision risk: FDA ODAC April 2026 briefing questioned whether rPFS clinical effect was sufficiently meaningful in asymptomatic early mHSPC, and additive toxicity.",
+      "researchCall": "CRL",
+      "researchStrength": "MODERATE_LOW",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Conservative risk lean despite statistically positive primary; this may be a misjudgment if FDA accepts narrower PTEN-deficient indication."
     },
     {
       "id": "JUN26-07",
@@ -120,11 +126,12 @@
       "level1PhaseFirst": "DIAGNOSTIC_MRI_NDA",
       "level1Clinical": "Bayer FDA-accepted NDA for lower-gadolinium-dose macrocyclic MRI contrast agent across multiple anatomic indications.",
       "level2RiskBenefit": "MRI visualization and low dose plausible, but reader validation, gadolinium retention, neonate data and CMC require review.",
-      "level3Regulatory": "APPROVAL",
-      "researchCall": "MODERATE_LOW",
-      "researchStrength": "Source confirms filing rather than original per-reader pivotal numerical results.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the positive development evidence and known regulatory precedents favor an approval lean, subject to unresolved inspections, labeling and data review. Independent decision risk: MRI visualization and low dose plausible, but reader validation, gadolinium retention, neonate data and CMC require review.",
+      "researchCall": "APPROVAL",
+      "researchStrength": "MODERATE_LOW",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Source confirms filing rather than original per-reader pivotal numerical results."
     },
     {
       "id": "JUN26-08",
@@ -136,11 +143,12 @@
       "level1PhaseFirst": "CDRH_PMA_DEVICE",
       "level1Clinical": "Dermal filler neck-line indication under PMA P110033/S099 (received May 13 2025), NOT a drug NDA/BLA.",
       "level2RiskBenefit": "Categorically different CDRH device authorization and regulatory rules.",
-      "level3Regulatory": "EXCLUDE_NON_PDUFA_DEVICE",
-      "researchCall": "NOT_APPLICABLE",
-      "researchStrength": "Do not include as drug PDUFA accuracy denominator.",
+      "level3Regulatory": "Regulatory Level 3 judgment: this is a CDRH PMA device decision and is outside drug PDUFA scoring. Independent decision risk: Categorically different CDRH device authorization and regulatory rules.",
+      "researchCall": "EXCLUDE_NON_PDUFA_DEVICE",
+      "researchStrength": "NOT_APPLICABLE",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Do not include as drug PDUFA accuracy denominator."
     },
     {
       "id": "JUN26-09",
@@ -152,11 +160,12 @@
       "level1PhaseFirst": "PHASE_3_PIVOT_PO",
       "level1Clinical": "Phase 3 PIVOT-PO noninferior to imipenem-cilastatin for cUTI; early stopped for efficacy after 1690 participants.",
       "level2RiskBenefit": "Potential first oral carbapenem with positive trial; resistance stewardship, microbiological eradication, 2022 prior review and CMC outstanding.",
-      "level3Regulatory": "APPROVAL",
-      "researchCall": "MODERATE_HIGH",
-      "researchStrength": "GSK and SPRO represent ONE licensed application; no duplicate case.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the positive development evidence and known regulatory precedents favor an approval lean, subject to unresolved inspections, labeling and data review. Independent decision risk: Potential first oral carbapenem with positive trial; resistance stewardship, microbiological eradication, 2022 prior review and CMC outstanding.",
+      "researchCall": "APPROVAL",
+      "researchStrength": "MODERATE_HIGH",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "GSK and SPRO represent ONE licensed application; no duplicate case."
     },
     {
       "id": "JUN26-10",
@@ -168,11 +177,12 @@
       "level1PhaseFirst": "PHASE_3_STRIDE_13",
       "level1Clinical": "Phase 3 STRIDE-13 positive immunogenicity versus PPSV23 in at-risk ages 2-17, licensed in adults.",
       "level2RiskBenefit": "Extrapolation of validated OPA immunogenicity; pediatric risk groups, adverse events and vaccine-type interactions require review.",
-      "level3Regulatory": "APPROVAL",
-      "researchCall": "MODERATE_HIGH",
-      "researchStrength": "Not two separate approvals for Merck and its licensed pediatric indication.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the positive development evidence and known regulatory precedents favor an approval lean, subject to unresolved inspections, labeling and data review. Independent decision risk: Extrapolation of validated OPA immunogenicity; pediatric risk groups, adverse events and vaccine-type interactions require review.",
+      "researchCall": "APPROVAL",
+      "researchStrength": "MODERATE_HIGH",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Not two separate approvals for Merck and its licensed pediatric indication."
     },
     {
       "id": "JUN26-11",
@@ -184,11 +194,12 @@
       "level1PhaseFirst": "PHASE_3_ORCA_2_ORCA_3",
       "level1Clinical": "Two pivotal randomized Phase 3 studies reported statistically significant smoking abstinence.",
       "level2RiskBenefit": "Unmet need and repeat positive efficacy support favorable clinical evidence; third-party CMC and final label are not resolved publicly.",
-      "level3Regulatory": "APPROVAL",
-      "researchCall": "MODERATE",
-      "researchStrength": "Approval lean can miss a CMC-only CRL; cannot treat clinical effect as confirmation of manufacturing readiness.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the positive development evidence and known regulatory precedents favor an approval lean, subject to unresolved inspections, labeling and data review. Independent decision risk: Unmet need and repeat positive efficacy support favorable clinical evidence; third-party CMC and final label are not resolved publicly.",
+      "researchCall": "APPROVAL",
+      "researchStrength": "MODERATE",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Approval lean can miss a CMC-only CRL; cannot treat clinical effect as confirmation of manufacturing readiness."
     },
     {
       "id": "JUN26-12",
@@ -200,11 +211,12 @@
       "level1PhaseFirst": "PHASE_3_PATINA",
       "level1Clinical": "PATINA randomized Phase 3 PFS HR 0.75, p .02 for adding palbociclib to anti-HER2/endocrine maintenance.",
       "level2RiskBenefit": "Clinical gain on PFS with considerably more grade 3/4 neutropenia; OS and tolerability not fully mature.",
-      "level3Regulatory": "APPROVAL",
-      "researchCall": "MODERATE",
-      "researchStrength": "PFS clinically positive but higher toxicity and lack of OS impose label uncertainty.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the positive development evidence and known regulatory precedents favor an approval lean, subject to unresolved inspections, labeling and data review. Independent decision risk: Clinical gain on PFS with considerably more grade 3/4 neutropenia; OS and tolerability not fully mature.",
+      "researchCall": "APPROVAL",
+      "researchStrength": "MODERATE",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "PFS clinically positive but higher toxicity and lack of OS impose label uncertainty."
     },
     {
       "id": "JUN26-13",
@@ -216,11 +228,12 @@
       "level1PhaseFirst": "PHASE_3_ASCENT_03_ASCENT_04",
       "level1Clinical": "ASCENT-03 PFS HR 0.62 p<.0001; companion ASCENT-04 reported favorable PFS in PD-L1-positive population.",
       "level2RiskBenefit": "Prior metastatic TNBC authorization supports efficacy; neutropenia, diarrhea, OS maturity and indication-specific PD-L1 eligibility unresolved.",
-      "level3Regulatory": "APPROVAL",
-      "researchCall": "MODERATE_HIGH",
-      "researchStrength": "Two supplemental indications based on related separate pivotal trials, count one listed cohort row.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the positive development evidence and known regulatory precedents favor an approval lean, subject to unresolved inspections, labeling and data review. Independent decision risk: Prior metastatic TNBC authorization supports efficacy; neutropenia, diarrhea, OS maturity and indication-specific PD-L1 eligibility unresolved.",
+      "researchCall": "APPROVAL",
+      "researchStrength": "MODERATE_HIGH",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Two supplemental indications based on related separate pivotal trials, count one listed cohort row."
     },
     {
       "id": "JUN26-14",
@@ -232,11 +245,12 @@
       "level1PhaseFirst": "PHASE_3_CORE_CORE2",
       "level1Clinical": "Phase 3 CORE/CORE2 sponsor data positive triglyceride reduction, established oligonucleotide already approved in FCS.",
       "level2RiskBenefit": "Potential pancreatitis prevention meaningful but risk reduction not entirely supported by fully mature event counts; tolerability and liver risk need review.",
-      "level3Regulatory": "APPROVAL",
-      "researchCall": "MODERATE_HIGH",
-      "researchStrength": "Original verified goal June 30; FDA acted earlier June 24.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the positive development evidence and known regulatory precedents favor an approval lean, subject to unresolved inspections, labeling and data review. Independent decision risk: Potential pancreatitis prevention meaningful but risk reduction not entirely supported by fully mature event counts; tolerability and liver risk need review.",
+      "researchCall": "APPROVAL",
+      "researchStrength": "MODERATE_HIGH",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Original verified goal June 30; FDA acted earlier June 24."
     },
     {
       "id": "JUN26-15",
@@ -248,11 +262,12 @@
       "level1PhaseFirst": "PHASE_3_OPTIMMIZE",
       "level1Clinical": "Phase 3 pediatric program completed enrollment with adult risankizumab approval precedent and pediatric PK extrapolation; exact predecision efficacy table not independently captured.",
       "level2RiskBenefit": "Known IL-23 mechanism and durable adult benefit; pediatric dosing, immunogenicity and infection exposure remain important.",
-      "level3Regulatory": "APPROVAL",
-      "researchCall": "MODERATE_LOW",
-      "researchStrength": "Current registry may contain post-May changes; no dated original version authenticated.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the positive development evidence and known regulatory precedents favor an approval lean, subject to unresolved inspections, labeling and data review. Independent decision risk: Known IL-23 mechanism and durable adult benefit; pediatric dosing, immunogenicity and infection exposure remain important.",
+      "researchCall": "APPROVAL",
+      "researchStrength": "MODERATE_LOW",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Current registry may contain post-May changes; no dated original version authenticated."
     },
     {
       "id": "JUN26-16",
@@ -264,11 +279,12 @@
       "level1PhaseFirst": "PHASE_3_THRIVE_AND_THRIVE2",
       "level1Clinical": "Two positive Phase 3 TED studies for proptosis with rapid diplopia improvements and priority review.",
       "level2RiskBenefit": "Anti-IGF1R effect clinically relevant; hearing-related adverse events, infusion issues and BLA CMC could complicate.",
-      "level3Regulatory": "APPROVAL",
-      "researchCall": "MODERATE_HIGH",
-      "researchStrength": "Pre-May source gives June 30 goal; listed approval action occurred earlier.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the positive development evidence and known regulatory precedents favor an approval lean, subject to unresolved inspections, labeling and data review. Independent decision risk: Anti-IGF1R effect clinically relevant; hearing-related adverse events, infusion issues and BLA CMC could complicate.",
+      "researchCall": "APPROVAL",
+      "researchStrength": "MODERATE_HIGH",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Pre-May source gives June 30 goal; listed approval action occurred earlier."
     },
     {
       "id": "JUN26-17",
@@ -280,11 +296,12 @@
       "level1PhaseFirst": "505B2_RESUBMISSION_CMC",
       "level1Clinical": "Three original clinical studies and accepted Class 2 resubmission; 2025 CRL arose from third-party manufacturing compliance, not efficacy.",
       "level2RiskBenefit": "Unresolved manufacturing inspection chain is central binary agency risk even with improved tolerability and lower pill burden.",
-      "level3Regulatory": "CRL",
-      "researchCall": "MODERATE",
-      "researchStrength": "No independent proof the original plant deficiency was cleared before the new action.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the identified regulatory/manufacturing concern is sufficient for a conservative CRL lean. Independent decision risk: Unresolved manufacturing inspection chain is central binary agency risk even with improved tolerability and lower pill burden.",
+      "researchCall": "CRL",
+      "researchStrength": "MODERATE",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "No independent proof the original plant deficiency was cleared before the new action."
     },
     {
       "id": "JUN26-18",
@@ -296,11 +313,12 @@
       "level1PhaseFirst": "PEDIATRIC_PSORIASIS_SNDA",
       "level1Clinical": "Existing topical PDE4 inhibitor pediatric efficacy and safety experience; accepted sNDA extends lower age in psoriasis.",
       "level2RiskBenefit": "Low systemic exposure and familiar marketed product; careful separation from atopic dermatitis 0.05% regimen is required.",
-      "level3Regulatory": "APPROVAL",
-      "researchCall": "MODERATE_HIGH",
-      "researchStrength": "Do not mistake the separate INTEGUMENT-PED dermatitis trial as direct pivotal evidence for 0.3% psoriasis.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the positive development evidence and known regulatory precedents favor an approval lean, subject to unresolved inspections, labeling and data review. Independent decision risk: Low systemic exposure and familiar marketed product; careful separation from atopic dermatitis 0.05% regimen is required.",
+      "researchCall": "APPROVAL",
+      "researchStrength": "MODERATE_HIGH",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Do not mistake the separate INTEGUMENT-PED dermatitis trial as direct pivotal evidence for 0.3% psoriasis."
     },
     {
       "id": "JUN26-19",
@@ -312,11 +330,12 @@
       "level1PhaseFirst": "RADIO_DIAGNOSTIC_NDA_MANUFACTURING",
       "level1Clinical": "PET SSTR-targeted diagnostic, with existing chemistry and clinical potential; original diagnostic reader validation not adjudicated.",
       "level2RiskBenefit": "Explicit March three-month FDA extension for added manufacturing material makes unresolved third-party CMC credible nonclinical blockage.",
-      "level3Regulatory": "CRL",
-      "researchCall": "MODERATE_LOW",
-      "researchStrength": "Class 2 extension isn't a CRL in itself; this is a cautious CMC failure lean.",
+      "level3Regulatory": "Regulatory Level 3 judgment: the identified regulatory/manufacturing concern is sufficient for a conservative CRL lean. Independent decision risk: Explicit March three-month FDA extension for added manufacturing material makes unresolved third-party CMC credible nonclinical blockage.",
+      "researchCall": "CRL",
+      "researchStrength": "MODERATE_LOW",
       "actualDecision": null,
-      "match": null
+      "match": null,
+      "caveat": "Class 2 extension isn't a CRL in itself; this is a cautious CMC failure lean."
     }
   ]
 }
