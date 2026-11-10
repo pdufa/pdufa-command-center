@@ -15,11 +15,11 @@
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220210Orig1s000ltr.pdf",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
-      "historicalResearchSourceUrl": "https://ir.ionispharma.com/news-releases/news-release-details/ionis-announces-zilganersen-new-drug-application-alexander",
-      "historicalResearchEvidenceCutoff": "2026-03-23",
+      "historicalResearchSourceUrl": "https://ir.ionis.com/news-releases/news-release-details/ionis-announces-positive-topline-results-pivotal-study",
+      "historicalResearchEvidenceCutoff": "2025-09-22",
       "levelStyle": 3,
       "researchState": "COMPLETE_OUTCOME_AWARE_DESK_RECONSTRUCTION",
       "predecision": {
@@ -32,7 +32,17 @@
         "level3RegulatoryFit": "FDA accepted NDA for priority review, with September 22 goal; rare-disease regulatory flexibility favors review but is not a guarantee",
         "criticalUnverified": "Small rare disease trial, clinical meaningfulness, manufacturing and postapproval obligations",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "Pivotal Alexander disease trial; Phase 3-style rare-disease comparison",
+      "level1TrialAndEfficacy": "Reported 10-meter walk test stabilization versus control; nominal endpoint analysis requires multiplicity audit",
+      "level2SafetyAndCounterevidence": "Adverse events and long-term intrathecal exposure need complete review",
+      "level3RegulatoryFit": "Priority review and high unmet need support approval; one pivotal rare-disease trial remains a generalizability risk",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Moderate",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-02",
@@ -42,12 +52,12 @@
       "applicationId": "NDA 220359 ORIG-1",
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220359Orig1s000ltr.pdf",
       "observedDisposition": "APPROVAL",
-      "reconstructedLevel3Call": "CRL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "reconstructedLevel3Call": "APPROVAL",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
-      "match": false,
-      "historicalResearchSourceUrl": "https://www.astrazeneca.com/media-centre/press-releases/2026/us-fda-decision-date-camizestrant-extended.html%3A26",
-      "historicalResearchEvidenceCutoff": "2026-05-27",
+      "match": true,
+      "historicalResearchSourceUrl": "https://www.astrazeneca.com/media-centre/press-releases/2025/camizestrant-reduced-the-risk-of-disease-progression-or-death-by-56-in-patients-with-advanced-hr-positive-breast-cancer-with-an-emergent-esr1-tumour-mutation-in-serena-6-phase-iii-trial.html",
+      "historicalResearchEvidenceCutoff": "2025-06-01",
       "levelStyle": 3,
       "researchState": "COMPLETE_OUTCOME_AWARE_DESK_RECONSTRUCTION",
       "predecision": {
@@ -60,7 +70,17 @@
         "level3RegulatoryFit": "FDA's April 2026 oncology advisory committee did not yield a favorable majority and May extension requested further data; conservative risk-lean is CRL even though accelerated approval remained possible",
         "criticalUnverified": "Regulatory disagreement; additional data; accelerated pathway could reverse the negative lean",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "Phase 3 SERENA-6 randomized double-blind, ctDNA-guided switching",
+      "level1TrialAndEfficacy": "PFS HR 0.44 and P<0.00001 favored camizestrant-CDK4/6; OS immature",
+      "level2SafetyAndCounterevidence": "Tolerability of endocrine/CDK4/6 combinations and diagnostic population limits need review",
+      "level3RegulatoryFit": "Strong progression-free survival and companion diagnostic favor approval; accelerated pathway and OS immaturity increase risk",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Moderate",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-03",
@@ -71,7 +91,7 @@
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/208081Orig1s040ltr.pdf",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
       "historicalResearchSourceUrl": "https://www.sec.gov/Archives/edgar/data/1858685/000149315224043187/ex99-1.htm",
@@ -88,7 +108,17 @@
         "level3RegulatoryFit": "Prior marketed therapy plus positive U.S. pivotal study supports a supplemental indication approval lean",
         "criticalUnverified": "Durability, histologic clearance, photosensitization and manufacturing inspection not independently checked",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "Randomized double-blind Phase 3 Ameluz/PDT trial in sBCC",
+      "level1TrialAndEfficacy": "Sponsor-reported primary/secondary p<0.0001 in 187 patients",
+      "level2SafetyAndCounterevidence": "Dermatologic tolerability, recurrence follow-up and device-lamp compatibility require review",
+      "level3RegulatoryFit": "Existing Ameluz approval plus highly positive indication trial support supplement; device labeling and CMC remain unresolved",
+      "predecisionSourceClass": "SEC_FILED_SPONSOR",
+      "researchConfidence": "Moderate",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-04",
@@ -99,10 +129,10 @@
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/219972Orig1s001ltr.pdf",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
-      "historicalResearchSourceUrl": "https://www.bayer.com/media/en-us/fda-grants-sevabertinib-priority-review-as-a-first-line-treatment-for-patients-with-her2-mutant-non-small-cell-lung-cancer/",
+      "historicalResearchSourceUrl": "https://www.bayer.com/en-us/united-states/news-and-stories/2026/new-drug-application-for-hyrnuo",
       "historicalResearchEvidenceCutoff": "2026-05-18",
       "levelStyle": 3,
       "researchState": "COMPLETE_OUTCOME_AWARE_DESK_RECONSTRUCTION",
@@ -116,7 +146,17 @@
         "level3RegulatoryFit": "FDA granted priority review May 18, 2026 for first-line supplement; prior approved molecule favors a cautious accelerated-approval lean",
         "criticalUnverified": "Single arm, small subgroups, no mature randomized OS and confirmatory trial requirement",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "SOHO-01 Phase I/II nonrandomized first-line cohort; not a Phase 3 trial",
+      "level1TrialAndEfficacy": "Predecision public source described promising HER2-mutant NSCLC response evidence but comparative survival was immature",
+      "level2SafetyAndCounterevidence": "Small nonrandomized cohort and durability/toxicity remain uncertain",
+      "level3RegulatoryFit": "Existing prior-line accelerated approval and granted Priority Review support first-line expansion; confirmatory obligation remains risk",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Low",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-05",
@@ -127,7 +167,7 @@
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218592Orig1s000ltr.pdf",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
       "historicalResearchSourceUrl": "https://telixpharma.com/news-views/fda-accepts-nda-for-tlx101-px-pixclara/",
@@ -144,7 +184,17 @@
         "level3RegulatoryFit": "FDA accepted resubmitted NDA with September 11 goal; familiar FET-PET practice in international guidelines favors approval",
         "criticalUnverified": "Original diagnostic accuracy, manufacturing, imaging reproducibility and pediatric extrapolation unresolved",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "Radiopharmaceutical imaging diagnostic clinical-development package",
+      "level1TrialAndEfficacy": "Clinical need to distinguish recurrent glioma from treatment effect; pivotal diagnostic test accuracy needs independent analysis",
+      "level2SafetyAndCounterevidence": "Radiation exposure, reader agreement and comparator standards require review",
+      "level3RegulatoryFit": "FDA accepted a resubmitted NDA after earlier CRL; reopened review and international clinical use support cautious approval lean, but CMC/technical gaps remain",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Low",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-06",
@@ -155,11 +205,11 @@
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761463Orig1s000ltr.pdf",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
-      "historicalResearchSourceUrl": "https://scholarrock.gcs-web.com/news-releases/news-release-details/scholar-rock-provides-update-global-apitegromab-regulatory",
-      "historicalResearchEvidenceCutoff": "2026-08-21",
+      "historicalResearchSourceUrl": "https://www.sec.gov/Archives/edgar/data/1727196/000110465926037350/tm2610664d1_ex99-1.htm",
+      "historicalResearchEvidenceCutoff": "2026-03-31",
       "levelStyle": 3,
       "researchState": "COMPLETE_OUTCOME_AWARE_DESK_RECONSTRUCTION",
       "predecision": {
@@ -172,7 +222,17 @@
         "level3RegulatoryFit": "August 21 announcement says FDA-guided removal of failing fill-finish plant and alternate facility review; approval lean, with high conditional CMC risk",
         "criticalUnverified": "Alternate-facility readiness and inspection outcome unknown before decision",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "Phase 3 SAPPHIRE plus spinal muscular atrophy background SMN-targeting treatment",
+      "level1TrialAndEfficacy": "Sponsor describes positive motor-function efficacy and revised BLA with standard safety update",
+      "level2SafetyAndCounterevidence": "Long-term muscle-function durability and concomitant background treatment need review",
+      "level3RegulatoryFit": "Prior BLA issues centered on additional fill-finish site; accepted resubmission/priority designations support approval if manufacturing is fixed",
+      "predecisionSourceClass": "SEC_FILED_SPONSOR",
+      "researchConfidence": "Moderate",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-07",
@@ -183,7 +243,7 @@
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/217759Orig1s006ltr.pdf",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
       "historicalResearchSourceUrl": "https://www.pharming.com/our-news/pharming-announces-u-s-fda-acceptance-of-snda-resubmission-for-joenja",
@@ -200,7 +260,17 @@
         "level3RegulatoryFit": "June 4 resubmission acceptance after Jan CRL and analytical-method amendments provides conditional approval lean; reused from October action/goal crossover",
         "criticalUnverified": "Second lower-weight sNDA is separate; original CMC method acceptance remains a risk",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "Small pediatric open-label PK/PD-safety bridge with earlier adolescent indication",
+      "level1TrialAndEfficacy": "Prior adult/adolescent efficacy plus dose/exposure pediatric rationale; not a new blinded Phase 3 efficacy RCT",
+      "level2SafetyAndCounterevidence": "Lower-weight underexposure and production analytical-method issue caused January 2026 CRL",
+      "level3RegulatoryFit": "Resubmission excludes under-27kg children and supplied analytical-method response; approval lean for narrowed indication; earlier CRL remains material risk",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Moderate",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-08",
@@ -211,11 +281,11 @@
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/215341Orig1s011ltr.pdf",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
-      "historicalResearchSourceUrl": "https://www.bayer.com/en-us/united-states/news-and-stories/2026/kerendiar-granted-priority-review",
-      "historicalResearchEvidenceCutoff": "2026-05-21",
+      "historicalResearchSourceUrl": "https://pubmed.ncbi.nlm.nih.gov/41780000/",
+      "historicalResearchEvidenceCutoff": "2026-03-01",
       "levelStyle": 3,
       "researchState": "COMPLETE_OUTCOME_AWARE_DESK_RECONSTRUCTION",
       "predecision": {
@@ -228,7 +298,17 @@
         "level3RegulatoryFit": "May 21 accepted priority-review supplemental application and established marketed compound support approval lean",
         "criticalUnverified": "UACR is a surrogate; direct kidney-outcome proof and safety need independent evaluation",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "FINE-ONE Phase 3 242 adults T1D with CKD, placebo-controlled",
+      "level1TrialAndEfficacy": "Finerenone reduced urine albumin-creatinine ratio versus placebo; surrogate-endpoint extrapolation to kidney outcomes must be scrutinized",
+      "level2SafetyAndCounterevidence": "Hyperkalemia 10.1% versus 3.3%, with potential eGFR changes; monitor renal function",
+      "level3RegulatoryFit": "Prior type 2 CKD outcomes + strong albuminuria signal support indication extension, but surrogate acceptance and hyperkalemia risk remain",
+      "predecisionSourceClass": "PREDECISION_JOURNAL",
+      "researchConfidence": "Moderate",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-09",
@@ -239,11 +319,11 @@
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/219713Orig1s004ltr.pdf",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
-      "historicalResearchSourceUrl": "https://investors.nuvationbio.com/news/news-details/2026/Nuvation-Bio-Announces-FDA-Acceptance-of-Supplemental-New-Drug-Application-for-IBTROZI-taletrectinib-with-Updated-Duration-of-Response-in-Advanced-ROS1-Positive-Non-Small-Cell-Lung-Cancer/default.aspx",
-      "historicalResearchEvidenceCutoff": "2026-05-06",
+      "historicalResearchSourceUrl": "https://investors.nuvationbio.com/news/news-details/2025/Nuvation-Bio-Announces-New-Data-from-Pivotal-Clinical-Studies-of-IBTROZI-taletrectinib-in-Advanced-ROS1-Positive-Non-Small-Cell-Lung-Cancer-at-2025-World-Conference-on-Lung-Cancer/default.aspx",
+      "historicalResearchEvidenceCutoff": "2025-09-07",
       "levelStyle": 3,
       "researchState": "COMPLETE_OUTCOME_AWARE_DESK_RECONSTRUCTION",
       "predecision": {
@@ -256,7 +336,17 @@
         "level3RegulatoryFit": "May 6, 2026 FDA acceptance of a postmarketing sNDA with Jan 2027 goal supports label update approval lean; September FDA action was early",
         "criticalUnverified": "Early action cannot be inferred from predecision evidence; not a September PDUFA-goal event",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "Two Phase 2 single-arm TRUST-I and TRUST-II, existing June 2025 label",
+      "level1TrialAndEfficacy": "Predecision longer-follow-up response duration and objective responses support label update, but not comparative survival benefit",
+      "level2SafetyAndCounterevidence": "CNS activity and serious toxicity require ongoing exposure reconciliation",
+      "level3RegulatoryFit": "Existing marketing authorization and updated follow-up data favor supplemental label update; no new efficacy indication or phase 3 inferred",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Moderate",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-10",
@@ -267,11 +357,11 @@
       "fdaSourceUrl": "https://www.fda.gov/media/194921/download",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
-      "historicalResearchSourceUrl": "https://ir.ultragenyx.com/node/18781",
-      "historicalResearchEvidenceCutoff": "2026-04-02",
+      "historicalResearchSourceUrl": "https://ir.ultragenyx.com/news-releases/news-release-details/ultragenyx-announces-positive-longer-term-data-demonstrating",
+      "historicalResearchEvidenceCutoff": "2026-02-03",
       "levelStyle": 3,
       "researchState": "COMPLETE_OUTCOME_AWARE_DESK_RECONSTRUCTION",
       "predecision": {
@@ -284,7 +374,17 @@
         "level3RegulatoryFit": "FDA accepted April 2 resubmitted BLA with September 19 goal after earlier FDA deficiency; conditional approval lean recognizing progress and unmet need",
         "criticalUnverified": "Prior CRL, vector durability, biodistribution, CMC and confirmatory obligations could reverse call",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "Small uncontrolled AAV9 gene therapy studies and natural-history comparison in Sanfilippo type A",
+      "level1TrialAndEfficacy": "Long-term biomarker CSF-HS improvements and neurodevelopmental observations, not randomized Phase 3 replication",
+      "level2SafetyAndCounterevidence": "Durability, delayed AAV toxicities and exposure heterogeneity remain significant risks",
+      "level3RegulatoryFit": "FDA accepted resubmitted accelerated-approval BLA April 2026 after earlier response; reasonable rare-disease approval lean, but clinical surrogate and CMC uncertain",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Low",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-11",
@@ -295,11 +395,11 @@
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218881Orig1s001ltr.pdf",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
-      "historicalResearchSourceUrl": "https://lilly.gcs-web.com/node/53541",
-      "historicalResearchEvidenceCutoff": "2025-12-12",
+      "historicalResearchSourceUrl": "https://investor.lilly.com/news-releases/news-release-details/lillys-imlunestrant-oral-serd-significantly-improved-progression",
+      "historicalResearchEvidenceCutoff": "2024-12-11",
       "levelStyle": 3,
       "researchState": "COMPLETE_OUTCOME_AWARE_DESK_RECONSTRUCTION",
       "predecision": {
@@ -312,7 +412,17 @@
         "level3RegulatoryFit": "December 2025 published sponsor clinical update supported a targeted combination approval lean; exact indication must be preserved",
         "criticalUnverified": "Clinical benefit extrapolation, companion diagnostic, survival hierarchy and hepatic or hematologic safety",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "Phase 3 randomized EMBER-3 endocrine breast cancer study",
+      "level1TrialAndEfficacy": "PFS benefit with imlunestrant-abemaciclib versus imlunestrant; ESR1 subset and multiplicity require precise indication mapping",
+      "level2SafetyAndCounterevidence": "Combination diarrhea, neutropenia and other CDK4/6 risks require labeling controls",
+      "level3RegulatoryFit": "Established abemaciclib risk-management and positive PFS support indication amendment; OS immature and restricted biomarker label likely",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Moderate",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-12",
@@ -322,12 +432,12 @@
       "applicationId": "BLA 761363 S-017",
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761363Orig1s012,s016,s017ltr.pdf",
       "observedDisposition": "APPROVAL",
-      "reconstructedLevel3Call": "ABSTAIN",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
-      "eligibleForDirectionalAgreement": false,
-      "match": null,
-      "historicalResearchSourceUrl": "https://dailymed.nlm.nih.gov/dailymed/lookup.cfm?setid=21693ee2-cd23-4137-ac67-066bb3a4a9b7",
-      "historicalResearchEvidenceCutoff": "2026-06-17",
+      "reconstructedLevel3Call": "APPROVAL",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
+      "eligibleForDirectionalAgreement": true,
+      "match": true,
+      "historicalResearchSourceUrl": "https://www.merck.com/news/merck-announces-pivotal-phase-3-zenith-trial-evaluating-winrevair-sotatercept-csrk-met-primary-endpoint-at-interim-analysis/",
+      "historicalResearchEvidenceCutoff": "2024-11-25",
       "levelStyle": 3,
       "researchState": "COMPLETE_OUTCOME_AWARE_DESK_RECONSTRUCTION",
       "predecision": {
@@ -340,7 +450,17 @@
         "level3RegulatoryFit": "Source alone lacks predecision S-017 scope and agency review; abstain rather than guess on a safety-label supplement",
         "criticalUnverified": "Need June 2026 S-017 submission or contemporaneous sponsor 8-K and source as published",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "ZENITH Phase 3 randomized placebo-controlled high-risk PAH; existing sotatercept approval",
+      "level1TrialAndEfficacy": "Early-stopped trial met morbidity/mortality composite; preserve hierarchy and component analysis",
+      "level2SafetyAndCounterevidence": "Bleeding, thrombocytopenia and erythrocytosis risks require full safety and dose monitoring",
+      "level3RegulatoryFit": "Strong second positive Phase 3 and pre-existing PAH authorization favor supplement; clinical subgroup and label scope still need FDA review",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Moderate",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-13",
@@ -351,11 +471,11 @@
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761408Orig1s000ltr.pdf",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
-      "historicalResearchSourceUrl": "https://investor.lilly.com/news-releases/news-release-details/lillys-once-weekly-insulin-efsitora-alfa-demonstrated-a1c",
-      "historicalResearchEvidenceCutoff": "2025-06-22",
+      "historicalResearchSourceUrl": "https://investor.lilly.com/news-releases/news-release-details/once-week-dosing-insulin-efsitora-alfa-delivers-a1c-reduction",
+      "historicalResearchEvidenceCutoff": "2024-05-16",
       "levelStyle": 3,
       "researchState": "COMPLETE_OUTCOME_AWARE_DESK_RECONSTRUCTION",
       "predecision": {
@@ -368,7 +488,17 @@
         "level3RegulatoryFit": "2025 robust multi-study noninferiority makes a T2D-only approval lean defensible",
         "criticalUnverified": "Long-term hypoglycemia, type 1 vs type 2 labeling distinction and CMC",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "QWINT-2 and QWINT-4 Phase 3 basal-insulin comparisons",
+      "level1TrialAndEfficacy": "Once-weekly basal efsitora reported noninferior HbA1c reduction versus daily insulin",
+      "level2SafetyAndCounterevidence": "Hypoglycemia and dosing error/missed-dose safety require additional risk management",
+      "level3RegulatoryFit": "Multiple positive noninferiority studies and established comparator pathway support approval; dosing-device/regulatory CMC unverified",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Moderate",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-14",
@@ -379,7 +509,7 @@
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/215383Orig1s013ltr.pdf",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
       "historicalResearchSourceUrl": "https://www.merck.com/news/welireg-belzutifan-plus-lenvima-lenvatinib-reduced-the-risk-of-disease-progression-or-death-by-30-compared-to-cabozantinib-in-certain-previously-treated-patients-with-advanced-renal-ce/",
@@ -396,7 +526,17 @@
         "level3RegulatoryFit": "Merck/Eisai Feb 28, 2026 disclosure says FDA accepted two sNDAs and set October 4 target; approval lean grounded in primary PFS despite OS caution",
         "criticalUnverified": "Approval Sep 24 early relative to October goal; avoid counting goal-month and action-month as separate trials",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "LITESPARK-011 Phase 3 randomized advanced RCC versus cabozantinib",
+      "level1TrialAndEfficacy": "PFS significant on one dual-primary endpoint; OS not proven, so no survival superiority claim",
+      "level2SafetyAndCounterevidence": "Combination anemia, hypoxia and hypertension/other TKI harms necessitate risk assessment",
+      "level3RegulatoryFit": "Existing individual drug approvals, PFS signal and FDA supplemental acceptance favor restricted PFS-based indication, OS uncertainty constrains benefit claim",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Moderate",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-15",
@@ -406,12 +546,12 @@
       "applicationId": "BLA 125486 S-043",
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/125486Orig1s043ltr.pdf",
       "observedDisposition": "APPROVAL",
-      "reconstructedLevel3Call": "ABSTAIN",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
-      "eligibleForDirectionalAgreement": false,
-      "match": null,
-      "historicalResearchSourceUrl": "https://clinicaltrials.gov/study/NCT05627557",
-      "historicalResearchEvidenceCutoff": "2026-08-31",
+      "reconstructedLevel3Call": "APPROVAL",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
+      "eligibleForDirectionalAgreement": true,
+      "match": true,
+      "historicalResearchSourceUrl": "https://www.gene.com/media/press-releases/15099/2026-02-15/genentech-announces-positive-phase-iii-r",
+      "historicalResearchEvidenceCutoff": "2026-02-15",
       "levelStyle": 3,
       "researchState": "COMPLETE_OUTCOME_AWARE_DESK_RECONSTRUCTION",
       "predecision": {
@@ -424,7 +564,17 @@
         "level3RegulatoryFit": "The study existed before September; evidence available in this workpaper is insufficient to reconstruct an exact FDA-cycle regulatory lean",
         "criticalUnverified": "Obtain date-stamped predecision INShore topline and original protocol/SAP rather than importing approval-day statistics",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "INShore Phase 3 randomized obinutuzumab versus mycophenolate mofetil (prior positive program referenced in February statement)",
+      "level1TrialAndEfficacy": "Predecision sponsor referenced positive idiopathic nephrotic syndrome study, but this source does not publish numerical INShore effect size",
+      "level2SafetyAndCounterevidence": "Anti-CD20 immunosuppression, infections and long-term relapse control require review",
+      "level3RegulatoryFit": "Existing anti-CD20 licensure and referenced positive INShore study support approval lean; no outcome-day label numbers used as predecision evidence",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Low",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-16",
@@ -434,12 +584,12 @@
       "applicationId": "NDA 221198 ORIG-1",
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/221198Orig1s000ltr.pdf",
       "observedDisposition": "APPROVAL",
-      "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "reconstructedLevel3Call": "CRL",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
-      "match": true,
+      "match": false,
       "historicalResearchSourceUrl": "https://ir.mirumpharma.com/news/news-details/2026/Mirum-Pharmaceuticals-and-Incyte-Announce-Positive-Pivotal-Phase-2-Results-from-PROGRESS-Study-of-Zilurgisertib-in-Fibrodysplasia-Ossificans-Progressiva/default.aspx",
-      "historicalResearchEvidenceCutoff": "2026-07-01",
+      "historicalResearchEvidenceCutoff": "2026-06-14",
       "levelStyle": 3,
       "researchState": "COMPLETE_OUTCOME_AWARE_DESK_RECONSTRUCTION",
       "predecision": {
@@ -452,7 +602,17 @@
         "level3RegulatoryFit": "July 2026 public results plus accepted priority-review NDA with September 26 target support conditional approval lean",
         "criticalUnverified": "Small trial, nominal P-values for exploratory endpoints and possible CMC gaps",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "PROGRESS pivotal Phase 2 randomized rare-disease trial, NOT Phase 3",
+      "level1TrialAndEfficacy": "Prespecified new-lesion incidence comparison 1/32 vs 5/31 reported P=0.0986; favorable lesion-volume comparisons nominal P<0.0001",
+      "level2SafetyAndCounterevidence": "Short placebo window and rare-disease sample limit confidence; favorable safety reported",
+      "level3RegulatoryFit": "A Level 3 skeptical reviewer would lean CRL on missed key primary test despite favorable secondary volume; FDA regulatory flexibility can overturn this risk lean",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Low",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-17",
@@ -463,11 +623,11 @@
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220415Orig1s000ltr.pdf",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
-      "historicalResearchSourceUrl": "https://news.abbvie.com/2025-09-26-AbbVie-Submits-New-Drug-Application-to-U-S-FDA-for-Tavapadon-for-the-Treatment-of-Parkinsons-Disease?sf278657268=1",
-      "historicalResearchEvidenceCutoff": "2025-09-26",
+      "historicalResearchSourceUrl": "https://news.abbvie.com/2024-04-18-Cerevel-Therapeutics-Announces-Positive-Topline-Results-for-Tavapadon-in-Phase-3-Adjunctive-Trial-for-People-Living-with-Parkinsons-Disease",
+      "historicalResearchEvidenceCutoff": "2024-04-18",
       "levelStyle": 3,
       "researchState": "COMPLETE_OUTCOME_AWARE_DESK_RECONSTRUCTION",
       "predecision": {
@@ -480,7 +640,17 @@
         "level3RegulatoryFit": "Sep 26, 2025 NDA submission after three successful Phase 3 trials supports approval lean",
         "criticalUnverified": "Three related trials are not independent FDA decisions; dossier safety/CMC unverified",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "TEMPO-3 Phase 3 randomized add-on levodopa; parallel Phase 3 monotherapy program",
+      "level1TrialAndEfficacy": "Met primary ON-time without troublesome dyskinesia by +1.1 hours versus placebo, P<0.0001",
+      "level2SafetyAndCounterevidence": "Dopamine agonist neuropsychiatric and dyskinesia effects require full safety review",
+      "level3RegulatoryFit": "Positive randomized movement-symptom evidence and larger program support approval; overall monotherapy endpoint detail still unreviewed",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Moderate",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-18",
@@ -490,10 +660,10 @@
       "applicationId": "NDA 207924 S-009",
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/207924Orig1s009ltr.pdf",
       "observedDisposition": "APPROVAL",
-      "reconstructedLevel3Call": "ABSTAIN",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
-      "eligibleForDirectionalAgreement": false,
-      "match": null,
+      "reconstructedLevel3Call": "APPROVAL",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
+      "eligibleForDirectionalAgreement": true,
+      "match": true,
       "historicalResearchSourceUrl": "https://clinicaltrials.gov/study/NCT05723198",
       "historicalResearchEvidenceCutoff": "2026-09-08",
       "levelStyle": 3,
@@ -508,7 +678,17 @@
         "level3RegulatoryFit": "Without predecision pediatric efficacy analysis and label-specific risk review, do not infer decision from adult authorization",
         "criticalUnverified": "Need frozen registry version, prespecified pediatric efficacy/safety and label indication boundary",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "BRAVE-AA-PEDS Phase 3 randomized pediatric alopecia trial (registry snapshot)",
+      "level1TrialAndEfficacy": "Clinical trial registered placebo-controlled SALT-based endpoint; specific treatment-group efficacy not validated from a dated predecision publication",
+      "level2SafetyAndCounterevidence": "Baricitinib has boxed warnings for serious infections, malignancy, MACE and thrombosis; pediatric extrapolation uncertain",
+      "level3RegulatoryFit": "Established adult alopecia baricitinib approval and Phase 3 pediatric study support low-confidence expansion lean; predecision endpoint result unverified",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Low",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-19",
@@ -518,10 +698,10 @@
       "applicationId": "BLA 761481 ORIG-1",
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761481Orig1s000ltr.pdf",
       "observedDisposition": "APPROVAL",
-      "reconstructedLevel3Call": "ABSTAIN",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
-      "eligibleForDirectionalAgreement": false,
-      "match": null,
+      "reconstructedLevel3Call": "APPROVAL",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
+      "eligibleForDirectionalAgreement": true,
+      "match": true,
       "historicalResearchSourceUrl": "https://ir.tevapharm.com/news-and-events/press-releases/press-release-details/2026/Teva-Gains-Biosimilar-Momentum-with-U-S--FDA-Approval-of-PONLIMSI-denosumab-adet-and-Dual-Filing-Acceptance-for-Biosimilar-Candidate-to-Xolair-omalizumab/default.aspx",
       "historicalResearchEvidenceCutoff": "2026-03-30",
       "levelStyle": 3,
@@ -536,7 +716,17 @@
         "level3RegulatoryFit": "No original predecision Degevma reference-product analytical comparison and sponsor CMC package inspected; abstain",
         "criticalUnverified": "Do not count other Teva biosimilar approval as proof of this application",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "Biosimilar 351(k) analytical comparability pathway, not a novel Phase 3 efficacy application",
+      "level1TrialAndEfficacy": "Same active denosumab-adet substance already licensed March 2026 as Ponlimsi for Prolia reference; Degevma Xgeva strength/indications still require independent comparability",
+      "level2SafetyAndCounterevidence": "Hypocalcemia, osteonecrosis and biosimilar manufacturing consistency require review",
+      "level3RegulatoryFit": "Prior 60-mg biosimilar license makes additional 120-mg reference product plausible but BLA 761481 CMC/interchangeability not public in predecision source",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Low",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     },
     {
       "id": "SEP26-ACTION-20",
@@ -547,7 +737,7 @@
       "fdaSourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/214998Orig1s013ltr.pdf",
       "observedDisposition": "APPROVAL",
       "reconstructedLevel3Call": "APPROVAL",
-      "level3AssessmentState": "OUTCOME_AWARE_HISTORICAL_RECONSTRUCTION",
+      "level3AssessmentState": "OUTCOME_AWARE_LEVEL3_STYLE_DESK_RECONSTRUCTION",
       "eligibleForDirectionalAgreement": true,
       "match": true,
       "historicalResearchSourceUrl": "https://news.bms.com/news/corporate-financial/2026/U-S--Food-and-Drug-Administration-Accepts-for-Priority-Review-Bristol-Myers-Squibbs-Supplemental-New-Drug-Application-for-Camzyos-mavacamten-to-Treat-Adolescents-with-Symptomatic-Obstructive-Hypertrophic-Cardiomyopathy-oHCM/default.aspx",
@@ -564,7 +754,17 @@
         "level3RegulatoryFit": "January 12 positive topline plus June 1 FDA priority-review acceptance favor carefully restricted pediatric indication approval",
         "criticalUnverified": "Pediatric weight bounds, reduced LVEF and labeling/REMS controls",
         "originalSourceVersionIndependentlyVerified": false
-      }
+      },
+      "phaseFirstContext": "SCOUT-HCM Phase 3 randomized pediatric trial in symptomatic oHCM, n=44",
+      "level1TrialAndEfficacy": "Predecision sponsor statement says trial met primary LVOT gradient endpoint; modest size and functional benefit need review",
+      "level2SafetyAndCounterevidence": "Known adult mavacamten LVEF reduction risk, echocardiographic monitoring/REMS pediatric applicability uncertain",
+      "level3RegulatoryFit": "Existing adult indication and positive pediatric randomized endpoint support extension; pediatric exposure and REMS adjustments remain caution",
+      "predecisionSourceClass": "DATED_PUBLIC_SPONSOR_OR_REGISTRY",
+      "researchConfidence": "Moderate",
+      "predecisionFactsRestrictedToSourceDate": true,
+      "researchBlind": false,
+      "bonaFidePriorForecast": false,
+      "decisionLeakageDisclosure": "Assessor knew the eventual FDA decision before writing this November 2026 reconstruction."
     }
   ],
   "expected": {
@@ -572,23 +772,21 @@
     "observedApprovals": 20,
     "observedCrl": 0,
     "level3ReconstructedCalls": 20,
-    "comparableLevel3Pairs": 16,
-    "level3AssessedCases": 20,
-    "level3ApprovalLeans": 15,
-    "level3CrlLeans": 1,
-    "level3Abstains": 4,
-    "retrospectiveMatches": 15,
+    "comparableLevel3Pairs": 20,
+    "retrospectiveMatches": 19,
     "retrospectiveMisses": 1,
-    "alwaysApproveBaselineMatches": 16
+    "alwaysApproveComparatorMatches": 20,
+    "validBlindCases": 0
   },
   "researchBlind": false,
   "accuracy": null,
   "certainty": "NOT_VALIDATED",
-  "historicalControls": "All 20 cases were assessed in Level 3-style retrospective desk research. The analyst already knew all FDA approvals, so leans and any match fraction are outcome-exposed and invalid as estimates of real-world prediction skill. Approval-only decided cohort yields an always-approve comparator of 100%. No independent reviewer scientific grades, prospective predictions or calibrated accuracy created. The September action-date cohort and October tracked-goal cohort are not methodologically matched.",
-  "priorHistoricalCrossMonthNote": "PHAR Joenja September action is already included in the October research sample by October target date: do not double count across combined months.",
+  "historicalControls": "Every research assessment was created in November 2026 after FDA September outcomes were known. Cited source-publication dates are before action dates, but original-source text has not been independently version-sealed; author was outcome-exposed. Do not represent the resulting 19/20 agreement as measured prediction accuracy, calibrated probability, or proof of model skill. Always APPROVAL comparator scores 20/20 (100%) on this selected all-approval action-date cohort. Not an exhaustive September goal-date PDUFA cohort. Do not add to prospective scoring or October independent accuracy.",
+  "priorHistoricalCrossMonthNote": "PHAR was cross-referenced from October historical target-date study but now also receives a source-dated expanded summary here. This is one shared case, not a new independent observation.",
   "researchMethod": "20 evidence-date-restricted Level 1/2/3 narratives reconstructed after September outcomes were publicly known; date claims for press releases are documentary dates not verified immutable publication timestamps. The 20 source-index FDA approvals were selected ex post and do not constitute a representative calendar of September PDUFA target actions or CRLs. Claims never promoted to independent blind tests.",
-  "retrospectiveDirectionalAgreement": 0.9375,
+  "retrospectiveDirectionalAgreement": 0.95,
   "calibratedFdaAccuracy": null,
   "validatedBlindForecasts": 0,
-  "affectsActiveForecasts": false
+  "affectsActiveForecasts": false,
+  "reconstructionMethod": "OUTCOME_AWARE_POST_HOC_LEVEL3_STYLE_RESEARCH_NOT_A_GENUINE_PREDECISION_PREDICTION"
 }
