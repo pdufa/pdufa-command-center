@@ -72,10 +72,10 @@ export async function GET(request:Request):Promise<Response>{
      firstOutcomeGroups:array(firstOutcome.groups).slice(0,2).map(keys),
      firstMeasureKeys:keys(dict(array(firstCat.measurements)[0])),
      firstAnalysisKeys:keys(firstAnalysis),
-     firstAnalysisGroupKinds:array(firstAnalysis.groups).slice(0,2).map(
+     firstAnalysisGroupKinds:array(firstAnalysis.groupIds).slice(0,2).map(
       v=>typeof v==="string"?"string":keys(v).join(",")),
      flowGroupKeys:keys(dict(array(flow.groups)[0])),
-     adverseGroupKeys:keys(dict(array(adverse.groups)[0])),
+     adverseGroupKeys:keys(dict(array(adverse.eventGroups)[0])),
      seriousEventKeys:keys(firstSerious),
      firstSeriousStatsKeys:keys(firstStats)
     },
