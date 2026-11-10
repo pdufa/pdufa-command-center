@@ -33,6 +33,13 @@ export default function FocusSourceReadinessR81(){
    All <strong>{d.fullScientificSourceReviewPositions}</strong>
    source-review positions are unassessed. FDA forecast <strong>ABSTAIN</strong>;
    independently measured accuracy <strong>UNAVAILABLE</strong>.</p>
+  <p className={styles.footer}>
+   <a href="/predictions/evidence-gaps/export" download="focus-29-source-evidence-gaps-r83.csv">
+    Download all 29 trial evidence gaps (CSV)
+   </a>
+   {" · "}One exact NCT per row, with all provisional application-cycle links.
+   This is a dated source-research handoff, not FDA prediction accuracy or a clinical score.
+  </p>
   <details className={styles.coverageDetails}>
    <summary>Expand all 23 provisional application cycles and their exact NCT evidence status</summary>
    <div className={styles.coverageGrid}>
