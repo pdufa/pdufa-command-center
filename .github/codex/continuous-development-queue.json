@@ -1,0 +1,12 @@
+{
+  "schemaVersion": 1,
+  "notes": "Explicit source-controlled task queue. Entries authorize PR proposals, not production deployment, clinical review, grading, predictions or spending.",
+  "tasks": [
+    {
+      "id": "medical-source-gates-01",
+      "status": "approved_for_draft_pr",
+      "promptFile": ".github/codex/tasks/medical-source-gates-01.md",
+      "branch": "autodev/medical-source-gates-01"
+    }
+  ]
+}
