@@ -1,0 +1,58 @@
+name: MAIN R73 Launch-HTN exact published protocol and SAP document index
+
+# Source-index crosswalk ONLY. A publisher link is not authenticated original
+# PDF content, first-public date, a pre-unblinding signed plan, or an FDA grade.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r73-launch-htn-protocol-sap-source-index.yml
+      - new-platform/backend/scripts/verify_focus_r73_launch_htn_document_index.py
+      - new-platform/backend/tests/test_r73_launch_htn_original_document_index.py
+      - new-platform/frontend/data/focus-r73-launch-htn-original-document-index.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: main-r73-launch-htn-protocol-sap-index
+  cancel-in-progress: false
+
+jobs:
+  source-only-index-and-retirement-checks:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Confirm original POOL and FOCUS membership unchanged
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Validate seven exact JAMA/PMC source-index entries and absence of signed original SAP proof
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/verify_focus_r73_launch_htn_document_index.py
+          python new-platform/backend/tests/test_r73_launch_htn_original_document_index.py -v
+      - name: Record truthful research acceptance gate
+        if: success()
+        shell: bash
+        run: |
+          {
+            echo "## MAIN R73 original publication supplement source index"
+            echo
+            echo "Exactly 7 linked named public JAMA/PMC supplementary documents were enumerated for NCT06153693: 3 protocol versions, 3 SAP documents, 1 methods supplement."
+            echo
+            echo "**This workflow verifies metadata and original trial identity against archived R71 metadata only. It does NOT download or hash original PDF bytes, prove signed pre-unblinding chronology, sign a clinical review, or validate an FDA forecast.**"
+            echo
+            echo "**Original PDF byte verification 0/7; signed SAP/lock chronology 0; qualified independent reviews 0; FDA outcome ABSTAIN; production/model training writes 0.**"
+          } >> "$GITHUB_STEP_SUMMARY"
