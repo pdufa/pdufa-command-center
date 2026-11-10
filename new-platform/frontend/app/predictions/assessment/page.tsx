@@ -8,13 +8,14 @@ import AssessmentStatusPies from "../../AssessmentStatusPies";
 import AssessmentLevelChart from "../../AssessmentLevelChart";
 import HistoricalTestingChart from "../../HistoricalTestingChart";
 import HistoricalMonthlyLevelTrend from "../../HistoricalMonthlyLevelTrend";
+import Focus29Level3ProvisionalPanel from "../../Focus29Level3ProvisionalPanel";
 import October2026HistoricalAuditPanel from "../../October2026HistoricalAuditPanel";
 import UltomirisHistoricalLevelThreePanel from "../../UltomirisHistoricalLevelThreePanel";
 import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
 
 export const metadata:Metadata={
   title:"FOCUS Scientific Assessment Readiness | PDUFA",
-  description:"Source-linked, phase-first clinical subspecialty research queue for each exact FOCUS trial, with evidence gaps and no unvalidated predictions."
+  description:"29 exact FOCUS trials, 23 provisional Level 3-style source-linked research hypotheses, evidence gaps, and separate independently unvalidated FDA forecasts."
 };
 type Params={nct?:string;cycle?:string};
 const section={border:"1px solid #c3d9d5",background:"#fff",borderRadius:13,padding:"clamp(13px,2vw,20px)"} as const;
@@ -40,6 +41,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
       and partial specialty-style investigations. <strong>This is assessment preparation, not 29 completed scientific reviews.</strong>
       The first step in every actual review is to verify current trial phase, status, intervention and indication.
     </p>
+    <Focus29Level3ProvisionalPanel/>
     <HistoricalMonthlyLevelTrend/>
     <section aria-label="Future prospective FDA predictions"
       style={{background:"#eefaf5",border:"1px solid #9bcdb9",borderRadius:13,
