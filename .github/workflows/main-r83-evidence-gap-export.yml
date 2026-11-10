@@ -1,4 +1,4 @@
-name: MAIN R83-R84 source-gap export and application-cycle verification acceptance
+name: MAIN R83-R85 source-gap application and phase verification acceptance
 # Read-only source status and documented reviewer handoff; not clinical validation.
 on:
   push:
@@ -11,7 +11,11 @@ on:
       - new-platform/frontend/tests/focus-r83-evidence-gap-export.test.cjs
       - new-platform/frontend/lib/focus-r84-application-verification-queue.ts
       - new-platform/frontend/app/predictions/evidence-gaps/ApplicationVerificationR84.tsx
-      - new-platform/frontend/tests/focus-r84-application-verification.test.cjs
+      - new-platform/frontend/tests/focus-r84-application-verification.test.cjs tests/focus-r85-registry-phase-crosscheck.test.cjs
+      - new-platform/frontend/lib/focus-r85-registry-phase-crosscheck.ts
+      - new-platform/frontend/app/predictions/phase-verification/check/route.ts
+      - new-platform/frontend/app/predictions/phase-verification/page.tsx
+      - new-platform/frontend/tests/focus-r85-registry-phase-crosscheck.test.cjs
   workflow_dispatch:
 
 permissions:
@@ -57,8 +61,8 @@ jobs:
         shell: bash
         run: |
           {
-            echo "## Revisions 83-84: exact-NCT evidence-gap and issuer date verification"
+            echo "## Revisions 83-85: exact-NCT evidence-gap, issuer date, registry source drift"
             echo "29 exact FOCUS NCT rows, with all 23 provisional application cycle links and original-source absence explicitly described."
             echo "Source and schema integrity validated; source-reported application goals are not FDA verified. CSV has no scientific grade, calibrated probability or production write."
-            echo "0 independent clinical signoffs; 0 validated future FDA forecasts. Scientific installation remains incomplete."
+            echo "Live registry field matching is not phase signoff. 0 independent clinical signoffs; 0 validated future FDA forecasts. Scientific installation remains incomplete."
           } >> "$GITHUB_STEP_SUMMARY"
