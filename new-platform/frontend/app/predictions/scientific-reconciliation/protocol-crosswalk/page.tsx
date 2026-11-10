@@ -70,6 +70,12 @@ export default function R92CurrentProtocolResultsPage(){
   </p>
   <CurrentProtocolResultsR92Client rows={d.rows}/>
   <p className={styles.footer}>
+   <a href="/predictions/scientific-reconciliation/priority-gates">
+    Continue original signed-SAP and independent safety review — ACACIA-HCM and Launch-HTN
+   </a>. Eleven existing source/authentication requirements are review tasks,
+   not completed medical assessments.
+  </p>
+  <p className={styles.footer}>
    <a href="/predictions/scientific-reconciliation">
     Return to 12-trial original posted efficacy and safety data
    </a>{" · "}
