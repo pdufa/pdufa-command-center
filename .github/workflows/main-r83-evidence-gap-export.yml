@@ -93,7 +93,8 @@ on:
       - new-platform/frontend/tests/focus-r114-page-tree-structural-node-census.test.cjs
       - new-platform/frontend/tests/focus-r115-page-tree-kids-resolution.test.cjs
       - new-platform/frontend/tests/focus-r116-page-tree-direct-kids-classification.test.cjs
-      - new-platform/frontend/tests/focus-r117-provisional-direct-leaf-order.test.cjs
+      - new-platform/frontend/tests/focus-r117-provisional-direct-leaf-order.test.cjs tests/focus-r118-provisional-page-order-mapping.test.cjs
+      - new-platform/frontend/tests/focus-r118-provisional-page-order-mapping.test.cjs
       - new-platform/frontend/data/focus-r105-acacia-page-linked-diagnostic-readback-20261110.json
       - new-platform/frontend/tests/focus-r105-page-linked-readback.test.cjs
   workflow_dispatch:
