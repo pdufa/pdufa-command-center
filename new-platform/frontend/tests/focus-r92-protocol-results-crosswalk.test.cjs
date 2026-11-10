@@ -12,6 +12,9 @@ const {
  R92_CURRENT_PROTOCOL_RESULTS_ROSTER,inspectR92CurrentProtocolResults,
  R92_SCIENTIFIC_LIMIT
 }=require("../lib/focus-r92-protocol-results-crosswalk.ts");
+const frozenR92=require("../data/focus-r92-current-protocol-results-primary-text-audit-20261110.json");
+const {R92_DATED_CROSSWALK_AUDIT,buildR92DatedCrosswalkAudit}=
+ require("../lib/focus-r92-dated-crosswalk-audit.ts");
 const {GET}=require(
  "../app/predictions/scientific-reconciliation/protocol-crosswalk/check/route.ts");
 function row(){const r=R92_CURRENT_PROTOCOL_RESULTS_ROSTER.rows[0];assert.ok(r);return r;}
@@ -74,6 +77,50 @@ test("R92 builds an exact 12-of-29/23 lock with no prospective SAP or FDA signof
   x.independentlyAdjudicated===false&&x.FDAForecast==="ABSTAIN"&&
   /^[0-9a-f]{64}$/.test(x.datedOriginalResultsSHA256)));
  assert.match(R92_SCIENTIFIC_LIMIT,/DOES NOT|not evidence/i);
+});
+test("R92 frozen public-source text audit validates 12 official NCT receipts, all 16 title/timeframe pairs, no signed SAP or FDA claims",()=>{
+ const d=R92_DATED_CROSSWALK_AUDIT;
+ assert.ok(d);
+ assert.equal(d.checkedNcts,12);
+ assert.equal(d.plannedPrimaryTextEntries,16);
+ assert.equal(d.postedPrimaryTextEntries,16);
+ assert.equal(d.exactCurrentRegistryTitleTimeframeMatches,16);
+ assert.equal(d.observedTextDifferences,0);
+ assert.equal(d.rawR91SourceHashesStable,12);
+ assert.equal(d.independentSignedSAPAttestations,0);
+ assert.equal(d.qualifiedIndependentMedicalReviews,0);
+ assert.equal(d.calibratedFDAPredictions,0);
+ assert.equal(d.rows.length,12);
+ assert.deepEqual(
+  new Set(d.rows.map(x=>x.nct)),
+  new Set(R92_CURRENT_PROTOCOL_RESULTS_ROSTER.rows.map(x=>x.nct))
+ );
+ assert.ok(d.rows.every(x=>x.originalSAPProspectivityVerified===false&&
+  x.qualifiedClinicalReviewSigned===false&&x.FDAForecast==="ABSTAIN"&&
+  /^[a-f0-9]{64}$/.test(x.sourceSHA256)));
+});
+test("R92 frozen source crosswalk fails closed if a title, SHA, NCT, or scientific signoff is forged",()=>{
+ const tamper=[
+  x=>{x.rows[0].nct="NCT00000000";},
+  x=>{x.rows[0].ticker="FAKE";},
+  x=>{x.rows[0].currentOriginalApiSha256="a".repeat(64);},
+  x=>{x.rows[0].sourceUrl="https://attacker.example";},
+  x=>{x.rows[0].plannedPrimaryOutcomes[0].title="Fake Protocol Title";},
+  x=>{x.rows[0].postedPrimaryOutcomes[0].title="Forged outcome";},
+  x=>{x.rows[0].textualCorrespondence[0].state="LEXICAL_CANDIDATE_REQUIRES_REVIEW";},
+  x=>{x.rows[0].originalPreUnblindingSignedSAPAuthenticated=true;},
+  x=>{x.rows[0].independentClinicalEndpointAdjudication=true;},
+  x=>{x.rows[0].FDAOutcome="APPROVED";},
+  x=>{x.rows[1].nct=x.rows[0].nct;},
+  x=>{x.rows.pop();},
+  x=>{x.counts.exactNormalizedTitleAndTimeFrameTextMatches=15;},
+  x=>{x.counts.qualifedReviewSignoffs=1; x.counts.qualifiedClinicalStatisticalReviewSignoffs=1;}
+ ];
+ for(const fn of tamper){
+  const fake=structuredClone(frozenR92);
+  fn(fake);
+  assert.equal(buildR92DatedCrosswalkAudit(fake),null);
+ }
 });
 test("R92 preserves literal current registry planned and posted outcome titles separately",()=>{
  const result=inspectR92CurrentProtocolResults(row(),study());
@@ -179,6 +226,7 @@ test("R92 browser source page is linked to original scientific review, never all
  const existing=fs.readFileSync(path.join(root,
   "app/predictions/scientific-reconciliation/page.tsx"),"utf8");
  assert.match(page,/Registry design-to-results primary endpoint comparison/);
+ assert.match(page,/R92_DATED_CROSSWALK_AUDIT/);
  assert.match(client,/Compare all 12 current protocol and posted result records/);
  assert.match(client,/No close text candidate/);
  assert.match(client,/FDA Forecast: ABSTAIN/);
