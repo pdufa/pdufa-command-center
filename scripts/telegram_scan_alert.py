@@ -16,6 +16,7 @@ LABELS = {
     "pipeline-end": "✅ PDUFA PIPELINE — COMPLETED",
     "system-edit": "🛠 PDUFA SYSTEM — CODE UPDATED",
     "prediction-change": "📈 PDUFA — VERIFIED PREDICTION CHANGE",
+    "focus-news": "🚨 FOCUS — MATERIAL NEWS OR AMENDMENT",
     "scan-start": "▶️ PDUFA — SCAN STARTED",
     "scan-end": "✅ PDUFA — SCAN COMPLETED",
     "test": "🔔 PDUFA — TELEGRAM TEST",

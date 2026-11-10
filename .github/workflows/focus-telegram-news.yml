@@ -1,0 +1,58 @@
+name: FOCUS — hourly Telegram ticker news
+
+on:
+  schedule:
+    # Hourly checks for source headlines/new material amendments.
+    - cron: '17 * * * *'
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/focus-telegram-news.yml'
+      - 'scripts/focus_telegram_news.py'
+      - 'scripts/telegram_scan_alert.py'
+      - 'tests/test_focus_telegram_news.py'
+  pull_request:
+    paths:
+      - '.github/workflows/focus-telegram-news.yml'
+      - 'scripts/focus_telegram_news.py'
+      - 'scripts/telegram_scan_alert.py'
+      - 'tests/test_focus_telegram_news.py'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: focus-telegram-news-${{ github.event_name == 'pull_request' && github.ref || 'main' }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify FOCUS-only source and Telegram amendment safety
+        run: |
+          python -m unittest discover -s tests -p 'test_focus_telegram_news.py' -v
+          python -m unittest discover -s tests -p 'test_telegram_scan_alert.py' -v
+      - name: Restore last successful Telegram news fingerprints
+        if: github.event_name != 'pull_request'
+        uses: actions/cache@v4
+        with:
+          path: .cache/focus-telegram-news.json
+          key: focus-telegram-news-v1-${{ github.run_id }}-${{ github.run_attempt }}
+          restore-keys: |
+            focus-telegram-news-v1-
+      - name: Check current FOCUS news and send only new or amended source leads
+        if: github.event_name != 'pull_request'
+        env:
+          TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
+          TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
+          FOCUS_TELEGRAM_NEWS_STATE: .cache/focus-telegram-news.json
+        run: python scripts/focus_telegram_news.py
