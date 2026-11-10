@@ -1,6 +1,7 @@
 import {R91_POSTED_RESULTS_ROSTER} from
  "../../../lib/focus-r91-posted-results-reconciliation";
 import PostedResultsR91Client from "./PostedResultsR91Client";
+import {R91_DATED_SOURCE_AUDIT} from "../../../lib/focus-r91-source-audit-readiness";
 import styles from "../evidence-gaps/EvidenceRecoveryBoardR68.module.css";
 
 export const metadata={
@@ -9,7 +10,7 @@ export const metadata={
 };
 export default function ScientificReconciliationR91Page(){
  const d=R91_POSTED_RESULTS_ROSTER;
- if(!d)return <main className={styles.coverage}>
+ if(!d||!R91_DATED_SOURCE_AUDIT)return <main className={styles.coverage}>
   <h1>Stage 4 — scientific source reconciliation</h1>
   <p role="alert">Original 29-NCT source integrity verification failed.
    No scientific review, clinical pass/fail, or FDA forecast can be inferred.</p>
@@ -35,6 +36,36 @@ export default function ScientificReconciliationR91Page(){
    <div><small>Qualified independent science signoffs</small>
     <strong>{d.qualifiedScienceSignoffs}</strong></div>
   </div>
+  <div className={styles.stats} aria-label="Dated original posted results readback">
+    <div><small>Official records re-read and fingerprinted</small>
+     <strong>{R91_DATED_SOURCE_AUDIT.originalResultsSourceNcts}/12</strong></div>
+    <div><small>Original PRIMARY outcome entries</small>
+     <strong>{R91_DATED_SOURCE_AUDIT.reportedPrimaryOutcomeEntries}</strong></div>
+    <div><small>Reported serious adverse-event terms</small>
+     <strong>{R91_DATED_SOURCE_AUDIT.seriousAdverseTermEntries}</strong></div>
+    <div><small>Original safety exposure groups</small>
+     <strong>{R91_DATED_SOURCE_AUDIT.safetyArmGroupEntries}</strong></div>
+    <div><small>Registry-reported comparison p-value fields</small>
+     <strong>{R91_DATED_SOURCE_AUDIT.sourcePValueEntries}</strong></div>
+    <div><small>Signed original final SAPs independently authenticated</small>
+     <strong>{R91_DATED_SOURCE_AUDIT.finalProspectivelySignedSAPsIndependentlyAuthenticated}</strong></div>
+  </div>
+  <details className={styles.coverageDetails}>
+    <summary>Open dated 12-trial source SHA-256 and original primary endpoint receipt</summary>
+    <p>Snapshot observed {R91_DATED_SOURCE_AUDIT.observedDateUtc} UTC.
+      These are original posted registry fields, not independent
+      effect estimates, safety assessments, or FDA prediction accuracy.</p>
+    <ul>{R91_DATED_SOURCE_AUDIT.rows.map(row=><li key={row.nct}>
+      <b>{row.ticker} · {row.nct}</b> — {row.primaryOutcomeCount} primary,
+      {" "}{row.seriousAdverseEventTerms} serious AE terms,
+      {" "}{row.safetyArmGroups} reported safety group(s)
+      <div>{row.originallyPostedPrimaryTitles.join("; ")}</div>
+      <div>Official response SHA-256: <code>{row.rawOriginalSourceSHA256}</code></div>
+      <a href={row.originalResultNctUrl} target="_blank" rel="noopener noreferrer">
+       Official original posted result record
+      </a>
+    </li>)}</ul>
+  </details>
   <p className={styles.notice}>
    The first 12 source records have ClinicalTrials.gov posted aggregate
    result tables. The other 17 have issuer, SEC or publisher report leads
