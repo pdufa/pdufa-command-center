@@ -19,3 +19,9 @@ As of 2026-11-10. Historical/outcome-aware research; **not** a prospective blind
 - Maintain separate **clinical efficacy**, **safety**, **CMC/manufacturing**, **regulatory timing**, and **commercial** risk conclusions.
 
 **Clinical adjudication:** NOT_ADJUDICATED. **Independent challenge:** NOT_COMPLETED. **Approval probability:** NOT_CALCULATED. **Predictions updated:** NO.
+
+## Primary FDA Complete Response Letter cross-check (added 2026-11-10)
+The FDA's publicly released redacted CRL for **NDA 218995**, dated June 20, 2026, directly documents (1) CGMP inspection deficiencies at a named-in-application facility and possible need for FDA reinspection/prior approval inspection, and (2) a request for revised draft prescribing information responsive to FDA's June 4, 2026 communication. The letter says FDA **cannot approve the application in its present form**. This is primary regulator evidence and should take precedence over sponsor characterization of the rejection. It does **not** establish that a new manufacturer's batches have been FDA accepted, that deficiencies are resolved, or that a resubmission has been accepted.
+Primary source: https://download.open.fda.gov/crl/CRL_NDA218995_20260620_Redacted.pdf
+
+**FDA-primary-source classification:** HISTORICAL_CRL_CONFIRMED. **Current remediation:** COMPANY_REPORTED_NOT_FDA_VERIFIED. **Future action date:** NOT_CONFIRMED.
