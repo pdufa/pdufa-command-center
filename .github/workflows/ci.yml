@@ -82,6 +82,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_subspecialty_review_gate.py' -v
           python -m unittest discover -s tests -p 'test_subspecialty_registry_evidence_leads.py' -v
           python -m unittest discover -s tests -p 'test_subspecialty_evidence_gap_report.py' -v
+          python -m unittest discover -s tests -p 'test_subspecialty_research_queue.py' -v
 
   backup-archive-integrity:
     name: Offline ZIP backup integrity regressions
