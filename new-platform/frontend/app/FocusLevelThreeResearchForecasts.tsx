@@ -116,7 +116,7 @@ export default function FocusLevelThreeResearchForecasts({selectedCycleId}:{
     {selected&&<p style={{border:"1px solid #c5dacb",background:"#eff8f1",
       borderRadius:8,padding:12,fontSize:13,lineHeight:1.5}}>
       <strong>Selected application:</strong> {selected.ticker} · {selected.drug} ·{" "}
-      {callTag(selected.call)}. This research call is not the validated
+      {callTag(selected.call as LabelKey)}. This research call is not the validated
       FDA prediction for the application.
     </p>}
     <div style={{overflowX:"auto",background:"#fff",borderRadius:10,
@@ -143,7 +143,7 @@ export default function FocusLevelThreeResearchForecasts({selectedCycleId}:{
           <td style={cell}><strong>{c.reportedPdufaGoal||"Not assigned"}</strong>
             {c.reportedPdufaGoal===null&&
               <div style={{fontSize:10,color:"#725d3a"}}>No invented date</div>}</td>
-          <td style={cell}>{callTag(c.call)}
+          <td style={cell}>{callTag(c.call as LabelKey)}
             <div style={{marginTop:6,color:"#6c7468",fontSize:11}}>
               Research confidence: {c.confidenceDescription.replaceAll("_"," ").toLowerCase()}
             </div>
