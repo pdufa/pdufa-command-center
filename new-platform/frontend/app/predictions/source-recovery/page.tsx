@@ -1,6 +1,7 @@
 import {R89_HISTORICAL_SOURCE_RECOVERY} from
  "../../../lib/focus-r89-historical-source-recovery";
 import OriginalHistoryRecoveryR89Client from "./OriginalHistoryRecoveryR89Client";
+import {R89_NEW_PUBLIC_SOURCE_LEADS} from "../../../lib/focus-r89-new-public-source-leads";
 import styles from "../evidence-gaps/EvidenceRecoveryBoardR68.module.css";
 
 export const metadata={
@@ -9,7 +10,7 @@ export const metadata={
 };
 export default function OriginalSourceRecoveryR89Page(){
  const d=R89_HISTORICAL_SOURCE_RECOVERY;
- if(!d)return <main className={styles.coverage}>
+ if(!d||!R89_NEW_PUBLIC_SOURCE_LEADS)return <main className={styles.coverage}>
   <h1>Original source recovery queue</h1>
   <p role="alert">The exact original 29/23 FOCUS study, publication or
    trial-source crosswalk failed; no reviews or source history are released.</p>
@@ -24,6 +25,10 @@ export default function OriginalSourceRecoveryR89Page(){
      <div><small>Current registry file gaps</small><strong>{d.missingPublicProtocolSapListingNcts}</strong></div>
      <div><small>Existing pivotal journal leads</small><strong>{d.originalPivotalPublisherLeadsInFiveStudyIndex}</strong></div>
      <div><small>Not indexed in five-study archive</small><strong>{d.unindexedPivotalPublicationInFiveStudyIndex}</strong></div>
+     <div><small>Additional public conference/sponsor leads found</small>
+      <strong>{R89_NEW_PUBLIC_SOURCE_LEADS.exactNctMatchedNewSourceLeads}</strong></div>
+     <div><small>Without new lead this research pass</small>
+      <strong>{R89_NEW_PUBLIC_SOURCE_LEADS.remainingWithoutNewPublicLeadThisPass}</strong></div>
      <div><small>Authenticated prospectively signed SAPs</small><strong>{d.independentlyAuthenticatedSignedProspectiveSAPs}</strong></div>
      <div><small>Qualified scientific signoffs</small><strong>{d.independentQualifiedScienceReviews}</strong></div>
    </div>
@@ -37,7 +42,16 @@ export default function OriginalSourceRecoveryR89Page(){
     These on-demand lookups are source research, not independent pre-unblinding
     plan authentication, trial success, or FDA outcome calibration.
    </p>
-   <OriginalHistoryRecoveryR89Client rows={d.rows}/>
+   <p className={styles.footer}>Additional research leads discovered on
+    <strong> {R89_NEW_PUBLIC_SOURCE_LEADS.researchDate}</strong>:
+    {R89_NEW_PUBLIC_SOURCE_LEADS.conferenceSupplementAbstractLeads} publisher
+    conference abstract and {R89_NEW_PUBLIC_SOURCE_LEADS.sponsorPublicReportLeads}
+    sponsor-reported disclosure records. These sources are not complete
+    original prospective SAPs or clinical study reports. The historical
+    original-version endpoint is still inaccessible from the preview server;
+    use the public record-history links.</p>
+   <OriginalHistoryRecoveryR89Client rows={d.rows}
+     newLeads={R89_NEW_PUBLIC_SOURCE_LEADS.rows}/>
    <p className={styles.footer}>
     <a href="/predictions/original-documents/chronology">
      Return to dated 23-file original SAP chronology
