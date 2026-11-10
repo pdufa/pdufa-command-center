@@ -4,6 +4,7 @@ import {R94_ACACIA_COHORT_SAFETY_SOURCE} from
  "../../../../lib/focus-r94-acacia-cross-source-reconciliation";
 import {R95_EU_ACACIA_PROTOCOL_IDENTITY} from
  "../../../../lib/focus-r95-eu-protocol-identity-gates";
+import R103_PAGE_CENSUS from "../../../../data/focus-r103-acacia-original-pdf-structural-census-20261110.json";
 import R101_TEXT_DIAGNOSTICS from "../../../../data/focus-r101-acacia-pdf-text-diagnostic-readback-20261110.json";
 import {R98_ACACIA_CTIS_ORIGINAL_PDF_RECEIPTS} from "../../../../lib/focus-r98-ctis-original-pdf-receipts";
 import styles from "../../evidence-gaps/EvidenceRecoveryBoardR68.module.css";
@@ -25,7 +26,7 @@ export default function PriorityOriginalScientificGatesR93(){
    conclusion is represented as verified.</p>
  </main>;
  return <main className={styles.coverage}>
-  <div className={styles.eyebrow}>MAIN · REVISION 101 · STAGE 4 INDEPENDENT SCIENCE EVIDENCE GATES</div>
+  <div className={styles.eyebrow}>MAIN · REVISION 103 · STAGE 4 INDEPENDENT SCIENCE EVIDENCE GATES</div>
   <h1>Priority original scientific evidence checklist</h1>
   <p className={styles.intro}>{d.notice} Evidence baseline:
    {" "}<strong>{d.datedSourceReview} UTC</strong>.</p>
@@ -74,6 +75,28 @@ export default function PriorityOriginalScientificGatesR93(){
      {" "}{d.launchPublicToplineDate} public topline disclosure. This does not
      establish the real database-lock or blind-break date.
    </p>}
+   {c.trial==="ACACIA_HCM"&&
+    R103_PAGE_CENSUS.nct==="NCT06081894"&&
+    R103_PAGE_CENSUS.protocol==="CY 6033"&&
+    R103_PAGE_CENSUS.FDAForecast==="ABSTAIN"&&
+    <details className={styles.coverageDetails}>
+     <summary>Revision 103: verified original-PDF page structure (not complete page text)</summary>
+     <p>Original PDF byte checks passed on all four source documents. Only the
+      Greek AM4 protocol has a structurally consistent page count.
+      Compressed PDF object streams prevent treating the other page-object
+      counts as complete page totals.</p>
+     <ul>{R103_PAGE_CENSUS.documents.map(d=>
+      <li key={d.key}><b>{d.key}</b>:
+       {" "}{d.structuralPageDictionariesFound} page dictionaries detected;
+       {" "}{d.objectStreams} compressed object-stream containers;
+       {" "}{d.structurallyConsistent?"structural page count consistent":"page count not independently verified"}.
+       {" "}<a href={"/predictions/scientific-reconciliation/priority-gates/ctis-page-census?doc="+encodeURIComponent(d.key)}
+       target="_blank" rel="noopener noreferrer">Inspect original PDF structure</a>
+      </li>)}</ul>
+     <p><b>Do not use these counts as clinical page citations.</b>
+      Full page text, signed prospective SAP chronology and independent
+      scientific review remain unverified. FDA forecast: ABSTAIN.</p>
+    </details>}
    {c.trial==="ACACIA_HCM"&&
     R101_TEXT_DIAGNOSTICS.exactNct==="NCT06081894"&&
     R101_TEXT_DIAGNOSTICS.protocol==="CY 6033"&&
