@@ -83,7 +83,7 @@ export function buildR85PhaseCrosscheckManifest(
     rows.filter(r=>r.registryReportedStatus==="COMPLETED").length!==19||
     rows.filter(r=>r.registryReportedStatus==="ACTIVE NOT RECRUITING").length!==8||
     rows.filter(r=>r.registryReportedStatus==="RECRUITING").length!==2)return null;
- const priorities={
+ const priorities:Record<string,number>={
    "DESIGN_REQUIRES_SPECIAL_ADJUDICATION":0,
    "STUDY_STATUS_RECONCILIATION":1,
    "RETRIEVE_ORIGINAL_RESULTS_AND_SAFETY":2,
