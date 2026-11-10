@@ -39,6 +39,10 @@ export function buildR89HistoricalSourceRecovery(
     source.independentScientificSignoffs!==0||source.validFutureFDAApplicationForecasts!==0||
     source.originalSignedProspectiveSAPsVerified!==0||
     source.FDAOutcome!=="ABSTAIN")return null;
+ const canonical=R88_SOURCE_CHRONOLOGY;
+ if(!canonical||canonical.rows.length!==29)return null;
+ const byCanonical=new Map(canonical.rows.map(r=>[r.nct,r]));
+ if(byCanonical.size!==29)return null;
  const bySource=new Map(source.rows.map(r=>[r.nct,r]));
  const papers=new Map(journal.fiveRecords.map(r=>[r.nct,r]));
  if(bySource.size!==29||papers.size!==5||
@@ -68,6 +72,8 @@ export function buildR89HistoricalSourceRecovery(
  for(const trial of timeline.rows){
   const src=bySource.get(trial.nct);
   if(!src||seen.has(trial.nct)||src.ticker!==trial.ticker||
+     !byCanonical.has(trial.nct)||
+     JSON.stringify(trial)!==JSON.stringify(byCanonical.get(trial.nct))||
      trial.qualifiedClinicalReviewerSignoff!==false||
      trial.originallySignedPlanVerified!==false||
      trial.actualBlindBreakDateIndependentlyVerified!==false||
