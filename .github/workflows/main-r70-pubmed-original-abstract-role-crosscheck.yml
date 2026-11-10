@@ -1,0 +1,67 @@
+name: MAIN R70 original NLM XML to publication role crosscheck
+
+# Research source-only, no clinical grade or validated FDA prediction.
+# Compare editorial title/abstract role labels to exact immutable PubMed
+# original XML archive so phase II and duplicate same-trial papers cannot
+# accidentally inflate the pivotal Phase III evidence census.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r70-pubmed-original-abstract-role-crosscheck.yml
+      - new-platform/backend/scripts/verify_r70_abstract_roles_against_nlm_xml.py
+      - new-platform/frontend/data/focus-r70-abstract-publication-triage.json
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r70-original-nlm-pubmed-to-role-parity
+  cancel-in-progress: false
+
+jobs:
+  verify-source-pubmed-and-evidence-role-only:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Preserve original FOCUS unique trial and application membership
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Restore exact original eleven NLM XML journal metadata and abstract bodies
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42729546458
+          name: main-r70-original-11-pubmed-article-xml-42729546458
+          path: ${{ runner.temp }}/r70/source
+      - name: Verify original article title, phase, protocol and primary outcomes are only candidate classifications
+        shell: bash
+        run: |
+          set -euo pipefail
+          python new-platform/backend/scripts/verify_r70_abstract_roles_against_nlm_xml.py \
+            --nlm-original "$RUNNER_TEMP/r70/source/FOCUS_11_PUBMED_ARTICLE_METADATA_REVIEW_R70.json" \
+            --nlm-original-xml "$RUNNER_TEMP/r70/source/PUBMED_11_ORIGINAL_ARTICLE_RECORDS_R70.xml" \
+            --role-catalog new-platform/frontend/data/focus-r70-abstract-publication-triage.json
+          {
+            echo "## R70 independent source parity: exact original NLM PubMed XML"
+            echo
+            echo "11 original PubMed XML records from 7 registry-linked NCTs; five abstract-level candidate main Phase 3 reports in five trials; two related ACACIA analyses, one protocol, one RINGSIDE Phase 2 dose-finding report, one prior casimersen Phase 1/2 cohort, and one normative background paper."
+            echo
+            echo "**These are machine-checked article identity and preliminary abstract-role research, NOT independent scientific adjudication, source-version validation, FDA forecasts or historical predictive accuracy.**"
+            echo
+            echo "Qualified clinical signatures 0; scientific grade 0; valid FDA forecasts 0/23; future FDA outcome ABSTAIN. No production writes or original evidence changes."
+          } >> "$GITHUB_STEP_SUMMARY"
