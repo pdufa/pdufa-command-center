@@ -105,9 +105,19 @@ const META:Record<string,{
  }
 };
 
-function sorted<T extends {id:string}>(xs:T[]):T[]{
- return [...xs].sort((a,b)=>a.id.localeCompare(b.id));
-}
+const SOURCE_GATE_STATES:Record<string,string>={
+ "ACACIA_HCM:FINAL_LOCKED_SAP":"NOT_AUTHENTICATED",
+ "ACACIA_HCM:DUAL_PRIMARY_HISTORY":"NEEDS_ADJUDICATION",
+ "ACACIA_HCM:CONSORT_SETS":"UNRESOLVED",
+ "ACACIA_HCM:HEART_FAILURE_WINDOWS":"UNRESOLVED",
+ "LAUNCH_HTN:CONTROLLED_ORIGINAL_SAP_BYTES":"PUBLISHED_IMPRINT_ONLY",
+ "LAUNCH_HTN:FORMAL_SAP_FINALIZATION_RECORD":"NOT_OBTAINED",
+ "LAUNCH_HTN:FINAL_DATABASE_LOCK_AUDIT":"NOT_OBTAINED",
+ "LAUNCH_HTN:FIRST_UNBLINDED_ACCESS_AUDIT":"NOT_OBTAINED",
+ "LAUNCH_HTN:SAP_AMENDMENT_CONTROLLED_CHAIN":"NOT_OBTAINED",
+ "LAUNCH_HTN:CONFLICTED_ADDENDUM_YEAR_RECONCILIATION":"UNRESOLVED_PRINTED_YEAR_CONFLICT",
+ "LAUNCH_HTN:TWO_TRUSTED_INDEPENDENT_ATTESTATIONS":"NOT_OBTAINED"
+};
 export function buildR93PriorityScientificGates(
  inventory:typeof R86_ORIGINAL_DOCUMENT_MANIFEST=R86_ORIGINAL_DOCUMENT_MANIFEST,
  launch:typeof FOCUS_R79_LAUNCH_HTN_SAP_LOCK_GATES=FOCUS_R79_LAUNCH_HTN_SAP_LOCK_GATES,
@@ -163,7 +173,8 @@ export function buildR93PriorityScientificGates(
   const gates=[];
   for(const gate of rows){
    const id=gate.id,meta=META[kind+":"+id];
-   if(!meta||!gate.status||!gate.label||!gate.evidence||
+   if(!meta||SOURCE_GATE_STATES[kind+":"+id]!==gate.status||
+      !gate.label||!gate.evidence||
       ("verified" in gate&&gate.verified!==false)||
       ("independentReceipt" in gate&&gate.independentReceipt!==null))return null;
    gates.push({
