@@ -74,6 +74,8 @@ jobs:
         run: |
           python -m unittest discover -s tests -p 'test_level4_registry_extraction.py' -v
           python -m unittest discover -s tests -p 'test_level4_focus_checkpoint.py' -v
+          python -m unittest discover -s tests -p 'test_twenty_level_expansion.py' -v
+          python -m unittest discover -s tests -p 'test_twenty_level_evidence_matrix.py' -v
 
   backup-archive-integrity:
     name: Offline ZIP backup integrity regressions
