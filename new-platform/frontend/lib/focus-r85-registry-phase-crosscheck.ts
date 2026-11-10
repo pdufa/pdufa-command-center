@@ -49,7 +49,7 @@ export function buildR85PhaseCrosscheckManifest(
      !["NONE","DOUBLE","TRIPLE","QUADRUPLE"].includes(r.masking)||
      !Number.isSafeInteger(r.enrollment)||r.enrollment<=0||
      !["ACTUAL","ESTIMATED"].includes(r.enrollmentType)||
-     !/^\d{4}-\d{2}-\d{2}$/u.test(r.primaryCompletionDate)||
+     !/^\d{4}-\d{2}(?:-\d{2})?$/u.test(r.primaryCompletionDate)||
      !["ACTUAL","ESTIMATED"].includes(r.primaryCompletionType))return null;
   seen.add(r.nct);
   const exceptionalPhase=r.sourcePhase==="Combined Phase 2/3";
