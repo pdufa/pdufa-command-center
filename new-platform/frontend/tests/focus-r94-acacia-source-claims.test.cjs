@@ -102,7 +102,7 @@ test("R94 source handoff CSV keeps 11 original gates and adds qualified 517/516,
  assert.match(csv,/HF SAE 12\/3/);
  assert.match(csv,/11\/1/);
  assert.match(csv,/signed SAP and first-access audit not independently authenticated/);
- assert.match(csv,/main-r94-priority-original-evidence-gates/);
+ assert.match(resp.headers.get("content-disposition")??"",/main-r94-priority-original-evidence-gates/);
  assert.match(csv,/NOT_VERIFIED/);
  assert.match(csv,/NOT_SIGNED/);
  assert.match(csv,/ABSTAIN/);
