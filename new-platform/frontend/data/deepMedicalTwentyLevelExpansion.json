@@ -1,0 +1,259 @@
+{
+  "schemaVersion": 1,
+  "kind": "PROPOSED_ADDITIVE_20_LEVEL_EXPANSION",
+  "status": "DESIGN_NOT_FULL_INSTALLATION",
+  "preserveExistingTwelveLevelArchitecture": true,
+  "activePipeline": "POOL → FOCUS → Deep Medical Intelligence → FDA Decision",
+  "levels": [
+    {
+      "level": 1,
+      "name": "Source identity and provenance",
+      "implementationStatus": "EXISTING_WORK_REQUIRES_VERIFICATION",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 2,
+      "name": "Registry and phase verification",
+      "implementationStatus": "EXISTING_WORK_REQUIRES_VERIFICATION",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 3,
+      "name": "Clinical results evidence",
+      "implementationStatus": "EXISTING_WORK_REQUIRES_VERIFICATION",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 4,
+      "name": "Trial design and protocol investigation",
+      "implementationStatus": "SOURCE_EXTRACTION_INSTALLED_NOT_ADJUDICATED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 5,
+      "name": "Statistical analysis and multiplicity",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 6,
+      "name": "Endpoint clinical relevance",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 7,
+      "name": "Population and subgroup validity",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 8,
+      "name": "Safety and tolerability",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 9,
+      "name": "Benefit-risk integration",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 10,
+      "name": "Disease and standard-of-care dossier",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 11,
+      "name": "Unmet need and therapeutic context",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 12,
+      "name": "Reproducibility and independent studies",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 13,
+      "name": "Application and filing readiness",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 14,
+      "name": "FDA regulatory pathway and designations",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 15,
+      "name": "FDA precedent and advisory evidence",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 16,
+      "name": "Manufacturing and inspection uncertainty",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 17,
+      "name": "Sponsor disclosures and consistency",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 18,
+      "name": "Independent scientific challenge",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 19,
+      "name": "Prospective decision record and calibration eligibility",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    },
+    {
+      "level": 20,
+      "name": "Regulatory outcome and timing monitoring",
+      "implementationStatus": "NOT_IMPLEMENTED",
+      "assessmentStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+      "requirements": [
+        "traceable original evidence",
+        "explicit missingness",
+        "independent scientific review"
+      ],
+      "outcomeProbability": null
+    }
+  ],
+  "guardrails": [
+    "No retired RAAS or survey dependencies",
+    "No changes to POOL/FOCUS membership",
+    "No arbitrary numerical FDA approval probability",
+    "Preserve immutable prediction history",
+    "Separate FDA outcome and timing",
+    "Unknown CMC and inspection are gaps not deficiencies",
+    "Historical outcome-aware studies excluded from prospective calibration"
+  ],
+  "scientificReviewsCompletedByThisPlan": 0
+}
