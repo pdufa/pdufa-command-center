@@ -7,7 +7,13 @@ import argparse
 import json
 from pathlib import Path
 
-from deep_clinical_subspecialty import route
+import importlib.util
+
+_spec = importlib.util.spec_from_file_location(
+    "deep_clinical_subspecialty", Path(__file__).with_name("deep_clinical_subspecialty.py"))
+_specialty = importlib.util.module_from_spec(_spec)
+_spec.loader.exec_module(_specialty)
+route = _specialty.route
 
 # Level-specific registry pointers; levels without a reliable registry-only
 # proxy deliberately have no pointers and require original external evidence.
