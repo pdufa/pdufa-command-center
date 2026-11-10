@@ -2,6 +2,7 @@
 const test=require("node:test"),assert=require("node:assert/strict");
 const fs=require("node:fs"),path=require("node:path"),ts=require("typescript");
 const root=path.resolve(__dirname,"..");
+const crypto=require("node:crypto");
 require.extensions[".ts"]=(mod,file)=>{
  const compiled=ts.transpileModule(fs.readFileSync(file,"utf8"),{
   compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS,
@@ -12,6 +13,7 @@ const {R88_SOURCE_CHRONOLOGY}=require("../lib/focus-r88-source-chronology-triage
 const {R89_HISTORICAL_SOURCE_RECOVERY,buildR89HistoricalSourceRecovery}=
  require("../lib/focus-r89-historical-source-recovery.ts");
 const {GET}=require("../app/predictions/source-recovery/history/route.ts");
+const {R89_ARCHIVED_ACACIA_SOURCE_HISTORY}=require("../lib/focus-r89-acacia-prior-original-history.ts");
 
 test("R89 reconciles exactly 17 current registry original gaps with all 29/23 originals",()=>{
  const d=R89_HISTORICAL_SOURCE_RECOVERY;assert.ok(d);
@@ -50,6 +52,38 @@ test("R89 reuses only the five authentic recorded journal leads and prioritizes 
  }
  assert.deepEqual(new Set(d.rows.slice(0,2).map(r=>r.nct)),
   new Set(["NCT06081894","NCT06153693"]));
+});
+test("R89 reuses four R36 exact original ACACIA bytes and SHA receipts, never forges a signed SAP",()=>{
+ const d=R89_ARCHIVED_ACACIA_SOURCE_HISTORY;
+ assert.equal(d.nct,"NCT06081894");
+ assert.equal(d.exactOriginalVersionsCaptured,4);
+ assert.equal(d.liveIndexAvailableFromR89Preview,false);
+ assert.equal(d.scientificReviewSigned,false);
+ assert.equal(d.prospectiveSAPFinalSignatureAuthenticated,false);
+ assert.equal(d.actualUnblindingDateIndependentlyVerified,false);
+ assert.equal(d.FDAForecast,"ABSTAIN");
+ const repoRoot=path.resolve(root,"../..");
+ const validated=JSON.parse(fs.readFileSync(path.join(repoRoot,
+  d.sourceResearchDirectory,"validated_comparison.json"),"utf8"));
+ const priorReceipt=JSON.parse(fs.readFileSync(path.join(repoRoot,
+  d.sourceResearchDirectory,"public_browser_receipt.json"),"utf8"));
+ assert.equal(validated.nct,d.nct);
+ assert.equal(validated.clinicalSignoff,false);
+ assert.equal(validated.gradedMethods,0);
+ assert.equal(priorReceipt.versions.length,4);
+ for(const v of d.previousVersionFiles){
+  const originalBytes=fs.readFileSync(path.join(repoRoot,v.originalRepoPath));
+  const actualDigest=crypto.createHash("sha256").update(originalBytes).digest("hex");
+  const evidence=validated.versionData["v"+v.uiVersion];
+  assert.equal(actualDigest,v.sourceSha256,"original "+v.uiVersion);
+  assert.equal(evidence.sourceSha256,v.sourceSha256);
+  assert.equal(evidence.apiIndex,v.apiIndex);
+  assert.equal(evidence.submitted,v.submittedDate);
+  assert.equal(evidence.outcomes.primary.length,v.primaryEndpointsListed);
+  assert.equal(priorReceipt.versions.find(x=>x.version===v.uiVersion).sha256,
+   v.sourceSha256);
+ }
+ assert.deepEqual(d.previousVersionFiles.map(v=>v.primaryEndpointsListed),[1,2,2,2]);
 });
 test("R89 fails closed on altered 17-file source state, fake original signoff and roster",()=>{
  const forged=structuredClone(R88_SOURCE_CHRONOLOGY);
@@ -165,6 +199,8 @@ test("R89 read-only page, UI and original historical host remain scoped",()=>{
  assert.match(page,/17 original-source recovery cases/);
  assert.match(client,/Check original registry version index/);
  assert.match(client,/Original signoff: NOT VERIFIED/);
+ assert.match(client,/Open official public study record history/);
+ assert.match(client,/Four original ACACIA-HCM registry versions already preserved/);
  assert.match(previous,/\/predictions\/source-recovery/);
  assert.doesNotMatch(route,/method:"POST"|submitClinicalScore|setGrade\(/);
 });
