@@ -40,11 +40,21 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
       and partial specialty-style investigations. <strong>This is assessment preparation, not 29 completed scientific reviews.</strong>
       The first step in every actual review is to verify current trial phase, status, intervention and indication.
     </p>
+    <HistoricalMonthlyLevelTrend/>
+    <section aria-label="Future prospective FDA predictions"
+      style={{background:"#eefaf5",border:"1px solid #9bcdb9",borderRadius:13,
+        padding:"13px 16px",margin:"0 0 10px"}}>
+      <div style={{fontSize:16,fontWeight:850,color:"#0d684f"}}>
+        FUTURE PREDICTIONS · LIVE / PROSPECTIVE
+      </div>
+      <p style={{fontSize:13,color:"#3d6558",margin:"5px 0 0",lineHeight:1.55}}>
+        Verified accuracy counts only a frozen forecast followed by a sourced FDA decision.
+        This is separate from the historical Level 3–20 selector above, so zero verified
+        decisions does not mean zero historical research.
+      </p>
+    </section>
     <AssessmentStatusPies {...pies}/>
     <AssessmentLevelChart/>
-    <HistoricalTestingChart/>
-    <HistoricalMonthlyLevelTrend/>
-    <October2026HistoricalAuditPanel/>
     {pies.latest?.researchOnly&&pies.latest.ticker==="SMMT"&&
       <section style={{...section,margin:"0 0 22px",background:"#f7faf9"}} aria-label="First prospective 2026 FDA research prediction">
         <div style={{...label,marginBottom:7}}>FIRST PROSPECTIVE 2026 PDUFA PREDICTION PILOT</div>
@@ -84,7 +94,20 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
           The roster-gated automatic source worker was not started; no FOCUS membership changed.
         </p>
       </section>}
-    <UltomirisHistoricalLevelThreePanel/>
+    <details data-testid="fixed-historical-level-3-archives"
+      style={{border:"1px solid #d5dfe0",borderRadius:12,padding:"12px 14px",
+        margin:"5px 0 22px",background:"#f8fbfa"}}>
+      <summary style={{cursor:"pointer",fontWeight:800,color:"#2c5c54",fontSize:14}}>
+        Archived Level 3 case studies · fixed original results (not affected by dropdown)
+      </summary>
+      <p style={{fontSize:12,color:"#536b66",lineHeight:1.6}}>
+        These archived studies preserve their original Level 3 methodology; they must
+        not change merely because another assessment level is selected in the historical chart.
+      </p>
+      <HistoricalTestingChart/>
+      <October2026HistoricalAuditPanel/>
+      <UltomirisHistoricalLevelThreePanel/>
+    </details>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:10,margin:"15px 0 20px"}}>
       {[
         ["Exact FOCUS trials",FOCUS_SPECIALTY_SUMMARY.ncts],
