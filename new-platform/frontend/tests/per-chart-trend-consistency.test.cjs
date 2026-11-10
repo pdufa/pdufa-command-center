@@ -11,6 +11,7 @@ require.extensions[".tsx"]=(module,filename)=>module._compile(
       jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}
   }).outputText,filename
 );
+require.extensions[".ts"]=require.extensions[".tsx"];
 const {default:Trend,cumulativeDatedAgreement}=require("../app/ChartTrendInset.tsx");
 
 test("In-card trend is a real chronological cumulative line from separately dated decisions",()=>{
@@ -31,7 +32,9 @@ test("In-card trend is a real chronological cumulative line from separately date
     testId:"example-historic-trend",title:"Historical cumulative direction",points,kind:"retrospective",emptyText:""
   }));
   assert.match(html,/data-testid="example-historic-trend-line"/);
-  assert.match(html,/<polyline/);
+  assert.match(html,/data-testid="example-historic-trend-best-fit"/);
+  assert.doesNotMatch(html,/<polyline/);
+  assert.match(html,/least-squares/i);
   assert.match(html,/75\.0%/);
   assert.match(html,/NOT BLIND/);
   assert.match(html,/not blind accuracy/i);
