@@ -14,6 +14,9 @@ const {R89_HISTORICAL_SOURCE_RECOVERY,buildR89HistoricalSourceRecovery}=
  require("../lib/focus-r89-historical-source-recovery.ts");
 const {GET}=require("../app/predictions/source-recovery/history/route.ts");
 const {R89_ARCHIVED_ACACIA_SOURCE_HISTORY}=require("../lib/focus-r89-acacia-prior-original-history.ts");
+const externalSourceRecords=require("../data/focus-r89-new-public-original-source-leads-20261110.json");
+const {R89_NEW_PUBLIC_SOURCE_LEADS,buildR89NewPublicResearchLeads}=
+ require("../lib/focus-r89-new-public-source-leads.ts");
 
 test("R89 reconciles exactly 17 current registry original gaps with all 29/23 originals",()=>{
  const d=R89_HISTORICAL_SOURCE_RECOVERY;assert.ok(d);
@@ -84,6 +87,47 @@ test("R89 reuses four R36 exact original ACACIA bytes and SHA receipts, never fo
    v.sourceSha256);
  }
  assert.deepEqual(d.previousVersionFiles.map(v=>v.primaryEndpointsListed),[1,2,2,2]);
+});
+test("R89 newly retrieved publisher/sponsor leads have three exact-NCT matches and do not silently become five-study R71 pivotal papers",()=>{
+ const d=R89_NEW_PUBLIC_SOURCE_LEADS;
+ assert.ok(d);
+ assert.equal(d.exactNctMatchedNewSourceLeads,3);
+ assert.equal(d.conferenceSupplementAbstractLeads,1);
+ assert.equal(d.sponsorPublicReportLeads,2);
+ assert.equal(d.originalFiveStudyPivotalIndexStill,5);
+ assert.equal(d.previouslyUnindexedResearchRowsStill,12);
+ assert.equal(d.remainingWithoutNewPublicLeadThisPass,9);
+ assert.deepEqual(new Set(d.rows.map(r=>r.nct)),
+  new Set(["NCT02500381","NCT06411899","NCT06411379"]));
+ assert.equal(new Set(d.rows.map(r=>r.sourceUrl)).size,2);
+ assert.ok(d.rows.every(r=>r.originalFullManuscriptIndependentlyReviewed===false&&
+  r.sourceOriginalBytesCaptured===false&&
+  r.prospectivelySignedSAPIndependentlyVerified===false&&
+  r.qualifiedClinicalScienceReviewSigned===false&&
+  r.clinicalGrade===null&&r.FDAOutcome==="ABSTAIN"));
+ for(const r of d.rows){
+  const base=R89_HISTORICAL_SOURCE_RECOVERY.rows.find(x=>x.nct===r.nct);
+  assert.ok(base);
+  assert.equal(base.originalIndexedPivotalPublication,null);
+ }
+});
+test("R89 rejects cross-NCT sponsor links, fake SAP adjudication and altered publisher source",()=>{
+ const attacks=[
+  x=>{x.sourceCases[0].nct="NCT00000000";},
+  x=>{x.sourceCases[0].sourceUrl="https://attacker.example/fake";},
+  x=>{x.sourceCases[1].originalProspectiveSapAuthenticated=true;},
+  x=>{x.sourceCases[2].independentScienceReviewed=true;},
+  x=>{x.sourceCases[0].FDAForecast="APPROVAL";},
+  x=>{x.sourceCases[0].sourceType="PEER_REVIEWED_FULL_ORIGINAL";},
+  x=>{x.sourceCases.pop();},
+  x=>{x.sourceCases[1].nct=x.sourceCases[2].nct;},
+  x=>{x.distinctUnderlyingOriginalSourcePages=3;}
+ ];
+ for(const attack of attacks){
+  const altered=structuredClone(externalSourceRecords);
+  attack(altered);
+  assert.equal(buildR89NewPublicResearchLeads(altered),null);
+ }
 });
 test("R89 fails closed on altered 17-file source state, fake original signoff and roster",()=>{
  const forged=structuredClone(R88_SOURCE_CHRONOLOGY);
@@ -201,6 +245,8 @@ test("R89 read-only page, UI and original historical host remain scoped",()=>{
  assert.match(client,/Original signoff: NOT VERIFIED/);
  assert.match(client,/Open official public study record history/);
  assert.match(client,/Four original ACACIA-HCM registry versions already preserved/);
+ assert.match(client,/New public original research lead/);
+ assert.match(page,/Additional public conference\/sponsor leads found/);
  assert.match(previous,/\/predictions\/source-recovery/);
  assert.doesNotMatch(route,/method:"POST"|submitClinicalScore|setGrade\(/);
 });
