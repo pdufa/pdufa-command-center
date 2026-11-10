@@ -1,0 +1,113 @@
+name: MAIN R70 original PubMed metadata abstract source retrieval
+
+# Research branch ONLY. PubMed article XML is machine-readable publication
+# metadata/abstract, not a downloaded full paper, qualified scientific review,
+# historical time-frozen backtest, FDA approval/CRL forecast or medical grade.
+on:
+  push:
+    branches: [feature/medical-stage4-verified-method-matrix-20261108]
+    paths:
+      - .github/workflows/main-r70-original-pubmed-article-retrieval.yml
+      - new-platform/backend/scripts/build_focus_pubmed_article_records_r70.py
+      - new-platform/backend/tests/test_focus_pubmed_article_records_r70.py
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: main-r70-original-pubmed-11
+  cancel-in-progress: false
+
+jobs:
+  verify-pubmed-originals-without-clinical-grade:
+    if: github.repository == 'pdufa/pdufa-command-center' && github.ref == 'refs/heads/feature/medical-stage4-verified-method-matrix-20261108'
+    runs-on: ubuntu-latest
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Guard 29 NCT / 23 FDA application identities and retired-scan policy
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          test "$(git hash-object new-platform/backend/app/data/focus_snapshot.json)" = "842d025951def749d4672625e13fe487a87f5e52"
+          test "$(git hash-object new-platform/backend/app/data/focus_application_snapshot.json)" = "2f8d93a01a49402b1eb0c8ac1464a08b67316262"
+          python scripts/audit_raas_retirement.py --check
+      - name: Restore exact frozen R69 original registry-derived 11-PMID research
+        uses: actions/download-artifact@v4
+        with:
+          github-token: ${{ github.token }}
+          run-id: 42727350931
+          name: main-r69-exact-registry-pubmed-leads-42727350931
+          path: ${{ runner.temp }}/r70/r69
+      - name: Run local adversarial NCT source identity and PubMed XML parsing tests
+        working-directory: new-platform/backend
+        shell: bash
+        env:
+          R70_R69: ${{ runner.temp }}/r70/r69/FOCUS_17_ORIGINAL_PUBMED_REFERENCE_RECOVERY_R69.json
+        run: |
+          set -euo pipefail
+          python -m pip install 'pytest>=8,<10'
+          PYTHONPATH=. python -m pytest -q tests/test_focus_pubmed_article_records_r70.py
+      - name: Fetch exactly eleven publicly available PubMed article XML metadata/abstracts
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/r70/research"
+          PYTHONPATH=new-platform/backend python new-platform/backend/scripts/build_focus_pubmed_article_records_r70.py \
+            --r69 "$RUNNER_TEMP/r70/r69/FOCUS_17_ORIGINAL_PUBMED_REFERENCE_RECOVERY_R69.json" \
+            --output "$RUNNER_TEMP/r70/research/FOCUS_11_PUBMED_ARTICLE_METADATA_REVIEW_R70.json" \
+            --summary "$RUNNER_TEMP/r70/research/FOCUS_11_PUBMED_ARTICLE_METADATA_REVIEW_R70.md" \
+            --raw-xml "$RUNNER_TEMP/r70/research/PUBMED_11_ORIGINAL_ARTICLE_RECORDS_R70.xml"
+      - name: Assert exact PMID article bodies, evidence limits and no signoffs
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import json,os,hashlib
+          from pathlib import Path
+          d=Path(os.environ["RUNNER_TEMP"])/"r70/research"
+          j=json.loads((d/"FOCUS_11_PUBMED_ARTICLE_METADATA_REVIEW_R70.json").read_bytes())
+          xml=(d/"PUBMED_11_ORIGINAL_ARTICLE_RECORDS_R70.xml").read_bytes()
+          assert j["schema"]=="MAIN_R70_ORIGINAL_PUBMED_XML_METADATA_ABSTRACT_EVIDENCE_LEADS"
+          assert j["focusExactNcts"]==29 and j["provisionalFDAApplicationGroups"]==23
+          assert j["originalRegistryNctsWithoutCurrentPrimary"]==17
+          assert j["registryDerivedPubmedCitationLeads"]==11
+          assert j["articleMetadataRecordsRetrieved"]==11
+          assert j["originalPubmedXmlSha256"]==hashlib.sha256(xml).hexdigest()
+          assert j["exactNctIdentifiersFoundInRetrievedMetadataOrAbstract"]+j["noExactNctIdentifierFoundInRetrievedMetadataOrAbstract"]==11
+          assert len(j["articleResearchLeads"])==11
+          assert len({x["pmid"] for x in j["articleResearchLeads"]})==11
+          assert all(x["clinicalGrade"] is None and x["scientificReviewerSigned"] is False and x["pivotalPhase3PrimaryResultsIndependentlyVerified"] is False and x["fdaApprovalOrCrlPrediction"]=="ABSTAIN" for x in j["articleResearchLeads"])
+          assert j["articlesWithIndependentlyAdjudicatedPivotalOutcomes"]==0
+          assert j["qualifiedReviewerSignoffs"]==0
+          assert j["scoredScientificMethods"]==0
+          assert j["validatedFutureFdaApplicationPredictions"]==0
+          assert j["measuredHistoricalForecastAccuracy"] is None
+          assert j["officialFutureFDAOutcome"]=="ABSTAIN"
+          assert j["originalArticleFullTextsRetrieved"]==0
+          assert j["pubmedAbstractsAreNotFullPublicationAnalysis"] is True
+          assert j["machineNctIdentifierMatchDoesNotEstablishClinicalGrade"] is True
+          assert j["modelTrainingOrProductionWrites"] is False
+          with open(os.environ["GITHUB_STEP_SUMMARY"],"a") as f:
+            f.write("## R70 PubMed full original metadata and abstract research\n\n")
+            f.write("All 11 original Registry DERIVED PMID source records were fetched as original PubMed XML; exact NCT literal identifiers and phase/protocol/primary endpoint **words** were inspected. **No full article was reviewed and no paper has been qualified as pivotal study results.**\n\n")
+            f.write(f'Exact NCT literal identifiers in PubMed source metadata/abstract: {j["exactNctIdentifiersFoundInRetrievedMetadataOrAbstract"]}/11. Missing literal NCT identifiers: {j["noExactNctIdentifierFoundInRetrievedMetadataOrAbstract"]}/11. These are machine-text flags, not independent science or evidence of trial success.\n\n')
+            f.write("Independent scientific reviews 0; FDA forecasts validated 0/23; historical accuracy null; ABSTAIN; no production or backtest writes.\n\n")
+            f.write((d/"FOCUS_11_PUBMED_ARTICLE_METADATA_REVIEW_R70.md").read_text())
+          PY
+      - name: Archive raw PubMed XML and original article metadata/abstract report only
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-r70-original-11-pubmed-article-xml-${{ github.run_id }}
+          path: ${{ runner.temp }}/r70/research/
+          retention-days: 90
+          if-no-files-found: error
