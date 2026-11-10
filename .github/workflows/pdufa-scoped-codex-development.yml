@@ -1,0 +1,113 @@
+name: Scoped Continuous Codex Development
+
+# Poll for the next explicitly approved, unattempted scope.
+# This is *not* a nonstop process. One bounded task per invocation, no auto-merges.
+on:
+  schedule:
+    - cron: '*/15 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pdufa-scoped-codex-development
+  cancel-in-progress: false
+
+jobs:
+  select:
+    # Disabled by default until both a GitHub repository variable and the
+    # separate OPENAI_API_KEY secret are configured by the repo owner.
+    if: ${{ vars.PDUFA_CONTINUOUS_CODEX_ENABLED == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    outputs:
+      task_id: ${{ steps.pick.outputs.task_id }}
+      prompt_file: ${{ steps.pick.outputs.prompt_file }}
+      branch: ${{ steps.pick.outputs.branch }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Pick one approved, unattempted scoped task
+        id: pick
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python scripts/select_continuous_codex_task.py
+
+  develop:
+    needs: select
+    if: ${{ needs.select.outputs.task_id != '' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      # Secrets are handed directly to the Codex action, never exported
+      # to arbitrary repository tests, scripts, or job-level environments.
+      - name: Propose one scoped code patch with Codex
+        uses: openai/codex-action@v1
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          prompt-file: ${{ needs.select.outputs.prompt_file }}
+          sandbox: workspace-write
+          safety-strategy: drop-sudo
+          codex-args: '["--ephemeral"]'
+      - name: Reject changes outside source-controlled approved paths
+        run: |
+          python scripts/check_continuous_codex_patch.py "${{ needs.select.outputs.task_id }}"
+          git add -N .
+          git diff --binary > "$RUNNER_TEMP/codex-approved.patch"
+          test -s "$RUNNER_TEMP/codex-approved.patch"
+          test "$(wc -c < "$RUNNER_TEMP/codex-approved.patch")" -lt 200000
+      - uses: actions/upload-artifact@v4
+        with:
+          name: approved-codex-patch
+          path: ${{ runner.temp }}/codex-approved.patch
+          retention-days: 3
+          if-no-files-found: error
+
+  draft-pr:
+    needs: [select, develop]
+    if: ${{ needs.develop.result == 'success' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/download-artifact@v4
+        with:
+          name: approved-codex-patch
+          path: ${{ runner.temp }}/approved
+      - name: Recheck and apply approved patch
+        run: |
+          git apply --check "$RUNNER_TEMP/approved/codex-approved.patch"
+          git apply "$RUNNER_TEMP/approved/codex-approved.patch"
+          python scripts/check_continuous_codex_patch.py "${{ needs.select.outputs.task_id }}"
+          python scripts/audit_raas_retirement.py --check
+          python -m py_compile new-platform/backend/app/medical_method_projection.py new-platform/backend/app/medical_grading_policy.py
+      - name: Open draft PR for separate review and required CI
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          base: main
+          branch: ${{ needs.select.outputs.branch }}
+          title: 'Scoped Codex proposal: ${{ needs.select.outputs.task_id }}'
+          commit-message: 'test(medical): proposed gated Codex evidence-integrity improvement'
+          body: |
+            Automated **draft only** for a previously approved, fixed prompt.
+            Task ID: ${{ needs.select.outputs.task_id }}
+            Exact file allowlist and retired-system checks enforced.
+            Full CI, independent scientific review and human merge approval
+            are required before any production change. This is NOT a
+            prediction, scientific grade, clinical signoff or validated outcome.
+          draft: true
+          delete-branch: false
