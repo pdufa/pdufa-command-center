@@ -89,3 +89,21 @@ test("R94 source evidence presentation remains research-only and preserves prior
  assert.match(page,/FDA outcome forecast: ABSTAIN/);
  assert.doesNotMatch(page,/submitClinicalScore|setGrade\(|probabilityPercent|approvedByMedicalReviewer/);
 });
+
+test("R94 source handoff CSV keeps 11 original gates and adds qualified 517/516, HF and author-asserted SAP leads",async()=>{
+ const {GET}=require("../app/predictions/scientific-reconciliation/priority-gates/export/route.ts");
+ const resp=GET();
+ assert.equal(resp.status,200);
+ const csv=await resp.text();
+ assert.equal(csv.trim().split("\r\n").length,12);
+ assert.match(csv,/R94_public_source_clarification_not_adjudicated/);
+ assert.match(csv,/517 randomized/);
+ assert.match(csv,/516 treated/);
+ assert.match(csv,/HF SAE 12\/3/);
+ assert.match(csv,/11\/1/);
+ assert.match(csv,/signed SAP and first-access audit not independently authenticated/);
+ assert.match(csv,/main-r94-priority-original-evidence-gates/);
+ assert.match(csv,/NOT_VERIFIED/);
+ assert.match(csv,/NOT_SIGNED/);
+ assert.match(csv,/ABSTAIN/);
+});
