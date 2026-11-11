@@ -159,6 +159,7 @@ def capture_batch(ncts: list[str], cohort_digest: str, directory: Path, limit: i
     if directory.is_symlink():
         raise ValueError("Unsafe output directory")
     directory.mkdir(parents=True, exist_ok=True)
+    fixed_clock = now is not None
     now = now or datetime.now(timezone.utc)
     if now.tzinfo is None:
         raise ValueError("Capture date must be timezone-aware")
@@ -172,10 +173,12 @@ def capture_batch(ncts: list[str], cohort_digest: str, directory: Path, limit: i
             record, metadata = fetcher(nct, timeout=20)
             envelope = make_envelope(nct, cohort_digest, record, metadata)
             fetched_time = parse_stamp(envelope["retrieved_at_utc"])
-            if not timedelta(0) <= now - fetched_time < TTL:
+            # The live response necessarily arrives *after* the batch begins.
+            validation_clock = now if fixed_clock else datetime.now(timezone.utc)
+            if not timedelta(0) <= validation_clock - fetched_time < TTL:
                 raise ValueError("Source capture timestamp is not current")
             atomic_json(directory / f"{nct}.json", envelope)
-            if not valid_cache(directory / f"{nct}.json", nct, cohort_digest, now):
+            if not valid_cache(directory / f"{nct}.json", nct, cohort_digest, validation_clock):
                 raise ValueError("Saved source capture did not pass checksum validation")
             completed += 1
         except (OSError, ValueError, TimeoutError, TypeError, KeyError, json.JSONDecodeError) as exc:
