@@ -1,6 +1,7 @@
 name: Stage 4 Manual FOCUS Primary Source Review
 on:
   workflow_dispatch:
+  workflow_call:
 
 permissions:
   contents: read
