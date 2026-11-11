@@ -104,6 +104,7 @@ export default function WtEtradeOrderPrep(){
   return <section aria-label="SVRA and CAPR E*TRADE order preparation" data-wt-etrade-prep="read-only"
     style={css.panel}>
     <h2 style={{marginTop:0}}>SVRA + CAPR · Alpaca analysis → E*TRADE limit-order drafts</h2>
+    <p><a href="/wt/status" style={{fontWeight:700}}>OPEN STATUS SHEETS — all eight Alpaca metrics for each ticker</a></p>
     <p><strong>Two proposed purchases: one whole share each.</strong> Alpaca provides on-demand market research.
       E*TRADE live brokerage trading is not connected; a separate sandbox authorization option is below.
       No broker-side live account verification or order preview has happened. <strong>No order can be placed or approved through this page.</strong></p>
@@ -123,6 +124,7 @@ export default function WtEtradeOrderPrep(){
         const technicalSignal=evaluateWtAlpacaTechnicalSignal(candidate,source,market?.value||null,now);
         return <article key={candidate.programId} style={css.card} aria-label={candidate.ticker+" proposed limit order"}>
           <h3 style={{margin:"0 0 7px"}}>{candidate.ticker} · {candidate.drug}</h3>
+          <p><a href={"/wt/status#"+candidate.ticker}>View {candidate.ticker} complete eight-metric status sheet</a></p>
           <p style={{fontSize:12,margin:"0 0 12px"}}>
             <a href={"https://clinicaltrials.gov/study/"+candidate.nct} target="_blank" rel="noopener noreferrer">{candidate.nct}</a>
             {" · "}{candidate.programId} · PDUFA (recorded): {source?.recordedPdufaDate||"NOT VERIFIED"}
