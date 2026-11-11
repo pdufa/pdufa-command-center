@@ -2,6 +2,7 @@
 
 import {useCallback,useEffect,useState} from "react";
 import AlpacaStockChart from "./AlpacaStockChart";
+import WtEtradeSandboxConnect from "./WtEtradeSandboxConnect";
 import focusSnapshot from "../data/p3PostDataActive.json";
 import {sessionSnapshot,type WtMarket} from "../lib/wt-entry-stay-exit";
 import {
@@ -102,12 +103,13 @@ export default function WtEtradeOrderPrep(){
     style={css.panel}>
     <h2 style={{marginTop:0}}>SVRA + CAPR · Alpaca analysis → E*TRADE limit-order drafts</h2>
     <p><strong>Two proposed purchases: one whole share each.</strong> Alpaca provides on-demand market research.
-      E*TRADE is not connected; its OAuth authorization, account verification and broker-side order preview
-      have not happened. <strong>No order can be placed or approved through this page.</strong></p>
+      E*TRADE live brokerage trading is not connected; a separate sandbox authorization option is below.
+      No broker-side live account verification or order preview has happened. <strong>No order can be placed or approved through this page.</strong></p>
     <p style={{fontSize:13}}>Drafts are prefilled with ticker, BUY action, quantity 1, LIMIT and regular-session
       day validity. A limit price is suggested only when an exact-program Alpaca entry signal passes all
       price, freshness and PDUFA safety gates. Current FOCUS source snapshot: {focusSnapshot.asOf}.
       The chart and entry checks are research, not investment advice or evidence of an E*TRADE executable quote.</p>
+    <WtEtradeSandboxConnect />
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(min(100%,350px),1fr))",gap:14}}>
       {WT_ETRADE_CANDIDATES.map(candidate=>{
         const source=focusSnapshot.records.find(x=>x.nct===candidate.nct&&x.ticker===candidate.ticker);
@@ -159,7 +161,8 @@ export default function WtEtradeOrderPrep(){
     {copyStatus&&<p role="status">{copyStatus}</p>}
     <p style={{fontSize:12,marginBottom:0}}>Execution safeguard: no E*TRADE order API, account token, broker preview ID,
       approval endpoint, scheduled order or live-order submission is wired to this feature.
-      An E*TRADE OAuth connection and a separate explicit order approval would be required for future broker integration.
+      Production E*TRADE OAuth, independent fresh broker-side preview and separate explicit order approval
+      would be required for any future live broker integration.
       The existing entry model does not permit new buys inside 14 days of the recorded FDA target.</p>
   </section>;
 }
