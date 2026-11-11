@@ -49,28 +49,6 @@
       "recordedPdufaDate": null
     },
     {
-      "ticker": "AGIO",
-      "nct": "NCT05031780",
-      "company": "Agios Pharmaceuticals, Inc.",
-      "marketCap": 1899554516,
-      "fdaStatus": "2027-02-01",
-      "resultsUrl": "https://investor.agios.com/news-releases/news-release-details/agios-announces-topline-results-rise-phase-3-trial-mitapivat",
-      "regulatoryUrl": "https://investor.agios.com/node/19341",
-      "recordedReleaseDate": "2025-11-19",
-      "recordedPdufaDate": "2027-02-01"
-    },
-    {
-      "ticker": "AMLX",
-      "nct": "NCT06747468",
-      "company": "Amylyx Pharmaceuticals Inc.",
-      "marketCap": 3973879363,
-      "fdaStatus": "NDA filing planned 2026; PDUFA not assigned",
-      "resultsUrl": "https://amylyx.gcs-web.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-positive-topline-results-0",
-      "regulatoryUrl": "https://amylyx.gcs-web.com/news-releases/news-release-details/amylyx-pharmaceuticals-reports-third-quarter-2026-financial",
-      "recordedReleaseDate": "2026-08-18",
-      "recordedPdufaDate": null
-    },
-    {
       "ticker": "APMD",
       "nct": "NCT05811247",
       "company": "Apnimed",
@@ -223,17 +201,6 @@
       "regulatoryUrl": "https://investors.immunome.com/immunome-announces-u-s-fda-acceptance-of-new-drug-application-for-varegacestat-for-the-treatment-of-adults-with-desmoid-tumors/",
       "recordedReleaseDate": "2025-12-15",
       "recordedPdufaDate": "2027-04-28"
-    },
-    {
-      "ticker": "MIRM",
-      "nct": "NCT06553768",
-      "company": "Mirum Pharmaceuticals, Inc.",
-      "marketCap": 6163930594,
-      "fdaStatus": "sNDA filing planned 2027; PDUFA not assigned",
-      "resultsUrl": "https://www.sec.gov/Archives/edgar/data/1759425/000175942526000051/mirm-20261012.htm",
-      "regulatoryUrl": "https://ir.mirumpharma.com/news/news-details/2026/Mirum-Pharmaceuticals-Announces-Primary-Endpoint-Met-in-Phase-3-EXPAND-Study-of-LIVMARLI-maralixibat-in-Ultra-Rare-Cholestatic-Liver-Diseases/default.aspx",
-      "recordedReleaseDate": "2026-10-12",
-      "recordedPdufaDate": null
     },
     {
       "ticker": "MLTX",
