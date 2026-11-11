@@ -45,7 +45,7 @@ class FocusLevelTwoQueueTests(unittest.TestCase):
         data = json.loads(path.read_text(encoding="utf-8"))
         report = MODULE.build_review_queue(data)
         self.assertEqual(report["snapshot_as_of"], data["asOf"])
-        self.assertEqual(report["trial_count"], 29)
+        self.assertEqual(report["trial_count"], len(data["records"]))
         self.assertEqual(len(set(row["nct"] for row in report["records"])), 29)
         for item in report["records"]:
             self.assertEqual(
