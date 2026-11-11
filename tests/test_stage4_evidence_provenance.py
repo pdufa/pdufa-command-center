@@ -65,9 +65,9 @@ class ProvenanceTests(unittest.TestCase):
             "https://clinicaltrials.gov/study/NCT05507203#section",
             "https://clinicaltrials.gov/study/NCT05507203#citation",
             "https://clinicaltrials.gov/study/NCT05507203 extra",
-            "https://clinicaltrials.gov/study/NCT05507203\\t",
-            "\\nhttps://clinicaltrials.gov/study/NCT05507203",
-            "https://clinicaltrials.gov/study/NCT05507203\\u00a0",
+            "https://clinicaltrials.gov/study/NCT05507203\t",
+            "\nhttps://clinicaltrials.gov/study/NCT05507203",
+            "https://clinicaltrials.gov/study/NCT05507203\u00a0",
         ):
             with self.subTest(url=repr(invalid)):
                 item = sample()
