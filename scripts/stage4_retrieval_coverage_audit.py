@@ -6,6 +6,8 @@ import sys
 from pathlib import Path
 
 NCT = re.compile(r"NCT[0-9]{8}\Z")
+ENDPOINT_EVIDENCE = {"endpoint_metadata_unavailable", "registered_primary_endpoint_missing",
+                     "posted_primary_outcome_missing", "primary_outcome_review_required"}
 READINESS = {"retrieval_failed", "phase_unresolved", "phase_appropriate_results_present",
              "phase_appropriate_results_missing", "earlier_phase"}
 
@@ -26,6 +28,7 @@ def audit(registry, triage, roster):
         if [r.get("nct") for r in rows if isinstance(r, dict)] != expected:
             raise ValueError("Artifact order/identity differs from canonical roster")
     counts = {k: 0 for k in sorted(READINESS)}
+    endpoint_counts = {k: 0 for k in sorted(ENDPOINT_EVIDENCE)}
     for source, result in zip(a, b):
         if source.get("status") not in ("retrieved", "retrieval_failed"):
             raise ValueError("Invalid retrieval status")
@@ -37,10 +40,16 @@ def audit(registry, triage, roster):
             raise ValueError("Failed retrieval cannot pass triage")
         if source["status"] == "retrieved" and result["readiness"] == "retrieval_failed":
             raise ValueError("Triage inconsistent with retrieval")
+        if source["status"] == "retrieved":
+            category = result.get("endpoint_evidence")
+            if category not in ENDPOINT_EVIDENCE:
+                raise ValueError("Missing or unknown endpoint evidence classification")
+            endpoint_counts[category] += 1
         counts[result["readiness"]] += 1
     return {"total": 29, "retrieved": sum(r["status"] == "retrieved" for r in a),
             "failed": sum(r["status"] == "retrieval_failed" for r in a),
-            "readiness_counts": counts, "scientific_verification_complete": False,
+            "readiness_counts": counts, "endpoint_evidence_counts": endpoint_counts,
+            "scientific_verification_complete": False,
             "prediction_count": 0}
 
 
