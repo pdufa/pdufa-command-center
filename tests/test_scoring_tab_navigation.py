@@ -15,6 +15,7 @@ def test_active_navigation_links_only_supported_primary_destinations():
     expected = {
         "POOL": "/pool",
         "FOCUS": "/focus",
+        "WT": "/wt",
         "CAL": "/cal",
         "COMPANY": "/company",
         "NEWS": "/news",
@@ -33,6 +34,7 @@ def test_active_navigation_links_only_supported_primary_destinations():
     assert 'aria-label="Site navigation"' in source
     # Research source history remains in Git; legacy clinical cohorts are not
     # active menu choices. POOL and FOCUS remain the only candidate populations;
+    # WT is a trading-research view, not an additional candidate population.
     # PREDICTIONS is a read-only FDA outcome-status destination.
     # INSTALLATION is a read-only audit, not an extra trial cohort or scoring tier.
 
