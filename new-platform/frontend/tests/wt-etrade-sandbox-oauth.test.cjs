@@ -33,7 +33,11 @@ test("E*TRADE sandbox requires all server keys and a 32-byte cookie-encryption k
     const access=c.sealAccess("sample-access-token","sample-access-secret");
     assert.equal(c.readPending(access),null);
     assert.equal(c.readAccess(access)?.token,"sample-access-token");
-    assert.equal(c.readPending(pending.slice(0,-1)+(pending.at(-1)==="0"?"1":"0")),null);
+    // Mutate an authenticated tag byte (not the final base64url character:
+    // its unused padding bits can decode to the same bytes).
+    const tamperedParts=pending.split(".");
+    tamperedParts[2]=(tamperedParts[2][0]==="A"?"B":"A")+tamperedParts[2].slice(1);
+    assert.equal(c.readPending(tamperedParts.join(".")),null);
     const url=new URL(c.authorizeSandboxUrl("token/a+b"));
     assert.equal(url.origin,"https://us.etrade.com");
     assert.equal(url.searchParams.get("key"),"sandbox-test-key");
