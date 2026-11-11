@@ -4,7 +4,7 @@ param([switch]$Remove)
 $ErrorActionPreference = 'Stop'
 $taskName = 'PDUFA-Local-AI-Proposals'
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
-$controller = Join-Path $PSScriptRoot 'windows_local_agent_controller.py'
+$controller = Join-Path $PSScriptRoot 'windows_local_agent_job.py'
 
 if ($Remove) {
   Unregister-ScheduledTask -TaskName $taskName -Confirm:$false -ErrorAction SilentlyContinue
@@ -22,11 +22,11 @@ $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit
 # It cannot run if the user signs out; this deliberate limitation avoids saving passwords.
 $identity = [Security.Principal.WindowsIdentity]::GetCurrent().Name
 $principal = New-ScheduledTaskPrincipal -UserId $identity -LogonType Interactive -RunLevel Limited
-Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Description 'Read-only offline Ollama proposals. No code edits, no push, no deployment.' -Force | Out-Null
+Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Description 'Read-only Ollama proposals with redacted public GitHub issue status. No edits, push or deploy.' -Force | Out-Null
 Write-Host "INSTALLED: $taskName"
 Write-Host "Schedule: every 4 hours, beginning in approximately 10 minutes"
 Write-Host "Security: current Windows user only; no administrator rights"
-Write-Host "Reports: $env:USERPROFILE\\PDUFA-Agent-Reports"
+Write-Host "Reports: $env:USERPROFILE\\PDUFA-Agent-Reports`nRemote issue: https://github.com/pdufa/pdufa-command-center/issues/1096 (public, generic status only)"
 Write-Host "PC must stay powered on, awake, signed in (may be locked)."
 Write-Host "View task: Get-ScheduledTask -TaskName '$taskName'"
 Write-Host "Disable task: Disable-ScheduledTask -TaskName '$taskName'"
