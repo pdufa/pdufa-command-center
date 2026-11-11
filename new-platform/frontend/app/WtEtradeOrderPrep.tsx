@@ -3,6 +3,7 @@
 import {useCallback,useEffect,useState} from "react";
 import AlpacaStockChart from "./AlpacaStockChart";
 import focusSnapshot from "../data/p3PostDataActive.json";
+import {sessionSnapshot,type WtMarket} from "../lib/wt-entry-stay-exit";
 import {
   WT_ETRADE_CANDIDATES,prepareWtEtradeDraft,formatWtEtradeDraft,
   type WtAlpacaEntry,
@@ -10,6 +11,8 @@ import {
 
 type Feed={value:WtAlpacaEntry|null;error:string;receivedAt:number};
 type Feeds=Record<string,Feed>;
+type MarketFeed={value:WtMarket|null;error:string};
+type Markets=Record<string,MarketFeed>;
 const css={
   panel:{border:"1px solid #a5c8bc",borderRadius:12,padding:16,margin:"16px 0",background:"#f6fbf9"},
   card:{border:"1px solid #c4d4da",borderRadius:10,padding:14,background:"#fff",minWidth:0} as const,
@@ -19,6 +22,7 @@ const css={
 
 export default function WtEtradeOrderPrep(){
   const [feeds,setFeeds]=useState<Feeds>({});
+  const [markets,setMarkets]=useState<Markets>({});
   const [now,setNow]=useState(0);
   const [expanded,setExpanded]=useState<Record<string,boolean>>({});
   const [copyStatus,setCopyStatus]=useState("");
@@ -47,15 +51,42 @@ export default function WtEtradeOrderPrep(){
         }));
       }finally{busy=false;}
     };
+    let marketBusy=false;
+    const refreshMarket=async()=>{
+      if(marketBusy||document.visibilityState==="hidden")return;
+      marketBusy=true;
+      try{
+        await Promise.all(WT_ETRADE_CANDIDATES.map(async candidate=>{
+          let value:WtMarket|null=null,error="";
+          try{
+            const response=await fetch("/api/alpaca-chart/"+encodeURIComponent(candidate.programId)+"?range=6M",{
+              cache:"no-store",signal:controller.signal,
+            });
+            if(!response.ok)throw new Error("Alpaca chart feed HTTP "+response.status);
+            const received=await response.json() as WtMarket;
+            if(received.programId!==candidate.programId||received.ticker!==candidate.ticker||received.provider!=="ALPACA")
+              throw new Error("Alpaca chart source or exact Program ID mismatch");
+            value=received;
+          }catch(e){
+            if(controller.signal.aborted)return;
+            error=e instanceof Error?e.message:"Alpaca chart unavailable";
+          }
+          if(!controller.signal.aborted)setMarkets(old=>({...old,[candidate.programId]:{value,error}}));
+        }));
+      }finally{marketBusy=false;}
+    };
     const tick=()=>setNow(Date.now());
-    tick();void refresh();
+    tick();void refresh();void refreshMarket();
     const poll=setInterval(()=>void refresh(),30000);
     const clock=setInterval(tick,10000);
+    const marketPoll=setInterval(()=>void refreshMarket(),300000);
     document.addEventListener("visibilitychange",refresh);
+    document.addEventListener("visibilitychange",refreshMarket);
     document.addEventListener("visibilitychange",tick);
     return()=>{
-      controller.abort();clearInterval(poll);clearInterval(clock);
+      controller.abort();clearInterval(poll);clearInterval(clock);clearInterval(marketPoll);
       document.removeEventListener("visibilitychange",refresh);
+      document.removeEventListener("visibilitychange",refreshMarket);
       document.removeEventListener("visibilitychange",tick);
     };
   },[]);
@@ -81,6 +112,8 @@ export default function WtEtradeOrderPrep(){
       {WT_ETRADE_CANDIDATES.map(candidate=>{
         const source=focusSnapshot.records.find(x=>x.nct===candidate.nct&&x.ticker===candidate.ticker);
         const feed=feeds[candidate.programId];
+        const market=markets[candidate.programId];
+        const technical=now>0&&market?.value?sessionSnapshot(market.value,new Date(now)):null;
         const draft=prepareWtEtradeDraft(candidate,source,feed?.value||null,now);
         return <article key={candidate.programId} style={css.card} aria-label={candidate.ticker+" proposed limit order"}>
           <h3 style={{margin:"0 0 7px"}}>{candidate.ticker} · {candidate.drug}</h3>
@@ -96,6 +129,15 @@ export default function WtEtradeOrderPrep(){
             </strong></div></div>
             <div style={css.chip}><small>Broker approval</small><div><strong>NOT GIVEN</strong></div></div>
           </div>
+          <div style={css.data} aria-label={candidate.ticker+" Alpaca technical observations"}>
+            <div style={css.chip}><small>Alpaca last close</small><div><strong>{technical?"$"+technical.close.toFixed(2):"NOT VERIFIED"}</strong></div></div>
+            <div style={css.chip}><small>20 / 50-day averages</small><div><strong>{technical?"$"+technical.sma20.toFixed(2)+" / $"+technical.sma50.toFixed(2):"UNAVAILABLE"}</strong></div></div>
+            <div style={css.chip}><small>RSI14 / ATR14</small><div><strong>{technical?technical.rsi14.toFixed(1)+" / $"+technical.atr14.toFixed(2):"UNAVAILABLE"}</strong></div></div>
+            <div style={css.chip}><small>RVOL20</small><div><strong>{technical?technical.rvol20.toFixed(2)+"×":"UNAVAILABLE"}</strong></div></div>
+          </div>
+          <p style={{fontSize:12}}>Alpaca completed-session data: {technical?technical.asOf+" · "+technical.coverage:
+            (market?.error||market?.value?.message||"Checking bars / insufficient recent sessions")}.
+            These EOD observations are <strong>not</strong> a verified E*TRADE order price.</p>
           <p role="status"><strong>{now===0?"CHECKING SOURCES":draft.status.replaceAll("_"," ")}</strong>
             {" — "}{now===0?"Awaiting browser market clock.":draft.reason}</p>
           <p style={{fontSize:12}}>Alpaca exact-program signal: <strong>{feed?.value?.status||"NOT AVAILABLE"}</strong>
