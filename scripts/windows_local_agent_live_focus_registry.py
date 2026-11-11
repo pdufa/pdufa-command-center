@@ -53,8 +53,8 @@ def verified_roster(snapshot: object) -> list[str]:
     if date.fromisoformat(stamp).isoformat() != stamp:
         raise ValueError("FOCUS as-of date invalid")
     rows = snapshot.get("records")
-    if not isinstance(rows, list) or len(rows) != 29:
-        raise ValueError("This bounded capture expects the saved 29-trial FOCUS roster")
+    if not isinstance(rows, list) or not 1 <= len(rows) <= 100:
+        raise ValueError("Expected a bounded saved FOCUS roster")
     seen = set()
     for row in rows:
         if not isinstance(row, dict):
@@ -151,8 +151,8 @@ def atomic_json(path: Path, value: dict) -> None:
 def capture_batch(ncts: list[str], cohort_digest: str, directory: Path, limit: int,
                   fetcher=retrieve, now: datetime | None = None) -> dict:
     """Bounded network capture; fetcher injection enables purely offline tests."""
-    if (not isinstance(limit, int) or not 1 <= limit <= 29
-            or len(ncts) != 29 or len(set(ncts)) != 29
+    if (type(limit) is not int or not 1 <= limit <= 100
+            or not 1 <= len(ncts) <= 100 or len(set(ncts)) != len(ncts)
             or any(not isinstance(n, str) or not NCT.fullmatch(n) for n in ncts)
             or not isinstance(cohort_digest, str) or not DIGEST.fullmatch(cohort_digest)):
         raise ValueError("Unsafe capture request")
@@ -217,9 +217,9 @@ def capture_batch(ncts: list[str], cohort_digest: str, directory: Path, limit: i
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--batch-size", type=int, default=5, choices=range(1, 30),
-                        metavar="1..29", help="Max HTTPS requests this run; default 5")
-    parser.add_argument("--all", action="store_true", help="Attempt all remaining NCTs (up to 29)")
+    parser.add_argument("--batch-size", type=int, default=5, choices=range(1, 101),
+                        metavar="1..100", help="Max HTTPS requests this run; default 5")
+    parser.add_argument("--all", action="store_true", help="Attempt all uncached NCTs in the saved roster")
     args = parser.parse_args()
     try:
         audit = subprocess.run(
@@ -236,7 +236,7 @@ def main() -> int:
         raw = ROSTER.read_bytes()
         ncts = verified_roster(json.loads(raw.decode("utf-8")))
         digest = hashlib.sha256(raw).hexdigest()
-        result = capture_batch(ncts, digest, CAPTURES, 29 if args.all else args.batch_size)
+        result = capture_batch(ncts, digest, CAPTURES, len(ncts) if args.all else args.batch_size)
         REPORTS.mkdir(parents=True, exist_ok=True)
         stamp = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ%f")
         report = REPORTS / f"level2-registry-live-status-{stamp}.json"
