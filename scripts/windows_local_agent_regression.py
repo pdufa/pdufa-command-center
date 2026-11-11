@@ -24,9 +24,9 @@ SUITES = (
     ("level2_hypothesis_intake", "test_level2_scientific_hypothesis_intake.py", 10),
     ("level2_focus_queue", "test_level2_focus_evidence_queue.py", 7),
     ("focus_schedule_validation", "test_windows_local_agent_focus_validation.py", 5),
-    ("level2_registry_research", "test_level2_focus_registry_research.py", 8),
+    ("level2_registry_research", "test_level2_focus_registry_research.py", 9),
     ("level2_research_status_validation", "test_windows_local_agent_registry_research_validation.py", 4),
-    ("level2_live_registry_capture", "test_windows_local_agent_live_focus_registry.py", 12),
+    ("level2_live_registry_capture", "test_windows_local_agent_live_focus_registry.py", 13),
     ("patch_generator_safety", "test_windows_local_patch_proposal.py", 4),
     ("patch_reviewer_safety", "test_windows_local_patch_review.py", 8),
 )
