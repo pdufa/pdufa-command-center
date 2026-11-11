@@ -109,5 +109,6 @@ def test_focus_success_requires_full_registry_and_coherent_promotion(monkeypatch
 
 
 def test_controller_never_promotes_unwired_stage(monkeypatch):
+    monkeypatch.setattr(runner,"gh",lambda *a,**k:{"status":"completed","conclusion":"success"})
     with pytest.raises(runner.ControllerError,match="STAGE_NOT_IMPLEMENTED"):
         runner.evidence("ASSESSMENTS",42,datetime.now(timezone.utc))
