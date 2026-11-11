@@ -187,12 +187,12 @@ def audit(root: Path = ROOT, check_policy: bool = True) -> dict:
 
     if check_policy:
         policy = root / 'AGENTS.md'
-        text = policy.read_text() if policy.exists() else ''
+        text = policy.read_text(encoding='utf-8') if policy.exists() else ''
         if not (re.search(r'RAAS', text, re.I) and re.search(r'permanent(?:ly)?\s+retir', text, re.I) and
                 re.search(r'read.only', text, re.I)):
             add('PERMANENT_POLICY_MISSING', policy, 'Root instructions must permanently retire RAAS and preserve read-only history.')
         copilot = root / '.github/copilot-instructions.md'
-        copilot_text = copilot.read_text() if copilot.exists() else ''
+        copilot_text = copilot.read_text(encoding='utf-8') if copilot.exists() else ''
         if not (re.search(r'AGENTS\.md', copilot_text, re.I) and
                 re.search(r'RAAS', copilot_text, re.I) and
                 re.search(r'permanent(?:ly)?\s+retir', copilot_text, re.I) and
@@ -205,7 +205,7 @@ def audit(root: Path = ROOT, check_policy: bool = True) -> dict:
         add('HISTORICAL_MANIFEST_MISSING', pinned, 'The read-only historical record manifest is required; removing it cannot disable preservation checks.')
     if pinned.exists():
         try:
-            manifest = json.loads(pinned.read_text())
+            manifest = json.loads(pinned.read_text(encoding='utf-8'))
             if manifest.get('schemaVersion') != 1 or not isinstance(manifest.get('files'), list):
                 raise ValueError('Invalid read-only record manifest')
             seen_pinned = set()
@@ -225,13 +225,13 @@ def audit(root: Path = ROOT, check_policy: bool = True) -> dict:
     roots = frontend_entrypoints(root)
     for main in ('new-platform/backend/app/main.py', 'app.py'):
         path = root / main
-        if path.exists() and not (main == 'app.py' and 'retired' in path.read_text().lower()):
+        if path.exists() and not (main == 'app.py' and 'retired' in path.read_text(encoding='utf-8').lower()):
             roots.append(path)
     workflows = root / '.github/workflows'
     for workflow in sorted(workflows.glob('*')) if workflows.exists() else []:
         if workflow.suffix not in ('.yml', '.yaml'):
             continue
-        text = workflow.read_text()
+        text = workflow.read_text(encoding='utf-8')
         if RETIRED_NAME.search(workflow.name) and 'retirement' not in workflow.name:
             add('RETIRED_WORKFLOW_REGISTERED', workflow, 'Retired workflows must remain outside the active GitHub workflow directory.')
         for script in workflow_scripts(text, root):
@@ -287,7 +287,7 @@ def audit(root: Path = ROOT, check_policy: bool = True) -> dict:
     for path in config_paths:
         if not path.is_file():
             continue
-        text = path.read_text()
+        text = path.read_text(encoding='utf-8')
         if path.name == 'package.json':
             try:
                 config = json.loads(text)
@@ -302,7 +302,7 @@ def audit(root: Path = ROOT, check_policy: bool = True) -> dict:
     for path in installation:
         if not path.is_file() or path.suffix not in SOURCE_EXTENSIONS:
             continue
-        text = code_without_comments(path.read_text(), path.suffix)
+        text = code_without_comments(path.read_text(encoding='utf-8'), path.suffix)
         task = re.search(r'''\b(?:title|name|label|requirement|component)\s*:\s*["'][^"'\n]*\bRAAS\b[^"'\n]*["']''', text, re.I)
         if task:
             add('RETIRED_INSTALLATION_TASK', path, task.group(0))
@@ -342,7 +342,7 @@ def main(argv=None) -> int:
     report = audit(args.root)
     if args.output:
         args.output.parent.mkdir(parents=True, exist_ok=True)
-        args.output.write_text(json.dumps(report, indent=2) + '\n')
+        args.output.write_text(json.dumps(report, indent=2) + '\n', encoding='utf-8')
     print(json.dumps(report, indent=2))
     return 1 if args.check and not report['passed'] else 0
 
