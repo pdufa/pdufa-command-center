@@ -7,6 +7,9 @@ from __future__ import annotations
 
 import hashlib
 import json
+from datetime import datetime
+
+from level2_focus_registry_research import build_source_research
 
 
 def verify_queue_report(report: object, snapshot_bytes: bytes) -> bool:
@@ -77,4 +80,34 @@ def verify_queue_report(report: object, snapshot_bytes: bytes) -> bool:
                     return False
         return True
     except (ValueError, KeyError, TypeError, UnicodeError):
+        return False
+
+
+def verify_registry_research_report(
+    report: object, roster_bytes: bytes, scan_bytes: bytes
+) -> bool:
+    """Require exact, unpromoted contents for one saved 29-trial registry packet.
+
+    A fresh-file check in the scheduled worker rejects old reports separately.
+    Any changed cohort/source digest, FDA prediction, or science completion
+    assertion must be flagged rather than posted as a green result.
+    """
+    if not isinstance(report, dict) or not isinstance(roster_bytes, bytes) or not isinstance(scan_bytes, bytes):
+        return False
+    try:
+        timestamp = report.get("generated_at_utc")
+        if not isinstance(timestamp, str):
+            return False
+        parsed = datetime.fromisoformat(timestamp.replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            return False
+        expected = build_source_research(
+            json.loads(roster_bytes.decode("utf-8")),
+            json.loads(scan_bytes.decode("utf-8")),
+        )
+        expected["roster_sha256"] = hashlib.sha256(roster_bytes).hexdigest()
+        expected["saved_scan_sha256"] = hashlib.sha256(scan_bytes).hexdigest()
+        observed = {key: value for key, value in report.items() if key != "generated_at_utc"}
+        return observed == expected
+    except (ValueError, TypeError, KeyError, UnicodeError, OverflowError):
         return False
