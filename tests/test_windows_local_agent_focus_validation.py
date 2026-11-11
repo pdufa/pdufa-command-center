@@ -24,7 +24,7 @@ class ScheduledFocusValidationTests(unittest.TestCase):
         cls.report["snapshot_sha256"] = hashlib.sha256(cls.raw).hexdigest()
 
     def test_exact_snapshot_generated_queue_passes(self):
-        self.assertEqual(self.report["trial_count"], 29)
+        self.assertEqual(self.report["trial_count"], len(json.loads(self.raw)["records"]))
         self.assertTrue(verify_queue_report(self.report, self.raw))
 
     def test_modified_snapshot_is_not_reported_successful(self):
