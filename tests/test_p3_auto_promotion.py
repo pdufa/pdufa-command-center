@@ -153,5 +153,53 @@ class PromotionTests(unittest.TestCase):
         self.assertEqual(added, [])
         self.assertIn("CTGOV_PHASE3_CURRENT_SOURCE_UNAVAILABLE", review[0]["reasons"])
         
+class NewlyReviewedFocusCandidates(unittest.TestCase):
+    def test_amlx_agio_mirm_all_have_exact_trial_public_results_fda_path_and_current_cap(self):
+        import json
+        with (PATH.parents[0] / "new-platform/backend/app/phase3_curated_announcements.json").open(encoding="utf-8") as source:
+            complete=json.load(source)
+        names={
+            "APPLICATION|AMLX|AVEXITIDE_PBH_LUCIDITY":("AMLX","NCT06747468",3973879363),
+            "APPLICATION|AGIO|MITAPIVAT_SCD_RISEUP_20270201":("AGIO","NCT05031780",1899554516),
+            "APPLICATION|MIRM|MARALIXIBAT_EXPAND_CHOLESTATIC_2027":("MIRM","NCT06553768",6163930594),
+        }
+        cases={k:complete["cases"][k] for k in names}
+        day=date(2026,11,11)
+        caps=[{"ticker":ticker,"market_cap":str(cap),"market_cap_status":"VERIFIED",
+            "market_cap_source":f"https://api.nasdaq.com/api/quote/{ticker}/summary?assetclass=stocks",
+            "market_cap_checked_at":"2026-11-11T04:20:58+00:00"}
+            for ticker,_,cap in names.values()]
+        census=[{"ticker":ticker,"nct_id":nct,"company":ticker}
+                for ticker,nct,_ in names.values()]
+        pool={nct:ticker for ticker,nct,_ in names.values()}
+        approved,review=promote.evaluate(
+            {"schemaVersion":"pdufa-curated-phase3-announcements-v1","cases":cases},
+            caps,census,pool,set(),day,phase3_check=lambda nct:"ACTIVE_NOT_RECRUITING")
+        self.assertEqual(review,[])
+        self.assertEqual({x["nct"] for x in approved},set(pool))
+        for row in approved:
+            self.assertEqual(len(row["values"]),28)
+            self.assertEqual(row["values"][4],"YES - company/SEC/journal")
+            self.assertTrue(row["values"][26].startswith("https://"))
+            self.assertTrue(row["values"][27].startswith("https://"))
+            self.assertEqual(row["values"][10:19],[""]*9)
+            if row["ticker"]=="AGIO":
+                self.assertEqual(row["values"][25],"2027-02-01")
+            else:
+                self.assertIn("PDUFA not assigned",row["values"][25])
+        approved_again,_=promote.evaluate(
+            {"schemaVersion":"pdufa-curated-phase3-announcements-v1","cases":cases},
+            caps,census,pool,set(pool),day,phase3_check=lambda nct:"ACTIVE_NOT_RECRUITING")
+        self.assertEqual(approved_again,[])
+
+    def test_issuer_results_without_verified_application_path_remain_review_only(self):
+        args=self.inputs()
+        candidate=args[0]["cases"]["APPLICATION|COGT|BEZUCLASTINIB_GIST"]
+        candidate.pop("pdufa_assignment")
+        approved,review=self.run_check(args)
+        self.assertEqual(approved,[])
+        self.assertIn("NO_CURRENT_VERIFIED_FDA_PATH",review[0]["reasons"])
+
+
 if __name__ == "__main__":
     unittest.main()
