@@ -113,6 +113,21 @@ class ATSMSTests(unittest.TestCase):
             self.assertEqual(report["focusTrials"],1)
             self.assertEqual(report["trials"][0]["technical"],"UNAVAILABLE")
             self.assertFalse(report["brokerOrdersEnabled"])
+    def test_alpaca_401_is_reported_as_authorization_blocker_without_secrets(self):
+        from urllib.error import HTTPError
+        with tempfile.TemporaryDirectory() as tmp:
+            roster=Path(tmp)/"focus.json"
+            rosterfile(roster,[{"ticker":"SVRA","nct":"NCT04544293","recordedPdufaDate":"2026-11-22"}])
+            ctx={"session":"REGULAR","localDay":"2026-11-11","expectedCompletedDay":"2026-11-10"}
+            def rejected(*args,**kwargs):
+                raise HTTPError("https://data.alpaca.markets/v2/stocks/bars",401,"Unauthorized",{},None)
+            with patch.dict(os.environ,{"ALPACA_API_KEY":"test-key","ALPACA_SECRET_KEY":"test-secret"}):
+                result=atsms.run(NOW,roster=roster,load_market=rejected,session_override=ctx)
+            self.assertEqual(result["status"],"ALPACA_AUTH_REJECTED")
+            self.assertEqual(result["focusTrials"],1)
+            self.assertNotIn("test-secret",str(result))
+            self.assertFalse(result["brokerOrdersEnabled"])
+            self.assertEqual(result["trials"],[])
     def test_exchange_calendar_holiday_and_regular_vs_extended(self):
         class Stamp:
             def to_pydatetime(self):

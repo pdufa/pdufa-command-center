@@ -329,6 +329,17 @@ def run(now=None,roster=ROSTER,report=REPORT,load_market=collect_market,session_
             if not changed or result["alerts"]=="SENT":
                 write_json(STATE,{"schemaVersion":1,"signals":current,"runAtUTC":started})
         return result
+    except HTTPError as e:
+        if e.code in (401,403):
+            result["status"]="ALPACA_AUTH_REJECTED"
+            result["error"]="Alpaca market-data authentication was refused (HTTP "+str(e.code)+"). Verify the GitHub Actions APCA_API_KEY_ID / APCA_API_SECRET_KEY repository secrets; credentials on Render are separate."
+        elif e.code == 429:
+            result["status"]="ALPACA_RATE_LIMITED"
+            result["error"]="Alpaca market-data requests were rate limited (HTTP 429); no technical signals were produced."
+        else:
+            result["status"]="ALPACA_HTTP_ERROR"
+            result["error"]="Alpaca market-data endpoint returned HTTP "+str(e.code)+". No technical signals were produced."
+        return result
     except Exception as e:
         result["status"]="SOURCE_OR_CALENDAR_FAILURE"
         result["error"]=type(e).__name__+": "+str(e)[:250]
@@ -349,6 +360,8 @@ def main():
         f"{report.get('availableDaily',0)} daily metrics and "
         f"{report.get('availableIntraday',0)} fresh minute bars")
     print(summary,flush=True)
+    if report.get("error"):
+        print("ATSMS BLOCKER: "+report["error"],flush=True)
     if os.environ.get("GITHUB_STEP_SUMMARY"):
         with open(os.environ["GITHUB_STEP_SUMMARY"],"a",encoding="utf-8") as out:
             out.write("## ATSMS read-only research monitor\n\n"+summary+"\n\n")
