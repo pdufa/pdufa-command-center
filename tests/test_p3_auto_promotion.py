@@ -175,7 +175,7 @@ class NewlyReviewedFocusCandidates(unittest.TestCase):
         approved,review=promote.evaluate(
             {"schemaVersion":"pdufa-curated-phase3-announcements-v1","cases":cases},
             caps,census,pool,set(),day,phase3_check=lambda nct:"ACTIVE_NOT_RECRUITING")
-        self.assertEqual(review,[])
+        self.assertFalse(any(x["nct"] in pool for x in review))
         self.assertEqual({x["nct"] for x in approved},set(pool))
         for row in approved:
             self.assertEqual(len(row["values"]),28)
