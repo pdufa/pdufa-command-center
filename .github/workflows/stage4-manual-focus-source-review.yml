@@ -1,0 +1,42 @@
+name: Stage 4 Manual FOCUS Primary Source Review
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  retrieve-and-triage:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Retrieve 29 ClinicalTrials.gov records
+        run: |
+          mkdir -p stage4-review-output
+          python scripts/stage4_clinicaltrials_source.py > stage4-review-output/registry-metadata.json
+      - name: Phase-first triage
+        run: |
+          python scripts/stage4_phase_first_triage.py < stage4-review-output/registry-metadata.json > stage4-review-output/phase-triage.json
+      - name: Verify output remains non-adjudicated
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path("stage4-review-output")
+          registry = json.loads((root / "registry-metadata.json").read_text())
+          triage = json.loads((root / "phase-triage.json").read_text())
+          assert len(registry["trials"]) == len(triage["trials"]) == 29
+          assert registry["scientific_adjudications"] == 0
+          assert triage["verified_scientific_adjudications"] == 0
+          assert all(x.get("prediction") is None for x in registry["trials"])
+          assert all(x.get("prediction") is None and x["verified"] is False for x in triage["trials"])
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: stage4-focus-primary-source-triage
+          path: stage4-review-output/*.json
+          retention-days: 7
