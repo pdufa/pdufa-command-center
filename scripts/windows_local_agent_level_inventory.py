@@ -10,6 +10,7 @@ import argparse
 from collections import Counter
 from datetime import datetime, timezone
 import json
+import os
 from pathlib import Path
 import re
 import subprocess
@@ -60,36 +61,42 @@ def candidates(level: int) -> tuple[list[dict], Counter]:
         base = ROOT / folder
         if not base.is_dir():
             continue
-        for path in base.rglob("*"):
-            if any(part.lower() in SKIP_DIRS for part in path.relative_to(base).parts):
-                continue
-            if not path.is_file() or path.suffix.lower() not in ALLOWED:
-                continue
-            rel = path.relative_to(ROOT).as_posix()
-            if any("raas" in part.lower() for part in path.parts):
-                continue  # Retired RAAS is not a source of active implementation.
-            try:
-                if path.stat().st_size > 250_000:
-                    continue
-                body = path.read_text(encoding="utf-8", errors="replace").lower()
-            except OSError:
-                continue
-            scanned += 1
-            basename = path.name.lower()
-            hits = [word for word in KEYWORDS[level] if word in body or word in basename]
-            if len(hits) < 2:
-                continue
-            is_test = (
-                "tests" in path.parts or basename.startswith("test_")
-                or basename.endswith((".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx"))
+        for folder_path, child_dirs, filenames in os.walk(base, followlinks=False):
+            child_dirs[:] = sorted(
+                name for name in child_dirs
+                if name.lower() not in SKIP_DIRS
+                and "raas" not in name.lower()
+                and not (Path(folder_path) / name).is_symlink()
             )
-            role = "test_candidate" if is_test else "source_candidate"
-            score = len(hits) + 2 * sum(word in basename for word in hits)
-            found.append({
-                "path": rel, "role": role, "matched_topics": hits,
-                "relevance_score": score,
-            })
-            counts[role] += 1
+            for filename in sorted(filenames):
+                path = Path(folder_path) / filename
+                if path.is_symlink() or not path.is_file() or path.suffix.lower() not in ALLOWED:
+                    continue
+                if "raas" in filename.lower() or not path.resolve().is_relative_to(ROOT.resolve()):
+                    continue
+                rel = path.relative_to(ROOT).as_posix()
+                try:
+                    if path.stat().st_size > 250_000:
+                        continue
+                    body = path.read_text(encoding="utf-8", errors="replace").lower()
+                except OSError:
+                    continue
+                scanned += 1
+                basename = filename.lower()
+                hits = [word for word in KEYWORDS[level] if word in body or word in basename]
+                if len(hits) < 2:
+                    continue
+                is_test = (
+                    "tests" in path.parts or basename.startswith("test_")
+                    or basename.endswith((".test.ts", ".test.tsx", ".spec.ts", ".spec.tsx"))
+                )
+                role = "test_candidate" if is_test else "source_candidate"
+                score = len(hits) + 2 * sum(word in basename for word in hits)
+                found.append({
+                    "path": rel, "role": role, "matched_topics": hits,
+                    "relevance_score": score,
+                })
+                counts[role] += 1
     found.sort(key=lambda item: (-item["relevance_score"], item["path"]))
     return found, Counter(counts, files_scanned=scanned)
 
