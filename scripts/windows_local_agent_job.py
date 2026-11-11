@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run guarded local proposal and sandbox-code draft, reporting only redacted status.
+"""Run guarded proposals, sandbox drafts, regression tests and FOCUS gap queue.
 
 No generated code is executed, applied, committed, pushed or deployed.
 Repository issue 1096 is PUBLIC: publish only generic status, never logs,
@@ -8,6 +8,7 @@ file paths, prompts, scientific evidence, machine details or credentials.
 from __future__ import annotations
 
 from datetime import datetime, timezone
+from windows_local_agent_focus_validation import verify_queue_report
 import json
 from pathlib import Path
 import subprocess
@@ -20,6 +21,8 @@ REPORTS = Path.home() / "PDUFA-Agent-Reports"
 CONTROLLER = ROOT / "scripts/windows_local_agent_controller.py"
 DRAFT_CONTROLLER = ROOT / "scripts/windows_local_agent_code_draft.py"
 REGRESSION_GATE = ROOT / "scripts/windows_local_agent_regression.py"
+FOCUS_QUEUE = ROOT / "scripts/level2_focus_evidence_queue.py"
+FOCUS_SNAPSHOT = ROOT / "new-platform/frontend/data/p3PostDataActive.json"
 REPO = "pdufa/pdufa-command-center"
 ISSUE = "1096"
 
@@ -87,35 +90,70 @@ def main() -> int:
         except (OSError, ValueError):
             pass
 
-    # Run actual standard-library regression checks for the studied Level 1
-    # evidence boundary. A failure prevents any all-green remote report.
+    # Run the Level 1 and Level 2 evidence-safety regression suites.
+    # A failure prevents any all-green remote report.
     try:
         regression = subprocess.run(
             [sys.executable, "-B", str(REGRESSION_GATE)], cwd=ROOT,
             capture_output=True, text=True, errors="replace", timeout=600,
         )
         regression_ok = regression.returncode == 0
-        print("Level 1 regression gate:", "PASS" if regression_ok else "FAILED")
+        print("Level 1–2 regression gate:", "PASS" if regression_ok else "FAILED")
     except (OSError, subprocess.TimeoutExpired) as exc:
         regression_ok = False
-        print("Level 1 regression gate unavailable:", type(exc).__name__)
+        print("Level 1–2 regression gate unavailable:", type(exc).__name__)
+
+    # Rebuild the local, research-only evidence-gap queue after successful
+    # regression tests. Verify a NEW report against the exact FOCUS snapshot
+    # bytes; old reports and claims of completed science must never pass.
+    focus_verified = False
+    if regression_ok:
+        focus_started = time.time()
+        try:
+            queue_run = subprocess.run(
+                [sys.executable, "-B", str(FOCUS_QUEUE)], cwd=ROOT,
+                capture_output=True, text=True, errors="replace", timeout=300,
+            )
+            focus_command_ok = queue_run.returncode == 0
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            focus_command_ok = False
+            print("FOCUS Level 2 queue unavailable:", type(exc).__name__)
+        if focus_command_ok:
+            try:
+                reports = sorted(
+                    REPORTS.glob("level2-focus-evidence-queue-*.json"),
+                    key=lambda p: p.stat().st_mtime, reverse=True,
+                )
+                if reports and reports[0].stat().st_mtime >= focus_started - 2:
+                    report = json.loads(reports[0].read_text(encoding="utf-8"))
+                    focus_verified = verify_queue_report(
+                        report, FOCUS_SNAPSHOT.read_bytes()
+                    )
+            except (OSError, ValueError):
+                pass
+    else:
+        print("FOCUS Level 2 queue: SKIPPED — regression failure")
+    print("FOCUS Level 2 saved-snapshot queue:", "PASS" if focus_verified else "FAILED")
 
     if not regression_ok:
-        status = "NEEDS ATTENTION — Level 1 regression gate failed"
+        status = "NEEDS ATTENTION — Level 1–2 regressions failed"
+    elif not focus_verified:
+        status = "NEEDS ATTENTION — saved FOCUS queue failed"
     elif verified and draft_verified:
-        status = "PASS — proposal, sandbox draft, and Level 1 regressions"
+        status = "PASS — proposals, sandbox draft, tests and saved FOCUS queue"
     elif verified or draft_verified:
-        status = "PARTIAL — regression passed, one local task needs attention"
+        status = "PARTIAL — tests and FOCUS queue passed; local AI task needs attention"
     else:
-        status = "NEEDS ATTENTION — regression passed, no new AI output"
+        status = "NEEDS ATTENTION — tests and FOCUS queue passed; no new AI output"
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     body = (
         "# Windows PDUFA local agent — remote status\n\n"
         f"**Last reported:** {timestamp}\n\n"
         f"**Status:** {status}\n\n"
-        "**Mode:** Read-only proposals, sandbox drafts, and Level 1 regression checks\n\n"
+        "**Mode:** Read-only proposals, sandbox drafts, regression tests, and saved-snapshot FOCUS evidence-gap queue\n\n"
         "**Safety:** AI-generated code is never executed. Production edits, commits, deploys, and automated repository changes are disabled.\n\n"
-        f"**Level 1 regression checks:** {'PASS' if regression_ok else 'NEEDS ATTENTION'} (local testing only)\n\n"
+        f"**Level 1–2 regression checks:** {'PASS' if regression_ok else 'NEEDS ATTENTION'} (local testing only)\n\n"
+        f"**Level 2 saved FOCUS queue:** {'PASS' if focus_verified else 'NEEDS ATTENTION'} (unverified source leads, no live FOCUS verification or scientific predictions)\n\n"
         "**Scientific assessment levels:** No implementation or completion is implied by this report.\n\n"
         "**Privacy:** This is a public issue with generic status only. No scientific files, prompts, "
         "local paths, error logs, credentials, or machine details are posted.\n\n"
@@ -127,6 +165,8 @@ def main() -> int:
         "timestamp_utc": timestamp, "local_proposal_ok": verified,
         "local_sandbox_draft_ok": draft_verified,
         "level1_regression_ok": regression_ok,
+        "level2_regression_ok": regression_ok,
+        "level2_focus_queue_ok": focus_verified,
         "remote_report_target": f"https://github.com/{REPO}/issues/{ISSUE}",
     }, indent=2) + "\n", encoding="utf-8")
     filename = None
@@ -150,7 +190,7 @@ def main() -> int:
     finally:
         if filename is not None:
             filename.unlink(missing_ok=True)
-    return 0 if verified and draft_verified and regression_ok else 1
+    return 0 if verified and draft_verified and regression_ok and focus_verified else 1
 
 
 if __name__ == "__main__":
