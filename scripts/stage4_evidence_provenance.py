@@ -23,6 +23,8 @@ def validate_evidence(record):
     if not isinstance(url, str):
         raise ValueError("Invalid source URL")
     parsed = urlparse(url)
+    if any(ch.isspace() for ch in url) or parsed.fragment:
+        raise ValueError("Source URL must not contain whitespace or fragments")
     if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
         raise ValueError("Source must be an HTTPS URL without credentials")
     for field in ("document_date", "accessed_date"):
