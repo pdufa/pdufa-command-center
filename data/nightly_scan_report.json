@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-10T04:22:06.665895+00:00",
-  "latest_run_id": 42754666515,
-  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42754666515",
-  "latest_run_started_at_utc": "2026-11-10T04:15:16Z",
+  "updated_at_utc": "2026-11-11T04:22:22.645312+00:00",
+  "latest_run_id": 42958010350,
+  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42958010350",
+  "latest_run_started_at_utc": "2026-11-11T04:15:15Z",
   "latest_run_conclusion": null,
   "scope": "CLINICAL_POOL_PIPELINE_AND_PHASE3_RESULTS_COLLECTORS_ONLY",
   "status": "PARTIAL",
   "verification": {
-    "checked_at_utc": "2026-11-10T04:22:06.665911+00:00",
+    "checked_at_utc": "2026-11-11T04:22:22.645328+00:00",
     "artifact_integrity": "PASS",
     "all_source_coverage": "NOT_VERIFIED",
     "description": "Archived clinical reports checked against source-state JSON; no independent FDA/SEC/issuer/market verification."
@@ -19,67 +19,67 @@
       "label": "PIPELINE \u2014 trial inventory",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 42754666515,
+      "run_id": 42958010350,
       "new_records": null,
-      "changed_trials_this_execution": 31,
+      "changed_trials_this_execution": 65,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_checked": 717,
         "companies_due": 717,
-        "tracked_trials_checked": 11645,
-        "tracked_trials_total": 11645,
+        "tracked_trials_checked": 11648,
+        "tracked_trials_total": 11648,
         "registry_companies": 717,
         "companies_with_warnings": 0,
         "tracked_trials_with_warnings": 0
       },
       "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-11-10T04:20:08.052313+00:00",
+      "collected_at_utc": "2026-11-11T04:20:23.670436+00:00",
       "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42754666515"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42958010350"
     },
     {
       "scan": "3",
       "label": "PIPELINE \u2014 clinical enrichment",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 42754666515,
+      "run_id": 42958010350,
       "new_records": null,
       "changed_trials_this_execution": null,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_due": 717,
-        "studies_checked": 15536,
-        "matched_trials": 3715,
+        "studies_checked": 15560,
+        "matched_trials": 3719,
         "registry_companies": 717,
-        "market_cap_source_unavailable": 2
+        "market_cap_source_unavailable": 3
       },
       "collector_status": "COMPLETE WITH WARNINGS",
-      "collected_at_utc": "2026-11-10T04:20:56.090389+00:00",
+      "collected_at_utc": "2026-11-11T04:21:13.856476+00:00",
       "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42754666515"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42958010350"
     },
     {
       "scan": "4",
       "label": "FOCUS \u2014 published Phase 3 results",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 42754666515,
+      "run_id": 42958010350,
       "new_records": 0,
       "changed_trials_this_execution": null,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_due": 717,
-        "studies_checked": 3988,
-        "matched_posted_results": 98,
+        "studies_checked": 4002,
+        "matched_posted_results": 97,
         "registry_companies": 717
       },
       "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-11-10T04:21:31.708815+00:00",
+      "collected_at_utc": "2026-11-11T04:21:47.638045+00:00",
       "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42754666515"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42958010350"
     }
   ],
   "metrics": {
@@ -96,6 +96,16 @@
     "issuer/program identity and complete source coverage audit"
   ],
   "history": [
+    {
+      "run_id": 42958010350,
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42958010350",
+      "started_at_utc": "2026-11-11T04:15:15Z",
+      "run_conclusion": null,
+      "status": "PARTIAL",
+      "new_records": null,
+      "changed_trials": null,
+      "errors": 0
+    },
     {
       "run_id": 42754666515,
       "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/42754666515",
@@ -385,16 +395,6 @@
       "new_records": null,
       "changed_trials": null,
       "errors": null
-    },
-    {
-      "run_id": 38685204322,
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/38685204322",
-      "started_at_utc": "2026-10-15T13:27:07Z",
-      "run_conclusion": "success",
-      "status": "PARTIAL",
-      "new_records": null,
-      "changed_trials": null,
-      "errors": 0
     }
   ]
 }
