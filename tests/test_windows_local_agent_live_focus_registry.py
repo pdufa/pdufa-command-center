@@ -6,10 +6,12 @@ import hashlib
 import importlib.util
 import json
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(ROOT / "scripts"))
 SCRIPT = ROOT / "scripts/windows_local_agent_live_focus_registry.py"
 SPEC = importlib.util.spec_from_file_location("windows_local_agent_live_focus_registry", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
