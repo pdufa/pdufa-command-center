@@ -1,34 +1,34 @@
-# Guarded Windows local AI coding workflow — installation plan
+# Guarded Windows local AI coding workflow — continuous mode installation plan
 
-Status: PREPARATION ONLY. This document does not enable code execution, autonomous commits, GitHub PR creation, or deployments.
+Status: PREPARATION ONLY. Continuous coding is **not yet installed or enabled**. No autonomous commits, PRs, merges, or deployments are authorized by this document alone.
 
-## Approved scope
-- Local Windows scheduled agent may generate code on a disposable worktree or sandbox branch.
-- Run project-specific lint, type checks, and tests with timeouts and bounded resources.
-- After passing checks, push to a dedicated agent/* branch and open a **draft** pull request.
-- Never push to main, merge PRs, enable auto-merge, deploy, modify production configuration, or run generated code outside an isolated sandbox.
-- No credentials or proprietary data in public issue #1096, PR descriptions, or logs.
+## Approved architecture
+- Ollama coding model on Windows, using a **single isolated worker** and a persistent, bounded approved-task queue.
+- On successful completion, immediately dequeue the next eligible task. No fixed four-hour delay between tasks.
+- When the queue is empty, idle with a low-frequency check and backoff rather than spinning or inventing work.
+- Each task: isolated checkout -> generate patch -> review allowed paths and diff -> isolated tests -> push agent/* branch -> open **draft** PR.
+- GitHub is the review and test record; main and production remain protected.
+- Never automatically merge, enable auto-merge, deploy, or directly edit main.
 
-## Required installation gates
-1. Inspect the installed Windows task and local agent script; confirm the actual source and installed revision.
-2. Verify sandbox containment, command allowlist, file/path restrictions, network and secret isolation. Generated code must not execute on the host without sandbox enforcement.
-3. Set up least-privilege GitHub credentials scoped to repository contents and pull requests, stored securely on Windows. Never paste tokens into chat or public GitHub.
-4. Add an agent execution path that uses a disposable checkout and isolated tests; protect against untrusted issue instructions and prompt injection.
-5. Add a bounded queue, retries, per-run timeouts, concurrency lock, duplicate-PR detection, and clear failure reports.
-6. Require test success and diff review before any agent branch is pushed. PRs must be draft, with provenance and test results.
-7. Verify repository branch protections and required reviews on main; repository-level auto-merge is currently disabled.
-8. Run one end-to-end dry run, then one harmless test task. Verify a draft PR appears without merge or deployment.
-9. Only after passing these checks, enable the 4-hour schedule for coding mode. Preserve a kill switch and rollback.
+## Required gates before activation
+1. Inspect actual Windows task, installed script, Ollama model and hardware limits.
+2. Verify sandbox containment, network/secret isolation, command allowlist and safe execution limits.
+3. Provision least-privilege GitHub credential securely on Windows; never post secrets in issues or logs.
+4. Implement a persistent queue of explicitly approved tasks, bounded retries, timeouts, resource limits, a concurrency lock, deduplication and crash recovery.
+5. Run tests in a disposable isolated environment; failed tests block branch publication.
+6. Create draft PRs only, with provenance and test evidence; no production merge/deployment permission.
+7. Verify main branch protection and required review settings independently.
+8. Perform one dry run and one harmless end-to-end task, proving draft PR creation without merges or deployments.
+9. After acceptance tests pass, replace the four-hour proposal schedule with the supervised continuous worker, avoiding overlapping agents. Include stop/disable control, failure backoff and resource monitoring.
 
-## Current known status
-- Existing Windows scheduled task: PDUFA-Local-AI-Proposals, every four hours (reported by user).
-- Public status issue #1096: PASS for read-only proposals and sandbox-only Python code drafts at 2026-11-11 10:00 UTC.
-- Existing agent explicitly does not execute generated code or change production.
-- This PR is a reviewable checklist, **not proof of installation**.
+## Known status
+- User-reported Windows Task Scheduler task: PDUFA-Local-AI-Proposals, scheduled every four hours.
+- GitHub issue #1096 reported PASS for read-only proposals and sandbox-only drafts at 2026-11-11 10:00 UTC.
+- Existing agent does **not** execute AI-generated code or modify the repository.
+- This PR documents the requested change; no Windows installation can be inferred from it.
 
-## Acceptance criteria
-- One isolated task produces a draft PR and test evidence.
-- No commit to main, merge, deployment, or production modification.
-- Repeated task does not create duplicate PRs.
-- Failed tests block publication.
-- Disabling the scheduled task stops subsequent coding runs.
+## Acceptance
+- At least two queued approved tasks process sequentially without waiting four hours.
+- Successful isolated task creates a draft PR; failed task does not publish code.
+- Duplicate work is skipped, idle queue does not consume sustained CPU, and stop switch prevents further tasks.
+- No automatic merges or deployments.
