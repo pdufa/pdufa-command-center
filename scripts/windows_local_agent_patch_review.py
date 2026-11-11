@@ -11,6 +11,7 @@ from __future__ import annotations
 import ast
 from datetime import datetime, timezone
 import difflib
+import hashlib
 import json
 from pathlib import Path
 import textwrap
@@ -33,7 +34,10 @@ def check_proposal(original: str, document: str) -> str:
         raise ValueError("Review document exceeds the allowed size")
     if not document.startswith(HEADER):
         raise ValueError("Review-only header missing")
-    diff = document[len(HEADER):]
+    metadata, separator, diff = document[len(HEADER):].partition("\n")
+    expected = "# baseline-sha256: " + hashlib.sha256(original.encode("utf-8")).hexdigest()
+    if not separator or metadata != expected:
+        raise ValueError("Proposed diff has a missing or changed source baseline digest")
     if "\r" in diff or "\x00" in diff or original.count(ANCHOR) != 1:
         raise ValueError("Noncanonical line endings or changed baseline")
     lines = diff.splitlines(keepends=True)
