@@ -33,11 +33,14 @@ class LevelTwoRegistryResearchTests(unittest.TestCase):
         self.assertEqual(report["saved_registry_facts"], 145)
         self.assertEqual(
             {r["nct"] for r in report["records"]},
-            {r["nct"] for r in self.roster["records"]},
+            {r["nct"] for r in self.scan["rows"]},
         )
+        self.assertEqual(report["current_saved_roster_count"], len(self.roster["records"]))
+        self.assertEqual(report["unscanned_focus_trial_count"], len(self.roster["records"]) - 29)
         self.assertEqual(
             [r["nct"] for r in report["records"]],
-            [r["nct"] for r in self.roster["records"]],
+            [r["nct"] for r in self.roster["records"]
+             if r["nct"] in {x["nct"] for x in self.scan["rows"]}],
         )
         for item in report["records"]:
             self.assertEqual(len(item["saved_registry_facts"]), 5)
@@ -53,6 +56,19 @@ class LevelTwoRegistryResearchTests(unittest.TestCase):
                 self.assertEqual(field["source_url"], f'https://clinicaltrials.gov/study/{item["nct"]}')
                 self.assertFalse(field["independently_verified"])
                 self.assertEqual(field["status"], "CAPTURED_REGISTRY_FIELD_REQUIRES_PRIMARY_SOURCE_RECHECK")
+
+    def test_additional_focus_trial_is_not_silently_marked_scanned(self):
+        expanded = copy.deepcopy(self.roster)
+        expanded["records"].append({
+            "nct": "NCT00000029", "ticker": "TEST", "company": "Synthetic Candidate",
+        })
+        report = MODULE.build_source_research(expanded, self.scan)
+        self.assertEqual(report["trial_count"], 29)
+        self.assertEqual(
+            report["unscanned_focus_trial_count"],
+            len(expanded["records"]) - 29,
+        )
+        self.assertNotIn("NCT00000029", {r["nct"] for r in report["records"]})
 
     def test_five_registry_field_summaries_not_scientific_verdicts(self):
         report = MODULE.build_source_research(self.roster, self.scan)
