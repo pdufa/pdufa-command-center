@@ -139,7 +139,7 @@ def claim(state, stage, worker, now=None):
     row.update(status="RUNNING", attempts=row["attempts"] + 1,
                inputDigest=_input_digest(state, stage), outputDigest=None,
                workflowRunId=None, worker=worker,
-               leaseUntil=(now + timedelta(minutes=90)).isoformat(),
+               leaseUntil=(now + timedelta(hours=4)).isoformat(),
                errorCode=None, updatedAt=now.isoformat())
     _append_event(state, "CLAIMED", now, stage=stage, attempt=row["attempts"])
     return state
@@ -176,6 +176,23 @@ def finish(state, stage, worker, conclusion, workflow_run_id, evidence_digest=No
     row.update(workflowRunId=workflow_run_id, worker=None, leaseUntil=None,
                updatedAt=now.isoformat())
     _append_event(state, conclusion, now, stage=stage, workflowRunId=workflow_run_id)
+    return state
+
+
+def fail_expired_lease(state, stage, now=None):
+    """Manual recovery gate: never steal or replay an active worker's stage."""
+    now = now or utcnow()
+    if stage not in MANAGED:
+        raise ValueError("Unknown managed stage")
+    row = state["stages"][stage]
+    if row["status"] != "RUNNING" or not row["leaseUntil"]:
+        raise ValueError("No running lease to recover")
+    if datetime.fromisoformat(row["leaseUntil"]) >= now:
+        raise ValueError("The current worker lease has not expired")
+    row.update(status="FAILED", outputDigest=None, errorCode="LEASE_EXPIRED",
+               worker=None, leaseUntil=None, updatedAt=now.isoformat())
+    _blocked_dependents(state, stage, now)
+    _append_event(state, "LEASE_EXPIRED", now, stage=stage)
     return state
 
 
