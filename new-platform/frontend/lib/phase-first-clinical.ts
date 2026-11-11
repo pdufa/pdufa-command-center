@@ -61,6 +61,24 @@ export function verifiedPhase(phases:readonly string[],studyType:string){
   maturity:verified?Math.max(...accepted.map(p=>p==="EARLY_PHASE1"?1:Number(p.slice(-1)))):null};
 }
 const serialized=(x:unknown)=>JSON.stringify(x);
+/** A sourced observation needs a usable URL; it is not independent proof. */
+function validEvidenceUrl(value:unknown):boolean{
+ if(typeof value!=="string"||!value.startsWith("https://")||/\s/.test(value))return false;
+ try{
+  const url=new URL(value);
+  return url.protocol==="https:"&&!!url.hostname&&!url.username&&!url.password&&!url.hash;
+ }catch{return false;}
+}
+/** Keep the existing optional YYYY-MM precision, but reject nonexistent dates. */
+function validEvidenceDate(value:unknown):boolean{
+ if(typeof value!=="string")return false;
+ const match=/^(\d{4})-(\d{2})(?:-(\d{2}))?$/.exec(value);
+ if(!match)return false;
+ const year=Number(match[1]),month=Number(match[2]),day=match[3]?Number(match[3]):1;
+ if(year<1000||year>9999)return false;
+ const parsed=new Date(Date.UTC(year,month-1,day));
+ return parsed.getUTCFullYear()===year&&parsed.getUTCMonth()===month-1&&parsed.getUTCDate()===day;
+}
 export function evaluatePhaseFirst(trial:PhaseTrial,context:ClinicalContext,asOf:string){
  if(!/^NCT\d{8}$|^ISRCTN\d{8}$/.test(trial.trialId)||trial.sourceDate>asOf||
   !/^https:\/\//.test(trial.sourceUrl)||!context.programId||
@@ -99,7 +117,7 @@ export function evaluatePhaseFirst(trial:PhaseTrial,context:ClinicalContext,asOf
  const resultItems=new Set(["safety","tolerability","pkPd","biologicalActivity","earlyEfficacy","proofOfConcept","endpointPerformance","uncertainty","phase3Results","benefitRisk","pivotalResults"]);
  const evidence:EvidenceItem[]=REQUIREMENTS.map(([id,label,minimum,group])=>{
   const extra=context.additionalEvidence?.[id];const value=extra?.text??direct[id];
-  if(extra&&(!extra.url.startsWith("https://")||!/^\d{4}-\d{2}(-\d{2})?$/.test(extra.date)||extra.date>asOf))throw Error("PHASE_FIRST_EVIDENCE_CHRONOLOGY_INVALID");
+  if(extra&&(!validEvidenceUrl(extra.url)||!validEvidenceDate(extra.date)||extra.date>asOf))throw Error("PHASE_FIRST_EVIDENCE_CHRONOLOGY_INVALID");
   let status:EvidenceStatus;let explanation:string;
   if(value){status="AVAILABLE";explanation=value;}
   else if(id==="phase"&&!phase.verified){status=trial.studyType==="OBSERVATIONAL"?"NOT APPLICABLE":"CONFLICTING";explanation="No interventional phase is assigned; no interventional clinical phase is inferred.";}
