@@ -155,8 +155,10 @@ def finish(state, stage, worker, conclusion, workflow_run_id, evidence_digest=No
         raise ValueError("Stage lease is not held by this worker")
     if datetime.fromisoformat(row["leaseUntil"]) < now:
         raise ValueError("Lease expired; a manual recovery is required")
-    if not isinstance(workflow_run_id, int) or workflow_run_id < 1:
-        raise ValueError("A correlated GitHub workflow run ID is required")
+    # A failed dispatch may have no correlated run ID; success never may.
+    if (not isinstance(workflow_run_id, int) or workflow_run_id < 0 or
+            (conclusion == "SUCCEEDED" and workflow_run_id < 1)):
+        raise ValueError("A correlated GitHub run ID is required for success")
     if row["inputDigest"] != _input_digest(state, stage):
         raise ValueError("An upstream checkpoint changed while executing")
     if conclusion == "SUCCEEDED":
