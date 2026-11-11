@@ -41,6 +41,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_stage4_evidence_provenance.py' -v
           python -m unittest discover -s tests -p 'test_level1_science40_integration.py' -v
           python -m unittest discover -s tests -p 'test_stage4_phase_first_triage.py' -v
+          python -m unittest discover -s tests -p 'test_level2_scientific_hypothesis_intake.py' -v
           python -m unittest discover -s tests -p 'test_windows_local_patch_proposal.py' -v
           python -m unittest discover -s tests -p 'test_windows_local_patch_review.py' -v
 
