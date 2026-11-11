@@ -36,7 +36,22 @@ def triage(collection):
                 readiness, next_check = "phase_appropriate_results_missing", "locate_primary_readout_or_publication"
         else:
             readiness, next_check = "earlier_phase", "review_only_phase_appropriate_evidence"
+        registered = trial.get("registered_primary_outcomes")
+        posted = trial.get("posted_primary_outcomes")
+        registered_count = len(registered) if isinstance(registered, list) else None
+        posted_count = len(posted) if isinstance(posted, list) else None
+        if registered_count is None or posted_count is None:
+            endpoint_evidence = "endpoint_metadata_unavailable"
+        elif registered_count == 0:
+            endpoint_evidence = "registered_primary_endpoint_missing"
+        elif posted_count == 0:
+            endpoint_evidence = "posted_primary_outcome_missing"
+        else:
+            endpoint_evidence = "primary_outcome_review_required"
         output.append({"nct": nct, "readiness": readiness, "next_check": next_check,
+                       "endpoint_evidence": endpoint_evidence,
+                       "registered_primary_outcome_count": registered_count,
+                       "posted_primary_outcome_count": posted_count,
                        "verified": False, "prediction": None})
     return {"status": "triage_only", "verified_scientific_adjudications": 0, "trials": output}
 
