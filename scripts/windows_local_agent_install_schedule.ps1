@@ -21,7 +21,7 @@ $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit
 # An interactive-token task works after the desktop is locked while logged in.
 # It cannot run if the user signs out; this deliberate limitation avoids saving passwords.
 $identity = [Security.Principal.WindowsIdentity]::GetCurrent().Name
-$principal = New-ScheduledTaskPrincipal -UserId $identity -LogonType Interactive -RunLevel LeastPrivilege
+$principal = New-ScheduledTaskPrincipal -UserId $identity -LogonType Interactive -RunLevel Limited
 Register-ScheduledTask -TaskName $taskName -Action $action -Trigger $trigger -Settings $settings -Principal $principal -Description 'Read-only offline Ollama proposals. No code edits, no push, no deployment.' -Force | Out-Null
 Write-Host "INSTALLED: $taskName"
 Write-Host "Schedule: every 4 hours, beginning in approximately 10 minutes"
