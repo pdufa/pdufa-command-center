@@ -37,10 +37,10 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 240
     env:
-      GH_TOKEN: \${{ github.token }}
-      PDUFA_MASTER_API_BASE_URL: \${{ secrets.PDUFA_MASTER_API_BASE_URL }}
-      PDUFA_MASTER_INTERNAL_API_KEY: \${{ secrets.PDUFA_MASTER_INTERNAL_API_KEY }}
-      PDUFA_MASTER_ALLOW_EXECUTION: \${{ vars.PDUFA_MASTER_ALLOW_EXECUTION }}
+      GH_TOKEN: ${{ github.token }}
+      PDUFA_MASTER_API_BASE_URL: ${{ secrets.PDUFA_MASTER_API_BASE_URL }}
+      PDUFA_MASTER_INTERNAL_API_KEY: ${{ secrets.PDUFA_MASTER_INTERNAL_API_KEY }}
+      PDUFA_MASTER_ALLOW_EXECUTION: ${{ vars.PDUFA_MASTER_ALLOW_EXECUTION }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -59,7 +59,7 @@ jobs:
       - name: Execute an explicitly opted-in, checkpointed run
         if: inputs.mode == 'run'
         env:
-          RUN_KEY: \${{ inputs.run_key }}
+          RUN_KEY: ${{ inputs.run_key }}
         shell: bash
         run: |
           set -euo pipefail
@@ -69,8 +69,8 @@ jobs:
       - name: Resume only a recorded failed stage
         if: inputs.mode == 'resume'
         env:
-          CONTROLLER_RUN_ID: \${{ inputs.run_id }}
-          FROM_STAGE: \${{ inputs.from_stage }}
+          CONTROLLER_RUN_ID: ${{ inputs.run_id }}
+          FROM_STAGE: ${{ inputs.from_stage }}
         shell: bash
         run: |
           set -euo pipefail
@@ -81,13 +81,13 @@ jobs:
       - name: Report execution status and scope
         if: always()
         env:
-          MODE: \${{ inputs.mode }}
+          MODE: ${{ inputs.mode }}
         shell: bash
         run: |
           {
             echo "## Master Automation Controller"
             echo "- Mode: $MODE"
-            echo "- Execution opt-in: \${PDUFA_MASTER_ALLOW_EXECUTION:-DISABLED}"
+            echo "- Execution opt-in: ${PDUFA_MASTER_ALLOW_EXECUTION:-DISABLED}"
             echo "- Managed: POOL → FOCUS"
             echo "- Assessments, predictions, CAL/NEWS and alerts: NOT YET WIRED"
             echo "- ATSMS and backups: independent; not dispatched or paused here"
