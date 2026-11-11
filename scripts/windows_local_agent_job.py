@@ -8,7 +8,7 @@ file paths, prompts, scientific evidence, machine details or credentials.
 from __future__ import annotations
 
 from datetime import datetime, timezone
-from windows_local_agent_focus_validation import verify_queue_report
+from windows_local_agent_focus_validation import verify_queue_report, verify_registry_research_report
 import json
 from pathlib import Path
 import subprocess
@@ -23,6 +23,8 @@ DRAFT_CONTROLLER = ROOT / "scripts/windows_local_agent_code_draft.py"
 REGRESSION_GATE = ROOT / "scripts/windows_local_agent_regression.py"
 FOCUS_QUEUE = ROOT / "scripts/level2_focus_evidence_queue.py"
 FOCUS_SNAPSHOT = ROOT / "new-platform/frontend/data/p3PostDataActive.json"
+REGISTRY_RESEARCH = ROOT / "scripts/level2_focus_registry_research.py"
+REGISTRY_SCAN = ROOT / "new-platform/frontend/data/focus-29-registry-source-scan-20261108.json"
 REPO = "pdufa/pdufa-command-center"
 ISSUE = "1096"
 
@@ -135,16 +137,52 @@ def main() -> int:
         print("FOCUS Level 2 queue: SKIPPED — regression failure")
     print("FOCUS Level 2 saved-snapshot queue:", "PASS" if focus_verified else "FAILED")
 
+    # Build research notes only from existing saved ClinicalTrials.gov fields.
+    # Never claim a current live registry check or independent FDA judgement.
+    research_verified = False
+    if regression_ok and focus_verified:
+        research_started = time.time()
+        try:
+            research_run = subprocess.run(
+                [sys.executable, "-B", str(REGISTRY_RESEARCH)], cwd=ROOT,
+                capture_output=True, text=True, errors="replace", timeout=300,
+            )
+            research_command_ok = research_run.returncode == 0
+        except (OSError, subprocess.TimeoutExpired) as exc:
+            research_command_ok = False
+            print("Saved registry research unavailable:", type(exc).__name__)
+        if research_command_ok:
+            try:
+                reports = sorted(
+                    REPORTS.glob("level2-registry-hypothesis-research-*.json"),
+                    key=lambda p: p.stat().st_mtime, reverse=True,
+                )
+                if reports and reports[0].stat().st_mtime >= research_started - 2:
+                    research_report = json.loads(
+                        reports[0].read_text(encoding="utf-8")
+                    )
+                    research_verified = verify_registry_research_report(
+                        research_report, FOCUS_SNAPSHOT.read_bytes(),
+                        REGISTRY_SCAN.read_bytes(),
+                    )
+            except (OSError, ValueError):
+                pass
+    else:
+        print("Saved registry research: SKIPPED — prior safety gate failed")
+    print("Level 2 saved registry research:", "PASS" if research_verified else "FAILED")
+
     if not regression_ok:
         status = "NEEDS ATTENTION — Level 1–2 regressions failed"
     elif not focus_verified:
         status = "NEEDS ATTENTION — saved FOCUS queue failed"
+    elif not research_verified:
+        status = "NEEDS ATTENTION — saved registry-field research failed"
     elif verified and draft_verified:
-        status = "PASS — proposals, sandbox draft, tests and saved FOCUS queue"
+        status = "PASS — proposals, sandbox draft, tests and saved FOCUS research"
     elif verified or draft_verified:
-        status = "PARTIAL — tests and FOCUS queue passed; local AI task needs attention"
+        status = "PARTIAL — saved FOCUS research passed; one local AI task needs attention"
     else:
-        status = "NEEDS ATTENTION — tests and FOCUS queue passed; no new AI output"
+        status = "NEEDS ATTENTION — saved FOCUS research passed; no new AI output"
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     body = (
         "# Windows PDUFA local agent — remote status\n\n"
@@ -154,6 +192,7 @@ def main() -> int:
         "**Safety:** AI-generated code is never executed. Production edits, commits, deploys, and automated repository changes are disabled.\n\n"
         f"**Level 1–2 regression checks:** {'PASS' if regression_ok else 'NEEDS ATTENTION'} (local testing only)\n\n"
         f"**Level 2 saved FOCUS queue:** {'PASS' if focus_verified else 'NEEDS ATTENTION'} (unverified source leads, no live FOCUS verification or scientific predictions)\n\n"
+        f"**Level 2 saved registry-field research:** {'PASS' if research_verified else 'NEEDS ATTENTION'} (saved field summaries; no live collection, science verdicts or FDA predictions)\n\n"
         "**Scientific assessment levels:** No implementation or completion is implied by this report.\n\n"
         "**Privacy:** This is a public issue with generic status only. No scientific files, prompts, "
         "local paths, error logs, credentials, or machine details are posted.\n\n"
@@ -167,6 +206,7 @@ def main() -> int:
         "level1_regression_ok": regression_ok,
         "level2_regression_ok": regression_ok,
         "level2_focus_queue_ok": focus_verified,
+        "level2_registry_research_ok": research_verified,
         "remote_report_target": f"https://github.com/{REPO}/issues/{ISSUE}",
     }, indent=2) + "\n", encoding="utf-8")
     filename = None
@@ -190,7 +230,7 @@ def main() -> int:
     finally:
         if filename is not None:
             filename.unlink(missing_ok=True)
-    return 0 if verified and draft_verified and regression_ok and focus_verified else 1
+    return 0 if verified and draft_verified and regression_ok and focus_verified and research_verified else 1
 
 
 if __name__ == "__main__":
