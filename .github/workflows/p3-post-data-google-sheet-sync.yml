@@ -1,6 +1,13 @@
 name: FOCUS Google Sheets → Website source snapshot
+run-name: ${{ inputs.master_run_id && format('MASTER:{0}:FOCUS', inputs.master_run_id) || 'FOCUS source synchronization' }}
 on:
   workflow_dispatch:
+    inputs:
+      master_run_id:
+        description: 'Optional authenticated master controller correlation ID'
+        type: string
+        required: false
+        default: ''
   push:
     branches: [main]
     paths:
