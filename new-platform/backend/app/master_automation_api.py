@@ -37,7 +37,7 @@ class Claim(Mutation):
 
 class Complete(Claim):
     conclusion: str
-    workflowRunId: int = Field(ge=1)
+    workflowRunId: int = Field(ge=0)
     evidenceDigest: str | None = None
     errorCode: str | None = None
 
