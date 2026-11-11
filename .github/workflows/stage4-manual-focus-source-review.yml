@@ -55,6 +55,10 @@ jobs:
               summary.write(f"- Retrieved: {report['retrieved']}\n")
               summary.write(f"- Failed retrieval: {report['failed']}\n")
               summary.write("- Scientific verification: not completed\n")
+              summary.write("\\n### Primary endpoint evidence readiness\\n")
+              for key, count in report["endpoint_evidence_counts"].items():
+                  summary.write(f"- {key}: {count}\\n")
+              summary.write("\\n### Phase readiness\\n")
               for key, count in report["readiness_counts"].items():
                   summary.write(f"- {key}: {count}\n")
           PY
