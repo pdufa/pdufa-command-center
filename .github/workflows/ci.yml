@@ -46,6 +46,7 @@ jobs:
           python -m unittest discover -s tests -p 'test_windows_local_agent_focus_validation.py' -v
           python -m unittest discover -s tests -p 'test_level2_focus_registry_research.py' -v
           python -m unittest discover -s tests -p 'test_windows_local_agent_registry_research_validation.py' -v
+          python -m unittest discover -s tests -p 'test_windows_local_agent_live_focus_registry.py' -v
           python -m unittest discover -s tests -p 'test_windows_local_patch_proposal.py' -v
           python -m unittest discover -s tests -p 'test_windows_local_patch_review.py' -v
 
