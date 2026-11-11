@@ -1,200 +1,8 @@
 {
   "applicationCrosswalkAsOf": "2026-11-07",
   "kind": "FOCUS_NIGHTLY_PRIMARY_SOURCE_MONITOR_NOT_FDA_PREDICTIONS",
-  "pacificDate": "2026-11-10",
-  "reassessmentQueue": [
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "abvx-uc",
-      "ncts": [
-        "NCT05507203",
-        "NCT05507216"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "achv-cytisinicline",
-      "ncts": [
-        "NCT04576949",
-        "NCT05206370"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "apmd-ad109",
-      "ncts": [
-        "NCT05811247",
-        "NCT05813275"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "axsm-axs12",
-      "ncts": [
-        "NCT05059223",
-        "NCT05113745"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "blte-stargardt",
-      "ncts": [
-        "NCT05244304"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "capr-deramiocel",
-      "ncts": [
-        "NCT05126758"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "cldx-barzolvolimab",
-      "ncts": [
-        "NCT06445023",
-        "NCT06455202"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "cogt-gist",
-      "ncts": [
-        "NCT05208047"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "cort-relacorilant",
-      "ncts": [
-        "NCT03697109",
-        "NCT04308590"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "cytk-aficamten-nhcm",
-      "ncts": [
-        "NCT06081894"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "cytk-aficamten-ohcm",
-      "ncts": [
-        "NCT05767346"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "imnm-desmoid",
-      "ncts": [
-        "NCT04871282"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "mltx-sonelokimab",
-      "ncts": [
-        "NCT06411379",
-        "NCT06411899"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "mlys-lorundrostat",
-      "ncts": [
-        "NCT06153693"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "phvs-ondemand",
-      "ncts": [
-        "NCT06343779"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "phvs-prophylaxis",
-      "ncts": [
-        "NCT06669754"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "prax-ulixacaltamide",
-      "ncts": [
-        "NCT06087276"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "srpt-casimersen",
-      "ncts": [
-        "NCT02500381"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "srpt-golodirsen",
-      "ncts": [
-        "NCT02500381"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "svra-molgramostim",
-      "ncts": [
-        "NCT04544293"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "urgn-ugn103",
-      "ncts": [
-        "NCT06331299"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "vera-trutakna",
-      "ncts": [
-        "NCT04716231"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "zbio-obexelimab",
-      "ncts": [
-        "NCT05662241"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    }
-  ],
+  "pacificDate": "2026-11-11",
+  "reassessmentQueue": [],
   "researchPolicy": {
     "FDAOutcomeDetermined": false,
     "independentMedicalReviewComplete": false,
@@ -204,17 +12,17 @@
     "trialMembershipOrSheetWrites": false,
     "unchangedEvidenceNotNewValidation": true
   },
-  "rosterSnapshotAsOf": "2026-11-09",
-  "runAtUTC": "2026-11-10T15:21:21.206746+00:00",
+  "rosterSnapshotAsOf": "2026-11-10",
+  "runAtUTC": "2026-11-11T14:09:44.397960+00:00",
   "schemaVersion": 1,
   "sourceAuthority": "ClinicalTrials.gov API v2; exact-NCT public records",
   "sourceRecoveryQueue": [],
   "summary": {
     "applicationCycles": 23,
     "focusTrials": 29,
-    "newOrChangedEvidenceTrials": 29,
+    "newOrChangedEvidenceTrials": 0,
     "predictionProbabilitiesUpdated": 0,
-    "reassessmentQueueCycles": 23,
+    "reassessmentQueueCycles": 0,
     "scientificAssessmentsRevalidated": 0,
     "sourceRetrieved": 29,
     "sourceUnavailable": 0,
@@ -228,7 +36,7 @@
       ],
       "calibratedProbability": null,
       "company": "Sarepta Therapeutics, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-announces-fda-acceptance-sndas-amondys-45r-and-vyondys",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -254,7 +62,7 @@
       ],
       "calibratedProbability": null,
       "company": "Corcept Therapeutics",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://ir.corcept.com/news-releases/news-release-details/corcept-resubmits-new-drug-application-relacorilant-treatment",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -280,7 +88,7 @@
       ],
       "calibratedProbability": null,
       "company": "Corcept Therapeutics",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-5",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -306,7 +114,7 @@
       ],
       "calibratedProbability": null,
       "company": "Savara Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526344585/svra-20260630.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -332,7 +140,7 @@
       ],
       "calibratedProbability": null,
       "company": "Achieve Life Sciences",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-344624/achv-20260630.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -358,7 +166,7 @@
       ],
       "calibratedProbability": null,
       "company": "Vera Therapeutics, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://veratherapeutics.gcs-web.com/news-releases/news-release-details/vera-therapeutics-provides-business-update-and-reports-third-3",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -384,7 +192,7 @@
       ],
       "calibratedProbability": null,
       "company": "Immunome, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://investors.immunome.com/immunome-announces-u-s-fda-acceptance-of-new-drug-application-for-varegacestat-for-the-treatment-of-adults-with-desmoid-tumors/",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -411,7 +219,7 @@
       ],
       "calibratedProbability": null,
       "company": "Axsome Therapeutics, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.axsome.com/news/axsome-therapeutics-announces-fda-acceptance-of-new-drug-app-13191",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -437,7 +245,7 @@
       ],
       "calibratedProbability": null,
       "company": "Axsome Therapeutics, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526443752/axsm-20260930.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -463,7 +271,7 @@
       ],
       "calibratedProbability": null,
       "company": "Capricor Therapeutics, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.capricor.com/investors/sec-filings/all-sec-filings/content/0001104659-26-100071/capr-20260824xex99d1.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -489,7 +297,7 @@
       ],
       "calibratedProbability": null,
       "company": "Achieve Life Sciences",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-344624/achv-20260630.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -515,7 +323,7 @@
       ],
       "calibratedProbability": null,
       "company": "Cogent Biosciences, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526449926/cogt-ex99_1.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -541,7 +349,7 @@
       ],
       "calibratedProbability": null,
       "company": "Belite Bio, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://belitebio.gcs-web.com/news-releases/news-release-details/belite-bio-reports-unaudited-second-quarter-2026-financial",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -567,7 +375,7 @@
       ],
       "calibratedProbability": null,
       "company": "Abivax S.A.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.abivax.com/pipeline/",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -593,7 +401,7 @@
       ],
       "calibratedProbability": null,
       "company": "Abivax S.A.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.abivax.com/pipeline/",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -619,7 +427,7 @@
       ],
       "calibratedProbability": null,
       "company": "Zenas BioPharma, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://zenasbio.gcs-web.com/news-releases/news-release-details/zenas-biopharma-reports-third-quarter-2026-financial-results-and",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -645,7 +453,7 @@
       ],
       "calibratedProbability": null,
       "company": "Cytokinetics",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -671,7 +479,7 @@
       ],
       "calibratedProbability": null,
       "company": "Apnimed",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://ir.apnimed.com/news-releases/news-release-details/apnimed-reports-second-quarter-2026-financial-results-and",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -697,7 +505,7 @@
       ],
       "calibratedProbability": null,
       "company": "Apnimed",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://ir.apnimed.com/news-releases/news-release-details/apnimed-reports-second-quarter-2026-financial-results-and",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -723,7 +531,7 @@
       ],
       "calibratedProbability": null,
       "company": "Cytokinetics, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447198/cytk-ex99_1.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -749,7 +557,7 @@
       ],
       "calibratedProbability": null,
       "company": "Praxis Precision Medicines, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-provides-corporate-update-and-20",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -775,7 +583,7 @@
       ],
       "calibratedProbability": null,
       "company": "Mineralys Therapeutics, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://ir.mineralystx.com/news-events/press-releases/detail/127/mineralys-therapeutics-reports-third-quarter-2026-financial",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -801,7 +609,7 @@
       ],
       "calibratedProbability": null,
       "company": "UroGen Pharma Ltd.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1668243/000143774926034769/ex_1036873.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -827,7 +635,7 @@
       ],
       "calibratedProbability": null,
       "company": "Pharvaris N.V.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-fda-acceptance-new-drug-application",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -853,7 +661,7 @@
       ],
       "calibratedProbability": null,
       "company": "MoonLake Immunotherapeutics AG",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1821586/000182158626000013/moonlake-pressreleasexq320.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -879,7 +687,7 @@
       ],
       "calibratedProbability": null,
       "company": "MoonLake Immunotherapeutics AG",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1821586/000182158626000013/moonlake-pressreleasexq320.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -905,7 +713,7 @@
       ],
       "calibratedProbability": null,
       "company": "Celldex Therapeutics",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-reports-third-quarter-financial-results-and-provides",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -931,7 +739,7 @@
       ],
       "calibratedProbability": null,
       "company": "Celldex Therapeutics",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-reports-third-quarter-financial-results-and-provides",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -957,7 +765,7 @@
       ],
       "calibratedProbability": null,
       "company": "Pharvaris N.V.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
