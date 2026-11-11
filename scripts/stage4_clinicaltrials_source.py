@@ -51,7 +51,9 @@ def fetch_study(nct, opener=urlopen, sleeper=time.sleep):
         "phase": design.get("phases", []),
         "overall_status": status.get("overallStatus"),
         "primary_completion_date": status.get("primaryCompletionDateStruct", {}).get("date"),
-        "results_submitted": bool(study.get("resultsSection")),
+        # A public resultsSection establishes posted results, not submission timing.
+        "results_posted": bool(study.get("resultsSection")),
+        "results_submitted": bool(study.get("resultsSection")),  # legacy compatibility only
         "registered_primary_outcomes": [
             {"measure": item.get("measure"), "time_frame": item.get("timeFrame")}
             for item in primary_outcomes if isinstance(item, dict)

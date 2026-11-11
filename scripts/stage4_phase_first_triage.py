@@ -30,7 +30,7 @@ def triage(collection):
         if not isinstance(phases, list) or not phases or any(p not in PHASES for p in phases):
             readiness, next_check = "phase_unresolved", "confirm_phase_in_primary_record"
         elif "PHASE3" in phases or "PHASE4" in phases:
-            if trial.get("results_submitted") is True:
+            if trial.get("results_posted", trial.get("results_submitted")) is True:
                 readiness, next_check = "phase_appropriate_results_present", "independently_review_endpoints_and_safety"
             else:
                 readiness, next_check = "phase_appropriate_results_missing", "locate_primary_readout_or_publication"
