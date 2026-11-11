@@ -6,6 +6,9 @@ on:
     paths:
       - '.github/workflows/p3-post-data-google-sheet-sync.yml'
       - 'scripts/auto_promote_p3_post_data.py'
+      - 'scripts/p3_pool_full_discovery.py'
+      - 'tests/test_p3_pool_full_discovery.py'
+      - 'data/phase_pipeline_market_caps.csv'
       - 'scripts/refresh_existing_p3_post_data.py'
       - 'scripts/p3_market_cap_secondary.py'
       - 'new-platform/backend/app/phase3_curated_announcements.json'
@@ -29,7 +32,7 @@ jobs:
   sync:
     if: github.event_name != 'workflow_run' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 40
     steps:
       - uses: actions/checkout@v4
         with:
@@ -43,6 +46,41 @@ jobs:
         run: python -m unittest discover -s tests -p 'test_p3_auto_promotion.py' -v
       - name: Confirm planned/submitted/accepted/PDUFA stage classifications
         run: python -m unittest discover -s tests -p 'test_p3_regulatory_stage_rules.py' -v
+      - name: Audit the entire canonical POOL before approving FOCUS additions
+        env:
+          GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
+        run: |
+          python -m unittest discover -s tests -p 'test_p3_pool_full_discovery.py' -v
+          python scripts/p3_pool_full_discovery.py
+          python - <<'PY'
+          import json, os
+          from pathlib import Path
+          report=json.loads(Path('reports/p3_pool_full_discovery_latest.json').read_text())
+          counts=report['counts']
+          assert report['status']=='COMPLETE', 'Incomplete official registry coverage; fail closed'
+          assert counts['POOL_RECORDS'] >= counts['CAP_ELIGIBLE']
+          assert counts['REGISTRY_QUERIED'] == counts['CAP_ELIGIBLE']
+          assert counts['REGISTRY_RECORDS_RETURNED'] == counts['REGISTRY_QUERIED']
+          assert counts['REVIEW_QUEUE'] >= 0
+          with open(os.environ['GITHUB_STEP_SUMMARY'],'a',encoding='utf-8') as out:
+              out.write('## FOCUS full-POOL qualification audit\\n')
+              out.write('POOL rows: '+str(counts['POOL_RECORDS'])+
+                        '; verified-cap candidates: '+str(counts['CAP_ELIGIBLE'])+
+                        '; Phase 3: '+str(counts['PHASE3'])+
+                        '; posted registry results: '+str(counts['REGISTRY_RESULTS_POSTED'])+
+                        '; awaiting verified FDA/issuer evidence: '+str(counts['REVIEW_QUEUE'])+'\\n')
+              out.write('An outstanding review queue means FOCUS completeness is NOT certified.\\n')
+          PY
+      - name: Archive full-POOL FOCUS reconciliation and unresolved NCTs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-full-pool-reconciliation-${{ github.run_id }}
+          path: |
+            reports/p3_pool_full_discovery_latest.json
+            reports/p3_pool_full_discovery_review.json
+          if-no-files-found: warn
+          retention-days: 30
       - name: Automatically append reviewed exact-NCT POOL matches to FOCUS
         env:
           GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
