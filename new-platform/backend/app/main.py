@@ -368,6 +368,10 @@ async def lifespan(app: FastAPI):
     if storage_ready():
         try:
             Base.metadata.create_all(bind=ENGINE)  # Bootstrap only; replace with reviewed Alembic migrations
+            # Opt-in master controller: separate metadata, same persistent database.
+            # Existing jobs and user records are never migrated by this create-only step.
+            from .master_automation import ControllerBase
+            ControllerBase.metadata.create_all(bind=ENGINE)
             _DB_STATE.update(available=True, reason="READY")
         except Exception as exc:
             # Neon's free-plan quota can return HTTP 402 while Postgres tables
@@ -660,6 +664,10 @@ from .reconciliation_review import ReviewPackage
 app = FastAPI(title="PDUFA New Platform Setup API", lifespan=lifespan)
 from .nct_live_stream import install_routes as install_nct_stream_routes
 install_nct_stream_routes(app, lambda: ENGINE, require_internal_key, require_storage)
+from .master_automation_api import install_routes as install_master_automation_routes
+install_master_automation_routes(
+    app, lambda: ENGINE, require_internal_key, require_storage, require_writes_enabled
+)
 
 @app.get("/api/internal/installation-monitor", dependencies=[Depends(require_internal_key)])
 def installation_monitor_status():
