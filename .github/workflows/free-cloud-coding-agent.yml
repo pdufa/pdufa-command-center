@@ -1,0 +1,48 @@
+name: Free Cloud Coding Agent (proposals only)
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '40 6 * * *'
+permissions:
+  contents: write
+  pull-requests: write
+concurrency:
+  group: free-cloud-coding-agent
+  cancel-in-progress: false
+jobs:
+  propose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: true
+      - name: Check free-tier configuration
+        id: config
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: |
+          if [ -n "$GROQ_API_KEY" ]; then echo "enabled=true" >> "$GITHUB_OUTPUT"; else echo "enabled=false" >> "$GITHUB_OUTPUT"; echo "No key configured; worker skipped."; fi
+      - name: Generate and validate a bounded coding proposal
+        if: steps.config.outputs.enabled == 'true'
+        env:
+          GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        run: python scripts/free_cloud_coding_agent.py
+      - name: Open a review-only pull request
+        if: steps.config.outputs.enabled == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        shell: bash
+        run: |
+          if [ -z "$(git status --porcelain -- tests docs scripts)" ]; then
+            echo "No validated changes to propose."
+            exit 0
+          fi
+          BRANCH="agent/free-cloud-${GITHUB_RUN_ID}"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -c "$BRANCH"
+          git add -- tests docs scripts
+          git commit -m "chore: propose free-tier coding maintenance"
+          git push origin "$BRANCH"
+          gh pr create --base main --head "$BRANCH" --title "Review: free-tier coding agent proposal" --body "AI-generated maintenance proposal. Validated by local checks. Human review required. No automatic merge or deployment."
