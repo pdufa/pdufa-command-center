@@ -17,7 +17,7 @@ export const OAUTH_REQUEST_MAX_AGE=300; // E*TRADE request tokens expire after 5
 export const ACCESS_MAX_AGE=7200; // Reauthorize rather than silently renewing.
 const AAD=Buffer.from("pdufa-wt-etrade-sandbox-token-v1","utf8");
 
-type TokenPair={token:string;secret:string;issuedAt:number};
+type TokenPair={token:string;secret:string;issuedAt:number;kind:"request"|"access"};
 const enc=(v:string)=>encodeURIComponent(v).replace(/[!'()*]/g,c=>"%"+c.charCodeAt(0).toString(16).toUpperCase());
 
 function getConfig(){
@@ -39,7 +39,7 @@ function encrypt(pair:TokenPair):string {
   const body=Buffer.concat([cipher.update(JSON.stringify(pair),"utf8"),cipher.final()]);
   return "v1."+iv.toString("base64url")+"."+cipher.getAuthTag().toString("base64url")+"."+body.toString("base64url");
 }
-function decrypt(text:string|undefined,maxAge:number):TokenPair|null {
+function decrypt(text:string|undefined,maxAge:number,kind:TokenPair["kind"]):TokenPair|null {
   const config=getConfig();
   if(!config||!text||text.length>4096)return null;
   const parts=text.split(".");
@@ -53,16 +53,16 @@ function decrypt(text:string|undefined,maxAge:number):TokenPair|null {
     decipher.setAAD(AAD);decipher.setAuthTag(tag);
     const raw=Buffer.concat([decipher.update(body),decipher.final()]).toString("utf8");
     const value=JSON.parse(raw) as Partial<TokenPair>;
-    if(typeof value.token!=="string"||!value.token||typeof value.secret!=="string"||!value.secret||
+    if(value.kind!==kind||typeof value.token!=="string"||!value.token||typeof value.secret!=="string"||!value.secret||
       typeof value.issuedAt!=="number"||!Number.isSafeInteger(value.issuedAt)||
       Date.now()<value.issuedAt||Date.now()-value.issuedAt>maxAge*1000)return null;
-    return {token:value.token,secret:value.secret,issuedAt:value.issuedAt};
+    return {token:value.token,secret:value.secret,issuedAt:value.issuedAt,kind};
   }catch{return null;}
 }
-export function readPending(cookie:string|undefined){return decrypt(cookie,OAUTH_REQUEST_MAX_AGE);}
-export function readAccess(cookie:string|undefined){return decrypt(cookie,ACCESS_MAX_AGE);}
-export function sealPending(token:string,secret:string){return encrypt({token,secret,issuedAt:Date.now()});}
-export function sealAccess(token:string,secret:string){return encrypt({token,secret,issuedAt:Date.now()});}
+export function readPending(cookie:string|undefined){return decrypt(cookie,OAUTH_REQUEST_MAX_AGE,"request");}
+export function readAccess(cookie:string|undefined){return decrypt(cookie,ACCESS_MAX_AGE,"access");}
+export function sealPending(token:string,secret:string){return encrypt({token,secret,issuedAt:Date.now(),kind:"request"});}
+export function sealAccess(token:string,secret:string){return encrypt({token,secret,issuedAt:Date.now(),kind:"access"});}
 
 /** Stable OAuth 1.0a HMAC-SHA1 signer with RFC 5849 percent-encoding. */
 export function oauthHeader(
