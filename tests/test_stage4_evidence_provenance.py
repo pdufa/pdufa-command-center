@@ -44,6 +44,22 @@ class ProvenanceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             module.validate_evidence(item)
 
+    def test_nct_identifier_requires_eight_ascii_digits(self):
+        for invalid in ("NCT1", "NCT1234567", "NCT123456789",
+                        "NCT١٢٣٤٥٦٧٨", "nct12345678", "NCT1234abcd"):
+            with self.subTest(nct=invalid):
+                item = sample()
+                item["nct"] = invalid
+                with self.assertRaisesRegex(ValueError, "Invalid NCT identifier"):
+                    module.validate_evidence(item)
+
+    def test_valid_eight_digit_nct_is_preserved(self):
+        item = sample()
+        item["nct"] = "NCT12345678"
+        result = module.validate_evidence(item)
+        self.assertEqual(result["nct"], "NCT12345678")
+        self.assertFalse(result["scientifically_verified"])
+
 
 if __name__ == "__main__":
     unittest.main()
