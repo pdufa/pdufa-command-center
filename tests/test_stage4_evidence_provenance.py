@@ -60,6 +60,28 @@ class ProvenanceTests(unittest.TestCase):
         self.assertEqual(result["nct"], "NCT12345678")
         self.assertFalse(result["scientifically_verified"])
 
+    def test_source_url_rejects_whitespace_and_nonempty_fragments(self):
+        for invalid in (
+            "https://clinicaltrials.gov/study/NCT05507203#section",
+            "https://clinicaltrials.gov/study/NCT05507203#citation",
+            "https://clinicaltrials.gov/study/NCT05507203 extra",
+            "https://clinicaltrials.gov/study/NCT05507203\\t",
+            "\\nhttps://clinicaltrials.gov/study/NCT05507203",
+            "https://clinicaltrials.gov/study/NCT05507203\\u00a0",
+        ):
+            with self.subTest(url=repr(invalid)):
+                item = sample()
+                item["url"] = invalid
+                with self.assertRaises(ValueError):
+                    module.validate_evidence(item)
+
+    def test_valid_https_source_url_remains_unverified(self):
+        item = sample()
+        item["url"] = "https://clinicaltrials.gov/study/NCT05507203?format=json"
+        result = module.validate_evidence(item)
+        self.assertTrue(result["provenance_complete"])
+        self.assertFalse(result["scientifically_verified"])
+
 
 if __name__ == "__main__":
     unittest.main()
