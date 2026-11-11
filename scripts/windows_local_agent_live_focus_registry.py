@@ -187,7 +187,13 @@ def capture_batch(ncts: list[str], cohort_digest: str, directory: Path, limit: i
             print("Registry capture failed for a saved NCT:", nct, type(exc).__name__)
         if index + 1 < len(attempt) and fetcher is retrieve:
             time.sleep(1)
-    fresh_after = sum(valid_cache(directory / f"{n}.json", n, cohort_digest, now) for n in ncts)
+    # Compare against the time AFTER the last download, not the batch start.
+    # Newly fetched records naturally have timestamps later than the start.
+    final_clock = now if fixed_clock else datetime.now(timezone.utc)
+    fresh_after = sum(
+        valid_cache(directory / f"{n}.json", n, cohort_digest, final_clock)
+        for n in ncts
+    )
     return {
         "schema_version": 1,
         "workflow": "LEVEL2_FOCUS_LIVE_REGISTRY_CAPTURE",
