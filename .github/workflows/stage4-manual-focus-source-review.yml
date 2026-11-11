@@ -50,13 +50,13 @@ jobs:
           from pathlib import Path
           report = json.loads(Path("stage4-review-output/coverage-audit.json").read_text())
           with open(os.environ["GITHUB_STEP_SUMMARY"], "a", encoding="utf-8") as summary:
-              summary.write("## FOCUS primary-source retrieval coverage\\n\\n")
-              summary.write(f"- Total trials: {report['total']}\\n")
-              summary.write(f"- Retrieved: {report['retrieved']}\\n")
-              summary.write(f"- Failed retrieval: {report['failed']}\\n")
-              summary.write("- Scientific verification: not completed\\n")
+              summary.write("## FOCUS primary-source retrieval coverage\n\n")
+              summary.write(f"- Total trials: {report['total']}\n")
+              summary.write(f"- Retrieved: {report['retrieved']}\n")
+              summary.write(f"- Failed retrieval: {report['failed']}\n")
+              summary.write("- Scientific verification: not completed\n")
               for key, count in report["readiness_counts"].items():
-                  summary.write(f"- {key}: {count}\\n")
+                  summary.write(f"- {key}: {count}\n")
           PY
       - uses: actions/upload-artifact@v4
         with:
