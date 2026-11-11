@@ -46,7 +46,7 @@ class FocusLevelTwoQueueTests(unittest.TestCase):
         report = MODULE.build_review_queue(data)
         self.assertEqual(report["snapshot_as_of"], data["asOf"])
         self.assertEqual(report["trial_count"], len(data["records"]))
-        self.assertEqual(len(set(row["nct"] for row in report["records"])), 29)
+        self.assertEqual(len(set(row["nct"] for row in report["records"])), len(data["records"]))
         for item in report["records"]:
             self.assertEqual(
                 item["status"], "SOURCE_COLLECTION_AND_HYPOTHESIS_REVIEW_REQUIRED"
