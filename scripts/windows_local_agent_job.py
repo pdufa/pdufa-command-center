@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Run the guarded local proposal test and publish only a redacted status to GitHub.
+"""Run guarded local proposal and sandbox-code draft, reporting only redacted status.
 
 No generated code is executed, applied, committed, pushed or deployed.
 Repository issue 1096 is PUBLIC: publish only generic status, never logs,
@@ -18,6 +18,7 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 REPORTS = Path.home() / "PDUFA-Agent-Reports"
 CONTROLLER = ROOT / "scripts/windows_local_agent_controller.py"
+DRAFT_CONTROLLER = ROOT / "scripts/windows_local_agent_code_draft.py"
 REPO = "pdufa/pdufa-command-center"
 ISSUE = "1096"
 
@@ -48,7 +49,49 @@ def main() -> int:
         except (OSError, ValueError):
             pass
 
-    status = "PASS — a new read-only proposal was generated" if verified else "NEEDS ATTENTION — no verified new proposal"
+    # The coding draft stays OUTSIDE the Git checkout. Never run generated source.
+    # Even if the prose proposal fails, attempt the bounded sandbox draft; its
+    # own mandatory RAAS audit gate will stop it if the policy is not satisfied.
+    draft_started = time.time()
+    try:
+        draft_run = subprocess.run(
+            [sys.executable, str(DRAFT_CONTROLLER)], cwd=ROOT,
+            capture_output=True, text=True, errors="replace", timeout=900,
+        )
+        draft_command_ok = draft_run.returncode == 0
+        print("Sandbox code draft:", "PASS" if draft_command_ok else "FAILED")
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        draft_command_ok = False
+        print("Sandbox code draft could not finish:", type(exc).__name__)
+
+    draft_verified = False
+    draft_reports = (
+        sorted(REPORTS.glob("code-draft-status-*.json"),
+               key=lambda p: p.stat().st_mtime, reverse=True)
+        if REPORTS.exists() else []
+    )
+    if (draft_command_ok and draft_reports
+            and draft_reports[0].stat().st_mtime >= draft_started - 2):
+        try:
+            draft_record = json.loads(
+                draft_reports[0].read_text(encoding="utf-8")
+            )
+            draft_verified = (
+                draft_record.get("state") == "sandbox_draft_for_review"
+                and draft_record.get("syntax_check") == "pass"
+                and draft_record.get("production_changed") is False
+                and draft_record.get("repository_changed") is False
+                and draft_record.get("generated_source_executed") is False
+            )
+        except (OSError, ValueError):
+            pass
+
+    if verified and draft_verified:
+        status = "PASS — read-only proposal and sandbox code draft generated"
+    elif verified or draft_verified:
+        status = "PARTIAL — one local task needs attention"
+    else:
+        status = "NEEDS ATTENTION — no verified new output"
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     body = (
         "# Windows PDUFA local agent — remote status\n\n"
@@ -65,6 +108,7 @@ def main() -> int:
     REPORTS.mkdir(parents=True, exist_ok=True)
     (REPORTS / "last-run-summary.json").write_text(json.dumps({
         "timestamp_utc": timestamp, "local_proposal_ok": verified,
+        "local_sandbox_draft_ok": draft_verified,
         "remote_report_target": f"https://github.com/{REPO}/issues/{ISSUE}",
     }, indent=2) + "\n", encoding="utf-8")
     filename = None
@@ -88,7 +132,7 @@ def main() -> int:
     finally:
         if filename is not None:
             filename.unlink(missing_ok=True)
-    return 0 if verified else 1
+    return 0 if verified and draft_verified else 1
 
 
 if __name__ == "__main__":
