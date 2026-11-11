@@ -13,7 +13,7 @@ from datetime import datetime, timezone
 import difflib
 import json
 from pathlib import Path
-import re
+import textwrap
 import subprocess
 import sys
 
@@ -45,7 +45,7 @@ def check_proposal(original: str, document: str) -> str:
     if not guard.endswith("\n"):
         raise ValueError("Missing final newline")
     try:
-        tree = ast.parse(guard, filename="<AI_two_line_review>")
+        tree = ast.parse(textwrap.dedent(guard), filename="<AI_two_line_review>")
         expected = ast.parse(
             f"if {CONDITION}:\n    raise ValueError('Invalid URL')\n"
         )
@@ -71,7 +71,7 @@ def check_proposal(original: str, document: str) -> str:
         "    if " + CONDITION + ":\n"
         "        raise ValueError(" + repr(exc.args[0].value) + ")\n"
     )
-    if ast.dump(ast.parse(guard)) != ast.dump(ast.parse(canonical)):
+    if ast.dump(ast.parse(textwrap.dedent(guard))) != ast.dump(ast.parse(textwrap.dedent(canonical))):
         raise ValueError("Guard AST differs from restricted approved form")
     proposed = original.replace(ANCHOR, ANCHOR + guard, 1)
     try:
