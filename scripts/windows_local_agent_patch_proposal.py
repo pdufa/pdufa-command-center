@@ -11,6 +11,7 @@ from __future__ import annotations
 import ast
 from datetime import datetime, timezone
 import difflib
+import hashlib
 import json
 from pathlib import Path
 import re
@@ -171,6 +172,7 @@ def main() -> int:
     output = SANDBOX / f"level1-url-guard-review-{stamp}.diff.txt"
     with output.open("x", encoding="utf-8", newline="\n") as file:
         file.write("# REVIEW ONLY — generated source not executed or applied\n")
+        file.write("# baseline-sha256: " + hashlib.sha256(original.encode("utf-8")).hexdigest() + "\n")
         file.write(diff)
     status = REPORTS / f"level1-patch-proposal-status-{stamp}.json"
     status.write_text(json.dumps({
