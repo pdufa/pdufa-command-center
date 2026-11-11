@@ -10,6 +10,8 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
+import os
+import tempfile
 from pathlib import Path
 import subprocess
 import sys
@@ -72,20 +74,51 @@ def main() -> int:
         print("To apply: py -3.13 scripts\\windows_fix_raas_archive_checkout.py --apply")
         return 0
 
-    # Use repository-local setting, not the user's global Git preferences.
+    # Disable conversion in this clone only; never alter the user's global Git settings.
+    # Git checkout-index may still apply configured attributes/filters, so restore
+    # the *verified index blob bytes* directly, bypassing checkout conversion.
     try:
         git("config", "--local", "core.autocrlf", "false")
+        expected_by_path = {entry["path"]: entry["sha256"]
+                            for entry in manifest["files"]}
+        restored = 0
         for rel, needs_restore in paths:
-            if needs_restore:
-                git("-c", "core.autocrlf=false", "checkout-index", "--force", "--", rel)
-                if digest((ROOT / rel).read_bytes()) != next(
-                        item["sha256"] for item in manifest["files"] if item["path"] == rel):
-                    raise ValueError(f"Restored bytes do not match manifest: {rel}")
+            if not needs_restore:
+                continue
+            path = (ROOT / rel).resolve()
+            expected = expected_by_path[rel]
+            index_bytes = git("show", f":{rel}", binary=True)
+            if digest(index_bytes) != expected:
+                raise ValueError(f"Index blob changed during repair: {rel}")
+            current = path.read_bytes()
+            if digest(current) != expected and digest(current.replace(b"\\r\\n", b"\\n")) != expected:
+                raise ValueError(f"Working file changed during repair; preserving: {rel}")
+
+            # Atomic file replacement on the same volume; never invoke Git's
+            # checkout filters and never rebaseline an archive checksum.
+            temporary = None
+            try:
+                with tempfile.NamedTemporaryFile(
+                    mode="wb", prefix=".pdufa-archive-", suffix=".tmp",
+                    dir=path.parent, delete=False
+                ) as stream:
+                    temporary = Path(stream.name)
+                    stream.write(index_bytes)
+                if digest(temporary.read_bytes()) != expected:
+                    raise ValueError(f"Temporary file failed checksum: {rel}")
+                os.replace(temporary, path)
+                temporary = None
+            finally:
+                if temporary is not None:
+                    temporary.unlink(missing_ok=True)
+            if digest(path.read_bytes()) != expected:
+                raise ValueError(f"Restored bytes do not match manifest: {rel}")
+            restored += 1
     except (OSError, ValueError, subprocess.CalledProcessError) as exc:
         print(f"STOP: {exc}")
         return 2
 
-    print(f"RESTORED: {crlf_count} pinned records now match stored checksums.")
+    print(f"RESTORED: {restored} pinned records now match stored checksums.")
     print("Git config set locally: core.autocrlf=false")
     print("No remote files, Git commits, or scientific content were changed.")
     return 0
