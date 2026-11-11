@@ -1,9 +1,14 @@
 name: PDUFA Overnight Sequential Scans
-run-name: ${{ (github.event_name != 'workflow_dispatch' || inputs.validate_only) && 'VALIDATE — PDUFA overnight' || 'POOL + PIPELINE — PDUFA overnight' }}
+run-name: ${{ inputs.master_run_id && format('MASTER:{0}:POOL', inputs.master_run_id) || ((github.event_name != 'workflow_dispatch' || inputs.validate_only) && 'VALIDATE — PDUFA overnight' || 'POOL + PIPELINE — PDUFA overnight') }}
 
 on:
   workflow_dispatch:
     inputs:
+      master_run_id:
+        description: 'Optional authenticated controller correlation ID; no change to scan semantics'
+        type: string
+        required: false
+        default: ''
       validate_only:
         description: 'Validate wiring without collecting sources or sending scan notifications'
         type: boolean
