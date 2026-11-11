@@ -81,6 +81,11 @@ jobs:
             reports/p3_pool_full_discovery_review.json
           if-no-files-found: warn
           retention-days: 30
+      - name: Discard temporary tracked audit report after artifact retention
+        run: |
+          # Full report already uploaded as an artifact. Restore ONLY this generated
+          # tracked path; leaving it dirty would break the later git pull --rebase.
+          git restore -- reports/p3_pool_full_discovery_latest.json
       - name: Automatically append reviewed exact-NCT POOL matches to FOCUS
         env:
           GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
