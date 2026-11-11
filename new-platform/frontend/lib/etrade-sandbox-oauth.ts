@@ -121,6 +121,16 @@ export async function exchangeSandboxVerifier(pending:TokenPair,verifier:string)
   if(!/^[A-Za-z0-9]{4,64}$/.test(verifier))throw new Error("Invalid verifier format");
   return oauthGet("/oauth/access_token",pending,{oauth_verifier:verifier});
 }
+export async function revokeSandboxToken(access:TokenPair){
+  const config=getConfig();
+  if(!config)throw new Error("Sandbox not configured");
+  const url=OAUTH_HOST+"/oauth/revoke_access_token";
+  const auth=oauthHeader("GET",url,config.consumerKey,config.consumerSecret,access.token,access.secret);
+  const response=await fetch(url,{headers:{Authorization:auth,Accept:"text/plain"},
+    cache:"no-store",redirect:"error",signal:AbortSignal.timeout(12000)});
+  if(!response.ok)throw new Error("E*TRADE sandbox token revocation unsuccessful");
+}
+
 export async function listSandboxAccounts(access:TokenPair){
   const config=getConfig();
   if(!config)throw new Error("Sandbox credentials missing");
