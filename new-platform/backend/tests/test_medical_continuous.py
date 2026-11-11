@@ -81,7 +81,8 @@ def test_packaged_focus_roster_matches_frontend_snapshot():
     bundled = json.loads(packaged.read_text(encoding="utf-8"))
     original = json.loads(frontend.read_text(encoding="utf-8"))
     assert bundled["asOf"] == original["asOf"]
-    assert len(bundled["records"]) == 29
+    assert len(bundled["records"]) == len(original["records"])
+    assert len({row["nct"] for row in bundled["records"]}) == len(bundled["records"])
     assert bundled["records"] == original["records"]
 
 
