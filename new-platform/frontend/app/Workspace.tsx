@@ -638,7 +638,7 @@ export function Drilldown({ rows }: { rows: Candidate[] }) {
   </details>;
 }
 
-function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
+function WorkspaceContent({ onInspect, initialNav="PIPELINE" }: { onInspect: (ticker: string, stage: Stage, programId?: string) => void; initialNav?: Nav }) {
   const { records: assessmentRecords } = useAssessments();
   const { index: designationIndex, loading: designationLoading, error: designationError, retry: retryDesignations } = useTrialDesignations();
   const [assessmentOrder, setAssessmentOrder] = useState({ GEM_JR: "source", GEM: "source" });
@@ -894,7 +894,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
   const [top, setTop] = useState<TopNav>("PDUFA");
   const [restrictionTab,setRestrictionTab]=useState<"PRESET"|"RESTRICTIONS">("RESTRICTIONS");
   const [restrictionFocus,setRestrictionFocus]=useState<"DISEASE"|"COMPANY">("DISEASE");
-  const [nav, setNav] = useState<Nav>("PIPELINE");
+  const [nav, setNav] = useState<Nav>(initialNav);
   // Deep links from standalone trial sheets reopen the matching workspace tab.
   useEffect(() => {
     const requested = new URLSearchParams(window.location.search).get("section");
@@ -1812,7 +1812,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
         </button>
       </div>
       <nav id="pdufa-section-navigation" className="worknav" aria-label="PDUFA sections" data-open={mobileNavOpen?"true":"false"}>
-        {([["PIPELINE","PIPELINE"],["MASTER","GOLD MASTER CHART"],["TRADING","TRADING"]] as [Nav,string][]).map(([key,label])=>
+        {([["PIPELINE","PIPELINE"],["MASTER","GOLD MASTER CHART"],["WT","WT"],["TRADING","TRADING"]] as [Nav,string][]).map(([key,label])=>
           <button type="button" key={key} className={top==="PDUFA"&&nav===key?"nav-selected":""} aria-current={top==="PDUFA"&&nav===key?"page":undefined}
             onClick={()=>{setTop("PDUFA");setNav(key);setMobileNavOpen(false);}}>{label}</button>)}
       </nav>
@@ -2001,14 +2001,14 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
       <label>Find candidate<input value={gemQuery} onChange={e=>setGemQuery(e.target.value)} placeholder="Ticker or drug" /></label></div>
       <div className="gems-two-blocks">{gemBlock(nav==="GEM_JR"?"GEM_JR":"GEM")}</div>
     </div>}
-    {false && snapshot && top==="PDUFA" && nav==="WT" && <div className="wt-page">
+    {snapshot && top==="PDUFA" && nav==="WT" && <div className="wt-page">
       <div className="sectionhead wt-page-header"><h2>WT — Permanent Program ID Watchlist &amp; Trading Research</h2><span className="counter">{tagsReady ? pageTotals.WT.toLocaleString("en-US") : "—"} total W/T programs</span></div>
       <p className="subtle">WT displays the identical GEM JR/GEM entry-strength and exit-risk scores for each permanent Program ID, including evidence coverage and safety overrides. Different drugs and trials remain independent. Research only — no broker orders.</p>
       <p aria-live="polite" className="saveState">{wtStatus}</p>
       <p className="subtle wt-trial-indicator-explanation">Choose ENTRY, STAY, or EXIT beside each trial ticker. The corresponding indicator checklist opens immediately below that trial. Tick the options you want to display; every new stage starts with no indicators selected. Settings are independent for each permanent Program ID and saved in this browser.</p>
       <div className="wt-screenwide-stages">
       {(["watch","trade"] as const).map(kind=><section className="panel wt-screenwide-stage" key={kind}>
-        <div className="sectionhead"><h3>{kind==="watch"?"WATCHLIST — EXACT PROGRAMS":"TRADING RESEARCH — EXACT PROGRAMS / NO ORDERS"}</h3><span className="counter">{tags[kind].length} tracked programs</span></div>
+        <div className="sectionhead"><h3>{kind==="watch"?"WATCHLIST — EXACT PROGRAMS":"T ACTIVE — TRADING RESEARCH / NO ORDERS"}</h3><span className="counter">{tags[kind].length} tracked programs</span></div>
         {tags[kind].length===0 && <p className="subtle">No exact programs selected yet. Use W/T buttons beside Program IDs in PIPELINE or GEM.</p>}
         <div className="wt-screenwide-list">
         {tags[kind].map(programId=>{
@@ -2043,7 +2043,7 @@ function WorkspaceContent({ onInspect }: { onInspect: (ticker: string, stage: St
               </div>
               <p className="subtle">{stated(selectedRecord?.drug||saved?.drug)} · {stated(selectedRecord?.id||saved?.id,"historical exact program")}</p>
               {!selectedRecord && <p className="subtle">Program remains stored in Neon even when no longer in the latest published source. Historical identity has not been removed.</p>}
-              <button type="button" onClick={()=>mark(programId,kind==="watch"?"trade":"watch")}>{kind==="watch"?"MOVE PROGRAM TO TRADING RESEARCH":"RETURN PROGRAM TO WATCHLIST"}</button>
+              <button type="button" onClick={()=>mark(programId,kind==="watch"?"trade":"watch")}>{kind==="watch"?"MOVE PROGRAM TO T ACTIVE":"RETURN PROGRAM TO WATCHLIST"}</button>
               <button type="button" className="secondary" onClick={()=>mark(programId,"clear")}>REMOVE PROGRAM TAG</button>
               {selectedRecord && <button type="button" className="secondary" onClick={()=>{setMasterProgram(selectedRecord.id);setNav("MASTER");}}>Open program Master Chart</button>}
               {ticker && <button type="button" className="secondary" onClick={()=>onInspect(ticker,"PIPELINE",programId)}>Open exact program checklist</button>}
@@ -2207,6 +2207,6 @@ function PredictionExplanation() {
   </div>;
 }
 
-export default function Workspace(props: { onInspect: (ticker: string, stage: Stage, programId?: string) => void }) {
+export default function Workspace(props: { onInspect: (ticker: string, stage: Stage, programId?: string) => void; initialNav?: Nav }) {
   return <AssessmentProvider><WorkspaceContent {...props} /></AssessmentProvider>;
 }
