@@ -46,6 +46,16 @@ def fetch_study(nct, opener=urlopen):
             for item in primary_outcomes if isinstance(item, dict)
         ],
         "posted_outcome_measures_count": len(outcome_results),
+        "posted_primary_outcomes": [
+            {"title": item.get("title"), "description": item.get("description"),
+             "time_frame": item.get("timeFrame")}
+            for item in outcome_results
+            if isinstance(item, dict) and item.get("type") == "PRIMARY"
+        ],
+        "posted_primary_outcome_count": sum(
+            1 for item in outcome_results
+            if isinstance(item, dict) and item.get("type") == "PRIMARY"
+        ),
         "endpoint_review_status": "requires_independent_review",
         "scientifically_verified": False,
         "fda_outcome_verified": False,
