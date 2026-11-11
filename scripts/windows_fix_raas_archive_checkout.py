@@ -91,7 +91,7 @@ def main() -> int:
             if digest(index_bytes) != expected:
                 raise ValueError(f"Index blob changed during repair: {rel}")
             current = path.read_bytes()
-            if digest(current) != expected and digest(current.replace(b"\\r\\n", b"\\n")) != expected:
+            if digest(current) != expected and digest(current.replace(b"\r\n", b"\n")) != expected:
                 raise ValueError(f"Working file changed during repair; preserving: {rel}")
 
             # Atomic file replacement on the same volume; never invoke Git's
