@@ -21,6 +21,7 @@ SUITES = (
     ("provenance", "test_stage4_evidence_provenance.py", 9),
     ("science40_integration", "test_level1_science40_integration.py", 3),
     ("level2_phase_first_triage", "test_stage4_phase_first_triage.py", 5),
+    ("level2_hypothesis_intake", "test_level2_scientific_hypothesis_intake.py", 10),
     ("patch_generator_safety", "test_windows_local_patch_proposal.py", 4),
     ("patch_reviewer_safety", "test_windows_local_patch_review.py", 8),
 )
