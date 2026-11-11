@@ -111,6 +111,75 @@
         "submitted_on": "2026-09-30"
       },
       "clinicalRiskNote": "VELA-2 missed the prespecified composite Week-16 primary endpoint (HiSCR75, p=0.053); retain as clinical risk, not an automatic failure or score."
+    },
+    "APPLICATION|AMLX|AVEXITIDE_PBH_LUCIDITY": {
+      "nctId": "NCT06747468",
+      "drug": "avexitide",
+      "indication": "post-bariatric hypoglycemia",
+      "reviewedOn": "2026-11-11",
+      "reviewerMethod": "PRIMARY_PUBLIC_ISSUER_DISCLOSURE",
+      "phase3_results": {
+        "review_status": "VERIFIED",
+        "source_url": "https://amylyx.gcs-web.com/news-releases/news-release-details/amylyx-pharmaceuticals-announces-positive-topline-results-0",
+        "published_at": "2026-08-18",
+        "event_date": "2026-08-18"
+      },
+      "regulatory_path": {
+        "stage": "PLANNED",
+        "application_type": "NDA",
+        "review_status": "VERIFIED",
+        "source_url": "https://amylyx.gcs-web.com/news-releases/news-release-details/amylyx-pharmaceuticals-reports-third-quarter-2026-financial",
+        "published_at": "2026-11-05",
+        "event_date": "2026-11-05",
+        "planned_filing_period": "2026"
+      },
+      "clinicalRiskNote": "Avexitide LUCIDITY Phase 3 top-line results publicly reported; NDA planned by year-end 2026. No FDA acceptance or PDUFA action date has been assigned."
+    },
+    "APPLICATION|AGIO|MITAPIVAT_SCD_RISEUP_20270201": {
+      "nctId": "NCT05031780",
+      "drug": "mitapivat",
+      "indication": "sickle cell disease",
+      "reviewedOn": "2026-11-11",
+      "reviewerMethod": "PRIMARY_PUBLIC_ISSUER_DISCLOSURE",
+      "phase3_results": {
+        "review_status": "VERIFIED",
+        "source_url": "https://investor.agios.com/news-releases/news-release-details/agios-announces-topline-results-rise-phase-3-trial-mitapivat",
+        "published_at": "2025-11-19",
+        "event_date": "2025-11-19"
+      },
+      "regulatory_path": {
+        "stage": "PDUFA_ASSIGNED",
+        "application_type": "sNDA",
+        "review_status": "VERIFIED",
+        "source_url": "https://investor.agios.com/node/19341",
+        "published_at": "2026-10-30",
+        "event_date": "2026-10-30",
+        "pdufa_target_date": "2027-02-01"
+      },
+      "clinicalRiskNote": "RISE UP Phase 3 met hemoglobin-response primary endpoint; annualized sickle-cell pain-crisis primary endpoint did not meet statistical significance. FDA extended sNDA PDUFA to February 1, 2027."
+    },
+    "APPLICATION|MIRM|MARALIXIBAT_EXPAND_CHOLESTATIC_2027": {
+      "nctId": "NCT06553768",
+      "drug": "maralixibat (LIVMARLI)",
+      "indication": "cholestatic pruritus in rare cholestatic liver diseases",
+      "reviewedOn": "2026-11-11",
+      "reviewerMethod": "PRIMARY_PUBLIC_ISSUER_DISCLOSURE",
+      "phase3_results": {
+        "review_status": "VERIFIED",
+        "source_url": "https://www.sec.gov/Archives/edgar/data/1759425/000175942526000051/mirm-20261012.htm",
+        "published_at": "2026-10-12",
+        "event_date": "2026-10-12"
+      },
+      "regulatory_path": {
+        "stage": "PLANNED",
+        "application_type": "sNDA",
+        "review_status": "VERIFIED",
+        "source_url": "https://ir.mirumpharma.com/news/news-details/2026/Mirum-Pharmaceuticals-Announces-Primary-Endpoint-Met-in-Phase-3-EXPAND-Study-of-LIVMARLI-maralixibat-in-Ultra-Rare-Cholestatic-Liver-Diseases/default.aspx",
+        "published_at": "2026-10-12",
+        "event_date": "2026-10-12",
+        "planned_filing_period": "2027"
+      },
+      "clinicalRiskNote": "EXPAND Phase 3 reported positive topline results October 2026; issuer plans U.S. sNDA filing in H1 2027. No new PDUFA date assigned."
     }
   }
 }
