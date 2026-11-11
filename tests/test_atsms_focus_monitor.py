@@ -121,8 +121,8 @@ class ATSMSTests(unittest.TestCase):
             def __init__(self,allowed): self.allowed=allowed
             def is_session(self,day): return self.allowed
             def session_close(self,day): return Stamp()
-            def previous_session(self,day): return date(2026,11,10)
-            def date_to_session(self,day): return date(2026,11,11)
+            def previous_session(self,day): return datetime(2026,11,10)
+            def date_to_session(self,day): return datetime(2026,11,11)
         self.assertIsNone(atsms.market_context(datetime(2026,11,11,8,50,tzinfo=timezone.utc),Cal(True)))
         self.assertIsNone(atsms.market_context(NOW,Cal(False)))
         self.assertEqual(atsms.market_context(datetime(2026,11,11,10,0,tzinfo=timezone.utc),Cal(True))["session"],"PREMARKET")
