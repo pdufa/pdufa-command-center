@@ -156,7 +156,7 @@ class PromotionTests(unittest.TestCase):
 class NewlyReviewedFocusCandidates(unittest.TestCase):
     def test_amlx_agio_mirm_all_have_exact_trial_public_results_fda_path_and_current_cap(self):
         import json
-        with (PATH.parents[0] / "new-platform/backend/app/phase3_curated_announcements.json").open(encoding="utf-8") as source:
+        with (PATH.parents[1] / "new-platform/backend/app/phase3_curated_announcements.json").open(encoding="utf-8") as source:
             complete=json.load(source)
         names={
             "APPLICATION|AMLX|AVEXITIDE_PBH_LUCIDITY":("AMLX","NCT06747468",3973879363),
@@ -193,10 +193,11 @@ class NewlyReviewedFocusCandidates(unittest.TestCase):
         self.assertEqual(approved_again,[])
 
     def test_issuer_results_without_verified_application_path_remain_review_only(self):
-        args=self.inputs()
+        baseline=PromotionTests()
+        args=baseline.inputs()
         candidate=args[0]["cases"]["APPLICATION|COGT|BEZUCLASTINIB_GIST"]
         candidate.pop("pdufa_assignment")
-        approved,review=self.run_check(args)
+        approved,review=baseline.run_check(args)
         self.assertEqual(approved,[])
         self.assertIn("NO_CURRENT_VERIFIED_FDA_PATH",review[0]["reasons"])
 
