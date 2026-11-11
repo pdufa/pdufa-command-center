@@ -95,11 +95,26 @@ def main() -> int:
         return stop("Unexpected function name or signature")
     # Parsing is safe. No AI-generated code is executed or imported.
     forbidden = (
-        ast.Import, ast.ImportFrom, ast.Call, ast.Attribute, ast.Await,
-        ast.Yield, ast.YieldFrom, ast.Global, ast.Nonlocal, ast.ClassDef,
+        ast.Import, ast.ImportFrom, ast.Await, ast.Yield, ast.YieldFrom,
+        ast.Global, ast.Nonlocal, ast.ClassDef, ast.Delete, ast.Raise,
+        ast.With, ast.AsyncWith, ast.Try, ast.While, ast.For, ast.AsyncFor,
+        ast.Lambda, ast.NamedExpr,
     )
     if any(isinstance(node, forbidden) for node in ast.walk(tree)):
         return stop("Draft uses disallowed operations; review-only stage rejects it")
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            callee = node.func
+            if isinstance(callee, ast.Name) and callee.id in (
+                "isinstance", "all", "bool", "str", "len"
+            ):
+                continue
+            if isinstance(callee, ast.Attribute) and callee.attr in ("get", "strip"):
+                continue
+            return stop("Draft uses a function call outside the allowlist")
+        if isinstance(node, ast.Attribute) and node.attr not in ("get", "strip"):
+            return stop("Draft uses an attribute outside the allowlist")
+    # compile() does not run generated Python. Never import or execute this draft.
     compile(tree, "<untrusted_ollama_draft>", "exec")
     print("PASS: Generated Python source passed syntax and structure checks")
     print("NOTE: This does not establish scientific correctness or functional test coverage")
