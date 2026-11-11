@@ -125,7 +125,7 @@ def valid_cache(path: Path, nct: str, cohort_digest: str, now: datetime) -> bool
             and hashlib.sha256(canonical_bytes(data["record"])).hexdigest() == data["normalized_record_sha256"]
             and timedelta(0) <= age < TTL
         )
-    except (ValueError, OSError, TypeError, OverflowError, KeyError):
+    except (ValueError, OSError, TypeError, OverflowError, KeyError, AttributeError):
         return False
 
 
@@ -156,7 +156,8 @@ def capture_batch(ncts: list[str], cohort_digest: str, directory: Path, limit: i
             or any(not isinstance(n, str) or not NCT.fullmatch(n) for n in ncts)
             or not isinstance(cohort_digest, str) or not DIGEST.fullmatch(cohort_digest)):
         raise ValueError("Unsafe capture request")
-    if directory.is_symlink():
+    if (directory.is_symlink() or directory.parent.is_symlink()
+            or directory.resolve().is_relative_to(ROOT.resolve())):
         raise ValueError("Unsafe output directory")
     directory.mkdir(parents=True, exist_ok=True)
     fixed_clock = now is not None
@@ -222,6 +223,8 @@ def main() -> int:
         if audit.returncode != 0:
             print("STOP: Historical RAAS retirement audit failed")
             return 2
+        if (REPORTS.is_symlink() or REPORTS.resolve().is_relative_to(ROOT.resolve())):
+            raise ValueError("Reports location must be outside the repository")
         if ROSTER.is_symlink() or not ROSTER.is_file() or not ROSTER.resolve().is_relative_to(ROOT.resolve()):
             raise ValueError("Trusted saved FOCUS roster missing")
         raw = ROSTER.read_bytes()
