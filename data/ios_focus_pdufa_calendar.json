@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-11T19:40:47Z",
+  "generatedAt": "2026-11-11T19:46:45Z",
   "source": "FOCUS Google Sheet: cap-screened $300M-$10B trial population",
   "sourceSheetId": "1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU",
   "events": [
@@ -20,7 +20,7 @@
       "ticker": "CAPR",
       "company": "Capricor Therapeutics, Inc.",
       "date": "2026-11-22",
-      "marketCapUsd": 610490000,
+      "marketCapUsd": 626770000,
       "id": "focus-capr-nct05126758",
       "ncts": [
         "NCT05126758"
@@ -142,7 +142,7 @@
       "ticker": "PHVS",
       "company": "Pharvaris N.V.",
       "date": "2027-04-23",
-      "marketCapUsd": 2410000000,
+      "marketCapUsd": 2390000000,
       "id": "focus-phvs-nct06343779",
       "ncts": [
         "NCT06343779"
