@@ -2,6 +2,8 @@
 
 import {useCallback,useEffect,useState} from "react";
 import AlpacaStockChart from "./AlpacaStockChart";
+import WtAlpacaBuySignal from "./WtAlpacaBuySignal";
+import {evaluateWtAlpacaTechnicalSignal} from "../lib/wt-alpaca-buy-signal";
 import WtEtradeSandboxConnect from "./WtEtradeSandboxConnect";
 import focusSnapshot from "../data/p3PostDataActive.json";
 import {sessionSnapshot,type WtMarket} from "../lib/wt-entry-stay-exit";
@@ -105,6 +107,7 @@ export default function WtEtradeOrderPrep(){
     <p><strong>Two proposed purchases: one whole share each.</strong> Alpaca provides on-demand market research.
       E*TRADE live brokerage trading is not connected; a separate sandbox authorization option is below.
       No broker-side live account verification or order preview has happened. <strong>No order can be placed or approved through this page.</strong></p>
+    <p style={{fontSize:13}}>Alpaca now calculates a separate eight-check, completed-session technical BUY setup or WAIT for each stock. It is unbacktested and non-executable; a technical BUY does not override the 14-day PDUFA blackout. The original strict FDA/financing/quote entry gate remains separate.</p>
     <p style={{fontSize:13}}>Drafts are prefilled with ticker, BUY action, quantity 1, LIMIT and regular-session
       day validity. A limit price is suggested only when an exact-program Alpaca entry signal passes all
       price, freshness and PDUFA safety gates. Current FOCUS source snapshot: {focusSnapshot.asOf}.
@@ -117,12 +120,14 @@ export default function WtEtradeOrderPrep(){
         const market=markets[candidate.programId];
         const technical=now>0&&market?.value?sessionSnapshot(market.value,new Date(now)):null;
         const draft=prepareWtEtradeDraft(candidate,source,feed?.value||null,now);
+        const technicalSignal=evaluateWtAlpacaTechnicalSignal(candidate,source,market?.value||null,now);
         return <article key={candidate.programId} style={css.card} aria-label={candidate.ticker+" proposed limit order"}>
           <h3 style={{margin:"0 0 7px"}}>{candidate.ticker} · {candidate.drug}</h3>
           <p style={{fontSize:12,margin:"0 0 12px"}}>
             <a href={"https://clinicaltrials.gov/study/"+candidate.nct} target="_blank" rel="noopener noreferrer">{candidate.nct}</a>
             {" · "}{candidate.programId} · PDUFA (recorded): {source?.recordedPdufaDate||"NOT VERIFIED"}
           </p>
+          <WtAlpacaBuySignal signal={technicalSignal}/>
           <div style={css.data}>
             <div style={css.chip}><small>Broker / action</small><div><strong>E*TRADE · BUY</strong></div></div>
             <div style={css.chip}><small>Shares / order</small><div><strong>1 · LIMIT / DAY</strong></div></div>
@@ -142,7 +147,7 @@ export default function WtEtradeOrderPrep(){
             These EOD observations are <strong>not</strong> a verified E*TRADE order price.</p>
           <p role="status"><strong>{now===0?"CHECKING SOURCES":draft.status.replaceAll("_"," ")}</strong>
             {" — "}{now===0?"Awaiting browser market clock.":draft.reason}</p>
-          <p style={{fontSize:12}}>Alpaca exact-program signal: <strong>{feed?.value?.status||"NOT AVAILABLE"}</strong>
+          <p style={{fontSize:12}}>Strict FDA/financing/quote entry gate (separate from EOD technical screening): <strong>{feed?.value?.status||"NOT AVAILABLE"}</strong>
             {feed?.error?" · "+feed.error:""}
             {feed?.value?.quote?" · "+feed.value.quote.feed+" quote":" · no fresh broker-executable price"}
           </p>
