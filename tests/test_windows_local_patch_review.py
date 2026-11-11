@@ -3,6 +3,7 @@
 Synthetic examples only. No generated code is imported or executed.
 """
 import difflib
+import hashlib
 import importlib.util
 from pathlib import Path
 import unittest
@@ -35,7 +36,8 @@ def document(original, proposed):
         fromfile="a/" + MODULE.TARGET,
         tofile="b/" + MODULE.TARGET,
     ))
-    return MODULE.HEADER + diff
+    return (MODULE.HEADER + "# baseline-sha256: " +
+            hashlib.sha256(original.encode("utf-8")).hexdigest() + "\n" + diff)
 
 
 class LevelOnePatchReviewTests(unittest.TestCase):
@@ -89,6 +91,29 @@ class LevelOnePatchReviewTests(unittest.TestCase):
         doc = document(ORIGINAL, candidate)
         with self.assertRaises(ValueError):
             MODULE.check_proposal(ORIGINAL + "# newer source\n", doc)
+
+    def test_tampered_baseline_fingerprint_rejected(self):
+        candidate = ORIGINAL.replace(
+            MODULE.ANCHOR, MODULE.ANCHOR + GUARD, 1
+        )
+        doc = document(ORIGINAL, candidate)
+        changed = doc.replace(
+            "# baseline-sha256: " + hashlib.sha256(ORIGINAL.encode("utf-8")).hexdigest(),
+            "# baseline-sha256: " + "0" * 64,
+            1,
+        )
+        with self.assertRaises(ValueError):
+            MODULE.check_proposal(ORIGINAL, changed)
+
+    def test_legacy_patch_without_fingerprint_rejected(self):
+        candidate = ORIGINAL.replace(
+            MODULE.ANCHOR, MODULE.ANCHOR + GUARD, 1
+        )
+        doc = document(ORIGINAL, candidate)
+        legacy = doc.split("\n", 2)
+        without_digest = legacy[0] + "\n" + legacy[2]
+        with self.assertRaises(ValueError):
+            MODULE.check_proposal(ORIGINAL, without_digest)
 
 
 if __name__ == "__main__":
