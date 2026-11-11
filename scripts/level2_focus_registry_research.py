@@ -68,8 +68,8 @@ def build_source_research(roster: object, scan: object) -> dict:
     observations = scan.get("rows")
     if not isinstance(rows, list) or not isinstance(observations, list):
         raise ValueError("Expected saved FOCUS roster and registry rows")
-    if len(rows) != 29 or len(observations) != 29:
-        raise ValueError("Unexpected FOCUS cohort size")
+    if not 29 <= len(rows) <= 100 or len(observations) != 29:
+        raise ValueError("Saved source scan must have 29 entries within bounded FOCUS roster")
     roster_index = {}
     for item in rows:
         if not isinstance(item, dict):
@@ -153,23 +153,25 @@ def build_source_research(roster: object, scan: object) -> dict:
             "approval_probability": None,
             "status": "SOURCE_REPORTED_CONTEXT_ONLY_HYPOTHESIS_RESEARCH_REQUIRED",
         }
-    if set(mapped) != set(roster_index):
-        raise ValueError("Registry snapshot lacks FOCUS trials")
+    if not set(mapped).issubset(set(roster_index)):
+        raise ValueError("Registry snapshot contains an unrelated FOCUS identity")
     return {
         "schema_version": 1,
         "kind": "LEVEL2_SOURCE_GROUNDED_HYPOTHESIS_RESEARCH_WORKLIST",
         "roster_as_of": roster_date.isoformat(),
         "registry_scan_as_of": scan_roster_date.isoformat(),
         "registry_scan_completed_at": completed,
-        "trial_count": 29,
-        "saved_registry_facts": 29 * len(REQUIRED_TESTS),
+        "trial_count": len(mapped),
+        "current_saved_roster_count": len(roster_index),
+        "unscanned_focus_trial_count": len(roster_index) - len(mapped),
+        "saved_registry_facts": len(mapped) * len(REQUIRED_TESTS),
         "level2_scientific_assessments_completed": 0,
         "fda_predictions": 0,
         "data_source": "SAVED_CLINICALTRIALS_GOV_FIELD_INSPECTION",
         "live_registry_fetched": False,
         "study_records_retrieved_in_run": 0,
         "production_modified": False,
-        "records": [mapped[r["nct"]] for r in rows],
+        "records": [mapped[r["nct"]] for r in rows if r["nct"] in mapped],
     }
 
 
