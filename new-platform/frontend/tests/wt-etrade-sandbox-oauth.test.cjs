@@ -29,8 +29,11 @@ test("E*TRADE sandbox requires all server keys and a 32-byte cookie-encryption k
     const pending=c.sealPending("sample-request-token","sample-request-secret");
     assert.doesNotMatch(pending,/sample-request-token|sample-request-secret/);
     assert.deepEqual(c.readPending(pending)?.token,"sample-request-token");
-    assert.equal(c.readAccess(pending)?.token,"sample-request-token");
-    assert.equal(c.readPending(pending.slice(0,-1)+"0"),null);
+    assert.equal(c.readAccess(pending),null);
+    const access=c.sealAccess("sample-access-token","sample-access-secret");
+    assert.equal(c.readPending(access),null);
+    assert.equal(c.readAccess(access)?.token,"sample-access-token");
+    assert.equal(c.readPending(pending.slice(0,-1)+(pending.at(-1)==="0"?"1":"0")),null);
     const url=new URL(c.authorizeSandboxUrl("token/a+b"));
     assert.equal(url.origin,"https://us.etrade.com");
     assert.equal(url.searchParams.get("key"),"sandbox-test-key");
