@@ -18,8 +18,10 @@ ROOT = Path(__file__).resolve().parents[1]
 REPORTS = Path.home() / "PDUFA-Agent-Reports"
 
 SUITES = (
-    ("provenance", "test_stage4_evidence_provenance.py", 7),
+    ("provenance", "test_stage4_evidence_provenance.py", 9),
     ("science40_integration", "test_level1_science40_integration.py", 3),
+    ("patch_generator_safety", "test_windows_local_patch_proposal.py", 4),
+    ("patch_reviewer_safety", "test_windows_local_patch_review.py", 8),
 )
 
 
