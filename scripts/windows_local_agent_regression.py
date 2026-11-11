@@ -26,7 +26,7 @@ SUITES = (
     ("focus_schedule_validation", "test_windows_local_agent_focus_validation.py", 5),
     ("level2_registry_research", "test_level2_focus_registry_research.py", 8),
     ("level2_research_status_validation", "test_windows_local_agent_registry_research_validation.py", 4),
-    ("level2_live_registry_capture", "test_windows_local_agent_live_focus_registry.py", 10),
+    ("level2_live_registry_capture", "test_windows_local_agent_live_focus_registry.py", 12),
     ("patch_generator_safety", "test_windows_local_patch_proposal.py", 4),
     ("patch_reviewer_safety", "test_windows_local_patch_review.py", 8),
 )
