@@ -25,8 +25,10 @@ on:
     paths:
       - '.github/workflows/pdufa-overnight-sequential.yml'
       - '.github/workflows/pdufa-nightly-scoring-then-repair.yml'
+      - '.github/workflows/stage4-manual-focus-source-review.yml'
       - 'scripts/nightly_sequence.py'
       - 'tests/test_nightly_pacific_sequence.py'
+      - 'tests/test_main_focus_wiring.py'
   pull_request:
     branches: [main]
     paths:
@@ -100,15 +102,20 @@ jobs:
       scan_mode: ${{ inputs.scan_mode || 'DELTA' }}
     secrets: inherit
 
-  shared-data:
+  focus-evidence:
     needs: sources
-    if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only && needs.sources.result != 'skipped'
+    if: github.event_name == 'workflow_dispatch' && !inputs.validate_only && needs.sources.result == 'success'
+    uses: ./.github/workflows/stage4-manual-focus-source-review.yml
+
+  shared-data:
+    needs: [sources, focus-evidence]
+    if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only && needs.sources.result != 'skipped' && needs.focus-evidence.result == 'success'
     uses: ./.github/workflows/pdufa-shared-enrichment.yml
     secrets: inherit
 
   scoring-and-repair:
-    needs: [sources, shared-data]
-    if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only && needs.sources.result != 'skipped'
+    needs: [sources, focus-evidence, shared-data]
+    if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only && needs.sources.result != 'skipped' && needs.focus-evidence.result == 'success'
     uses: ./.github/workflows/pdufa-nightly-scoring-then-repair.yml
     with:
       source_run_id: ${{ github.run_id }}
@@ -116,7 +123,7 @@ jobs:
     secrets: inherit
 
   result:
-    needs: [validate, clinical, report, sources, shared-data, scoring-and-repair]
+    needs: [validate, clinical, report, sources, focus-evidence, shared-data, scoring-and-repair]
     if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -197,7 +204,7 @@ jobs:
           exit 1
 
   notify-finish:
-    needs: [validate, clinical, report, sources, shared-data, scoring-and-repair, result, archive]
+    needs: [validate, clinical, report, sources, focus-evidence, shared-data, scoring-and-repair, result, archive]
     if: always() && github.event_name == 'workflow_dispatch' && !inputs.validate_only
     runs-on: ubuntu-latest
     timeout-minutes: 2
