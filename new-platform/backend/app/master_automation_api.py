@@ -17,7 +17,7 @@ from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from .master_automation import (
-    ControllerRun, INDEX, STAGES, claim, finish, new_state, public, resume, utcnow,
+    ControllerRun, INDEX, STAGES, claim, finish, fail_expired_lease, new_state, public, resume, utcnow,
 )
 
 
@@ -144,6 +144,11 @@ def install_routes(app: FastAPI, engine: Callable, require_key: Callable,
                           state, payload.stage, payload.worker, payload.conclusion,
                           payload.workflowRunId, payload.evidenceDigest,
                           payload.errorCode))
+
+    @app.post("/api/master-automation/runs/{run_id}/recover-expired", dependencies=write)
+    def recover_expired_run(run_id: str, payload: Mutation):
+        return mutate(run_id, payload.version,
+                      lambda state: fail_expired_lease(state, payload.stage))
 
     @app.post("/api/master-automation/runs/{run_id}/resume", dependencies=write)
     def resume_failed(run_id: str, payload: Mutation):
