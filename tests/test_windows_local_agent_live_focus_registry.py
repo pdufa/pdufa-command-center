@@ -9,6 +9,7 @@ from pathlib import Path
 import sys
 import tempfile
 import unittest
+from unittest.mock import patch
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "scripts"))
@@ -143,6 +144,36 @@ class LiveFocusRegistryTests(unittest.TestCase):
         self.assertEqual(result["fresh_exact_registry_captures"], 4)
         self.assertEqual(result["source_state"], "PARTIAL_SOURCE_CAPTURE")
         self.assertFalse((self.dir / f"{self.ncts[0]}.json").exists())
+
+    def test_live_batch_uses_end_clock_when_receipts_follow_start(self):
+        # Reproduces the observed bug: all requests succeed, but their receipt
+        # timestamps are newer than the clock captured at batch start.
+        times = iter([NOW - timedelta(seconds=2), NOW, NOW + timedelta(seconds=1)])
+        class Clock(datetime):
+            @classmethod
+            def now(cls, tz=None):
+                return next(times)
+        with patch.object(MODULE, "datetime", Clock):
+            result = MODULE.capture_batch(
+                self.ncts, COHORT, self.dir, 1, fetcher=self.fake_fetch
+            )
+        self.assertEqual(result["network_attempts_this_run"], 1)
+        self.assertEqual(result["newly_captured_this_run"], 1)
+        self.assertEqual(result["failed_attempts_this_run"], 0)
+        self.assertEqual(result["fresh_exact_registry_captures"], 1)
+        self.assertEqual(result["remaining_without_fresh_capture"], 28)
+
+    def test_prior_successful_downloads_are_recounted_without_network(self):
+        first = self.batch(limit=29)
+        self.assertEqual(first["fresh_exact_registry_captures"], 29)
+        def network_must_not_run(nct, timeout=20):
+            raise AssertionError("Already cached NCT was fetched again")
+        later = self.batch(limit=29, fetcher=network_must_not_run,
+                           now=NOW + timedelta(minutes=5))
+        self.assertEqual(later["network_attempts_this_run"], 0)
+        self.assertEqual(later["newly_captured_this_run"], 0)
+        self.assertEqual(later["fresh_exact_registry_captures"], 29)
+        self.assertEqual(later["source_state"], "ALL_FRESH_SOURCE_ONLY")
 
     def test_duplicate_or_malformed_nct_blocks_capture(self):
         for bad in ([*self.ncts[:-1], self.ncts[0]], ["../private", *self.ncts[1:]]):
