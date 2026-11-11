@@ -6,6 +6,7 @@ Read-only. Registry data is not independently adjudicated and does not imply FDA
 import json
 import re
 import sys
+import time
 from pathlib import Path
 from urllib.error import HTTPError, URLError
 from urllib.request import Request, urlopen
@@ -16,12 +17,22 @@ API = "https://clinicaltrials.gov/api/v2/studies/"
 NCT_PATTERN = re.compile(r"NCT[0-9]{8}\Z")
 
 
-def fetch_study(nct, opener=urlopen):
+def fetch_study(nct, opener=urlopen, sleeper=time.sleep):
     if not isinstance(nct, str) or not NCT_PATTERN.fullmatch(nct):
         raise ValueError("Invalid NCT identifier")
     request = Request(API + nct, headers={"Accept": "application/json", "User-Agent": "pdufa-focus-evidence-inventory/1.0"})
-    with opener(request, timeout=20) as response:
-        study = json.load(response)
+    for attempt in range(3):
+        try:
+            with opener(request, timeout=20) as response:
+                study = json.load(response)
+            break
+        except HTTPError as exc:
+            if exc.code not in (429, 500, 502, 503, 504) or attempt == 2:
+                raise
+        except (URLError, TimeoutError):
+            if attempt == 2:
+                raise
+        sleeper(2 ** attempt)
     protocol = study.get("protocolSection", {})
     identification = protocol.get("identificationModule", {})
     if identification.get("nctId") != nct:
