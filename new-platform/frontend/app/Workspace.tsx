@@ -931,6 +931,7 @@ function WorkspaceContent({ onInspect, initialNav="PIPELINE" }: { onInspect: (ti
   const [displayVersion, setDisplayVersion] = useState(0);
   const pipelineDataRef = useRef<HTMLDivElement>(null);
   const [gemQuery, setGemQuery] = useState("");
+  const [wtFindQuery, setWtFindQuery] = useState("");
   const [selected, setSelected] = useState<Record<string, string>>({});
   const [tags, setTags] = useState<Tags>({ watch: [], trade: [] });
   const [tagsReady, setTagsReady] = useState(false);
@@ -2005,6 +2006,26 @@ function WorkspaceContent({ onInspect, initialNav="PIPELINE" }: { onInspect: (ti
       <div className="sectionhead wt-page-header"><h2>WT — Permanent Program ID Watchlist &amp; Trading Research</h2><span className="counter">{tagsReady ? pageTotals.WT.toLocaleString("en-US") : "—"} total W/T programs</span></div>
       <p className="subtle">WT displays the identical GEM JR/GEM entry-strength and exit-risk scores for each permanent Program ID, including evidence coverage and safety overrides. Different drugs and trials remain independent. Research only — no broker orders.</p>
       <p aria-live="polite" className="saveState">{wtStatus}</p>
+      <section className="panel" aria-label="Choose an exact program for WT">
+        <h3>ADD A PROGRAM TO WATCHLIST OR T ACTIVE</h3>
+        <p className="subtle">Choose an exact permanent Program ID so different drugs and trials under the same ticker remain separate. T ACTIVE activates trading research, not broker orders.</p>
+        <label htmlFor="wt-find-program">Ticker, company, drug, or Program ID</label>
+        <input id="wt-find-program" aria-label="Find exact WT program" value={wtFindQuery}
+          onChange={event=>setWtFindQuery(event.target.value)} placeholder="Search exact programs" />
+        {wtFindQuery.trim() && (()=>{
+          const query=wtFindQuery.trim().toLowerCase();
+          const matches=pipeline.filter(record=>
+            [record.ticker,record.company,record.drug,record.programId].some(value=>(value||"").toLowerCase().includes(query))
+          ).slice(0,20);
+          return matches.length ? <div className="table-scroll"><table>
+            <thead><tr><th>Ticker</th><th>Program ID</th><th>Drug</th><th>Watch</th><th>T Active</th></tr></thead>
+            <tbody>{matches.map(record=><tr key={record.programId||record.id}>
+              <td>{record.ticker}</td><td>{stated(record.programId,"NOT VERIFIED")}</td>
+              <td>{stated(record.drug)}</td><td>{wtButton(record,"watch")}</td><td>{wtButton(record,"trade")}</td>
+            </tr>)}</tbody>
+          </table></div>:<p className="subtle">No exact program matches found in this published research snapshot.</p>;
+        })()}
+      </section>
       <p className="subtle wt-trial-indicator-explanation">Choose ENTRY, STAY, or EXIT beside each trial ticker. The corresponding indicator checklist opens immediately below that trial. Tick the options you want to display; every new stage starts with no indicators selected. Settings are independent for each permanent Program ID and saved in this browser.</p>
       <div className="wt-screenwide-stages">
       {(["watch","trade"] as const).map(kind=><section className="panel wt-screenwide-stage" key={kind}>
