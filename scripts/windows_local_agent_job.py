@@ -19,6 +19,7 @@ ROOT = Path(__file__).resolve().parents[1]
 REPORTS = Path.home() / "PDUFA-Agent-Reports"
 CONTROLLER = ROOT / "scripts/windows_local_agent_controller.py"
 DRAFT_CONTROLLER = ROOT / "scripts/windows_local_agent_code_draft.py"
+REGRESSION_GATE = ROOT / "scripts/windows_local_agent_regression.py"
 REPO = "pdufa/pdufa-command-center"
 ISSUE = "1096"
 
@@ -86,19 +87,35 @@ def main() -> int:
         except (OSError, ValueError):
             pass
 
-    if verified and draft_verified:
-        status = "PASS — read-only proposal and sandbox code draft generated"
+    # Run actual standard-library regression checks for the studied Level 1
+    # evidence boundary. A failure prevents any all-green remote report.
+    try:
+        regression = subprocess.run(
+            [sys.executable, "-B", str(REGRESSION_GATE)], cwd=ROOT,
+            capture_output=True, text=True, errors="replace", timeout=600,
+        )
+        regression_ok = regression.returncode == 0
+        print("Level 1 regression gate:", "PASS" if regression_ok else "FAILED")
+    except (OSError, subprocess.TimeoutExpired) as exc:
+        regression_ok = False
+        print("Level 1 regression gate unavailable:", type(exc).__name__)
+
+    if not regression_ok:
+        status = "NEEDS ATTENTION — Level 1 regression gate failed"
+    elif verified and draft_verified:
+        status = "PASS — proposal, sandbox draft, and Level 1 regressions"
     elif verified or draft_verified:
-        status = "PARTIAL — one local task needs attention"
+        status = "PARTIAL — regression passed, one local task needs attention"
     else:
-        status = "NEEDS ATTENTION — no verified new output"
+        status = "NEEDS ATTENTION — regression passed, no new AI output"
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M UTC")
     body = (
         "# Windows PDUFA local agent — remote status\n\n"
         f"**Last reported:** {timestamp}\n\n"
         f"**Status:** {status}\n\n"
-        "**Mode:** Read-only proposals plus sandbox-only Python code drafts\n\n"
+        "**Mode:** Read-only proposals, sandbox drafts, and Level 1 regression checks\n\n"
         "**Safety:** AI-generated code is never executed. Production edits, commits, deploys, and automated repository changes are disabled.\n\n"
+        f"**Level 1 regression checks:** {'PASS' if regression_ok else 'NEEDS ATTENTION'} (local testing only)\n\n"
         "**Scientific assessment levels:** No implementation or completion is implied by this report.\n\n"
         "**Privacy:** This is a public issue with generic status only. No scientific files, prompts, "
         "local paths, error logs, credentials, or machine details are posted.\n\n"
@@ -109,6 +126,7 @@ def main() -> int:
     (REPORTS / "last-run-summary.json").write_text(json.dumps({
         "timestamp_utc": timestamp, "local_proposal_ok": verified,
         "local_sandbox_draft_ok": draft_verified,
+        "level1_regression_ok": regression_ok,
         "remote_report_target": f"https://github.com/{REPO}/issues/{ISSUE}",
     }, indent=2) + "\n", encoding="utf-8")
     filename = None
@@ -132,7 +150,7 @@ def main() -> int:
     finally:
         if filename is not None:
             filename.unlink(missing_ok=True)
-    return 0 if verified and draft_verified else 1
+    return 0 if verified and draft_verified and regression_ok else 1
 
 
 if __name__ == "__main__":
