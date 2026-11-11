@@ -54,6 +54,44 @@ test('identity and chronology fail closed',()=>{
  assert.throws(()=>evaluate({...fixture,sourceDate:'2026-12-01'}),/CHRONOLOGY/);
  assert.throws(()=>evaluate(fixture,{...ctx(),additionalEvidence:{mechanism:{url:'https://example.org',date:'2026-12-01',text:'Future'}}}),/CHRONOLOGY/);
 });
+
+test('Level 2 mechanism source rejects malformed URLs and impossible or future dates',()=>{
+ const make=(url,date)=>({...ctx(),additionalEvidence:{mechanism:{
+  text:'Hypothesis documented in a source; not scientifically adjudicated.',url,date
+ }}});
+ for(const url of [
+  'https://','https://user:pass@example.org/mechanism',
+  'https://example.org/mechanism#section',
+  'https://example.org/mechanism with spaces',
+  'http://example.org/mechanism'
+ ]){
+  assert.throws(()=>evaluate(fixture,make(url,'2026-10-27')),
+   /PHASE_FIRST_EVIDENCE_CHRONOLOGY_INVALID/,url);
+ }
+ for(const date of [
+  '2026-02-30','2026-04-31','2026-13-01',
+  '2026-00','2026-11-07'
+ ]){
+  assert.throws(()=>evaluate(fixture,make('https://example.org/mechanism',date)),
+   /PHASE_FIRST_EVIDENCE_CHRONOLOGY_INVALID/,date);
+ }
+ const valid=evaluate(fixture,make('https://example.org/mechanism','2026-10-27'));
+ assert.equal(evidence(valid,'mechanism').status,'AVAILABLE');
+ assert.equal(evidence(valid,'mechanism').sourceUrl,'https://example.org/mechanism');
+ assert.equal(valid.fdaPrediction.probabilities,null);
+ assert.equal(valid.pipeline.automaticTransfer,false);
+});
+
+test('Level 2 maintains month-only evidence date precision without inventing a prediction',()=>{
+ const report=evaluate(fixture,{...ctx(),additionalEvidence:{mechanism:{
+  text:'Early mechanistic rationale needs scientific review',
+  url:'https://example.org/mechanism',date:'2026-10'
+ }}});
+ assert.equal(evidence(report,'mechanism').evidenceDate,'2026-10');
+ assert.equal(report.fdaPrediction.probabilities,null);
+ assert.equal(report.fdaPrediction.status,'ABSTAIN');
+});
+
 test('all Alkermes trial identities survive without executing historical scores',()=>{
  const r=phaseFirstReport('alkermes');assert.equal(r.trialCount,128);
  assert.equal(r.analysisMode,'PHASE_APPROPRIATE_SOURCE_EVIDENCE_ONLY');
