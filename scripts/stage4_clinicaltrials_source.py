@@ -28,6 +28,12 @@ def fetch_study(nct, opener=urlopen):
         raise ValueError("ClinicalTrials.gov identifier mismatch")
     design = protocol.get("designModule", {})
     status = protocol.get("statusModule", {})
+    outcomes = protocol.get("outcomesModule") or {}
+    primary_outcomes = outcomes.get("primaryOutcomes") or []
+    results = study.get("resultsSection") or {}
+    outcome_results = (results.get("outcomeMeasuresModule") or {}).get("outcomeMeasures") or []
+    if not isinstance(primary_outcomes, list) or not isinstance(outcome_results, list):
+        raise ValueError("Unexpected registry outcome structure")
     return {
         "nct": nct,
         "source_url": API + nct,
@@ -35,6 +41,12 @@ def fetch_study(nct, opener=urlopen):
         "overall_status": status.get("overallStatus"),
         "primary_completion_date": status.get("primaryCompletionDateStruct", {}).get("date"),
         "results_submitted": bool(study.get("resultsSection")),
+        "registered_primary_outcomes": [
+            {"measure": item.get("measure"), "time_frame": item.get("timeFrame")}
+            for item in primary_outcomes if isinstance(item, dict)
+        ],
+        "posted_outcome_measures_count": len(outcome_results),
+        "endpoint_review_status": "requires_independent_review",
         "scientifically_verified": False,
         "fda_outcome_verified": False,
         "prediction": None,
