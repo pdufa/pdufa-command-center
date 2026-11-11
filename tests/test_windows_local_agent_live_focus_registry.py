@@ -55,8 +55,8 @@ class LiveFocusRegistryTests(unittest.TestCase):
     def test_real_saved_roster_29_distinct_ncts(self):
         source = ROOT / "new-platform/frontend/data/p3PostDataActive.json"
         ncts = MODULE.verified_roster(json.loads(source.read_text(encoding="utf-8")))
-        self.assertEqual(len(ncts), 29)
-        self.assertEqual(len(set(ncts)), 29)
+        self.assertEqual(len(ncts), len(json.loads(source.read_text(encoding="utf-8"))["records"]))
+        self.assertEqual(len(set(ncts)), len(ncts))
 
     def test_default_batch_captures_five_only_and_abstains(self):
         result = self.batch()
@@ -83,6 +83,18 @@ class LiveFocusRegistryTests(unittest.TestCase):
         self.assertEqual(second["fresh_exact_registry_captures"], 10)
         self.assertEqual(second["network_attempts_this_run"], 5)
         self.assertEqual([c[0] for c in self.calls], self.ncts[:10])
+
+    def test_expanded_32_trial_roster_preserves_distinct_id_and_abstention(self):
+        expanded = self.ncts + [f"NCT{n:08d}" for n in range(30, 33)]
+        result = MODULE.capture_batch(
+            expanded, COHORT, self.dir, len(expanded),
+            fetcher=self.fake_fetch, now=NOW,
+        )
+        self.assertEqual(result["saved_roster_size"], 32)
+        self.assertEqual(result["fresh_exact_registry_captures"], 32)
+        self.assertEqual(result["failed_attempts_this_run"], 0)
+        self.assertEqual(result["scientific_levels_completed"], 0)
+        self.assertFalse(result["roster_live_membership_verified"])
 
     def test_all_29_captured_with_explicit_extended_limit(self):
         result = self.batch(limit=29)
