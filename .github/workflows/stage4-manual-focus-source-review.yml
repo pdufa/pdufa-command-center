@@ -42,6 +42,13 @@ jobs:
             stage4-review-output/phase-triage.json \
             new-platform/frontend/data/p3PostDataActive.json \
             > stage4-review-output/coverage-audit.json
+      - name: Build trial-by-trial scientific review queue
+        run: |
+          python scripts/stage4_trial_review_queue.py \
+            new-platform/frontend/data/p3PostDataActive.json \
+            stage4-review-output/registry-metadata.json \
+            stage4-review-output/phase-triage.json \
+            > stage4-review-output/trial-review-queue.json
       - name: Publish retrieval coverage summary
         run: |
           python - <<'PY'
