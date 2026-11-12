@@ -73,7 +73,7 @@ def plan() -> dict:
         if (row.get("completed_scientific_level") is not False or
                 row.get("original_intake_draft_pr") != 1121 + n - 4 or
                 row.get("provenance_draft_pr") != 1139 + n - 4 or
-                row.get("implementation_draft_pr") != ({4: 1156, 5: 1161, 6: 1163}.get(n)) or
+                row.get("implementation_draft_pr") != ({4: 1156, 5: 1161, 6: 1163, 7: 1169}.get(n)) or
                 not isinstance(row.get("scientific_acceptance_criteria"), list) or
                 len(row["scientific_acceptance_criteria"]) < 5):
             raise ValueError("Incomplete or inconsistent scientific review manifest")
@@ -233,6 +233,22 @@ def confirmed_level6_pr() -> dict:
     return {"pr_number": 1163, "draft_url": data["url"]}
 
 
+def confirmed_level7_pr() -> dict:
+    """Verify Level7 draft #1169 on its exact approved branch/base."""
+    result = cmd(["gh", "pr", "view", "1169", "--repo", REPO, "--json",
+                  "number,url,isDraft,state,baseRefName,headRefName"], timeout=35)
+    if result.returncode:
+        raise RuntimeError("LEVEL7_REVIEW_PR_LOOKUP_FAILED")
+    data = json.loads(result.stdout)
+    if (data.get("number") != 1169 or data.get("state") != "OPEN"
+            or data.get("isDraft") is not True
+            or data.get("baseRefName") != "automation/predictive-preflight-all-levels-20261112"
+            or data.get("headRefName") != "automation/level7-engineering-readiness-20261112"
+            or data.get("url") != "https://github.com/pdufa/pdufa-command-center/pull/1169"):
+        raise RuntimeError("LEVEL7_REVIEW_PR_NOT_APPROVED_DRAFT")
+    return {"pr_number": 1169, "draft_url": data["url"]}
+
+
 def execute(number: int, step: str, manifest: dict) -> dict:
     definition = manifest["levels"][number - 4]
     if step == "AUDIT_EXISTING_DRAFTS":
@@ -242,6 +258,33 @@ def execute(number: int, step: str, manifest: dict) -> dict:
                 "drafts": checks, "required_evidence": definition["required_evidence_fields"],
                 "scientific_review_required": True}
     if step == "COLLECT_ORIGINAL_SOURCE":
+        if number == 7:
+            from level7_source_readiness_inventory import inventory
+            ncts, roster = verified_level5_candidate_ids()
+            original = DATA / "level6" / "dated-cross-domain-source-gap-inventory.json"
+            if not original.is_file():
+                raise RuntimeError("LEVEL7_PRIOR_SOURCE_RECEIPTS_NOT_AVAILABLE")
+            source = json.loads(original.read_text(encoding="utf-8"))
+            report = inventory(source, ncts=ncts, freeze_as_of=roster["asOf"],
+                               source_roster_blob_sha1=roster["source_git_blob_sha1"])
+            dest = DATA / "level7" / "model-validation-source-and-timing-gaps.json"
+            safe_json(dest, report)
+            return {
+                "result": "ORIGINAL_SOURCE_TIMING_GAPS_INVENTORIED_NOT_VALIDATION",
+                "snapshot_nct_count": report["total"],
+                "original_registry_receipts_audited": report["original_registry_receipts_audited"],
+                "exact_nct_identity_matched": report["exact_nct_identity_matched"],
+                "source_roster_git_blob_sha1": report["source_roster_git_blob_sha1"],
+                "source_publication_dates_independently_verified": 0,
+                "historical_pre_cutoff_source_freezes_verified": 0,
+                "outcome_blind_historical_validations_performed": 0,
+                "predictive_model_trained": False,
+                "calibration_evidence_verified": False,
+                "approval_probabilities_generated": False,
+                "current_canonical_focus_verified": False,
+                "independently_reviewed": False,
+                "source_report": str(dest),
+            }
         if number == 6:
             from level6_cross_disciplinary_inventory import process_ncts
             ncts, roster = verified_level5_candidate_ids()
@@ -312,6 +355,15 @@ def execute(number: int, step: str, manifest: dict) -> dict:
                 "source_report": str(dest), "current_canonical_focus_verified": False,
                 "independently_reviewed": False}
     if step == "IMPLEMENT_FUNCTIONAL_GATES":
+        if number == 7:
+            for name in ("level7_model_validation_readiness.py",
+                         "level7_source_readiness_inventory.py"):
+                if not (ROOT / "scripts" / name).is_file():
+                    raise RuntimeError("LEVEL7_READINESS_IMPLEMENTATION_NOT_INSTALLED")
+            return {"result": "LEVEL7_READ_ONLY_VALIDATION_READINESS_CODE_PRESENT",
+                    "implementation_pr": confirmed_level7_pr(),
+                    "scope": definition["implementation_scope"],
+                    "trained_model": False, "probability_calibrated": False}
         if number == 6:
             file = ROOT / "scripts" / "level6_cross_disciplinary_inventory.py"
             if not file.is_file():
@@ -334,6 +386,32 @@ def execute(number: int, step: str, manifest: dict) -> dict:
         return {"result": "LEVEL4_FUNCTIONAL_SOURCE_REVIEW_CODE_PRESENT_NOT_SCIENCE_SIGNOFF",
                 "implementation_pr": confirmed_pr(1156)}
     if step == "RUN_REGRESSION_TESTS":
+        if number == 7:
+            checks = [
+                ([sys.executable, "-B", "-m", "unittest", "discover", "-s", "tests",
+                  "-p", "test_level7_model_validation_readiness.py", "-v"],
+                 "level7_temporal_model_readiness", 13),
+                ([sys.executable, "-B", "-m", "unittest", "discover", "-s", "tests",
+                  "-p", "test_level7_source_readiness_inventory.py", "-v"],
+                 "level7_source_gap_inventory", 12),
+                ([sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"],
+                 "permanent_retirement", None),
+            ]
+            reports = []
+            for argv, suite, minimum in checks:
+                result = cmd(argv, timeout=240)
+                if result.returncode:
+                    raise RuntimeError("LEVEL7_REGRESSION_OR_RETIREMENT_FAILED")
+                if minimum is None:
+                    reports.append({"suite": suite, "passed": True})
+                else:
+                    match = re.search(r"Ran (\d+) tests? in ", result.stderr + result.stdout)
+                    if match is None or int(match.group(1)) < minimum:
+                        raise RuntimeError("LEVEL7_TEST_COUNT_MISMATCH")
+                    reports.append({"suite": suite, "passed": int(match.group(1))})
+            return {"result": "LEVEL7_READINESS_OFFLINE_REGRESSIONS_PASS_NO_MODEL_TRAINED",
+                    "tests": reports, "independent_review_required": True,
+                    "model_validated": False, "calibrated_probabilities": False}
         if number == 6:
             checks = [
                 [sys.executable, "-B", "-m", "unittest", "discover", "-s", "tests",
@@ -396,6 +474,9 @@ def execute(number: int, step: str, manifest: dict) -> dict:
         return {"result": "LOCAL_OFFLINE_REGRESSIONS_PASS_NOT_SCIENCE_SIGNOFF",
                 "tests": reports, "independent_review_required": True}
     if step == "PREPARE_REVIEW_PR":
+        if number == 7:
+            return {"result": "LEVEL7_READ_ONLY_READINESS_DRAFT_VERIFIED",
+                    "implementation_pr": confirmed_level7_pr()}
         if number == 6:
             return {"result": "LEVEL6_REVIEW_PR_VERIFIED_DRAFT_ONLY",
                     "implementation_pr": confirmed_level6_pr()}

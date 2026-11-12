@@ -34,7 +34,7 @@ class Level6IntegrationTests(unittest.TestCase):
         self.assertIn("gap inventory",row["implementation_scope"])
         self.assertFalse(row["completed_scientific_level"])
         self.assertTrue(all(x["implementation_draft_pr"] is None
-                            for x in self.manifest["levels"][3:]))
+                            for x in self.manifest["levels"][4:]))
         self.assertTrue(all(v is False for v in self.manifest["safety"].values()))
 
     def test_32_live_registry_receipts_needed_not_preclinical_or_fda_invented(self):

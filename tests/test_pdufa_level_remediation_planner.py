@@ -58,13 +58,14 @@ class SerialRemediationTests(unittest.TestCase):
         self.assertTrue(lvl6["can_start_engineering_now"])
         self.assertFalse(lvl6["scientific_completion_verified"])
 
-    def test_future_level7_is_development_prep_not_advance(self):
+    def test_future_level7_can_have_reviewed_draft_without_skipping_level6(self):
         p=M.plan_work(BASE,engineering_state=ledger(),completion_state=progress(),
                       focus_level=7)
         self.assertEqual(p["selected_level"]["level"],7)
         self.assertEqual(p["selected_level"]["name"],"Predictive Modeling and Uncertainty")
         self.assertFalse(p["selected_level"]["can_start_engineering_now"])
-        self.assertIsNone(p["selected_level"]["implementation_draft_pr"])
+        self.assertEqual(p["selected_level"]["implementation_draft_pr"],1169)
+        self.assertFalse(p["selected_level"]["scientific_completion_verified"])
         self.assertEqual(p["active_level"],6)
 
     def test_proper_contiguous_sequence_cannot_skip_level6(self):

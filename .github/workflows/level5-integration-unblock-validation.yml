@@ -48,10 +48,11 @@ jobs:
           p=json.loads(Path("automation/scientific-level-completion-queue.json").read_text())
           assert p["levels"][1]["implementation_draft_pr"] == 1161
           assert p["levels"][2]["implementation_draft_pr"] == 1163
-          assert all(x["implementation_draft_pr"] is None for x in p["levels"][3:])
+          assert p["levels"][3]["implementation_draft_pr"] == 1169
+          assert all(x["implementation_draft_pr"] is None for x in p["levels"][4:])
           assert all(x["completed_scientific_level"] is False for x in p["levels"])
           assert all(x is False for x in p["safety"].values())
-          print("PASS: Level4-6 bounded engineering scope only; Level7-20 still await domain code")
+          print("PASS: Level4-6 bounded engineering scope only; Level7 has bounded readiness code; Levels8-20 await domain code")
           PY
   windows-installer:
     runs-on: windows-latest

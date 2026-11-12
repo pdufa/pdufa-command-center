@@ -47,9 +47,8 @@ class WindowsPartialInstallStagingTests(unittest.TestCase):
             # The one-time bootstrap downloads itself first, outside $files.
             local_installer=stage/"scripts/windows_pdufa_level6_unblock.ps1"
             shutil.copy2(INSTALLER,local_installer)
-            self.assertFalse(
-                (stage/"scripts/level7_model_validation_readiness.py").exists(),
-                "Fixture must omit optional Level7 module like the actual install")
+            self.assertTrue((stage/"scripts/level7_model_validation_readiness.py").exists())
+            self.assertTrue((stage/"scripts/level7_source_readiness_inventory.py").exists())
             result=subprocess.run(
                 [sys.executable,"-B","-m","unittest","discover","-s",str(stage/"tests"),
                  "-p","test_pdufa_predictive_preflight.py","-v"],
@@ -69,7 +68,7 @@ class WindowsPartialInstallStagingTests(unittest.TestCase):
             report=json.loads(report_path.read_text(encoding="utf-8"))
             self.assertEqual(report["known_shared_installation_blockers"],0)
             self.assertEqual(report["future_levels_with_missing_approved_domain_implementation"],
-                             list(range(7,21)))
+                             list(range(8,21)))
             self.assertFalse(report["windows_restart_confirmed"])
 
 if __name__=="__main__":

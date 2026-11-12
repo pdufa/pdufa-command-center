@@ -164,6 +164,39 @@ def engineering_evidence(state: dict, manifest: dict, n: int, *,
                     or tests[1] != {"suite": "permanent_retirement", "passed": True}
                     or gates.get("implementation_pr", {}).get("pr_number") != 1163):
                 return None
+        elif n == 7:
+            # Read-only temporal/model-validation gap inventory for original
+            # registry receipts. This does NOT approve a trained model or
+            # regulatory prediction probability.
+            source = evidence["COLLECT_ORIGINAL_SOURCE"]
+            tests = evidence["RUN_REGRESSION_TESTS"].get("tests", [])
+            gates = evidence["IMPLEMENT_FUNCTIONAL_GATES"]
+            if (row.get("implementation_draft_pr") != 1169
+                    or source.get("snapshot_nct_count") != 32
+                    or source.get("original_registry_receipts_audited") != 32
+                    or source.get("exact_nct_identity_matched") != 32
+                    or source.get("source_roster_git_blob_sha1") !=
+                       "b1b79b632ff6a87d6533f6135d4204cb5931e23c"
+                    or source.get("source_publication_dates_independently_verified") != 0
+                    or source.get("historical_pre_cutoff_source_freezes_verified") != 0
+                    or source.get("outcome_blind_historical_validations_performed") != 0
+                    or source.get("predictive_model_trained") is not False
+                    or source.get("calibration_evidence_verified") is not False
+                    or source.get("approval_probabilities_generated") is not False
+                    or source.get("current_canonical_focus_verified") is not False
+                    or source.get("independently_reviewed") is not False
+                    or len(tests) != 3
+                    or tests[0].get("suite") != "level7_temporal_model_readiness"
+                    or type(tests[0].get("passed")) is not int
+                    or tests[0]["passed"] < 13
+                    or tests[1].get("suite") != "level7_source_gap_inventory"
+                    or type(tests[1].get("passed")) is not int
+                    or tests[1]["passed"] < 12
+                    or tests[2] != {"suite": "permanent_retirement", "passed": True}
+                    or gates.get("implementation_pr", {}).get("pr_number") != 1169
+                    or gates.get("trained_model") is not False
+                    or gates.get("probability_calibrated") is not False):
+                return None
         else:
             return None
     pr = row["implementation_draft_pr"]
@@ -172,6 +205,8 @@ def engineering_evidence(state: dict, manifest: dict, n: int, *,
             base.confirmed_level5_pr()
         elif n == 6:
             base.confirmed_level6_pr()
+        elif n == 7:
+            base.confirmed_level7_pr()
         else:
             base.confirmed_pr(pr)
     body = json.dumps({"level": n, "scope": row["implementation_scope"],
@@ -482,6 +517,60 @@ def rearm_level6_after_real_implementation(state: dict, manifest: dict) -> bool:
     return True
 
 
+LEVEL7_REARM_ID = "LEVEL7_READ_ONLY_MODEL_READINESS_PR1169_INTEGRATION_V1"
+
+
+def rearm_level7_after_real_implementation(state: dict, manifest: dict) -> bool:
+    """Retry exactly the four original Level 7 placeholder blockers once.
+
+    This is a bounded engineering retry, not scientific signoff; preserves
+    prior evidence in a durable backup, does not reset new/unrecognized errors.
+    """
+    row = manifest["levels"][3]
+    if (row.get("level") != 7 or row.get("implementation_draft_pr") != 1169 or
+            row.get("implementation_scope") !=
+            "Read-only phase-first model-validation evidence-gap inventory from 32 original registry receipts; no fitted model, historical backtest, calibration or PDUFA prediction"):
+        return False
+    receipt = base.DATA / "level7" / "approved-retry-receipt.json"
+    if receipt.exists():
+        saved = json.loads(receipt.read_text(encoding="utf-8"))
+        if saved.get("scope") != LEVEL7_REARM_ID:
+            raise ValueError("Unrecognized Level7 historical retry receipt")
+        return False
+    for name in ("level7_model_validation_readiness.py",
+                 "level7_source_readiness_inventory.py"):
+        if not (base.ROOT / "scripts" / name).is_file():
+            return False
+    if not (base.DATA / "level6" / "dated-cross-domain-source-gap-inventory.json").is_file():
+        return False
+    ncts, _ = base.verified_level5_candidate_ids()
+    if len(ncts) != 32:
+        return False
+    base.confirmed_level7_pr()
+    steps = state["levels"]["7"]["steps"]
+    to_rearm = {
+        step: {"prior_status": item["status"], "prior_attempts": item["attempts"],
+               "prior_blocker": item.get("blocker"), "prior_evidence": item.get("evidence")}
+        for step, code in LEVEL5_REARMABLE.items()
+        if (item := steps[step])["status"] == "BLOCKED" and item.get("blocker") == code
+    }
+    if not to_rearm:
+        return False
+    backup = base.DATA / "level7" / "prior-placeholder-blockers.json"
+    if backup.exists():
+        raise ValueError("Old Level7 blocker backup exists; no overwrite")
+    base.safe_json(backup, {"scope": LEVEL7_REARM_ID, "recorded_utc": utc(),
+                            "restored_steps": to_rearm, "scientific_review_not_modified": True})
+    for step in to_rearm:
+        steps[step].update(status="PENDING", attempts=0, blocker=None, evidence={})
+    base.save(state)
+    base.safe_json(receipt, {"scope": LEVEL7_REARM_ID, "recorded_utc": utc(),
+                             "reset_only_old_domain_placeholders": sorted(to_rearm),
+                             "historical_blockers_preserved_at": str(backup),
+                             "scientific_level_completed": False})
+    return True
+
+
 def run(*, once: bool = False, sleep_seconds: int = 60) -> int:
     if base.STOP.exists():
         print("STOPPED_BY_OWNER")
@@ -497,6 +586,9 @@ def run(*, once: bool = False, sleep_seconds: int = 60) -> int:
         if first_uncompleted(eng) == 6:
             if rearm_level6_after_real_implementation(state,manifest):
                 print("LEVEL6_OLD_PLACEHOLDER_RETRIED_AFTER_VERIFIED_CODE; pending checkpoints will execute",flush=True)
+        if first_uncompleted(eng) == 7:
+            if rearm_level7_after_real_implementation(state,manifest):
+                print("LEVEL7_OLD_PLACEHOLDER_RETRIED_AFTER_VERIFIED_CODE; pending checkpoints will execute",flush=True)
         while not base.STOP.exists():
             result = cycle(eng,state,manifest)
             print(result,"engineering_level=",first_uncompleted(eng),flush=True)
