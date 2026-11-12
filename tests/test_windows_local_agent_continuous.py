@@ -302,7 +302,9 @@ class ContinuousWorkerSafetyTests(unittest.TestCase):
     def test_stop_control_blocks_worker_even_before_pilot(self):
         M.STOP_FILE.parent.mkdir(parents=True, exist_ok=True)
         M.STOP_FILE.write_text("stop", encoding="utf-8")
-        self.assertEqual(M.worker(pilot=True), 2)
+        # Owner STOP is a clean exit so Windows restart-on-failure does not
+        # consume retries or continuously relaunch an intentionally stopped job.
+        self.assertEqual(M.worker(pilot=True), 0)
         self.assertFalse(M.LOCK_FILE.exists())
 
     def test_active_worker_lock_blocks_parallel_workers(self):
@@ -438,6 +440,27 @@ class ContinuousWorkerSafetyTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError, "WORKER_LOCK_PRESENT"):
                 M.reset_blocked_stage4_after_commit_check()
         checker.assert_not_called()
+
+    def test_windows_recovery_is_bounded_and_never_repeats_pilot(self):
+        installer = (ROOT / "scripts/windows_local_agent_install_continuous.ps1").read_text(
+            encoding="utf-8"
+        )
+        self.assertIn("[switch]$EnableAutoRestart", installer)
+        self.assertIn("$restartAttempts = 12", installer)
+        self.assertIn("$restartDelay = New-TimeSpan -Minutes 1", installer)
+        self.assertIn("-RestartCount $restartAttempts", installer)
+        self.assertIn("-RestartInterval $restartDelay", installer)
+        self.assertIn("-MultipleInstances IgnoreNew", installer)
+        self.assertIn("Set-ScheduledTask -TaskName $taskName -Settings $settings", installer)
+        self.assertIn("Export-ScheduledTask -TaskName $taskName", installer)
+        recovery = installer.split("if ($EnableAutoRestart) {", 1)[1].split(
+            "\\nif ($Stop)", 1
+        )[0]
+        self.assertNotIn("Start-ScheduledTask", recovery)
+        self.assertNotIn("--pilot", recovery)
+        self.assertNotIn("--clear-stop", recovery)
+        self.assertNotIn("Enable-ScheduledTask", recovery)
+        self.assertNotIn("gh pr merge", recovery)
 
     def test_real_repo_self_test_is_safe_and_has_no_network(self):
         self.assertEqual(M.self_test(), 0)
