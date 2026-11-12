@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "channel": "pdufa-reviewed-windows",
+  "enabled": false,
+  "release_commit": null,
+  "installer_path": "scripts/windows_pdufa_level6_unblock.ps1",
+  "installer_git_blob_sha1": null,
+  "approved_pr": null,
+  "release_description": "DISABLED EXAMPLE. To publish, create a separate reviewed PR merging an enabled channel on protected main after the implementation is independently reviewed and CI-green."
+}

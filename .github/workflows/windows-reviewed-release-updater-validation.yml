@@ -1,0 +1,52 @@
+name: PDUFA Windows Reviewed Release Updater Validation
+on:
+  pull_request:
+    paths:
+      - 'scripts/windows_pdufa_reviewed_release_updater.ps1'
+      - 'tests/test_windows_reviewed_release_updater.py'
+      - 'automation/windows-release-channel.example.json'
+      - 'docs/PDUFA_WINDOWS_REVIEWED_AUTO_UPDATES.md'
+      - '.github/workflows/windows-reviewed-release-updater-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  release-policy-offline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Review gates, fixed release path, STOP, installer backup and no live channel
+        run: |
+          python -m unittest discover -s tests -p 'test_windows_reviewed_release_updater.py' -v
+          python scripts/audit_raas_retirement.py --check
+          python - <<'PY'
+          from pathlib import Path
+          t=Path('scripts/windows_pdufa_reviewed_release_updater.ps1').read_text()
+          assert '$pr.reviewDecision' in t and 'required_approving_review_count' in t
+          assert '$blob' in t and 'hash-object $incoming' in t
+          assert not Path('automation/windows-release-channel.json').exists()
+          print('PASS: reviewed transport staged, no auto-deployment channel enabled')
+          PY
+  native-windows-security-and-readonly-status:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse PowerShell 5.1 + run read-only status (no scheduled-task mutation)
+        shell: pwsh
+        run: |
+          $file = 'scripts/windows_pdufa_reviewed_release_updater.ps1'
+          $tokens = $null
+          $parseErrors = $null
+          [System.Management.Automation.Language.Parser]::ParseFile($file,[ref]$tokens,[ref]$parseErrors) | Out-Null
+          if($parseErrors.Count -gt 0) {
+            $parseErrors | Out-String | Write-Error
+            exit 1
+          }
+          & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File (Resolve-Path $file).Path -Status
+          if($LASTEXITCODE -ne 0) { throw ('Read-only status returned '+$LASTEXITCODE) }
+          Write-Host 'PASS: native Windows updater parses and read-only status succeeds'
