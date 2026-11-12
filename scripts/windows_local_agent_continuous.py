@@ -590,7 +590,13 @@ def worker(*, pilot: bool) -> int:
         heartbeat("STOPPED", state)
         return 0
     finally:
-        LOCK_FILE.unlink(missing_ok=True)
+        # Never delete a lock that another process replaced while we ran.
+        try:
+            lock_data = json.loads(LOCK_FILE.read_text(encoding="utf-8"))
+            if lock_data.get("pid") == os.getpid():
+                LOCK_FILE.unlink(missing_ok=True)
+        except (OSError, ValueError, TypeError):
+            pass
 
 
 def self_test() -> int:
