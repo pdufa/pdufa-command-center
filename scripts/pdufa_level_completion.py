@@ -1,0 +1,455 @@
+#!/usr/bin/env python3
+"""Persistent, review-gated Level 4-20 PDUFA completion worker (draft work only).
+
+Unlike the finished intake/provenance generators, this worker tracks scientific
+acceptance requirements, original-source retrieval, functional implementation,
+regression tests, independent review, blockers, and next approved action.
+It NEVER marks a scientific level complete automatically.
+"""
+from __future__ import annotations
+
+import argparse
+from datetime import datetime, timezone
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import sys
+import tempfile
+import threading
+import time
+
+ROOT = Path(__file__).resolve().parents[1]
+PLAN = ROOT / "automation/scientific-level-completion-queue.json"
+DATA = Path.home() / "PDUFA-Agent-Continuous"
+LEDGER = DATA / "level_completion_ledger.json"
+HEARTBEAT = DATA / "heartbeat.json"
+STOP = DATA / "STOP"
+LOCK = DATA / "RUNNING.lock"
+REPO = "pdufa/pdufa-command-center"
+ISSUE = "1096"
+STATES = {"PENDING", "RUNNING", "DONE", "BLOCKED"}
+STEPS = ("AUDIT_EXISTING_DRAFTS", "COLLECT_ORIGINAL_SOURCE", "IMPLEMENT_FUNCTIONAL_GATES",
+         "RUN_REGRESSION_TESTS", "PREPARE_REVIEW_PR", "INDEPENDENT_REVIEW")
+ERROR_CODE = re.compile(r"[A-Z][A-Z0-9_]{2,80}\Z")
+MAX_ATTEMPTS = 2
+
+def utc() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+def safe_json(path: Path, value: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.is_symlink() or path.parent.is_symlink():
+        raise ValueError("Unsafe local completion ledger path")
+    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=".pdufa-stage-", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            json.dump(value, stream, indent=2, sort_keys=True)
+            stream.write("\n")
+            stream.flush()
+            os.fsync(stream.fileno())
+        os.replace(tmp, path)
+    finally:
+        Path(tmp).unlink(missing_ok=True)
+
+def plan() -> dict:
+    value = json.loads(PLAN.read_text(encoding="utf-8"))
+    safety = value.get("safety")
+    levels = value.get("levels")
+    if (value.get("schema_version") != 1 or
+            value.get("queue_id") != "PDUFA_LEVEL_COMPLETION_V1" or
+            value.get("steps") != list(STEPS) or
+            not isinstance(levels, list) or len(levels) != 17 or
+            [v.get("level") for v in levels] != list(range(4, 21)) or
+            not isinstance(safety, dict) or
+            any(safety.get(flag) is not False for flag in
+                ("automatic_merges", "production_deployments", "automatic_predictions",
+                 "trades", "scientific_level_completion_by_agent",
+                 "raas_dependency", "allow_automatic_execution_of_unreviewed_generated_python"))):
+        raise ValueError("Unapproved or unsafe level-completion plan")
+    for row in levels:
+        n = row["level"]
+        if (row.get("completed_scientific_level") is not False or
+                row.get("original_intake_draft_pr") != 1121 + n - 4 or
+                row.get("provenance_draft_pr") != 1139 + n - 4 or
+                row.get("implementation_draft_pr") != (1156 if n == 4 else None) or
+                not isinstance(row.get("scientific_acceptance_criteria"), list) or
+                len(row["scientific_acceptance_criteria"]) < 5):
+            raise ValueError("Incomplete or inconsistent scientific review manifest")
+    return value
+
+def new_ledger(manifest: dict) -> dict:
+    return {"schema_version": 1, "queue_id": manifest["queue_id"],
+            "created_utc": utc(), "updated_utc": utc(),
+            "mode": "LEVEL_COMPLETION_PENDING", "scientifically_completed_levels": 0,
+            "production_modified": False, "active": None, "levels": {
+                str(row["level"]): {
+                    "name": row["name"], "scientific_complete": False,
+                    "acceptance": {criterion: False for criterion in row["scientific_acceptance_criteria"]},
+                    "steps": {step: {"status": "PENDING", "attempts": 0,
+                                     "blocker": None, "evidence": {}}
+                              for step in STEPS}
+                } for row in manifest["levels"]
+            }}
+
+def load(manifest: dict) -> dict:
+    if not LEDGER.exists():
+        result = new_ledger(manifest)
+        safe_json(LEDGER, result)
+        return result
+    result = json.loads(LEDGER.read_text(encoding="utf-8"))
+    if (result.get("schema_version") != 1 or result.get("queue_id") != manifest["queue_id"]
+            or result.get("scientifically_completed_levels") != 0
+            or result.get("production_modified") is not False
+            or set(result.get("levels", {})) != {str(n) for n in range(4, 21)}):
+        raise ValueError("Invalid persistent level-completion state")
+    for row in manifest["levels"]:
+        level = result["levels"][str(row["level"])]
+        if (level.get("name") != row["name"] or level.get("scientific_complete") is not False
+                or set(level.get("acceptance", {})) != set(row["scientific_acceptance_criteria"])
+                or any(flag is not False for flag in level["acceptance"].values())
+                or set(level.get("steps", {})) != set(STEPS)):
+            raise ValueError("Scientific-level acceptance was altered without review")
+        for item in level["steps"].values():
+            if (item.get("status") not in STATES or type(item.get("attempts")) is not int
+                    or not 0 <= item["attempts"] <= MAX_ATTEMPTS
+                    or not isinstance(item.get("evidence"), dict)):
+                raise ValueError("Invalid completion task state")
+    return result
+
+def save(state: dict) -> None:
+    state["updated_utc"] = utc()
+    safe_json(LEDGER, state)
+
+def counts(state: dict) -> dict:
+    jobs = [row for level in state["levels"].values() for row in level["steps"].values()]
+    return {"tasks_done": sum(x["status"] == "DONE" for x in jobs),
+            "tasks_pending": sum(x["status"] == "PENDING" for x in jobs),
+            "tasks_blocked": sum(x["status"] == "BLOCKED" for x in jobs),
+            "tasks_total": len(jobs), "scientifically_completed_levels": 0}
+
+def next_step(state: dict) -> tuple[int, str] | None:
+    for number in range(4, 21):
+        for step in STEPS:
+            item = state["levels"][str(number)]["steps"][step]
+            if item["status"] == "RUNNING":
+                item["status"] = "PENDING" if item["attempts"] < MAX_ATTEMPTS else "BLOCKED"
+                item["blocker"] = ("INTERRUPTED_PREVIOUS_ATTEMPT"
+                                   if item["status"] == "BLOCKED" else None)
+            if item["status"] == "PENDING":
+                return number, step
+    return None
+
+def heartbeat(mode: str, state: dict, level: int | None = None,
+              task: str | None = None) -> None:
+    safe_json(HEARTBEAT, {"mode": mode, "queue": "LEVEL_COMPLETION",
+                           "level": level, "task": task, "updated_utc": utc(),
+                           "pid": os.getpid(), "counts": counts(state),
+                           "next_action": next_label(state)})
+
+def next_label(state: dict) -> str:
+    for n in range(4, 21):
+        for step in STEPS:
+            if state["levels"][str(n)]["steps"][step]["status"] == "PENDING":
+                return f"L{n:02d}:{step}"
+    return "AWAIT_REVIEW_OR_NEW_APPROVED_IMPLEMENTATION"
+
+def cmd(args: list[str], timeout: int = 120) -> subprocess.CompletedProcess:
+    env = os.environ.copy()
+    env["GH_PROMPT_DISABLED"] = "1"
+    env["GIT_TERMINAL_PROMPT"] = "0"
+    return subprocess.run(args, cwd=ROOT, timeout=timeout, env=env,
+                          capture_output=True, text=True, errors="replace")
+
+def confirmed_pr(pr_number: int) -> dict:
+    result = cmd(["gh", "pr", "view", str(pr_number), "--repo", REPO, "--json",
+                  "number,url,isDraft,state,baseRefName,headRefName"], timeout=35)
+    if result.returncode:
+        raise RuntimeError("GITHUB_PR_LOOKUP_FAILED")
+    data = json.loads(result.stdout)
+    if (data.get("number") != pr_number or data.get("state") != "OPEN"
+            or data.get("isDraft") is not True
+            or data.get("baseRefName") != "automation/windows-local-agent-monitor"
+            or not isinstance(data.get("headRefName"), str)
+            or not re.fullmatch(r"https://github\.com/pdufa/pdufa-command-center/pull/[0-9]+",
+                                str(data.get("url", "")))):
+        raise RuntimeError("REVIEW_PR_NOT_APPROVED_DRAFT")
+    return {"pr_number": pr_number, "draft_url": data["url"]}
+
+def execute(number: int, step: str, manifest: dict) -> dict:
+    definition = manifest["levels"][number - 4]
+    if step == "AUDIT_EXISTING_DRAFTS":
+        checks = [confirmed_pr(definition["original_intake_draft_pr"]),
+                  confirmed_pr(definition["provenance_draft_pr"])]
+        return {"result": "EXISTING_DRAFTS_AUDITED_NOT_SCIENTIFICALLY_COMPLETE",
+                "drafts": checks, "required_evidence": definition["required_evidence_fields"],
+                "scientific_review_required": True}
+    if step == "COLLECT_ORIGINAL_SOURCE":
+        if number != 4:
+            raise RuntimeError("DOMAIN_SOURCE_COLLECTION_NOT_REVIEWED")
+        # First real source from dated FOCUS research snapshot; not a current
+        # canonical FOCUS membership assertion or a blind retrospective bundle.
+        from level4_scientific_evidence import retrieve_and_summarize
+        report = retrieve_and_summarize("NCT05507203")
+        dest = DATA / "level4" / "NCT05507203.original-source-review.json"
+        safe_json(dest, report)
+        return {"result": "ONE_ORIGINAL_REGISTRY_RECORD_INVENTORIED_REVIEW_REQUIRED",
+                "nct": "NCT05507203", "receipt_sha256": report["source"]["raw_sha256"],
+                "receipt_url": report["source"]["url"],
+                "source_report": str(dest), "current_focus_roster_verified": False,
+                "independently_reviewed": False}
+    if step == "IMPLEMENT_FUNCTIONAL_GATES":
+        if number != 4:
+            raise RuntimeError("DOMAIN_IMPLEMENTATION_NOT_APPROVED")
+        file = ROOT / "scripts/level4_scientific_evidence.py"
+        if not file.exists():
+            raise RuntimeError("LEVEL4_IMPLEMENTATION_NOT_INSTALLED")
+        return {"result": "LEVEL4_FUNCTIONAL_SOURCE_REVIEW_CODE_PRESENT_NOT_SCIENCE_SIGNOFF",
+                "implementation_pr": confirmed_pr(1156)}
+    if step == "RUN_REGRESSION_TESTS":
+        if number != 4:
+            raise RuntimeError("DOMAIN_REGRESSION_SUITE_NOT_APPROVED")
+        commands = [
+            [sys.executable, "-B", "-m", "unittest", "discover",
+             "-s", "tests", "-p", "test_level4_scientific_evidence.py", "-v"],
+            [sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"],
+        ]
+        reports = []
+        for argv in commands:
+            result = cmd(argv, timeout=240)
+            if result.returncode:
+                raise RuntimeError("LEVEL4_REGRESSION_OR_RETIREMENT_FAILED")
+            if "unittest" in argv:
+                match = re.search(r"Ran (\d+) tests? in ", result.stderr + result.stdout)
+                if match is None or int(match.group(1)) < 6:
+                    raise RuntimeError("LEVEL4_TEST_COUNT_MISMATCH")
+                reports.append({"suite": "level4_original_source", "passed": int(match.group(1))})
+            else:
+                reports.append({"suite": "permanent_retirement", "passed": True})
+        return {"result": "LOCAL_OFFLINE_REGRESSIONS_PASS_NOT_SCIENCE_SIGNOFF",
+                "tests": reports, "independent_review_required": True}
+    if step == "PREPARE_REVIEW_PR":
+        if number != 4:
+            raise RuntimeError("DOMAIN_IMPLEMENTATION_PR_NOT_AVAILABLE")
+        return {"result": "EXISTING_REVIEW_PR_VERIFIED_DRAFT_ONLY",
+                "implementation_pr": confirmed_pr(1156)}
+    if step == "INDEPENDENT_REVIEW":
+        # Human independent clinical/scientific/statistical review cannot be
+        # forged by local model code or source receipt metadata.
+        raise RuntimeError("INDEPENDENT_REVIEW_NOT_APPROVED")
+    raise ValueError("Unknown approved completion step")
+
+def once(state: dict, manifest: dict) -> bool:
+    selection = next_step(state)
+    if selection is None:
+        return False
+    level, task_name = selection
+    item = state["levels"][str(level)]["steps"][task_name]
+    item["attempts"] += 1
+    item["status"] = "RUNNING"
+    item["blocker"] = None
+    state["active"] = {"level": level, "task": task_name, "started_utc": utc()}
+    state["mode"] = "LEVEL_COMPLETION_WORKING"
+    save(state)
+    heartbeat("WORKING", state, level, task_name)
+    try:
+        result = execute(level, task_name, manifest)
+    except (OSError, ValueError, RuntimeError, TimeoutError, subprocess.TimeoutExpired,
+            json.JSONDecodeError) as exc:
+        code = str(exc) if isinstance(exc, RuntimeError) and ERROR_CODE.fullmatch(str(exc)) else type(exc).__name__.upper()
+        item["blocker"] = code
+        # Missing implementation/independent review is a true blocker, not
+        # something to brute-force retry indefinitely.
+        permanent = code in {"DOMAIN_SOURCE_COLLECTION_NOT_REVIEWED",
+                             "DOMAIN_IMPLEMENTATION_NOT_APPROVED",
+                             "DOMAIN_REGRESSION_SUITE_NOT_APPROVED",
+                             "DOMAIN_IMPLEMENTATION_PR_NOT_AVAILABLE",
+                             "INDEPENDENT_REVIEW_NOT_APPROVED",
+                             "LEVEL4_IMPLEMENTATION_NOT_INSTALLED"}
+        item["status"] = "BLOCKED" if permanent or item["attempts"] >= MAX_ATTEMPTS else "PENDING"
+        item["evidence"] = {"last_attempt_utc": utc(), "scientific_signoff": False}
+    else:
+        item["status"] = "DONE"
+        item["evidence"] = {"observed_at_utc": utc(), **result,
+                            "scientific_signoff": False}
+    state["active"] = None
+    save(state)
+    return True
+
+def public_status(state: dict) -> str:
+    active = state.get("active")
+    last = None
+    blockers = []
+    for n in range(4, 21):
+        for key, row in state["levels"][str(n)]["steps"].items():
+            if row["status"] == "BLOCKED":
+                blockers.append(f"L{n:02d} {key}: {row.get('blocker') or 'UNCLASSIFIED'}")
+            if row["status"] == "DONE":
+                last = f"L{n:02d} {key}"
+    count = counts(state)
+    visible = blockers[:12]
+    if len(blockers) > 12:
+        visible.append(f"... plus {len(blockers)-12} additional recorded blockers")
+    return (
+        "# PDUFA continuous-development monitor\n\n"
+        "**Mode:** LEVEL COMPLETION, not research-intake draft generation\n\n"
+        f"**Updated UTC:** {utc()}\n\n"
+        f"**Current level/task:** {('L'+str(active['level'])+' '+active['task']) if active else 'none running'}\n\n"
+        f"**Tasks completed (engineering checkpoints only):** {count['tasks_done']}/{count['tasks_total']}\n\n"
+        "**Scientific levels independently completed:** 0/17\n\n"
+        f"**Last engineering checkpoint:** {last or 'none'}\n\n"
+        f"**Next approved action:** {next_label(state)}\n\n"
+        f"**Pending:** {count['tasks_pending']} | **Blocked:** {count['tasks_blocked']}\n\n"
+        "**Blockers:**\n" + ("\n".join("- " + b for b in visible) if visible else "- none recorded") +
+        "\n\n**Safeguards:** Review-only draft PRs; no merges, deployments, "
+        "FDA prediction publishing, trading or automatic scientific signoff.\n"
+        "Detailed source receipts and test results are in the local completion ledger.\n"
+    )
+
+def publish(state: dict) -> bool:
+    DATA.mkdir(parents=True, exist_ok=True)
+    fd, name = tempfile.mkstemp(dir=DATA, prefix=".level-monitor-", suffix=".md")
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8") as stream:
+            stream.write(public_status(state))
+        result = cmd(["gh", "issue", "edit", ISSUE, "--repo", REPO,
+                      "--body-file", name], timeout=45)
+        return result.returncode == 0
+    finally:
+        Path(name).unlink(missing_ok=True)
+
+def process_alive(pid: int) -> bool:
+    if type(pid) is not int or pid < 1:
+        return True
+    if os.name == "nt":
+        import ctypes
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.OpenProcess.argtypes = [ctypes.c_ulong, ctypes.c_int, ctypes.c_ulong]
+        kernel.OpenProcess.restype = ctypes.c_void_p
+        kernel.GetExitCodeProcess.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_ulong)]
+        kernel.CloseHandle.argtypes = [ctypes.c_void_p]
+        handle = kernel.OpenProcess(0x1000, 0, pid)
+        if not handle:
+            return ctypes.get_last_error() != 87
+        try:
+            result = ctypes.c_ulong(0)
+            ok = kernel.GetExitCodeProcess(handle, ctypes.byref(result))
+            return not ok or result.value == 259
+        finally:
+            kernel.CloseHandle(handle)
+    try:
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+
+def acquire_lock() -> None:
+    DATA.mkdir(parents=True, exist_ok=True)
+    if LOCK.is_symlink():
+        raise RuntimeError("UNSAFE_LOCK")
+    if LOCK.exists():
+        try:
+            old = json.loads(LOCK.read_text(encoding="utf-8"))
+            started = datetime.fromisoformat(old["started_utc"])
+            age = (datetime.now(timezone.utc) - started).total_seconds()
+            if not 60 <= age <= 60 * 60 * 24 * 30 or process_alive(old["pid"]):
+                raise RuntimeError("ACTIVE_OR_UNCERTAIN_WORKER_LOCK")
+            if json.loads(LOCK.read_text(encoding="utf-8")) != old:
+                raise RuntimeError("WORKER_LOCK_CHANGED")
+            LOCK.unlink()
+        except (KeyError, ValueError, TypeError, OSError) as exc:
+            raise RuntimeError("WORKER_LOCK_UNVERIFIABLE") from exc
+    fd = os.open(LOCK, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(fd, "w", encoding="utf-8") as stream:
+        json.dump({"pid": os.getpid(), "started_utc": utc()}, stream)
+
+def run(once_only: bool = False) -> int:
+    if STOP.exists():
+        print("STOPPED_BY_OWNER")
+        return 0
+    acquire_lock()
+    try:
+        manifest = plan()
+        state = load(manifest)
+        state["mode"] = "LEVEL_COMPLETION_RUNNING"
+        save(state)
+        heartbeat("RUNNING", state)
+        while not STOP.exists():
+            if not once(state, manifest):
+                state["mode"] = "AWAITING_INDEPENDENT_REVIEW_OR_APPROVED_WORK"
+                save(state)
+                heartbeat("IDLE", state)
+                publish(state)
+                if once_only:
+                    break
+                for _ in range(6):
+                    if STOP.exists():
+                        break
+                    time.sleep(10)
+                    heartbeat("IDLE", state)
+                continue
+            heartbeat("RUNNING", state)
+            publish(state)
+            if once_only:
+                break
+            time.sleep(2)
+        if STOP.exists():
+            state["mode"] = "STOPPED_BY_OWNER"
+            save(state)
+            heartbeat("STOPPED", state)
+        return 0
+    finally:
+        try:
+            current = json.loads(LOCK.read_text(encoding="utf-8"))
+            if current.get("pid") == os.getpid():
+                LOCK.unlink(missing_ok=True)
+        except (OSError, ValueError):
+            pass
+
+def self_test() -> int:
+    p = plan()
+    state = new_ledger(p)
+    assert len(state["levels"]) == 17
+    assert counts(state)["tasks_total"] == 102
+    assert next_step(state) == (4, "AUDIT_EXISTING_DRAFTS")
+    assert state["levels"]["20"]["scientific_complete"] is False
+    assert all(not any(l["acceptance"].values()) for l in state["levels"].values())
+    assert "Scientific levels independently completed:** 0/17" in public_status(state)
+    print("PASS: persistent fail-closed Level 4-20 queue, 102 review-gated tasks")
+    return 0
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    actions = parser.add_mutually_exclusive_group(required=True)
+    for name in ("run", "once", "status", "self-test", "plan"):
+        actions.add_argument("--" + name, action="store_true")
+    args = parser.parse_args()
+    try:
+        if args.self_test:
+            return self_test()
+        manifest = plan()
+        if args.plan:
+            print(json.dumps({"queue_id": manifest["queue_id"], "levels": 17,
+                              "scientific_signoff_automatic": False, "tasks": 102}))
+            return 0
+        if args.status:
+            if not LEDGER.exists():
+                print("NOT_STARTED: completion ledger has not been initialized")
+                return 2
+            state = load(manifest)
+            print(json.dumps({"mode": state["mode"], "active": state.get("active"),
+                              "counts": counts(state), "next_action": next_label(state),
+                              "heartbeat": str(HEARTBEAT)}, indent=2))
+            return 0
+        return run(once_only=args.once)
+    except (RuntimeError, ValueError, OSError, subprocess.TimeoutExpired,
+            json.JSONDecodeError) as exc:
+        code = str(exc) if isinstance(exc, RuntimeError) and ERROR_CODE.fullmatch(str(exc)) else type(exc).__name__.upper()
+        print("STOP:", code)
+        return 2
+
+if __name__ == "__main__":
+    raise SystemExit(main())
