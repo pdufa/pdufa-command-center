@@ -63,6 +63,15 @@ SCOPES = {
 STATUS = frozenset(("PENDING", "RUNNING", "DRAFT_PR_CREATED", "BLOCKED"))
 
 
+def public_blocker(stage: object) -> str:
+    """Return only a predefined failure code, never secrets or command output."""
+    raw = stage.get("blocker") if isinstance(stage, dict) else None
+    if not isinstance(raw, str) or not re.fullmatch(r"[A-Z][A-Z0-9_]{2,80}", raw):
+        return "UNCLASSIFIED_LOCAL_FAILURE" if raw else "NONE_RECORDED"
+    return raw
+
+
+
 def utc() -> str:
     return datetime.now(timezone.utc).isoformat()
 
@@ -451,6 +460,12 @@ def status(require_running: bool = False) -> int:
         return 2
     print("Engineering drafts:", counts["draft_prs_created"],
           "pending:", counts["pending"], "blocked:", counts["blocked"])
+    for number in LEVELS:
+        stage = state["tasks"][str(number)]
+        if stage.get("blocker") or stage.get("status") == "BLOCKED":
+            print("Stage", number, "status:", stage.get("status"),
+                  "attempts:", stage.get("attempts"),
+                  "blocker:", public_blocker(stage))
     for n in LEVELS:
         item = state["tasks"][str(n)]
         if item["status"] == "PENDING":
@@ -576,6 +591,10 @@ def worker(*, pilot: bool) -> int:
                 publish_status(state)
                 print("ENGINEERING_QUEUE_EXHAUSTED: draft PRs need review; no scientific signoff")
                 return 0
+            if pilot and level != 4:
+                print("PILOT_BLOCKED: Stage 4 must pass a verified draft PR first")
+                print("Stage 4 blocker:", public_blocker(state["tasks"]["4"]))
+                return 2
             # A live heartbeat continues even during bounded Ollama/test calls.
             save_ledger(state)
             ping_stop = threading.Event()
@@ -593,7 +612,10 @@ def worker(*, pilot: bool) -> int:
             publish_status(state)
             if pilot:
                 if state["tasks"][str(level)]["status"] != "DRAFT_PR_CREATED":
-                    print("PILOT_NOT_PASSED: no verified draft PR")
+                    stage = state["tasks"][str(level)]
+                    print("PILOT_NOT_PASSED: Stage", level, "status", stage["status"],
+                          "attempts", stage["attempts"],
+                          "blocker", public_blocker(stage))
                     return 2
                 state["mode"] = "PILOT_PASSED_NOT_RUNNING"
                 save_ledger(state)
