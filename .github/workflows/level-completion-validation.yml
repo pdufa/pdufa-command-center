@@ -1,0 +1,68 @@
+name: PDUFA Level Completion Worker Validation
+on:
+  pull_request:
+    paths:
+      - 'automation/scientific-level-completion-queue.json'
+      - 'scripts/pdufa_level_completion.py'
+      - 'scripts/level4_scientific_evidence.py'
+      - 'scripts/windows_local_agent_enable_level_completion.ps1'
+      - 'scripts/windows_local_agent_watchdog.ps1'
+      - 'tests/test_pdufa_level_completion.py'
+      - 'tests/test_level4_scientific_evidence.py'
+      - '.github/workflows/level-completion-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  persistent-queue-and-level4:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Validate fail-closed completion plan and review boundaries
+        run: python scripts/pdufa_level_completion.py --self-test
+      - name: Test crash resume, blocker skipping and monitor contract
+        run: python -m unittest discover -s tests -p 'test_pdufa_level_completion.py' -v
+      - name: Test synthetic Level 4 original-source evidence gates
+        run: python -m unittest discover -s tests -p 'test_level4_scientific_evidence.py' -v
+      - name: Check permanent retirement policy
+        run: python scripts/audit_raas_retirement.py --check
+      - name: Verify no automatic science signoff or deployment
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          src = Path("scripts/pdufa_level_completion.py").read_text()
+          assert '"scientific_complete": False' in src
+          assert '"scientific_signoff": False' in src
+          assert "INDEPENDENT_REVIEW_NOT_APPROVED" in src
+          assert 'merge_pull_request' not in src
+          assert 'deploy --prod' not in src
+          print("Draft-only and independent review barriers enforced")
+          PY
+  windows-install-script-syntax:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse guard and upgrade PowerShell without executing
+        shell: pwsh
+        run: |
+          $scripts = @(
+            "scripts/windows_local_agent_enable_level_completion.ps1",
+            "scripts/windows_local_agent_watchdog.ps1"
+          )
+          foreach ($path in $scripts) {
+            $tokens = $null
+            $errorsFound = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              $path, [ref]$tokens, [ref]$errorsFound
+            ) | Out-Null
+            if ($errorsFound.Count -gt 0) {
+              $errorsFound | Out-String | Write-Error
+              exit 1
+            }
+          }
+          Write-Host "PASS: scripts parse; no scheduler task modified."

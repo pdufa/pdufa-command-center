@@ -1,0 +1,417 @@
+{
+  "schema_version": 1,
+  "queue_id": "PDUFA_LEVEL_COMPLETION_V1",
+  "purpose": "Real level-completion work after two 17-stage scaffold/provenance draft-generation queues; never treat draft creation as scientific completion.",
+  "approved_scope": "Level 4 first: original source registry inventory and review-gated implementation; all Levels 4-20: auditable draft/requirement inventory and gap/blocker recording. Later domain implementations require reviewed code and independent scientific review.",
+  "safety": {
+    "automatic_merges": false,
+    "production_deployments": false,
+    "automatic_predictions": false,
+    "trades": false,
+    "scientific_level_completion_by_agent": false,
+    "raas_dependency": false,
+    "allow_automatic_execution_of_unreviewed_generated_python": false
+  },
+  "steps": [
+    "AUDIT_EXISTING_DRAFTS",
+    "COLLECT_ORIGINAL_SOURCE",
+    "IMPLEMENT_FUNCTIONAL_GATES",
+    "RUN_REGRESSION_TESTS",
+    "PREPARE_REVIEW_PR",
+    "INDEPENDENT_REVIEW"
+  ],
+  "levels": [
+    {
+      "level": 4,
+      "name": "Experimental and Statistical Validation",
+      "required_evidence_fields": [
+        "trial_design",
+        "prespecified_endpoints",
+        "statistical_analysis_plan",
+        "multiplicity"
+      ],
+      "original_intake_draft_pr": 1121,
+      "provenance_draft_pr": 1139,
+      "implementation_draft_pr": 1156,
+      "implementation_scope": "Read-only original-source trial design, endpoint, statistical-document gap inventory",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 5,
+      "name": "Contradictory Evidence and Critical Challenge",
+      "required_evidence_fields": [
+        "negative_findings",
+        "contradictory_sources",
+        "study_limitations"
+      ],
+      "original_intake_draft_pr": 1122,
+      "provenance_draft_pr": 1140,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 6,
+      "name": "Cross-Disciplinary Scientific Integration",
+      "required_evidence_fields": [
+        "clinical_sources",
+        "preclinical_sources",
+        "regulatory_sources"
+      ],
+      "original_intake_draft_pr": 1123,
+      "provenance_draft_pr": 1141,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 7,
+      "name": "Predictive Modeling and Uncertainty",
+      "required_evidence_fields": [
+        "model_validation",
+        "uncertainty_methods",
+        "calibration_evidence"
+      ],
+      "original_intake_draft_pr": 1124,
+      "provenance_draft_pr": 1142,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 8,
+      "name": "Independent Scientific Synthesis",
+      "required_evidence_fields": [
+        "efficacy_evidence",
+        "safety_evidence",
+        "benefit_risk_context"
+      ],
+      "original_intake_draft_pr": 1125,
+      "provenance_draft_pr": 1143,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 9,
+      "name": "Causal Inference and Counterfactual Analysis",
+      "required_evidence_fields": [
+        "causal_assumptions",
+        "confounding",
+        "counterfactual_support"
+      ],
+      "original_intake_draft_pr": 1126,
+      "provenance_draft_pr": 1144,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 10,
+      "name": "Systems Biology and Computational Modeling",
+      "required_evidence_fields": [
+        "pathway_model",
+        "computational_assumptions",
+        "independent_replication"
+      ],
+      "original_intake_draft_pr": 1127,
+      "provenance_draft_pr": 1145,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 11,
+      "name": "Adversarial Scientific Review",
+      "required_evidence_fields": [
+        "adversarial_hypotheses",
+        "falsification_tests",
+        "unresolved_contradictions"
+      ],
+      "original_intake_draft_pr": 1128,
+      "provenance_draft_pr": 1146,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 12,
+      "name": "Multi-Model Scientific Adjudication",
+      "required_evidence_fields": [
+        "independent_model_outputs",
+        "model_disagreements",
+        "adjudication_protocol"
+      ],
+      "original_intake_draft_pr": 1129,
+      "provenance_draft_pr": 1147,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 13,
+      "name": "Quantitative Pharmacology",
+      "required_evidence_fields": [
+        "pharmacokinetics",
+        "pharmacodynamics",
+        "exposure_response"
+      ],
+      "original_intake_draft_pr": 1130,
+      "provenance_draft_pr": 1148,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 14,
+      "name": "Patient-Level Heterogeneity",
+      "required_evidence_fields": [
+        "subgroups",
+        "biomarkers",
+        "interaction_tests"
+      ],
+      "original_intake_draft_pr": 1131,
+      "provenance_draft_pr": 1149,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 15,
+      "name": "Bayesian Evidence Integration",
+      "required_evidence_fields": [
+        "prior_sources",
+        "likelihood_evidence",
+        "sensitivity_analysis"
+      ],
+      "original_intake_draft_pr": 1132,
+      "provenance_draft_pr": 1150,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 16,
+      "name": "External Validity Analysis",
+      "required_evidence_fields": [
+        "external_population",
+        "trial_population",
+        "transportability_assumptions"
+      ],
+      "original_intake_draft_pr": 1133,
+      "provenance_draft_pr": 1151,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 17,
+      "name": "Historical Failure-Pattern Analysis",
+      "required_evidence_fields": [
+        "historical_sources",
+        "decision_cutoffs",
+        "outcome_blinding"
+      ],
+      "original_intake_draft_pr": 1134,
+      "provenance_draft_pr": 1152,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 18,
+      "name": "Regulatory Counterfactual Analysis",
+      "required_evidence_fields": [
+        "regulatory_pathway",
+        "alternative_actions",
+        "application_cycle_provenance"
+      ],
+      "original_intake_draft_pr": 1135,
+      "provenance_draft_pr": 1153,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 19,
+      "name": "Independent Reproducibility Audit",
+      "required_evidence_fields": [
+        "reproducibility_plan",
+        "source_hashes",
+        "independent_rerun"
+      ],
+      "original_intake_draft_pr": 1136,
+      "provenance_draft_pr": 1154,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    },
+    {
+      "level": 20,
+      "name": "Scientific Red-Team Adjudication",
+      "required_evidence_fields": [
+        "red_team_challenges",
+        "adjudication_record",
+        "unresolved_risks"
+      ],
+      "original_intake_draft_pr": 1137,
+      "provenance_draft_pr": 1155,
+      "implementation_draft_pr": null,
+      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "scientific_acceptance_criteria": [
+        "exact_application_trial_identity_and_phase",
+        "original_source_receipts_with_access_dates_and_sha256",
+        "documented_phase_appropriate_evidence_for_required_fields",
+        "domain_functionality_implemented_and_regression_tests_pass",
+        "independent_scientific_and_code_review_approved",
+        "no_unblinded_historical_data_leakage",
+        "approved_integrated_acceptance_evidence"
+      ],
+      "completed_scientific_level": false
+    }
+  ]
+}
