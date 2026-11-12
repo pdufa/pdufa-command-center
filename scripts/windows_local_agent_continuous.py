@@ -23,6 +23,9 @@ import tempfile
 import time
 import urllib.error
 import urllib.request
+from types import SimpleNamespace
+
+import windows_local_agent_followon as followon
 
 ROOT = Path(__file__).resolve().parents[1]
 MANIFEST = ROOT / "automation/scientific-20-level-development-queue.json"
@@ -563,6 +566,7 @@ def heartbeat(mode: str, state: dict, level: int | None = None) -> None:
     atomic_json(HEARTBEAT, {
         "mode": mode, "pid": os.getpid(), "updated_utc": utc(),
         "level": level, "counts": summarize(state),
+        "followon_counts": followon.counts(state) if "validation_jobs" in state else None,
     })
 
 
@@ -578,7 +582,7 @@ def status(require_running: bool = False) -> int:
                - datetime.fromisoformat(h["updated_utc"])).total_seconds()
         mode = h["mode"]
         if require_running and (
-            mode not in ("RUNNING", "WORKING") or not 0 <= age <= 35
+            mode not in ("RUNNING", "WORKING", "IDLE") or not 0 <= age <= 35
             or not LOCK_FILE.exists() or STOP_FILE.exists()
         ):
             print("NOT_VERIFIED_RUNNING")
@@ -607,7 +611,16 @@ def status(require_running: bool = False) -> int:
         print(line)
     next_level = next((n for n in LEVELS
                        if state["tasks"][str(n)]["status"] == "PENDING"), None)
-    print("Next independent engineering task:", next_level if next_level else "None")
+    print("Next original engineering task:", next_level if next_level else "None")
+    if "validation_jobs" in state:
+        v = followon.counts(state)
+        print("Follow-on provenance drafts:", v["completed"], "of", v["total"],
+              "pending:", v["pending"], "blocked:", v["blocked"])
+        print("Next approved provenance task:", next((
+            n for n in LEVELS if state["validation_jobs"][str(n)]["status"] == "PENDING"),
+            "None"))
+    if HEARTBEAT.exists() and mode == "IDLE":
+        print("CONTINUOUS_IDLE: worker is alive but not coding; no approved task remains")
     print("Scientific stages independently completed: 0 (not verified)")
     return 0
 
@@ -623,6 +636,8 @@ def publish_status(state: dict) -> None:
         f"**Engineering draft PRs:** {counts['draft_prs_created']} of 17\n\n"
         f"**Pending engineering tasks:** {counts['pending']}\n\n"
         f"**Blocked engineering tasks:** {counts['blocked']}\n\n"
+        f"**Phase-first source validation draft PRs:** {followon.counts(state)['completed']} of 17\n\n"
+        if "validation_jobs" in state else ""
         "**Scientific levels independently completed by this agent:** 0\n\n"
         "Detailed blockers and development artifacts are stored locally.\n"
     )
@@ -716,19 +731,42 @@ def worker(*, pilot: bool) -> int:
         completed_in_this_run = 0
         while not STOP_FILE.exists():
             level = select_task(state)
+            kind = "ORIGINAL"
             if level is None:
-                state["mode"] = "ENGINEERING_QUEUE_EXHAUSTED_REVIEW_REQUIRED"
-                save_ledger(state)
-                heartbeat("QUEUE_EXHAUSTED", state)
-                publish_status(state)
-                print("ENGINEERING_QUEUE_EXHAUSTED: draft PRs need review; no scientific signoff")
-                return 0
-            if pilot and level != 4:
+                # Preserve the Stage 4-20 ledger and automatically advance to
+                # the owner-approved, deterministic provenance work queue.
+                if pilot:
+                    print("PILOT_BLOCKED: Stage 4 pilot cannot be substituted")
+                    return 2
+                created = followon.ensure_jobs(state)
+                if created:
+                    save_ledger(state)
+                level = followon.select_job(state)
+                kind = "PROVENANCE"
+            if level is None:
+                # Never exit just because the bounded backlog is finished.
+                # Remain visibly idle and STOP-responsive without inventing
+                # new development requirements or repeating finished PRs.
+                if state.get("mode") != "IDLE_AWAITING_APPROVED_WORK":
+                    state["mode"] = "IDLE_AWAITING_APPROVED_WORK"
+                    save_ledger(state)
+                    publish_status(state)
+                    print("CONTINUOUS_IDLE: approved queues exhausted; "
+                          "waiting for reviewed new work", flush=True)
+                heartbeat("IDLE", state)
+                for _ in range(6):
+                    if STOP_FILE.exists():
+                        break
+                    time.sleep(10)
+                    heartbeat("IDLE", state)
+                continue
+            if pilot and (kind != "ORIGINAL" or level != 4):
                 print("PILOT_BLOCKED: Stage 4 must pass a verified draft PR first")
                 print("Stage 4 blocker:", public_blocker(state["tasks"]["4"]))
                 return 2
-            # A live heartbeat continues even during bounded Ollama/test calls.
+            state["mode"] = "CONTINUOUS_RUNNING"
             save_ledger(state)
+            heartbeat("WORKING", state, level)
             ping_stop = threading.Event()
             def ping() -> None:
                 while not ping_stop.wait(10):
@@ -736,7 +774,15 @@ def worker(*, pilot: bool) -> int:
             ticker = threading.Thread(target=ping, daemon=True)
             ticker.start()
             try:
-                one_attempt(state, level, levels)
+                if kind == "ORIGINAL":
+                    one_attempt(state, level, levels)
+                else:
+                    helpers = SimpleNamespace(
+                        WORKTREES=WORKTREES, ROOT=ROOT, DATA=DATA, REPO=REPO,
+                        REVIEW_BASE=REVIEW_BASE, SCOPES=SCOPES, cmd=cmd,
+                        require_ok=require_ok, save_ledger=save_ledger,
+                        heartbeat=heartbeat, utc=utc)
+                    followon.one_attempt(helpers, state, level, levels)
             finally:
                 ping_stop.set()
                 ticker.join(timeout=3)
@@ -755,7 +801,6 @@ def worker(*, pilot: bool) -> int:
                 print("PILOT_PASSED: verified a tested draft PR for level", level)
                 return 0
             heartbeat("RUNNING", state)
-            # Continue immediately, not every four hours.
             if not STOP_FILE.exists():
                 time.sleep(COOLDOWN_SECONDS)
         state["mode"] = "STOPPED_BY_OWNER"
