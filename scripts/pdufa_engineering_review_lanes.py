@@ -299,6 +299,77 @@ def perform(eng: dict, sci: dict, state: dict, manifest: dict, task: str) -> Non
     heartbeat(eng,sci,state,None,"ENGINEERING_RUNNING")
     publish(eng,sci,state,None,None)
 
+LEVEL5_REARM_ID = "LEVEL5_SOURCE_CHALLENGE_PR1161_INTEGRATION_V1"
+LEVEL5_REARMABLE = {
+    "COLLECT_ORIGINAL_SOURCE": "DOMAIN_SOURCE_COLLECTION_NOT_REVIEWED",
+    "IMPLEMENT_FUNCTIONAL_GATES": "DOMAIN_IMPLEMENTATION_NOT_APPROVED",
+    "RUN_REGRESSION_TESTS": "DOMAIN_REGRESSION_SUITE_NOT_APPROVED",
+    "PREPARE_REVIEW_PR": "DOMAIN_IMPLEMENTATION_PR_NOT_AVAILABLE",
+}
+
+
+def rearm_level5_after_real_implementation(state: dict, manifest: dict) -> bool:
+    """Retry ONLY the old L5 domain placeholders after approved new code exists.
+
+    Never erases scientific history, never edits a completed step, never rearms
+    failures from a new test/source run, and never resets other level blockers.
+    A durable old-blocker receipt prevents repeated resets on every restart.
+    """
+    row = manifest["levels"][1]
+    if (row.get("level") != 5 or row.get("implementation_draft_pr") != 1161
+            or row.get("implementation_scope") !=
+            "Read-only original-registry candidate challenge inventory; 32 dated source leads, not complete clinical adjudication"):
+        return False
+    receipt_path = base.DATA / "level5" / "approved-retry-receipt.json"
+    if receipt_path.exists():
+        record = json.loads(receipt_path.read_text(encoding="utf-8"))
+        if record.get("scope") != LEVEL5_REARM_ID:
+            raise ValueError("Level5 retry receipt from different code scope")
+        return False
+    if not (base.ROOT / "scripts" / "level5_contradictory_evidence.py").is_file():
+        return False
+    ncts, _ = base.verified_level5_candidate_ids()
+    if len(ncts) != 32:
+        return False
+    base.confirmed_level5_pr()
+    level = state["levels"]["5"]["steps"]
+    to_rearm = {
+        step: {
+            "prior_status": item["status"],
+            "prior_blocker": item["blocker"],
+            "prior_attempts": item["attempts"],
+            "prior_evidence": item["evidence"],
+        }
+        for step, code in LEVEL5_REARMABLE.items()
+        if (item := level[step])["status"] == "BLOCKED"
+        and item.get("blocker") == code
+    }
+    if not to_rearm:
+        return False
+    backup = base.DATA / "level5" / "prior-placeholder-blockers.json"
+    if backup.exists():
+        raise ValueError("Level5 placeholder-blocker backup already exists")
+    base.safe_json(backup, {
+        "scope": LEVEL5_REARM_ID, "recorded_utc": utc(),
+        "restored_steps": to_rearm, "scientific_review_not_modified": True,
+    })
+    for step in to_rearm:
+        item = level[step]
+        item["status"] = "PENDING"
+        item["attempts"] = 0
+        item["blocker"] = None
+        item["evidence"] = {}
+    base.save(state)
+    base.safe_json(receipt_path, {
+        "scope": LEVEL5_REARM_ID,
+        "recorded_utc": utc(),
+        "reset_only_legacy_domain_placeholders": sorted(to_rearm),
+        "historical_blockers_preserved_at": str(backup),
+        "scientific_level_completed": False,
+    })
+    return True
+
+
 def cycle(eng: dict, state: dict, manifest: dict, *,
           check_review: bool = True, remote: bool = True) -> str:
     # Scientific reviews are polled separately; later engineering does not
@@ -344,6 +415,9 @@ def run(*, once: bool = False, sleep_seconds: int = 60) -> int:
         manifest = base.plan()
         state = base.load(manifest)
         eng = load(state,manifest)
+        if first_uncompleted(eng) == 5:
+            if rearm_level5_after_real_implementation(state,manifest):
+                print("LEVEL5_OLD_PLACEHOLDER_RETRIED_AFTER_VERIFIED_CODE; pending checkpoints will execute",flush=True)
         while not base.STOP.exists():
             result = cycle(eng,state,manifest)
             print(result,"engineering_level=",first_uncompleted(eng),flush=True)
