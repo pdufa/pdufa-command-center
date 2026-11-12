@@ -46,10 +46,11 @@ jobs:
           from pathlib import Path
           manifest=json.loads(Path("automation/scientific-level-completion-queue.json").read_text())
           assert [manifest["levels"][i]["implementation_draft_pr"] for i in range(3)] == [1156, 1161, 1163]
-          assert all(x["implementation_draft_pr"] is None for x in manifest["levels"][3:])
+          assert manifest["levels"][3]["implementation_draft_pr"] == 1169
+          assert all(x["implementation_draft_pr"] is None for x in manifest["levels"][4:])
           assert all(x["completed_scientific_level"] is False for x in manifest["levels"])
           assert all(v is False for v in manifest["safety"].values())
-          print("PASS: engineering inventory ONLY, no scientific signoff, Level7+ still requires code")
+          print("PASS: engineering inventory ONLY, no scientific signoff, Level7 scoped readiness now has code; Level8+ still requires code")
           PY
   windows-installer:
     runs-on: windows-latest
