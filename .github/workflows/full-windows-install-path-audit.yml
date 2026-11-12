@@ -1,0 +1,78 @@
+name: PDUFA Windows Full Installation Path Audit
+on:
+  pull_request:
+    paths:
+      - 'scripts/windows_pdufa_level6_unblock.ps1'
+      - 'scripts/windows_local_agent_watchdog.ps1'
+      - '.github/workflows/full-windows-install-path-audit.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  release-manifest-and-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Check all exact Git blobs and all install-path gates
+        run: |
+          python - <<'PY'
+          import re
+          import subprocess
+          from pathlib import Path
+          text=Path("scripts/windows_pdufa_level6_unblock.ps1").read_text()
+          watch=Path("scripts/windows_local_agent_watchdog.ps1").read_text()
+          manifest=re.search(r"\$allowed=@\{(.*?)\n\}",text,re.S)
+          assert manifest, "missing approved source map"
+          pinned=dict(re.findall(r"'([^']+)'='([0-9a-f]{40})'",manifest.group(1)))
+          files_block=re.search(r"\$files=@\((.*?)\n\)",text,re.S)
+          assert files_block
+          installed=re.findall(r"'([^']+)'",files_block.group(1))
+          assert set(installed)==set(pinned), (set(installed)-set(pinned),set(pinned)-set(installed))
+          for path,sha in pinned.items():
+              assert Path(path).is_file(),path
+              actual=subprocess.check_output(["git","hash-object",path],text=True).strip()
+              assert actual==sha,f"source changed without explicit pinned review: {path}"
+          assert "$branch='automation/full-install-path-repair-20261112'" in text
+          assert "$remoteRef='refs/remotes/origin/automation/full-install-path-repair-20261112'" in text
+          assert "[switch]$Preflight" in text and "PDUFA_INSTALL_PREFLIGHT_PASS" in text
+          assert text.index("if($Preflight)") < text.index("$stage=Join-Path")
+          assert "$canRestore=$true" in text and "$filesReady" not in text
+          assert "$startRequestedUtc=(Get-Date).ToUniversalTime()" in text
+          assert "LEVEL6_PR_NO_LONGER_APPROVED_DRAFT" in text
+          assert "APPROVED_RELEASE_BRANCH_NOT_ACCESSIBLE" in text
+          assert "DOMAIN_SOURCE_COLLECTION_NOT_REVIEWED" in Path("scripts/pdufa_level_completion.py").read_text()
+          assert "$engineeringLedger=Join-Path" in watch
+          assert "$completionLedger=Join-Path" in watch
+          assert "ENGINEERING_BLOCKED_AWAITING_APPROVED_CHANGE_NO_RESTART" in watch
+          assert "RUNNING_STALE_HEARTBEAT_REVIEW_REQUIRED" in watch
+          assert "OWNER_STOP_SUPPRESSES_RESTART" in watch
+          print(f"PASS: {len(pinned)} pinned installed files, fail-closed preflight, rollback, fresh start and guarded recovery")
+          PY
+      - name: Level4–7 actual domain/engineering safety tests
+        run: |
+          python scripts/pdufa_engineering_review_lanes.py --self-test
+          python scripts/pdufa_level_completion.py --self-test
+          python -m unittest discover -s tests -p 'test_level6_cross_disciplinary_inventory.py' -v
+          python -m unittest discover -s tests -p 'test_level6_implementation_integration.py' -v
+          python -m unittest discover -s tests -p 'test_pdufa_level_remediation_planner.py' -v
+          python -m unittest discover -s tests -p 'test_level7_model_validation_readiness.py' -v
+          python scripts/audit_raas_retirement.py --check
+  native-windows-script-parse:
+    runs-on: windows-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse both Windows scripts (never change this runner's PC tasks)
+        shell: pwsh
+        run: |
+          foreach($file in @("scripts/windows_pdufa_level6_unblock.ps1","scripts/windows_local_agent_watchdog.ps1")){
+            $tokens=$null
+            $errors=$null
+            [System.Management.Automation.Language.Parser]::ParseFile($file,[ref]$tokens,[ref]$errors) | Out-Null
+            if($errors.Count -gt 0){ $errors | Out-String | Write-Error; exit 1 }
+          }
+          Write-Host "PASS: native PowerShell syntax for installer and watchdog; no client modification"

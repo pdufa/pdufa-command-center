@@ -9,7 +9,9 @@ $repo=(Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $controller=Join-Path $PSScriptRoot 'windows_local_agent_continuous.py'
 $data=Join-Path $env:USERPROFILE 'PDUFA-Agent-Continuous'
 $stopToken=Join-Path $data 'STOP'
-$ledger=Join-Path $data 'ledger.json'
+$legacyLedger=Join-Path $data 'ledger.json'
+$engineeringLedger=Join-Path $data 'engineering_lane_ledger.json'
+$completionLedger=Join-Path $data 'level_completion_ledger.json'
 $heartbeat=Join-Path $data 'heartbeat.json'
 $watchdogStatus=Join-Path $data 'watchdog_status.json'
 $identity=[Security.Principal.WindowsIdentity]::GetCurrent()
@@ -47,9 +49,14 @@ function Assert-Worker {
   } else {
     $controller
   }
+  $requiredLedger=if ($actions[0].Arguments -match 'pdufa_engineering_review_lanes\.py') {
+    $engineeringLedger
+  } else {
+    $legacyLedger
+  }
   if (-not (Test-Path -LiteralPath $workerScript -PathType Leaf) -or
       -not (Test-Path -LiteralPath (Join-Path $repo 'AGENTS.md') -PathType Leaf) -or
-      -not (Test-Path -LiteralPath $ledger -PathType Leaf)) {
+      -not (Test-Path -LiteralPath $requiredLedger -PathType Leaf)) {
     throw 'Missing activated worker, safety policy, or persistent ledger.'
   }
   return $task
@@ -174,15 +181,42 @@ if ($worker.State -ne 'Ready') {
   Write-Host ('UNKNOWN_STATE_NO_RESTART: '+$worker.State)
   exit 0
 }
-# Queue exhaustion is NOT installation completion. Avoid relaunching a worker
-# every two minutes after it has exhausted its bounded, approved work queue.
-# New queue installers explicitly start the worker after updating approved code.
-if ((Test-Path -LiteralPath $heartbeat -PathType Leaf) -and
-    (Test-Path -LiteralPath $ledger -PathType Leaf)) {
+# Respect the *active controller's* ledger, not legacy tasks after migration.
+# A healthy idle controller needs new approved code, not a 2-minute restart loop.
+if (Test-Path -LiteralPath $heartbeat -PathType Leaf) {
   try {
     $pulse=Get-Content -LiteralPath $heartbeat -Raw | ConvertFrom-Json
+    if ($pulse.queue -eq 'LEVEL_COMPLETION' -and
+        $pulse.mode -in @('ENGINEERING_AWAITING_APPROVED_WORK','ENGINEERING_SCOPE_FINISHED')) {
+      if (-not (Test-Path -LiteralPath $engineeringLedger -PathType Leaf) -or
+          -not (Test-Path -LiteralPath $completionLedger -PathType Leaf)) {
+        throw 'Current engineering ledgers unavailable.'
+      }
+      $progress=Get-Content -LiteralPath $engineeringLedger -Raw | ConvertFrom-Json
+      $completionRecord=Get-Content -LiteralPath $completionLedger -Raw | ConvertFrom-Json
+      $currentLevel=4+@($progress.engineering_completed_levels).Count
+      if($currentLevel -gt 20) {
+        Save-Check 'ENGINEERING_LEVELS_FINISHED_NO_RESTART' ([string]$worker.State)
+        Write-Host 'ENGINEERING_LEVELS_FINISHED_NO_RESTART'
+        exit 0
+      }
+      $levelRow=$completionRecord.levels.PSObject.Properties[[string]$currentLevel]
+      if($null -eq $levelRow -or $null -eq $levelRow.Value.steps) {
+        throw 'Current engineering level checkpoint ledger unavailable.'
+      }
+      $pending=@($levelRow.Value.steps.PSObject.Properties |
+                 Where-Object { $_.Value.status -eq 'PENDING' }).Count
+      if($pending -eq 0) {
+        Save-Check 'ENGINEERING_BLOCKED_AWAITING_APPROVED_CHANGE_NO_RESTART' ([string]$worker.State)
+        Write-Host 'ENGINEERING_BLOCKED_AWAITING_APPROVED_CHANGE_NO_RESTART'
+        exit 0
+      }
+    }
     if ($pulse.mode -in @('QUEUE_EXHAUSTED','IDLE','IDLE_AWAITING_APPROVED_WORK')) {
-      $record=Get-Content -LiteralPath $ledger -Raw | ConvertFrom-Json
+      if(-not(Test-Path -LiteralPath $legacyLedger -PathType Leaf)) {
+        throw 'Legacy queue ledger unavailable.'
+      }
+      $record=Get-Content -LiteralPath $legacyLedger -Raw | ConvertFrom-Json
       $pending=0
       $blocked=0
       foreach ($queueName in @('tasks','validation_jobs')) {
