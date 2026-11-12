@@ -145,7 +145,10 @@ if($worker.State -eq 'Running') {
     # Verify no real current engineering step is marked RUNNING before draining.
     $q=Get-Content -LiteralPath $engineering -Raw | ConvertFrom-Json
     $l=Get-Content -LiteralPath $completion -Raw | ConvertFrom-Json
-    if($null -ne $q.active_task -or $null -ne $l.active) {
+    $currentTask=$q.PSObject.Properties['active_task']
+    $completionTask=$l.PSObject.Properties['active']
+    if(($null -ne $currentTask -and $null -ne $currentTask.Value) -or
+       ($null -ne $completionTask -and $null -ne $completionTask.Value)) {
       throw 'Live engineering step is active; do not drain.'
     }
   } else {
