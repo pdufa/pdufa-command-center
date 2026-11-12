@@ -17,7 +17,7 @@ $workerName='PDUFA-Continuous-Development'
 $script=Join-Path $PSScriptRoot 'windows_pdufa_reviewed_release_updater.ps1'
 $installerRel='scripts/windows_pdufa_level6_unblock.ps1'
 $installer=Join-Path $root ($installerRel.Replace('/','\'))
-$status=Join-Path $data 'reviewed-release-updater-status.json'
+$statusPath=Join-Path $data 'reviewed-release-updater-status.json'
 $mainRef='refs/remotes/origin/main'
 $who=[Security.Principal.WindowsIdentity]::GetCurrent()
 function RequireSuccess([string]$name) {
@@ -56,14 +56,14 @@ function Record([string]$state,[string]$detail,[string]$commit='') {
   }
   $tmp=Join-Path $data ('updater-status-'+[guid]::NewGuid().ToString('N')+'.tmp')
   [IO.File]::WriteAllText($tmp,(ConvertTo-Json $record -Depth 4),[Text.UTF8Encoding]::new($false))
-  Move-Item -LiteralPath $tmp -Destination $status -Force
+  Move-Item -LiteralPath $tmp -Destination $statusPath -Force
 }
 if($Status) {
   $t=Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
   if($t) { AssertUpdater $t }
   Write-Host ('Updater task: '+$(if($t){$t.State}else{'NOT_INSTALLED'}))
   Write-Host ('Owner STOP: '+(Test-Path -LiteralPath $stop))
-  if(Test-Path -LiteralPath $status) { Get-Content -LiteralPath $status -Raw | Write-Host }
+  if(Test-Path -LiteralPath $statusPath) { Get-Content -LiteralPath $statusPath -Raw | Write-Host }
   exit 0
 }
 if($Uninstall) {
@@ -158,8 +158,8 @@ try {
       $prNumber -isnot [int] -or $prNumber -lt 1) {
     throw 'Manifest has no exact approved installer version.'
   }
-  if(Test-Path -LiteralPath $status -PathType Leaf) {
-    $prior=Get-Content -LiteralPath $status -Raw | ConvertFrom-Json
+  if(Test-Path -LiteralPath $statusPath -PathType Leaf) {
+    $prior=Get-Content -LiteralPath $statusPath -Raw | ConvertFrom-Json
     if($prior.state -eq 'INSTALLED_AND_RESTART_VERIFIED' -and $prior.release_commit -eq $release) {
       Write-Host 'APPROVED_RELEASE_ALREADY_INSTALLED'
       exit 0
