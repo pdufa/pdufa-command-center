@@ -18,6 +18,7 @@ import json
 from pathlib import Path
 import re
 import sys
+import threading
 import time
 from typing import Any
 
@@ -72,11 +73,11 @@ def save_sequence(seq: dict) -> None:
 def level(seq: dict) -> int | None:
     return 4 + len(seq["accepted_levels"]) if len(seq["accepted_levels"]) < 17 else None
 
-def candidate(state: dict, n: int) -> str | None:
+def candidate(state: dict, n: int, *, recover: bool = False) -> str | None:
     """Never select any later level while n lacks independent acceptance."""
     for name in base.STEPS:
         item = state["levels"][str(n)]["steps"][name]
-        if item["status"] == "RUNNING":
+        if recover and item["status"] == "RUNNING":
             item["status"] = ("PENDING" if item["attempts"] < base.MAX_ATTEMPTS
                               else "BLOCKED")
             item["blocker"] = ("INTERRUPTED_PREVIOUS_ATTEMPT"
@@ -225,26 +226,40 @@ def perform(state: dict, seq: dict, manifest: dict, task: str) -> None:
     base.save(state)
     heartbeat(seq, state, task, "WORKING")
     publish(seq, state, task)
+    ping_stop = threading.Event()
+    def pulse() -> None:
+        while not ping_stop.wait(10):
+            heartbeat(seq, state, task, "WORKING")
+    ping_thread = threading.Thread(target=pulse, daemon=True)
+    ping_thread.start()
     try:
-        result = base.execute(n, task, manifest)
-    except (OSError, ValueError, RuntimeError, TimeoutError, json.JSONDecodeError) as exc:
-        key = str(exc) if isinstance(exc, RuntimeError) and base.ERROR_CODE.fullmatch(str(exc)) else type(exc).__name__.upper()
-        permanent = key in {
-            "DOMAIN_SOURCE_COLLECTION_NOT_REVIEWED",
-            "DOMAIN_IMPLEMENTATION_NOT_APPROVED",
-            "DOMAIN_REGRESSION_SUITE_NOT_APPROVED",
-            "DOMAIN_IMPLEMENTATION_PR_NOT_AVAILABLE",
-            "INDEPENDENT_REVIEW_NOT_APPROVED",
-            "LEVEL4_IMPLEMENTATION_NOT_INSTALLED",
-        }
-        item["status"] = ("BLOCKED" if permanent or item["attempts"] >= base.MAX_ATTEMPTS
-                          else "PENDING")
-        item["blocker"] = key
-        item["evidence"] = {"last_attempt_utc": utc(), "scientific_signoff": False}
-    else:
-        item["status"] = "DONE"
-        item["evidence"] = {"observed_at_utc": utc(), **result, "scientific_signoff": False}
+        try:
+            result = base.execute(n, task, manifest)
+        except (OSError, ValueError, RuntimeError, TimeoutError,
+                json.JSONDecodeError) as exc:
+            key = (str(exc) if isinstance(exc, RuntimeError)
+                   and base.ERROR_CODE.fullmatch(str(exc))
+                   else type(exc).__name__.upper())
+            permanent = key in {
+                "DOMAIN_SOURCE_COLLECTION_NOT_REVIEWED",
+                "DOMAIN_IMPLEMENTATION_NOT_APPROVED",
+                "DOMAIN_REGRESSION_SUITE_NOT_APPROVED",
+                "DOMAIN_IMPLEMENTATION_PR_NOT_AVAILABLE",
+                "INDEPENDENT_REVIEW_NOT_APPROVED",
+                "LEVEL4_IMPLEMENTATION_NOT_INSTALLED",
+            }
+            item["status"] = ("BLOCKED" if permanent
+                              or item["attempts"] >= base.MAX_ATTEMPTS
+                              else "PENDING")
+            item["blocker"] = key
+            item["evidence"] = {"last_attempt_utc": utc(), "scientific_signoff": False}
+        else:
+            item["status"] = "DONE"
+            item["evidence"] = {"observed_at_utc": utc(), **result,
+                                "scientific_signoff": False}
     finally:
+        ping_stop.set()
+        ping_thread.join(timeout=2)
         state["active"] = None
         base.save(state)
     heartbeat(seq, state, None, "RUNNING")
@@ -270,7 +285,7 @@ def one_cycle(seq: dict, state: dict, manifest: dict, *, lookup=github_comment) 
         heartbeat(seq, state, None, "RUNNING")
         publish(seq, state, None)
         return "INDEPENDENT_REVIEW_ACCEPTED_NEXT_LEVEL"
-    task = candidate(state, n)
+    task = candidate(state, n, recover=True)
     if task is None:
         heartbeat(seq, state, None, "AWAITING_APPROVED_WORK_OR_REVIEW")
         return "BLOCKED_AWAITING_APPROVED_WORK_OR_REVIEW"
