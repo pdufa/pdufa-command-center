@@ -188,16 +188,30 @@ def execute(number: int, step: str, manifest: dict) -> dict:
     if step == "COLLECT_ORIGINAL_SOURCE":
         if number != 4:
             raise RuntimeError("DOMAIN_SOURCE_COLLECTION_NOT_REVIEWED")
-        # First real source from dated FOCUS research snapshot; not a current
-        # canonical FOCUS membership assertion or a blind retrospective bundle.
-        from level4_scientific_evidence import retrieve_and_summarize
-        report = retrieve_and_summarize("NCT05507203")
-        dest = DATA / "level4" / "NCT05507203.original-source-review.json"
-        safe_json(dest, report)
-        return {"result": "ONE_ORIGINAL_REGISTRY_RECORD_INVENTORIED_REVIEW_REQUIRED",
-                "nct": "NCT05507203", "receipt_sha256": report["source"]["raw_sha256"],
-                "receipt_url": report["source"]["url"],
-                "source_report": str(dest), "current_focus_roster_verified": False,
+        # The dated local FOCUS research snapshot is an NCT acquisition LEAD,
+        # not proof of current canonical membership. Never write to POOL/FOCUS.
+        from level4_scientific_evidence import process_ncts, NCT
+        snapshot = ROOT / "new-platform/frontend/data/p3PostDataActive.json"
+        doc = json.loads(snapshot.read_text(encoding="utf-8"))
+        rows = doc.get("records")
+        if (not isinstance(rows, list) or not 1 <= len(rows) <= 32
+                or any(not isinstance(r, dict) or
+                       not isinstance(r.get("nct"), str) or
+                       not NCT.fullmatch(r["nct"]) for r in rows)):
+            raise RuntimeError("FOCUS_SNAPSHOT_INVALID")
+        ncts = [r["nct"] for r in rows]
+        if len(ncts) != len(set(ncts)):
+            raise RuntimeError("FOCUS_SNAPSHOT_DUPLICATE_NCT")
+        batch = process_ncts(ncts)
+        dest = DATA / "level4" / "dated-focus-source-inventory.json"
+        safe_json(dest, batch)
+        if batch["retrieved"] == 0:
+            raise RuntimeError("ORIGINAL_SOURCE_RETRIEVAL_UNAVAILABLE")
+        return {"result": "DATED_SNAPSHOT_ORIGINAL_REGISTRY_RECORDS_INVENTORIED",
+                "snapshot_as_of": doc.get("asOf"), "snapshot_nct_count": len(ncts),
+                "retrieved_original_source_count": batch["retrieved"],
+                "unavailable_or_invalid_count": len(ncts) - batch["retrieved"],
+                "source_report": str(dest), "current_canonical_focus_verified": False,
                 "independently_reviewed": False}
     if step == "IMPLEMENT_FUNCTIONAL_GATES":
         if number != 4:
