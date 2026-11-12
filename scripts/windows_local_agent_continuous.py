@@ -451,6 +451,19 @@ def status(require_running: bool = False) -> int:
         return 2
     print("Engineering drafts:", counts["draft_prs_created"],
           "pending:", counts["pending"], "blocked:", counts["blocked"])
+    for n in LEVELS:
+        item = state["tasks"][str(n)]
+        if item["status"] == "PENDING":
+            continue
+        line = f"Level {n:02d}: {item['status']}"
+        if item["status"] == "BLOCKED":
+            line += " (" + str(item.get("blocker") or "UNKNOWN") + ")"
+        if item["status"] == "DRAFT_PR_CREATED" and item.get("draft_pr"):
+            line += " " + item["draft_pr"]
+        print(line)
+    next_level = next((n for n in LEVELS
+                       if state["tasks"][str(n)]["status"] == "PENDING"), None)
+    print("Next independent engineering task:", next_level if next_level else "None")
     print("Scientific stages independently completed: 0 (not verified)")
     return 0
 
