@@ -73,7 +73,7 @@ def plan() -> dict:
         if (row.get("completed_scientific_level") is not False or
                 row.get("original_intake_draft_pr") != 1121 + n - 4 or
                 row.get("provenance_draft_pr") != 1139 + n - 4 or
-                row.get("implementation_draft_pr") != ({4: 1156, 5: 1161}.get(n)) or
+                row.get("implementation_draft_pr") != ({4: 1156, 5: 1161, 6: 1163}.get(n)) or
                 not isinstance(row.get("scientific_acceptance_criteria"), list) or
                 len(row["scientific_acceptance_criteria"]) < 5):
             raise ValueError("Incomplete or inconsistent scientific review manifest")
@@ -218,6 +218,21 @@ def verified_level5_candidate_ids() -> tuple[list[str], dict]:
     return ncts, doc
 
 
+def confirmed_level6_pr() -> dict:
+    result = cmd(["gh", "pr", "view", "1163", "--repo", REPO, "--json",
+                  "number,url,isDraft,state,baseRefName,headRefName"], timeout=35)
+    if result.returncode:
+        raise RuntimeError("LEVEL6_REVIEW_PR_LOOKUP_FAILED")
+    data = json.loads(result.stdout)
+    if (data.get("number") != 1163 or data.get("state") != "OPEN"
+            or data.get("isDraft") is not True
+            or data.get("baseRefName") != "automation/level5-checkpoints-one-command-20261112"
+            or data.get("headRefName") != "feature/level6-cross-disciplinary-evidence-20261112"
+            or data.get("url") != "https://github.com/pdufa/pdufa-command-center/pull/1163"):
+        raise RuntimeError("LEVEL6_REVIEW_PR_NOT_APPROVED_DRAFT")
+    return {"pr_number": 1163, "draft_url": data["url"]}
+
+
 def execute(number: int, step: str, manifest: dict) -> dict:
     definition = manifest["levels"][number - 4]
     if step == "AUDIT_EXISTING_DRAFTS":
@@ -227,6 +242,28 @@ def execute(number: int, step: str, manifest: dict) -> dict:
                 "drafts": checks, "required_evidence": definition["required_evidence_fields"],
                 "scientific_review_required": True}
     if step == "COLLECT_ORIGINAL_SOURCE":
+        if number == 6:
+            from level6_cross_disciplinary_inventory import process_ncts
+            ncts, roster = verified_level5_candidate_ids()
+            batch = process_ncts(ncts)
+            dest = DATA / "level6" / "dated-cross-domain-source-gap-inventory.json"
+            safe_json(dest, batch)
+            if batch["retrieved"] != len(ncts):
+                raise RuntimeError("LEVEL6_SOURCE_RETRIEVAL_PARTIAL")
+            return {
+                "result": "PHASE_FIRST_CROSS_DOMAIN_GAP_INVENTORY_REGISTRY_ONLY",
+                "snapshot_as_of": roster["asOf"],
+                "source_git_blob_sha1": roster["source_git_blob_sha1"],
+                "snapshot_nct_count": len(ncts),
+                "retrieved_original_source_count": batch["retrieved"],
+                "unavailable_or_invalid_count": len(ncts)-batch["retrieved"],
+                "preclinical_primary_sources_verified": 0,
+                "regulatory_primary_sources_verified": 0,
+                "cross_domain_scientific_integration_complete": False,
+                "source_report": str(dest),
+                "current_canonical_focus_verified": False,
+                "independently_reviewed": False,
+            }
         if number == 5:
             from level5_contradictory_evidence import process_ncts
             ncts, roster = verified_level5_candidate_ids()
@@ -275,6 +312,13 @@ def execute(number: int, step: str, manifest: dict) -> dict:
                 "source_report": str(dest), "current_canonical_focus_verified": False,
                 "independently_reviewed": False}
     if step == "IMPLEMENT_FUNCTIONAL_GATES":
+        if number == 6:
+            file = ROOT / "scripts" / "level6_cross_disciplinary_inventory.py"
+            if not file.is_file():
+                raise RuntimeError("LEVEL6_IMPLEMENTATION_NOT_INSTALLED")
+            return {"result": "LEVEL6_CROSS_DOMAIN_GAP_INVENTORY_CODE_PRESENT_NOT_SCIENCE_SIGNOFF",
+                    "implementation_pr": confirmed_level6_pr(),
+                    "scope": definition["implementation_scope"]}
         if number == 5:
             file = ROOT / "scripts" / "level5_contradictory_evidence.py"
             if not file.is_file():
@@ -290,6 +334,26 @@ def execute(number: int, step: str, manifest: dict) -> dict:
         return {"result": "LEVEL4_FUNCTIONAL_SOURCE_REVIEW_CODE_PRESENT_NOT_SCIENCE_SIGNOFF",
                 "implementation_pr": confirmed_pr(1156)}
     if step == "RUN_REGRESSION_TESTS":
+        if number == 6:
+            checks = [
+                [sys.executable, "-B", "-m", "unittest", "discover", "-s", "tests",
+                 "-p", "test_level6_cross_disciplinary_inventory.py", "-v"],
+                [sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"],
+            ]
+            reports = []
+            for argv in checks:
+                result = cmd(argv, timeout=240)
+                if result.returncode:
+                    raise RuntimeError("LEVEL6_REGRESSION_OR_RETIREMENT_FAILED")
+                if "unittest" in argv:
+                    match = re.search(r"Ran (\d+) tests? in ", result.stderr + result.stdout)
+                    if match is None or int(match.group(1)) < 9:
+                        raise RuntimeError("LEVEL6_TEST_COUNT_MISMATCH")
+                    reports.append({"suite": "level6_cross_domain_source_gaps", "passed": int(match.group(1))})
+                else:
+                    reports.append({"suite": "permanent_retirement", "passed": True})
+            return {"result": "LEVEL6_LOCAL_REGRESSIONS_PASS_NOT_SCIENCE_SIGNOFF",
+                    "tests": reports, "independent_review_required": True}
         if number == 5:
             checks = [
                 [sys.executable, "-B", "-m", "unittest", "discover",
@@ -332,6 +396,9 @@ def execute(number: int, step: str, manifest: dict) -> dict:
         return {"result": "LOCAL_OFFLINE_REGRESSIONS_PASS_NOT_SCIENCE_SIGNOFF",
                 "tests": reports, "independent_review_required": True}
     if step == "PREPARE_REVIEW_PR":
+        if number == 6:
+            return {"result": "LEVEL6_REVIEW_PR_VERIFIED_DRAFT_ONLY",
+                    "implementation_pr": confirmed_level6_pr()}
         if number == 5:
             return {"result": "LEVEL5_REVIEW_PR_VERIFIED_DRAFT_ONLY",
                     "implementation_pr": confirmed_level5_pr()}

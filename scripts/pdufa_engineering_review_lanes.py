@@ -141,14 +141,37 @@ def engineering_evidence(state: dict, manifest: dict, n: int, *,
                     or tests[1] != {"suite": "permanent_retirement", "passed": True}
                     or gates.get("implementation_pr", {}).get("pr_number") != 1161):
                 return None
+        elif n == 6:
+            # Only the phase-first registry-source *gap inventory* slice is
+            # approved, NOT full clinical/preclinical/regulatory integration.
+            source = evidence["COLLECT_ORIGINAL_SOURCE"]
+            tests = evidence["RUN_REGRESSION_TESTS"].get("tests", [])
+            gates = evidence["IMPLEMENT_FUNCTIONAL_GATES"]
+            if (row.get("implementation_draft_pr") != 1163
+                    or source.get("snapshot_nct_count") != 32
+                    or source.get("retrieved_original_source_count") != 32
+                    or source.get("unavailable_or_invalid_count") != 0
+                    or source.get("source_git_blob_sha1") != "b1b79b632ff6a87d6533f6135d4204cb5931e23c"
+                    or source.get("preclinical_primary_sources_verified") != 0
+                    or source.get("regulatory_primary_sources_verified") != 0
+                    or source.get("cross_domain_scientific_integration_complete") is not False
+                    or source.get("current_canonical_focus_verified") is not False
+                    or source.get("independently_reviewed") is not False
+                    or len(tests) != 2
+                    or tests[0].get("suite") != "level6_cross_domain_source_gaps"
+                    or type(tests[0].get("passed")) is not int
+                    or tests[0]["passed"] < 9
+                    or tests[1] != {"suite": "permanent_retirement", "passed": True}
+                    or gates.get("implementation_pr", {}).get("pr_number") != 1163):
+                return None
         else:
-            # No future level is approved by this installation. Each future
-            # domain step must receive its own verified implementation.
             return None
     pr = row["implementation_draft_pr"]
     if verify_remote:
         if n == 5:
             base.confirmed_level5_pr()
+        elif n == 6:
+            base.confirmed_level6_pr()
         else:
             base.confirmed_pr(pr)
     body = json.dumps({"level": n, "scope": row["implementation_scope"],
@@ -406,6 +429,59 @@ def cycle(eng: dict, state: dict, manifest: dict, *,
     perform(eng,scientific,state,manifest,task)
     return "ENGINEERING_CHECKPOINT_ATTEMPTED"
 
+LEVEL6_REARM_ID = "LEVEL6_CROSS_DOMAIN_GAP_PR1163_INTEGRATION_V1"
+
+
+def rearm_level6_after_real_implementation(state: dict, manifest: dict) -> bool:
+    """Once per approved version, re-execute only the four OLD Level 6 stubs.
+
+    Retain full prior error metadata; new source/test errors remain blockers.
+    Preserve engineering levels 4-5 and all independent-science history.
+    """
+    row = manifest["levels"][2]
+    if (row.get("level") != 6 or row.get("implementation_draft_pr") != 1163
+            or row.get("implementation_scope") !=
+            "Read-only phase-first cross-disciplinary original-registry source and missing-domain gap inventory for 32 dated NCT research leads; no preclinical/regulatory source adjudication"):
+        return False
+    receipt_path = base.DATA / "level6" / "approved-retry-receipt.json"
+    if receipt_path.exists():
+        record = json.loads(receipt_path.read_text(encoding="utf-8"))
+        if record.get("scope") != LEVEL6_REARM_ID:
+            raise ValueError("Unexpected Level6 rearm version; must review")
+        return False
+    if not (base.ROOT / "scripts" / "level6_cross_disciplinary_inventory.py").is_file():
+        return False
+    ncts, _ = base.verified_level5_candidate_ids()
+    if len(ncts) != 32:
+        return False
+    base.confirmed_level6_pr()
+    level = state["levels"]["6"]["steps"]
+    to_rearm = {
+        step: {"prior_status": item["status"], "prior_attempts": item["attempts"],
+               "prior_blocker": item.get("blocker"), "prior_evidence": item.get("evidence")}
+        for step, code in LEVEL5_REARMABLE.items()
+        if (item := level[step])["status"] == "BLOCKED" and item.get("blocker") == code
+    }
+    if not to_rearm:
+        return False
+    backup = base.DATA / "level6" / "prior-placeholder-blockers.json"
+    if backup.exists():
+        raise ValueError("Old Level6 blocker backup exists; no overwrite")
+    base.safe_json(backup, {"scope": LEVEL6_REARM_ID, "recorded_utc": utc(),
+                            "restored_steps": to_rearm,
+                            "scientific_review_not_modified": True})
+    for step in to_rearm:
+        item = level[step]
+        item.update(status="PENDING", attempts=0, blocker=None, evidence={})
+    base.save(state)
+    base.safe_json(receipt_path, {"scope": LEVEL6_REARM_ID,
+                                   "recorded_utc": utc(),
+                                   "reset_only_old_domain_placeholders": sorted(to_rearm),
+                                   "historical_blockers_preserved_at": str(backup),
+                                   "scientific_level_completed": False})
+    return True
+
+
 def run(*, once: bool = False, sleep_seconds: int = 60) -> int:
     if base.STOP.exists():
         print("STOPPED_BY_OWNER")
@@ -418,6 +494,9 @@ def run(*, once: bool = False, sleep_seconds: int = 60) -> int:
         if first_uncompleted(eng) == 5:
             if rearm_level5_after_real_implementation(state,manifest):
                 print("LEVEL5_OLD_PLACEHOLDER_RETRIED_AFTER_VERIFIED_CODE; pending checkpoints will execute",flush=True)
+        if first_uncompleted(eng) == 6:
+            if rearm_level6_after_real_implementation(state,manifest):
+                print("LEVEL6_OLD_PLACEHOLDER_RETRIED_AFTER_VERIFIED_CODE; pending checkpoints will execute",flush=True)
         while not base.STOP.exists():
             result = cycle(eng,state,manifest)
             print(result,"engineering_level=",first_uncompleted(eng),flush=True)

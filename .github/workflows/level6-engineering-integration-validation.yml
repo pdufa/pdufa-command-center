@@ -1,0 +1,66 @@
+name: PDUFA Level6 Engineering Integration Validation
+on:
+  pull_request:
+    paths:
+      - 'scripts/level6_cross_disciplinary_inventory.py'
+      - 'tests/test_level6_cross_disciplinary_inventory.py'
+      - 'scripts/pdufa_level_completion.py'
+      - 'scripts/pdufa_engineering_review_lanes.py'
+      - 'automation/scientific-level-completion-queue.json'
+      - 'scripts/windows_pdufa_level6_unblock.ps1'
+      - 'tests/test_level6_implementation_integration.py'
+      - 'tests/test_level5_implementation_integration.py'
+      - '.github/workflows/level6-engineering-integration-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  scientific-gap-code:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Existing and new domain offline tests
+        run: |
+          python -m unittest discover -s tests -p 'test_level4_scientific_evidence.py' -v
+          python -m unittest discover -s tests -p 'test_level5_contradictory_evidence.py' -v
+          python -m unittest discover -s tests -p 'test_level6_cross_disciplinary_inventory.py' -v
+      - name: Controller, ledger and independent scientific-review regressions
+        run: |
+          python scripts/pdufa_level_completion.py --self-test
+          python scripts/pdufa_engineering_review_lanes.py --self-test
+          python -m unittest discover -s tests -p 'test_pdufa_level_completion.py' -v
+          python -m unittest discover -s tests -p 'test_pdufa_strict_level_runner.py' -v
+          python -m unittest discover -s tests -p 'test_pdufa_engineering_review_lanes.py' -v
+          python -m unittest discover -s tests -p 'test_level5_implementation_integration.py' -v
+          python -m unittest discover -s tests -p 'test_level6_implementation_integration.py' -v
+      - name: Permanent RAAS retirement
+        run: python scripts/audit_raas_retirement.py --check
+      - name: Fail-closed future engineering and all scientific levels
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          manifest=json.loads(Path("automation/scientific-level-completion-queue.json").read_text())
+          assert [manifest["levels"][i]["implementation_draft_pr"] for i in range(3)] == [1156, 1161, 1163]
+          assert all(x["implementation_draft_pr"] is None for x in manifest["levels"][3:])
+          assert all(x["completed_scientific_level"] is False for x in manifest["levels"])
+          assert all(v is False for v in manifest["safety"].values())
+          print("PASS: engineering inventory ONLY, no scientific signoff, Level7+ still requires code")
+          PY
+  windows-installer:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate PowerShell syntax without executing install
+        shell: pwsh
+        run: |
+          $tokens=$null; $errors=$null
+          $path="scripts/windows_pdufa_level6_unblock.ps1"
+          [System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors) | Out-Null
+          if($errors.Count -gt 0){ $errors | Out-String | Write-Error; exit 1 }
+          Write-Host 'PASS Windows installer syntax; no Windows client modified'
