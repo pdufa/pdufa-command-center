@@ -1,0 +1,66 @@
+name: PDUFA Level7 Readiness Engineering Integration
+on:
+  pull_request:
+    paths:
+      - 'scripts/level7_source_readiness_inventory.py'
+      - 'scripts/level7_model_validation_readiness.py'
+      - 'scripts/pdufa_engineering_review_lanes.py'
+      - 'scripts/pdufa_level_completion.py'
+      - 'automation/scientific-level-completion-queue.json'
+      - 'tests/test_level7*'
+      - 'scripts/windows_pdufa_level6_unblock.ps1'
+      - '.github/workflows/level7-engineering-integration-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  phase-first-validation-readiness:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Level7 source and temporal leakage tests and engineering gates
+        run: |
+          python -m unittest discover -s tests -p 'test_level7_model_validation_readiness.py' -v
+          python -m unittest discover -s tests -p 'test_level7_source_readiness_inventory.py' -v
+          python -m unittest discover -s tests -p 'test_level7_implementation_integration.py' -v
+          python -m unittest discover -s tests -p 'test_level6_implementation_integration.py' -v
+          python -m unittest discover -s tests -p 'test_level5_implementation_integration.py' -v
+          python scripts/pdufa_engineering_review_lanes.py --self-test
+          python scripts/pdufa_level_completion.py --self-test
+          python scripts/audit_raas_retirement.py --check
+      - name: Reject fake prediction/model/science completion or higher level advancement
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          m=json.loads(Path('automation/scientific-level-completion-queue.json').read_text())
+          assert [x['level'] for x in m['levels']]==list(range(4,21))
+          assert [x['implementation_draft_pr'] for x in m['levels'][:4]]==[1156,1161,1163,1169]
+          assert all(x['implementation_draft_pr'] is None for x in m['levels'][4:])
+          assert all(x['completed_scientific_level'] is False for x in m['levels'])
+          assert all(v is False for v in m['safety'].values())
+          assert 'no fitted model' in m['levels'][3]['implementation_scope']
+          print('PASS: readiness inventory engineering slice only. Level8+ remains blocked.')
+          PY
+      - name: Reproduce only the exact installed Windows file set
+        run: |
+          python -m unittest discover -s tests -p 'test_pdufa_partial_install_integration.py' -v
+  powershell-installer-syntax:
+    runs-on: windows-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse Windows installer and watchdog without task modification
+        shell: pwsh
+        run: |
+          foreach($file in @("scripts/windows_pdufa_level6_unblock.ps1","scripts/windows_local_agent_watchdog.ps1")){
+            $tokens=$null
+            $errors=$null
+            [System.Management.Automation.Language.Parser]::ParseFile($file,[ref]$tokens,[ref]$errors) | Out-Null
+            if($errors.Count -gt 0){ $errors | Out-String | Write-Error; exit 1 }
+          }
+          Write-Host 'PASS: Windows PowerShell syntax, no PC tasks changed'
