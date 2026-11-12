@@ -1,0 +1,62 @@
+name: Strict Level-by-Level Worker Validation
+on:
+  pull_request:
+    paths:
+      - 'scripts/pdufa_strict_level_runner.py'
+      - 'tests/test_pdufa_strict_level_runner.py'
+      - 'scripts/windows_local_agent_enable_strict_sequence.ps1'
+      - 'scripts/windows_local_agent_watchdog.ps1'
+      - '.github/workflows/strict-level-sequence-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  strict-checkpoints:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Strict sequence offline self-test
+        run: python scripts/pdufa_strict_level_runner.py --self-test
+      - name: Verify review-gated progression, persistence and block handling
+        run: python -m unittest discover -s tests -p 'test_pdufa_strict_level_runner.py' -v
+      - name: Verify previous completion ledger stays valid
+        run: python -m unittest discover -s tests -p 'test_pdufa_level_completion.py' -v
+      - name: Level 4 original-source tests
+        run: python -m unittest discover -s tests -p 'test_level4_scientific_evidence.py' -v
+      - name: Retirement-policy audit
+        run: python scripts/audit_raas_retirement.py --check
+      - name: Confirm no bypass of independent scientific acceptance
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          text = Path('scripts/pdufa_strict_level_runner.py').read_text()
+          assert 'independent_code_review' in text
+          assert 'all_acceptance_criteria_met' in text
+          assert 'verified_reviewers' in text
+          assert 'if task is None' in text
+          assert 'merge_pull_request' not in text
+          print('PASS: no automated review fabrication, merges, predictions or trades')
+          PY
+  windows-script:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: PowerShell script parse only (no task mutation)
+        shell: pwsh
+        run: |
+          $files=@(
+            'scripts/windows_local_agent_enable_strict_sequence.ps1',
+            'scripts/windows_local_agent_watchdog.ps1'
+          )
+          foreach($file in $files){
+            $t=$null;$e=$null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              $file,[ref]$t,[ref]$e) | Out-Null
+            if($e.Count -gt 0){$e | Out-String | Write-Error;exit 1}
+          }
+          Write-Host 'PASS: strict Windows installer and watchdog parse'
