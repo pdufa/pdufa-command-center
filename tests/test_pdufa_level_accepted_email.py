@@ -55,7 +55,6 @@ class AcceptedEmailTests(unittest.TestCase):
 
     def test_missing_credentials_preserves_unsent(self):
         events=M.accepted_events({"accepted_levels":[accepted()]})
-        result=M.process(events=events,credentials=None,send=lambda *args:self.fail("must not send"))
         with patch.object(M,"config",return_value=None):
             result=M.process(events=events,credentials=None,
                              send=lambda *args:self.fail("must not send"))
@@ -100,7 +99,6 @@ class AcceptedEmailTests(unittest.TestCase):
                        "approved_utc":ev["verified_utc"],"reviewers":ev["verified_reviewers"]},
                       "recipient@example.org","sender@example.org")
         self.assertIn("Levels 4",msg["Subject"])
-        self.assertIn("no",msg.get_content().lower()) if False else None
         self.assertIn("All Levels 4-20",msg.get_content())
 
     def test_reject_header_injection(self):
