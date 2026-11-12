@@ -48,6 +48,7 @@ class CompletionTests(unittest.TestCase):
         self.assertEqual(M.next_step(state), (4, "COLLECT_ORIGINAL_SOURCE"))
         self.assertEqual(state["levels"]["4"]["steps"]["AUDIT_EXISTING_DRAFTS"]["evidence"],
                          {"result": "SUCCESS"})
+        step = state["levels"]["4"]["steps"]["COLLECT_ORIGINAL_SOURCE"]
         step["status"] = "RUNNING"
         step["attempts"] = 2
         self.assertEqual(M.next_step(state), (4, "IMPLEMENT_FUNCTIONAL_GATES"))
