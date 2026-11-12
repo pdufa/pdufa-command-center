@@ -120,20 +120,12 @@ Require 'REVIEWED_BLOB'
 if($actual -ne $blob){throw 'Email notifier changed since review; do not install'}
 $url='https://raw.githubusercontent.com/pdufa/pdufa-command-center/'+$revision+'/scripts/pdufa_level_accepted_email.py'
 $tmp=Join-Path $data ('email-'+[guid]::NewGuid().ToString('N')+'.tmp')
-try{
-  Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $tmp
-  $hash=(& git -C $root hash-object $tmp | Out-String).Trim()
-  Require 'NOTIFIER_HASH'
-  if($hash -ne $blob){throw 'Email notifier content hash mismatch'}
-  & py -3.13 -B $tmp --self-test
-  # A .tmp file is not importable as a script from its expected scripts folder;
-  # perform self-test only after the verified file is installed.
-}catch{
-  # If Python cannot import the installed modules from temporary staging, do
-  # not claim failure of the reviewed code; do not replace unrelated files.
-  if($_.Exception.Message -ne 'EMAIL_SELF_TEST_FAILED'){throw}
-}finally{
-  # file remains until installed below, cleaned after copy
+Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $tmp
+$hash=(& git -C $root hash-object $tmp | Out-String).Trim()
+Require 'NOTIFIER_HASH'
+if($hash -ne $blob){
+  Remove-Item $tmp -Force -ErrorAction SilentlyContinue
+  throw 'Email notifier content hash mismatch'
 }
 $existingHash=''
 if(Test-Path $pythonScript -PathType Leaf){
