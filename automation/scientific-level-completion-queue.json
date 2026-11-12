@@ -101,8 +101,8 @@
       ],
       "original_intake_draft_pr": 1124,
       "provenance_draft_pr": 1142,
-      "implementation_draft_pr": null,
-      "implementation_scope": "AUDIT_ONLY_UNTIL_DOMAIN_IMPLEMENTATION_REVIEWED",
+      "implementation_draft_pr": 1169,
+      "implementation_scope": "Read-only phase-first model-validation evidence-gap inventory from 32 original registry receipts; no fitted model, historical backtest, calibration or PDUFA prediction",
       "scientific_acceptance_criteria": [
         "exact_application_trial_identity_and_phase",
         "original_source_receipts_with_access_dates_and_sha256",
