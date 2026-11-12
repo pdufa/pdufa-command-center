@@ -213,6 +213,28 @@ RequireSuccess 'APPROVED_RELEASE_BRANCH_NOT_ACCESSIBLE'
 if($published -notmatch '^[0-9a-f]{40}\s+refs/heads/') {
   throw 'Remote release ref was not uniquely resolved.'
 }
+# Verify network dependencies BEFORE stopping any existing working controller.
+# The installer and original-source collector both require these endpoints.
+try {
+  $registry=Invoke-WebRequest -UseBasicParsing -Uri 'https://clinicaltrials.gov/api/v2/studies/NCT05507203' -TimeoutSec 20 -ErrorAction Stop
+  $study=$registry.Content | ConvertFrom-Json
+  if($study.protocolSection.identificationModule.nctId -ne 'NCT05507203') {
+    throw 'Returned registry trial identity did not match test NCT.'
+  }
+} catch {
+  throw ('CLINICAL_REGISTRY_HOST_CONNECTIVITY_FAILED: '+$_.Exception.GetType().Name)
+}
+try {
+  $releaseSha=($published -split '\s+')[0]
+  $sourceProbeUrl='https://raw.githubusercontent.com/pdufa/pdufa-command-center/'+
+                  $releaseSha+'/scripts/pdufa_level_completion.py'
+  $sourceProbe=Invoke-WebRequest -UseBasicParsing -Uri $sourceProbeUrl -TimeoutSec 20 -ErrorAction Stop
+  if($sourceProbe.Content -notmatch 'LEVEL_COMPLETION') {
+    throw 'GitHub release source returned unexpected content.'
+  }
+} catch {
+  throw ('GITHUB_RAW_RELEASE_DOWNLOAD_BLOCKED: '+$_.Exception.GetType().Name)
+}
 if($Preflight) {
   Write-Host 'PDUFA_INSTALL_PREFLIGHT_PASS: toolchain, current worker ownership, safe idle state, GitHub PR and release ref verified. No processes modified.'
   Write-Host ('Current worker: '+$worker.State)
