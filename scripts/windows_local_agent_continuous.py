@@ -1,0 +1,599 @@
+#!/usr/bin/env python3
+"""Continuous local PDUFA engineering worker: draft PRs, never merge or deploy.
+
+Only a narrow, approved research-intake code scaffold can be generated and
+executed. Ollama supplies *textual review questions* in JSON; trusted local
+templates build Python modules and tests. Untrusted generated Python is never
+executed. Each stage is an engineering DRAFT, not a scientific level signoff.
+The worker must be started on the owner's Windows PC after a real pilot.
+"""
+from __future__ import annotations
+
+import argparse
+from datetime import datetime, timezone
+import json
+import os
+from pathlib import Path
+import re
+import shutil
+import subprocess
+import sys
+import tempfile
+import time
+import urllib.error
+import urllib.request
+
+ROOT = Path(__file__).resolve().parents[1]
+MANIFEST = ROOT / "automation/scientific-20-level-development-queue.json"
+HOME = Path.home()
+DATA = HOME / "PDUFA-Agent-Continuous"
+WORKTREES = HOME / "PDUFA-Agent-Worktrees"
+STATE_FILE = DATA / "ledger.json"
+HEARTBEAT = DATA / "heartbeat.json"
+STOP_FILE = DATA / "STOP"
+LOCK_FILE = DATA / "RUNNING.lock"
+REPO = "pdufa/pdufa-command-center"
+ISSUE = "1096"
+MODEL = "qwen2.5-coder:1.5b"
+OLLAMA = "http://127.0.0.1:11434/api/generate"
+MAX_ATTEMPTS = 2
+LEVELS = tuple(range(4, 21))
+COOLDOWN_SECONDS = 2
+# Single-thread, bounded-cpu/context workloads: max one model and one test run.
+SCOPES = {
+    4: ("trial_design", "prespecified_endpoints", "statistical_analysis_plan", "multiplicity"),
+    5: ("negative_findings", "contradictory_sources", "study_limitations"),
+    6: ("clinical_sources", "preclinical_sources", "regulatory_sources"),
+    7: ("model_validation", "uncertainty_methods", "calibration_evidence"),
+    8: ("efficacy_evidence", "safety_evidence", "benefit_risk_context"),
+    9: ("causal_assumptions", "confounding", "counterfactual_support"),
+    10: ("pathway_model", "computational_assumptions", "independent_replication"),
+    11: ("adversarial_hypotheses", "falsification_tests", "unresolved_contradictions"),
+    12: ("independent_model_outputs", "model_disagreements", "adjudication_protocol"),
+    13: ("pharmacokinetics", "pharmacodynamics", "exposure_response"),
+    14: ("subgroups", "biomarkers", "interaction_tests"),
+    15: ("prior_sources", "likelihood_evidence", "sensitivity_analysis"),
+    16: ("external_population", "trial_population", "transportability_assumptions"),
+    17: ("historical_sources", "decision_cutoffs", "outcome_blinding"),
+    18: ("regulatory_pathway", "alternative_actions", "application_cycle_provenance"),
+    19: ("reproducibility_plan", "source_hashes", "independent_rerun"),
+    20: ("red_team_challenges", "adjudication_record", "unresolved_risks"),
+}
+STATUS = frozenset(("PENDING", "RUNNING", "DRAFT_PR_CREATED", "BLOCKED"))
+
+
+def utc() -> str:
+    return datetime.now(timezone.utc).isoformat()
+
+
+def atomic_json(path: Path, data: dict) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    if path.is_symlink() or path.parent.is_symlink():
+        raise ValueError("Refusing unsafe state path")
+    fd, tmp = tempfile.mkstemp(prefix=".pdufa-", suffix=".tmp", dir=path.parent)
+    try:
+        with os.fdopen(fd, "w", encoding="utf-8", newline="\n") as f:
+            json.dump(data, f, indent=2, sort_keys=True)
+            f.write("\n")
+            f.flush()
+            os.fsync(f.fileno())
+        os.replace(tmp, path)
+    finally:
+        if os.path.exists(tmp):
+            os.unlink(tmp)
+
+
+def manifest() -> list[dict]:
+    source = json.loads(MANIFEST.read_text(encoding="utf-8"))
+    levels = source.get("levels")
+    if (not isinstance(levels, list) or len(levels) != 20
+            or [v.get("level") for v in levels] != list(range(1, 21))
+            or source.get("automatic_merges") is not False
+            or source.get("production_deployment") is not False
+            or source.get("automatic_prediction_updates") is not False):
+        raise ValueError("20-level approved queue is missing or unsafe")
+    return levels
+
+
+def initial_ledger(levels: list[dict]) -> dict:
+    return {
+        "schema_version": 1, "mode": "REQUIRES_WINDOWS_ACTIVATION",
+        "created_utc": utc(), "updated_utc": utc(),
+        "completed_scientific_levels": 0, "production_modified": False,
+        "tasks": {
+            str(n): {
+                "stage": n, "name": levels[n - 1]["name"], "status": "PENDING",
+                "attempts": 0, "draft_pr": None, "scientific_stage_complete": False,
+                "blocker": None, "last_attempt_utc": None,
+            } for n in LEVELS
+        },
+    }
+
+
+def load_ledger(levels: list[dict]) -> dict:
+    DATA.mkdir(parents=True, exist_ok=True)
+    if not STATE_FILE.exists():
+        state = initial_ledger(levels)
+        atomic_json(STATE_FILE, state)
+        return state
+    state = json.loads(STATE_FILE.read_text(encoding="utf-8"))
+    if (state.get("schema_version") != 1 or state.get("production_modified") is not False
+            or state.get("completed_scientific_levels") != 0
+            or set(state.get("tasks", {})) != {str(n) for n in LEVELS}):
+        raise ValueError("Persistent stage ledger does not match approved safeguards")
+    for n in LEVELS:
+        item = state["tasks"][str(n)]
+        if (item.get("stage") != n or item.get("name") != levels[n - 1]["name"]
+                or item.get("status") not in STATUS
+                or type(item.get("attempts")) is not int
+                or item["attempts"] < 0 or item["attempts"] > MAX_ATTEMPTS
+                or item.get("scientific_stage_complete") is not False):
+            raise ValueError("Stage ledger has an invalid task record")
+    return state
+
+
+def save_ledger(state: dict) -> None:
+    state["updated_utc"] = utc()
+    atomic_json(STATE_FILE, state)
+
+
+def select_task(state: dict) -> int | None:
+    for n in LEVELS:
+        t = state["tasks"][str(n)]
+        if t["status"] == "RUNNING":
+            # On startup, an interrupted attempt is not falsely marked done.
+            t["status"] = "PENDING" if t["attempts"] < MAX_ATTEMPTS else "BLOCKED"
+            t["blocker"] = "INTERRUPTED_ATTEMPT" if t["status"] == "BLOCKED" else None
+        if t["status"] == "PENDING":
+            return n
+    return None
+
+
+def summarize(state: dict) -> dict:
+    tasks = list(state["tasks"].values())
+    return {
+        "draft_prs_created": sum(t["status"] == "DRAFT_PR_CREATED" for t in tasks),
+        "blocked": sum(t["status"] == "BLOCKED" for t in tasks),
+        "pending": sum(t["status"] == "PENDING" for t in tasks),
+        "currently_running": next((t["stage"] for t in tasks if t["status"] == "RUNNING"), None),
+        "scientific_stages_complete": 0,
+        "production_modified": False,
+    }
+
+
+def cmd(args: list[str], *, cwd: Path = ROOT, timeout: int = 180) -> subprocess.CompletedProcess:
+    env = os.environ.copy()
+    env["GIT_TERMINAL_PROMPT"] = "0"
+    env["GH_PROMPT_DISABLED"] = "1"
+    # No shell=True: never interpolate AI-authored instructions into a shell.
+    return subprocess.run(args, cwd=cwd, timeout=timeout, capture_output=True,
+                          text=True, errors="replace", env=env)
+
+
+def require_ok(result: subprocess.CompletedProcess, label: str) -> str:
+    if result.returncode:
+        raise RuntimeError(label + "_FAILED")
+    return result.stdout.strip()
+
+
+def preflight(*, online: bool) -> None:
+    if not (ROOT / "AGENTS.md").is_file() or not MANIFEST.is_file():
+        raise RuntimeError("POLICY_OR_QUEUE_MISSING")
+    manifest()
+    for binary in ("git", "gh"):
+        if shutil.which(binary) is None:
+            raise RuntimeError(binary.upper() + "_NOT_INSTALLED")
+    top = require_ok(cmd(["git", "rev-parse", "--show-toplevel"], timeout=15),
+                     "GIT_REPOSITORY").replace("\\", "/").lower()
+    if top != str(ROOT.resolve()).replace("\\", "/").lower():
+        raise RuntimeError("REPOSITORY_ROOT_MISMATCH")
+    remote = require_ok(cmd(["git", "remote", "get-url", "origin"], timeout=15),
+                        "GIT_ORIGIN")
+    if not (remote.rstrip("/").removesuffix(".git").endswith("github.com/" + REPO)
+            or remote.rstrip("/").removesuffix(".git").endswith("github.com:" + REPO)):
+        raise RuntimeError("UNEXPECTED_GIT_ORIGIN")
+    policy = cmd([sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"],
+                 timeout=240)
+    require_ok(policy, "RETIREMENT_POLICY")
+    if online:
+        require_ok(cmd(["gh", "auth", "status"], timeout=35), "GITHUB_AUTH")
+        # Local-host only. Never send owner research evidence to external AI.
+        req = urllib.request.Request(
+            "http://127.0.0.1:11434/api/tags", headers={"Accept": "application/json"}
+        )
+        with urllib.request.urlopen(req, timeout=15) as response:
+            models = json.load(response).get("models", [])
+        if not any(x.get("name", "").startswith(MODEL) for x in models):
+            raise RuntimeError("LOCAL_OLLAMA_MODEL_MISSING")
+
+
+def review_questions(level: int, name: str, fields: tuple[str, ...], feedback: str = "") -> list[str]:
+    prompt = (
+        "Return STRICT JSON ONLY with a key review_questions containing EXACTLY "
+        "four concise specific questions (each <=160 characters) for a "
+        "research-only evidence intake about this scientific method. "
+        "Do not state any trial has passed, FDA approval is likely, or any "
+        "prediction, score, or independent signoff exists. This is an "
+        "engineering scaffold; original sources remain unverified. "
+        "No code, URLs, medical records, or instructions. "
+        f"Level {level}: {name}. Expected source fields: {', '.join(fields)}. "
+        f"Previous validation issue: {feedback[:120]}"
+    )
+    body = json.dumps({
+        "model": MODEL, "prompt": prompt, "stream": False, "format": "json",
+        "options": {"num_predict": 500, "num_ctx": 2048, "temperature": 0.1}
+    }).encode()
+    req = urllib.request.Request(OLLAMA, data=body,
+                                 headers={"Content-Type": "application/json"})
+    with urllib.request.urlopen(req, timeout=180) as response:
+        raw = json.load(response).get("response")
+    if not isinstance(raw, str) or len(raw) > 8000:
+        raise ValueError("MODEL_RESPONSE_INVALID")
+    payload = json.loads(raw)
+    questions = payload.get("review_questions") if isinstance(payload, dict) else None
+    if (not isinstance(questions, list) or len(questions) != 4
+            or any(not isinstance(q, str) or not 12 <= len(q.strip()) <= 160
+                   or any(ord(ch) < 32 for ch in q) for q in questions)
+            or len(set(questions)) != 4):
+        raise ValueError("MODEL_QUESTIONS_NOT_VALIDATED")
+    return [q.strip() for q in questions]
+
+
+def render(level: int, name: str, fields: tuple[str, ...], questions: list[str]) -> tuple[str, str]:
+    """Only this trusted template, never raw LLM code, reaches the test runner."""
+    slug = f"level_{level:02d}_intake"
+    source = (
+        '# Research-only engineering intake. Does NOT certify this scientific level.\n'
+        'from __future__ import annotations\n'
+        'import re\n'
+        f'LEVEL = {level}\n'
+        f'LEVEL_NAME = {name!r}\n'
+        f'REQUIRED_FIELDS = {fields!r}\n'
+        f'REVIEW_QUESTIONS = {tuple(questions)!r}\n'
+        'NCT = re.compile(r"NCT[0-9]{8}\\Z")\n\n'
+        'def assess(record: dict) -> dict:\n'
+        '    if not isinstance(record, dict):\n'
+        '        raise ValueError("Expected one research intake record")\n'
+        '    nct = record.get("nct")\n'
+        '    if not isinstance(nct, str) or not NCT.fullmatch(nct):\n'
+        '        raise ValueError("Exact NCT identifier required")\n'
+        '    observed = record.get("evidence_fields", {})\n'
+        '    if not isinstance(observed, dict):\n'
+        '        raise ValueError("Evidence fields must be keyed source observations")\n'
+        '    # Only identify documentary gaps; absence is not negative trial evidence.\n'
+        '    missing = [key for key in REQUIRED_FIELDS if not isinstance(observed.get(key), str)\n'
+        '               or not observed[key].strip()]\n'
+        '    return {"nct": nct, "level": LEVEL, "status": "RESEARCH_INTAKE_REVIEW_REQUIRED",\n'
+        '            "missing_source_fields": missing, "questions": list(REVIEW_QUESTIONS),\n'
+        '            "source_facts_independently_verified": False,\n'
+        '            "scientific_stage_complete": False, "fda_prediction": None,\n'
+        '            "approval_probability": None, "clinical_score": None}\n'
+    )
+    tests = (
+        '"""Trusted synthetic tests for research-only level scaffold."""\n'
+        'import importlib.util\nfrom pathlib import Path\nimport unittest\n'
+        'ROOT = Path(__file__).resolve().parents[2]\n'
+        f'PATH = ROOT / "scripts/continuous_stage_drafts/{slug}.py"\n'
+        'SPEC = importlib.util.spec_from_file_location("review_module", PATH)\n'
+        'MODULE = importlib.util.module_from_spec(SPEC)\nSPEC.loader.exec_module(MODULE)\n\n'
+        'class EvidenceIntakeTests(unittest.TestCase):\n'
+        '    def test_missing_sources_are_not_negative_trial_results(self):\n'
+        '        x = MODULE.assess({"nct": "NCT00000001", "evidence_fields": {}})\n'
+        '        self.assertEqual(len(x["missing_source_fields"]), len(MODULE.REQUIRED_FIELDS))\n'
+        '        self.assertFalse(x["scientific_stage_complete"])\n'
+        '        self.assertFalse(x["source_facts_independently_verified"])\n'
+        '        self.assertIsNone(x["approval_probability"])\n'
+        '        self.assertIsNone(x["fda_prediction"])\n'
+        '    def test_all_keys_are_present_but_science_remains_unverified(self):\n'
+        '        fields = {k: "UNVERIFIED source receipt" for k in MODULE.REQUIRED_FIELDS}\n'
+        '        x = MODULE.assess({"nct": "NCT00000001", "evidence_fields": fields})\n'
+        '        self.assertEqual(x["missing_source_fields"], [])\n'
+        '        self.assertFalse(x["scientific_stage_complete"])\n'
+        '        self.assertIsNone(x["clinical_score"])\n'
+        '    def test_bad_nct_rejected(self):\n'
+        '        for nct in ("NCT1", "NCT١٢٣٤٥٦٧٨", "../NCT00000001"):\n'
+        '            with self.assertRaises(ValueError):\n'
+        '                MODULE.assess({"nct": nct})\n'
+        '    def test_invalid_source_structure_rejected(self):\n'
+        '        with self.assertRaises(ValueError):\n'
+        '            MODULE.assess({"nct": "NCT00000001", "evidence_fields": []})\n'
+        '\nif __name__ == "__main__":\n    unittest.main()\n'
+    )
+    return source, tests
+
+
+def stage_paths(level: int) -> tuple[str, str]:
+    slug = f"level_{level:02d}_intake"
+    return (f"scripts/continuous_stage_drafts/{slug}.py",
+            f"tests/continuous_stage_drafts/test_{slug}.py")
+
+
+def new_branch(level: int, attempt: int) -> str:
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S%f")
+    return f"automation/continuous-l{level:02d}-{stamp}-a{attempt}"
+
+
+def create_review_pr(level: int, name: str, source: str, tests: str) -> str:
+    paths = stage_paths(level)
+    branch = new_branch(level, 1)
+    working = WORKTREES / branch.rsplit("/", 1)[-1]
+    if working.exists():
+        raise RuntimeError("UNEXPECTED_WORKTREE_EXISTS")
+    WORKTREES.mkdir(parents=True, exist_ok=True)
+    require_ok(cmd(["git", "fetch", "--no-tags", "origin", "main"], timeout=180),
+               "FETCH_MAIN")
+    require_ok(cmd(["git", "worktree", "add", "-b", branch, str(working),
+                    "origin/main"], timeout=90), "CREATE_ISOLATED_BRANCH")
+    for relative, value in zip(paths, (source, tests)):
+        file = working / relative
+        if file.exists() or file.is_symlink():
+            raise RuntimeError("APPROVED_FILE_ALREADY_EXISTS")
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_text(value, encoding="utf-8", newline="\n")
+    guard = cmd([sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"],
+                cwd=working, timeout=240)
+    require_ok(guard, "RETIREMENT_POLICY")
+    relative_tests = "tests/continuous_stage_drafts"
+    test = cmd([sys.executable, "-B", "-I", "-m", "unittest", "discover",
+                "-s", relative_tests, "-p", Path(paths[1]).name, "-v"],
+               cwd=working, timeout=120)
+    if test.returncode or not re.search(r"Ran 4 tests? in ", test.stderr + test.stdout):
+        raise RuntimeError("SYNTHETIC_REGRESSION_FAILED")
+    require_ok(cmd(["git", "add", "--", *paths], cwd=working, timeout=30), "STAGE_FILES")
+    staged = require_ok(cmd(["git", "diff", "--cached", "--name-only"],
+                            cwd=working, timeout=30), "CHECK_FILE_SCOPE").splitlines()
+    if sorted(staged) != sorted(paths):
+        raise RuntimeError("UNEXPECTED_FILE_MUTATION")
+    require_ok(cmd(["git", "diff", "--cached", "--check"],
+                   cwd=working, timeout=30), "DIFF_WHITESPACE")
+    # Prohibit local Git hooks in the task worktree; no checkout or push hooks.
+    hooks = DATA / "empty-hooks"
+    hooks.mkdir(parents=True, exist_ok=True)
+    require_ok(cmd(["git", "-c", f"core.hooksPath={hooks}", "commit", "-m",
+                    f"Add research-only Level {level} evidence intake scaffold"],
+                   cwd=working, timeout=45), "COMMIT_DRAFT_BRANCH")
+    require_ok(cmd(["git", "-c", f"core.hooksPath={hooks}", "push",
+                    "--set-upstream", "origin", branch],
+                   cwd=working, timeout=180), "PUSH_DRAFT_BRANCH")
+    body = (
+        f"## Level {level}: {name}\n\n"
+        "AUTOMATED RESEARCH-ONLY ENGINEERING SCAFFOLD — DRAFT PR.\n\n"
+        "The code only identifies missing original-source fields and lists "
+        "untrusted research questions. It is NOT a completed scientific assessment, "
+        "validated mechanism, approval forecast, calibrated probability, "
+        "or production prediction. No FOCUS/POOL records were modified.\n\n"
+        "Safety: exact NCT check, retired-systems audit, four synthetic regression "
+        "tests, protected branch, no automatic merge or deployment. "
+        "Human code/scientific review and normal CI are still required.\n"
+    )
+    require_ok(cmd(["gh", "pr", "create", "--repo", REPO,
+                    "--base", "main", "--head", branch, "--draft",
+                    "--title", f"Research-only Level {level} intake: {name}",
+                    "--body", body], cwd=working, timeout=100), "CREATE_DRAFT_PR")
+    detail = require_ok(cmd(["gh", "pr", "view", branch, "--repo", REPO,
+                             "--json", "isDraft,url,baseRefName,headRefName"],
+                            cwd=working, timeout=45), "VERIFY_DRAFT_PR")
+    obj = json.loads(detail)
+    if (obj.get("isDraft") is not True or obj.get("baseRefName") != "main"
+            or obj.get("headRefName") != branch
+            or not isinstance(obj.get("url"), str)
+            or not obj["url"].startswith("https://github.com/" + REPO + "/pull/")):
+        raise RuntimeError("PR_NOT_VERIFIED_DRAFT")
+    return obj["url"]
+
+
+def one_attempt(state: dict, level: int, levels: list[dict]) -> bool:
+    task = state["tasks"][str(level)]
+    task["attempts"] += 1
+    task["last_attempt_utc"] = utc()
+    task["status"] = "RUNNING"
+    task["blocker"] = None
+    save_ledger(state)
+    heartbeat("WORKING", state, level)
+    try:
+        questions = review_questions(level, task["name"], SCOPES[level])
+        source, tests = render(level, task["name"], SCOPES[level], questions)
+        pr = create_review_pr(level, task["name"], source, tests)
+        task["draft_pr"] = pr
+        task["status"] = "DRAFT_PR_CREATED"
+        task["blocker"] = None
+        save_ledger(state)
+        return True
+    except (OSError, TimeoutError, urllib.error.URLError, ValueError,
+            RuntimeError, subprocess.TimeoutExpired) as error:
+        # Never store or publish raw command output, prompts or credentials.
+        blocker = type(error).__name__
+        if isinstance(error, (RuntimeError, ValueError)):
+            safe = str(error)
+            if re.fullmatch(r"[A-Z][A-Z0-9_]{2,80}", safe):
+                blocker = safe
+        task["status"] = "PENDING" if task["attempts"] < MAX_ATTEMPTS else "BLOCKED"
+        task["blocker"] = blocker
+        save_ledger(state)
+        return False
+
+
+def heartbeat(mode: str, state: dict, level: int | None = None) -> None:
+    atomic_json(HEARTBEAT, {
+        "mode": mode, "pid": os.getpid(), "updated_utc": utc(),
+        "level": level, "counts": summarize(state),
+    })
+
+
+def status(require_running: bool = False) -> int:
+    if not STATE_FILE.exists():
+        print("NOT_INSTALLED: no continuous-development ledger")
+        return 2
+    state = load_ledger(manifest())
+    counts = summarize(state)
+    if HEARTBEAT.exists():
+        h = json.loads(HEARTBEAT.read_text(encoding="utf-8"))
+        age = (datetime.now(timezone.utc)
+               - datetime.fromisoformat(h["updated_utc"])).total_seconds()
+        mode = h["mode"]
+        if require_running and (
+            mode not in ("RUNNING", "WORKING") or not 0 <= age <= 35
+            or not LOCK_FILE.exists() or STOP_FILE.exists()
+        ):
+            print("NOT_VERIFIED_RUNNING")
+            return 2
+        print("Heartbeat:", mode, "age-seconds:", int(age))
+    elif require_running:
+        print("NO_HEARTBEAT")
+        return 2
+    print("Engineering drafts:", counts["draft_prs_created"],
+          "pending:", counts["pending"], "blocked:", counts["blocked"])
+    print("Scientific stages independently completed: 0 (not verified)")
+    return 0
+
+
+def publish_status(state: dict) -> None:
+    # PUBLIC GitHub issue: generic stage counts only, no prompts or file paths.
+    counts = summarize(state)
+    content = (
+        "# PDUFA continuous-development monitor\n\n"
+        "**Safety:** Draft PRs only; no merges, deployments, predictions or "
+        "completed scientific-level claims.\n\n"
+        f"**As of UTC:** {utc()}\n\n"
+        f"**Engineering draft PRs:** {counts['draft_prs_created']} of 17\n\n"
+        f"**Pending engineering tasks:** {counts['pending']}\n\n"
+        f"**Blocked engineering tasks:** {counts['blocked']}\n\n"
+        "**Scientific levels independently completed by this agent:** 0\n\n"
+        "Detailed blockers and development artifacts are stored locally.\n"
+    )
+    try:
+        fd, filename = tempfile.mkstemp(prefix="pdufa-summary-", suffix=".md", dir=DATA)
+        try:
+            with os.fdopen(fd, "w", encoding="utf-8") as f:
+                f.write(content)
+            cmd(["gh", "issue", "edit", ISSUE, "--repo", REPO,
+                 "--body-file", filename], timeout=45)
+        finally:
+            Path(filename).unlink(missing_ok=True)
+    except (OSError, subprocess.TimeoutExpired):
+        pass
+
+
+def acquire_lock() -> int:
+    DATA.mkdir(parents=True, exist_ok=True)
+    fd = os.open(LOCK_FILE, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(fd, "w") as out:
+        out.write(json.dumps({"pid": os.getpid(), "started_utc": utc()}) + "\n")
+    return os.getpid()
+
+
+def worker(*, pilot: bool) -> int:
+    if STOP_FILE.exists():
+        print("STOPPED_BY_OWNER: remove STOP via --clear-stop before starting")
+        return 2
+    try:
+        acquire_lock()
+    except FileExistsError:
+        print("RUNNING_OR_STALE_LOCK: do not start a second worker")
+        return 2
+    try:
+        preflight(online=True)
+        levels = manifest()
+        state = load_ledger(levels)
+        state["mode"] = "PILOT" if pilot else "CONTINUOUS_RUNNING"
+        save_ledger(state)
+        heartbeat("RUNNING", state)
+        completed_in_this_run = 0
+        while not STOP_FILE.exists():
+            level = select_task(state)
+            if level is None:
+                state["mode"] = "ENGINEERING_QUEUE_EXHAUSTED_REVIEW_REQUIRED"
+                save_ledger(state)
+                heartbeat("QUEUE_EXHAUSTED", state)
+                publish_status(state)
+                print("ENGINEERING_QUEUE_EXHAUSTED: draft PRs need review; no scientific signoff")
+                return 0
+            # Restart-safe atomic ledger: one task at a time, never simultaneous.
+            save_ledger(state)
+            one_attempt(state, level, levels)
+            completed_in_this_run += 1
+            publish_status(state)
+            if pilot:
+                if state["tasks"][str(level)]["status"] != "DRAFT_PR_CREATED":
+                    print("PILOT_NOT_PASSED: no verified draft PR")
+                    return 2
+                state["mode"] = "PILOT_PASSED_NOT_RUNNING"
+                save_ledger(state)
+                heartbeat("PILOT_PASSED", state, level)
+                print("PILOT_PASSED: verified a tested draft PR for level", level)
+                return 0
+            heartbeat("RUNNING", state)
+            # Continue immediately, not every four hours.
+            if not STOP_FILE.exists():
+                time.sleep(COOLDOWN_SECONDS)
+        state["mode"] = "STOPPED_BY_OWNER"
+        save_ledger(state)
+        heartbeat("STOPPED", state)
+        return 0
+    finally:
+        LOCK_FILE.unlink(missing_ok=True)
+
+
+def self_test() -> int:
+    levels = manifest()
+    ledger = initial_ledger(levels)
+    assert list(map(int, ledger["tasks"])) == list(LEVELS)
+    assert select_task(ledger) == 4
+    sample = render(4, levels[3]["name"], SCOPES[4], [
+        "Which study endpoints were prespecified in the protocol?",
+        "What source supports the statistical analysis plan?",
+        "How was allocation concealment documented?",
+        "What multiplicity correction was prespecified?",
+    ])
+    assert "scientific_stage_complete" in sample[0]
+    assert "assertFalse(x[" in sample[1]
+    assert "approval_probability" in sample[0]
+    assert sum(int(t["status"] == "DRAFT_PR_CREATED")
+               for t in ledger["tasks"].values()) == 0
+    # Only trusted deterministic source is generated; no model Python is run.
+    import ast
+    ast.parse(sample[0]); ast.parse(sample[1])
+    print("PASS: 17 approved Level 4–20 tasks validated")
+    print("PASS: Trusted code and tests parse; no AI-authored Python executed")
+    print("PASS: Queue ordering, default abstention, draft-only safety")
+    return 0
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    actions = parser.add_mutually_exclusive_group(required=True)
+    for flag in ("preflight", "self-test", "pilot", "run", "status",
+                 "stop", "clear-stop"):
+        actions.add_argument("--" + flag, action="store_true")
+    parser.add_argument("--require-running", action="store_true")
+    args = parser.parse_args()
+    try:
+        if args.self_test:
+            return self_test()
+        if args.preflight:
+            preflight(online=True)
+            print("PREFLIGHT_PASS: GitHub, localhost Ollama, repo and retirement guard")
+            return 0
+        if args.stop:
+            DATA.mkdir(parents=True, exist_ok=True)
+            STOP_FILE.write_text("STOP REQUESTED\n", encoding="utf-8")
+            print("STOP_REQUESTED: worker will exit after current bounded task")
+            return 0
+        if args.clear_stop:
+            STOP_FILE.unlink(missing_ok=True)
+            print("STOP_CONTROL_CLEARED")
+            return 0
+        if args.status:
+            return status(require_running=args.require_running)
+        return worker(pilot=args.pilot)
+    except (OSError, ValueError, RuntimeError, urllib.error.URLError,
+            subprocess.TimeoutExpired) as error:
+        reason = type(error).__name__
+        if isinstance(error, (RuntimeError, ValueError)) and re.fullmatch(r"[A-Z][A-Z0-9_]{2,80}", str(error)):
+            reason = str(error)
+        print("STOP:", reason)
+        return 2
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
