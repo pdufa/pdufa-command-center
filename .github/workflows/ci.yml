@@ -36,6 +36,24 @@ jobs:
         run: python scripts/audit_raas_retirement.py --check
       - name: Test permanent retirement guards
         run: python -m unittest discover -s tests -p 'test_raas_retirement_guard.py' -v
+      - name: Validate Level 1 source provenance and SCIENCE 40 integration
+        run: |
+          python -m unittest discover -s tests -p 'test_stage4_evidence_provenance.py' -v
+          python -m unittest discover -s tests -p 'test_level1_science40_integration.py' -v
+          python -m unittest discover -s tests -p 'test_stage4_phase_first_triage.py' -v
+          python -m unittest discover -s tests -p 'test_level2_scientific_hypothesis_intake.py' -v
+          python -m unittest discover -s tests -p 'test_level2_focus_evidence_queue.py' -v
+          python -m unittest discover -s tests -p 'test_windows_local_agent_focus_validation.py' -v
+          python -m unittest discover -s tests -p 'test_level2_focus_registry_research.py' -v
+          python -m unittest discover -s tests -p 'test_windows_local_agent_registry_research_validation.py' -v
+          python -m unittest discover -s tests -p 'test_windows_local_agent_live_focus_registry.py' -v
+          python -m unittest discover -s tests -p 'test_windows_local_agent_live_status.py' -v
+          python -m unittest discover -s tests -p 'test_level3_focus_evidence_readiness.py' -v
+          python -m unittest discover -s tests -p 'test_windows_local_agent_continuous.py' -v
+          python -m unittest discover -s tests -p 'test_windows_local_agent_followon.py' -v
+          python -m unittest discover -s tests -p 'test_windows_local_agent_dashboard.py' -v
+          python -m unittest discover -s tests -p 'test_windows_local_patch_proposal.py' -v
+          python -m unittest discover -s tests -p 'test_windows_local_patch_review.py' -v
 
   source-integrity:
     name: GEM ledger and exact-event source checks

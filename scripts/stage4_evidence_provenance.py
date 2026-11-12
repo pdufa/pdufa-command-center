@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Validate source provenance before scientific review; no automated verification claims."""
 from datetime import date
+import re
 from urllib.parse import urlparse
 
 ALLOWED_TYPES = {"trial_registry", "trial_results", "regulatory", "company_release", "publication"}
@@ -14,7 +15,7 @@ def validate_evidence(record):
     if missing:
         raise ValueError("Missing provenance fields: " + ", ".join(sorted(missing)))
     nct = record["nct"]
-    if not isinstance(nct, str) or not nct.startswith("NCT") or not nct[3:].isdigit():
+    if not isinstance(nct, str) or re.fullmatch(r"NCT[0-9]{8}", nct) is None:
         raise ValueError("Invalid NCT identifier")
     if record["source_type"] not in ALLOWED_TYPES:
         raise ValueError("Unknown source type")
@@ -22,6 +23,8 @@ def validate_evidence(record):
     if not isinstance(url, str):
         raise ValueError("Invalid source URL")
     parsed = urlparse(url)
+    if any(ch.isspace() for ch in url) or parsed.fragment:
+        raise ValueError("Source URL must not contain whitespace or fragments")
     if parsed.scheme != "https" or not parsed.hostname or parsed.username or parsed.password:
         raise ValueError("Source must be an HTTPS URL without credentials")
     for field in ("document_date", "accessed_date"):

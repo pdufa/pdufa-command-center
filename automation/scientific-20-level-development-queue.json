@@ -1,0 +1,164 @@
+{
+  "schema_version": 1,
+  "description": "Review-first engineering task queue for the proposed 20-Level Scientific Assessment System. Not evidence of implemented levels, completed scientific assessments, or reliable predictions.",
+  "source": "Owner's saved 20-Level Scientific Analysis reference; level labels only, not assessment implementations.",
+  "policy": "AGENTS.md controls; preserve all past work; never restore retired RAAS scoring.",
+  "population": "POOL/FOCUS, phase-appropriate evidence only; no changes to membership.",
+  "levels": [
+    {
+      "level": 1,
+      "name": "Document Reading and Extraction",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 2,
+      "name": "Scientific Hypothesis Comprehension",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 3,
+      "name": "Molecular and Biological Investigation",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 4,
+      "name": "Experimental and Statistical Validation",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 5,
+      "name": "Contradictory Evidence and Critical Challenge",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 6,
+      "name": "Cross-Disciplinary Scientific Integration",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 7,
+      "name": "Predictive Modeling and Uncertainty",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 8,
+      "name": "Independent Scientific Synthesis",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 9,
+      "name": "Causal Inference and Counterfactual Analysis",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 10,
+      "name": "Systems Biology and Computational Modeling",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 11,
+      "name": "Adversarial Scientific Review",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 12,
+      "name": "Multi-Model Scientific Adjudication",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 13,
+      "name": "Quantitative Pharmacology",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 14,
+      "name": "Patient-Level Heterogeneity",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 15,
+      "name": "Bayesian Evidence Integration",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 16,
+      "name": "External Validity Analysis",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 17,
+      "name": "Historical Failure-Pattern Analysis",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 18,
+      "name": "Regulatory Counterfactual Analysis",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 19,
+      "name": "Independent Reproducibility Audit",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    },
+    {
+      "level": 20,
+      "name": "Scientific Red-Team Adjudication",
+      "verified_installation": "NOT_AUDITED",
+      "task_kind": "inventory_and_acceptance_plan",
+      "review_required": true
+    }
+  ],
+  "scientific_layers": [
+    "Disease Biology and Pathophysiology",
+    "Molecular Mechanism and Drug Action",
+    "Preclinical and Translational Evidence",
+    "Trial Design and Statistical Integrity",
+    "Clinical Efficacy, Safety and Reproducibility",
+    "Comparative Therapeutic Science",
+    "Regulatory Science and Approval Readiness",
+    "Integrated Scientific Inference"
+  ],
+  "assessment_count_per_layer": 5,
+  "investigation_positions_target": 800,
+  "production_deployment": false,
+  "automatic_merges": false,
+  "automatic_prediction_updates": false
+}

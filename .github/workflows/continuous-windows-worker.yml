@@ -1,0 +1,46 @@
+name: Continuous PDUFA Windows worker checks
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/windows_local_agent_continuous.py'
+      - 'scripts/windows_local_agent_install_continuous.ps1'
+      - 'tests/test_windows_local_agent_continuous.py'
+      - 'automation/scientific-20-level-development-queue.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  windows-continuous-worker:
+    name: Windows 3.13 orchestration and PowerShell syntax
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Run offline continuous worker regressions
+        shell: pwsh
+        run: |
+          python -m unittest discover -s tests -p 'test_windows_local_agent_continuous.py' -v
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python scripts/windows_local_agent_continuous.py --self-test
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Parse continuous scheduler PowerShell without execution
+        shell: pwsh
+        run: |
+          $errorsFound = $null
+          $tokensFound = $null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            "scripts/windows_local_agent_install_continuous.ps1",
+            [ref]$tokensFound,
+            [ref]$errorsFound
+          ) | Out-Null
+          if ($errorsFound.Count -ne 0) {
+            $errorsFound | Out-String | Write-Error
+            exit 1
+          }
+          Write-Host "PASS: PowerShell syntax parsed; no task was registered or started."
