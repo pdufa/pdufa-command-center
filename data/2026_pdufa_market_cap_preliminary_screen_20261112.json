@@ -1,0 +1,178 @@
+{
+  "asOf": "2026-11-12",
+  "scope": "existing 2026 historical assessed records only, not 177-calendar census",
+  "marketCapMinUsd": 300000000,
+  "marketCapMaxUsd": 10000000000,
+  "marketCapSource": "data/phase_pipeline_market_caps.csv",
+  "historicalSource": "data/historical_assessed_decisions.csv",
+  "warning": "Snapshot market caps are from 2026-11-12 and cannot establish pre-PDUFA market cap; do not treat as eligible for historical blind backtest until timestamp-appropriate caps and event identities verified.",
+  "counts": {
+    "screened": 20,
+    "snapshotInRange": 10,
+    "snapshotOutOfRange": 3,
+    "missing": 7,
+    "preDecisionVerified": 0
+  },
+  "records": [
+    {
+      "ticker": "RGNX",
+      "pdufaDate": "2026-02-08",
+      "snapshotMarketCapUsd": 508482794,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "IN_RANGE"
+    },
+    {
+      "ticker": "VNDA",
+      "pdufaDate": "2026-02-21",
+      "snapshotMarketCapUsd": 246716323,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "OUT_OF_RANGE"
+    },
+    {
+      "ticker": "ETON",
+      "pdufaDate": "2026-02-25",
+      "snapshotMarketCapUsd": null,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "MISSING"
+    },
+    {
+      "ticker": "ALDX",
+      "pdufaDate": "2026-03-16",
+      "snapshotMarketCapUsd": 39316251,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "OUT_OF_RANGE"
+    },
+    {
+      "ticker": "RYTM",
+      "pdufaDate": "2026-03-20",
+      "snapshotMarketCapUsd": 7900256739,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "IN_RANGE"
+    },
+    {
+      "ticker": "RCKT",
+      "pdufaDate": "2026-03-28",
+      "snapshotMarketCapUsd": 268947763,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "OUT_OF_RANGE"
+    },
+    {
+      "ticker": "DNLI",
+      "pdufaDate": "2026-04-05",
+      "snapshotMarketCapUsd": 3162532473,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "IN_RANGE"
+    },
+    {
+      "ticker": "TVTX",
+      "pdufaDate": "2026-04-13",
+      "snapshotMarketCapUsd": 4990632138,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "IN_RANGE"
+    },
+    {
+      "ticker": "MNKD",
+      "pdufaDate": "2026-05-29",
+      "snapshotMarketCapUsd": 1360537699,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "IN_RANGE"
+    },
+    {
+      "ticker": "ARVN",
+      "pdufaDate": "2026-06-05",
+      "snapshotMarketCapUsd": 452501391,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "IN_RANGE"
+    },
+    {
+      "ticker": "ARQT",
+      "pdufaDate": "2026-06-29",
+      "snapshotMarketCapUsd": 3588793837,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "IN_RANGE"
+    },
+    {
+      "ticker": "LNTH",
+      "pdufaDate": "2026-06-29",
+      "snapshotMarketCapUsd": null,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "MISSING"
+    },
+    {
+      "ticker": "VRDN",
+      "pdufaDate": "2026-06-30",
+      "snapshotMarketCapUsd": null,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "MISSING"
+    },
+    {
+      "ticker": "MNKD",
+      "pdufaDate": "2026-07-26",
+      "snapshotMarketCapUsd": 1360537699,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "IN_RANGE"
+    },
+    {
+      "ticker": "LNTH",
+      "pdufaDate": "2026-08-13",
+      "snapshotMarketCapUsd": null,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "MISSING"
+    },
+    {
+      "ticker": "RARE",
+      "pdufaDate": "2026-08-23",
+      "snapshotMarketCapUsd": 1645054458,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "IN_RANGE"
+    },
+    {
+      "ticker": "ZYME",
+      "pdufaDate": "2026-08-25",
+      "snapshotMarketCapUsd": null,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "MISSING"
+    },
+    {
+      "ticker": "TLX",
+      "pdufaDate": "2026-09-11",
+      "snapshotMarketCapUsd": null,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "MISSING"
+    },
+    {
+      "ticker": "IONS",
+      "pdufaDate": "2026-09-22",
+      "snapshotMarketCapUsd": 4684736037,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "IN_RANGE"
+    },
+    {
+      "ticker": "SRRK",
+      "pdufaDate": "2026-09-30",
+      "snapshotMarketCapUsd": null,
+      "preDecisionMarketCapUsd": null,
+      "preDecisionVerification": "PENDING",
+      "snapshotClassification": "MISSING"
+    }
+  ]
+}
