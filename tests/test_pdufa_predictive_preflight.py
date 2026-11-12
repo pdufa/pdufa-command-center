@@ -33,12 +33,25 @@ class PredictivePreflightTests(unittest.TestCase):
             self.assertIn("DOMAIN_IMPLEMENTATION_NOT_APPROVED",
                           [x["code"] for x in row["predictable_findings"]])
 
-    def test_level7_preparatory_code_does_not_count_as_approved_model(self):
+    def test_level7_preparatory_code_optional_but_never_an_approved_model(self):
         out=M.audit(manifest,ROOT)
         level7=out["levels"][3]
         self.assertFalse(level7["engineering_release_ready"])
-        self.assertIn("PREPARATORY_ONLY_NOT_APPROVED_FOR_ENGINEERING_ADVANCEMENT",
-                      [x["code"] for x in level7["predictable_findings"]])
+        codes=[x["code"] for x in level7["predictable_findings"]]
+        self.assertIn("DOMAIN_IMPLEMENTATION_NOT_APPROVED",codes)
+        if (ROOT/"scripts/level7_model_validation_readiness.py").is_file():
+            self.assertIn("PREPARATORY_ONLY_NOT_APPROVED_FOR_ENGINEERING_ADVANCEMENT",
+                          codes)
+        else:
+            self.assertIn("LEVEL7_PREPARATORY_MODULE_NOT_INSTALLED",codes)
+
+    def test_partial_windows_install_without_level7_does_not_fail(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            out=M.audit(manifest,Path(tmp))
+            level7=out["levels"][3]
+            self.assertFalse(level7["engineering_release_ready"])
+            self.assertIn("LEVEL7_PREPARATORY_MODULE_NOT_INSTALLED",
+                          [x["code"] for x in level7["predictable_findings"]])
 
     def test_missing_source_file_is_predicted_before_worker_reaches_stage(self):
         with tempfile.TemporaryDirectory() as tmp:
