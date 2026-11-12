@@ -268,6 +268,37 @@ class ContinuousWorkerSafetyTests(unittest.TestCase):
                             and "--force" in x for x in calls))
         self.assertFalse(any(x[:3] == ("gh", "pr", "create") for x in calls))
 
+    def test_base_check_runs_clean_audit_without_stage_attempt(self):
+        calls = []
+        def mock_cmd(args, *, cwd=M.ROOT, timeout=180):
+            calls.append(tuple(args))
+            if args[:4] == ["git", "worktree", "add", "--detach"]:
+                Path(args[4]).mkdir(parents=True, exist_ok=True)
+            return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
+        with patch.object(M, "cmd", side_effect=mock_cmd):
+            M.verify_review_base()
+        self.assertTrue(any(x[:4] == ("git", "worktree", "add", "--detach")
+                            and x[-1] == "origin/" + M.REVIEW_BASE for x in calls))
+        self.assertTrue(any(x[:3] == ("git", "worktree", "remove") for x in calls))
+        self.assertFalse(M.STATE_FILE.exists())
+        self.assertFalse(any("push" in x or "merge" in x for x in calls))
+
+    def test_base_check_failure_cleans_worktree_without_attempting_pilot(self):
+        calls = []
+        def mock_cmd(args, *, cwd=M.ROOT, timeout=180):
+            calls.append(tuple(args))
+            if args[:4] == ["git", "worktree", "add", "--detach"]:
+                Path(args[4]).mkdir(parents=True, exist_ok=True)
+            if args[:3] == [sys.executable, "-B", "scripts/audit_raas_retirement.py"]:
+                return subprocess.CompletedProcess(args, 1, stdout="", stderr="")
+            return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
+        with patch.object(M, "cmd", side_effect=mock_cmd):
+            with self.assertRaisesRegex(RuntimeError, "REVIEW_BASE_RETIREMENT_POLICY_FAILED"):
+                M.verify_review_base()
+        self.assertTrue(any(x[:3] == ("git", "worktree", "remove") for x in calls))
+        self.assertFalse(M.STATE_FILE.exists())
+        self.assertFalse(any(x[:3] == ("gh", "pr", "create") for x in calls))
+
     def test_stop_control_blocks_worker_even_before_pilot(self):
         M.STOP_FILE.parent.mkdir(parents=True, exist_ok=True)
         M.STOP_FILE.write_text("stop", encoding="utf-8")
