@@ -1,0 +1,67 @@
+name: PDUFA Level5 Install and Engineering Unblock Validation
+on:
+  pull_request:
+    paths:
+      - 'automation/scientific-level-completion-queue.json'
+      - 'automation/level5-candidate-roster-20261111.json'
+      - 'scripts/pdufa_level_completion.py'
+      - 'scripts/pdufa_engineering_review_lanes.py'
+      - 'scripts/windows_pdufa_level5_unblock.ps1'
+      - 'tests/test_pdufa_engineering_review_lanes.py'
+      - 'tests/test_level5_implementation_integration.py'
+      - '.github/workflows/level5-integration-unblock-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  evidence-and-sequencing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Validate current queue and new engineering/science lanes
+        run: |
+          python scripts/pdufa_level_completion.py --self-test
+          python scripts/pdufa_engineering_review_lanes.py --self-test
+      - name: Existing persistent worker regressions
+        run: python -m unittest discover -s tests -p 'test_pdufa_level_completion.py' -v
+      - name: Existing strict reviewer sequencing
+        run: python -m unittest discover -s tests -p 'test_pdufa_strict_level_runner.py' -v
+      - name: Approved engineering lane regressions
+        run: python -m unittest discover -s tests -p 'test_pdufa_engineering_review_lanes.py' -v
+      - name: Original-source Level 4 / Level 5 inventory regressions
+        run: |
+          python -m unittest discover -s tests -p 'test_level4_scientific_evidence.py' -v
+          python -m unittest discover -s tests -p 'test_level5_contradictory_evidence.py' -v
+      - name: Four Level5 checkpoint integration checks
+        run: python -m unittest discover -s tests -p 'test_level5_implementation_integration.py' -v
+      - name: Permanent retired-system audit
+        run: python scripts/audit_raas_retirement.py --check
+      - name: Fail closed for uncertified levels and future implementation
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path("automation/scientific-level-completion-queue.json").read_text())
+          assert p["levels"][1]["implementation_draft_pr"] == 1161
+          assert all(x["implementation_draft_pr"] is None for x in p["levels"][2:])
+          assert all(x["completed_scientific_level"] is False for x in p["levels"])
+          assert all(x is False for x in p["safety"].values())
+          print("PASS: Level6-20 remain implementation-blocked until real code/evidence exists")
+          PY
+  windows-installer:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse Windows PowerShell installer only; never execute machine migration in CI
+        shell: pwsh
+        run: |
+          $tokens=$null; $errors=$null
+          $path="scripts/windows_pdufa_level5_unblock.ps1"
+          [System.Management.Automation.Language.Parser]::ParseFile($path,[ref]$tokens,[ref]$errors) | Out-Null
+          if($errors.Count -gt 0){ $errors | Out-String | Write-Error; exit 1 }
+          Write-Host 'PASS: Windows script parses; owner task NOT modified'
