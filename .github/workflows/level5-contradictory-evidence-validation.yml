@@ -1,0 +1,36 @@
+name: PDUFA Level 5 Contradictory Evidence Inventory Validation
+on:
+  pull_request:
+    paths:
+      - 'scripts/level5_contradictory_evidence.py'
+      - 'tests/test_level5_contradictory_evidence.py'
+      - '.github/workflows/level5-contradictory-evidence-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  level5-source-challenge:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Level 5 original-source critical challenge tests
+        run: python -m unittest discover -s tests -p test_level5_contradictory_evidence.py -v
+      - name: Earlier Level 4 evidence validation remains intact
+        run: python -m unittest discover -s tests -p test_level4_scientific_evidence.py -v
+      - name: Retired RAAS restrictions
+        run: python scripts/audit_raas_retirement.py --check
+      - name: Safe no-adjudication output guards
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          s=Path("scripts/level5_contradictory_evidence.py").read_text()
+          assert '"scientific_stage_complete": False' in s
+          assert '"fda_prediction": None' in s
+          assert '"approval_probability": None' in s
+          assert '"negative_evidence_adjudicated": False' in s
+          print("PASS: Level5 is explicitly only a challenge-leads inventory")
+          PY
