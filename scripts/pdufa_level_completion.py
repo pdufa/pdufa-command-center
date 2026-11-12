@@ -73,7 +73,7 @@ def plan() -> dict:
         if (row.get("completed_scientific_level") is not False or
                 row.get("original_intake_draft_pr") != 1121 + n - 4 or
                 row.get("provenance_draft_pr") != 1139 + n - 4 or
-                row.get("implementation_draft_pr") != (1156 if n == 4 else None) or
+                row.get("implementation_draft_pr") != ({4: 1156, 5: 1161}.get(n)) or
                 not isinstance(row.get("scientific_acceptance_criteria"), list) or
                 len(row["scientific_acceptance_criteria"]) < 5):
             raise ValueError("Incomplete or inconsistent scientific review manifest")
@@ -177,6 +177,47 @@ def confirmed_pr(pr_number: int) -> dict:
         raise RuntimeError("REVIEW_PR_NOT_APPROVED_DRAFT")
     return {"pr_number": pr_number, "draft_url": data["url"]}
 
+def confirmed_level5_pr() -> dict:
+    """Verify only the known, draft Level 5 implementation PR, never a random PR."""
+    result = cmd(["gh", "pr", "view", "1161", "--repo", REPO, "--json",
+                  "number,url,isDraft,state,baseRefName,headRefName"], timeout=35)
+    if result.returncode:
+        raise RuntimeError("LEVEL5_REVIEW_PR_LOOKUP_FAILED")
+    data = json.loads(result.stdout)
+    if (data.get("number") != 1161 or data.get("state") != "OPEN"
+            or data.get("isDraft") is not True
+            or data.get("baseRefName") != "automation/engineering-lane-review-pending-20261112"
+            or data.get("headRefName") != "feature/level5-contradictory-evidence-20261112"
+            or data.get("url") != "https://github.com/pdufa/pdufa-command-center/pull/1161"):
+        raise RuntimeError("LEVEL5_REVIEW_PR_NOT_APPROVED_DRAFT")
+    return {"pr_number": 1161, "draft_url": data["url"]}
+
+
+def verified_level5_candidate_ids() -> tuple[list[str], dict]:
+    """Read research candidates, never rewrite canonical POOL or FOCUS membership."""
+    from level4_scientific_evidence import NCT
+    frozen = ROOT / "automation" / "level5-candidate-roster-20261111.json"
+    doc = json.loads(frozen.read_text(encoding="utf-8"))
+    rows = doc.get("records")
+    if (doc.get("purpose") != "READ_ONLY_RESEARCH_CANDIDATE_LEADS_NOT_CANONICAL_FOCUS"
+            or doc.get("asOf") != "2026-11-11"
+            or doc.get("canonical_focus_verified") is not False
+            or doc.get("source_repo_path") != "new-platform/frontend/data/p3PostDataActive.json"
+            or doc.get("source_git_blob_sha1") != "b1b79b632ff6a87d6533f6135d4204cb5931e23c"
+            or not isinstance(rows, list) or len(rows) != 32
+            or any(not isinstance(row, dict) or
+                   not isinstance(row.get("nct"), str) or
+                   not NCT.fullmatch(row["nct"]) or
+                   not isinstance(row.get("ticker"), str) or
+                   not re.fullmatch(r"[A-Z0-9]{1,6}", row["ticker"])
+                   for row in rows)):
+        raise RuntimeError("LEVEL5_CANDIDATE_ROSTER_NOT_VERIFIED")
+    ncts = [row["nct"] for row in rows]
+    if len(set(ncts)) != 32:
+        raise RuntimeError("LEVEL5_DUPLICATE_NCT")
+    return ncts, doc
+
+
 def execute(number: int, step: str, manifest: dict) -> dict:
     definition = manifest["levels"][number - 4]
     if step == "AUDIT_EXISTING_DRAFTS":
@@ -186,6 +227,26 @@ def execute(number: int, step: str, manifest: dict) -> dict:
                 "drafts": checks, "required_evidence": definition["required_evidence_fields"],
                 "scientific_review_required": True}
     if step == "COLLECT_ORIGINAL_SOURCE":
+        if number == 5:
+            from level5_contradictory_evidence import process_ncts
+            ncts, roster = verified_level5_candidate_ids()
+            batch = process_ncts(ncts)
+            dest = DATA / "level5" / "dated-source-challenge-inventory.json"
+            safe_json(dest, batch)
+            if batch["retrieved"] != len(ncts):
+                raise RuntimeError("LEVEL5_SOURCE_RETRIEVAL_PARTIAL")
+            return {
+                "result": "DATED_CANDIDATE_ORIGINAL_REGISTRY_CHALLENGE_LEADS_INVENTORIED",
+                "snapshot_as_of": roster["asOf"],
+                "source_git_blob_sha1": roster["source_git_blob_sha1"],
+                "snapshot_nct_count": len(ncts),
+                "retrieved_original_source_count": batch["retrieved"],
+                "unavailable_or_invalid_count": len(ncts)-batch["retrieved"],
+                "source_report": str(dest),
+                "current_canonical_focus_verified": False,
+                "independently_reviewed": False,
+                "negative_evidence_adjudicated": False,
+            }
         if number != 4:
             raise RuntimeError("DOMAIN_SOURCE_COLLECTION_NOT_REVIEWED")
         # The dated local FOCUS research snapshot is an NCT acquisition LEAD,
@@ -214,6 +275,13 @@ def execute(number: int, step: str, manifest: dict) -> dict:
                 "source_report": str(dest), "current_canonical_focus_verified": False,
                 "independently_reviewed": False}
     if step == "IMPLEMENT_FUNCTIONAL_GATES":
+        if number == 5:
+            file = ROOT / "scripts" / "level5_contradictory_evidence.py"
+            if not file.is_file():
+                raise RuntimeError("LEVEL5_IMPLEMENTATION_NOT_INSTALLED")
+            return {"result": "LEVEL5_CHALLENGE_INVENTORY_CODE_PRESENT_NOT_SCIENCE_SIGNOFF",
+                    "implementation_pr": confirmed_level5_pr(),
+                    "scope": definition["implementation_scope"]}
         if number != 4:
             raise RuntimeError("DOMAIN_IMPLEMENTATION_NOT_APPROVED")
         file = ROOT / "scripts/level4_scientific_evidence.py"
@@ -222,6 +290,26 @@ def execute(number: int, step: str, manifest: dict) -> dict:
         return {"result": "LEVEL4_FUNCTIONAL_SOURCE_REVIEW_CODE_PRESENT_NOT_SCIENCE_SIGNOFF",
                 "implementation_pr": confirmed_pr(1156)}
     if step == "RUN_REGRESSION_TESTS":
+        if number == 5:
+            checks = [
+                [sys.executable, "-B", "-m", "unittest", "discover",
+                 "-s", "tests", "-p", "test_level5_contradictory_evidence.py", "-v"],
+                [sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"],
+            ]
+            reports = []
+            for argv in checks:
+                result = cmd(argv, timeout=240)
+                if result.returncode:
+                    raise RuntimeError("LEVEL5_REGRESSION_OR_RETIREMENT_FAILED")
+                if "unittest" in argv:
+                    match = re.search(r"Ran (\d+) tests? in ", result.stderr + result.stdout)
+                    if match is None or int(match.group(1)) < 8:
+                        raise RuntimeError("LEVEL5_TEST_COUNT_MISMATCH")
+                    reports.append({"suite": "level5_source_challenge", "passed": int(match.group(1))})
+                else:
+                    reports.append({"suite": "permanent_retirement", "passed": True})
+            return {"result": "LEVEL5_LOCAL_REGRESSIONS_PASS_NOT_SCIENCE_SIGNOFF",
+                    "tests": reports, "independent_review_required": True}
         if number != 4:
             raise RuntimeError("DOMAIN_REGRESSION_SUITE_NOT_APPROVED")
         commands = [
@@ -244,6 +332,9 @@ def execute(number: int, step: str, manifest: dict) -> dict:
         return {"result": "LOCAL_OFFLINE_REGRESSIONS_PASS_NOT_SCIENCE_SIGNOFF",
                 "tests": reports, "independent_review_required": True}
     if step == "PREPARE_REVIEW_PR":
+        if number == 5:
+            return {"result": "LEVEL5_REVIEW_PR_VERIFIED_DRAFT_ONLY",
+                    "implementation_pr": confirmed_level5_pr()}
         if number != 4:
             raise RuntimeError("DOMAIN_IMPLEMENTATION_PR_NOT_AVAILABLE")
         return {"result": "EXISTING_REVIEW_PR_VERIFIED_DRAFT_ONLY",
