@@ -47,6 +47,6 @@ jobs:
             $parseErrors | Out-String | Write-Error
             exit 1
           }
-          $p = Start-Process -FilePath 'powershell.exe' -ArgumentList @('-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass','-File',(Resolve-Path $file).Path,'-Status') -PassThru -Wait -NoNewWindow
-          if($p.ExitCode -ne 0) { throw ('Read-only status returned '+$p.ExitCode) }
+          & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File (Resolve-Path $file).Path -Status
+          if($LASTEXITCODE -ne 0) { throw ('Read-only status returned '+$LASTEXITCODE) }
           Write-Host 'PASS: native Windows updater parses and read-only status succeeds'
