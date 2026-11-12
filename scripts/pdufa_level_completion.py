@@ -240,7 +240,7 @@ def execute(number: int, step: str, manifest: dict) -> dict:
         raise RuntimeError("INDEPENDENT_REVIEW_NOT_APPROVED")
     raise ValueError("Unknown approved completion step")
 
-def once(state: dict, manifest: dict) -> bool:
+def once(state: dict, manifest: dict, *, notify: bool = False) -> bool:
     selection = next_step(state)
     if selection is None:
         return False
@@ -253,26 +253,38 @@ def once(state: dict, manifest: dict) -> bool:
     state["mode"] = "LEVEL_COMPLETION_WORKING"
     save(state)
     heartbeat("WORKING", state, level, task_name)
+    if notify:
+        publish(state)
+    ping_stop = threading.Event()
+    def ping() -> None:
+        while not ping_stop.wait(10):
+            heartbeat("WORKING", state, level, task_name)
+    ticker = threading.Thread(target=ping, daemon=True)
+    ticker.start()
     try:
-        result = execute(level, task_name, manifest)
-    except (OSError, ValueError, RuntimeError, TimeoutError, subprocess.TimeoutExpired,
-            json.JSONDecodeError) as exc:
-        code = str(exc) if isinstance(exc, RuntimeError) and ERROR_CODE.fullmatch(str(exc)) else type(exc).__name__.upper()
-        item["blocker"] = code
-        # Missing implementation/independent review is a true blocker, not
-        # something to brute-force retry indefinitely.
-        permanent = code in {"DOMAIN_SOURCE_COLLECTION_NOT_REVIEWED",
-                             "DOMAIN_IMPLEMENTATION_NOT_APPROVED",
-                             "DOMAIN_REGRESSION_SUITE_NOT_APPROVED",
-                             "DOMAIN_IMPLEMENTATION_PR_NOT_AVAILABLE",
-                             "INDEPENDENT_REVIEW_NOT_APPROVED",
-                             "LEVEL4_IMPLEMENTATION_NOT_INSTALLED"}
-        item["status"] = "BLOCKED" if permanent or item["attempts"] >= MAX_ATTEMPTS else "PENDING"
-        item["evidence"] = {"last_attempt_utc": utc(), "scientific_signoff": False}
-    else:
-        item["status"] = "DONE"
-        item["evidence"] = {"observed_at_utc": utc(), **result,
-                            "scientific_signoff": False}
+        try:
+            result = execute(level, task_name, manifest)
+        except (OSError, ValueError, RuntimeError, TimeoutError,
+                subprocess.TimeoutExpired, json.JSONDecodeError) as exc:
+            code = (str(exc) if isinstance(exc, RuntimeError) and ERROR_CODE.fullmatch(str(exc))
+                    else type(exc).__name__.upper())
+            item["blocker"] = code
+            permanent = code in {"DOMAIN_SOURCE_COLLECTION_NOT_REVIEWED",
+                                 "DOMAIN_IMPLEMENTATION_NOT_APPROVED",
+                                 "DOMAIN_REGRESSION_SUITE_NOT_APPROVED",
+                                 "DOMAIN_IMPLEMENTATION_PR_NOT_AVAILABLE",
+                                 "INDEPENDENT_REVIEW_NOT_APPROVED",
+                                 "LEVEL4_IMPLEMENTATION_NOT_INSTALLED"}
+            item["status"] = ("BLOCKED" if permanent or item["attempts"] >= MAX_ATTEMPTS
+                              else "PENDING")
+            item["evidence"] = {"last_attempt_utc": utc(), "scientific_signoff": False}
+        else:
+            item["status"] = "DONE"
+            item["evidence"] = {"observed_at_utc": utc(), **result,
+                                "scientific_signoff": False}
+    finally:
+        ping_stop.set()
+        ticker.join(timeout=3)
     state["active"] = None
     save(state)
     return True
@@ -288,6 +300,18 @@ def public_status(state: dict) -> str:
             if row["status"] == "DONE":
                 last = f"L{n:02d} {key}"
     count = counts(state)
+    focus_level = active["level"] if active else next(
+        (n for n in range(4, 21) if any(
+            x["status"] == "PENDING" for x in state["levels"][str(n)]["steps"].values())), 4)
+    focus_steps = state["levels"][str(focus_level)]["steps"]
+    done_keys = [key for key, x in focus_steps.items() if x["status"] == "DONE"]
+    test_evidence = focus_steps["RUN_REGRESSION_TESTS"]["evidence"].get("tests", [])
+    source_evidence = focus_steps["COLLECT_ORIGINAL_SOURCE"]["evidence"]
+    test_line = ", ".join(
+        f"{t.get('suite')}: {t.get('passed')}" for t in test_evidence
+    ) if test_evidence else "not yet verified"
+    source_line = (source_evidence.get("result") or
+                   source_evidence.get("last_attempt_utc") or "not yet retrieved")
     visible = blockers[:12]
     if len(blockers) > 12:
         visible.append(f"... plus {len(blockers)-12} additional recorded blockers")
@@ -299,6 +323,10 @@ def public_status(state: dict) -> str:
         f"**Tasks completed (engineering checkpoints only):** {count['tasks_done']}/{count['tasks_total']}\n\n"
         "**Scientific levels independently completed:** 0/17\n\n"
         f"**Last engineering checkpoint:** {last or 'none'}\n\n"
+        f"**Focus level:** {focus_level}\n\n"
+        f"**Completed engineering requirements at this level:** {', '.join(done_keys) or 'none'}\n\n"
+        f"**Test results:** {test_line}\n\n"
+        f"**Original-source work:** {source_line}\n\n"
         f"**Next approved action:** {next_label(state)}\n\n"
         f"**Pending:** {count['tasks_pending']} | **Blocked:** {count['tasks_blocked']}\n\n"
         "**Blockers:**\n" + ("\n".join("- " + b for b in visible) if visible else "- none recorded") +
@@ -378,7 +406,7 @@ def run(once_only: bool = False) -> int:
         save(state)
         heartbeat("RUNNING", state)
         while not STOP.exists():
-            if not once(state, manifest):
+            if not once(state, manifest, notify=True):
                 state["mode"] = "AWAITING_INDEPENDENT_REVIEW_OR_APPROVED_WORK"
                 save(state)
                 heartbeat("IDLE", state)
