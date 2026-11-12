@@ -101,10 +101,11 @@ def plan_work(manifest: dict, *, completion_state: dict | None = None,
               focus_level: int | None = None) -> dict:
     levels = validate_manifest(manifest)
     engineering = _object(engineering_state)
+    has_engineering_ledger = engineering_state is not None
     if engineering and engineering.get("mode") != "ENGINEERING_ADVANCE_REVIEW_SEPARATE":
         raise ValueError("Unrecognized engineering lane state")
     done_count = _check_complete_ledger(engineering, levels)
-    pending_level = MIN_LEVEL + done_count if done_count < len(levels) else None
+    pending_level = (MIN_LEVEL + done_count if done_count < len(levels) else None) if has_engineering_ledger else None
     if focus_level is not None and (type(focus_level) is not int or
                                     focus_level < MIN_LEVEL or focus_level > MAX_LEVEL):
         raise ValueError("Invalid level")
@@ -115,7 +116,9 @@ def plan_work(manifest: dict, *, completion_state: dict | None = None,
         checkpoint = _steps(ledgers.get(str(level)))
         completed = idx < done_count
         current = (level == pending_level)
-        if completed:
+        if not has_engineering_ledger:
+            state = "ENGINEERING_LEDGER_NOT_PROVIDED"
+        elif completed:
             state = "ENGINEERING_SCOPE_RECORDED_COMPLETE_REQUIRES_CONTROLLER_VERIFICATION"
         elif current:
             state = "ACTIVE_ENGINEERING_LEVEL"
@@ -156,7 +159,7 @@ def plan_work(manifest: dict, *, completion_state: dict | None = None,
         "status": "READ_ONLY_SERIAL_REMEDIATION_PLAN",
         "generated_at_utc": datetime.now(timezone.utc).isoformat(),
         "active_level": pending_level,
-        "engineering_levels_recorded_complete": done_count,
+        "engineering_levels_recorded_complete": done_count if has_engineering_ledger else None,
         "engineering_ledger_verified_by_authoritative_controller": False,
         "next_repair": (active["checkpoints_to_repair"][0] if active and
                         active["checkpoints_to_repair"] else None),
