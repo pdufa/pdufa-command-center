@@ -1,13 +1,14 @@
 # One-time Level 6 approved engineering-slice installer; retains independent science review.
 # Never clears scientific acceptance blockers, owner STOP, or failures from new tests.
-# Installs verified source code, retries only old L5 domain placeholders, and enables watchdog.
+# Installs verified source code, retries only original Level 6 placeholders, and enables watchdog.
+# Read-only -Preflight diagnoses local prerequisites without stopping any worker.
 # Requires current-user Task Scheduler ownership; NEVER interrupts active PR work.
 [CmdletBinding()]
-param([switch]$Install,[switch]$Status)
+param([switch]$Install,[switch]$Status,[switch]$Preflight)
 Set-StrictMode -Version Latest
 $ErrorActionPreference='Stop'
-if (($Install -and $Status) -or (-not $Install -and -not $Status)) {
-  throw 'Specify exactly one of -Install and -Status.'
+if (@(@($Install,$Status,$Preflight) | Where-Object { $_ }).Count -ne 1) {
+  throw 'Specify exactly one of -Install, -Status and -Preflight.'
 }
 $root=(Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $data=Join-Path $env:USERPROFILE 'PDUFA-Agent-Continuous'
@@ -19,8 +20,8 @@ $engineering=Join-Path $data 'engineering_lane_ledger.json'
 $oldLedger=Join-Path $data 'ledger.json'
 $taskName='PDUFA-Continuous-Development'
 $guardName='PDUFA-Continuous-Watchdog'
-$branch='automation/level6-engineering-checkpoints-20261112'
-$remoteRef='refs/remotes/origin/automation/level6-engineering-checkpoints-20261112'
+$branch='automation/full-install-path-repair-20261112'
+$remoteRef='refs/remotes/origin/automation/full-install-path-repair-20261112'
 $files=@(
   'automation/scientific-level-completion-queue.json',
   'automation/level5-candidate-roster-20261111.json',
@@ -30,6 +31,7 @@ $files=@(
   'scripts/level4_scientific_evidence.py',
   'scripts/level5_contradictory_evidence.py',
   'scripts/level6_cross_disciplinary_inventory.py',
+  'scripts/pdufa_level_remediation_planner.py',
   'tests/test_pdufa_level_completion.py',
   'tests/test_pdufa_strict_level_runner.py',
   'tests/test_pdufa_engineering_review_lanes.py',
@@ -38,6 +40,7 @@ $files=@(
   'tests/test_level6_cross_disciplinary_inventory.py',
   'tests/test_level5_implementation_integration.py',
   'tests/test_level6_implementation_integration.py',
+  'tests/test_pdufa_level_remediation_planner.py',
   'scripts/windows_local_agent_watchdog.ps1'
 )
 # Approved, exact Git blob IDs for this review slice; no branch drift.
@@ -48,13 +51,15 @@ $allowed=@{
  'scripts/level4_scientific_evidence.py'='2530d029f49b8ab4ec1f21f7db784d5864bf5c36'
  'scripts/level5_contradictory_evidence.py'='2c5eee95d0760baa2d3f5f1aea3e2012fe964a07'
  'scripts/level6_cross_disciplinary_inventory.py'='f5dbe151a8a7c7657dcacb9581281dc627b708bf'
+ 'scripts/pdufa_level_remediation_planner.py'='741d04cf3a803860c1c590499d139df86e0889d5'
  'tests/test_pdufa_level_completion.py'='1e08eda6249fc2cd94fccacb41fe44c6b744f373'
  'tests/test_level4_scientific_evidence.py'='5a30ed426188aa8da968639fc763842d9d15f0e6'
  'tests/test_level5_contradictory_evidence.py'='5ae934b3c74036791c01f170ff3bb45fe8972d0c'
  'tests/test_level6_cross_disciplinary_inventory.py'='1dcf90611b77059d3f17b11ae512abeb18a94ac4'
  'tests/test_level5_implementation_integration.py'='1eeff40f9a33e4b41c1a25230f67b6230df29eca'
  'tests/test_level6_implementation_integration.py'='16f7e60149a0792f436b8b3516bc6f9d796761c0'
- 'scripts/windows_local_agent_watchdog.ps1'='49a9debd9db01c8d2416e8715387b9c3ee1ec726'
+ 'tests/test_pdufa_level_remediation_planner.py'='2b83f4e7a77ccc9e821b5d1444e8d30d2873e13d'
+ 'scripts/windows_local_agent_watchdog.ps1'='3904b3262e1efc02349ba96b239a8ff12f925131'
  'scripts/pdufa_engineering_review_lanes.py'='c6920a64dac13652551527ec2c3fdd23b6946386'
  'tests/test_pdufa_engineering_review_lanes.py'='a26e87b32274aec7edb210b68fa991421bfe956b'
  'scripts/pdufa_strict_level_runner.py'='c63f9e3f191f53a42c7fafc4e184a065dec5d7b9'
@@ -100,17 +105,26 @@ if($Status) {
   Write-Host 'Engineering progression worker has not started.'
   exit 2
 }
-if(-not(Test-Path -LiteralPath $oldLedger -PathType Leaf) -or
-   -not(Test-Path -LiteralPath (Join-Path $root 'AGENTS.md') -PathType Leaf)) {
-  throw 'Original engineering ledger or safety policy is missing.'
+$runAction=[string]$worker.Actions[0].Arguments
+if(-not(Test-Path -LiteralPath (Join-Path $root 'AGENTS.md') -PathType Leaf)) {
+  throw 'Permanent safety policy is missing.'
+}
+# The engineering controller uses its own ledger. An old legacy ledger may be
+# absent once migrated, and must not block a safe Level 6 upgrade.
+if($runAction -match 'pdufa_engineering_review_lanes\.py') {
+  if(-not(Test-Path -LiteralPath $engineering -PathType Leaf) -or
+     -not(Test-Path -LiteralPath $completion -PathType Leaf)) {
+    throw 'Current engineering completion ledgers are missing.'
+  }
+} elseif(-not(Test-Path -LiteralPath $oldLedger -PathType Leaf)) {
+  throw 'Legacy worker ledger missing; no safe migration.'
 }
 if(Test-Path -LiteralPath $stopToken) { throw 'Owner STOP exists; do not override it.' }
 if($worker.State -eq 'Disabled') { throw 'Worker disabled; owner intervention required.' }
-$runAction=[string]$worker.Actions[0].Arguments
 # A previously configured engineering worker still needs the reviewed Level6
 # module and ledger retry migration; do not incorrectly exit early.
 if($runAction -match 'pdufa_engineering_review_lanes\.py') {
-  Write-Host 'ENGINEERING_LANE_FOUND: verifying safe Level5 upgrade conditions.'
+  Write-Host 'ENGINEERING_LANE_FOUND: verifying safe Level6 upgrade conditions.'
 }
 if($worker.State -eq 'Running') {
   # Only allow an intentional graceful drain if the prior worker is provably
@@ -126,15 +140,25 @@ if($worker.State -eq 'Running') {
      $null -ne $h.task) {
     throw 'Worker is running or heartbeat is stale; no in-flight work may be terminated.'
   }
-  $old=Get-Content -LiteralPath $oldLedger -Raw | ConvertFrom-Json
-  foreach($group in @('tasks','validation_jobs')) {
-    $key=$old.PSObject.Properties[$group]
-    if($null -eq $key -or $null -eq $key.Value) {
-      throw 'Approved draft queues have not both been verified exhausted.'
+  if($runAction -match 'pdufa_engineering_review_lanes\.py') {
+    # This task no longer processes legacy draft tasks; preserve them untouched.
+    # Verify no real current engineering step is marked RUNNING before draining.
+    $q=Get-Content -LiteralPath $engineering -Raw | ConvertFrom-Json
+    $l=Get-Content -LiteralPath $completion -Raw | ConvertFrom-Json
+    if($null -ne $q.active_task -or $null -ne $l.active) {
+      throw 'Live engineering step is active; do not drain.'
     }
-    foreach($x in $key.Value.PSObject.Properties) {
-      if($x.Value.status -in @('PENDING','RUNNING')) {
-        throw 'Unfinished earlier task exists: no drain permitted.'
+  } else {
+    $old=Get-Content -LiteralPath $oldLedger -Raw | ConvertFrom-Json
+    foreach($group in @('tasks','validation_jobs')) {
+      $key=$old.PSObject.Properties[$group]
+      if($null -eq $key -or $null -eq $key.Value) {
+        throw 'Approved draft queues have not both been verified exhausted.'
+      }
+      foreach($x in $key.Value.PSObject.Properties) {
+        if($x.Value.status -in @('PENDING','RUNNING')) {
+          throw 'Unfinished earlier task exists: no drain permitted.'
+        }
       }
     }
   }
@@ -163,13 +187,41 @@ if($guard) {
   }
   $guardEnabled=($guard.State -ne 'Disabled')
 }
+# Diagnose the *whole active execution path* before pausing any Windows task.
+foreach($tool in @('git','gh','py.exe')) {
+  if(-not(Get-Command $tool -ErrorAction SilentlyContinue)) {
+    throw ('REQUIRED_TOOL_MISSING: '+$tool)
+  }
+}
+& py -3.13 -c 'import sys; assert sys.version_info >= (3, 13)'
+RequireSuccess 'PYTHON_3_13_NOT_AVAILABLE'
+& gh auth status --hostname github.com 2>$null
+RequireSuccess 'GH_AUTH_NOT_READY'
+$approved=(& gh pr view 1163 --repo pdufa/pdufa-command-center --json number,isDraft,state,headRefName,baseRefName | Out-String).Trim()
+RequireSuccess 'LEVEL6_DRAFT_PR_LOOKUP_FAILED'
+$pr=$approved | ConvertFrom-Json
+if($pr.number -ne 1163 -or $pr.state -ne 'OPEN' -or -not $pr.isDraft -or
+   $pr.headRefName -ne 'feature/level6-cross-disciplinary-evidence-20261112' -or
+   $pr.baseRefName -ne 'automation/level5-checkpoints-one-command-20261112') {
+  throw 'LEVEL6_PR_NO_LONGER_APPROVED_DRAFT'
+}
+$published=(& git -C $root ls-remote --exit-code origin ('refs/heads/'+$branch) | Out-String).Trim()
+RequireSuccess 'APPROVED_RELEASE_BRANCH_NOT_ACCESSIBLE'
+if($published -notmatch '^[0-9a-f]{40}\s+refs/heads/') {
+  throw 'Remote release ref was not uniquely resolved.'
+}
+if($Preflight) {
+  Write-Host 'PDUFA_INSTALL_PREFLIGHT_PASS: toolchain, current worker ownership, safe idle state, GitHub PR and release ref verified. No processes modified.'
+  Write-Host ('Current worker: '+$worker.State)
+  Write-Host ('Release ref: '+$branch)
+  exit 0
+}
 $stamp=(Get-Date).ToUniversalTime().ToString('yyyyMMddHHmmssfff')
 $stage=Join-Path $data ('completion-stage-'+$stamp)
 $backup=Join-Path $data ('completion-backup-'+$stamp)
 $backups=@()
 $drained=$false
 $changedAction=$false
-$filesReady=$false
 New-Item -ItemType Directory -Path $stage,$backup -Force | Out-Null
 try {
   if($guardEnabled) {
@@ -246,9 +298,10 @@ try {
   RequireSuccess 'LEVEL6_REGRESSIONS'
   & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_level6_implementation_integration.py' -v
   RequireSuccess 'LEVEL6_INTEGRATION_REGRESSIONS'
+  & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_pdufa_level_remediation_planner.py' -v
+  RequireSuccess 'SERIAL_REMEDIATION_REGRESSIONS'
   & py -3.13 -B (Join-Path $root 'scripts/audit_raas_retirement.py') --check
   RequireSuccess 'RETIRED_DEPENDENCY_AUDIT'
-  $filesReady=$true
   $python=(Get-Command py.exe -ErrorAction Stop).Source
   $controller=Join-Path $root 'scripts/pdufa_engineering_review_lanes.py'
   $action=New-ScheduledTaskAction -Execute $python -Argument ('-3.13 "{0}" --run' -f $controller) -WorkingDirectory $root
@@ -256,17 +309,30 @@ try {
   $changedAction=$true
   if($drained) { Remove-Item -LiteralPath $stopToken -Force -ErrorAction Stop }
 } catch {
-  if($changedAction) {
-    Set-ScheduledTask -TaskName $taskName -Action $oldAction -ErrorAction SilentlyContinue | Out-Null
+  # Unlike the old installer, failures AFTER tests but BEFORE scheduled-task
+  # activation must still restore the old files. Never leave a half-upgraded
+  # controller behind. Never revert an already running process.
+  $canRestore=$true
+  if((Get-ScheduledTask -TaskName $taskName).State -ne 'Ready') {
+    $canRestore=$false
+    Write-Warning 'Worker no longer idle: manual recovery required; preserve installed files.'
+  } elseif($changedAction) {
+    try {
+      Set-ScheduledTask -TaskName $taskName -Action $oldAction -ErrorAction Stop | Out-Null
+    } catch {
+      $canRestore=$false
+      Write-Warning 'Could not restore original Task Scheduler action; manual recovery required.'
+    }
   }
-  if(-not $filesReady) {
+  if($canRestore) {
     foreach($record in $backups) {
       if($record.existed) {
-        Copy-Item -LiteralPath $record.backup -Destination $record.file -Force -ErrorAction SilentlyContinue
+        Copy-Item -LiteralPath $record.backup -Destination $record.file -Force -ErrorAction Stop
       } else {
-        Remove-Item -LiteralPath $record.file -Force -ErrorAction SilentlyContinue
+        Remove-Item -LiteralPath $record.file -Force -ErrorAction Stop
       }
     }
+    Write-Warning 'Pre-start upgrade failed; previously installed controller files restored.'
   }
   if($drained -and (Test-Path -LiteralPath $stopToken)) {
     Remove-Item -LiteralPath $stopToken -Force -ErrorAction SilentlyContinue
@@ -279,6 +345,7 @@ try {
   Remove-Item -LiteralPath $stage -Recurse -Force -ErrorAction SilentlyContinue
 }
 if(-not $changedAction) { throw 'Completion task action was not installed.' }
+$startRequestedUtc=(Get-Date).ToUniversalTime()
 Start-ScheduledTask -TaskName $taskName -ErrorAction Stop
 $verified=$false
 for($i=0;$i -lt 30;$i++) {
@@ -295,7 +362,8 @@ for($i=0;$i -lt 30;$i++) {
     $age=((Get-Date).ToUniversalTime()-
          [datetime]::Parse([string]$h.updated_utc).ToUniversalTime()).TotalSeconds
     $first=$l.levels.PSObject.Properties['4'].Value.steps.AUDIT_EXISTING_DRAFTS.status
-    if($h.queue -eq 'LEVEL_COMPLETION' -and
+    $fresh=[datetime]::Parse([string]$h.updated_utc).ToUniversalTime() -ge $startRequestedUtc.AddSeconds(-2)
+    if($fresh -and $h.queue -eq 'LEVEL_COMPLETION' -and
        $e.mode -eq 'ENGINEERING_ADVANCE_REVIEW_SEPARATE' -and
        $q.mode -eq 'STRICT_LEVEL_BY_LEVEL' -and
        $age -ge 0 -and $age -lt 45 -and
@@ -321,5 +389,5 @@ Write-Host 'Draft-only; scientific review and acceptance remain independent.'
 # active worker. Failure here is explicit rather than misreporting a full setup.
 $watchdogScript=Join-Path $root 'scripts/windows_local_agent_watchdog.ps1'
 & $watchdogScript -Install
-if($LASTEXITCODE -ne 0) { throw 'WATCHDOG_INSTALL_FAILED_AFTER_LEVEL5_WORKER_STARTED' }
+if($LASTEXITCODE -ne 0) { throw 'WATCHDOG_INSTALL_FAILED_AFTER_LEVEL6_WORKER_STARTED' }
 Write-Host 'LEVEL6_WATCHDOG_INSTALLED_AND_ENABLED: checks every 2 minutes while owner signed in.'
