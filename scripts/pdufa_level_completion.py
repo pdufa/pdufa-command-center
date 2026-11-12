@@ -405,7 +405,7 @@ def execute(number: int, step: str, manifest: dict) -> dict:
                 if minimum is None:
                     reports.append({"suite": suite, "passed": True})
                 else:
-                    match = re.search(r"Ran (\\d+) tests? in ", result.stderr + result.stdout)
+                    match = re.search(r"Ran (\d+) tests? in ", result.stderr + result.stdout)
                     if match is None or int(match.group(1)) < minimum:
                         raise RuntimeError("LEVEL7_TEST_COUNT_MISMATCH")
                     reports.append({"suite": suite, "passed": int(match.group(1))})
