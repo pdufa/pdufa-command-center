@@ -62,6 +62,15 @@ class PredictivePreflightTests(unittest.TestCase):
         self.assertEqual(result["status"],
                          "STATIC_PREDICTIVE_PREFLIGHT_NOT_WINDOWS_HOST_CERTIFICATION")
 
+    def test_network_failure_checked_before_installing_and_restarting(self):
+        body=(ROOT/"scripts/windows_pdufa_level6_unblock.ps1").read_text()
+        for name in ("CLINICAL_REGISTRY_HOST_CONNECTIVITY_FAILED",
+                     "GITHUB_RAW_RELEASE_DOWNLOAD_BLOCKED"):
+            self.assertIn(name,body)
+            self.assertLess(body.index(name),body.index("$stage=Join-Path"))
+        self.assertLess(body.index("if($Preflight)"),
+                        body.index("$stage=Join-Path"))
+
     def test_no_auto_merges_or_prediction_signoffs_permitted(self):
         for unsafe in ("automatic_merges","production_deployments",
                        "scientific_level_completion_by_agent"):
