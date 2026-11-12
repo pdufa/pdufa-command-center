@@ -34,11 +34,13 @@ function Assert-Worker {
   $actions=@($task.Actions)
   if ($actions.Count -ne 1 -or
       $actions[0].Execute -notmatch '(?i)(^|[\\/])py(?:\.exe)?$' -or
-      $actions[0].Arguments -notmatch '(?:windows_local_agent_continuous|pdufa_level_completion|pdufa_strict_level_runner)\.py' -or
+      $actions[0].Arguments -notmatch '(?:windows_local_agent_continuous|pdufa_level_completion|pdufa_strict_level_runner|pdufa_engineering_review_lanes)\.py' -or
       $actions[0].Arguments -notmatch '(?<!\S)--run(?!\S)') {
     throw 'Worker is not the approved continuous PDUFA worker.'
   }
-  $workerScript = if ($actions[0].Arguments -match 'pdufa_strict_level_runner\.py') {
+  $workerScript = if ($actions[0].Arguments -match 'pdufa_engineering_review_lanes\.py') {
+    Join-Path $PSScriptRoot 'pdufa_engineering_review_lanes.py'
+  } elseif ($actions[0].Arguments -match 'pdufa_strict_level_runner\.py') {
     Join-Path $PSScriptRoot 'pdufa_strict_level_runner.py'
   } elseif ($actions[0].Arguments -match 'pdufa_level_completion\.py') {
     Join-Path $PSScriptRoot 'pdufa_level_completion.py'
