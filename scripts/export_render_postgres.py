@@ -40,8 +40,13 @@ def main() -> int:
     env["PGPASSWORD"] = unquote(parsed.password or "")
     env["PGDATABASE"] = unquote(parsed.path.lstrip("/"))
     env["PGSSLMODE"] = "require"
+    created = False
     try:
-        with output.open("xb") as target:
+        # Exclusive creation protects an existing backup even if it appears
+        # after the preflight check. Dumps contain private application data.
+        fd = os.open(output, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+        created = True
+        with os.fdopen(fd, "wb") as target:
             result = subprocess.run(
                 ["pg_dump", "--format=custom", "--no-owner", "--no-acl", "--file=-"],
                 stdout=target, stderr=subprocess.PIPE, env=env, timeout=900, check=False
@@ -51,7 +56,8 @@ def main() -> int:
             print("Backup failed; no valid archive created. Check pg_dump availability and database permissions.", file=sys.stderr)
             return 1
     except (OSError, subprocess.TimeoutExpired) as exc:
-        output.unlink(missing_ok=True)
+        if created:
+            output.unlink(missing_ok=True)
         print(f"Backup failed: {type(exc).__name__}", file=sys.stderr)
         return 1
     print(f"Created local PostgreSQL dump: {output.name} ({output.stat().st_size} bytes)")
