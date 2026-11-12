@@ -329,9 +329,11 @@ def snapshot() -> dict:
 
 
 def make_handler(token: str, port: int):
-    allowed_hosts = {"127.0.0.1:" + str(port), "localhost:" + str(port)}
     class Handler(BaseHTTPRequestHandler):
         def _host_ok(self) -> bool:
+            actual_port = self.server.server_port
+            allowed_hosts = {"127.0.0.1:" + str(actual_port),
+                             "localhost:" + str(actual_port)}
             return self.headers.get("Host", "").lower() in allowed_hosts
 
         def _send(self, code: int, data: bytes, content_type: str) -> None:
@@ -366,8 +368,9 @@ def make_handler(token: str, port: int):
                 self._send(403, b"Forbidden", "text/plain")
                 return
             origin = self.headers.get("Origin")
-            if origin and origin not in ("http://127.0.0.1:" + str(port),
-                                         "http://localhost:" + str(port)):
+            actual_port = self.server.server_port
+            if origin and origin not in ("http://127.0.0.1:" + str(actual_port),
+                                         "http://localhost:" + str(actual_port)):
                 self._send(403, b"Forbidden", "text/plain")
                 return
             if not secrets.compare_digest(self.headers.get("X-PDUFA-Dashboard-Token", ""), token):
