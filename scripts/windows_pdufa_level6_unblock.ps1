@@ -20,8 +20,8 @@ $engineering=Join-Path $data 'engineering_lane_ledger.json'
 $oldLedger=Join-Path $data 'ledger.json'
 $taskName='PDUFA-Continuous-Development'
 $guardName='PDUFA-Continuous-Watchdog'
-$branch='automation/predictive-preflight-all-levels-20261112'
-$remoteRef='refs/remotes/origin/automation/predictive-preflight-all-levels-20261112'
+$branch='automation/level7-engineering-readiness-20261112'
+$remoteRef='refs/remotes/origin/automation/level7-engineering-readiness-20261112'
 $files=@(
   'automation/scientific-level-completion-queue.json',
   'automation/level5-candidate-roster-20261111.json',
@@ -43,31 +43,43 @@ $files=@(
   'tests/test_level6_implementation_integration.py',
   'tests/test_pdufa_level_remediation_planner.py',
   'tests/test_pdufa_predictive_preflight.py',
-  'scripts/windows_local_agent_watchdog.ps1'
+  'scripts/windows_local_agent_watchdog.ps1',
+  'scripts/level7_model_validation_readiness.py',
+  'scripts/level7_source_readiness_inventory.py',
+  'tests/test_level7_model_validation_readiness.py',
+  'tests/test_level7_source_readiness_inventory.py',
+  'tests/test_level7_implementation_integration.py',
+  'tests/test_pdufa_partial_install_integration.py'
 )
 # Approved, exact Git blob IDs for this review slice; no branch drift.
 $allowed=@{
- 'automation/scientific-level-completion-queue.json'='9b619ba2bb0761b36768a60cbe4ed4e17980cec9'
+ 'automation/scientific-level-completion-queue.json'='9c363bbaa8b485c38a41aeb71127c78b91175206'
  'automation/level5-candidate-roster-20261111.json'='2eba75caf3a6d435db53ea4dbdcf63959532ff06'
- 'scripts/pdufa_level_completion.py'='409dcc3603f9757aad7970a7f6f17dc62cf03bd7'
+ 'scripts/pdufa_level_completion.py'='4dba6d039a6481543deaa22faaedee8e83fe0ec3'
  'scripts/level4_scientific_evidence.py'='2530d029f49b8ab4ec1f21f7db784d5864bf5c36'
  'scripts/level5_contradictory_evidence.py'='2c5eee95d0760baa2d3f5f1aea3e2012fe964a07'
  'scripts/level6_cross_disciplinary_inventory.py'='f5dbe151a8a7c7657dcacb9581281dc627b708bf'
  'scripts/pdufa_level_remediation_planner.py'='741d04cf3a803860c1c590499d139df86e0889d5'
- 'scripts/pdufa_predictive_preflight.py'='dc0171d820fe3f8426068789d917b57717c57960'
+ 'scripts/pdufa_predictive_preflight.py'='4a72120f696b207c9d3eae2d632a6344b6bd17cc'
  'tests/test_pdufa_level_completion.py'='1e08eda6249fc2cd94fccacb41fe44c6b744f373'
  'tests/test_level4_scientific_evidence.py'='5a30ed426188aa8da968639fc763842d9d15f0e6'
  'tests/test_level5_contradictory_evidence.py'='5ae934b3c74036791c01f170ff3bb45fe8972d0c'
  'tests/test_level6_cross_disciplinary_inventory.py'='1dcf90611b77059d3f17b11ae512abeb18a94ac4'
- 'tests/test_level5_implementation_integration.py'='1eeff40f9a33e4b41c1a25230f67b6230df29eca'
- 'tests/test_level6_implementation_integration.py'='16f7e60149a0792f436b8b3516bc6f9d796761c0'
+ 'tests/test_level5_implementation_integration.py'='7fde843748dda101efaedba9138383c4132f95c7'
+ 'tests/test_level6_implementation_integration.py'='2bd0db180e1595f5cf787a59a9fd2cc1bf88b22f'
  'tests/test_pdufa_level_remediation_planner.py'='2b83f4e7a77ccc9e821b5d1444e8d30d2873e13d'
- 'tests/test_pdufa_predictive_preflight.py'='8a78975d48a367d947d722c9dd2ccaa7394dc350'
+ 'tests/test_pdufa_predictive_preflight.py'='b4259309e9134ff5b82e154b5aae8c5d1c386e3f'
  'scripts/windows_local_agent_watchdog.ps1'='3904b3262e1efc02349ba96b239a8ff12f925131'
- 'scripts/pdufa_engineering_review_lanes.py'='c6920a64dac13652551527ec2c3fdd23b6946386'
+ 'scripts/pdufa_engineering_review_lanes.py'='1f49b4152af522cefac95c3bac911687778ebb1b'
  'tests/test_pdufa_engineering_review_lanes.py'='a26e87b32274aec7edb210b68fa991421bfe956b'
  'scripts/pdufa_strict_level_runner.py'='c63f9e3f191f53a42c7fafc4e184a065dec5d7b9'
  'tests/test_pdufa_strict_level_runner.py'='cb1ebbb5ab0c77fd9f1c05cb65d52cf3744b561b'
+ 'scripts/level7_model_validation_readiness.py'='f9044bf35dc72d3c1160978ee30f9f61fe5929c9'
+ 'scripts/level7_source_readiness_inventory.py'='815e43453e054278943c7aea2a87ee480acfae64'
+ 'tests/test_level7_model_validation_readiness.py'='e78aae6150fbe4c2fd749c7c0584c4da8fb3e278'
+ 'tests/test_level7_source_readiness_inventory.py'='dcb91feacde4d5af3f1ab76cf0a44726627b8f20'
+ 'tests/test_level7_implementation_integration.py'='db09d5d1712e65623fdf3194c6b00d5f8e3c19ed'
+ 'tests/test_pdufa_partial_install_integration.py'='7c2e8f66604084f2940d996b18828909c251e7ec'
 }
 $who=[Security.Principal.WindowsIdentity]::GetCurrent()
 function AssertOwner($task) {
@@ -212,6 +224,19 @@ if($pr.number -ne 1163 -or $pr.state -ne 'OPEN' -or -not $pr.isDraft -or
    $pr.baseRefName -ne 'automation/level5-checkpoints-one-command-20261112') {
   throw 'LEVEL6_PR_NO_LONGER_APPROVED_DRAFT'
 }
+# The new Level7 source receipt audit must use real Level6 retrieved data.
+$level6Report=Join-Path $data 'level6\dated-cross-domain-source-gap-inventory.json'
+if(-not(Test-Path -LiteralPath $level6Report -PathType Leaf)) {
+  throw 'LEVEL7_PRIOR_SOURCE_RECEIPTS_NOT_AVAILABLE'
+}
+$review7=(& gh pr view 1169 --repo pdufa/pdufa-command-center --json number,isDraft,state,headRefName,baseRefName | Out-String).Trim()
+RequireSuccess 'LEVEL7_DRAFT_PR_LOOKUP_FAILED'
+$p7=$review7 | ConvertFrom-Json
+if($p7.number -ne 1169 -or $p7.state -ne 'OPEN' -or -not $p7.isDraft -or
+   $p7.headRefName -ne 'automation/level7-engineering-readiness-20261112' -or
+   $p7.baseRefName -ne 'automation/predictive-preflight-all-levels-20261112') {
+  throw 'LEVEL7_PR_NO_LONGER_APPROVED_DRAFT'
+}
 $published=(& git -C $root ls-remote --exit-code origin ('refs/heads/'+$branch) | Out-String).Trim()
 RequireSuccess 'APPROVED_RELEASE_BRANCH_NOT_ACCESSIBLE'
 if($published -notmatch '^[0-9a-f]{40}\s+refs/heads/') {
@@ -327,10 +352,18 @@ try {
   RequireSuccess 'LEVEL6_REGRESSIONS'
   & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_level6_implementation_integration.py' -v
   RequireSuccess 'LEVEL6_INTEGRATION_REGRESSIONS'
+  & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_level7_model_validation_readiness.py' -v
+  RequireSuccess 'LEVEL7_TEMPORAL_READINESS_REGRESSIONS'
+  & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_level7_source_readiness_inventory.py' -v
+  RequireSuccess 'LEVEL7_REGISTRY_RECEIPT_REGRESSIONS'
+  & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_level7_implementation_integration.py' -v
+  RequireSuccess 'LEVEL7_ENGINEERING_INTEGRATION_REGRESSIONS'
   & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_pdufa_level_remediation_planner.py' -v
   RequireSuccess 'SERIAL_REMEDIATION_REGRESSIONS'
   & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_pdufa_predictive_preflight.py' -v
   RequireSuccess 'PREDICTIVE_PREFLIGHT_REGRESSIONS'
+  & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_pdufa_partial_install_integration.py' -v
+  RequireSuccess 'EXACT_WINDOWS_INSTALLED_FILES_REGRESSIONS'
   & py -3.13 -B (Join-Path $root 'scripts/pdufa_predictive_preflight.py') --out (Join-Path $data 'predictive_preflight_report.json')
   RequireSuccess 'PREDICTIVE_PREFLIGHT_RELEASE_PIN_CHECK'
   & py -3.13 -B (Join-Path $root 'scripts/audit_raas_retirement.py') --check
