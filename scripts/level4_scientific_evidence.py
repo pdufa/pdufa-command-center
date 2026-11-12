@@ -61,8 +61,8 @@ def summarize(record: dict, provenance: dict, *, as_of: str | None = None) -> di
     # hierarchy, multiplicity, estimate, denominators, SAP and actual analysis.
     concordance_leads = sum(1 for row in registered
                             if all(_measure(row)) and _measure(row) in posted_keys)
-    documents = _entries(_object(record.get("documentSection"))
-                          .get("largeDocumentModule", {}).get("largeDocs"))
+    document_section = _object(record.get("documentSection"))
+    documents = _entries(_object(document_section.get("largeDocumentModule")).get("largeDocs"))
     document_types = sorted({str(doc.get("type", "")).upper()
                              for doc in documents if isinstance(doc.get("type"), str)})
     source_fields = {
@@ -75,7 +75,7 @@ def summarize(record: dict, provenance: dict, *, as_of: str | None = None) -> di
         "possible_textual_primary_endpoint_matches": concordance_leads,
         "registry_results_section_present": bool(results),
         "linked_document_types": document_types,
-        "last_update_posted": _object(status.get("studyFirstPostDateStruct")).get("date"),
+        "last_update_posted": _object(status.get("lastUpdatePostDateStruct")).get("date"),
     }
     missing = []
     if not design.get("studyType"):
