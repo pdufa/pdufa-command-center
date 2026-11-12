@@ -122,6 +122,28 @@ class DashboardTests(unittest.TestCase):
         self.assertEqual(data["stages"][0]["status"], "PENDING")
         self.assertIsNone(data["stages"][0]["blocker"])
 
+    def test_followon_progress_and_live_idle_status_are_distinguished(self):
+        self.make_records()
+        ledger = D._read_json(D.LEDGER)
+        ledger["validation_jobs"] = {
+            str(n): {
+                "stage": n, "kind": "PROVENANCE_GATE_V1",
+                "status": "DRAFT_PR_CREATED" if n <= 5 else "PENDING",
+            } for n in range(4, 21)
+        }
+        self.write(D.LEDGER, ledger)
+        heart = D._read_json(D.HEARTBEAT)
+        heart["mode"] = "IDLE"
+        self.write(D.HEARTBEAT, heart)
+        view = D.snapshot()
+        self.assertEqual(view["worker"]["state"], "LIVE")
+        self.assertIn("IDLE", view["worker"]["label"])
+        self.assertTrue(view["followon"]["started"])
+        self.assertEqual(view["followon"]["drafts"], 2)
+        self.assertEqual(view["followon"]["pending"], 15)
+        self.assertEqual(view["scientific_levels_verified"], 0)
+        self.assertFalse(view["automatic_merge"])
+
     def start_server(self):
         token = "isolated-test-token"
         # Bind on an ephemeral local port so tests never conflict with a running
