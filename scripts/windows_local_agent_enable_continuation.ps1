@@ -15,11 +15,14 @@ $workerTask='PDUFA-Continuous-Development'
 $watchdogTask='PDUFA-Continuous-Watchdog'
 $originBranch='automation/windows-local-agent-monitor'
 $remoteRef='refs/remotes/origin/automation/windows-local-agent-monitor'
-$paths=@('scripts/windows_local_agent_continuous.py','scripts/windows_local_agent_followon.py')
+$watchdogBranch='automation/continuous-agent-watchdog-20261111'
+$watchdogRef='refs/remotes/origin/automation/continuous-agent-watchdog-20261111'
+$paths=@('scripts/windows_local_agent_continuous.py','scripts/windows_local_agent_followon.py','scripts/windows_local_agent_watchdog.ps1')
 # Pin the reviewed blobs: a moved branch must not silently change the worker.
 $approvedBlobs=@{
   'scripts/windows_local_agent_continuous.py'='8f248946968c78d84c79f4ad1eb89ea87bc7483c'
   'scripts/windows_local_agent_followon.py'='2e29a10ca3bc47285a955a9ad0c2e70220c80430'
+  'scripts/windows_local_agent_watchdog.ps1'='e6df60c1ac22974b699a11b3a5fa01746df28504'
 }
 $current=[Security.Principal.WindowsIdentity]::GetCurrent()
 function VerifyOwner($task) {
@@ -98,15 +101,21 @@ try {
   $source=((& git -C $root rev-parse ($remoteRef+'^{commit}')) | Out-String).Trim()
   RequireSuccess 'REVIEW_COMMIT'
   if ($source -notmatch '^[0-9a-f]{40}$') { throw 'Invalid source revision.' }
+  & git -C $root fetch --no-tags origin ('+refs/heads/'+$watchdogBranch+':'+$watchdogRef)
+  RequireSuccess 'FETCH_WATCHDOG_UPGRADE'
+  $watchdogSource=((& git -C $root rev-parse ($watchdogRef+'^{commit}')) | Out-String).Trim()
+  RequireSuccess 'WATCHDOG_COMMIT'
+  if ($watchdogSource -notmatch '^[0-9a-f]{40}$') { throw 'Invalid watchdog revision.' }
   New-Item -ItemType Directory -Path $stage,$backup -Force | Out-Null
   foreach ($p in $paths) {
-    $blob=((& git -C $root rev-parse ($source+':'+$p)) | Out-String).Trim()
+    $fileSource=if($p -eq 'scripts/windows_local_agent_watchdog.ps1'){$watchdogSource}else{$source}
+    $blob=((& git -C $root rev-parse ($fileSource+':'+$p)) | Out-String).Trim()
     RequireSuccess 'SOURCE_BLOB'
     if ($blob -notmatch '^[0-9a-f]{40}$' -or $blob -ne $approvedBlobs[$p]) {
       throw 'Approved source blob changed; review required before upgrading.'
     }
     $tmp=Join-Path $stage ([IO.Path]::GetFileName($p))
-    $uri='https://raw.githubusercontent.com/pdufa/pdufa-command-center/'+$source+'/'+$p
+    $uri='https://raw.githubusercontent.com/pdufa/pdufa-command-center/'+$fileSource+'/'+$p
     Invoke-WebRequest -UseBasicParsing -Uri $uri -OutFile $tmp -ErrorAction Stop
     $actual=((& git -C $root hash-object $tmp) | Out-String).Trim()
     RequireSuccess 'HASH_DOWNLOADED_SOURCE'
@@ -127,6 +136,7 @@ try {
   RequireSuccess 'EXISTING_LEDGER_VALIDATION'
   $installed=$true
   Write-Host ('CONTINUATION_FILES_READY: approved commit '+$source)
+  Write-Host 'WATCHDOG_UPDATED: exhausted queues no longer cause restart loops.'
   Write-Host ('Original progress ledger preserved: '+$ledger)
   Write-Host ('Source backups: '+$backup)
 } catch {
