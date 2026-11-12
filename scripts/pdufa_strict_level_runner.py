@@ -125,6 +125,7 @@ def monitor_text(seq: dict, state: dict, task: str | None) -> str:
         f"**Local tests:** {json.dumps(tests, sort_keys=True)}\n\n"
         f"**Original-source results:** {json.dumps(sources, sort_keys=True)}\n\n"
         f"**Current-level blockers:** {json.dumps(held, sort_keys=True)}\n\n"
+        f"**Review verification blocker:** {seq.get('last_review_blocker') or 'none'}\n\n"
         "**Next action:** " + (
             "No further levels" if n is None else
             (f"Complete L{n} {candidate(state, n)}" if candidate(state, n) else
@@ -286,6 +287,7 @@ def one_cycle(seq: dict, state: dict, manifest: dict, *, lookup=github_comment) 
         publish(seq, state, None)
         return "INDEPENDENT_REVIEW_ACCEPTED_NEXT_LEVEL"
     task = candidate(state, n, recover=True)
+    base.save(state)
     if task is None:
         heartbeat(seq, state, None, "AWAITING_APPROVED_WORK_OR_REVIEW")
         return "BLOCKED_AWAITING_APPROVED_WORK_OR_REVIEW"
@@ -306,6 +308,8 @@ def run(*, once: bool = False, sleep_seconds: int = 60) -> int:
         publish(seq, state, None)
         while not base.STOP.exists():
             result = one_cycle(seq, state, manifest)
+            if result == "BLOCKED_AWAITING_APPROVED_WORK_OR_REVIEW":
+                publish(seq, state, None)
             print(result, "level=", level(seq), flush=True)
             if result == "PROJECT_REVIEWED_END" or once:
                 break
