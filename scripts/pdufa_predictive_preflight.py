@@ -20,6 +20,10 @@ LEVEL_FILES = {
     4: ("scripts/level4_scientific_evidence.py", "tests/test_level4_scientific_evidence.py"),
     5: ("scripts/level5_contradictory_evidence.py", "tests/test_level5_contradictory_evidence.py"),
     6: ("scripts/level6_cross_disciplinary_inventory.py", "tests/test_level6_cross_disciplinary_inventory.py"),
+    7: ("scripts/level7_model_validation_readiness.py",
+        "tests/test_level7_model_validation_readiness.py",
+        "scripts/level7_source_readiness_inventory.py",
+        "tests/test_level7_source_readiness_inventory.py"),
 }
 SHARED_PATHS = (
     "AGENTS.md",
@@ -33,6 +37,7 @@ SHARED_PATHS = (
 )
 REQUIRED_INTEGRATION = {
     6: "tests/test_level6_implementation_integration.py",
+    7: "tests/test_level7_implementation_integration.py",
 }
 REQUIRED_EVIDENCE_KEYS = (
     "exact_application_trial_identity_and_phase",
