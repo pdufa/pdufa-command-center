@@ -29,6 +29,7 @@ SUITES = (
     ("level2_live_registry_capture", "test_windows_local_agent_live_focus_registry.py", 13),
     ("level2_live_status", "test_windows_local_agent_live_status.py", 7),
     ("level3_phase_first_evidence", "test_level3_focus_evidence_readiness.py", 12),
+    ("continuous_worker_safety", "test_windows_local_agent_continuous.py", 16),
     ("patch_generator_safety", "test_windows_local_patch_proposal.py", 4),
     ("patch_reviewer_safety", "test_windows_local_patch_review.py", 8),
 )
