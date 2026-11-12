@@ -20,8 +20,8 @@ $engineering=Join-Path $data 'engineering_lane_ledger.json'
 $oldLedger=Join-Path $data 'ledger.json'
 $taskName='PDUFA-Continuous-Development'
 $guardName='PDUFA-Continuous-Watchdog'
-$branch='automation/full-install-path-repair-20261112'
-$remoteRef='refs/remotes/origin/automation/full-install-path-repair-20261112'
+$branch='automation/predictive-preflight-all-levels-20261112'
+$remoteRef='refs/remotes/origin/automation/predictive-preflight-all-levels-20261112'
 $files=@(
   'automation/scientific-level-completion-queue.json',
   'automation/level5-candidate-roster-20261111.json',
@@ -32,6 +32,7 @@ $files=@(
   'scripts/level5_contradictory_evidence.py',
   'scripts/level6_cross_disciplinary_inventory.py',
   'scripts/pdufa_level_remediation_planner.py',
+  'scripts/pdufa_predictive_preflight.py',
   'tests/test_pdufa_level_completion.py',
   'tests/test_pdufa_strict_level_runner.py',
   'tests/test_pdufa_engineering_review_lanes.py',
@@ -41,6 +42,7 @@ $files=@(
   'tests/test_level5_implementation_integration.py',
   'tests/test_level6_implementation_integration.py',
   'tests/test_pdufa_level_remediation_planner.py',
+  'tests/test_pdufa_predictive_preflight.py',
   'scripts/windows_local_agent_watchdog.ps1'
 )
 # Approved, exact Git blob IDs for this review slice; no branch drift.
@@ -52,6 +54,7 @@ $allowed=@{
  'scripts/level5_contradictory_evidence.py'='2c5eee95d0760baa2d3f5f1aea3e2012fe964a07'
  'scripts/level6_cross_disciplinary_inventory.py'='f5dbe151a8a7c7657dcacb9581281dc627b708bf'
  'scripts/pdufa_level_remediation_planner.py'='741d04cf3a803860c1c590499d139df86e0889d5'
+ 'scripts/pdufa_predictive_preflight.py'='deb27af8c13a7ef6037c7a6a77544a16019db163'
  'tests/test_pdufa_level_completion.py'='1e08eda6249fc2cd94fccacb41fe44c6b744f373'
  'tests/test_level4_scientific_evidence.py'='5a30ed426188aa8da968639fc763842d9d15f0e6'
  'tests/test_level5_contradictory_evidence.py'='5ae934b3c74036791c01f170ff3bb45fe8972d0c'
@@ -59,6 +62,7 @@ $allowed=@{
  'tests/test_level5_implementation_integration.py'='1eeff40f9a33e4b41c1a25230f67b6230df29eca'
  'tests/test_level6_implementation_integration.py'='16f7e60149a0792f436b8b3516bc6f9d796761c0'
  'tests/test_pdufa_level_remediation_planner.py'='2b83f4e7a77ccc9e821b5d1444e8d30d2873e13d'
+ 'tests/test_pdufa_predictive_preflight.py'='ecd7c257bfad7ed27ed03b9a676c95caa4738e2e'
  'scripts/windows_local_agent_watchdog.ps1'='3904b3262e1efc02349ba96b239a8ff12f925131'
  'scripts/pdufa_engineering_review_lanes.py'='c6920a64dac13652551527ec2c3fdd23b6946386'
  'tests/test_pdufa_engineering_review_lanes.py'='a26e87b32274aec7edb210b68fa991421bfe956b'
@@ -325,6 +329,10 @@ try {
   RequireSuccess 'LEVEL6_INTEGRATION_REGRESSIONS'
   & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_pdufa_level_remediation_planner.py' -v
   RequireSuccess 'SERIAL_REMEDIATION_REGRESSIONS'
+  & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_pdufa_predictive_preflight.py' -v
+  RequireSuccess 'PREDICTIVE_PREFLIGHT_REGRESSIONS'
+  & py -3.13 -B (Join-Path $root 'scripts/pdufa_predictive_preflight.py') --out (Join-Path $data 'predictive_preflight_report.json')
+  RequireSuccess 'PREDICTIVE_PREFLIGHT_RELEASE_PIN_CHECK'
   & py -3.13 -B (Join-Path $root 'scripts/audit_raas_retirement.py') --check
   RequireSuccess 'RETIRED_DEPENDENCY_AUDIT'
   $python=(Get-Command py.exe -ErrorAction Stop).Source
