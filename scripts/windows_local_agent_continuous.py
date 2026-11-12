@@ -339,74 +339,76 @@ def create_review_pr(level: int, name: str, source: str, tests: str) -> str:
                    timeout=180), "FETCH_AUDITED_REVIEW_BASE")
     require_ok(cmd(["git", "worktree", "add", "-b", branch, str(working),
                     "origin/" + REVIEW_BASE], timeout=90), "CREATE_ISOLATED_BRANCH")
-    # Fail closed if the pinned review base itself fails the retirement policy.
-    # Never accept the policy test from the main worktree as evidence for a PR.
-    base_guard = cmd([sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"],
-                     cwd=working, timeout=240)
-    require_ok(base_guard, "REVIEW_BASE_RETIREMENT_POLICY")
-    for relative, value in zip(paths, (source, tests)):
-        file = working / relative
-        if file.exists() or file.is_symlink():
-            raise RuntimeError("APPROVED_FILE_ALREADY_EXISTS")
-        file.parent.mkdir(parents=True, exist_ok=True)
-        file.write_text(value, encoding="utf-8", newline="\n")
-    guard = cmd([sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"],
-                cwd=working, timeout=240)
-    require_ok(guard, "RETIREMENT_POLICY")
-    relative_tests = "tests/continuous_stage_drafts"
-    test = cmd([sys.executable, "-B", "-I", "-m", "unittest", "discover",
-                "-s", relative_tests, "-p", Path(paths[1]).name, "-v"],
-               cwd=working, timeout=120)
-    if test.returncode or not re.search(r"Ran 4 tests? in ", test.stderr + test.stdout):
-        raise RuntimeError("SYNTHETIC_REGRESSION_FAILED")
-    require_ok(cmd(["git", "add", "--", *paths], cwd=working, timeout=30), "STAGE_FILES")
-    staged = require_ok(cmd(["git", "diff", "--cached", "--name-only"],
-                            cwd=working, timeout=30), "CHECK_FILE_SCOPE").splitlines()
-    if sorted(staged) != sorted(paths):
-        raise RuntimeError("UNEXPECTED_FILE_MUTATION")
-    require_ok(cmd(["git", "diff", "--cached", "--check"],
-                   cwd=working, timeout=30), "DIFF_WHITESPACE")
-    # Prohibit local Git hooks in the task worktree; no checkout or push hooks.
-    hooks = DATA / "empty-hooks"
-    hooks.mkdir(parents=True, exist_ok=True)
-    require_ok(cmd(["git", "-c", f"core.hooksPath={hooks}", "commit", "-m",
-                    f"Add research-only Level {level} evidence intake scaffold"],
-                   cwd=working, timeout=45), "COMMIT_DRAFT_BRANCH")
-    require_ok(cmd(["git", "-c", f"core.hooksPath={hooks}", "push",
-                    "--set-upstream", "origin", branch],
-                   cwd=working, timeout=180), "PUSH_DRAFT_BRANCH")
-    body = (
-        f"## Level {level}: {name}\n\n"
-        "AUTOMATED RESEARCH-ONLY ENGINEERING SCAFFOLD — DRAFT PR.\n\n"
-        "The code only identifies missing original-source fields and lists "
-        "untrusted research questions. It is NOT a completed scientific assessment, "
-        "validated mechanism, approval forecast, calibrated probability, "
-        "or production prediction. No FOCUS/POOL records were modified.\n\n"
-        "Safety: exact NCT check, retired-systems audit, four synthetic regression "
-        "tests, protected branch, no automatic merge or deployment. "
-        "Human code/scientific review and normal CI are still required.\n"
-        f"Review base: {REVIEW_BASE} (development only, not production).\n"
-    )
-    require_ok(cmd(["gh", "pr", "create", "--repo", REPO,
-                    "--base", REVIEW_BASE, "--head", branch, "--draft",
-                    "--title", f"Research-only Level {level} intake: {name}",
-                    "--body", body], cwd=working, timeout=100), "CREATE_DRAFT_PR")
-    detail = require_ok(cmd(["gh", "pr", "view", branch, "--repo", REPO,
-                             "--json", "isDraft,url,baseRefName,headRefName"],
-                            cwd=working, timeout=45), "VERIFY_DRAFT_PR")
-    obj = json.loads(detail)
-    if (obj.get("isDraft") is not True or obj.get("baseRefName") != REVIEW_BASE
-            or obj.get("headRefName") != branch
-            or not isinstance(obj.get("url"), str)
-            or not obj["url"].startswith("https://github.com/" + REPO + "/pull/")):
-        raise RuntimeError("PR_NOT_VERIFIED_DRAFT")
-    # The verified draft is stored on GitHub; reclaim this large temporary
-    # checkout after success so 17 tasks do not consume 17 full repository copies.
-    cleanup = cmd(["git", "worktree", "remove", "--force", str(working)],
-                  cwd=ROOT, timeout=90)
-    if cleanup.returncode != 0:
-        print("WARNING: Temporary worktree cleanup requires attention")
-    return obj["url"]
+    try:
+        # Fail closed if the pinned review base itself fails the retirement policy.
+        # Never accept the policy test from the main worktree as evidence for a PR.
+        base_guard = cmd([sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"],
+                         cwd=working, timeout=240)
+        require_ok(base_guard, "REVIEW_BASE_RETIREMENT_POLICY")
+        for relative, value in zip(paths, (source, tests)):
+            file = working / relative
+            if file.exists() or file.is_symlink():
+                raise RuntimeError("APPROVED_FILE_ALREADY_EXISTS")
+            file.parent.mkdir(parents=True, exist_ok=True)
+            file.write_text(value, encoding="utf-8", newline="\n")
+        guard = cmd([sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"],
+                    cwd=working, timeout=240)
+        require_ok(guard, "RETIREMENT_POLICY")
+        relative_tests = "tests/continuous_stage_drafts"
+        test = cmd([sys.executable, "-B", "-I", "-m", "unittest", "discover",
+                    "-s", relative_tests, "-p", Path(paths[1]).name, "-v"],
+                   cwd=working, timeout=120)
+        if test.returncode or not re.search(r"Ran 4 tests? in ", test.stderr + test.stdout):
+            raise RuntimeError("SYNTHETIC_REGRESSION_FAILED")
+        require_ok(cmd(["git", "add", "--", *paths], cwd=working, timeout=30), "STAGE_FILES")
+        staged = require_ok(cmd(["git", "diff", "--cached", "--name-only"],
+                                cwd=working, timeout=30), "CHECK_FILE_SCOPE").splitlines()
+        if sorted(staged) != sorted(paths):
+            raise RuntimeError("UNEXPECTED_FILE_MUTATION")
+        require_ok(cmd(["git", "diff", "--cached", "--check"],
+                       cwd=working, timeout=30), "DIFF_WHITESPACE")
+        # Prohibit local Git hooks in the task worktree; no checkout or push hooks.
+        hooks = DATA / "empty-hooks"
+        hooks.mkdir(parents=True, exist_ok=True)
+        require_ok(cmd(["git", "-c", f"core.hooksPath={hooks}", "commit", "-m",
+                        f"Add research-only Level {level} evidence intake scaffold"],
+                       cwd=working, timeout=45), "COMMIT_DRAFT_BRANCH")
+        require_ok(cmd(["git", "-c", f"core.hooksPath={hooks}", "push",
+                        "--set-upstream", "origin", branch],
+                       cwd=working, timeout=180), "PUSH_DRAFT_BRANCH")
+        body = (
+            f"## Level {level}: {name}\n\n"
+            "AUTOMATED RESEARCH-ONLY ENGINEERING SCAFFOLD — DRAFT PR.\n\n"
+            "The code only identifies missing original-source fields and lists "
+            "untrusted research questions. It is NOT a completed scientific assessment, "
+            "validated mechanism, approval forecast, calibrated probability, "
+            "or production prediction. No FOCUS/POOL records were modified.\n\n"
+            "Safety: exact NCT check, retired-systems audit, four synthetic regression "
+            "tests, protected branch, no automatic merge or deployment. "
+            "Human code/scientific review and normal CI are still required.\n"
+            f"Review base: {REVIEW_BASE} (development only, not production).\n"
+        )
+        require_ok(cmd(["gh", "pr", "create", "--repo", REPO,
+                        "--base", REVIEW_BASE, "--head", branch, "--draft",
+                        "--title", f"Research-only Level {level} intake: {name}",
+                        "--body", body], cwd=working, timeout=100), "CREATE_DRAFT_PR")
+        detail = require_ok(cmd(["gh", "pr", "view", branch, "--repo", REPO,
+                                 "--json", "isDraft,url,baseRefName,headRefName"],
+                                cwd=working, timeout=45), "VERIFY_DRAFT_PR")
+        obj = json.loads(detail)
+        if (obj.get("isDraft") is not True or obj.get("baseRefName") != REVIEW_BASE
+                or obj.get("headRefName") != branch
+                or not isinstance(obj.get("url"), str)
+                or not obj["url"].startswith("https://github.com/" + REPO + "/pull/")):
+            raise RuntimeError("PR_NOT_VERIFIED_DRAFT")
+        return obj["url"]
+    finally:
+        # Always reclaim isolated checkouts, even when audit, tests, or PR
+        # creation fails. Never remove branches, pushed code, or evidence.
+        cleanup = cmd(["git", "worktree", "remove", "--force", str(working)],
+                      cwd=ROOT, timeout=90)
+        if cleanup.returncode != 0:
+            print("WARNING: Temporary worktree cleanup requires attention")
 
 
 def one_attempt(state: dict, level: int, levels: list[dict]) -> bool:
