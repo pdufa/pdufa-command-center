@@ -1,0 +1,57 @@
+name: PDUFA Engineering / Scientific Review Separate Lanes
+on:
+  pull_request:
+    paths:
+      - 'scripts/pdufa_engineering_review_lanes.py'
+      - 'tests/test_pdufa_engineering_review_lanes.py'
+      - 'scripts/windows_local_agent_enable_engineering_lane.ps1'
+      - 'scripts/windows_local_agent_watchdog.ps1'
+      - '.github/workflows/engineering-review-lanes.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  engineering-and-science:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: {python-version: '3.13'}
+      - name: Engineering review lanes self-test
+        run: python scripts/pdufa_engineering_review_lanes.py --self-test
+      - name: Separate gates and engineering progression regressions
+        run: python -m unittest discover -s tests -p 'test_pdufa_engineering_review_lanes.py' -v
+      - name: Strict scientific-review gates preserved
+        run: python -m unittest discover -s tests -p 'test_pdufa_strict_level_runner.py' -v
+      - name: Original Level 4 evidence checks
+        run: python -m unittest discover -s tests -p 'test_level4_scientific_evidence.py' -v
+      - name: No retired analytics paths
+        run: python scripts/audit_raas_retirement.py --check
+      - name: Reject invented completion or unattended production side effects
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          t=Path("scripts/pdufa_engineering_review_lanes.py").read_text()
+          assert '"ENGINEERING_ADVANCE_REVIEW_SEPARATE"' in t
+          assert 'scientifically_complete":False' in t
+          assert 'ENGINEERING_SCOPE_ACCEPTED_ADVANCE_NEXT' in t
+          assert 'strict.verify_review' in t
+          assert 'merge_pull_request' not in t
+          assert 'deploy' in t.lower()
+          print('PASS: scientific review independent; draft-only controls retained')
+          PY
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Parse Windows installer and watchdog only
+        shell: pwsh
+        run: |
+          foreach ($file in @('scripts/windows_local_agent_enable_engineering_lane.ps1','scripts/windows_local_agent_watchdog.ps1')) {
+            $tokens=$null; $errors=$null
+            [System.Management.Automation.Language.Parser]::ParseFile($file,[ref]$tokens,[ref]$errors) | Out-Null
+            if($errors.Count -gt 0){ $errors | Out-String | Write-Error; exit 1 }
+          }
+          Write-Host 'PASS: Windows handoff syntax, no task mutation'
