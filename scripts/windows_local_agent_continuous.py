@@ -476,8 +476,55 @@ def publish_status(state: dict) -> None:
         pass
 
 
+def process_alive(pid: int) -> bool:
+    """Check process presence without killing Windows processes."""
+    if type(pid) is not int or pid < 1:
+        return True  # Treat uncertain ownership as busy, not a stale lock.
+    if os.name == "nt":
+        import ctypes
+        kernel = ctypes.WinDLL("kernel32", use_last_error=True)
+        kernel.OpenProcess.argtypes = [ctypes.c_ulong, ctypes.c_int, ctypes.c_ulong]
+        kernel.OpenProcess.restype = ctypes.c_void_p
+        kernel.GetExitCodeProcess.argtypes = [ctypes.c_void_p, ctypes.POINTER(ctypes.c_ulong)]
+        kernel.CloseHandle.argtypes = [ctypes.c_void_p]
+        handle = kernel.OpenProcess(0x1000, 0, pid)
+        if not handle:
+            return ctypes.get_last_error() != 87  # ERROR_INVALID_PARAMETER
+        try:
+            exit_code = ctypes.c_ulong(0)
+            success = kernel.GetExitCodeProcess(handle, ctypes.byref(exit_code))
+            return not success or exit_code.value == 259  # STILL_ACTIVE
+        finally:
+            kernel.CloseHandle(handle)
+    try:
+        os.kill(pid, 0)
+        return True
+    except ProcessLookupError:
+        return False
+    except PermissionError:
+        return True
+
+
 def acquire_lock() -> int:
     DATA.mkdir(parents=True, exist_ok=True)
+    if LOCK_FILE.is_symlink():
+        raise RuntimeError("UNSAFE_SYMLINK_LOCK")
+    if LOCK_FILE.exists():
+        try:
+            old = json.loads(LOCK_FILE.read_text(encoding="utf-8"))
+            pid, started = old["pid"], old["started_utc"]
+            age = (datetime.now(timezone.utc)
+                   - datetime.fromisoformat(started)).total_seconds()
+            if (not 60 <= age <= 60 * 60 * 24 * 30
+                    or process_alive(pid)):
+                raise FileExistsError("Active or indeterminate worker lock")
+            # A terminated former process may leave a stale lock on reboot.
+            # Do not claim recovery if content changed while we inspected it.
+            if json.loads(LOCK_FILE.read_text(encoding="utf-8")) != old:
+                raise FileExistsError("Lock changed during recovery")
+            LOCK_FILE.unlink()
+        except (OSError, ValueError, TypeError, KeyError, OverflowError):
+            raise FileExistsError("Cannot validate existing worker lock") from None
     fd = os.open(LOCK_FILE, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
     with os.fdopen(fd, "w") as out:
         out.write(json.dumps({"pid": os.getpid(), "started_utc": utc()}) + "\n")
