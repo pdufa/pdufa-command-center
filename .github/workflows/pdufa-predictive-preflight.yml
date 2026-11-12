@@ -30,7 +30,7 @@ jobs:
           from pathlib import Path
           result=json.loads(Path("/tmp/pdufa_predictive_preflight.json").read_text())
           assert result["known_shared_installation_blockers"] == 0
-          assert result["future_levels_with_missing_approved_domain_implementation"] == list(range(7,21))
+          assert result["future_levels_with_missing_approved_domain_implementation"] == list(range(8,21))
           assert result["windows_restart_confirmed"] is False
           assert all(x["scientific_level_complete"] is False for x in result["levels"])
           for level in result["levels"]:
