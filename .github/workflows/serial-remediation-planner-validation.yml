@@ -1,0 +1,43 @@
+name: Serial Level4-20 Remediation Planner Validation
+on:
+  pull_request:
+    paths:
+      - 'scripts/pdufa_level_remediation_planner.py'
+      - 'tests/test_pdufa_level_remediation_planner.py'
+      - '.github/workflows/serial-remediation-planner-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  serial-stage-and-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Serial stage validation and fail-closed source checks
+        run: python -m unittest discover -s tests -p 'test_pdufa_level_remediation_planner.py' -v
+      - name: Generate full level-by-level repair plan without misreporting live status
+        run: |
+          python scripts/pdufa_level_remediation_planner.py --out /tmp/pdufa-serial-plan.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report=json.loads(Path("/tmp/pdufa-serial-plan.json").read_text())
+          assert report["active_level"] is None
+          assert report["engineering_levels_recorded_complete"] is None
+          assert report["next_repair"] is None
+          assert [x["level"] for x in report["levels"]] == list(range(4,21))
+          assert not report["scientific_review_separate"] is False
+          assert all(not x["scientific_completion_verified"] for x in report["levels"])
+          print("PASS: all 17 level requirements enumerated; no fabricated live PC state")
+          PY
+      - name: Existing persistent controller and Level7 readiness regression
+        run: |
+          python scripts/pdufa_level_completion.py --self-test
+          python scripts/pdufa_engineering_review_lanes.py --self-test
+          python -m unittest discover -s tests -p 'test_level7_model_validation_readiness.py' -v
+      - name: Permanent retired-system guard
+        run: python scripts/audit_raas_retirement.py --check
