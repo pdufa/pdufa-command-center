@@ -3,7 +3,7 @@
 The isolated preview may execute this on startup only when the three-key
 campaign gate is explicitly enabled. This never releases an FDA probability,
 does not run on production by default, and cannot start more than three
-additional FOCUS NCTs. Durable idempotency prevents replay on restart.
+additional FOCUS NCTs per explicitly named campaign. Durable idempotency prevents replay on restart.
 """
 from __future__ import annotations
 
@@ -29,10 +29,10 @@ def requested():
     campaign = os.getenv("PDUFA_MEDICAL_BATCH_CAMPAIGN", "")
     raw = os.getenv("PDUFA_MEDICAL_BATCH_NCTS", "")
     studies = [x.strip() for x in raw.split(",")]
-    if (not CAMPAIGN.fullmatch(campaign) or len(studies) != 3
-            or len(set(studies)) != 3 or
+    if (not CAMPAIGN.fullmatch(campaign) or not (1 <= len(studies) <= 3)
+            or len(set(studies)) != len(studies) or
             any(not core.NCT.fullmatch(x) for x in studies)):
-        raise ValueError("Batch gate requires one named campaign and exactly three unique NCTs")
+        raise ValueError("Batch gate requires one named campaign and one to three unique NCTs")
     if os.getenv("PDUFA_ANALYZE_NOW_ALL_ENABLED", "").lower() in YES:
         raise ValueError("Global all-trial rollout must remain disabled")
     canary = os.getenv("PDUFA_ANALYZE_NOW_CANARY_NCT", "NCT06081894")
@@ -217,14 +217,17 @@ def launch(engine):
             LOG.error("PDUFA_MEDICAL_BATCH status=HALTED index=%d nct=%s error_type=%s",
                       pos+1,nct,type(exc).__name__)
             return
-    LOG.warning("PDUFA_MEDICAL_BATCH status=COMPLETE completed=3 target=3 "
-                "scientificSignoff=False prediction=ABSTAIN certainty=NOT_VALIDATED")
+    LOG.warning("PDUFA_MEDICAL_BATCH status=COMPLETE completed=%d target=%d "
+                "scientificSignoff=False prediction=ABSTAIN certainty=NOT_VALIDATED",
+                len(studies), len(studies))
 
 
 def start(engine):
-    if not requested():
+    config = requested()
+    if not config:
         return
-    LOG.warning("PDUFA_MEDICAL_BATCH status=STARTING target=3 sourceResearchOnly=True")
+    LOG.warning("PDUFA_MEDICAL_BATCH status=STARTING target=%d sourceResearchOnly=True",
+                len(config[1]))
     def run():
         try:
             launch(engine)

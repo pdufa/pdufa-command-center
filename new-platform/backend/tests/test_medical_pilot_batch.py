@@ -41,7 +41,7 @@ def test_batch_allowlist_only_three_and_original_canary(monkeypatch):
     "NCT05507203,NCT05507203,NCT05126758",
     "NCT06081894,NCT04576949,NCT05126758",
     "NCT99999999,NCT04576949,NCT05126758",
-    "NCT05507203",
+    "",
     "NCT05507203,NCT04576949,NCT05126758,NCT05244304",
     "NCT05507203,NCT04576949,NCTXXXXYYYY",
 ])
@@ -50,6 +50,17 @@ def test_invalid_cohorts_fail_before_writes(monkeypatch,ncts):
     monkeypatch.setenv("PDUFA_MEDICAL_BATCH_NCTS",ncts)
     with pytest.raises(ValueError):
         batch.requested()
+
+
+def test_bounded_tail_campaigns_allow_one_or_two_remaining_focus_studies(monkeypatch):
+    configure(monkeypatch)
+    for cohort in ("NCT05662241", "NCT06331299,NCT04716231"):
+        monkeypatch.setenv("PDUFA_MEDICAL_BATCH_NCTS", cohort)
+        expected=tuple(cohort.split(","))
+        assert batch.requested()==(CAMPAIGN,expected)
+        assert batch.allowed_ncts()==set(expected)
+        assert all(saved.eligible_for_analysis(nct) for nct in expected)
+        assert not saved.eligible_for_analysis("NCT99999999")
 
 
 def test_global_all_rollout_cannot_be_used_with_batch(monkeypatch):
