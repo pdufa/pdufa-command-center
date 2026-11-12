@@ -160,6 +160,41 @@ if ($worker.State -ne 'Ready') {
   Write-Host ('UNKNOWN_STATE_NO_RESTART: '+$worker.State)
   exit 0
 }
+# Queue exhaustion is NOT installation completion. Avoid relaunching a worker
+# every two minutes after it has exhausted its bounded, approved work queue.
+# New queue installers explicitly start the worker after updating approved code.
+if ((Test-Path -LiteralPath $heartbeat -PathType Leaf) -and
+    (Test-Path -LiteralPath $ledger -PathType Leaf)) {
+  try {
+    $pulse=Get-Content -LiteralPath $heartbeat -Raw | ConvertFrom-Json
+    if ($pulse.mode -in @('QUEUE_EXHAUSTED','IDLE','IDLE_AWAITING_APPROVED_WORK')) {
+      $record=Get-Content -LiteralPath $ledger -Raw | ConvertFrom-Json
+      $pending=0
+      $blocked=0
+      foreach ($queueName in @('tasks','validation_jobs')) {
+        $part=$record.PSObject.Properties[$queueName]
+        if ($null -ne $part -and $null -ne $part.Value) {
+          foreach ($entry in $part.Value.PSObject.Properties) {
+            if ($entry.Value.status -in @('PENDING','RUNNING')) { $pending++ }
+            if ($entry.Value.status -eq 'BLOCKED') { $blocked++ }
+          }
+        }
+      }
+      if ($pending -eq 0) {
+        $result=if($blocked -gt 0){'BLOCKED_WORK_REVIEW_REQUIRED'}else{'AWAITING_APPROVED_WORK_NO_RESTART'}
+        Save-Check $result ([string]$worker.State)
+        Write-Host $result
+        exit 0
+      }
+    }
+  } catch {
+    # Corrupt or unreadable state is a reason for review, never a reason to
+    # launch duplicate work or silently reset the agent's ledger.
+    Save-Check 'UNREADABLE_QUEUE_REVIEW_REQUIRED' ([string]$worker.State)
+    Write-Host 'UNREADABLE_QUEUE_REVIEW_REQUIRED'
+    exit 0
+  }
+}
 # Task Scheduler IgnoreNew and Python RUNNING.lock prevent duplicate workers.
 Start-ScheduledTask -TaskName $workerName -ErrorAction Stop
 Start-Sleep -Seconds 3
