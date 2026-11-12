@@ -84,20 +84,29 @@ class CompletionTests(unittest.TestCase):
         self.assertFalse(row["evidence"]["scientific_signoff"])
         self.assertEqual(M.next_step(self.state), (4, "IMPLEMENT_FUNCTIONAL_GATES"))
 
-    def test_level4_original_source_receipt_retains_review_gate(self):
-        for s in M.STEPS[:1]:
-            self.state["levels"]["4"]["steps"][s]["status"] = "DONE"
-        receipt = {"nct": "NCT05507203", "source": {"raw_sha256": "a" * 64,
-                   "url": "https://clinicaltrials.gov/api/v2/studies/NCT05507203"},
-                   "scientific_stage_complete": False}
-        with patch("level4_scientific_evidence.retrieve_and_summarize",
-                   return_value=receipt):
+    def test_level4_dated_roster_batch_retains_original_source_review_gate(self):
+        self.state["levels"]["4"]["steps"]["AUDIT_EXISTING_DRAFTS"]["status"] = "DONE"
+        source = self.home / "new-platform/frontend/data/p3PostDataActive.json"
+        source.parent.mkdir(parents=True)
+        source.write_text(json.dumps({"asOf": "2026-11-10", "records": [
+            {"nct": "NCT05507203"}, {"nct": "NCT05507216"}
+        ]}), encoding="utf-8")
+        batch = {"retrieved": 1, "total": 2, "reports": [
+            {"nct": "NCT05507203", "scientific_stage_complete": False},
+            {"nct": "NCT05507216", "status": "SOURCE_RETRIEVAL_OR_VALIDATION_BLOCKED"}]}
+        with patch.object(M, "ROOT", self.home), patch(
+                "level4_scientific_evidence.process_ncts", return_value=batch) as fetch:
             M.once(self.state, self.plan)
+        fetch.assert_called_once_with(["NCT05507203", "NCT05507216"])
         row = self.state["levels"]["4"]["steps"]["COLLECT_ORIGINAL_SOURCE"]
         self.assertEqual(row["status"], "DONE")
+        self.assertEqual(row["evidence"]["retrieved_original_source_count"], 1)
+        self.assertEqual(row["evidence"]["unavailable_or_invalid_count"], 1)
+        self.assertEqual(row["evidence"]["snapshot_as_of"], "2026-11-10")
+        self.assertFalse(row["evidence"]["current_canonical_focus_verified"])
         self.assertFalse(row["evidence"]["independently_reviewed"])
         self.assertFalse(self.state["levels"]["4"]["scientific_complete"])
-        self.assertTrue((self.home / "level4/NCT05507203.original-source-review.json").exists())
+        self.assertTrue((self.home / "level4/dated-focus-source-inventory.json").exists())
 
     def test_reviews_are_not_automatically_approved(self):
         for s in M.STEPS[:-1]:
