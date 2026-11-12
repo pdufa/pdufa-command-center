@@ -35,6 +35,10 @@ STOP_FILE = DATA / "STOP"
 LOCK_FILE = DATA / "RUNNING.lock"
 REPO = "pdufa/pdufa-command-center"
 ISSUE = "1096"
+# Draft engineering changes are reviewed against this independently audited
+# development branch. main has a different retirement-audit state; never
+# bypass the audit by testing one tree and changing another.
+REVIEW_BASE = "automation/windows-local-agent-monitor"
 MODEL = "qwen2.5-coder:1.5b"
 OLLAMA = "http://127.0.0.1:11434/api/generate"
 MAX_ATTEMPTS = 2
@@ -330,10 +334,16 @@ def create_review_pr(level: int, name: str, source: str, tests: str) -> str:
     if working.exists():
         raise RuntimeError("UNEXPECTED_WORKTREE_EXISTS")
     WORKTREES.mkdir(parents=True, exist_ok=True)
-    require_ok(cmd(["git", "fetch", "--no-tags", "origin", "main"], timeout=180),
-               "FETCH_MAIN")
+    require_ok(cmd(["git", "fetch", "--no-tags", "origin",
+                    "+refs/heads/" + REVIEW_BASE + ":refs/remotes/origin/" + REVIEW_BASE],
+                   timeout=180), "FETCH_AUDITED_REVIEW_BASE")
     require_ok(cmd(["git", "worktree", "add", "-b", branch, str(working),
-                    "origin/main"], timeout=90), "CREATE_ISOLATED_BRANCH")
+                    "origin/" + REVIEW_BASE], timeout=90), "CREATE_ISOLATED_BRANCH")
+    # Fail closed if the pinned review base itself fails the retirement policy.
+    # Never accept the policy test from the main worktree as evidence for a PR.
+    base_guard = cmd([sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"],
+                     cwd=working, timeout=240)
+    require_ok(base_guard, "REVIEW_BASE_RETIREMENT_POLICY")
     for relative, value in zip(paths, (source, tests)):
         file = working / relative
         if file.exists() or file.is_symlink():
@@ -375,16 +385,17 @@ def create_review_pr(level: int, name: str, source: str, tests: str) -> str:
         "Safety: exact NCT check, retired-systems audit, four synthetic regression "
         "tests, protected branch, no automatic merge or deployment. "
         "Human code/scientific review and normal CI are still required.\n"
+        f"Review base: {REVIEW_BASE} (development only, not production).\n"
     )
     require_ok(cmd(["gh", "pr", "create", "--repo", REPO,
-                    "--base", "main", "--head", branch, "--draft",
+                    "--base", REVIEW_BASE, "--head", branch, "--draft",
                     "--title", f"Research-only Level {level} intake: {name}",
                     "--body", body], cwd=working, timeout=100), "CREATE_DRAFT_PR")
     detail = require_ok(cmd(["gh", "pr", "view", branch, "--repo", REPO,
                              "--json", "isDraft,url,baseRefName,headRefName"],
                             cwd=working, timeout=45), "VERIFY_DRAFT_PR")
     obj = json.loads(detail)
-    if (obj.get("isDraft") is not True or obj.get("baseRefName") != "main"
+    if (obj.get("isDraft") is not True or obj.get("baseRefName") != REVIEW_BASE
             or obj.get("headRefName") != branch
             or not isinstance(obj.get("url"), str)
             or not obj["url"].startswith("https://github.com/" + REPO + "/pull/")):
