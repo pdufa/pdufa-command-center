@@ -18,6 +18,7 @@ import re
 import shutil
 import subprocess
 import sys
+import threading
 import tempfile
 import time
 import urllib.error
@@ -384,6 +385,7 @@ def create_review_pr(level: int, name: str, source: str, tests: str) -> str:
 
 def one_attempt(state: dict, level: int, levels: list[dict]) -> bool:
     task = state["tasks"][str(level)]
+    previous_blocker = task.get("blocker") or ""
     task["attempts"] += 1
     task["last_attempt_utc"] = utc()
     task["status"] = "RUNNING"
@@ -391,7 +393,7 @@ def one_attempt(state: dict, level: int, levels: list[dict]) -> bool:
     save_ledger(state)
     heartbeat("WORKING", state, level)
     try:
-        questions = review_questions(level, task["name"], SCOPES[level])
+        questions = review_questions(level, task["name"], SCOPES[level], feedback=previous_blocker)
         source, tests = render(level, task["name"], SCOPES[level], questions)
         pr = create_review_pr(level, task["name"], source, tests)
         task["draft_pr"] = pr
@@ -508,9 +510,19 @@ def worker(*, pilot: bool) -> int:
                 publish_status(state)
                 print("ENGINEERING_QUEUE_EXHAUSTED: draft PRs need review; no scientific signoff")
                 return 0
-            # Restart-safe atomic ledger: one task at a time, never simultaneous.
+            # A live heartbeat continues even during bounded Ollama/test calls.
             save_ledger(state)
-            one_attempt(state, level, levels)
+            ping_stop = threading.Event()
+            def ping() -> None:
+                while not ping_stop.wait(10):
+                    heartbeat("WORKING", state, level)
+            ticker = threading.Thread(target=ping, daemon=True)
+            ticker.start()
+            try:
+                one_attempt(state, level, levels)
+            finally:
+                ping_stop.set()
+                ticker.join(timeout=3)
             completed_in_this_run += 1
             publish_status(state)
             if pilot:
