@@ -696,8 +696,11 @@ def acquire_lock() -> int:
 
 def worker(*, pilot: bool) -> int:
     if STOP_FILE.exists():
-        print("STOPPED_BY_OWNER: remove STOP via --clear-stop before starting")
-        return 2
+        # An intentional owner STOP must be a clean exit. Returning a failure
+        # would cause Windows Task Scheduler's retry-on-failure policy to
+        # repeatedly relaunch a worker that the owner explicitly stopped.
+        print("STOPPED_BY_OWNER: no work started; use --clear-stop only to resume")
+        return 0
     try:
         acquire_lock()
     except FileExistsError:
