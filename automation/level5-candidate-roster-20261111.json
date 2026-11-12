@@ -1,0 +1,137 @@
+{
+  "purpose": "READ_ONLY_RESEARCH_CANDIDATE_LEADS_NOT_CANONICAL_FOCUS",
+  "source_repo_path": "new-platform/frontend/data/p3PostDataActive.json",
+  "source_git_blob_sha1": "b1b79b632ff6a87d6533f6135d4204cb5931e23c",
+  "asOf": "2026-11-11",
+  "canonical_focus_verified": false,
+  "records": [
+    {
+      "nct": "NCT05507203",
+      "ticker": "ABVX"
+    },
+    {
+      "nct": "NCT05507216",
+      "ticker": "ABVX"
+    },
+    {
+      "nct": "NCT04576949",
+      "ticker": "ACHV"
+    },
+    {
+      "nct": "NCT05206370",
+      "ticker": "ACHV"
+    },
+    {
+      "nct": "NCT05031780",
+      "ticker": "AGIO"
+    },
+    {
+      "nct": "NCT06747468",
+      "ticker": "AMLX"
+    },
+    {
+      "nct": "NCT05811247",
+      "ticker": "APMD"
+    },
+    {
+      "nct": "NCT05813275",
+      "ticker": "APMD"
+    },
+    {
+      "nct": "NCT05059223",
+      "ticker": "AXSM"
+    },
+    {
+      "nct": "NCT05113745",
+      "ticker": "AXSM"
+    },
+    {
+      "nct": "NCT05244304",
+      "ticker": "BLTE"
+    },
+    {
+      "nct": "NCT05126758",
+      "ticker": "CAPR"
+    },
+    {
+      "nct": "NCT06445023",
+      "ticker": "CLDX"
+    },
+    {
+      "nct": "NCT06455202",
+      "ticker": "CLDX"
+    },
+    {
+      "nct": "NCT05208047",
+      "ticker": "COGT"
+    },
+    {
+      "nct": "NCT03697109",
+      "ticker": "CORT"
+    },
+    {
+      "nct": "NCT04308590",
+      "ticker": "CORT"
+    },
+    {
+      "nct": "NCT05767346",
+      "ticker": "CYTK"
+    },
+    {
+      "nct": "NCT06081894",
+      "ticker": "CYTK"
+    },
+    {
+      "nct": "NCT04871282",
+      "ticker": "IMNM"
+    },
+    {
+      "nct": "NCT06553768",
+      "ticker": "MIRM"
+    },
+    {
+      "nct": "NCT06411379",
+      "ticker": "MLTX"
+    },
+    {
+      "nct": "NCT06411899",
+      "ticker": "MLTX"
+    },
+    {
+      "nct": "NCT06153693",
+      "ticker": "MLYS"
+    },
+    {
+      "nct": "NCT06343779",
+      "ticker": "PHVS"
+    },
+    {
+      "nct": "NCT06669754",
+      "ticker": "PHVS"
+    },
+    {
+      "nct": "NCT06087276",
+      "ticker": "PRAX"
+    },
+    {
+      "nct": "NCT02500381",
+      "ticker": "SRPT"
+    },
+    {
+      "nct": "NCT04544293",
+      "ticker": "SVRA"
+    },
+    {
+      "nct": "NCT06331299",
+      "ticker": "URGN"
+    },
+    {
+      "nct": "NCT04716231",
+      "ticker": "VERA"
+    },
+    {
+      "nct": "NCT05662241",
+      "ticker": "ZBIO"
+    }
+  ]
+}
