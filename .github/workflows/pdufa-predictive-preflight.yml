@@ -4,6 +4,7 @@ on:
     paths:
       - 'scripts/pdufa_predictive_preflight.py'
       - 'tests/test_pdufa_predictive_preflight.py'
+      - 'tests/test_pdufa_partial_install_integration.py'
       - 'automation/scientific-level-completion-queue.json'
       - 'scripts/windows_pdufa_level6_unblock.ps1'
       - '.github/workflows/pdufa-predictive-preflight.yml'
@@ -22,6 +23,7 @@ jobs:
       - name: Predict source-manifest drift and planned code/approval gaps before the next level
         run: |
           python -m unittest discover -s tests -p 'test_pdufa_predictive_preflight.py' -v
+          python -m unittest discover -s tests -p 'test_pdufa_partial_install_integration.py' -v
           python scripts/pdufa_predictive_preflight.py --out /tmp/pdufa_predictive_preflight.json
           python - <<'PY'
           import json
