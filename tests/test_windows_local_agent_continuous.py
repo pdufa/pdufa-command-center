@@ -207,7 +207,7 @@ class ContinuousWorkerSafetyTests(unittest.TestCase):
                 out = json.dumps({
                     "isDraft": True,
                     "url": "https://github.com/pdufa/pdufa-command-center/pull/999",
-                    "baseRefName": "main",
+                    "baseRefName": M.REVIEW_BASE,
                     "headRefName": args[3],
                 })
             err = ""
@@ -217,7 +217,14 @@ class ContinuousWorkerSafetyTests(unittest.TestCase):
         with patch.object(M, "cmd", side_effect=mock_cmd):
             url = M.create_review_pr(4, self.levels[3]["name"], source, tests)
         self.assertEqual(url, "https://github.com/pdufa/pdufa-command-center/pull/999")
-        self.assertTrue(any(x[:3] == ("gh", "pr", "create") and "--draft" in x for x in calls))
+        self.assertTrue(any(x[:3] == ("gh", "pr", "create") and "--draft" in x
+                            and x[x.index("--base") + 1] == M.REVIEW_BASE for x in calls))
+        self.assertTrue(any(x[:3] == ("git", "fetch", "--no-tags")
+                            and "refs/heads/" + M.REVIEW_BASE in x[-1] for x in calls))
+        self.assertTrue(any(x[:3] == ("git", "worktree", "add")
+                            and x[-1] == "origin/" + M.REVIEW_BASE for x in calls))
+        self.assertFalse(any(x[:3] == ("git", "worktree", "add")
+                             and x[-1] == "origin/main" for x in calls))
         self.assertTrue(any(x[:3] == ("git", "worktree", "add") for x in calls))
         self.assertFalse(any(c[:3] == ("gh", "pr", "merge") for c in calls))
         self.assertFalse(any(c[:2] == ("git", "merge") for c in calls))
@@ -225,6 +232,23 @@ class ContinuousWorkerSafetyTests(unittest.TestCase):
         self.assertFalse(any(c and c[0] in ("vercel", "render", "kubectl") for c in calls))
         self.assertTrue(all(x.startswith(("scripts/continuous_stage_drafts/", "tests/continuous_stage_drafts/"))
                             for x in paths))
+
+    def test_retirement_audit_failure_in_isolated_base_blocks_push_and_pr(self):
+        calls = []
+        source, tests = M.render(4, self.levels[3]["name"], M.SCOPES[4], self.questions())
+        def mock_cmd(args, *, cwd=M.ROOT, timeout=180):
+            calls.append(tuple(args))
+            if args[:3] == ["git", "worktree", "add"]:
+                Path(args[5]).mkdir(parents=True, exist_ok=True)
+            if args[:3] == [sys.executable, "-B", "scripts/audit_raas_retirement.py"]:
+                return subprocess.CompletedProcess(args, 1, stdout="", stderr="")
+            return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
+        with patch.object(M, "cmd", side_effect=mock_cmd):
+            with self.assertRaisesRegex(RuntimeError, "REVIEW_BASE_RETIREMENT_POLICY_FAILED"):
+                M.create_review_pr(4, self.levels[3]["name"], source, tests)
+        self.assertFalse(any(x[:3] == ("gh", "pr", "create") for x in calls))
+        self.assertFalse(any("push" in x for x in calls))
+        self.assertFalse(any("merge" in x for x in calls))
 
     def test_stop_control_blocks_worker_even_before_pilot(self):
         M.STOP_FILE.parent.mkdir(parents=True, exist_ok=True)
