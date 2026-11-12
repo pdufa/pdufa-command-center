@@ -154,5 +154,78 @@ class EngineeringLanes(unittest.TestCase):
         with self.assertRaises(ValueError):
             M.load(self.state,self.manifest)
 
+    def test_only_old_level5_placeholder_blockers_rearmed_one_time(self):
+        self.fill_level4()
+        M.cycle(self.eng,self.state,self.manifest,check_review=False,remote=False)
+        prior=S.load_sequence()
+        mapping=dict(M.LEVEL5_REARMABLE)
+        for step,code in mapping.items():
+            self.state["levels"]["5"]["steps"][step].update(
+                status="BLOCKED",blocker=code,attempts=2,
+                evidence={"scientific_signoff":False,"last_attempt_utc":"2026-11-12T15:37:21Z"})
+        self.state["levels"]["6"]["steps"]["COLLECT_ORIGINAL_SOURCE"].update(
+            status="BLOCKED",blocker="DOMAIN_SOURCE_COLLECTION_NOT_REVIEWED",attempts=2)
+        with patch.object(B,"confirmed_level5_pr",return_value={"pr_number":1161}):
+            self.assertTrue(M.rearm_level5_after_real_implementation(self.state,self.manifest))
+            self.assertFalse(M.rearm_level5_after_real_implementation(self.state,self.manifest))
+        self.assertTrue((self.home/"level5/prior-placeholder-blockers.json").exists())
+        self.assertTrue((self.home/"level5/approved-retry-receipt.json").exists())
+        for step,code in mapping.items():
+            item=self.state["levels"]["5"]["steps"][step]
+            self.assertEqual(item["status"],"PENDING")
+            self.assertEqual(item["attempts"],0)
+            self.assertIsNone(item["blocker"])
+        self.assertEqual(self.state["levels"]["6"]["steps"]["COLLECT_ORIGINAL_SOURCE"]["status"],
+                         "BLOCKED")
+        self.assertEqual(S.load_sequence(),prior)
+
+    def test_actual_level5_test_failure_cannot_be_hidden_by_rearm(self):
+        self.state["levels"]["5"]["steps"]["RUN_REGRESSION_TESTS"].update(
+            status="BLOCKED",blocker="LEVEL5_REGRESSION_OR_RETIREMENT_FAILED",attempts=2)
+        with patch.object(B,"confirmed_level5_pr",return_value={"pr_number":1161}):
+            self.assertFalse(M.rearm_level5_after_real_implementation(self.state,self.manifest))
+        self.assertEqual(self.state["levels"]["5"]["steps"]["RUN_REGRESSION_TESTS"]["status"],
+                         "BLOCKED")
+        self.assertFalse((self.home/"level5/approved-retry-receipt.json").exists())
+
+    def test_level5_engineering_scope_proven_by_32_receipts_eight_tests_and_pr(self):
+        self.fill_level4()
+        M.cycle(self.eng,self.state,self.manifest,check_review=False,remote=False)
+        for step in M.STEPS:
+            self.state["levels"]["5"]["steps"][step].update(
+                status="DONE",attempts=1,evidence={"scientific_signoff":False})
+        source=self.state["levels"]["5"]["steps"]["COLLECT_ORIGINAL_SOURCE"]["evidence"]
+        source.update(snapshot_nct_count=32,retrieved_original_source_count=32,
+                      unavailable_or_invalid_count=0,
+                      source_git_blob_sha1="b1b79b632ff6a87d6533f6135d4204cb5931e23c",
+                      current_canonical_focus_verified=False,independently_reviewed=False,
+                      negative_evidence_adjudicated=False)
+        self.state["levels"]["5"]["steps"]["IMPLEMENT_FUNCTIONAL_GATES"][
+            "evidence"]["implementation_pr"]={"pr_number":1161}
+        self.state["levels"]["5"]["steps"]["PREPARE_REVIEW_PR"][
+            "evidence"]["implementation_pr"]={"pr_number":1161}
+        self.state["levels"]["5"]["steps"]["RUN_REGRESSION_TESTS"]["evidence"]["tests"]=[
+            {"suite":"level5_source_challenge","passed":8},
+            {"suite":"permanent_retirement","passed":True}]
+        self.assertIsNotNone(M.engineering_evidence(self.state,self.manifest,5,verify_remote=False))
+        self.assertEqual(M.cycle(self.eng,self.state,self.manifest,check_review=False,remote=False),
+                         "ENGINEERING_SCOPE_ACCEPTED_ADVANCE_NEXT")
+        self.assertEqual(M.first_uncompleted(self.eng),6)
+        self.assertEqual(len(S.load_sequence()["accepted_levels"]),0)
+        self.assertFalse(self.eng["engineering_completed_levels"][1]["scientifically_complete"])
+
+    def test_incomplete_32_study_source_cannot_advance_level5(self):
+        self.fill_level4()
+        M.cycle(self.eng,self.state,self.manifest,check_review=False,remote=False)
+        for step in M.STEPS:
+            self.state["levels"]["5"]["steps"][step].update(
+                status="DONE",attempts=1,evidence={"scientific_signoff":False})
+        self.state["levels"]["5"]["steps"]["COLLECT_ORIGINAL_SOURCE"]["evidence"].update(
+            snapshot_nct_count=32,retrieved_original_source_count=31,
+            source_git_blob_sha1="b1b79b632ff6a87d6533f6135d4204cb5931e23c",
+            unavailable_or_invalid_count=1,current_canonical_focus_verified=False,
+            independently_reviewed=False,negative_evidence_adjudicated=False)
+        self.assertIsNone(M.engineering_evidence(self.state,self.manifest,5,verify_remote=False))
+
 if __name__=="__main__":
     unittest.main()
