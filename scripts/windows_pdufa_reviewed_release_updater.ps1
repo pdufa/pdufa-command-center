@@ -172,6 +172,7 @@ try {
   if($null -eq $protect.required_pull_request_reviews -or
       $protect.required_pull_request_reviews.required_approving_review_count -lt 1 -or
       $null -eq $protect.required_status_checks -or
+      $null -eq $protect.required_status_checks.contexts -or
       @($protect.required_status_checks.contexts).Count -lt 1) {
     throw 'Protected main requires at least one PR approval and CI status check.'
   }
