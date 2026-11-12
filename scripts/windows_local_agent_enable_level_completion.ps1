@@ -28,9 +28,9 @@ $files=@(
 # Approved, exact Git blob IDs for this review slice; no branch drift.
 $allowed=@{
  'automation/scientific-level-completion-queue.json'='94f40f5dfa2c299f8a23d650aef8dd8b7bd67098'
- 'scripts/pdufa_level_completion.py'='aaa99fc25c2b7e37cc8f17afe0a5418612b9bd99'
+ 'scripts/pdufa_level_completion.py'='8dec50893a0d4c6acee33a2c7398e0c2a32f5bc8'
  'scripts/level4_scientific_evidence.py'='2530d029f49b8ab4ec1f21f7db784d5864bf5c36'
- 'tests/test_pdufa_level_completion.py'='fd8a2e92a294ec913ce35e8aa9bc085237ed3c27'
+ 'tests/test_pdufa_level_completion.py'='1e08eda6249fc2cd94fccacb41fe44c6b744f373'
  'tests/test_level4_scientific_evidence.py'='5a30ed426188aa8da968639fc763842d9d15f0e6'
  'scripts/windows_local_agent_watchdog.ps1'='5b83e1913fd70e7f8aa72fcb5fc43844e11f3aae'
 }
