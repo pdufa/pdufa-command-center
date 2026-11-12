@@ -254,6 +254,37 @@ class ContinuousWorkerSafetyTests(unittest.TestCase):
         new_lock = json.loads(M.LOCK_FILE.read_text(encoding="utf-8"))
         self.assertEqual(new_lock["pid"], M.os.getpid())
 
+    def test_pilot_blocker_redacts_diagnostic_output(self):
+        self.assertEqual(M.public_blocker({"blocker": "MODEL_QUESTIONS_NOT_VALIDATED"}),
+                         "MODEL_QUESTIONS_NOT_VALIDATED")
+        self.assertEqual(M.public_blocker({"blocker": "password=not-safe"}),
+                         "UNCLASSIFIED_LOCAL_FAILURE")
+        self.assertEqual(M.public_blocker({"blocker": None}), "NONE_RECORDED")
+
+    def test_pilot_rejects_stage_five_substitution_when_stage_four_blocked(self):
+        self.state["tasks"]["4"]["status"] = "BLOCKED"
+        self.state["tasks"]["4"]["attempts"] = 2
+        self.state["tasks"]["4"]["blocker"] = "MODEL_QUESTIONS_NOT_VALIDATED"
+        M.save_ledger(self.state)
+        with (patch.object(M, "preflight"),
+              patch.object(M, "acquire_lock", return_value=123),
+              patch.object(M, "one_attempt", side_effect=AssertionError("unexpected stage"))):
+            self.assertEqual(M.worker(pilot=True), 2)
+        current = M.load_ledger(self.levels)
+        self.assertEqual(current["tasks"]["5"]["attempts"], 0)
+        self.assertEqual(current["tasks"]["4"]["status"], "BLOCKED")
+
+    def test_status_prints_sanitized_blocker_without_raw_secrets(self):
+        self.state["tasks"]["4"]["blocker"] = "GITHUB_AUTH_FAILED"
+        self.state["tasks"]["4"]["attempts"] = 1
+        M.save_ledger(self.state)
+        from contextlib import redirect_stdout
+        stream = io.StringIO()
+        with redirect_stdout(stream):
+            self.assertEqual(M.status(), 0)
+        self.assertIn("Stage 4 status:", stream.getvalue())
+        self.assertIn("blocker: GITHUB_AUTH_FAILED", stream.getvalue())
+
     def test_real_repo_self_test_is_safe_and_has_no_network(self):
         self.assertEqual(M.self_test(), 0)
 
