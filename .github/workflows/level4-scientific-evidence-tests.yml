@@ -1,0 +1,33 @@
+name: Level 4 Original-Source Review Gates
+on:
+  pull_request:
+    paths:
+      - 'scripts/level4_scientific_evidence.py'
+      - 'tests/test_level4_scientific_evidence.py'
+      - '.github/workflows/level4-scientific-evidence-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  level4-original-source-gates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test Level 4 fail-closed source inventory, offline
+        run: python -m unittest discover -s tests -p 'test_level4_scientific_evidence.py' -v
+      - name: Audit permanent retirement policy
+        run: python scripts/audit_raas_retirement.py --check
+      - name: Assert code never publishes a prediction
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          src = Path("scripts/level4_scientific_evidence.py").read_text()
+          assert '"scientific_stage_complete": False' in src
+          assert '"approval_probability": None' in src
+          assert '"fda_prediction": None' in src
+          print("Source receipt and endpoint-review gates only")
+          PY
