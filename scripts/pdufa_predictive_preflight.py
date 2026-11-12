@@ -149,10 +149,18 @@ def audit(manifest: dict, root: Path) -> dict:
         if integration and not (root / integration).is_file():
             findings.append(issue("INTEGRATION_TEST_MISSING",
                                   classification="KNOWN_BLOCK", details=integration))
-        if n == 7 and (root / "scripts/level7_model_validation_readiness.py").is_file():
-            findings.append(issue("PREPARATORY_ONLY_NOT_APPROVED_FOR_ENGINEERING_ADVANCEMENT",
-                                  classification="CONTEXT",
-                                  details="Draft readiness checks are not a validated model"))
+        if n == 7:
+            if (root / "scripts/level7_model_validation_readiness.py").is_file():
+                findings.append(issue(
+                    "PREPARATORY_ONLY_NOT_APPROVED_FOR_ENGINEERING_ADVANCEMENT",
+                    classification="CONTEXT",
+                    details="Draft readiness checks are not a validated model"))
+            else:
+                findings.append(issue(
+                    "LEVEL7_PREPARATORY_MODULE_NOT_INSTALLED",
+                    classification="KNOWN_FUTURE_DEVELOPMENT_GAP",
+                    details="Level 7 preparation is absent from this installation; "
+                            "it is not an approved domain implementation in either case"))
         rows.append({
             "level": n, "name": row["name"],
             "required_phase_appropriate_evidence": row["required_evidence_fields"],
