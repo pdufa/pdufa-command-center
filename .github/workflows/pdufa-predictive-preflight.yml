@@ -1,0 +1,51 @@
+name: PDUFA Predictive Preflight All Levels
+on:
+  pull_request:
+    paths:
+      - 'scripts/pdufa_predictive_preflight.py'
+      - 'tests/test_pdufa_predictive_preflight.py'
+      - 'tests/test_pdufa_partial_install_integration.py'
+      - 'automation/scientific-level-completion-queue.json'
+      - 'scripts/windows_pdufa_level6_unblock.ps1'
+      - '.github/workflows/pdufa-predictive-preflight.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  anticipate-known-blockers:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Predict source-manifest drift and planned code/approval gaps before the next level
+        run: |
+          python -m unittest discover -s tests -p 'test_pdufa_predictive_preflight.py' -v
+          python -m unittest discover -s tests -p 'test_pdufa_partial_install_integration.py' -v
+          python scripts/pdufa_predictive_preflight.py --out /tmp/pdufa_predictive_preflight.json
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          result=json.loads(Path("/tmp/pdufa_predictive_preflight.json").read_text())
+          assert result["known_shared_installation_blockers"] == 0
+          assert result["future_levels_with_missing_approved_domain_implementation"] == list(range(7,21))
+          assert result["windows_restart_confirmed"] is False
+          assert all(x["scientific_level_complete"] is False for x in result["levels"])
+          for level in result["levels"]:
+              codes=[x["code"] for x in level["predictable_findings"]]
+              print("LEVEL",level["level"],level["name"],"REGISTERED_PR",
+                    level["implementation_pr_registered"],"EXPECTED_GAPS",codes)
+          print("KNOWN RUNTIME GAPS:")
+          for x in result["shared_installation_findings"]:
+              if x["classification"]=="HOST_CHECK_REQUIRED":
+                  print("HOST_PRECHECK_NEEDED:",x["details"])
+          PY
+      - name: Check existing engineering, offline source and regression safeguards
+        run: |
+          python -m unittest discover -s tests -p 'test_level6_cross_disciplinary_inventory.py' -v
+          python -m unittest discover -s tests -p 'test_level6_implementation_integration.py' -v
+          python -m unittest discover -s tests -p 'test_pdufa_level_remediation_planner.py' -v
+          python -m unittest discover -s tests -p 'test_level7_model_validation_readiness.py' -v
+          python scripts/audit_raas_retirement.py --check
