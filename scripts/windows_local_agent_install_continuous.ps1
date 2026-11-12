@@ -41,6 +41,9 @@ Write-Host "PRECHECK: Verify repo, strict retirement audit, GitHub and local Oll
 if ($LASTEXITCODE -ne 0) { throw "Preflight failed. Old schedule remains unchanged." }
 & $python -3.13 $controller --self-test
 if ($LASTEXITCODE -ne 0) { throw "Offline safety self-test failed. Old schedule remains unchanged." }
+Write-Host "BASE CHECK: Audit the exact clean development PR baseline before consuming a pilot attempt."
+& $python -3.13 $controller --base-check
+if ($LASTEXITCODE -ne 0) { throw "Audited review base failed. Pilot not attempted; old schedule remains unchanged." }
 
 # A real pilot must create a draft PR and verify it remains a draft.
 # Before the pilot, no unattended code application or issue update is enabled.
