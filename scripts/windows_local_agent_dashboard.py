@@ -147,6 +147,13 @@ PAGE = r"""<!doctype html>
       <p class="notice" id="message">A stop request lets the current bounded task finish and prevents the next one. It never merges or deploys code.</p>
     </aside>
   </div>
+  <section class="panel" aria-label="Follow-on provenance validation progress">
+    <div class="eyebrow">NEXT QUEUE / Phase-first source provenance validations</div>
+    <div class="big"><span id="validation-count">—</span><span> / 17</span></div>
+    <div class="progress-labels"><strong id="validation-percent">—%</strong><span class="muted" id="validation-label">No follow-on queue loaded</span></div>
+    <div class="progress" id="validation-progress" role="progressbar" aria-valuemin="0" aria-valuemax="17" aria-valuenow="0" aria-label="Source provenance draft PRs"></div>
+    <p class="note">These are engineering source-document validation drafts only; no scientific levels are independently verified, and no predictions are generated.</p>
+  </section>
   <div class="section-heading"><h2>Stage-by-stage activity</h2><span class="muted small" id="refreshed">Not refreshed yet</span></div>
   <section class="stages" id="stages" aria-label="Stages 4 through 20"></section>
   <footer class="footer">LOCAL DASHBOARD · 127.0.0.1 ONLY · NO CLOUD SERVER · No automatic merges, production deployments, or clinical prediction updates. Close this window to stop viewing; the development worker continues separately.</footer>
@@ -157,6 +164,7 @@ PAGE = r"""<!doctype html>
   var TOKEN = '__TOKEN__';
   var STAGES = document.getElementById('stages');
   var PROGRESS = document.getElementById('progress');
+  var VALIDATION_PROGRESS = document.getElementById('validation-progress');
   function setText(id, value) { document.getElementById(id).textContent = String(value); }
   function clear(node) { while (node.firstChild) node.removeChild(node.firstChild); }
   function node(tag, cls, value) {
@@ -211,6 +219,27 @@ PAGE = r"""<!doctype html>
     });
     setText('current', data.worker.state === 'LIVE' && totals.running ?
       'Level ' + String(totals.running).padStart(2, '0') : data.worker.label);
+    var v = data.followon;
+    setText('validation-count', v.drafts);
+    setText('validation-percent', Math.round(v.drafts / 17 * 100) + '%');
+    setText('validation-label', !v.started ? 'Waiting to start approved follow-on tasks' :
+      v.running ? 'Working on provenance Level ' + v.running :
+      v.pending > 0 ? v.pending + ' provenance development tasks pending' :
+      'Follow-on queue finished · awaiting further approved work');
+    VALIDATION_PROGRESS.setAttribute('aria-valuenow', String(v.drafts));
+    clear(VALIDATION_PROGRESS);
+    v.stages.forEach(function (item) {
+      var cl = item.status === 'DRAFT_PR_CREATED' ? 'done' :
+        item.status === 'RUNNING' ? 'active' :
+        item.status === 'BLOCKED' ? 'blocked' : '';
+      var seg = node('div', 'segment ' + cl);
+      seg.title = 'Provenance Level ' + item.level + ': ' + item.status;
+      VALIDATION_PROGRESS.appendChild(seg);
+    });
+    if (v.running && data.worker.state === 'LIVE') {
+      setText('current', 'Source validation · Level ' + String(v.running).padStart(2, '0'));
+      setText('queue', v.pending + ' provenance tasks pending · ' + v.blocked + ' blocked');
+    }
     setText('heartbeat', data.worker.age_seconds === null ? 'Not available' :
       data.worker.age_seconds + 's ago · ' + data.worker.mode);
     setText('activity', fmtTime(data.last_activity));
@@ -304,17 +333,36 @@ def snapshot() -> dict:
     blocked = sum(x["status"] == "BLOCKED" for x in rows)
     pending = sum(x["status"] == "PENDING" for x in rows)
     running = next((x["level"] for x in rows if x["status"] == "RUNNING"), None)
+    # A separate, explicit queue follows the original 17 engineering drafts.
+    # Never infer validated clinical science from its PR count.
+    validation = ledger.get("validation_jobs")
+    validation = validation if isinstance(validation, dict) else {}
+    validation_rows = []
+    for level in range(4, 21):
+        rec = validation.get(str(level))
+        rec = rec if isinstance(rec, dict) else {}
+        status = rec.get("status", "PENDING")
+        status = status if status in VALID_STATUS else "PENDING"
+        validation_rows.append({"level": level, "status": status})
+    validation_drafts = sum(rec["status"] == "DRAFT_PR_CREATED"
+                            for rec in validation_rows) if validation else 0
+    validation_blocked = sum(rec["status"] == "BLOCKED"
+                             for rec in validation_rows) if validation else 0
+    validation_pending = sum(rec["status"] == "PENDING"
+                             for rec in validation_rows) if validation else 0
+    validation_running = next((rec["level"] for rec in validation_rows
+                               if rec["status"] == "RUNNING"), None)
     age = _age_seconds(heart.get("updated_utc"))
     mode = heart.get("mode") if isinstance(heart.get("mode"), str) else "NO_HEARTBEAT"
     live = bool(ledger and age is not None and age <= 35
-                and mode in ("RUNNING", "WORKING") and LOCK.is_file()
+                and mode in ("RUNNING", "WORKING", "IDLE") and LOCK.is_file()
                 and not STOP.exists())
     if not ledger:
         state, label = "NOT_INSTALLED", "NO LOCAL LEDGER"
     elif STOP.exists():
         state, label = "STOP_REQUESTED", "STOP REQUESTED"
     elif live:
-        state, label = "LIVE", "WORKER LIVE"
+        state, label = "LIVE", ("IDLE — AWAITING APPROVED WORK" if mode == "IDLE" else "WORKER LIVE")
     elif drafts + blocked == TOTAL and running is None:
         state, label = "QUEUE_ENDED", "DRAFT QUEUE FINISHED"
     else:
@@ -323,7 +371,13 @@ def snapshot() -> dict:
         "worker": {"state": state, "label": label, "mode": mode, "age_seconds": age},
         "totals": {"drafts": drafts, "blocked": blocked, "pending": pending,
                    "running": running, "total": TOTAL},
-        "stages": rows, "last_activity": ledger.get("updated_utc") if ledger else None,
+        "stages": rows,
+        "followon": {
+            "started": bool(validation), "drafts": validation_drafts,
+            "blocked": validation_blocked, "pending": validation_pending,
+            "running": validation_running, "stages": validation_rows,
+        },
+        "last_activity": ledger.get("updated_utc") if ledger else None,
         "scientific_levels_verified": 0, "automatic_merge": False, "production_deploy": False,
     }
 
