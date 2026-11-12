@@ -1,0 +1,47 @@
+name: PDUFA Level Acceptance Email Validation
+on:
+  pull_request:
+    paths:
+      - 'scripts/pdufa_level_accepted_email.py'
+      - 'tests/test_pdufa_level_accepted_email.py'
+      - 'scripts/pdufa_level_email_task.ps1'
+      - '.github/workflows/level-acceptance-email-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  acceptance-email-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Offline independent-acceptance-only email regressions
+        run: python -m unittest discover -s tests -p 'test_pdufa_level_accepted_email.py' -v
+      - name: Notification script self-test
+        run: python scripts/pdufa_level_accepted_email.py --self-test
+      - name: Existing strict Level 4-20 acceptance regressions
+        run: python -m unittest discover -s tests -p 'test_pdufa_strict_level_runner.py' -v
+      - name: Permanent retirement guard
+        run: python scripts/audit_raas_retirement.py --check
+  windows-powershell:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate notification setup without credentials or scheduled-task changes
+        shell: pwsh
+        run: |
+          $tokens=$null
+          $errorsFound=$null
+          [System.Management.Automation.Language.Parser]::ParseFile(
+            'scripts/pdufa_level_email_task.ps1',
+            [ref]$tokens,[ref]$errorsFound
+          ) | Out-Null
+          if($errorsFound.Count -ne 0){
+            $errorsFound | Out-String | Write-Error
+            exit 1
+          }
+          Write-Host 'PASS: DPAPI protected email installer PowerShell parses.'
