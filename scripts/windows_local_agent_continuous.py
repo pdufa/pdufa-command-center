@@ -380,6 +380,12 @@ def create_review_pr(level: int, name: str, source: str, tests: str) -> str:
             or not isinstance(obj.get("url"), str)
             or not obj["url"].startswith("https://github.com/" + REPO + "/pull/")):
         raise RuntimeError("PR_NOT_VERIFIED_DRAFT")
+    # The verified draft is stored on GitHub; reclaim this large temporary
+    # checkout after success so 17 tasks do not consume 17 full repository copies.
+    cleanup = cmd(["git", "worktree", "remove", "--force", str(working)],
+                  cwd=ROOT, timeout=90)
+    if cleanup.returncode != 0:
+        print("WARNING: Temporary worktree cleanup requires attention")
     return obj["url"]
 
 
