@@ -454,7 +454,7 @@ class ContinuousWorkerSafetyTests(unittest.TestCase):
         self.assertIn("Set-ScheduledTask -TaskName $taskName -Settings $settings", installer)
         self.assertIn("Export-ScheduledTask -TaskName $taskName", installer)
         recovery = installer.split("if ($EnableAutoRestart) {", 1)[1].split(
-            "\\nif ($Stop)", 1
+            "\nif ($Stop)", 1
         )[0]
         self.assertNotIn("Start-ScheduledTask", recovery)
         self.assertNotIn("--pilot", recovery)
