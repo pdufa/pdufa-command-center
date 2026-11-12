@@ -249,6 +249,24 @@ class ContinuousWorkerSafetyTests(unittest.TestCase):
         self.assertFalse(any(x[:3] == ("gh", "pr", "create") for x in calls))
         self.assertFalse(any("push" in x for x in calls))
         self.assertFalse(any("merge" in x for x in calls))
+        self.assertTrue(any(x[:3] == ("git", "worktree", "remove") for x in calls))
+
+    def test_failed_pilot_cleanup_removes_temporary_checkout(self):
+        calls = []
+        source, tests = M.render(4, self.levels[3]["name"], M.SCOPES[4], self.questions())
+        def mock_cmd(args, *, cwd=M.ROOT, timeout=180):
+            calls.append(tuple(args))
+            if args[:3] == ["git", "worktree", "add"]:
+                Path(args[5]).mkdir(parents=True, exist_ok=True)
+            if args[:3] == [sys.executable, "-B", "scripts/audit_raas_retirement.py"]:
+                return subprocess.CompletedProcess(args, 1, stdout="", stderr="")
+            return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
+        with patch.object(M, "cmd", side_effect=mock_cmd):
+            with self.assertRaisesRegex(RuntimeError, "REVIEW_BASE_RETIREMENT_POLICY_FAILED"):
+                M.create_review_pr(4, self.levels[3]["name"], source, tests)
+        self.assertTrue(any(x[:3] == ("git", "worktree", "remove")
+                            and "--force" in x for x in calls))
+        self.assertFalse(any(x[:3] == ("gh", "pr", "create") for x in calls))
 
     def test_stop_control_blocks_worker_even_before_pilot(self):
         M.STOP_FILE.parent.mkdir(parents=True, exist_ok=True)
