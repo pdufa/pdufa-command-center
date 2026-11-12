@@ -312,6 +312,11 @@ def reset_blocked_stage4_after_commit_check() -> None:
     verify_local_commit()
     state = load_ledger(manifest())
     stage = state["tasks"]["4"]
+    if (stage.get("status") == "PENDING"
+            and stage.get("attempts") in (0, 1)
+            and stage.get("draft_pr") is None):
+        print("STAGE4_READY: no attempt reset required")
+        return
     if (stage.get("status") != "BLOCKED"
             or stage.get("attempts") != MAX_ATTEMPTS
             or stage.get("blocker") != "COMMIT_DRAFT_BRANCH_FAILED"
