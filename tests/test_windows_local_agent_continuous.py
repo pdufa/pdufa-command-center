@@ -358,6 +358,87 @@ class ContinuousWorkerSafetyTests(unittest.TestCase):
         self.assertIn("Stage 4 status:", stream.getvalue())
         self.assertIn("blocker: GITHUB_AUTH_FAILED", stream.getvalue())
 
+    def test_local_commit_check_in_temporary_checkout_never_pushes(self):
+        calls = []
+        def mock_cmd(args, *, cwd=M.ROOT, timeout=180):
+            calls.append(tuple(args))
+            if args[:4] == ["git", "worktree", "add", "--detach"]:
+                Path(args[4]).mkdir(parents=True, exist_ok=True)
+            return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
+        with (patch.object(M, "verify_review_base"),
+              patch.object(M, "cmd", side_effect=mock_cmd)):
+            M.verify_local_commit()
+        self.assertTrue(any(x[:3] == ("git", "worktree", "remove") for x in calls))
+        self.assertTrue(any("commit" in x for x in calls))
+        self.assertFalse(any("push" in x or "merge" in x for x in calls))
+        self.assertFalse(any(x[:3] == ("gh", "pr", "create") for x in calls))
+        self.assertFalse(M.STATE_FILE.exists())
+
+    def test_commit_check_catches_missing_git_identity_before_any_commit(self):
+        calls = []
+        def mock_cmd(args, *, cwd=M.ROOT, timeout=180):
+            calls.append(tuple(args))
+            result = 1 if args[:3] == ["git", "var", "GIT_AUTHOR_IDENT"] else 0
+            return subprocess.CompletedProcess(args, result, stdout="", stderr="")
+        with (patch.object(M, "verify_review_base"),
+              patch.object(M, "cmd", side_effect=mock_cmd)):
+            with self.assertRaisesRegex(RuntimeError, "GIT_AUTHOR_IDENT_UNAVAILABLE"):
+                M.verify_local_commit()
+        self.assertFalse(any("commit" in x for x in calls))
+        self.assertFalse(any(x[:3] == ("git", "worktree", "add") for x in calls))
+
+    def test_commit_check_classifies_signing_failure_without_exposing_error(self):
+        calls = []
+        def mock_cmd(args, *, cwd=M.ROOT, timeout=180):
+            calls.append(tuple(args))
+            if args[:4] == ["git", "worktree", "add", "--detach"]:
+                Path(args[4]).mkdir(parents=True, exist_ok=True)
+            if "commit" in args:
+                return subprocess.CompletedProcess(
+                    args, 1, stdout="", stderr="gpg failed to sign data"
+                )
+            return subprocess.CompletedProcess(args, 0, stdout="", stderr="")
+        with (patch.object(M, "verify_review_base"),
+              patch.object(M, "cmd", side_effect=mock_cmd)):
+            with self.assertRaisesRegex(RuntimeError, "GIT_COMMIT_SIGNING_FAILED"):
+                M.verify_local_commit()
+        self.assertTrue(any(x[:3] == ("git", "worktree", "remove") for x in calls))
+
+    def test_stage4_recovery_is_specific_and_audited(self):
+        stage = self.state["tasks"]["4"]
+        stage.update(status="BLOCKED", attempts=2,
+                     blocker="COMMIT_DRAFT_BRANCH_FAILED")
+        M.save_ledger(self.state)
+        with patch.object(M, "verify_local_commit") as checked:
+            M.reset_blocked_stage4_after_commit_check()
+        checked.assert_called_once()
+        current = M.load_ledger(self.levels)
+        recovered = current["tasks"]["4"]
+        self.assertEqual(recovered["status"], "PENDING")
+        self.assertEqual(recovered["attempts"], 0)
+        self.assertIsNone(recovered["blocker"])
+        self.assertEqual(recovered["recovery_history"][0]["previous_attempts"], 2)
+        self.assertEqual(recovered["recovery_history"][0]["previous_blocker"],
+                         "COMMIT_DRAFT_BRANCH_FAILED")
+        self.assertEqual(current["tasks"]["5"]["attempts"], 0)
+        self.assertEqual(current["completed_scientific_levels"], 0)
+
+    def test_stage4_recovery_refuses_unrelated_failure_and_active_lock(self):
+        stage = self.state["tasks"]["4"]
+        stage.update(status="BLOCKED", attempts=2, blocker="RETIREMENT_POLICY_FAILED")
+        M.save_ledger(self.state)
+        with patch.object(M, "verify_local_commit"):
+            with self.assertRaisesRegex(RuntimeError, "STAGE4_RESET_NOT_AUTHORIZED"):
+                M.reset_blocked_stage4_after_commit_check()
+        self.assertEqual(M.load_ledger(self.levels)["tasks"]["4"]["attempts"], 2)
+        stage["blocker"] = "COMMIT_DRAFT_BRANCH_FAILED"
+        M.save_ledger(self.state)
+        M.LOCK_FILE.write_text("occupied", encoding="utf-8")
+        with patch.object(M, "verify_local_commit") as checker:
+            with self.assertRaisesRegex(RuntimeError, "WORKER_LOCK_PRESENT"):
+                M.reset_blocked_stage4_after_commit_check()
+        checker.assert_not_called()
+
     def test_real_repo_self_test_is_safe_and_has_no_network(self):
         self.assertEqual(M.self_test(), 0)
 
