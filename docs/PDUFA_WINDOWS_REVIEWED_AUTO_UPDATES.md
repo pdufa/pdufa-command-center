@@ -33,8 +33,8 @@ After the updater code is peer-reviewed, validate its exact pinned hash before i
 ```powershell
 $root = 'C:\PDUFA\pdufa-ai-agent'
 $script = Join-Path $root 'scripts\windows_pdufa_reviewed_release_updater.ps1'
-$releaseSha = '<EXACT_REVIEWED_COMMIT_SHA>'
-$expectedBlob = '<EXACT_GIT_BLOB_SHA>'
+$releaseSha = '4acc2b9a5bc7599e079e1c4fef19f34a19f8d67e'
+$expectedBlob = '72e3c0c47d22cc5302b48a4d0f0ecfaa39f87f1d'
 $source = "https://raw.githubusercontent.com/pdufa/pdufa-command-center/$releaseSha/scripts/windows_pdufa_reviewed_release_updater.ps1"
 Invoke-WebRequest -UseBasicParsing -Uri $source -OutFile $script
 $actual = (& git -C $root hash-object $script | Out-String).Trim()
