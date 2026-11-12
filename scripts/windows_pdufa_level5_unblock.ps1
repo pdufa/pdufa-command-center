@@ -1,0 +1,311 @@
+# One-time Level 5 approved engineering-slice installer; retains independent science review.
+# Never clears scientific acceptance blockers, owner STOP, or failures from new tests.
+# Installs verified source code, retries only old L5 domain placeholders, and enables watchdog.
+# Requires current-user Task Scheduler ownership; NEVER interrupts active PR work.
+[CmdletBinding()]
+param([switch]$Install,[switch]$Status)
+Set-StrictMode -Version Latest
+$ErrorActionPreference='Stop'
+if (($Install -and $Status) -or (-not $Install -and -not $Status)) {
+  throw 'Specify exactly one of -Install and -Status.'
+}
+$root=(Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$data=Join-Path $env:USERPROFILE 'PDUFA-Agent-Continuous'
+$stopToken=Join-Path $data 'STOP'
+$heartbeat=Join-Path $data 'heartbeat.json'
+$completion=Join-Path $data 'level_completion_ledger.json'
+$sequence=Join-Path $data 'sequential_level_status.json'
+$engineering=Join-Path $data 'engineering_lane_ledger.json'
+$oldLedger=Join-Path $data 'ledger.json'
+$taskName='PDUFA-Continuous-Development'
+$guardName='PDUFA-Continuous-Watchdog'
+$branch='automation/level5-checkpoints-one-command-20261112'
+$remoteRef='refs/remotes/origin/automation/level5-checkpoints-one-command-20261112'
+$files=@(
+  'automation/scientific-level-completion-queue.json',
+  'automation/level5-candidate-roster-20261111.json',
+  'scripts/pdufa_level_completion.py',
+  'scripts/pdufa_strict_level_runner.py',
+  'scripts/pdufa_engineering_review_lanes.py',
+  'scripts/level4_scientific_evidence.py',
+  'scripts/level5_contradictory_evidence.py',
+  'tests/test_pdufa_level_completion.py',
+  'tests/test_pdufa_strict_level_runner.py',
+  'tests/test_pdufa_engineering_review_lanes.py',
+  'tests/test_level4_scientific_evidence.py',
+  'tests/test_level5_contradictory_evidence.py',
+  'scripts/windows_local_agent_watchdog.ps1'
+)
+# Approved, exact Git blob IDs for this review slice; no branch drift.
+$allowed=@{
+ 'automation/scientific-level-completion-queue.json'='14e1aed05a2fe99706b687f21e55ef5f25f55489'
+ 'automation/level5-candidate-roster-20261111.json'='2eba75caf3a6d435db53ea4dbdcf63959532ff06'
+ 'scripts/pdufa_level_completion.py'='56a91e6012a52b42568bafbc1f5cfc567a77f8b1'
+ 'scripts/level4_scientific_evidence.py'='2530d029f49b8ab4ec1f21f7db784d5864bf5c36'
+ 'scripts/level5_contradictory_evidence.py'='2c5eee95d0760baa2d3f5f1aea3e2012fe964a07'
+ 'tests/test_pdufa_level_completion.py'='1e08eda6249fc2cd94fccacb41fe44c6b744f373'
+ 'tests/test_level4_scientific_evidence.py'='5a30ed426188aa8da968639fc763842d9d15f0e6'
+ 'tests/test_level5_contradictory_evidence.py'='5ae934b3c74036791c01f170ff3bb45fe8972d0c'
+ 'scripts/windows_local_agent_watchdog.ps1'='49a9debd9db01c8d2416e8715387b9c3ee1ec726'
+ 'scripts/pdufa_engineering_review_lanes.py'='d67aa7b0e5e783eeb5553eb5316486f1c32a4cd4'
+ 'tests/test_pdufa_engineering_review_lanes.py'='a26e87b32274aec7edb210b68fa991421bfe956b'
+ 'scripts/pdufa_strict_level_runner.py'='c63f9e3f191f53a42c7fafc4e184a065dec5d7b9'
+ 'tests/test_pdufa_strict_level_runner.py'='cb1ebbb5ab0c77fd9f1c05cb65d52cf3744b561b'
+}
+$who=[Security.Principal.WindowsIdentity]::GetCurrent()
+function AssertOwner($task) {
+  $name=[string]$task.Principal.UserId
+  if ([string]::IsNullOrWhiteSpace($name)) { throw 'Task principal missing.' }
+  try {
+    if($name -match '^S-1-[0-9]+(?:-[0-9]+)+$') {
+      $sid=([Security.Principal.SecurityIdentifier]::new($name)).Value
+    } else {
+      $sid=([Security.Principal.NTAccount]::new($name)).Translate(
+        [Security.Principal.SecurityIdentifier]).Value
+    }
+  } catch { throw 'Task principal could not be verified.' }
+  if($sid -ne $who.User.Value) { throw 'Task belongs to a different Windows account.' }
+}
+function RequireSuccess([string]$name) {
+  if($LASTEXITCODE -ne 0) { throw ($name+'_FAILED') }
+}
+$worker=Get-ScheduledTask -TaskName $taskName -ErrorAction Stop
+AssertOwner $worker
+if(@($worker.Actions).Count -ne 1 -or
+   $worker.Actions[0].Arguments -notmatch '(?:windows_local_agent_continuous|pdufa_level_completion|pdufa_strict_level_runner|pdufa_engineering_review_lanes)\.py' -or
+   $worker.Actions[0].Arguments -notmatch '(?<!\S)--run(?!\S)') {
+  throw 'Unrecognized worker action. No modifications made.'
+}
+if($Status) {
+  Write-Host ('Windows worker: '+$worker.State)
+  if(Test-Path -LiteralPath $heartbeat -PathType Leaf) {
+    $h=Get-Content -LiteralPath $heartbeat -Raw | ConvertFrom-Json
+    Write-Host ('Heartbeat queue: '+$h.queue)
+    Write-Host ('Heartbeat mode: '+$h.mode)
+    Write-Host ('Level: '+$h.level+' Task: '+$h.task)
+    Write-Host ('Heartbeat UTC: '+$h.updated_utc)
+  }
+  if(Test-Path -LiteralPath $engineering -PathType Leaf) {
+    & py -3.13 -B (Join-Path $root 'scripts/pdufa_engineering_review_lanes.py') --status
+    exit $LASTEXITCODE
+  }
+  Write-Host 'Engineering progression worker has not started.'
+  exit 2
+}
+if(-not(Test-Path -LiteralPath $oldLedger -PathType Leaf) -or
+   -not(Test-Path -LiteralPath (Join-Path $root 'AGENTS.md') -PathType Leaf)) {
+  throw 'Original engineering ledger or safety policy is missing.'
+}
+if(Test-Path -LiteralPath $stopToken) { throw 'Owner STOP exists; do not override it.' }
+if($worker.State -eq 'Disabled') { throw 'Worker disabled; owner intervention required.' }
+$runAction=[string]$worker.Actions[0].Arguments
+# A previously configured engineering worker still needs the reviewed Level5
+# module and ledger retry migration; do not incorrectly exit early.
+if($runAction -match 'pdufa_engineering_review_lanes\.py') {
+  Write-Host 'ENGINEERING_LANE_FOUND: verifying safe Level5 upgrade conditions.'
+}
+if($worker.State -eq 'Running') {
+  # Only allow an intentional graceful drain if the prior worker is provably
+  # idle and BOTH approved draft queues have no pending/in-flight tasks.
+  if(-not(Test-Path -LiteralPath $heartbeat -PathType Leaf)) {
+    throw 'Running without heartbeat; do not terminate an in-flight PR.'
+  }
+  $h=Get-Content -LiteralPath $heartbeat -Raw | ConvertFrom-Json
+  $age=((Get-Date).ToUniversalTime()-
+       [datetime]::Parse([string]$h.updated_utc).ToUniversalTime()).TotalSeconds
+  if($h.mode -notin @('IDLE','QUEUE_EXHAUSTED','IDLE_AWAITING_APPROVED_WORK','AWAITING_INDEPENDENT_REVIEW_OR_APPROVED_WORK','AWAITING_APPROVED_WORK_OR_REVIEW','ENGINEERING_AWAITING_APPROVED_WORK') -or
+     $age -lt 0 -or $age -gt 90 -or
+     $null -ne $h.task) {
+    throw 'Worker is running or heartbeat is stale; no in-flight work may be terminated.'
+  }
+  $old=Get-Content -LiteralPath $oldLedger -Raw | ConvertFrom-Json
+  foreach($group in @('tasks','validation_jobs')) {
+    $key=$old.PSObject.Properties[$group]
+    if($null -eq $key -or $null -eq $key.Value) {
+      throw 'Approved draft queues have not both been verified exhausted.'
+    }
+    foreach($x in $key.Value.PSObject.Properties) {
+      if($x.Value.status -in @('PENDING','RUNNING')) {
+        throw 'Unfinished earlier task exists: no drain permitted.'
+      }
+    }
+  }
+} elseif($worker.State -ne 'Ready') {
+  throw ('Unsafe Windows worker state: '+$worker.State)
+}
+$origin=(& git -C $root remote get-url origin | Out-String).Trim()
+RequireSuccess 'READ_REMOTE'
+if($origin -notmatch '^(https://github\.com/|git@github\.com:|ssh://git@github\.com/)pdufa/pdufa-command-center(?:\.git)?/?$') {
+  throw 'Unexpected GitHub remote; no changes made.'
+}
+$repoTop=(& git -C $root rev-parse --show-toplevel | Out-String).Trim().Replace('/','\').TrimEnd('\')
+RequireSuccess 'ROOT'
+if(-not [string]::Equals($repoTop,$root.Replace('/','\').TrimEnd('\'),
+                         [StringComparison]::OrdinalIgnoreCase)) {
+  throw 'Unexpected working Git checkout.'
+}
+$oldAction=$worker.Actions[0]
+$guard=Get-ScheduledTask -TaskName $guardName -ErrorAction SilentlyContinue
+$guardEnabled=$false
+if($guard) {
+  AssertOwner $guard
+  if(@($guard.Actions).Count -ne 1 -or
+     $guard.Actions[0].Arguments -notmatch 'windows_local_agent_watchdog\.ps1') {
+    throw 'Unexpected watchdog task; do not alter it.'
+  }
+  $guardEnabled=($guard.State -ne 'Disabled')
+}
+$stamp=(Get-Date).ToUniversalTime().ToString('yyyyMMddHHmmssfff')
+$stage=Join-Path $data ('completion-stage-'+$stamp)
+$backup=Join-Path $data ('completion-backup-'+$stamp)
+$backups=@()
+$drained=$false
+$changedAction=$false
+$filesReady=$false
+New-Item -ItemType Directory -Path $stage,$backup -Force | Out-Null
+try {
+  if($guardEnabled) {
+    Disable-ScheduledTask -TaskName $guardName -ErrorAction Stop | Out-Null
+  }
+  if((Get-ScheduledTask -TaskName $taskName).State -eq 'Running') {
+    # Existing Python honors STOP between bounded tasks. This has been approved
+    # by the owner for idle-only migration. No forced process termination.
+    Set-Content -LiteralPath $stopToken -Value 'GRACEFUL_IDLE_UPGRADE' -Encoding ASCII
+    $drained=$true
+    $ready=$false
+    for($i=0;$i -lt 35;$i++) {
+      Start-Sleep -Seconds 2
+      if((Get-ScheduledTask -TaskName $taskName).State -eq 'Ready') {
+        $ready=$true
+        break
+      }
+    }
+    if(-not $ready) { throw 'Graceful idle drain timed out; no forced stop attempted.' }
+  }
+  $state=Get-ScheduledTask -TaskName $taskName
+  if($state.State -ne 'Ready') { throw 'Worker unexpectedly active during upgrade.' }
+  & git -C $root fetch --no-tags origin ('+refs/heads/'+$branch+':'+$remoteRef)
+  RequireSuccess 'FETCH_REVIEWED_QUEUE'
+  $revision=(& git -C $root rev-parse ($remoteRef+'^{commit}') | Out-String).Trim()
+  RequireSuccess 'REVISION'
+  if($revision -notmatch '^[0-9a-f]{40}$') { throw 'Invalid reviewed commit.' }
+  foreach($path in $files) {
+    $blob=(& git -C $root rev-parse ($revision+':'+$path) | Out-String).Trim()
+    RequireSuccess 'BLOB'
+    if($blob -ne $allowed[$path]) {
+      throw ('Reviewed file changed since approval: '+$path)
+    }
+    $target=Join-Path $stage ($path.Replace('/','\'))
+    New-Item -ItemType Directory -Path (Split-Path $target) -Force | Out-Null
+    $url='https://raw.githubusercontent.com/pdufa/pdufa-command-center/'+$revision+'/'+$path
+    Invoke-WebRequest -UseBasicParsing -Uri $url -OutFile $target -ErrorAction Stop
+    $actual=(& git -C $root hash-object $target | Out-String).Trim()
+    RequireSuccess 'HASH'
+    if($actual -ne $blob) { throw ('Downloaded source hash mismatch: '+$path) }
+  }
+  foreach($path in $files) {
+    $local=Join-Path $root ($path.Replace('/','\'))
+    $incoming=Join-Path $stage ($path.Replace('/','\'))
+    $original=Join-Path $backup ($path.Replace('/','\'))
+    $existed=(Test-Path -LiteralPath $local -PathType Leaf)
+    if($existed) {
+      New-Item -ItemType Directory -Path (Split-Path $original) -Force | Out-Null
+      Copy-Item -LiteralPath $local -Destination $original -ErrorAction Stop
+    }
+    $backups+=@{file=$local; backup=$original; existed=$existed}
+    New-Item -ItemType Directory -Path (Split-Path $local) -Force | Out-Null
+    Copy-Item -LiteralPath $incoming -Destination $local -Force -ErrorAction Stop
+  }
+  & py -3.13 -B (Join-Path $root 'scripts/pdufa_level_completion.py') --self-test
+  RequireSuccess 'COMPLETION_SELF_TEST'
+  & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_pdufa_level_completion.py' -v
+  RequireSuccess 'QUEUE_REGRESSIONS'
+  & py -3.13 -B (Join-Path $root 'scripts/pdufa_strict_level_runner.py') --self-test
+  RequireSuccess 'STRICT_SEQUENCE_SELF_TEST'
+  & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_pdufa_strict_level_runner.py' -v
+  RequireSuccess 'STRICT_SEQUENCE_REGRESSIONS'
+  & py -3.13 -B (Join-Path $root 'scripts/pdufa_engineering_review_lanes.py') --self-test
+  RequireSuccess 'ENGINEERING_LANE_SELF_TEST'
+  & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_pdufa_engineering_review_lanes.py' -v
+  RequireSuccess 'ENGINEERING_LANE_REGRESSIONS'
+  & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_level4_scientific_evidence.py' -v
+  RequireSuccess 'LEVEL4_REGRESSIONS'
+  & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_level5_contradictory_evidence.py' -v
+  RequireSuccess 'LEVEL5_REGRESSIONS'
+  & py -3.13 -B (Join-Path $root 'scripts/audit_raas_retirement.py') --check
+  RequireSuccess 'RETIRED_DEPENDENCY_AUDIT'
+  $filesReady=$true
+  $python=(Get-Command py.exe -ErrorAction Stop).Source
+  $controller=Join-Path $root 'scripts/pdufa_engineering_review_lanes.py'
+  $action=New-ScheduledTaskAction -Execute $python -Argument ('-3.13 "{0}" --run' -f $controller) -WorkingDirectory $root
+  Set-ScheduledTask -TaskName $taskName -Action $action -ErrorAction Stop | Out-Null
+  $changedAction=$true
+  if($drained) { Remove-Item -LiteralPath $stopToken -Force -ErrorAction Stop }
+} catch {
+  if($changedAction) {
+    Set-ScheduledTask -TaskName $taskName -Action $oldAction -ErrorAction SilentlyContinue | Out-Null
+  }
+  if(-not $filesReady) {
+    foreach($record in $backups) {
+      if($record.existed) {
+        Copy-Item -LiteralPath $record.backup -Destination $record.file -Force -ErrorAction SilentlyContinue
+      } else {
+        Remove-Item -LiteralPath $record.file -Force -ErrorAction SilentlyContinue
+      }
+    }
+  }
+  if($drained -and (Test-Path -LiteralPath $stopToken)) {
+    Remove-Item -LiteralPath $stopToken -Force -ErrorAction SilentlyContinue
+  }
+  throw
+} finally {
+  if($guardEnabled) {
+    Enable-ScheduledTask -TaskName $guardName -ErrorAction Stop | Out-Null
+  }
+  Remove-Item -LiteralPath $stage -Recurse -Force -ErrorAction SilentlyContinue
+}
+if(-not $changedAction) { throw 'Completion task action was not installed.' }
+Start-ScheduledTask -TaskName $taskName -ErrorAction Stop
+$verified=$false
+for($i=0;$i -lt 30;$i++) {
+  Start-Sleep -Seconds 2
+  if(-not(Test-Path -LiteralPath $heartbeat -PathType Leaf) -or
+     -not(Test-Path -LiteralPath $completion -PathType Leaf) -or
+     -not(Test-Path -LiteralPath $sequence -PathType Leaf) -or
+     -not(Test-Path -LiteralPath $engineering -PathType Leaf)) { continue }
+  try {
+    $h=Get-Content -LiteralPath $heartbeat -Raw | ConvertFrom-Json
+    $l=Get-Content -LiteralPath $completion -Raw | ConvertFrom-Json
+    $q=Get-Content -LiteralPath $sequence -Raw | ConvertFrom-Json
+    $e=Get-Content -LiteralPath $engineering -Raw | ConvertFrom-Json
+    $age=((Get-Date).ToUniversalTime()-
+         [datetime]::Parse([string]$h.updated_utc).ToUniversalTime()).TotalSeconds
+    $first=$l.levels.PSObject.Properties['4'].Value.steps.AUDIT_EXISTING_DRAFTS.status
+    if($h.queue -eq 'LEVEL_COMPLETION' -and
+       $e.mode -eq 'ENGINEERING_ADVANCE_REVIEW_SEPARATE' -and
+       $q.mode -eq 'STRICT_LEVEL_BY_LEVEL' -and
+       $age -ge 0 -and $age -lt 45 -and
+       $h.mode -like 'ENGINEERING_*' -and
+       $first -in @('RUNNING','DONE','BLOCKED') -and
+       (Get-ScheduledTask -TaskName $taskName).State -eq 'Running') {
+      $verified=$true
+      break
+    }
+  } catch { }
+}
+if(-not $verified) {
+  Write-Warning 'LEVEL_COMPLETION_START_NOT_VERIFIED. No automatic rollback of possibly active work.'
+  exit 2
+}
+Write-Host 'LEVEL5_APPROVED_ENGINEERING_SLICE_STARTED_AND_VERIFIED: source challenge inventory is now eligible for verified retry.'
+Write-Host ('Persistent completion ledger: '+$completion)
+Write-Host ('Independent scientific acceptance ledger: '+$sequence)
+Write-Host ('Engineering milestone ledger: '+$engineering)
+Write-Host ('Rollback backups retained: '+$backup)
+Write-Host 'Draft-only; scientific review and acceptance remain independent.'
+# Install scheduled watchdog if absent; it respects owner STOP and never kills an
+# active worker. Failure here is explicit rather than misreporting a full setup.
+$watchdogScript=Join-Path $root 'scripts/windows_local_agent_watchdog.ps1'
+& $watchdogScript -Install
+if($LASTEXITCODE -ne 0) { throw 'WATCHDOG_INSTALL_FAILED_AFTER_LEVEL5_WORKER_STARTED' }
+Write-Host 'LEVEL5_WATCHDOG_INSTALLED_AND_ENABLED: checks every 2 minutes while owner signed in.'
