@@ -44,8 +44,8 @@ def collect(record: dict, receipt: dict, *, historical_cutoff: str | None = None
     posted = [x for x in entries(obj(results.get("outcomeMeasuresModule"))
               .get("outcomeMeasures")) if x.get("type") == "PRIMARY"]
 
-    registered_tokens = {k for row in registered if all(k := _measure(row))}
-    posted_tokens = {k for row in posted if all(k := _measure(row))}
+    registered_tokens = {_measure(row) for row in registered if all(_measure(row))}
+    posted_tokens = {_measure(row) for row in posted if all(_measure(row))}
     # In fact _measure may not exist for records without a time frame;
     # these fields are *search leads*, not endpoint discordance proofs.
     candidate_missing_registered = len(registered_tokens - posted_tokens)
