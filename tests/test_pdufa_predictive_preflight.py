@@ -27,9 +27,9 @@ class PredictivePreflightTests(unittest.TestCase):
     def test_all_known_future_level_implementations_recognized_as_missing(self):
         out=M.audit(manifest,ROOT)
         self.assertEqual(out["future_levels_with_missing_approved_domain_implementation"],
-                         list(range(7,21)))
+                         list(range(8,21)))
         self.assertFalse(out["all_future_levels_implementation_ready"])
-        for row in out["levels"][3:]:
+        for row in out["levels"][4:]:
             self.assertIn("DOMAIN_IMPLEMENTATION_NOT_APPROVED",
                           [x["code"] for x in row["predictable_findings"]])
 
@@ -38,7 +38,8 @@ class PredictivePreflightTests(unittest.TestCase):
         level7=out["levels"][3]
         self.assertFalse(level7["engineering_release_ready"])
         codes=[x["code"] for x in level7["predictable_findings"]]
-        self.assertIn("DOMAIN_IMPLEMENTATION_NOT_APPROVED",codes)
+        self.assertNotIn("DOMAIN_IMPLEMENTATION_NOT_APPROVED",codes)
+        self.assertEqual(level7["implementation_pr_registered"],1169)
         if (ROOT/"scripts/level7_model_validation_readiness.py").is_file():
             self.assertIn("PREPARATORY_ONLY_NOT_APPROVED_FOR_ENGINEERING_ADVANCEMENT",
                           codes)
