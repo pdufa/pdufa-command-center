@@ -247,6 +247,91 @@ def verify_review_base() -> None:
     print("REVIEW_BASE_AUDIT_PASS: clean development review base verified")
 
 
+def verify_local_commit(*, audit_base: bool = True) -> None:
+    """Test a real local Git commit in a disposable detached worktree.
+
+    Never pushes, edits the owner's checkout, creates PRs, or advances a stage.
+    Do not expose Git identity, stderr, or credentials in the status output.
+    """
+    if audit_base:
+        verify_review_base()
+    for kind in ("GIT_AUTHOR_IDENT", "GIT_COMMITTER_IDENT"):
+        ident = cmd(["git", "var", kind], cwd=ROOT, timeout=20)
+        if ident.returncode != 0:
+            raise RuntimeError(kind + "_UNAVAILABLE")
+    WORKTREES.mkdir(parents=True, exist_ok=True)
+    stamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S%f")
+    working = WORKTREES / ("commit-check-" + stamp)
+    if working.exists() or working.is_symlink():
+        raise RuntimeError("UNEXPECTED_WORKTREE_EXISTS")
+    require_ok(cmd(["git", "worktree", "add", "--detach", str(working),
+                    "origin/" + REVIEW_BASE], cwd=ROOT, timeout=90),
+               "CREATE_LOCAL_COMMIT_CHECK")
+    try:
+        # Test exactly the same commit environment and disabled hooks as a
+        # real engineering PR, without publishing any diagnostic file.
+        diagnostic = "scripts/continuous_stage_drafts/local-commit-diagnostic.txt"
+        file = working / diagnostic
+        file.parent.mkdir(parents=True, exist_ok=True)
+        file.write_text("Isolated commit capability test only.\\n", encoding="utf-8")
+        require_ok(cmd(["git", "add", "--", diagnostic], cwd=working, timeout=30),
+                   "COMMIT_CHECK_STAGE")
+        hooks = DATA / "empty-hooks"
+        hooks.mkdir(parents=True, exist_ok=True)
+        result = cmd(["git", "-c", f"core.hooksPath={hooks}", "commit", "-m",
+                      "Local isolated commit capability check"],
+                     cwd=working, timeout=60)
+        if result.returncode:
+            detail = (result.stderr + " " + result.stdout).lower()
+            if any(word in detail for word in
+                   ("unable to auto-detect email", "author identity unknown",
+                    "empty ident name", "no email was given")):
+                raise RuntimeError("GIT_AUTHOR_IDENTITY_UNAVAILABLE")
+            if any(word in detail for word in
+                   ("gpg failed", "gpg: signing failed", "failed to sign",
+                    "error: gpg", "signing failed")):
+                raise RuntimeError("GIT_COMMIT_SIGNING_FAILED")
+            if "permission denied" in detail or "access is denied" in detail:
+                raise RuntimeError("GIT_COMMIT_ACCESS_DENIED")
+            raise RuntimeError("LOCAL_GIT_COMMIT_FAILED")
+    finally:
+        cleanup = cmd(["git", "worktree", "remove", "--force", str(working)],
+                      cwd=ROOT, timeout=90)
+        require_ok(cleanup, "LOCAL_COMMIT_CHECK_CLEANUP")
+    print("LOCAL_COMMIT_CHECK_PASS: isolated Git commit succeeded without push")
+
+
+def reset_blocked_stage4_after_commit_check() -> None:
+    """One targeted recovery for the reported Stage 4 Git commit blocker.
+
+    Preserve both earlier failed attempts in the ledger's audit history.
+    Never reset unrelated blockers or any scientific completion claim.
+    """
+    if LOCK_FILE.exists():
+        raise RuntimeError("WORKER_LOCK_PRESENT")
+    verify_local_commit()
+    state = load_ledger(manifest())
+    stage = state["tasks"]["4"]
+    if (stage.get("status") != "BLOCKED"
+            or stage.get("attempts") != MAX_ATTEMPTS
+            or stage.get("blocker") != "COMMIT_DRAFT_BRANCH_FAILED"
+            or stage.get("draft_pr") is not None
+            or any(state["tasks"][str(n)]["status"] != "PENDING"
+                   for n in LEVELS if n != 4)):
+        raise RuntimeError("STAGE4_RESET_NOT_AUTHORIZED")
+    stage.setdefault("recovery_history", []).append({
+        "previous_blocker": stage["blocker"],
+        "previous_attempts": stage["attempts"],
+        "reset_utc": utc(),
+        "verified_isolated_commit": True,
+    })
+    stage["attempts"] = 0
+    stage["status"] = "PENDING"
+    stage["blocker"] = None
+    save_ledger(state)
+    print("STAGE4_RETRY_READY: previous failures preserved; no pilot executed")
+
+
 def review_questions(level: int, name: str, fields: tuple[str, ...], feedback: str = "") -> list[str]:
     prompt = (
         "Return STRICT JSON ONLY with a key review_questions containing EXACTLY "
@@ -707,8 +792,8 @@ def self_test() -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     actions = parser.add_mutually_exclusive_group(required=True)
-    for flag in ("preflight", "base-check", "self-test", "pilot", "run", "status",
-                 "stop", "clear-stop"):
+    for flag in ("preflight", "base-check", "commit-check", "retry-stage4", "self-test",
+                 "pilot", "run", "status", "stop", "clear-stop"):
         actions.add_argument("--" + flag, action="store_true")
     parser.add_argument("--require-running", action="store_true")
     args = parser.parse_args()
@@ -722,6 +807,14 @@ def main() -> int:
         if args.base_check:
             preflight(online=True)
             verify_review_base()
+            return 0
+        if args.commit_check:
+            preflight(online=True)
+            verify_local_commit()
+            return 0
+        if args.retry_stage4:
+            preflight(online=True)
+            reset_blocked_stage4_after_commit_check()
             return 0
         if args.stop:
             DATA.mkdir(parents=True, exist_ok=True)
