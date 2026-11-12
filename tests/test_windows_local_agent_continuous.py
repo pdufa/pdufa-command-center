@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import ast
+from datetime import datetime, timedelta, timezone
 import importlib.util
 import io
 import json
@@ -230,6 +231,28 @@ class ContinuousWorkerSafetyTests(unittest.TestCase):
         M.STOP_FILE.write_text("stop", encoding="utf-8")
         self.assertEqual(M.worker(pilot=True), 2)
         self.assertFalse(M.LOCK_FILE.exists())
+
+    def test_active_worker_lock_blocks_parallel_workers(self):
+        M.LOCK_FILE.parent.mkdir(parents=True, exist_ok=True)
+        M.LOCK_FILE.write_text(json.dumps({
+            "pid": 12345,
+            "started_utc": (datetime.now(timezone.utc) - timedelta(minutes=4)).isoformat(),
+        }), encoding="utf-8")
+        with patch.object(M, "process_alive", return_value=True):
+            with self.assertRaises(FileExistsError):
+                M.acquire_lock()
+        self.assertTrue(M.LOCK_FILE.exists())
+
+    def test_dead_worker_lock_can_recover_on_windows_restart(self):
+        M.LOCK_FILE.parent.mkdir(parents=True, exist_ok=True)
+        M.LOCK_FILE.write_text(json.dumps({
+            "pid": 12345,
+            "started_utc": (datetime.now(timezone.utc) - timedelta(minutes=4)).isoformat(),
+        }), encoding="utf-8")
+        with patch.object(M, "process_alive", return_value=False):
+            self.assertEqual(M.acquire_lock(), M.os.getpid())
+        new_lock = json.loads(M.LOCK_FILE.read_text(encoding="utf-8"))
+        self.assertEqual(new_lock["pid"], M.os.getpid())
 
     def test_real_repo_self_test_is_safe_and_has_no_network(self):
         self.assertEqual(M.self_test(), 0)
