@@ -37,7 +37,7 @@ jobs:
               actual=subprocess.check_output(["git","hash-object",path],text=True).strip()
               assert actual==sha,f"source changed without explicit pinned review: {path}"
           assert "$branch='automation/level7-engineering-readiness-20261112'" in text
-          assert "$remoteRef='refs/remotes/origin/automation/predictive-preflight-all-levels-20261112'" in text
+          assert "$remoteRef='refs/remotes/origin/automation/level7-engineering-readiness-20261112'" in text
           assert "[switch]$Preflight" in text and "PDUFA_INSTALL_PREFLIGHT_PASS" in text
           assert text.index("if($Preflight)") < text.index("$stage=Join-Path")
           assert "$canRestore=$true" in text and "$filesReady" not in text
