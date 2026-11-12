@@ -79,13 +79,13 @@ class Level5IntegrationTests(unittest.TestCase):
             with self.assertRaisesRegex(RuntimeError,"LEVEL5_REGRESSION_OR_RETIREMENT_FAILED"):
                 B.execute(5,"RUN_REGRESSION_TESTS",self.manifest)
 
-    def test_level7_still_fails_without_actual_code(self):
+    def test_level8_still_fails_without_actual_code(self):
         for step in ("COLLECT_ORIGINAL_SOURCE","IMPLEMENT_FUNCTIONAL_GATES",
                      "RUN_REGRESSION_TESTS","PREPARE_REVIEW_PR"):
             with self.subTest(step=step), self.assertRaises(RuntimeError):
-                B.execute(7,step,self.manifest)
+                B.execute(8,step,self.manifest)
         self.assertIsNone(E.engineering_evidence(B.new_ledger(self.manifest),
-                                                  self.manifest,7,verify_remote=False))
+                                                  self.manifest,8,verify_remote=False))
 
 if __name__=="__main__":
     unittest.main()
