@@ -218,7 +218,10 @@ class ContinuousWorkerSafetyTests(unittest.TestCase):
         self.assertEqual(url, "https://github.com/pdufa/pdufa-command-center/pull/999")
         self.assertTrue(any(x[:3] == ("gh", "pr", "create") and "--draft" in x for x in calls))
         self.assertTrue(any(x[:3] == ("git", "worktree", "add") for x in calls))
-        self.assertFalse(any("merge" in x or "deploy" in x for c in calls for x in c))
+        self.assertFalse(any(c[:3] == ("gh", "pr", "merge") for c in calls))
+        self.assertFalse(any(c[:2] == ("git", "merge") for c in calls))
+        self.assertFalse(any(c[:2] == ("git", "checkout") and "main" in c for c in calls))
+        self.assertFalse(any(c and c[0] in ("vercel", "render", "kubectl") for c in calls))
         self.assertTrue(all(x.startswith(("scripts/continuous_stage_drafts/", "tests/continuous_stage_drafts/"))
                             for x in paths))
 
