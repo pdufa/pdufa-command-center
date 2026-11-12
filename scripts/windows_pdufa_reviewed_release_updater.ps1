@@ -136,12 +136,17 @@ try {
   $main=(& git -C $root rev-parse ($mainRef+'^{commit}') | Out-String).Trim()
   RequireSuccess 'MAIN_REVISION'
   if($main -notmatch '^[a-f0-9]{40}$') { throw 'Invalid main revision.' }
-  $channelText=& git -C $root show ($main+':automation/windows-release-channel.json') 2>$null
-  if($LASTEXITCODE -ne 0) {
+  # ls-tree returns success and no output for a missing channel. This avoids
+  # treating the intentionally unpublished channel as a noisy native stderr error.
+  $channelPresent=(& git -C $root ls-tree --name-only $main -- automation/windows-release-channel.json | Out-String).Trim()
+  RequireSuccess 'CHANNEL_LOOKUP'
+  if($channelPresent -ne 'automation/windows-release-channel.json') {
     Record 'NO_APPROVED_RELEASE_CHANNEL' 'No reviewed channel file merged to main.'
     Write-Host 'NO_APPROVED_RELEASE_CHANNEL: no changes.'
     exit 0
   }
+  $channelText=& git -C $root show ($main+':automation/windows-release-channel.json')
+  RequireSuccess 'CHANNEL_READ'
   $channel=($channelText | Out-String | ConvertFrom-Json)
   if($channel.schema_version -ne 1 -or $channel.channel -ne 'pdufa-reviewed-windows' -or
       $channel.enabled -isnot [bool]) { throw 'Unrecognized release channel.' }
