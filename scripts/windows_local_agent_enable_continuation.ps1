@@ -16,6 +16,12 @@ $watchdogTask='PDUFA-Continuous-Watchdog'
 $originBranch='automation/windows-local-agent-monitor'
 $remoteRef='refs/remotes/origin/automation/windows-local-agent-monitor'
 $paths=@('scripts/windows_local_agent_continuous.py','scripts/windows_local_agent_followon.py')
+# Pin the exact two reviewed Python blobs; a moved branch cannot silently
+# replace local worker code with newly unreviewed content.
+$approvedBlobs=@{
+  'scripts/windows_local_agent_continuous.py'='8f248946968c78d84c79f4ad1eb89ea87bc7483c'
+  'scripts/windows_local_agent_followon.py'='2e29a10ca3bc47285a955a9ad0c2e70220c80430'
+}
 $current=[Security.Principal.WindowsIdentity]::GetCurrent()
 function VerifyOwner($task) {
   $id=[string]$task.Principal.UserId
@@ -56,7 +62,9 @@ if (Test-Path -LiteralPath $stop) {
 }
 $gitRoot=(& git -C $root rev-parse --show-toplevel)
 RequireSuccess 'GIT_ROOT'
-if (-not [string]::Equals(([string]$gitRoot).TrimEnd('\','/'),$root.TrimEnd('\','/'),[StringComparison]::OrdinalIgnoreCase)) {
+$normalizedGitRoot=(([string]$gitRoot).Replace('/','\')).TrimEnd('\')
+$normalizedRoot=($root.Replace('/','\')).TrimEnd('\')
+if (-not [string]::Equals($normalizedGitRoot,$normalizedRoot,[StringComparison]::OrdinalIgnoreCase)) {
   throw 'Local folder does not match Git checkout root.'
 }
 $remote=(& git -C $root remote get-url origin)
@@ -82,6 +90,7 @@ $installed=$false
 try {
   if ($guardWasEnabled) {
     Disable-ScheduledTask -TaskName $watchdogTask -ErrorAction Stop | Out-Null
+    Stop-ScheduledTask -TaskName $watchdogTask -ErrorAction SilentlyContinue
   }
   $task=Get-ScheduledTask -TaskName $workerTask -ErrorAction Stop
   if ($task.State -ne 'Ready') { throw 'Worker became active during preflight; no files modified.' }
@@ -94,7 +103,56 @@ try {
   foreach ($p in $paths) {
     $blob=((& git -C $root rev-parse ($source+':'+$p)) | Out-String).Trim()
     RequireSuccess 'SOURCE_BLOB'
-    if ($blob -notmatch '^[0-9a-f]{40}$') { throw 'Invalid Git blob.' }
+    if ($blob -notmatch '^[0-9a-f]{40}
+    $tmp=Join-Path $stage ([IO.Path]::GetFileName($p))
+    $uri='https://raw.githubusercontent.com/pdufa/pdufa-command-center/'+$source+'/'+$p
+    Invoke-WebRequest -UseBasicParsing -Uri $uri -OutFile $tmp -ErrorAction Stop
+    $actual=((& git -C $root hash-object $tmp) | Out-String).Trim()
+    RequireSuccess 'HASH_DOWNLOADED_SOURCE'
+    if ($actual -ne $blob) { throw 'Source blob hash mismatch; no changes made.' }
+  }
+  foreach ($p in $paths) {
+    $dest=Join-Path $root $p
+    $tmp=Join-Path $stage ([IO.Path]::GetFileName($p))
+    $prior=Join-Path $backup ([IO.Path]::GetFileName($p))
+    $hadFile=Test-Path -LiteralPath $dest -PathType Leaf
+    if ($hadFile) { Copy-Item -LiteralPath $dest -Destination $prior -ErrorAction Stop }
+    $replaced+=@{destination=$dest;backup=$prior;hadFile=$hadFile}
+    Copy-Item -LiteralPath $tmp -Destination $dest -Force -ErrorAction Stop
+  }
+  & py -3.13 -B (Join-Path $root $paths[0]) --self-test
+  RequireSuccess 'CONTINUATION_SELF_TEST'
+  & py -3.13 -B (Join-Path $root $paths[0]) --status
+  RequireSuccess 'EXISTING_LEDGER_VALIDATION'
+  $installed=$true
+  Write-Host ('CONTINUATION_FILES_READY: approved commit '+$source)
+  Write-Host ('Original progress ledger preserved: '+$ledger)
+  Write-Host ('Source backups: '+$backup)
+} catch {
+  if (-not $installed) {
+    foreach ($item in $replaced) {
+      if ($item.hadFile) {
+        Copy-Item -LiteralPath $item.backup -Destination $item.destination -Force -ErrorAction SilentlyContinue
+      } else {
+        Remove-Item -LiteralPath $item.destination -Force -ErrorAction SilentlyContinue
+      }
+    }
+  }
+  throw
+} finally {
+  if ($guardWasEnabled) {
+    Enable-ScheduledTask -TaskName $watchdogTask -ErrorAction Stop | Out-Null
+  }
+  Remove-Item -LiteralPath $stage -Recurse -Force -ErrorAction SilentlyContinue
+}
+# Activates only existing reviewed-template follow-on queue, not live production changes.
+Start-ScheduledTask -TaskName $workerTask -ErrorAction Stop
+Write-Host 'CONTINUATION_START_REQUESTED: Stage 4-20 follow-on source-validation drafts.'
+Write-Host 'The subsequent scientific/production installation still requires reviewed implementations and acceptance tests.'
+Write-Host 'No merge, deployment, broker order, ledger reset, or STOP override performed.'
+ -or $blob -ne $approvedBlobs[$p]) {
+      throw 'Approved source blob changed; review required before upgrading.'
+    }
     $tmp=Join-Path $stage ([IO.Path]::GetFileName($p))
     $uri='https://raw.githubusercontent.com/pdufa/pdufa-command-center/'+$source+'/'+$p
     Invoke-WebRequest -UseBasicParsing -Uri $uri -OutFile $tmp -ErrorAction Stop
