@@ -2,6 +2,7 @@
 # Never merges, deploys, or modifies the existing PDUFA production service.
 param(
   [switch]$Activate,
+  [switch]$EnableAutoRestart,
   [switch]$Stop,
   [switch]$Status
 )
@@ -11,6 +12,48 @@ $oldTask = 'PDUFA-Local-AI-Proposals'
 $repo = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
 $controller = Join-Path $PSScriptRoot 'windows_local_agent_continuous.py'
 $python = (Get-Command py.exe -ErrorAction Stop).Source
+
+# Bounded one-minute failure retries; retain the worker's lock, stage ledger,
+# STOP control, and prohibition on unattended merges and deployments.
+$restartAttempts = 12
+$restartDelay = New-TimeSpan -Minutes 1
+
+if ($EnableAutoRestart) {
+  # Update only the existing task settings; do not replay the Stage 4 pilot.
+  if ($Activate -or $Stop -or $Status) { throw "Use -EnableAutoRestart alone." }
+  $task = Get-ScheduledTask -TaskName $taskName -ErrorAction Stop
+  $actions = @($task.Actions)
+  if ($actions.Count -ne 1 -or
+      $actions[0].Arguments -notmatch 'windows_local_agent_continuous\.py' -or
+      $actions[0].Arguments -notmatch '(?<!\S)--run(?!\S)') {
+    throw "Existing task is not the approved PDUFA continuous worker. No changes made."
+  }
+  if ($task.Principal.UserId -ne [Security.Principal.WindowsIdentity]::GetCurrent().Name) {
+    throw "Scheduled task is owned by another Windows account. No changes made."
+  }
+  $oldSettings = $task.Settings
+  $settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew -RestartCount $restartAttempts -RestartInterval $restartDelay -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+  try {
+    Set-ScheduledTask -TaskName $taskName -Settings $settings -ErrorAction Stop | Out-Null
+    [xml]$readback = Export-ScheduledTask -TaskName $taskName -ErrorAction Stop
+    $registered = $readback.Task.Settings.RestartOnFailure
+    if ($null -eq $registered -or [int]$registered.Count -ne $restartAttempts -or
+        [System.Xml.XmlConvert]::ToTimeSpan([string]$registered.Interval) -ne $restartDelay) {
+      throw "Windows did not retain the restart-on-failure settings."
+    }
+  } catch {
+    try { Set-ScheduledTask -TaskName $taskName -Settings $oldSettings -ErrorAction Stop | Out-Null }
+    catch { Write-Warning "Prior settings could not be restored; inspect task configuration." }
+    throw
+  }
+  $after = Get-ScheduledTask -TaskName $taskName -ErrorAction Stop
+  Write-Host "AUTORESTART_CONFIGURED: $taskName"
+  Write-Host ("On unexpected failure, restart after 1 minute, up to {0} times." -f $restartAttempts)
+  Write-Host ("Windows task state: " + $after.State)
+  Write-Host "No pilot, worker restart, merge, deployment or ledger change occurred."
+  Write-Host "Owner STOP token still prevents new coding work."
+  exit 0
+}
 
 if ($Stop) {
   & $python -3.13 $controller --stop
@@ -24,13 +67,21 @@ if ($Status) {
   & $python -3.13 $controller --status
   $scriptResult = $LASTEXITCODE
   $task = Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
-  if ($task) { Write-Host ("Windows task state: " + $task.State) }
+  if ($task) {
+    Write-Host ("Windows task state: " + $task.State)
+    if ([int]$task.Settings.RestartCount -gt 0) {
+      Write-Host ("Automatic failure retries: " + $task.Settings.RestartCount)
+      Write-Host ("Restart interval: " + $task.Settings.RestartInterval)
+    } else {
+      Write-Host "Automatic failure restart: NOT CONFIGURED"
+    }
+  }
   else { Write-Host "Continuous task is not installed." }
   exit $scriptResult
 }
 
 if (-not $Activate) {
-  Write-Host "Use -Activate, -Stop, or -Status. Nothing was changed."
+  Write-Host "Use -EnableAutoRestart, -Activate, -Stop, or -Status. Nothing was changed."
   exit 2
 }
 if (-not (Test-Path $controller)) { throw "Continuous worker file missing" }
@@ -68,7 +119,7 @@ $userId = [Security.Principal.WindowsIdentity]::GetCurrent().Name
 $principal = New-ScheduledTaskPrincipal -UserId $userId -LogonType Interactive -RunLevel Limited
 $action = New-ScheduledTaskAction -Execute $python -Argument ('-3.13 "{0}" --run' -f $controller) -WorkingDirectory $repo
 $trigger = New-ScheduledTaskTrigger -AtLogOn -User $userId
-$settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew
+$settings = New-ScheduledTaskSettingsSet -StartWhenAvailable -ExecutionTimeLimit ([TimeSpan]::Zero) -MultipleInstances IgnoreNew -RestartCount $restartAttempts -RestartInterval $restartDelay -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
 $prior = Get-ScheduledTask -TaskName $oldTask -ErrorAction SilentlyContinue
 
 # Keep original task available for rollback, but disabled before continuous run
