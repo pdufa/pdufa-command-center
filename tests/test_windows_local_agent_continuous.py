@@ -462,6 +462,22 @@ class ContinuousWorkerSafetyTests(unittest.TestCase):
         self.assertNotIn("Enable-ScheduledTask", recovery)
         self.assertNotIn("gh pr merge", recovery)
 
+    def test_restart_owner_check_uses_sid_not_display_name(self):
+        installer = (ROOT / "scripts/windows_local_agent_install_continuous.ps1").read_text(
+            encoding="utf-8"
+        )
+        recovery = installer.split("if ($EnableAutoRestart) {", 1)[1].split(
+            "\nif ($Stop)", 1
+        )[0]
+        self.assertIn("[Security.Principal.WindowsIdentity]::GetCurrent().User.Value", recovery)
+        self.assertIn("[Security.Principal.NTAccount]::new($taskUserId)", recovery)
+        self.assertIn("[Security.Principal.SecurityIdentifier]::new($taskUserId)", recovery)
+        self.assertIn("if ($taskSid -ne $currentSid)", recovery)
+        self.assertIn("Cannot resolve scheduled task owner", recovery)
+        self.assertNotIn("$task.Principal.UserId -ne", recovery)
+        self.assertNotIn("Start-ScheduledTask", recovery)
+        self.assertNotIn("--pilot", recovery)
+
     def test_real_repo_self_test_is_safe_and_has_no_network(self):
         self.assertEqual(M.self_test(), 0)
 
