@@ -221,6 +221,32 @@ def preflight(*, online: bool) -> None:
             raise RuntimeError("LOCAL_OLLAMA_MODEL_MISSING")
 
 
+def verify_review_base() -> None:
+    """Audit the exact remote draft-PR base in a clean isolated worktree.
+
+    Does not change the task ledger or consume a Stage 4 pilot attempt.
+    """
+    WORKTREES.mkdir(parents=True, exist_ok=True)
+    branch = "review-base-check-" + datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S%f")
+    working = WORKTREES / branch
+    if working.exists() or working.is_symlink():
+        raise RuntimeError("UNEXPECTED_WORKTREE_EXISTS")
+    require_ok(cmd(["git", "fetch", "--no-tags", "origin",
+                    "+refs/heads/" + REVIEW_BASE + ":refs/remotes/origin/" + REVIEW_BASE],
+                   timeout=180), "FETCH_AUDITED_REVIEW_BASE")
+    require_ok(cmd(["git", "worktree", "add", "--detach", str(working),
+                    "origin/" + REVIEW_BASE], timeout=90), "CREATE_REVIEW_BASE_CHECK")
+    try:
+        guard = cmd([sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"],
+                    cwd=working, timeout=240)
+        require_ok(guard, "REVIEW_BASE_RETIREMENT_POLICY")
+    finally:
+        cleanup = cmd(["git", "worktree", "remove", "--force", str(working)],
+                      cwd=ROOT, timeout=90)
+        require_ok(cleanup, "CLEANUP_REVIEW_BASE_CHECK")
+    print("REVIEW_BASE_AUDIT_PASS: clean development review base verified")
+
+
 def review_questions(level: int, name: str, fields: tuple[str, ...], feedback: str = "") -> list[str]:
     prompt = (
         "Return STRICT JSON ONLY with a key review_questions containing EXACTLY "
@@ -681,7 +707,7 @@ def self_test() -> int:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     actions = parser.add_mutually_exclusive_group(required=True)
-    for flag in ("preflight", "self-test", "pilot", "run", "status",
+    for flag in ("preflight", "base-check", "self-test", "pilot", "run", "status",
                  "stop", "clear-stop"):
         actions.add_argument("--" + flag, action="store_true")
     parser.add_argument("--require-running", action="store_true")
@@ -692,6 +718,10 @@ def main() -> int:
         if args.preflight:
             preflight(online=True)
             print("PREFLIGHT_PASS: GitHub, localhost Ollama, repo and retirement guard")
+            return 0
+        if args.base_check:
+            preflight(online=True)
+            verify_review_base()
             return 0
         if args.stop:
             DATA.mkdir(parents=True, exist_ok=True)
