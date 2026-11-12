@@ -628,6 +628,11 @@ def status(require_running: bool = False) -> int:
 def publish_status(state: dict) -> None:
     # PUBLIC GitHub issue: generic stage counts only, no prompts or file paths.
     counts = summarize(state)
+    followon_line = (
+        f"**Phase-first source validation draft PRs:** "
+        f"{followon.counts(state)['completed']} of 17\n\n"
+        if "validation_jobs" in state else ""
+    )
     content = (
         "# PDUFA continuous-development monitor\n\n"
         "**Safety:** Draft PRs only; no merges, deployments, predictions or "
@@ -636,9 +641,8 @@ def publish_status(state: dict) -> None:
         f"**Engineering draft PRs:** {counts['draft_prs_created']} of 17\n\n"
         f"**Pending engineering tasks:** {counts['pending']}\n\n"
         f"**Blocked engineering tasks:** {counts['blocked']}\n\n"
-        f"**Phase-first source validation draft PRs:** {followon.counts(state)['completed']} of 17\n\n"
-        if "validation_jobs" in state else ""
-        "**Scientific levels independently completed by this agent:** 0\n\n"
+        + followon_line
+        + "**Scientific levels independently completed by this agent:** 0\n\n"
         "Detailed blockers and development artifacts are stored locally.\n"
     )
     try:
