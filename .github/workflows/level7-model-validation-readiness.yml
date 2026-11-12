@@ -1,0 +1,37 @@
+name: Level7 Model Validation Readiness - Offline Gate
+on:
+  pull_request:
+    paths:
+      - 'scripts/level7_model_validation_readiness.py'
+      - 'tests/test_level7_model_validation_readiness.py'
+      - '.github/workflows/level7-model-validation-readiness.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  temporal-leakage-and-calibration-contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Level7 predictive validation readiness synthetic tests
+        run: python -m unittest discover -s tests -p 'test_level7_model_validation_readiness.py' -v
+      - name: Do not bypass existing Level6 and independent science checkpoints
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path("automation/scientific-level-completion-queue.json").read_text())
+          assert p["levels"][2]["level"] == 6
+          assert p["levels"][2]["implementation_draft_pr"] == 1163
+          assert p["levels"][3]["level"] == 7
+          assert p["levels"][3]["implementation_draft_pr"] is None
+          assert p["levels"][3]["completed_scientific_level"] is False
+          assert all(x["completed_scientific_level"] is False for x in p["levels"])
+          print("PASS: Level7 preparatory audit only; official stage still awaits Level6")
+          PY
+      - name: Permanent retired-system guard
+        run: python scripts/audit_raas_retirement.py --check
