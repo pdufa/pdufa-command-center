@@ -1,0 +1,459 @@
+{
+  "schemaVersion": 1,
+  "created": "2026-11-12",
+  "kind": "LEVEL4_BLIND_ASSESSMENT_QUEUE",
+  "rules": [
+    "Historical outcome labels, post-cutoff evidence, previous model decisions and retrospective performance must never enter blind model inputs.",
+    "Historical cutoff is 30 days before the actual decision; cutoffDate currently stores decision date for scheduling only and must not be passed to scorer as outcome signal.",
+    "Freeze timestamped evidence and source hashes; generate Level 4 assessment and score; lock immutable prediction before outcome comparison.",
+    "Prospective records require independent Level 4 evidence, scoring, and abstention on insufficient data.",
+    "Null scores and predictions are pending, not zero."
+  ],
+  "historicalSource": "data/historical_assessed_decisions.csv (identity/date fields only; outcome columns intentionally excluded)",
+  "historical2026": [
+    {
+      "eventKey": "RGNX|2026-02-08|rgx-121 seeking accelerated approval was submitted to the fda in march 2025",
+      "ticker": "RGNX",
+      "cutoffDate": "2026-02-08",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "VNDA|2026-02-21|bysanti",
+      "ticker": "VNDA",
+      "cutoffDate": "2026-02-21",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "ETON|2026-02-25|et-600",
+      "ticker": "ETON",
+      "cutoffDate": "2026-02-25",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "ALDX|2026-03-16|reproxalap",
+      "ticker": "ALDX",
+      "cutoffDate": "2026-03-16",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "RYTM|2026-03-20|obesity",
+      "ticker": "RYTM",
+      "cutoffDate": "2026-03-20",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "RCKT|2026-03-28|kresladi",
+      "ticker": "RCKT",
+      "cutoffDate": "2026-03-28",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "DNLI|2026-04-05|tividenofusp-alfa",
+      "ticker": "DNLI",
+      "cutoffDate": "2026-04-05",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "TVTX|2026-04-13|glomerulosclerosis",
+      "ticker": "TVTX",
+      "cutoffDate": "2026-04-13",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "MNKD|2026-05-29|sbla",
+      "ticker": "MNKD",
+      "cutoffDate": "2026-05-29",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "ARVN|2026-06-05|vepdegestrant",
+      "ticker": "ARVN",
+      "cutoffDate": "2026-06-05",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "ARQT|2026-06-29|treatment",
+      "ticker": "ARQT",
+      "cutoffDate": "2026-06-29",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "LNTH|2026-06-29|lnth-2501",
+      "ticker": "LNTH",
+      "cutoffDate": "2026-06-29",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "VRDN|2026-06-30|veligrotug to the fda in october 2025",
+      "ticker": "VRDN",
+      "cutoffDate": "2026-06-30",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "MNKD|2026-07-26|sbla",
+      "ticker": "MNKD",
+      "cutoffDate": "2026-07-26",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "LNTH|2026-08-13|mk-6240",
+      "ticker": "LNTH",
+      "cutoffDate": "2026-08-13",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "RARE|2026-08-23|dtx401",
+      "ticker": "RARE",
+      "cutoffDate": "2026-08-23",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "ZYME|2026-08-25|tevimbra",
+      "ticker": "ZYME",
+      "cutoffDate": "2026-08-25",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "TLX|2026-09-11|tlx101-px",
+      "ticker": "TLX",
+      "cutoffDate": "2026-09-11",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "IONS|2026-09-22|alexander",
+      "ticker": "IONS",
+      "cutoffDate": "2026-09-22",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    },
+    {
+      "eventKey": "SRRK|2026-09-30|apitegromab",
+      "ticker": "SRRK",
+      "cutoffDate": "2026-09-30",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_EVIDENCE_FREEZE"
+    }
+  ],
+  "focusSource": "new-platform/frontend/data/p3PostDataActive.json",
+  "focusFuture": [
+    {
+      "ticker": "ABVX",
+      "nct": "NCT05507203",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "ABVX",
+      "nct": "NCT05507216",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "ACHV",
+      "nct": "NCT04576949",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "ACHV",
+      "nct": "NCT05206370",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "AGIO",
+      "nct": "NCT05031780",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "AMLX",
+      "nct": "NCT06747468",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "APMD",
+      "nct": "NCT05811247",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "APMD",
+      "nct": "NCT05813275",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "AXSM",
+      "nct": "NCT05059223",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "AXSM",
+      "nct": "NCT05113745",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "BLTE",
+      "nct": "NCT05244304",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "CAPR",
+      "nct": "NCT05126758",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "CLDX",
+      "nct": "NCT06445023",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "CLDX",
+      "nct": "NCT06455202",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "COGT",
+      "nct": "NCT05208047",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "CORT",
+      "nct": "NCT03697109",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "CORT",
+      "nct": "NCT04308590",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "CYTK",
+      "nct": "NCT05767346",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "CYTK",
+      "nct": "NCT06081894",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "IMNM",
+      "nct": "NCT04871282",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "MIRM",
+      "nct": "NCT06553768",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "MLTX",
+      "nct": "NCT06411379",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "MLTX",
+      "nct": "NCT06411899",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "MLYS",
+      "nct": "NCT06153693",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "PHVS",
+      "nct": "NCT06343779",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "PHVS",
+      "nct": "NCT06669754",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "PRAX",
+      "nct": "NCT06087276",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "SRPT",
+      "nct": "NCT02500381",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "SVRA",
+      "nct": "NCT04544293",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "URGN",
+      "nct": "NCT06331299",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "VERA",
+      "nct": "NCT04716231",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    },
+    {
+      "ticker": "ZBIO",
+      "nct": "NCT05662241",
+      "level4Score": null,
+      "blindPrediction": null,
+      "confidence": null,
+      "status": "PENDING_LEVEL4_ASSESSMENT"
+    }
+  ],
+  "summary": {
+    "historicalQueued": 20,
+    "focusQueued": 32,
+    "completed": 0
+  }
+}
