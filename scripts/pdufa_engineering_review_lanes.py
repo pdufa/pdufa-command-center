@@ -113,8 +113,8 @@ def engineering_evidence(state: dict, manifest: dict, n: int, *,
                 or row.get("implementation_draft_pr") != 1156):
             return None
     else:
-        # Additional levels require a separately approved explicit scope and
-        # concrete test receipts. They are not currently configured.
+        # Future domain modules remain blocked until explicitly implemented,
+        # tested and approved in the immutable manifest. No blanket level pass.
         if not isinstance(row.get("implementation_draft_pr"), int):
             return None
         if not evidence["RUN_REGRESSION_TESTS"].get("tests"):
@@ -122,9 +122,35 @@ def engineering_evidence(state: dict, manifest: dict, n: int, *,
         if (evidence["PREPARE_REVIEW_PR"].get("implementation_pr", {})
                 .get("pr_number") != row["implementation_draft_pr"]):
             return None
+        if n == 5:
+            source = evidence["COLLECT_ORIGINAL_SOURCE"]
+            tests = evidence["RUN_REGRESSION_TESTS"].get("tests", [])
+            gates = evidence["IMPLEMENT_FUNCTIONAL_GATES"]
+            if (row.get("implementation_draft_pr") != 1161
+                    or source.get("snapshot_nct_count") != 32
+                    or source.get("retrieved_original_source_count") != 32
+                    or source.get("unavailable_or_invalid_count") != 0
+                    or source.get("source_git_blob_sha1") != "b1b79b632ff6a87d6533f6135d4204cb5931e23c"
+                    or source.get("current_canonical_focus_verified") is not False
+                    or source.get("independently_reviewed") is not False
+                    or source.get("negative_evidence_adjudicated") is not False
+                    or len(tests) != 2
+                    or tests[0].get("suite") != "level5_source_challenge"
+                    or type(tests[0].get("passed")) is not int
+                    or tests[0]["passed"] < 8
+                    or tests[1] != {"suite": "permanent_retirement", "passed": True}
+                    or gates.get("implementation_pr", {}).get("pr_number") != 1161):
+                return None
+        else:
+            # No future level is approved by this installation. Each future
+            # domain step must receive its own verified implementation.
+            return None
     pr = row["implementation_draft_pr"]
     if verify_remote:
-        base.confirmed_pr(pr)
+        if n == 5:
+            base.confirmed_level5_pr()
+        else:
+            base.confirmed_pr(pr)
     body = json.dumps({"level": n, "scope": row["implementation_scope"],
                        "implementation_draft_pr": pr, "steps": evidence},
                       sort_keys=True, separators=(",", ":"), ensure_ascii=True)
