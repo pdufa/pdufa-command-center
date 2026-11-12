@@ -36,7 +36,7 @@ $allowed=@{
  'tests/test_pdufa_level_completion.py'='1e08eda6249fc2cd94fccacb41fe44c6b744f373'
  'tests/test_level4_scientific_evidence.py'='5a30ed426188aa8da968639fc763842d9d15f0e6'
  'scripts/windows_local_agent_watchdog.ps1'='595783a8ad221b95e0fa12f0efab19d5c0ecc0c6'
- 'scripts/pdufa_strict_level_runner.py'='5ac45cf43cb0b7e630d4c235f21649b2090eb450'
+ 'scripts/pdufa_strict_level_runner.py'='c63f9e3f191f53a42c7fafc4e184a065dec5d7b9'
  'tests/test_pdufa_strict_level_runner.py'='cb1ebbb5ab0c77fd9f1c05cb65d52cf3744b561b'
 }
 $who=[Security.Principal.WindowsIdentity]::GetCurrent()
