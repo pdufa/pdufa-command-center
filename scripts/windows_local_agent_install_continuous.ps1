@@ -44,6 +44,12 @@ if ($LASTEXITCODE -ne 0) { throw "Offline safety self-test failed. Old schedule 
 Write-Host "BASE CHECK: Audit the exact clean development PR baseline before consuming a pilot attempt."
 & $python -3.13 $controller --base-check
 if ($LASTEXITCODE -ne 0) { throw "Audited review base failed. Pilot not attempted; old schedule remains unchanged." }
+Write-Host "COMMIT CHECK: Test a real isolated Git commit without push or PR."
+& $python -3.13 $controller --commit-check
+if ($LASTEXITCODE -ne 0) { throw "Local Git commit prerequisites failed. Pilot not attempted; old schedule remains unchanged." }
+Write-Host "RECOVERY: Reopen only previously blocked Stage 4 commit attempt, preserving the failure history."
+& $python -3.13 $controller --retry-stage4
+if ($LASTEXITCODE -ne 0) { throw "Stage 4 retry not authorized. Pilot not attempted; old schedule remains unchanged." }
 
 # A real pilot must create a draft PR and verify it remains a draft.
 # Before the pilot, no unattended code application or issue update is enabled.
