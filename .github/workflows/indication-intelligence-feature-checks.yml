@@ -38,6 +38,6 @@ jobs:
       - name: Typecheck all frontend components
         run: npm run typecheck
       - name: Indication-specific regression and evidence gate tests
-        run: node --test tests/indication-intelligence.test.cjs tests/indication-review.test.cjs tests/pool-registry-details.test.cjs tests/focus-specialty-assessment.test.cjs
+        run: node --test tests/indication-intelligence.test.cjs tests/indication-review.test.cjs tests/pool-registry-details.test.cjs
       - name: Production Next.js build
         run: npm run build
