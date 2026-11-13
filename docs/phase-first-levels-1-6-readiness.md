@@ -45,3 +45,85 @@ python scripts/audit_raas_retirement.py --check
 The isolated workflow `.github/workflows/phase-first-levels1-6-tests.yml` runs these on Windows and Ubuntu. This test receipt verifies **software structure**, never actual clinical validity.
 
 **Next slice:** independently verified trial phase/status and indication provenance; source-specific clinical evidence requests and phase-specific reviewer workflow; staging integration after acceptance. Preserve distinct approvals, CRLs, extensions and abstentions and ensure postdecision historical outcomes are not laundered as predictions.
+
+
+## Second engineering slice — source-submission review queue and offline preview
+
+A separate fail-closed source intake is implemented in
+`scripts/medical/level16_source_submissions.py`. It accepts bounded
+source metadata for **Levels 1–6** only and attaches each lead to its exact
+NCT and (optionally) its *provisional* application-cycle ID.
+
+A submission contains `submissionId`, `nct`, `level`, `sourceKind`,
+`sourceUrl`, `sourceDate`, `accessedDate`, `documentSha256`,
+`locator`, `claim`, `role` (SUPPORTS/CHALLENGES/CONTEXT), and
+`submittedBy`; `candidateApplicationCycleId` is optional. The enclosing
+object requires `schemaVersion: 1`, `kind:
+FOCUS_LEVELS_1_6_SOURCE_SUBMISSIONS`, `cutoffDate`, and `records`.
+
+**Crucial trust boundary:** a submitted SHA-256 string or source URL is
+**unverified metadata**, not proof that the underlying document bytes have
+been accessed or authenticated. Likewise, a string in `submittedBy` is
+not an independently authenticated reviewer signature. Caller-supplied
+verification, reviewer approval, score or FDA prediction fields are rejected.
+Every accepted source lead is marked
+`SUBMITTED_SOURCE_NOT_INDEPENDENTLY_AUTHENTICATED` and every level remains
+`NOT_ADJUDICATED`. Even a registry source lead must match the checkpoint's
+exact NCT, URL, SHA-256 and captured field locator. No self-attestation can
+promote an item into independent scientific review.
+
+### No-source example
+
+Create a local `source-submissions.json` file containing this example.
+It is a valid **empty queue**, not actual verified evidence:
+
+```json
+{
+  "schemaVersion": 1,
+  "kind": "FOCUS_LEVELS_1_6_SOURCE_SUBMISSIONS",
+  "cutoffDate": "2026-11-13",
+  "records": []
+}
+```
+
+### Read-only workflow
+
+```powershell
+python scripts/medical/phase_first_levels_1_6.py --checkpoint path/to/level4-checkpoint.json --source-submissions source-submissions.json > levels1-6-readiness.json
+
+python scripts/medical/render_level16_focus_preview.py --report levels1-6-readiness.json --output levels1-6-preview.html
+```
+
+The output HTML is **offline-only**, not a deployed route. It displays a
+29-NCT, six-level, expandable review queue and strongly labels all evidence
+as unauthenticated and all assessments as unreviewed. All free-text and
+source links are escaped/validated. It does not connect to the live FOCUS
+site or modify databases, records, memberships, scoring or predictions.
+
+### Tests
+
+```powershell
+python -m unittest discover -s tests -p "test_phase_first_levels_1_6.py" -v
+python -m unittest discover -s tests -p "test_render_level16_focus_preview.py" -v
+python -m unittest discover -s tests -p "test_level4_registry_extraction.py" -v
+python scripts/audit_raas_retirement.py --check
+```
+
+Windows and Ubuntu CI run the checks with byte-preserving checkout and
+UTF-8 decoding so the historical-record hash audit is not invalidated by
+Windows line-ending conversion. Do not weaken that audit.
+
+### Still required before functional assessments
+
+- Provenance authentication against actual permitted original source bytes;
+  reproducible hashes, publication/access dates and phase-first identity
+  verification;
+- A separate *authenticated* reviewer workflow with demonstrably independent
+  source and clinical reviews, amendment tracking and contradictory evidence;
+- Trial/indication-specific clinical analyses and methods for Levels 1–6;
+  independent specialist challenge, and FDA application-cycle adjudication;
+- Approved frontend integration on an actual protected FOCUS page, runtime
+  smoke testing and explicit release approval before deployment;
+- Historical point-in-time blind validation before quantitative probability
+  forecasts. These submissions and this preview cannot be used to assert
+  clinical accuracy, reviewer completion or approval probability.
