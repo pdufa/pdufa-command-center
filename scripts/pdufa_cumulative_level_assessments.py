@@ -317,6 +317,61 @@ def build(manifest: dict, roster: dict, evidence: dict | None) -> dict:
     }
 
 
+
+def audit_level_coverage(report: dict, roster: dict, level: int) -> dict:
+    """Independent-review readiness prerequisite, NEVER scientific approval.
+
+    Validate individual NCT-level evidence rows; do not trust aggregate
+    count/status JSON alone. A maliciously edited or stale report must not
+    satisfy this gate without matching FOCUS trial identifiers and receipts.
+    """
+    expected = {item["nct"] for item in validated_roster(roster)}
+    if not isinstance(level, int) or level not in range(4, 21):
+        raise ValueError("Unknown PDUFA assessment level")
+    if (not isinstance(report, dict) or report.get("schema_version") != 1 or
+            report.get("focus_trials") != len(expected) or
+            report.get("assessment_records") != len(expected) * 17 or
+            report.get("source_spreadsheet_id") != roster["source"]["spreadsheet_id"] or
+            report.get("scientific_acceptance_automated") is not False or
+            report.get("validated_pdufa_probability_available") is not False or
+            report.get("production_publication") is not False):
+        raise ValueError("Untrusted/incomplete research assessment report")
+    cutoff = utc_date(report.get("as_of"))
+    if cutoff < utc_date(roster["source"]["snapshot_date"]):
+        raise ValueError("Assessment predates cited FOCUS snapshot")
+    items = report.get("assessments")
+    if not isinstance(items, list) or len(items) != len(expected) * 17:
+        raise ValueError("Missing scientific level assessment records")
+    selected = [item for item in items if item.get("level") == level]
+    if len(selected) != len(expected) or {item.get("nct") for item in selected} != expected:
+        raise ValueError("Not all exact FOCUS trial identities were assessed")
+    for row in selected:
+        if (row.get("score_not_fda_probability") is not True or
+                row.get("fda_approval_probability") is not None or
+                row.get("science_complete") is not False or
+                row.get("review_status") != REVIEW_REQUIRED or
+                row.get("assessment_status") != "PROVISIONAL_RESEARCH_SCORE_REVIEW_REQUIRED"):
+            raise ValueError("Score status cannot bypass science review")
+        score = row.get("score_out_of_100")
+        if (isinstance(score, bool) or not isinstance(score, (int, float)) or
+                not math.isfinite(score) or not 0 <= score <= 100):
+            raise ValueError("Missing or invalid per-trial score")
+        included = row.get("verified_source_ratings")
+        if (not isinstance(included, list) or not included or
+                row.get("scored_criteria") != len(included) or
+                row.get("evidence_gaps") is None or
+                any(x.get("status") != "NOT_YET_EXPECTED" for x in row["evidence_gaps"])):
+            raise ValueError("All phase-applicable criteria must be individually sourced")
+        for item in included:
+            if not isinstance(item.get("reason"), str) or len(item["reason"].strip()) < 15:
+                raise ValueError("Scored criterion missing explanatory reason")
+            receipt(item.get("source"), cutoff)
+    return {"level": level, "focus_trials": len(expected),
+            "provisional_scored": len(selected),
+            "ready_for_independent_review": True,
+            "scientific_level_accepted": False}
+
+
 def safe_write(path: Path, obj: dict) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     if path.is_symlink():
