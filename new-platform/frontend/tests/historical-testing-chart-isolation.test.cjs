@@ -88,5 +88,5 @@ test("the historical visualization stays isolated from active review level and p
   assert.equal(prospective.records[0].ticker,"SMMT");
   assert.equal(prospective.records[0].actualOutcome,"PENDING");
   const focus=JSON.parse(fs.readFileSync(path.join(root,"../backend/app/data/focus_snapshot.json"),"utf8"));
-  assert.equal(focus.records.length,29);
+  assert.equal(focus.records.length,32);
 });
