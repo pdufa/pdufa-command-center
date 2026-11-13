@@ -109,15 +109,15 @@ test("degraded PostgreSQL never passes database-backed installation gates",()=>{
 });
 
 
-test("backend application map requires all 29 exact NCTs before becoming verified",()=>{
+test("backend application map requires all 32 exact NCTs before becoming verified",()=>{
  const valid={...external,apiReachable:true};
  const base={schemaVersion:1,observedAt:at,storage:{state:"BLOCKED",kind:"sqlite",postgresRequired:true},
-   sourceSnapshots:{applications:{state:"VALID",focusNctCount:29,coveredNctCount:29,applicationCycleCount:23}}};
+   sourceSnapshots:{applications:{state:"VALID",focusNctCount:32,coveredNctCount:32,applicationCycleCount:23}}};
  const verified=buildInstallationProgress(base,valid,at);
  assert.equal(verified.stages.find(x=>x.id==="medical").checks.find(x=>x.id==="medical.application-map").status,"VERIFIED");
  assert.equal(verified.stages.find(x=>x.id==="medical").checks.find(x=>x.id==="medical.db").status,"BLOCKED");
- const partial=buildInstallationProgress({...base,sourceSnapshots:{applications:{state:"VALID",focusNctCount:29,
-   coveredNctCount:28,applicationCycleCount:23}}},valid,at);
+ const partial=buildInstallationProgress({...base,sourceSnapshots:{applications:{state:"VALID",focusNctCount:32,
+   coveredNctCount:29,applicationCycleCount:23}}},valid,at);
  assert.equal(partial.stages.find(x=>x.id==="medical").checks.find(x=>x.id==="medical.application-map").status,"UNKNOWN");
  const corrupt=buildInstallationProgress({...base,sourceSnapshots:{applications:{state:"INVALID"}}},valid,at);
  assert.equal(corrupt.stages.find(x=>x.id==="medical").checks.find(x=>x.id==="medical.application-map").status,"FAILED");
@@ -154,10 +154,10 @@ test("Analyze Now progress waits for saved pilot and independent rollout switche
  assert.equal(enabledGate(all),"VERIFIED");
 });
 
-test("all exact 29 FOCUS trials have expandable evidence, no invented verification",()=>{
+test("all exact 32 FOCUS trials have expandable evidence, no invented verification",()=>{
  const report=buildInstallationProgress(null,external,at);
- assert.equal(report.trials.length,29);
- assert.equal(new Set(report.trials.map(t=>t.nct)).size,29);
+ assert.equal(report.trials.length,32);
+ assert.equal(new Set(report.trials.map(t=>t.nct)).size,32);
  assert.ok(report.trials.every(t=>t.gates.length===7&&t.independentlyVerified===0));
  assert.ok(report.trials.every(t=>t.sourceState==="UNKNOWN"&&t.revisions.length===0));
  assert.ok(report.trials.some(t=>t.missing>0));
