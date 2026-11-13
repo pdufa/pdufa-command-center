@@ -7,19 +7,19 @@ Status: DRAFT implementation, **not** production acceptance. All requested capab
 | # | Requested capability | Draft coverage | Definition of complete |
 |---|---|---|---|
 | 1 | Full disease hierarchy and deeper subtypes | Existing MeSH hierarchy and unified 5-level selector | Preserve all source paths, custom deeper levels and source provenance |
-| 2 | Biomarkers and mutations | Missing / explicitly marked unverified | Clinical subtype, gene, assay, cutoff and source tied to exact indication |
-| 3 | Disease severity and patient subgroups | Registry eligibility on demand | Severity, line of therapy, subgroup definition, and independently sourced criteria |
+| 2 | Biomarkers and mutations | Research worklist added; no mutation/assay adjudication | Clinical subtype, gene, assay, cutoff and source tied to exact indication |
+| 3 | Disease severity and patient subgroups | Registry eligibility + reviewed research question | Severity, line of therapy, subgroup definition, and independently sourced criteria |
 | 4 | All clinical phases and FDA stages | Separate phase columns including mixed phases, results and FDA | Phase verified from exact-NCT source with stage updates and status provenance |
 | 5 | Click phase counts to show matching trials | Implemented in draft matrix | Verified full-POOL counts, distinct exact NCT + ticker within each branch and stage |
 | 6 | Multiple indications per drug or trial | Split indication rows; deduplicate trials | Adjudicated many-to-many indication IDs; do not treat punctuation alone as a verified identity |
 | 7 | Search disease, company, drug, NCT | Implemented in draft UI | Search full source inventory, audit query and restrictions |
-| 8 | Indication-specific scientific assessment | On-demand registry facts; no adjudication | Disease-specific clinical questions, source-backed findings, independent challenge |
-| 9 | Efficacy and endpoints | Official registry endpoints and posted measurements | Effect size, statistical uncertainty, prespecification, clinical importance and phase readiness |
-| 10 | Existing treatments and competitors | Pending | Current standard of care, competing clinical trials, resistance and differentiation |
-| 11 | Eligible patient population and unmet need | Registry eligibility only; market denominator unavailable | Disease prevalence distinct from eligible patients, enrollment and commercial TAM |
+| 8 | Indication-specific scientific assessment | Source-linked dimension worklist + on-demand registry facts; no adjudication | Disease-specific clinical questions, source-backed findings, independent challenge |
+| 9 | Efficacy and endpoints | Registry endpoints and posted outcome observations; interpretation pending | Effect size, statistical uncertainty, prespecification, clinical importance and phase readiness |
+| 10 | Existing treatments and competitors | Comparator source links and competitor research queue; no SOC conclusion | Current standard of care, competing clinical trials, resistance and differentiation |
+| 11 | Eligible patient population and unmet need | Registry enrollment + eligibility review, no eligible-market denominator | Disease prevalence distinct from eligible patients, enrollment and commercial TAM |
 | 12 | Scores, risk reasons and confidence | Explicit NOT SCORED | Phase-specific calibrated rubrics, documented uncertainty, no unsupported probabilities |
 | 13 | Trial/company details and popups | Trial modal, links to current Analyze Now / FOCUS | Full company ownership, rights, trial, indication and exact source relationships |
-| 14 | POOL → FOCUS assessment integration | Exact NCT + ticker FOCUS flag; missing matches surfaced | Verified promotion gates and evidence reuse without treating historical scores as active |
+| 14 | POOL → FOCUS assessment integration | Exact NCT + ticker FOCUS flag, unmatched review and specialist intake drilldown | Verified promotion gates and evidence reuse without treating historical scores as active |
 | 15 | Automated evidence updates and assessment history | Live source retrieval only | Dated source snapshots, trigger-based reassessment, immutable versions, diff explanations |
 
 ## Identity and evidence rules
