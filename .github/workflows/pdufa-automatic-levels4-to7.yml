@@ -1,0 +1,87 @@
+name: PDUFA Automated Levels 4–7 Research
+on:
+  pull_request:
+    paths:
+      - 'scripts/pdufa_automatic_levels4_to7.py'
+      - 'tests/test_pdufa_automatic_levels4_to7.py'
+      - '.github/workflows/pdufa-automatic-levels4-to7.yml'
+      - 'scripts/pdufa_cumulative_level_assessments.py'
+      - 'automation/focus-assessment-roster-snapshot-20261112.json'
+      - 'automation/scientific-level-completion-queue.json'
+  workflow_dispatch:
+  schedule:
+    # Read-only nightly inventories once reviewed into the default branch.
+    - cron: '17 09 * * *'
+permissions:
+  contents: read
+concurrency:
+  group: pdufa-levels4-7-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  offline-test-and-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: No-network 32-trial Levels 4–7 workflow tests
+        run: |
+          python -m unittest discover -s tests -p 'test_pdufa_automatic_levels4_to7.py' -v
+          python -m unittest discover -s tests -p 'test_pdufa_cumulative_level_assessments.py' -v
+          python -m unittest discover -s tests -p 'test_level6_cross_disciplinary_inventory.py' -v
+          python -m unittest discover -s tests -p 'test_level7_source_readiness_inventory.py' -v
+          python scripts/pdufa_level_completion.py --self-test
+      - name: Require review, no automatic clinical prediction or release
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=json.loads(Path('automation/scientific-level-completion-queue.json').read_text())
+          assert all(not x['completed_scientific_level'] for x in p['levels'][:4])
+          assert all(p['safety'][x] is False for x in
+                     ['automatic_merges','production_deployments','automatic_predictions',
+                      'trades','scientific_level_completion_by_agent'])
+          print('PASS: Levels4-7 schedule never signs off scientific predictions or deployments')
+          PY
+  nightly-registry-and-assessment-readiness:
+    if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && vars.PDUFA_RESEARCH_AUTOMATION_PAUSED != 'true'
+    needs: offline-test-and-safety
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Fetch once per FOCUS trial and generate Levels 4–7 audit artifacts
+        run: |
+          python scripts/pdufa_automatic_levels4_to7.py \
+            --out-dir "$RUNNER_TEMP/pdufa-level4-7-run" \
+            > "$RUNNER_TEMP/pdufa-level4-7-run-summary.json"
+          cat "$RUNNER_TEMP/pdufa-level4-7-run-summary.json"
+          python - "$RUNNER_TEMP/pdufa-level4-7-run/level4-7-automation-status.json" <<'PY'
+          import json, sys, os
+          status=json.load(open(sys.argv[1]))
+          summary=os.environ.get('GITHUB_STEP_SUMMARY')
+          if summary:
+              with open(summary,'a') as f:
+                  f.write('## PDUFA automated research Levels 4–7\n\n')
+                  f.write(f'- Dated FOCUS records: {status["roster_count"]}\n')
+                  f.write(f'- Original ClinicalTrials.gov receipts: {status["original_registry_sources_retrieved"]}\n')
+                  f.write(f'- Level 7 model state: {status["level7_model"]}\n')
+                  f.write(f'- Level 4–7 provisional research scores: {status["scores_generated"]}\n')
+                  f.write('- Independent scientific completion: **not automatically granted**\n')
+                  f.write('- Auto-release, auto-merge, PDUFA probabilities: **disabled**\n')
+          PY
+      - name: Preserve original-source receipts and reviewable status
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pdufa-level4-to7-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/pdufa-level4-7-run/**
+            ${{ runner.temp }}/pdufa-level4-7-run-summary.json
+          retention-days: 14
+          if-no-files-found: warn
