@@ -127,7 +127,8 @@ def _level(number, name, fields, phase_group, indication_leads, source_captured)
     return result
 
 
-def build(roster, application_snapshot, checkpoint, definition, submissions=None):
+def build(roster, application_snapshot, checkpoint, definition, submissions=None,
+          local_receipts=None, evidence_root=None):
     """Return non-predictive, non-mutating readiness for every canonical FOCUS NCT."""
     records = _records(roster, "canonical roster")
     apps = _records(application_snapshot, "application crosswalk")
@@ -150,6 +151,29 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
         validator = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(validator)
         submissions_by_nct = validator.validate(submissions, records, apps, checkpoint)
+
+    if (local_receipts is None) != (evidence_root is None):
+        raise ValueError("Local receipt manifest and evidence root must be supplied together")
+    if local_receipts is not None and submissions is None:
+        raise ValueError("Local receipts require validated source submissions")
+    byte_consistency = None
+    if local_receipts is not None:
+        spec = importlib.util.spec_from_file_location(
+            "level16_local_byte_receipts",
+            Path(__file__).with_name("level16_local_byte_receipts.py")
+        )
+        checker = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(checker)
+        result = checker.match_local_bytes(
+            submissions_by_nct, local_receipts, evidence_root)
+        byte_consistency = result["summary"]
+        for items in submissions_by_nct.values():
+            for source in items:
+                source["localByteReceipt"] = result["receipts"].get(
+                    source["submissionId"],
+                    {"byteMatchStatus": "NO_LOCAL_RECEIPT",
+                     "computedSha256": None, "bytesRead": 0}
+                )
 
     rows, cycle_ids = [], set()
     for nct, record in records.items():
@@ -227,6 +251,7 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
         "mappedTrialCount": len(apps), "unmappedTrialCount": len(rows) - len(apps),
         "scientificallyAdjudicatedLevels": 0, "calibratedFdaPredictions": 0,
         "sourceSubmissionCount": sum(len(items) for items in submissions_by_nct.values()),
+        "localByteConsistency": byte_consistency,
         "levelsPerTrial": 6, "trials": rows,
     }
 
@@ -239,12 +264,19 @@ def main():
     parser.add_argument("--checkpoint", type=Path, required=True)
     parser.add_argument("--source-submissions", type=Path,
                         help="Optional unreviewed, point-in-time evidence-submission JSON")
+    parser.add_argument("--local-byte-receipts", type=Path,
+                        help="Optional bounded local document byte-receipt manifest")
+    parser.add_argument("--evidence-root", type=Path,
+                        help="Existing private directory holding original permitted source files")
     args = parser.parse_args()
     inputs = [json.loads(path.read_text(encoding="utf-8")) for path in
               (args.roster, args.applications, args.checkpoint, args.definition)]
     submitted = (json.loads(args.source_submissions.read_text(encoding="utf-8"))
                  if args.source_submissions else None)
-    report = build(*inputs, submissions=submitted)
+    receipt_manifest = (json.loads(args.local_byte_receipts.read_text(encoding="utf-8"))
+                        if args.local_byte_receipts else None)
+    report = build(*inputs, submissions=submitted,
+                   local_receipts=receipt_manifest, evidence_root=args.evidence_root)
     print(json.dumps(report, indent=2))
 
 
