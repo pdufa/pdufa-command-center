@@ -188,7 +188,12 @@ export async function GET(req:NextRequest) {
           sourceUrl:"https://clinicaltrials.gov/study/"+nct,
         }];
       });
+      const present=new Set(rows.map(r=>r.nct+"|"+r.ticker));
+      const focusUnmatched=focusSnapshot.records.filter(r=>
+        !present.has(r.nct.toUpperCase()+"|"+r.ticker.toUpperCase()))
+        .map(r=>({nct:r.nct,ticker:r.ticker,company:r.company}));
       return NextResponse.json({
+        focusUnmatched,
         view:"indications",asOf:data.overview.poolAsOf,
         sourceState:data.overview.poolSourceState,
         focusAsOf:focusSnapshot.asOf,totalTrials:rows.length,rows,
