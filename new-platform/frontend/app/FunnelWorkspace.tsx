@@ -147,6 +147,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
          onClick={()=>setOffset(page.nextOffset!)}>Next</button>
      </div>}
    </section>}
+   {section==="pool"&&<IndicationIntelligence mode="pool"/>}
    {section==="pipeline"&&<BatchRegistryExport/>}
    <section className={styles.notice}>
      <strong>Qualification rules:</strong> U.S.-listed publicly traded issuer; current sourced market capitalization $300 million–$10 billion inclusive;
