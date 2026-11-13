@@ -47,6 +47,10 @@ test("site ASSESMENTS route includes Level 1 score table with evidence and no ap
   assert.match(component, /data-testid="level1-score-row"/);
   assert.match(component, /ClinicalTrials\.gov/);
   assert.match(component, /registry-source SHA-256|Registry-source SHA-256/);
+  assert.match(component, /DOCUMENTATION SCORE ONLY — NOT A PDUFA APPROVAL PREDICTION/);
+  assert.match(component, /Documentation \/100/);
+  assert.match(component, /Documentation only/);
+  assert.match(component, /Level 1 Documentation Scores/);
   assert.match(component, /NOT FDA approval probabilities/);
   assert.match(component, /scientific review pending/);
   assert.doesNotMatch(component, /FDA approval probability:\s*\{row\.score\}/);
