@@ -543,6 +543,8 @@ def once(state: dict, manifest: dict, *, notify: bool = False) -> bool:
                                  "DOMAIN_REGRESSION_SUITE_NOT_APPROVED",
                                  "DOMAIN_IMPLEMENTATION_PR_NOT_AVAILABLE",
                                  "INDEPENDENT_REVIEW_NOT_APPROVED",
+                                 "PDUFA_LEVEL_ASSESSMENTS_NOT_AVAILABLE",
+                                 "PDUFA_LEVEL_ASSESSMENTS_NOT_READY",
                                  "LEVEL4_IMPLEMENTATION_NOT_INSTALLED"}
             item["status"] = ("BLOCKED" if permanent or item["attempts"] >= MAX_ATTEMPTS
                               else "PENDING")
