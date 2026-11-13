@@ -496,18 +496,13 @@ def execute(number: int, step: str, manifest: dict) -> dict:
         if not report_path.is_file():
             raise RuntimeError("PDUFA_LEVEL_ASSESSMENTS_NOT_AVAILABLE")
         try:
+            from pdufa_cumulative_level_assessments import audit_level_coverage
             report = json.loads(report_path.read_text(encoding="utf-8"))
-            stats = next(x for x in report["per_level"] if x["level"] == number)
-            if (report.get("schema_version") != 1 or
-                    report.get("focus_trials") != 32 or
-                    report.get("assessment_records") != 32 * 17 or
-                    stats["trials"] != 32 or
-                    stats["provisional_numeric_scores"] != 32 or
-                    stats["unscored"] != 0 or
-                    stats["all_focus_trials_scored"] is not True or
-                    report.get("scientific_acceptance_automated") is not False):
-                raise ValueError("Missing reviewed score coverage")
-        except (ValueError, TypeError, KeyError, StopIteration, json.JSONDecodeError):
+            roster_path = ROOT / "automation/focus-assessment-roster-snapshot-20261112.json"
+            roster = json.loads(roster_path.read_text(encoding="utf-8"))
+            audit_level_coverage(report, roster, number)
+        except (ValueError, TypeError, KeyError, ImportError, OSError,
+                json.JSONDecodeError):
             raise RuntimeError("PDUFA_LEVEL_ASSESSMENTS_NOT_READY") from None
         # Even complete provisional numerical coverage is not proof of actual
         # primary sources or an independent scientific reviewer. Never sign.
