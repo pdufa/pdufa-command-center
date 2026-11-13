@@ -26,15 +26,16 @@ def evidence_report():
 
 
 class PreviewTests(unittest.TestCase):
-    def test_preview_preserves_29_trials_and_six_levels(self):
+    def test_preview_preserves_current_32_trials_and_six_levels(self):
         report = evidence_report()
         html = renderer.render(report)
-        self.assertEqual(html.count("<details>"), 29)
+        self.assertEqual(html.count("<details>"), 32)
         self.assertIn("Scientific Levels 1–6", html)
         self.assertIn("NOT MEDICAL ASSESSMENTS OR FDA FORECASTS", html)
         self.assertIn("NOT ADJUDICATED", html)
         self.assertIn("Source submissions awaiting authentication", html)
         self.assertIn("Provisional application cycles", html)
+        self.assertIn("Trials without application mapping", html)
         self.assertNotIn("approved forecast", html.lower())
 
     def test_untrusted_fields_escape_html_and_links_are_safe(self):
