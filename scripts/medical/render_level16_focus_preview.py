@@ -34,8 +34,9 @@ def render(report):
     if not isinstance(report, dict) or report.get("status") != "PHASE_FIRST_EVIDENCE_TRIAGE_ONLY":
         raise ValueError("Refusing non-readiness or scientific-prediction report")
     trials = report.get("trials")
-    if not isinstance(trials, list) or len(trials) != 29:
-        raise ValueError("Preview requires exact 29-trial FOCUS report")
+    if (not isinstance(trials, list) or not trials
+            or len(trials) != report.get("focusTrialCount")):
+        raise ValueError("Preview requires the complete exact-NCT FOCUS report")
     seen = set()
     rows = []
     for trial in trials:
@@ -129,6 +130,8 @@ def render(report):
         "</strong><small>FOCUS exact NCT trials</small></div>"
         "<div class='metric'><strong>" + _text(report.get("provisionalApplicationCycleCount")) +
         "</strong><small>Provisional application cycles</small></div>"
+        "<div class='metric'><strong>" + _text(report.get("unmappedTrialCount", 0)) +
+        "</strong><small>Trials without application mapping</small></div>"
         "<div class='metric'><strong>" + _text(report.get("sourceSubmissionCount", 0)) +
         "</strong><small>Source submissions awaiting authentication</small></div>"
         "<div class='metric'><strong>0</strong><small>Independently reviewed Levels 1–6</small></div>"
@@ -146,7 +149,8 @@ def main():
     html = render(document)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(html, encoding="utf-8")
-    print(json.dumps({"status": "PREVIEW_ONLY", "trials": 29, "output": str(args.output)}))
+    print(json.dumps({"status": "PREVIEW_ONLY", "trials": document["focusTrialCount"],
+                      "output": str(args.output)}))
 
 
 if __name__ == "__main__":
