@@ -29,6 +29,8 @@ test('unknown and ambiguous disease text never becomes an inferred clinical matc
  assert.equal(selectedRows(rows,index,null,'NCT01234567',false,null).length,1);
 });
 test('combined phases and regulatory stages stay separate',()=>{
+ assert.equal(phaseColumn('Early Phase 1'),'EARLY');
+ assert.equal(phaseColumn('Phase 4'),'P4');
  assert.equal(phaseColumn('Phase 1/2'),'P1/2');
  assert.equal(phaseColumn('Phase 2/3'),'P2/3');
  assert.equal(phaseColumn('Phase 3 Results'),'RESULTS');
