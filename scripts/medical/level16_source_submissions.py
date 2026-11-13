@@ -74,8 +74,8 @@ def validate(document, roster, applications, checkpoint):
 
     # The assessment layer independently validates both canonical snapshots.
     all_ncts = set(roster)
-    if set(applications) != all_ncts:
-        raise ValueError("Unreconciled application identity")
+    if not set(applications).issubset(all_ncts):
+        raise ValueError("Application crosswalk references a trial outside current FOCUS")
     captures = checkpoint.get("results", {})
     result = {nct: [] for nct in roster}
     ids = set()
@@ -96,7 +96,8 @@ def validate(document, roster, applications, checkpoint):
             raise ValueError("Evidence submission has invalid Level 1–6")
         kind = item["sourceKind"]
         role = item["role"]
-        if kind not in ALLOWED_KINDS or role not in ALLOWED_ROLES:
+        if (not isinstance(kind, str) or not isinstance(role, str)
+                or kind not in ALLOWED_KINDS or role not in ALLOWED_ROLES):
             raise ValueError("Unknown source kind or claim role")
         url = _https(item["sourceUrl"])
         source_date = _date(item["sourceDate"], "sourceDate")
@@ -112,7 +113,7 @@ def validate(document, roster, applications, checkpoint):
         cycle = item.get("candidateApplicationCycleId")
         if cycle is not None:
             cycle = _nonblank(cycle, "candidateApplicationCycleId", 128)
-            valid_ids = {c["cycleId"] for c in applications[nct]["candidateApplications"]}
+            valid_ids = {c["cycleId"] for c in applications.get(nct, {}).get("candidateApplications", [])}
             if cycle not in valid_ids:
                 raise ValueError("Source has mismatched application-cycle identity")
         if kind == "REGISTRY":
