@@ -1,0 +1,8 @@
+{
+  "enabled": false,
+  "base_commit": "REQUIRES_REVIEWED_40_CHARACTER_COMMIT",
+  "base_branch": "REQUIRES_REVIEWED_BASE_BRANCH",
+  "image": "REQUIRES_LOCALLY_AVAILABLE_REVIEWED_IMAGE_AT_SHA256_DIGEST",
+  "max_repairs": 1,
+  "tasks": []
+}
