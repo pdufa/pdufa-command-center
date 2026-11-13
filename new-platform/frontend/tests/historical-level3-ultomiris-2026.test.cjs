@@ -100,6 +100,6 @@ test("AZN outcome cannot affect live prospective accuracy, retired analyses, or 
   const model=fs.readFileSync(path.join(root,"lib/focus-assessment-chart.ts"),"utf8");
   assert.doesNotMatch(model,/levelThreeAznFrozen2026|levelThreeAznHistoricalComparison2026/);
   const focus=JSON.parse(fs.readFileSync(path.join(root,"../backend/app/data/focus_snapshot.json"),"utf8"));
-  assert.equal(focus.records.length,29);
+  assert.equal(focus.records.length,32);
   assert.equal(focus.records.some(r=>r.nct==="NCT06291376"),false);
 });
