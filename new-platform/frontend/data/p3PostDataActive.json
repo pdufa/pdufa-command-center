@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "asOf": "2026-11-12",
+  "asOf": "2026-11-13",
   "origin": "FOCUS / Google Sheet",
   "source": "https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit#gid=202611061",
   "records": [
@@ -129,7 +129,7 @@
       "ticker": "CAPR",
       "nct": "NCT05126758",
       "company": "Capricor Therapeutics, Inc.",
-      "marketCap": 587240000,
+      "marketCap": 595380000,
       "fdaStatus": "2026-11-22",
       "resultsUrl": "https://www.capricor.com/investors/news-events/press-releases/detail/331/capricor-therapeutics-announces-positive-topline-results",
       "regulatoryUrl": "https://www.capricor.com/investors/sec-filings/all-sec-filings/content/0001104659-26-100071/capr-20260824xex99d1.htm",
