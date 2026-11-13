@@ -113,7 +113,7 @@ class CompletionTests(unittest.TestCase):
             self.state["levels"]["4"]["steps"][s]["status"] = "DONE"
         self.assertTrue(M.once(self.state, self.plan))
         row = self.state["levels"]["4"]["steps"]["INDEPENDENT_REVIEW"]
-        self.assertEqual(row["blocker"], "INDEPENDENT_REVIEW_NOT_APPROVED")
+        self.assertEqual(row["blocker"], "PDUFA_LEVEL_ASSESSMENTS_NOT_AVAILABLE")
         self.assertEqual(row["status"], "BLOCKED")
         self.assertEqual(M.next_step(self.state), (5, "AUDIT_EXISTING_DRAFTS"))
         self.assertEqual(M.counts(self.state)["scientifically_completed_levels"], 0)
