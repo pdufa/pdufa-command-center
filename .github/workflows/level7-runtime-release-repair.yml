@@ -1,0 +1,123 @@
+name: PDUFA Level7 Runtime and Reviewed Release Repair
+
+on:
+  pull_request:
+    paths:
+      - 'AGENTS.md'
+      - 'automation/scientific-level-completion-queue.json'
+      - 'automation/windows-release-channel*.json'
+      - 'scripts/pdufa_runtime_status.py'
+      - 'scripts/pdufa_predictive_preflight.py'
+      - 'scripts/pdufa_engineering_review_lanes.py'
+      - 'scripts/pdufa_level_completion.py'
+      - 'scripts/pdufa_strict_level_runner.py'
+      - 'scripts/level4_*.py'
+      - 'scripts/level5_*.py'
+      - 'scripts/level6_*.py'
+      - 'scripts/level7_*.py'
+      - 'scripts/windows_pdufa_level6_unblock.ps1'
+      - 'scripts/windows_pdufa_reviewed_release_updater.ps1'
+      - 'scripts/windows_local_agent_watchdog.ps1'
+      - 'tests/test_pdufa_runtime_status.py'
+      - 'tests/test_pdufa_partial_install_integration.py'
+      - 'tests/test_pdufa_engineering_review_lanes.py'
+      - 'tests/test_pdufa_level_completion.py'
+      - 'tests/test_pdufa_strict_level_runner.py'
+      - 'tests/test_level5_implementation_integration.py'
+      - 'tests/test_level6_implementation_integration.py'
+      - 'tests/test_level7_*.py'
+      - 'tests/test_windows_reviewed_release_updater.py'
+      - 'tests/test_reviewed_release_repair_contract.py'
+      - 'docs/PDUFA_REVIEWED_RELEASE_RECOVERY.md'
+      - '.github/workflows/level7-runtime-release-repair.yml'
+
+permissions:
+  contents: read
+
+jobs:
+  offline-runtime-and-release:
+    name: Offline runtime and release (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - name: Preserve exact reviewed source bytes on both platforms
+        shell: bash
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Runtime inspection and reviewed-release failure regressions
+        shell: bash
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          for path in (
+              'scripts/pdufa_runtime_status.py',
+              'tests/test_pdufa_runtime_status.py',
+              'tests/test_reviewed_release_repair_contract.py',
+          ):
+              assert Path(path).is_file(), 'Missing runtime/release dependency: ' + path
+          PY
+          python -B -m unittest discover -s tests -p 'test_pdufa_runtime_status.py' -v
+          python -B -m unittest discover -s tests -p 'test_windows_reviewed_release_updater.py' -v
+          python -B -m unittest discover -s tests -p 'test_reviewed_release_repair_contract.py' -v
+      - name: Level7 receipts, gates and exact installed-file integration
+        shell: bash
+        run: |
+          python -B -m unittest discover -s tests -p 'test_level7_model_validation_readiness.py' -v
+          python -B -m unittest discover -s tests -p 'test_level7_source_readiness_inventory.py' -v
+          python -B -m unittest discover -s tests -p 'test_level7_implementation_integration.py' -v
+          python -B -m unittest discover -s tests -p 'test_level6_implementation_integration.py' -v
+          python -B -m unittest discover -s tests -p 'test_level5_implementation_integration.py' -v
+          python -B -m unittest discover -s tests -p 'test_pdufa_level_completion.py' -v
+          python -B -m unittest discover -s tests -p 'test_pdufa_strict_level_runner.py' -v
+          python -B -m unittest discover -s tests -p 'test_pdufa_engineering_review_lanes.py' -v
+          python -B -m unittest discover -s tests -p 'test_pdufa_partial_install_integration.py' -v
+          python -B scripts/audit_raas_retirement.py --check
+      - name: Keep approval channel disabled and scientific gates separate
+        shell: bash
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          root = Path('.')
+          assert not (root / 'automation/windows-release-channel.json').exists()
+          example = json.loads((root / 'automation/windows-release-channel.example.json').read_text())
+          assert example['enabled'] is False
+          plan = json.loads((root / 'automation/scientific-level-completion-queue.json').read_text())
+          assert all(x['completed_scientific_level'] is False for x in plan['levels'])
+          assert all(x['implementation_draft_pr'] is None for x in plan['levels'][4:])
+          print('PASS: no release activated, no independent scientific approval fabricated, Levels8-20 remain separate work')
+          PY
+      - name: Parse and inspect using native Windows PowerShell 5.1
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          if ($PSVersionTable.PSVersion.Major -ne 5) { throw 'Expected Windows PowerShell 5.1' }
+          foreach ($file in @(
+            'scripts/windows_pdufa_level6_unblock.ps1',
+            'scripts/windows_pdufa_reviewed_release_updater.ps1',
+            'scripts/windows_local_agent_watchdog.ps1'
+          )) {
+            $tokens = $null
+            $parseErrors = $null
+            [System.Management.Automation.Language.Parser]::ParseFile(
+              (Join-Path $PWD $file), [ref]$tokens, [ref]$parseErrors
+            ) | Out-Null
+            if ($parseErrors.Count -gt 0) {
+              $parseErrors | Out-String | Write-Error
+              exit 1
+            }
+          }
+          & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File `
+            (Join-Path $PWD 'scripts/windows_pdufa_reviewed_release_updater.ps1') -Status
+          if ($LASTEXITCODE -ne 0) { throw 'Read-only updater status failed' }
+          Write-Host 'PASS: native parsing and status only; no installer or Scheduled Task activation'
