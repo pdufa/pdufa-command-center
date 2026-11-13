@@ -1,0 +1,44 @@
+name: FOCUS Live Level 6 Readiness Unit Tests
+on:
+  pull_request:
+    paths:
+      - 'scripts/focus_nightly_l6_review.py'
+      - 'tests/test_focus_nightly_l6_review.py'
+      - '.github/workflows/focus-nightly-l6-review-ci.yml'
+      - '.github/workflows/focus-nightly-source-reassessment.yml'
+      - 'scripts/pdufa_scoring_replay_guard.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  linux-phase-first-scoring-safety:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test assessment classification and no misleading FDA scores
+        run: |
+          python -B -m unittest discover -s tests -p 'test_pdufa_scoring_replay_guard.py' -v
+          python -B -m unittest discover -s tests -p 'test_focus_nightly_l6_review.py' -v
+          python -B -m py_compile scripts/focus_nightly_l6_review.py
+
+  windows-phase-first-scoring-safety:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Test read-only source evidence monitor on Windows
+        shell: pwsh
+        run: |
+          python -B -m unittest discover -s tests -p 'test_pdufa_scoring_replay_guard.py' -v
+          if ($LASTEXITCODE -ne 0) { throw 'Scorer regression failed' }
+          python -B -m unittest discover -s tests -p 'test_focus_nightly_l6_review.py' -v
+          if ($LASTEXITCODE -ne 0) { throw 'Readiness queue regression failed' }
