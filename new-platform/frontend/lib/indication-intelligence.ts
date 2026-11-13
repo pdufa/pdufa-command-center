@@ -16,8 +16,10 @@ export type LinkedTrial=IndicationTrial&{
   indicationText:string;classificationId:string|null;matchStatus:"EXACT"|"AMBIGUOUS"|"UNMAPPED";
 };
 export const PHASE_COLUMNS=[
-  ["P1","Phase 1"],["P1/2","Phase 1/2"],["P2","Phase 2"],["P2/3","Phase 2/3"],
-  ["P3","Phase 3"],["RESULTS","Phase 3 results"],["FDA","FDA / PDUFA"],["OTHER","Other / unknown"]
+  ["EARLY","Early Phase 1"],["P1","Phase 1"],["P1/2","Phase 1/2"],
+  ["P2","Phase 2"],["P2/3","Phase 2/3"],["P3","Phase 3"],
+  ["RESULTS","Phase 3 results"],["FDA","FDA / PDUFA"],
+  ["P4","Phase 4"],["OTHER","Other / unknown"]
 ] as const;
 export type PhaseColumn=typeof PHASE_COLUMNS[number][0];
 const clean=(s:string)=>s.trim().toLowerCase().replace(/[^a-z0-9]+/g," ").trim();
@@ -33,8 +35,10 @@ export function phaseColumn(stage:string):PhaseColumn{
  if(/phase 3 results|phase3 results/.test(s))return "RESULTS";
  if(/phase 2\s*\/\s*3|phase2\s*\/\s*3/.test(s))return "P2/3";
  if(/phase 1\s*\/\s*2|phase1\s*\/\s*2/.test(s))return "P1/2";
+ if(/phase 4|phase4/.test(s))return "P4";
  if(/phase 3|phase3/.test(s))return "P3";
  if(/phase 2|phase2/.test(s))return "P2";
+ if(/early phase 1|early phase1/.test(s))return "EARLY";
  if(/phase 1|phase1/.test(s))return "P1";
  return "OTHER";
 }
