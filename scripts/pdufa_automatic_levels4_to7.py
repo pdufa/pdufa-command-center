@@ -240,7 +240,7 @@ def execute(*, roster: dict, manifest: dict, output: Path, fetcher=fetch_registr
                 batches[6], ncts=observed_ncts,
                 freeze_as_of=roster["source"]["snapshot_date"],
                 source_roster_blob_sha1=git_blob_sha(
-                    (ROSTER if roster is None else ROSELESS_ROSTER_FILE(roster)).read_bytes()),
+                    checked_roster_file(roster).read_bytes()),
             )
         except (ValueError, KeyError, TypeError) as exc:
             level7 = {"level": 7, "status": "LEVEL7_SOURCE_AUDIT_BLOCKED",
@@ -296,7 +296,7 @@ def execute(*, roster: dict, manifest: dict, output: Path, fetcher=fetch_registr
     return status
 
 
-def ROSELESS_ROSTER_FILE(roster: dict) -> Path:
+def checked_roster_file(roster: dict) -> Path:
     """Legacy source roster checksum must be exact Git blob for the dated file."""
     # The fixed, checked-in dated roster is the only allowed source in v1.
     with ROSTER.open("r", encoding="utf-8") as f:
