@@ -13,6 +13,7 @@ import LiveRegistryReview from "./LiveRegistryReview";
 import PipelineSponsorReadout from "./PipelineSponsorReadout";
 import BatchRegistryExport from "./BatchRegistryExport";
 import PoolMasterSpreadsheet from "./PoolMasterSpreadsheet";
+import IndicationIntelligence from "./IndicationIntelligence";
 import {type PoolPhaseSelection} from "../lib/pool-phase-options";
 import type {PoolSortSpec} from "../lib/pool-full-sort";
 
@@ -106,6 +107,8 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
        "Read-only Phase 3 eligibility review, linked by exact NCT and ticker to the master POOL. Only registry-completed, exact-linked trials appear in the initial screening queue."}</p>
      <div className={styles.links}>
        <Link href="/pool">Master POOL</Link>
+        <Link href="/indications">Indication Intelligence</Link>
+        <Link href="/focus">FOCUS</Link>
        <Link href="/pipeline">Post–Phase 3 PIPELINE</Link>
        <Link href="/patient-population">#1 Patient Population</Link>
        {section==="pipeline"&&<a href="https://docs.google.com/spreadsheets/d/1FSRXFXc4u2KTpdyP-vSbWil-Fgtrj3ucELSk2kpQAG0/edit#gid=1138168786" target="_blank" rel="noopener noreferrer">Eligibility Gate Matrix (Google Sheets)</a>}
