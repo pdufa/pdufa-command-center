@@ -1,0 +1,43 @@
+name: Phase-first Level 1-6 readiness checks
+
+on:
+  pull_request:
+    paths:
+      - "scripts/medical/phase_first_levels_1_6.py"
+      - "scripts/medical/level4_registry_extraction.py"
+      - "tests/test_phase_first_levels_1_6.py"
+      - "tests/test_level4_registry_extraction.py"
+      - ".github/workflows/phase-first-levels1-6-tests.yml"
+  push:
+    branches:
+      - "codex/assessment-levels1-6-phase-first-20261113"
+    paths:
+      - "scripts/medical/phase_first_levels_1_6.py"
+      - "scripts/medical/level4_registry_extraction.py"
+      - "tests/test_phase_first_levels_1_6.py"
+      - "tests/test_level4_registry_extraction.py"
+      - ".github/workflows/phase-first-levels1-6-tests.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  evidence-readiness:
+    name: Phase-first and retirement guard (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+      - name: Phase-first six-level unit tests
+        run: python -m unittest discover -s tests -p "test_phase_first_levels_1_6.py" -v
+      - name: Registry extractor regression tests
+        run: python -m unittest discover -s tests -p "test_level4_registry_extraction.py" -v
+      - name: Permanent retirement regression guard
+        run: python scripts/audit_raas_retirement.py --check
