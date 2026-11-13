@@ -106,7 +106,8 @@ def score_trials(rows: list[dict]) -> dict:
         "trials": computed,
         "total": len(computed),
         "five_of_five": sum(x["fully_observed_clinical_five_100"] is not None for x in computed),
-        "partial": sum("1/5" <= x["component_coverage"] < "5/5" for x in computed),
+        "partial": sum(0 < len([v for v in x["source_components"] if v is not None]) < 5
+                       for x in computed),
         "not_scoreable": sum(x["observed_only_mean_100"] is None for x in computed),
         "verified_level6_scientific_completions": 0,
     }
@@ -231,7 +232,7 @@ def evaluate(frozen: dict, outcomes: list[dict]) -> dict:
             if n else None
         ),
         "records": rows,
-        "warning": "Only independently audited, predecision frozen, one-per-application prospective cases count. No 100% accuracy guarantee.",
+        "warning": "Counts require an externally supplied independent audit attestation; this offline program cannot independently authenticate that attestation or prove historical outcomes were unknown. One case per FDA application/event; no 100% accuracy guarantee.",
     }
 
 
