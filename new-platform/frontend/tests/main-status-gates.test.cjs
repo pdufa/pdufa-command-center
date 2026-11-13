@@ -31,8 +31,8 @@ test("MAIN status page reports dated release proof without promoting old install
   assert.match(html,/Core Platform \(3\)/);
   assert.match(html,/Pipeline \(4\)/);
   assert.match(html,/other six former sections \(24 gates\)/);
-  assert.match(html,/Final trial acceptance · 29 FOCUS trials only/);
-  assert.match(html,/29 unique NCTs/);
+  assert.match(html,/Final trial acceptance · 32 FOCUS trials only/);
+  assert.match(html,/32 unique NCTs/);
   assert.match(html,/203 trial-specific evidence checks/);
   assert.match(html,/0 independently verified/);
   assert.match(html,/only trial records/);
