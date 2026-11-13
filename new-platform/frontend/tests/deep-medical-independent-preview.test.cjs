@@ -4,7 +4,11 @@ const {parseDeepMedicalSnapshot}=require('../lib/deep-medical-intelligence.ts');
 const data=require('../data/deepMedicalIntelligencePreview.json');
 test('independent source preview preserves all current trial identities and distinguishes medical completion',()=>{
  const d=parseDeepMedicalSnapshot(data),active=require('../data/p3PostDataActive.json').records;
- assert.deepEqual([...new Set(d.applications.flatMap(a=>a.nctIds))].sort(),active.map(r=>r.nct).sort());
+ const current=new Set(active.map(r=>r.nct));
+ const frozen=[...new Set(d.applications.flatMap(a=>a.nctIds))];
+ assert.equal(frozen.length,29,"older research snapshot must retain its original 29 trial identities");
+ assert.equal(current.size,32,"current source roster has 32 exact trials");
+ assert.ok(frozen.every(nct=>current.has(nct)),"historic clinical research cannot introduce a foreign trial");
  assert.equal(d.installationLevels.length,12);assert.equal(d.inventory.completedDecisions,0);
  assert.ok(d.applications.every(a=>a.outcome.leading==='Indeterminate'&&a.timing.leading==='Indeterminate'));
  assert.ok(d.inventory.metadataScreenedTrials>d.inventory.fullyReviewedTrials);
