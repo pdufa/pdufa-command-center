@@ -196,3 +196,69 @@ CI covers synthetic byte matching and mismatches, missing files, oversized
 files, relative-path confinement, symlink refusal, manifest tampering,
 review-status non-promotion, and the 32-NCT FOCUS integration contract.
 These are engineering tests, not clinical source-verification receipts.
+
+## Source-verification cases and scientific-review proposals (November 13)
+
+The next bounded engineering slice adds `level16_review_cases.py`. These are
+**offline unreviewed queues**, not a permissioned authentication service or
+completed scientific assessments. No original sources were authenticated in this
+slice, and no real reviewer identity was established. Tests use synthetic data.
+
+The readiness CLI now accepts `--source-cases` and `--review-proposals` JSON,
+only with `--source-submissions`. Both documents require exactly `schemaVersion`
+(integer 1), `kind`, `cutoffDate` (equal to the validated submission cutoff), and
+`records` (at most 2,000). They never accept scores, outcomes, probabilities,
+verified flags, or signed-off status. Review dates can follow the evidence
+cutoff; such dates do not establish a prospective blind assessment.
+
+Source-case kind: `FOCUS_LEVELS_1_6_SOURCE_CASES`. Each record contains exactly:
+
+- `submissionId`, `nct`, `candidateApplicationCycleId`, `documentSha256`,
+  `sourceUrl`, `sourceDate`, `accessedDate`: must match the validated source lead.
+- `checks`: exactly `exactNct`, `phase`, `registryStatus`, `indication`,
+  `population`, `sourceOwnership`, `publicationDate`, `retrievalDate`,
+  `documentVersion`, `protocolVersion`. Every check has `state`, `observation`,
+  and `locator`; observations and locators are bounded, nonblank source leads.
+- `conflicts` and `limitations`: bounded text lists. Conflicting checks require
+  explicit contradictory information. Unknown versions remain MISSING or
+  NOT_PUBLICLY_AVAILABLE with explanation; do not invent versions.
+
+Review-proposal kind: `FOCUS_LEVELS_1_6_REVIEW_PROPOSALS`. Each record contains
+exactly `proposalId`, `nct`, `level`, `candidateApplicationCycleId`,
+`sourceSubmissionIds`, `phaseBasis`, `evidenceState`, `findings`, `reasons`,
+`contradictoryEvidence`, `limitations`, `reviewerIdentityClaim`, `reviewDate`,
+`challenge`, and `outstandingBlockers`. Findings, reasons and limitations require
+nonempty text lists. Every evidence ID must match the exact trial, level and
+application candidate (including null for unmapped evidence). A phase basis is
+required but remains unverified and cannot override registry phase.
+
+`challenge` has exactly `reviewerIdentityClaim`, `reviewDate`, `findings`, and
+`limitations`; all four are null if absent. An included challenge must follow
+the first review date and use a different identity claim. Different strings
+**do not prove different people or independence**. Both identities and challenge
+remain unverified; all proposals still require trusted identity, authenticated
+sources, verified phase, and independent scientific adjudication. An AI statement
+has the same unreviewed status as any other submitted statement.
+
+Allowed intake evidence/check states are UNREVIEWED, MISSING, CONFLICTING, and
+NOT_PUBLICLY_AVAILABLE. NOT_YET_EXPECTED_AT_THIS_PHASE is additionally permitted
+only for proposed Levels 3/5 assessments with an exclusively Phase 1/2 basis;
+it cannot waive source identity, provenance or phase checks. VERIFIED is
+intentionally unavailable until a separate trusted review service exists.
+
+Dossiers flag same-digest submissions as duplicate documents, never independent
+corroboration. Different digests at the same URL require variant reconciliation.
+A matching local-byte receipt does not remove the authentication blocker.
+The offline preview shows dossier blockers/conflicts/limitations and proposed
+findings/reasons with explicit UNREVIEWED labels, escaped as text. It continues
+to reject review promotion and predictions. This is not protected staging:
+authentication, authorization, immutable review storage and runtime integration
+are still outstanding. No service, worker, production configuration or history
+is changed.
+
+Next implementation: add a separately permissioned reviewer identity and
+append-only review-event boundary, with trusted authorization supplied by the
+service rather than JSON intake; bind each event to immutable original evidence
+bytes and cutoff. Only then implement adjudication transitions and protected
+staging integration. Obtain original-source and medical specialist review for
+all six levels; keep all 32 trials and the three unmapped exceptions visible.

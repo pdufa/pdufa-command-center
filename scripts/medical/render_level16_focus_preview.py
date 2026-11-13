@@ -89,6 +89,13 @@ def render(report):
                     local_status = (" · Local byte consistency: "
                                     + _text(local["byteMatchStatus"])
                                     + " (NOT original-source authenticated)")
+                case = source.get("sourceVerificationCase")
+                if case is not None:
+                    if case.get("status") != "SOURCE_CASE_UNREVIEWED" or case.get("independentlyAuthenticated") is not False:
+                        raise ValueError("Preview refuses source-case certification")
+                    local_status += "<p>Source verification case: UNREVIEWED. Blockers: " + _text(", ".join(case["blockers"])) + "</p>"
+                    local_status += "<p>Conflicts: " + _text("; ".join(case["conflicts"]) or "None submitted; not independently checked") + "</p>"
+                    local_status += "<p>Limitations: " + _text("; ".join(case["limitations"])) + "</p>"
                 linked.append(
                     '<li><span class="kind">' + _text(source.get("sourceKind")) +
                     "</span> — " + _text(source.get("role")) +
@@ -98,6 +105,14 @@ def render(report):
                     local_status + "</li>"
                 )
             link_html = "<ul>" + "".join(linked) + "</ul>" if linked else "<span class='muted'>No source submissions</span>"
+            for proposal in item.get("reviewProposalsUnreviewed", []):
+                if (proposal.get("status") != "UNREVIEWED_PROPOSAL_NOT_SCIENTIFIC_ASSESSMENT"
+                        or proposal.get("independentlyReviewed") is not False):
+                    raise ValueError("Preview refuses proposed-review certification")
+                link_html += "<p>UNREVIEWED review proposal: " + _text(proposal["proposalId"]) + "</p>"
+                for label, key in (("Proposed findings", "findingsUnreviewed"), ("Proposed reasons", "reasonsUnreviewed"),
+                                   ("Contradictions", "contradictoryEvidence"), ("Limitations", "limitations"), ("Blockers", "blockers")):
+                    link_html += "<p>" + label + ": " + _text("; ".join(proposal[key])) + "</p>"
             requests = item.get("originalEvidenceRequests", [])
             requests_text = ", ".join(map(str, requests)) if isinstance(requests, list) else ""
             lines.append(
@@ -108,13 +123,17 @@ def render(report):
                 "</td><td>NOT ADJUDICATED</td></tr>"
             )
         summary = (
-            _text(trial.get("ticker")) + " · " + _text(nct) +
+            _text(trial.get("company")) + " · " + _text(trial.get("ticker")) + " · " + _text(nct) +
             " · Phase: " + _text(trial.get("phaseGroup")) +
             " · Source submissions: " + _text(trial.get("sourceSubmissionCount", 0))
         )
         rows.append(
             "<details><summary>" + summary +
-            "</summary><div class='detail'><p><strong>Candidate indications (not verified):</strong> " +
+            "</summary><div class='detail'><p><strong>Registry phase/status (captured, NOT verified):</strong> " +
+            _text(", ".join(trial.get("capturedRegistryPhasesUnreviewed", [])) or "Unknown") +
+            " / " + _text(trial.get("capturedStudyStatusUnreviewed")) +
+            " · <strong>Mapping status:</strong> " + _text(trial.get("applicationCycleVerification")) +
+            "</p><p><strong>Candidate indications (not verified):</strong> " +
             _text(", ".join(trial.get("candidateIndicationsUnverified", [])) or "Not supplied") +
             " · <strong>Application cycle links:</strong> " +
             _text(", ".join(trial.get("candidateApplicationCycleIdsUnverified", [])) or "None") +

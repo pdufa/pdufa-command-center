@@ -128,7 +128,7 @@ def _level(number, name, fields, phase_group, indication_leads, source_captured)
 
 
 def build(roster, application_snapshot, checkpoint, definition, submissions=None,
-          local_receipts=None, evidence_root=None):
+          local_receipts=None, evidence_root=None, source_cases=None, review_proposals=None):
     """Return non-predictive, non-mutating readiness for every canonical FOCUS NCT."""
     records = _records(roster, "canonical roster")
     apps = _records(application_snapshot, "application crosswalk")
@@ -174,6 +174,20 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
                     {"byteMatchStatus": "NO_LOCAL_RECEIPT",
                      "computedSha256": None, "bytesRead": 0}
                 )
+
+    dossiers, proposals = {}, {}
+    if source_cases is not None or review_proposals is not None:
+        if submissions is None:
+            raise ValueError("Review cases require validated source submissions")
+        spec = importlib.util.spec_from_file_location(
+            "level16_review_cases", Path(__file__).with_name("level16_review_cases.py"))
+        cases = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(cases)
+        dossiers, proposals = cases.prepare(submissions_by_nct, submissions["cutoffDate"],
+                                            source_cases, review_proposals)
+        for items in submissions_by_nct.values():
+            for source in items:
+                source["sourceVerificationCase"] = dossiers.get(source["submissionId"])
 
     rows, cycle_ids = [], set()
     for nct, record in records.items():
@@ -221,6 +235,7 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
         for level in levels:
             submitted = [item for item in submissions_by_nct[nct]
                          if item["level"] == level["level"]]
+            level["reviewProposalsUnreviewed"] = proposals.get(nct, {}).get(level["level"], [])
             level["submittedEvidenceLeads"] = submitted
             level["sourceSubmissionCount"] = len(submitted)
             level["sourceReviewQueueStatus"] = (
@@ -230,7 +245,8 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
             if submitted:
                 level["readiness"] = "SOURCE_METADATA_SUBMITTED_REVIEW_REQUIRED"
         rows.append({
-            "nct": nct, "ticker": record.get("ticker"), "phaseGroup": phase_group,
+            "nct": nct, "ticker": record.get("ticker"), "company": record.get("company"),
+            "phaseGroup": phase_group,
             "capturedRegistryPhasesUnreviewed": captured_phases,
             "capturedStudyStatusUnreviewed": study_status,
             "registrySource": source, "registryCaptureStatus": capture_status,
@@ -251,6 +267,9 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
         "mappedTrialCount": len(apps), "unmappedTrialCount": len(rows) - len(apps),
         "scientificallyAdjudicatedLevels": 0, "calibratedFdaPredictions": 0,
         "sourceSubmissionCount": sum(len(items) for items in submissions_by_nct.values()),
+        "sourceVerificationCaseCount": len(dossiers),
+        "unreviewedProposalCount": sum(len(items) for levels in proposals.values() for items in levels.values()),
+        "originalSourcesIndependentlyAuthenticated": 0,
         "localByteConsistency": byte_consistency,
         "levelsPerTrial": 6, "trials": rows,
     }
@@ -268,6 +287,8 @@ def main():
                         help="Optional bounded local document byte-receipt manifest")
     parser.add_argument("--evidence-root", type=Path,
                         help="Existing private directory holding original permitted source files")
+    parser.add_argument("--source-cases", type=Path, help="Unreviewed source-verification dossiers")
+    parser.add_argument("--review-proposals", type=Path, help="Unreviewed scientific-review proposals")
     args = parser.parse_args()
     inputs = [json.loads(path.read_text(encoding="utf-8")) for path in
               (args.roster, args.applications, args.checkpoint, args.definition)]
@@ -276,7 +297,9 @@ def main():
     receipt_manifest = (json.loads(args.local_byte_receipts.read_text(encoding="utf-8"))
                         if args.local_byte_receipts else None)
     report = build(*inputs, submissions=submitted,
-                   local_receipts=receipt_manifest, evidence_root=args.evidence_root)
+                   local_receipts=receipt_manifest, evidence_root=args.evidence_root,
+                   source_cases=json.loads(args.source_cases.read_text(encoding="utf-8")) if args.source_cases else None,
+                   review_proposals=json.loads(args.review_proposals.read_text(encoding="utf-8")) if args.review_proposals else None)
     print(json.dumps(report, indent=2))
 
 
