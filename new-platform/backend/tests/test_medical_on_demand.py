@@ -163,10 +163,10 @@ def test_failed_source_stage_retains_initial_report(engine):
     assert saved["records"][0]["analysis"]["savedAt"]
 
 
-def test_one_engine_supports_all_29_after_rollout_flag(engine,monkeypatch):
+def test_one_engine_supports_all_32_after_rollout_flag(engine,monkeypatch):
     monkeypatch.setenv("PDUFA_ANALYZE_NOW_ALL_ENABLED","true")
     ncts=sorted(core.roster())
-    assert len(ncts)==29
+    assert len(ncts)==32
     for i,nct in enumerate(ncts):
         job=analyze.start_now(engine,nct,f"00000000-0000-4000-8000-{i+900:012d}",submit=False)
         assert job["nct"]==nct and job["status"]=="PENDING"
@@ -174,4 +174,4 @@ def test_one_engine_supports_all_29_after_rollout_flag(engine,monkeypatch):
         assert job["analysis"]["certainty"]["rating"] is None
         assert analyze.history(engine,nct)["total"]==1
     with engine.connect() as c:
-        assert c.execute(text("SELECT COUNT(*) FROM medical_continuous_runs")).scalar()==29
+        assert c.execute(text("SELECT COUNT(*) FROM medical_continuous_runs")).scalar()==32
