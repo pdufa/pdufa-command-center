@@ -1,0 +1,43 @@
+name: POOL–INDICATIONS–FOCUS Feature Verification
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/app/IndicationIntelligence.tsx'
+      - 'new-platform/frontend/app/indications/**'
+      - 'new-platform/frontend/app/focus/page.tsx'
+      - 'new-platform/frontend/app/FunnelWorkspace.tsx'
+      - 'new-platform/frontend/app/api/scope-funnel/route.ts'
+      - 'new-platform/frontend/lib/indication-*.ts'
+      - 'new-platform/frontend/tests/indication-*.test.cjs'
+      - '.github/workflows/indication-intelligence-feature-checks.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'new-platform/frontend/**'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  feature:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install locked dependencies
+        run: npm install --no-audit --no-fund
+      - name: Typecheck all frontend components
+        run: npm run typecheck
+      - name: Indication-specific regression and evidence gate tests
+        run: node --test tests/indication-intelligence.test.cjs tests/indication-review.test.cjs tests/pool-registry-details.test.cjs tests/focus-specialty-assessment.test.cjs
+      - name: Production Next.js build
+        run: npm run build
