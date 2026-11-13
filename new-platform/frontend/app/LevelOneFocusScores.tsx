@@ -40,17 +40,17 @@ export default function LevelOneFocusScores() {
   const full = snapshot.records.filter(row => row.score === 100).length;
   return <section id="focus-level1-scores" aria-label="Level 1 registry document coverage assessments" data-testid="focus-level1-scores" style={section}>
     <div style={{fontWeight:850, fontSize:11, letterSpacing:".075em", color:"#176658"}}>
-      FOCUS · LEVEL 1 · SOURCE DOCUMENT ASSESSMENTS
+      FOCUS · LEVEL 1 · DOCUMENTATION SCORE ONLY
     </div>
-    <h2 style={{fontSize:23, margin:"6px 0"}}>All 32 FOCUS trials — Level 1 scores</h2>
+    <h2 style={{fontSize:23, margin:"6px 0"}}>All 32 FOCUS trials — Level 1 Documentation Scores</h2>
     <p style={{fontSize:14,lineHeight:1.6,maxWidth:1050,margin:"8px 0"}}>
-      Dated ClinicalTrials.gov document coverage snapshot, <strong>{snapshot.asOfUtc} UTC</strong>.
+      Dated ClinicalTrials.gov documentation-coverage assessment,  <strong>{snapshot.asOfUtc} UTC</strong>.
       All <strong>{snapshot.records.length} / 32</strong> exact trial IDs were scored against this five-part
-      source-document checklist: <strong>{full}</strong> scored 100/100 and{" "}
-      <strong>{snapshot.records.length - full}</strong> scored 50/100.
+      documentation checklist: <strong>{full}</strong> have 100/100 documentation points and{" "}
+      <strong>{snapshot.records.length - full}</strong> have 50/100 documentation points.
     </p>
     <p style={{fontSize:13,lineHeight:1.65,padding:12,background:"#fff4df",border:"1px solid #d9b981",borderRadius:8,margin:"9px 0"}}>
-      <strong>These are NOT FDA approval probabilities or full scientific PDUFA assessments.</strong>{" "}
+      <strong>DOCUMENTATION SCORE ONLY — NOT A PDUFA APPROVAL PREDICTION.</strong>{" "}
       A 100/100 means all checklist categories were documented in the registry snapshot; a 50/100
       means fewer categories were documented there, <strong>not</strong> that approval is 50% likely.
       Information absent from ClinicalTrials.gov may be available from FDA filings, sponsors,
@@ -89,7 +89,7 @@ export default function LevelOneFocusScores() {
     <div style={{overflowX:"auto",background:"#fff",border:"1px solid #c9dbd4",borderRadius:9}}>
       <table style={{borderCollapse:"collapse",width:"100%",minWidth:760,fontSize:13}}>
         <thead><tr style={{background:"#e5f1eb",textAlign:"left"}}>
-          {["Ticker","Exact NCT","Level 1 /100","Identity /15","Design /20","Protocol+SAP /25","Results /25","Trace /15","Explanation & sources"].map(x=>
+          {["Ticker","Exact NCT","Documentation /100","Identity /15","Design /20","Protocol+SAP /25","Results /25","Trace /15","Explanation & sources"].map(x=>
             <th key={x} scope="col" style={{padding:"10px 8px",borderBottom:"2px solid #acc8ba",whiteSpace:"nowrap"}}>{x}</th>)}
         </tr></thead>
         <tbody>{visible.map(row=><tr key={row.nct} data-testid="level1-score-row">
@@ -98,7 +98,7 @@ export default function LevelOneFocusScores() {
             <a href={"https://clinicaltrials.gov/study/"+row.nct} target="_blank" rel="noopener noreferrer" style={{color:"#08665a"}}>{row.nct}</a>
           </td>
           <td style={{padding:"9px 8px",borderBottom:"1px solid #dce7e3",fontWeight:850,whiteSpace:"nowrap"}}>
-            {row.score} / 100
+            {row.score} / 100 <span style={{display:"block",fontSize:10,fontWeight:650,color:"#58746c"}}>Documentation only</span>
           </td>
           {[row.identityPhase,row.designEndpoints,row.protocolSap,row.registryResults,row.sourceTraceability].map((value,i)=>
             <td key={i} style={{padding:"9px 8px",borderBottom:"1px solid #dce7e3",textAlign:"center"}}>
@@ -129,7 +129,7 @@ export default function LevelOneFocusScores() {
       {visible.length === 0 && <p style={{padding:"12px 16px"}}>No trial matches this search.</p>}
     </div>
     <p style={{fontSize:12,color:"#55716a",lineHeight:1.6,margin:"13px 0 0"}}>
-      Level 1 scoring formula: identity and phase (15), study design and endpoints (20),
+      Level 1 documentation scoring formula: identity and phase (15), study design and endpoints (20),
       registry-linked protocol/SAP (25), posted registry results (25), source traceability (15).
       The Level 1 document coverage score must not be substituted for Levels 2–6 medical or
       regulatory scores, and cannot justify an investment or trading decision.
