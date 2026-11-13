@@ -488,8 +488,29 @@ def execute(number: int, step: str, manifest: dict) -> dict:
         return {"result": "EXISTING_REVIEW_PR_VERIFIED_DRAFT_ONLY",
                 "implementation_pr": confirmed_pr(1156)}
     if step == "INDEPENDENT_REVIEW":
-        # Human independent clinical/scientific/statistical review cannot be
-        # forged by local model code or source receipt metadata.
+        # A level's engineering checkpoints alone are NOT its scientific
+        # assessment. Every current FOCUS record must first have an actual
+        # phase-first, source-backed level score; gap inventories do not count.
+        # This is a necessary readiness gate, not independent signoff.
+        report_path = DATA / "assessments" / "pdufa-cumulative-assessment-audit.json"
+        if not report_path.is_file():
+            raise RuntimeError("PDUFA_LEVEL_ASSESSMENTS_NOT_AVAILABLE")
+        try:
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            stats = next(x for x in report["per_level"] if x["level"] == number)
+            if (report.get("schema_version") != 1 or
+                    report.get("focus_trials") != 32 or
+                    report.get("assessment_records") != 32 * 17 or
+                    stats["trials"] != 32 or
+                    stats["provisional_numeric_scores"] != 32 or
+                    stats["unscored"] != 0 or
+                    stats["all_focus_trials_scored"] is not True or
+                    report.get("scientific_acceptance_automated") is not False):
+                raise ValueError("Missing reviewed score coverage")
+        except (ValueError, TypeError, KeyError, StopIteration, json.JSONDecodeError):
+            raise RuntimeError("PDUFA_LEVEL_ASSESSMENTS_NOT_READY") from None
+        # Even complete provisional numerical coverage is not proof of actual
+        # primary sources or an independent scientific reviewer. Never sign.
         raise RuntimeError("INDEPENDENT_REVIEW_NOT_APPROVED")
     raise ValueError("Unknown approved completion step")
 
