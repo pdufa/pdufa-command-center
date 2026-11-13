@@ -45,6 +45,7 @@ class Identity:
     """Only a trusted server-side adapter may return this; never deserialize JSON."""
     issuer: str
     subject: str
+    session: object = None
 
 
 class UnavailableIdentityProvider:
@@ -115,8 +116,12 @@ def validate_command(command):
     if not isinstance(command, dict) or set(command) != keys:
         raise ValueError('Unknown, missing or forbidden reviewer/role/timestamp/prediction fields')
     for key in ('eventId', 'streamId'):
+        if not isinstance(command[key], str):
+            raise ValueError('Canonical event/stream UUID text required')
         UUID(command[key])
     if command['previousEventId'] is not None:
+        if not isinstance(command['previousEventId'], str):
+            raise ValueError('Canonical predecessor UUID text required')
         UUID(command['previousEventId'])
     if type(command['expectedVersion']) is not int or command['expectedVersion'] < 0:
         raise ValueError('Expected current stream version required')

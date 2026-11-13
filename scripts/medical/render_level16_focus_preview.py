@@ -60,7 +60,8 @@ def render(report, trusted_review_reader=None):
         for level in levels:
             workflow = level.get("reviewWorkflow", {})
             authorized = workflow.get("status") == "AUTHORIZED_DATABASE_READBACK"
-            if authorized:
+            blocked_readback = workflow.get("status") == "TRUSTED_REVIEW_READBACK_BLOCKED"
+            if authorized or blocked_readback:
                 if trusted_review_reader is None or trusted_review_reader(nct, level["level"]) != workflow:
                     raise ValueError("Saved JSON cannot certify reviews; trusted current database readback required")
             elif workflow:
@@ -139,12 +140,24 @@ def render(report, trusted_review_reader=None):
                 review_html += "<p>" + label + ": " + _text(workflow.get(key)) + "</p>"
             review_html += "<p>Registry fields missing: " + _text(", ".join(item.get("registryFieldsNotCaptured", [])) or "None captured as missing; not a scientific completeness claim") + "</p>"
             review_html += "<p>Phase-specific applicability: " + _text(item.get("pivotalReadoutRequirement") or item.get("pivotalSAPRequirement") or "Review at current phase") + "</p>"
+            if item.get("verifiedPhaseBasis"):
+                review_html += "<p>Verified phase from source review: " + _text(", ".join(item["verifiedPhaseBasis"])) + "</p>"
+            review_html += "<p>Evidence disposition: " + _text(workflow.get("evidenceState", "UNREVIEWED")) + "</p>"
+            review_html += "<p>Implementation: " + _text(item.get("implementationStatus")) + " · Automated tests: " + _text(item.get("automatedTestStatus")) + "</p>"
             review_html += "<p>Remaining blockers: " + _text("; ".join(workflow.get("blockers", []))) + "</p>"
             if workflow.get("status") == "AUTHORIZED_DATABASE_READBACK":
                 label = "Independently adjudicated finding" if workflow.get("independentlyAdjudicated") else "Authorized review event (NOT final adjudication)"
                 review_html += "<p><strong>" + label + "</strong></p>"
                 context = workflow["binding"]
                 review_html += "<p>Review evidence context: " + _text(context["indication"]) + " · " + _text(", ".join(context["phases"])) + " · cutoff " + _text(context["cutoffDate"]) + "</p>"
+                review_html += "<p>Original document: " + _text(context["documentId"]) + " · version " + _text(context["documentVersion"]) + " · protocol " + _text(context["protocolVersion"]) + " · SHA-256 " + _text(context["documentSha256"]) + "</p>"
+                review_html += "<p>Published " + _text(context["publicationDate"]) + " · retrieved " + _text(context["retrievalDate"]) + " · " + _source_link(context["sourceUrl"]) + "</p>"
+                provenance = workflow.get("originalEvidenceProvenance")
+                if provenance is not None:
+                    review_html += "<p>Original publisher: " + _text(provenance["provenance"]["publisher"]) + " · retrieval: " + _text(provenance["provenance"]["retrievalMethod"]) + "</p>"
+                    review_html += "<p>Source attestation authority: " + _text(provenance["attestationAuthority"]) + " · ID " + _text(provenance["attestationId"]) + " · attesting person " + _text(provenance["attestingPerson"]) + "</p>"
+                    for amendment in provenance["amendments"]:
+                        review_html += "<p>Amendment original: " + _text(amendment["documentId"]) + " · " + _text(amendment["documentVersion"]) + " · " + _text(amendment["protocolVersion"]) + " · SHA-256 " + _text(amendment["documentSha256"]) + " · " + _source_link(amendment["sourceUrl"]) + "</p>"
                 for label, key in (("Findings", "findings"), ("Reasons", "reasons"),
                                    ("Contradictions", "contradictoryEvidence"), ("Limitations", "limitations")):
                     review_html += "<p>" + label + ": " + _text("; ".join(workflow[key])) + "</p>"

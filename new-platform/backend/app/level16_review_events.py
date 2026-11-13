@@ -49,6 +49,7 @@ class ReviewEventService:
         # migration is a separate DBA task; runtime cannot migrate/disable guards.
         safe = connection.execute(text("""SELECT NOT r.rolsuper AND NOT r.rolcreaterole
             AND NOT login_role.rolsuper AND NOT login_role.rolcreaterole
+            AND NOT r.rolbypassrls AND NOT login_role.rolbypassrls
             AND NOT pg_has_role(session_user,n.nspowner,'MEMBER')
             AND NOT pg_has_role(current_user,n.nspowner,'MEMBER')
             AND pg_has_role(current_user,'pdufa_level16_writer','MEMBER')
@@ -71,6 +72,9 @@ class ReviewEventService:
         return self.engine
 
     def _grants(self, connection, identity):
+        authorize = getattr(self.identity_provider, 'authorize_in_transaction', None)
+        if authorize is not None:
+            authorize(identity, connection)
         rows = connection.execute(text('''SELECT role FROM level16_review.reviewer_grants
             WHERE issuer=:issuer AND subject=:subject AND enabled FOR SHARE'''),
             {'issuer': identity.issuer, 'subject': identity.subject}).scalars().all()
@@ -146,7 +150,7 @@ class ReviewEventService:
             if latest and latest['action'] == 'CORRECTION':
                 status = 'CORRECTION_REQUIRES_REVIEW'
             stage = STAGES.index(status) if status in STAGES else -1
-            return {
+            result = {
                 'status': 'AUTHORIZED_DATABASE_READBACK', 'binding': current,
                 'sourceCollectionStatus': 'SOURCE_SUBMITTED' if events else 'NO_REVIEW_EVENTS',
                 'originalDocumentAuthenticationStatus': 'SOURCE_AUTHENTICATED' if stage >= 2 else 'NOT_AUTHENTICATED',
@@ -160,6 +164,10 @@ class ReviewEventService:
                 'blockers': (latest['blockers'] if latest else []) + ([] if stage == 8 else ['FINAL_INDEPENDENT_ADJUDICATION_REQUIRED']),
                 'history': events,
             }
+            describe = getattr(self.evidence_provider, 'provenance', None)
+            if describe is not None:
+                result['originalEvidenceProvenance'] = describe(stream_id, connection)
+            return result
 
     def append(self, credential, command):
         # Authenticate before processing any caller-supplied reviewer claims.
@@ -201,6 +209,11 @@ class ReviewEventService:
                      CAST(:contradictoryEvidence AS jsonb),CAST(:limitations AS jsonb),CAST(:blockers AS jsonb),CAST(:checks AS jsonb))
                     RETURNING *'''), params).mappings().one()
                 return _event(row)
+        except ReviewDenied:
+            audit = getattr(self.identity_provider, 'audit_denial', None)
+            if audit is not None:
+                audit(actor)
+            raise
         except DBAPIError as exc:
             # Includes duplicate event IDs, concurrent branch attempts, revoked
             # grants and constraint failures. Never leak SQL, documents or DSNs.

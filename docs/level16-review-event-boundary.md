@@ -159,3 +159,9 @@ as genuinely separate subjects. Validate real issuer/audience/expiry/revocation,
 source attestations and reviewer grants before mounting any review router.
 Obtain real source and scientific reviews only afterward. No staging/production
 migration or provider connection has been performed by this stage.
+
+## Subsequent staging harness slice
+
+The isolated adapter/resolver/interface implementation and its explicit live
+activation blockers are documented in [isolated staging](level16-isolated-staging.md).
+Default access remains blocked; only disposable synthetic integration is enabled.

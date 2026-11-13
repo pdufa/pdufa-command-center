@@ -44,6 +44,7 @@ class ReviewPostgresTests(unittest.TestCase):
                 raw = c.connection.driver_connection
                 raw.autocommit = True
                 raw.execute((ROOT / 'new-platform/backend/migrations/20261113_level16_review_events.sql').read_text(encoding='utf-8'))
+                raw.autocommit = False  # Restore transactional owner connections after explicit DDL.
             with bootstrap.connect() as c:
                 c.exec_driver_sql('CREATE ROLE ' + cls.runtime_role + " LOGIN PASSWORD 'synthetic-test-only' NOSUPERUSER NOCREATEDB NOCREATEROLE")
                 c.exec_driver_sql('GRANT pdufa_level16_writer TO ' + cls.runtime_role)

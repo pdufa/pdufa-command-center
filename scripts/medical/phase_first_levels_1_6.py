@@ -40,6 +40,10 @@ def _records(document, label):
 def _phase(fields):
     entry = fields.get("phase", {})
     raw = entry.get("value") if isinstance(entry, dict) and entry.get("status") == "CAPTURED_UNREVIEWED" else None
+    return _phase_values(raw)
+
+
+def _phase_values(raw):
     if not isinstance(raw, list) or not raw or not all(isinstance(x, str) and x in PHASES for x in raw):
         return "UNRESOLVED", []
     if "PHASE3" in raw:
@@ -86,6 +90,8 @@ def _level(number, name, fields, phase_group, indication_leads, source_captured)
     }[number]
     result = {
         "level": number,
+        "implementationStatus": "PHASE_FIRST_READINESS_AND_REVIEW_EVENT_INTEGRATION",
+        "automatedTestStatus": "NOT_EXECUTED_BY_REPORT",
         "name": name,
         "registryFieldsCapturedUnreviewed": present,
         "registryFieldsNotCaptured": absent,
@@ -251,7 +257,11 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
                 # Trusted server dependency only. There is no JSON/CLI option to
                 # assert authorization; offline preview must independently reread.
                 verified = trusted_review_reader(nct, level["level"])
-                if verified is not None:
+                if verified is not None and verified.get("status") == "TRUSTED_REVIEW_READBACK_BLOCKED":
+                    if verified.get("nct") != nct or verified.get("level") != level["level"] or verified.get("independentlyAdjudicated") is not False:
+                        raise ValueError("Blocked review identity mismatch")
+                    workflow = verified
+                elif verified is not None:
                     binding = verified.get("binding", {})
                     if (verified.get("status") != "AUTHORIZED_DATABASE_READBACK"
                             or binding.get("nct") != nct or binding.get("level") != level["level"]
@@ -266,6 +276,17 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
                         level["assessmentCompleted"] = True
                         level["scientificConclusion"] = workflow["findings"]
                         level["readiness"] = "INDEPENDENTLY_ADJUDICATED_NO_FDA_PREDICTION"
+            if workflow["originalDocumentAuthenticationStatus"] == "SOURCE_AUTHENTICATED":
+                verified_phases = workflow["binding"]["phases"]
+                verified_group, _ = _phase_values(verified_phases)
+                level["verifiedPhaseBasis"] = verified_phases
+                phase_requirements = _level(level["level"], level["name"], fields, verified_group,
+                                            sorted(indications), source_captured)
+                for key in ("pivotalReadoutRequirement", "pivotalSAPRequirement"):
+                    if key in phase_requirements:
+                        level[key] = phase_requirements[key]
+            level["evidenceVerificationStatus"] = workflow["originalDocumentAuthenticationStatus"]
+            level["remainingReviewBlockers"] = workflow["blockers"]
             level["reviewWorkflow"] = workflow
             level["submittedEvidenceLeads"] = submitted
             level["sourceSubmissionCount"] = len(submitted)
