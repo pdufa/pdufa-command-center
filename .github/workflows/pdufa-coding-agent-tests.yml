@@ -1,0 +1,26 @@
+name: PDUFA isolated coding agent tests
+on:
+  pull_request:
+    paths:
+      - 'scripts/pdufa_coding_agent.py'
+      - 'tests/test_pdufa_coding_agent.py'
+      - 'automation/coding-agent.example.json'
+      - '.github/workflows/pdufa-coding-agent-tests.yml'
+permissions:
+  contents: read
+jobs:
+  offline:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: python -B -m unittest discover -s tests -p test_pdufa_coding_agent.py -v
+      - run: python -B scripts/audit_raas_retirement.py --check
