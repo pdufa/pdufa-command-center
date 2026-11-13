@@ -1,0 +1,40 @@
+{
+  "schema_version": 1,
+  "contract": "PDUFA_CUMULATIVE_LEVEL_ASSESSMENTS_V1",
+  "scope": {
+    "levels": [
+      4,
+      20
+    ],
+    "trial_population": "DATED_FOCUS_NCT_RECORDS",
+    "current_trial_count": 32,
+    "source": "automation/focus-assessment-roster-snapshot-20261112.json",
+    "live_focus_refresh_required_before_release": true
+  },
+  "per_level_rules": {
+    "phase_first_verified_original_registry_phase_required": true,
+    "application_cycle_filed_review_claims_require_separate_primary_source": true,
+    "criteria_expected_at_phase_only": true,
+    "criterion_score_requires_date_bounded_source_receipt_hash_and_reason": true,
+    "preserve_unsourced_or_not_yet_expected_as_explicit_gap_not_zero": true,
+    "published_after_freeze_date_forbidden": true,
+    "previous_level_scores_and_explanations_preserved": true,
+    "new_level_adds_separate_scientific_evidence_fields": true,
+    "trial_level_research_score_or_unscorable_reason_required_for_every_focus_record": true,
+    "unvalidated_research_rubric_not_fda_approval_probability": true,
+    "blinded_historical_outcomes_excluded_until_predictions_frozen": true,
+    "independent_scientific_and_code_acceptance_required_before_scientific_level_complete": true,
+    "no_automatic_scientific_completion": true,
+    "no_automatic_publication": true,
+    "no_trades": true
+  },
+  "current_implementation": {
+    "status": "PHASE_FIRST_ASSESSMENT_RESEARCH_ENGINE_IMPLEMENTED_NOT_VALIDATED",
+    "cumulative_preview_for_all_32_trials": true,
+    "verified_source_rubric_records_for_live_focus": "NOT_YET_COLLECTED_AND_ADJUDICATED",
+    "scientific_level6_scores_complete": false,
+    "scientific_levels4_through20_complete": false,
+    "current_pc_installed": false,
+    "needs_developer_review_and_scientific_signoff": true
+  }
+}

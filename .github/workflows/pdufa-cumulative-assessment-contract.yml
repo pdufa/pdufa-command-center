@@ -1,0 +1,45 @@
+name: PDUFA Cumulative Scientific Assessment Contract
+on:
+  pull_request:
+    paths:
+      - 'scripts/pdufa_cumulative_level_assessments.py'
+      - 'tests/test_pdufa_cumulative_level_assessments.py'
+      - 'automation/focus-assessment-roster-snapshot-20261112.json'
+      - 'automation/assessment-level-acceptance-contract.json'
+      - 'docs/PDUFA_LEVEL_ASSESSMENTS_COMPLETION_CONTRACT.md'
+      - '.github/workflows/pdufa-cumulative-assessment-contract.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  phase-first-assessment-regressions:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: All 17 cumulative levels and source-scoped scores
+        run: |
+          python -m unittest discover -s tests -p 'test_pdufa_cumulative_level_assessments.py' -v
+          python scripts/pdufa_cumulative_level_assessments.py --self-test
+      - name: No false Level6 prediction or scientific completion on FOCUS snapshot
+        run: |
+          python scripts/pdufa_cumulative_level_assessments.py --output /tmp/pdufa-snapshot-assessment-audit.json > /tmp/pdufa-snapshot-readiness.json
+          python - <<'PY'
+          import json
+          p=json.load(open('/tmp/pdufa-snapshot-assessment-audit.json'))
+          assert p['focus_trials']==32 and p['assessment_records']==32*17
+          assert all(r['provisional_numeric_scores']==0 for r in p['per_level'])
+          assert all(r['complete_scientific_assessments']==0 for r in p['per_level'])
+          assert all(r['score_out_of_100'] is None for r in p['assessments'])
+          assert all(r['fda_approval_probability'] is None for r in p['assessments'])
+          assert p['scientific_acceptance_automated'] is False
+          print('PASS: trial-level assessment coverage produced; no counterfeit Level6 score/approval prediction')
+          PY
+      - name: Existing engineering and retired-dependency safeguards
+        run: |
+          python -m unittest discover -s tests -p 'test_pdufa_level_completion.py' -v
+          python -m unittest discover -s tests -p 'test_level6_cross_disciplinary_inventory.py' -v
+          python scripts/audit_raas_retirement.py --check

@@ -1,0 +1,337 @@
+{
+  "schema_version": 1,
+  "type": "DATED_FOCUS_ROSTER_SOURCE_SNAPSHOT_NOT_TRIAL_EVIDENCE",
+  "source": {
+    "provider": "Connected Google Sheets",
+    "spreadsheet_id": "1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU",
+    "tab": "FOCUS",
+    "range": "A3:AE35",
+    "snapshot_date": "2026-11-12",
+    "canonical_live_membership_not_guaranteed": true,
+    "clinical_phase_and_application_stage_not_independently_verified": true
+  },
+  "trial_count": 32,
+  "legacy_research_scores_are_not_level4_to20_scores": true,
+  "trials": [
+    {
+      "sheet_row": 4,
+      "ticker": "ABVX",
+      "nct": "NCT05507203",
+      "company": "Abivax S.A.",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "POST-P3 / NDA filing planned",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 60.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 5,
+      "ticker": "ABVX",
+      "nct": "NCT05507216",
+      "company": "Abivax S.A.",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "POST-P3 / NDA filing planned",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 55.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 6,
+      "ticker": "ACHV",
+      "nct": "NCT04576949",
+      "company": "Achieve Life Sciences",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "POST-P3 / NDA resubmission planned",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 50.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 7,
+      "ticker": "ACHV",
+      "nct": "NCT05206370",
+      "company": "Achieve Life Sciences",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "POST-P3 / NDA resubmission planned",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 50.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 8,
+      "ticker": "APMD",
+      "nct": "NCT05811247",
+      "company": "Apnimed",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA NDA review active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 4/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 9,
+      "ticker": "APMD",
+      "nct": "NCT05813275",
+      "company": "Apnimed",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA NDA review active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 50.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 10,
+      "ticker": "AXSM",
+      "nct": "NCT05059223",
+      "company": "Axsome Therapeutics, Inc.",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA filing / PDUFA active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 4/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 11,
+      "ticker": "AXSM",
+      "nct": "NCT05113745",
+      "company": "Axsome Therapeutics, Inc.",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA filing / PDUFA active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 60.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 12,
+      "ticker": "BLTE",
+      "nct": "NCT05244304",
+      "company": "Belite Bio, Inc.",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA filing / PDUFA active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 4/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 13,
+      "ticker": "CAPR",
+      "nct": "NCT05126758",
+      "company": "Capricor Therapeutics, Inc.",
+      "registry_status_as_recorded": "ACTIVE_NOT_RECRUITING",
+      "application_stage_as_recorded": "FDA BLA review",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 4/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 14,
+      "ticker": "COGT",
+      "nct": "NCT05208047",
+      "company": "Cogent Biosciences, Inc.",
+      "registry_status_as_recorded": "RECRUITING",
+      "application_stage_as_recorded": "FDA NDA review",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 55.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 15,
+      "ticker": "CORT",
+      "nct": "NCT03697109",
+      "company": "Corcept Therapeutics",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA NDA review active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 50.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 16,
+      "ticker": "CORT",
+      "nct": "NCT04308590",
+      "company": "Corcept Therapeutics",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA NDA review active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 40.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 17,
+      "ticker": "CYTK",
+      "nct": "NCT05767346",
+      "company": "Cytokinetics",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA sNDA review active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 60.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 18,
+      "ticker": "CYTK",
+      "nct": "NCT06081894",
+      "company": "Cytokinetics, Inc.",
+      "registry_status_as_recorded": "ACTIVE_NOT_RECRUITING",
+      "application_stage_as_recorded": "FDA filing / PDUFA active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 45.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 19,
+      "ticker": "IMNM",
+      "nct": "NCT04871282",
+      "company": "Immunome, Inc.",
+      "registry_status_as_recorded": "ACTIVE_NOT_RECRUITING",
+      "application_stage_as_recorded": "FDA filing / PDUFA active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 2/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 20,
+      "ticker": "MLYS",
+      "nct": "NCT06153693",
+      "company": "Mineralys Therapeutics, Inc.",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA NDA review",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 4/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 21,
+      "ticker": "PHVS",
+      "nct": "NCT06343779",
+      "company": "Pharvaris N.V.",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA filing / PDUFA active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 4/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 22,
+      "ticker": "PHVS",
+      "nct": "NCT06669754",
+      "company": "Pharvaris N.V.",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA filing / PDUFA active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 3/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 23,
+      "ticker": "PRAX",
+      "nct": "NCT06087276",
+      "company": "Praxis Precision Medicines, Inc.",
+      "registry_status_as_recorded": "RECRUITING",
+      "application_stage_as_recorded": "FDA NDA review",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 55.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 24,
+      "ticker": "SRPT",
+      "nct": "NCT02500381",
+      "company": "Sarepta Therapeutics, Inc.",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA filing / PDUFA active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 4/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 25,
+      "ticker": "SVRA",
+      "nct": "NCT04544293",
+      "company": "Savara Inc.",
+      "registry_status_as_recorded": "ACTIVE_NOT_RECRUITING",
+      "application_stage_as_recorded": "FDA review reported / verify current",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 55.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 26,
+      "ticker": "URGN",
+      "nct": "NCT06331299",
+      "company": "UroGen Pharma Ltd.",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA NDA review active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 4/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 27,
+      "ticker": "VERA",
+      "nct": "NCT04716231",
+      "company": "Vera Therapeutics, Inc.",
+      "registry_status_as_recorded": "ACTIVE_NOT_RECRUITING",
+      "application_stage_as_recorded": "FDA sBLA submission / ongoing",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 65.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 28,
+      "ticker": "ZBIO",
+      "nct": "NCT05662241",
+      "company": "Zenas BioPharma, Inc.",
+      "registry_status_as_recorded": "ACTIVE_NOT_RECRUITING",
+      "application_stage_as_recorded": "FDA filing / PDUFA active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 5/5; research 65.0/100; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 29,
+      "ticker": "CLDX",
+      "nct": "NCT06445023",
+      "company": "Celldex Therapeutics",
+      "registry_status_as_recorded": "ACTIVE_NOT_RECRUITING",
+      "application_stage_as_recorded": "POST-P3 / BLA filing planned",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 4/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 30,
+      "ticker": "CLDX",
+      "nct": "NCT06455202",
+      "company": "Celldex Therapeutics",
+      "registry_status_as_recorded": "ACTIVE_NOT_RECRUITING",
+      "application_stage_as_recorded": "POST-P3 / BLA filing planned",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 4/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 31,
+      "ticker": "MLTX",
+      "nct": "NCT06411899",
+      "company": "MoonLake Immunotherapeutics AG",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA BLA submitted / acceptance pending",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 4/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 32,
+      "ticker": "MLTX",
+      "nct": "NCT06411379",
+      "company": "MoonLake Immunotherapeutics AG",
+      "registry_status_as_recorded": "COMPLETED",
+      "application_stage_as_recorded": "FDA BLA submitted / acceptance pending",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "CLINICAL_FIVE 4/5; research Not scored; NOT FDA PROBABILITY; archived /30 columns retained"
+    },
+    {
+      "sheet_row": 33,
+      "ticker": "AGIO",
+      "nct": "NCT05031780",
+      "company": "Agios Pharmaceuticals, Inc.",
+      "registry_status_as_recorded": "ACTIVE_NOT_RECRUITING",
+      "application_stage_as_recorded": "FDA sNDA review / PDUFA active",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "NOT_RECORDED"
+    },
+    {
+      "sheet_row": 34,
+      "ticker": "AMLX",
+      "nct": "NCT06747468",
+      "company": "Amylyx Pharmaceuticals Inc.",
+      "registry_status_as_recorded": "ACTIVE_NOT_RECRUITING",
+      "application_stage_as_recorded": "POST-P3 / NDA filing planned",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "NOT_RECORDED"
+    },
+    {
+      "sheet_row": 35,
+      "ticker": "MIRM",
+      "nct": "NCT06553768",
+      "company": "Mirum Pharmaceuticals, Inc.",
+      "registry_status_as_recorded": "ACTIVE_NOT_RECRUITING",
+      "application_stage_as_recorded": "POST-P3 / sNDA filing planned",
+      "recorded_as_of": "2026-11-12",
+      "research_clinical_five_status": "NOT_RECORDED"
+    }
+  ]
+}

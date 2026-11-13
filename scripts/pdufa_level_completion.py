@@ -488,8 +488,24 @@ def execute(number: int, step: str, manifest: dict) -> dict:
         return {"result": "EXISTING_REVIEW_PR_VERIFIED_DRAFT_ONLY",
                 "implementation_pr": confirmed_pr(1156)}
     if step == "INDEPENDENT_REVIEW":
-        # Human independent clinical/scientific/statistical review cannot be
-        # forged by local model code or source receipt metadata.
+        # A level's engineering checkpoints alone are NOT its scientific
+        # assessment. Every current FOCUS record must first have an actual
+        # phase-first, source-backed level score; gap inventories do not count.
+        # This is a necessary readiness gate, not independent signoff.
+        report_path = DATA / "assessments" / "pdufa-cumulative-assessment-audit.json"
+        if not report_path.is_file():
+            raise RuntimeError("PDUFA_LEVEL_ASSESSMENTS_NOT_AVAILABLE")
+        try:
+            from pdufa_cumulative_level_assessments import audit_level_coverage
+            report = json.loads(report_path.read_text(encoding="utf-8"))
+            roster_path = ROOT / "automation/focus-assessment-roster-snapshot-20261112.json"
+            roster = json.loads(roster_path.read_text(encoding="utf-8"))
+            audit_level_coverage(report, roster, number)
+        except (ValueError, TypeError, KeyError, ImportError, OSError,
+                json.JSONDecodeError):
+            raise RuntimeError("PDUFA_LEVEL_ASSESSMENTS_NOT_READY") from None
+        # Even complete provisional numerical coverage is not proof of actual
+        # primary sources or an independent scientific reviewer. Never sign.
         raise RuntimeError("INDEPENDENT_REVIEW_NOT_APPROVED")
     raise ValueError("Unknown approved completion step")
 
@@ -527,6 +543,8 @@ def once(state: dict, manifest: dict, *, notify: bool = False) -> bool:
                                  "DOMAIN_REGRESSION_SUITE_NOT_APPROVED",
                                  "DOMAIN_IMPLEMENTATION_PR_NOT_AVAILABLE",
                                  "INDEPENDENT_REVIEW_NOT_APPROVED",
+                                 "PDUFA_LEVEL_ASSESSMENTS_NOT_AVAILABLE",
+                                 "PDUFA_LEVEL_ASSESSMENTS_NOT_READY",
                                  "LEVEL4_IMPLEMENTATION_NOT_INSTALLED"}
             item["status"] = ("BLOCKED" if permanent or item["attempts"] >= MAX_ATTEMPTS
                               else "PENDING")
