@@ -16,11 +16,13 @@ import re
 import subprocess
 import sys
 import time
+import tempfile
+import secrets
 import urllib.request
 
 
 REPO = "pdufa/pdufa-command-center"
-TERMINAL = {"review_waiting", "blocked", "stopped"}
+TERMINAL = {"review_waiting", "blocked", "stopped", "dry_run_passed"}
 
 
 def digest(value):
@@ -80,7 +82,7 @@ def apply_files(work, task, files):
     if sum(len(v.encode()) for v in files.values() if isinstance(v, str)) > 100_000:
         raise ValueError("Patch exceeds byte budget")
     for name, content in files.items():
-        if not isinstance(content, str) or "\x00" in content:
+        if not isinstance(content, str) or not content.strip() or "\x00" in content:
             raise ValueError("Invalid source")
         path = work / name
         if any(p.is_symlink() for p in [path, *path.parents]):
@@ -90,8 +92,9 @@ def apply_files(work, task, files):
 
 
 class Agent:
-    def __init__(self, root, data, contract, model="qwen2.5-coder:1.5b"):
+    def __init__(self, root, data, contract, model="qwen2.5-coder:1.5b", *, dry_run=False):
         validate(contract)
+        self._dry_run = dry_run is True
         self.root, self.data, self.contract, self.model = root.resolve(), data.resolve(), contract, model
         if self.data == self.root or self.root in self.data.parents:
             raise ValueError("State and disposable clones must be outside source checkout")
@@ -116,17 +119,12 @@ class Agent:
 
     def recover(self):
         """Read-only reconciliation. Never repeat a possibly successful push/PR."""
-        rows = []
-        for task_id, row in self.state["tasks"].items():
-            branch = row.get("branch")
-            prs = self.command(["gh", "pr", "list", "--repo", REPO, "--state", "all",
-                "--head", branch, "--json", "url,headRefOid,isDraft,state"])
-            rows.append({"task": task_id, "local": row, "remote_prs": json.loads(prs),
-                         "action": "Inspect exact head and tests; retain state and clone. No replay authorized."})
-        return rows
+        raise ValueError("Remote recovery disabled pending independent review")
 
     def command(self, argv, cwd=None, timeout=240):
         self.check_stop()
+        if Path(argv[0]).stem.lower() == "gh" or any(a in {"push", "send-pack"} for a in argv):
+            raise ValueError("GitHub writes disabled pending independent review")
         # Poll STOP while children run. No shell or inherited model commands.
         import tempfile
         with tempfile.TemporaryFile() as output:
@@ -158,8 +156,30 @@ class Agent:
                   "predictions or scores. Draft engineering only. No commands or tool calls.",
                   "task": task, "feedback": feedback[-8000:],
                   "current_files": {p: (work / p).read_text() if (work / p).exists() else "" for p in task["files"]}}
+        # Constrain model output to the exact reviewed file paths.
+        prompt["instruction"] += (
+            " Return exactly these full file paths as JSON keys: "
+            + json.dumps(task["files"])
+            + ". Do not shorten or invent filenames."
+        )
+        schema = {
+            "type": "object",
+            "properties": {
+                "files": {
+                    "type": "object",
+                    "properties": {
+                        name: {"type": "string"}
+                        for name in task["files"]
+                    },
+                    "required": list(task["files"]),
+                    "additionalProperties": False,
+                }
+            },
+            "required": ["files"],
+            "additionalProperties": False,
+        }
         request = urllib.request.Request("http://127.0.0.1:11434/api/generate", data=json.dumps({
-            "model": self.model, "prompt": json.dumps(prompt), "format": "json", "stream": False,
+            "model": self.model, "prompt": json.dumps(prompt), "format": schema, "stream": False,
             "options": {"num_predict": 4096, "num_ctx": 16384, "temperature": 0}}).encode(),
             headers={"Content-Type": "application/json"})
         with urllib.request.urlopen(request, timeout=180) as response:
@@ -167,7 +187,15 @@ class Agent:
         if len(raw) > 200_000:
             raise ValueError("Model response exceeds budget")
         self.check_stop()
-        return json.loads(json.loads(raw)["response"])["files"]
+        files = json.loads(json.loads(raw)["response"])["files"]
+        if isinstance(files, dict) and set(files) == set(task["files"]):
+            if any(not isinstance(v, str) or not v.strip()
+                   for v in files.values()):
+                raise RuntimeError(
+                    "Model returned empty source. Retry with complete Python "
+                    "code defining every required function."
+                )
+        return files
 
     def test(self, task, work):
         # The test harness and acceptance files come from the pinned baseline,
@@ -205,6 +233,8 @@ class Agent:
             subprocess.run(["docker", "rm", "-f", name], capture_output=True, timeout=30)
 
     def run(self):
+        if not self._dry_run:
+            raise ValueError("Publishing disabled pending independent review; use --dry-run")
         lock = self.data / "LOCK"
         # Crash locks intentionally require operator confirmation; never infer
         # that another process is dead from an expired heartbeat alone.
@@ -219,7 +249,10 @@ class Agent:
                 raise ValueError("Checkout is not approved baseline")
             if self.git(self.root, "status", "--porcelain"):
                 raise ValueError("Source checkout must be clean")
-            self.command([sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"], self.root)
+            # Full source checkout already audited by run_fixture().
+            # The disposable fixture intentionally has no historical archive.
+            if not self._dry_run:
+                self.command([sys.executable, "-B", "scripts/audit_raas_retirement.py", "--check"], self.root)
             task = select_task(self.contract, self.state)
             if task is None:
                 return {"status": "idle_or_review_blocked"}
@@ -234,7 +267,13 @@ class Agent:
             feedback = ""
             for attempt in range(self.contract["max_repairs"] + 1):
                 self.save(task, "writing", attempt=attempt)
-                files = self.generate(task, work, feedback)
+                try:
+                    files = self.generate(task, work, feedback)
+                except RuntimeError as exc:
+                    feedback = str(exc)
+                    self.save(task, "repair_waiting",
+                              test_output=feedback[-8000:])
+                    continue
                 apply_files(work, task, files)
                 self.save(task, "testing")
                 try:
@@ -246,22 +285,8 @@ class Agent:
             else:
                 raise ValueError("Repair budget exhausted")
             self.save(task, "tests_passed", test_output=feedback[-8000:])
-            self.git(work, "add", "--", *task["files"])
-            self.git(work, "commit", "-m", f"Draft engineering Level {task['level']}: {task['id']}")
-            head = self.git(work, "rev-parse", "HEAD")
-            self.save(task, "publishing", head=head)
-            self.git(work, "remote", "set-url", "origin", "https://github.com/" + REPO + ".git")
-            self.git(work, "push", "origin", f"HEAD:refs/heads/{branch}")
-            body = self.data / "pr-body.md"
-            body.write_text(f"Engineering draft for #1171, continuing #1177.\n\n"
-                f"Contract SHA256: {digest(self.contract)}\nBase: {self.contract['base_commit']}\n"
-                f"Task: {task['id']} (Level {task['level']}); phase: {task['phase']}\n\n"
-                "Offline acceptance tests passed. CI and independent code/scientific review pending. "
-                "No scientific acceptance, level advancement, merge, deployment or worker changes.\n")
-            url = self.command(["gh", "pr", "create", "--repo", REPO, "--draft", "--base",
-                self.contract["base_branch"], "--head", branch, "--title",
-                f"Draft Level {task['level']} engineering: {task['id']}", "--body-file", str(body)], work)
-            self.save(task, "review_waiting", pr_url=url)
+            self.check_stop()
+            self.save(task, "dry_run_passed", mode="dry-run", published=False)
             return self.state["tasks"][task["id"]]
         except Exception as exc:
             if task:
@@ -272,14 +297,67 @@ class Agent:
             lock.unlink()
 
 
+def run_fixture(image, model):
+    """Real generation and acceptance in a retained disposable local repository."""
+    source = Path(__file__).resolve().parents[1]
+    subprocess.run([sys.executable, "-B", str(source / "scripts/audit_raas_retirement.py"),
+                    "--check"], cwd=source, check=True)
+    # Only disposable fixtures are placed here; no credentials or
+    # production data. Inherit normal Windows ACLs for Docker sharing.
+    home = Path(tempfile.gettempdir()) / (
+        "pdufa-coder-dry-run-" + secrets.token_hex(8)
+    )
+    home.mkdir(mode=0o755)
+    root, data = home / "fixture", home / "state"
+    root.mkdir()
+    print(json.dumps({"mode": "dry-run", "artifacts": str(home)}), flush=True)
+    (root / "AGENTS.md").write_bytes((source / "AGENTS.md").read_bytes())
+    (root / "scripts").mkdir()
+    (root / "scripts/audit_raas_retirement.py").write_bytes(
+        (source / "scripts/audit_raas_retirement.py").read_bytes())
+    (root / "tests").mkdir()
+    (root / "tests/test_gap_acceptance.py").write_text(
+        "import unittest\nfrom gap_helper import has_gap\n"
+        "class Acceptance(unittest.TestCase):\n"
+        " def test_gap(self):\n"
+        "  self.assertIs(has_gap(None), True)\n"
+        "  for value in [False, 0, '', 'unknown', {}, []]:\n"
+        "   self.assertIs(has_gap(value), False)\n", encoding="utf-8")
+    def git(*args):
+        return subprocess.check_output(["git", "-c", "core.hooksPath=/dev/null",
+            "-c", "commit.gpgsign=false", *args], cwd=root, text=True).strip()
+    git("init")
+    git("add", ".")
+    git("-c", "user.name=Local Fixture", "-c", "user.email=fixture@localhost",
+        "commit", "-m", "Disposable fixture baseline")
+    contract = {"enabled": True, "base_commit": git("rev-parse", "HEAD"),
+        "base_branch": "local-only", "image": image, "max_repairs": 1,
+        "tasks": [{"id": "fixture-gap-helper", "level": 7, "engineering_only": True,
+            "requirements": "Implement exactly this Python module: def has_gap(value):\n    return value is None\n",
+            "phase": "engineering-fixture", "depends_on": [],
+            "files": ["scripts/engineering_drafts/gap_helper.py"],
+            "acceptance_tests": ["tests/test_gap_acceptance.py"]}]}
+    return Agent(root, data, contract, model, dry_run=True).run()
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--root", type=Path, required=True)
-    parser.add_argument("--data", type=Path, required=True)
+    parser.add_argument("--root", type=Path)
+    parser.add_argument("--data", type=Path)
     parser.add_argument("--contract", type=Path)
+    parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--image", help="Locally available digest-pinned Python Docker image")
+    parser.add_argument("--model", default="qwen2.5-coder:1.5b")
     parser.add_argument("--status", action="store_true")
     parser.add_argument("--recover", action="store_true", help="Read-only remote PR reconciliation")
     args = parser.parse_args()
+    if args.dry_run:
+        if not args.image or any([args.root, args.data, args.contract, args.status, args.recover]):
+            parser.error("--dry-run requires --image and forbids root/data/contract/status/recover overrides")
+        print(json.dumps(run_fixture(args.image, args.model), indent=2))
+        return
+    if not args.root or not args.data:
+        parser.error("--root and --data required for status; execution requires --dry-run")
     if args.status:
         path = args.data / "state.json"
         result = json.loads(path.read_text()) if path.exists() else {"status": "not_activated"}

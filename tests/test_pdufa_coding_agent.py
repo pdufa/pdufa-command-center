@@ -6,7 +6,7 @@ import subprocess
 import sys
 import tempfile
 import unittest
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "scripts"))
 import pdufa_coding_agent as m
@@ -69,7 +69,7 @@ class CodingAgentTests(unittest.TestCase):
         self.c = contract()
 
     def agent(self, **kwargs):
-        return FakeAgent(self.root, self.data, self.c, **kwargs)
+        return FakeAgent(self.root, self.data, self.c, dry_run=True, **kwargs)
 
     def test_disabled_and_bad_contracts(self):
         for key, value in [("enabled", False), ("base_commit", "main"), ("image", "python:latest"),
@@ -97,12 +97,12 @@ class CodingAgentTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             m.validate(self.c)
 
-    def test_full_mock_cycle_authors_tests_repairs_and_draft(self):
+    def test_full_mock_cycle_authors_tests_repairs_without_publication(self):
         agent = self.agent(failures=1)
         result = agent.run()
-        self.assertEqual(result["status"], "review_waiting")
+        self.assertEqual(result["status"], "dry_run_passed")
         self.assertEqual(agent.generated, 2)
-        self.assertTrue(agent.assert_draft)
+        self.assertFalse(any("push" in call or "create" in call for call in agent.calls))
         self.assertFalse(result["scientifically_accepted"])
         self.assertTrue((self.data / "level7-gap-helper" / self.c["tasks"][0]["files"][0]).is_file())
         self.assertFalse((self.root / self.c["tasks"][0]["files"][0]).exists())
@@ -175,6 +175,58 @@ class CodingAgentTests(unittest.TestCase):
     def test_status_storage_outside_checkout(self):
         with self.assertRaises(ValueError):
             m.Agent(self.root, self.root / "state", self.c)
+
+    def test_real_generation_response_validation(self):
+        agent = self.agent()
+        work = self.data / "candidate"
+        work.mkdir()
+        files = {self.c["tasks"][0]["files"][0]: "def has_gap(value): return value is None\n"}
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = json.dumps(
+            {"response": json.dumps({"files": files})}).encode()
+        with patch.object(m.urllib.request, "urlopen", return_value=response) as request:
+            result = m.Agent.generate(agent, self.c["tasks"][0], work, "")
+        self.assertEqual(request.call_args.args[0].full_url, "http://127.0.0.1:11434/api/generate")
+        m.apply_files(work, self.c["tasks"][0], result)
+        self.assertEqual((work / next(iter(files))).read_text(), next(iter(files.values())))
+
+    def test_malformed_model_response(self):
+        agent = self.agent()
+        response = MagicMock()
+        response.__enter__.return_value.read.return_value = b"invalid json"
+        with patch.object(m.urllib.request, "urlopen", return_value=response):
+            with self.assertRaises(ValueError):
+                m.Agent.generate(agent, self.c["tasks"][0], self.root, "")
+
+    def test_normal_execution_disabled(self):
+        agent = m.Agent(self.root, self.data, self.c)
+        with self.assertRaisesRegex(ValueError, "Publishing disabled"):
+            agent.run()
+
+    def test_github_commands_blocked_before_spawn(self):
+        agent = m.Agent(self.root, self.data, self.c, dry_run=True)
+        with patch.object(subprocess, "Popen") as spawn:
+            for argv in [["gh", "pr", "create"], ["git", "push", "origin"], ["git", "send-pack", "remote"]]:
+                with self.assertRaisesRegex(ValueError, "GitHub writes disabled"):
+                    agent.command(argv)
+            spawn.assert_not_called()
+
+    def test_stop_after_generation(self):
+        agent = self.agent()
+        def stopped(*args):
+            (self.data / "STOP").touch()
+            agent.check_stop()
+        agent.generate = stopped
+        with self.assertRaises(InterruptedError):
+            agent.run()
+        self.assertEqual(agent.state["tasks"][self.c["tasks"][0]["id"]]["status"], "stopped")
+
+    def test_generation_failure(self):
+        agent = self.agent()
+        agent.generate = lambda *args: {"AGENTS.md": "bad"}
+        with self.assertRaisesRegex(ValueError, "unapproved"):
+            agent.run()
+        self.assertEqual(agent.state["tasks"][self.c["tasks"][0]["id"]]["status"], "blocked")
 
     def test_real_child_timeout(self):
         agent = m.Agent(self.root, self.data, self.c)
