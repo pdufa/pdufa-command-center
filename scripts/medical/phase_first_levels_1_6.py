@@ -8,6 +8,7 @@ constitute source verification, scientific review, an FDA filing, or a forecast.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 import re
 from pathlib import Path
@@ -126,7 +127,7 @@ def _level(number, name, fields, phase_group, indication_leads, source_captured)
     return result
 
 
-def build(roster, application_snapshot, checkpoint, definition):
+def build(roster, application_snapshot, checkpoint, definition, submissions=None):
     """Return non-predictive, non-mutating readiness for every canonical FOCUS NCT."""
     records = _records(roster, "canonical roster")
     apps = _records(application_snapshot, "application crosswalk")
@@ -140,6 +141,15 @@ def build(roster, application_snapshot, checkpoint, definition):
     captures = checkpoint.get("results", {})
     if not set(captures).issubset(records):
         raise ValueError("Checkpoint contains evidence outside the FOCUS roster")
+
+    submissions_by_nct = {nct: [] for nct in records}
+    if submissions is not None:
+        spec = importlib.util.spec_from_file_location(
+            "level16_source_submissions", Path(__file__).with_name("level16_source_submissions.py")
+        )
+        validator = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(validator)
+        submissions_by_nct = validator.validate(submissions, records, apps, checkpoint)
 
     rows, cycle_ids = [], set()
     for nct, record in records.items():
@@ -184,6 +194,17 @@ def build(roster, application_snapshot, checkpoint, definition):
         study_status = _field(fields, "studyOverallStatus")
         levels = [_level(d["level"], d["name"], fields, phase_group,
                          sorted(indications), source_captured) for d in definitions[:6]]
+        for level in levels:
+            submitted = [item for item in submissions_by_nct[nct]
+                         if item["level"] == level["level"]]
+            level["submittedEvidenceLeads"] = submitted
+            level["sourceSubmissionCount"] = len(submitted)
+            level["sourceReviewQueueStatus"] = (
+                "AWAITING_INDEPENDENT_SOURCE_AUTHENTICATION" if submitted
+                else "NO_SOURCE_SUBMISSION"
+            )
+            if submitted:
+                level["readiness"] = "SOURCE_METADATA_SUBMITTED_REVIEW_REQUIRED"
         rows.append({
             "nct": nct, "ticker": record.get("ticker"), "phaseGroup": phase_group,
             "capturedRegistryPhasesUnreviewed": captured_phases,
@@ -192,6 +213,7 @@ def build(roster, application_snapshot, checkpoint, definition):
             "candidateApplicationCycleIdsUnverified": ids,
             "candidateIndicationsUnverified": sorted(indications),
             "applicationCycleVerification": "PROVISIONAL_NOT_FDA_VERIFIED",
+            "sourceSubmissionCount": len(submissions_by_nct[nct]),
             "levels": levels, "completedLevels": 0, "scientificReviews": 0,
             "fdaOutcomeJudgment": None, "fdaTimingJudgment": None,
         })
@@ -202,6 +224,7 @@ def build(roster, application_snapshot, checkpoint, definition):
         "checkpointGeneratedAt": checkpoint.get("generatedAt"),
         "focusTrialCount": len(rows), "provisionalApplicationCycleCount": len(cycle_ids),
         "scientificallyAdjudicatedLevels": 0, "calibratedFdaPredictions": 0,
+        "sourceSubmissionCount": sum(len(items) for items in submissions_by_nct.values()),
         "levelsPerTrial": 6, "trials": rows,
     }
 
@@ -212,9 +235,14 @@ def main():
     parser.add_argument("--applications", type=Path, default=APPLICATIONS_PATH)
     parser.add_argument("--definition", type=Path, default=DEFINITION_PATH)
     parser.add_argument("--checkpoint", type=Path, required=True)
+    parser.add_argument("--source-submissions", type=Path,
+                        help="Optional unreviewed, point-in-time evidence-submission JSON")
     args = parser.parse_args()
-    report = build(*(json.loads(path.read_text(encoding="utf-8")) for path in
-                     (args.roster, args.applications, args.checkpoint, args.definition)))
+    inputs = [json.loads(path.read_text(encoding="utf-8")) for path in
+              (args.roster, args.applications, args.checkpoint, args.definition)]
+    submitted = (json.loads(args.source_submissions.read_text(encoding="utf-8"))
+                 if args.source_submissions else None)
+    report = build(*inputs, submissions=submitted)
     print(json.dumps(report, indent=2))
 
 
