@@ -1,0 +1,36 @@
+name: PDUFA Phase-First Scoring and Blind Replay Guard
+on:
+  pull_request:
+    paths:
+      - 'scripts/pdufa_scoring_replay_guard.py'
+      - 'tests/test_pdufa_scoring_replay_guard.py'
+      - '.github/workflows/pdufa-scoring-blind-replay-validation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  no-outcome-leakage-provisional-scoring:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Score components and check no outcome leakage or blind overclaim
+        run: |
+          python -B -m unittest discover -s tests -p 'test_pdufa_scoring_replay_guard.py' -v
+          python -B -m py_compile scripts/pdufa_scoring_replay_guard.py
+  native-windows-cli:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Validate scoring/evaluator code on Windows with no private data
+        shell: pwsh
+        run: |
+          python -B -m unittest discover -s tests -p 'test_pdufa_scoring_replay_guard.py' -v
+          if($LASTEXITCODE -ne 0) { throw 'Windows scorer tests failed' }
