@@ -46,7 +46,7 @@ jobs:
           print('PASS: Levels4-7 schedule never signs off scientific predictions or deployments')
           PY
   nightly-registry-and-assessment-readiness:
-    if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch') && vars.PDUFA_RESEARCH_AUTOMATION_PAUSED != 'true'
+    if: (github.event_name == 'schedule' || github.event_name == 'workflow_dispatch' || (github.event_name == 'pull_request' && github.event.pull_request.number == 1175)) && vars.PDUFA_RESEARCH_AUTOMATION_PAUSED != 'true'
     needs: offline-test-and-safety
     runs-on: ubuntu-latest
     timeout-minutes: 40
