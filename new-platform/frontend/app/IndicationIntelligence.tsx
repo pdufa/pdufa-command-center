@@ -11,6 +11,7 @@ import {
 } from "../lib/indication-intelligence";
 import {POOL_DETAIL_FIELDS,type PoolRegistryDetail} from "../lib/pool-registry-details";
 type Feed={view:"indications";rows:IndicationTrial[];asOf:string|null;focusAsOf:string;
+ focusUnmatched?:{nct:string;ticker:string;company:string}[];
  sourceState:string;totalTrials:number};
 type Mode="pool"|"focus"|"indications";
 const surface:React.CSSProperties={border:"1px solid #c8d8ce",borderRadius:12,padding:15,background:"#fff"};
@@ -121,6 +122,12 @@ export default function IndicationIntelligence({mode="indications"}:{mode?:Mode}
     <div style={surface}><strong>{linked.filter(t=>t.matchStatus==="EXACT").length.toLocaleString()}</strong><div style={small}>Indication rows with unique exact taxonomy matches</div></div>
     <div style={surface}><strong>{linked.filter(t=>t.matchStatus!=="EXACT").length.toLocaleString()}</strong><div style={small}>Indication rows requiring taxonomy review</div></div>
    </div>
+   {!!feed.focusUnmatched?.length&&<details style={{...surface,marginBottom:12}}>
+    <summary style={{cursor:"pointer",fontWeight:700}}>{feed.focusUnmatched.length} FOCUS trial identities need exact POOL reconciliation</summary>
+    <p style={small}>These are in the dated FOCUS roster but not matched by both NCT and ticker in the current POOL. They are not silently added to POOL or given an inferred indication.</p>
+    {feed.focusUnmatched.map(item=><p key={item.nct+"|"+item.ticker} style={small}>
+     <a href={"https://clinicaltrials.gov/study/"+item.nct} target="_blank" rel="noopener noreferrer">{item.nct}</a> · {item.ticker} · {item.company}</p>)}
+   </details>}
    <div style={{display:"flex",flexWrap:"wrap",gap:12,alignItems:"end",marginBottom:15}}>
     <label style={{flex:"1 1 245px"}}><span style={label}>Find disease, company, drug, NCT or stage</span>
      <input aria-label="Search indications and trials" type="search" value={query} onChange={e=>setQuery(e.target.value)}
