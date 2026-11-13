@@ -172,6 +172,48 @@ class Assessments(unittest.TestCase):
         self.assertFalse(output["per_level"][2]["all_focus_trials_scored"])
         self.assertTrue(output["per_level"][2]["review_required"])
 
+    def test_coverage_gate_rejects_synthetic_score_count_without_32_source_rows(self):
+        # One score must never satisfy the stage, even if summary JSON is falsified.
+        result = A.build(MANIFEST, ROSTER, {
+            "schema_version": 1, "as_of": "2026-11-12", "trials": [scored_trial(6)]})
+        result["per_level"][2]["provisional_numeric_scores"] = 32
+        result["per_level"][2]["unscored"] = 0
+        result["per_level"][2]["all_focus_trials_scored"] = True
+        with self.assertRaises(ValueError):
+            A.audit_level_coverage(result, ROSTER, 6)
+
+    def test_coverage_gate_all_32_synthetic_source_scored_ready_not_accepted(self):
+        evidence = {"schema_version": 1, "as_of": "2026-11-12", "trials": []}
+        for entry in ROSTER["trials"]:
+            item = scored_trial(6)
+            item["nct"] = entry["nct"]
+            item["phase_source"]["url"] = "https://clinicaltrials.gov/study/"+entry["nct"]
+            evidence["trials"].append(item)
+        result = A.build(MANIFEST, ROSTER, evidence)
+        audited = A.audit_level_coverage(result, ROSTER, 6)
+        self.assertEqual(audited["provisional_scored"], 32)
+        self.assertTrue(audited["ready_for_independent_review"])
+        self.assertFalse(audited["scientific_level_accepted"])
+        self.assertTrue(all(a["fda_approval_probability"] is None for a in
+                            result["assessments"]))
+
+    def test_coverage_gate_rejects_missing_score_rationale_and_future_source(self):
+        evidence = {"schema_version": 1, "as_of": "2026-11-12", "trials": []}
+        for entry in ROSTER["trials"]:
+            item = scored_trial(6)
+            item["nct"] = entry["nct"]
+            item["phase_source"]["url"] = "https://clinicaltrials.gov/study/"+entry["nct"]
+            evidence["trials"].append(item)
+        result = A.build(MANIFEST, ROSTER, evidence)
+        target = next(x for x in result["assessments"] if x["level"] == 6)
+        target["verified_source_ratings"][0]["reason"] = ""
+        with self.assertRaises(ValueError):
+            A.audit_level_coverage(result, ROSTER, 6)
+        target["verified_source_ratings"][0]["reason"] = "Sourced prespecified trial design evidence"
+        target["verified_source_ratings"][0]["source"]["published_on"] = "2026-11-13"
+        with self.assertRaises(ValueError):
+            A.audit_level_coverage(result, ROSTER, 6)
+
     def test_output_atomic_json_and_no_automatic_publication(self):
         result = A.build(MANIFEST, ROSTER, None)
         with tempfile.TemporaryDirectory() as d:
