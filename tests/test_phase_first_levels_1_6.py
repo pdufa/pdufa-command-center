@@ -42,13 +42,15 @@ class PhaseFirstLevels16Tests(unittest.TestCase):
     def build(self, results=None):
         return module.build(self.roster, self.apps, {"results": results or {}}, self.definition)
 
-    def test_canonical_29_and_23_provisional_cycles_without_predictions(self):
+    def test_current_32_roster_and_23_provisional_cycles_without_predictions(self):
         report = self.build()
-        self.assertEqual(report["focusTrialCount"], 29)
+        self.assertEqual(report["focusTrialCount"], 32)
+        self.assertEqual(report["mappedTrialCount"], 29)
+        self.assertEqual(report["unmappedTrialCount"], 3)
         self.assertEqual(report["provisionalApplicationCycleCount"], 23)
         self.assertEqual(report["scientificallyAdjudicatedLevels"], 0)
         self.assertEqual(report["calibratedFdaPredictions"], 0)
-        self.assertEqual(len(report["trials"]), 29)
+        self.assertEqual(len(report["trials"]), 32)
         self.assertEqual([x["level"] for x in report["trials"][0]["levels"]], list(range(1, 7)))
         for trial in report["trials"]:
             self.assertEqual(trial["phaseGroup"], "UNRESOLVED")
@@ -59,6 +61,31 @@ class PhaseFirstLevels16Tests(unittest.TestCase):
                 self.assertFalse(level["assessmentCompleted"])
                 self.assertIsNone(level["score"])
                 self.assertIsNone(level["approvalProbability"])
+
+    def test_three_new_focus_trials_remain_unmapped_instead_of_fabricated(self):
+        report = self.build()
+        unmapped = [row for row in report["trials"]
+                    if row["applicationCycleVerification"] == "NOT_MAPPED_APPLICATION_CYCLE"]
+        self.assertEqual(len(unmapped), 3)
+        self.assertEqual({x["nct"] for x in unmapped},
+                         {"NCT05031780", "NCT06747468", "NCT06553768"})
+        for row in unmapped:
+            self.assertEqual(row["candidateApplicationCycleIdsUnverified"], [])
+            self.assertEqual(row["candidateIndicationsUnverified"], [])
+            self.assertEqual(row["scientificReviews"], 0)
+            self.assertIsNone(row["fdaOutcomeJudgment"])
+        orphaned = copy.deepcopy(self.apps)
+        orphaned["records"].append({
+            "nct": "NCT99999999", "candidateApplications": []
+        })
+        with self.assertRaises(ValueError):
+            module.build(self.roster, orphaned, {"results": {}}, self.definition)
+
+    def test_unmapped_trial_cannot_claim_a_provisional_application_link(self):
+        unmapped = "NCT05031780"
+        entry = self.submission(nct=unmapped, candidateApplicationCycleId="abvx-uc")
+        with self.assertRaises(ValueError):
+            self.report_with_submissions([entry])
 
     def test_phase_two_does_not_require_future_phase_three_readout(self):
         report = self.build({self.nct: captured(self.nct, "PHASE2")})
