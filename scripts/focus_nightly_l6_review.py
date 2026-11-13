@@ -238,10 +238,11 @@ def build_assessment_readiness(
             "partialClinicalFactors": score_report["partial"],
             "noClinicalFactors": score_report["not_scoreable"],
             "nearFdaDateUnverifiedCount": sum(
-                isinstance(e["recorded_fda_date_unverified"], str)
-                and ISODATE.fullmatch(e["recorded_fda_date_unverified"])
+                1 for e in entries
+                if isinstance(e["recorded_fda_date_unverified"], str)
+                and ISODATE.fullmatch(e["recorded_fda_date_unverified"]) is not None
                 and today <= date.fromisoformat(e["recorded_fda_date_unverified"])
-                <= today + timedelta(days=30) for e in entries
+                <= today + timedelta(days=30)
             ),
             "liveSheetOnlyNcts": len(new_in_live_sheet),
             "githubOnlyNcts": len(extra_from_github),
