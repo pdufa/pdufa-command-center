@@ -22,6 +22,9 @@ on:
 permissions:
   contents: read
 
+env:
+  PYTHONUTF8: '1'
+
 jobs:
   evidence-readiness:
     name: Phase-first and retirement guard (${{ matrix.os }})
