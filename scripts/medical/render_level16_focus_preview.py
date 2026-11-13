@@ -37,6 +37,14 @@ def render(report):
     if (not isinstance(trials, list) or not trials
             or len(trials) != report.get("focusTrialCount")):
         raise ValueError("Preview requires the complete exact-NCT FOCUS report")
+    byte_summary = report.get("localByteConsistency")
+    if byte_summary is not None and (
+        not isinstance(byte_summary, dict)
+        or byte_summary.get("status") != "LOCAL_BYTE_CONSISTENCY_ONLY_NOT_SOURCE_AUTHENTICATION"
+        or byte_summary.get("originalSourceAuthenticated") != 0
+        or byte_summary.get("independentScientificReviews") != 0
+    ):
+        raise ValueError("Preview refuses source-authentication or review promotion")
     seen = set()
     rows = []
     for trial in trials:
@@ -67,12 +75,27 @@ def render(report):
                         != "SUBMITTED_SOURCE_NOT_INDEPENDENTLY_AUTHENTICATED"
                         or source.get("scientificReviewStatus") != "NOT_ADJUDICATED"):
                     raise ValueError("Preview rejects unreviewed source promotion")
+                local = source.get("localByteReceipt")
+                local_status = ""
+                if local is not None:
+                    if (not isinstance(local, dict)
+                            or local.get("byteMatchStatus") not in {
+                                "NO_LOCAL_RECEIPT",
+                                "LOCAL_BYTES_MATCH_SUBMITTED_DIGEST_ONLY",
+                                "LOCAL_DIGEST_MISMATCH",
+                                "LOCAL_FILE_NOT_PRESENT",
+                            }):
+                        raise ValueError("Preview refuses invalid local receipt status")
+                    local_status = (" · Local byte consistency: "
+                                    + _text(local["byteMatchStatus"])
+                                    + " (NOT original-source authenticated)")
                 linked.append(
                     '<li><span class="kind">' + _text(source.get("sourceKind")) +
                     "</span> — " + _text(source.get("role")) +
                     ": " + _text(source.get("claim")) + " — " +
                     _source_link(source.get("sourceUrl")) +
-                    " (source date " + _text(source.get("sourceDate")) + ")</li>"
+                    " (source date " + _text(source.get("sourceDate")) + ")" +
+                    local_status + "</li>"
                 )
             link_html = "<ul>" + "".join(linked) + "</ul>" if linked else "<span class='muted'>No source submissions</span>"
             requests = item.get("originalEvidenceRequests", [])
@@ -135,7 +158,14 @@ def render(report):
         "<div class='metric'><strong>" + _text(report.get("sourceSubmissionCount", 0)) +
         "</strong><small>Source submissions awaiting authentication</small></div>"
         "<div class='metric'><strong>0</strong><small>Independently reviewed Levels 1–6</small></div>"
-        "</section><h2>Trial-by-trial review queues</h2>" +
+        + (
+            "<div class='metric'><strong>" + _text(byte_summary.get("localByteMatches", 0))
+            + "</strong><small>Local files matching submitted SHA-256 (NOT source-authenticated)</small></div>"
+            "<div class='metric'><strong>" + _text(byte_summary.get("localDigestMismatches", 0))
+            + "</strong><small>Local digest mismatches</small></div>"
+            if byte_summary is not None else ""
+        )
+        + "</section><h2>Trial-by-trial review queues</h2>" +
         "".join(rows) + "</main></body></html>"
     )
 
