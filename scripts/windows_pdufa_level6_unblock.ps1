@@ -20,12 +20,15 @@ $engineering=Join-Path $data 'engineering_lane_ledger.json'
 $oldLedger=Join-Path $data 'ledger.json'
 $taskName='PDUFA-Continuous-Development'
 $guardName='PDUFA-Continuous-Watchdog'
-$branch='automation/level7-engineering-readiness-20261112'
-$remoteRef='refs/remotes/origin/automation/level7-engineering-readiness-20261112'
+$branch='feature/phase-first-cumulative-level-assessments-20261112'
+$remoteRef='refs/remotes/origin/feature/phase-first-cumulative-level-assessments-20261112'
 $files=@(
   'automation/scientific-level-completion-queue.json',
   'automation/level5-candidate-roster-20261111.json',
+  'automation/focus-assessment-roster-snapshot-20261112.json',
+  'automation/assessment-level-acceptance-contract.json',
   'scripts/pdufa_level_completion.py',
+  'scripts/pdufa_cumulative_level_assessments.py',
   'scripts/pdufa_strict_level_runner.py',
   'scripts/pdufa_engineering_review_lanes.py',
   'scripts/level4_scientific_evidence.py',
@@ -34,6 +37,7 @@ $files=@(
   'scripts/pdufa_level_remediation_planner.py',
   'scripts/pdufa_predictive_preflight.py',
   'tests/test_pdufa_level_completion.py',
+  'tests/test_pdufa_cumulative_level_assessments.py',
   'tests/test_pdufa_strict_level_runner.py',
   'tests/test_pdufa_engineering_review_lanes.py',
   'tests/test_level4_scientific_evidence.py',
@@ -55,13 +59,17 @@ $files=@(
 $allowed=@{
  'automation/scientific-level-completion-queue.json'='9c363bbaa8b485c38a41aeb71127c78b91175206'
  'automation/level5-candidate-roster-20261111.json'='2eba75caf3a6d435db53ea4dbdcf63959532ff06'
- 'scripts/pdufa_level_completion.py'='4dba6d039a6481543deaa22faaedee8e83fe0ec3'
+ 'automation/focus-assessment-roster-snapshot-20261112.json'='4c626ceb8bffb5b53e8bad6a9ff28c8179818d20'
+ 'automation/assessment-level-acceptance-contract.json'='0122099f2a9453c029af68b0da54af0ba525162f'
+ 'scripts/pdufa_level_completion.py'='9bca6c9ba9f062751a011954718d457a9b288a90'
+ 'scripts/pdufa_cumulative_level_assessments.py'='cf5854d2b5532238ccd4afa4644f83c6e30e9f98'
  'scripts/level4_scientific_evidence.py'='2530d029f49b8ab4ec1f21f7db784d5864bf5c36'
  'scripts/level5_contradictory_evidence.py'='2c5eee95d0760baa2d3f5f1aea3e2012fe964a07'
  'scripts/level6_cross_disciplinary_inventory.py'='f5dbe151a8a7c7657dcacb9581281dc627b708bf'
  'scripts/pdufa_level_remediation_planner.py'='741d04cf3a803860c1c590499d139df86e0889d5'
  'scripts/pdufa_predictive_preflight.py'='4a72120f696b207c9d3eae2d632a6344b6bd17cc'
- 'tests/test_pdufa_level_completion.py'='1e08eda6249fc2cd94fccacb41fe44c6b744f373'
+ 'tests/test_pdufa_level_completion.py'='7e6a6f2500d8833161b7c4e3270d80e0dba43785'
+ 'tests/test_pdufa_cumulative_level_assessments.py'='851b3669f7f30b65840e81445254f6c1f564af7d'
  'tests/test_level4_scientific_evidence.py'='5a30ed426188aa8da968639fc763842d9d15f0e6'
  'tests/test_level5_contradictory_evidence.py'='5ae934b3c74036791c01f170ff3bb45fe8972d0c'
  'tests/test_level6_cross_disciplinary_inventory.py'='1dcf90611b77059d3f17b11ae512abeb18a94ac4'
@@ -237,6 +245,13 @@ if($p7.number -ne 1169 -or $p7.state -ne 'OPEN' -or -not $p7.isDraft -or
    $p7.baseRefName -ne 'automation/predictive-preflight-all-levels-20261112') {
   throw 'LEVEL7_PR_NO_LONGER_APPROVED_DRAFT'
 }
+$scorePr=(& gh pr view 1172 --repo pdufa/pdufa-command-center --json number,isDraft,state,headRefName,baseRefName | Out-String).Trim() | ConvertFrom-Json
+RequireSuccess 'SCORED_ASSESSMENT_DRAFT_PR_LOOKUP_FAILED'
+if($scorePr.number -ne 1172 -or $scorePr.state -ne 'OPEN' -or -not $scorePr.isDraft -or
+   $scorePr.headRefName -ne 'feature/phase-first-cumulative-level-assessments-20261112' -or
+   $scorePr.baseRefName -ne 'automation/windows-reviewed-release-poller-20261112') {
+  throw 'SCORED_ASSESSMENT_PR_NOT_EXPECTED_DRAFT'
+}
 $published=(& git -C $root ls-remote --exit-code origin ('refs/heads/'+$branch) | Out-String).Trim()
 RequireSuccess 'APPROVED_RELEASE_BRANCH_NOT_ACCESSIBLE'
 if($published -notmatch '^[0-9a-f]{40}\s+refs/heads/') {
@@ -334,6 +349,8 @@ try {
   RequireSuccess 'COMPLETION_SELF_TEST'
   & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_pdufa_level_completion.py' -v
   RequireSuccess 'QUEUE_REGRESSIONS'
+  & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_pdufa_cumulative_level_assessments.py' -v
+  RequireSuccess 'CUMULATIVE_LEVEL4_TO20_SCORED_ASSESSMENT_REGRESSIONS'
   & py -3.13 -B (Join-Path $root 'scripts/pdufa_strict_level_runner.py') --self-test
   RequireSuccess 'STRICT_SEQUENCE_SELF_TEST'
   & py -3.13 -B -m unittest discover -s (Join-Path $root 'tests') -p 'test_pdufa_strict_level_runner.py' -v
