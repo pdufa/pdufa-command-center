@@ -14,6 +14,10 @@ on:
     paths:
       - 'scripts/focus_nightly_source_monitor.py'
       - 'tests/test_focus_nightly_source_monitor.py'
+      - 'scripts/focus_nightly_l6_review.py'
+      - 'tests/test_focus_nightly_l6_review.py'
+      - 'scripts/pdufa_scoring_replay_guard.py'
+      - 'tests/test_pdufa_scoring_replay_guard.py'
       - '.github/workflows/focus-nightly-source-reassessment.yml'
       - 'new-platform/backend/app/data/focus_application_snapshot.json'
       - 'new-platform/frontend/data/p3PostDataActive.json'
@@ -39,6 +43,10 @@ jobs:
         run: python scripts/audit_raas_retirement.py --check
       - name: Test exact-NCT registry monitor
         run: python -m unittest discover -s tests -p 'test_focus_nightly_source_monitor.py' -v
+      - name: Validate read-only live-sheet assessment readiness (no credentials required)
+        run: |
+          python -m unittest discover -s tests -p 'test_focus_nightly_l6_review.py' -v
+          python -m unittest discover -s tests -p 'test_pdufa_scoring_replay_guard.py' -v
 
   monitor:
     needs: validate
@@ -95,3 +103,43 @@ jobs:
           path: |
             reports/focus/nightly/*.json
             data/focus_nightly_evidence_current.json
+
+  assessment-readiness:
+    # This is a downstream read-only step of the EXISTING nightly FOCUS scan.
+    # No second schedule, no source-roster writes, no clinical score uploads,
+    # no change to site predictions or to retired subjective scoring systems.
+    needs: [validate, monitor]
+    if: ${{ github.event_name != 'pull_request' && needs.monitor.result == 'success' }}
+    name: Current FOCUS Google Sheet research scores and review-queue health
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout the verified published FOCUS monitor snapshot
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install read-only Sheets client
+        run: python -m pip install google-auth requests
+      - name: Validate FOCUS clinical-score coverage without private credentials
+        run: |
+          python -m unittest discover -s tests -p 'test_focus_nightly_l6_review.py' -v
+          python -m unittest discover -s tests -p 'test_pdufa_scoring_replay_guard.py' -v
+      - name: Compare current FOCUS Sheet and latest official exact-NCT source report
+        env:
+          GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON: ${{ secrets.GOOGLE_SHEETS_SERVICE_ACCOUNT_JSON }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          # Only aggregate counts are logged; full per-trial review is ephemeral
+          # and is NOT uploaded as a GitHub Actions artifact or repository commit.
+          python scripts/focus_nightly_l6_review.py \
+            --roster new-platform/frontend/data/p3PostDataActive.json \
+            --registry-current data/focus_nightly_evidence_current.json \
+            --private-output "$RUNNER_TEMP/focus-assessment-run${{ github.run_id }}-attempt${{ github.run_attempt }}.json"
+          echo "FOCUS source and existing score coverage audited; independent scientific review remains required."
