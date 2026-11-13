@@ -127,3 +127,72 @@ Windows line-ending conversion. Do not weaken that audit.
 - Historical point-in-time blind validation before quantitative probability
   forecasts. These submissions and this preview cannot be used to assert
   clinical accuracy, reviewer completion or approval probability.
+
+
+## Third engineering slice — bounded local byte-consistency receipts
+
+The optional `scripts/medical/level16_local_byte_receipts.py` checks local
+**bytes** against the SHA-256 value in an existing, already-validated
+submission. This is an offline, read-only operation; it neither downloads
+sources nor proves publication origin, clinical relevance, original acquisition,
+FDA authenticity or reviewer independence. Do **not** put licensed clinical
+records, study reports or patient data into GitHub or CI fixtures.
+
+Provide a private evidence root on the PC, accessible only to the authorized
+operator. Then create an optional JSON sidecar, for example:
+
+```json
+{
+  "schemaVersion": 1,
+  "kind": "FOCUS_LEVELS_1_6_LOCAL_BYTE_RECEIPTS",
+  "records": [
+    {
+      "submissionId": "a-submission-id-already-listed-in-source-submissions",
+      "relativePath": "trial-research/source.pdf"
+    }
+  ]
+}
+```
+
+The source submission itself must already contain the **same** `submissionId`
+and the declared lowercase 64-character SHA-256 for the stored original file.
+The example is illustrative and does not assert that this source or file exists.
+
+Run the strict local check:
+
+```powershell
+python scripts/medical/phase_first_levels_1_6.py --checkpoint path/to/level4-checkpoint.json --source-submissions source-submissions.json --local-byte-receipts local-byte-receipts.json --evidence-root C:\private\pdufa-original-sources > levels1-6-readiness.json
+
+python scripts/medical/render_level16_focus_preview.py --report levels1-6-readiness.json --output levels1-6-preview.html
+```
+
+The permitted filenames are relative, slash-separated and bounded; absolute
+paths, traversal, symlinks and source files larger than 64 MiB are refused.
+The computed hash is compared with the recorded hash, but the byte contents
+and absolute local file paths are not copied into the output report. There are
+no network calls or writes to source files.
+
+The possible per-submission states are:
+
+- `LOCAL_BYTES_MATCH_SUBMITTED_DIGEST_ONLY` — local file contents match
+  the *submitted* checksum; **not** independent source authentication
+- `LOCAL_DIGEST_MISMATCH` — do not use the claimed document until reconciled
+- `LOCAL_FILE_NOT_PRESENT` — a path was specified but no local bytes exist
+- `NO_LOCAL_RECEIPT` — no entry was supplied for that submission
+
+Counters explicitly preserve `originalSourceAuthenticated: 0` and
+`independentScientificReviews: 0`, even after a successful byte match.
+This third slice does **not** verify that the source URL served the same bytes
+at the recorded access date. The document must still be independently
+authenticated and reviewed, and source dates and clinical assertions reconciled.
+
+### Additional tests
+
+```powershell
+python -m unittest discover -s tests -p "test_level16_local_byte_receipts.py" -v
+```
+
+CI covers synthetic byte matching and mismatches, missing files, oversized
+files, relative-path confinement, symlink refusal, manifest tampering,
+review-status non-promotion, and the 32-NCT FOCUS integration contract.
+These are engineering tests, not clinical source-verification receipts.
