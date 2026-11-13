@@ -13,21 +13,21 @@ require.extensions[".ts"]=(module,filename)=>module._compile(
 const snapshot=require("../data/p3PostDataActive.json");
 const {assessFinalFocusRoster,FOCUS_FINAL_TRIAL_AUDIT}=require("../lib/focus-final-gate-checks.ts");
 
-test("final 29 NCT roster is the ONLY population used by the seven trial gates",()=>{
+test("final 32 NCT roster is the ONLY population used by the seven trial gates",()=>{
   const audit=FOCUS_FINAL_TRIAL_AUDIT;
-  assert.equal(snapshot.records.length,29,"Current dated final FOCUS listing has 29 entries");
+  assert.equal(snapshot.records.length,32,"Current dated final FOCUS listing has 32 entries");
   assert.equal(audit.trialCount,snapshot.records.length);
   assert.equal(audit.asOf,snapshot.asOf);
   assert.equal(audit.checksPerTrial,7);
-  assert.equal(audit.totalChecks,29*7);
+  assert.equal(audit.totalChecks,32*7);
   assert.equal(audit.independentlyVerified,0);
-  assert.equal(new Set(audit.rows.map(row=>row.nct)).size,29);
+  assert.equal(new Set(audit.rows.map(row=>row.nct)).size,32);
   assert.deepEqual(audit.rows.map(row=>row.nct),snapshot.records.map(row=>row.nct));
   assert.deepEqual(audit.rows.map(row=>row.ticker),snapshot.records.map(row=>row.ticker));
   assert.ok(audit.rows.every(row=>row.gates.length===7&&row.independentlyVerified===0));
   assert.ok(audit.rows.every(row=>row.gates.every(g=>
     ["RECORDED_POINTER","SOURCE_REVIEW_REQUIRED","MISSING_EVIDENCE"].includes(g.state))));
-  assert.equal(audit.pointers+audit.review+audit.missing,203);
+  assert.equal(audit.pointers+audit.review+audit.missing,32*7);
   const moduleSource=fs.readFileSync(path.join(__dirname,"../lib/focus-final-gate-checks.ts"),"utf8");
   assert.ok(!/import .*pool-pipeline-funnel|import .*tools-restricted-scope|import .*phase3-census/.test(moduleSource),
     "No other trial population is imported into current acceptance checks");

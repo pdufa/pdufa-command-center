@@ -14,6 +14,7 @@ def test_active_navigation_links_only_supported_primary_destinations():
     source = (APP / "GlobalNavigation.tsx").read_text(encoding="utf-8")
     expected = {
         "POOL": "/pool",
+        "INDICATIONS": "/indications",
         "FOCUS": "/focus",
         "WT": "/wt",
         "CAL": "/cal",

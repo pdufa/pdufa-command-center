@@ -43,11 +43,13 @@ def roster_and_cycles(roster, applications):
                 or not isinstance(ticker, str) or not ticker or nct in by_nct):
             raise ValueError("FOCUS exact-NCT identity missing or duplicated")
         by_nct[nct] = row
-    links = {}
+    links = {nct: [] for nct in by_nct}  # Preserve unmapped current studies.
+    observed = set()
     for lead in leads:
         nct = lead.get("nct")
-        if nct in links or nct not in by_nct:
-            raise ValueError("FOCUS application index differs from roster")
+        if nct in observed or nct not in by_nct:
+            raise ValueError("FOCUS application index has duplicate or foreign NCT")
+        observed.add(nct)
         candidates = lead.get("candidateApplications")
         if not isinstance(candidates, list) or not candidates:
             raise ValueError("FOCUS application cycle unresolved")
@@ -58,8 +60,6 @@ def roster_and_cycles(roster, applications):
                 raise ValueError("FOCUS FDA-cycle mapping disagrees with ticker")
             accepted.append(cycle)
         links[nct] = sorted(set(accepted))
-    if set(links) != set(by_nct):
-        raise ValueError("FOCUS application crosswalk incomplete")
     return by_nct, links
 
 def fetch_registry(nct):
@@ -130,6 +130,7 @@ def build_report(roster, applications, prior, fetcher, now=None):
         trials.append(trial)
     cycles = sorted({c for nct in rows for c in links[nct]})
     queue = sorted({c for nct in changed for c in links[nct]})
+    unlinked = sorted(nct for nct in rows if not links[nct])
     unavailable = len(trials) - retrieved
     return {"schemaVersion": 1,
             "kind": "FOCUS_NIGHTLY_PRIMARY_SOURCE_MONITOR_NOT_FDA_PREDICTIONS",
@@ -137,6 +138,7 @@ def build_report(roster, applications, prior, fetcher, now=None):
             "pacificDate": now.astimezone(ZoneInfo("America/Los_Angeles")).date().isoformat(),
             "rosterSnapshotAsOf": roster.get("asOf"),
             "applicationCrosswalkAsOf": applications.get("asOf"),
+            "applicationCrosswalkState": "PARTIAL" if unlinked else "COMPLETE_RECORD_COVERAGE",
             "sourceAuthority": "ClinicalTrials.gov API v2; exact-NCT public records",
             "researchPolicy": {"phaseFirst": True, "independentMedicalReviewComplete": False,
                                "FDAOutcomeDetermined": False, "probabilitiesUpdated": False,
@@ -147,6 +149,7 @@ def build_report(roster, applications, prior, fetcher, now=None):
                         "sourceRetrieved": retrieved, "sourceUnavailable": unavailable,
                         "newOrChangedEvidenceTrials": len(changed),
                         "reassessmentQueueCycles": len(queue),
+                        "unmappedApplicationNcts": len(unlinked),
                         "status": "SOURCE_MONITOR_COMPLETE" if unavailable == 0 else "PARTIAL_SOURCE_MONITOR",
                         "scientificAssessmentsRevalidated": 0, "predictionProbabilitiesUpdated": 0},
             "reassessmentQueue": [
@@ -154,6 +157,9 @@ def build_report(roster, applications, prior, fetcher, now=None):
                  "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE",
                  "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW"}
                 for c in queue],
+            "unmappedApplicationReviewQueue": [{"nct": nct, "ticker": rows[nct]["ticker"],
+                "reason":"CURRENT_FOCUS_TRIAL_HAS_NO_MAPPED_APPLICATION_CYCLE",
+                "action":"INDEPENDENT_DRUG_INDICATION_AND_FDA_CYCLE_RECONCILIATION"} for nct in unlinked],
             "sourceRecoveryQueue": [t["nct"] for t in trials if t["sourceStatus"] == "OFFICIAL_SOURCE_UNAVAILABLE"],
             "trials": trials}
 

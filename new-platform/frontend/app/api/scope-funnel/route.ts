@@ -1,4 +1,5 @@
 import { createHash } from "node:crypto";
+import focusSnapshot from "../../../data/p3PostDataActive.json";
 import {POOL_SORT_KEYS,type PoolSortKey} from "../../../lib/pool-full-sort";
 import type {PageSortDirection} from "../../../lib/pool-row-sorting";
 import { NextRequest, NextResponse } from "next/server";
@@ -169,6 +170,40 @@ export async function GET(req:NextRequest) {
     return NextResponse.json({error:"Authentication required"},{status:401});
   const params=req.nextUrl.searchParams;
   const view=params.get("view")||"pool";
+  if(view==="indications"){
+    // Full, authenticated, source-dated trial-only inventory for the unified viewer.
+    // Never infer FDA status, clinical success or drug rights from a text match.
+    try{
+      const data=await source();
+      const focusKeys=new Set(focusSnapshot.records.map(r=>r.nct.toUpperCase()+"|"+r.ticker.toUpperCase()));
+      const rows=data.poolRows.filter(isPoolTrial).flatMap(row=>{
+        const nct=row.nctId||(row.id.startsWith("TRIAL|")?row.id.slice(6):"");
+        if(!/^NCT\d{8}$/.test(nct))return [];
+        const ticker=(row.ticker||"").trim().toUpperCase();
+        if(!ticker)return [];
+        return [{
+          nct,ticker,company:row.company||"",drug:row.drug||"",
+          indication:row.indication||"",stage:row.stage||"Unknown",
+          focus:focusKeys.has(nct+"|"+ticker),
+          sourceUrl:"https://clinicaltrials.gov/study/"+nct,
+        }];
+      });
+      const present=new Set(rows.map(r=>r.nct+"|"+r.ticker));
+      const focusUnmatched=focusSnapshot.records.filter(r=>
+        !present.has(r.nct.toUpperCase()+"|"+r.ticker.toUpperCase()))
+        .map(r=>({nct:r.nct,ticker:r.ticker,company:r.company}));
+      return NextResponse.json({
+        focusUnmatched,
+        view:"indications",asOf:data.overview.poolAsOf,
+        sourceState:data.overview.poolSourceState,
+        focusAsOf:focusSnapshot.asOf,totalTrials:rows.length,rows,
+        note:"Records are exact-NCT source pointers; disease mapping and scientific assessment require independent verification."
+      },{headers:{"Cache-Control":"private, no-store"}});
+    }catch{
+      return NextResponse.json({error:"Current source-verified indication inventory unavailable; no saved records were changed."},
+        {status:503,headers:{"Cache-Control":"private, no-store"}});
+    }
+  }
   const offset=params.get("offset")||"0",limit=params.get("limit")||"50";
   const query=params.get("query")||"";
   const format=params.get("format")||"json";

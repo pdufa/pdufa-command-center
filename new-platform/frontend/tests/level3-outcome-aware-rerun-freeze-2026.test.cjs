@@ -68,5 +68,5 @@ test("Rerun stays archival and cannot resurrect deleted historical assessment UI
   assert.ok(page.includes("<UltomirisHistoricalLevelThreePanel/>"));
   assert.ok(page.includes("<AssessmentLevelChart/>"));
   const focus=JSON.parse(fs.readFileSync(path.join(root,"../backend/app/data/focus_snapshot.json"),"utf8"));
-  assert.equal(focus.records.length,29);
+  assert.equal(focus.records.length,32);
 });

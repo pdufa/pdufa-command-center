@@ -264,10 +264,10 @@ test("a single calibrated prediction snapshot is not a manufactured line trend",
   assert.doesNotMatch(html,/<polyline /);
 });
 
-test("prospective forecast freeze precedes PDUFA and did not mutate 29-trial FOCUS eligibility",()=>{
+test("prospective forecast freeze precedes PDUFA and did not mutate current 32-trial FOCUS eligibility",()=>{
   const record=JSON.parse(fs.readFileSync(path.join(root,"data/fdaPredictionDecisionAudit.json"),"utf8")).records[0];
   const focus=JSON.parse(fs.readFileSync(path.join(root,"../backend/app/data/focus_snapshot.json"),"utf8"));
-  assert.equal(focus.records.length,29);
+  assert.equal(focus.records.length,32);
   assert.equal(focus.records.some(x=>x.nct==="NCT06396065"),false);
   assert.equal(record.researchOnly,true);
   assert.equal(record.actualDecisionVerified,false);

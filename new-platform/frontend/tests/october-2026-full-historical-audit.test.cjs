@@ -105,5 +105,5 @@ test("monthly historical view only appears in the separated section, leaving ori
   assert.equal(prospective.records.length,1);
   assert.equal(prospective.records[0].actualOutcome,"PENDING");
   const roster=JSON.parse(fs.readFileSync(path.join(root,"../backend/app/data/focus_snapshot.json"),"utf8"));
-  assert.equal(roster.records.length,29);
+  assert.equal(roster.records.length,32);
 });

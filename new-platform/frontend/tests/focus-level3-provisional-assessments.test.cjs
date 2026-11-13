@@ -7,12 +7,12 @@ const read=(...p)=>fs.readFileSync(path.join(root,...p),"utf8");
 const research=JSON.parse(read("data","calFocusResearchOverlay20261110.json"));
 const focus=JSON.parse(read("data","p3PostDataActive.json"));
 
-test("ASSESSMENTS visibly offers 29 FOCUS linked trials with 23 frozen preliminary FDA calls",()=>{
+test("ASSESSMENTS distinguishes historical 29 FOCUS trials with 23 frozen preliminary FDA calls",()=>{
   const page=read("app","predictions","assessment","page.tsx");
   const component=read("app","FocusLevelThreeResearchForecasts.tsx");
   assert.match(page,/import FocusLevelThreeResearchForecasts/);
   assert.match(page,/<FocusLevelThreeResearchForecasts selectedCycleId=\{cycle\?\.cycleId\}\/>/);
-  assert.match(component,/CURRENT FOCUS · 29 EXACT NCTS · 23 FDA APPLICATION CYCLES/);
+  assert.match(component,/HISTORICAL FOCUS · 29 EXACT NCTS · 23 FDA APPLICATION CYCLES/);
   assert.match(component,/data-testid="focus-level3-cycle-prediction-table"/);
   assert.match(component,/researchSnapshotPasses\(\)/);
   assert.match(component,/selectedCycleId/);
@@ -27,7 +27,7 @@ test("ASSESSMENTS visibly offers 29 FOCUS linked trials with 23 frozen prelimina
   assert.doesNotMatch(component,/setForecast|updatePrediction|writePredictions|addToAccuracy/);
 });
 test("23 FDA application cycles keep separate NCT mappings and research direction counts",()=>{
-  assert.equal(focus.records.length,29);
+  assert.equal(focus.records.length,32);
   assert.equal(research.cycles.length,23);
   assert.equal(research.kind,"CAL_FOCUS_LEVEL3_STYLE_RESEARCH_FREEZE_NOT_VALIDATED_FDA_FORECAST");
   assert.equal(research.policy.notActivePredictionEngine,true);
@@ -55,6 +55,7 @@ test("23 FDA application cycles keep separate NCT mappings and research directio
   assert.deepEqual(counts,{APPROVAL_LEAN:12,CRL_LEAN:5,ABSTAIN:5,ALREADY_APPROVED:1});
   assert.equal(ids.size,23);
   assert.equal(ncts.size,29);
+  assert.ok([...ncts].every(nct=>existing.has(nct)),"historic cycles remain an exact-NCT subset of current 32");
   const srpt=research.cycles.filter(x=>x.ticker==="SRPT");
   assert.equal(srpt.length,2);
   assert.notEqual(srpt[0].cycleId,srpt[1].cycleId);

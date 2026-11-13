@@ -16,11 +16,12 @@ const canonical=require("../data/p3PostDataActive.json");
 
 test("all canonical FOCUS NCTs are queued without merging indications or inventing conclusions",()=>{
   assert.equal(queue.length,canonical.records.length);
-  assert.equal(summary.ncts,29);
-  assert.equal(summary.tickers,20);
+  assert.equal(summary.ncts,32);
+  assert.equal(summary.tickers,23);
   assert.equal(summary.mappedApplicationCycles,23);
   assert.equal(summary.partialClinicalDimensions,161);
   assert.equal(summary.mappedNcts,29);
+  assert.equal(queue.length-summary.mappedNcts,3,"new trial applications must not be inferred from historical cycles");
   assert.deepEqual(queue.map(r=>r.nct),canonical.records.map(r=>r.nct));
   assert.equal(new Set(queue.map(r=>r.nct)).size,queue.length);
   assert.equal(new Set(queue.flatMap(r=>r.applications.map(a=>a.cycleId))).size,23);
@@ -31,7 +32,7 @@ test("all canonical FOCUS NCTs are queued without merging indications or inventi
     assert.equal(r.certainty,"NOT_VALIDATED");
     assert.equal(r.independentlyVerifiedGates,0);
     assert.ok(r.registryUrl.endsWith("/"+r.nct));
-    assert.ok(r.applications.length>0,r.nct+" not application mapped");
+    if(r.applications.length===0)assert.ok(["NCT05031780","NCT06747468","NCT06553768"].includes(r.nct),r.nct+" unexpected unmapped application");
     for(const c of r.applications){
       assert.ok(c.specialty,c.cycleId+" missing specialty");
       assert.equal(c.researchQuestions,10);

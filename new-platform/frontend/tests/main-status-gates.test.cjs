@@ -31,9 +31,9 @@ test("MAIN status page reports dated release proof without promoting old install
   assert.match(html,/Core Platform \(3\)/);
   assert.match(html,/Pipeline \(4\)/);
   assert.match(html,/other six former sections \(24 gates\)/);
-  assert.match(html,/Final trial acceptance · 29 FOCUS trials only/);
-  assert.match(html,/29 unique NCTs/);
-  assert.match(html,/203 trial-specific evidence checks/);
+  assert.match(html,/Final trial acceptance · 32 FOCUS trials only/);
+  assert.match(html,/32 unique NCTs/);
+  assert.match(html,/224 trial-specific evidence checks/);
   assert.match(html,/0 independently verified/);
   assert.match(html,/only trial records/);
   assert.doesNotMatch(html,/Current 31-gate scope/);
@@ -65,7 +65,10 @@ test("MAIN is reachable without adding a new active population tab",()=>{
   const home=fs.readFileSync(path.join(__dirname,"../app/page.tsx"),"utf8");
   for(const entry of ['{label:"POOL",href:"/pool"}','{label:"FOCUS",href:"/focus"}',
     '{label:"TOOLS",href:"/tools"}']) assert.ok(nav.includes(entry),entry);
-  assert.equal(nav.split(' {label:"').length-1,10);
+  assert.equal(nav.split(' {label:"').length-1,11);
+  assert.ok(nav.includes('{label:"INDICATIONS",href:"/indications"}'));
+  assert.ok(nav.indexOf('label:"INDICATIONS"')>nav.indexOf('label:"POOL"'));
+  assert.ok(nav.indexOf('label:"INDICATIONS"')<nav.indexOf('label:"FOCUS"'));
   assert.ok(nav.includes('{label:"COMPANY",href:"/company"}'));
   assert.ok(nav.includes('{label:"NEWS",href:"/news"}'));
   assert.ok(nav.includes('{label:"CAL",href:"/cal"}'));

@@ -229,8 +229,11 @@ def application_roster_status():
     if data.get("schemaVersion") != 1 or data.get("asOf") != "2026-11-07" or not isinstance(rows, list):
         raise ValueError("Application map source version not recognized")
     by_nct = {row.get("nct"): row for row in rows if isinstance(row, dict)}
-    if len(by_nct) != len(rows) or set(by_nct) != expected:
-        raise ValueError("Application map is not a unique, complete FOCUS identity set")
+    if len(by_nct) != len(rows) or not set(by_nct).issubset(expected):
+        raise ValueError("Application map has duplicate or foreign FOCUS identities")
+    # Preserve source-linked older study research as an explicitly incomplete
+    # subset of the current roster; never assert independent verification.
+    missing = sorted(expected - set(by_nct))
     ids = set()
     ambiguous = []
     for nct, row in by_nct.items():
@@ -255,8 +258,9 @@ def application_roster_status():
                 raise ValueError("Shared study attributed to a specific unverified application")
         elif row.get("indication") not in indications or row.get("drug") not in drugs:
             raise ValueError("Study-level labels do not match exact application records")
-    return {"state": "VALID", "asOf": data["asOf"],
+    return {"state": "VALID" if not missing else "PARTIAL", "asOf": data["asOf"],
             "focusNctCount":len(expected),"coveredNctCount":len(by_nct),
+            "missingNctIds":missing,
             "applicationCycleCount":len(ids),
             "sharedIndicationUnresolvedNcts":ambiguous,
             "regulatorySourceType":"SPONSOR_SEC_RECONSTRUCTION",

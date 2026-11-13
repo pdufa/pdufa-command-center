@@ -110,12 +110,12 @@ export default function FocusLevelThreeResearchForecasts({selectedCycleId}:{
     a.ticker.localeCompare(b.ticker)||a.cycleId.localeCompare(b.cycleId));
   const selected=snapshot.cycles.find(c=>c.cycleId===selectedCycleId);
   return <section id="focus-level3-provisional-forecasts"
-    aria-label="Current FOCUS preliminary Level 3 forecasts"
+    aria-label="Historical FOCUS preliminary Level 3 research"
     data-testid="focus-level3-provisional-forecasts"
     style={{border:"2px solid #d4ba7e",background:"#fffaf1",
       borderRadius:14,padding:"clamp(13px,2vw,20px)",margin:"12px 0 24px"}}>
     <div style={{fontSize:11,fontWeight:900,letterSpacing:".09em",color:"#886018"}}>
-      CURRENT FOCUS · 29 EXACT NCTS · 23 FDA APPLICATION CYCLES
+      HISTORICAL FOCUS · 29 EXACT NCTS · 23 FDA APPLICATION CYCLES
     </div>
     <h2 style={{fontSize:22,margin:"7px 0",color:"#254335"}}>
       Level 3 preliminary FDA outcome research · November 10, 2026
