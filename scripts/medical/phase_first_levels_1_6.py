@@ -17,15 +17,15 @@ NCT_PATTERN = re.compile(r"NCT[0-9]{8}\Z")
 SHA256_PATTERN = re.compile(r"[0-9a-f]{64}\Z")
 PHASES = {"EARLY_PHASE1", "PHASE1", "PHASE2", "PHASE3", "PHASE4", "NA"}
 ROOT = Path(__file__).resolve().parents[2]
-ROSTER_PATH = ROOT / "new-platform/backend/app/data/focus_snapshot.json"
+ROSTER_PATH = ROOT / "new-platform/frontend/data/p3PostDataActive.json"
 APPLICATIONS_PATH = ROOT / "new-platform/backend/app/data/focus_application_snapshot.json"
 DEFINITION_PATH = ROOT / "new-platform/frontend/data/deepMedicalTwentyLevelExpansion.json"
 
 
 def _records(document, label):
     records = document.get("records") if isinstance(document, dict) else None
-    if not isinstance(records, list) or len(records) != 29:
-        raise ValueError(f"{label}: expected exactly 29 FOCUS records")
+    if not isinstance(records, list) or not records:
+        raise ValueError(f"{label}: expected a nonempty exact-NCT record list")
     indexed = {}
     for record in records:
         if not isinstance(record, dict):
@@ -131,8 +131,8 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
     """Return non-predictive, non-mutating readiness for every canonical FOCUS NCT."""
     records = _records(roster, "canonical roster")
     apps = _records(application_snapshot, "application crosswalk")
-    if set(records) != set(apps):
-        raise ValueError("Application crosswalk does not match exact FOCUS NCT roster")
+    if not set(apps).issubset(records):
+        raise ValueError("Application crosswalk references NCT outside the current FOCUS roster")
     definitions = definition.get("levels") if isinstance(definition, dict) else None
     if not isinstance(definitions, list) or [x.get("level") for x in definitions[:6]] != list(range(1, 7)):
         raise ValueError("Missing or reordered assessment Levels 1–6 definitions")
@@ -153,8 +153,8 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
 
     rows, cycle_ids = [], set()
     for nct, record in records.items():
-        app = apps[nct]
-        candidates = app.get("candidateApplications")
+        app = apps.get(nct)
+        candidates = app.get("candidateApplications") if app is not None else []
         if not isinstance(candidates, list):
             raise ValueError("Invalid candidate application links")
         ids, indications = [], set()
@@ -212,7 +212,8 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
             "registrySource": source, "registryCaptureStatus": capture_status,
             "candidateApplicationCycleIdsUnverified": ids,
             "candidateIndicationsUnverified": sorted(indications),
-            "applicationCycleVerification": "PROVISIONAL_NOT_FDA_VERIFIED",
+            "applicationCycleVerification": ("PROVISIONAL_NOT_FDA_VERIFIED" if app is not None
+                                             else "NOT_MAPPED_APPLICATION_CYCLE"),
             "sourceSubmissionCount": len(submissions_by_nct[nct]),
             "levels": levels, "completedLevels": 0, "scientificReviews": 0,
             "fdaOutcomeJudgment": None, "fdaTimingJudgment": None,
@@ -223,6 +224,7 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
         "applicationSnapshotAsOf": application_snapshot.get("asOf"),
         "checkpointGeneratedAt": checkpoint.get("generatedAt"),
         "focusTrialCount": len(rows), "provisionalApplicationCycleCount": len(cycle_ids),
+        "mappedTrialCount": len(apps), "unmappedTrialCount": len(rows) - len(apps),
         "scientificallyAdjudicatedLevels": 0, "calibratedFdaPredictions": 0,
         "sourceSubmissionCount": sum(len(items) for items in submissions_by_nct.values()),
         "levelsPerTrial": 6, "trials": rows,
