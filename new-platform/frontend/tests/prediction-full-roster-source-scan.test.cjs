@@ -7,8 +7,8 @@ const roster=JSON.parse(fs.readFileSync(path.join(root,"data/p3PostDataActive.js
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 
 test("all-FOCUS source endpoint uses exact canonical FOCUS roster and source-only diagnostics",()=>{
-  assert.equal(roster.records.length,29);
-  assert.equal(new Set(roster.records.map(x=>x.nct)).size,29);
+  assert.equal(roster.records.length,32);
+  assert.equal(new Set(roster.records.map(x=>x.nct)).size,32);
   const route=read("app/api/predictions/roster-source-scan/route.ts");
   assert.match(route,/FOCUS_SPECIALTY_ASSESSMENT_QUEUE/);
   assert.match(route,/makeEvidenceRun\(study,nct,"FULL"\)/);
@@ -22,6 +22,7 @@ test("all-FOCUS source endpoint uses exact canonical FOCUS roster and source-onl
   assert.match(route,/calibratedFDAForecasts:0/);
   assert.match(route,/savedToDatabase:false/);
   assert.match(route,/ABSTAIN/);
+  assert.match(route,/FOCUS_CURRENT_TRIAL_SOURCE_INSPECTION_NOT_VALIDATED_FDA_ASSESSMENT/);
   assert.match(route,/NOT_VALIDATED/);
   assert.match(route,/req.nextUrl.searchParams.get\("run"\)!=="source-inspection"/);
   assert.match(route,/Origin header required/);
@@ -33,7 +34,9 @@ test("production predictions page offers an explicit full-roster button without 
   const page=read("app/predictions/page.tsx");
   const ui=read("app/predictions/FullRosterSourceScan.tsx");
   assert.match(page,/<FullRosterSourceScan\/>/);
-  assert.match(ui,/Start Full FOCUS Scan — 29 Trials/);
+  assert.match(ui,/Start Full FOCUS Scan — /);
+  assert.match(ui,/CURRENT_FOCUS_COUNT/);
+  assert.match(ui,/FOCUS_CURRENT_TRIAL_SOURCE_INSPECTION_NOT_VALIDATED_FDA_ASSESSMENT/);
   assert.match(ui,/method:"POST"/);
   assert.match(ui,/onClick=\{\(\)=>void start\(\)\}/);
   assert.match(ui,/Download scan results/);
@@ -46,7 +49,8 @@ test("production predictions page offers an explicit full-roster button without 
   assert.equal(scan.summary.independentlyCompletedScientificReviews,0);
   assert.equal(scan.summary.calibratedFDAForecasts,0);
   assert.equal(scan.summary.savedToDatabase,false);
-  assert.deepEqual(scan.rows.map(row=>row.nct),roster.records.map(row=>row.nct));
+  assert.ok(scan.rows.every(row=>roster.records.some(r=>r.nct===row.nct&&r.ticker===row.ticker)),"29-trial archived scan cannot claim current 32-trial completeness");
+  assert.equal(roster.records.length-scan.rows.length,3);
   assert.ok(scan.rows.every(row=>row.tests.length===12&&row.prediction==="ABSTAIN"&&row.certainty==="NOT_VALIDATED"));
   assert.match(ui,/SOURCE_SCANNED/);
   assert.match(ui,/Review required · ABSTAIN/);
