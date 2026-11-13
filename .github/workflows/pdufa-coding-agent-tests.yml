@@ -3,7 +3,7 @@ on:
   pull_request:
     paths:
       - 'scripts/pdufa_coding_agent.py'
-      - 'tests/test_pdufa_coding_agent.py'
+      - 'tests/test_pdufa_coding_agent*.py'
       - 'automation/coding-agent.example.json'
       - '.github/workflows/pdufa-coding-agent-tests.yml'
 permissions:
@@ -24,5 +24,5 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.13'
-      - run: python -B -m unittest discover -s tests -p test_pdufa_coding_agent.py -v
+      - run: python -B -m unittest discover -s tests -p "test_pdufa_coding_agent*.py" -v
       - run: python -B scripts/audit_raas_retirement.py --check
