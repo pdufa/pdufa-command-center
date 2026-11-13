@@ -162,7 +162,34 @@ def cmd(args: list[str], timeout: int = 120) -> subprocess.CompletedProcess:
     return subprocess.run(args, cwd=ROOT, timeout=timeout, env=env,
                           capture_output=True, text=True, errors="replace")
 
+def reviewed_implementation(pr_number: int) -> dict | None:
+    """A reviewed installation can retain historical draft IDs after merge.
+
+    Only a fully reverified release containing this exact installed plan/code
+    replaces the old open-draft lookup. This never accepts a scientific level.
+    Existing receipts and engineering evidence are left unchanged.
+    """
+    from pdufa_runtime_status import AUTHORIZATION, verify_reviewed_release
+    receipt_path = DATA / AUTHORIZATION
+    if not receipt_path.exists() and not receipt_path.is_symlink():
+        return None
+    receipt = verify_reviewed_release(ROOT, DATA, cmd)
+    manifest = plan()
+    known = {row[key] for row in manifest["levels"]
+             for key in ("original_intake_draft_pr", "provenance_draft_pr", "implementation_draft_pr")
+             if row.get(key) is not None}
+    if pr_number not in known:
+        raise RuntimeError("PR_OUTSIDE_REVIEWED_RELEASE_SCOPE")
+    return {"pr_number": pr_number,
+            "draft_url": f"https://github.com/{REPO}/pull/{pr_number}",
+            "reviewed_release_commit": receipt["release_commit"],
+            "release_approved_pr": receipt["approved_pr"],
+            "scientific_signoff": False}
+
 def confirmed_pr(pr_number: int) -> dict:
+    release = reviewed_implementation(pr_number)
+    if release is not None:
+        return release
     result = cmd(["gh", "pr", "view", str(pr_number), "--repo", REPO, "--json",
                   "number,url,isDraft,state,baseRefName,headRefName"], timeout=35)
     if result.returncode:
@@ -179,6 +206,9 @@ def confirmed_pr(pr_number: int) -> dict:
 
 def confirmed_level5_pr() -> dict:
     """Verify only the known, draft Level 5 implementation PR, never a random PR."""
+    release = reviewed_implementation(1161)
+    if release is not None:
+        return release
     result = cmd(["gh", "pr", "view", "1161", "--repo", REPO, "--json",
                   "number,url,isDraft,state,baseRefName,headRefName"], timeout=35)
     if result.returncode:
@@ -219,6 +249,9 @@ def verified_level5_candidate_ids() -> tuple[list[str], dict]:
 
 
 def confirmed_level6_pr() -> dict:
+    release = reviewed_implementation(1163)
+    if release is not None:
+        return release
     result = cmd(["gh", "pr", "view", "1163", "--repo", REPO, "--json",
                   "number,url,isDraft,state,baseRefName,headRefName"], timeout=35)
     if result.returncode:
@@ -235,6 +268,9 @@ def confirmed_level6_pr() -> dict:
 
 def confirmed_level7_pr() -> dict:
     """Verify Level7 draft #1169 on its exact approved branch/base."""
+    release = reviewed_implementation(1169)
+    if release is not None:
+        return release
     result = cmd(["gh", "pr", "view", "1169", "--repo", REPO, "--json",
                   "number,url,isDraft,state,baseRefName,headRefName"], timeout=35)
     if result.returncode:

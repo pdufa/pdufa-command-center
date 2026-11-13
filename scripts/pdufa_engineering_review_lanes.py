@@ -16,12 +16,18 @@ import json
 import os
 from pathlib import Path
 import re
+import subprocess
 import sys
 import threading
 import time
 
 import pdufa_level_completion as base
 import pdufa_strict_level_runner as strict
+import pdufa_runtime_status as runtime
+
+# Capture once after imports. Re-reading replaced files must never make an old
+# process appear to have loaded the new release.
+RUNTIME_START = runtime.capture_runtime(base.ROOT)
 
 STATE = base.DATA / "engineering_lane_ledger.json"
 HEARTBEAT = base.HEARTBEAT
@@ -248,8 +254,9 @@ def review_sync(state: dict, manifest: dict) -> tuple[dict, str | None]:
     return seq, None
 
 def heartbeat(engineering: dict, scientific: dict, state: dict,
-              task: str | None, mode: str) -> None:
+              task: str | None, mode: str, *, startup_blocker: str | None = None) -> None:
     n = first_uncompleted(engineering)
+    version = runtime.runtime_version(RUNTIME_START, base.ROOT, base.DATA)
     base.safe_json(HEARTBEAT, {
         "queue": "LEVEL_COMPLETION", "mode": mode, "level": n,
         "task": task, "pid": os.getpid(), "updated_utc": utc(),
@@ -259,11 +266,16 @@ def heartbeat(engineering: dict, scientific: dict, state: dict,
                         ("ENGINEERING_SLICES_DONE" if n is None else
                          "AWAIT_APPROVED_DOMAIN_IMPLEMENTATION_OR_EVIDENCE")),
         "counts": base.counts(state),
+        "runtime_version": version,
+        "engineering_diagnostics": runtime.diagnose(state, n, base.ROOT, base.DATA, version),
+        "startup_blocker": startup_blocker,
     })
 
 def monitor(engineering: dict, scientific: dict, state: dict, *,
             task: str | None = None, review_issue: str | None = None) -> str:
     n = first_uncompleted(engineering)
+    version = runtime.runtime_version(RUNTIME_START, base.ROOT, base.DATA)
+    diagnostics = runtime.diagnose(state, n, base.ROOT, base.DATA, version)
     completed = (sum(state["levels"][str(n)]["steps"][s]["status"] == "DONE"
                      for s in STEPS) if n is not None else 0)
     blocked = ([
@@ -285,6 +297,8 @@ def monitor(engineering: dict, scientific: dict, state: dict, *,
         f"**Independent scientific levels reviewed:** "
         f"{len(scientific['accepted_levels'])}/17\n\n"
         f"**Current engineering checkpoints passed:** {completed}/5\n\n"
+        f"**Runtime version:** {json.dumps(version, sort_keys=True)}\n\n"
+        f"**Installation / source / test diagnosis:** {json.dumps(diagnostics, sort_keys=True)}\n\n"
         f"**Current engineering blockers:** {json.dumps(blocked, sort_keys=True)}\n\n"
         f"**Current original-source receipts:** {json.dumps(sources, sort_keys=True)}\n\n"
         f"**Current tests:** {json.dumps(tests, sort_keys=True)}\n\n"
@@ -580,15 +594,31 @@ def run(*, once: bool = False, sleep_seconds: int = 60) -> int:
         manifest = base.plan()
         state = base.load(manifest)
         eng = load(state,manifest)
-        if first_uncompleted(eng) == 5:
-            if rearm_level5_after_real_implementation(state,manifest):
-                print("LEVEL5_OLD_PLACEHOLDER_RETRIED_AFTER_VERIFIED_CODE; pending checkpoints will execute",flush=True)
-        if first_uncompleted(eng) == 6:
-            if rearm_level6_after_real_implementation(state,manifest):
-                print("LEVEL6_OLD_PLACEHOLDER_RETRIED_AFTER_VERIFIED_CODE; pending checkpoints will execute",flush=True)
-        if first_uncompleted(eng) == 7:
-            if rearm_level7_after_real_implementation(state,manifest):
-                print("LEVEL7_OLD_PLACEHOLDER_RETRIED_AFTER_VERIFIED_CODE; pending checkpoints will execute",flush=True)
+        scientific = strict.load_sequence()
+        heartbeat(eng, scientific, state, None, "ENGINEERING_STARTING")
+        # Remote release/PR checks can outlast one heartbeat interval. Pulse
+        # without altering ledgers, and do not certify start-up as active work.
+        startup_stop = threading.Event()
+        def startup_ping() -> None:
+            while not startup_stop.wait(10):
+                heartbeat(eng, scientific, state, None, "ENGINEERING_STARTING")
+        startup_thread = threading.Thread(target=startup_ping, daemon=True)
+        startup_thread.start()
+        try:
+            for number, rearm in ((5, rearm_level5_after_real_implementation),
+                                  (6, rearm_level6_after_real_implementation),
+                                  (7, rearm_level7_after_real_implementation)):
+                if first_uncompleted(eng) == number and rearm(state, manifest):
+                    print(f"LEVEL{number}_OLD_PLACEHOLDER_RETRIED_AFTER_VERIFIED_CODE; pending checkpoints will execute",flush=True)
+        except (OSError, ValueError, RuntimeError, TimeoutError, subprocess.TimeoutExpired) as exc:
+            startup_stop.set()
+            startup_thread.join(timeout=3)
+            code = str(exc) if base.ERROR_CODE.fullmatch(str(exc)) else type(exc).__name__.upper()
+            heartbeat(eng, scientific, state, None, "ENGINEERING_STARTUP_BLOCKED", startup_blocker=code)
+            raise
+        finally:
+            startup_stop.set()
+            startup_thread.join(timeout=3)
         while not base.STOP.exists():
             result = cycle(eng,state,manifest)
             print(result,"engineering_level=",first_uncompleted(eng),flush=True)
@@ -645,7 +675,7 @@ def main() -> int:
                                            if first_uncompleted(eng) is not None else None)},indent=2))
             return 0
         return run(once=args.once)
-    except (OSError,ValueError,RuntimeError,json.JSONDecodeError) as exc:
+    except (OSError,ValueError,RuntimeError,json.JSONDecodeError,subprocess.TimeoutExpired) as exc:
         print("ENGINEERING_LANE_STOP:",type(exc).__name__)
         return 2
 

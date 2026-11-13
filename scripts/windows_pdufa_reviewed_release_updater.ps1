@@ -18,6 +18,8 @@ $script=Join-Path $PSScriptRoot 'windows_pdufa_reviewed_release_updater.ps1'
 $installerRel='scripts/windows_pdufa_level6_unblock.ps1'
 $installer=Join-Path $root ($installerRel.Replace('/','\'))
 $statusPath=Join-Path $data 'reviewed-release-updater-status.json'
+$installedReceiptPath=Join-Path $data 'installed-release-receipt.json'
+$authorizationPath=Join-Path $data 'reviewed-release-authorization.json'
 $mainRef='refs/remotes/origin/main'
 $who=[Security.Principal.WindowsIdentity]::GetCurrent()
 function RequireSuccess([string]$name) {
@@ -58,12 +60,18 @@ function Record([string]$state,[string]$detail,[string]$commit='') {
   [IO.File]::WriteAllText($tmp,(ConvertTo-Json $record -Depth 4),[Text.UTF8Encoding]::new($false))
   Move-Item -LiteralPath $tmp -Destination $statusPath -Force
 }
+function WriteInstalledReceipt($Receipt) {
+  $tmp=Join-Path $data ('installed-release-'+[guid]::NewGuid().ToString('N')+'.tmp')
+  [IO.File]::WriteAllText($tmp,(ConvertTo-Json $Receipt -Depth 6),[Text.UTF8Encoding]::new($false))
+  Move-Item -LiteralPath $tmp -Destination $installedReceiptPath -Force
+}
 if($Status) {
   $t=Get-ScheduledTask -TaskName $taskName -ErrorAction SilentlyContinue
   if($t) { AssertUpdater $t }
   Write-Host ('Updater task: '+$(if($t){$t.State}else{'NOT_INSTALLED'}))
   Write-Host ('Owner STOP: '+(Test-Path -LiteralPath $stop))
   if(Test-Path -LiteralPath $statusPath) { Get-Content -LiteralPath $statusPath -Raw | Write-Host }
+  if(Test-Path -LiteralPath $installedReceiptPath) { Get-Content -LiteralPath $installedReceiptPath -Raw | Write-Host }
   exit 0
 }
 if($Uninstall) {
@@ -160,15 +168,9 @@ try {
   $prNumber=$channel.approved_pr
   if($release -notmatch '^[0-9a-f]{40}$' -or $blob -notmatch '^[0-9a-f]{40}$' -or
       $channel.installer_path -cne $installerRel -or
-      $prNumber -isnot [int] -or $prNumber -lt 1) {
+      ($prNumber -isnot [int] -and $prNumber -isnot [long]) -or
+      $prNumber -lt 1 -or $prNumber -gt [int]::MaxValue) {
     throw 'Manifest has no exact approved installer version.'
-  }
-  if(Test-Path -LiteralPath $statusPath -PathType Leaf) {
-    $prior=Get-Content -LiteralPath $statusPath -Raw | ConvertFrom-Json
-    if($prior.state -eq 'INSTALLED_AND_RESTART_VERIFIED' -and $prior.release_commit -eq $release) {
-      Write-Host 'APPROVED_RELEASE_ALREADY_INSTALLED'
-      exit 0
-    }
   }
   # GitHub branch protection must enforce independent approvals and CI.
   $protectionText=& gh api ('repos/'+$repo+'/branches/main/protection') 2>$null
@@ -197,6 +199,51 @@ try {
   $sourceBlob=(& git -C $root rev-parse ($release+':'+$installerRel) | Out-String).Trim()
   RequireSuccess 'RELEASE_SOURCE_BLOB'
   if($sourceBlob -cne $blob) { throw 'Release source blob mismatch.' }
+  # Latest poll status may change; the successful installation receipt persists.
+  # Idempotence still requires exact current bytes and the loaded worker version.
+  if((Test-Path -LiteralPath $installedReceiptPath -PathType Leaf) -and
+     (Test-Path -LiteralPath $authorizationPath -PathType Leaf)) {
+    $prior=Get-Content -LiteralPath $installedReceiptPath -Raw | ConvertFrom-Json
+    $auth=Get-Content -LiteralPath $authorizationPath -Raw | ConvertFrom-Json
+    if($prior.state -eq 'INSTALLED_AND_RESTART_VERIFIED' -and
+       $prior.release_commit -ceq $release -and $auth.release_commit -ceq $release) {
+      $matches=($auth.schema_version -eq 1 -and $auth.repository -ceq $repo -and
+                @($auth.files.PSObject.Properties).Count -gt 0)
+      foreach($entry in $auth.files.PSObject.Properties) {
+        if($entry.Name -match '(^/|\\|(?:^|/)\.\.(?:/|$))' -or $entry.Value -cnotmatch '^[0-9a-f]{40}$') {
+          $matches=$false
+          break
+        }
+        $expected=(& git -C $root rev-parse ($release+':'+$entry.Name) | Out-String).Trim()
+        RequireSuccess 'INSTALLED_RELEASE_SOURCE_BLOB'
+        $local=Join-Path $root ($entry.Name.Replace('/','\'))
+        if(-not(Test-Path -LiteralPath $local -PathType Leaf)) { $matches=$false; break }
+        $actual=(& git -C $root hash-object $local | Out-String).Trim()
+        RequireSuccess 'INSTALLED_RELEASE_LOCAL_BLOB'
+        if($expected -cne $entry.Value -or $actual -cne $entry.Value) { $matches=$false; break }
+      }
+      $heartbeatPath=Join-Path $data 'heartbeat.json'
+      if($matches -and (Test-Path -LiteralPath $heartbeatPath -PathType Leaf)) {
+        $h=Get-Content -LiteralPath $heartbeatPath -Raw | ConvertFrom-Json
+        $age=((Get-Date).ToUniversalTime()-[datetime]::Parse([string]$h.updated_utc).ToUniversalTime()).TotalSeconds
+        $matches=($h.runtime_version.release_commit -ceq $release -and
+                  $h.runtime_version.files_match_authorization -eq $true -and
+                  @($h.runtime_version.disk_changed_since_start).Count -eq 0 -and
+                  $h.mode -notin @('ENGINEERING_STARTING','ENGINEERING_STARTUP_BLOCKED') -and
+                  $age -ge 0 -and $age -lt 90 -and
+                  (Get-ScheduledTask -TaskName $workerName).State -eq 'Running')
+        foreach($entry in $auth.files.PSObject.Properties) {
+          $loaded=$h.runtime_version.startup_files.PSObject.Properties[$entry.Name]
+          if($null -eq $loaded -or $loaded.Value -cne $entry.Value) { $matches=$false }
+        }
+        if($matches) {
+          Record 'APPROVED_RELEASE_ALREADY_INSTALLED' 'Exact installed and running release verified.' $release
+          Write-Host 'APPROVED_RELEASE_ALREADY_INSTALLED'
+          exit 0
+        }
+      }
+    }
+  }
   if(Test-Path -LiteralPath $stop) { throw 'Owner STOP appeared before download.' }
   $stage=Join-Path $data ('release-'+$release.Substring(0,12))
   New-Item -ItemType Directory -Path $stage -Force | Out-Null
@@ -214,12 +261,18 @@ try {
   }
   Copy-Item -LiteralPath $incoming -Destination $installer -Force -ErrorAction Stop
   $installerChanged=$true
-  & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $installer -Preflight
+  & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $installer -Preflight -ReviewedReleaseCommit $release
   RequireSuccess 'RELEASE_PREFLIGHT'
   if(Test-Path -LiteralPath $stop) { throw 'Owner STOP appeared before install.' }
-  & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $installer -Install
+  & powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File $installer -Install -ReviewedReleaseCommit $release
   RequireSuccess 'RELEASE_INSTALL_OR_RESTART'
   $installed=$true
+  WriteInstalledReceipt ([ordered]@{
+    schema_version=1; state='INSTALLED_AND_RESTART_VERIFIED'; repository=$repo
+    release_commit=$release; installer_git_blob_sha1=$blob; approved_pr=$prNumber
+    installed_at_utc=(Get-Date).ToUniversalTime().ToString('o')
+    independent_scientific_acceptance=$false
+  })
   Record 'INSTALLED_AND_RESTART_VERIFIED' 'Installer returned successful restart verification.' $release
   Write-Host ('APPROVED_RELEASE_INSTALLED_AND_RESTART_VERIFIED: '+$release)
 } catch {
