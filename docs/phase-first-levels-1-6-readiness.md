@@ -4,8 +4,8 @@ This is the **first isolated engineering slice** for #1179. It is **not** a medi
 
 ## Reused inputs
 
-- Canonical 29 exact-NCT FOCUS snapshot: `new-platform/backend/app/data/focus_snapshot.json`.
-- 29-NCT / 23 **provisional** candidate application-cycle crosswalk: `new-platform/backend/app/data/focus_application_snapshot.json`; cycle IDs and indication labels remain *unverified leads*.
+- Current 32 exact-NCT FOCUS roster (as of 2026-11-13): `new-platform/frontend/data/p3PostDataActive.json`. This legacy filename remains an internal source artifact, not an active P3 workspace.
+- Existing application crosswalk: `new-platform/backend/app/data/focus_application_snapshot.json`, with 29/32 FOCUS NCTs mapped to 23 **provisional** cycle IDs. Three newly added exact NCTs are explicitly **NOT_MAPPED_APPLICATION_CYCLE**, never silently excluded or assigned guessed FDA applications. The unreviewed cycle IDs and indication labels remain leads only.
 - The existing `scripts/medical/level4_registry_extraction.py` source checkpoint, now with an additional read-only `studyOverallStatus` field for future captures.
 - Existing 20-level names: `new-platform/frontend/data/deepMedicalTwentyLevelExpansion.json`; only Levels 1–6 are read.
 
@@ -95,7 +95,7 @@ python scripts/medical/render_level16_focus_preview.py --report levels1-6-readin
 ```
 
 The output HTML is **offline-only**, not a deployed route. It displays a
-29-NCT, six-level, expandable review queue and strongly labels all evidence
+32-NCT (or exact current FOCUS roster count), six-level, expandable review queue and strongly labels all evidence
 as unauthenticated and all assessments as unreviewed. All free-text and
 source links are escaped/validated. It does not connect to the live FOCUS
 site or modify databases, records, memberships, scoring or predictions.
