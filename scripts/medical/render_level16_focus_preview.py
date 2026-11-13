@@ -30,7 +30,7 @@ def _source_link(url):
     return f'<a href="{safe_url}" target="_blank" rel="noopener noreferrer">View submitted source</a>'
 
 
-def render(report):
+def render(report, trusted_review_reader=None):
     if not isinstance(report, dict) or report.get("status") != "PHASE_FIRST_EVIDENCE_TRIAGE_ONLY":
         raise ValueError("Refusing non-readiness or scientific-prediction report")
     trials = report.get("trials")
@@ -58,8 +58,24 @@ def render(report):
         if trial.get("fdaOutcomeJudgment") is not None or trial.get("fdaTimingJudgment") is not None:
             raise ValueError("Preview cannot display uncertified FDA predictions")
         for level in levels:
-            if (level.get("scientificReviewStatus") != "NOT_ADJUDICATED"
-                    or level.get("assessmentCompleted") is not False
+            workflow = level.get("reviewWorkflow", {})
+            authorized = workflow.get("status") == "AUTHORIZED_DATABASE_READBACK"
+            if authorized:
+                if trusted_review_reader is None or trusted_review_reader(nct, level["level"]) != workflow:
+                    raise ValueError("Saved JSON cannot certify reviews; trusted current database readback required")
+            elif workflow:
+                if (workflow.get("status") != "TRUSTED_REVIEW_INFRASTRUCTURE_NOT_CONNECTED"
+                        or workflow.get("history") or workflow.get("independentlyAdjudicated") is not False
+                        or workflow.get("originalDocumentAuthenticationStatus") != "NOT_AUTHENTICATED"
+                        or workflow.get("reviewerAuthorizationStatus") != "TRUSTED_INDIVIDUAL_AUTH_NOT_CONNECTED"
+                        or workflow.get("clinicalReviewStatus") != "NOT_COMPLETED"
+                        or workflow.get("independentChallengeStatus") != "NOT_COMPLETED"):
+                    raise ValueError("Untrusted review authorization, authentication or event-history claim")
+            completed = authorized and workflow.get("independentlyAdjudicated") is True
+            expected_review = "INDEPENDENTLY_ADJUDICATED" if completed else "NOT_ADJUDICATED"
+            if (level.get("scientificReviewStatus") != expected_review
+                    or level.get("assessmentCompleted") is not completed
+                    or level.get("scientificConclusion") != (workflow["findings"] if completed else None)
                     or level.get("score") is not None
                     or level.get("approvalProbability") is not None):
                 raise ValueError("Preview refuses uncertified clinical assessments")
@@ -113,6 +129,29 @@ def render(report):
                 for label, key in (("Proposed findings", "findingsUnreviewed"), ("Proposed reasons", "reasonsUnreviewed"),
                                    ("Contradictions", "contradictoryEvidence"), ("Limitations", "limitations"), ("Blockers", "blockers")):
                     link_html += "<p>" + label + ": " + _text("; ".join(proposal[key])) + "</p>"
+            workflow = item.get("reviewWorkflow", {})
+            review_html = "<p>Scientific review: " + _text(item["scientificReviewStatus"].replace("_", " ")) + "</p>"
+            for label, key in (("Source collection", "sourceCollectionStatus"),
+                               ("Original document authentication", "originalDocumentAuthenticationStatus"),
+                               ("Reviewer authorization", "reviewerAuthorizationStatus"),
+                               ("Clinical review", "clinicalReviewStatus"),
+                               ("Independent challenge", "independentChallengeStatus")):
+                review_html += "<p>" + label + ": " + _text(workflow.get(key)) + "</p>"
+            review_html += "<p>Registry fields missing: " + _text(", ".join(item.get("registryFieldsNotCaptured", [])) or "None captured as missing; not a scientific completeness claim") + "</p>"
+            review_html += "<p>Phase-specific applicability: " + _text(item.get("pivotalReadoutRequirement") or item.get("pivotalSAPRequirement") or "Review at current phase") + "</p>"
+            review_html += "<p>Remaining blockers: " + _text("; ".join(workflow.get("blockers", []))) + "</p>"
+            if workflow.get("status") == "AUTHORIZED_DATABASE_READBACK":
+                label = "Independently adjudicated finding" if workflow.get("independentlyAdjudicated") else "Authorized review event (NOT final adjudication)"
+                review_html += "<p><strong>" + label + "</strong></p>"
+                context = workflow["binding"]
+                review_html += "<p>Review evidence context: " + _text(context["indication"]) + " · " + _text(", ".join(context["phases"])) + " · cutoff " + _text(context["cutoffDate"]) + "</p>"
+                for label, key in (("Findings", "findings"), ("Reasons", "reasons"),
+                                   ("Contradictions", "contradictoryEvidence"), ("Limitations", "limitations")):
+                    review_html += "<p>" + label + ": " + _text("; ".join(workflow[key])) + "</p>"
+                review_html += "<details><summary>Append-only review-event history</summary><ol>"
+                for event in workflow["history"]:
+                    review_html += "<li>" + _text(event["eventId"]) + " · version " + _text(event["version"]) + " · " + _text(event["status"]) + " · " + _text(event["action"]) + " · " + _text(event["authorizedRole"]) + " / " + _text(event["reviewerIssuer"]) + " / " + _text(event["reviewerId"]) + " · " + _text(event["serverTimestamp"]) + " · predecessor " + _text(event["previousEventId"]) + " · findings " + _text("; ".join(event["findings"])) + "</li>"
+                review_html += "</ol></details>"
             requests = item.get("originalEvidenceRequests", [])
             requests_text = ", ".join(map(str, requests)) if isinstance(requests, list) else ""
             lines.append(
@@ -120,7 +159,7 @@ def render(report):
                 "</td><td>" + _text(item.get("readiness")) +
                 "</td><td>" + _text(requests_text) +
                 "</td><td>" + link_html +
-                "</td><td>NOT ADJUDICATED</td></tr>"
+                "</td><td>" + review_html + "</td></tr>"
             )
         summary = (
             _text(trial.get("company")) + " · " + _text(trial.get("ticker")) + " · " + _text(nct) +
@@ -141,6 +180,9 @@ def render(report):
             "<th>Required evidence review</th><th>Submitted source leads</th><th>Scientific review</th>"
             "</tr></thead><tbody>" + "".join(lines) + "</tbody></table></div></div></details>"
         )
+    actual_completed = sum(level.get("assessmentCompleted") is True for trial in trials for level in trial["levels"])
+    if report.get("scientificallyAdjudicatedLevels", 0) != actual_completed:
+        raise ValueError("Review completion count must agree with authorized readback")
     css = """body{font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif;margin:0;color:#192536;background:#f4f7fa}
     main{max-width:1160px;margin:auto;padding:24px 18px 50px}
     h1{font-size:1.8rem;margin-bottom:6px}p{margin:8px 0}
@@ -165,8 +207,8 @@ def render(report):
         "<h1>FOCUS · Scientific Levels 1–6</h1>"
         "<p>Read-only evidence review preview. Original FOCUS membership remains unchanged.</p>"
         "<div class='notice'><strong>NOT MEDICAL ASSESSMENTS OR FDA FORECASTS.</strong>"
-        " Submitted source metadata is not authenticated; no trial or level is "
-        "independently scientifically adjudicated. This page is not deployed to production.</div>"
+        " Submitted source metadata and proposed findings are unreviewed. Authorized findings require "
+        "trusted current database readback. This page is not deployed to production.</div>"
         "<section class='metrics' aria-label='Assessment readiness counts'>"
         "<div class='metric'><strong>" + _text(report.get("focusTrialCount")) +
         "</strong><small>FOCUS exact NCT trials</small></div>"
@@ -176,7 +218,7 @@ def render(report):
         "</strong><small>Trials without application mapping</small></div>"
         "<div class='metric'><strong>" + _text(report.get("sourceSubmissionCount", 0)) +
         "</strong><small>Source submissions awaiting authentication</small></div>"
-        "<div class='metric'><strong>0</strong><small>Independently reviewed Levels 1–6</small></div>"
+        "<div class='metric'><strong>" + _text(report.get("scientificallyAdjudicatedLevels", 0)) + "</strong><small>Independently reviewed Levels 1–6</small></div>"
         + (
             "<div class='metric'><strong>" + _text(byte_summary.get("localByteMatches", 0))
             + "</strong><small>Local files matching submitted SHA-256 (NOT source-authenticated)</small></div>"

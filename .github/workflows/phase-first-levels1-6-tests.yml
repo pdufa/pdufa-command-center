@@ -3,6 +3,11 @@ name: Phase-first Level 1-6 readiness checks
 on:
   pull_request:
     paths:
+      - "new-platform/backend/app/level16_review_policy.py"
+      - "new-platform/backend/app/level16_review_events.py"
+      - "new-platform/backend/migrations/20261113_level16_review_events.sql"
+      - "tests/test_level16_review_events.py"
+      - "tests/test_level16_review_postgres.py"
       - "scripts/medical/phase_first_levels_1_6.py"
       - "scripts/medical/level16_source_submissions.py"
       - "scripts/medical/level16_review_cases.py"
@@ -19,6 +24,11 @@ on:
     branches:
       - "codex/assessment-levels1-6-phase-first-20261113"
     paths:
+      - "new-platform/backend/app/level16_review_policy.py"
+      - "new-platform/backend/app/level16_review_events.py"
+      - "new-platform/backend/migrations/20261113_level16_review_events.sql"
+      - "tests/test_level16_review_events.py"
+      - "tests/test_level16_review_postgres.py"
       - "scripts/medical/phase_first_levels_1_6.py"
       - "scripts/medical/level16_source_submissions.py"
       - "scripts/medical/level16_review_cases.py"
@@ -54,6 +64,10 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.13"
+      - name: Install isolated review-interface test dependencies
+        run: python -m pip install "sqlalchemy>=2.0,<3" "fastapi>=0.115,<1" "httpx>=0.27,<1"
+      - name: Authorized review policy and fail-closed HTTP tests
+        run: python -m unittest discover -s tests -p "test_level16_review_events.py" -v
       - name: Phase-first six-level unit tests
         run: python -m unittest discover -s tests -p "test_phase_first_levels_1_6.py" -v
       - name: Source-verification dossier and independent-review intake gates
@@ -64,5 +78,39 @@ jobs:
         run: python -m unittest discover -s tests -p "test_render_level16_focus_preview.py" -v
       - name: Registry extractor regression tests
         run: python -m unittest discover -s tests -p "test_level4_registry_extraction.py" -v
+      - name: Permanent retirement regression guard
+        run: python scripts/audit_raas_retirement.py --check
+
+  review-postgres:
+    name: Disposable PostgreSQL review permissions and concurrency
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_PASSWORD: synthetic-ci-test-only
+          POSTGRES_DB: level16_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      LEVEL16_TEST_ALLOW_DISPOSABLE: '1'
+      LEVEL16_TEST_DATABASE_URL: postgresql+psycopg://postgres:synthetic-ci-test-only@127.0.0.1:5432/level16_test
+    steps:
+      - name: Preserve historical bytes
+        run: git config --global core.autocrlf false
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - name: Install review storage test dependencies
+        run: python -m pip install "sqlalchemy>=2.0,<3" "psycopg[binary]>=3.2,<4" "fastapi>=0.115,<1" "httpx>=0.27,<1"
+      - name: Migration, permissions, replay, append-only and concurrent updates
+        run: python -m unittest discover -s tests -p "test_level16_review_postgres.py" -v
       - name: Permanent retirement regression guard
         run: python scripts/audit_raas_retirement.py --check

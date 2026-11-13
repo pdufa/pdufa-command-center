@@ -128,7 +128,8 @@ def _level(number, name, fields, phase_group, indication_leads, source_captured)
 
 
 def build(roster, application_snapshot, checkpoint, definition, submissions=None,
-          local_receipts=None, evidence_root=None, source_cases=None, review_proposals=None):
+          local_receipts=None, evidence_root=None, source_cases=None, review_proposals=None,
+          trusted_review_reader=None):
     """Return non-predictive, non-mutating readiness for every canonical FOCUS NCT."""
     records = _records(roster, "canonical roster")
     apps = _records(application_snapshot, "application crosswalk")
@@ -236,13 +237,43 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
             submitted = [item for item in submissions_by_nct[nct]
                          if item["level"] == level["level"]]
             level["reviewProposalsUnreviewed"] = proposals.get(nct, {}).get(level["level"], [])
+            workflow = {
+                "status": "TRUSTED_REVIEW_INFRASTRUCTURE_NOT_CONNECTED",
+                "sourceCollectionStatus": "SOURCE_SUBMITTED" if submitted else "NO_SOURCE_SUBMISSION",
+                "originalDocumentAuthenticationStatus": "NOT_AUTHENTICATED",
+                "reviewerAuthorizationStatus": "TRUSTED_INDIVIDUAL_AUTH_NOT_CONNECTED",
+                "clinicalReviewStatus": "NOT_COMPLETED", "independentChallengeStatus": "NOT_COMPLETED",
+                "independentlyAdjudicated": False, "history": [],
+                "blockers": ["TRUSTED_IDENTITY_PROVIDER_REQUIRED", "IMMUTABLE_EVIDENCE_RESOLVER_REQUIRED",
+                             "MIGRATED_RESTRICTED_POSTGRES_REQUIRED"],
+            }
+            if trusted_review_reader is not None:
+                # Trusted server dependency only. There is no JSON/CLI option to
+                # assert authorization; offline preview must independently reread.
+                verified = trusted_review_reader(nct, level["level"])
+                if verified is not None:
+                    binding = verified.get("binding", {})
+                    if (verified.get("status") != "AUTHORIZED_DATABASE_READBACK"
+                            or binding.get("nct") != nct or binding.get("level") != level["level"]
+                            or binding.get("company") != record.get("company")
+                            or binding.get("ticker") != record.get("ticker")
+                            or binding.get("applicationCycleId") not in [None] + ids
+                            or (submissions is not None and binding.get("cutoffDate") != submissions["cutoffDate"])):
+                        raise ValueError("Trusted review readback identity mismatch")
+                    workflow = verified
+                    if workflow.get("independentlyAdjudicated") is True:
+                        level["scientificReviewStatus"] = "INDEPENDENTLY_ADJUDICATED"
+                        level["assessmentCompleted"] = True
+                        level["scientificConclusion"] = workflow["findings"]
+                        level["readiness"] = "INDEPENDENTLY_ADJUDICATED_NO_FDA_PREDICTION"
+            level["reviewWorkflow"] = workflow
             level["submittedEvidenceLeads"] = submitted
             level["sourceSubmissionCount"] = len(submitted)
             level["sourceReviewQueueStatus"] = (
                 "AWAITING_INDEPENDENT_SOURCE_AUTHENTICATION" if submitted
                 else "NO_SOURCE_SUBMISSION"
             )
-            if submitted:
+            if submitted and not level["assessmentCompleted"]:
                 level["readiness"] = "SOURCE_METADATA_SUBMITTED_REVIEW_REQUIRED"
         rows.append({
             "nct": nct, "ticker": record.get("ticker"), "company": record.get("company"),
@@ -255,7 +286,8 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
             "applicationCycleVerification": ("PROVISIONAL_NOT_FDA_VERIFIED" if app is not None
                                              else "NOT_MAPPED_APPLICATION_CYCLE"),
             "sourceSubmissionCount": len(submissions_by_nct[nct]),
-            "levels": levels, "completedLevels": 0, "scientificReviews": 0,
+            "levels": levels, "completedLevels": sum(x["assessmentCompleted"] for x in levels),
+            "scientificReviews": sum(x["assessmentCompleted"] for x in levels),
             "fdaOutcomeJudgment": None, "fdaTimingJudgment": None,
         })
     return {
@@ -265,11 +297,15 @@ def build(roster, application_snapshot, checkpoint, definition, submissions=None
         "checkpointGeneratedAt": checkpoint.get("generatedAt"),
         "focusTrialCount": len(rows), "provisionalApplicationCycleCount": len(cycle_ids),
         "mappedTrialCount": len(apps), "unmappedTrialCount": len(rows) - len(apps),
-        "scientificallyAdjudicatedLevels": 0, "calibratedFdaPredictions": 0,
+        "scientificallyAdjudicatedLevels": sum(t["completedLevels"] for t in rows), "calibratedFdaPredictions": 0,
         "sourceSubmissionCount": sum(len(items) for items in submissions_by_nct.values()),
         "sourceVerificationCaseCount": len(dossiers),
         "unreviewedProposalCount": sum(len(items) for levels in proposals.values() for items in levels.values()),
-        "originalSourcesIndependentlyAuthenticated": 0,
+        "independentlyReviewedTrialCount": sum(t["completedLevels"] > 0 for t in rows),
+        "originalSourcesIndependentlyAuthenticated": len({
+            (level["reviewWorkflow"]["binding"]["documentId"], level["reviewWorkflow"]["binding"]["documentSha256"])
+            for trial in rows for level in trial["levels"]
+            if level["reviewWorkflow"]["originalDocumentAuthenticationStatus"] == "SOURCE_AUTHENTICATED"}),
         "localByteConsistency": byte_consistency,
         "levelsPerTrial": 6, "trials": rows,
     }

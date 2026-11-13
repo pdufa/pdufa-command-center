@@ -262,3 +262,11 @@ service rather than JSON intake; bind each event to immutable original evidence
 bytes and cutoff. Only then implement adjudication transitions and protected
 staging integration. Obtain original-source and medical specialist review for
 all six levels; keep all 32 trials and the three unmapped exceptions visible.
+
+## Review-event boundary stage
+
+See [review-event boundary architecture and blockers](level16-review-event-boundary.md)
+for the auth/persistence audit, additive PostgreSQL migration, lifecycle,
+transactional role/evidence interfaces, trusted engine/preview readback and tests.
+The default workflow remains disconnected and fail-closed. No individual reviewer
+provider, real source-attestation store or staging migration is activated.
