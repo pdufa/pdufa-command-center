@@ -7,6 +7,7 @@ import {FOCUS_SPECIALTY_ASSESSMENT_QUEUE,FOCUS_SPECIALTY_SUMMARY} from "../../..
 import AssessmentStatusPies from "../../AssessmentStatusPies";
 import FocusLevelThreeResearchForecasts from "../../FocusLevelThreeResearchForecasts";
 import AssessmentLevelChart from "../../AssessmentLevelChart";
+import LevelOneFocusScores from "../../LevelOneFocusScores";
 import HistoricalTestingChart from "../../HistoricalTestingChart";
 import HistoricalMonthlyLevelTrend from "../../HistoricalMonthlyLevelTrend";
 import October2026HistoricalAuditPanel from "../../October2026HistoricalAuditPanel";
@@ -15,7 +16,7 @@ import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
 
 export const metadata:Metadata={
   title:"FOCUS Scientific Assessment Readiness | PDUFA",
-  description:"Source-linked FOCUS scientific assessment intake, with frozen, clearly labeled provisional Level 3 FDA application research calls and evidence gaps."
+  description:"Dated Level 1 registry-document coverage scores for 32 FOCUS NCTs, plus earlier specialty-intake evidence and clearly labeled provisional research calls."
 };
 type Params={nct?:string;cycle?:string};
 const section={border:"1px solid #c3d9d5",background:"#fff",borderRadius:13,padding:"clamp(13px,2vw,20px)"} as const;
@@ -37,10 +38,11 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
     <h1 style={{fontSize:"clamp(25px,4vw,36px)",margin:"8px 0 4px"}}>Deep Clinical Subspecialty Intelligence</h1>
     <p style={{fontSize:17,fontWeight:700,margin:"4px 0"}}>FOCUS — Complete Assessment Preparation</p>
     <p style={{maxWidth:1030,lineHeight:1.6,color:"#435f60",fontSize:14}}>
-      The live read-only research worklist links all FOCUS NCT records with dated FDA application mappings
-      and partial specialty-style investigations. <strong>This is assessment preparation, not 29 completed scientific reviews.</strong>
+      The Level 1 section below covers 32 dated FOCUS trial records. The older specialty dossier further down
+      covers a separate 29-trial intake snapshot. <strong>Neither is a validated FDA probability or 32 completed clinical PDUFA reviews.</strong>
       The first step in every actual review is to verify current trial phase, status, intervention and indication.
     </p>
+    <LevelOneFocusScores/>
     <HistoricalMonthlyLevelTrend/>
     <section aria-label="Future prospective FDA predictions"
       style={{background:"#eefaf5",border:"1px solid #9bcdb9",borderRadius:13,
@@ -112,7 +114,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
     </details>
     <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(160px,1fr))",gap:10,margin:"15px 0 20px"}}>
       {[
-        ["Exact FOCUS trials",FOCUS_SPECIALTY_SUMMARY.ncts],
+        ["Legacy specialty-intake NCTs",FOCUS_SPECIALTY_SUMMARY.ncts],
         ["Stock tickers",FOCUS_SPECIALTY_SUMMARY.tickers],
         ["Mapped FDA cycles",FOCUS_SPECIALTY_SUMMARY.mappedApplicationCycles],
         ["Specialty profiles",CLINICAL_SPECIALTY_PROFILES.length],
@@ -125,7 +127,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
     <div style={{...section,marginBottom:18,background:"#fff8ea",borderColor:"#d8ae6f"}}>
       <strong>Research-only checkpoint — not a completed trial assessment</strong>
       <p style={{fontSize:13,lineHeight:1.6,margin:"7px 0 0"}}>
-        All {FOCUS_SPECIALTY_SUMMARY.ncts} current FOCUS NCTs are in the intake queue.
+        The older {FOCUS_SPECIALTY_SUMMARY.ncts}-NCT specialty-intake snapshot is in this queue.
         The {FOCUS_SPECIALTY_SUMMARY.partialClinicalDimensions} specialty positions are authored research interpretations,
         not individually independently reverified findings. Signed clinical adjudications: 0 recorded.
         For the FOCUS research queue only: approved numerical FDA forecasts: 0.
@@ -135,13 +137,13 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
         enter validated production predictions or accuracy. Roster snapshot: {FOCUS_SPECIALTY_SUMMARY.rosterAsOf}.
       </p>
       <p style={{fontSize:13,margin:"9px 0 0"}}>
-        <Link href="/api/focus-assessment-intake" style={{color:"#08695c",fontWeight:750}}>Download machine-readable 29-trial intake manifest</Link>
+        <Link href="/api/focus-assessment-intake" style={{color:"#08695c",fontWeight:750}}>Download older 29-trial specialty intake manifest</Link>
         {" · "}<Link href="/predictions" style={{color:"#08695c"}}>Back to FDA predictions</Link>
       </p>
     </div>
     <div style={{display:"grid",gridTemplateColumns:"minmax(0,1fr)",gap:17}}>
       <section style={section} aria-label="All FOCUS research intake trials">
-        <h2 style={{fontSize:21,margin:"0 0 4px"}}>All {FOCUS_SPECIALTY_SUMMARY.ncts} exact-NCT trials</h2>
+        <h2 style={{fontSize:21,margin:"0 0 4px"}}>Earlier specialty intake snapshot · {FOCUS_SPECIALTY_SUMMARY.ncts} exact-NCT records</h2>
         <p style={{color:"#5d7270",fontSize:13,margin:"0 0 12px"}}>
           Select any row for its exact trial's clinical subspecialty questions and source-linked dossier.
           Each row is a research intake entry, not a prediction.
