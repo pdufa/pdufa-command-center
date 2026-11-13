@@ -12,7 +12,7 @@ const source=read("new-platform/backend/app/medical_on_demand.py");
 const snapshot=JSON.parse(read("new-platform/backend/app/data/focus_snapshot.json")).records;
 
 test("Analyze Now is keyed to exact current FOCUS identities",()=>{
-  assert.equal(records.length,29);
+  assert.equal(records.length,32);
   assert.deepEqual(snapshot.map(x=>x.nct),records.map(x=>x.nct));
   assert.ok(records.some(x=>x.nct==="NCT06081894"));
   assert.match(app,/focus\.records\.some\(record=>record\.nct===nct\)/);
