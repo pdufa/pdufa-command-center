@@ -44,13 +44,14 @@ export default function LevelOneFocusScores() {
     </div>
     <h2 style={{fontSize:23, margin:"6px 0"}}>All 32 FOCUS trials — Level 1 Documentation Scores</h2>
     <p style={{fontSize:14,lineHeight:1.6,maxWidth:1050,margin:"8px 0"}}>
-      Dated ClinicalTrials.gov documentation-coverage assessment,  <strong>{snapshot.asOfUtc} UTC</strong>.
+      Dated ClinicalTrials.gov documentation-coverage assessment, <strong>{snapshot.asOfUtc} UTC</strong>.
       All <strong>{snapshot.records.length} / 32</strong> exact trial IDs were scored against this five-part
       documentation checklist: <strong>{full}</strong> have 100/100 documentation points and{" "}
       <strong>{snapshot.records.length - full}</strong> have 50/100 documentation points.
     </p>
     <p style={{fontSize:13,lineHeight:1.65,padding:12,background:"#fff4df",border:"1px solid #d9b981",borderRadius:8,margin:"9px 0"}}>
       <strong>DOCUMENTATION SCORE ONLY — NOT A PDUFA APPROVAL PREDICTION.</strong>{" "}
+      These are NOT FDA approval probabilities or full scientific PDUFA assessments.
       A 100/100 means all checklist categories were documented in the registry snapshot; a 50/100
       means fewer categories were documented there, <strong>not</strong> that approval is 50% likely.
       Information absent from ClinicalTrials.gov may be available from FDA filings, sponsors,
