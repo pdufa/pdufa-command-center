@@ -146,5 +146,116 @@ class PhaseFirstLevels16Tests(unittest.TestCase):
         self.assertEqual(retry["registryCaptureStatus"], "RETRY_REQUIRED")
 
 
+    def evidence_doc(self, records, cutoff="2026-11-12"):
+        return {"schemaVersion": 1, "kind": "FOCUS_LEVELS_1_6_SOURCE_SUBMISSIONS",
+                "cutoffDate": cutoff, "records": records}
+
+    def submission(self, **overrides):
+        item = {
+            "submissionId": "source-lead-001", "nct": self.nct, "level": 3,
+            "sourceKind": "JOURNAL_PUBLICATION",
+            "sourceUrl": "https://journals.example.org/clinical-result",
+            "sourceDate": "2026-11-08", "accessedDate": "2026-11-10",
+            "documentSha256": "b" * 64, "locator": "Figure 1",
+            "claim": "Authors report a clinical endpoint difference requiring independent review.",
+            "role": "SUPPORTS", "submittedBy": "research-intake",
+        }
+        item.update(overrides)
+        return item
+
+    def report_with_submissions(self, submission_records, checkpoint=None, cutoff="2026-11-12"):
+        return module.build(self.roster, self.apps, {"results": checkpoint or {}},
+                            self.definition, self.evidence_doc(submission_records, cutoff))
+
+    def test_source_submission_routes_to_exact_trial_level_without_certification(self):
+        report = self.report_with_submissions([self.submission()])
+        self.assertEqual(report["sourceSubmissionCount"], 1)
+        first = report["trials"][0]
+        self.assertEqual(first["sourceSubmissionCount"], 1)
+        level3 = first["levels"][2]
+        self.assertEqual(level3["sourceReviewQueueStatus"],
+                         "AWAITING_INDEPENDENT_SOURCE_AUTHENTICATION")
+        self.assertEqual(level3["readiness"], "SOURCE_METADATA_SUBMITTED_REVIEW_REQUIRED")
+        self.assertEqual(level3["submittedEvidenceLeads"][0]["authenticationStatus"],
+                         "SUBMITTED_SOURCE_NOT_INDEPENDENTLY_AUTHENTICATED")
+        self.assertEqual(level3["scientificReviewStatus"], "NOT_ADJUDICATED")
+        self.assertFalse(level3["assessmentCompleted"])
+        self.assertIsNone(level3["score"])
+        self.assertIsNone(first["fdaOutcomeJudgment"])
+        self.assertEqual(report["scientificallyAdjudicatedLevels"], 0)
+        self.assertEqual(report["trials"][1]["sourceSubmissionCount"], 0)
+
+    def test_registry_submission_binds_original_source_digest_and_exact_locator(self):
+        reg = captured(self.nct, phase="PHASE2")
+        reg["evidence"]["fields"]["phase"]["locator"] = "protocolSection.designModule.phases"
+        entry = self.submission(
+            level=2, sourceKind="REGISTRY",
+            sourceUrl="https://clinicaltrials.gov/study/" + self.nct,
+            documentSha256="a" * 64, locator="protocolSection.designModule.phases",
+            claim="Registry phase is Phase 2, pending independent source verification.")
+        report = self.report_with_submissions([entry], {self.nct: reg})
+        self.assertEqual(report["trials"][0]["levels"][1]["sourceSubmissionCount"], 1)
+        self.assertEqual(report["trials"][0]["phaseGroup"], "EARLIER_PHASE")
+        entry["documentSha256"] = "b" * 64
+        with self.assertRaises(ValueError):
+            self.report_with_submissions([entry], {self.nct: reg})
+        entry["documentSha256"] = "a" * 64
+        entry["locator"] = "protocolSection.madeUp"
+        with self.assertRaises(ValueError):
+            self.report_with_submissions([entry], {self.nct: reg})
+
+    def test_declared_cutoff_blocks_future_or_later_accessed_evidence(self):
+        entry = self.submission(sourceDate="2026-11-13")
+        with self.assertRaises(ValueError):
+            self.report_with_submissions([entry])
+        entry = self.submission(accessedDate="2026-11-15")
+        with self.assertRaises(ValueError):
+            self.report_with_submissions([entry])
+        entry = self.submission(sourceDate="2026-11-11", accessedDate="2026-11-10")
+        with self.assertRaises(ValueError):
+            self.report_with_submissions([entry])
+
+    def test_fake_review_or_fda_prediction_field_is_rejected(self):
+        for field, value in (("scientificReviewStatus", "INDEPENDENTLY_REVIEWED"),
+                             ("outcomeProbability", 0.99),
+                             ("reviewer", "invented reviewer"),
+                             ("independentlyVerified", True)):
+            with self.subTest(field=field):
+                with self.assertRaises(ValueError):
+                    self.report_with_submissions([self.submission(**{field: value})])
+
+    def test_external_source_is_not_registry_and_cannot_override_phase(self):
+        entry = self.submission(level=2, sourceKind="SPONSOR_DISCLOSURE",
+                                claim="Sponsor says the study changed status.")
+        report = self.report_with_submissions([entry])
+        self.assertEqual(report["trials"][0]["phaseGroup"], "UNRESOLVED")
+        self.assertEqual(report["trials"][0]["levels"][1]["currentStatusReview"],
+                         "STATUS_UNRESOLVED")
+        self.assertEqual(report["trials"][0]["levels"][1]["scientificReviewStatus"],
+                         "NOT_ADJUDICATED")
+
+    def test_rejects_wrong_application_cycle_or_mismatched_trial(self):
+        wrong_cycle = "cycle-not-associated-with-trial"
+        with self.assertRaises(ValueError):
+            self.report_with_submissions([
+                self.submission(candidateApplicationCycleId=wrong_cycle)])
+        with self.assertRaises(ValueError):
+            self.report_with_submissions([self.submission(nct="NCT99999999")])
+
+    def test_rejects_duplicate_ids_unsafe_urls_and_invalid_levels(self):
+        entry = self.submission()
+        with self.assertRaises(ValueError):
+            self.report_with_submissions([entry, entry])
+        for bad in (0, 7, True):
+            with self.subTest(bad=bad):
+                with self.assertRaises(ValueError):
+                    self.report_with_submissions([self.submission(level=bad)])
+        for url in ("http://example.org/claim", "https://localhost/source",
+                    "https://user:password@example.org/source"):
+            with self.subTest(url=url):
+                with self.assertRaises(ValueError):
+                    self.report_with_submissions([self.submission(sourceUrl=url)])
+
+
 if __name__ == "__main__":
     unittest.main()
