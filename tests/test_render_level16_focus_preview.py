@@ -96,5 +96,41 @@ class PreviewTests(unittest.TestCase):
             renderer.render(report)
 
 
+    def test_local_byte_receipts_visible_but_never_labeled_authenticated(self):
+        report = evidence_report()
+        report["localByteConsistency"] = {
+            "status": "LOCAL_BYTE_CONSISTENCY_ONLY_NOT_SOURCE_AUTHENTICATION",
+            "localByteMatches": 1, "localDigestMismatches": 0,
+            "originalSourceAuthenticated": 0, "independentScientificReviews": 0,
+        }
+        report["trials"][0]["levels"][0]["submittedEvidenceLeads"] = [
+            {"sourceKind": "PROTOCOL", "role": "CONTEXT",
+             "claim": "Synthetic placeholder, not an assessed protocol",
+             "sourceUrl": "https://example.org/synthetic",
+             "sourceDate": "2026-11-10",
+             "authenticationStatus": "SUBMITTED_SOURCE_NOT_INDEPENDENTLY_AUTHENTICATED",
+             "scientificReviewStatus": "NOT_ADJUDICATED",
+             "localByteReceipt": {
+                 "byteMatchStatus": "LOCAL_BYTES_MATCH_SUBMITTED_DIGEST_ONLY",
+                 "computedSha256": "a" * 64, "bytesRead": 12,
+             }},
+        ]
+        html = renderer.render(report)
+        self.assertIn("Local byte consistency", html)
+        self.assertIn("LOCAL_BYTES_MATCH_SUBMITTED_DIGEST_ONLY", html)
+        self.assertIn("NOT original-source authenticated", html)
+        self.assertIn("Independently reviewed Levels 1–6", html)
+        self.assertIn("NOT ADJUDICATED", html)
+
+        report["localByteConsistency"]["originalSourceAuthenticated"] = 1
+        with self.assertRaises(ValueError):
+            renderer.render(report)
+        report["localByteConsistency"]["originalSourceAuthenticated"] = 0
+        report["trials"][0]["levels"][0]["submittedEvidenceLeads"][0][
+            "localByteReceipt"]["byteMatchStatus"] = "INDEPENDENTLY_VERIFIED"
+        with self.assertRaises(ValueError):
+            renderer.render(report)
+
+
 if __name__ == "__main__":
     unittest.main()
