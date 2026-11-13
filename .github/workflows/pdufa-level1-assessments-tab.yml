@@ -1,0 +1,43 @@
+name: PDUFA Level 1 FOCUS Assessments Tab
+on:
+  pull_request:
+    paths:
+      - 'new-platform/frontend/app/LevelOneFocusScores.tsx'
+      - 'new-platform/frontend/app/predictions/assessment/page.tsx'
+      - 'new-platform/frontend/data/focusLevelOneDocumentCoverage20261113.json'
+      - 'new-platform/frontend/tests/focus-level1-assessment-publication.test.cjs'
+      - '.github/workflows/pdufa-level1-assessments-tab.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  level1-assessment-site:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install locked dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Exact 32-trial Level 1 scores, evidence, and ASSESMENTS page route
+        run: node --test tests/focus-level1-assessment-publication.test.cjs
+      - name: Typecheck entire frontend
+        run: npm run typecheck
+      - name: Production frontend build
+        run: npm run build
+      - name: Do not promote trial coverage into FDA approval prediction
+        run: |
+          node - <<'NODE'
+          const d=require('./data/focusLevelOneDocumentCoverage20261113.json');
+          if(d.records.length!==32||d.approvalProbability!==null||
+             d.reviewStatus.includes('COMPLETE')||
+             d.records.some(x=>x.score!==50 && x.score!==100)) {
+            throw new Error('LEVEL1_SCORE_OR_PREDICTION_CLAIM_MISMATCH');
+          }
+          console.log('PASS: 32 document coverage scores, no false approval predictions');
+          NODE
