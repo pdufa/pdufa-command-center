@@ -69,7 +69,7 @@ export default function FullRosterSourceScan(){
         <button type="button" onClick={()=>void start()} disabled={running}
           style={{background:"#026a52",color:"white",padding:"12px 16px",border:"1px solid #00523e",borderRadius:8,
             fontWeight:800,fontSize:14,cursor:running?"wait":"pointer",opacity:running?.7:1}}>
-          {running?"Scanning all {CURRENT_FOCUS_COUNT} trials…":"Start Full FOCUS Scan — {CURRENT_FOCUS_COUNT} Trials"}
+          {running?`Scanning all ${CURRENT_FOCUS_COUNT} trials…`:`Start Full FOCUS Scan — ${CURRENT_FOCUS_COUNT} Trials`}
         </button>
         {data&&<button type="button" onClick={download}
           style={{background:"#eff8f2",color:"#005343",padding:"12px 14px",border:"1px solid #9ccabc",borderRadius:8,
