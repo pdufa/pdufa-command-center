@@ -10,10 +10,19 @@ import {
  type LinkedTrial,type IndicationTrial,type PhaseColumn
 } from "../lib/indication-intelligence";
 import {POOL_DETAIL_FIELDS,type PoolRegistryDetail} from "../lib/pool-registry-details";
+import {buildIndicationReview,indicationReviewSummary} from "../lib/indication-review";
 type Feed={view:"indications";rows:IndicationTrial[];asOf:string|null;focusAsOf:string;
  focusUnmatched?:{nct:string;ticker:string;company:string}[];
  sourceState:string;totalTrials:number};
 type Mode="pool"|"focus"|"indications";
+type FocusIntake={
+ nct:string;ticker:string;phaseVerified:boolean;
+ prediction:string;certainty:string;
+ applications:{cycleId:string;drug:string;indication:string;specialty:string|null;
+  researchQuestions:number;partialCaseDimensions:number;sourceLinkedDimensions:number;
+  sourceUrl:string;clinicalAdjudicationComplete:boolean;}[];
+};
+
 const surface:React.CSSProperties={border:"1px solid #c8d8ce",borderRadius:12,padding:15,background:"#fff"};
 const button:React.CSSProperties={border:"1px solid #b8d0c1",borderRadius:8,padding:"8px 10px",background:"#fff",color:"#174633",cursor:"pointer"};
 const small:React.CSSProperties={fontSize:12,color:"#536a5e",lineHeight:1.5};
@@ -47,6 +56,11 @@ export default function IndicationIntelligence({mode="indications"}:{mode?:Mode}
  const [registry,setRegistry]=useState<PoolRegistryDetail|null>(null);
  const [registryLoading,setRegistryLoading]=useState(false);
  const [registryError,setRegistryError]=useState("");
+ const [focusIntake,setFocusIntake]=useState<FocusIntake|null>(null);
+ const [focusIntakeError,setFocusIntakeError]=useState("");
+ const reviewItems=useMemo(()=>detail?buildIndicationReview(detail,registry):[],[detail,registry]);
+ const reviewSummary=useMemo(()=>indicationReviewSummary(reviewItems),[reviewItems]);
+
  useEffect(()=>{
   try{
    const saved=localStorage.getItem(DISEASE_STORAGE_KEY);
@@ -88,7 +102,10 @@ export default function IndicationIntelligence({mode="indications"}:{mode?:Mode}
  const suggestions=useMemo(()=>searchDiseases(query,index).slice(0,7),[query,index]);
  const focusCount=new Set(linked.filter(t=>t.focus).map(nctKey)).size;
  function chooseNode(id:string|null){setSelectedNode(id);setPhase(null);setUnmappedOnly(false);setShowAllNodes(false);}
- function openDetail(trial:LinkedTrial){setDetail(trial);setRegistry(null);setRegistryError("");}
+ function openDetail(trial:LinkedTrial){
+  setDetail(trial);setRegistry(null);setRegistryError("");
+  setFocusIntake(null);setFocusIntakeError("");
+ }
  useEffect(()=>{
   if(!detail)return;
   const controller=new AbortController();
@@ -101,6 +118,23 @@ export default function IndicationIntelligence({mode="indications"}:{mode?:Mode}
     if(!controller.signal.aborted)setRegistry(data);
    }).catch(reason=>{if(!controller.signal.aborted)setRegistryError(reason instanceof Error?reason.message:"Registry unavailable");})
    .finally(()=>{if(!controller.signal.aborted)setRegistryLoading(false)});
+  return ()=>controller.abort();
+ },[detail]);
+ useEffect(()=>{
+  if(!detail?.focus)return;
+  const controller=new AbortController();
+  void fetch("/api/focus-assessment-intake",{signal:controller.signal,cache:"no-store"})
+   .then(async response=>{if(!response.ok)throw Error("FOCUS assessment intake unavailable");
+    const raw:unknown=await response.json();
+    if(!raw||typeof raw!=="object"||!Array.isArray((raw as {trials?:unknown}).trials))
+     throw Error("FOCUS intake response invalid");
+    const trials=(raw as {trials:FocusIntake[]}).trials;
+    const exact=trials.find(x=>x.nct===detail.nct&&x.ticker===detail.ticker);
+    if(!controller.signal.aborted){
+     if(exact)setFocusIntake(exact);
+     else setFocusIntakeError("Exact NCT and ticker were not found in current research intake.");
+    }
+   }).catch(error=>{if(!controller.signal.aborted)setFocusIntakeError(error instanceof Error?error.message:"FOCUS intake unavailable");});
   return ()=>controller.abort();
  },[detail]);
  return <section aria-label="Unified indication intelligence" style={{...surface,color:"#153e2b",margin:"18px 0",maxWidth:"100%"}}>
@@ -227,6 +261,32 @@ export default function IndicationIntelligence({mode="indications"}:{mode?:Mode}
       ["Clinical research history","No sourced indication assessment in this viewer"]
      ].map(([title,value])=><div key={title} style={{...surface,padding:11}}><div style={label}>{title}</div><div style={{fontSize:13}}>{value}</div></div>)}
     </div>
+    <section aria-label="Indication-specific research review dimensions" style={{margin:"18px 0"}}>
+     <h3>Indication-specific research worklist · {reviewItems.length} dimensions</h3>
+     <p style={small}>Source observations: {reviewSummary.sourceObservations} · Open research gaps: {reviewSummary.researchGaps} · Independently adjudicated: 0 · Validated scores: 0. All findings remain phase-specific research, not clinical verdicts.</p>
+     {reviewItems.map(item=><details key={item.key} style={{borderBottom:"1px solid #dfe7df",padding:"10px 0"}}>
+      <summary style={{cursor:"pointer",fontWeight:650}}>
+       {item.label} · {item.state==="SOURCE_OBSERVED_REVIEW_REQUIRED"?"Official source located — interpretation pending":
+        item.state==="RESEARCH_REQUIRED"?"Research required":item.state==="NOT_SCORED"?"Not scored":"Not connected"}
+      </summary>
+      <p style={{fontSize:13,lineHeight:1.5}}>{item.researchQuestion}</p>
+      {item.evidence&&<p style={{fontSize:13,whiteSpace:"pre-wrap",overflowWrap:"anywhere"}}><strong>Source observation:</strong> {item.evidence}</p>}
+      {item.sourceUrl&&<a href={item.sourceUrl} target="_blank" rel="noopener noreferrer">Exact-NCT evidence source ↗</a>}
+     </details>)}
+    </section>
+    {detail.focus&&<section style={{...surface,background:"#f4f8f5",margin:"14px 0"}}>
+     <h3 style={{marginTop:0}}>FOCUS specialist research intake</h3>
+     {focusIntakeError&&<p role="alert">{focusIntakeError}</p>}
+     {!focusIntake&&!focusIntakeError&&<p style={small}>Retrieving exact-NCT FOCUS research intake…</p>}
+     {focusIntake&&<>
+      <p style={small}>Prediction: {focusIntake.prediction} · Certainty: {focusIntake.certainty} · Phase independently verified: {focusIntake.phaseVerified?"Yes":"No"}.</p>
+      {focusIntake.applications.length?focusIntake.applications.map(a=><details key={a.cycleId}>
+       <summary style={{fontWeight:650,cursor:"pointer"}}>{a.drug} · {a.indication} · {a.specialty||"Specialty not assigned"}</summary>
+       <p style={small}>{a.researchQuestions} specialist research prompts · {a.partialCaseDimensions} partial research dimensions · {a.sourceLinkedDimensions} linked source dimensions. Clinical adjudication complete: {a.clinicalAdjudicationComplete?"Yes":"No"}.</p>
+       <a href={a.sourceUrl} target="_blank" rel="noopener noreferrer">Application source pointer ↗</a>
+      </details>):<p style={small}>No exact application cycle has been linked to this FOCUS NCT in this research intake.</p>}
+     </>}
+    </section>}
     {registryLoading&&<p role="status">Checking official trial endpoints, safety and enrollment…</p>}
     {registryError&&<p role="alert">{registryError}</p>}
     {registry&&<><h3>Exact-trial registry observations · {registry.available}/{registry.total} reported fields</h3>
