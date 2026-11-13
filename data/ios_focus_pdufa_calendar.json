@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAt": "2026-11-13T02:31:52Z",
+  "generatedAt": "2026-11-13T02:48:36Z",
   "source": "FOCUS Google Sheet: cap-screened $300M-$10B trial population",
   "sourceSheetId": "1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU",
   "events": [
@@ -20,7 +20,7 @@
       "ticker": "CAPR",
       "company": "Capricor Therapeutics, Inc.",
       "date": "2026-11-22",
-      "marketCapUsd": 587240000,
+      "marketCapUsd": 595380000,
       "id": "focus-capr-nct05126758",
       "ncts": [
         "NCT05126758"
