@@ -33,7 +33,7 @@ test("MAIN status page reports dated release proof without promoting old install
   assert.match(html,/other six former sections \(24 gates\)/);
   assert.match(html,/Final trial acceptance · 32 FOCUS trials only/);
   assert.match(html,/32 unique NCTs/);
-  assert.match(html,/203 trial-specific evidence checks/);
+  assert.match(html,/224 trial-specific evidence checks/);
   assert.match(html,/0 independently verified/);
   assert.match(html,/only trial records/);
   assert.doesNotMatch(html,/Current 31-gate scope/);
