@@ -110,3 +110,36 @@ authority, lawfully accessible originals, independent scientific reviews,
 protected staging approval and verified application links remain outstanding.
 The three unverified crosswalk exceptions stay visible. Do not merge/deploy
 this draft to satisfy a review-readiness test.
+
+
+## Fourth slice — connect review questions to the offline FOCUS preview
+
+The review handoff now can be displayed beside the existing preliminary
+research within the original, **offline-only** FOCUS preview. The renderer
+checks that all 32 exact NCTs match, the 192 levels are in order, provisional
+application-cycle status has not changed and every source authentication,
+clinical review, independent challenge, score and FDA prediction is still
+unreviewed/null. Handoff text is HTML-escaped; this does not create an
+authorized reviewer session.
+
+Generate the complete handoff locally, then render it in the existing
+read-only preview workflow:
+
+```powershell
+python scripts/medical/level16_review_handoff.py --format json > focus-level1-6-review-handoff.json
+
+python scripts/medical/render_level16_focus_preview.py --report levels1-6-readiness.json --review-handoff focus-level1-6-review-handoff.json --output focus-level1-6-review.html
+```
+
+The readiness input is generated separately by the existing
+`phase_first_levels_1_6.py` command against an available registry
+checkpoint. If there is no current checkpoint, do not invent one and do not
+claim an updated readiness display. Optionally include
+`--preliminary-research reports/scientific-levels1-6/focus-source-research-20261114.json`
+only on a checkout with the actual source snapshot present.
+
+The preview refuses handoffs with altered NCT membership, corrupted level
+count, incompatible provisional application status, claimed authenticated
+sources/reviewers, fake independent review or numerical predictions.
+This tests safe presentation of **unreviewed** work, not medical validity
+or a production website.
