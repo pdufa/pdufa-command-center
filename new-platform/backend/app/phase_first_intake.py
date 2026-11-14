@@ -27,6 +27,19 @@ def _secure_source(value):
         return False
 
 
+def _source_matches_trial(source, trial_id):
+    """Reject ClinicalTrials.gov evidence URLs pointing to another NCT trial."""
+    try:
+        parsed = urlparse(source)
+        host = (parsed.hostname or "").lower()
+        if host not in {"clinicaltrials.gov", "www.clinicaltrials.gov"}:
+            return True
+        path = parsed.path.rstrip("/").split("/")
+        return len(path) >= 3 and path[-2] == "study" and path[-1] == trial_id
+    except (TypeError, ValueError):
+        return False
+
+
 def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=None):
     """Return an auditable, non-scoring Level 1 phase intake."""
     cutoff_day = _date(cutoff)
@@ -117,6 +130,7 @@ def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=N
             if (judgment in {"SUPPORTS", "CONCERNS", "INCONCLUSIVE"}
                     and _secure_source(source)
                     and trial_id and record.get("nctId") == trial_id
+                    and _source_matches_trial(source, trial_id)
                     and record.get("rationale") and evidence_day and review_day
                     and evidence_day <= review_day <= cutoff_day):
                 endpoint_quality[criterion] = judgment
