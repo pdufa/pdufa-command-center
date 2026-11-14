@@ -164,6 +164,10 @@ def enrich(research, pdf_attempts, publications):
                 raise ValueError('Duplicate document receipt')
             documents[identity] = receipt
         trial['additionalOriginalDocuments'] = list(documents.values())
+        retrieved_urls = {receipt['sourceUrl'] for receipt in documents.values()}
+        for lead in trial['sourceDiscoveryPlan']:
+            if lead.get('url') in retrieved_urls:
+                lead.update(state='HASH_CHECKED', retrieved=True)
         trial['documentRetrievalFailures'] = [x for x in attempts if 'receipt' not in x]
         pmids = {x['url'].rstrip('/').split('/')[-1] for x in trial['sourceDiscoveryPlan'] if x['sourceKind'] == 'PUBLICATION_REFERENCE'}
         trial['publicationResearch'] = [copy.deepcopy(publications[p]) for p in sorted(pmids) if p in publications]

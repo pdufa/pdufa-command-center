@@ -44,6 +44,12 @@ class ScientificCoverageTests(unittest.TestCase):
             'indexedJournalRecords':15,'retrievedPublicFullTexts':10,'exactNctFdaLabelPackets':2})
         self.assertEqual(r['uniqueRegistryAndProtocolSapOriginals'],55)
         self.assertEqual(r['trialsWithSixPreliminaryLevels'],32)
+        for trial in self.research['trials']:
+            urls={d['sourceUrl'] for d in trial['additionalOriginalDocuments']}
+            for lead in trial['sourceDiscoveryPlan']:
+                if lead.get('url') in urls:
+                    self.assertTrue(lead['retrieved'])
+                    self.assertEqual(lead['state'],'HASH_CHECKED')
         saved=json.loads((REPORTS/'scientific-coverage-20261114.json').read_text())
         for key,value in r.items(): self.assertEqual(value,saved[key],key)
 

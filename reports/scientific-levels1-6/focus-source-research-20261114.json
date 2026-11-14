@@ -317,7 +317,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2024-04-10",
           "labelUnreviewed": "Study Protocol",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -326,7 +326,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2025-07-15",
           "labelUnreviewed": "Statistical Analysis Plan",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         }
       ],
@@ -1430,7 +1430,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2024-04-10",
           "labelUnreviewed": "Study Protocol",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -1439,7 +1439,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2025-07-15",
           "labelUnreviewed": "Statistical Analysis Plan",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         }
       ],
@@ -2723,7 +2723,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2021-03-08",
           "labelUnreviewed": "Study Protocol",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -2732,7 +2732,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2022-03-25",
           "labelUnreviewed": "Statistical Analysis Plan",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -4493,7 +4493,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2021-11-15",
           "labelUnreviewed": "Study Protocol",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -4502,7 +4502,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2023-04-27",
           "labelUnreviewed": "Statistical Analysis Plan",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -8230,7 +8230,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2025-06-11",
           "labelUnreviewed": "Study Protocol",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -8239,7 +8239,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2025-06-11",
           "labelUnreviewed": "Statistical Analysis Plan",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         }
       ],
@@ -9555,7 +9555,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2025-04-17",
           "labelUnreviewed": "Study Protocol",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -9564,7 +9564,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2025-04-22",
           "labelUnreviewed": "Statistical Analysis Plan",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -17041,7 +17041,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2024-05-17",
           "labelUnreviewed": "Study Protocol",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -17050,7 +17050,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2024-05-17",
           "labelUnreviewed": "Statistical Analysis Plan",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -18716,7 +18716,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2024-10-11",
           "labelUnreviewed": "Study Protocol",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -18725,7 +18725,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2024-10-11",
           "labelUnreviewed": "Statistical Analysis Plan",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         }
       ],
@@ -20070,7 +20070,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2024-03-14",
           "labelUnreviewed": "Study Protocol",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -20079,7 +20079,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2025-03-20",
           "labelUnreviewed": "Statistical Analysis Plan",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -30386,7 +30386,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2024-10-09",
           "labelUnreviewed": "Study Protocol",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -30395,7 +30395,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2024-04-24",
           "labelUnreviewed": "Statistical Analysis Plan",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -31548,7 +31548,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2025-08-06",
           "labelUnreviewed": "Study Protocol",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
@@ -31557,7 +31557,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2026-02-23",
           "labelUnreviewed": "Statistical Analysis Plan",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         }
       ],
@@ -32622,7 +32622,7 @@
           "registryDeclaredDocumentDateUnreviewed": "2023-02-23",
           "labelUnreviewed": "Study Protocol and Statistical Analysis Plan",
           "state": "HASH_CHECKED",
-          "retrieved": false,
+          "retrieved": true,
           "provenanceIndependentlyAuthenticated": false
         },
         {
