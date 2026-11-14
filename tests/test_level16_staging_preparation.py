@@ -20,8 +20,29 @@ class StagingPreparationTests(unittest.TestCase):
         self.assertEqual(len(status['decisionReferencesMissing']),14)
         self.assertFalse(status['liveIntegrationEnabled'])
         self.assertEqual(status['actualAuthenticatedSources'],0)
+        # The old 5-person experiment is archived, NOT a live requirement.
         self.assertEqual(self.package['recommended']['reviewerMinimumDistinctPeople'],5)
+        self.assertEqual(self.package['status'],
+                         'LEGACY_INACTIVE_NOT_AN_OWNER_LEVEL_1_TO_20_ASSESSMENT_GATE')
+        self.assertFalse(self.package['activeAssessmentPrerequisite'])
+        self.assertTrue(self.package['legacyOnly'])
+        self.assertTrue(status['legacyExternalReviewerTrackInactive'])
+        self.assertFalse(status['ownerAssessmentsBlockedByThisPackage'])
+        self.assertEqual(status['mandatoryOutsideReviewerCountForOwnerAssessments'],0)
+        self.assertNotIn('EXTERNAL_APPROVAL_AND_INFRASTRUCTURE_REQUIRED',status['blockers'])
         self.assertTrue(all(v is None or v==[] for v in self.package['configuration'].values()))
+
+    def test_archived_external_path_cannot_become_an_owner_gate(self):
+        for name,value in (
+            ('activeAssessmentPrerequisite',True),
+            ('legacyOnly',False),
+            ('status','ACTIVE_REQUIRED'),
+            ('ownerDirective','FIVE_REVIEWERS_REQUIRED'),
+        ):
+            item=copy.deepcopy(self.package)
+            item[name]=value
+            with self.subTest(name=name),self.assertRaises(ValueError):
+                check_package(item)
 
     def test_even_filled_references_cannot_authorize_or_activate(self):
         for item in self.package['decisions']:item['approvalReference']='CALLER_SUPPLIED_NOT_AUTHORIZATION'
