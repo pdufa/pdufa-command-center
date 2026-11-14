@@ -21,6 +21,7 @@ APPLICATIONS = ROOT / "new-platform/backend/app/data/focus_application_snapshot.
 ORCA2 = REPORTS / "orca2-statistical-chronology-20261114.json"
 ORCA2_PUBLICATION = REPORTS / "orca2-publication-outcomes-20261114.json"
 ORCA3_PUBLICATION = REPORTS / "orca3-publication-outcomes-20261114.json"
+MAPLE_HCM = REPORTS / "maple-hcm-source-review-20261114.json"
 NCT_RE = re.compile(r"NCT[0-9]{8}\Z")
 LEVEL_NAMES = {
     1: "Original source identity and provenance",
@@ -38,6 +39,7 @@ REVIEW_STEPS = [
 ]
 ORCA_NCT = "NCT04576949"
 ORCA3_NCT = "NCT05206370"
+MAPLE_NCT = "NCT05767346"
 
 
 def _source_record(record, kind, require_ticker=True):
@@ -68,7 +70,8 @@ def _status(collected):
     return "COLLECTED_UNREVIEWED" if collected else "NOT_COLLECTED_AVAILABILITY_UNRESOLVED"
 
 
-def _level_rows(row, orca_chronology, publication=None, publication3=None):
+def _level_rows(row, orca_chronology, publication=None, publication3=None,
+                maple_paper=None):
     fields = {
         "originalRegistry": row["registry"],
         "registeredProtocol": row["protocol"],
@@ -169,6 +172,34 @@ def _level_rows(row, orca_chronology, publication=None, publication3=None):
                 "scientificallyAdjudicated": False,
             }
             questions.extend(report["independentReviewQuestions"])
+        if i in (3, 4, 6) and row["nct"] == MAPLE_NCT and maple_paper is not None:
+            if published is not None:
+                raise ValueError("Trial published evidence must never be cross-linked")
+            published = {
+                "publicationUrl": maple_paper["sourceUrl"],
+                "secondaryEvidenceUrl": maple_paper["secondarySourceUrl"],
+                "publishedDate": maple_paper["publishedDate"],
+                "status": maple_paper["status"],
+                "endpointDataType": maple_paper["endpointDataType"],
+                "reportedEfficacyComparisons": [],
+                "reportedSafetyObservations": (
+                    maple_paper["publishedSafetyObservationFromACC"] if i == 3 else None
+                ),
+                "continuousPrimaryEndpointUnreviewed": (
+                    maple_paper["primaryEndpointReported"] if i == 3 else None
+                ),
+                "secondaryContinuousComparisonsUnreviewed": (
+                    maple_paper["secondaryEndpointsFromACC"] if i == 3 else []
+                ),
+                "reportedTrialDesign": maple_paper["studyDesign"] if i == 4 else None,
+                "reportedClinicalLimitations": (
+                    maple_paper["documentedLimitationsUnreviewed"] if i == 6 else []
+                ),
+                "independentReviewQuestions": maple_paper["independentReviewQuestions"],
+                "sourceIndependentlyAuthenticated": False,
+                "scientificallyAdjudicated": False,
+            }
+            questions.extend(maple_paper["independentReviewQuestions"])
         levels.append({
             "level": i, "name": name,
             "publicationFindingsUnreviewed": published,
@@ -189,7 +220,8 @@ def _level_rows(row, orca_chronology, publication=None, publication3=None):
 
 
 def build(coverage, roster, application_crosswalk, chronology,
-          orca_publication=None, orca3_publication=None):
+          orca_publication=None, orca3_publication=None,
+          maple_publication=None):
     """Build an explicitly blocked handoff for the active frozen FOCUS cohort."""
     if not isinstance(coverage, dict) or coverage.get("kind") != "LEVEL16_SCIENTIFIC_COVERAGE_NOT_EVIDENCE_COMPLETENESS":
         raise ValueError("Not an approved source-coverage research report")
@@ -261,6 +293,19 @@ def build(coverage, roster, application_crosswalk, chronology,
         publication3 = module3.assess(orca3_publication)
         if publication3["nct"] != ORCA3_NCT or ORCA3_NCT not in trials:
             raise ValueError("ORCA-3 publication does not match frozen FOCUS")
+    maple_paper = None
+    if maple_publication is not None:
+        spec_maple = importlib.util.spec_from_file_location(
+            "level16_maple_hcm_publication_review",
+            Path(__file__).with_name("level16_maple_hcm_publication_review.py"),
+        )
+        maple_mod = importlib.util.module_from_spec(spec_maple)
+        spec_maple.loader.exec_module(maple_mod)
+        maple_paper = maple_mod.assess(maple_publication)
+        if (maple_paper["nct"] != MAPLE_NCT or MAPLE_NCT not in trials
+                or trials[MAPLE_NCT]["ticker"] != "CYTK"
+                or "PHASE3" not in trials[MAPLE_NCT]["phaseUnreviewed"]):
+            raise ValueError("MAPLE-HCM clinical publication and FOCUS phase mismatch")
     rows = []
     for nct, row in trials.items():
         if (row["ticker"] != registered[nct]["ticker"]
@@ -277,7 +322,8 @@ def build(coverage, roster, application_crosswalk, chronology,
                 raise ValueError("Source coverage must be explicit unreviewed booleans")
         if not row["registry"]:
             raise ValueError("Original registry source missing for frozen cohort")
-        levels = _level_rows(row, chronology, publication, publication3)
+        levels = _level_rows(row, chronology, publication, publication3,
+                             maple_paper)
         if len(levels) != 6:
             raise ValueError("Six assessment levels required")
         documentation = sum((row["registry"], row["protocol"], row["sap"], row["postedResults"]))
@@ -372,7 +418,39 @@ def markdown(packet):
                         + " Table 2=" + discrepancy["table2"]
                         + " narrative=" + discrepancy["narrative"]
                     )
-                if level["level"] == 3:
+                if level["level"] == 3 and pub.get("endpointDataType") == (
+                        "CONTINUOUS_EXERCISE_CAPACITY_NOT_BINARY_ABSTINENCE"):
+                    primary = pub["continuousPrimaryEndpointUnreviewed"]
+                    lines.append(
+                        "- REPORTED CONTINUOUS PRIMARY ENDPOINT — not an odds ratio: "
+                        + primary["name"] + ", between-group difference "
+                        + str(primary["adjustedBetweenGroupMeanDifference"]) + " "
+                        + primary["unit"] + " (95% CI "
+                        + str(primary["adjustedBetweenGroup95CI"]) + "); "
+                        + "ORIGINAL NEJM ABSTRACT, NOT INDEPENDENTLY REANALYZED."
+                    )
+                    for secondary in pub["secondaryContinuousComparisonsUnreviewed"]:
+                        lines.append(
+                            "- ACC secondary trial SUMMARY ONLY: " + secondary["name"]
+                            + " " + str(secondary["effect"]) + " " + secondary["unit"]
+                            + " (95% CI " + str(secondary["ci95"]) + ")."
+                        )
+                    safety = pub["reportedSafetyObservations"]
+                    lines.append(
+                        "- ACC summary serious adverse events: "
+                        + str(safety["seriousAdverseEvents"]["aficamten"]) + "/"
+                        + str(safety["seriousAdverseEvents"]["aficamtenDenom"])
+                        + " aficamten vs "
+                        + str(safety["seriousAdverseEvents"]["metoprolol"]) + "/"
+                        + str(safety["seriousAdverseEvents"]["metoprololDenom"])
+                        + " metoprolol; LVEF difference "
+                        + str(safety["lvefBetweenGroupDifferencePercentagePoints"])
+                        + " percentage points. No independent safety adjudication."
+                    )
+                    lines.append("- ACC is secondary commentary, NOT the original NEJM study report: "
+                                 + pub["secondaryEvidenceUrl"])
+                if level["level"] == 3 and pub.get("endpointDataType") != (
+                        "CONTINUOUS_EXERCISE_CAPACITY_NOT_BINARY_ABSTINENCE"):
                     for comparison in pub["reportedEfficacyComparisons"]:
                         lines.append(
                             "- " + comparison["classification"] + " " + comparison["interval"]
@@ -417,7 +495,8 @@ def main():
     packet = build(read(COVERAGE), read(ROSTER), read(APPLICATIONS),
                    mod.assess(read(ORCA2)),
                    orca_publication=read(ORCA2_PUBLICATION),
-                   orca3_publication=read(ORCA3_PUBLICATION))
+                   orca3_publication=read(ORCA3_PUBLICATION),
+                   maple_publication=read(MAPLE_HCM))
     if args.nct:
         if not NCT_RE.fullmatch(args.nct) or args.nct not in {t["nct"] for t in packet["trials"]}:
             parser.error("NCT not in current exact FOCUS roster")
