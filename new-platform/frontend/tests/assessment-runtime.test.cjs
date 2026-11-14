@@ -71,3 +71,22 @@ test('saved assessment history is isolated when the parent changes trial',async(
   assert.equal(tree.root.findAllByProps({'aria-label':'Level 1 saved assessment'}).length,0);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
+
+test('outdated POOL search cannot overwrite FOCUS search results',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Workbench=require('../app/AssessmentWorkbench.tsx').default;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const old=global.fetch;let resolveFirst;let tree;
+ const stale=new Promise(resolve=>{resolveFirst=resolve;});
+ let calls=0;
+ global.fetch=async()=>{calls++;if(calls===1)return stale;return Response.json({trials:[{nct:'NCT01234567',ticker:'NEW',title:'Current cohort',population:'POOL'}]});};
+ try{
+  await act(async()=>{tree=create(React.createElement(Workbench,{selectedNct:nct}));});
+  const search=()=>tree.root.findAllByType('button').find(b=>b.props.children==='Search trials');
+  let first;
+  await act(async()=>{first=search().props.onClick();});
+  await act(async()=>{tree.root.findByProps({'aria-label':'Trial population'}).props.onChange({target:{value:'POOL'}});});
+  await act(async()=>{search().props.onClick();});
+  await act(async()=>{resolveFirst(Response.json({trials:[{nct:'NCT00000001',ticker:'OLD',title:'Stale cohort',population:'FOCUS'}]}));await Promise.resolve();});
+  const display=JSON.stringify(tree.toJSON());
+  assert.match(display,/Current cohort/);assert.doesNotMatch(display,/Stale cohort/);
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
+});
