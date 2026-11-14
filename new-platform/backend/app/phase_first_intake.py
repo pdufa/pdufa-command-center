@@ -6,6 +6,7 @@ snapshots dated after the assessment cutoff are ineligible for scoring.
 from __future__ import annotations
 
 from datetime import date
+from urllib.parse import urlparse
 
 
 def _date(value):
@@ -13,6 +14,17 @@ def _date(value):
         return date.fromisoformat(str(value or "")[:10])
     except ValueError:
         return None
+
+
+def _secure_source(value):
+    if not isinstance(value, str):
+        return False
+    try:
+        parsed = urlparse(value)
+        return bool(parsed.scheme == "https" and parsed.hostname and not parsed.username
+                    and not parsed.password and not any(ch.isspace() for ch in value))
+    except ValueError:
+        return False
 
 
 def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=None):
@@ -103,7 +115,7 @@ def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=N
             trial_id = registry.get("nct_id")
             judgment = record.get("judgment")
             if (judgment in {"SUPPORTS", "CONCERNS", "INCONCLUSIVE"}
-                    and isinstance(source, str) and source.startswith("https://")
+                    and _secure_source(source)
                     and trial_id and record.get("nctId") == trial_id
                     and record.get("rationale") and evidence_day and review_day
                     and evidence_day <= review_day <= cutoff_day):
@@ -116,6 +128,13 @@ def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=N
                     "rationale": record["rationale"],
                 }
     endpoint_quality["reviewedEvidence"] = reviewed_evidence
+    endpoint_quality["reviewCoverage"] = {
+        "reviewedCriteria": len(reviewed_evidence),
+        "totalCriteria": len(review_criteria),
+        "status": ("BLOCKED" if not verified else "ALL_REVIEWED" if len(reviewed_evidence) == len(review_criteria)
+                   else "PARTIALLY_REVIEWED" if reviewed_evidence else "NOT_REVIEWED"),
+        "note": "Coverage counts accepted review records, not independently verified science or predictive accuracy.",
+    }
     missing = ([name for name, state in evidence_inventory.items() if state == "MISSING"]
                if verified else ["Verified phase and chronological registry provenance"])
     return {
