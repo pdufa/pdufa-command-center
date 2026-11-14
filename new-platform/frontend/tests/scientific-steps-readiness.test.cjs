@@ -52,3 +52,9 @@ test("FOCUS trial rows expose explicit exact-program intake selector without aut
  assert.match(loader,/Program identity must be verified separately/);
  assert.match(loader,/programIdentity=\{selected\}/);
 });
+
+test("POOL exact-NCT review rows provide a guarded intake selector",()=>{
+ const source=fs.readFileSync(path.join(app,"FunnelWorkspace.tsx"),"utf8");
+ assert.match(source,/<ExactTrialIntakeSelector cohort="POOL" nctId=\{r\.nctId\}\/>/);
+ assert.match(source,/section==="pool"/);
+});
