@@ -543,3 +543,28 @@ def test_phase_one_review_readiness_excludes_not_yet_expected_items():
     assert "primaryEndpointResults" in readiness["notYetExpected"]
     assert "primaryEndpointResults" not in readiness["outstanding"]
     assert readiness["complete"] is False
+
+
+def test_levels_two_to_six_distinguish_unpublished_from_unreviewed():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "3.primaryEndpointResults": {"availability": "NOT_PUBLIC"}
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["3"]
+    assert level["criteria"]["primaryEndpointResults"] == "UNPUBLISHED"
+    assert level["criteria"]["statisticalAnalysisPlan"] == "NOT_ASSESSED"
+    assert level["unpublishedCriteria"] == ["primaryEndpointResults"]
+    assert "primaryEndpointResults" in level["reviewReadiness"]["outstanding"]
+    assert level["score"] is None
+
+
+def test_early_phase_not_expected_overrides_unpublished_marker():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE1"]
+    reviews["scientificLevelEvidence"] = {
+        "3.primaryEndpointResults": {"availability": "NOT_PUBLIC"}
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["3"]
+    assert level["criteria"]["primaryEndpointResults"] == "NOT_YET_EXPECTED"
+    assert level["unpublishedCriteria"] == []
