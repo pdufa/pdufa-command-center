@@ -84,5 +84,31 @@ class PhaseStatusVerificationTests(unittest.TestCase):
         self.assertEqual(result["fdaPrediction"], "ABSTAIN")
 
 
+    def test_whitespace_only_endpoint_rationale_is_not_reviewed(self):
+        registry = {
+            "nct_id": "NCT12345678",
+            "phases": ["PHASE3"],
+            "status": "COMPLETED",
+            "last_update_posted": {"date": "2026-01-01"},
+        }
+        reviews = {
+            "clinicalRelevance": {
+                "nctId": "NCT12345678",
+                "source": "https://clinicaltrials.gov/study/NCT12345678",
+                "sourceDate": "2026-01-01",
+                "reviewedAt": "2026-01-03",
+                "judgment": "SUPPORTS",
+                "rationale": "   ",
+            }
+        }
+        result = module.phase_first_intake(
+            registry, cutoff=date(2026, 2, 1),
+            registry_checked="2026-01-02", endpoint_reviews=reviews,
+        )
+        self.assertEqual(result["endpointQuality"]["reviewCoverage"]["reviewedCriteria"], 0)
+        self.assertEqual(result["endpointQuality"]["clinicalRelevance"], "NOT_ASSESSED")
+        self.assertEqual(result["fdaPrediction"], "ABSTAIN")
+
+
 if __name__ == "__main__":
     unittest.main()
