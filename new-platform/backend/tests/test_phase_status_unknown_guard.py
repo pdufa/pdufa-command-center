@@ -110,5 +110,23 @@ class PhaseStatusVerificationTests(unittest.TestCase):
         self.assertEqual(result["fdaPrediction"], "ABSTAIN")
 
 
+    def test_invalid_nct_cannot_certify_phase_first_intake(self):
+        for nct_id in ("", "NCT123", "NCT12345678-extra", "nct12345678"):
+            with self.subTest(nct_id=nct_id):
+                registry = {
+                    "nct_id": nct_id,
+                    "phases": ["PHASE3"],
+                    "status": "RECRUITING",
+                    "last_update_posted": {"date": "2026-01-01"},
+                }
+                result = module.phase_first_intake(
+                    registry, cutoff=date(2026, 2, 1),
+                    registry_checked="2026-01-02",
+                )
+                self.assertEqual(result["executionStatus"], "BLOCKED_UNVERIFIED_PHASE")
+                self.assertIsNone(result["phase"])
+                self.assertEqual(result["fdaPrediction"], "ABSTAIN")
+
+
 if __name__ == "__main__":
     unittest.main()
