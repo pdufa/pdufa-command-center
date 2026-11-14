@@ -333,5 +333,33 @@ class LevelsTwoToSixContractTests(unittest.TestCase):
                 self.assertEqual(result[level]["fdaPrediction"], "ABSTAIN")
 
 
+    def test_malformed_source_dates_cannot_be_reviewed(self):
+        base_record = {
+            "nctId": "NCT12345678",
+            "source": "https://clinicaltrials.gov/study/NCT12345678",
+            "sourceDate": "2026-01-10",
+            "reviewedAt": "2026-01-15",
+            "sourceVerified": True,
+            "sourceVerifiedAt": "2026-01-15",
+            "sourceVerifiedBy": "reviewer-1",
+            "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+            "judgment": "SUPPORTS",
+            "rationale": "Exact trial protocol review",
+            "reviewerId": "reviewer-1",
+            "documentType": "PROTOCOL",
+            "evidenceExcerpt": "Randomized allocation",
+        }
+        for field in ("sourceDate", "reviewedAt", "sourceVerifiedAt"):
+            with self.subTest(field=field):
+                record = {**base_record, field: "2026-01-10FORGED"}
+                result = module.assess_levels_two_to_six(
+                    BASE, trial_id="NCT12345678",
+                    evidence={"2.protocol": record},
+                )
+                self.assertEqual(result["2"]["criteria"]["protocol"], "REJECTED_EVIDENCE")
+                self.assertEqual(result["2"]["reviewedCount"], 0)
+                self.assertEqual(result["2"]["fdaPrediction"], "ABSTAIN")
+
+
 if __name__ == "__main__":
     unittest.main()
