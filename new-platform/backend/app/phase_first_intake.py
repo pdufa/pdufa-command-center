@@ -55,6 +55,10 @@ def phase_first_intake(registry, *, cutoff, registry_checked):
             isinstance(item, dict) and item.get("measure") and item.get("timeFrame") for item in endpoints
         ) else "MISSING" if verified else "UNVERIFIED"),
     }
+    # Registry design metadata cannot establish clinical efficacy, safety, or
+    # regulatory dossier completeness. These require separate source review.
+    if verified and "phase-appropriate efficacy and safety evidence" in expected:
+        evidence_inventory["phase-appropriate efficacy and safety evidence"] = "NOT_ASSESSED"
     missing = ([name for name, state in evidence_inventory.items() if state == "MISSING"]
                if verified else ["Verified phase and chronological registry provenance"])
     return {
@@ -72,5 +76,6 @@ def phase_first_intake(registry, *, cutoff, registry_checked):
         "evidenceInventory": evidence_inventory,
         "notYetExpected": not_yet_expected,
         "missingEvidence": missing,
-        "note": "Evidence expectations are intake categories, not proof that documents exist or scientific scores.",
+        "requiresSourceReview": [name for name, state in evidence_inventory.items() if state == "NOT_ASSESSED"],
+        "note": "OBSERVED means present in eligible registry metadata, not clinically adjudicated. NOT_ASSESSED requires separate source review; it is not missing evidence or scientific scoring.",
     }
