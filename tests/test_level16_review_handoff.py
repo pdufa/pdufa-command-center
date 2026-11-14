@@ -64,6 +64,44 @@ class Level16ReviewHandoffTests(unittest.TestCase):
                 self.assertEqual(level["sourceAuthenticationStatus"],
                                  "NOT_INDEPENDENTLY_AUTHENTICATED")
 
+    def test_publication_outcomes_only_enter_orca2_levels_3_4_and_6_as_unreviewed(self):
+        publication = json.loads(handoff.ORCA2_PUBLICATION.read_text(encoding="utf-8"))
+        packet = handoff.build(self.coverage, self.roster, self.applications,
+                               self.chronology, orca_publication=publication)
+        trial = next(t for t in packet["trials"] if t["nct"] == "NCT04576949")
+        self.assertIsNone(trial["levels"][0]["publicationFindingsUnreviewed"])
+        self.assertIsNone(trial["levels"][1]["publicationFindingsUnreviewed"])
+        self.assertIsNone(trial["levels"][4]["publicationFindingsUnreviewed"])
+        for level in (2, 3, 5):
+            report = trial["levels"][level]["publicationFindingsUnreviewed"]
+            self.assertFalse(report["scientificallyAdjudicated"])
+            self.assertFalse(report["sourceIndependentlyAuthenticated"])
+            self.assertEqual(report["publicationUrl"],
+                             "https://pmc.ncbi.nlm.nih.gov/articles/PMC10336611/")
+            self.assertFalse(trial["levels"][level]["completionPermitted"])
+        self.assertEqual(len(trial["levels"][2]["publicationFindingsUnreviewed"][
+            "reportedEfficacyComparisons"]), 4)
+        self.assertEqual(trial["levels"][2]["publicationFindingsUnreviewed"][
+            "reportedSafetyObservations"]["seriousAdverseEvents"]["cytisinicline"], 18)
+        self.assertTrue(trial["levels"][5]["publicationFindingsUnreviewed"][
+            "reportedClinicalLimitations"])
+        self.assertIsNone(trial["fdaOutcomeJudgment"])
+        self.assertEqual(packet["independentlyAdjudicatedLevels"], 0)
+        other = next(t for t in packet["trials"] if t["nct"] != "NCT04576949")
+        self.assertTrue(all(x["publicationFindingsUnreviewed"] is None for x in other["levels"]))
+
+    def test_forged_publication_results_cannot_enter_the_review_packet(self):
+        publication = json.loads(handoff.ORCA2_PUBLICATION.read_text(encoding="utf-8"))
+        publication["efficacy"][0]["activePct"] = 100.0
+        with self.assertRaises(ValueError):
+            handoff.build(self.coverage, self.roster, self.applications,
+                          self.chronology, orca_publication=publication)
+        publication = json.loads(handoff.ORCA2_PUBLICATION.read_text(encoding="utf-8"))
+        publication["sourceIndependentlyAuthenticated"] = True
+        with self.assertRaises(ValueError):
+            handoff.build(self.coverage, self.roster, self.applications,
+                          self.chronology, orca_publication=publication)
+
     def test_orca2_first_for_collected_evidence_not_highest_approval_chance(self):
         packet = self.build()
         self.assertEqual(packet["trials"][0]["nct"], "NCT04576949")
