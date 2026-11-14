@@ -1,3 +1,4 @@
+import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
 import AssessmentLauncher from '../AssessmentLauncher';
 import type {Metadata} from "next";
 import Link from "next/link";
@@ -45,7 +46,7 @@ export default function FocusPage(){
   </section>
   <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
    <table style={{width:"100%",borderCollapse:"collapse",minWidth:970,fontSize:14}}>
-    <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"left"}}>FDA Special Designations</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>7 gate checks</th></tr></thead>
+    <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"left"}}>FDA Special Designations</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>7 gate checks</th><PredictionHeaders/></tr></thead>
     <tbody>{trials.map((t,i)=>{const gateAudit=finalGateByNct.get(t.nct);const d=designationByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
       <td style={{padding:10,fontWeight:700}}><TickerChartButton ticker={t.ticker}/></td>
       <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a><div style={{marginTop:5,fontSize:12}}><Link href={"/analyze-now?nct="+encodeURIComponent(t.nct)}>View exact-trial research history</Link></div><details style={{marginTop:6}}><summary style={{cursor:"pointer",fontSize:12}}>Steps 1–3 · exact-program intake</summary><ExactTrialIntakeSelector cohort="FOCUS" nctId={t.nct}/></details></td>
@@ -74,10 +75,10 @@ export default function FocusPage(){
           <strong>{g.title}</strong><div>{g.state==="RECORDED_POINTER"?"Source pointer only":g.state==="SOURCE_REVIEW_REQUIRED"?"Needs source review":"Missing evidence"}</div>
           <div>{g.note}</div>{g.sourceUrl&&<a href={g.sourceUrl} target="_blank" rel="noopener noreferrer">Inspect source</a>}
         </div>)}</div>
-      </details>:<span role="alert">Gate identity mismatch — not verified</span>}</td>
+      </details>:<span role="alert">Gate identity mismatch — not verified</span>}</td><PredictionCells nct={t.nct}/>
     </tr>;})}</tbody>
    </table>
   </div>
-  <p style={{fontSize:12,color:"#4f6556",marginTop:15}}>Some entries are planned NDA/BLA filings rather than FDA-accepted submissions. Source snapshots require continued review.</p>
+  <PredictionLegend/><p style={{fontSize:12,color:"#4f6556",marginTop:15}}>Some entries are planned NDA/BLA filings rather than FDA-accepted submissions. Source snapshots require continued review.</p>
  </main>;
 }
