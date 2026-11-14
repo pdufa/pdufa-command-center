@@ -188,6 +188,64 @@ class Level16ReviewHandoffTests(unittest.TestCase):
             handoff.build(self.coverage, self.roster, self.applications,
                           self.chronology, maple_publication=maple)
 
+    def test_origin3_interim_primary_and_final_secondary_renal_evidence_are_distinct(self):
+        renal = json.loads(handoff.ORIGIN3_RENAL.read_text(encoding="utf-8"))
+        packet = handoff.build(self.coverage, self.roster, self.applications,
+                               self.chronology, origin3_renal=renal)
+        trial = next(x for x in packet["trials"] if x["nct"] == "NCT04716231")
+        self.assertEqual(trial["ticker"], "VERA")
+        self.assertEqual(trial["phaseUnreviewed"], ["PHASE3"])
+        self.assertEqual(len(trial["levels"]), 6)
+        for level in trial["levels"]:
+            pub = level["renalEvidenceUnreviewed"]
+            self.assertIsNotNone(pub)
+            self.assertEqual(pub["nct"], "NCT04716231")
+            self.assertEqual(len(pub["sourceLinks"]), 2)
+            self.assertFalse(pub["historicalBlindBacktestPermitted"])
+            self.assertFalse(pub["scientificallyAdjudicated"])
+            self.assertFalse(pub["originalSourcesIndependentlyAuthenticated"])
+            self.assertEqual(level["independentScientificReviewStatus"], "NOT_ADJUDICATED")
+            self.assertIsNone(level["score"])
+            self.assertFalse(level["completionPermitted"])
+        clinical = trial["levels"][2]["renalEvidenceUnreviewed"]
+        self.assertEqual(clinical["interimPrimaryProteinuriaUnreviewed"]["denominator"][
+            "prespecifiedInterimAnalysisTotal"], 203)
+        self.assertEqual(clinical["interimPrimaryProteinuriaUnreviewed"]["primary"][
+            "publishedBetweenGroupDifferencePercentagePoints"], 41.8)
+        self.assertEqual(clinical["laterSecondaryKidneyFunctionUnreviewed"]["denominator"][
+            "randomized"], 431)
+        self.assertEqual(clinical["laterSecondaryKidneyFunctionUnreviewed"][
+            "secondaryEfficacy"][0]["reportedBetweenGroupDifference"], 5.58)
+        self.assertEqual(clinical["laterSecondaryKidneyFunctionUnreviewed"][
+            "secondaryEfficacy"][1]["reportedBetweenGroupDifference"], 5.00)
+        self.assertIsNone(trial["levels"][4]["publicationFindingsUnreviewed"])
+        self.assertIsNone(trial["approvalProbability"])
+        self.assertEqual(packet["independentlyAdjudicatedLevels"], 0)
+        other = next(t for t in packet["trials"] if t["nct"] == "NCT05767346")
+        self.assertTrue(all(l["renalEvidenceUnreviewed"] is None for l in other["levels"]))
+        md = handoff.markdown(packet)
+        self.assertIn("PRIMARY INTERIM: week-36", md)
+        self.assertIn("LATER SECONDARY: eGFR change at week 52", md)
+        self.assertIn("ONE Phase 3 trial", md)
+
+    def test_origin3_rejects_forged_science_and_historical_cutoff(self):
+        data = json.loads(handoff.ORIGIN3_RENAL.read_text(encoding="utf-8"))
+        data["blindHistoricalPredictionPermitted"] = True
+        with self.assertRaises(ValueError):
+            handoff.build(self.coverage, self.roster, self.applications,
+                          self.chronology, origin3_renal=data)
+        data = json.loads(handoff.ORIGIN3_RENAL.read_text(encoding="utf-8"))
+        data["reports"][1]["secondaryEfficacy"][0][
+            "reportedBetweenGroupDifference"] = 0.0
+        with self.assertRaises(ValueError):
+            handoff.build(self.coverage, self.roster, self.applications,
+                          self.chronology, origin3_renal=data)
+        data = json.loads(handoff.ORIGIN3_RENAL.read_text(encoding="utf-8"))
+        data["nct"] = "NCT04576949"
+        with self.assertRaises(ValueError):
+            handoff.build(self.coverage, self.roster, self.applications,
+                          self.chronology, origin3_renal=data)
+
     def test_orca2_first_for_collected_evidence_not_highest_approval_chance(self):
         packet = self.build()
         self.assertEqual(packet["trials"][0]["nct"], "NCT04576949")
