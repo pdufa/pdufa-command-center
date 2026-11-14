@@ -716,3 +716,22 @@ def test_source_verification_provenance_must_precede_cutoff():
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
     assert level["criteria"]["protocol"] == "SUPPORTS"
     assert level["acceptedEvidence"]["protocol"]["sourceVerifiedBy"] == "test-verifier"
+
+
+def test_level_one_rejects_unknown_registry_status():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["status"] = "APPROVED_BY_FDA"
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
+    assert intake["trialStatus"] is None
+    assert intake["fdaPrediction"] == "ABSTAIN"
+
+
+def test_level_one_accepts_known_registry_lifecycle_status():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["status"] = "ACTIVE_NOT_RECRUITING"
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["executionStatus"] == "INTAKE_ONLY"
+    assert intake["trialStatus"] == "ACTIVE_NOT_RECRUITING"
