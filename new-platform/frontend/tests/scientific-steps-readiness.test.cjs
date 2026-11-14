@@ -105,3 +105,11 @@ test("authenticated assessment proxy preserves exact identity, backend conflict 
  assert.match(route,/Cache-Control": "private, no-store"/);
  assert.match(route,/headers: \{ "x-pdufa-internal-key": key \}/);
 });
+
+
+test("exact-trial intake explains rejected or unknown identities without exposing evidence",()=>{
+ const source=fs.readFileSync(path.join(app,"ExactTrialScientificIntake.tsx"),"utf8");
+ assert.match(source,/res\.status===404\?"Exact program not found/);
+ assert.match(source,/res\.status===409\?"Exact program identity or evidence is not verified/);
+ assert.match(source,/setIntake\(null\);setError\(" "\)/);
+});
