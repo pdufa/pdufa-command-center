@@ -152,7 +152,8 @@ def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=N
                     and _secure_source(source)
                     and trial_id and record.get("nctId") == trial_id
                     and _source_matches_trial(source, trial_id)
-                    and record.get("rationale") and evidence_day and review_day
+                    and isinstance(record.get("rationale"), str)
+                    and record["rationale"].strip() and evidence_day and review_day
                     and evidence_day <= review_day <= cutoff_day):
                 endpoint_quality[criterion] = judgment
                 reviewed_evidence[criterion] = {
