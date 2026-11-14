@@ -96,14 +96,20 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
     if registry and (not nct or registry.get("nct_id") != nct): raise ValueError("Registry identity mismatch")
     facts, tech = row.get("trialFilters") or {}, row.get("technical") or {}
     checked = registry_checked[:10]
-    source = "https://clinicaltrials.gov/study/" + nct if nct and registry and day(checked) and day(checked) <= today else ""
+    registry_day = (registry.get("last_update_posted") or {}).get("date", "")
+    # A registry snapshot checked before the scoring cutoff can still contain a
+    # future-dated amendment. Do not award registry-derived points in that case.
+    registry_as_of = day(registry_day)
+    registry_checked_on = day(checked)
+    registry_eligible = bool(nct and registry and registry_as_of and registry_checked_on
+                             and registry_as_of <= registry_checked_on <= today)
+    source = "https://clinicaltrials.gov/study/" + nct if registry_eligible else ""
     design = registry.get("study_design") or {}
     info = design.get("designInfo") or {}
     masking, allocation = (info.get("maskingInfo") or {}).get("masking"), info.get("allocation")
     arms, endpoints = registry.get("treatment_groups") or [], registry.get("primary_outcomes") or []
     control = len(arms) >= 2 and any(a.get("type") in {"ACTIVE_COMPARATOR", "PLACEBO_COMPARATOR", "SHAM_COMPARATOR", "NO_INTERVENTION"} for a in arms)
     defined = bool(endpoints and all(e.get("measure") and e.get("timeFrame") for e in endpoints))
-    registry_day = (registry.get("last_update_posted") or {}).get("date", "")
     def reg(key, name, maximum, value, fraction, rule):
         return measure(key, name, maximum, value, fraction=fraction, rule=rule, source=source, checked=checked, source_date=registry_day)
     def reviewed(key, name, weight, age=90): return grade(key, name, weight, reviews, today, max_age=age)
