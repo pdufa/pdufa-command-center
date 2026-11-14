@@ -5,6 +5,9 @@ on:
     paths:
       - "scripts/medical/level16_orca2_owner_dossier.py"
       - "tests/test_level16_orca2_owner_dossier.py"
+      - "scripts/medical/export_level16_assessment_evidence.py"
+      - "tests/test_level16_assessment_export.py"
+      - "new-platform/frontend/data/level16AssessmentEvidence.json"
       - "scripts/medical/level16_scientific_coverage.py"
       - "scripts/medical/level16_orca2_statistical_timeline.py"
       - "scripts/medical/level16_orca2_publication_review.py"
@@ -66,6 +69,9 @@ on:
     paths:
       - "scripts/medical/level16_orca2_owner_dossier.py"
       - "tests/test_level16_orca2_owner_dossier.py"
+      - "scripts/medical/export_level16_assessment_evidence.py"
+      - "tests/test_level16_assessment_export.py"
+      - "new-platform/frontend/data/level16AssessmentEvidence.json"
       - "scripts/medical/level16_scientific_coverage.py"
       - "scripts/medical/level16_orca2_statistical_timeline.py"
       - "scripts/medical/level16_orca2_publication_review.py"
@@ -172,6 +178,10 @@ jobs:
         run: python -m unittest discover -s tests -p "test_level16_orca2_statistical_timeline.py" -v
       - name: ORCA-2 owner dossier, chronology and zero-external-gate regression
         run: python -m unittest discover -s tests -p "test_level16_orca2_owner_dossier.py" -v
+      - name: Reproducible website assessment evidence package
+        run: |
+          python scripts/medical/export_level16_assessment_evidence.py --check
+          python -m unittest discover -s tests -p "test_level16_assessment_export.py" -v
       - name: Scientific collection coverage and preliminary research integrity
         run: python -m unittest discover -s tests -p "test_level16_scientific_coverage.py" -v
       - name: Phase-specific public-source acquisition and preliminary worksheets
