@@ -1,15 +1,16 @@
 #!/usr/bin/env python3
-"""Fail-closed acceptance gate for independent 20-level scientific assessments.
+"""Fail-closed OWNER-ONLY acceptance gate for scientific Levels 1–20.
 
-Readiness records are not clinical reviews. This gate only validates a separately
-authored, source-cited, independently challenged decision package.
+No outside source verifier, reviewer, challenger or independent signoff is
+required. The owner checks a source-cited decision and records their status.
+A structurally accepted package is not FDA certification or proven accuracy.
 """
 import argparse
 import json
 from pathlib import Path
 
 REQUIRED = ("nct", "applicationId", "reviewCycle", "assessmentLevel",
-            "evidence", "limitations", "reviewer", "independentChallenge",
+            "evidence", "limitations", "ownerReviewStatus",
             "outcomeJudgment", "timingJudgment", "frozenAt")
 
 def validate(package):
@@ -17,13 +18,16 @@ def validate(package):
     for field in REQUIRED:
         if not package.get(field):
             errors.append("MISSING_" + field)
-    if package.get("assessmentLevel") not in range(1, 21):
+    if type(package.get("assessmentLevel")) is not int or package.get("assessmentLevel") not in range(1, 21):
         errors.append("INVALID_LEVEL")
-    challenge = package.get("independentChallenge")
-    if not isinstance(challenge, dict) or not challenge.get("reviewer") or not challenge.get("critique"):
-        errors.append("INDEPENDENT_CHALLENGE_INCOMPLETE")
-    elif package.get("reviewer") == challenge["reviewer"]:
-        errors.append("CHALLENGER_NOT_INDEPENDENT")
+    if package.get("ownerReviewStatus") not in (
+        "OWNER_ACCEPTED_WITH_LIMITATIONS", "OWNER_NEEDS_EVIDENCE", "OWNER_REJECTED"
+    ):
+        errors.append("OWNER_DECISION_REQUIRED")
+    elif package["ownerReviewStatus"] != "OWNER_ACCEPTED_WITH_LIMITATIONS":
+        errors.append("OWNER_HAS_NOT_ACCEPTED")
+    # Legacy independentChallenge/reviewer fields may be preserved in archived
+    # packages, but have NO authority as acceptance requirements.
     probability = package.get("outcomeProbability")
     if probability is not None:
         if isinstance(probability, bool) or not isinstance(probability, (int, float)) or not 0 <= probability <= 1:
@@ -47,7 +51,11 @@ def validate(package):
     if not package.get("predictionHistoryAppendOnly", False):
         errors.append("IMMUTABLE_HISTORY_NOT_ATTESTED")
     return {"accepted": not errors, "errors": errors,
-            "status": "VALIDATED_PACKAGE_STRUCTURE_ONLY" if not errors else "REJECTED",
+            "status": "OWNER_REVIEWED_STRUCTURE_ONLY" if not errors else "OWNER_REVIEW_REQUIRED",
+            "externalReviewersRequired": 0,
+            "externalSignoffsRequired": 0,
+            "ownerOnly": True,
+            "independentlyCertified": False,
             "scientificAccuracyVerified": False}
 
 def main():

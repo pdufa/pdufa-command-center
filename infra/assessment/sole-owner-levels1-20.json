@@ -1,0 +1,69 @@
+{
+  "schemaVersion": 1,
+  "kind": "PDUFA_OWNER_ONLY_ASSESSMENTS_LEVELS_1_TO_20",
+  "ownerDirectiveDate": "2026-11-13",
+  "activeMode": "SOLE_OWNER_AI_ASSISTED_ASSESSMENT",
+  "scope": {
+    "fromLevel": 1,
+    "toLevel": 20,
+    "activeTrialPopulations": [
+      "POOL",
+      "FOCUS"
+    ],
+    "ownerHumanSeats": 1,
+    "levels1To6ImplementedResearchFramework": true,
+    "levels7To20EngineeringComplete": false
+  },
+  "humanRequirements": {
+    "externalMedicalReviewer": false,
+    "externalStatisticalReviewer": false,
+    "externalRegulatoryReviewer": false,
+    "outsideSourceAttestor": false,
+    "independentChallenger": false,
+    "multiPersonAdjudication": false,
+    "outsideReviewerCredentials": false,
+    "externalSignoffBeforeAssessment": false,
+    "externalSignoffBeforeScoring": false,
+    "externalSignoffBeforePrediction": false,
+    "externalSignoffBeforeOwnerPublication": false,
+    "outsideClinicalCertification": false,
+    "requiredHumanOperators": 1,
+    "ownerMayCheckAllEvidenceAndLevels": true
+  },
+  "retainedControls": {
+    "automatedSourceCitationAndExactNctChecks": true,
+    "ownerMayManuallyCheckOriginalSources": true,
+    "versionAndCutoffHistory": true,
+    "phaseAndIndicationApplicability": true,
+    "statisticalConsistencyChecks": true,
+    "missingEvidenceAndContradictionsDisplayed": true,
+    "outcomeExposureAndBacktestLeakageProtection": true,
+    "dataSecurityOwnerSignInAndMfa": true,
+    "regressionTestsAndReproducibility": true,
+    "noFabricatedIndependentVerification": true,
+    "noUncalibratedOrGuaranteedFdaProbabilities": true,
+    "noClaimOfFdaOrExternalCertification": true,
+    "existingProductionMergeAndDeployAuthorizationSeparate": true
+  },
+  "ownerStatusVocabulary": {
+    "notReviewed": "OWNER_NOT_REVIEWED",
+    "inProgress": "OWNER_REVIEW_IN_PROGRESS",
+    "acceptedWithLimitations": "OWNER_ACCEPTED_WITH_LIMITATIONS",
+    "ownerRejected": "OWNER_REJECTED",
+    "needsEvidence": "OWNER_NEEDS_EVIDENCE",
+    "notApplicable": "NOT_APPLICABLE_AT_THIS_PHASE",
+    "notIndependent": "OWNER_SELF_REVIEW_NO_EXTERNAL_CERTIFICATION"
+  },
+  "legacyExternalWorkflow": "RETIRED_FROM_ACTIVE_GATES_PRESERVED_ONLY_AS_DISABLED_HISTORICAL_ENGINEERING",
+  "technicalStatus": {
+    "levels1To6": "PRELIMINARY_RESEARCH_WORKSHEETS_AVAILABLE_OWNER_REVIEW_NOT_AUTOMATICALLY_COMPLETE",
+    "levels7To20": "POLICY_APPLIES_NO_CLAIM_OF_COMPLETED_ENGINEERING",
+    "externalReviewerGateCount": 0,
+    "externallySignedAssessmentsRequired": 0,
+    "ownerReviewsCompletedClaimed": 0,
+    "siteDeploymentAuthorized": false
+  },
+  "ownerOnlyReleaseRule": "Owner may approve publication of clearly labeled owner-reviewed research subject to actual destination-specific security and deployment authorization; do not imply verified science or validated probability.",
+  "historicalAccuracyRule": "Never retroactively call outcome-exposed reconstruction blind; prospective outcome-unexposed predictions can be frozen and evaluated by the owner without outside reviewers.",
+  "note": "No mandatory external person or outside attestation anywhere in Levels 1–20. Research sources remain documentary inputs, not external reviewers; the owner may inspect them personally. Missing source data remains an uncertainty, not a fabricated fact."
+}
