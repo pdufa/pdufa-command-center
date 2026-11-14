@@ -310,5 +310,17 @@ class LevelsTwoToSixContractTests(unittest.TestCase):
         self.assertEqual(result["4"]["fdaPrediction"], "ABSTAIN")
 
 
+    def test_unicode_digit_nct_is_not_an_exact_trial_identity(self):
+        unicode_nct = "NCT1234567\u0668"
+        result = module.assess_levels_two_to_six(
+            BASE, trial_id=unicode_nct,
+        )
+        for level in ("2", "3", "4", "5", "6"):
+            with self.subTest(level=level):
+                self.assertEqual(result[level]["status"], "BLOCKED_UNVERIFIED_PHASE")
+                self.assertIsNone(result[level]["score"])
+                self.assertEqual(result[level]["fdaPrediction"], "ABSTAIN")
+
+
 if __name__ == "__main__":
     unittest.main()
