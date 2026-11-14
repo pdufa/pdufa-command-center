@@ -321,10 +321,10 @@ def render(report, trusted_review_reader=None, preliminary_research=None, review
             _text(", ".join(trial.get("candidateIndicationsUnverified", [])) or "Not supplied") +
             " · <strong>Application cycle links:</strong> " +
             _text(", ".join(trial.get("candidateApplicationCycleIdsUnverified", [])) or "None") +
-            "</p><div class='tablewrap'><table><thead><tr><th>Level</th><th>Evidence status</th>"
+            "</p><div class='tablewrap'><table><thead><tr><th>Level</th><th>Evidence status</th>" +
             ("<th>Owner evidence checks</th><th>Source leads</th><th>Owner review</th>"
              if handoff_by_nct else
-             "<th>Required evidence review</th><th>Submitted source leads</th><th>Scientific review</th>")
+             "<th>Required evidence review</th><th>Submitted source leads</th><th>Scientific review</th>") +
             "</tr></thead><tbody>" + "".join(lines) + "</tbody></table></div></div></details>"
         )
     actual_completed = sum(level.get("assessmentCompleted") is True for trial in trials for level in trial["levels"])
@@ -352,14 +352,14 @@ def render(report, trusted_review_reader=None, preliminary_research=None, review
         "<title>FOCUS — Scientific Levels 1–6 Evidence Review Preview</title>"
         "<style>" + css + "</style></head><body><main>"
         "<h1>FOCUS · Scientific Levels 1–6</h1>"
-        "<p>Read-only evidence review preview. Original FOCUS membership remains unchanged.</p>"
+        "<p>Read-only evidence review preview. Original FOCUS membership remains unchanged.</p>" +
         ("<div class='notice'><strong>OWNER-ONLY RESEARCH — NO EXTERNAL VERIFICATION REQUIRED.</strong>"
          " Sources and proposed findings are preliminary; owner review has not been entered."
          " No calibrated FDA forecast or production deployment is implied.</div>"
          if handoff_by_nct else
          "<div class='notice'><strong>NOT MEDICAL ASSESSMENTS OR FDA FORECASTS.</strong>"
          " Submitted source metadata and proposed findings are unreviewed. Authorized findings require "
-         "trusted current database readback. This page is not deployed to production.</div>")
+         "trusted current database readback. This page is not deployed to production.</div>") +
         "<section class='metrics' aria-label='Assessment readiness counts'>"
         "<div class='metric'><strong>" + _text(report.get("focusTrialCount")) +
         "</strong><small>FOCUS exact NCT trials</small></div>"
@@ -368,7 +368,7 @@ def render(report, trusted_review_reader=None, preliminary_research=None, review
         "<div class='metric'><strong>" + _text(report.get("unmappedTrialCount", 0)) +
         "</strong><small>Trials without application mapping</small></div>"
         "<div class='metric'><strong>" + _text(report.get("sourceSubmissionCount", 0)) +
-        "</strong><small>Source submissions awaiting authentication</small></div>"
+        "</strong><small>Source submissions awaiting authentication</small></div>" +
         ("<div class='metric'><strong>0</strong><small>Owner reviews recorded</small></div>"
          if handoff_by_nct else
          "<div class='metric'><strong>" + _text(report.get("scientificallyAdjudicatedLevels", 0)) + "</strong><small>Independently reviewed Levels 1–6</small></div>")
