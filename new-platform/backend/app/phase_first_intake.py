@@ -5,20 +5,40 @@ snapshots dated after the assessment cutoff are ineligible for scoring.
 """
 from __future__ import annotations
 
-from datetime import date
-import re
+from datetime import date, datetime, timezone
 import re
 from urllib.parse import urlparse
 
 
 def _date(value):
-    if isinstance(value, date):
+    if type(value) is date:
         return value
     try:
         raw = value if isinstance(value, str) else ""
         if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", raw):
             return None
         return date.fromisoformat(raw)
+    except ValueError:
+        return None
+
+
+def registry_retrieved_day(value):
+    """Accept saved UTC-aware database instants, never a sliced date prefix.
+
+    Publication/review dates still use the strict day parser. Offset instants
+    are normalized to UTC before the cutoff comparison.
+    """
+    day = _date(value)
+    if day:
+        return day
+    if not isinstance(value, str) or not re.fullmatch(
+        r"[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}"
+        r"(?:\.[0-9]{1,6})?(?:Z|[+-](?:[01][0-9]|2[0-3]):[0-5][0-9])", value
+    ):
+        return None
+    try:
+        instant = datetime.fromisoformat(value.replace("Z", "+00:00"))
+        return instant.astimezone(timezone.utc).date()
     except ValueError:
         return None
 
@@ -35,14 +55,17 @@ def _secure_source(value):
 
 
 def _source_matches_trial(source, trial_id):
-    """Reject ClinicalTrials.gov evidence URLs pointing to another NCT trial."""
+    """Require exact identity in registry API, study and registered PDF URLs."""
     try:
         parsed = urlparse(source)
         host = (parsed.hostname or "").lower()
+        path = parsed.path.rstrip("/")
+        if host == "cdn.clinicaltrials.gov":
+            match = re.fullmatch(r"/large-docs/([0-9]{2})/(NCT[0-9]{8})/[^/]+\.pdf", path)
+            return bool(match and match[2] == trial_id and match[1] == trial_id[-2:])
         if host not in {"clinicaltrials.gov", "www.clinicaltrials.gov"}:
             return True
-        path = parsed.path.rstrip("/").split("/")
-        return len(path) >= 3 and path[-2] == "study" and path[-1] == trial_id
+        return path in {"/study/" + trial_id, "/api/v2/studies/" + trial_id}
     except (TypeError, ValueError):
         return False
 
@@ -50,7 +73,7 @@ def _source_matches_trial(source, trial_id):
 def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=None):
     """Return an auditable, non-scoring Level 1 phase intake."""
     cutoff_day = _date(cutoff)
-    checked_day = _date(registry_checked)
+    checked_day = registry_retrieved_day(registry_checked)
     last_update = registry.get("last_update_posted") or {}
     if not isinstance(last_update, dict):
         last_update = {}

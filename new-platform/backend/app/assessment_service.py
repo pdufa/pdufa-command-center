@@ -18,7 +18,7 @@ LOG = logging.getLogger(__name__)
 _LOCK = threading.RLock()
 _STATE = {"key": "", "building": False, "index": None, "error": "", "snapshot": None, "reviews": {}, "token": ""}
 _REVIEW_CACHE = {"at": 0, "value": {}, "status": "NOT_LOADED"}
-FIELDS = ("nct_id", "phases", "study_title", "study_design", "treatment_groups", "primary_outcomes", "secondary_outcomes", "enrollment", "status", "last_update_posted", "primary_completion_date", "has_results")
+FIELDS = ("nct_id", "phases", "study_title", "study_design", "treatment_groups", "primary_outcomes", "secondary_outcomes", "enrollment", "status", "last_update_posted", "primary_completion_date", "has_results", "eligibility", "conditions")
 
 
 def review_evidence():
@@ -56,7 +56,12 @@ def registry_rows(ids=None):
     if ids is not None: query = query.where(db.FullTrialRecord.nct_id.in_(ids))
     with Session(db.ENGINE) as session:
         for item in session.execute(query.execution_options(yield_per=100)):
-            yield item[0], dict(zip(FIELDS, item[1:1 + len(FIELDS)])), item[-2] or [], item[-1].isoformat()
+            # fetched_at is stored in UTC; SQLite drops the SQL timezone flag.
+            # Normalize this trusted database column, not arbitrary source text.
+            fetched = item[-1]
+            if fetched.tzinfo is None:
+                fetched = fetched.replace(tzinfo=timezone.utc)
+            yield item[0], dict(zip(FIELDS, item[1:1 + len(FIELDS)])), item[-2] or [], fetched.isoformat()
 
 
 
@@ -92,7 +97,12 @@ def build_index(snapshot, reviews, review_status, key, token):
             records[row["id"]] = [row["id"], *values, result["riskFlags"]]
             if writable and prior.get(row["id"]) != evidence_hash:
                 updates.append({"exact_id": row["id"], "program_id": row.get("programId") or "", "model_version": MODEL,
-                                "evidence_hash": evidence_hash, "summary": {"models": values, "riskFlags": result["riskFlags"]}, "assessed_at": clock})
+                                "evidence_hash": evidence_hash, "summary": {
+                                    "models": values, "riskFlags": result["riskFlags"],
+                                    "levelOneIntake": result["levelOneIntake"],
+                                    "levelsTwoToSix": result["levelsTwoToSix"],
+                                    "scientificReadiness": result["scientificReadiness"],
+                                }, "assessed_at": clock})
         for nct, registry, analyses, checked in registry_rows():
             for identity in by_nct.get(nct, []):
                 accept(rows[identity], registry, analyses, checked)

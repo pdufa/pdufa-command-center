@@ -2,9 +2,11 @@
 import {useEffect,useRef,useState} from "react";
 import ScientificStepsReadiness,{type PhaseFirstIntake} from "./ScientificStepsReadiness";
 
+import ScientificLevelsEvidence from "./ScientificLevelsEvidence";
+
 const NCT=/^NCT\d{8}$/;
 type Cohort="POOL"|"FOCUS"|"PAST";
-type Assessment={id?:unknown;nctId?:unknown;levelOneIntake?:unknown};
+type Assessment={id?:unknown;nctId?:unknown;levelOneIntake?:unknown;levelsTwoToSix?:unknown};
 function validIntake(value:unknown):value is PhaseFirstIntake {
  if(!value||typeof value!=="object"||Array.isArray(value))return false;
  const x=value as Record<string,unknown>;
@@ -18,13 +20,14 @@ function validIntake(value:unknown):value is PhaseFirstIntake {
 /** Explicit exact-program selection is required: an NCT may map to several programs. */
 export default function ExactTrialScientificIntake({cohort,nctId,programIdentity}:{cohort:Cohort;nctId:string;programIdentity:string}){
  const [intake,setIntake]=useState<PhaseFirstIntake|null>(null);
+ const [levels,setLevels]=useState<unknown>(null);
  const [error,setError]=useState("");
  const [busy,setBusy]=useState(false);
  const requestSequence=useRef(0);
  useEffect(()=>()=>{++requestSequence.current;},[nctId,programIdentity]);
  async function load(){
   const sequence=++requestSequence.current;
-  setIntake(null);setError("");
+  setIntake(null);setError("");setLevels(null);
   if(!NCT.test(nctId)||!programIdentity.trim()||programIdentity.length>512){
    setError("An exact NCT and program identity are required.");return;
   }
@@ -38,12 +41,14 @@ export default function ExactTrialScientificIntake({cohort,nctId,programIdentity
    if(record.id!==programIdentity||record.nctId!==nctId||!validIntake(record.levelOneIntake))
     throw Error("Exact program/NCT mismatch or unverified intake; nothing displayed.");
    if(sequence===requestSequence.current)setIntake(record.levelOneIntake);
+   if(sequence===requestSequence.current)setLevels(record.levelsTwoToSix);
   }catch(e){if(sequence===requestSequence.current)setError(e instanceof Error?e.message:"Assessment unavailable.");}
   finally{if(sequence===requestSequence.current)setBusy(false);}
  }
  return <section aria-label={"Exact "+cohort+" trial scientific intake"}>
   <button type="button" disabled={busy} onClick={()=>void load()}>{busy?"Checking exact trial…":"Load exact-trial scientific intake"}</button>
   {error&&<p role="alert">{error}</p>}
+  {intake&&<ScientificLevelsEvidence value={levels}/>}
   {intake&&<ScientificStepsReadiness cohort={cohort} trial={{nctId,assessmentNctId:nctId,intake}}/>}
  </section>;
 }

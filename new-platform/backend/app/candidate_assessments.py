@@ -9,8 +9,10 @@ import math
 import re
 from urllib.parse import urlparse
 
-from .phase_first_intake import phase_first_intake
+from .phase_first_intake import phase_first_intake, registry_retrieved_day
 from .scientific_levels_two_to_six import assess_levels_two_to_six
+from .scientific_registry_inventory import attach_registry_inventory
+from .scientific_binary_effects import binary_effect
 
 MODEL = "candidate-assessments-v1"
 NCT = re.compile(r"^NCT[0-9]{8}$")
@@ -104,7 +106,8 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
     nct = nct_id(row)
     if registry and (not nct or registry.get("nct_id") != nct): raise ValueError("Registry identity mismatch")
     facts, tech = row.get("trialFilters") or {}, row.get("technical") or {}
-    checked = registry_checked[:10]
+    checked_day = registry_retrieved_day(registry_checked)
+    checked = checked_day.isoformat() if checked_day else ""
     registry_update = registry.get("last_update_posted") or {}
     registry_day = registry_update.get("date", "") if isinstance(registry_update, dict) else ""
     # A registry snapshot checked before the scoring cutoff can still contain a
@@ -209,6 +212,7 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
     # Evidence coverage is not proof of a validated Level 1–6 scientific engine.
     # Fail closed until independent scientific acceptance is recorded elsewhere.
     scientific_readiness = {
+        "contractVersion": "scientific-levels1-6-v1.1",
         "levels": [1, 2, 3, 4, 5, 6],
         "status": "NOT_VERIFIED",
         "fdaPrediction": "ABSTAIN",
@@ -217,6 +221,17 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
     level_one = phase_first_intake(registry, cutoff=today.isoformat(), registry_checked=registry_checked,
                                    endpoint_reviews=reviews.get("levelOneEndpointReviews"))
     levels_two_to_six = assess_levels_two_to_six(level_one, trial_id=nct, evidence=reviews.get("scientificLevelEvidence"))
+    scientific_records = reviews.get("scientificLevelEvidence") or {}
+    for level, criteria in (("3", ("effectSizeAndPrecision",)),
+                            ("4", ("adverseEvents", "seriousAdverseEvents", "discontinuations"))):
+        calculations = {}
+        for criterion in criteria:
+            accepted = levels_two_to_six[level]["acceptedEvidence"].get(criterion)
+            if accepted:
+                record = scientific_records.get(level + "." + criterion, {})
+                calculations[criterion] = binary_effect({**accepted, "measurements": record.get("measurements")})
+        levels_two_to_six[level]["descriptiveCalculations"] = calculations
+    attach_registry_inventory(level_one, levels_two_to_six, registry, trial_id=nct, retrieved_at=registry_checked)
     return {"levelOneIntake": level_one, "levelsTwoToSix": levels_two_to_six, "scientificReadiness": scientific_readiness, "modelVersion": MODEL, "id": row["id"], "programId": row.get("programId"), "nctId": nct, "asOf": today.isoformat(), "models": models, "riskFlags": flags,
             "qualification": {"savedLists": facts.get("lists", ["PIPELINE"]), "primaryOutcome": outcome, "firstFinancingClosed": facts.get("firstFinancingClosed"), "secondFinancingClosed": facts.get("secondFinancingClosed"), "note": "Scores do not alter screening, saved membership or trade entry. Only complete evidence is ranked. Uncalibrated research scores, not success probabilities."},
             "registryFetchedAt": registry_checked, "registrySourceDate": registry_day, "reportedStatistics": analyses,

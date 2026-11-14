@@ -55,15 +55,18 @@ def _valid_url(value):
         return False
 
 
-def _source_matches_trial(url, trial_id):
-    """Reject a ClinicalTrials.gov study URL that names another trial."""
+def _source_matches_trial(source, trial_id):
+    """Require exact identity in registry API, study and registered PDF URLs."""
     try:
-        parsed = urlparse(url)
+        parsed = urlparse(source)
         host = (parsed.hostname or "").lower()
+        path = parsed.path.rstrip("/")
+        if host == "cdn.clinicaltrials.gov":
+            match = re.fullmatch(r"/large-docs/([0-9]{2})/(NCT[0-9]{8})/[^/]+\.pdf", path)
+            return bool(match and match[2] == trial_id and match[1] == trial_id[-2:])
         if host not in {"clinicaltrials.gov", "www.clinicaltrials.gov"}:
             return True
-        parts = parsed.path.rstrip("/").split("/")
-        return len(parts) >= 3 and parts[-2] == "study" and parts[-1] == trial_id
+        return path in {"/study/" + trial_id, "/api/v2/studies/" + trial_id}
     except (TypeError, ValueError):
         return False
 
@@ -146,6 +149,20 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                 continue
             source_day = _day(record.get("sourceDate"))
             review_day = _day(record.get("reviewedAt"))
+            retrieval_day = _day(record.get("sourceRetrievedAt"))
+            # Legacy reviews lacking a retrieval receipt remain explicitly
+            # incomplete provenance. Never invent a collection date. Supplied
+            # receipts must satisfy the same cutoff and source chronology.
+            if "sourceRetrievedAt" in record and (
+                    not retrieval_day or not source_day or not review_day
+                    or not source_day <= retrieval_day <= verification_day <= review_day <= cutoff):
+                states[criterion] = "REJECTED_EVIDENCE"
+                rejection_reasons[criterion] = "INVALID_RETRIEVAL_CHRONOLOGY"
+                continue
+            if record.get("conflict") is True:
+                states[criterion] = "REJECTED_EVIDENCE"
+                rejection_reasons[criterion] = "CONFLICTING_EVIDENCE"
+                continue
             url = record.get("source")
             if (record.get("nctId") != trial_id or not _valid_url(url)
                     or not _source_matches_trial(url, trial_id)
@@ -192,6 +209,8 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                 "sourceVerifiedAt": verification_day.isoformat(),
                 "sourceVerifiedBy": verification_actor,
                 "sourceVerificationMethod": verification_method,
+                "sourceRetrievedAt": retrieval_day.isoformat() if retrieval_day else None,
+                "retrievalProvenance": "RECORDED" if retrieval_day else "NOT_RECORDED",
                 "evidenceExcerpt": record["evidenceExcerpt"],
             }
         required = [c for c in criteria if states[c] != "NOT_YET_EXPECTED"]

@@ -363,3 +363,21 @@ class LevelsTwoToSixContractTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+def test_supplied_retrieval_receipt_cannot_postdate_cutoff_or_conflict():
+    from copy import deepcopy
+    record = {"nctId": "NCT12345678", "source": "https://clinicaltrials.gov/study/NCT12345678",
+              "sourceDate": "2026-01-01", "sourceRetrievedAt": "2026-01-02", "reviewedAt": "2026-01-04",
+              "sourceVerified": True, "sourceVerifiedAt": "2026-01-03", "sourceVerifiedBy": "fixture-owner",
+              "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW", "reviewerId": "fixture-owner",
+              "documentType": "PROTOCOL", "judgment": "INCONCLUSIVE", "rationale": "Test only",
+              "evidenceExcerpt": "Synthetic evidence, not a real approval"}
+    good = module.assess_levels_two_to_six(BASE, trial_id="NCT12345678", evidence={"2.protocol":record})["2"]
+    assert good["acceptedEvidence"]["protocol"]["sourceRetrievedAt"] == "2026-01-02"
+    for mutation in [{"sourceRetrievedAt":"2026-03-01"}, {"sourceRetrievedAt":"2025-12-31"}, {"sourceRetrievedAt":"2026-01-02forged"}, {"conflict":True}]:
+        bad = deepcopy(record); bad.update(mutation)
+        result = module.assess_levels_two_to_six(BASE, trial_id="NCT12345678", evidence={"2.protocol":bad})["2"]
+        assert result["criteria"]["protocol"] == "REJECTED_EVIDENCE"
+        assert not result["acceptedEvidence"]
+        assert result["fdaPrediction"] == "ABSTAIN"
