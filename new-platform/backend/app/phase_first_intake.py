@@ -6,6 +6,7 @@ snapshots dated after the assessment cutoff are ineligible for scoring.
 from __future__ import annotations
 
 from datetime import date
+import re
 from urllib.parse import urlparse
 
 
@@ -70,7 +71,9 @@ def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=N
         str(status_value).upper().replace(" ", "_")
         if isinstance(status_value, str) else None
     )
-    verified = (eligible and bool(phases)
+    verified = (eligible and isinstance(registry.get("nct_id"), str)
+                and re.fullmatch(r"NCT[0-9]{8}", registry["nct_id"]) is not None
+                and bool(phases)
                 and all(phase in known for phase in phases)
                 and normalized_status in known_statuses)
     phase = max(phases, key=order.__getitem__) if verified else None
