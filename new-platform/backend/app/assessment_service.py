@@ -171,6 +171,11 @@ def exact_detail(identity):
     row = rows_for(snapshot).get(identity)
     if row is None: raise HTTPException(status_code=404, detail="Exact program is not in the current Pipeline universe")
     nct = nct_id(row)
+    # The detail endpoint must enforce the same exact-identity guard as the index.
+    # Otherwise a manually entered program ID could bypass NCT conflict filtering.
+    allowed = exact_nct_program_map({identity: row})
+    if not nct or identity not in allowed.get(nct, []):
+        raise HTTPException(status_code=409, detail="Conflicting or missing exact NCT identity")
     saved = next(registry_rows([nct]), None) if nct else None
     result = score_candidate(row, saved[1] if saved else None, saved[2] if saved else None, reviews.get(identity, {}),
                              today=date.fromisoformat(snapshot["assessmentDate"]), registry_checked=saved[3] if saved else "")
