@@ -22,6 +22,7 @@ ORCA2 = REPORTS / "orca2-statistical-chronology-20261114.json"
 ORCA2_PUBLICATION = REPORTS / "orca2-publication-outcomes-20261114.json"
 ORCA3_PUBLICATION = REPORTS / "orca3-publication-outcomes-20261114.json"
 MAPLE_HCM = REPORTS / "maple-hcm-source-review-20261114.json"
+ORIGIN3_RENAL = REPORTS / "origin3-published-renal-evidence-20261114.json"
 NCT_RE = re.compile(r"NCT[0-9]{8}\Z")
 LEVEL_NAMES = {
     1: "Original source identity and provenance",
@@ -40,6 +41,7 @@ REVIEW_STEPS = [
 ORCA_NCT = "NCT04576949"
 ORCA3_NCT = "NCT05206370"
 MAPLE_NCT = "NCT05767346"
+ORIGIN3_NCT = "NCT04716231"
 
 
 def _source_record(record, kind, require_ticker=True):
@@ -71,7 +73,7 @@ def _status(collected):
 
 
 def _level_rows(row, orca_chronology, publication=None, publication3=None,
-                maple_paper=None):
+                maple_paper=None, renal_paper=None):
     fields = {
         "originalRegistry": row["registry"],
         "registeredProtocol": row["protocol"],
@@ -200,8 +202,41 @@ def _level_rows(row, orca_chronology, publication=None, publication3=None,
                 "scientificallyAdjudicated": False,
             }
             questions.extend(maple_paper["independentReviewQuestions"])
+        renal = None
+        if row["nct"] == ORIGIN3_NCT and renal_paper is not None:
+            renal = {
+                "status": renal_paper["status"],
+                "nct": renal_paper["nct"],
+                "sourceLinks": [
+                    {"publishedOnline": renal_paper["interimPublicationDate"],
+                     "url": renal_paper["interimSource"],
+                     "sourceStatus": "UNREVIEWED_INTERIM_JOURNAL"},
+                    {"publishedOnline": renal_paper["finalPublicationDate"],
+                     "url": renal_paper["finalSource"],
+                     "sourceStatus": "UNREVIEWED_LATER_JOURNAL"}
+                ],
+                "historicalBlindBacktestPermitted": False,
+                "originalSourcesIndependentlyAuthenticated": False,
+                "scientificallyAdjudicated": False,
+                "studyPhaseContextUnreviewed": (
+                    renal_paper["studyContext"] if i in (1, 2, 4) else None
+                ),
+                "interimPrimaryProteinuriaUnreviewed": (
+                    renal_paper["interimAnalysis"] if i in (3, 5, 6) else None
+                ),
+                "laterSecondaryKidneyFunctionUnreviewed": (
+                    renal_paper["finalAnalysis"] if i in (3, 5, 6) else None
+                ),
+                "distinctPopulationAndCutoffWarning": (
+                    "203 prespecified interim patients are NOT the full 431 randomized / 428 treated cohort; "
+                    "the Oct 22 2026 final report is outcome-exposed later evidence, never blind historical input."
+                ),
+                "independentReviewQuestions": renal_paper["independentReviewQuestions"],
+            }
+            questions.extend(renal_paper["independentReviewQuestions"])
         levels.append({
             "level": i, "name": name,
+            "renalEvidenceUnreviewed": renal,
             "publicationFindingsUnreviewed": published,
             "evidenceCollectionStatus": status,
             "applicability": applicability,
@@ -221,7 +256,7 @@ def _level_rows(row, orca_chronology, publication=None, publication3=None,
 
 def build(coverage, roster, application_crosswalk, chronology,
           orca_publication=None, orca3_publication=None,
-          maple_publication=None):
+          maple_publication=None, origin3_renal=None):
     """Build an explicitly blocked handoff for the active frozen FOCUS cohort."""
     if not isinstance(coverage, dict) or coverage.get("kind") != "LEVEL16_SCIENTIFIC_COVERAGE_NOT_EVIDENCE_COMPLETENESS":
         raise ValueError("Not an approved source-coverage research report")
@@ -306,6 +341,19 @@ def build(coverage, roster, application_crosswalk, chronology,
                 or trials[MAPLE_NCT]["ticker"] != "CYTK"
                 or "PHASE3" not in trials[MAPLE_NCT]["phaseUnreviewed"]):
             raise ValueError("MAPLE-HCM clinical publication and FOCUS phase mismatch")
+    renal_paper = None
+    if origin3_renal is not None:
+        spec_renal = importlib.util.spec_from_file_location(
+            "level16_origin3_renal_publication",
+            Path(__file__).with_name("level16_origin3_renal_publication.py"),
+        )
+        renal_mod = importlib.util.module_from_spec(spec_renal)
+        spec_renal.loader.exec_module(renal_mod)
+        renal_paper = renal_mod.assess(origin3_renal)
+        if (renal_paper["nct"] != ORIGIN3_NCT or ORIGIN3_NCT not in trials
+                or trials[ORIGIN3_NCT]["ticker"] != "VERA"
+                or "PHASE3" not in trials[ORIGIN3_NCT]["phaseUnreviewed"]):
+            raise ValueError("ORIGIN 3 original renal evidence and FOCUS phase mismatch")
     rows = []
     for nct, row in trials.items():
         if (row["ticker"] != registered[nct]["ticker"]
@@ -323,7 +371,7 @@ def build(coverage, roster, application_crosswalk, chronology,
         if not row["registry"]:
             raise ValueError("Original registry source missing for frozen cohort")
         levels = _level_rows(row, chronology, publication, publication3,
-                             maple_paper)
+                             maple_paper, renal_paper)
         if len(levels) != 6:
             raise ValueError("Six assessment levels required")
         documentation = sum((row["registry"], row["protocol"], row["sap"], row["postedResults"]))
@@ -472,6 +520,63 @@ def markdown(packet):
                 if level["level"] == 6:
                     for limitation in pub["reportedClinicalLimitations"]:
                         lines.append("- Published limitation (unreviewed): " + limitation)
+            if level.get("renalEvidenceUnreviewed") is not None:
+                renal = level["renalEvidenceUnreviewed"]
+                lines.append(
+                    "- ORIGIN 3 KIDNEY RESEARCH — NOT independently authenticated or reviewed; "
+                    + "2025 interim and 2026 final articles concern ONE Phase 3 trial."
+                )
+                lines.append(
+                    "- Original journals: " + renal["sourceLinks"][0]["url"]
+                    + " (" + renal["sourceLinks"][0]["publishedOnline"] + "); "
+                    + renal["sourceLinks"][1]["url"]
+                    + " (" + renal["sourceLinks"][1]["publishedOnline"] + ")."
+                )
+                lines.append("- Strict research cutoff warning: "
+                             + renal["distinctPopulationAndCutoffWarning"])
+                if level["level"] == 3:
+                    interim = renal["interimPrimaryProteinuriaUnreviewed"]
+                    later = renal["laterSecondaryKidneyFunctionUnreviewed"]
+                    upcr = interim["primary"]
+                    lines.append(
+                        "- PRIMARY INTERIM: week-36 24h UPCR reduction "
+                        + str(upcr["ataciceptPercentReduction"]) + "% atacicept vs "
+                        + str(upcr["placeboPercentReduction"]) + "% placebo; "
+                        + "published adjusted geometric comparison "
+                        + str(upcr["publishedBetweenGroupDifferencePercentagePoints"])
+                        + " percentage points (95% CI " + str(upcr["difference95CI"])
+                        + "); subset 106/97 of 203; this is not direct kidney-function proof."
+                    )
+                    for k in later["secondaryEfficacy"]:
+                        lines.append(
+                            "- LATER SECONDARY: " + k["measure"]
+                            + ": published between-arm difference "
+                            + str(k["reportedBetweenGroupDifference"]) + " " + k["unit"]
+                            + " (95% CI " + str(k["difference95CI"]) + "), "
+                            + "not a week-36 primary endpoint."
+                        )
+                    progression = later["progression"]
+                    lines.append(
+                        "- LATER KIDNEY PROGRESSION COMPOSITE: "
+                        + str(progression["atacicept"]) + " vs "
+                        + str(progression["placebo"]) + "; published HR "
+                        + str(progression["hazardRatio"]) + " (95% CI "
+                        + str(progression["hr95CI"]) + "); not mortality-only."
+                    )
+                    ae = later["safety"]
+                    lines.append(
+                        "- LATER SAFETY: serious AEs reported "
+                        + str(ae["seriousAdverseEventsPercent"]["atacicept"])
+                        + "% atacicept vs "
+                        + str(ae["seriousAdverseEventsPercent"]["placebo"])
+                        + "% placebo in 214/214 treated; no causal signoff."
+                    )
+                if level["level"] == 5:
+                    lines.append("- STATISTICAL REVIEW NEEDED: distinct interim/final estimands, "
+                                 "alpha spending, multiplicity, protocol/SAP and unblinding chronology.")
+                if level["level"] == 6:
+                    lines.append("- MEDICAL REVIEW NEEDED: UPCR biomarker versus later eGFR "
+                                 "slope/clinical kidney progression and long-term safety.")
             if level["statisticalChronology"] is not None:
                 lines.append("- ORCA-2 chronology: Hochberg in pre-completion protocol; "
                              "later SAP date; final SAP approval relative to unblinding UNRESOLVED.")
@@ -496,7 +601,8 @@ def main():
                    mod.assess(read(ORCA2)),
                    orca_publication=read(ORCA2_PUBLICATION),
                    orca3_publication=read(ORCA3_PUBLICATION),
-                   maple_publication=read(MAPLE_HCM))
+                   maple_publication=read(MAPLE_HCM),
+                   origin3_renal=read(ORIGIN3_RENAL))
     if args.nct:
         if not NCT_RE.fullmatch(args.nct) or args.nct not in {t["nct"] for t in packet["trials"]}:
             parser.error("NCT not in current exact FOCUS roster")
