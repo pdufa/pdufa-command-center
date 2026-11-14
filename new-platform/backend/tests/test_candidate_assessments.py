@@ -178,3 +178,20 @@ def test_level_one_intake_rejects_future_dated_registry_phase():
     result = score(row, registry, reviews)
     assert result["levelOneIntake"]["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
     assert result["levelOneIntake"]["phase"] is None
+
+
+def test_level_one_uses_highest_registry_phase_regardless_of_tag_order():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3", "PHASE2"]
+    result = score(row, registry, reviews)
+    assert result["levelOneIntake"]["phase"] == "PHASE3"
+    assert result["levelOneIntake"]["executionStatus"] == "INTAKE_ONLY"
+
+
+def test_level_one_requires_registry_status_as_well_as_phase():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry.pop("status")
+    result = score(row, registry, reviews)
+    assert result["levelOneIntake"]["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
+    assert result["levelOneIntake"]["phase"] is None
