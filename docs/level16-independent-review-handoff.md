@@ -333,3 +333,76 @@ now binds the journal-reported outcome metadata as a **fifth** snapshot. This
 is source-text transcription and consistency checking, not independent
 authentication of the publisher's served original bits or a scientific
 review signature. No signed clinical assessments exist in these outputs.
+
+
+## Next case: ORCA-3 replication study (NCT05206370) — source-reported clinical facts
+
+The second same-indication clinical case is **ORCA-3**, also from Achieve
+Life Sciences, but with a **different exact NCT, trial population, protocol,
+SAP and original 2025 study report**. Research must never silently replace
+ORCA-2 evidence with ORCA-3 or pool the two studies as if one randomized trial.
+
+Original source: [Rigotti et al, JAMA Internal Medicine, published online
+April 21, 2025, doi:10.1001/jamainternmed.2025.0628,
+PMID 40257755](https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/),
+Results / Tables 2–3 / Limitations. These are public reported facts; neither
+the journal nor ClinicalTrials.gov data has yet been independently authenticated
+as original evidence by the approved verifier.
+
+Study source description: 792 randomized in three groups (6-week cytisinicline
+263; 12-week cytisinicline 264; placebo 265), 20 sites, double blind,
+behavioral support in all arms, 628 completing week-24 follow-up. The treated
+safety population is **785**, not 792 (523 in the combined cytisinicline
+arms, 262 placebo). Missing smoking outcomes counted as smoking.
+
+| Publication Table 2 outcome | Cytisinicline | Placebo | Table 2 reported OR, 95% CI |
+| --- | --- | --- | --- |
+| PRIMARY 6-week course, weeks 3–6 | 39/263 (14.8%) | 16/265 (6.0%) | 2.9 (1.5–5.6) |
+| PRIMARY 12-week course, weeks 9–12 | 80/264 (30.3%) | 25/265 (9.4%) | 4.4 (2.6–7.3) |
+| SECONDARY 6-week course, weeks 3–24 | 18/263 (6.8%) | 3/265 (1.1%) | 6.3 (1.9–34.6), per Table 2 |
+| SECONDARY 12-week course, weeks 9–24 | 54/264 (20.5%) | 11/265 (4.2%) | 5.8 (2.9–12.5), per Table 2 |
+
+**Original-article source discrepancy:** The article's narrative reports
+lower CI bound **1.8** for the 6-week secondary outcome and upper CI bound
+**12.4** for the 12-week secondary outcome, while the HTML Table 2 displays
+**1.9** and **12.5**, respectively. The research ledger records *both* and
+requires original publisher/source resolution; it does not call either value
+a confirmed analysis error or assume clinical/fda materiality.
+
+The publication records 16/523 serious treatment-emergent adverse events
+in the two cytisinicline arms versus 8/262 placebo; 9/523 versus 3/262
+discontinuations for adverse events; and four deaths in the cytisinicline
+arms. The investigators determined none of the serious adverse events
+treatment-related and considered the deaths unrelated or unlikely related.
+These attribution statements are **not proof of absence of risk**.
+A qualified reviewer must examine the actual case-level evidence and the
+comparative population/exposure context.
+
+Limitations include low representation of non-White participants, exclusion
+of smokers using fewer than 10 cigarettes/day, selected psychiatric and
+cardiovascular exclusions, relatively intensive behavioral support, and
+only 24 weeks of abstinence and 12 weeks of treatment-related safety
+observation.
+
+Dedicated sources and checks:
+
+```powershell
+python scripts/medical/level16_orca3_publication_review.py
+python -m unittest discover -s tests -p "test_level16_orca3_publication_review.py" -v
+python scripts/medical/level16_review_handoff.py --nct NCT05206370 --format markdown
+```
+
+The original article's supplemental **protocol and SAP** are linked in the
+public PMC article. Their dated versions and complete amendments have not
+been independently reconciled in this clinical research case. Genuine source
+verification, separate statistics review, disease-relevance review,
+independent challenge and adjudication remain blocked by the existing A01–A14
+owner authorization requirements.
+
+ORCA-3's Levels **3, 4 and 6** research handoff contains the four published
+endpoints, reported safety and population, clinical limitations and the
+unresolved original-source CI discrepancy, all marked **UNREVIEWED**.
+The Level 5 SAP/statistical chronology is **not** presumed to be the same as
+ORCA-2's merely because the drug, trial sponsor and primary outcome are similar.
+No FDA prediction, score, signed review or blinded retrospective analysis
+is generated from either article.
