@@ -45,6 +45,18 @@ def phase_first_intake(registry, *, cutoff, registry_checked):
             not_yet_expected.append("pivotal efficacy or marketing-application dossier")
         if phase in {"EARLY_PHASE1", "PHASE1", "PHASE2"}:
             not_yet_expected.append("completed Phase 3 results")
+    design = registry.get("study_design") or {}
+    design_info = design.get("designInfo") or {}
+    endpoints = registry.get("primary_outcomes") or []
+    evidence_inventory = {
+        "registry phase and status": "OBSERVED" if verified else "UNVERIFIED",
+        "trial design": ("OBSERVED" if verified and design_info else "MISSING" if verified else "UNVERIFIED"),
+        "primary endpoint definition": ("OBSERVED" if verified and endpoints and all(
+            isinstance(item, dict) and item.get("measure") and item.get("timeFrame") for item in endpoints
+        ) else "MISSING" if verified else "UNVERIFIED"),
+    }
+    missing = ([name for name, state in evidence_inventory.items() if state == "MISSING"]
+               if verified else ["Verified phase and chronological registry provenance"])
     return {
         "level": 1,
         "name": "Phase-first evidence intake",
@@ -57,7 +69,8 @@ def phase_first_intake(registry, *, cutoff, registry_checked):
         "registryCheckedAt": checked_day.isoformat() if checked_day else None,
         "assessmentCutoff": cutoff_day.isoformat() if cutoff_day else None,
         "expectedEvidence": expected,
+        "evidenceInventory": evidence_inventory,
         "notYetExpected": not_yet_expected,
-        "missingEvidence": [] if verified else ["Verified phase and chronological registry provenance"],
+        "missingEvidence": missing,
         "note": "Evidence expectations are intake categories, not proof that documents exist or scientific scores.",
     }
