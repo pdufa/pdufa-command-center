@@ -1,0 +1,173 @@
+"""Fail-closed tests for the 32-trial, six-level scientific review handoff."""
+import copy
+import importlib.util
+import json
+from pathlib import Path
+import unittest
+
+ROOT = Path(__file__).resolve().parents[1]
+SCRIPTS = ROOT / "scripts/medical"
+
+
+def load(name):
+    spec = importlib.util.spec_from_file_location(name, SCRIPTS / (name + ".py"))
+    obj = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(obj)
+    return obj
+
+
+handoff = load("level16_review_handoff")
+chronology = load("level16_orca2_statistical_timeline")
+
+
+def inputs():
+    def read(path):
+        return json.loads(path.read_text(encoding="utf-8"))
+    return (
+        read(handoff.COVERAGE), read(handoff.ROSTER), read(handoff.APPLICATIONS),
+        chronology.assess(read(handoff.ORCA2)),
+    )
+
+
+class Level16ReviewHandoffTests(unittest.TestCase):
+    def setUp(self):
+        self.coverage, self.roster, self.applications, self.chronology = inputs()
+
+    def build(self):
+        return handoff.build(self.coverage, self.roster, self.applications, self.chronology)
+
+    def test_32_exact_focus_and_192_levels_remain_unreviewed(self):
+        packet = self.build()
+        self.assertEqual(packet["focusTrialCount"], 32)
+        self.assertEqual(packet["provisionalApplicationCycleCount"], 23)
+        self.assertEqual(packet["provisionallyMappedTrialCount"], 29)
+        self.assertEqual(packet["unmappedTrialCount"], 3)
+        self.assertEqual(packet["reviewPacketsPrepared"], 32)
+        self.assertEqual(packet["independentlyAuthenticatedSources"], 0)
+        self.assertEqual(packet["independentlyAdjudicatedLevels"], 0)
+        self.assertEqual(packet["actualApprovalProbabilities"], 0)
+        self.assertFalse(packet["stagingActivated"])
+        self.assertEqual(sum(len(t["levels"]) for t in packet["trials"]), 192)
+        for trial in packet["trials"]:
+            self.assertEqual(trial["actualCompletedLevels"], 0)
+            self.assertEqual(trial["actualIndependentScientificReviews"], 0)
+            self.assertFalse(trial["readyForIndependentFinalAdjudication"])
+            self.assertIsNone(trial["approvalProbability"])
+            for level in trial["levels"]:
+                self.assertFalse(level["completionPermitted"])
+                self.assertIsNone(level["score"])
+                self.assertIsNone(level["approvalProbability"])
+                self.assertIsNone(level["fdaOutcomeJudgment"])
+                self.assertEqual(level["independentScientificReviewStatus"], "NOT_ADJUDICATED")
+                self.assertEqual(level["sourceAuthenticationStatus"],
+                                 "NOT_INDEPENDENTLY_AUTHENTICATED")
+
+    def test_orca2_first_for_collected_evidence_not_highest_approval_chance(self):
+        packet = self.build()
+        self.assertEqual(packet["trials"][0]["nct"], "NCT04576949")
+        self.assertIn("NOT_APPROVAL_LIKELIHOOD", packet["sortDefinition"])
+        level = packet["trials"][0]["levels"][4]
+        self.assertIn("UNRESOLVED", level["statisticalChronology"][
+            "finalSapPrespecificationRelativeToUnblinding"])
+        self.assertFalse(level["statisticalChronology"]["statisticalDeficiencyEstablished"])
+        self.assertIn("database-lock", " ".join(level["openReviewQuestions"]).lower())
+        self.assertFalse(packet["researchIsOutcomeExposed"] is False)
+
+    def test_unmapped_three_are_visible_with_no_invented_application(self):
+        packet = self.build()
+        unlinked = {t["nct"] for t in packet["trials"]
+                    if t["applicationMappingStatus"] == "NOT_MAPPED_APPLICATION_CYCLE"}
+        self.assertEqual(unlinked, {"NCT05031780", "NCT06747468", "NCT06553768"})
+        self.assertTrue(all(t["independentReviewerAccess"] == "NOT_APPROVED_OR_ACTIVATED"
+                            for t in packet["trials"]))
+
+    def test_missing_posted_result_not_interpreted_as_failed_trial(self):
+        packet = self.build()
+        trial = next(t for t in packet["trials"] if t["nct"] == "NCT05031780")
+        self.assertEqual(trial["levels"][2]["evidenceCollectionStatus"],
+                         "NOT_COLLECTED_AVAILABILITY_UNRESOLVED")
+        self.assertTrue(any("do not presume failure" in q
+                            for q in trial["levels"][2]["openReviewQuestions"]))
+        self.assertEqual(trial["levels"][2]["scientificReviewStatus"]
+                         if "scientificReviewStatus" in trial["levels"][2]
+                         else trial["levels"][2]["independentScientificReviewStatus"],
+                         "NOT_ADJUDICATED")
+
+    def test_mixed_phase_requires_applicability_not_future_phase_proof(self):
+        packet = self.build()
+        for nct in ("NCT05031780", "NCT04871282"):
+            trial = next(t for t in packet["trials"] if t["nct"] == nct)
+            self.assertEqual(trial["levels"][2]["applicability"],
+                             "MIXED_PHASE2_PHASE3_REQUIRES_APPLICABILITY_REVIEW")
+            self.assertEqual(trial["levels"][4]["applicability"],
+                             "MIXED_PHASE2_PHASE3_REQUIRES_APPLICABILITY_REVIEW")
+
+    def test_missing_roster_and_cross_trial_ticker_swaps_are_rejected(self):
+        self.roster["records"].pop()
+        with self.assertRaises(ValueError):
+            self.build()
+        self.coverage, self.roster, self.applications, self.chronology = inputs()
+        self.coverage["trials"][0]["ticker"] = "WRONG"
+        with self.assertRaises(ValueError):
+            self.build()
+
+    def test_unmapped_cannot_be_silently_mapped(self):
+        target = next(x for x in self.coverage["trials"] if x["nct"] == "NCT05031780")
+        target["mappingStatus"] = "PROVISIONAL_NOT_VERIFIED"
+        with self.assertRaises(ValueError):
+            self.build()
+
+    def test_cannot_promote_source_or_scientific_review_flags(self):
+        for key, value in (
+            ("independentlyAuthenticatedSources", 1),
+            ("independentlyAdjudicatedAssessments", 1),
+            ("historicalPredictionInputPermitted", True),
+            ("approvalProbability", 0.99),
+        ):
+            params = inputs()
+            data = copy.deepcopy(params[0])
+            data[key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                handoff.build(data, *params[1:])
+        self.coverage["trials"][0]["independentlyAdjudicatedAssessments"] = 1
+        with self.assertRaises(ValueError):
+            self.build()
+
+    def test_cannot_forge_orca_chronology_review_or_forecast(self):
+        for key, value in (
+            ("finalSapPrespecificationRelativeToUnblinding", "VERIFIED_BEFORE_LOCK"),
+            ("scientificReviewStatus", "ADJUDICATED"),
+            ("fdaPredictionPermitted", True),
+            ("approvalProbability", 0.9),
+            ("sourceIndependentlyAuthenticated", True),
+            ("databaseLockDateVerified", True),
+        ):
+            params = inputs()
+            changed = copy.deepcopy(params[3])
+            changed[key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                handoff.build(*params[:3], changed)
+
+    def test_markdown_handoff_lists_original_questions_without_scores(self):
+        text = handoff.markdown(self.build())
+        self.assertIn("NCT04576949", text)
+        self.assertIn("NOT_ADJUDICATED", text)
+        self.assertIn("UNRESOLVED", text)
+        self.assertEqual(text.count("### Level "), 192)
+        self.assertNotIn("FDA approval probability:", text)
+
+    def test_altered_phase_and_collection_status_do_not_autoadjudicate(self):
+        trial = next(x for x in self.coverage["trials"] if x["nct"] == "NCT04576949")
+        trial["phaseUnreviewed"] = ["PHASE1"]
+        packet = self.build()
+        row = next(x for x in packet["trials"] if x["nct"] == "NCT04576949")
+        self.assertEqual(row["levels"][4]["applicability"],
+                         "FUTURE_PIVOTAL_PHASE3_PACKAGE_NOT_YET_EXPECTED")
+        self.assertFalse(row["readyForIndependentFinalAdjudication"])
+        trial["protocol"] = "verified"
+        with self.assertRaises(ValueError):
+            self.build()
+
+
+if __name__ == "__main__":
+    unittest.main()
