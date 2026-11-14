@@ -44,7 +44,10 @@ def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=N
     """Return an auditable, non-scoring Level 1 phase intake."""
     cutoff_day = _date(cutoff)
     checked_day = _date(registry_checked)
-    updated = _date((registry.get("last_update_posted") or {}).get("date"))
+    last_update = registry.get("last_update_posted") or {}
+    if not isinstance(last_update, dict):
+        last_update = {}
+    updated = _date(last_update.get("date"))
     eligible = bool(cutoff_day and checked_day and updated
                     and updated <= checked_day <= cutoff_day)
     phases = registry.get("phases") or registry.get("phase") or []
@@ -52,7 +55,7 @@ def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=N
         phases = [phases]
     if not isinstance(phases, (list, tuple)):
         phases = []
-    phases = [str(phase).upper().replace(" ", "") for phase in phases]
+    phases = [str(phase).upper().replace(" ", "").replace("/", "") for phase in phases]
     known = {"EARLY_PHASE1", "PHASE1", "PHASE2", "PHASE3", "PHASE4"}
     # Multi-phase trials must not depend on the order of registry phase tags.
     order = {"EARLY_PHASE1": 0, "PHASE1": 1, "PHASE2": 2, "PHASE3": 3, "PHASE4": 4}
