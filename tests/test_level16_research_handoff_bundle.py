@@ -28,7 +28,7 @@ class ResearchHandoffBundleTests(unittest.TestCase):
         bundle = mod.build_bundle(self.root)
         self.assertEqual(bundle["kind"], "FOCUS_LEVEL16_UNSIGNED_RESEARCH_REVIEW_BUNDLE")
         self.assertEqual(bundle["status"], "BYTE_CONSISTENCY_ONLY_NOT_EVIDENCE_AUTHENTICATION")
-        self.assertEqual(len(bundle["sourceSha256"]), 7)
+        self.assertEqual(len(bundle["sourceSha256"]), 8)
         self.assertEqual(bundle["packet"]["focusTrialCount"], 32)
         self.assertEqual(bundle["packet"]["reviewPacketsPrepared"], 32)
         self.assertEqual(sum(len(t["levels"]) for t in bundle["packet"]["trials"]), 192)
@@ -124,6 +124,34 @@ class ResearchHandoffBundleTests(unittest.TestCase):
             mod.build_bundle(self.root)
         with self.assertRaises(ValueError):
             mod.verify_bundle(original, self.root)
+
+    def test_origin3_renal_two_dated_sources_are_bound_without_historical_prediction(self):
+        bundle = mod.build_bundle(self.root)
+        packet = bundle["packet"]
+        trial = next(x for x in packet["trials"] if x["nct"] == "NCT04716231")
+        clinical = trial["levels"][2]["renalEvidenceUnreviewed"]
+        self.assertEqual(len(clinical["sourceLinks"]), 2)
+        self.assertEqual(clinical["sourceLinks"][0]["publishedOnline"], "2025-11-06")
+        self.assertEqual(clinical["sourceLinks"][1]["publishedOnline"], "2026-10-22")
+        self.assertEqual(clinical["interimPrimaryProteinuriaUnreviewed"][
+            "denominator"]["prespecifiedInterimAnalysisTotal"], 203)
+        self.assertEqual(clinical["laterSecondaryKidneyFunctionUnreviewed"][
+            "denominator"]["treatedTotal"], 428)
+        self.assertFalse(clinical["historicalBlindBacktestPermitted"])
+        self.assertEqual(packet["independentlyAdjudicatedLevels"], 0)
+        self.assertEqual(packet["actualApprovalProbabilities"], 0)
+        self.assertEqual(mod.verify_bundle(bundle, self.root)["approvedReviewerCount"], 0)
+
+    def test_origin3_2026_late_evidence_cannot_be_modified_without_rejection(self):
+        src = self.root / mod.SOURCES["origin3Renal"]
+        before = mod.build_bundle(self.root)
+        obj = json.loads(src.read_text(encoding="utf-8"))
+        obj["reports"][1]["secondaryEfficacy"][0]["reportedBetweenGroupDifference"] = -3.3
+        src.write_text(json.dumps(obj), encoding="utf-8")
+        with self.assertRaises(ValueError):
+            mod.build_bundle(self.root)
+        with self.assertRaises(ValueError):
+            mod.verify_bundle(before, self.root)
 
     def test_byte_identical_recomputation_is_stable(self):
         a = mod.build_bundle(self.root)
