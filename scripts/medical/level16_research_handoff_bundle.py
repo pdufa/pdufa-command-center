@@ -26,6 +26,7 @@ SOURCES = {
     "orca2Publication": "reports/scientific-levels1-6/orca2-publication-outcomes-20261114.json",
     "orca3Publication": "reports/scientific-levels1-6/orca3-publication-outcomes-20261114.json",
     "mapleHcm": "reports/scientific-levels1-6/maple-hcm-source-review-20261114.json",
+    "origin3Renal": "reports/scientific-levels1-6/origin3-published-renal-evidence-20261114.json",
 }
 MAX_JSON_BYTES = 5_000_000
 KIND = "FOCUS_LEVEL16_UNSIGNED_RESEARCH_REVIEW_BUNDLE"
@@ -83,6 +84,7 @@ def build_bundle(root=ROOT):
         orca_publication=objects["orca2Publication"],
         orca3_publication=objects["orca3Publication"],
         maple_publication=objects["mapleHcm"],
+        origin3_renal=objects["origin3Renal"],
     )
     if (packet.get("focusTrialCount") != 32 or packet.get("reviewPacketsPrepared") != 32
             or packet.get("independentlyAuthenticatedSources") != 0
