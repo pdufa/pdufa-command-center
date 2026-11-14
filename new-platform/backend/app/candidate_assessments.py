@@ -177,7 +177,7 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
     if facts.get("safety") == "FLAGGED": flags.append("Unresolved safety flag")
     if facts.get("dilution") == "FLAGGED": flags.append("New dilution flag")
     if "CONFLICTING" in facts.get("evidence", []): flags.append("Conflicting source evidence")
-    return {"modelVersion": MODEL, "id": row["id"], "programId": row.get("programId"), "nctId": nct, "asOf": today.isoformat(), "models": models, "riskFlags": flags,
+    # Evidence coverage is not proof of a validated Level 1–6 scientific engine.\n    # Fail closed until independent scientific acceptance is recorded elsewhere.\n    scientific_readiness = {\n        "levels": [1, 2, 3, 4, 5, 6],\n        "status": "NOT_VERIFIED",\n        "fdaPrediction": "ABSTAIN",\n        "reason": "This candidate evidence rubric does not validate six independent scientific assessments or an FDA prediction model.",\n    }\n    return {"scientificReadiness": scientific_readiness, "modelVersion": MODEL, "id": row["id"], "programId": row.get("programId"), "nctId": nct, "asOf": today.isoformat(), "models": models, "riskFlags": flags,
             "qualification": {"savedLists": facts.get("lists", ["PIPELINE"]), "primaryOutcome": outcome, "firstFinancingClosed": facts.get("firstFinancingClosed"), "secondFinancingClosed": facts.get("secondFinancingClosed"), "note": "Scores do not alter screening, saved membership or trade entry. Only complete evidence is ranked. Uncalibrated research scores, not success probabilities."},
             "registryFetchedAt": registry_checked, "registrySourceDate": registry_day, "reportedStatistics": analyses,
             "data": {"candidate": row, "registry": registry},
