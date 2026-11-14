@@ -129,3 +129,22 @@ def test_compact_assessment_retains_unverified_scientific_readiness():
     assert summary["scientificReadiness"] == result["scientificReadiness"]
     assert summary["scientificReadiness"]["fdaPrediction"] == "ABSTAIN"
     json.dumps(summary, allow_nan=False)
+
+
+def test_historical_primary_outcome_requires_evidence_available_by_check_date():
+    row, registry, reviews = fixture()
+    row["trialFilters"]["resultsDate"] = "2026-10-20"
+    row["lastChecked"] = "2026-10-19"
+    result = score(row, registry, reviews)
+    primary = result["models"]["PIPELINE"]["categories"][0]["metrics"][0]
+    assert primary["points"] is None
+    assert primary["coverage"] == 0
+
+
+def test_historical_primary_outcome_rejects_future_check_date():
+    row, registry, reviews = fixture()
+    row["lastChecked"] = "2026-10-21"
+    result = score(row, registry, reviews)
+    primary = result["models"]["PIPELINE"]["categories"][0]["metrics"][0]
+    assert primary["points"] is None
+    assert primary["coverage"] == 0
