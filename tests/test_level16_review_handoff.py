@@ -335,7 +335,7 @@ class Level16ReviewHandoffTests(unittest.TestCase):
     def test_markdown_handoff_lists_original_questions_without_scores(self):
         text = handoff.markdown(self.build())
         self.assertIn("NCT04576949", text)
-        self.assertIn("NOT_ADJUDICATED", text)
+        self.assertIn("OWNER_NOT_REVIEWED", text)
         self.assertIn("UNRESOLVED", text)
         self.assertEqual(text.count("### Level "), 192)
         self.assertNotIn("FDA approval probability:", text)
