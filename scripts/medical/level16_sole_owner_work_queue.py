@@ -100,6 +100,10 @@ def build(intent, unsigned_bundle):
     if (unsigned_bundle.get("kind") != bundle_kind
             or unsigned_bundle.get("status") != "BYTE_CONSISTENCY_ONLY_NOT_EVIDENCE_AUTHENTICATION"):
         raise ValueError("Cannot use verified or prediction-published packet in sole-owner research mode")
+    # Recompute exact expected source/packet bytes; never accept caller-supplied
+    # 32-row research content as independent or trustworthy just because it
+    # carries self-authored hashes or a plausible NCT.
+    _module("level16_research_handoff_bundle").verify_bundle(unsigned_bundle, ROOT)
     packet = unsigned_bundle.get("packet")
     if (not isinstance(packet, dict)
             or packet.get("focusTrialCount") != 32
