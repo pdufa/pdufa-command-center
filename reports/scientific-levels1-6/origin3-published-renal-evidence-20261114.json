@@ -1,0 +1,203 @@
+{
+  "schemaVersion": 1,
+  "kind": "ORIGIN3_EXACT_NCT_PHASE_FIRST_PUBLICATION_SEQUENCE_RESEARCH_ONLY",
+  "nct": "NCT04716231",
+  "trial": "ORIGIN 3",
+  "sponsor": "Vera Therapeutics",
+  "drug": "atacicept",
+  "indication": "IgA nephropathy",
+  "evidenceCutoffDate": "2026-11-14",
+  "studyContext": {
+    "registryPhaseUnreviewed": [
+      "PHASE3"
+    ],
+    "multiPartRegistryWarning": "NCT04716231 registry contains earlier Phase 2b and separate pivotal Phase 3 portions; do not commingle populations or arms",
+    "design": "RANDOMIZED_DOUBLE_BLIND_PLACEBO_CONTROLLED",
+    "dose": "atacicept 150 mg subcutaneously once weekly versus matched placebo",
+    "backgroundTherapy": "Stable optimized background renin-angiotensin inhibition; additional stable SGLT2i potentially allowed",
+    "comparator": "PLACEBO_ON_BACKGROUND_THERAPY",
+    "activeDiseasePopulation": "Adults with biopsy-confirmed IgA nephropathy at risk of progression",
+    "endpointSequence": [
+      "WEEK36_24H_UPCR_INTERIM_PRIMARY",
+      "WEEK52_EGFR_CHANGE_FINAL_SECONDARY",
+      "WEEK104_ANNUAL_EGFR_SLOPE_FINAL_SECONDARY"
+    ],
+    "exactApplicationCycleVerified": false
+  },
+  "reports": [
+    {
+      "id": "INTERIM_2025",
+      "type": "PRESPECIFIED_PHASE3_INTERIM_ANALYSIS",
+      "source": {
+        "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2510198",
+        "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/41196369/",
+        "pmid": "41196369",
+        "doi": "10.1056/NEJMoa2510198",
+        "publishedOnline": "2025-11-06",
+        "printedIssue": "2026-02-12",
+        "title": "A Phase 3 Trial of Atacicept in Patients with IgA Nephropathy",
+        "locator": "Publisher abstract, Results and Methods",
+        "independentlyAuthenticated": false
+      },
+      "denominator": {
+        "prespecifiedInterimAnalysisTotal": 203,
+        "atacicept": 106,
+        "placebo": 97,
+        "label": "INTERIM_ANALYSIS_SUBSET_NOT_FULL_431_RANDOMIZED_COHORT"
+      },
+      "primary": {
+        "id": "WEEK36_24H_UPCR_INTERIM_PRIMARY",
+        "measure": "24-hour urinary protein-to-creatinine ratio percentage change from baseline",
+        "timeWeek": 36,
+        "classification": "PRIMARY_INTERIM",
+        "metric": "GEOMETRIC_MEAN_PERCENT_REDUCTION",
+        "ataciceptPercentReduction": 45.7,
+        "placeboPercentReduction": 6.8,
+        "publishedBetweenGroupDifferencePercentagePoints": 41.8,
+        "difference95CI": [
+          28.9,
+          52.3
+        ],
+        "publishedPValue": "<0.001",
+        "locator": "NEJM abstract Results, prespecified week-36 proteinuria comparison"
+      },
+      "safety": {
+        "measure": "Any adverse events in the interim analysis",
+        "ataciceptPercent": 59.3,
+        "placeboPercent": 50,
+        "assessment": "PUBLICATION_REPORTED_NOT_CAUSALLY_ADJUDICATED"
+      },
+      "limitation": "UPCR reduction is an intermediate biomarker, not proof of kidney failure or mortality prevention. Interim 203-person population is not final randomized cohort.",
+      "independentlyReviewed": false
+    },
+    {
+      "id": "FINAL_2026",
+      "type": "FINAL_PRESPECIFIED_PHASE3_EGFR_EFFICACY_ANALYSIS",
+      "source": {
+        "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2610103",
+        "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/42911181/",
+        "pmid": "42911181",
+        "doi": "10.1056/NEJMoa2610103",
+        "publishedOnline": "2026-10-22",
+        "title": "Atacicept in IgA Nephropathy — Phase 3 Trial Final Efficacy Analysis",
+        "locator": "Publisher abstract, Methods and Results, including kidney progression and safety",
+        "independentlyAuthenticated": false
+      },
+      "denominator": {
+        "randomized": 431,
+        "treatedTotal": 428,
+        "ataciceptTreated": 214,
+        "placeboTreated": 214,
+        "label": "FINAL_COHORT_DISTINCT_FROM_203_INTERIM_POPULATION"
+      },
+      "secondaryEfficacy": [
+        {
+          "id": "WEEK52_EGFR_CHANGE_FINAL_SECONDARY",
+          "classification": "PRESPECIFIED_SECONDARY",
+          "measure": "eGFR change at week 52",
+          "unit": "mL/min/1.73m²",
+          "timeWeek": 52,
+          "ataciceptMeanChange": -0.11,
+          "atacicept95CI": [
+            -1.44,
+            1.22
+          ],
+          "placeboMeanChange": -5.69,
+          "placebo95CI": [
+            -7.04,
+            -4.35
+          ],
+          "reportedBetweenGroupDifference": 5.58,
+          "difference95CI": [
+            3.68,
+            7.48
+          ],
+          "publishedPValue": "<0.001",
+          "locator": "NEJM final analysis abstract Results, week 52 eGFR"
+        },
+        {
+          "id": "WEEK104_ANNUAL_EGFR_SLOPE_FINAL_SECONDARY",
+          "classification": "PRESPECIFIED_SECONDARY",
+          "measure": "Annualized eGFR slope through week 104",
+          "unit": "mL/min/1.73m²/year",
+          "timeWeek": 104,
+          "ataciceptMeanSlope": -0.6,
+          "atacicept95CI": [
+            -1.62,
+            0.41
+          ],
+          "placeboMeanSlope": -5.6,
+          "placebo95CI": [
+            -6.64,
+            -4.57
+          ],
+          "reportedBetweenGroupDifference": 5,
+          "difference95CI": [
+            3.55,
+            6.45
+          ],
+          "publishedPValue": "<0.001",
+          "locator": "NEJM final analysis abstract Results, 104 week annualized eGFR slope"
+        }
+      ],
+      "progression": {
+        "id": "COMPOSITE_KIDNEY_DISEASE_PROGRESSION",
+        "atacicept": 11,
+        "ataciceptPercent": 5.1,
+        "placebo": 38,
+        "placeboPercent": 17.8,
+        "hazardRatio": 0.24,
+        "hr95CI": [
+          0.12,
+          0.48
+        ],
+        "publishedPValue": "<0.001",
+        "includedHardOutcomeObservation": "0 atacicept vs 7 placebo for dialysis, transplantation or death components",
+        "label": "PUBLISHED_COMPOSITE_NOT_MORTALITY_ENDPOINT"
+      },
+      "safety": {
+        "exposedAtacicept": 214,
+        "exposedPlacebo": 214,
+        "anyAdverseEvents": {
+          "atacicept": 160,
+          "ataciceptPercent": 74.8,
+          "placebo": 167,
+          "placeboPercent": 78
+        },
+        "seriousAdverseEventsPercent": {
+          "atacicept": 7,
+          "placebo": 15.4
+        },
+        "deathsReported": {
+          "atacicept": 0,
+          "placebo": 1
+        },
+        "assessment": "PUBLISHED_REPORT_NOT_CENTRAL_MEDICAL_ADJUDICATION"
+      },
+      "limitation": "The 2026 efficacy analysis is later evidence that must not be leaked into any historical blind PDUFA analysis frozen before its actual October 22, 2026 release.",
+      "independentlyReviewed": false
+    }
+  ],
+  "scientificQuestions": [
+    "Reconcile the same NCT's earlier Phase 2b portion with the separate pivotal Phase 3 cohort and exact registered versions before comparing results.",
+    "Verify the original NEJM 2025 and 2026 publisher versions, protocol/SAP changes, full trial tables, analyses and source provenance against authorized original bytes.",
+    "Treat week-36 UPCR as biomarker-driven primary interim measure and week-52/104 eGFR and progression as distinct later secondary outcomes.",
+    "Assess prespecified interim and final analysis testing hierarchy, alpha expenditure, missing data and multiplicity without retroactively inventing statistical approvals.",
+    "Review proteinuria as a surrogate versus clinical kidney-function and kidney-failure outcomes with a qualified nephrologist.",
+    "Reconcile 203 interim versus 431 randomized/428 treated final populations without pooling trial denominators or adverse-event rates.",
+    "Independently review serious adverse events, immunomodulator infection and immune effects, safety follow-up and populations excluded.",
+    "Record whether later 2026 evidence was available before the exact PDUFA prediction cutoff; exclude any later evidence from blind historical backtests.",
+    "Verify provisional FDA application-cycle mapping separately from trial identity and published outcomes.",
+    "Obtain separate authorized source authentication, statistical review, disease review, independent challenge and final adjudication."
+  ],
+  "originalClinicalSourceAuthenticated": false,
+  "genuineStatisticalReviewCompleted": false,
+  "genuineDiseaseSpecialistReviewCompleted": false,
+  "independentChallengeCompleted": false,
+  "scientificAdjudicationCompleted": false,
+  "fdaApplicationCycleVerified": false,
+  "blindHistoricalPredictionPermitted": false,
+  "scientificScore": null,
+  "approvalProbability": null,
+  "fdaOutcomeJudgment": null
+}
