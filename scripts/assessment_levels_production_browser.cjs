@@ -48,7 +48,7 @@ function check(ok,code){if(!ok){const e=Error(code);e.checkId=code;throw e;}}
      if(state.status==='COMPLETED'){report=state.report;break;}await sleep(1200);
     }
    }
-   check(report&&report.nct===NCT&&report.level===level&&report.engineVersion.endsWith('/level-'+level),'INTENDED_ENGINE_LEVEL_'+level);
+   check(report&&report.nct===NCT&&report.level===level&&report.engineVersion===`assessment-evidence-v2.0.1/level-${level}`,'INTENDED_ENGINE_LEVEL_'+level);
    check(report.savedToDatabase===true&&report.reportHash,'PERSISTENCE_LEVEL_'+level);
    check(report.fdaPrediction.outcome==='ABSTAIN'&&report.fdaPrediction.probability===null,'NO_FABRICATED_PREDICTION_LEVEL_'+level);
    const history=await context.request.get(BASE+'/api/assessments/runtime?nct='+NCT+'&level='+level);check(history.ok()&&(await history.json()).runs.some(r=>r.runId===report.runId),'HISTORY_LEVEL_'+level);
