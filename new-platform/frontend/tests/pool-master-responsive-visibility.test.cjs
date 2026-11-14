@@ -128,11 +128,13 @@ test("Phase checkboxes and Reset, sort buttons and circled info buttons are wire
  assert.ok(style.includes('.sortButton,.infoButton{'));
 });
 
-test("latest download category buttons appear directly under Phase, highlight independently and do not invent trial classification",()=>{
- const phase=component.indexOf('<div className={css.phaseToolbar}');
+test("latest download buttons highlight independently and Phase leads the matching column sections without inventing classification",()=>{
+ const phase=component.indexOf('data-segment="phase-filter"');
+ const remainingSections=component.indexOf('{orderedSegments.map(',phase);
  const choices=component.indexOf('<div className={css.latestDownloadToolbar}');
  const view=component.indexOf('<p className={css.viewport}');
- assert.ok(phase>=0&&choices>phase&&view>choices);
+ assert.ok(choices>=0&&view>choices);
+ assert.ok(phase>=0&&remainingSections>phase,"The approved Phase group remains before the four column sections");
  assert.ok(component.includes('<span>Newly Registered</span>'));
  assert.ok(component.includes('<span>Newly Discovered</span>'));
  assert.ok(component.includes('aria-pressed={latestDownloadChoice==="registered"}'));
