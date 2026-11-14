@@ -103,3 +103,20 @@ def test_candidate_evidence_coverage_never_claims_scientific_levels_active():
     assert result["scientificReadiness"]["levels"] == [1, 2, 3, 4, 5, 6]
     assert result["scientificReadiness"]["status"] == "NOT_VERIFIED"
     assert result["scientificReadiness"]["fdaPrediction"] == "ABSTAIN"
+
+
+def test_future_dated_registry_amendment_cannot_score_historical_cutoff():
+    row, registry, reviews = fixture()
+    registry["last_update_posted"]["date"] = "2026-10-21"
+    result = score(row, registry, reviews)
+    design = result["models"]["PIPELINE"]["categories"][1]
+    assert design["coverage"] == 0
+    assert all(metric["points"] is None for metric in design["metrics"])
+    assert result["models"]["PIPELINE"]["categories"][5]["metrics"][0]["points"] is None
+
+
+def test_registry_snapshot_checked_before_amendment_cannot_score():
+    row, registry, reviews = fixture()
+    registry["last_update_posted"]["date"] = "2026-10-20"
+    result = score_candidate(row, registry, reviews=reviews, today=TODAY, registry_checked="2026-10-19")
+    assert result["models"]["PIPELINE"]["categories"][1]["coverage"] == 0
