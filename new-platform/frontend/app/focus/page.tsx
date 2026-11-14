@@ -2,6 +2,8 @@ import type {Metadata} from "next";
 import Link from "next/link";
 import TickerChartButton from "../TickerChartButton";
 import IndicationIntelligence from "../IndicationIntelligence";
+import ScientificStepsReadiness from "../ScientificStepsReadiness";
+import {ExactTrialIntakeSelector} from "../ExactTrialScientificIntake";
 import CompanyDateBadges from "../CompanyDateBadges";
 import snapshot from "../../data/p3PostDataActive.json";
 import designationData from "../../data/focusFdaDesignations.json";
@@ -27,6 +29,7 @@ export default function FocusPage(){
     No external scientific reviewer, source attestor, independent challenger, or third-party signoff is required.
     Original source links, missing-evidence flags, and safety and phase checks remain.
   </p>
+  <ScientificStepsReadiness cohort="FOCUS"/>
   <IndicationIntelligence mode="focus"/>
   <p><strong>{trials.length} distinct NCT trials</strong> · Final-list Phase 3 / post-Phase 3 candidates · Reported $300M–$10B market caps · Source-linked FDA pathways for owner checks; no external verification gate.</p>
   <p>Snapshot of the final Google Sheets list as of {snapshot.asOf}. Recorded listing, readout and FDA-path links are evidence pointers, not an owner-reviewed finding of trial eligibility or a successful nightly sync. Completed trials remain if their program may continue toward approval. No retired or historical research-only cohort is included.</p>
@@ -44,7 +47,7 @@ export default function FocusPage(){
     <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"left"}}>FDA Special Designations</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>7 gate checks</th></tr></thead>
     <tbody>{trials.map((t,i)=>{const gateAudit=finalGateByNct.get(t.nct);const d=designationByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
       <td style={{padding:10,fontWeight:700}}><TickerChartButton ticker={t.ticker}/></td>
-      <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a></td>
+      <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a><div style={{marginTop:5,fontSize:12}}><Link href={"/analyze-now?nct="+encodeURIComponent(t.nct)}>View exact-trial research history</Link></div><details style={{marginTop:6}}><summary style={{cursor:"pointer",fontSize:12}}>Steps 1–3 · exact-program intake</summary><ExactTrialIntakeSelector cohort="FOCUS" nctId={t.nct}/></details></td>
       <td style={{padding:10}}>{t.company}<CompanyDateBadges nctId={t.nct} timeline={null} recordedReleaseDate={"recordedReleaseDate" in t && typeof t.recordedReleaseDate==="string" ? t.recordedReleaseDate : null} recordedPdufaDate={"recordedPdufaDate" in t && typeof t.recordedPdufaDate==="string" ? t.recordedPdufaDate : null} releaseSource={t.resultsUrl} pdufaSource={t.regulatoryUrl}/></td>
       <td style={{padding:10,minWidth:220,verticalAlign:"top",fontSize:12}}>
        {d?.designations.length?<><strong>{d.designations.map(x=>x.label).join(" · ")}</strong>

@@ -5,6 +5,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import threading
 import time
 from fastapi import HTTPException
@@ -17,7 +18,7 @@ LOG = logging.getLogger(__name__)
 _LOCK = threading.RLock()
 _STATE = {"key": "", "building": False, "index": None, "error": "", "snapshot": None, "reviews": {}, "token": ""}
 _REVIEW_CACHE = {"at": 0, "value": {}, "status": "NOT_LOADED"}
-FIELDS = ("nct_id", "study_title", "study_design", "treatment_groups", "primary_outcomes", "secondary_outcomes", "enrollment", "status", "last_update_posted", "primary_completion_date", "has_results")
+FIELDS = ("nct_id", "phases", "study_title", "study_design", "treatment_groups", "primary_outcomes", "secondary_outcomes", "enrollment", "status", "last_update_posted", "primary_completion_date", "has_results")
 
 
 def review_evidence():
@@ -58,13 +59,25 @@ def registry_rows(ids=None):
             yield item[0], dict(zip(FIELDS, item[1:1 + len(FIELDS)])), item[-2] or [], item[-1].isoformat()
 
 
+
+def exact_nct_program_map(rows):
+    """Deterministic, exact-NCT mapping; never infer programs from ticker or indication."""
+    mapping = {}
+    for row in rows.values():
+        nct = nct_id(row)
+        identity = row.get("id")
+        embedded = set(re.findall(r"(?<![A-Za-z0-9])NCT[0-9]{8}(?![A-Za-z0-9])", str(identity or "")))
+        if embedded and (len(embedded) != 1 or nct not in embedded):
+            continue  # Conflicting exact identifiers must not produce a selectable program mapping.
+        if isinstance(nct, str) and re.fullmatch(r"NCT[0-9]{8}", nct) and isinstance(identity, str) and identity:
+            mapping.setdefault(nct, set()).add(identity)
+    return {nct: sorted(identities) for nct, identities in sorted(mapping.items())}
+
+
 def build_index(snapshot, reviews, review_status, key, token):
     try:
         rows = rows_for(snapshot)
-        by_nct = {}
-        for row in rows.values():
-            nct = nct_id(row)
-            if nct: by_nct.setdefault(nct, []).append(row["id"])
+        by_nct = exact_nct_program_map(rows)
         records, updates, covered = {}, [], set()
         writable = os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() not in {"1", "true", "yes"}
         with Session(db.ENGINE) as session:
@@ -103,7 +116,8 @@ def build_index(snapshot, reviews, review_status, key, token):
                   "reviewSource": review_status, "historyStatus": "SAVED" if writable else "READ_ONLY", "totals": totals,
                   "columns": ["id", "PIPELINE", "GEM_JR", "GEM", "riskFlags"],
                   "scoreColumns": ["score", "observedPoints", "coverage", "categoryPoints1to7", "categoryCoverage1to7"],
-                  "records": ordered}
+                  "records": ordered,
+                  "exactNctProgramMap": by_nct}
         # Keep the whole-universe payload safely under Vercel's response limit.
         if len(packed(result).encode()) > 4_000_000: raise ValueError("Score index exceeds response budget")
         with _LOCK:

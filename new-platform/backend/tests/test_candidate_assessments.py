@@ -94,3 +94,753 @@ def test_market_cap_and_reported_date_are_not_valuation_or_verified_catalyst():
     assert result["models"]["GEM_JR"]["categories"][3]["coverage"] == 0
     assert result["models"]["GEM_JR"]["categories"][6]["coverage"] == 0
     json.dumps(compact(result), allow_nan=False)
+
+
+def test_candidate_evidence_coverage_never_claims_scientific_levels_active():
+    row, registry, reviews = fixture()
+    result = score(row, registry, reviews)
+    assert result["models"]["PIPELINE"]["coverage"] == 100
+    assert result["scientificReadiness"]["levels"] == [1, 2, 3, 4, 5, 6]
+    assert result["scientificReadiness"]["status"] == "NOT_VERIFIED"
+    assert result["scientificReadiness"]["fdaPrediction"] == "ABSTAIN"
+
+
+def test_future_dated_registry_amendment_cannot_score_historical_cutoff():
+    row, registry, reviews = fixture()
+    registry["last_update_posted"]["date"] = "2026-10-21"
+    result = score(row, registry, reviews)
+    design = result["models"]["PIPELINE"]["categories"][1]
+    assert design["coverage"] == 0
+    assert all(metric["points"] is None for metric in design["metrics"])
+    assert result["models"]["PIPELINE"]["categories"][5]["metrics"][0]["points"] is None
+
+
+def test_registry_snapshot_checked_before_amendment_cannot_score():
+    row, registry, reviews = fixture()
+    registry["last_update_posted"]["date"] = "2026-10-20"
+    result = score_candidate(row, registry, reviews=reviews, today=TODAY, registry_checked="2026-10-19")
+    assert result["models"]["PIPELINE"]["categories"][1]["coverage"] == 0
+
+
+def test_compact_assessment_retains_unverified_scientific_readiness():
+    row, registry, reviews = fixture()
+    result = score(row, registry, reviews)
+    summary = compact(result)
+    assert summary["scientificReadiness"] == result["scientificReadiness"]
+    assert summary["scientificReadiness"]["fdaPrediction"] == "ABSTAIN"
+    json.dumps(summary, allow_nan=False)
+
+
+def test_historical_primary_outcome_requires_evidence_available_by_check_date():
+    row, registry, reviews = fixture()
+    row["trialFilters"]["resultsDate"] = "2026-10-20"
+    row["lastChecked"] = "2026-10-19"
+    result = score(row, registry, reviews)
+    primary = result["models"]["PIPELINE"]["categories"][0]["metrics"][0]
+    assert primary["points"] is None
+    assert primary["coverage"] == 0
+
+
+def test_historical_primary_outcome_rejects_future_check_date():
+    row, registry, reviews = fixture()
+    row["lastChecked"] = "2026-10-21"
+    result = score(row, registry, reviews)
+    primary = result["models"]["PIPELINE"]["categories"][0]["metrics"][0]
+    assert primary["points"] is None
+    assert primary["coverage"] == 0
+
+
+def test_level_one_intake_blocks_missing_registry_phase():
+    row, registry, reviews = fixture()
+    result = score(row, registry, reviews)
+    level = result["levelOneIntake"]
+    assert level["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
+    assert level["phase"] is None
+    assert level["fdaPrediction"] == "ABSTAIN"
+    assert compact(result)["levelOneIntake"] == level
+
+
+def test_level_one_intake_phase_two_does_not_require_completed_phase_three():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE2"]
+    result = score(row, registry, reviews)
+    level = result["levelOneIntake"]
+    assert level["executionStatus"] == "INTAKE_ONLY"
+    assert level["phase"] == "PHASE2"
+    assert "completed Phase 3 results" in level["notYetExpected"]
+    assert level["scientificValidation"] == "NOT_VERIFIED"
+
+
+def test_level_one_intake_rejects_future_dated_registry_phase():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["last_update_posted"]["date"] = "2026-10-21"
+    result = score(row, registry, reviews)
+    assert result["levelOneIntake"]["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
+    assert result["levelOneIntake"]["phase"] is None
+
+
+def test_level_one_uses_highest_registry_phase_regardless_of_tag_order():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3", "PHASE2"]
+    result = score(row, registry, reviews)
+    assert result["levelOneIntake"]["phase"] == "PHASE3"
+    assert result["levelOneIntake"]["executionStatus"] == "INTAKE_ONLY"
+
+
+def test_level_one_requires_registry_status_as_well_as_phase():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry.pop("status")
+    result = score(row, registry, reviews)
+    assert result["levelOneIntake"]["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
+    assert result["levelOneIntake"]["phase"] is None
+
+
+def test_phase_first_intake_changes_assessment_fingerprint():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE2"]
+    first = score(row, registry, reviews)
+    registry["phases"] = ["PHASE3"]
+    second = score(row, registry, reviews)
+    assert first["models"] == second["models"]
+    assert first["levelOneIntake"]["phase"] == "PHASE2"
+    assert second["levelOneIntake"]["phase"] == "PHASE3"
+    assert fingerprint(first) != fingerprint(second)
+
+
+def test_level_one_inventory_distinguishes_missing_endpoint_from_later_phase_requirements():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE2"]
+    registry["primary_outcomes"] = []
+    result = score(row, registry, reviews)["levelOneIntake"]
+    assert result["evidenceInventory"]["trial design"] == "OBSERVED"
+    assert result["evidenceInventory"]["primary endpoint definition"] == "MISSING"
+    assert "primary endpoint definition" in result["missingEvidence"]
+    assert "completed Phase 3 results" in result["notYetExpected"]
+    assert "completed Phase 3 results" not in result["missingEvidence"]
+
+
+def test_level_one_unverified_registry_never_labels_design_as_missing():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["last_update_posted"]["date"] = "2026-10-21"
+    result = score(row, registry, reviews)["levelOneIntake"]
+    assert result["evidenceInventory"]["trial design"] == "UNVERIFIED"
+    assert "trial design" not in result["missingEvidence"]
+
+
+def test_level_one_phase_three_requires_separate_efficacy_safety_review():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    label = "phase-appropriate efficacy and safety evidence"
+    assert intake["evidenceInventory"][label] == "NOT_ASSESSED"
+    assert label in intake["requiresSourceReview"]
+    assert label not in intake["missingEvidence"]
+    assert intake["fdaPrediction"] == "ABSTAIN"
+
+
+def test_level_one_phase_one_does_not_require_pivotal_dossier():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE1"]
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert "pivotal efficacy or marketing-application dossier" in intake["notYetExpected"]
+    assert intake["requiresSourceReview"] == []
+
+
+def test_level_one_endpoint_inventory_preserves_definition_without_success_claim():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    endpoint = intake["endpointDefinitions"][0]
+    assert endpoint["measure"] == "Prespecified change"
+    assert endpoint["timeFrame"] == "12 weeks"
+    assert endpoint["definitionStatus"] == "OBSERVED"
+    assert endpoint["scientificAdjudication"] == "NOT_ASSESSED"
+    assert intake["fdaPrediction"] == "ABSTAIN"
+
+
+def test_level_one_partial_endpoint_definition_is_not_accepted():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["primary_outcomes"] = [{"measure": "Change in score"}]
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["endpointDefinitions"][0]["definitionStatus"] == "INCOMPLETE"
+    assert intake["evidenceInventory"]["primary endpoint definition"] == "MISSING"
+
+
+def test_level_one_endpoint_quality_requires_independent_adjudication():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["definitionCompleteness"] == "OBSERVED"
+    assert quality["prespecification"] == "NOT_ASSESSED"
+    assert quality["clinicalRelevance"] == "NOT_ASSESSED"
+    assert quality["multiplicityControl"] == "NOT_ASSESSED"
+    assert quality["estimandAndAnalysisPlan"] == "NOT_ASSESSED"
+    assert quality["outcomeSuccess"] == "NOT_ASSESSED"
+    assert quality["score"] is None
+
+
+def test_level_one_endpoint_quality_blocks_unverified_registry():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["last_update_posted"]["date"] = "2026-10-21"
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["definitionCompleteness"] == "UNVERIFIED"
+    assert quality["prespecification"] == "UNVERIFIED"
+    assert quality["score"] is None
+
+
+def test_level_one_accepts_exact_trial_source_review_without_inventing_score():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["levelOneEndpointReviews"] = {
+        "prespecification": {
+            "judgment": "SUPPORTS", "nctId": "NCT00000001",
+            "source": "https://clinicaltrials.gov/study/NCT00000001",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+            "rationale": "Protocol evidence reviewed for exact trial",
+        }
+    }
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["prespecification"] == "SUPPORTS"
+    assert quality["score"] is None
+    assert quality["reviewedEvidence"]["prespecification"]["nctId"] == "NCT00000001"
+
+
+def test_level_one_rejects_cross_trial_and_post_cutoff_reviews():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    record = {
+        "judgment": "SUPPORTS", "nctId": "NCT00000002",
+        "source": "https://clinicaltrials.gov/study/NCT00000001",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "rationale": "Evidence review",
+    }
+    reviews["levelOneEndpointReviews"] = {"prespecification": record}
+    assert score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]["prespecification"] == "NOT_ASSESSED"
+    record["nctId"] = "NCT00000001"
+    record["reviewedAt"] = "2026-10-21"
+    assert score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]["prespecification"] == "NOT_ASSESSED"
+
+
+def test_level_one_rejects_malformed_or_credentialed_source_urls():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    review = {
+        "judgment": "SUPPORTS", "nctId": "NCT00000001",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "rationale": "Exact-trial source reviewed",
+    }
+    for url in ("https://", "https://user:password@example.org/report",
+                "https://example.org/report with spaces", "http://example.org/report"):
+        reviews["levelOneEndpointReviews"] = {"prespecification": {**review, "source": url}}
+        quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+        assert quality["prespecification"] == "NOT_ASSESSED"
+        assert quality["reviewCoverage"]["reviewedCriteria"] == 0
+
+
+def test_level_one_review_coverage_does_not_generate_scientific_score():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["levelOneEndpointReviews"] = {
+        "clinicalRelevance": {
+            "judgment": "INCONCLUSIVE", "nctId": "NCT00000001",
+            "source": "https://example.org/trial-review",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+            "rationale": "Review cannot establish clinical relevance",
+        }
+    }
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["reviewCoverage"]["reviewedCriteria"] == 1
+    assert quality["reviewCoverage"]["totalCriteria"] == 5
+    assert quality["reviewCoverage"]["status"] == "PARTIALLY_REVIEWED"
+    assert quality["score"] is None
+
+
+def test_level_one_rejects_clinicaltrials_link_to_different_trial():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    review = {
+        "judgment": "SUPPORTS", "nctId": "NCT00000001",
+        "source": "https://clinicaltrials.gov/study/NCT00000002",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "rationale": "Evidence review",
+    }
+    reviews["levelOneEndpointReviews"] = {"prespecification": review}
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["prespecification"] == "NOT_ASSESSED"
+    review["source"] = "https://clinicaltrials.gov/study/NCT00000001"
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["prespecification"] == "SUPPORTS"
+
+
+def test_level_one_review_consensus_requires_all_criteria():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["reviewConsensus"] == "INSUFFICIENT_REVIEW_COVERAGE"
+    assert quality["scientificScoreStatus"] == "NOT_VALIDATED"
+    assert quality["score"] is None
+
+
+def test_level_one_review_consensus_is_not_a_prediction():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    criteria = ("prespecification", "clinicalRelevance", "multiplicityControl",
+                "estimandAndAnalysisPlan", "outcomeSuccess")
+    reviews["levelOneEndpointReviews"] = {
+        criterion: {
+            "judgment": "SUPPORTS", "nctId": "NCT00000001",
+            "source": "https://clinicaltrials.gov/study/NCT00000001",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+            "rationale": "Source and trial checked",
+        } for criterion in criteria
+    }
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["endpointQuality"]["reviewConsensus"] == "ALL_CRITERIA_SUPPORTIVE"
+    assert intake["endpointQuality"]["score"] is None
+    assert intake["fdaPrediction"] == "ABSTAIN"
+    reviews["levelOneEndpointReviews"]["outcomeSuccess"]["judgment"] = "CONCERNS"
+    assert score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]["reviewConsensus"] == "MIXED_EVIDENCE"
+
+
+def test_levels_two_to_six_present_and_abstain():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    result = score(row, registry, reviews)
+    assert set(result["levelsTwoToSix"]) == {"2", "3", "4", "5", "6"}
+    for level in result["levelsTwoToSix"].values():
+        assert level["score"] is None
+        assert level["fdaPrediction"] == "ABSTAIN"
+        assert level["scientificValidation"] == "NOT_VERIFIED"
+
+
+def test_levels_two_to_six_phase_two_does_not_require_pivotal_results():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE2"]
+    levels = score(row, registry, reviews)["levelsTwoToSix"]
+    assert levels["3"]["criteria"]["primaryEndpointResults"] == "NOT_ASSESSED"
+    assert levels["6"]["criteria"]["applicationDossier"] == "NOT_YET_EXPECTED"
+    assert levels["2"]["criteria"]["protocol"] == "NOT_ASSESSED"
+
+
+def test_levels_two_to_six_reject_post_cutoff_evidence():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "2.protocol": {
+            "nctId": "NCT00000001", "source": "https://example.org/protocol",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-21",
+            "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+            "reviewerId": "test-reviewer", "documentType": "protocol",
+            "evidenceExcerpt": "The trial uses a randomized design.",
+            "sourceVerified": True,
+            "sourceVerifiedAt": "2026-10-19",
+            "sourceVerifiedBy": "test-verifier",
+            "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+        }
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "REJECTED_EVIDENCE"
+    assert level["reviewedCount"] == 0
+
+
+def test_levels_two_to_six_accept_valid_evidence_without_scoring():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "2.protocol": {
+            "nctId": "NCT00000001", "source": "https://example.org/protocol",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+            "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+            "reviewerId": "test-reviewer", "documentType": "protocol",
+            "evidenceExcerpt": "The trial uses a randomized design.",
+            "sourceVerified": True,
+            "sourceVerifiedAt": "2026-10-19",
+            "sourceVerifiedBy": "test-verifier",
+            "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+        }
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "SUPPORTS"
+    assert level["reviewedCount"] == 1
+    assert level["status"] == "PARTIAL"
+    assert level["score"] is None
+
+
+def test_levels_two_to_six_reject_registry_url_for_another_trial():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    review = {
+        "nctId": "NCT00000001",
+        "source": "https://clinicaltrials.gov/study/NCT00000002",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+            "reviewerId": "test-reviewer", "documentType": "protocol",
+            "evidenceExcerpt": "The trial uses a randomized design.",
+            "sourceVerified": True,
+            "sourceVerifiedAt": "2026-10-19",
+            "sourceVerifiedBy": "test-verifier",
+            "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+    }
+    reviews["scientificLevelEvidence"] = {"2.protocol": review}
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "REJECTED_EVIDENCE"
+    review["source"] = "https://clinicaltrials.gov/study/NCT00000001"
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "SUPPORTS"
+
+
+def test_levels_two_to_six_require_review_provenance():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    record = {
+        "nctId": "NCT00000001", "source": "https://example.org/protocol",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+    }
+    reviews["scientificLevelEvidence"] = {"2.protocol": record}
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "REJECTED_EVIDENCE"
+    record["reviewerId"] = "test-reviewer"
+    record["documentType"] = "protocol"
+    record["evidenceExcerpt"] = "Protocol design evidence excerpt"
+    record["sourceVerified"] = True
+    record["sourceVerifiedAt"] = "2026-10-19"
+    record["sourceVerifiedBy"] = "test-verifier"
+    record["sourceVerificationMethod"] = "DIRECT_DOCUMENT_REVIEW"
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "SUPPORTS"
+    assert level["acceptedEvidence"]["protocol"]["reviewerId"] == "test-reviewer"
+
+
+def test_phase_one_does_not_require_late_phase_efficacy():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE1"]
+    levels = score(row, registry, reviews)["levelsTwoToSix"]
+    assert levels["3"]["criteria"]["primaryEndpointResults"] == "NOT_YET_EXPECTED"
+    assert "primaryEndpointResults" in levels["3"]["notYetExpectedCriteria"]
+    assert levels["6"]["criteria"]["applicationDossier"] == "NOT_YET_EXPECTED"
+
+
+def test_rejected_scientific_evidence_is_visible_in_level_status():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "2.protocol": {
+            "nctId": "NCT00000002", "source": "https://example.org/protocol",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+            "judgment": "SUPPORTS", "rationale": "Wrong trial",
+            "reviewerId": "test-reviewer", "documentType": "protocol",
+            "evidenceExcerpt": "The trial uses a randomized design.",
+            "sourceVerified": True,
+            "sourceVerifiedAt": "2026-10-19",
+            "sourceVerifiedBy": "test-verifier",
+            "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+        }
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["status"] == "EVIDENCE_REJECTED"
+    assert level["rejectedCriteria"] == ["protocol"]
+    assert level["score"] is None
+
+
+def test_levels_two_to_six_report_outstanding_criteria_without_score():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    readiness = level["reviewReadiness"]
+    assert readiness["accepted"] == 0
+    assert readiness["rejected"] == 0
+    assert "protocol" in readiness["outstanding"]
+    assert readiness["complete"] is False
+    assert level["score"] is None
+
+
+def test_phase_one_review_readiness_excludes_not_yet_expected_items():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE1"]
+    level = score(row, registry, reviews)["levelsTwoToSix"]["3"]
+    readiness = level["reviewReadiness"]
+    assert "primaryEndpointResults" in readiness["notYetExpected"]
+    assert "primaryEndpointResults" not in readiness["outstanding"]
+    assert readiness["complete"] is False
+
+
+def test_levels_two_to_six_distinguish_unpublished_from_unreviewed():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "3.primaryEndpointResults": {
+            "availability": "NOT_PUBLIC", "nctId": "NCT00000001",
+            "source": "https://clinicaltrials.gov/study/NCT00000001",
+            "checkedAt": "2026-10-19",
+            "searchRationale": "Registry results section inspected; no public results",
+        }
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["3"]
+    assert level["criteria"]["primaryEndpointResults"] == "UNPUBLISHED"
+    assert level["criteria"]["statisticalAnalysisPlan"] == "NOT_ASSESSED"
+    assert level["unpublishedCriteria"] == ["primaryEndpointResults"]
+    assert "primaryEndpointResults" in level["reviewReadiness"]["outstanding"]
+    assert level["score"] is None
+
+
+def test_early_phase_not_expected_overrides_unpublished_marker():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE1"]
+    reviews["scientificLevelEvidence"] = {
+        "3.primaryEndpointResults": {"availability": "NOT_PUBLIC"}
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["3"]
+    assert level["criteria"]["primaryEndpointResults"] == "NOT_YET_EXPECTED"
+    assert level["unpublishedCriteria"] == []
+
+
+def test_unpublished_claim_requires_auditable_source_and_date():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "3.primaryEndpointResults": {"availability": "NOT_PUBLIC"}
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["3"]
+    assert level["criteria"]["primaryEndpointResults"] == "UNVERIFIED_UNPUBLISHED_CLAIM"
+    assert level["unpublishedCriteria"] == []
+    assert level["unverifiedUnpublishedCriteria"] == ["primaryEndpointResults"]
+
+
+def test_post_cutoff_unpublished_check_is_not_accepted():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "3.primaryEndpointResults": {
+            "availability": "NOT_PUBLIC", "nctId": "NCT00000001",
+            "source": "https://clinicaltrials.gov/study/NCT00000001",
+            "checkedAt": "2026-10-21", "searchRationale": "No public results found",
+        }
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["3"]
+    assert level["criteria"]["primaryEndpointResults"] == "UNVERIFIED_UNPUBLISHED_CLAIM"
+
+
+def test_levels_two_to_six_require_evidence_excerpt():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    record = {
+        "nctId": "NCT00000001", "source": "https://example.org/protocol",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+        "reviewerId": "test-reviewer", "documentType": "protocol",
+        "sourceVerified": True, "sourceVerifiedAt": "2026-10-19",
+        "sourceVerifiedBy": "test-verifier",
+        "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+    }
+    reviews["scientificLevelEvidence"] = {"2.protocol": record}
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "REJECTED_EVIDENCE"
+    assert level["rejectionReasons"]["protocol"] == "MISSING_EVIDENCE_EXCERPT"
+    record["evidenceExcerpt"] = "Randomization methods are described."
+    record["sourceVerified"] = True
+    record["sourceVerifiedAt"] = "2026-10-19"
+    record["sourceVerifiedBy"] = "test-verifier"
+    record["sourceVerificationMethod"] = "DIRECT_DOCUMENT_REVIEW"
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "SUPPORTS"
+    assert level["acceptedEvidence"]["protocol"]["evidenceExcerpt"] == "Randomization methods are described."
+
+
+def test_scientific_evidence_rejection_reason_distinguishes_cross_trial_source():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "2.protocol": {
+            "nctId": "NCT00000001",
+            "source": "https://clinicaltrials.gov/study/NCT00000002",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+            "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+            "reviewerId": "test-reviewer", "documentType": "protocol",
+            "evidenceExcerpt": "Randomization was performed.",
+            "sourceVerified": True,
+            "sourceVerifiedAt": "2026-10-19",
+            "sourceVerifiedBy": "test-verifier",
+            "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+        }
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["rejectionReasons"]["protocol"] == "SOURCE_TRIAL_MISMATCH"
+    assert level["score"] is None
+
+
+def test_scientific_review_requires_explicit_source_verification():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    record = {
+        "nctId": "NCT00000001", "source": "https://example.org/protocol",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+        "reviewerId": "test-reviewer", "documentType": "protocol",
+        "evidenceExcerpt": "Protocol defines allocation methods.",
+    }
+    reviews["scientificLevelEvidence"] = {"2.protocol": record}
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["rejectionReasons"]["protocol"] == "SOURCE_NOT_VERIFIED"
+    record["sourceVerified"] = True
+    record["sourceVerifiedAt"] = "2026-10-19"
+    record["sourceVerifiedBy"] = "test-verifier"
+    record["sourceVerificationMethod"] = "DIRECT_DOCUMENT_REVIEW"
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "SUPPORTS"
+    assert level["score"] is None
+
+
+def test_source_verification_provenance_must_precede_cutoff():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    record = {
+        "nctId": "NCT00000001", "source": "https://example.org/protocol",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+        "reviewerId": "test-reviewer", "documentType": "protocol",
+        "evidenceExcerpt": "Randomized assignment was prespecified.",
+        "sourceVerified": True, "sourceVerifiedAt": "2026-10-21",
+        "sourceVerifiedBy": "test-verifier",
+        "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+    }
+    reviews["scientificLevelEvidence"] = {"2.protocol": record}
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["rejectionReasons"]["protocol"] == "SOURCE_VERIFICATION_PROVENANCE_MISSING"
+    record["sourceVerifiedAt"] = "2026-10-19"
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "SUPPORTS"
+    assert level["acceptedEvidence"]["protocol"]["sourceVerifiedBy"] == "test-verifier"
+
+
+def test_level_one_rejects_unknown_registry_status():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["status"] = "APPROVED_BY_FDA"
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
+    assert intake["trialStatus"] is None
+    assert intake["fdaPrediction"] == "ABSTAIN"
+
+
+def test_level_one_accepts_known_registry_lifecycle_status():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["status"] = "ACTIVE_NOT_RECRUITING"
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["executionStatus"] == "INTAKE_ONLY"
+    assert intake["trialStatus"] == "ACTIVE_NOT_RECRUITING"
+
+
+def test_level_one_malformed_registry_design_and_endpoints_do_not_crash():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["study_design"] = "invalid design"
+    registry["primary_outcomes"] = {"measure": "not a list"}
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["executionStatus"] == "INTAKE_ONLY"
+    assert intake["evidenceInventory"]["trial design"] == "MISSING"
+    assert intake["evidenceInventory"]["primary endpoint definition"] == "MISSING"
+    assert intake["endpointDefinitions"] == []
+    assert intake["endpointQuality"]["score"] is None
+
+
+def test_level_one_malformed_last_update_metadata_blocks_intake():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["last_update_posted"] = "not a dated object"
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
+    assert intake["registrySourceDate"] is None
+    assert intake["fdaPrediction"] == "ABSTAIN"
+
+
+def test_level_one_ambiguous_combined_phase_does_not_infer_phase():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE1/PHASE2"]
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
+    assert intake["phase"] is None
+
+
+def test_level_one_phase_evidence_and_endpoint_assessment_survive_compact_payload():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE2"]
+    result = score(row, registry, reviews)
+    payload = compact(result)
+    level = payload["levelOneIntake"]
+    assert level["phase"] == "PHASE2"
+    assert level["trialStatus"] == "COMPLETED"
+    assert level["evidenceInventory"]["primary endpoint definition"] == "OBSERVED"
+    assert "completed Phase 3 results" in level["notYetExpected"]
+    assert level["endpointQuality"]["definitionCompleteness"] == "OBSERVED"
+    assert level["endpointQuality"]["scientificScoreStatus"] == "NOT_VALIDATED"
+    assert level["fdaPrediction"] == "ABSTAIN"
+    assert payload["scientificReadiness"]["status"] == "NOT_VERIFIED"
+    json.dumps(payload, allow_nan=False)
+
+
+def test_assessment_service_fetches_registry_phase_for_phase_first_intake():
+    from app.assessment_service import FIELDS
+    assert "phases" in FIELDS, "Phase-first assessment must receive actual registry phase"
+    assert "status" in FIELDS
+    assert "last_update_posted" in FIELDS
+
+def test_exact_nct_program_index_rejects_malformed_registry_identifiers():
+    from app.assessment_service import exact_nct_program_map
+    rows = {
+        "a": {"id": "TRIAL|NCT00000001", "nctId": "NCT00000001"},
+        "b": {"id": "OTHER|NCT00000001", "nctId": "NCT00000001"},
+        "c": {"id": "BAD", "nctId": "NCT1234567X"},
+    }
+    # Exercise actual nct_id extraction from the canonical pipeline row schema.
+    for row in rows.values():
+        row["phase3Source"] = "https://clinicaltrials.gov/study/" + row["nctId"]
+    rows["c"]["phase3Source"] = "https://clinicaltrials.gov/study/NCT1234567X"
+    assert exact_nct_program_map(rows) == {
+        "NCT00000001": ["OTHER|NCT00000001", "TRIAL|NCT00000001"]
+    }
+
+
+def test_exact_nct_program_map_deduplicates_and_is_order_independent():
+    from app.assessment_service import exact_nct_program_map
+    entries = [
+        ("one", {"id": "Z|NCT00000002", "nctId": "NCT00000002"}),
+        ("two", {"id": "A|NCT00000001", "nctId": "NCT00000001"}),
+        ("three", {"id": "B|NCT00000001", "nctId": "NCT00000001"}),
+        ("four", {"id": "A|NCT00000001", "nctId": "NCT00000001"}),
+        ("five", {"id": "NO_NCT", "ticker": "SAME"}),
+    ]
+    expected = {
+        "NCT00000001": ["A|NCT00000001", "B|NCT00000001"],
+        "NCT00000002": ["Z|NCT00000002"],
+    }
+    assert exact_nct_program_map(dict(entries)) == expected
+    assert exact_nct_program_map(dict(reversed(entries))) == expected
+
+
+def test_exact_nct_program_map_does_not_infer_from_ticker_or_indication():
+    from app.assessment_service import exact_nct_program_map
+    rows = {
+        "ticker_only": {"id": "COMPANY-A", "ticker": "NCT00000001"},
+        "indication_only": {"id": "COMPANY-B", "indication": "NCT00000002"},
+        "malformed": {"id": "COMPANY-C", "nctId": "NCT0000000X"},
+    }
+    assert exact_nct_program_map(rows) == {}
+
+
+def test_exact_nct_program_map_rejects_conflicting_embedded_nct():
+    from app.assessment_service import exact_nct_program_map
+    rows = {
+        "conflict": {"id": "TRIAL|NCT00000001", "nctId": "NCT00000002"},
+        "ambiguous": {"id": "NCT00000001|NCT00000002", "nctId": "NCT00000001"},
+        "valid": {"id": "TRIAL|NCT00000003", "nctId": "NCT00000003"},
+    }
+    assert exact_nct_program_map(rows) == {
+        "NCT00000003": ["TRIAL|NCT00000003"]
+    }

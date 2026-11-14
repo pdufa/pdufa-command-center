@@ -13,6 +13,7 @@ import LiveRegistryReview from "./LiveRegistryReview";
 import PipelineSponsorReadout from "./PipelineSponsorReadout";
 import BatchRegistryExport from "./BatchRegistryExport";
 import PoolMasterSpreadsheet from "./PoolMasterSpreadsheet";
+import {ExactTrialIntakeSelector} from "./ExactTrialScientificIntake";
 import IndicationIntelligence from "./IndicationIntelligence";
 import {type PoolPhaseSelection} from "../lib/pool-phase-options";
 import type {PoolSortSpec} from "../lib/pool-full-sort";
@@ -198,7 +199,7 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
          </tr></thead>
          <tbody>{page.rows.map(r=>isReview(r)?
            <tr key={r.nctId}>
-             <td><a href={r.sourceUrl} target="_blank" rel="noopener noreferrer">{r.nctId}</a></td>
+             <td><a href={r.sourceUrl} target="_blank" rel="noopener noreferrer">{r.nctId}</a>{section==="pool"&&<details><summary>Steps 1–3 · exact-program intake</summary><ExactTrialIntakeSelector cohort="POOL" nctId={r.nctId}/></details>}</td>
              <td>{r.ticker}</td><td>{r.company}</td><td>{display(r.drug)}</td><td>{display(r.indication)}</td>
              <PipelineTimelineCells dates={r.timeline} today={today}/>
              <CompetitiveAssessmentCells row={r}/>
