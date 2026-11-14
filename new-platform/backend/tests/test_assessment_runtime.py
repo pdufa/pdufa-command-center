@@ -165,7 +165,7 @@ def test_three_levels_share_exact_source_identity_and_persist_distinct_reports(e
     for level in (1,2,3):
         q=request(level)
         run=r.create(engine,q)
-        r.execute(engine,run,lambda nct: source if nct==q.nct else pytest.fail('Wrong trial source requested'))
+        r.execute(engine,run,lambda nct: snapshot() if nct==q.nct else pytest.fail('Wrong trial source requested'))
         state=r.status(engine,q.nct,run)
         assert state['status']=='COMPLETED'
         report=state['report']
