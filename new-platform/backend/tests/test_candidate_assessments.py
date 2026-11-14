@@ -903,3 +903,15 @@ def test_exact_detail_rejects_unknown_program_before_registry_lookup(monkeypatch
         service.exact_detail("UNKNOWN|NCT00000001")
     assert exc.value.status_code == 404
     assert "not in the current Pipeline universe" in str(exc.value.detail)
+
+def test_forged_review_and_source_dates_cannot_score_research_grades():
+    row, registry, reviews = fixture()
+    for field in ("sourceDate", "reviewedAt"):
+        modified = copy.deepcopy(reviews)
+        modified["effectSize"][field] = "2026-10-19FORGED"
+        result = score(row, registry, modified)
+        metric = result["models"]["PIPELINE"]["categories"][0]["metrics"][1]
+        assert metric["status"] == "MISSING"
+        assert metric["points"] is None
+        assert result["scientificReadiness"]["fdaPrediction"] == "ABSTAIN"
+
