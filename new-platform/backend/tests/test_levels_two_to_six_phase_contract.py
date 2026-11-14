@@ -237,5 +237,32 @@ class LevelsTwoToSixContractTests(unittest.TestCase):
         self.assertEqual(result["4"]["reviewedCount"], 0)
 
 
+    def test_verification_after_review_is_rejected(self):
+        evidence = {
+            "5.indicationDefinition": {
+                "nctId": "NCT12345678",
+                "source": "https://clinicaltrials.gov/study/NCT12345678",
+                "sourceDate": "2026-01-10",
+                "reviewedAt": "2026-01-15",
+                "sourceVerified": True,
+                "sourceVerifiedAt": "2026-01-20",
+                "sourceVerifiedBy": "reviewer-1",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "judgment": "SUPPORTS",
+                "rationale": "Indication review",
+                "reviewerId": "reviewer-1",
+                "documentType": "REGISTRY_RECORD",
+                "evidenceExcerpt": "Condition and population",
+            }
+        }
+        result = module.assess_levels_two_to_six(
+            BASE, trial_id="NCT12345678", evidence=evidence
+        )
+        self.assertEqual(result["5"]["criteria"]["indicationDefinition"], "REJECTED_EVIDENCE")
+        self.assertEqual(result["5"]["rejectionReasons"]["indicationDefinition"], "INVALID_CHRONOLOGY")
+        self.assertEqual(result["5"]["reviewedCount"], 0)
+        self.assertEqual(result["5"]["fdaPrediction"], "ABSTAIN")
+
+
 if __name__ == "__main__":
     unittest.main()
