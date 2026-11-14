@@ -324,7 +324,7 @@ export default function CalCalendar({onSelectCompany,embedded=false,focusDate,fo
             <p>Market cap at publication: <strong>{dollar(event.marketCapUsd)}</strong></p>
             <p>Linked trials: {event.ncts.length?event.ncts.map((nct,i)=>
               <span key={nct}>{i>0?", ":""}<a href={"https://clinicaltrials.gov/study/"+nct}
-                target="_blank" rel="noopener noreferrer">{nct}</a></span>):"Not recorded"}</p>
+                target="_blank" rel="noopener noreferrer">{nct}</a>{" · "}<a href={"/predictions/assessment?nct="+nct}>Assessments</a></span>):"Not recorded"}</p>
             <p>FDA review-cycle status: <strong>{
               event.prediction?.call==="ALREADY_APPROVED"?
                 "Previously approved; this date is not a pending decision":
@@ -338,7 +338,7 @@ export default function CalCalendar({onSelectCompany,embedded=false,focusDate,fo
             <PredictionSummary prediction={c.prediction}/>
             <p>Linked clinical trials: {c.ncts.map((nct,i)=><span key={nct}>
               {i?", ":""}<a href={"https://clinicaltrials.gov/study/"+nct}
-                target="_blank" rel="noopener noreferrer">{nct}</a></span>)}</p>
+                target="_blank" rel="noopener noreferrer">{nct}</a>{" · "}<a href={"/predictions/assessment?nct="+nct}>Assessments</a></span>)}</p>
           </article>)}
         </div>
         <p className={styles.modalFoot}>Source-reported dates can change. Forecasts are unvalidated

@@ -13,9 +13,9 @@ export type EvidenceTrial={nct:string;ticker:string;company:string;indications:s
 export type EvidencePackage={schemaVersion:number;kind:string;evidenceCutoffDate:string;rosterAsOf:string;historicalPredictionInputPermitted:false;ownerReviewStatus:string;externalVerificationRequired:false;trials:EvidenceTrial[]};
 export type Check={id:string;label:string;state:"EVIDENCE_AVAILABLE"|"MISSING_EVIDENCE"|"CONFLICTING_EVIDENCE"|"OWNER_CHECK_REQUIRED"|"NOT_YET_EXPECTED";reason:string};
 export type LevelResult=Worksheet&{checks:Check[];researchStatus:"EVIDENCE_TO_REVIEW"|"EVIDENCE_GAPS"|"CONFLICTS_TO_RECONCILE"|"PHASE_UNRESOLVED";ownerReviewStatus:"OWNER_NOT_REVIEWED";externalReviewerRequired:false;approvalProbability:null};
-export type TrialResult={level3Prediction:Level3Prediction;nct:string;ticker:string;company:string;indications:string[];phases:string[];registryStatus:string|null;applicationMappingStatus:string;provisionalApplicationCycleIds:string[];sources:Source[];levels:LevelResult[];publishedSafety:unknown;statisticalChronology:Record<string,unknown>|null;ownerReviewStatus:"OWNER_NOT_REVIEWED";approvalProbability:null};
-export type AssessmentRun={schemaVersion:1;kind:"FOCUS_LEVEL16_OWNER_RESEARCH_RUN";runId:string;startedAt:string;completedAt:string;status:"COMPLETED";evidenceCutoffDate:string;sourceMode:"COLLECTED_EVIDENCE_NO_NEW_RETRIEVAL";historicalPredictionInputPermitted:false;ownerReviewStatus:"OWNER_NOT_REVIEWED";externalVerificationRequired:false;savedToDatabase:false;approvalProbability:null;requestedLevel:3|null;summary:{trialsProcessed:number;levelsProcessed:number;levelsWithEvidenceGaps:number;levelsWithConflicts:number};trials:TrialResult[]};
-export type RunRequest=({scope:"ONE";nct:string}|{scope:"ALL"})&{level?:3};
+export type TrialResult={level3Prediction:Level3Prediction|null;nct:string;ticker:string;company:string;indications:string[];phases:string[];registryStatus:string|null;applicationMappingStatus:string;provisionalApplicationCycleIds:string[];sources:Source[];levels:LevelResult[];publishedSafety:unknown;statisticalChronology:Record<string,unknown>|null;ownerReviewStatus:"OWNER_NOT_REVIEWED";approvalProbability:null};
+export type AssessmentRun={schemaVersion:1;kind:"FOCUS_LEVEL16_OWNER_RESEARCH_RUN";runId:string;startedAt:string;completedAt:string;status:"COMPLETED";evidenceCutoffDate:string;sourceMode:"COLLECTED_EVIDENCE_NO_NEW_RETRIEVAL";historicalPredictionInputPermitted:false;ownerReviewStatus:"OWNER_NOT_REVIEWED";externalVerificationRequired:false;savedToDatabase:false;approvalProbability:null;requestedLevel:number|null;summary:{trialsProcessed:number;levelsProcessed:number;levelsWithEvidenceGaps:number;levelsWithConflicts:number};trials:TrialResult[]};
+export type RunRequest=({scope:"ONE";nct:string}|{scope:"ALL"})&{level?:number};
 const evidence=collected as unknown as EvidencePackage;
 const phases=new Set(["EARLY_PHASE1","PHASE1","PHASE2","PHASE3","PHASE4","NA"]);
 const day=(s:string)=>/^\d{4}-\d{2}-\d{2}$/.test(s)&&Number.isFinite(Date.parse(s+"T00:00:00Z"))&&new Date(s+"T00:00:00Z").toISOString().slice(0,10)===s;
@@ -42,9 +42,9 @@ export function validateEvidence(data:EvidencePackage):void{
 export function parseRunRequest(input:unknown):RunRequest{
  if(!input||typeof input!=="object"||Array.isArray(input))throw Error("Choose one FOCUS trial or all FOCUS trials");
  const v=input as Record<string,unknown>;
- const extra=v.level===3?1:0;
- if(v.scope==="ALL"&&Object.keys(v).length===1+extra)return {scope:"ALL",...(extra?{level:3 as const}:{})};
- if(v.scope==="ONE"&&Object.keys(v).length===2+extra&&typeof v.nct==="string"&&canonical.records.some(r=>r.nct===v.nct))return {scope:"ONE",nct:v.nct,...(extra?{level:3 as const}:{})};
+ const extra=Number.isInteger(v.level)&&Number(v.level)>=1&&Number(v.level)<=6?1:0;
+ if(v.scope==="ALL"&&Object.keys(v).length===1+extra)return {scope:"ALL",...(extra?{level:v.level as number}:{})};
+ if(v.scope==="ONE"&&Object.keys(v).length===2+extra&&typeof v.nct==="string"&&canonical.records.some(r=>r.nct===v.nct))return {scope:"ONE",nct:v.nct,...(extra?{level:v.level as number}:{})};
  throw Error("Exact current FOCUS NCT required; review claims and extra fields are not accepted");
 }
 function check(id:string,label:string,present:boolean,reason:string):Check{return {id,label,state:present?"EVIDENCE_AVAILABLE":"MISSING_EVIDENCE",reason};}
@@ -67,7 +67,7 @@ export function processLevel(level:number,t:EvidenceTrial):Check[]{
   default:throw Error("Assessment level must be 1–6");
  }
 }
-export function assessTrial(t:EvidenceTrial,cutoff:string="2026-11-14",onlyLevel?:3):TrialResult{
+export function assessTrial(t:EvidenceTrial,cutoff:string="2026-11-14",onlyLevel?:number):TrialResult{
  const phaseKnown=t.phases.length>0&&!t.phases.includes("NA");
  const levels=t.levels.filter(w=>!onlyLevel||w.level===onlyLevel).map(w=>{
   const checks=phaseKnown||w.level<=2?processLevel(w.level,t):[{id:"phase-first",label:"Current phase unresolved",state:"MISSING_EVIDENCE" as const,reason:"Resolve the current phase before applying evidence requirements"}];
@@ -75,7 +75,7 @@ export function assessTrial(t:EvidenceTrial,cutoff:string="2026-11-14",onlyLevel
   const researchStatus:LevelResult["researchStatus"]=!phaseKnown&&w.level>=3?"PHASE_UNRESOLVED":conflicts?"CONFLICTS_TO_RECONCILE":checks.some(c=>c.state==="MISSING_EVIDENCE")?"EVIDENCE_GAPS":"EVIDENCE_TO_REVIEW";
   return {...w,checks,researchStatus,ownerReviewStatus:"OWNER_NOT_REVIEWED" as const,externalReviewerRequired:false as const,approvalProbability:null};
  });
- return {level3Prediction:predictLevel3(t,cutoff),nct:t.nct,ticker:t.ticker,company:t.company,indications:t.indications,phases:t.phases,registryStatus:t.registryStatus,applicationMappingStatus:t.applicationMappingStatus,provisionalApplicationCycleIds:t.provisionalApplicationCycleIds,sources:t.sources,levels,publishedSafety:t.publishedSafety,statisticalChronology:t.statisticalChronology,ownerReviewStatus:"OWNER_NOT_REVIEWED",approvalProbability:null};
+ return {level3Prediction:!onlyLevel||onlyLevel===3?predictLevel3(t,cutoff):null,nct:t.nct,ticker:t.ticker,company:t.company,indications:t.indications,phases:t.phases,registryStatus:t.registryStatus,applicationMappingStatus:t.applicationMappingStatus,provisionalApplicationCycleIds:t.provisionalApplicationCycleIds,sources:t.sources,levels,publishedSafety:t.publishedSafety,statisticalChronology:t.statisticalChronology,ownerReviewStatus:"OWNER_NOT_REVIEWED",approvalProbability:null};
 }
 export function runAssessment(input:unknown,data:EvidencePackage=evidence):AssessmentRun{
  const request=parseRunRequest(input);validateEvidence(data);

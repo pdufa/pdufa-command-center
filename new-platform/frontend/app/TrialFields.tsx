@@ -90,6 +90,7 @@ export default function TrialFields({ row, onClose, standalone = false }: { row:
       <p className="subtle">{!standalone && row.programId && <strong>{row.programId} · </strong>}{nct ? nct : "Regulatory / source program"}</p></div>
       <div className="pipeline-actions">
         {study && <button type="button" className="secondary" onClick={downloadRecord}>Download this record · JSON</button>}
+        {nct && <a href={"/predictions/assessment?nct=" + nct}>Levels 1–6 and saved assessments</a>}
         {nct && <a href={"https://clinicaltrials.gov/study/" + nct} target="_blank" rel="noopener noreferrer">Registry source ↗</a>}
         {!standalone && onClose && <button type="button" className="secondary" onClick={onClose}>Close details</button>}
       </div>
