@@ -477,3 +477,87 @@ python scripts/medical/level16_review_handoff.py --nct NCT05767346 --format mark
 No human reviewer, original-source attestor or application-cycle verifier has
 been authorized by these commands. No deployment, scoring, clinical
 adjudication or FDA prediction should result from running them.
+
+
+## Fourth evidence-detailed case: Vera ORIGIN 3 IgA nephropathy, NCT04716231
+
+**Public-source research, not independently authenticated or clinically
+adjudicated; no FDA approval probability, no retrospective blind assessment.**
+
+The exact NCT is a multi-part record with an earlier Phase 2b portion and a
+separate pivotal Phase 3 portion. The Phase 3 publication sequence must not
+be merged into Phase 2b data or incorrectly presented as two independent
+Phase 3 replication trials. Original protocol, SAP and trial mapping still
+require independent reconciliation.
+
+Two *original peer-reviewed research articles on the same Phase 3 trial*
+were retrieved:
+
+1. [NEJM original November 6, 2025 interim analysis (DOI:
+   10.1056/NEJMoa2510198, PMID 41196369)](https://www.nejm.org/doi/full/10.1056/NEJMoa2510198).
+   Its **prespecified week-36 interim primary endpoint** is change in
+   24-hour urinary protein-to-creatinine ratio (UPCR), a proteinuria biomarker.
+   The evaluated interim cohort was **203** patients (106 atacicept, 97
+   placebo). The published relative reduction was **45.7% vs 6.8%**,
+   with a *source-reported geometric-mean between-arm contrast* of **41.8
+   percentage points** (95% CI 28.9–52.3; P<0.001). That contrast is an
+   original reported model result, **not** an arithmetic subtraction of
+   45.7% minus 6.8%. Any adverse events were reported in **59.3% vs 50.0%**
+   of the interim populations. A biomarker response alone does not prove
+   long-term preservation of kidney function or reduction in renal failure.
+
+2. [NEJM original October 22, 2026 final efficacy analysis (DOI:
+   10.1056/NEJMoa2610103, PMID 42911181)](https://www.nejm.org/doi/full/10.1056/NEJMoa2610103).
+   There were **431 randomized**; **428 treated** (214 each group).
+   The reported **prespecified secondary** eGFR change at week 52 was
+   −0.11 mL/min/1.73m² with atacicept and −5.69 with placebo, for an
+   adjusted between-group difference of **+5.58 mL/min/1.73m²**
+   (95% CI 3.68–7.48; P<0.001).
+   The reported annualized eGFR slope through week 104 was −0.60 vs
+   −5.60 mL/min/1.73m²/year, difference **+5.00**
+   (95% CI 3.55–6.45; P<0.001).
+   The reported kidney-progression composite occurred in 11 patients
+   (5.1%) vs 38 (17.8%), published HR 0.24
+   (95% CI 0.12–0.48). This is a **composite**, not a claim of mortality
+   reduction. Serious adverse events were **7.0% vs 15.4%**, and one death
+   was reported in the placebo group. These results still require
+   independent endpoint, censoring, multiplicity, and safety review.
+
+**Do not combine populations:** the original 203-person interim analysis is
+not identical to the later randomized 431/treated 428 population; numerical
+AE denominators and event rates cannot be silently pooled.
+
+**Critical outcome chronology:** The final eGFR paper appeared
+**October 22, 2026**. It is newly published later evidence relative to
+the 2025 interim paper and is **not valid input** into any historical blind
+backtest or FDA prediction purportedly made before that date. The current
+2026-11-14 research packet is openly outcome-exposed; no PDUFA decision or
+FDA-approved status is inferred from it.
+
+**Per-level review intent:** Level 1 must authenticate both original
+publisher versions, registration, amendments and source receipts. Level 2
+must reconcile the multi-part Phase 2b/Phase 3 record and indication-specific
+cohort. Level 3 distinguishes the interim **primary UPCR** biomarker from
+later **secondary eGFR change, eGFR slope, kidney-progression composite**
+and safety. Level 4 reviews comparator/background therapy, allocation,
+adherence, missingness and protocol conduct. Level 5 independently verifies
+interim/final SAP versions, alpha spending, hierarchy, estimands, censoring,
+database lock and unblinding. Level 6 evaluates UPCR as an intermediate
+surrogate versus clinically meaningful loss of kidney function, need for
+dialysis/transplant, benefits, harms and follow-up.
+
+Machine-readable source and conservative validator:
+
+```powershell
+python scripts/medical/level16_origin3_renal_publication.py
+python -m unittest discover -s tests -p "test_level16_origin3_renal_publication.py" -v
+python scripts/medical/level16_review_handoff.py --nct NCT04716231 --format markdown
+```
+
+Only the actual frozen FOCUS NCT NCT04716231 receives this original
+kidney evidence; the other 31 trials retain their own independent sources
+and initial readiness gates. The unsigned research handoff now binds an
+**eighth** fixed metadata source. Passing software tests proves neither
+original-source authenticity nor efficacy/safety adjudication. A01–A14
+owner decisions, authorized source verification and qualified reviewers
+remain outstanding, with all code in draft PR #1181 and no site deployment.
