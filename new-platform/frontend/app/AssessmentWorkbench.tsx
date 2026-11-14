@@ -35,10 +35,12 @@ export default function AssessmentWorkbench({selectedNct}:{selectedNct?:string})
  async function run(){
   if(busy)return;const revision=selectionRevision.current;const requestedNct=nct;const requestedLevel=level;const requestedMode=mode;const requestedCutoff=cutoff;setBusy(true);setError('');setMessage('Submitting the selected level…');controller.current=new AbortController();const signal=controller.current.signal;
   try{
-   const created=await read(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nct,level,mode,...(mode==='BLIND_HISTORICAL'?{cutoffDate:cutoff}:{})}),signal});
+   const created=await read(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nct:requestedNct,level:requestedLevel,mode:requestedMode,...(requestedMode==='BLIND_HISTORICAL'?{cutoffDate:requestedCutoff}:{})}),signal});
+   if(revision!==selectionRevision.current)return;
+   if(typeof created.runId!=='string'||!/^[a-f0-9-]{36}$/.test(created.runId))throw Error('Assessment backend did not return a valid run identifier.');
    const until=Date.now()+180000;
    while(Date.now()<until){
-    const state=await read(endpoint+'?'+new URLSearchParams({nct,runId:created.runId}),{signal});
+    const state=await read(endpoint+'?'+new URLSearchParams({nct:requestedNct,runId:created.runId}),{signal});
     if(revision!==selectionRevision.current)return;
     setMessage(state.progress.map((p:{stage:string;at:string})=>human(p.stage)+' · '+p.at).join(' → '));
     if(state.status==='FAILED')throw Error(state.error||'Assessment failed; no completed result saved');
