@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "censusAsOf": "2026-10-26",
-  "scanStartedAt": "2026-11-13T18:35:56.194Z",
+  "scanStartedAt": "2026-11-14T17:13:09.861Z",
   "scanned": 375,
   "successful": 375,
   "failed": 0,
@@ -10,7 +10,7 @@
     {
       "nctId": "NCT02249988",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02249988",
-      "retrievedAt": "2026-11-13T18:35:56.458Z",
+      "retrievedAt": "2026-11-14T17:13:10.063Z",
       "sourceUpdated": "2017-01-24",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -40,7 +40,7 @@
     {
       "nctId": "NCT05507203",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05507203",
-      "retrievedAt": "2026-11-13T18:35:56.463Z",
+      "retrievedAt": "2026-11-14T17:13:10.070Z",
       "sourceUpdated": "2026-09-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -449,7 +449,7 @@
     {
       "nctId": "NCT05507216",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05507216",
-      "retrievedAt": "2026-11-13T18:35:56.476Z",
+      "retrievedAt": "2026-11-14T17:13:10.073Z",
       "sourceUpdated": "2026-09-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -838,7 +838,7 @@
     {
       "nctId": "NCT00477672",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00477672",
-      "retrievedAt": "2026-11-13T18:35:56.771Z",
+      "retrievedAt": "2026-11-14T17:13:10.400Z",
       "sourceUpdated": "2017-05-17",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -1270,7 +1270,7 @@
     {
       "nctId": "NCT00550238",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00550238",
-      "retrievedAt": "2026-11-13T18:35:56.772Z",
+      "retrievedAt": "2026-11-14T17:13:10.415Z",
       "sourceUpdated": "2019-06-24",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -2115,7 +2115,7 @@
     {
       "nctId": "NCT00658567",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00658567",
-      "retrievedAt": "2026-11-13T18:35:56.784Z",
+      "retrievedAt": "2026-11-14T17:13:10.413Z",
       "sourceUpdated": "2017-05-19",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -2387,7 +2387,7 @@
     {
       "nctId": "NCT01174004",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01174004",
-      "retrievedAt": "2026-11-13T18:35:57.091Z",
+      "retrievedAt": "2026-11-14T17:13:10.739Z",
       "sourceUpdated": "2014-03-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -2793,7 +2793,7 @@
     {
       "nctId": "NCT02970292",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02970292",
-      "retrievedAt": "2026-11-13T18:35:57.100Z",
+      "retrievedAt": "2026-11-14T17:13:10.750Z",
       "sourceUpdated": "2020-06-17",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -3192,7 +3192,7 @@
     {
       "nctId": "NCT03325556",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03325556",
-      "retrievedAt": "2026-11-13T18:35:57.097Z",
+      "retrievedAt": "2026-11-14T17:13:10.769Z",
       "sourceUpdated": "2021-06-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -3904,7 +3904,7 @@
     {
       "nctId": "NCT03575052",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03575052",
-      "retrievedAt": "2026-11-13T18:35:57.415Z",
+      "retrievedAt": "2026-11-14T17:13:11.077Z",
       "sourceUpdated": "2024-12-31",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -4279,7 +4279,7 @@
     {
       "nctId": "NCT03623321",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03623321",
-      "retrievedAt": "2026-11-13T18:35:57.404Z",
+      "retrievedAt": "2026-11-14T17:13:11.086Z",
       "sourceUpdated": "2024-12-20",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -4754,7 +4754,7 @@
     {
       "nctId": "NCT03968159",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03968159",
-      "retrievedAt": "2026-11-13T18:35:57.414Z",
+      "retrievedAt": "2026-11-14T17:13:11.114Z",
       "sourceUpdated": "2021-11-17",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -5047,7 +5047,7 @@
     {
       "nctId": "NCT04181723",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04181723",
-      "retrievedAt": "2026-11-13T18:35:57.726Z",
+      "retrievedAt": "2026-11-14T17:13:11.414Z",
       "sourceUpdated": "2024-04-08",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -5409,7 +5409,7 @@
     {
       "nctId": "NCT04279314",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04279314",
-      "retrievedAt": "2026-11-13T18:35:57.739Z",
+      "retrievedAt": "2026-11-14T17:13:11.421Z",
       "sourceUpdated": "2024-04-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -6120,7 +6120,7 @@
     {
       "nctId": "NCT04531982",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04531982",
-      "retrievedAt": "2026-11-13T18:35:57.727Z",
+      "retrievedAt": "2026-11-14T17:13:11.458Z",
       "sourceUpdated": "2025-08-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -6296,7 +6296,7 @@
     {
       "nctId": "NCT05523895",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05523895",
-      "retrievedAt": "2026-11-13T18:35:58.048Z",
+      "retrievedAt": "2026-11-14T17:13:11.752Z",
       "sourceUpdated": "2025-08-24",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -6373,7 +6373,7 @@
     {
       "nctId": "NCT06173531",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06173531",
-      "retrievedAt": "2026-11-13T18:35:58.054Z",
+      "retrievedAt": "2026-11-14T17:13:11.755Z",
       "sourceUpdated": "2026-10-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -6500,7 +6500,7 @@
     {
       "nctId": "NCT01188187",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01188187",
-      "retrievedAt": "2026-11-13T18:35:58.052Z",
+      "retrievedAt": "2026-11-14T17:13:11.805Z",
       "sourceUpdated": "2016-10-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -6532,7 +6532,7 @@
     {
       "nctId": "NCT01578655",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01578655",
-      "retrievedAt": "2026-11-13T18:35:58.359Z",
+      "retrievedAt": "2026-11-14T17:13:12.089Z",
       "sourceUpdated": "2016-10-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -6563,7 +6563,7 @@
     {
       "nctId": "NCT01630733",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01630733",
-      "retrievedAt": "2026-11-13T18:35:58.361Z",
+      "retrievedAt": "2026-11-14T17:13:12.090Z",
       "sourceUpdated": "2026-04-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -6593,7 +6593,7 @@
     {
       "nctId": "NCT04576949",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04576949",
-      "retrievedAt": "2026-11-13T18:35:58.366Z",
+      "retrievedAt": "2026-11-14T17:13:12.155Z",
       "sourceUpdated": "2026-01-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -7242,7 +7242,7 @@
     {
       "nctId": "NCT05206370",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05206370",
-      "retrievedAt": "2026-11-13T18:35:58.669Z",
+      "retrievedAt": "2026-11-14T17:13:12.426Z",
       "sourceUpdated": "2026-01-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -7831,7 +7831,7 @@
     {
       "nctId": "NCT06435221",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06435221",
-      "retrievedAt": "2026-11-13T18:35:58.666Z",
+      "retrievedAt": "2026-11-14T17:13:12.424Z",
       "sourceUpdated": "2025-11-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -7861,7 +7861,7 @@
     {
       "nctId": "NCT02667236",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02667236",
-      "retrievedAt": "2026-11-13T18:35:58.678Z",
+      "retrievedAt": "2026-11-14T17:13:12.511Z",
       "sourceUpdated": "2018-02-06",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -8082,7 +8082,7 @@
     {
       "nctId": "NCT02667275",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02667275",
-      "retrievedAt": "2026-11-13T18:35:58.985Z",
+      "retrievedAt": "2026-11-14T17:13:12.761Z",
       "sourceUpdated": "2018-02-06",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -8363,7 +8363,7 @@
     {
       "nctId": "NCT02667288",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02667288",
-      "retrievedAt": "2026-11-13T18:35:58.995Z",
+      "retrievedAt": "2026-11-14T17:13:12.761Z",
       "sourceUpdated": "2018-02-07",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -8422,7 +8422,7 @@
     {
       "nctId": "NCT03687372",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03687372",
-      "retrievedAt": "2026-11-13T18:35:58.988Z",
+      "retrievedAt": "2026-11-14T17:13:12.848Z",
       "sourceUpdated": "2020-10-05",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -8660,7 +8660,7 @@
     {
       "nctId": "NCT03691831",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03691831",
-      "retrievedAt": "2026-11-13T18:35:59.313Z",
+      "retrievedAt": "2026-11-14T17:13:13.098Z",
       "sourceUpdated": "2020-10-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -8913,7 +8913,7 @@
     {
       "nctId": "NCT03812510",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03812510",
-      "retrievedAt": "2026-11-13T18:35:59.316Z",
+      "retrievedAt": "2026-11-14T17:13:13.102Z",
       "sourceUpdated": "2020-11-23",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -9202,7 +9202,7 @@
     {
       "nctId": "NCT00538915",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00538915",
-      "retrievedAt": "2026-11-13T18:35:59.305Z",
+      "retrievedAt": "2026-11-14T17:13:13.182Z",
       "sourceUpdated": "2021-07-30",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -9357,7 +9357,7 @@
     {
       "nctId": "NCT01814800",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01814800",
-      "retrievedAt": "2026-11-13T18:35:59.634Z",
+      "retrievedAt": "2026-11-14T17:13:13.434Z",
       "sourceUpdated": "2016-10-05",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -10015,7 +10015,7 @@
     {
       "nctId": "NCT03548220",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03548220",
-      "retrievedAt": "2026-11-13T18:35:59.646Z",
+      "retrievedAt": "2026-11-14T17:13:13.446Z",
       "sourceUpdated": "2022-05-24",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -10611,7 +10611,7 @@
     {
       "nctId": "NCT03559699",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03559699",
-      "retrievedAt": "2026-11-13T18:35:59.630Z",
+      "retrievedAt": "2026-11-14T17:13:13.524Z",
       "sourceUpdated": "2022-01-04",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -10782,7 +10782,7 @@
     {
       "nctId": "NCT03853798",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03853798",
-      "retrievedAt": "2026-11-13T18:35:59.961Z",
+      "retrievedAt": "2026-11-14T17:13:13.782Z",
       "sourceUpdated": "2025-11-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -12935,7 +12935,7 @@
     {
       "nctId": "NCT00156923",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00156923",
-      "retrievedAt": "2026-11-13T18:35:59.958Z",
+      "retrievedAt": "2026-11-14T17:13:13.783Z",
       "sourceUpdated": "2017-07-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -13301,7 +13301,7 @@
     {
       "nctId": "NCT00501631",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00501631",
-      "retrievedAt": "2026-11-13T18:35:59.953Z",
+      "retrievedAt": "2026-11-14T17:13:13.871Z",
       "sourceUpdated": "2011-09-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -13821,7 +13821,7 @@
     {
       "nctId": "NCT00678418",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00678418",
-      "retrievedAt": "2026-11-13T18:36:00.272Z",
+      "retrievedAt": "2026-11-14T17:13:14.118Z",
       "sourceUpdated": "2017-02-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -14084,7 +14084,7 @@
     {
       "nctId": "NCT00834080",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00834080",
-      "retrievedAt": "2026-11-13T18:36:00.282Z",
+      "retrievedAt": "2026-11-14T17:13:14.119Z",
       "sourceUpdated": "2018-12-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -14149,7 +14149,7 @@
     {
       "nctId": "NCT01218958",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01218958",
-      "retrievedAt": "2026-11-13T18:36:00.277Z",
+      "retrievedAt": "2026-11-14T17:13:14.209Z",
       "sourceUpdated": "2017-07-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -14632,7 +14632,7 @@
     {
       "nctId": "NCT01218971",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01218971",
-      "retrievedAt": "2026-11-13T18:36:00.591Z",
+      "retrievedAt": "2026-11-14T17:13:14.457Z",
       "sourceUpdated": "2010-12-24",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -15313,7 +15313,7 @@
     {
       "nctId": "NCT01218997",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01218997",
-      "retrievedAt": "2026-11-13T18:36:00.583Z",
+      "retrievedAt": "2026-11-14T17:13:14.453Z",
       "sourceUpdated": "2011-01-04",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -15994,7 +15994,7 @@
     {
       "nctId": "NCT01469039",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01469039",
-      "retrievedAt": "2026-11-13T18:36:00.595Z",
+      "retrievedAt": "2026-11-14T17:13:14.544Z",
       "sourceUpdated": "2019-01-30",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -16385,7 +16385,7 @@
     {
       "nctId": "NCT01626456",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01626456",
-      "retrievedAt": "2026-11-13T18:36:00.897Z",
+      "retrievedAt": "2026-11-14T17:13:14.790Z",
       "sourceUpdated": "2018-09-25",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -17022,7 +17022,7 @@
     {
       "nctId": "NCT01895452",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01895452",
-      "retrievedAt": "2026-11-13T18:36:00.915Z",
+      "retrievedAt": "2026-11-14T17:13:14.793Z",
       "sourceUpdated": "2017-08-25",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -17202,7 +17202,7 @@
     {
       "nctId": "NCT02085135",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02085135",
-      "retrievedAt": "2026-11-13T18:36:00.904Z",
+      "retrievedAt": "2026-11-14T17:13:14.882Z",
       "sourceUpdated": "2019-08-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -17251,7 +17251,7 @@
     {
       "nctId": "NCT02141399",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02141399",
-      "retrievedAt": "2026-11-13T18:36:01.216Z",
+      "retrievedAt": "2026-11-14T17:13:15.126Z",
       "sourceUpdated": "2018-12-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -17846,7 +17846,7 @@
     {
       "nctId": "NCT02158533",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02158533",
-      "retrievedAt": "2026-11-13T18:36:01.229Z",
+      "retrievedAt": "2026-11-14T17:13:15.130Z",
       "sourceUpdated": "2019-08-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -18131,7 +18131,7 @@
     {
       "nctId": "NCT02158546",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02158546",
-      "retrievedAt": "2026-11-13T18:36:01.227Z",
+      "retrievedAt": "2026-11-14T17:13:15.218Z",
       "sourceUpdated": "2019-06-25",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -18275,7 +18275,7 @@
     {
       "nctId": "NCT02218008",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02218008",
-      "retrievedAt": "2026-11-13T18:36:01.526Z",
+      "retrievedAt": "2026-11-14T17:13:15.462Z",
       "sourceUpdated": "2019-08-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -18742,7 +18742,7 @@
     {
       "nctId": "NCT02537574",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02537574",
-      "retrievedAt": "2026-11-13T18:36:01.552Z",
+      "retrievedAt": "2026-11-14T17:13:15.469Z",
       "sourceUpdated": "2019-03-06",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -19044,7 +19044,7 @@
     {
       "nctId": "NCT02634346",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02634346",
-      "retrievedAt": "2026-11-13T18:36:01.538Z",
+      "retrievedAt": "2026-11-14T17:13:15.552Z",
       "sourceUpdated": "2018-06-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -19190,7 +19190,7 @@
     {
       "nctId": "NCT02669758",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02669758",
-      "retrievedAt": "2026-11-13T18:36:01.835Z",
+      "retrievedAt": "2026-11-14T17:13:15.797Z",
       "sourceUpdated": "2019-07-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -19295,7 +19295,7 @@
     {
       "nctId": "NCT02694328",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02694328",
-      "retrievedAt": "2026-11-13T18:36:01.862Z",
+      "retrievedAt": "2026-11-14T17:13:15.805Z",
       "sourceUpdated": "2020-02-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -19644,7 +19644,7 @@
     {
       "nctId": "NCT02696434",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02696434",
-      "retrievedAt": "2026-11-13T18:36:01.864Z",
+      "retrievedAt": "2026-11-14T17:13:15.885Z",
       "sourceUpdated": "2019-02-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -19841,7 +19841,7 @@
     {
       "nctId": "NCT02873208",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02873208",
-      "retrievedAt": "2026-11-13T18:36:02.146Z",
+      "retrievedAt": "2026-11-14T17:13:16.134Z",
       "sourceUpdated": "2021-07-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -19996,7 +19996,7 @@
     {
       "nctId": "NCT03187769",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03187769",
-      "retrievedAt": "2026-11-13T18:36:02.170Z",
+      "retrievedAt": "2026-11-14T17:13:16.139Z",
       "sourceUpdated": "2023-01-19",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -20275,7 +20275,7 @@
     {
       "nctId": "NCT03188185",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03188185",
-      "retrievedAt": "2026-11-13T18:36:02.175Z",
+      "retrievedAt": "2026-11-14T17:13:16.220Z",
       "sourceUpdated": "2021-04-08",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -20485,7 +20485,7 @@
     {
       "nctId": "NCT03201757",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03201757",
-      "retrievedAt": "2026-11-13T18:36:02.463Z",
+      "retrievedAt": "2026-11-14T17:13:16.469Z",
       "sourceUpdated": "2024-09-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -20956,7 +20956,7 @@
     {
       "nctId": "NCT03345979",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03345979",
-      "retrievedAt": "2026-11-13T18:36:02.497Z",
+      "retrievedAt": "2026-11-14T17:13:16.475Z",
       "sourceUpdated": "2020-08-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -21347,7 +21347,7 @@
     {
       "nctId": "NCT06586112",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06586112",
-      "retrievedAt": "2026-11-13T18:36:02.487Z",
+      "retrievedAt": "2026-11-14T17:13:16.561Z",
       "sourceUpdated": "2026-10-28",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -21378,7 +21378,7 @@
     {
       "nctId": "NCT06588738",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06588738",
-      "retrievedAt": "2026-11-13T18:36:02.775Z",
+      "retrievedAt": "2026-11-14T17:13:16.802Z",
       "sourceUpdated": "2026-10-28",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -21409,7 +21409,7 @@
     {
       "nctId": "NCT04516096",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04516096",
-      "retrievedAt": "2026-11-13T18:36:02.791Z",
+      "retrievedAt": "2026-11-14T17:13:16.810Z",
       "sourceUpdated": "2023-04-07",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -21439,7 +21439,7 @@
     {
       "nctId": "NCT05619783",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05619783",
-      "retrievedAt": "2026-11-13T18:36:02.806Z",
+      "retrievedAt": "2026-11-14T17:13:16.895Z",
       "sourceUpdated": "2025-01-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -21468,7 +21468,7 @@
     {
       "nctId": "NCT06122662",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06122662",
-      "retrievedAt": "2026-11-13T18:36:03.089Z",
+      "retrievedAt": "2026-11-14T17:13:17.137Z",
       "sourceUpdated": "2026-04-30",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -21502,7 +21502,7 @@
     {
       "nctId": "NCT01357642",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01357642",
-      "retrievedAt": "2026-11-13T18:36:03.113Z",
+      "retrievedAt": "2026-11-14T17:13:17.146Z",
       "sourceUpdated": "2016-03-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -21533,7 +21533,7 @@
     {
       "nctId": "NCT01460511",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01460511",
-      "retrievedAt": "2026-11-13T18:36:03.117Z",
+      "retrievedAt": "2026-11-14T17:13:17.232Z",
       "sourceUpdated": "2018-07-31",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -21563,7 +21563,7 @@
     {
       "nctId": "NCT01476904",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01476904",
-      "retrievedAt": "2026-11-13T18:36:03.413Z",
+      "retrievedAt": "2026-11-14T17:13:17.474Z",
       "sourceUpdated": "2017-02-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -21594,7 +21594,7 @@
     {
       "nctId": "NCT01737905",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01737905",
-      "retrievedAt": "2026-11-13T18:36:03.439Z",
+      "retrievedAt": "2026-11-14T17:13:17.490Z",
       "sourceUpdated": "2016-03-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -21624,7 +21624,7 @@
     {
       "nctId": "NCT05539872",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05539872",
-      "retrievedAt": "2026-11-13T18:36:03.430Z",
+      "retrievedAt": "2026-11-14T17:13:17.569Z",
       "sourceUpdated": "2026-03-05",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -22114,7 +22114,7 @@
     {
       "nctId": "NCT07560150",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT07560150",
-      "retrievedAt": "2026-11-13T18:36:03.721Z",
+      "retrievedAt": "2026-11-14T17:13:17.810Z",
       "sourceUpdated": "2026-07-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -22147,7 +22147,7 @@
     {
       "nctId": "NCT01064024",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01064024",
-      "retrievedAt": "2026-11-13T18:36:03.752Z",
+      "retrievedAt": "2026-11-14T17:13:17.825Z",
       "sourceUpdated": "2013-01-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -22178,7 +22178,7 @@
     {
       "nctId": "NCT01650051",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01650051",
-      "retrievedAt": "2026-11-13T18:36:03.746Z",
+      "retrievedAt": "2026-11-14T17:13:17.905Z",
       "sourceUpdated": "2014-06-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -22208,7 +22208,7 @@
     {
       "nctId": "NCT01779947",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01779947",
-      "retrievedAt": "2026-11-13T18:36:04.036Z",
+      "retrievedAt": "2026-11-14T17:13:18.145Z",
       "sourceUpdated": "2014-06-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -22238,7 +22238,7 @@
     {
       "nctId": "NCT02072954",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02072954",
-      "retrievedAt": "2026-11-13T18:36:04.094Z",
+      "retrievedAt": "2026-11-14T17:13:18.158Z",
       "sourceUpdated": "2014-06-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -22269,7 +22269,7 @@
     {
       "nctId": "NCT02103322",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02103322",
-      "retrievedAt": "2026-11-13T18:36:04.065Z",
+      "retrievedAt": "2026-11-14T17:13:18.240Z",
       "sourceUpdated": "2014-06-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -22301,7 +22301,7 @@
     {
       "nctId": "NCT02110368",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02110368",
-      "retrievedAt": "2026-11-13T18:36:04.786Z",
+      "retrievedAt": "2026-11-14T17:13:18.481Z",
       "sourceUpdated": "2014-06-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -22332,7 +22332,7 @@
     {
       "nctId": "NCT02121002",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02121002",
-      "retrievedAt": "2026-11-13T18:36:04.368Z",
+      "retrievedAt": "2026-11-14T17:13:18.494Z",
       "sourceUpdated": "2021-06-16",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -22388,7 +22388,7 @@
     {
       "nctId": "NCT02125253",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02125253",
-      "retrievedAt": "2026-11-13T18:36:04.776Z",
+      "retrievedAt": "2026-11-14T17:13:18.575Z",
       "sourceUpdated": "2015-11-02",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -22419,7 +22419,7 @@
     {
       "nctId": "NCT04701164",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04701164",
-      "retrievedAt": "2026-11-13T18:36:04.673Z",
+      "retrievedAt": "2026-11-14T17:13:18.815Z",
       "sourceUpdated": "2025-05-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -22449,7 +22449,7 @@
     {
       "nctId": "NCT05811247",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05811247",
-      "retrievedAt": "2026-11-13T18:36:05.001Z",
+      "retrievedAt": "2026-11-14T17:13:18.827Z",
       "sourceUpdated": "2026-11-03",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -22810,7 +22810,7 @@
     {
       "nctId": "NCT05813275",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05813275",
-      "retrievedAt": "2026-11-13T18:36:05.090Z",
+      "retrievedAt": "2026-11-14T17:13:18.909Z",
       "sourceUpdated": "2026-09-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -23156,7 +23156,7 @@
     {
       "nctId": "NCT03428360",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03428360",
-      "retrievedAt": "2026-11-13T18:36:05.093Z",
+      "retrievedAt": "2026-11-14T17:13:19.155Z",
       "sourceUpdated": "2021-08-05",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -23574,7 +23574,7 @@
     {
       "nctId": "NCT01923428",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01923428",
-      "retrievedAt": "2026-11-13T18:36:05.310Z",
+      "retrievedAt": "2026-11-14T17:13:19.174Z",
       "sourceUpdated": "2020-04-08",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -23736,7 +23736,7 @@
     {
       "nctId": "NCT02621892",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02621892",
-      "retrievedAt": "2026-11-13T18:36:05.419Z",
+      "retrievedAt": "2026-11-14T17:13:19.248Z",
       "sourceUpdated": "2020-04-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -23973,7 +23973,7 @@
     {
       "nctId": "NCT02675998",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02675998",
-      "retrievedAt": "2026-11-13T18:36:05.418Z",
+      "retrievedAt": "2026-11-14T17:13:19.495Z",
       "sourceUpdated": "2020-08-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -24074,7 +24074,7 @@
     {
       "nctId": "NCT02686138",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02686138",
-      "retrievedAt": "2026-11-13T18:36:05.630Z",
+      "retrievedAt": "2026-11-14T17:13:19.516Z",
       "sourceUpdated": "2020-04-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -24428,7 +24428,7 @@
     {
       "nctId": "NCT02727751",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02727751",
-      "retrievedAt": "2026-11-13T18:36:05.738Z",
+      "retrievedAt": "2026-11-14T17:13:19.583Z",
       "sourceUpdated": "2020-09-09",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -24518,7 +24518,7 @@
     {
       "nctId": "NCT03427125",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03427125",
-      "retrievedAt": "2026-11-13T18:36:05.727Z",
+      "retrievedAt": "2026-11-14T17:13:19.831Z",
       "sourceUpdated": "2023-06-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -24769,7 +24769,7 @@
     {
       "nctId": "NCT03824587",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03824587",
-      "retrievedAt": "2026-11-13T18:36:05.940Z",
+      "retrievedAt": "2026-11-14T17:13:19.852Z",
       "sourceUpdated": "2023-03-06",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -24985,7 +24985,7 @@
     {
       "nctId": "NCT05643534",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05643534",
-      "retrievedAt": "2026-11-13T18:36:06.038Z",
+      "retrievedAt": "2026-11-14T17:13:19.919Z",
       "sourceUpdated": "2026-09-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -25016,7 +25016,7 @@
     {
       "nctId": "NCT04211363",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04211363",
-      "retrievedAt": "2026-11-13T18:36:06.047Z",
+      "retrievedAt": "2026-11-14T17:13:20.167Z",
       "sourceUpdated": "2022-12-07",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -25306,7 +25306,7 @@
     {
       "nctId": "NCT04211389",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04211389",
-      "retrievedAt": "2026-11-13T18:36:06.261Z",
+      "retrievedAt": "2026-11-14T17:13:20.187Z",
       "sourceUpdated": "2022-12-07",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -25536,7 +25536,7 @@
     {
       "nctId": "NCT04286607",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04286607",
-      "retrievedAt": "2026-11-13T18:36:06.350Z",
+      "retrievedAt": "2026-11-14T17:13:20.261Z",
       "sourceUpdated": "2026-09-09",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -26108,7 +26108,7 @@
     {
       "nctId": "NCT04773587",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04773587",
-      "retrievedAt": "2026-11-13T18:36:06.372Z",
+      "retrievedAt": "2026-11-14T17:13:20.501Z",
       "sourceUpdated": "2024-10-09",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -26410,7 +26410,7 @@
     {
       "nctId": "NCT04773600",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04773600",
-      "retrievedAt": "2026-11-13T18:36:06.584Z",
+      "retrievedAt": "2026-11-14T17:13:20.525Z",
       "sourceUpdated": "2024-10-04",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -26712,7 +26712,7 @@
     {
       "nctId": "NCT04804605",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04804605",
-      "retrievedAt": "2026-11-13T18:36:06.665Z",
+      "retrievedAt": "2026-11-14T17:13:20.607Z",
       "sourceUpdated": "2025-12-23",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -27909,7 +27909,7 @@
     {
       "nctId": "NCT04845620",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04845620",
-      "retrievedAt": "2026-11-13T18:36:06.699Z",
+      "retrievedAt": "2026-11-14T17:13:20.838Z",
       "sourceUpdated": "2025-12-23",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -28109,7 +28109,7 @@
     {
       "nctId": "NCT04973228",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04973228",
-      "retrievedAt": "2026-11-13T18:36:06.904Z",
+      "retrievedAt": "2026-11-14T17:13:20.860Z",
       "sourceUpdated": "2024-03-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -28309,7 +28309,7 @@
     {
       "nctId": "NCT05028582",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05028582",
-      "retrievedAt": "2026-11-13T18:36:06.977Z",
+      "retrievedAt": "2026-11-14T17:13:20.944Z",
       "sourceUpdated": "2025-07-17",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -28797,7 +28797,7 @@
     {
       "nctId": "NCT05089084",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05089084",
-      "retrievedAt": "2026-11-13T18:36:07.014Z",
+      "retrievedAt": "2026-11-14T17:13:21.176Z",
       "sourceUpdated": "2026-06-05",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -30060,7 +30060,7 @@
     {
       "nctId": "NCT06347003",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06347003",
-      "retrievedAt": "2026-11-13T18:36:07.225Z",
+      "retrievedAt": "2026-11-14T17:13:21.197Z",
       "sourceUpdated": "2026-10-08",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -30090,7 +30090,7 @@
     {
       "nctId": "NCT06347016",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06347016",
-      "retrievedAt": "2026-11-13T18:36:07.287Z",
+      "retrievedAt": "2026-11-14T17:13:21.281Z",
       "sourceUpdated": "2026-10-09",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -30120,7 +30120,7 @@
     {
       "nctId": "NCT06347133",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06347133",
-      "retrievedAt": "2026-11-13T18:36:07.345Z",
+      "retrievedAt": "2026-11-14T17:13:21.514Z",
       "sourceUpdated": "2026-09-25",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -30150,7 +30150,7 @@
     {
       "nctId": "NCT00244842",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00244842",
-      "retrievedAt": "2026-11-13T18:36:07.553Z",
+      "retrievedAt": "2026-11-14T17:13:21.533Z",
       "sourceUpdated": "2023-03-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -30511,7 +30511,7 @@
     {
       "nctId": "NCT00258713",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00258713",
-      "retrievedAt": "2026-11-13T18:36:07.611Z",
+      "retrievedAt": "2026-11-14T17:13:21.619Z",
       "sourceUpdated": "2008-09-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -30540,7 +30540,7 @@
     {
       "nctId": "NCT00408187",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00408187",
-      "retrievedAt": "2026-11-13T18:36:07.665Z",
+      "retrievedAt": "2026-11-14T17:13:21.849Z",
       "sourceUpdated": "2009-07-30",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -30571,7 +30571,7 @@
     {
       "nctId": "NCT03021499",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03021499",
-      "retrievedAt": "2026-11-13T18:36:07.886Z",
+      "retrievedAt": "2026-11-14T17:13:21.874Z",
       "sourceUpdated": "2023-03-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -32210,7 +32210,7 @@
     {
       "nctId": "NCT03597464",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03597464",
-      "retrievedAt": "2026-11-13T18:36:07.938Z",
+      "retrievedAt": "2026-11-14T17:13:21.956Z",
       "sourceUpdated": "2022-12-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -33294,7 +33294,7 @@
     {
       "nctId": "NCT04147650",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04147650",
-      "retrievedAt": "2026-11-13T18:36:07.974Z",
+      "retrievedAt": "2026-11-14T17:13:22.186Z",
       "sourceUpdated": "2021-12-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -33639,7 +33639,7 @@
     {
       "nctId": "NCT05629962",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05629962",
-      "retrievedAt": "2026-11-13T18:36:08.202Z",
+      "retrievedAt": "2026-11-14T17:13:22.210Z",
       "sourceUpdated": "2025-06-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -34241,7 +34241,7 @@
     {
       "nctId": "NCT02741791",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02741791",
-      "retrievedAt": "2026-11-13T18:36:08.260Z",
+      "retrievedAt": "2026-11-14T17:13:22.290Z",
       "sourceUpdated": "2021-03-24",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -34271,7 +34271,7 @@
     {
       "nctId": "NCT03226522",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03226522",
-      "retrievedAt": "2026-11-13T18:36:08.286Z",
+      "retrievedAt": "2026-11-14T17:13:22.521Z",
       "sourceUpdated": "2023-09-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -34651,7 +34651,7 @@
     {
       "nctId": "NCT03896009",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03896009",
-      "retrievedAt": "2026-11-13T18:36:08.511Z",
+      "retrievedAt": "2026-11-14T17:13:22.545Z",
       "sourceUpdated": "2023-08-24",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -34748,7 +34748,7 @@
     {
       "nctId": "NCT04019704",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04019704",
-      "retrievedAt": "2026-11-13T18:36:08.583Z",
+      "retrievedAt": "2026-11-14T17:13:22.626Z",
       "sourceUpdated": "2022-10-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -34815,7 +34815,7 @@
     {
       "nctId": "NCT04039022",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04039022",
-      "retrievedAt": "2026-11-13T18:36:08.594Z",
+      "retrievedAt": "2026-11-14T17:13:22.855Z",
       "sourceUpdated": "2022-10-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -35082,7 +35082,7 @@
     {
       "nctId": "NCT04068051",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04068051",
-      "retrievedAt": "2026-11-13T18:36:08.837Z",
+      "retrievedAt": "2026-11-14T17:13:22.877Z",
       "sourceUpdated": "2023-10-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -35242,7 +35242,7 @@
     {
       "nctId": "NCT04163185",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04163185",
-      "retrievedAt": "2026-11-13T18:36:08.911Z",
+      "retrievedAt": "2026-11-14T17:13:22.961Z",
       "sourceUpdated": "2026-01-28",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -35311,7 +35311,7 @@
     {
       "nctId": "NCT04797715",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04797715",
-      "retrievedAt": "2026-11-13T18:36:08.897Z",
+      "retrievedAt": "2026-11-14T17:13:23.189Z",
       "sourceUpdated": "2023-11-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -35343,7 +35343,7 @@
     {
       "nctId": "NCT04947553",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04947553",
-      "retrievedAt": "2026-11-13T18:36:09.149Z",
+      "retrievedAt": "2026-11-14T17:13:23.211Z",
       "sourceUpdated": "2025-12-08",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -35375,7 +35375,7 @@
     {
       "nctId": "NCT05059223",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05059223",
-      "retrievedAt": "2026-11-13T18:36:09.232Z",
+      "retrievedAt": "2026-11-14T17:13:23.689Z",
       "sourceUpdated": "2026-05-28",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -35407,7 +35407,7 @@
     {
       "nctId": "NCT05113745",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05113745",
-      "retrievedAt": "2026-11-13T18:36:09.233Z",
+      "retrievedAt": "2026-11-14T17:13:23.523Z",
       "sourceUpdated": "2025-11-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -35439,7 +35439,7 @@
     {
       "nctId": "NCT05550207",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05550207",
-      "retrievedAt": "2026-11-13T18:36:09.465Z",
+      "retrievedAt": "2026-11-14T17:13:23.577Z",
       "sourceUpdated": "2025-12-02",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -35468,7 +35468,7 @@
     {
       "nctId": "NCT05557409",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05557409",
-      "retrievedAt": "2026-11-13T18:36:09.548Z",
+      "retrievedAt": "2026-11-14T17:13:23.857Z",
       "sourceUpdated": "2026-08-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -35566,7 +35566,7 @@
     {
       "nctId": "NCT05972044",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05972044",
-      "retrievedAt": "2026-11-13T18:36:09.538Z",
+      "retrievedAt": "2026-11-14T17:13:23.912Z",
       "sourceUpdated": "2026-02-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -35597,7 +35597,7 @@
     {
       "nctId": "NCT06360419",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06360419",
-      "retrievedAt": "2026-11-13T18:36:09.793Z",
+      "retrievedAt": "2026-11-14T17:13:24.025Z",
       "sourceUpdated": "2026-01-05",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -35627,7 +35627,7 @@
     {
       "nctId": "NCT00957996",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00957996",
-      "retrievedAt": "2026-11-13T18:36:09.869Z",
+      "retrievedAt": "2026-11-14T17:13:24.195Z",
       "sourceUpdated": "2015-02-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -36768,7 +36768,7 @@
     {
       "nctId": "NCT02303626",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02303626",
-      "retrievedAt": "2026-11-13T18:36:09.868Z",
+      "retrievedAt": "2026-11-14T17:13:24.246Z",
       "sourceUpdated": "2025-11-17",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -37091,7 +37091,7 @@
     {
       "nctId": "NCT02369159",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02369159",
-      "retrievedAt": "2026-11-13T18:36:10.113Z",
+      "retrievedAt": "2026-11-14T17:13:24.361Z",
       "sourceUpdated": "2021-03-23",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -37606,7 +37606,7 @@
     {
       "nctId": "NCT02635724",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02635724",
-      "retrievedAt": "2026-11-13T18:36:10.191Z",
+      "retrievedAt": "2026-11-14T17:13:24.533Z",
       "sourceUpdated": "2021-03-23",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -38039,7 +38039,7 @@
     {
       "nctId": "NCT03472040",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03472040",
-      "retrievedAt": "2026-11-13T18:36:10.196Z",
+      "retrievedAt": "2026-11-14T17:13:24.587Z",
       "sourceUpdated": "2023-06-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -39209,7 +39209,7 @@
     {
       "nctId": "NCT03485911",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03485911",
-      "retrievedAt": "2026-11-13T18:36:10.437Z",
+      "retrievedAt": "2026-11-14T17:13:24.700Z",
       "sourceUpdated": "2023-06-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -40210,7 +40210,7 @@
     {
       "nctId": "NCT03873116",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03873116",
-      "retrievedAt": "2026-11-13T18:36:10.524Z",
+      "retrievedAt": "2026-11-14T17:13:24.872Z",
       "sourceUpdated": "2024-07-19",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -41003,7 +41003,7 @@
     {
       "nctId": "NCT05244304",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05244304",
-      "retrievedAt": "2026-11-13T18:36:10.501Z",
+      "retrievedAt": "2026-11-14T17:13:24.921Z",
       "sourceUpdated": "2026-07-23",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -41033,7 +41033,7 @@
     {
       "nctId": "NCT01480479",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01480479",
-      "retrievedAt": "2026-11-13T18:36:10.775Z",
+      "retrievedAt": "2026-11-14T17:13:25.049Z",
       "sourceUpdated": "2018-01-16",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -41068,7 +41068,7 @@
     {
       "nctId": "NCT05624268",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05624268",
-      "retrievedAt": "2026-11-13T18:36:10.810Z",
+      "retrievedAt": "2026-11-14T17:13:25.206Z",
       "sourceUpdated": "2026-08-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -41097,7 +41097,7 @@
     {
       "nctId": "NCT01685684",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01685684",
-      "retrievedAt": "2026-11-13T18:36:10.848Z",
+      "retrievedAt": "2026-11-14T17:13:25.266Z",
       "sourceUpdated": "2020-10-19",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -41896,7 +41896,7 @@
     {
       "nctId": "NCT00128479",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00128479",
-      "retrievedAt": "2026-11-13T18:36:11.093Z",
+      "retrievedAt": "2026-11-14T17:13:25.385Z",
       "sourceUpdated": "2012-02-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -41929,7 +41929,7 @@
     {
       "nctId": "NCT00128505",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00128505",
-      "retrievedAt": "2026-11-13T18:36:11.136Z",
+      "retrievedAt": "2026-11-14T17:13:25.548Z",
       "sourceUpdated": "2012-02-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -41959,7 +41959,7 @@
     {
       "nctId": "NCT00130676",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00130676",
-      "retrievedAt": "2026-11-13T18:36:11.158Z",
+      "retrievedAt": "2026-11-14T17:13:25.602Z",
       "sourceUpdated": "2012-02-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -41990,7 +41990,7 @@
     {
       "nctId": "NCT00146523",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00146523",
-      "retrievedAt": "2026-11-13T18:36:11.417Z",
+      "retrievedAt": "2026-11-14T17:13:25.720Z",
       "sourceUpdated": "2012-02-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -42020,7 +42020,7 @@
     {
       "nctId": "NCT00208156",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00208156",
-      "retrievedAt": "2026-11-13T18:36:11.458Z",
+      "retrievedAt": "2026-11-14T17:13:25.882Z",
       "sourceUpdated": "2012-02-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -42049,7 +42049,7 @@
     {
       "nctId": "NCT00569582",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00569582",
-      "retrievedAt": "2026-11-13T18:36:11.513Z",
+      "retrievedAt": "2026-11-14T17:13:25.936Z",
       "sourceUpdated": "2013-08-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -42328,7 +42328,7 @@
     {
       "nctId": "NCT00936741",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00936741",
-      "retrievedAt": "2026-11-13T18:36:11.727Z",
+      "retrievedAt": "2026-11-14T17:13:26.058Z",
       "sourceUpdated": "2014-04-02",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -42658,7 +42658,7 @@
     {
       "nctId": "NCT01371565",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01371565",
-      "retrievedAt": "2026-11-13T18:36:11.781Z",
+      "retrievedAt": "2026-11-14T17:13:26.217Z",
       "sourceUpdated": "2014-03-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -42734,7 +42734,7 @@
     {
       "nctId": "NCT03697109",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03697109",
-      "retrievedAt": "2026-11-13T18:36:11.842Z",
+      "retrievedAt": "2026-11-14T17:13:26.277Z",
       "sourceUpdated": "2025-07-16",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -44183,7 +44183,7 @@
     {
       "nctId": "NCT04308590",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04308590",
-      "retrievedAt": "2026-11-13T18:36:12.053Z",
+      "retrievedAt": "2026-11-14T17:13:26.393Z",
       "sourceUpdated": "2025-09-04",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -44844,7 +44844,7 @@
     {
       "nctId": "NCT02496767",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02496767",
-      "retrievedAt": "2026-11-13T18:36:12.099Z",
+      "retrievedAt": "2026-11-14T17:13:26.558Z",
       "sourceUpdated": "2020-09-09",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -48680,7 +48680,7 @@
     {
       "nctId": "NCT02929329",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02929329",
-      "retrievedAt": "2026-11-13T18:36:12.189Z",
+      "retrievedAt": "2026-11-14T17:13:26.667Z",
       "sourceUpdated": "2021-11-05",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -50019,7 +50019,7 @@
     {
       "nctId": "NCT02936635",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02936635",
-      "retrievedAt": "2026-11-13T18:36:12.380Z",
+      "retrievedAt": "2026-11-14T17:13:26.731Z",
       "sourceUpdated": "2021-06-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -51016,7 +51016,7 @@
     {
       "nctId": "NCT03759392",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03759392",
-      "retrievedAt": "2026-11-13T18:36:12.428Z",
+      "retrievedAt": "2026-11-14T17:13:26.897Z",
       "sourceUpdated": "2023-03-07",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -51740,7 +51740,7 @@
     {
       "nctId": "NCT05186818",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05186818",
-      "retrievedAt": "2026-11-13T18:36:12.513Z",
+      "retrievedAt": "2026-11-14T17:13:27.024Z",
       "sourceUpdated": "2026-03-03",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -52357,7 +52357,7 @@
     {
       "nctId": "NCT05767346",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05767346",
-      "retrievedAt": "2026-11-13T18:36:12.698Z",
+      "retrievedAt": "2026-11-14T17:13:27.070Z",
       "sourceUpdated": "2026-06-09",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -52810,7 +52810,7 @@
     {
       "nctId": "NCT00877656",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00877656",
-      "retrievedAt": "2026-11-13T18:36:12.735Z",
+      "retrievedAt": "2026-11-14T17:13:27.231Z",
       "sourceUpdated": "2024-03-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -52840,7 +52840,7 @@
     {
       "nctId": "NCT01158157",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01158157",
-      "retrievedAt": "2026-11-13T18:36:12.820Z",
+      "retrievedAt": "2026-11-14T17:13:27.359Z",
       "sourceUpdated": "2024-03-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -52894,7 +52894,7 @@
     {
       "nctId": "NCT01491607",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01491607",
-      "retrievedAt": "2026-11-13T18:36:13.015Z",
+      "retrievedAt": "2026-11-14T17:13:27.407Z",
       "sourceUpdated": "2024-04-09",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -54774,7 +54774,7 @@
     {
       "nctId": "NCT03877926",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03877926",
-      "retrievedAt": "2026-11-13T18:36:13.067Z",
+      "retrievedAt": "2026-11-14T17:13:27.568Z",
       "sourceUpdated": "2026-05-06",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -56647,7 +56647,7 @@
     {
       "nctId": "NCT02334423",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02334423",
-      "retrievedAt": "2026-11-13T18:36:13.126Z",
+      "retrievedAt": "2026-11-14T17:13:27.693Z",
       "sourceUpdated": "2019-03-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -56801,7 +56801,7 @@
     {
       "nctId": "NCT02334436",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02334436",
-      "retrievedAt": "2026-11-13T18:36:13.335Z",
+      "retrievedAt": "2026-11-14T17:13:27.743Z",
       "sourceUpdated": "2019-03-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -56970,7 +56970,7 @@
     {
       "nctId": "NCT02049905",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02049905",
-      "retrievedAt": "2026-11-13T18:36:13.398Z",
+      "retrievedAt": "2026-11-14T17:13:27.908Z",
       "sourceUpdated": "2024-06-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -58221,7 +58221,7 @@
     {
       "nctId": "NCT00017407",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00017407",
-      "retrievedAt": "2026-11-13T18:36:13.434Z",
+      "retrievedAt": "2026-11-14T17:13:28.027Z",
       "sourceUpdated": "2022-12-05",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -58252,7 +58252,7 @@
     {
       "nctId": "NCT00048113",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00048113",
-      "retrievedAt": "2026-11-13T18:36:13.641Z",
+      "retrievedAt": "2026-11-14T17:13:28.077Z",
       "sourceUpdated": "2022-12-05",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -58281,7 +58281,7 @@
     {
       "nctId": "NCT00048295",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00048295",
-      "retrievedAt": "2026-11-13T18:36:13.723Z",
+      "retrievedAt": "2026-11-14T17:13:28.241Z",
       "sourceUpdated": "2022-08-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -58310,7 +58310,7 @@
     {
       "nctId": "NCT01737398",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01737398",
-      "retrievedAt": "2026-11-13T18:36:13.744Z",
+      "retrievedAt": "2026-11-14T17:13:28.363Z",
       "sourceUpdated": "2019-07-17",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -59609,7 +59609,7 @@
     {
       "nctId": "NCT02175004",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02175004",
-      "retrievedAt": "2026-11-13T18:36:13.951Z",
+      "retrievedAt": "2026-11-14T17:13:28.415Z",
       "sourceUpdated": "2023-11-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -61726,7 +61726,7 @@
     {
       "nctId": "NCT02211209",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02211209",
-      "retrievedAt": "2026-11-13T18:36:14.043Z",
+      "retrievedAt": "2026-11-14T17:13:28.574Z",
       "sourceUpdated": "2022-04-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -62091,7 +62091,7 @@
     {
       "nctId": "NCT02300233",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02300233",
-      "retrievedAt": "2026-11-13T18:36:14.073Z",
+      "retrievedAt": "2026-11-14T17:13:28.704Z",
       "sourceUpdated": "2022-04-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -62597,7 +62597,7 @@
     {
       "nctId": "NCT04136171",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04136171",
-      "retrievedAt": "2026-11-13T18:36:14.261Z",
+      "retrievedAt": "2026-11-14T17:13:28.756Z",
       "sourceUpdated": "2026-09-03",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -62627,7 +62627,7 @@
     {
       "nctId": "NCT04136184",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04136184",
-      "retrievedAt": "2026-11-13T18:36:14.374Z",
+      "retrievedAt": "2026-11-14T17:13:28.913Z",
       "sourceUpdated": "2024-12-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -63940,7 +63940,7 @@
     {
       "nctId": "NCT04568434",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04568434",
-      "retrievedAt": "2026-11-13T18:36:14.406Z",
+      "retrievedAt": "2026-11-14T17:13:29.041Z",
       "sourceUpdated": "2025-03-06",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -64688,7 +64688,7 @@
     {
       "nctId": "NCT05079919",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05079919",
-      "retrievedAt": "2026-11-13T18:36:14.571Z",
+      "retrievedAt": "2026-11-14T17:13:29.092Z",
       "sourceUpdated": "2026-02-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -64718,7 +64718,7 @@
     {
       "nctId": "NCT05139810",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05139810",
-      "retrievedAt": "2026-11-13T18:36:14.681Z",
+      "retrievedAt": "2026-11-14T17:13:29.253Z",
       "sourceUpdated": "2025-03-06",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -64993,7 +64993,7 @@
     {
       "nctId": "NCT05552326",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05552326",
-      "retrievedAt": "2026-11-13T18:36:14.732Z",
+      "retrievedAt": "2026-11-14T17:13:29.380Z",
       "sourceUpdated": "2025-10-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -65023,7 +65023,7 @@
     {
       "nctId": "NCT05610280",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05610280",
-      "retrievedAt": "2026-11-13T18:36:14.889Z",
+      "retrievedAt": "2026-11-14T17:13:29.428Z",
       "sourceUpdated": "2026-02-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -65055,7 +65055,7 @@
     {
       "nctId": "NCT06910358",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06910358",
-      "retrievedAt": "2026-11-13T18:36:14.999Z",
+      "retrievedAt": "2026-11-14T17:13:29.589Z",
       "sourceUpdated": "2026-10-09",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -65086,7 +65086,7 @@
     {
       "nctId": "NCT00730015",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00730015",
-      "retrievedAt": "2026-11-13T18:36:15.059Z",
+      "retrievedAt": "2026-11-14T17:13:29.717Z",
       "sourceUpdated": "2013-01-30",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -65806,7 +65806,7 @@
     {
       "nctId": "NCT00730171",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00730171",
-      "retrievedAt": "2026-11-13T18:36:15.197Z",
+      "retrievedAt": "2026-11-14T17:13:29.764Z",
       "sourceUpdated": "2018-02-19",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -67462,7 +67462,7 @@
     {
       "nctId": "NCT00938717",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00938717",
-      "retrievedAt": "2026-11-13T18:36:15.314Z",
+      "retrievedAt": "2026-11-14T17:13:29.926Z",
       "sourceUpdated": "2013-11-05",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -67940,7 +67940,7 @@
     {
       "nctId": "NCT02291679",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02291679",
-      "retrievedAt": "2026-11-13T18:36:15.387Z",
+      "retrievedAt": "2026-11-14T17:13:30.052Z",
       "sourceUpdated": "2017-06-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -68441,7 +68441,7 @@
     {
       "nctId": "NCT03561883",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03561883",
-      "retrievedAt": "2026-11-13T18:36:15.513Z",
+      "retrievedAt": "2026-11-14T17:13:30.100Z",
       "sourceUpdated": "2021-08-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -68671,7 +68671,7 @@
     {
       "nctId": "NCT03573908",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03573908",
-      "retrievedAt": "2026-11-13T18:36:15.625Z",
+      "retrievedAt": "2026-11-14T17:13:30.262Z",
       "sourceUpdated": "2020-12-01",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -69210,7 +69210,7 @@
     {
       "nctId": "NCT00460096",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00460096",
-      "retrievedAt": "2026-11-13T18:36:15.710Z",
+      "retrievedAt": "2026-11-14T17:13:30.389Z",
       "sourceUpdated": "2007-10-17",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -69240,7 +69240,7 @@
     {
       "nctId": "NCT01217671",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01217671",
-      "retrievedAt": "2026-11-13T18:36:15.827Z",
+      "retrievedAt": "2026-11-14T17:13:30.434Z",
       "sourceUpdated": "2019-11-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -69271,7 +69271,7 @@
     {
       "nctId": "NCT02040090",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02040090",
-      "retrievedAt": "2026-11-13T18:36:15.933Z",
+      "retrievedAt": "2026-11-14T17:13:30.598Z",
       "sourceUpdated": "2021-09-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -69337,7 +69337,7 @@
     {
       "nctId": "NCT02912845",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02912845",
-      "retrievedAt": "2026-11-13T18:36:16.015Z",
+      "retrievedAt": "2026-11-14T17:13:30.725Z",
       "sourceUpdated": "2021-09-05",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -69366,7 +69366,7 @@
     {
       "nctId": "NCT04447469",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04447469",
-      "retrievedAt": "2026-11-13T18:36:16.147Z",
+      "retrievedAt": "2026-11-14T17:13:30.798Z",
       "sourceUpdated": "2025-01-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -74888,7 +74888,7 @@
     {
       "nctId": "NCT04592419",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04592419",
-      "retrievedAt": "2026-11-13T18:36:16.252Z",
+      "retrievedAt": "2026-11-14T17:13:30.942Z",
       "sourceUpdated": "2024-06-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -77923,7 +77923,7 @@
     {
       "nctId": "NCT04964089",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04964089",
-      "retrievedAt": "2026-11-13T18:36:16.325Z",
+      "retrievedAt": "2026-11-14T17:13:31.061Z",
       "sourceUpdated": "2024-07-03",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -80260,7 +80260,7 @@
     {
       "nctId": "NCT06270836",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06270836",
-      "retrievedAt": "2026-11-13T18:36:16.452Z",
+      "retrievedAt": "2026-11-14T17:13:31.131Z",
       "sourceUpdated": "2026-05-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -80290,7 +80290,7 @@
     {
       "nctId": "NCT04491604",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04491604",
-      "retrievedAt": "2026-11-13T18:36:16.566Z",
+      "retrievedAt": "2026-11-14T17:13:31.279Z",
       "sourceUpdated": "2023-02-17",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -80442,7 +80442,7 @@
     {
       "nctId": "NCT04917874",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04917874",
-      "retrievedAt": "2026-11-13T18:36:16.640Z",
+      "retrievedAt": "2026-11-14T17:13:31.396Z",
       "sourceUpdated": "2024-04-09",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -80474,7 +80474,7 @@
     {
       "nctId": "NCT00141323",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00141323",
-      "retrievedAt": "2026-11-13T18:36:16.777Z",
+      "retrievedAt": "2026-11-14T17:13:31.465Z",
       "sourceUpdated": "2011-08-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -80505,7 +80505,7 @@
     {
       "nctId": "NCT00163137",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00163137",
-      "retrievedAt": "2026-11-13T18:36:16.874Z",
+      "retrievedAt": "2026-11-14T17:13:31.614Z",
       "sourceUpdated": "2011-08-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -80536,7 +80536,7 @@
     {
       "nctId": "NCT02914561",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02914561",
-      "retrievedAt": "2026-11-13T18:36:16.967Z",
+      "retrievedAt": "2026-11-14T17:13:31.754Z",
       "sourceUpdated": "2023-12-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -85949,7 +85949,7 @@
     {
       "nctId": "NCT01677910",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01677910",
-      "retrievedAt": "2026-11-13T18:36:17.090Z",
+      "retrievedAt": "2026-11-14T17:13:31.804Z",
       "sourceUpdated": "2018-02-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -88091,7 +88091,7 @@
     {
       "nctId": "NCT02026063",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02026063",
-      "retrievedAt": "2026-11-13T18:36:17.191Z",
+      "retrievedAt": "2026-11-14T17:13:31.953Z",
       "sourceUpdated": "2019-09-17",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -89698,7 +89698,7 @@
     {
       "nctId": "NCT02063659",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02063659",
-      "retrievedAt": "2026-11-13T18:36:17.304Z",
+      "retrievedAt": "2026-11-14T17:13:32.097Z",
       "sourceUpdated": "2018-02-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -90682,7 +90682,7 @@
     {
       "nctId": "NCT02384941",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02384941",
-      "retrievedAt": "2026-11-13T18:36:17.408Z",
+      "retrievedAt": "2026-11-14T17:13:32.142Z",
       "sourceUpdated": "2020-02-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -91887,7 +91887,7 @@
     {
       "nctId": "NCT02421510",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02421510",
-      "retrievedAt": "2026-11-13T18:36:17.510Z",
+      "retrievedAt": "2026-11-14T17:13:32.290Z",
       "sourceUpdated": "2020-02-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -93233,7 +93233,7 @@
     {
       "nctId": "NCT02531035",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02531035",
-      "retrievedAt": "2026-11-13T18:36:17.629Z",
+      "retrievedAt": "2026-11-14T17:13:32.434Z",
       "sourceUpdated": "2020-02-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -94112,7 +94112,7 @@
     {
       "nctId": "NCT02926937",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02926937",
-      "retrievedAt": "2026-11-13T18:36:17.719Z",
+      "retrievedAt": "2026-11-14T17:13:32.479Z",
       "sourceUpdated": "2021-06-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -94691,7 +94691,7 @@
     {
       "nctId": "NCT02926950",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02926950",
-      "retrievedAt": "2026-11-13T18:36:17.821Z",
+      "retrievedAt": "2026-11-14T17:13:32.631Z",
       "sourceUpdated": "2021-05-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -95786,7 +95786,7 @@
     {
       "nctId": "NCT03066830",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03066830",
-      "retrievedAt": "2026-11-13T18:36:17.947Z",
+      "retrievedAt": "2026-11-14T17:13:32.770Z",
       "sourceUpdated": "2021-05-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -97133,7 +97133,7 @@
     {
       "nctId": "NCT03242018",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03242018",
-      "retrievedAt": "2026-11-13T18:36:18.037Z",
+      "retrievedAt": "2026-11-14T17:13:32.819Z",
       "sourceUpdated": "2021-06-25",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -98951,7 +98951,7 @@
     {
       "nctId": "NCT03242252",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03242252",
-      "retrievedAt": "2026-11-13T18:36:18.146Z",
+      "retrievedAt": "2026-11-14T17:13:32.968Z",
       "sourceUpdated": "2021-06-25",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -100855,7 +100855,7 @@
     {
       "nctId": "NCT03285594",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03285594",
-      "retrievedAt": "2026-11-13T18:36:18.256Z",
+      "retrievedAt": "2026-11-14T17:13:33.110Z",
       "sourceUpdated": "2021-05-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -102656,7 +102656,7 @@
     {
       "nctId": "NCT03332771",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03332771",
-      "retrievedAt": "2026-11-13T18:36:18.356Z",
+      "retrievedAt": "2026-11-14T17:13:33.173Z",
       "sourceUpdated": "2021-05-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -104684,7 +104684,7 @@
     {
       "nctId": "NCT03351478",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03351478",
-      "retrievedAt": "2026-11-13T18:36:18.455Z",
+      "retrievedAt": "2026-11-14T17:13:33.305Z",
       "sourceUpdated": "2021-05-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -105651,7 +105651,7 @@
     {
       "nctId": "NCT00366145",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00366145",
-      "retrievedAt": "2026-11-13T18:36:18.569Z",
+      "retrievedAt": "2026-11-14T17:13:33.445Z",
       "sourceUpdated": "2022-02-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -105682,7 +105682,7 @@
     {
       "nctId": "NCT00482092",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00482092",
-      "retrievedAt": "2026-11-13T18:36:18.680Z",
+      "retrievedAt": "2026-11-14T17:13:33.507Z",
       "sourceUpdated": "2026-03-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -105712,7 +105712,7 @@
     {
       "nctId": "NCT00543374",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00543374",
-      "retrievedAt": "2026-11-13T18:36:18.770Z",
+      "retrievedAt": "2026-11-14T17:13:33.639Z",
       "sourceUpdated": "2026-03-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -105742,7 +105742,7 @@
     {
       "nctId": "NCT00562497",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00562497",
-      "retrievedAt": "2026-11-13T18:36:18.883Z",
+      "retrievedAt": "2026-11-14T17:13:33.781Z",
       "sourceUpdated": "2022-01-19",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -105773,7 +105773,7 @@
     {
       "nctId": "NCT01233960",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01233960",
-      "retrievedAt": "2026-11-13T18:36:18.996Z",
+      "retrievedAt": "2026-11-14T17:13:33.841Z",
       "sourceUpdated": "2026-03-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -105802,7 +105802,7 @@
     {
       "nctId": "NCT01854567",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01854567",
-      "retrievedAt": "2026-11-13T18:36:19.084Z",
+      "retrievedAt": "2026-11-14T17:13:33.973Z",
       "sourceUpdated": "2020-06-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -105835,7 +105835,7 @@
     {
       "nctId": "NCT02032004",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02032004",
-      "retrievedAt": "2026-11-13T18:36:19.212Z",
+      "retrievedAt": "2026-11-14T17:13:34.121Z",
       "sourceUpdated": "2026-03-23",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -107086,7 +107086,7 @@
     {
       "nctId": "NCT02336230",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02336230",
-      "retrievedAt": "2026-11-13T18:36:19.304Z",
+      "retrievedAt": "2026-11-14T17:13:34.179Z",
       "sourceUpdated": "2022-03-17",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -107874,7 +107874,7 @@
     {
       "nctId": "NCT02412735",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02412735",
-      "retrievedAt": "2026-11-13T18:36:19.395Z",
+      "retrievedAt": "2026-11-14T17:13:34.311Z",
       "sourceUpdated": "2022-10-19",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -108990,7 +108990,7 @@
     {
       "nctId": "NCT02652130",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02652130",
-      "retrievedAt": "2026-11-13T18:36:19.536Z",
+      "retrievedAt": "2026-11-14T17:13:34.456Z",
       "sourceUpdated": "2022-03-16",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -109302,7 +109302,7 @@
     {
       "nctId": "NCT00007020",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00007020",
-      "retrievedAt": "2026-11-13T18:36:19.629Z",
+      "retrievedAt": "2026-11-14T17:13:34.514Z",
       "sourceUpdated": "2023-10-03",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -109892,7 +109892,7 @@
     {
       "nctId": "NCT01115582",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01115582",
-      "retrievedAt": "2026-11-13T18:36:19.710Z",
+      "retrievedAt": "2026-11-14T17:13:34.647Z",
       "sourceUpdated": "2023-10-03",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -110163,7 +110163,7 @@
     {
       "nctId": "NCT01438411",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01438411",
-      "retrievedAt": "2026-11-13T18:36:19.850Z",
+      "retrievedAt": "2026-11-14T17:13:34.793Z",
       "sourceUpdated": "2023-10-03",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -110790,7 +110790,7 @@
     {
       "nctId": "NCT03905330",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03905330",
-      "retrievedAt": "2026-11-13T18:36:19.938Z",
+      "retrievedAt": "2026-11-14T17:13:34.855Z",
       "sourceUpdated": "2023-12-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -111125,7 +111125,7 @@
     {
       "nctId": "NCT04185363",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04185363",
-      "retrievedAt": "2026-11-13T18:36:20.026Z",
+      "retrievedAt": "2026-11-14T17:13:34.981Z",
       "sourceUpdated": "2026-06-23",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -111889,7 +111889,7 @@
     {
       "nctId": "NCT04270682",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04270682",
-      "retrievedAt": "2026-11-13T18:36:20.167Z",
+      "retrievedAt": "2026-11-14T17:13:35.128Z",
       "sourceUpdated": "2024-10-28",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -112101,7 +112101,7 @@
     {
       "nctId": "NCT06411379",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06411379",
-      "retrievedAt": "2026-11-13T18:36:20.246Z",
+      "retrievedAt": "2026-11-14T17:13:35.191Z",
       "sourceUpdated": "2026-06-08",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -112131,7 +112131,7 @@
     {
       "nctId": "NCT06411899",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06411899",
-      "retrievedAt": "2026-11-13T18:36:20.341Z",
+      "retrievedAt": "2026-11-14T17:13:35.318Z",
       "sourceUpdated": "2026-08-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -112161,7 +112161,7 @@
     {
       "nctId": "NCT06153693",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06153693",
-      "retrievedAt": "2026-11-13T18:36:20.476Z",
+      "retrievedAt": "2026-11-14T17:13:35.464Z",
       "sourceUpdated": "2026-05-01",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -112192,7 +112192,7 @@
     {
       "nctId": "NCT00308308",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00308308",
-      "retrievedAt": "2026-11-13T18:36:20.564Z",
+      "retrievedAt": "2026-11-14T17:13:35.527Z",
       "sourceUpdated": "2014-10-16",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -113082,7 +113082,7 @@
     {
       "nctId": "NCT00308737",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00308737",
-      "retrievedAt": "2026-11-13T18:36:20.660Z",
+      "retrievedAt": "2026-11-14T17:13:35.655Z",
       "sourceUpdated": "2014-10-16",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -114984,7 +114984,7 @@
     {
       "nctId": "NCT00309244",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00309244",
-      "retrievedAt": "2026-11-13T18:36:20.784Z",
+      "retrievedAt": "2026-11-14T17:13:35.805Z",
       "sourceUpdated": "2014-10-16",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -116369,7 +116369,7 @@
     {
       "nctId": "NCT00332488",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00332488",
-      "retrievedAt": "2026-11-13T18:36:20.881Z",
+      "retrievedAt": "2026-11-14T17:13:35.862Z",
       "sourceUpdated": "2014-10-16",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -117045,7 +117045,7 @@
     {
       "nctId": "NCT00539890",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00539890",
-      "retrievedAt": "2026-11-13T18:36:20.966Z",
+      "retrievedAt": "2026-11-14T17:13:35.990Z",
       "sourceUpdated": "2009-10-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -117074,7 +117074,7 @@
     {
       "nctId": "NCT01445951",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01445951",
-      "retrievedAt": "2026-11-13T18:36:21.105Z",
+      "retrievedAt": "2026-11-14T17:13:36.145Z",
       "sourceUpdated": "2014-10-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -117792,7 +117792,7 @@
     {
       "nctId": "NCT01451398",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01451398",
-      "retrievedAt": "2026-11-13T18:36:21.198Z",
+      "retrievedAt": "2026-11-14T17:13:36.199Z",
       "sourceUpdated": "2014-10-17",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -118436,7 +118436,7 @@
     {
       "nctId": "NCT04974528",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04974528",
-      "retrievedAt": "2026-11-13T18:36:21.272Z",
+      "retrievedAt": "2026-11-14T17:13:36.326Z",
       "sourceUpdated": "2025-05-06",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -118468,7 +118468,7 @@
     {
       "nctId": "NCT01492101",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01492101",
-      "retrievedAt": "2026-11-13T18:36:21.438Z",
+      "retrievedAt": "2026-11-14T17:13:36.493Z",
       "sourceUpdated": "2021-06-01",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -120644,7 +120644,7 @@
     {
       "nctId": "NCT02362672",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02362672",
-      "retrievedAt": "2026-11-13T18:36:21.514Z",
+      "retrievedAt": "2026-11-14T17:13:36.535Z",
       "sourceUpdated": "2020-09-16",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -121302,7 +121302,7 @@
     {
       "nctId": "NCT02367820",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02367820",
-      "retrievedAt": "2026-11-13T18:36:21.595Z",
+      "retrievedAt": "2026-11-14T17:13:36.663Z",
       "sourceUpdated": "2021-06-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -122752,7 +122752,7 @@
     {
       "nctId": "NCT02915744",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02915744",
-      "retrievedAt": "2026-11-13T18:36:21.765Z",
+      "retrievedAt": "2026-11-14T17:13:36.830Z",
       "sourceUpdated": "2023-04-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -124245,7 +124245,7 @@
     {
       "nctId": "NCT02608502",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02608502",
-      "retrievedAt": "2026-11-13T18:36:21.819Z",
+      "retrievedAt": "2026-11-14T17:13:36.870Z",
       "sourceUpdated": "2022-07-19",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -124275,7 +124275,7 @@
     {
       "nctId": "NCT02624947",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02624947",
-      "retrievedAt": "2026-11-13T18:36:21.920Z",
+      "retrievedAt": "2026-11-14T17:13:37.012Z",
       "sourceUpdated": "2025-05-06",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -127354,7 +127354,7 @@
     {
       "nctId": "NCT04120194",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04120194",
-      "retrievedAt": "2026-11-13T18:36:22.084Z",
+      "retrievedAt": "2026-11-14T17:13:37.171Z",
       "sourceUpdated": "2023-05-06",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -129208,7 +129208,7 @@
     {
       "nctId": "NCT04583995",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04583995",
-      "retrievedAt": "2026-11-13T18:36:22.197Z",
+      "retrievedAt": "2026-11-14T17:13:37.205Z",
       "sourceUpdated": "2025-05-08",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -129240,7 +129240,7 @@
     {
       "nctId": "NCT04611802",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04611802",
-      "retrievedAt": "2026-11-13T18:36:22.236Z",
+      "retrievedAt": "2026-11-14T17:13:37.350Z",
       "sourceUpdated": "2023-12-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -129275,7 +129275,7 @@
     {
       "nctId": "NCT05372588",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05372588",
-      "retrievedAt": "2026-11-13T18:36:22.397Z",
+      "retrievedAt": "2026-11-14T17:13:37.510Z",
       "sourceUpdated": "2024-04-23",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -129309,7 +129309,7 @@
     {
       "nctId": "NCT05463068",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05463068",
-      "retrievedAt": "2026-11-13T18:36:22.512Z",
+      "retrievedAt": "2026-11-14T17:13:37.541Z",
       "sourceUpdated": "2026-04-17",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -129703,7 +129703,7 @@
     {
       "nctId": "NCT05468736",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05468736",
-      "retrievedAt": "2026-11-13T18:36:22.556Z",
+      "retrievedAt": "2026-11-14T17:13:37.685Z",
       "sourceUpdated": "2026-05-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -129734,7 +129734,7 @@
     {
       "nctId": "NCT05875701",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05875701",
-      "retrievedAt": "2026-11-13T18:36:22.725Z",
+      "retrievedAt": "2026-11-14T17:13:37.845Z",
       "sourceUpdated": "2025-06-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -130289,7 +130289,7 @@
     {
       "nctId": "NCT05925127",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05925127",
-      "retrievedAt": "2026-11-13T18:36:22.838Z",
+      "retrievedAt": "2026-11-14T17:13:37.875Z",
       "sourceUpdated": "2024-12-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -130325,7 +130325,7 @@
     {
       "nctId": "NCT05973006",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05973006",
-      "retrievedAt": "2026-11-13T18:36:22.870Z",
+      "retrievedAt": "2026-11-14T17:13:38.022Z",
       "sourceUpdated": "2025-07-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -130938,7 +130938,7 @@
     {
       "nctId": "NCT05975060",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05975060",
-      "retrievedAt": "2026-11-13T18:36:23.552Z",
+      "retrievedAt": "2026-11-14T17:13:38.182Z",
       "sourceUpdated": "2024-05-30",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -130969,7 +130969,7 @@
     {
       "nctId": "NCT06291857",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06291857",
-      "retrievedAt": "2026-11-13T18:36:23.151Z",
+      "retrievedAt": "2026-11-14T17:13:38.211Z",
       "sourceUpdated": "2026-06-05",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -131001,7 +131001,7 @@
     {
       "nctId": "NCT06409663",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06409663",
-      "retrievedAt": "2026-11-13T18:36:23.557Z",
+      "retrievedAt": "2026-11-14T17:13:38.359Z",
       "sourceUpdated": "2025-07-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -131030,7 +131030,7 @@
     {
       "nctId": "NCT01498224",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01498224",
-      "retrievedAt": "2026-11-13T18:36:23.554Z",
+      "retrievedAt": "2026-11-14T17:13:38.518Z",
       "sourceUpdated": "2016-12-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -131060,7 +131060,7 @@
     {
       "nctId": "NCT02034019",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02034019",
-      "retrievedAt": "2026-11-13T18:36:23.860Z",
+      "retrievedAt": "2026-11-14T17:13:38.546Z",
       "sourceUpdated": "2020-01-31",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -131145,7 +131145,7 @@
     {
       "nctId": "NCT02089113",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02089113",
-      "retrievedAt": "2026-11-13T18:36:23.865Z",
+      "retrievedAt": "2026-11-14T17:13:38.697Z",
       "sourceUpdated": "2019-09-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -131231,7 +131231,7 @@
     {
       "nctId": "NCT02445326",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02445326",
-      "retrievedAt": "2026-11-13T18:36:23.867Z",
+      "retrievedAt": "2026-11-14T17:13:38.853Z",
       "sourceUpdated": "2018-03-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -131376,7 +131376,7 @@
     {
       "nctId": "NCT02736175",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02736175",
-      "retrievedAt": "2026-11-13T18:36:24.176Z",
+      "retrievedAt": "2026-11-14T17:13:38.884Z",
       "sourceUpdated": "2017-11-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -131522,7 +131522,7 @@
     {
       "nctId": "NCT02914509",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02914509",
-      "retrievedAt": "2026-11-13T18:36:24.176Z",
+      "retrievedAt": "2026-11-14T17:13:39.033Z",
       "sourceUpdated": "2021-10-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -131827,7 +131827,7 @@
     {
       "nctId": "NCT02988882",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02988882",
-      "retrievedAt": "2026-11-13T18:36:24.187Z",
+      "retrievedAt": "2026-11-14T17:13:39.189Z",
       "sourceUpdated": "2020-10-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -131915,7 +131915,7 @@
     {
       "nctId": "NCT04050865",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04050865",
-      "retrievedAt": "2026-11-13T18:36:24.483Z",
+      "retrievedAt": "2026-11-14T17:13:39.219Z",
       "sourceUpdated": "2021-10-07",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -132003,7 +132003,7 @@
     {
       "nctId": "NCT04061044",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04061044",
-      "retrievedAt": "2026-11-13T18:36:24.483Z",
+      "retrievedAt": "2026-11-14T17:13:39.368Z",
       "sourceUpdated": "2023-06-09",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -132032,7 +132032,7 @@
     {
       "nctId": "NCT04539548",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04539548",
-      "retrievedAt": "2026-11-13T18:36:24.501Z",
+      "retrievedAt": "2026-11-14T17:13:39.523Z",
       "sourceUpdated": "2024-04-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -132062,7 +132062,7 @@
     {
       "nctId": "NCT00226759",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00226759",
-      "retrievedAt": "2026-11-13T18:36:24.804Z",
+      "retrievedAt": "2026-11-14T17:13:39.553Z",
       "sourceUpdated": "2012-10-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -132092,7 +132092,7 @@
     {
       "nctId": "NCT00226772",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00226772",
-      "retrievedAt": "2026-11-13T18:36:24.789Z",
+      "retrievedAt": "2026-11-14T17:13:39.703Z",
       "sourceUpdated": "2012-10-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -132122,7 +132122,7 @@
     {
       "nctId": "NCT00245271",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00245271",
-      "retrievedAt": "2026-11-13T18:36:24.821Z",
+      "retrievedAt": "2026-11-14T17:13:39.859Z",
       "sourceUpdated": "2011-06-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -132152,7 +132152,7 @@
     {
       "nctId": "NCT00624845",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00624845",
-      "retrievedAt": "2026-11-13T18:36:25.099Z",
+      "retrievedAt": "2026-11-14T17:13:39.888Z",
       "sourceUpdated": "2011-06-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -132183,7 +132183,7 @@
     {
       "nctId": "NCT01406561",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01406561",
-      "retrievedAt": "2026-11-13T18:36:25.114Z",
+      "retrievedAt": "2026-11-14T17:13:40.035Z",
       "sourceUpdated": "2018-10-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -132213,7 +132213,7 @@
     {
       "nctId": "NCT01454063",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01454063",
-      "retrievedAt": "2026-11-13T18:36:25.142Z",
+      "retrievedAt": "2026-11-14T17:13:40.193Z",
       "sourceUpdated": "2014-08-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -132454,7 +132454,7 @@
     {
       "nctId": "NCT01579565",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01579565",
-      "retrievedAt": "2026-11-13T18:36:25.420Z",
+      "retrievedAt": "2026-11-14T17:13:40.222Z",
       "sourceUpdated": "2017-06-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -132860,7 +132860,7 @@
     {
       "nctId": "NCT02132312",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02132312",
-      "retrievedAt": "2026-11-13T18:36:25.425Z",
+      "retrievedAt": "2026-11-14T17:13:40.371Z",
       "sourceUpdated": "2021-07-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -132980,7 +132980,7 @@
     {
       "nctId": "NCT01219855",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01219855",
-      "retrievedAt": "2026-11-13T18:36:25.466Z",
+      "retrievedAt": "2026-11-14T17:13:40.530Z",
       "sourceUpdated": "2016-08-25",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -133398,7 +133398,7 @@
     {
       "nctId": "NCT02282813",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02282813",
-      "retrievedAt": "2026-11-13T18:36:25.743Z",
+      "retrievedAt": "2026-11-14T17:13:40.560Z",
       "sourceUpdated": "2016-09-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -134991,7 +134991,7 @@
     {
       "nctId": "NCT02968004",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02968004",
-      "retrievedAt": "2026-11-13T18:36:25.742Z",
+      "retrievedAt": "2026-11-14T17:13:40.708Z",
       "sourceUpdated": "2025-07-20",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -135753,7 +135753,7 @@
     {
       "nctId": "NCT03874013",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03874013",
-      "retrievedAt": "2026-11-13T18:36:25.781Z",
+      "retrievedAt": "2026-11-14T17:13:40.866Z",
       "sourceUpdated": "2021-08-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -136041,7 +136041,7 @@
     {
       "nctId": "NCT04106557",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04106557",
-      "retrievedAt": "2026-11-13T18:36:26.064Z",
+      "retrievedAt": "2026-11-14T17:13:40.894Z",
       "sourceUpdated": "2024-01-08",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -136172,7 +136172,7 @@
     {
       "nctId": "NCT00878709",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00878709",
-      "retrievedAt": "2026-11-13T18:36:26.076Z",
+      "retrievedAt": "2026-11-14T17:13:41.057Z",
       "sourceUpdated": "2021-06-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -137768,7 +137768,7 @@
     {
       "nctId": "NCT01808573",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01808573",
-      "retrievedAt": "2026-11-13T18:36:26.110Z",
+      "retrievedAt": "2026-11-14T17:13:41.208Z",
       "sourceUpdated": "2021-06-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -139145,7 +139145,7 @@
     {
       "nctId": "NCT07284654",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT07284654",
-      "retrievedAt": "2026-11-13T18:36:26.372Z",
+      "retrievedAt": "2026-11-14T17:13:41.229Z",
       "sourceUpdated": "2026-10-16",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -139176,7 +139176,7 @@
     {
       "nctId": "NCT04124926",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04124926",
-      "retrievedAt": "2026-11-13T18:36:26.392Z",
+      "retrievedAt": "2026-11-14T17:13:41.394Z",
       "sourceUpdated": "2022-07-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -140445,7 +140445,7 @@
     {
       "nctId": "NCT04167670",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04167670",
-      "retrievedAt": "2026-11-13T18:36:26.424Z",
+      "retrievedAt": "2026-11-14T17:13:41.544Z",
       "sourceUpdated": "2022-04-05",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -140832,7 +140832,7 @@
     {
       "nctId": "NCT05195528",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05195528",
-      "retrievedAt": "2026-11-13T18:36:26.680Z",
+      "retrievedAt": "2026-11-14T17:13:41.570Z",
       "sourceUpdated": "2023-12-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -141594,7 +141594,7 @@
     {
       "nctId": "NCT04832425",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04832425",
-      "retrievedAt": "2026-11-13T18:36:26.699Z",
+      "retrievedAt": "2026-11-14T17:13:41.729Z",
       "sourceUpdated": "2022-07-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -141625,7 +141625,7 @@
     {
       "nctId": "NCT06999902",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06999902",
-      "retrievedAt": "2026-11-13T18:36:26.741Z",
+      "retrievedAt": "2026-11-14T17:13:41.878Z",
       "sourceUpdated": "2026-08-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -141656,7 +141656,7 @@
     {
       "nctId": "NCT00803205",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00803205",
-      "retrievedAt": "2026-11-13T18:36:26.999Z",
+      "retrievedAt": "2026-11-14T17:13:41.918Z",
       "sourceUpdated": "2020-05-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -142869,7 +142869,7 @@
     {
       "nctId": "NCT01140451",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01140451",
-      "retrievedAt": "2026-11-13T18:36:27.023Z",
+      "retrievedAt": "2026-11-14T17:13:42.070Z",
       "sourceUpdated": "2020-10-19",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -144967,7 +144967,7 @@
     {
       "nctId": "NCT01557400",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01557400",
-      "retrievedAt": "2026-11-13T18:36:27.064Z",
+      "retrievedAt": "2026-11-14T17:13:42.219Z",
       "sourceUpdated": "2020-11-25",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -145479,7 +145479,7 @@
     {
       "nctId": "NCT01826487",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01826487",
-      "retrievedAt": "2026-11-13T18:36:27.327Z",
+      "retrievedAt": "2026-11-14T17:13:42.259Z",
       "sourceUpdated": "2020-08-04",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -146384,7 +146384,7 @@
     {
       "nctId": "NCT02139306",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02139306",
-      "retrievedAt": "2026-11-13T18:36:27.343Z",
+      "retrievedAt": "2026-11-14T17:13:42.404Z",
       "sourceUpdated": "2020-05-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -147332,7 +147332,7 @@
     {
       "nctId": "NCT03179631",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03179631",
-      "retrievedAt": "2026-11-13T18:36:27.390Z",
+      "retrievedAt": "2026-11-14T17:13:42.558Z",
       "sourceUpdated": "2026-03-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -148779,7 +148779,7 @@
     {
       "nctId": "NCT04577352",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04577352",
-      "retrievedAt": "2026-11-13T18:36:27.635Z",
+      "retrievedAt": "2026-11-14T17:13:42.598Z",
       "sourceUpdated": "2026-04-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -149681,7 +149681,7 @@
     {
       "nctId": "NCT05099640",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05099640",
-      "retrievedAt": "2026-11-13T18:36:27.655Z",
+      "retrievedAt": "2026-11-14T17:13:42.742Z",
       "sourceUpdated": "2024-01-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -150254,7 +150254,7 @@
     {
       "nctId": "NCT05166161",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05166161",
-      "retrievedAt": "2026-11-13T18:36:27.697Z",
+      "retrievedAt": "2026-11-14T17:13:42.894Z",
       "sourceUpdated": "2026-09-09",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -150283,7 +150283,7 @@
     {
       "nctId": "NCT05218655",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05218655",
-      "retrievedAt": "2026-11-13T18:36:27.950Z",
+      "retrievedAt": "2026-11-14T17:13:42.933Z",
       "sourceUpdated": "2025-12-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -150948,7 +150948,7 @@
     {
       "nctId": "NCT03920228",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03920228",
-      "retrievedAt": "2026-11-13T18:36:27.974Z",
+      "retrievedAt": "2026-11-14T17:13:43.081Z",
       "sourceUpdated": "2024-08-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -150979,7 +150979,7 @@
     {
       "nctId": "NCT04520750",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04520750",
-      "retrievedAt": "2026-11-13T18:36:28.011Z",
+      "retrievedAt": "2026-11-14T17:13:43.230Z",
       "sourceUpdated": "2024-08-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -151008,7 +151008,7 @@
     {
       "nctId": "NCT05180708",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05180708",
-      "retrievedAt": "2026-11-13T18:36:28.264Z",
+      "retrievedAt": "2026-11-14T17:13:43.268Z",
       "sourceUpdated": "2024-08-29",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -151038,7 +151038,7 @@
     {
       "nctId": "NCT02230566",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02230566",
-      "retrievedAt": "2026-11-13T18:36:28.288Z",
+      "retrievedAt": "2026-11-14T17:13:43.418Z",
       "sourceUpdated": "2020-07-30",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -151297,7 +151297,7 @@
     {
       "nctId": "NCT02377921",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02377921",
-      "retrievedAt": "2026-11-13T18:36:28.333Z",
+      "retrievedAt": "2026-11-14T17:13:43.564Z",
       "sourceUpdated": "2019-06-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -151549,7 +151549,7 @@
     {
       "nctId": "NCT02432144",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02432144",
-      "retrievedAt": "2026-11-13T18:36:28.572Z",
+      "retrievedAt": "2026-11-14T17:13:43.604Z",
       "sourceUpdated": "2020-07-30",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -151777,7 +151777,7 @@
     {
       "nctId": "NCT05139316",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05139316",
-      "retrievedAt": "2026-11-13T18:36:28.604Z",
+      "retrievedAt": "2026-11-14T17:13:43.756Z",
       "sourceUpdated": "2026-10-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -153402,7 +153402,7 @@
     {
       "nctId": "NCT05568095",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05568095",
-      "retrievedAt": "2026-11-13T18:36:28.659Z",
+      "retrievedAt": "2026-11-14T17:13:43.900Z",
       "sourceUpdated": "2026-09-03",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -153437,7 +153437,7 @@
     {
       "nctId": "NCT02076399",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02076399",
-      "retrievedAt": "2026-11-13T18:36:28.889Z",
+      "retrievedAt": "2026-11-14T17:13:43.939Z",
       "sourceUpdated": "2019-02-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -153828,7 +153828,7 @@
     {
       "nctId": "NCT02076412",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02076412",
-      "retrievedAt": "2026-11-13T18:36:28.912Z",
+      "retrievedAt": "2026-11-14T17:13:44.092Z",
       "sourceUpdated": "2019-01-25",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -154174,7 +154174,7 @@
     {
       "nctId": "NCT02077192",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02077192",
-      "retrievedAt": "2026-11-13T18:36:28.976Z",
+      "retrievedAt": "2026-11-14T17:13:44.234Z",
       "sourceUpdated": "2023-12-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -154676,7 +154676,7 @@
     {
       "nctId": "NCT03764618",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03764618",
-      "retrievedAt": "2026-11-13T18:36:29.211Z",
+      "retrievedAt": "2026-11-14T17:13:44.275Z",
       "sourceUpdated": "2023-05-25",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -155288,7 +155288,7 @@
     {
       "nctId": "NCT04629703",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04629703",
-      "retrievedAt": "2026-11-13T18:36:29.234Z",
+      "retrievedAt": "2026-11-14T17:13:44.431Z",
       "sourceUpdated": "2023-08-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -155323,7 +155323,7 @@
     {
       "nctId": "NCT04688164",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04688164",
-      "retrievedAt": "2026-11-13T18:36:29.299Z",
+      "retrievedAt": "2026-11-14T17:13:44.570Z",
       "sourceUpdated": "2024-08-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -155443,7 +155443,7 @@
     {
       "nctId": "NCT04855760",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04855760",
-      "retrievedAt": "2026-11-13T18:36:29.517Z",
+      "retrievedAt": "2026-11-14T17:13:44.612Z",
       "sourceUpdated": "2025-02-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -155781,7 +155781,7 @@
     {
       "nctId": "NCT05081167",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05081167",
-      "retrievedAt": "2026-11-13T18:36:29.541Z",
+      "retrievedAt": "2026-11-14T17:13:44.765Z",
       "sourceUpdated": "2024-03-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -155870,7 +155870,7 @@
     {
       "nctId": "NCT02896192",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02896192",
-      "retrievedAt": "2026-11-13T18:36:29.617Z",
+      "retrievedAt": "2026-11-14T17:13:44.905Z",
       "sourceUpdated": "2023-09-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -156152,7 +156152,7 @@
     {
       "nctId": "NCT03287960",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03287960",
-      "retrievedAt": "2026-11-13T18:36:29.824Z",
+      "retrievedAt": "2026-11-14T17:13:44.951Z",
       "sourceUpdated": "2023-05-23",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -156385,7 +156385,7 @@
     {
       "nctId": "NCT03651765",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03651765",
-      "retrievedAt": "2026-11-13T18:36:29.855Z",
+      "retrievedAt": "2026-11-14T17:13:45.104Z",
       "sourceUpdated": "2025-05-31",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -156761,7 +156761,7 @@
     {
       "nctId": "NCT03746522",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03746522",
-      "retrievedAt": "2026-11-13T18:36:29.936Z",
+      "retrievedAt": "2026-11-14T17:13:45.239Z",
       "sourceUpdated": "2023-12-01",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -156931,7 +156931,7 @@
     {
       "nctId": "NCT04966741",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04966741",
-      "retrievedAt": "2026-11-13T18:36:30.151Z",
+      "retrievedAt": "2026-11-14T17:13:45.288Z",
       "sourceUpdated": "2024-11-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -157616,7 +157616,7 @@
     {
       "nctId": "NCT05093634",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05093634",
-      "retrievedAt": "2026-11-13T18:36:30.184Z",
+      "retrievedAt": "2026-11-14T17:13:45.468Z",
       "sourceUpdated": "2026-11-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -160716,7 +160716,7 @@
     {
       "nctId": "NCT05194124",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05194124",
-      "retrievedAt": "2026-11-13T18:36:30.260Z",
+      "retrievedAt": "2026-11-14T17:13:45.575Z",
       "sourceUpdated": "2024-11-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -162148,7 +162148,7 @@
     {
       "nctId": "NCT06596135",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06596135",
-      "retrievedAt": "2026-11-13T18:36:30.465Z",
+      "retrievedAt": "2026-11-14T17:13:45.622Z",
       "sourceUpdated": "2026-07-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -162177,7 +162177,7 @@
     {
       "nctId": "NCT02255552",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02255552",
-      "retrievedAt": "2026-11-13T18:36:30.494Z",
+      "retrievedAt": "2026-11-14T17:13:45.808Z",
       "sourceUpdated": "2021-01-25",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -162602,7 +162602,7 @@
     {
       "nctId": "NCT02500381",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02500381",
-      "retrievedAt": "2026-11-13T18:36:30.575Z",
+      "retrievedAt": "2026-11-14T17:13:45.909Z",
       "sourceUpdated": "2025-11-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -162633,7 +162633,7 @@
     {
       "nctId": "NCT05096221",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05096221",
-      "retrievedAt": "2026-11-13T18:36:30.783Z",
+      "retrievedAt": "2026-11-14T17:13:45.961Z",
       "sourceUpdated": "2025-07-08",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -163754,7 +163754,7 @@
     {
       "nctId": "NCT00772603",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00772603",
-      "retrievedAt": "2026-11-13T18:36:30.803Z",
+      "retrievedAt": "2026-11-14T17:13:46.144Z",
       "sourceUpdated": "2014-02-11",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -164428,7 +164428,7 @@
     {
       "nctId": "NCT00908349",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00908349",
-      "retrievedAt": "2026-11-13T18:36:30.881Z",
+      "retrievedAt": "2026-11-14T17:13:46.242Z",
       "sourceUpdated": "2017-05-31",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -164623,7 +164623,7 @@
     {
       "nctId": "NCT02477618",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02477618",
-      "retrievedAt": "2026-11-13T18:36:31.096Z",
+      "retrievedAt": "2026-11-14T17:13:46.301Z",
       "sourceUpdated": "2025-10-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -165937,7 +165937,7 @@
     {
       "nctId": "NCT02618408",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02618408",
-      "retrievedAt": "2026-11-13T18:36:31.115Z",
+      "retrievedAt": "2026-11-14T17:13:46.481Z",
       "sourceUpdated": "2024-01-02",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -166374,7 +166374,7 @@
     {
       "nctId": "NCT02618434",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02618434",
-      "retrievedAt": "2026-11-13T18:36:31.197Z",
+      "retrievedAt": "2026-11-14T17:13:46.576Z",
       "sourceUpdated": "2024-03-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -166800,7 +166800,7 @@
     {
       "nctId": "NCT02942004",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02942004",
-      "retrievedAt": "2026-11-13T18:36:31.427Z",
+      "retrievedAt": "2026-11-14T17:13:46.667Z",
       "sourceUpdated": "2025-10-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -167877,7 +167877,7 @@
     {
       "nctId": "NCT02942017",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02942017",
-      "retrievedAt": "2026-11-13T18:36:31.436Z",
+      "retrievedAt": "2026-11-14T17:13:46.821Z",
       "sourceUpdated": "2025-09-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -168643,7 +168643,7 @@
     {
       "nctId": "NCT03247517",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03247517",
-      "retrievedAt": "2026-11-13T18:36:31.515Z",
+      "retrievedAt": "2026-11-14T17:13:46.912Z",
       "sourceUpdated": "2021-06-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -169023,7 +169023,7 @@
     {
       "nctId": "NCT03247530",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03247530",
-      "retrievedAt": "2026-11-13T18:36:31.753Z",
+      "retrievedAt": "2026-11-14T17:13:47.007Z",
       "sourceUpdated": "2021-07-02",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -169423,7 +169423,7 @@
     {
       "nctId": "NCT03247543",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03247543",
-      "retrievedAt": "2026-11-13T18:36:31.749Z",
+      "retrievedAt": "2026-11-14T17:13:47.160Z",
       "sourceUpdated": "2021-07-08",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -169853,7 +169853,7 @@
     {
       "nctId": "NCT03247556",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03247556",
-      "retrievedAt": "2026-11-13T18:36:31.841Z",
+      "retrievedAt": "2026-11-14T17:13:47.248Z",
       "sourceUpdated": "2021-07-02",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -170248,7 +170248,7 @@
     {
       "nctId": "NCT03665038",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03665038",
-      "retrievedAt": "2026-11-13T18:36:32.067Z",
+      "retrievedAt": "2026-11-14T17:13:47.341Z",
       "sourceUpdated": "2025-09-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -170515,7 +170515,7 @@
     {
       "nctId": "NCT04016779",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04016779",
-      "retrievedAt": "2026-11-13T18:36:32.070Z",
+      "retrievedAt": "2026-11-14T17:13:47.509Z",
       "sourceUpdated": "2022-07-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -170996,7 +170996,7 @@
     {
       "nctId": "NCT04143217",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04143217",
-      "retrievedAt": "2026-11-13T18:36:32.163Z",
+      "retrievedAt": "2026-11-14T17:13:47.588Z",
       "sourceUpdated": "2024-02-13",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173344,7 +173344,7 @@
     {
       "nctId": "NCT01507857",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01507857",
-      "retrievedAt": "2026-11-13T18:36:32.382Z",
+      "retrievedAt": "2026-11-14T17:13:47.676Z",
       "sourceUpdated": "2013-11-28",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173374,7 +173374,7 @@
     {
       "nctId": "NCT01636245",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01636245",
-      "retrievedAt": "2026-11-13T18:36:32.378Z",
+      "retrievedAt": "2026-11-14T17:13:47.841Z",
       "sourceUpdated": "2013-03-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173404,7 +173404,7 @@
     {
       "nctId": "NCT02451969",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02451969",
-      "retrievedAt": "2026-11-13T18:36:32.470Z",
+      "retrievedAt": "2026-11-14T17:13:47.922Z",
       "sourceUpdated": "2017-05-03",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173434,7 +173434,7 @@
     {
       "nctId": "NCT03526978",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03526978",
-      "retrievedAt": "2026-11-13T18:36:32.692Z",
+      "retrievedAt": "2026-11-14T17:13:48.011Z",
       "sourceUpdated": "2019-01-25",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173464,7 +173464,7 @@
     {
       "nctId": "NCT03822754",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03822754",
-      "retrievedAt": "2026-11-13T18:36:32.686Z",
+      "retrievedAt": "2026-11-14T17:13:48.176Z",
       "sourceUpdated": "2019-01-30",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173494,7 +173494,7 @@
     {
       "nctId": "NCT03822767",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03822767",
-      "retrievedAt": "2026-11-13T18:36:32.779Z",
+      "retrievedAt": "2026-11-14T17:13:48.254Z",
       "sourceUpdated": "2019-01-31",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173524,7 +173524,7 @@
     {
       "nctId": "NCT03853993",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03853993",
-      "retrievedAt": "2026-11-13T18:36:33.000Z",
+      "retrievedAt": "2026-11-14T17:13:48.345Z",
       "sourceUpdated": "2019-02-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173555,7 +173555,7 @@
     {
       "nctId": "NCT03859141",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03859141",
-      "retrievedAt": "2026-11-13T18:36:33.000Z",
+      "retrievedAt": "2026-11-14T17:13:48.510Z",
       "sourceUpdated": "2019-03-01",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173587,7 +173587,7 @@
     {
       "nctId": "NCT03909074",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03909074",
-      "retrievedAt": "2026-11-13T18:36:33.085Z",
+      "retrievedAt": "2026-11-14T17:13:48.585Z",
       "sourceUpdated": "2022-05-26",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173618,7 +173618,7 @@
     {
       "nctId": "NCT04386707",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04386707",
-      "retrievedAt": "2026-11-13T18:36:33.322Z",
+      "retrievedAt": "2026-11-14T17:13:48.681Z",
       "sourceUpdated": "2021-08-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173650,7 +173650,7 @@
     {
       "nctId": "NCT05245552",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05245552",
-      "retrievedAt": "2026-11-13T18:36:33.307Z",
+      "retrievedAt": "2026-11-14T17:13:48.850Z",
       "sourceUpdated": "2024-05-28",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173682,7 +173682,7 @@
     {
       "nctId": "NCT05386810",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05386810",
-      "retrievedAt": "2026-11-13T18:36:33.391Z",
+      "retrievedAt": "2026-11-14T17:13:48.920Z",
       "sourceUpdated": "2024-04-15",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173713,7 +173713,7 @@
     {
       "nctId": "NCT05431725",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05431725",
-      "retrievedAt": "2026-11-13T18:36:33.633Z",
+      "retrievedAt": "2026-11-14T17:13:49.015Z",
       "sourceUpdated": "2024-05-28",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173743,7 +173743,7 @@
     {
       "nctId": "NCT05850364",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05850364",
-      "retrievedAt": "2026-11-13T18:36:33.630Z",
+      "retrievedAt": "2026-11-14T17:13:49.184Z",
       "sourceUpdated": "2025-12-18",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173773,7 +173773,7 @@
     {
       "nctId": "NCT06049927",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06049927",
-      "retrievedAt": "2026-11-13T18:36:33.712Z",
+      "retrievedAt": "2026-11-14T17:13:49.252Z",
       "sourceUpdated": "2025-08-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173805,7 +173805,7 @@
     {
       "nctId": "NCT07211152",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT07211152",
-      "retrievedAt": "2026-11-13T18:36:33.946Z",
+      "retrievedAt": "2026-11-14T17:13:49.353Z",
       "sourceUpdated": "2026-11-10",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173835,7 +173835,7 @@
     {
       "nctId": "NCT07357545",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT07357545",
-      "retrievedAt": "2026-11-13T18:36:33.941Z",
+      "retrievedAt": "2026-11-14T17:13:49.519Z",
       "sourceUpdated": "2026-01-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -173865,7 +173865,7 @@
     {
       "nctId": "NCT03181932",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03181932",
-      "retrievedAt": "2026-11-13T18:36:34.027Z",
+      "retrievedAt": "2026-11-14T17:13:49.595Z",
       "sourceUpdated": "2022-12-16",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -174882,7 +174882,7 @@
     {
       "nctId": "NCT04475432",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04475432",
-      "retrievedAt": "2026-11-13T18:36:34.256Z",
+      "retrievedAt": "2026-11-14T17:13:49.688Z",
       "sourceUpdated": "2023-12-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -175033,7 +175033,7 @@
     {
       "nctId": "NCT04784091",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04784091",
-      "retrievedAt": "2026-11-13T18:36:34.254Z",
+      "retrievedAt": "2026-11-14T17:13:49.852Z",
       "sourceUpdated": "2023-12-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -175247,7 +175247,7 @@
     {
       "nctId": "NCT02301156",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02301156",
-      "retrievedAt": "2026-11-13T18:36:34.336Z",
+      "retrievedAt": "2026-11-14T17:13:49.931Z",
       "sourceUpdated": "2022-05-20",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -176613,7 +176613,7 @@
     {
       "nctId": "NCT03277248",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03277248",
-      "retrievedAt": "2026-11-13T18:36:34.569Z",
+      "retrievedAt": "2026-11-14T17:13:50.025Z",
       "sourceUpdated": "2021-12-06",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -177530,7 +177530,7 @@
     {
       "nctId": "NCT03277261",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03277261",
-      "retrievedAt": "2026-11-13T18:36:34.567Z",
+      "retrievedAt": "2026-11-14T17:13:50.188Z",
       "sourceUpdated": "2021-12-06",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -178447,7 +178447,7 @@
     {
       "nctId": "NCT02143648",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02143648",
-      "retrievedAt": "2026-11-13T18:36:34.645Z",
+      "retrievedAt": "2026-11-14T17:13:50.266Z",
       "sourceUpdated": "2025-05-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -179506,7 +179506,7 @@
     {
       "nctId": "NCT02143973",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02143973",
-      "retrievedAt": "2026-11-13T18:36:34.882Z",
+      "retrievedAt": "2026-11-14T17:13:50.359Z",
       "sourceUpdated": "2025-05-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -180233,7 +180233,7 @@
     {
       "nctId": "NCT02174419",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02174419",
-      "retrievedAt": "2026-11-13T18:36:34.878Z",
+      "retrievedAt": "2026-11-14T17:13:50.524Z",
       "sourceUpdated": "2025-05-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -180371,7 +180371,7 @@
     {
       "nctId": "NCT02174432",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02174432",
-      "retrievedAt": "2026-11-13T18:36:34.968Z",
+      "retrievedAt": "2026-11-14T17:13:50.603Z",
       "sourceUpdated": "2025-05-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -180459,7 +180459,7 @@
     {
       "nctId": "NCT03497975",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03497975",
-      "retrievedAt": "2026-11-13T18:36:35.197Z",
+      "retrievedAt": "2026-11-14T17:13:50.696Z",
       "sourceUpdated": "2025-06-24",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -181736,7 +181736,7 @@
     {
       "nctId": "NCT03493685",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03493685",
-      "retrievedAt": "2026-11-13T18:36:35.198Z",
+      "retrievedAt": "2026-11-14T17:13:50.887Z",
       "sourceUpdated": "2026-04-17",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -183045,7 +183045,7 @@
     {
       "nctId": "NCT03762850",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03762850",
-      "retrievedAt": "2026-11-13T18:36:35.278Z",
+      "retrievedAt": "2026-11-14T17:13:50.938Z",
       "sourceUpdated": "2026-10-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -184336,7 +184336,7 @@
     {
       "nctId": "NCT02793128",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT02793128",
-      "retrievedAt": "2026-11-13T18:36:35.522Z",
+      "retrievedAt": "2026-11-14T17:13:51.032Z",
       "sourceUpdated": "2020-12-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -185011,7 +185011,7 @@
     {
       "nctId": "NCT05136898",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05136898",
-      "retrievedAt": "2026-11-13T18:36:35.507Z",
+      "retrievedAt": "2026-11-14T17:13:51.223Z",
       "sourceUpdated": "2024-09-19",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -185249,7 +185249,7 @@
     {
       "nctId": "NCT06331299",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06331299",
-      "retrievedAt": "2026-11-13T18:36:35.586Z",
+      "retrievedAt": "2026-11-14T17:13:51.271Z",
       "sourceUpdated": "2026-10-22",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -185558,7 +185558,7 @@
     {
       "nctId": "NCT00505219",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00505219",
-      "retrievedAt": "2026-11-13T18:36:35.821Z",
+      "retrievedAt": "2026-11-14T17:13:51.366Z",
       "sourceUpdated": "2019-10-21",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -185588,7 +185588,7 @@
     {
       "nctId": "NCT00719576",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT00719576",
-      "retrievedAt": "2026-11-13T18:36:35.834Z",
+      "retrievedAt": "2026-11-14T17:13:51.557Z",
       "sourceUpdated": "2021-05-12",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -186189,7 +186189,7 @@
     {
       "nctId": "NCT01483898",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT01483898",
-      "retrievedAt": "2026-11-13T18:36:35.910Z",
+      "retrievedAt": "2026-11-14T17:13:51.609Z",
       "sourceUpdated": "2021-05-27",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -186219,7 +186219,7 @@
     {
       "nctId": "NCT04545060",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT04545060",
-      "retrievedAt": "2026-11-13T18:36:36.137Z",
+      "retrievedAt": "2026-11-14T17:13:51.708Z",
       "sourceUpdated": "2022-11-07",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -187034,7 +187034,7 @@
     {
       "nctId": "NCT05614063",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05614063",
-      "retrievedAt": "2026-11-13T18:36:36.142Z",
+      "retrievedAt": "2026-11-14T17:13:51.892Z",
       "sourceUpdated": "2026-05-14",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -187064,7 +187064,7 @@
     {
       "nctId": "NCT03995108",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03995108",
-      "retrievedAt": "2026-11-13T18:36:36.218Z",
+      "retrievedAt": "2026-11-14T17:13:51.941Z",
       "sourceUpdated": "2026-07-06",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -187094,7 +187094,7 @@
     {
       "nctId": "NCT03292952",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03292952",
-      "retrievedAt": "2026-11-13T18:36:36.464Z",
+      "retrievedAt": "2026-11-14T17:13:52.044Z",
       "sourceUpdated": "2021-06-30",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
@@ -187164,7 +187164,7 @@
     {
       "nctId": "NCT03460652",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT03460652",
-      "retrievedAt": "2026-11-13T18:36:36.454Z",
+      "retrievedAt": "2026-11-14T17:13:52.226Z",
       "sourceUpdated": "2021-07-19",
       "registryStatus": "COMPLETED",
       "registeredPhases": [
