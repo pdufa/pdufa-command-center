@@ -1,0 +1,1219 @@
+{
+  "schemaVersion": 1,
+  "kind": "ORCA2_OWNER_RESEARCH_DOSSIER",
+  "packetVersion": "orca2-owner-20261114-1",
+  "nct": "NCT04576949",
+  "company": "Achieve Life Sciences",
+  "ticker": "ACHV",
+  "phasesUnreviewed": [
+    "PHASE3"
+  ],
+  "focusNcts": [
+    "NCT05507203",
+    "NCT05507216",
+    "NCT04576949",
+    "NCT05206370",
+    "NCT05031780",
+    "NCT06747468",
+    "NCT05811247",
+    "NCT05813275",
+    "NCT05059223",
+    "NCT05113745",
+    "NCT05244304",
+    "NCT05126758",
+    "NCT06445023",
+    "NCT06455202",
+    "NCT05208047",
+    "NCT03697109",
+    "NCT04308590",
+    "NCT05767346",
+    "NCT06081894",
+    "NCT04871282",
+    "NCT06553768",
+    "NCT06411379",
+    "NCT06411899",
+    "NCT06153693",
+    "NCT06343779",
+    "NCT06669754",
+    "NCT06087276",
+    "NCT02500381",
+    "NCT04544293",
+    "NCT06331299",
+    "NCT04716231",
+    "NCT05662241"
+  ],
+  "evidenceCutoffDate": "2026-11-14",
+  "cutoffTimezone": "UTC",
+  "sourceInventory": [
+    {
+      "id": "registry",
+      "nct": "NCT04576949",
+      "studyCode": "ACH-CYT-03",
+      "sourceKind": "REGISTRY",
+      "scope": "TRIAL_EVIDENCE",
+      "documentVersion": "2026-01-15",
+      "documentDate": null,
+      "publicationDate": "2026-01-15",
+      "dateText": null,
+      "authenticationStatus": "NOT_AUTHENTICATED",
+      "receipt": {
+        "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04576949",
+        "documentSha256": "39ad68a0b06ec3f4ce59092aa14114ef6eeae1d43569edfa12b23dda6b490742",
+        "byteCount": 47769,
+        "retrievedAt": "2026-11-14T00:34:24.721222+00:00",
+        "evidenceCutoffDate": "2026-11-14",
+        "state": "HASH_CHECKED",
+        "provenanceIndependentlyAuthenticated": false,
+        "independentlyScientificallyReviewed": false
+      }
+    },
+    {
+      "id": "protocol-v4",
+      "nct": "NCT04576949",
+      "studyCode": "ACH-CYT-03",
+      "sourceKind": "PROTOCOL",
+      "scope": "TRIAL_EVIDENCE",
+      "documentVersion": "4.0",
+      "documentDate": "2021-03-08",
+      "publicationDate": null,
+      "dateText": null,
+      "authenticationStatus": "NOT_AUTHENTICATED",
+      "receipt": {
+        "nct": "NCT04576949",
+        "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/49/NCT04576949/Prot_000.pdf",
+        "sourceKind": "PROTOCOL",
+        "documentSha256": "c0ec264fb43b3b1a8cfdaaf7d61fa837f4b2abd8d747dfd858f1473f30d1ac08",
+        "byteCount": 5296330,
+        "retrievedAt": "2026-11-14T00:38:25.216953+00:00",
+        "evidenceCutoffDate": "2026-11-14",
+        "state": "HASH_CHECKED",
+        "registryDeclaredDocumentDateUnreviewed": "2021-03-08",
+        "publicationDate": null,
+        "documentVersion": null,
+        "protocolVersion": null,
+        "exactIdentityReviewStatus": "PENDING_ORIGINAL_DOCUMENT_REVIEW",
+        "provenanceIndependentlyAuthenticated": false,
+        "independentlyScientificallyReviewed": false,
+        "documentVersionUnreviewed": "4.0",
+        "versionExtractionStatus": "TITLE_PAGES_UNREVIEWED_NOT_AUTHENTICATION"
+      }
+    },
+    {
+      "id": "sap-v1",
+      "nct": "NCT04576949",
+      "studyCode": "ACH-CYT-03",
+      "sourceKind": "STATISTICAL_ANALYSIS_PLAN",
+      "scope": "TRIAL_EVIDENCE",
+      "documentVersion": "1.0",
+      "documentDate": "2022-03-25",
+      "publicationDate": null,
+      "dateText": null,
+      "authenticationStatus": "NOT_AUTHENTICATED",
+      "receipt": {
+        "nct": "NCT04576949",
+        "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/49/NCT04576949/SAP_001.pdf",
+        "sourceKind": "STATISTICAL_ANALYSIS_PLAN",
+        "documentSha256": "621617c3bbfbba9e8eadd2e7b35513e0693b8531119ebf3bac7b66fcb15ff3f2",
+        "byteCount": 3094698,
+        "retrievedAt": "2026-11-14T00:38:25.267863+00:00",
+        "evidenceCutoffDate": "2026-11-14",
+        "state": "HASH_CHECKED",
+        "registryDeclaredDocumentDateUnreviewed": "2022-03-25",
+        "publicationDate": null,
+        "documentVersion": null,
+        "protocolVersion": null,
+        "exactIdentityReviewStatus": "PENDING_ORIGINAL_DOCUMENT_REVIEW",
+        "provenanceIndependentlyAuthenticated": false,
+        "independentlyScientificallyReviewed": false,
+        "documentVersionUnreviewed": "1.0",
+        "versionExtractionStatus": "TITLE_PAGES_UNREVIEWED_NOT_AUTHENTICATION"
+      }
+    },
+    {
+      "id": "primary-report",
+      "nct": "NCT04576949",
+      "studyCode": "ACH-CYT-03",
+      "sourceKind": "PRIMARY_TRIAL_REPORT_HTML",
+      "scope": "TRIAL_EVIDENCE",
+      "documentVersion": null,
+      "documentDate": null,
+      "publicationDate": "2023-07-11",
+      "dateText": null,
+      "authenticationStatus": "NOT_AUTHENTICATED",
+      "receipt": {
+        "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10336611/",
+        "finalUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10336611/",
+        "documentSha256": "470eb255539db3aa78a240345396e6b68b2c8ced1d39ee89c62214c8ea4a52fd",
+        "byteCount": 194269,
+        "retrievedAt": "2026-11-14T01:19:42.476113+00:00",
+        "evidenceCutoffDate": "2026-11-14",
+        "state": "HASH_CHECKED",
+        "provenanceIndependentlyAuthenticated": false,
+        "independentlyScientificallyReviewed": false
+      }
+    },
+    {
+      "id": "sponsor-last-visit",
+      "nct": "NCT04576949",
+      "studyCode": null,
+      "sourceKind": "CONTEMPORANEOUS_SPONSOR_DISCLOSURE",
+      "scope": "SPONSOR_CLAIM",
+      "documentVersion": null,
+      "documentDate": null,
+      "publicationDate": "2022-01-04",
+      "dateText": null,
+      "authenticationStatus": "NOT_AUTHENTICATED",
+      "receipt": {
+        "sourceUrl": "https://ir.achieverx.com/news-events/press-releases/detail/10/achieve-life-sciences-announces-completion-of-last-subject-last-follow-up-visit-in-phase-3-orca-2-trial-of-cytisinicline-for-smoking-cessation",
+        "finalUrl": "https://ir.achieverx.com/news-events/press-releases/detail/10/achieve-life-sciences-announces-completion-of-last-subject-last-follow-up-visit-in-phase-3-orca-2-trial-of-cytisinicline-for-smoking-cessation",
+        "documentSha256": "a2a9751a04a1ca06677ee85257650e5fdfb4a894de382538cbfad3bd1fb3a63b",
+        "byteCount": 38964,
+        "retrievedAt": "2026-11-14T01:22:39.187306+00:00",
+        "evidenceCutoffDate": "2026-11-14",
+        "state": "HASH_CHECKED",
+        "provenanceIndependentlyAuthenticated": false,
+        "independentlyScientificallyReviewed": false
+      }
+    },
+    {
+      "id": "sponsor-pre-readout",
+      "nct": "NCT04576949",
+      "studyCode": null,
+      "sourceKind": "CONTEMPORANEOUS_SPONSOR_DISCLOSURE",
+      "scope": "SPONSOR_CLAIM",
+      "documentVersion": null,
+      "documentDate": null,
+      "publicationDate": "2022-03-10",
+      "dateText": null,
+      "authenticationStatus": "NOT_AUTHENTICATED",
+      "receipt": {
+        "sourceUrl": "https://ir.achieverx.com/news-events/press-releases/detail/136/achieve-life-sciences-reports-financial-results-for-fourth-quarter-and-year-end-2021-and-provides-corporate-update",
+        "finalUrl": "https://ir.achieverx.com/news-events/press-releases/detail/136/achieve-life-sciences-reports-financial-results-for-fourth-quarter-and-year-end-2021-and-provides-corporate-update",
+        "documentSha256": "057a9e4a6be4b274b23224895f9d82448bc5e4842271ff6fd7106ac7091e0e56",
+        "byteCount": 83718,
+        "retrievedAt": "2026-11-14T01:22:39.181472+00:00",
+        "evidenceCutoffDate": "2026-11-14",
+        "state": "HASH_CHECKED",
+        "provenanceIndependentlyAuthenticated": false,
+        "independentlyScientificallyReviewed": false
+      }
+    },
+    {
+      "id": "sponsor-topline",
+      "nct": "NCT04576949",
+      "studyCode": null,
+      "sourceKind": "CONTEMPORANEOUS_SPONSOR_DISCLOSURE",
+      "scope": "SPONSOR_CLAIM",
+      "documentVersion": null,
+      "documentDate": null,
+      "publicationDate": "2022-04-27",
+      "dateText": null,
+      "authenticationStatus": "NOT_AUTHENTICATED",
+      "receipt": {
+        "sourceUrl": "https://ir.achieverx.com/news-events/press-releases/detail/141/achieve-life-sciences-announces-successful-statistically-significant-smoking-cessation-results-in-phase-3-orca-2-clinical-trial-of-cytisinicline-in-adult-smokers",
+        "finalUrl": "https://ir.achieverx.com/news-events/press-releases/detail/141/achieve-life-sciences-announces-successful-statistically-significant-smoking-cessation-results-in-phase-3-orca-2-clinical-trial-of-cytisinicline-in-adult-smokers",
+        "documentSha256": "24c6f6afdbda05195b56283a3287b8b752a1774cb1b23a5623dbc592a6eee620",
+        "byteCount": 45755,
+        "retrievedAt": "2026-11-14T01:21:51.408633+00:00",
+        "evidenceCutoffDate": "2026-11-14",
+        "state": "HASH_CHECKED",
+        "provenanceIndependentlyAuthenticated": false,
+        "independentlyScientificallyReviewed": false
+      }
+    },
+    {
+      "id": "sponsor-dsmc-2021",
+      "nct": "NCT04576949",
+      "studyCode": null,
+      "sourceKind": "CONTEMPORANEOUS_SPONSOR_DISCLOSURE",
+      "scope": "SPONSOR_CLAIM",
+      "documentVersion": null,
+      "documentDate": null,
+      "publicationDate": "2021-11-22",
+      "dateText": null,
+      "authenticationStatus": "NOT_AUTHENTICATED",
+      "receipt": {
+        "sourceUrl": "https://ir.achieverx.com/news-events/press-releases/detail/13/achieve-life-sciences-announces-phase-3-orca-2-trial-of-cytisinicline-in-smoking-cessation-clears-final-review-by-data-safety-monitoring-committee-dsmc",
+        "finalUrl": "https://ir.achieverx.com/news-events/press-releases/detail/13/achieve-life-sciences-announces-phase-3-orca-2-trial-of-cytisinicline-in-smoking-cessation-clears-final-review-by-data-safety-monitoring-committee-dsmc",
+        "documentSha256": "daea2c6d0ed18233a813dddc016b34b6b4fcaa9db5e4c621b18b66837e7c20cd",
+        "byteCount": 39247,
+        "retrievedAt": "2026-11-14T01:21:51.494764+00:00",
+        "evidenceCutoffDate": "2026-11-14",
+        "state": "HASH_CHECKED",
+        "provenanceIndependentlyAuthenticated": false,
+        "independentlyScientificallyReviewed": false
+      }
+    },
+    {
+      "id": "fda-multiple-endpoints-2017",
+      "nct": null,
+      "studyCode": null,
+      "sourceKind": "FDA_STATISTICAL_GUIDANCE",
+      "scope": "CONTEXT_ONLY",
+      "documentVersion": "Draft",
+      "documentDate": null,
+      "publicationDate": null,
+      "dateText": "January 2017",
+      "authenticationStatus": "NOT_AUTHENTICATED",
+      "receipt": {
+        "sourceUrl": "https://www.fda.gov/media/102657/download",
+        "finalUrl": "https://www.fda.gov/media/102657/download",
+        "documentSha256": "2beceb66e56377248d0da43e96ce3177023d4027bf2b459bcec0ad0c1040d70b",
+        "byteCount": 703996,
+        "retrievedAt": "2026-11-14T03:52:34.657646+00:00",
+        "evidenceCutoffDate": "2026-11-14",
+        "state": "HASH_CHECKED",
+        "provenanceIndependentlyAuthenticated": false,
+        "independentlyScientificallyReviewed": false
+      }
+    },
+    {
+      "id": "fda-multiple-endpoints-2022",
+      "nct": null,
+      "studyCode": null,
+      "sourceKind": "FDA_STATISTICAL_GUIDANCE",
+      "scope": "CONTEXT_ONLY",
+      "documentVersion": "Final",
+      "documentDate": null,
+      "publicationDate": null,
+      "dateText": "October 2022",
+      "authenticationStatus": "NOT_AUTHENTICATED",
+      "receipt": {
+        "sourceUrl": "https://www.fda.gov/media/162416/download",
+        "finalUrl": "https://www.fda.gov/media/162416/download",
+        "documentSha256": "40284a050aab0037799072b2340e37d4b02ab6f7f2339fff6ea1cd55673a9563",
+        "byteCount": 324708,
+        "retrievedAt": "2026-11-14T03:52:34.710172+00:00",
+        "evidenceCutoffDate": "2026-11-14",
+        "state": "HASH_CHECKED",
+        "provenanceIndependentlyAuthenticated": false,
+        "independentlyScientificallyReviewed": false
+      }
+    },
+    {
+      "id": "fda-e9",
+      "nct": null,
+      "studyCode": null,
+      "sourceKind": "FDA_STATISTICAL_GUIDANCE",
+      "scope": "CONTEXT_ONLY",
+      "documentVersion": "Final",
+      "documentDate": null,
+      "publicationDate": null,
+      "dateText": "September 1998",
+      "authenticationStatus": "NOT_AUTHENTICATED",
+      "receipt": {
+        "sourceUrl": "https://www.fda.gov/media/71336/download",
+        "finalUrl": "https://www.fda.gov/media/71336/download",
+        "documentSha256": "f64a79a9800d523e50ac3c33af6fbd5de0c229b984e51b224bd5d58c26b12325",
+        "byteCount": 112494,
+        "retrievedAt": "2026-11-14T03:52:34.524216+00:00",
+        "evidenceCutoffDate": "2026-11-14",
+        "state": "HASH_CHECKED",
+        "provenanceIndependentlyAuthenticated": false,
+        "independentlyScientificallyReviewed": false
+      }
+    }
+  ],
+  "primaryCompletionDateUnreviewed": "2021-12-23",
+  "sapObservations": {
+    "documentVersionUnreviewed": "1.0",
+    "documentDateUnreviewed": "2022-03-25",
+    "referencedProtocolVersionUnreviewed": "3.0",
+    "referencedProtocolDateUnreviewed": "2020-09-10",
+    "embeddedSigningCompletionDateUnreviewed": "2022-03-29",
+    "approvalEffectiveDate": null,
+    "authenticationStatus": "NOT_AUTHENTICATED"
+  },
+  "chronologyReconciliation": {
+    "primaryCompletionDateUnreviewed": "2021-12-23",
+    "sapCoverDateUnreviewed": "2022-03-25",
+    "embeddedSigningCompletionDateUnreviewed": "2022-03-29",
+    "daysCoverAfterPrimaryCompletion": 92,
+    "embeddedSigningBeforePublicTopline": true,
+    "protocolReferenceMismatch": true,
+    "databaseLockDate": null,
+    "actualUnblindingDate": null,
+    "sapApprovalEffectiveDate": null,
+    "earlierStandaloneSapVersions": "UNRESOLVED",
+    "prespecificationConclusion": "UNRESOLVED",
+    "postHocConclusion": null,
+    "limitation": "Cover date, embedded completion claim, last visit and public readout are distinct events; none establishes actual database lock or unblinding."
+  },
+  "actualAuthenticatedSources": 0,
+  "actualAdjudicatedAssessments": 0,
+  "evidenceComplete": false,
+  "assessmentCompleted": false,
+  "historicalPredictionInputPermitted": false,
+  "prospectiveBlindAssessment": false,
+  "approvalProbability": null,
+  "scientificConclusion": null,
+  "applicationIdentityVerified": false,
+  "applicationCycleId": null,
+  "candidateApplicationCycleIdsUnverified": [
+    "achv-cytisinicline"
+  ],
+  "timeline": [
+    {
+      "date": "2020-10-06",
+      "observation": "Initial registry posting date reported in the current registry packet; original historical versions were not retrieved.",
+      "sourceIds": [
+        "registry"
+      ],
+      "locator": "statusModule.studyFirstPostDateStruct",
+      "status": "PRELIMINARY_UNREVIEWED"
+    },
+    {
+      "date": "2021-03-08",
+      "observation": "Collected protocol cover identifies version 4.0; statistical section describes primary multiplicity handling before primary completion.",
+      "sourceIds": [
+        "protocol-v4"
+      ],
+      "locator": "cover; section 16.1",
+      "status": "PRELIMINARY_UNREVIEWED"
+    },
+    {
+      "date": "2021-11-22",
+      "observation": "Sponsor reports final DSMC review and follow-up ongoing. This does not establish sponsor unblinding or absence of limited safety access.",
+      "sourceIds": [
+        "sponsor-dsmc-2021"
+      ],
+      "locator": "dated article body",
+      "status": "PRELIMINARY_UNREVIEWED"
+    },
+    {
+      "date": "2021-12-23",
+      "observation": "Registry reports actual primary completion and study completion on this date. Completion is not database lock.",
+      "sourceIds": [
+        "registry"
+      ],
+      "locator": "statusModule.primaryCompletionDateStruct; completionDateStruct",
+      "status": "PRELIMINARY_UNREVIEWED"
+    },
+    {
+      "date": "2022-01-04",
+      "observation": "Sponsor announces last follow-up visit occurred in late December 2021. It provides no exact database-lock or unblinding date.",
+      "sourceIds": [
+        "sponsor-last-visit"
+      ],
+      "locator": "dated article body",
+      "status": "PRELIMINARY_UNREVIEWED"
+    },
+    {
+      "date": "2022-03-10",
+      "observation": "Pre-readout disclosure anticipates topline results in Q2 2022; this is not a blinded-status attestation.",
+      "sourceIds": [
+        "sponsor-pre-readout"
+      ],
+      "locator": "ORCA-2 completion/readout paragraph",
+      "status": "PRELIMINARY_UNREVIEWED"
+    },
+    {
+      "date": "2022-03-25",
+      "observation": "SAP cover/header identifies version 1.0, dated March 25; effective approval date is not independently established.",
+      "sourceIds": [
+        "sap-v1"
+      ],
+      "locator": "PDF pages 1–2",
+      "status": "PRELIMINARY_UNREVIEWED"
+    },
+    {
+      "date": "2022-03-29",
+      "observation": "Embedded certificate reports signing complete on March 29. Document-internal signature claims are unauthenticated and do not certify the research workflow.",
+      "sourceIds": [
+        "sap-v1"
+      ],
+      "locator": "PDF pages 51–52; Envelope Summary Events",
+      "status": "PRELIMINARY_UNREVIEWED"
+    },
+    {
+      "date": "2022-04-27",
+      "observation": "Sponsor publishes topline ORCA-2 results. Public disclosure is distinct from actual analyst/sponsor unblinding.",
+      "sourceIds": [
+        "sponsor-topline"
+      ],
+      "locator": "dated article body",
+      "status": "PRELIMINARY_UNREVIEWED"
+    },
+    {
+      "date": "2023-07-11",
+      "observation": "Primary trial report publication date. Current full HTML has now been retrieved, unlike the prior failed primary full-text XML request.",
+      "sourceIds": [
+        "primary-report"
+      ],
+      "locator": "article metadata; PMC10336611 / PMID37432430",
+      "status": "PRELIMINARY_UNREVIEWED"
+    },
+    {
+      "date": null,
+      "observation": "Actual database-lock date, unblinding date, legally effective SAP approval and earlier standalone SAP versions remain UNRESOLVED.",
+      "sourceIds": [
+        "protocol-v4",
+        "sap-v1",
+        "primary-report",
+        "sponsor-topline"
+      ],
+      "locator": "protocol 7.3.3–7.3.4; SAP 1 and certificate; article methods",
+      "status": "PRELIMINARY_UNREVIEWED"
+    }
+  ],
+  "levels": [
+    {
+      "level": 1,
+      "title": "Source provenance",
+      "evidenceCutoffDate": "2026-11-14",
+      "factualObservations": [
+        {
+          "observation": "Registry original, registered protocol/SAP originals and primary report HTML are retained with exact receipts. FDA statistical guidance and contemporaneous sponsor disclosures are separately scoped.",
+          "sourceIds": [
+            "registry",
+            "protocol-v4",
+            "sap-v1",
+            "primary-report"
+          ],
+          "locator": "sourceInventory; source-role and document-version fields",
+          "status": "PRELIMINARY_UNREVIEWED"
+        },
+        {
+          "observation": "The retained SAP contains an embedded completion certificate; no external verification of that certificate or its signing chain has been performed.",
+          "sourceIds": [
+            "sap-v1"
+          ],
+          "locator": "PDF pages 51–52",
+          "status": "PRELIMINARY_UNREVIEWED"
+        }
+      ],
+      "preliminaryInterpretation": "Core originals are available for owner source checking; provenance and package completeness remain unresolved. Matching bytes and embedded signing claims confer no independent trust.",
+      "supportingReasons": [
+        "Exact study code and NCT-linked source locators support traceability; original bytes were rechecked locally."
+      ],
+      "contradictoryEvidence": [
+        "Public URL, matching digest and embedded signature text are not independent authentication."
+      ],
+      "risksAndLimitations": [
+        "Historical registry revisions and journal supplement copies were not acquired; sponsor redirects require ownership reconciliation."
+      ],
+      "missingInformation": [
+        "Original history export, original protocol versions and complete amendment log",
+        "Original SAP certificate/effective-approval record if available; owner research can proceed with this gap",
+        "Owner source/version reconciliation and explicit owner self-review decision; no outside verification required."
+      ],
+      "gates": {
+        "CODE_IMPLEMENTED": true,
+        "TESTS_PASSED": true,
+        "ORIGINAL_EVIDENCE_COLLECTED": true,
+        "OWNER_REVIEW_COMPLETED": false
+      },
+      "evidenceComplete": false,
+      "scientificConclusion": null,
+      "score": null,
+      "approvalProbability": null,
+      "finalReadinessClassification": "READY_FOR_OWNER_RESEARCH_WITH_UNRESOLVED_EVIDENCE",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalReviewerRequired": false,
+      "ownerCanReviewWithoutExternalVerification": true,
+      "ownerCheckQuestions": [
+        "Verify source ownership, original bytes, exact trial identity, dates, versions and cutoff using original sources.",
+        "Can the embedded certificate be cross-checked by the owner without exposing private signer information?"
+      ],
+      "remainingEvidenceIssues": [
+        "Earlier protocol/SAP versions and executed chronology remain incomplete.",
+        "Owner acceptance has not been recorded; research can proceed without external verification."
+      ]
+    },
+    {
+      "level": 2,
+      "title": "Trial identity and phase",
+      "evidenceCutoffDate": "2026-11-14",
+      "factualObservations": [
+        {
+          "observation": "Registry identifies ACH-CYT-03 / ORCA-2 as Phase 3, completed, in adult smokers; the primary paper describes 17 US sites, 810 randomized adults and smoking-cessation behavioral support.",
+          "sourceIds": [
+            "registry",
+            "protocol-v4",
+            "primary-report"
+          ],
+          "locator": "identificationModule; designModule; eligibilityModule; paper Methods",
+          "status": "PRELIMINARY_UNREVIEWED"
+        },
+        {
+          "observation": "The frozen application candidate achv-cytisinicline remains provisional; no verified application-cycle identity is bound.",
+          "sourceIds": [
+            "registry"
+          ],
+          "locator": "packet candidateApplicationCycleIdsUnverified; no registry-to-FDA cycle attestation",
+          "status": "PRELIMINARY_UNREVIEWED"
+        }
+      ],
+      "preliminaryInterpretation": "Phase 3 smoking-cessation research is appropriate. Preserve exact trial/population boundaries; do not import ORCA-3 or COPD post-hoc findings as ORCA-2 primary outcomes.",
+      "supportingReasons": [
+        "Study identifier, intervention, population and registered primary windows can be compared across retained sources."
+      ],
+      "contradictoryEvidence": [
+        "SAP references protocol v3.0 rather than collected v4.0; current website branding differs from frozen roster."
+      ],
+      "risksAndLimitations": [
+        "No owner source cross-checking of current phase/status, sponsor aliases or application cycle."
+      ],
+      "missingInformation": [
+        "Original application/submission-cycle documentary linkage",
+        "Historical phase/status and eligibility amendment reconciliation",
+        "Owner source/version reconciliation and explicit owner self-review decision; no outside verification required."
+      ],
+      "gates": {
+        "CODE_IMPLEMENTED": true,
+        "TESTS_PASSED": true,
+        "ORIGINAL_EVIDENCE_COLLECTED": true,
+        "OWNER_REVIEW_COMPLETED": false
+      },
+      "evidenceComplete": false,
+      "scientificConclusion": null,
+      "score": null,
+      "approvalProbability": null,
+      "finalReadinessClassification": "READY_FOR_OWNER_RESEARCH_WITH_UNRESOLVED_EVIDENCE",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalReviewerRequired": false,
+      "ownerCanReviewWithoutExternalVerification": true,
+      "ownerCheckQuestions": [
+        "Reconcile NCT04576949 / ACH-CYT-03 across all originals.",
+        "Do any protocol amendments change the enrolled population or applicability?"
+      ],
+      "remainingEvidenceIssues": [
+        "Earlier protocol/SAP versions and executed chronology remain incomplete.",
+        "Owner acceptance has not been recorded; research can proceed without external verification."
+      ]
+    },
+    {
+      "level": 3,
+      "title": "Efficacy and clinical findings",
+      "evidenceCutoffDate": "2026-11-14",
+      "factualObservations": [
+        {
+          "observation": "The report describes 810 randomized participants: 270 in the 12-week arm, 269 in the 6-week arm and 271 placebo. Continuous abstinence was 32.6% versus 7.0% at weeks 9–12 and 25.3% versus 4.4% at weeks 3–6.",
+          "sourceIds": [
+            "primary-report",
+            "registry"
+          ],
+          "locator": "paper Results/Table 2; registry outcomeMeasuresModule",
+          "status": "PRELIMINARY_UNREVIEWED"
+        },
+        {
+          "observation": "Reported follow-up abstinence was 21.1% versus 4.8% through week 24 for the 12-week comparison, and 8.9% versus 2.6% for the 6-week comparison. Outcomes have different windows and placebo rates.",
+          "sourceIds": [
+            "primary-report"
+          ],
+          "locator": "paper Table 2",
+          "status": "PRELIMINARY_UNREVIEWED"
+        },
+        {
+          "observation": "Safety analysis uses 809 exposed participants; placebo safety denominator is 270 rather than 271 randomized. The report lists serious adverse events but none judged treatment related, including one death in the 6-week group.",
+          "sourceIds": [
+            "primary-report"
+          ],
+          "locator": "paper Table 3 and footnote; Results adverse events",
+          "status": "PRELIMINARY_UNREVIEWED"
+        },
+        {
+          "observation": "The paper reports primary odds ratios of 6.3 (95% CI 3.7–11.6) for 12-week treatment and 8.0 (95% CI 3.9–16.3) for 6-week treatment. These are published estimates, not new calculations or an independent significance judgment.",
+          "sourceIds": [
+            "primary-report"
+          ],
+          "locator": "paper Results and Table2",
+          "status": "PRELIMINARY_UNREVIEWED"
+        }
+      ],
+      "preliminaryInterpretation": "Reported cessation outcomes support a bounded efficacy research discussion. Treatment-end and follow-up effects, denominators, uncertainty and harms must be reconciled before an owner benefit-risk assessment.",
+      "supportingReasons": [
+        "Original primary report and posted aggregate registry results are collected; efficacy and safety populations are kept distinct."
+      ],
+      "contradictoryEvidence": [
+        "No treatment-related serious event is not the same as no serious events. Randomized and safety denominators differ for a stated exposure reason."
+      ],
+      "risksAndLimitations": [
+        "No active comparator; 24-week follow-up does not establish long-term disease-outcome benefit or exclude uncommon harms."
+      ],
+      "missingInformation": [
+        "Owner endpoint-by-endpoint registry/paper table reconciliation and sensitivity outputs",
+        "Full CSR and adjudicated harms/death attribution evidence if lawfully available",
+        "Owner source/version reconciliation and explicit owner self-review decision; no outside verification required."
+      ],
+      "gates": {
+        "CODE_IMPLEMENTED": true,
+        "TESTS_PASSED": true,
+        "ORIGINAL_EVIDENCE_COLLECTED": true,
+        "OWNER_REVIEW_COMPLETED": false
+      },
+      "evidenceComplete": false,
+      "scientificConclusion": null,
+      "score": null,
+      "approvalProbability": null,
+      "finalReadinessClassification": "READY_FOR_OWNER_RESEARCH_WITH_UNRESOLVED_EVIDENCE",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalReviewerRequired": false,
+      "ownerCanReviewWithoutExternalVerification": true,
+      "ownerCheckQuestions": [
+        "Confirm participant counts, outcome windows, effect estimates and uncertainty from originals.",
+        "Review all serious events, death, withdrawals, adherence and missing data without equating attributed relatedness with absence of risk."
+      ],
+      "remainingEvidenceIssues": [
+        "Earlier protocol/SAP versions and executed chronology remain incomplete.",
+        "Owner acceptance has not been recorded; research can proceed without external verification."
+      ]
+    },
+    {
+      "level": 4,
+      "title": "Protocol and trial design",
+      "evidenceCutoffDate": "2026-11-14",
+      "factualObservations": [
+        {
+          "observation": "Protocol v4.0 describes a randomized blinded placebo-controlled trial with three arms, two treatment durations, behavioral support and follow-up to week 24.",
+          "sourceIds": [
+            "protocol-v4",
+            "primary-report"
+          ],
+          "locator": "protocol synopsis and sections 7/16; paper Methods",
+          "status": "PRELIMINARY_UNREVIEWED"
+        },
+        {
+          "observation": "The protocol describes planned blinding/unblinding controls, not an executed unblinding timestamp. A sponsor DSMC review disclosure likewise does not establish comparative-data access history.",
+          "sourceIds": [
+            "protocol-v4",
+            "sponsor-dsmc-2021"
+          ],
+          "locator": "protocol 7.3.3–7.3.4; sponsor November 22 disclosure",
+          "status": "PRELIMINARY_UNREVIEWED"
+        }
+      ],
+      "preliminaryInterpretation": "The collected design supports review preparation. Its execution, amendment history and safeguards against operational unblinding cannot be certified from planned procedures.",
+      "supportingReasons": [
+        "A protocol predating primary completion is collected and can be compared with the reported study."
+      ],
+      "contradictoryEvidence": [
+        "SAP introductory protocol reference and current collected protocol version differ; formal amendment reconciliation is missing."
+      ],
+      "risksAndLimitations": [
+        "Exclusions limit generalization to serious mental illness, recent unstable cardiovascular disease and other excluded populations; missing visits/adherence may affect interpretation."
+      ],
+      "missingInformation": [
+        "Protocol versions 1–3 and amendment/IRB implementation records",
+        "Executed allocation, database-lock and access/unblinding logs; deviations summary",
+        "Owner source/version reconciliation and explicit owner self-review decision; no outside verification required."
+      ],
+      "gates": {
+        "CODE_IMPLEMENTED": true,
+        "TESTS_PASSED": true,
+        "ORIGINAL_EVIDENCE_COLLECTED": true,
+        "OWNER_REVIEW_COMPLETED": false
+      },
+      "evidenceComplete": false,
+      "scientificConclusion": null,
+      "score": null,
+      "approvalProbability": null,
+      "finalReadinessClassification": "READY_FOR_OWNER_RESEARCH_WITH_UNRESOLVED_EVIDENCE",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalReviewerRequired": false,
+      "ownerCanReviewWithoutExternalVerification": true,
+      "ownerCheckQuestions": [
+        "Which v3-to-v4 changes affected endpoints, population, conduct or analysis?",
+        "Were blinding, randomization and behavioral support implemented as planned?"
+      ],
+      "remainingEvidenceIssues": [
+        "Earlier protocol/SAP versions and executed chronology remain incomplete.",
+        "Owner acceptance has not been recorded; research can proceed without external verification."
+      ]
+    },
+    {
+      "level": 5,
+      "title": "Statistical analysis",
+      "evidenceCutoffDate": "2026-11-14",
+      "factualObservations": [
+        {
+          "observation": "SAP v1.0 cover is dated March 25, 2022; its embedded completion certificate reports March 29, 2022. Registry primary completion is December 23, 2021; public topline disclosure is April 27, 2022.",
+          "sourceIds": [
+            "sap-v1",
+            "registry",
+            "sponsor-topline"
+          ],
+          "locator": "SAP cover and PDF51–52; registry primaryCompletionDateStruct; dated sponsor article",
+          "status": "PRELIMINARY_UNREVIEWED"
+        },
+        {
+          "observation": "Protocol 16.1 already describes Hochberg with overall one-sided alpha 0.025. SAP 10.1 describes primary familywise-error control, conditional alpha propagation to secondaries and exploratory endpoints without multiplicity protection. Bonferroni appears in sizing assumptions.",
+          "sourceIds": [
+            "protocol-v4",
+            "sap-v1"
+          ],
+          "locator": "protocol 16.1; SAP 2 and 10.1–10.2",
+          "status": "PRELIMINARY_UNREVIEWED"
+        },
+        {
+          "observation": "SAP describes all-randomized efficacy analysis and exposed safety analysis, allowances for an interim missed visit, missing-as-failure rules and tipping-point sensitivity analyses. These rules require reconciliation with the reported implementation.",
+          "sourceIds": [
+            "sap-v1",
+            "primary-report"
+          ],
+          "locator": "SAP4.1.1,6.5,10.1.2.1; paper Statistical Analysis",
+          "status": "PRELIMINARY_UNREVIEWED"
+        },
+        {
+          "observation": "The paper names Hochberg control, but its reference 23 concerns false-discovery-rate methodology. The SAP specifies familywise-error handling; the citation discrepancy is unresolved.",
+          "sourceIds": [
+            "primary-report",
+            "sap-v1"
+          ],
+          "locator": "paper Statistical Analysis and reference23; SAP10.1.1",
+          "status": "PRELIMINARY_UNREVIEWED"
+        },
+        {
+          "observation": "The recorded primary rule uses one-sided 0.025 when both primary P values are <=0.025; otherwise the favorable comparison must be <=0.0125. Secondary alpha is conditional: 0.025 if both primaries pass, or 0.0125 for the corresponding secondary if only one passes. The third secondary requires both preceding secondaries to pass. No trial P values were transformed or re-tested here.",
+          "sourceIds": [
+            "sap-v1"
+          ],
+          "locator": "SAP section10.1.1, PDF pages29–30; mathematical symbols visually checked against retained original",
+          "status": "PRELIMINARY_UNREVIEWED"
+        }
+      ],
+      "preliminaryInterpretation": "Prespecification remains UNRESOLVED. March cover/signing dates after last visit do not establish post-hoc planning, and dates before public readout do not prove planning before unblinding.",
+      "supportingReasons": [
+        "The earlier protocol records key primary multiplicity concepts; the collected SAP provides detailed alpha/missing-data rules.",
+        "The embedded signing claim narrows the documented timeline without authenticating it."
+      ],
+      "contradictoryEvidence": [
+        "Protocol v3 reference versus collected v4; paper FDR reference versus SAP familywise-error specification.",
+        "No original earlier SAP/version log, effective-approval confirmation, actual lock or unblinding timestamp is available."
+      ],
+      "risksAndLimitations": [
+        "Embedded certificate dates and protocol intentions are not independent proof of chronology.",
+        "OCR/embedded-font artifacts require visual checking of mathematical symbols; no p-value conversion or significance certification was calculated."
+      ],
+      "missingInformation": [
+        "Earlier SAP drafts/final versions, tracked changes and prespecification/approval history",
+        "Actual database-lock, first unblinded access and analysis-population approval timestamps",
+        "Implemented statistical code/outputs, multiplicity hierarchy and sensitivity analyses; lawful CSR access if available",
+        "Owner source/version reconciliation and explicit owner self-review decision; no outside verification required."
+      ],
+      "gates": {
+        "CODE_IMPLEMENTED": true,
+        "TESTS_PASSED": true,
+        "ORIGINAL_EVIDENCE_COLLECTED": true,
+        "OWNER_REVIEW_COMPLETED": false
+      },
+      "evidenceComplete": false,
+      "scientificConclusion": null,
+      "score": null,
+      "approvalProbability": null,
+      "finalReadinessClassification": "READY_FOR_OWNER_RESEARCH_WITH_UNRESOLVED_EVIDENCE",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalReviewerRequired": false,
+      "ownerCanReviewWithoutExternalVerification": true,
+      "ownerCheckQuestions": [
+        "Validate the certificate and distinguish signing completion from effective approval.",
+        "Reconcile protocolv3/v4, all SAP versions, missing-data allowances and any data-driven amendments.",
+        "Confirm the implemented familywise-error procedure and alpha propagation; resolve the paper reference discrepancy."
+      ],
+      "remainingEvidenceIssues": [
+        "Earlier protocol/SAP versions and executed chronology remain incomplete.",
+        "Owner acceptance has not been recorded; research can proceed without external verification."
+      ]
+    },
+    {
+      "level": 6,
+      "title": "Endpoint clinical relevance",
+      "evidenceCutoffDate": "2026-11-14",
+      "factualObservations": [
+        {
+          "observation": "Primary outcomes concern biochemically verified continuous smoking abstinence during the final four treatment weeks. Week-24 follow-up and later clinical disease outcomes are separate questions.",
+          "sourceIds": [
+            "protocol-v4",
+            "sap-v1",
+            "primary-report"
+          ],
+          "locator": "protocol16.2; SAP4.1; paper Methods/Table2",
+          "status": "PRELIMINARY_UNREVIEWED"
+        },
+        {
+          "observation": "The report includes a selected adult smoking population receiving behavioral support and excludes several psychiatric/cardiovascular/substance-use groups; safety follow-up is limited.",
+          "sourceIds": [
+            "primary-report",
+            "protocol-v4"
+          ],
+          "locator": "paper Eligibility and Limitations; protocol inclusion/exclusion",
+          "status": "PRELIMINARY_UNREVIEWED"
+        }
+      ],
+      "preliminaryInterpretation": "Continuous abstinence is directly relevant to smoking behavior. Clinical importance, durability, tolerability, generalizability and comparative effectiveness still require owner indication-specific research; no mortality or cardiovascular benefit is inferred.",
+      "supportingReasons": [
+        "Abstinence definitions, biochemical threshold and follow-up duration are available for specialist inspection."
+      ],
+      "contradictoryEvidence": [
+        "Treatment-period response and later abstinence differ; they cannot be presented as durable disease benefit."
+      ],
+      "risksAndLimitations": [
+        "No head-to-head comparator or long-term morbidity endpoint; selected population limits transferability."
+      ],
+      "missingInformation": [
+        "Independent disease-specific endpoint/benefit-risk assessment",
+        "Longer-term and excluded-population evidence where available; no assumption it is required to have been collected at this phase",
+        "Owner source/version reconciliation and explicit owner self-review decision; no outside verification required."
+      ],
+      "gates": {
+        "CODE_IMPLEMENTED": true,
+        "TESTS_PASSED": true,
+        "ORIGINAL_EVIDENCE_COLLECTED": true,
+        "OWNER_REVIEW_COMPLETED": false
+      },
+      "evidenceComplete": false,
+      "scientificConclusion": null,
+      "score": null,
+      "approvalProbability": null,
+      "finalReadinessClassification": "READY_FOR_OWNER_RESEARCH_WITH_UNRESOLVED_EVIDENCE",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalReviewerRequired": false,
+      "ownerCanReviewWithoutExternalVerification": true,
+      "ownerCheckQuestions": [
+        "Are the abstinence definitions and missing-visit rules clinically interpretable?",
+        "What benefit-risk conclusions are justified for this exact population and duration, and where should reviewers abstain?"
+      ],
+      "remainingEvidenceIssues": [
+        "Earlier protocol/SAP versions and executed chronology remain incomplete.",
+        "Owner acceptance has not been recorded; research can proceed without external verification."
+      ]
+    }
+  ],
+  "unresolvedDiscrepancies": [
+    "SAP section 1 references protocol v3.0 dated September 10, 2020, while the collected protocol is v4.0 dated March 8, 2021. Earlier protocol versions, amendment log and an owner reconciliation are missing.",
+    "SAP cover date (March 25) and embedded signing completion (March 29) are different events; neither establishes database lock or first access to unblinded comparative data. No earlier standalone SAP was located in the searched sources; absence is not proven.",
+    "The primary report names Hochberg multiplicity control but reference 23 is Benjamini/Hochberg false-discovery-rate literature; SAP section 10 specifies familywise-error control. Reconcile implemented procedure and reference accuracy; do not assume analysis failure.",
+    "Protocol 16.1/16.2 and SAP 4.1.1/6.5/10 retain all-randomized efficacy analysis in their descriptions. There is no collected proof of a changed ITT population, but analysis-set approval and implementation records remain missing.",
+    "The earlier first-case summary overstated primary-report full-text collection. Saved data showed only the COPD post-hoc full text; the primary report XML request failed. Primary-report HTML was retrieved in this run; the earlier report is preserved unchanged.",
+    "Journal supplements 1–4 returned HTML download/challenge pages, not PDFs. Registry history JSON returned HTTP 403; history-page HTML alone is not a version history. A candidate SAP_000 URL returned 404. These access results do not prove nonpublic status or absence of earlier versions.",
+    "Current sponsor archive redirects to achieverx.com and presents changed branding. Preserve ACHV/company/cycle relationships from the frozen FOCUS roster; ownership/alias reconciliation needs owner source cross-checking.",
+    "FDA approved-drug query for cytisinicline returned no record; this does not exclude INDs, pending NDA submissions or other correspondence. FDA guidance is context, not trial-specific FDA endorsement."
+  ],
+  "sourceSearchAttempts": [
+    {
+      "id": "primary-fulltext",
+      "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10336611/",
+      "finalUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10336611/",
+      "documentSha256": "470eb255539db3aa78a240345396e6b68b2c8ced1d39ee89c62214c8ea4a52fd",
+      "byteCount": 194269,
+      "retrievedAt": "2026-11-14T01:19:42.476113+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "RETAINED_CORE_OR_CONTEXT"
+    },
+    {
+      "id": "pmc-availability",
+      "sourceUrl": "https://www.ncbi.nlm.nih.gov/pmc/utils/oa/oa.fcgi?id=PMC10336611",
+      "status": "RETRIEVAL_FAILED",
+      "error": "HTTPError",
+      "httpCode": 404,
+      "researchUse": "DISCOVERY_ONLY_NOT_CLINICAL_EVIDENCE"
+    },
+    {
+      "id": "registry-history",
+      "sourceUrl": "https://clinicaltrials.gov/api/int/studies/NCT04576949/history",
+      "status": "RETRIEVAL_FAILED",
+      "error": "HTTPError",
+      "httpCode": 403,
+      "researchUse": "DISCOVERY_ONLY_NOT_CLINICAL_EVIDENCE"
+    },
+    {
+      "id": "sponsor-news",
+      "sourceUrl": "https://ir.achievelifesciences.com/news-events/press-releases",
+      "finalUrl": "https://ir.achieverx.com/news-events/press-releases",
+      "documentSha256": "e680742b1a3a0af8b8d2c14c3b92571941551774d100736d94470230dbcc959d",
+      "byteCount": 46962,
+      "retrievedAt": "2026-11-14T01:19:43.130489+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "DISCOVERY_ONLY_NOT_CLINICAL_EVIDENCE"
+    },
+    {
+      "id": "registry-history-page",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04576949?tab=history",
+      "finalUrl": "https://clinicaltrials.gov/study/NCT04576949?tab=history",
+      "documentSha256": "66ba04e716eacfbd0601c980c442969da345a33403ec67c077e993a22710c74a",
+      "byteCount": 94251,
+      "retrievedAt": "2026-11-14T01:19:42.631845+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "HTML_SHELL_OR_CHALLENGE_NOT_ORIGINAL_REQUESTED_DOCUMENT"
+    },
+    {
+      "id": "earlier-sap-candidate",
+      "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/49/NCT04576949/SAP_000.pdf",
+      "status": "RETRIEVAL_FAILED",
+      "error": "HTTPError",
+      "httpCode": 404,
+      "researchUse": "DISCOVERY_ONLY_NOT_CLINICAL_EVIDENCE"
+    },
+    {
+      "id": "sponsor-topline",
+      "sourceUrl": "https://ir.achievelifesciences.com/news-events/press-releases/detail/176/achieve-life-sciences-announces-positive-topline-results-from",
+      "finalUrl": "https://ir.achieverx.com/news-events/press-releases/detail/176/achieve-life-sciences-announces-pricing-of-16-5-million-registered-direct-offering",
+      "documentSha256": "b03347c71a7c50f7409d5da2d9fd6f780b8d8e83e158b8e310973e508f8af9ae",
+      "byteCount": 37678,
+      "retrievedAt": "2026-11-14T01:20:16.944009+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "EXCLUDED_REDIRECT_TO_UNRELATED_FINANCING_RELEASE"
+    },
+    {
+      "id": "registry-history-v2",
+      "sourceUrl": "https://clinicaltrials.gov/api/int/studies/NCT04576949/history/2020-10-06",
+      "status": "RETRIEVAL_FAILED",
+      "error": "HTTPError",
+      "httpCode": 403,
+      "researchUse": "DISCOVERY_ONLY_NOT_CLINICAL_EVIDENCE"
+    },
+    {
+      "id": "sponsor-2022-news",
+      "sourceUrl": "https://ir.achievelifesciences.com/news-events/press-releases?year=2022",
+      "finalUrl": "https://ir.achieverx.com/news-events/press-releases?year=2022",
+      "documentSha256": "8311a9acf7bfefbcfe2a618a301b92ef6a7edd914b922a2d930828cebdf593db",
+      "byteCount": 40297,
+      "retrievedAt": "2026-11-14T01:20:16.859170+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "DISCOVERY_ONLY_NOT_CLINICAL_EVIDENCE"
+    },
+    {
+      "id": "primary-europe-html",
+      "sourceUrl": "https://europepmc.org/articles/PMC10336611",
+      "finalUrl": "https://europepmc.org/article/PMC/10336611",
+      "documentSha256": "be9c4bdf0cd6789e79cb8db23eacb374b9eb481a02c4b8e9ef5f48e98f095845",
+      "byteCount": 28121,
+      "retrievedAt": "2026-11-14T01:20:16.640299+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "HTML_SHELL_OR_CHALLENGE_NOT_ORIGINAL_REQUESTED_DOCUMENT"
+    },
+    {
+      "id": "journal-supplement-1",
+      "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/instance/10336611/bin/jama-e2310042-s001.pdf",
+      "finalUrl": "https://pmc.ncbi.nlm.nih.gov/articles/instance/10336611/bin/jama-e2310042-s001.pdf",
+      "documentSha256": "ddaab867dff4a785253b8b42dbc4d8e3dd28b9c1f90e59febf65c7cc60bf7138",
+      "byteCount": 1817,
+      "retrievedAt": "2026-11-14T01:20:59.610827+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "HTML_SHELL_OR_CHALLENGE_NOT_ORIGINAL_REQUESTED_DOCUMENT"
+    },
+    {
+      "id": "journal-supplement-2",
+      "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/instance/10336611/bin/jama-e2310042-s002.pdf",
+      "finalUrl": "https://pmc.ncbi.nlm.nih.gov/articles/instance/10336611/bin/jama-e2310042-s002.pdf",
+      "documentSha256": "139f68b29659756790ffb833b7753ce54df89e16929947ed7354ca5981aba6e5",
+      "byteCount": 1816,
+      "retrievedAt": "2026-11-14T01:20:59.608385+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "HTML_SHELL_OR_CHALLENGE_NOT_ORIGINAL_REQUESTED_DOCUMENT"
+    },
+    {
+      "id": "journal-supplement-3",
+      "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/instance/10336611/bin/jama-e2310042-s003.pdf",
+      "finalUrl": "https://pmc.ncbi.nlm.nih.gov/articles/instance/10336611/bin/jama-e2310042-s003.pdf",
+      "documentSha256": "7c21aed2d5da5725f952f5bd44f329cda6dd0d0b31ffb4ede200d72a267cdcc8",
+      "byteCount": 1817,
+      "retrievedAt": "2026-11-14T01:20:59.609375+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "HTML_SHELL_OR_CHALLENGE_NOT_ORIGINAL_REQUESTED_DOCUMENT"
+    },
+    {
+      "id": "journal-supplement-4",
+      "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/instance/10336611/bin/jama-e2310042-s004.pdf",
+      "finalUrl": "https://pmc.ncbi.nlm.nih.gov/articles/instance/10336611/bin/jama-e2310042-s004.pdf",
+      "documentSha256": "1538110ebf9edd0e11452e694a782485aecb5a1f6809378b7d84aee1cfbc1ec7",
+      "byteCount": 1817,
+      "retrievedAt": "2026-11-14T01:21:00.068024+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "HTML_SHELL_OR_CHALLENGE_NOT_ORIGINAL_REQUESTED_DOCUMENT"
+    },
+    {
+      "id": "fda-cytisinicline-search",
+      "sourceUrl": "https://api.fda.gov/drug/drugsfda.json?search=products.active_ingredients.name%3A%22cytisinicline%22&limit=100",
+      "status": "RETRIEVAL_FAILED",
+      "error": "HTTPError",
+      "httpCode": 404,
+      "researchUse": "DISCOVERY_ONLY_NOT_CLINICAL_EVIDENCE"
+    },
+    {
+      "id": "fda-smoking-guidance-search",
+      "sourceUrl": "https://www.fda.gov/search?s=smoking%20cessation%20developing%20drugs",
+      "finalUrl": "https://www.fda.gov/search?s=smoking%20cessation%20developing%20drugs",
+      "documentSha256": "5039078953eb3d235682b348366b275a12a5d09aff848e99cb289754b6c73842",
+      "byteCount": 1500,
+      "retrievedAt": "2026-11-14T01:21:00.078636+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "HTML_SHELL_OR_CHALLENGE_NOT_ORIGINAL_REQUESTED_DOCUMENT"
+    },
+    {
+      "id": "sponsor-topline-actual",
+      "sourceUrl": "https://ir.achieverx.com/news-events/press-releases/detail/141/achieve-life-sciences-announces-successful-statistically-significant-smoking-cessation-results-in-phase-3-orca-2-clinical-trial-of-cytisinicline-in-adult-smokers",
+      "finalUrl": "https://ir.achieverx.com/news-events/press-releases/detail/141/achieve-life-sciences-announces-successful-statistically-significant-smoking-cessation-results-in-phase-3-orca-2-clinical-trial-of-cytisinicline-in-adult-smokers",
+      "documentSha256": "24c6f6afdbda05195b56283a3287b8b752a1774cb1b23a5623dbc592a6eee620",
+      "byteCount": 45755,
+      "retrievedAt": "2026-11-14T01:21:51.408633+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "RETAINED_CORE_OR_CONTEXT"
+    },
+    {
+      "id": "sponsor-q1-2022",
+      "sourceUrl": "https://ir.achieverx.com/news-events/press-releases/detail/142/achieve-reports-financial-results-for-first-quarter-2022-and-provides-corporate-update",
+      "finalUrl": "https://ir.achieverx.com/news-events/press-releases/detail/142/achieve-reports-financial-results-for-first-quarter-2022-and-provides-corporate-update",
+      "documentSha256": "308271097c0421947c4b034fb1fd7c2acbd67be22aa43910c5ce5c32e6b0605c",
+      "byteCount": 74916,
+      "retrievedAt": "2026-11-14T01:21:51.559128+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "DISCOVERY_ONLY_NOT_CLINICAL_EVIDENCE"
+    },
+    {
+      "id": "sponsor-dsmc-2021",
+      "sourceUrl": "https://ir.achieverx.com/news-events/press-releases/detail/13/achieve-life-sciences-announces-phase-3-orca-2-trial-of-cytisinicline-in-smoking-cessation-clears-final-review-by-data-safety-monitoring-committee-dsmc",
+      "finalUrl": "https://ir.achieverx.com/news-events/press-releases/detail/13/achieve-life-sciences-announces-phase-3-orca-2-trial-of-cytisinicline-in-smoking-cessation-clears-final-review-by-data-safety-monitoring-committee-dsmc",
+      "documentSha256": "daea2c6d0ed18233a813dddc016b34b6b4fcaa9db5e4c621b18b66837e7c20cd",
+      "byteCount": 39247,
+      "retrievedAt": "2026-11-14T01:21:51.494764+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "RETAINED_CORE_OR_CONTEXT"
+    },
+    {
+      "id": "sponsor-2022-page3",
+      "sourceUrl": "https://ir.achieverx.com/news-events/press-releases?year=2022&page=3",
+      "finalUrl": "https://ir.achieverx.com/news-events/press-releases?year=2022&page=3",
+      "documentSha256": "6f4a37808dae2ccfb9eff4196bc4967f075a0077d095810bccbfd08690a4063b",
+      "byteCount": 39932,
+      "retrievedAt": "2026-11-14T01:21:51.662123+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "DISCOVERY_ONLY_NOT_CLINICAL_EVIDENCE"
+    },
+    {
+      "id": "pmc-sap-alternative",
+      "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10336611/bin/jama-e2310042-s002.pdf",
+      "status": "RETRIEVAL_FAILED",
+      "error": "HTTPError",
+      "httpCode": 404,
+      "researchUse": "DISCOVERY_ONLY_NOT_CLINICAL_EVIDENCE"
+    },
+    {
+      "id": "sponsor-last-visit",
+      "sourceUrl": "https://ir.achieverx.com/news-events/press-releases/detail/10/achieve-life-sciences-announces-completion-of-last-subject-last-follow-up-visit-in-phase-3-orca-2-trial-of-cytisinicline-for-smoking-cessation",
+      "finalUrl": "https://ir.achieverx.com/news-events/press-releases/detail/10/achieve-life-sciences-announces-completion-of-last-subject-last-follow-up-visit-in-phase-3-orca-2-trial-of-cytisinicline-for-smoking-cessation",
+      "documentSha256": "a2a9751a04a1ca06677ee85257650e5fdfb4a894de382538cbfad3bd1fb3a63b",
+      "byteCount": 38964,
+      "retrievedAt": "2026-11-14T01:22:39.187306+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "RETAINED_CORE_OR_CONTEXT"
+    },
+    {
+      "id": "sponsor-pre-readout",
+      "sourceUrl": "https://ir.achieverx.com/news-events/press-releases/detail/136/achieve-life-sciences-reports-financial-results-for-fourth-quarter-and-year-end-2021-and-provides-corporate-update",
+      "finalUrl": "https://ir.achieverx.com/news-events/press-releases/detail/136/achieve-life-sciences-reports-financial-results-for-fourth-quarter-and-year-end-2021-and-provides-corporate-update",
+      "documentSha256": "057a9e4a6be4b274b23224895f9d82448bc5e4842271ff6fd7106ac7091e0e56",
+      "byteCount": 83718,
+      "retrievedAt": "2026-11-14T01:22:39.181472+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "RETAINED_CORE_OR_CONTEXT"
+    },
+    {
+      "id": "fda-multiple-endpoints-2017",
+      "sourceUrl": "https://www.fda.gov/media/102657/download",
+      "finalUrl": "https://www.fda.gov/media/102657/download",
+      "documentSha256": "2beceb66e56377248d0da43e96ce3177023d4027bf2b459bcec0ad0c1040d70b",
+      "byteCount": 703996,
+      "retrievedAt": "2026-11-14T03:52:34.657646+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "RETAINED_CORE_OR_CONTEXT"
+    },
+    {
+      "id": "fda-multiple-endpoints-2022",
+      "sourceUrl": "https://www.fda.gov/media/162416/download",
+      "finalUrl": "https://www.fda.gov/media/162416/download",
+      "documentSha256": "40284a050aab0037799072b2340e37d4b02ab6f7f2339fff6ea1cd55673a9563",
+      "byteCount": 324708,
+      "retrievedAt": "2026-11-14T03:52:34.710172+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "RETAINED_CORE_OR_CONTEXT"
+    },
+    {
+      "id": "fda-e9",
+      "sourceUrl": "https://www.fda.gov/media/71336/download",
+      "finalUrl": "https://www.fda.gov/media/71336/download",
+      "documentSha256": "f64a79a9800d523e50ac3c33af6fbd5de0c229b984e51b224bd5d58c26b12325",
+      "byteCount": 112494,
+      "retrievedAt": "2026-11-14T03:52:34.524216+00:00",
+      "evidenceCutoffDate": "2026-11-14",
+      "state": "HASH_CHECKED",
+      "provenanceIndependentlyAuthenticated": false,
+      "independentlyScientificallyReviewed": false,
+      "researchUse": "RETAINED_CORE_OR_CONTEXT"
+    }
+  ],
+  "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+  "externalVerificationRequired": false,
+  "outsideReviewerCountRequired": 0,
+  "ownerCanReviewWithoutExternalVerification": true,
+  "liveAccessEnabled": false,
+  "ownerSelfReviewChecklist": [
+    "Owner checks exact original sources, study identity, phase, dates, versions and cutoff; software checks support research without outside attestation.",
+    "Owner compares efficacy, harms, populations, endpoints, statistical methods and competing explanations using the collected sources.",
+    "Owner explicitly records acceptance with limitations, need for evidence or rejection through the active owner workflow; no owner decision has been recorded by this dossier.",
+    "Retain old revisions and known outcome exposure; corrections create new source-bound revisions. No invented external certification or uncalibrated FDA probability."
+  ],
+  "sourceCrossChecks": [
+    "Exact NCT/study code, phase/status, population and frozen company/application relationship.",
+    "Original URL, document SHA-256, retrieval/cutoff, source date/version and amendment history; a hash is not proof of ownership.",
+    "SAP reference-version mismatch, embedded certificate claim, actual lock/unblinding, missing documents and contradictory findings. Unknown facts stay unresolved, but do not require an outside person for owner research."
+  ],
+  "ownerPolicyReference": "infra/assessment/sole-owner-levels1-20.json"
+}

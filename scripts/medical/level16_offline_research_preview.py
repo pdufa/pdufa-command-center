@@ -36,7 +36,7 @@ def _read(path):
     return json.loads(Path(path).read_text(encoding="utf-8"))
 
 
-def build(research, coverage, roster, applications, definitions, orca_case):
+def build(research, coverage, roster, applications, definitions, orca_case, owner_dossier=None):
     """Return combined offline HTML plus a verifiable research-only coverage receipt."""
     preparation = _load("level16_research_preparation")
     handoff = _load("level16_review_handoff")
@@ -92,7 +92,7 @@ def build(research, coverage, roster, applications, definitions, orca_case):
             raise ValueError("Rendered phase/source fields differ from collected originals")
     handoff_packet = handoff.build(coverage, roster, applications, orca.assess(orca_case))
     html = renderer.render(readiness, preliminary_research=research,
-                           review_handoff=handoff_packet)
+                           review_handoff=handoff_packet, owner_dossier=owner_dossier)
     return html, {
         "status": "OFFLINE_FOCUS_RESEARCH_PREVIEW_ONLY",
         "evidenceCutoffDate": research["evidenceCutoffDate"],
@@ -117,11 +117,14 @@ def main():
     parser.add_argument("--applications", type=Path, default=APPLICATIONS)
     parser.add_argument("--definitions", type=Path, default=DEFINITIONS)
     parser.add_argument("--orca2", type=Path, default=ORCA2)
+    parser.add_argument("--owner-dossier", type=Path,
+                        help="Optional source-linked owner-only ORCA-2 dossier; no external review gate")
     args = parser.parse_args()
 
     html, receipt = build(
         _read(args.research), _read(args.coverage), _read(args.roster),
         _read(args.applications), _read(args.definitions), _read(args.orca2),
+        owner_dossier=_read(args.owner_dossier) if args.owner_dossier else None,
     )
     target = args.output.absolute()
     if target.is_relative_to(ROOT):

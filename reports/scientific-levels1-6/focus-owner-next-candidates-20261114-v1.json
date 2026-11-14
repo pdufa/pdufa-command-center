@@ -1,0 +1,952 @@
+{
+  "kind": "FOCUS_DOCUMENTARY_REVIEW_QUEUE_NOT_APPROVAL_RANKING",
+  "remainingTrialCount": 31,
+  "ordering": "Documentary tiers then NCT; primary-report classification is preliminary and awaits owner source checking.",
+  "nextFive": [
+    "NCT05206370",
+    "NCT05813275",
+    "NCT03697109",
+    "NCT04544293",
+    "NCT04716231"
+  ],
+  "trials": [
+    {
+      "nct": "NCT05206370",
+      "company": "Achieve Life Sciences",
+      "ticker": "ACHV",
+      "documentaryTier": "A_CORE_AND_PRIMARY_PUBLIC_REPORT",
+      "protocolCollected": true,
+      "sapCollected": true,
+      "postedRegistryResults": true,
+      "primaryReportFullTextResearchClassified": true,
+      "indexedPublicationCount": 2,
+      "missingOriginalDocuments": [],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile ORCA-3 SAP timing and amendments independently; ORCA-2 observations cannot certify replication.",
+        "Separate primary ORCA-3 report PMID40257755 from the COPD post-hoc pooled article PMID40962497."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT05813275",
+      "company": "Apnimed",
+      "ticker": "APMD",
+      "documentaryTier": "A_CORE_AND_PRIMARY_PUBLIC_REPORT",
+      "protocolCollected": true,
+      "sapCollected": true,
+      "postedRegistryResults": true,
+      "primaryReportFullTextResearchClassified": true,
+      "indexedPublicationCount": 1,
+      "missingOriginalDocuments": [],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [
+        "Published AHI improvement and nonsignificant PROMIS-Fatigue finding concern different endpoints; reconcile patient benefit and adverse-event discontinuation, not a fabricated contradiction between identical outcomes."
+      ],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile reported AHI improvement with nonsignificant PROMIS-Fatigue and adverse-event discontinuation (21.2% versus 3.1%).",
+        "Review patient benefit, attrition and prespecified multiplicity without equating physiological improvement with broad clinical benefit."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT03697109",
+      "company": "Corcept Therapeutics",
+      "ticker": "CORT",
+      "documentaryTier": "B_CORE_AND_INDEXED_REPORT_LEADS",
+      "protocolCollected": true,
+      "sapCollected": true,
+      "postedRegistryResults": true,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 2,
+      "missingOriginalDocuments": [
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Collected public full text PMID35058882 concerns earlier receptor-antagonism research; it is not the primary GRACE phase-3 report PMID41730814.",
+        "Assess responder-enrichment/randomized-withdrawal design and generalizability; primary report full text and executed SAP timeline are missing."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT04544293",
+      "company": "Savara Inc.",
+      "ticker": "SVRA",
+      "documentaryTier": "B_CORE_AND_INDEXED_REPORT_LEADS",
+      "protocolCollected": true,
+      "sapCollected": true,
+      "postedRegistryResults": true,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 1,
+      "missingOriginalDocuments": [
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Primary phase-3 report PMID40834301 is indexed; original full report and supplementary analyses remain missing.",
+        "Reconcile physiological DLCO, patient-reported/function outcomes, rescue treatment and missing data; no serious contradiction has been owner-reviewed."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT04716231",
+      "company": "Vera Therapeutics, Inc.",
+      "ticker": "VERA",
+      "documentaryTier": "B_CORE_AND_INDEXED_REPORT_LEADS",
+      "protocolCollected": true,
+      "sapCollected": true,
+      "postedRegistryResults": true,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 5,
+      "missingOriginalDocuments": [
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Public full text PMID39462308 is an earlier open-label extension; do not substitute it for phase-3 ORIGIN reports PMID41196369/42911181.",
+        "Large combined protocol/SAP is research-only; obtain amendment/version timeline and phase-appropriate renal-outcome interpretation."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT05767346",
+      "company": "Cytokinetics",
+      "ticker": "CYTK",
+      "documentaryTier": "B_CORE_AND_INDEXED_REPORT_LEADS",
+      "protocolCollected": true,
+      "sapCollected": true,
+      "postedRegistryResults": true,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 7,
+      "missingOriginalDocuments": [
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT04308590",
+      "company": "Corcept Therapeutics",
+      "ticker": "CORT",
+      "documentaryTier": "C_CORE_REGISTERED_DOCUMENTS",
+      "protocolCollected": true,
+      "sapCollected": true,
+      "postedRegistryResults": true,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT05507203",
+      "company": "Abivax S.A.",
+      "ticker": "ABVX",
+      "documentaryTier": "C_CORE_REGISTERED_DOCUMENTS",
+      "protocolCollected": true,
+      "sapCollected": true,
+      "postedRegistryResults": true,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT05507216",
+      "company": "Abivax S.A.",
+      "ticker": "ABVX",
+      "documentaryTier": "C_CORE_REGISTERED_DOCUMENTS",
+      "protocolCollected": true,
+      "sapCollected": true,
+      "postedRegistryResults": true,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT05811247",
+      "company": "Apnimed",
+      "ticker": "APMD",
+      "documentaryTier": "C_CORE_REGISTERED_DOCUMENTS",
+      "protocolCollected": true,
+      "sapCollected": true,
+      "postedRegistryResults": true,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT06331299",
+      "company": "UroGen Pharma Ltd.",
+      "ticker": "URGN",
+      "documentaryTier": "C_CORE_REGISTERED_DOCUMENTS",
+      "protocolCollected": true,
+      "sapCollected": true,
+      "postedRegistryResults": true,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT02500381",
+      "company": "Sarepta Therapeutics, Inc.",
+      "ticker": "SRPT",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 2,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT04871282",
+      "company": "Immunome, Inc.",
+      "ticker": "IMNM",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 1,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT05031780",
+      "company": "Agios Pharmaceuticals, Inc.",
+      "ticker": "AGIO",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 5,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "NOT_MAPPED_APPLICATION_CYCLE",
+      "clinicalContradictionsUnreviewed": [
+        "Reported haemoglobin response and pain-crisis rate comparison differ; reconcile co-primary endpoint success rules. No independent statistical conclusion."
+      ],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT05059223",
+      "company": "Axsome Therapeutics, Inc.",
+      "ticker": "AXSM",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT05113745",
+      "company": "Axsome Therapeutics, Inc.",
+      "ticker": "AXSM",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT05126758",
+      "company": "Capricor Therapeutics, Inc.",
+      "ticker": "CAPR",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 1,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT05208047",
+      "company": "Cogent Biosciences, Inc.",
+      "ticker": "COGT",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT05244304",
+      "company": "Belite Bio, Inc.",
+      "ticker": "BLTE",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT05662241",
+      "company": "Zenas BioPharma, Inc.",
+      "ticker": "ZBIO",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 2,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT06081894",
+      "company": "Cytokinetics, Inc.",
+      "ticker": "CYTK",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 3,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT06087276",
+      "company": "Praxis Precision Medicines, Inc.",
+      "ticker": "PRAX",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT06153693",
+      "company": "Mineralys Therapeutics, Inc.",
+      "ticker": "MLYS",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 1,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT06343779",
+      "company": "Pharvaris N.V.",
+      "ticker": "PHVS",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 1,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT06411379",
+      "company": "MoonLake Immunotherapeutics AG",
+      "ticker": "MLTX",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT06411899",
+      "company": "MoonLake Immunotherapeutics AG",
+      "ticker": "MLTX",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT06445023",
+      "company": "Celldex Therapeutics",
+      "ticker": "CLDX",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT06455202",
+      "company": "Celldex Therapeutics",
+      "ticker": "CLDX",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT06553768",
+      "company": "Mirum Pharmaceuticals, Inc.",
+      "ticker": "MIRM",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "NOT_MAPPED_APPLICATION_CYCLE",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT06669754",
+      "company": "Pharvaris N.V.",
+      "ticker": "PHVS",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    },
+    {
+      "nct": "NCT06747468",
+      "company": "Amylyx Pharmaceuticals Inc.",
+      "ticker": "AMLX",
+      "documentaryTier": "D_ORIGINAL_DOCUMENT_GAPS",
+      "protocolCollected": false,
+      "sapCollected": false,
+      "postedRegistryResults": false,
+      "primaryReportFullTextResearchClassified": false,
+      "indexedPublicationCount": 0,
+      "missingOriginalDocuments": [
+        "protocol_and_amendments",
+        "original_SAP",
+        "posted_registry_results",
+        "primary_trial_report_full_text"
+      ],
+      "mappingStatus": "NOT_MAPPED_APPLICATION_CYCLE",
+      "clinicalContradictionsUnreviewed": [],
+      "approvalProbability": null,
+      "additionalOriginalRequirements": [
+        "Complete protocol/amendment history",
+        "SAP approval, database-lock and unblinding chronology",
+        "Clinical study report and sensitivity/safety outputs if lawfully available"
+      ],
+      "reviewSpecificQuestions": [
+        "Reconcile exact current-phase original report, SAP, amendments, endpoints, harms and missing data; contradiction search is not an independent review."
+      ],
+      "contradictionReviewStatus": "NOT_INDEPENDENTLY_ADJUDICATED",
+      "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+      "externalVerificationRequired": false
+    }
+  ],
+  "primaryReportClassificationBasis": {
+    "40257755": "ORCA-3 primary report title/registered identity and retained full text; independently unverified.",
+    "42148495": "SynAIRgy primary report title/registered identity and retained full text; independently unverified."
+  },
+  "ownerCanReviewWithoutExternalVerification": true
+}

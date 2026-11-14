@@ -30,13 +30,51 @@ def _source_link(url):
     return f'<a href="{safe_url}" target="_blank" rel="noopener noreferrer">View submitted source</a>'
 
 
-def render(report, trusted_review_reader=None, preliminary_research=None, review_handoff=None):
+def _orca2_dossier(packet):
+    html = "<section><h3>ORCA-2 OWNER RESEARCH — OWNER_NOT_REVIEWED</h3>"
+    html += "<p>Core originals collected; evidence completeness unresolved. Owner can review without external verification. No owner acceptance recorded.</p>"
+    html += "<h4>Original source inventory</h4><ul>"
+    for source in packet["sourceInventory"]:
+        html += "<li>" + _text(source["id"]) + " · " + _source_link(source["receipt"]["sourceUrl"]) + " · date " + _text(source.get("documentDate") or source.get("publicationDate") or source.get("dateText")) + " · version " + _text(source.get("documentVersion")) + " · SHA-256 " + _text(source["receipt"]["documentSha256"]) + "</li>"
+    html += "</ul><h4>Document chronology</h4><ul>"
+    for event in packet["timeline"]:
+        html += "<li>" + _text(event.get("date") or "UNRESOLVED") + ": " + _text(event["observation"]) + " · " + _text(event["locator"]) + "</li>"
+    html += "</ul><h4>Statistical questions and unresolved discrepancies</h4>"
+    for text in packet["unresolvedDiscrepancies"]:
+        html += "<p>" + _text(text) + "</p>"
+    for level in packet["levels"]:
+        html += "<h4>Level " + _text(level["level"]) + " — " + _text(level["title"]) + "</h4><p>" + _text(level["preliminaryInterpretation"]) + "</p>"
+        for item in level["factualObservations"]:
+            html += "<p>Unreviewed observation: " + _text(item["observation"]) + " · sources " + _text(", ".join(item["sourceIds"])) + " · " + _text(item["locator"]) + "</p>"
+        for label,key in (("Reasons","supportingReasons"),("Contradictions/questions","contradictoryEvidence"),
+                          ("Limitations","risksAndLimitations"),("Missing information","missingInformation"),
+                          ("Owner questions","ownerCheckQuestions"),("Remaining evidence issues","remainingEvidenceIssues")):
+            html += "<p>" + label + ": " + _text("; ".join(level[key])) + "</p>"
+        html += "<p>Readiness: " + _text(level["finalReadinessClassification"]) + "</p><ul>"
+        for gate,passed in level["gates"].items():
+            html += "<li>" + _text(gate) + ": " + _text(passed) + "</li>"
+        html += "</ul>"
+    for label,key in (("Owner self-review checklist","ownerSelfReviewChecklist"),("Original-source checks","sourceCrossChecks")):
+        html += "<h4>" + label + "</h4>"
+        for text in packet[key]: html += "<p>" + _text(text) + "</p>"
+    return html + "</section>"
+
+
+def render(report, trusted_review_reader=None, preliminary_research=None, review_handoff=None, owner_dossier=None):
     if not isinstance(report, dict) or report.get("status") != "PHASE_FIRST_EVIDENCE_TRIAGE_ONLY":
         raise ValueError("Refusing non-readiness or scientific-prediction report")
     trials = report.get("trials")
     if (not isinstance(trials, list) or not trials
             or len(trials) != report.get("focusTrialCount")):
         raise ValueError("Preview requires the complete exact-NCT FOCUS report")
+    owner_dossier_html = ""
+    if owner_dossier is not None:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("level16_orca2_owner_dossier", Path(__file__).with_name("level16_orca2_owner_dossier.py"))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        module.validate_packet(owner_dossier,[t.get("nct") for t in trials])
+        owner_dossier_html = _orca2_dossier(owner_dossier)
     handoff_by_nct = {}
     if review_handoff is not None:
         if (not isinstance(review_handoff, dict)
@@ -321,7 +359,7 @@ def render(report, trusted_review_reader=None, preliminary_research=None, review
             _text(", ".join(trial.get("candidateIndicationsUnverified", [])) or "Not supplied") +
             " · <strong>Application cycle links:</strong> " +
             _text(", ".join(trial.get("candidateApplicationCycleIdsUnverified", [])) or "None") +
-            "</p><div class='tablewrap'><table><thead><tr><th>Level</th><th>Evidence status</th>" +
+            "</p>" + (owner_dossier_html if nct == "NCT04576949" else "") + "<div class='tablewrap'><table><thead><tr><th>Level</th><th>Evidence status</th>" +
             ("<th>Owner evidence checks</th><th>Source leads</th><th>Owner review</th>"
              if handoff_by_nct else
              "<th>Required evidence review</th><th>Submitted source leads</th><th>Scientific review</th>") +
@@ -392,11 +430,13 @@ def main():
                         help="Optional unreviewed current-source worksheets; never authorizes clinical signoff")
     parser.add_argument("--review-handoff", type=Path,
                         help="Optional unreviewed 32-trial owner-only source and self-check preparation queue")
+    parser.add_argument("--owner-dossier", type=Path, help="Optional owner-only ORCA-2 research dossier; no external verification gates")
     args = parser.parse_args()
     document = json.loads(args.report.read_text(encoding="utf-8"))
     preliminary = json.loads(args.preliminary_research.read_text(encoding="utf-8")) if args.preliminary_research else None
     handoff = json.loads(args.review_handoff.read_text(encoding="utf-8")) if args.review_handoff else None
-    html = render(document, preliminary_research=preliminary, review_handoff=handoff)
+    owner_dossier = json.loads(args.owner_dossier.read_text(encoding="utf-8")) if args.owner_dossier else None
+    html = render(document, preliminary_research=preliminary, review_handoff=handoff, owner_dossier=owner_dossier)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(html, encoding="utf-8")
     print(json.dumps({"status": "PREVIEW_ONLY", "trials": document["focusTrialCount"],
