@@ -4,6 +4,10 @@ import json
 import sys
 from pathlib import Path
 
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts.phase3_qualification_ledger import registry_gate_allows_research
+
 def build_queue(ledger, registry):
     records = ledger.get("records")
     sources = registry.get("original_source_records")
@@ -18,7 +22,7 @@ def build_queue(ledger, registry):
     for row in records:
         nct = row["nct_id"]
         source = indexed[nct]
-        if row["gates"].get("registry_identity") != "PASS" or row["gates"].get("current_commercial_rights") != "REVIEW":
+        if not registry_gate_allows_research(row["gates"], source) or row["gates"].get("current_commercial_rights") != "REVIEW":
             raise ValueError("Research queue cannot override qualification gates")
         if source.get("census_ticker") != row["ticker"] or source.get("census_company") != row["company"]:
             raise ValueError("Ticker/company source mismatch")
@@ -31,6 +35,7 @@ def build_queue(ledger, registry):
                       "registered_lead_sponsor": name, "original_registry_url": source["source"],
                       "source_sha256": source.get("source_sha256"),
                       "source_fetched_at_utc": source.get("fetched_at_utc"),
+                      "registry_identity_gate": row["gates"]["registry_identity"],
                       "review_gate": "current_commercial_rights", "review_status": "REVIEW",
                       "commercial_rights_verified": False,
                       "required_next_evidence": "Current company filings or licensing disclosures independently establishing commercial development rights."})

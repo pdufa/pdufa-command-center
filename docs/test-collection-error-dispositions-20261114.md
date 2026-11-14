@@ -2,7 +2,7 @@
 
 The original full trace is retained in `reports/test-verification/original-34-collection-errors-20261114.txt`. The original broad root suite now executes with declared test dependencies and explicit retirement handling. Retired cases are **not passing coverage**; no removed survey collector or Streamlit app was restored.
 
-Final local root suite: **2,255 passed; 0 failed; 195 skipped; 0 errors**; 1,092 passing subtests. Of the skips, **153** match the explicit retirement inventory and **42** are other existing environment/fixture skips.
+Final local root suite: **2,261 passed; 0 failed; 195 skipped; 0 errors**; 1,092 passing subtests. Of the skips, **153** match the explicit retirement inventory and **42** are other existing environment/fixture skips.
 
 | # | Affected test module | Original error | Executed passed | Skipped | Resolution |
 |---|---|---|---:|---:|---|

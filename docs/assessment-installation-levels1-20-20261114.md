@@ -11,7 +11,7 @@ The original full trace and machine-readable final per-module counts are retaine
 under `reports/test-verification/`. Missing supported dependencies are declared in
 `requirements-test.txt`, separate from production requirements. `pip check` passes.
 
-The original broad root test scope now completes: **2,255 passed, 0 failed,
+The original broad root test scope now completes: **2,261 passed, 0 failed,
 195 skipped, 0 errors**, plus 1,092 passing subtests. Of the skips, **153** are
 explicit retired cases and **42** are other environment/fixture skips. This is
 **not** a claim that 195 skipped cases passed or that legacy applications were
@@ -164,7 +164,7 @@ was fabricated.
   database; receipt `reports/test-verification/level1-8-real-source-persistence-20261114.json`.
   No reviewed subgroup/exposure calculation was invented for that trial.
 
-Final local validation: root 2,255 passed / 195 skipped / zero failures or errors;
+Final local validation: root 2,261 passed / 195 skipped / zero failures or errors;
 backend **1,358 passed / 2 skipped / zero failures or errors**, plus 28 passing
 subtests; frontend **162 test files passed**, zero failed/skipped; TypeScript and
 production build passed locally; retirement guard passed with zero active retired
@@ -174,3 +174,32 @@ Remaining release boundary is explicit: no merge or deployment is authorized by
 this task. Existing histories, scores, source versions, source rosters, scheduler
 workflows and production records are preserved. Test-only dependencies do not
 activate the removed app, survey model, trading or scientific prediction systems.
+
+## Delivered-commit CI repair: genuine registry status changes
+
+Run 43639289871 collected all 741 official registry identities, including nine
+status changes from the frozen October cohort. The ledger correctly retained
+those nine registry gates as REVIEW. Downstream sponsor/casebook/worklist/summary
+consumers incorrectly required every registry gate to remain PASS, aborting the
+research-only report on legitimate source changes.
+
+The handoff now retains a REVIEW only with explicit, consistent source change
+context. Exact NCT/ticker/company/source-URL/digest checks and all qualification
+boundaries remain. A PASS contradicted by explicit changed-source flags, an
+unexplained REVIEW, altered context, context removal or a forged later gate
+promotion is rejected. The resulting summary preserves additional unresolved
+gates and the source-change blocker; it never counts those records as qualified.
+
+Six new regressions plus the existing related suite pass (**82 tests**). A former
+status-change fixture now updates its ledger to REVIEW consistently with its
+changed registry data, and adds an assertion that the state remains REVIEW.
+No assertion requiring source integrity or no promotion was removed.
+
+Read-only replay of the actual failed Actions artifact produced all 741 sponsor
+and casebook rows, preserved **732 PASS / 9 REVIEW** without altering the input
+ledger, verified zero commercial rights and qualified no trials. Receipt:
+`reports/test-verification/registry-status-review-replay-20261114.json`.
+These are registry source observations, not newly completed scientific reviews.
+The final broad local suite is **2,261 passed / 195 skipped / zero failures/errors**;
+82 targeted source-change regressions also passed after the stricter consistency
+checks. Final-head Actions must be checked separately after pushing this repair.
