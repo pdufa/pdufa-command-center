@@ -72,6 +72,8 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
     verified = level_one.get("executionStatus") == "INTAKE_ONLY" and bool(trial_id) and bool(cutoff)
     early = phase in {"EARLY_PHASE1", "PHASE1", "PHASE2"}
     results = {}
+    # Explicit evidence quality gates prevent a complete-looking dossier from
+    # being treated as adjudicated when reviewers did not supply source identity.
     for number, (name, criteria) in LEVELS.items():
         states = {}
         accepted = {}
@@ -96,7 +98,11 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                     or not source_day <= review_day <= cutoff
                     or record.get("judgment") not in {"SUPPORTS", "CONCERNS", "INCONCLUSIVE"}
                     or not isinstance(record.get("rationale"), str)
-                    or not record["rationale"].strip()):
+                    or not record["rationale"].strip()
+                    or not isinstance(record.get("reviewerId"), str)
+                    or not record["reviewerId"].strip()
+                    or not isinstance(record.get("documentType"), str)
+                    or not record["documentType"].strip()):
                 states[criterion] = "REJECTED_EVIDENCE"
                 continue
             states[criterion] = record["judgment"]
@@ -104,6 +110,8 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                 "source": url, "sourceDate": source_day.isoformat(),
                 "reviewedAt": review_day.isoformat(),
                 "nctId": trial_id, "rationale": record["rationale"],
+                "reviewerId": record["reviewerId"],
+                "documentType": record["documentType"],
             }
         required = [c for c in criteria if states[c] != "NOT_YET_EXPECTED"]
         results[str(number)] = {
