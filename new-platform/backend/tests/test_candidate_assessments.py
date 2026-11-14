@@ -422,7 +422,7 @@ def test_levels_two_to_six_phase_two_does_not_require_pivotal_results():
     row, registry, reviews = fixture()
     registry["phases"] = ["PHASE2"]
     levels = score(row, registry, reviews)["levelsTwoToSix"]
-    assert levels["3"]["criteria"]["primaryEndpointResults"] == "NOT_YET_EXPECTED"
+    assert levels["3"]["criteria"]["primaryEndpointResults"] == "NOT_ASSESSED"
     assert levels["6"]["criteria"]["applicationDossier"] == "NOT_YET_EXPECTED"
     assert levels["2"]["criteria"]["protocol"] == "NOT_ASSESSED"
 
@@ -495,3 +495,29 @@ def test_levels_two_to_six_require_review_provenance():
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
     assert level["criteria"]["protocol"] == "SUPPORTS"
     assert level["acceptedEvidence"]["protocol"]["reviewerId"] == "test-reviewer"
+
+
+def test_phase_one_does_not_require_late_phase_efficacy():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE1"]
+    levels = score(row, registry, reviews)["levelsTwoToSix"]
+    assert levels["3"]["criteria"]["primaryEndpointResults"] == "NOT_YET_EXPECTED"
+    assert "primaryEndpointResults" in levels["3"]["notYetExpectedCriteria"]
+    assert levels["6"]["criteria"]["applicationDossier"] == "NOT_YET_EXPECTED"
+
+
+def test_rejected_scientific_evidence_is_visible_in_level_status():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "2.protocol": {
+            "nctId": "NCT00000002", "source": "https://example.org/protocol",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+            "judgment": "SUPPORTS", "rationale": "Wrong trial",
+            "reviewerId": "test-reviewer", "documentType": "protocol",
+        }
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["status"] == "EVIDENCE_REJECTED"
+    assert level["rejectedCriteria"] == ["protocol"]
+    assert level["score"] is None
