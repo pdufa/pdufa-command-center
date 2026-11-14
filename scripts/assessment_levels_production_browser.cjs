@@ -31,6 +31,11 @@ function check(ok,code){if(!ok){const e=Error(code);e.checkId=code;throw e;}}
    let report;
    await workbench.getByLabel('Assessment level',{exact:true}).selectOption(String(level));
    if(existing){
+    await workbench.getByRole('button',{name:'Load saved assessment history',exact:true}).click();
+    await workbench.getByText(/persisted assessment version\(s\) loaded/).waitFor({timeout:30000});
+    const boxes=workbench.getByRole('checkbox');
+    for(const box of await boxes.all())if(await box.isChecked())await box.uncheck();
+    await workbench.getByLabel(`Level ${level} · ${existing.executedAt} · ${existing.mode} · ${existing.engineVersion}`,{exact:true}).check();
     const state=await context.request.get(BASE+'/api/assessments/runtime?nct='+NCT+'&runId='+existing.runId);
     check(state.ok(),'EXISTING_RESULT_RETRIEVAL_LEVEL_'+level);report=(await state.json()).report;
    }else{
@@ -53,6 +58,7 @@ function check(ok,code){if(!ok){const e=Error(code);e.checkId=code;throw e;}}
    // Allow the UI poller to observe completion before changing its disabled selector.
    await workbench.getByRole('button',{name:'Run Assessment',exact:true}).waitFor({state:'visible'});
    await page.waitForFunction(()=>{const s=document.querySelector('section[aria-label="Assessment workbench"]');return s&&Array.from(s.querySelectorAll('button')).some(b=>b.textContent==='Run Assessment'&&!b.matches(':disabled'));},{},{timeout:30000});
+   await workbench.getByRole('article',{name:`Level ${level} saved assessment`,exact:true}).waitFor({timeout:30000});
   }
   await workbench.getByRole('button',{name:'Load saved assessment history',exact:true}).click();
   await workbench.getByText(/persisted assessment version\(s\) loaded/).waitFor({timeout:30000});
