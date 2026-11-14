@@ -111,5 +111,5 @@ test("exact-trial intake explains rejected or unknown identities without exposin
  const source=fs.readFileSync(path.join(app,"ExactTrialScientificIntake.tsx"),"utf8");
  assert.match(source,/res\.status===404\?"Exact program not found/);
  assert.match(source,/res\.status===409\?"Exact program identity or evidence is not verified/);
- assert.match(source,/setIntake\(null\);setError\(" "\)/);
+ assert.match(source,/setIntake\(null\);setError\(""\)/);
 });
