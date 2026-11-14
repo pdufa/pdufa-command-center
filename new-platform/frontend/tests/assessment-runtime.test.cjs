@@ -124,3 +124,23 @@ test('Levels 1–3 each execute, persist and render exact-NCT evidence reports',
   assert.deepEqual(posted.map(x=>x.level),[1,2,3]);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
+
+test('late saved-history response cannot replace a newly completed Level 1 assessment',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Workbench=require('../app/AssessmentWorkbench.tsx').default;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const old=global.fetch;let resolveHistory;let tree;
+ const delayedHistory=new Promise(resolve=>{resolveHistory=resolve;});
+ const report={runId:'d'.repeat(36),nct,level:1,name:'Source identity',mode:'CURRENT_EVIDENCE',cutoffDate:null,executedAt:'2026-11-14',engineVersion:'test',reportHash:'d'.repeat(64),scientificStatus:'EVIDENCE_GAPS',activationStatus:'NOT_ACTIVE',ownerReviewStatus:'OWNER_NOT_REVIEWED',score:{value:null,available:0,applicable:1,kind:'LEVEL_SPECIFIC_EVIDENCE_COVERAGE',method:'Evidence only'},fdaPrediction:{outcome:'ABSTAIN',confidence:'UNCALIBRATED',calibration:'NONE'},context:{phases:['PHASE3'],phaseVerification:'OFFICIAL_REGISTRY_DECLARATION',registryStatus:'COMPLETED',regulatoryStatus:'UNVERIFIED',indicationAnalysis:[]},checks:[],observations:[],risks:[],recommendations:[],limitations:[],evidence:{source_url:'https://clinicaltrials.gov/api/v2/studies/'+nct}};
+ global.fetch=async(url,init={})=>{
+  if(init.method==='POST')return Response.json({runId:report.runId,status:'QUEUED'},{status:202});
+  if(String(url).includes('runId='))return Response.json({status:'COMPLETED',progress:[],report});
+  return delayedHistory;
+ };
+ try{
+  await act(async()=>{tree=create(React.createElement(Workbench,{selectedNct:nct}));});
+  await act(async()=>{tree.root.findAllByType('button').find(b=>b.props.children==='Load saved assessment history').props.onClick();});
+  await act(async()=>{tree.root.findAllByType('button').find(b=>b.props.children==='Run Assessment').props.onClick();});
+  assert.equal(tree.root.findAllByProps({'aria-label':'Level 1 saved assessment'}).length,1);
+  await act(async()=>{resolveHistory(Response.json({runs:[],hasMore:false}));await Promise.resolve();});
+  assert.equal(tree.root.findAllByProps({'aria-label':'Level 1 saved assessment'}).length,1);
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
+});
