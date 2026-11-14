@@ -195,7 +195,8 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
         "fdaPrediction": "ABSTAIN",
         "reason": "This candidate evidence rubric does not validate six independent scientific assessments or an FDA prediction model.",
     }
-    level_one = phase_first_intake(registry, cutoff=today.isoformat(), registry_checked=registry_checked)
+    level_one = phase_first_intake(registry, cutoff=today.isoformat(), registry_checked=registry_checked,
+                                   endpoint_reviews=reviews.get("levelOneEndpointReviews"))
     return {"levelOneIntake": level_one, "scientificReadiness": scientific_readiness, "modelVersion": MODEL, "id": row["id"], "programId": row.get("programId"), "nctId": nct, "asOf": today.isoformat(), "models": models, "riskFlags": flags,
             "qualification": {"savedLists": facts.get("lists", ["PIPELINE"]), "primaryOutcome": outcome, "firstFinancingClosed": facts.get("firstFinancingClosed"), "secondFinancingClosed": facts.get("secondFinancingClosed"), "note": "Scores do not alter screening, saved membership or trade entry. Only complete evidence is ranked. Uncalibrated research scores, not success probabilities."},
             "registryFetchedAt": registry_checked, "registrySourceDate": registry_day, "reportedStatistics": analyses,
