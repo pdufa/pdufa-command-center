@@ -9,6 +9,8 @@ import math
 import re
 from urllib.parse import urlparse
 
+from .phase_first_intake import phase_first_intake
+
 MODEL = "candidate-assessments-v1"
 NCT = re.compile(r"^NCT\d{8}$")
 DOMAINS = {
@@ -193,14 +195,15 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
         "fdaPrediction": "ABSTAIN",
         "reason": "This candidate evidence rubric does not validate six independent scientific assessments or an FDA prediction model.",
     }
-    return {"scientificReadiness": scientific_readiness, "modelVersion": MODEL, "id": row["id"], "programId": row.get("programId"), "nctId": nct, "asOf": today.isoformat(), "models": models, "riskFlags": flags,
+    level_one = phase_first_intake(registry, cutoff=today.isoformat(), registry_checked=registry_checked)
+    return {"levelOneIntake": level_one, "scientificReadiness": scientific_readiness, "modelVersion": MODEL, "id": row["id"], "programId": row.get("programId"), "nctId": nct, "asOf": today.isoformat(), "models": models, "riskFlags": flags,
             "qualification": {"savedLists": facts.get("lists", ["PIPELINE"]), "primaryOutcome": outcome, "firstFinancingClosed": facts.get("firstFinancingClosed"), "secondFinancingClosed": facts.get("secondFinancingClosed"), "note": "Scores do not alter screening, saved membership or trade entry. Only complete evidence is ranked. Uncalibrated research scores, not success probabilities."},
             "registryFetchedAt": registry_checked, "registrySourceDate": registry_day, "reportedStatistics": analyses,
             "data": {"candidate": row, "registry": registry},
             "missingEvidence": [c["id"] + ": " + m["label"] for model in models.values() for c in model["categories"] for m in c["metrics"] if m["coverage"] < m["maximum"]]}
 
 def compact(result):
-    return {"scientificReadiness": result["scientificReadiness"], "modelVersion": result["modelVersion"], "models": {name: {**{k: model[k] for k in ("score", "observedPoints", "coverage", "status")}, "categories": [{k: c[k] for k in ("id", "maximum", "score", "observedPoints", "coverage", "status")} for c in model["categories"]]} for name, model in result["models"].items()}, "riskFlags": result["riskFlags"]}
+    return {"levelOneIntake": result["levelOneIntake"], "scientificReadiness": result["scientificReadiness"], "modelVersion": result["modelVersion"], "models": {name: {**{k: model[k] for k in ("score", "observedPoints", "coverage", "status")}, "categories": [{k: c[k] for k in ("id", "maximum", "score", "observedPoints", "coverage", "status")} for c in model["categories"]]} for name, model in result["models"].items()}, "riskFlags": result["riskFlags"]}
 
 def fingerprint(result):
     stable = {key: result[key] for key in ("modelVersion", "models", "reportedStatistics", "qualification", "registryFetchedAt", "riskFlags")}
