@@ -790,3 +790,11 @@ def test_assessment_service_fetches_registry_phase_for_phase_first_intake():
     assert "phases" in FIELDS, "Phase-first assessment must receive actual registry phase"
     assert "status" in FIELDS
     assert "last_update_posted" in FIELDS
+
+def test_exact_nct_program_index_rejects_malformed_registry_identifiers():
+    import inspect
+    from app.assessment_service import build_index
+    source = inspect.getsource(build_index)
+    assert 're.fullmatch(r"NCT[0-9]{8}", nct)' in source
+    assert '"exactNctProgramMap"' in source
+    assert 'sorted(identities)' in source
