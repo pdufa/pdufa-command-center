@@ -14,7 +14,7 @@ export type PhaseFirstIntake = {
 
 /** Optional data is accepted only when bound to the exact trial by the caller. */
 export default function ScientificStepsReadiness({cohort,trial}:{cohort:"POOL"|"FOCUS"|"PAST";trial?:{nctId:string;intake:PhaseFirstIntake;assessmentNctId:string}}) {
- const exactTrial=Boolean(trial && /^NCT\\d{8}$/.test(trial.nctId) && trial.nctId===trial.assessmentNctId);
+ const exactTrial=Boolean(trial && /^NCT\d{8}$/.test(trial.nctId) && trial.nctId===trial.assessmentNctId);
  const intake=exactTrial?trial?.intake:undefined;
  const phaseVerified=intake?.executionStatus==="INTAKE_ONLY";
  const steps=[
