@@ -207,3 +207,24 @@ def test_phase_first_intake_changes_assessment_fingerprint():
     assert first["levelOneIntake"]["phase"] == "PHASE2"
     assert second["levelOneIntake"]["phase"] == "PHASE3"
     assert fingerprint(first) != fingerprint(second)
+
+
+def test_level_one_inventory_distinguishes_missing_endpoint_from_later_phase_requirements():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE2"]
+    registry["primary_outcomes"] = []
+    result = score(row, registry, reviews)["levelOneIntake"]
+    assert result["evidenceInventory"]["trial design"] == "OBSERVED"
+    assert result["evidenceInventory"]["primary endpoint definition"] == "MISSING"
+    assert "primary endpoint definition" in result["missingEvidence"]
+    assert "completed Phase 3 results" in result["notYetExpected"]
+    assert "completed Phase 3 results" not in result["missingEvidence"]
+
+
+def test_level_one_unverified_registry_never_labels_design_as_missing():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["last_update_posted"]["date"] = "2026-10-21"
+    result = score(row, registry, reviews)["levelOneIntake"]
+    assert result["evidenceInventory"]["trial design"] == "UNVERIFIED"
+    assert "trial design" not in result["missingEvidence"]
