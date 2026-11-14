@@ -25,3 +25,49 @@ Sources:
 No actual independent reviewer has signed this case. No source is independently authenticated. No assessment is complete.
 
 The shortest path to a real assessment is to resolve A02–A04/A12 with a real identity administrator, source authority and five qualified, separately identified people, while approving A01/A05–A11 infrastructure and policy. After real-token qualification and isolated access/recovery acceptance, authorize the specific release under A14. Authenticate this frozen source package first, then clinician review, independent challenge and separate final adjudication. Resolve the SAP timing question before statistical adjudication. A13 application-cycle verification remains separately required for any application-level claim.
+
+
+## Continued Level 5 investigation — original-source statistical chronology
+
+**Research-only update, November 14, 2026. NOT independent scientific adjudication.**
+This chronology distinguishes *document date*, *registry milestone*, *method's
+appearance in earlier protocol text*, *final analysis-plan approval* and
+*database lock/unblinding*. These are distinct facts; matching one does not
+prove another. The guarded, machine-readable event ledger is
+`orca2-statistical-chronology-20261114.json`, with the read-only evaluator
+`scripts/medical/level16_orca2_statistical_timeline.py`.
+
+| Dated item | Original source and locator | Bounded research finding |
+|---|---|---|
+| March 8, 2021 | [Protocol v4.0](https://cdn.clinicaltrials.gov/large-docs/49/NCT04576949/Prot_000.pdf), printed page 68, section 16.1 | Before the registry's recorded primary-completion date, this protocol version already specifies the Hochberg approach for the two primary comparisons and the one-sided overall type-I error rate of 0.025. |
+| December 23, 2021 | [ClinicalTrials.gov NCT04576949](https://clinicaltrials.gov/study/NCT04576949), primary-completion field | Primary completion is a registry milestone, **not** proof of database lock, analysis-plan finalization or treatment-code unblinding. |
+| March 25, 2022 | [Registered SAP v1.0](https://cdn.clinicaltrials.gov/large-docs/49/NCT04576949/SAP_001.pdf), printed pages 9, 29 and 42, sections 2.2, 10.1.1 and 13 | The later SAP explains that Bonferroni was used for sample-size simulations, while Hochberg handles primary outcome multiplicity. This is not by itself a Bonferroni-vs-Hochberg inconsistency. The SAP states there are no planned-analysis changes relative to protocol, but that statement itself has not been independently verified against full amendments and audit trails. |
+| July 11, 2023 | [Published JAMA trial report](https://pmc.ncbi.nlm.nih.gov/articles/PMC10336611/), Methods, Statistical Analysis | The publication reports use of Hochberg for primary multiplicity, without independently proving when the final SAP was locked or who had access to unblinded data. |
+
+**What is now better supported:** the intended Hochberg primary testing
+procedure appears in the dated March 2021 protocol, preceding the registry's
+December 2021 primary-completion milestone. The March 2022 SAP is not the
+earliest cited public document containing that method. The Bonferroni
+calculation in the later SAP concerns simulated sample-size/power assumptions,
+not an alternative verified primary hypothesis-testing decision.
+
+**What is still unresolved:** actual database-lock timestamp, treatment-code
+unblinding date, whether all analyses were finalized before unblinding,
+effective/signed SAP version history and revisions, full original protocol
+amendment lineage, clinical-study-report change log, and an independent
+biostatistician's familywise/error-control and analysis reconciliation.
+The dated public documents do **not** establish a post-hoc change,
+statistical misconduct, or complete statistical adequacy.
+
+Every linked original remains source material requiring independent provenance
+authentication. The research is current/outcome-exposed: it may inform
+preliminary clinical research but is **not** a blind historical prediction,
+FDA outcome judgment, numerical score or independently signed assessment.
+
+To validate the source chronology's integrity without pretending to complete
+a review, run:
+
+```powershell
+python -m unittest discover -s tests -p "test_level16_orca2_statistical_timeline.py" -v
+python scripts/medical/level16_orca2_statistical_timeline.py
+```
