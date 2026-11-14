@@ -49,6 +49,31 @@ def build():
                 receipt=item['receipt'];source_refs[receipt['sourceUrl']]={'url':receipt['sourceUrl'],
                     'date':item.get('documentDate') or item.get('publicationDate') or item.get('dateText'),
                     'digest':receipt['documentSha256'],'kind':item['sourceKind']}
+        # Bind each quantitative publication extraction to its retained original
+        # full-text receipt, rather than attributing publication numbers to a registry.
+        comparison_source = None
+        publication_doc = {orca2['nct']: orca2, orca3['nct']: orca3}.get(nct)
+        if publication_doc:
+            pmid = publication_doc['source']['pmid']
+            publication = next((p for p in trial.get('publicationResearch', [])
+                                if p['pmid'] == pmid and nct in p['indexedNctsUnreviewed']), None)
+            receipt = publication.get('fullTextReceipt') if publication else None
+            if receipt and receipt.get('boundPmidUnreviewed') != pmid:
+                raise ValueError('Publication receipt identity mismatch')
+            if not receipt and nct == dossier['nct']:
+                original = next((s for s in dossier['sourceInventory']
+                    if s['nct'] == nct and s['receipt']['sourceUrl'] == publication_doc['source']['url']), None)
+                receipt = original['receipt'] if original else None
+            if publication and receipt:
+                comparison_source = {'nct': nct, 'pmid': pmid,
+                    'endpointDomain': 'CO_VERIFIED_SMOKING_ABSTINENCE',
+                    'sourceUrl': receipt['sourceUrl'], 'retrievedAt': receipt['retrievedAt'],
+                    'publicationDate': (publication_doc['source'].get('publicationDate') or publication_doc['source']['publishedDate']),
+                    'indexedPublicationDate': publication['publicationDate'],
+                    'documentSha256': receipt['documentSha256']}
+                source_refs[receipt['sourceUrl']] = {'url': receipt['sourceUrl'],
+                    'date': (publication_doc['source'].get('publicationDate') or publication_doc['source']['publishedDate']), 'digest': receipt['documentSha256'],
+                    'kind': 'PUBLICATION_FULL_TEXT'}
         for item in trial['levels']:
             number=item['level']
             facts=[{'text':f['finding'],'value':f['sourceValue'],'locator':f['locator'],'sourceUrl':f['sourceUrl']}
@@ -97,6 +122,7 @@ def build():
                 'oddsRatioReported':c['publishedOddsRatio'],'ci95Reported':c['table95ci'],
                 'pValueReported':c['publishedPValue'],'locator':c['locator']})
                 for c in publications.get(nct,{}).get('publishedEfficacyComparisons',[])],
+            'publishedComparisonSource':comparison_source,
             'publishedSafety':publications.get(nct,{}).get('publishedSafetyObservation'),
             'statisticalChronology':dossier['chronologyReconciliation'] if nct==dossier['nct'] else None})
     return {'schemaVersion':1,'kind':'FOCUS_LEVEL16_COLLECTED_EVIDENCE_OWNER_RESEARCH',
