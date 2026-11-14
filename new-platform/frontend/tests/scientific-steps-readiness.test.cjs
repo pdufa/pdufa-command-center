@@ -44,3 +44,11 @@ test("exact-program loader uses authenticated assessments and fails closed on id
  assert.match(source,/scientificValidation==="NOT_VERIFIED"/);
  assert.match(source,/scientificScoreStatus==="NOT_VALIDATED"/);
 });
+
+test("FOCUS trial rows expose explicit exact-program intake selector without auto-mapping",()=>{
+ const source=fs.readFileSync(path.join(app,"focus","page.tsx"),"utf8");
+ const loader=fs.readFileSync(path.join(app,"ExactTrialScientificIntake.tsx"),"utf8");
+ assert.match(source,/<ExactTrialIntakeSelector cohort="FOCUS" nctId=\{t\.nct\}\/>/);
+ assert.match(loader,/Program identity must be verified separately/);
+ assert.match(loader,/programIdentity=\{selected\}/);
+});
