@@ -28,6 +28,7 @@ test("ASSESMENTS tab opens the existing FOCUS scientific review ledger without c
   assert.ok(nav.indexOf('label:"ASSESMENTS"')<nav.indexOf('label:"TOOLS"'));
   const page=fs.readFileSync(path.join(app,"predictions/assessment/page.tsx"),"utf8");
   assert.match(page,/FOCUS_SPECIALTY_ASSESSMENT_QUEUE/);
-  assert.match(page,/NOT ADJUDICATED/);
+  assert.match(page,/OWNER NOT REVIEWED/);
+  assert.match(page,/OWNER-ONLY ASSESSMENTS/);
   assert.match(page,/ABSTAIN/);
 });
