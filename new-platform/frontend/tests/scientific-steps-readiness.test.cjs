@@ -35,3 +35,12 @@ test("scientific panel fails closed when FDA prediction is not ABSTAIN",()=>{
  assert.match(component,/scientificScoreStatus==="NOT_VALIDATED"/);
  assert.match(component,/Array\.isArray\(intake\.missingEvidence\)/);
 });
+
+test("exact-program loader uses authenticated assessments and fails closed on identity mismatch",()=>{
+ const source=fs.readFileSync(path.join(app,"ExactTrialScientificIntake.tsx"),"utf8");
+ assert.match(source,/\/api\/assessments\?identity=/);
+ assert.match(source,/record\.id!==programIdentity\|\|record\.nctId!==nctId/);
+ assert.match(source,/!validIntake\(record\.levelOneIntake\)/);
+ assert.match(source,/scientificValidation==="NOT_VERIFIED"/);
+ assert.match(source,/scientificScoreStatus==="NOT_VALIDATED"/);
+});
