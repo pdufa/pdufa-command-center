@@ -17,6 +17,8 @@ review handoff from the exact committed research metadata snapshots:
 | `new-platform/frontend/data/p3PostDataActive.json` | Frozen exact 32-NCT FOCUS roster, despite legacy path name |
 | `new-platform/backend/app/data/focus_application_snapshot.json` | 29 provisional NCT mappings, 23 provisional candidate cycles, 3 unresolved NCTs |
 | `reports/scientific-levels1-6/orca2-statistical-chronology-20261114.json` | ORCA-2 original-public-source statistical chronology and unresolved lock/unblinding facts |
+| `reports/scientific-levels1-6/orca2-publication-outcomes-20261114.json` | Reported JAMA ORCA-2 primary/secondary efficacy, serious adverse events and clinical limitations—unreviewed |
+
 
 The script reuses the existing strict phase-first handoff and ORCA-2
 timeline validators. It computes a SHA-256 over each raw input snapshot and
