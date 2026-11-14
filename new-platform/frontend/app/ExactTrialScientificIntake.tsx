@@ -44,3 +44,18 @@ export default function ExactTrialScientificIntake({cohort,nctId,programIdentity
   {intake&&<ScientificStepsReadiness cohort={cohort} trial={{nctId,assessmentNctId:nctId,intake}}/>}
  </section>;
 }
+
+/** Manual exact-program selection until a verified NCT-to-program mapping is available. */
+export function ExactTrialIntakeSelector({cohort,nctId}:{cohort:Cohort;nctId:string}){
+ const [identity,setIdentity]=useState("");
+ const [selected,setSelected]=useState("");
+ return <div style={{marginTop:8}}>
+  <label style={{display:"block",fontSize:12}}>Exact program ID (not ticker or NCT)
+   <input aria-label={"Exact program ID for "+nctId} value={identity} onChange={e=>{setIdentity(e.target.value);setSelected("");}}
+    maxLength={512} placeholder="Enter verified program ID" style={{display:"block",width:"100%",maxWidth:260}}/>
+  </label>
+  <button type="button" disabled={!identity.trim()} onClick={()=>setSelected(identity.trim())}>Select program</button>
+  {selected&&<ExactTrialScientificIntake key={nctId+":"+selected} cohort={cohort} nctId={nctId} programIdentity={selected}/>}
+  <p style={{fontSize:11}}>Program identity must be verified separately. No automatic NCT-to-program match is assumed.</p>
+ </div>;
+}
