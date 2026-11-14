@@ -53,7 +53,9 @@ test("previously exposed assessments are archived and barred from active predict
   assert.equal(manifest.activeExceptions[0].outcomeAware,true);
   assert.equal(manifest.activeExceptions[0].allowedInAccuracy,false);
   assert.equal(manifest.activeExceptions[0].allowedInCalibration,false);
-  assert.equal(manifest.redoPolicy.status,"BLOCKED_UNTIL_INDEPENDENT_UNEXPOSED_EVALUATOR_AVAILABLE");
+  assert.equal(manifest.redoPolicy.status,"OWNER_ONLY_RECONSTRUCTION_ALLOWED_NOT_BLIND");
+  assert.ok(manifest.redoPolicy.steps.every(s=>!s.includes("INDEPENDENT_CUSTODIAN")));
+  assert.ok(manifest.redoPolicy.steps.includes("NONBLIND_COMPARISON_EXCLUDED_FROM_CALIBRATION_AND_CLAIMED_BLIND_ACCURACY"));
   const prospective=require("../data/fdaPredictionDecisionAudit.json");
   assert.equal(prospective.records.length,1);
   assert.equal(prospective.records[0].ticker,"SMMT");
