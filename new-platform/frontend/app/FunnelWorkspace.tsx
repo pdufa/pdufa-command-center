@@ -1,5 +1,6 @@
-import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
 "use client";
+import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
+
 
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
