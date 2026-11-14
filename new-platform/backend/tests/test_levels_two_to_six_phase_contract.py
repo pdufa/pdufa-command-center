@@ -183,5 +183,59 @@ class LevelsTwoToSixContractTests(unittest.TestCase):
         self.assertIsNone(result["6"]["score"])
 
 
+    def test_unpublished_claim_requires_exact_trial_and_search_provenance(self):
+        evidence = {
+            "3.primaryEndpointResults": {
+                "availability": "NOT_PUBLIC",
+                "nctId": "NCT12345678",
+                "source": "https://clinicaltrials.gov/study/NCT12345678",
+                "checkedAt": "2026-01-20",
+                "searchRationale": "Checked public registry results and linked publications",
+            }
+        }
+        result = module.assess_levels_two_to_six(
+            BASE, trial_id="NCT12345678", evidence=evidence
+        )
+        self.assertEqual(result["3"]["criteria"]["primaryEndpointResults"], "UNPUBLISHED")
+        self.assertIn("primaryEndpointResults", result["3"]["unpublishedCriteria"])
+        self.assertEqual(result["3"]["reviewedCount"], 0)
+        self.assertIsNone(result["3"]["score"])
+
+        evidence["3.primaryEndpointResults"]["nctId"] = "NCT87654321"
+        result = module.assess_levels_two_to_six(
+            BASE, trial_id="NCT12345678", evidence=evidence
+        )
+        self.assertEqual(
+            result["3"]["criteria"]["primaryEndpointResults"],
+            "UNVERIFIED_UNPUBLISHED_CLAIM",
+        )
+        self.assertEqual(result["3"]["fdaPrediction"], "ABSTAIN")
+
+    def test_post_cutoff_review_is_rejected(self):
+        evidence = {
+            "4.adverseEvents": {
+                "nctId": "NCT12345678",
+                "source": "https://clinicaltrials.gov/study/NCT12345678",
+                "sourceDate": "2026-01-10",
+                "reviewedAt": "2026-02-02",
+                "sourceVerified": True,
+                "sourceVerifiedAt": "2026-01-15",
+                "sourceVerifiedBy": "reviewer-1",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "judgment": "SUPPORTS",
+                "rationale": "Safety review",
+                "reviewerId": "reviewer-1",
+                "documentType": "REGISTRY_RECORD",
+                "evidenceExcerpt": "Adverse events",
+            }
+        }
+        result = module.assess_levels_two_to_six(
+            BASE, trial_id="NCT12345678", evidence=evidence
+        )
+        self.assertEqual(result["4"]["criteria"]["adverseEvents"], "REJECTED_EVIDENCE")
+        self.assertEqual(result["4"]["rejectionReasons"]["adverseEvents"], "INVALID_CHRONOLOGY")
+        self.assertEqual(result["4"]["reviewedCount"], 0)
+
+
 if __name__ == "__main__":
     unittest.main()
