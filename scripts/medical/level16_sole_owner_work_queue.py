@@ -16,6 +16,7 @@ import re
 
 ROOT = Path(__file__).resolve().parents[2]
 INTENT = ROOT / "infra/level16-staging/sole-owner-intent.json"
+ASSESSMENT_POLICY = ROOT / "infra/assessment/sole-owner-levels1-20.json"
 KIND = "LEVEL16_OWNER_ONLY_PREPARATION_NOT_INDEPENDENT_REVIEW"
 EXPECTED_KEYS = frozenset({
     "schemaVersion", "kind", "recordedLocalDate", "ownerPreferenceConfirmedByConversation",
@@ -67,7 +68,7 @@ def validate_intent(intent):
         "ownerIdentityVerificationStatus": "NOT_CONFIGURED_OR_VERIFIED",
         "researchMode": "OWNER_DIRECTED_PUBLIC_SOURCE_RESEARCH",
         "researchReviewLabel": "OWNER_SELF_RESEARCH_NOT_INDEPENDENT",
-        "existingIndependentWorkflow": "UNCHANGED_OPTIONAL_SEPARATE_CERTIFICATION_PATH",
+        "existingIndependentWorkflow": "RETIRED_FROM_ACTIVE_GATES_PRESERVED_ONLY_AS_DISABLED_HISTORICAL_ENGINEERING",
         "sourceAuthenticity": "NOT_INDEPENDENTLY_ATTESTED",
         "independentScientificAdjudications": 0,
         "ownerLevelReviewsEntered": 0,
@@ -94,6 +95,9 @@ def validate_intent(intent):
 
 def build(intent, unsigned_bundle):
     validate_intent(intent)
+    owner_policy_module = _module("level1_20_owner_policy")
+    owner_policy = json.loads(ASSESSMENT_POLICY.read_text(encoding="utf-8"))
+    owner_policy_module.validate(owner_policy)
     if not isinstance(unsigned_bundle, dict):
         raise ValueError("Source-metadata bundle required")
     bundle_kind = "FOCUS_LEVEL16_UNSIGNED_RESEARCH_REVIEW_BUNDLE"
@@ -154,6 +158,10 @@ def build(intent, unsigned_bundle):
                 "ownerObservationStatus": "NOT_ENTERED",
                 "ownerSourceChecksStatus": "NOT_ENTERED",
                 "ownerAssessmentStatus": "NOT_ENTERED",
+                "ownerSelfReviewStatus": "OWNER_NOT_REVIEWED",
+                "externalVerificationRequired": False,
+                "outsideReviewerCountRequired": 0,
+                "ownerCheckCanProceedWithoutIndependentSignoff": True,
                 "independentlyAuthenticated": False,
                 "independentlyAdjudicated": False,
                 "validatedFdaProbability": None,
@@ -168,6 +176,7 @@ def build(intent, unsigned_bundle):
             "ownerOnlyTasks": tasks,
             "ownerResearchProgress": "NOT_STARTED_OWNER_REVIEW",
             "outsidePeopleRequiredForOwnerResearch": False,
+            "ownerAssessmentNotBlockedByExternalVerification": True,
             "verifiedScientificOutcome": None,
         })
     return {
@@ -185,7 +194,16 @@ def build(intent, unsigned_bundle):
         "siteLive": False,
         "sourceIndependentlyAuthenticated": False,
         "fdaForecastPublished": False,
-        "independentlyReviewedWorkflowLeftIntact": True,
+        "legacyOutsideReviewerWorkflowInactive": True,
+        "externalReviewerRequirementsForOwnerAssessments": 0,
+        "externalSignoffsRequiredForOwnerAssessments": 0,
+        "ownerAssessmentCanProceedWithoutExternalVerification": True,
+        "ownerAssessmentAppliesThroughLevel": 20,
+        "levels7To20EngineeringComplete": False,
+        "ownerOnlyReviewRequirements": [
+            owner_policy_module.requirements_for_level(owner_policy, i)
+            for i in range(1, 21)
+        ],
         "blockedOn": intent["requiresFurtherConcreteConfiguration"][:],
         "trials": queue,
     }
