@@ -457,3 +457,20 @@ def test_levels_two_to_six_accept_valid_evidence_without_scoring():
     assert level["reviewedCount"] == 1
     assert level["status"] == "PARTIAL"
     assert level["score"] is None
+
+
+def test_levels_two_to_six_reject_registry_url_for_another_trial():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    review = {
+        "nctId": "NCT00000001",
+        "source": "https://clinicaltrials.gov/study/NCT00000002",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+    }
+    reviews["scientificLevelEvidence"] = {"2.protocol": review}
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "REJECTED_EVIDENCE"
+    review["source"] = "https://clinicaltrials.gov/study/NCT00000001"
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "SUPPORTS"
