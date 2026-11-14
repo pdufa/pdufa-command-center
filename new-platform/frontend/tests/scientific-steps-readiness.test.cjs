@@ -113,3 +113,13 @@ test("exact-trial intake explains rejected or unknown identities without exposin
  assert.match(source,/res\.status===409\?"Exact program identity or evidence is not verified/);
  assert.match(source,/setIntake\(null\);setError\(""\)/);
 });
+
+
+test("exact assessment proxy refuses non-HTTPS backend and does not cache failed evidence",()=>{
+ const route=fs.readFileSync(path.join(app,"api","assessments","route.ts"),"utf8");
+ assert.match(route,/!base\?\.startsWith\("https:\/\/"\)\s*\|\|\s*!key/);
+ assert.match(route,/status: 503/);
+ assert.match(route,/cache: "no-store"/);
+ assert.match(route,/signal: AbortSignal\.timeout\(45000\)/);
+ assert.match(route,/if\s*\(!response\.ok\)\s*return NextResponse\.json/);
+});
