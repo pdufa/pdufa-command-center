@@ -884,3 +884,22 @@ def test_exact_detail_rejects_missing_nct_before_registry_lookup(monkeypatch):
         service.exact_detail(identity)
     assert exc.value.status_code == 409
     assert "NCT" in str(exc.value.detail)
+
+
+def test_exact_detail_rejects_unknown_program_before_registry_lookup(monkeypatch):
+    from fastapi import HTTPException
+    from app import assessment_service as service
+    monkeypatch.setattr(service, "get_index", lambda: {"status": "COMPLETE"})
+    monkeypatch.setattr(service, "rows_for", lambda snapshot: {
+        "KNOWN|NCT00000001": {"id": "KNOWN|NCT00000001", "nctId": "NCT00000001"}
+    })
+    monkeypatch.setattr(service, "_STATE", {
+        "snapshot": {"assessmentDate": "2026-10-20"}, "reviews": {}
+    })
+    def forbidden_registry(_):
+        raise AssertionError("Unknown program must be rejected before registry access")
+    monkeypatch.setattr(service, "registry_rows", forbidden_registry)
+    with pytest.raises(HTTPException) as exc:
+        service.exact_detail("UNKNOWN|NCT00000001")
+    assert exc.value.status_code == 404
+    assert "not in the current Pipeline universe" in str(exc.value.detail)
