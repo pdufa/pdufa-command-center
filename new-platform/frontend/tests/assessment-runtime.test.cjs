@@ -44,3 +44,15 @@ test('SSR assessment controls stay disabled until client handlers are ready',()=
  const html=renderToString(React.createElement(Workbench,{selectedNct:nct}));
  assert.match(html,/data-assessment-ready="false"/);assert.equal((html.match(/<fieldset disabled=""/g)||[]).length,2);
 });
+
+test('parent-selected trial changes clear old evidence and switch the exact NCT',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Workbench=require('../app/AssessmentWorkbench.tsx').default;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ let tree;const second='NCT01234567';
+ try{
+  await act(async()=>{tree=create(React.createElement(Workbench,{selectedNct:nct}));});
+  assert.equal(tree.root.findByProps({placeholder:'NCT04576949'}).props.value,nct);
+  await act(async()=>{tree.update(React.createElement(Workbench,{selectedNct:second}));});
+  assert.equal(tree.root.findByProps({placeholder:'NCT04576949'}).props.value,second);
+  assert.equal(tree.root.findAllByProps({'aria-label':'Level 1 saved assessment'}).length,0);
+ }finally{if(tree)await act(async()=>tree.unmount());}
+});
