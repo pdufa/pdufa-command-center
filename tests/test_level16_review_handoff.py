@@ -246,6 +246,33 @@ class Level16ReviewHandoffTests(unittest.TestCase):
             handoff.build(self.coverage, self.roster, self.applications,
                           self.chronology, origin3_renal=data)
 
+    def test_active_handoff_has_zero_external_requirements_and_owner_check_only(self):
+        packet = self.build()
+        self.assertTrue(packet["ownerOnlyAssessmentMode"])
+        self.assertEqual(packet["externalReviewerGateCount"], 0)
+        self.assertEqual(packet["externalSignoffsRequiredForScoring"], 0)
+        self.assertEqual(packet["reviewReleaseStatus"],
+                         "OWNER_RESEARCH_PREPARED_NO_EXTERNAL_SIGNOFF_REQUIRED")
+        self.assertTrue(packet["ownerReviewNotYetEntered"])
+        for trial in packet["trials"]:
+            self.assertTrue(trial["ownerOnlyAssessmentMode"])
+            self.assertEqual(trial["outsideReviewerCountRequired"], 0)
+            self.assertTrue(trial["ownerAssessmentNotBlockedByExternalSignoff"])
+            self.assertEqual(len(trial["reviewWorkflow"]), 4)
+            self.assertTrue(all("Owner" in s or "owner" in s for s in trial["reviewWorkflow"]))
+            for level in trial["levels"]:
+                self.assertEqual(level["ownerReviewStatus"], "OWNER_NOT_REVIEWED")
+                self.assertFalse(level["externalReviewerRequired"])
+                self.assertTrue(level["ownerCanReviewWithoutExternalVerification"])
+                self.assertIsNone(level["score"])
+                for q in level["openReviewQuestions"]:
+                    self.assertNotIn("qualified independent", q.lower())
+                    self.assertNotIn("independently reconcile", q.lower())
+        out = handoff.markdown(packet)
+        self.assertIn("owner-only review handoff", out)
+        self.assertIn("No external approval required", out)
+        self.assertNotIn("Independent qualified challenger reviews", out)
+
     def test_orca2_first_for_collected_evidence_not_highest_approval_chance(self):
         packet = self.build()
         self.assertEqual(packet["trials"][0]["nct"], "NCT04576949")
