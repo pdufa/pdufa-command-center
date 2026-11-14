@@ -2,6 +2,7 @@ import type {Metadata} from "next";
 import Link from "next/link";
 import TickerChartButton from "../TickerChartButton";
 import IndicationIntelligence from "../IndicationIntelligence";
+import ScientificStepsReadiness from "../ScientificStepsReadiness";
 import CompanyDateBadges from "../CompanyDateBadges";
 import snapshot from "../../data/p3PostDataActive.json";
 import designationData from "../../data/focusFdaDesignations.json";
@@ -27,6 +28,7 @@ export default function FocusPage(){
     No external scientific reviewer, source attestor, independent challenger, or third-party signoff is required.
     Original source links, missing-evidence flags, and safety and phase checks remain.
   </p>
+  <ScientificStepsReadiness cohort="FOCUS"/>
   <IndicationIntelligence mode="focus"/>
   <p><strong>{trials.length} distinct NCT trials</strong> · Final-list Phase 3 / post-Phase 3 candidates · Reported $300M–$10B market caps · Source-linked FDA pathways for owner checks; no external verification gate.</p>
   <p>Snapshot of the final Google Sheets list as of {snapshot.asOf}. Recorded listing, readout and FDA-path links are evidence pointers, not an owner-reviewed finding of trial eligibility or a successful nightly sync. Completed trials remain if their program may continue toward approval. No retired or historical research-only cohort is included.</p>
