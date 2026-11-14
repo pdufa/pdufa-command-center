@@ -140,6 +140,15 @@ def render(report, trusted_review_reader=None, preliminary_research=None):
             if nct in research_by_nct:
                 preliminary = research_by_nct[nct]["levels"][item["level"]-1]
                 link_html += "<p><strong>PRELIMINARY RESEARCH — NOT INDEPENDENTLY REVIEWED</strong></p>"
+                if preliminary.get("preliminaryResearchInterpretation"):
+                    link_html += "<p>Research interpretation: " + _text(preliminary["preliminaryResearchInterpretation"]) + "</p>"
+                if preliminary.get("publicLiteratureObservationUnreviewed"):
+                    observation = preliminary["publicLiteratureObservationUnreviewed"]
+                    link_html += "<p>Unreviewed literature observation: " + _text(observation["factualObservation"]) + " · " + _source_link(observation["sourceUrl"]) + " · publication " + _text(observation["publicationDateUnreviewed"]) + "</p>"
+                for label, key in (("Supporting reasons", "supportingReasons"), ("Risks requiring review", "riskFactorsRequiringReview"),
+                                   ("Missing evidence", "missingEvidence"), ("Not yet expected", "notYetExpectedEvidence")):
+                    if preliminary.get(key):
+                        link_html += "<p>" + label + ": " + _text("; ".join(preliminary[key])) + "</p>"
                 for finding in preliminary["preliminaryFindings"]:
                     link_html += "<p>" + _text(finding["finding"]) + ": " + _text(json.dumps(finding["sourceValue"],ensure_ascii=False)) + " · locator " + _text(finding["locator"]) + " · " + _source_link(finding["sourceUrl"]) + "</p>"
                     link_html += "<p>Reasons: " + _text("; ".join(finding["reasons"])) + "</p>"

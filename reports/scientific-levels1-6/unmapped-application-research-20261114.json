@@ -1,0 +1,312 @@
+{
+  "kind": "UNMAPPED_APPLICATION_RELATIONSHIP_RESEARCH_NOT_CROSSWALK",
+  "asOf": "2026-11-14",
+  "mappingChanges": 0,
+  "independentlyVerifiedRelationships": 0,
+  "trials": [
+    {
+      "nct": "NCT05031780",
+      "drug": "mitapivat",
+      "indicationUnreviewed": [
+        "Sickle Cell Disease"
+      ],
+      "registrySourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT05031780",
+      "fdaSearchUrl": "https://api.fda.gov/drug/drugsfda.json?search=products.active_ingredients.name%3A%22mitapivat%22&limit=100",
+      "applicationNumbersDrugContextOnly": [
+        "NDA216196"
+      ],
+      "exactNctLabelSearch": {
+        "nct": "NCT05031780",
+        "sourceUrl": "https://api.fda.gov/drug/label.json?search=clinical_studies%3A%22NCT05031780%22&limit=100",
+        "searchStatus": "NO_RECORD_RETURNED",
+        "errorClass": "HTTPError",
+        "relationshipVerified": false,
+        "limitation": "Exact NCT text match in public label is a research lead; application/review-cycle relationship and authenticity are not independently verified. No search result does not exclude pending applications, INDs or other FDA records."
+      },
+      "retrievedOriginalFdaDocuments": [
+        {
+          "documentMetadataUnreviewed": {
+            "id": "84592",
+            "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/216196Orig1s003lbl.pdf",
+            "date": "20260623",
+            "type": "Label"
+          },
+          "receipt": {
+            "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/216196Orig1s003lbl.pdf",
+            "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/216196Orig1s003lbl.pdf",
+            "documentSha256": "4fcbc6a014888e9243cb0793d8156ef7f6c95698c94a80037f54d600c8c50750",
+            "byteCount": 3606435,
+            "retrievedAt": "2026-11-14T00:46:32.539486+00:00",
+            "evidenceCutoffDate": "2026-11-14",
+            "state": "HASH_CHECKED",
+            "provenanceIndependentlyAuthenticated": false,
+            "independentlyScientificallyReviewed": false
+          }
+        },
+        {
+          "documentMetadataUnreviewed": {
+            "id": "84839",
+            "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/216196Orig1s003ltr.pdf",
+            "date": "20260623",
+            "type": "Letter"
+          },
+          "receipt": {
+            "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/216196Orig1s003ltr.pdf",
+            "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/216196Orig1s003ltr.pdf",
+            "documentSha256": "9275b2d8e061898fc34d60bfa001ea0d9e5bcdcb0f17da8db5f449c36db053fd",
+            "byteCount": 365536,
+            "retrievedAt": "2026-11-14T00:46:32.921013+00:00",
+            "evidenceCutoffDate": "2026-11-14",
+            "state": "HASH_CHECKED",
+            "provenanceIndependentlyAuthenticated": false,
+            "independentlyScientificallyReviewed": false
+          }
+        },
+        {
+          "documentMetadataUnreviewed": {
+            "id": "86828",
+            "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/216196Orig1s006lbl.pdf",
+            "date": "20260807",
+            "type": "Label"
+          },
+          "receipt": {
+            "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/216196Orig1s006lbl.pdf",
+            "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/216196Orig1s006lbl.pdf",
+            "documentSha256": "4aa01d356477968238af8ba461159bdb9ec6db2edaf5fcfc63eb13e0a5929ad2",
+            "byteCount": 3458029,
+            "retrievedAt": "2026-11-14T00:46:33.716777+00:00",
+            "evidenceCutoffDate": "2026-11-14",
+            "state": "HASH_CHECKED",
+            "provenanceIndependentlyAuthenticated": false,
+            "independentlyScientificallyReviewed": false
+          }
+        },
+        {
+          "documentMetadataUnreviewed": {
+            "id": "86847",
+            "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/216196Orig1s006ltr.pdf",
+            "date": "20260811",
+            "type": "Letter"
+          },
+          "receipt": {
+            "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/216196Orig1s006ltr.pdf",
+            "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/216196Orig1s006ltr.pdf",
+            "documentSha256": "ec1048f37a50a54325a307d15878a064cd5697b78fb152ab090baa772d430367",
+            "byteCount": 135436,
+            "retrievedAt": "2026-11-14T00:46:34.256791+00:00",
+            "evidenceCutoffDate": "2026-11-14",
+            "state": "HASH_CHECKED",
+            "provenanceIndependentlyAuthenticated": false,
+            "independentlyScientificallyReviewed": false
+          }
+        },
+        {
+          "documentMetadataUnreviewed": {
+            "id": "80817",
+            "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/216196Orig1s004ltr.pdf",
+            "date": "20250106",
+            "type": "Letter"
+          },
+          "receipt": {
+            "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/216196Orig1s004ltr.pdf",
+            "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2025/216196Orig1s004ltr.pdf",
+            "documentSha256": "7f47aad009e4d2ae061b0263e8bfb3c37d26704d838bfb98686d3503b1293529",
+            "byteCount": 162877,
+            "retrievedAt": "2026-11-14T00:46:34.612828+00:00",
+            "evidenceCutoffDate": "2026-11-14",
+            "state": "HASH_CHECKED",
+            "provenanceIndependentlyAuthenticated": false,
+            "independentlyScientificallyReviewed": false
+          }
+        },
+        {
+          "documentMetadataUnreviewed": {
+            "id": "80819",
+            "url": "http://www.accessdata.fda.gov/drugsatfda_docs/label/2025/216196s004lbl.pdf",
+            "date": "20250107",
+            "type": "Label"
+          },
+          "receipt": {
+            "sourceUrl": "http://www.accessdata.fda.gov/drugsatfda_docs/label/2025/216196s004lbl.pdf",
+            "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2025/216196s004lbl.pdf",
+            "documentSha256": "1ecd61848aa111780a8ccad2def6431e7d1b54b906cf666dd5e48d3b3d1216a1",
+            "byteCount": 382343,
+            "retrievedAt": "2026-11-14T00:46:35.200826+00:00",
+            "evidenceCutoffDate": "2026-11-14",
+            "state": "HASH_CHECKED",
+            "provenanceIndependentlyAuthenticated": false,
+            "independentlyScientificallyReviewed": false
+          }
+        }
+      ],
+      "preliminaryResearchInterpretation": "RISE UP sickle cell disease is not established as the exact cycle by existing mitapivat product applications. Retrieved FDA labels include pyruvate kinase deficiency and thalassaemia contexts; verify indication and submission identity separately.",
+      "relationshipStatus": "NOT_MAPPED_APPLICATION_CYCLE",
+      "requiredEvidence": "Original FDA/sponsor documentation explicitly binding this exact NCT, indication, application, submission/supplement and review cycle; authorized independent regulatory verification.",
+      "independentlyReviewed": false
+    },
+    {
+      "nct": "NCT06747468",
+      "drug": "avexitide",
+      "indicationUnreviewed": [
+        "Post Bariatric Hypoglycemia"
+      ],
+      "registrySourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06747468",
+      "fdaSearchUrl": "https://api.fda.gov/drug/drugsfda.json?search=products.active_ingredients.name%3A%22avexitide%22&limit=100",
+      "applicationNumbersDrugContextOnly": [],
+      "exactNctLabelSearch": {
+        "nct": "NCT06747468",
+        "sourceUrl": "https://api.fda.gov/drug/label.json?search=clinical_studies%3A%22NCT06747468%22&limit=100",
+        "searchStatus": "NO_RECORD_RETURNED",
+        "errorClass": "HTTPError",
+        "relationshipVerified": false,
+        "limitation": "Exact NCT text match in public label is a research lead; application/review-cycle relationship and authenticity are not independently verified. No search result does not exclude pending applications, INDs or other FDA records."
+      },
+      "retrievedOriginalFdaDocuments": [],
+      "preliminaryResearchInterpretation": "The approved-drug search returned no record. That does not exclude an IND, a pending application or other FDA correspondence; LUCIDITY remains unmapped.",
+      "relationshipStatus": "NOT_MAPPED_APPLICATION_CYCLE",
+      "requiredEvidence": "Original FDA/sponsor documentation explicitly binding this exact NCT, indication, application, submission/supplement and review cycle; authorized independent regulatory verification.",
+      "independentlyReviewed": false
+    },
+    {
+      "nct": "NCT06553768",
+      "drug": "maralixibat",
+      "indicationUnreviewed": [
+        "Cholestatic Liver Disease (Except ALGS, PFIC, PBC and PSC)"
+      ],
+      "registrySourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT06553768",
+      "fdaSearchUrl": "https://api.fda.gov/drug/drugsfda.json?search=products.active_ingredients.name%3A%22maralixibat%22&limit=100",
+      "applicationNumbersDrugContextOnly": [
+        "NDA214662",
+        "NDA219485"
+      ],
+      "exactNctLabelSearch": {
+        "nct": "NCT06553768",
+        "sourceUrl": "https://api.fda.gov/drug/label.json?search=clinical_studies%3A%22NCT06553768%22&limit=100",
+        "searchStatus": "NO_RECORD_RETURNED",
+        "errorClass": "HTTPError",
+        "relationshipVerified": false,
+        "limitation": "Exact NCT text match in public label is a research lead; application/review-cycle relationship and authenticity are not independently verified. No search result does not exclude pending applications, INDs or other FDA records."
+      },
+      "retrievedOriginalFdaDocuments": [
+        {
+          "documentMetadataUnreviewed": {
+            "id": "68809",
+            "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2021/214662s000lbl.pdf",
+            "date": "20210929",
+            "type": "Label"
+          },
+          "receipt": {
+            "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2021/214662s000lbl.pdf",
+            "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2021/214662s000lbl.pdf",
+            "documentSha256": "f16c10e16635f150db2c2ca5bdcd645d5449e6064f4e639f2838dfe1b581046d",
+            "byteCount": 1463855,
+            "retrievedAt": "2026-11-14T00:46:35.602399+00:00",
+            "evidenceCutoffDate": "2026-11-14",
+            "state": "HASH_CHECKED",
+            "provenanceIndependentlyAuthenticated": false,
+            "independentlyScientificallyReviewed": false
+          }
+        },
+        {
+          "documentMetadataUnreviewed": {
+            "id": "69046",
+            "url": "http://www.accessdata.fda.gov/drugsatfda_docs/appletter/2021/214662Orig1s000Corrected_ltr.pdf",
+            "date": "20211021",
+            "type": "Letter"
+          },
+          "receipt": {
+            "sourceUrl": "http://www.accessdata.fda.gov/drugsatfda_docs/appletter/2021/214662Orig1s000Corrected_ltr.pdf",
+            "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2021/214662Orig1s000Corrected_ltr.pdf",
+            "documentSha256": "d6d1b6af3aea046913db1f117e37050dcd26ad9d4b6b2eba34797b8f66e5fed8",
+            "byteCount": 1815705,
+            "retrievedAt": "2026-11-14T00:46:36.090052+00:00",
+            "evidenceCutoffDate": "2026-11-14",
+            "state": "HASH_CHECKED",
+            "provenanceIndependentlyAuthenticated": false,
+            "independentlyScientificallyReviewed": false
+          }
+        },
+        {
+          "documentMetadataUnreviewed": {
+            "id": "79209",
+            "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2024/214662Orig1s009,s010ltr.pdf",
+            "date": "20240725",
+            "type": "Letter"
+          },
+          "receipt": {
+            "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2024/214662Orig1s009,s010ltr.pdf",
+            "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2024/214662Orig1s009,s010ltr.pdf",
+            "documentSha256": "920a8a4a04dc491c500ca4282625dba91504c42d681410273caa3ab2273673d1",
+            "byteCount": 364616,
+            "retrievedAt": "2026-11-14T00:46:36.350721+00:00",
+            "evidenceCutoffDate": "2026-11-14",
+            "state": "HASH_CHECKED",
+            "provenanceIndependentlyAuthenticated": false,
+            "independentlyScientificallyReviewed": false
+          }
+        },
+        {
+          "documentMetadataUnreviewed": {
+            "id": "79233",
+            "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/214662Orig1s009,s010lbl.pdf",
+            "date": "20260415",
+            "type": "Label"
+          },
+          "receipt": {
+            "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/214662Orig1s009,s010lbl.pdf",
+            "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/214662Orig1s009,s010lbl.pdf",
+            "documentSha256": "2f3b1cd0d247a93a6d65550f0255732172c2446948f4c99fc0e9787bf65d141f",
+            "byteCount": 1346993,
+            "retrievedAt": "2026-11-14T00:46:36.629167+00:00",
+            "evidenceCutoffDate": "2026-11-14",
+            "state": "HASH_CHECKED",
+            "provenanceIndependentlyAuthenticated": false,
+            "independentlyScientificallyReviewed": false
+          }
+        },
+        {
+          "documentMetadataUnreviewed": {
+            "id": "77830",
+            "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2024/214662Orig1s005,s008ltr.pdf",
+            "date": "20240314",
+            "type": "Letter"
+          },
+          "receipt": {
+            "sourceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2024/214662Orig1s005,s008ltr.pdf",
+            "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2024/214662Orig1s005,s008ltr.pdf",
+            "documentSha256": "13727ca66b0a1a753a4265afa4affe16a545f7964a707938bcae4faf78f43722",
+            "byteCount": 911853,
+            "retrievedAt": "2026-11-14T00:46:37.164117+00:00",
+            "evidenceCutoffDate": "2026-11-14",
+            "state": "HASH_CHECKED",
+            "provenanceIndependentlyAuthenticated": false,
+            "independentlyScientificallyReviewed": false
+          }
+        },
+        {
+          "documentMetadataUnreviewed": {
+            "id": "77834",
+            "url": "http://www.accessdata.fda.gov/drugsatfda_docs/label/2024/214662s005s008lbl.pdf",
+            "date": "20240314",
+            "type": "Label"
+          },
+          "receipt": {
+            "sourceUrl": "http://www.accessdata.fda.gov/drugsatfda_docs/label/2024/214662s005s008lbl.pdf",
+            "finalUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2024/214662s005s008lbl.pdf",
+            "documentSha256": "67ebc71e92171c5d54d8fa4c5a9af3742e76a5f4e95e6d644c80345d90c834d4",
+            "byteCount": 1192820,
+            "retrievedAt": "2026-11-14T00:46:37.459638+00:00",
+            "evidenceCutoffDate": "2026-11-14",
+            "state": "HASH_CHECKED",
+            "provenanceIndependentlyAuthenticated": false,
+            "independentlyScientificallyReviewed": false
+          }
+        }
+      ],
+      "preliminaryResearchInterpretation": "EXPAND explicitly excludes ALGS, PFIC, PBC and PSC. Retrieved LIVMARLI label contexts include ALGS/PFIC and cannot establish the EXPAND review cycle.",
+      "relationshipStatus": "NOT_MAPPED_APPLICATION_CYCLE",
+      "requiredEvidence": "Original FDA/sponsor documentation explicitly binding this exact NCT, indication, application, submission/supplement and review cycle; authorized independent regulatory verification.",
+      "independentlyReviewed": false
+    }
+  ]
+}

@@ -1,5 +1,7 @@
 # Levels 1–6 owner approval package — NOT authorization
 
+Current decision-by-decision preparation: [2026-11-14 A01–A14 resolution](level16-owner-approval-resolution-20261114.md). This adds evidence and owner actions; it grants no approval or live access.
+
 Prepared from commit `41611d5b6487e504ff68cfe95b71e04c10713a75` and current public
 provider references retrieved November 13, 2026. No provider, reviewer, workspace,
 new database, credentials or deployment is approved by this package.
