@@ -42,7 +42,7 @@ test("the first historical challenge is immutable directional research with outc
   assert.match(r.researchDossierPath,/2026-blind-ino3107-historical-challenge.md/);
 });
 
-test("SMMT prospectively frozen forecast and current 32-trial FOCUS roster remains outcome-independent",()=>{
+test("SMMT prospectively frozen forecast and canonical FOCUS roster remains unchanged",()=>{
   assert.equal(prospective.records.length,1);
   assert.equal(prospective.records[0].ticker,"SMMT");
   assert.equal(prospective.records[0].predictionId,"HARMONI-SMMT-PDUFA-2026-11-14-V1");

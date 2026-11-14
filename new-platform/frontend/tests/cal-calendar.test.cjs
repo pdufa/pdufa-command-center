@@ -85,13 +85,20 @@ test("provisional research is frozen, application-cycle exact and never a valida
 
 test("future dated calendar events map by cycle, not just ticker",()=>{
   const dated=new Map();
+  const unmapped=new Set(["NCT05031780","NCT06747468","NCT06553768"]);
+  const exceptions=new Set();
   for(const e of source.events){
     const joined=research.cycles.filter(c=>c.ticker===e.ticker &&
       c.associatedNcts.some(n=>e.ncts.includes(n)) &&
       (c.reportedPdufaGoal===e.date || c.call==="ALREADY_APPROVED"));
     dated.set(e.id,joined);
-    if(joined.length===0){assert.ok(roster.records.some(r=>e.ncts.includes(r.nct)&&r.ticker===e.ticker),"unmatched event must remain exact-NCT FOCUS member: "+e.id);}
+    if(e.ncts.every(n=>unmapped.has(n))){
+      assert.equal(joined.length,0,"Unmapped trials must not acquire invented cycles");
+      e.ncts.forEach(n=>exceptions.add(n));
+    }else assert.ok(joined.length>0,"Mapped entry without matching cycle: "+e.id);
   }
+  assert.deepEqual([...exceptions].sort(),["NCT05031780"],"Only this unmapped trial has a dated entry in the frozen calendar");
+  assert.ok([...unmapped].every(n=>research.cycles.every(c=>!c.associatedNcts.includes(n))),"None of the three exceptions may acquire an invented cycle");
   assert.equal(dated.get("focus-srpt-nct02500381").length,2,
     "two Sarepta products require two FDA-cycle predictions");
   const cy=dated.get("focus-cytk-nct05767346");

@@ -18,6 +18,7 @@ FIELDS = {
     "secondaryEndpoints": ("outcomesModule", "secondaryOutcomes"),
     "eligibility": ("eligibilityModule", "eligibilityCriteria"),
     "arms": ("armsInterventionsModule", "armGroups"),
+    "studyOverallStatus": ("statusModule", "overallStatus"),
     "studyLastUpdatePosted": ("statusModule", "studyLastUpdatePostDateStruct", "date"),
 }
 

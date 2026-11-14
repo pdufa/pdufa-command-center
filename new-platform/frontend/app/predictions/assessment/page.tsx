@@ -8,6 +8,7 @@ import AssessmentStatusPies from "../../AssessmentStatusPies";
 import FocusLevelThreeResearchForecasts from "../../FocusLevelThreeResearchForecasts";
 import AssessmentLevelChart from "../../AssessmentLevelChart";
 import LevelOneFocusScores from "../../LevelOneFocusScores";
+import LevelSixAssessmentRunner from "../../LevelSixAssessmentRunner";
 import HistoricalTestingChart from "../../HistoricalTestingChart";
 import HistoricalMonthlyLevelTrend from "../../HistoricalMonthlyLevelTrend";
 import October2026HistoricalAuditPanel from "../../October2026HistoricalAuditPanel";
@@ -16,7 +17,7 @@ import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
 
 export const metadata:Metadata={
   title:"FOCUS Scientific Assessment Readiness | PDUFA",
-  description:"Dated Level 1 registry-document coverage scores for 32 FOCUS NCTs, plus earlier specialty-intake evidence and clearly labeled provisional research calls."
+  description:"Run phase-first Levels 1–6 owner research for one FOCUS trial or all 32, with source-linked findings, uncertainty and evidence gaps."
 };
 type Params={nct?:string;cycle?:string};
 const section={border:"1px solid #c3d9d5",background:"#fff",borderRadius:13,padding:"clamp(13px,2vw,20px)"} as const;
@@ -36,7 +37,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
   return <main style={{maxWidth:1300,margin:"0 auto",padding:"26px 15px 60px",color:"#122f32"}}>
     <div style={{...label,letterSpacing:".12em"}}>PDUFA COMMAND CENTER · PHASE-FIRST RESEARCH INTAKE</div>
     <h1 style={{fontSize:"clamp(25px,4vw,36px)",margin:"8px 0 4px"}}>Deep Clinical Subspecialty Intelligence</h1>
-    <p style={{fontSize:17,fontWeight:700,margin:"4px 0"}}>FOCUS — Complete Assessment Preparation</p>
+    <p style={{fontSize:17,fontWeight:700,margin:"4px 0"}}>FOCUS — Run Scientific Levels 1–6</p>
     <section aria-label="Owner-only assessment policy" data-testid="owner-only-assessments"
       style={{...section,margin:"10px 0 16px",background:"#eefaf5"}}>
       <strong>OWNER-ONLY ASSESSMENTS · LEVELS 1–20</strong>
@@ -48,10 +49,12 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
       </p>
     </section>
     <p style={{maxWidth:1030,lineHeight:1.6,color:"#435f60",fontSize:14}}>
-      The Level 1 section below covers 32 dated FOCUS trial records. The older specialty dossier further down
-      covers a separate 29-trial intake snapshot. <strong>Neither is a validated FDA probability or 32 completed clinical PDUFA reviews.</strong>
+      Run all six levels for one trial or the complete 32-trial FOCUS roster below. The document-coverage
+      scores and older research for 29 mapped trials / 23 provisional cycles remain separate.
+      <strong>A completed automated run is not owner acceptance or a validated FDA probability.</strong>
       The first step in every actual review is to verify current trial phase, status, intervention and indication.
     </p>
+    <LevelSixAssessmentRunner selectedNct={selected?.nct}/>
     <LevelOneFocusScores/>
     <HistoricalMonthlyLevelTrend/>
     <section aria-label="Future prospective FDA predictions"

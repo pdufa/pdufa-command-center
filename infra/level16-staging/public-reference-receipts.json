@@ -1,0 +1,56 @@
+{
+  "kind": "PUBLIC_PROVIDER_REFERENCES_NOT_ACCOUNT_APPROVAL",
+  "references": [
+    {
+      "url": "https://render.com/docs/blueprint-spec.md",
+      "retrievedAtFromLocalReceiptUtc": "2026-11-13T23:37:37.016871+00:00",
+      "sha256": "56d84e8866805899f11067d56510e274a51f1e262ae23b0a7e0fded0c5579e99",
+      "bytes": 60939
+    },
+    {
+      "url": "https://render.com/docs/compute-plans.md",
+      "retrievedAtFromLocalReceiptUtc": "2026-11-13T23:37:36.944211+00:00",
+      "sha256": "bbede7342908c3d62b860ddde5785e81bfdc557d9ea0bb4f62d5c83cfc2d3243",
+      "bytes": 14769
+    },
+    {
+      "url": "https://render.com/docs/postgresql-backups.md",
+      "retrievedAtFromLocalReceiptUtc": "2026-11-13T23:37:36.994696+00:00",
+      "sha256": "dc273244bc056b9de6a2190bef6b499822e9926470fd392d68564845765f9900",
+      "bytes": 9454
+    },
+    {
+      "url": "https://render.com/pricing",
+      "retrievedAtFromLocalReceiptUtc": "2026-11-13T23:37:37.100905+00:00",
+      "sha256": "6a3a58869af3c66a8faadaa62a4ffb1661e28909b4dc039637696a0c16071a5a",
+      "bytes": 722078
+    },
+    {
+      "url": "https://auth0.com/pricing",
+      "retrievedAtFromLocalReceiptUtc": "2026-11-13T23:37:37.244218+00:00",
+      "sha256": "3a3ad749b2b7bcd986406435d36434b3d37edddd782f85f441c454df19c3b105",
+      "bytes": 508068
+    },
+    {
+      "url": "https://auth0.com/docs/secure/tokens/access-tokens/access-token-profiles",
+      "retrievedAtFromLocalReceiptUtc": "2026-11-13T23:37:37.225861+00:00",
+      "sha256": "4bc562d2c20182f210bd9bedb4d520586a544c93daabfc38751f5743e9c23326",
+      "bytes": 310990
+    },
+    {
+      "url": "https://www.keycloak.org/guides",
+      "retrievedAtFromLocalReceiptUtc": "2026-11-13T23:37:37.589723+00:00",
+      "sha256": "baa24830ebf7d0797c1e688a77d0af0449e0f43dbf82e0078bd2e75246925eeb",
+      "bytes": 77050
+    },
+    {
+      "url": "https://render.com/schema/render.yaml.json",
+      "retrievedAtFromLocalReceiptUtc": "2026-11-13T23:49:37.728263+00:00",
+      "sha256": "6c6721a602ef6d368d5c9384c473cefaae99980e43dd4b1adcf8a2f258fc54f4",
+      "bytes": 46591
+    }
+  ],
+  "renderTemplateSchemaValidation": "PASS",
+  "schemaValidatedAt": "2026-11-14T00:04:55.155638+00:00",
+  "platformAccountValidation": "NOT_PERFORMED_NO_SELECTED_WORKSPACE"
+}

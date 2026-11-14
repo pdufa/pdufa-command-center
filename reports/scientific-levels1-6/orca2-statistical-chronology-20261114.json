@@ -1,0 +1,60 @@
+{
+  "schemaVersion": 1,
+  "kind": "ORCA2_PHASE_FIRST_STATISTICAL_CHRONOLOGY_RESEARCH_ONLY",
+  "nct": "NCT04576949",
+  "studyCode": "ACH-CYT-03",
+  "evidenceCutoffDate": "2026-11-14",
+  "context": "CURRENT_SOURCE_OUTCOME_EXPOSED_NOT_BLIND",
+  "events": [
+    {
+      "eventId": "protocol_v4",
+      "kind": "PROTOCOL_VERSION_DATE",
+      "date": "2021-03-08",
+      "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/49/NCT04576949/Prot_000.pdf",
+      "locator": "Page 68, section 16.1",
+      "methods": ["PRIMARY_MULTIPLICITY_HOCHBERG"],
+      "factualObservation": "The dated protocol specifies Hochberg for the two primary comparisons and a one-sided overall alpha of 0.025.",
+      "sourceReviewStatus": "PUBLIC_SOURCE_NOT_INDEPENDENTLY_AUTHENTICATED"
+    },
+    {
+      "eventId": "registry_primary_completion",
+      "kind": "REGISTRY_PRIMARY_COMPLETION_DATE",
+      "date": "2021-12-23",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04576949",
+      "locator": "Study record, primary completion date, as cited by existing FOCUS research",
+      "methods": [],
+      "factualObservation": "Registry-listed primary completion date; not a verified database-lock or unblinding date.",
+      "sourceReviewStatus": "PUBLIC_SOURCE_NOT_INDEPENDENTLY_AUTHENTICATED"
+    },
+    {
+      "eventId": "sap_v1",
+      "kind": "SAP_VERSION_DATE",
+      "date": "2022-03-25",
+      "sourceUrl": "https://cdn.clinicaltrials.gov/large-docs/49/NCT04576949/SAP_001.pdf",
+      "locator": "Title page; page 9 section 2.2; page 29 section 10.1.1; page 42 section 13",
+      "methods": ["POWER_SIMULATION_BONFERRONI", "PRIMARY_MULTIPLICITY_HOCHBERG"],
+      "factualObservation": "The dated SAP distinguishes Bonferroni assumptions in sizing simulations from the Hochberg primary testing procedure and states no planned-analysis changes relative to the protocol. These statements are not independently adjudicated.",
+      "sourceReviewStatus": "PUBLIC_SOURCE_NOT_INDEPENDENTLY_AUTHENTICATED"
+    },
+    {
+      "eventId": "journal_publication",
+      "kind": "JOURNAL_PUBLICATION_DATE",
+      "date": "2023-07-11",
+      "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10336611/",
+      "locator": "Methods, Statistical Analysis",
+      "methods": ["PRIMARY_MULTIPLICITY_HOCHBERG"],
+      "factualObservation": "The published trial report describes the Hochberg procedure for primary endpoint multiplicity. Publication is not evidence of pre-unblinding final SAP approval.",
+      "sourceReviewStatus": "PUBLIC_SOURCE_NOT_INDEPENDENTLY_AUTHENTICATED"
+    }
+  ],
+  "databaseLockDate": null,
+  "unblindingDate": null,
+  "finalSapApprovalRelativeToUnblinding": "UNRESOLVED",
+  "priorSapVersionsReconciled": false,
+  "protocolAmendmentHistoryReconciled": false,
+  "sourceIndependentlyAuthenticated": false,
+  "statisticallyAdjudicated": false,
+  "fdaApplicationCycleVerified": false,
+  "approvalProbability": null,
+  "fdaOutcomeJudgment": null
+}

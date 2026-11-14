@@ -34,7 +34,9 @@ test("all canonical FOCUS NCTs are queued without merging indications or inventi
     assert.equal(r.externalReviewerRequired,false);
     assert.equal(r.ownerReviewStatus,"OWNER_NOT_REVIEWED");
     assert.ok(r.registryUrl.endsWith("/"+r.nct));
-    if(r.applications.length===0)assert.ok(["NCT05031780","NCT06747468","NCT06553768"].includes(r.nct),r.nct+" unexpected unmapped application");
+    if(["NCT05031780","NCT06553768","NCT06747468"].includes(r.nct))
+      assert.equal(r.applications.length,0,"Unmapped exception must remain visible without invented cycle");
+    else assert.ok(r.applications.length>0,r.nct+" not application mapped");
     for(const c of r.applications){
       assert.ok(c.specialty,c.cycleId+" missing specialty");
       assert.equal(c.researchQuestions,10);

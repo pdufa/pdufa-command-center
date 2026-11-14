@@ -1,0 +1,191 @@
+{
+  "schemaVersion": 1,
+  "kind": "ORCA3_PUBLICATION_RESULTS_RESEARCH_ONLY_NOT_ADJUDICATED",
+  "nct": "NCT05206370",
+  "studyCode": "ORCA-3",
+  "evidenceCutoffDate": "2026-11-14",
+  "source": {
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC12012700/",
+    "pmid": "40257755",
+    "doi": "10.1001/jamainternmed.2025.0628",
+    "publicationDate": "2025-04-21",
+    "paper": "JAMA Internal Medicine",
+    "sourceLocator": "2025 online paper, Results; Table 2; Table 3; Limitations; linked original protocol and SAP",
+    "authenticationStatus": "PUBLIC_ARTICLE_TEXT_NOT_INDEPENDENTLY_AUTHENTICATED"
+  },
+  "trial": {
+    "registryPhaseUnreviewed": [
+      "PHASE3"
+    ],
+    "design": "THREE_ARM_RANDOMIZED_DOUBLE_BLIND_PLACEBO_CONTROLLED",
+    "clinicalSites": 20,
+    "randomized": 792,
+    "arms": [
+      {
+        "id": "CYT6",
+        "n": 263
+      },
+      {
+        "id": "CYT12",
+        "n": 264
+      },
+      {
+        "id": "PLACEBO",
+        "n": 265
+      }
+    ],
+    "week24Completed": 628,
+    "behavioralSupportAllArms": true,
+    "followupWeeks": 24,
+    "safetyTreated": 785,
+    "safetyArms": [
+      {
+        "id": "CYT6",
+        "n": 263
+      },
+      {
+        "id": "CYT12",
+        "n": 260
+      },
+      {
+        "id": "PLACEBO",
+        "n": 262
+      }
+    ],
+    "quitEndpoint": "CO_VERIFIED_CONTINUOUS_SMOKING_ABSTINENCE_CO_LT_10_PPM",
+    "missingData": "MISSING_SMOKING_OUTCOME_CLASSIFIED_SMOKING_PER_PUBLICATION"
+  },
+  "endpoints": [
+    {
+      "id": "PRIMARY_CYT6_W3_6",
+      "type": "PRIMARY",
+      "arm": "CYT6",
+      "period": "WEEKS_3_TO_6",
+      "activeCount": 39,
+      "activeDenom": 263,
+      "activePercent": 14.8,
+      "placeboCount": 16,
+      "placeboDenom": 265,
+      "placeboPercent": 6,
+      "publishedOddsRatio": 2.9,
+      "table95ci": [
+        1.5,
+        5.6
+      ],
+      "publishedPValue": "<.001",
+      "locator": "Table 2, primary continuous abstinence weeks 3–6"
+    },
+    {
+      "id": "PRIMARY_CYT12_W9_12",
+      "type": "PRIMARY",
+      "arm": "CYT12",
+      "period": "WEEKS_9_TO_12",
+      "activeCount": 80,
+      "activeDenom": 264,
+      "activePercent": 30.3,
+      "placeboCount": 25,
+      "placeboDenom": 265,
+      "placeboPercent": 9.4,
+      "publishedOddsRatio": 4.4,
+      "table95ci": [
+        2.6,
+        7.3
+      ],
+      "publishedPValue": "<.001",
+      "locator": "Table 2, primary continuous abstinence weeks 9–12"
+    },
+    {
+      "id": "SECONDARY_CYT6_W3_24",
+      "type": "SECONDARY",
+      "arm": "CYT6",
+      "period": "WEEKS_3_TO_24",
+      "activeCount": 18,
+      "activeDenom": 263,
+      "activePercent": 6.8,
+      "placeboCount": 3,
+      "placeboDenom": 265,
+      "placeboPercent": 1.1,
+      "publishedOddsRatio": 6.3,
+      "table95ci": [
+        1.9,
+        34.6
+      ],
+      "publishedPValue": "<.001",
+      "locator": "Table 2, secondary continuous abstinence weeks 3–24"
+    },
+    {
+      "id": "SECONDARY_CYT12_W9_24",
+      "type": "SECONDARY",
+      "arm": "CYT12",
+      "period": "WEEKS_9_TO_24",
+      "activeCount": 54,
+      "activeDenom": 264,
+      "activePercent": 20.5,
+      "placeboCount": 11,
+      "placeboDenom": 265,
+      "placeboPercent": 4.2,
+      "publishedOddsRatio": 5.8,
+      "table95ci": [
+        2.9,
+        12.5
+      ],
+      "publishedPValue": "<.001",
+      "locator": "Table 2, secondary continuous abstinence weeks 9–24"
+    }
+  ],
+  "sourceTextDiscrepanciesUnreviewed": [
+    {
+      "endpointId": "SECONDARY_CYT6_W3_24",
+      "field": "reported95ciLower",
+      "table2": "1.9",
+      "narrative": "1.8",
+      "status": "ORIGINAL_ARTICLE_TABLE_VS_ABSTRACT_OR_RESULTS_TEXT_DISCREPANCY_REQUIRES_SOURCE_CHECK"
+    },
+    {
+      "endpointId": "SECONDARY_CYT12_W9_24",
+      "field": "reported95ciUpper",
+      "table2": "12.5",
+      "narrative": "12.4",
+      "status": "ORIGINAL_ARTICLE_TABLE_VS_ABSTRACT_OR_RESULTS_TEXT_DISCREPANCY_REQUIRES_SOURCE_CHECK"
+    }
+  ],
+  "safety": {
+    "combinedCytisiniclineExposed": 523,
+    "placeboExposed": 262,
+    "seriousTreatmentEmergentAEs": {
+      "cytisinicline": 16,
+      "placebo": 8,
+      "sourceLocator": "Article safety subsection and Table 3"
+    },
+    "seriousTreatmentRelatedAEsInvestigatorJudged": {
+      "cytisinicline": 0,
+      "placebo": 0,
+      "sourceLocator": "Article safety subsection and Table 3"
+    },
+    "studyDrugDiscontinuationsDueToAEs": {
+      "cytisinicline": 9,
+      "placebo": 3,
+      "sourceLocator": "Article safety subsection"
+    },
+    "deathsInCytisiniclineArms": 4,
+    "deathsJudgedUnrelatedOrUnlikelyByInvestigators": 4,
+    "deathsPlaceboReportedInSafetyParagraph": 0
+  },
+  "limitationsAndReviewNeeds": [
+    "Exclusion of smokers of fewer than 10 cigarettes per day limits generalizability",
+    "Underrepresentation of non-White populations limits subgroup evaluation",
+    "Exclusions of current suicidal ideation, significant depression, recent unstable cardiovascular disease and current cannabis or illicit drug use limit generalizability",
+    "Intensive study behavioral support may not represent usual clinical access or adherence",
+    "Twenty-four-week abstinence and twelve-week treatment safety cannot establish long-term effects or rare-event risk",
+    "Original public protocol and SAP versions, amendments, database lock and unblinding timing need independent reconciliation",
+    "Four deaths in cytisinicline arms were investigator judged unrelated/unlikely; independent benefit-risk review must not treat attribution as proof",
+    "Minor reported confidence interval differences between Table 2 and narrative require original-source verification"
+  ],
+  "sourceIndependentlyAuthenticated": false,
+  "independentMedicalReviewCompleted": false,
+  "statisticallyAdjudicated": false,
+  "independentChallengeCompleted": false,
+  "fdaApplicationLinkVerified": false,
+  "approvalProbability": null,
+  "approvalPrediction": null
+}

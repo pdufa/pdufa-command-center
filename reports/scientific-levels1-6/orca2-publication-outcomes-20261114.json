@@ -1,0 +1,165 @@
+{
+  "schemaVersion": 1,
+  "kind": "ORCA2_PUBLICATION_EVIDENCE_UNREVIEWED_NOT_FDA_PREDICTION",
+  "nct": "NCT04576949",
+  "studyCode": "ACH-CYT-03",
+  "evidenceCutoffDate": "2026-11-14",
+  "source": {
+    "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10336611/",
+    "pmid": "37432430",
+    "doi": "10.1001/jama.2023.10042",
+    "publishedDate": "2023-07-11",
+    "sourceLocator": "JAMA 2023 volume 330 pages 152-160; Methods; Table 2; Table 3; Limitations",
+    "authenticity": "PUBLICATION_TEXT_OBSERVED_NOT_INDEPENDENTLY_ATTESTED"
+  },
+  "trial": {
+    "design": "THREE_GROUP_RANDOMIZED_DOUBLE_BLIND_PLACEBO_CONTROLLED",
+    "studyPhaseUnreviewed": "PHASE3",
+    "randomization": "1:1:1; stratified by clinical site",
+    "sites": 17,
+    "randomized": 810,
+    "arms": [
+      {
+        "id": "CYT6",
+        "randomized": 269,
+        "dose": "cytisinicline 3 mg three times daily for 6 weeks; placebo to week 12"
+      },
+      {
+        "id": "CYT12",
+        "randomized": 270,
+        "dose": "cytisinicline 3 mg three times daily for 12 weeks"
+      },
+      {
+        "id": "PLACEBO",
+        "randomized": 271,
+        "dose": "placebo three times daily for 12 weeks"
+      }
+    ],
+    "allArmsBehavioralSupport": true,
+    "primaryAnalysisRandomizedCount": 810,
+    "followupWeek24Completed": 618,
+    "missingOutcomeTreatment": "MISSING_OUTCOME_COUNTED_AS_SMOKING_AS_DESCRIBED_BY_PUBLICATION",
+    "biochemicalCriterion": "self-report and expired air CO below 10 ppm"
+  },
+  "efficacy": [
+    {
+      "id": "PRIMARY_CYT6_W3_6",
+      "classification": "PRIMARY",
+      "arm": "CYT6",
+      "interval": "WEEKS_3_TO_6",
+      "activeAbstinent": 68,
+      "activeRandomized": 269,
+      "activePct": 25.3,
+      "placeboAbstinent": 12,
+      "placeboRandomized": 271,
+      "placeboPct": 4.4,
+      "oddsRatioReported": 8,
+      "ci95Reported": [
+        3.9,
+        16.3
+      ],
+      "pValueReported": "<.001",
+      "locator": "Table 2: Primary outcomes, Weeks 3-6"
+    },
+    {
+      "id": "PRIMARY_CYT12_W9_12",
+      "classification": "PRIMARY",
+      "arm": "CYT12",
+      "interval": "WEEKS_9_TO_12",
+      "activeAbstinent": 88,
+      "activeRandomized": 270,
+      "activePct": 32.6,
+      "placeboAbstinent": 19,
+      "placeboRandomized": 271,
+      "placeboPct": 7,
+      "oddsRatioReported": 6.3,
+      "ci95Reported": [
+        3.7,
+        11.6
+      ],
+      "pValueReported": "<.001",
+      "locator": "Table 2: Primary outcomes, Weeks 9-12"
+    },
+    {
+      "id": "SECONDARY_CYT6_W3_24",
+      "classification": "SECONDARY",
+      "arm": "CYT6",
+      "interval": "WEEKS_3_TO_24",
+      "activeAbstinent": 24,
+      "activeRandomized": 269,
+      "activePct": 8.9,
+      "placeboAbstinent": 7,
+      "placeboRandomized": 271,
+      "placeboPct": 2.6,
+      "oddsRatioReported": 3.7,
+      "ci95Reported": [
+        1.5,
+        10.2
+      ],
+      "pValueReported": ".002",
+      "locator": "Table 2: Secondary outcomes, Weeks 3-24"
+    },
+    {
+      "id": "SECONDARY_CYT12_W9_24",
+      "classification": "SECONDARY",
+      "arm": "CYT12",
+      "interval": "WEEKS_9_TO_24",
+      "activeAbstinent": 57,
+      "activeRandomized": 270,
+      "activePct": 21.1,
+      "placeboAbstinent": 13,
+      "placeboRandomized": 271,
+      "placeboPct": 4.8,
+      "oddsRatioReported": 5.3,
+      "ci95Reported": [
+        2.8,
+        11.1
+      ],
+      "pValueReported": "<.001",
+      "locator": "Table 2: Secondary outcomes, Weeks 9-24"
+    }
+  ],
+  "safety": {
+    "population": "RECEIVED_AT_LEAST_ONE_STUDY_DOSE",
+    "cytisiniclineExposed": 539,
+    "placeboExposed": 270,
+    "seriousAdverseEvents": {
+      "cytisinicline": 18,
+      "placebo": 3,
+      "locator": "Safety and Table 3; investigator attribution is not causal proof"
+    },
+    "adverseEventDiscontinuations": {
+      "cytisinicline": 16,
+      "placebo": 4,
+      "locator": "Safety section"
+    },
+    "treatmentRelatedSeriousAdverseEventsJudgedByInvestigators": {
+      "cytisinicline": 0,
+      "placebo": 0,
+      "locator": "Safety and Table 3"
+    },
+    "oneDeathReportedInCyt6": true
+  },
+  "limitationsUnreviewed": [
+    "Predominantly White enrolled population; generalizability to other racial and ethnic groups uncertain",
+    "Exclusions include serious mental illness, suicidal ideation, moderate/severe depression, recent unstable cardiovascular disease, and certain drug use",
+    "Trial size and 24-week assessment interval limit detection of rare or delayed adverse events",
+    "Behavioral support and dosing attention may exceed routine clinical practice",
+    "Smoking abstinence through week 24 does not establish longer-term sustained abstinence or direct mortality benefit",
+    "Original protocol/SAP amendments, database-lock and unblinding chronology require independently authenticated source review"
+  ],
+  "unresolvedQuestions": [
+    "Independently reconcile exact source and Table 2 efficacy group definitions with registry results",
+    "Evaluate missing-as-smoking rules and differential follow-up (618/810 completed week 24)",
+    "Separately review serious adverse events: 18/539 cytisinicline and 3/270 placebo despite 0 adjudged drug-related",
+    "Assess endpoint clinical importance, comparator generalizability and 6 vs 12-week regimen relevance",
+    "Verify multiplicity, prespecified estimands and final SAP effective date relative to database lock/unblinding",
+    "Obtain genuine authorized source authentication and independent statistical, clinical and disease-specialist review"
+  ],
+  "sourceIndependentlyAuthenticated": false,
+  "sourceReviewerApproved": false,
+  "independentlyAdjudicatedLevels": 0,
+  "predictionAllowed": false,
+  "approvalProbability": null,
+  "fdaOutcomeJudgment": null
+}

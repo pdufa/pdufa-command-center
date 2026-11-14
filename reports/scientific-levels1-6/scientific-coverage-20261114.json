@@ -1,0 +1,907 @@
+{
+  "kind": "LEVEL16_SCIENTIFIC_COVERAGE_NOT_EVIDENCE_COMPLETENESS",
+  "evidenceCutoffDate": "2026-11-14",
+  "focusTrialCount": 32,
+  "trialCoverageCounts": {
+    "registry": 32,
+    "protocol": 12,
+    "sap": 12,
+    "postedResults": 12,
+    "indexedJournalRecords": 15,
+    "retrievedPublicFullTexts": 10,
+    "exactNctFdaLabelPackets": 2
+  },
+  "trialsWithSixPreliminaryLevels": 32,
+  "awaitingAdditionalEvidence": 32,
+  "blockedOnIndependentReview": 32,
+  "uniqueRegistryAndProtocolSapOriginals": 55,
+  "verifiedPeerReviewedTrialReports": 0,
+  "verifiedExactTrialFdaDocuments": 0,
+  "independentlyAuthenticatedSources": 0,
+  "independentlyAdjudicatedAssessments": 0,
+  "historicalPredictionInputPermitted": false,
+  "approvalProbability": null,
+  "limitations": [
+    "Registry coverage is not scientific evidence completeness.",
+    "Indexed publication/full-text counts are discovery/collection counts, not independently verified trial-report counts.",
+    "FDA product records and drug-level labels do not establish exact trial/application-cycle relationships."
+  ],
+  "trials": [
+    {
+      "nct": "NCT05507203",
+      "ticker": "ABVX",
+      "company": "Abivax S.A.",
+      "indicationUnreviewed": [
+        "Ulcerative Colitis"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": true,
+      "sap": true,
+      "postedResults": true,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT05507216",
+      "ticker": "ABVX",
+      "company": "Abivax S.A.",
+      "indicationUnreviewed": [
+        "Ulcerative Colitis"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": true,
+      "sap": true,
+      "postedResults": true,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT04576949",
+      "ticker": "ACHV",
+      "company": "Achieve Life Sciences",
+      "indicationUnreviewed": [
+        "Smoking Cessation"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": true,
+      "sap": true,
+      "postedResults": true,
+      "indexedJournalRecords": 2,
+      "retrievedPublicFullTexts": 1,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT05206370",
+      "ticker": "ACHV",
+      "company": "Achieve Life Sciences",
+      "indicationUnreviewed": [
+        "Smoking Cessation"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": true,
+      "sap": true,
+      "postedResults": true,
+      "indexedJournalRecords": 2,
+      "retrievedPublicFullTexts": 2,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT05031780",
+      "ticker": "AGIO",
+      "company": "Agios Pharmaceuticals, Inc.",
+      "indicationUnreviewed": [
+        "Sickle Cell Disease"
+      ],
+      "phaseUnreviewed": [
+        "PHASE2",
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 5,
+      "retrievedPublicFullTexts": 2,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "NOT_MAPPED_APPLICATION_CYCLE",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT06747468",
+      "ticker": "AMLX",
+      "company": "Amylyx Pharmaceuticals Inc.",
+      "indicationUnreviewed": [
+        "Post Bariatric Hypoglycemia"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "NOT_MAPPED_APPLICATION_CYCLE",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT05811247",
+      "ticker": "APMD",
+      "company": "Apnimed",
+      "indicationUnreviewed": [
+        "OSA"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": true,
+      "sap": true,
+      "postedResults": true,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT05813275",
+      "ticker": "APMD",
+      "company": "Apnimed",
+      "indicationUnreviewed": [
+        "OSA"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": true,
+      "sap": true,
+      "postedResults": true,
+      "indexedJournalRecords": 1,
+      "retrievedPublicFullTexts": 1,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT05059223",
+      "ticker": "AXSM",
+      "company": "Axsome Therapeutics, Inc.",
+      "indicationUnreviewed": [
+        "Narcolepsy",
+        "Cataplexy",
+        "Excessive Daytime Sleepiness"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT05113745",
+      "ticker": "AXSM",
+      "company": "Axsome Therapeutics, Inc.",
+      "indicationUnreviewed": [
+        "Narcolepsy",
+        "Cataplexy",
+        "Excessive Daytime Sleepiness"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT05244304",
+      "ticker": "BLTE",
+      "company": "Belite Bio, Inc.",
+      "indicationUnreviewed": [
+        "Stargardt Disease 1"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT05126758",
+      "ticker": "CAPR",
+      "company": "Capricor Therapeutics, Inc.",
+      "indicationUnreviewed": [
+        "Muscular Dystrophies",
+        "Muscular Dystrophy, Duchenne",
+        "Muscular Disorders, Atrophic",
+        "Muscular Diseases",
+        "Neuromuscular Diseases",
+        "Genetic Diseases, X-Linked",
+        "Genetic Diseases, Inborn",
+        "Nervous System Diseases"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 1,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT06445023",
+      "ticker": "CLDX",
+      "company": "Celldex Therapeutics",
+      "indicationUnreviewed": [
+        "Chronic Spontaneous Urticaria"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT06455202",
+      "ticker": "CLDX",
+      "company": "Celldex Therapeutics",
+      "indicationUnreviewed": [
+        "Chronic Spontaneous Urticaria"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT05208047",
+      "ticker": "COGT",
+      "company": "Cogent Biosciences, Inc.",
+      "indicationUnreviewed": [
+        "Advanced Gastrointestinal Stromal Tumors",
+        "Metastatic Cancer"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT03697109",
+      "ticker": "CORT",
+      "company": "Corcept Therapeutics",
+      "indicationUnreviewed": [
+        "Cushing Syndrome"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": true,
+      "sap": true,
+      "postedResults": true,
+      "indexedJournalRecords": 2,
+      "retrievedPublicFullTexts": 1,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT04308590",
+      "ticker": "CORT",
+      "company": "Corcept Therapeutics",
+      "indicationUnreviewed": [
+        "Hypercortisolism"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": true,
+      "sap": true,
+      "postedResults": true,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT05767346",
+      "ticker": "CYTK",
+      "company": "Cytokinetics",
+      "indicationUnreviewed": [
+        "Obstructive Hypertrophic Cardiomyopathy (oHCM)"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": true,
+      "sap": true,
+      "postedResults": true,
+      "indexedJournalRecords": 7,
+      "retrievedPublicFullTexts": 1,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT06081894",
+      "ticker": "CYTK",
+      "company": "Cytokinetics, Inc.",
+      "indicationUnreviewed": [
+        "Symptomatic Non-Obstructive Hypertrophic Cardiomyopathy"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 3,
+      "retrievedPublicFullTexts": 2,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT04871282",
+      "ticker": "IMNM",
+      "company": "Immunome, Inc.",
+      "indicationUnreviewed": [
+        "Desmoid",
+        "Desmoid Tumor"
+      ],
+      "phaseUnreviewed": [
+        "PHASE2",
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 1,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT06553768",
+      "ticker": "MIRM",
+      "company": "Mirum Pharmaceuticals, Inc.",
+      "indicationUnreviewed": [
+        "Cholestatic Liver Disease (Except ALGS, PFIC, PBC and PSC)"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "NOT_MAPPED_APPLICATION_CYCLE",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT06411379",
+      "ticker": "MLTX",
+      "company": "MoonLake Immunotherapeutics AG",
+      "indicationUnreviewed": [
+        "Hidradenitis Suppurativa"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT06411899",
+      "ticker": "MLTX",
+      "company": "MoonLake Immunotherapeutics AG",
+      "indicationUnreviewed": [
+        "Hidradenitis Suppurativa"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT06153693",
+      "ticker": "MLYS",
+      "company": "Mineralys Therapeutics, Inc.",
+      "indicationUnreviewed": [
+        "Hypertension"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 1,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT06343779",
+      "ticker": "PHVS",
+      "company": "Pharvaris N.V.",
+      "indicationUnreviewed": [
+        "Hereditary Angioedema",
+        "Hereditary Angioedema Type I",
+        "Hereditary Angioedema Type II",
+        "Hereditary Angioedema Types I and II",
+        "Hereditary Angioedema Attack",
+        "Hereditary Angioedema With C1 Esterase Inhibitor Deficiency",
+        "Hereditary Angioedema - Type 1",
+        "Hereditary Angioedema - Type 2",
+        "C1 Esterase Inhibitor [C1-INH] Deficiency",
+        "C1 Esterase Inhibitor Deficiency",
+        "C1 Esterase Inhibitor, Deficiency of",
+        "C1 Inhibitor Deficiency",
+        "Hereditary Angioedema - Type 3",
+        "Hereditary Angioedema Type III"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 1,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT06669754",
+      "ticker": "PHVS",
+      "company": "Pharvaris N.V.",
+      "indicationUnreviewed": [
+        "Hereditary Angioedema (HAE)"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT06087276",
+      "ticker": "PRAX",
+      "company": "Praxis Precision Medicines, Inc.",
+      "indicationUnreviewed": [
+        "Essential Tremor"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT02500381",
+      "ticker": "SRPT",
+      "company": "Sarepta Therapeutics, Inc.",
+      "indicationUnreviewed": [
+        "Duchenne Muscular Dystrophy"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 2,
+      "retrievedPublicFullTexts": 1,
+      "exactNctFdaLabelPackets": true,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT04544293",
+      "ticker": "SVRA",
+      "company": "Savara Inc.",
+      "indicationUnreviewed": [
+        "Autoimmune Pulmonary Alveolar Proteinosis"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": true,
+      "sap": true,
+      "postedResults": true,
+      "indexedJournalRecords": 1,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT06331299",
+      "ticker": "URGN",
+      "company": "UroGen Pharma Ltd.",
+      "indicationUnreviewed": [
+        "Bladder Cancer",
+        "Urothelial Carcinoma",
+        "Urothelial Carcinoma Bladder"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": true,
+      "sap": true,
+      "postedResults": true,
+      "indexedJournalRecords": 0,
+      "retrievedPublicFullTexts": 0,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT04716231",
+      "ticker": "VERA",
+      "company": "Vera Therapeutics, Inc.",
+      "indicationUnreviewed": [
+        "IgA Nephropathy",
+        "Berger Disease"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": true,
+      "sap": true,
+      "postedResults": true,
+      "indexedJournalRecords": 5,
+      "retrievedPublicFullTexts": 1,
+      "exactNctFdaLabelPackets": true,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    },
+    {
+      "nct": "NCT05662241",
+      "ticker": "ZBIO",
+      "company": "Zenas BioPharma, Inc.",
+      "indicationUnreviewed": [
+        "IgG4 Related Disease"
+      ],
+      "phaseUnreviewed": [
+        "PHASE3"
+      ],
+      "registry": true,
+      "protocol": false,
+      "sap": false,
+      "postedResults": false,
+      "indexedJournalRecords": 2,
+      "retrievedPublicFullTexts": 1,
+      "exactNctFdaLabelPackets": false,
+      "verifiedPeerReviewedTrialReports": 0,
+      "exactTrialFdaDocumentsVerified": 0,
+      "preliminaryLevels": 6,
+      "mappingStatus": "PROVISIONAL_NOT_VERIFIED",
+      "independentSources": 0,
+      "independentlyAdjudicatedAssessments": 0,
+      "awaitingAdditionalEvidence": true,
+      "blockedOnIndependentReview": true
+    }
+  ],
+  "publicationCollectionSummary": {
+    "registryPublicationLinks": 37,
+    "uniquePubmedRecordsRetrieved": 36,
+    "inCutoffDatedPubmedRecords": 35,
+    "publicFullTextsRetrieved": 12,
+    "verifiedPrimaryTrialReports": 0
+  },
+  "collectionLimitations": [
+    "All 23 registered protocol/SAP leads retrieved. The 33,306,177-byte NCT04716231 combined PDF is private research-only, fetched under a separate 40 MiB bound after one transient HTTP 503. Standard collector remains limited to 16 MiB; no staging ingestion performed.",
+    "Five public full-text endpoints failed; this does not establish nonpublic status.",
+    "Peer-reviewed primary-report classification and FDA exact-cycle verification remain human review tasks.",
+    "Sponsor pipeline leads remain discovered; no sponsor claims were promoted to efficacy evidence."
+  ]
+}

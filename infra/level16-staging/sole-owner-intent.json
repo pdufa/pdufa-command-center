@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "kind": "LEVEL16_SOLE_OWNER_RESEARCH_INTENT_NOT_RUNTIME_AUTHORIZATION",
+  "recordedLocalDate": "2026-11-13",
+  "ownerPreferenceConfirmedByConversation": true,
+  "soleHumanOperator": true,
+  "siteOwnership": "SOLE_OWNER_CONTROLS_RESEARCH_ADMINISTRATION_AND_PUBLICATION_DECISIONS",
+  "authorizedOperatorSlots": 1,
+  "allowExternalEditorAccounts": false,
+  "allowOutsideReviewerAccounts": false,
+  "allowSharedAdminCredentials": false,
+  "requiredMfaForSoleOwner": true,
+  "ownerPrincipalId": null,
+  "ownerIssuer": null,
+  "ownerIdentityVerificationStatus": "NOT_CONFIGURED_OR_VERIFIED",
+  "researchMode": "OWNER_DIRECTED_PUBLIC_SOURCE_RESEARCH",
+  "researchReviewLabel": "OWNER_SELF_RESEARCH_NOT_INDEPENDENT",
+  "existingIndependentWorkflow": "RETIRED_FROM_ACTIVE_GATES_PRESERVED_ONLY_AS_DISABLED_HISTORICAL_ENGINEERING",
+  "sourceAuthenticity": "NOT_INDEPENDENTLY_ATTESTED",
+  "independentScientificAdjudications": 0,
+  "ownerLevelReviewsEntered": 0,
+  "publishedPredictions": 0,
+  "noPurchaseOrBillingAuthorization": true,
+  "noLiveReleaseAuthorization": true,
+  "allowedNow": [
+    "READ_ONLY_RESEARCH_PROCESSING",
+    "PRIVATE_OWNER_PREPARATION",
+    "DRAFT_PR_ENGINEERING_AND_TESTS"
+  ],
+  "requiresFurtherConcreteConfiguration": [
+    "Sole-owner secure account and MFA tested against real credentials; no outside human review account",
+    "Owner-managed provider administration and repository access audit, preserving machine/service identities as needed",
+    "Owner-selected local or cloud runtime, destination, region and explicitly authorized costs before any deployment",
+    "Owner-controlled source citation and evidence checks, with missing data and contradictions recorded",
+    "Owner self-review and documented acceptance or limitation for research assessments, not independent approval",
+    "Explicit destination-specific release permission plus owner-managed backups and security tests"
+  ],
+  "protectedActionsStillDisabled": [
+    "CREATE_PAID_RESOURCES",
+    "ACTIVATE_STAGING",
+    "MERGE",
+    "DEPLOY",
+    "MIGRATE_PRODUCTION",
+    "MINT_IDENTITY",
+    "CREATE_REVIEWER",
+    "SIGN_INDEPENDENT_ATTESTATION",
+    "PUBLISH_UNCALIBRATED_FDA_PROBABILITY"
+  ],
+  "notes": "Owner alone directs and performs Levels 1–20 assessments, source checking, scoring and review. Zero outside verification, clinicians, statisticians, challengers, attestors or external signoffs are required. This is not independent certification, genuine completed source verification, privileged owner authentication or measured FDA forecast accuracy. Service providers may operate hosting infrastructure separately."
+}

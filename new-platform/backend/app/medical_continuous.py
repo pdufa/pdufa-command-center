@@ -229,10 +229,12 @@ def application_roster_status():
     if data.get("schemaVersion") != 1 or data.get("asOf") != "2026-11-07" or not isinstance(rows, list):
         raise ValueError("Application map source version not recognized")
     by_nct = {row.get("nct"): row for row in rows if isinstance(row, dict)}
-    if len(by_nct) != len(rows) or not set(by_nct).issubset(expected):
-        raise ValueError("Application map has duplicate or foreign FOCUS identities")
-    # Preserve source-linked older study research as an explicitly incomplete
-    # subset of the current roster; never assert independent verification.
+    # The canonical roster has 32 trials; this frozen source maps 29 to 23
+    # provisional cycles. These exact three exceptions must stay unmapped.
+    known_unmapped = {"NCT05031780", "NCT06747468", "NCT06553768"}
+    if (len(by_nct) != len(rows) or not set(by_nct) <= expected
+            or expected - set(by_nct) != known_unmapped):
+        raise ValueError("Application map differs from the exact mapped FOCUS set and known exceptions")
     missing = sorted(expected - set(by_nct))
     ids = set()
     ambiguous = []
@@ -260,6 +262,7 @@ def application_roster_status():
             raise ValueError("Study-level labels do not match exact application records")
     return {"state": "VALID" if not missing else "PARTIAL", "asOf": data["asOf"],
             "focusNctCount":len(expected),"coveredNctCount":len(by_nct),
+            "mappingCoverageComplete":False,"unmappedNcts":sorted(known_unmapped),
             "missingNctIds":missing,
             "applicationCycleCount":len(ids),
             "sharedIndicationUnresolvedNcts":ambiguous,

@@ -1,0 +1,21 @@
+-- REVIEW ONLY. Run manually AFTER owner authorization on the NEW staging DB only.
+-- Database owner/migration DSN never enters the web runtime. No passwords here.
+\set ON_ERROR_STOP on
+\if :{?expected_staging_database}
+SELECT current_database()=:'expected_staging_database'
+       AND current_database() LIKE 'pdufa_level16_stage%' AS isolated_database_matches \gset
+\else
+\echo 'BLOCKED: expected_staging_database must be explicitly supplied'
+\quit 3
+\endif
+\if :isolated_database_matches
+BEGIN;
+CREATE ROLE level16_stage_runtime LOGIN NOSUPERUSER NOCREATEDB NOCREATEROLE NOREPLICATION NOBYPASSRLS;
+-- New LOGIN has no password and cannot authenticate until an operator provisions
+-- its credential through an approved secret mechanism. Never put it in Git.
+GRANT pdufa_level16_writer TO level16_stage_runtime;
+COMMIT;
+\else
+\echo 'BLOCKED: target database does not match the authorized isolated staging DB'
+\quit 3
+\endif

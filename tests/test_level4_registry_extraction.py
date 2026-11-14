@@ -14,12 +14,14 @@ class RegistryExtractionTests(unittest.TestCase):
         packet = {"protocolSection": {
             "identificationModule": {"nctId": "NCT00000001"},
             "designModule": {"phases": ["PHASE3"]},
+            "statusModule": {"overallStatus": "RECRUITING"},
             "outcomesModule": {"primaryOutcomes": [{"measure": "Endpoint"}]}
         }}
         raw = json.dumps(packet).encode()
         result = mod.extract(packet, "NCT00000001", raw)
         self.assertEqual(result["fields"]["phase"]["value"], ["PHASE3"])
         self.assertEqual(result["fields"]["primaryEndpoints"]["status"], "CAPTURED_UNREVIEWED")
+        self.assertEqual(result["fields"]["studyOverallStatus"]["value"], "RECRUITING")
         self.assertEqual(result["fields"]["eligibility"]["status"], "NOT_IN_SOURCE")
         self.assertEqual(len(result["sha256"]), 64)
         self.assertIsNone(result["fdaPrediction"])

@@ -55,12 +55,12 @@ test("23 FDA application cycles keep separate NCT mappings and research directio
   assert.deepEqual(counts,{APPROVAL_LEAN:12,CRL_LEAN:5,ABSTAIN:5,ALREADY_APPROVED:1});
   assert.equal(ids.size,23);
   assert.equal(ncts.size,29);
-  assert.ok([...ncts].every(nct=>existing.has(nct)),"historic cycles remain an exact-NCT subset of current 32");
+  assert.deepEqual(focus.records.filter(r=>!ncts.has(r.nct)).map(r=>r.nct).sort(),["NCT05031780","NCT06553768","NCT06747468"]);
   const srpt=research.cycles.filter(x=>x.ticker==="SRPT");
   assert.equal(srpt.length,2);
   assert.notEqual(srpt[0].cycleId,srpt[1].cycleId);
 });
-test("owner-only preliminary research remains separate from calibrated forecasts",()=>{
+test("owner-only preliminary research remains distinct from calibrated predictions",()=>{
   const api=read("app","api","focus-assessment-intake","route.ts");
   const page=read("app","predictions","assessment","page.tsx");
   assert.match(api,/FOCUS_SCIENTIFIC_RESEARCH_INTAKE_NOT_COMPLETED_ASSESSMENTS/);

@@ -27,7 +27,7 @@ test("final 32 NCT roster is the ONLY population used by the seven trial gates",
   assert.ok(audit.rows.every(row=>row.gates.length===7&&row.independentlyVerified===0));
   assert.ok(audit.rows.every(row=>row.gates.every(g=>
     ["RECORDED_POINTER","SOURCE_REVIEW_REQUIRED","MISSING_EVIDENCE"].includes(g.state))));
-  assert.equal(audit.pointers+audit.review+audit.missing,32*7);
+  assert.equal(audit.pointers+audit.review+audit.missing,224);
   const moduleSource=fs.readFileSync(path.join(__dirname,"../lib/focus-final-gate-checks.ts"),"utf8");
   assert.ok(!/import .*pool-pipeline-funnel|import .*tools-restricted-scope|import .*phase3-census/.test(moduleSource),
     "No other trial population is imported into current acceptance checks");

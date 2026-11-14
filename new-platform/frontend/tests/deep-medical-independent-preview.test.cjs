@@ -2,23 +2,25 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 require.extensions['.ts']=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText,f);
 const {parseDeepMedicalSnapshot}=require('../lib/deep-medical-intelligence.ts');
 const data=require('../data/deepMedicalIntelligencePreview.json');
-test('owner-only source preview preserves the 29 historical NCTs within the current 32 without fake signoff',()=>{
+test('owner-only source preview preserves original NCT identities and does not fake completion',()=>{
  const d=parseDeepMedicalSnapshot(data),active=require('../data/p3PostDataActive.json').records;
- const current=new Set(active.map(r=>r.nct));
- const frozen=[...new Set(d.applications.flatMap(a=>a.nctIds))];
- assert.equal(frozen.length,29,"older research snapshot must retain its original 29 trial identities");
- assert.equal(current.size,32,"current source roster has 32 exact trials");
- assert.ok(frozen.every(nct=>current.has(nct)),"historic clinical research cannot introduce a foreign trial");
+ const represented=[...new Set(d.applications.flatMap(a=>a.nctIds))].sort();
+ const unmapped=["NCT05031780","NCT06553768","NCT06747468"];
+ assert.equal(active.length,32);assert.equal(represented.length,29);
+ assert.deepEqual(represented,active.filter(r=>!unmapped.includes(r.nct)).map(r=>r.nct).sort());
+ assert.deepEqual(active.filter(r=>!represented.includes(r.nct)).map(r=>r.nct).sort(),unmapped);
  assert.equal(d.installationLevels.length,12);assert.equal(d.inventory.completedDecisions,0);
  assert.ok(d.applications.every(a=>a.outcome.leading==='Indeterminate'&&a.timing.leading==='Indeterminate'));
  assert.ok(d.inventory.metadataScreenedTrials>d.inventory.fullyReviewedTrials);
  assert.ok(d.applications.every(a=>a.ownerCriticalReview.status==='OWNER_NOT_REVIEWED'&&!('independentChallenge' in a)));
 });
-test('owner can draft source-backed provisional research without an outside challenger',()=>{
+test('owner may record provisional sourced decision without outside challenger',()=>{
  let d=structuredClone(data);
  d.applications[0].outcome.leading='Complete Response Letter';
+ d.applications[0].ownerCriticalReview.status='OWNER_NOT_REVIEWED';
  assert.equal(parseDeepMedicalSnapshot(d).applications[0].outcome.leading,'Complete Response Letter');
- d=structuredClone(data);d.applications[0].outcome.leading='Complete Response Letter';d.applications[0].outcome.sourceIds=[];
+ d=structuredClone(data);d.applications[0].outcome.leading='Complete Response Letter';
+ d.applications[0].outcome.sourceIds=[];
  assert.throws(()=>parseDeepMedicalSnapshot(d),/OWNER_PROVISIONAL_DECISION_NEEDS_CITED_EVIDENCE/);
  d=structuredClone(data);d.applications[0].ownerCriticalReview.status='EXTERNALLY_VERIFIED';
  assert.throws(()=>parseDeepMedicalSnapshot(d),/OWNER_REVIEW_STATUS_REQUIRED/);

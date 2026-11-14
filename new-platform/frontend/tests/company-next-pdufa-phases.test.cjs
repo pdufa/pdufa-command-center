@@ -45,8 +45,8 @@ test("clinical phase source is source-verified, nightly, read-only, and fail-clo
 });
 test("clinical registry phase snapshot remains linked by exact NCT, not ticker alone",()=>{
   assert.equal(roster.records.length,32);
-  assert.equal(evidence.summary.focusTrials,29); // archived registry coverage, not all current FOCUS
-  assert.equal(evidence.trials.length,29); // outdated source retained as a dated subset
+  assert.equal(evidence.summary.focusTrials,29);
+  assert.equal(evidence.trials.length,29);
   const byNct=new Map(roster.records.map(x=>[x.nct,x.ticker]));
   assert.equal(byNct.size,32);
   const seen=new Set();
@@ -59,5 +59,7 @@ test("clinical registry phase snapshot remains linked by exact NCT, not ticker a
     assert.equal(t.sourceStatus,"OFFICIAL_REGISTRY_RETRIEVED");
     seen.add(t.nct);
   }
+  const missing=roster.records.filter(r=>!seen.has(r.nct)).map(r=>r.nct).sort();
+  assert.deepEqual(missing,["NCT05031780","NCT06553768","NCT06747468"],"Preserve the dated 29-trial source cohort without pretending the three later additions were retrieved");
   assert.match(applications,/id:|\"id\":/);
 });

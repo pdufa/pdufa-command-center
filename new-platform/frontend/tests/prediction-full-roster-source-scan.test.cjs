@@ -49,8 +49,10 @@ test("production predictions page offers an explicit full-roster button without 
   assert.equal(scan.summary.independentlyCompletedScientificReviews,0);
   assert.equal(scan.summary.calibratedFDAForecasts,0);
   assert.equal(scan.summary.savedToDatabase,false);
-  assert.ok(scan.rows.every(row=>roster.records.some(r=>r.nct===row.nct&&r.ticker===row.ticker)),"29-trial archived scan cannot claim current 32-trial completeness");
-  assert.equal(roster.records.length-scan.rows.length,3);
+  const archivedNcts=new Set(scan.rows.map(row=>row.nct));
+  assert.equal(archivedNcts.size,29);
+  assert.ok(scan.rows.every(row=>roster.records.some(r=>r.nct===row.nct)));
+  assert.deepEqual(roster.records.filter(row=>!archivedNcts.has(row.nct)).map(row=>row.nct).sort(),["NCT05031780","NCT06553768","NCT06747468"],"Do not rewrite the historical 29-trial scan to claim retrieval of later additions");
   assert.ok(scan.rows.every(row=>row.tests.length===12&&row.prediction==="ABSTAIN"&&row.certainty==="NOT_VALIDATED"));
   assert.match(ui,/SOURCE_SCANNED/);
   assert.match(ui,/Review required · ABSTAIN/);
