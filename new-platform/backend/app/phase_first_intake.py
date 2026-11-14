@@ -71,6 +71,20 @@ def phase_first_intake(registry, *, cutoff, registry_checked):
                     "definitionStatus": "OBSERVED" if item.get("measure") and item.get("timeFrame") else "INCOMPLETE",
                     "scientificAdjudication": "NOT_ASSESSED",
                 })
+    endpoint_quality = {
+        "definitionCompleteness": (
+            "OBSERVED" if verified and endpoint_details and all(
+                item["definitionStatus"] == "OBSERVED" for item in endpoint_details
+            ) else "INCOMPLETE" if verified else "UNVERIFIED"
+        ),
+        "prespecification": "NOT_ASSESSED" if verified else "UNVERIFIED",
+        "clinicalRelevance": "NOT_ASSESSED" if verified else "UNVERIFIED",
+        "multiplicityControl": "NOT_ASSESSED" if verified else "UNVERIFIED",
+        "estimandAndAnalysisPlan": "NOT_ASSESSED" if verified else "UNVERIFIED",
+        "outcomeSuccess": "NOT_ASSESSED" if verified else "UNVERIFIED",
+        "score": None,
+        "reason": "Endpoint definition completeness is registry metadata, not scientific quality adjudication.",
+    }
     missing = ([name for name, state in evidence_inventory.items() if state == "MISSING"]
                if verified else ["Verified phase and chronological registry provenance"])
     return {
@@ -87,6 +101,7 @@ def phase_first_intake(registry, *, cutoff, registry_checked):
         "expectedEvidence": expected,
         "evidenceInventory": evidence_inventory,
         "endpointDefinitions": endpoint_details,
+        "endpointQuality": endpoint_quality,
         "notYetExpected": not_yet_expected,
         "missingEvidence": missing,
         "requiresSourceReview": [name for name, state in evidence_inventory.items() if state == "NOT_ASSESSED"],
