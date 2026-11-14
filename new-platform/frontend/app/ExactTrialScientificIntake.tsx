@@ -1,5 +1,5 @@
 "use client";
-import {useRef,useState} from "react";
+import {useEffect,useRef,useState} from "react";
 import ScientificStepsReadiness,{type PhaseFirstIntake} from "./ScientificStepsReadiness";
 
 const NCT=/^NCT\d{8}$/;
@@ -53,6 +53,10 @@ export function ExactTrialIntakeSelector({cohort,nctId}:{cohort:Cohort;nctId:str
  const [lookupStatus,setLookupStatus]=useState("");
  const [lookingUp,setLookingUp]=useState(false);
  const lookupSequence=useRef(0);
+ useEffect(()=>{
+  ++lookupSequence.current;
+  setIdentity("");setSelected("");setMatches([]);setLookupStatus("");setLookingUp(false);
+ },[nctId]);
  async function lookup(){
   const sequence=++lookupSequence.current;
   setSelected("");setIdentity("");setMatches([]);setLookupStatus("");
