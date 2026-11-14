@@ -82,6 +82,7 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
     for number, (name, criteria) in LEVELS.items():
         states = {}
         accepted = {}
+        rejection_reasons = {}
         for criterion in criteria:
             key = f"{number}.{criterion}"
             if not verified:
@@ -129,6 +130,23 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                     or not isinstance(record.get("evidenceExcerpt"), str)
                     or not record["evidenceExcerpt"].strip()):
                 states[criterion] = "REJECTED_EVIDENCE"
+                rejection_reasons[criterion] = (
+                    "INVALID_TRIAL_ID" if record.get("nctId") != trial_id else
+                    "INVALID_SOURCE_URL" if not _valid_url(url) else
+                    "SOURCE_TRIAL_MISMATCH" if not _source_matches_trial(url, trial_id) else
+                    "INVALID_CHRONOLOGY" if not source_day or not review_day
+                        or not source_day <= review_day <= cutoff else
+                    "INVALID_JUDGMENT" if record.get("judgment") not in {
+                        "SUPPORTS", "CONCERNS", "INCONCLUSIVE"
+                    } else
+                    "MISSING_RATIONALE" if not isinstance(record.get("rationale"), str)
+                        or not record["rationale"].strip() else
+                    "MISSING_REVIEWER" if not isinstance(record.get("reviewerId"), str)
+                        or not record["reviewerId"].strip() else
+                    "MISSING_DOCUMENT_TYPE" if not isinstance(record.get("documentType"), str)
+                        or not record["documentType"].strip() else
+                    "MISSING_EVIDENCE_EXCERPT"
+                )
                 continue
             states[criterion] = record["judgment"]
             accepted[criterion] = {
@@ -164,7 +182,8 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
             "criteria": states, "acceptedEvidence": accepted,
             "reviewReadiness": review_readiness,
             "reviewedCount": len(accepted), "requiredCount": len(required),
-            "rejectedCriteria": rejected, "unpublishedCriteria": unpublished,
+            "rejectedCriteria": rejected, "rejectionReasons": rejection_reasons,
+            "unpublishedCriteria": unpublished,
             "unverifiedUnpublishedCriteria": unverified_unpublished,
             "notYetExpectedCriteria": not_yet_expected,
             "score": None, "scientificValidation": "NOT_VERIFIED",
