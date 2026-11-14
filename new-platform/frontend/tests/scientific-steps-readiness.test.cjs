@@ -73,3 +73,8 @@ test("exact-NCT discovery refuses ambiguous automatic selection",()=>{
  assert.match(source,/if\(values\.length===1\)/);
  assert.match(source,/Multiple programs share this NCT/);
 });
+
+test("NCT discovery clears previously selected program before re-query",()=>{
+ const source=fs.readFileSync(path.join(app,"ExactTrialScientificIntake.tsx"),"utf8");
+ assert.match(source,/setSelected\(""\);setIdentity\(""\);setMatches\(\[\]\)/);
+});
