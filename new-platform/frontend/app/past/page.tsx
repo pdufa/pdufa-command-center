@@ -2,6 +2,7 @@
 import {useMemo,useState} from "react";
 import Link from "next/link";
 import ScientificStepsReadiness from "../ScientificStepsReadiness";
+import {ExactTrialIntakeSelector} from "../ExactTrialScientificIntake";
 import historical from "../../data/level4BlindAssessmentQueue20261112.json";
 import comparisons from "../../data/blindHistoricalComparisons2026.json";
 
@@ -12,6 +13,7 @@ export default function PastPage(){
  const [year,setYear]=useState("2026");
  const [search,setSearch]=useState("");
  const [reveal,setReveal]=useState(false);
+ const [verifiedNctByEvent,setVerifiedNctByEvent]=useState<Record<string,string>>({});
  const filtered=useMemo(()=>year==="2026"?rows.filter(r=>(r.ticker+" "+r.eventKey).toLowerCase().includes(search.toLowerCase())):[],[year,search]);
  return <main style={{maxWidth:1400,margin:"24px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif"}}>
  <nav style={{display:"flex",gap:14,marginBottom:16}}><Link href="/focus">FOCUS</Link><strong>PAST</strong><Link href="/pool">POOL</Link></nav>
@@ -29,7 +31,7 @@ export default function PastPage(){
  <thead style={{background:"#e6f2ea"}}><tr>{["Ticker","NCT / Trial","Company","FDA Special Designations","Market cap ($B)","FDA / PDUFA path","Sources","7 gate checks","PDUFA date (unverified queue date)","Assessment level","Score","Confidence","Blind prediction","FDA Decision Type","FDA Decision"].map(h=><th key={h} style={{textAlign:"left",padding:10,whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
  <tbody>{filtered.map((r,i)=>{const name=r.eventKey.split("|")[2]||"Not recorded";const verified=known.find(k=>k.ticker===r.ticker&&k.actualFdaActionDate===r.cutoffDate);
  return <tr key={r.eventKey} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
- <td style={{padding:9,fontWeight:700}}>{r.ticker}</td><td style={{padding:9}}>Not linked</td><td style={{padding:9}}>Not recorded</td><td style={{padding:9}}>Not verified</td><td style={{padding:9}}>—</td>
+ <td style={{padding:9,fontWeight:700}}>{r.ticker}</td><td style={{padding:9}}><details><summary>Not linked · verify exact NCT</summary><label style={{fontSize:12}}>Exact NCT <input aria-label={"Verified NCT for "+r.eventKey} value={verifiedNctByEvent[r.eventKey]??""} onChange={e=>setVerifiedNctByEvent(prev=>({...prev,[r.eventKey]:e.target.value.toUpperCase()}))} placeholder="NCT12345678" maxLength={11}/></label>{/^NCT\\d{8}$/.test(verifiedNctByEvent[r.eventKey]??"")?<ExactTrialIntakeSelector cohort="PAST" nctId={verifiedNctByEvent[r.eventKey]}/>:<p style={{fontSize:11}}>Exact historical trial linkage unverified; no intake displayed.</p>}</details></td><td style={{padding:9}}>Not recorded</td><td style={{padding:9}}>Not verified</td><td style={{padding:9}}>—</td>
  <td style={{padding:9}}>{name}</td><td style={{padding:9}}>Evidence pending</td><td style={{padding:9}}>Not assessed</td>
  <td style={{padding:9}}>{r.cutoffDate}</td><td style={{padding:9}}>Level 4 queued</td><td style={{padding:9}}>{r.level4Score??"Pending"}</td><td style={{padding:9}}>{r.confidence??"Pending"}</td><td style={{padding:9}}>{r.blindPrediction??"Pending"}</td>
  <td style={{padding:9}}>{!reveal?"Hidden":verified?verified.approvalType:"Not verified"}</td><td style={{padding:9}}>{!reveal?"Hidden":verified?verified.actualOutcome:"Not verified"}</td>
