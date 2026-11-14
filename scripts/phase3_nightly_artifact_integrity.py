@@ -20,6 +20,10 @@ import re
 import stat
 import sys
 
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts.phase3_qualification_ledger import GATES
+
 EXPECTED_TRIALS = 741
 EXPECTED_ISSUERS = 130
 GATE_SLOTS = EXPECTED_TRIALS * 9
@@ -182,8 +186,24 @@ def check_report_numbers(reports, csv_path, markdown_path):
         or len(pilot["issuers"]) != EXPECTED_ISSUERS):
         raise ValueError("SEC issuer source lists are incomplete")
 
-    if (score.get("gate_checks_pass") != EXPECTED_TRIALS
-        or score.get("gate_checks_review") != GATE_SLOTS - EXPECTED_TRIALS
+    # Registry changes remain unresolved qualification checks. Source retrieval
+    # coverage is a different numerator; never invent PASS to reach 741.
+    expected_registry_pass = 0
+    ledger_index = {r["nct_id"]: r for r in ledger["records"]}
+    for nct, original in registry_index.items():
+        phase3, matches = original.get("phase3_in_current_registry"), original.get("status_matches_dated_census")
+        if type(phase3) is not bool or type(matches) is not bool:
+            raise ValueError("Registry source change flags must be explicit booleans")
+        expected_state = "PASS" if phase3 and matches else "REVIEW"
+        expected_registry_pass += expected_state == "PASS"
+        gates = ledger_index[nct].get("gates")
+        if gates is not None and (not isinstance(gates, dict) or set(gates) != set(GATES)
+                or gates.get("registry_identity") != expected_state
+                or any(gates[g] != "REVIEW" for g in GATES if g != "registry_identity")):
+            raise ValueError("Ledger gates do not preserve registry changes or promote unverified qualification")
+
+    if (score.get("gate_checks_pass") != expected_registry_pass
+        or score.get("gate_checks_review") != GATE_SLOTS - expected_registry_pass
         or score.get("gate_checks_fail") != 0
         or score.get("rights_slots_with_submissions") != reviewed.get("distinct_review_slots_with_submissions")
         or score.get("rights_slots_without_submissions") != reviewed.get("review_slots_without_submissions")
@@ -268,9 +288,10 @@ def check_report_numbers(reports, csv_path, markdown_path):
         "registry_status_review_rows": EXPECTED_TRIALS,
         "registry_status_changed_vs_dated_census": status["registry_status_changed_since_saved_census"],
         "registry_posted_updates_older_than_365_days": status["original_source_posted_update_over_365_days"],
-        "verified_registry_identity_checks": EXPECTED_TRIALS,
+        "retrieved_registry_source_identities": EXPECTED_TRIALS,
+        "verified_registry_identity_checks": expected_registry_pass,
         "mandatory_gate_checks": GATE_SLOTS,
-        "unresolved_mandatory_gate_checks": GATE_SLOTS - EXPECTED_TRIALS,
+        "unresolved_mandatory_gate_checks": GATE_SLOTS - expected_registry_pass,
         "commercial_rights_review_slots": RIGHTS_SLOTS,
         "rights_slots_with_submissions": score["rights_slots_with_submissions"],
         "sec_issuer_indexes_fetched": score["sec_issuer_indexes_fetched"],

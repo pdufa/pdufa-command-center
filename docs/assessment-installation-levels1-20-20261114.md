@@ -203,3 +203,21 @@ These are registry source observations, not newly completed scientific reviews.
 The final broad local suite is **2,261 passed / 195 skipped / zero failures/errors**;
 82 targeted source-change regressions also passed after the stricter consistency
 checks. Final-head Actions must be checked separately after pushing this repair.
+
+The subsequent CI run 43640455033 reached the final 16-file artifact validator,
+which had its own hardcoded assumption of 741 registry PASS checks. Replaced that
+assumption with source-derived, boolean-validated counts and an explicit check
+that present ledger gates match the actual source state. All original file/hash,
+identity, denominator and zero-rights/qualification protections remain. Four new
+regressions reject inflated PASS totals, forged ledger promotion and invalid flag
+types, and accept a correctly disclosed unresolved source change. The combined
+artifact/source-change suite passes **34 tests**.
+
+Replayed all 16 actual files from that run unchanged. Integrity now reconciles
+741 retrieved registry identities, **732** verified registry gate checks,
+**5,937** unresolved checks out of 6,669, zero commercial rights verified and an
+unknown qualified-trial count. Receipt:
+`reports/test-verification/full-research-artifact-replay-20261114.json`.
+This correction reports uncertainty; it does not waive a source or scientific
+qualification requirement. The four new artifact regressions run in the broad PR
+pytest workflow; final-head CI counts supersede earlier committed check results.
