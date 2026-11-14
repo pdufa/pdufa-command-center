@@ -120,3 +120,12 @@ def test_registry_snapshot_checked_before_amendment_cannot_score():
     registry["last_update_posted"]["date"] = "2026-10-20"
     result = score_candidate(row, registry, reviews=reviews, today=TODAY, registry_checked="2026-10-19")
     assert result["models"]["PIPELINE"]["categories"][1]["coverage"] == 0
+
+
+def test_compact_assessment_retains_unverified_scientific_readiness():
+    row, registry, reviews = fixture()
+    result = score(row, registry, reviews)
+    summary = compact(result)
+    assert summary["scientificReadiness"] == result["scientificReadiness"]
+    assert summary["scientificReadiness"]["fdaPrediction"] == "ABSTAIN"
+    json.dumps(summary, allow_nan=False)
