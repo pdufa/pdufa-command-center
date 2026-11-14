@@ -5,14 +5,14 @@ const valid=(s:string)=>/^NCT\d{8}$/.test(s);
 type Entry={nct:string;level:number;status:string;detail:string};
 export default function AssessmentLauncher({source='FOCUS'}:{source?:'POOL'|'FOCUS'|'HISTORICAL'}){
  const [open,setOpen]=useState(false),[population,setPopulation]=useState(source),[scope,setScope]=useState('selected');
- const [input,setInput]=useState(''),[levels,setLevels]=useState<number[]>([1,2,3,4,5,6]);
+ const [input,setInput]=useState(''),[levels,setLevels]=useState<number[]>([1,2,3]);
  const [mode,setMode]=useState('CURRENT_EVIDENCE'),[cutoff,setCutoff]=useState(''),[entries,setEntries]=useState<Entry[]>([]);
  const [working,setWorking]=useState(false),[error,setError]=useState(''),[catalog,setCatalog]=useState<string[]>([]);
  useEffect(()=>{setPopulation(source)},[source]);
  const selected=Array.from(new Set(input.toUpperCase().split(/[\s,;]+/).filter(Boolean)));
  async function json(url:string,init?:RequestInit){const response=await fetch(url,{cache:'no-store',...init});const body=await response.json();if(!response.ok)throw Error(body.error||'Assessment service unavailable');return body;}
  async function load(){setError('');try{const data=await json(api+'?'+new URLSearchParams({population,q:''}));setCatalog((data.trials||[]).map((r:{nct:string})=>r.nct));if((data.trials||[]).length>=50)setError('The inventory API returns at most 50 trials. Entire-list submission is blocked until paginated inventory is available; no partial list will be treated as complete.');}catch(e){setError(String(e));}}
- function clearPopup(){if(working)return;setInput('');setScope('selected');setLevels([1,2,3,4,5,6]);setMode('CURRENT_EVIDENCE');setCutoff('');setEntries([]);setCatalog([]);setError('');setPopulation(source);}
+ function clearPopup(){if(working)return;setInput('');setScope('selected');setLevels([1,2,3]);setMode('CURRENT_EVIDENCE');setCutoff('');setEntries([]);setCatalog([]);setError('');setPopulation(source);}
  async function submit(){if(working)return;const ids=scope==='all'?catalog:selected;if(!ids.length||ids.some(id=>!valid(id))||!levels.length||(mode==='BLIND_HISTORICAL'&&!cutoff)||(scope==='all'&&catalog.length>=50))return;
  setWorking(true);setError('');const work=ids.flatMap(nct=>levels.map(level=>({nct,level,status:'QUEUED',detail:''})));setEntries(work);
  for(let i=0;i<work.length;i++){const task=work[i];const update=(status:string,detail:string)=>setEntries(prev=>prev.map((e,j)=>i===j?{...e,status,detail}:e));
