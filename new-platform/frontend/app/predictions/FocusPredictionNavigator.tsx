@@ -112,7 +112,7 @@ export default function FocusPredictionNavigator(){
         <div>
           <span>Roster-reported filing status</span>
           <strong>{formatStatus(selectedTrial.fdaStatus)}</strong>
-          <small>This entry is a dated source pointer, not independently verified FDA acceptance.</small>
+          <small>This entry is a dated source pointer, not yet checked against current FDA acceptance by the owner.</small>
         </div>
         <div>
           <span>Recorded PDUFA decision date</span>
@@ -129,7 +129,7 @@ export default function FocusPredictionNavigator(){
         </article>)}
       </div>
       <div className={styles.certainty}>
-        <div><strong>Independent certainty rating</strong><span>NOT VALIDATED</span></div>
+        <div><strong>Owner-model certainty</strong><span>NOT VALIDATED</span></div>
         <p>Clinical source review, saved research history, and out-of-time FDA outcome calibration have not passed release requirements. These are status labels, not numerical predictions.</p>
       </div>
       <div className={styles.sources}>
@@ -140,7 +140,7 @@ export default function FocusPredictionNavigator(){
       </div>
     </div>}
     <p className={styles.footerNote}>
-      This navigator uses the dated FOCUS roster, not independently qualified live FDA applications. A visible trial is not a validated approval prediction.
+      This navigator uses the dated FOCUS roster, not owner-confirmed live FDA applications. A visible trial is not a validated approval prediction.
     </p>
   </section>;
 }
