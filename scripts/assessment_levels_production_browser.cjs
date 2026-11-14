@@ -28,6 +28,11 @@ function check(ok,code){if(!ok){const e=Error(code);e.checkId=code;throw e;}}
   phase='OWNER_LOGIN';const auth=await context.request.post(BASE+'/api/auth',{headers:{Origin:BASE},data:{password:process.env.DASHBOARD_PASSWORD}});check(auth.ok(),'OWNER_LOGIN_FAILED');
   phase='NAVIGATING_TO_ASSESSMENTS';page=await context.newPage();page.on('pageerror',e=>{result.browserErrors=(result.browserErrors||[]).concat({name:e.name,code:(e.message.match(/Minified React error #\d+/)||['UNCLASSIFIED_JS_ERROR'])[0]});});const navigation=await page.goto(BASE+'/predictions/assessment?nct='+NCT,{waitUntil:'domcontentloaded',timeout:60000});result.navigationStatus=navigation?.status();phase='LOCATING_WORKBENCH';
   const workbench=page.getByRole('region',{name:'Assessment workbench'});await workbench.waitFor({timeout:45000});
+  async function waitForHistoryIdle(){
+   await page.waitForFunction(()=>document.querySelector('section[aria-label="Assessment workbench"]')?.getAttribute('aria-busy')==='false',{},{timeout:30000});
+   check(await workbench.getByRole('alert').count()===0,'SAVED_HISTORY_RELOAD_FAILED');
+  }
+
   phase='WAITING_FOR_CLIENT_READY';await page.waitForFunction(()=>document.querySelector('section[aria-label="Assessment workbench"]')?.getAttribute('data-assessment-ready')==='true',{},{timeout:60000});
   phase='EXACT_NCT_CONTROL';check(await workbench.getByLabel('Exact NCT identifier',{exact:true}).inputValue()===NCT,'EXACT_TRIAL_SELECTION');
   for(let level=1;level<=6;level++){
@@ -40,7 +45,7 @@ function check(ok,code){if(!ok){const e=Error(code);e.checkId=code;throw e;}}
    phase='LEVEL_'+level+'_SELECTING_CONTROL';await workbench.getByLabel('Assessment level',{exact:true}).selectOption(String(level));
    if(existing){
     await workbench.getByRole('button',{name:'Load saved assessment history',exact:true}).click();
-    await workbench.getByText(/persisted assessment version\(s\) loaded/).waitFor({timeout:30000});
+    await workbench.getByText(/persisted assessment version\(s\) loaded/).waitFor({timeout:30000});await waitForHistoryIdle();
     const boxes=workbench.getByRole('checkbox');
     for(const box of await boxes.all())if(await box.isChecked())await box.uncheck();
     await workbench.getByLabel(`Level ${level} · ${existing.executedAt} · ${existing.mode} · ${existing.engineVersion}`,{exact:true}).check();
@@ -69,8 +74,8 @@ function check(ok,code){if(!ok){const e=Error(code);e.checkId=code;throw e;}}
    phase='LEVEL_'+level+'_VERIFYING_DISPLAY';await workbench.getByRole('article',{name:`Level ${level} saved assessment`,exact:true}).waitFor({timeout:30000});
   }
   phase='COMPARING_SAVED_RESULTS';await workbench.getByRole('button',{name:'Load saved assessment history',exact:true}).click();
-  await workbench.getByText(/persisted assessment version\(s\) loaded/).waitFor({timeout:30000});
-  check(await workbench.locator('article').count()>=1,'SAVED_RESULT_DISPLAY');
+  await workbench.getByText(/persisted assessment version\(s\) loaded/).waitFor({timeout:30000});await waitForHistoryIdle();
+  check(await workbench.locator('article').count()===2,'SAVED_RESULT_SIDE_BY_SIDE_DISPLAY');
   // The repository's established historical test record has retained original
   // stream receipts. Use them only if genuinely captured by this past cutoff.
   phase='HISTORICAL_EXECUTION';result.historicalRuns=[];
@@ -86,7 +91,7 @@ function check(ok,code){if(!ok){const e=Error(code);e.checkId=code;throw e;}}
    let report;
    if(existing){
     await workbench.getByRole('button',{name:'Load saved assessment history',exact:true}).click();
-    await workbench.getByText(/persisted assessment version\(s\) loaded/).waitFor({timeout:30000});
+    await workbench.getByText(/persisted assessment version\(s\) loaded/).waitFor({timeout:30000});await waitForHistoryIdle();
     for(const box of await workbench.getByRole('checkbox').all())if(await box.isChecked())await box.uncheck();
     await workbench.getByLabel(`Level ${level} · ${existing.executedAt} · ${existing.mode} · ${existing.engineVersion}`,{exact:true}).check();
     const response=await context.request.get(BASE+'/api/assessments/runtime?nct='+HIST+'&runId='+existing.runId);
