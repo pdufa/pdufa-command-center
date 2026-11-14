@@ -406,3 +406,74 @@ The Level 5 SAP/statistical chronology is **not** presumed to be the same as
 ORCA-2's merely because the drug, trial sponsor and primary outcome are similar.
 No FDA prediction, score, signed review or blinded retrospective analysis
 is generated from either article.
+
+
+## Third evidence-detailed trial — MAPLE-HCM (NCT05767346), distinct disease and continuous outcome
+
+**Phase-first research only; no source signed, no independent assessment, no score
+or FDA prediction.** MAPLE-HCM is Cytokinetics' Phase 3 aficamten-versus-
+metoprolol double-blind, double-dummy, **active-comparator** study in
+symptomatic obstructive hypertrophic cardiomyopathy. It is NOT SEQUOIA-HCM
+and must not inherit another NCT's evidence.
+
+**Original peer-reviewed abstract**:
+[NEJM, Garcia-Pavia et al., posted August 30, 2025,
+doi:10.1056/NEJMoa2504654](https://www.nejm.org/doi/10.1056/NEJMoa2504654)
+(PubMed PMID 40888697). The study reports 175 randomized patients,
+88 aficamten and 87 metoprolol, each with matching placebo, treated
+over 24 weeks. Its **primary endpoint is a continuous exercise-capacity
+measure**, not a binary abstinence or response rate:
+
+| NEJM abstract, week 24 peak oxygen uptake change | Reported value (mL/kg/min) |
+| --- | --- |
+| Aficamten mean change | +1.1 (95% CI +0.5 to +1.7) |
+| Metoprolol mean change | −1.2 (95% CI −1.7 to −0.8) |
+| Adjusted between-group difference | +2.3 (95% CI +1.5 to +3.1), P<0.001 |
+
+**Secondary cardiology-society synopsis (not original publisher's full
+tables):** [American College of Cardiology trial summary,
+posted September 24, 2025; updated November 9,
+2025](https://www.acc.org/latest-in-cardiology/clinical-trials/2025/09/23/17/49/maple-hcm).
+The ACC reports between-group improvements in NYHA class (+25 percentage
+points), KCCQ-CSS (+6.9 points), Valsalva LVOT gradient (−34.9 mm Hg),
+NT-proBNP proportional change (ratio 0.19) and left atrial volume index
+(−7.0 mL/m²). Its left ventricular mass index comparison was −4.9 g/m²
+(95% CI −11.7 to 2.0; P=0.16), **not a reported significant improvement**.
+Every estimate retains its **own unit, source role and endpoint type**.
+
+ACC also summarizes serious adverse events in **7/88 aficamten** versus
+**6/87 metoprolol** recipients, adverse events requiring dose reduction
+in 1 versus 4 participants, and a mean between-arm LVEF change of −4.2
+percentage points (95% CI −5.3 to −3.1). One death was reported in the
+aficamten arm. These published observations require specialist safety review;
+they do not justify asserting causal attribution or long-term safety.
+
+**Original-source gaps requiring review:** exact full NEJM tables and
+supplements, registered protocol and SAP version sequence, prespecified
+endpoint hierarchy and multiplicity, CPET missingness, dose titration,
+withdrawal from previous beta blockers, arrhythmia/LVEF exclusion criteria,
+LVEF monitoring and recovery, longer-term durability, adverse-event
+case evidence, exact application-cycle mapping, and authenticated source
+provenance. Neither the 175-person sample nor 24 weeks establishes
+mortality benefit or long-term safety.
+
+The source-separated, unit-aware record is
+`reports/scientific-levels1-6/maple-hcm-source-review-20261114.json`.
+It is validated by `scripts/medical/level16_maple_hcm_publication_review.py`
+and imported into **Levels 3, 4 and 6 only** of
+`scripts/medical/level16_review_handoff.py`.
+Level 5 original statistical plan is still unreviewed; do not infer one from
+other myosin inhibitor studies. The exact 32-NCT cohort and provisional
+application crosswalk are unchanged. The offline handoff bundle now hashes
+**seven** source metadata snapshots; hash equality means only local research
+snapshot consistency.
+
+```powershell
+python -m unittest discover -s tests -p "test_level16_maple_hcm_publication_review.py" -v
+python scripts/medical/level16_maple_hcm_publication_review.py
+python scripts/medical/level16_review_handoff.py --nct NCT05767346 --format markdown
+```
+
+No human reviewer, original-source attestor or application-cycle verifier has
+been authorized by these commands. No deployment, scoring, clinical
+adjudication or FDA prediction should result from running them.
