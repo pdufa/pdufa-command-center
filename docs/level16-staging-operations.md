@@ -1,5 +1,18 @@
 # Isolated staging operations — review only, no deployment authorization
 
+> **ARCHIVED EXTERNAL-REVIEW DESIGN — NOT AN ACTIVE REQUIREMENT (owner decision, November 13, 2026).**
+> All outside clinical, statistical, source-attestation, challenger, regulatory,
+> qualification and multi-person adjudication gates described below were
+> **withdrawn for owner assessments at Levels 1–20**. The owner alone checks
+> and accepts results. The former five-person/A01–A14 reviewer scheme and
+> its old synthetic tests are historical/disabled engineering, not owner
+> work blockers. Use `AGENTS.md` (top directive),
+> `infra/assessment/sole-owner-levels1-20.json` and
+> `docs/level16-sole-owner-operation.md` for active policy.
+> Existing security, evidence honesty, cutoff and deployment controls remain.
+> No external review has been falsely recorded as completed.
+
+
 ## Scope and templates
 
 `infra/level16-staging/render.yaml.example` is a separate private service/database
