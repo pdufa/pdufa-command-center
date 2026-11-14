@@ -223,3 +223,45 @@ Tests cover 32-trial invariants, changed registry hashes, changed phases
 and status, version rollback, snapshot cutoff, metadata mismatch under an
 unchanged digest, false source authentication, forged FDA outcomes and
 absence of network/production writes. These are software checks only.
+
+## Seventh engineering slice — change triage connected to manual reviewer worklist
+
+The offline-only command `scripts/medical/level16_change_review_worklist.py`
+now joins the **existing** registry-change detector to the frozen 32-trial,
+192-level unsigned scientific handoff. It recomputes the handoff from
+committed source snapshots and checks the packet digest, before accepting a
+separately captured *unreviewed* candidate research snapshot.
+
+For each trial, the JSON output identifies the affected Levels 1–6,
+unchanged-versus-new registry evidence, and the exact source-review
+questions from the original handoff. A newer source byte digest triggers
+all six levels. Phase and endpoint changes remain explicit review reasons.
+Absent changes do NOT mean scientific adequacy or completed reviews.
+
+To inspect this research worklist from a local checkout:
+
+```powershell
+python scripts/medical/level16_change_review_worklist.py --candidate reports/scientific-levels1-6/focus-source-research-20261114.json > focus-level1-6-change-worklist.json
+```
+
+The example compares the frozen baseline against itself and should show
+no new changes. To detect real changes, first obtain a *new independent
+point-in-time* source snapshot and pass it as `--candidate`.
+No active source worker or nightly scan is installed by this feature.
+
+**Trust and security boundaries:** this is an unsigned, offline worklist.
+It cannot authenticate source bytes or reviewer identity, modify the
+append-only protected review store, invalidate an already approved
+scientific conclusion, activate staging, queue a background job,
+or produce a score or FDA probability. A human reviewer must determine
+how new evidence affects old conclusions. A live, transactional
+reassessment workflow remains owner-approval gated (A01–A14).
+
+```powershell
+python -m unittest discover -s tests -p "test_level16_change_review_worklist.py" -v
+python scripts/audit_raas_retirement.py --check
+```
+
+Tests verify all 32 NCTs and 192 levels, ORCA-2 and unmapped trial
+handling, phase changes, altered source digests, cutoff/identity
+rejections, and no fake signoff, reviewer activation or live writes.
