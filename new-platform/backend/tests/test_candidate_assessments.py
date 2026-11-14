@@ -268,3 +268,26 @@ def test_level_one_partial_endpoint_definition_is_not_accepted():
     intake = score(row, registry, reviews)["levelOneIntake"]
     assert intake["endpointDefinitions"][0]["definitionStatus"] == "INCOMPLETE"
     assert intake["evidenceInventory"]["primary endpoint definition"] == "MISSING"
+
+
+def test_level_one_endpoint_quality_requires_independent_adjudication():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["definitionCompleteness"] == "OBSERVED"
+    assert quality["prespecification"] == "NOT_ASSESSED"
+    assert quality["clinicalRelevance"] == "NOT_ASSESSED"
+    assert quality["multiplicityControl"] == "NOT_ASSESSED"
+    assert quality["estimandAndAnalysisPlan"] == "NOT_ASSESSED"
+    assert quality["outcomeSuccess"] == "NOT_ASSESSED"
+    assert quality["score"] is None
+
+
+def test_level_one_endpoint_quality_blocks_unverified_registry():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["last_update_posted"]["date"] = "2026-10-21"
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["definitionCompleteness"] == "UNVERIFIED"
+    assert quality["prespecification"] == "UNVERIFIED"
+    assert quality["score"] is None
