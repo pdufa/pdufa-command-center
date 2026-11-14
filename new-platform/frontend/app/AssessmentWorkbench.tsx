@@ -42,7 +42,7 @@ export default function AssessmentWorkbench({selectedNct}:{selectedNct?:string})
     if(revision!==selectionRevision.current)return;
     setMessage(state.progress.map((p:{stage:string;at:string})=>human(p.stage)+' · '+p.at).join(' → '));
     if(state.status==='FAILED')throw Error(state.error||'Assessment failed; no completed result saved');
-    if(state.status==='COMPLETED'&&state.report){const report=state.report as Report;if(report.nct!==requestedNct)throw Error('Assessment result NCT mismatch; result withheld.');setRuns(current=>[report,...current.filter(r=>r.nct===requestedNct&&r.runId!==report.runId)]);setSelected(current=>[report.runId,...current.filter(id=>id!==report.runId)].slice(0,2));setMessage('Completed: immutable result saved and retrieved from the backend.');return;}
+    if(state.status==='COMPLETED'&&state.report){const report=state.report as Report;if(report.nct!==requestedNct||report.level!==level||report.mode!==mode||(mode==='BLIND_HISTORICAL'&&report.cutoffDate!==cutoff))throw Error('Assessment result identity, level, mode or historical cutoff mismatch; result withheld.');setRuns(current=>[report,...current.filter(r=>r.nct===requestedNct&&r.runId!==report.runId)]);setSelected(current=>[report.runId,...current.filter(id=>id!==report.runId)].slice(0,2));setMessage('Completed: immutable result saved and retrieved from the backend.');return;}
     await new Promise<void>((resolve,reject)=>{const abort=()=>{clearTimeout(timer);reject(Error('Assessment display closed'));};const timer=setTimeout(()=>{signal.removeEventListener('abort',abort);resolve();},1200);signal.addEventListener('abort',abort,{once:true});});
    }
    throw Error('Execution has not confirmed completion. Load saved history before retrying.');
