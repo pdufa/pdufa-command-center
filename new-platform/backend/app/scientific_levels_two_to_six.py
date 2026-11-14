@@ -119,6 +119,18 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                 states[criterion] = "REJECTED_EVIDENCE"
                 rejection_reasons[criterion] = "SOURCE_NOT_VERIFIED"
                 continue
+            # Self-reported sourceVerified is not sufficient provenance.
+            # Require an identified verification actor, method, and timestamp.
+            verification_day = _day(record.get("sourceVerifiedAt"))
+            verification_actor = record.get("sourceVerifiedBy")
+            verification_method = record.get("sourceVerificationMethod")
+            if (not verification_day or verification_day > cutoff
+                    or not isinstance(verification_actor, str)
+                    or not verification_actor.strip()
+                    or verification_method not in {"DIRECT_DOCUMENT_REVIEW", "REGISTRY_RECORD_REVIEW"}):
+                states[criterion] = "REJECTED_EVIDENCE"
+                rejection_reasons[criterion] = "SOURCE_VERIFICATION_PROVENANCE_MISSING"
+                continue
             source_day = _day(record.get("sourceDate"))
             review_day = _day(record.get("reviewedAt"))
             url = record.get("source")
@@ -162,6 +174,9 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                 "reviewerId": record["reviewerId"],
                 "documentType": record["documentType"],
                 "sourceVerified": True,
+                "sourceVerifiedAt": verification_day.isoformat(),
+                "sourceVerifiedBy": verification_actor,
+                "sourceVerificationMethod": verification_method,
                 "evidenceExcerpt": record["evidenceExcerpt"],
             }
         required = [c for c in criteria if states[c] != "NOT_YET_EXPECTED"]
