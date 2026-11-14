@@ -1,5 +1,5 @@
 "use client";
-import {useState} from "react";
+import {useRef,useState} from "react";
 import ScientificStepsReadiness,{type PhaseFirstIntake} from "./ScientificStepsReadiness";
 
 const NCT=/^NCT\d{8}$/;
@@ -52,7 +52,9 @@ export function ExactTrialIntakeSelector({cohort,nctId}:{cohort:Cohort;nctId:str
  const [matches,setMatches]=useState<string[]>([]);
  const [lookupStatus,setLookupStatus]=useState("");
  const [lookingUp,setLookingUp]=useState(false);
+ const lookupSequence=useRef(0);
  async function lookup(){
+  const sequence=++lookupSequence.current;
   setSelected("");setIdentity("");setMatches([]);setLookupStatus("");
   if(!NCT.test(nctId)){setLookupStatus("Exact NCT required.");return;}
   setLookingUp(true);
@@ -60,6 +62,7 @@ export function ExactTrialIntakeSelector({cohort,nctId}:{cohort:Cohort;nctId:str
    const response=await fetch("/api/assessments",{cache:"no-store"});
    if(!response.ok)throw Error("Assessment index unavailable or sign-in required.");
    const raw:unknown=await response.json();
+   if(sequence!==lookupSequence.current)return;
    if(!raw||typeof raw!=="object"||Array.isArray(raw))throw Error("Invalid assessment index.");
    const data=raw as {status?:unknown;exactNctProgramMap?:unknown};
    if(data.status!=="COMPLETE"||!data.exactNctProgramMap||typeof data.exactNctProgramMap!=="object"||Array.isArray(data.exactNctProgramMap))
@@ -71,8 +74,8 @@ export function ExactTrialIntakeSelector({cohort,nctId}:{cohort:Cohort;nctId:str
    setMatches(values as string[]);
    if(values.length===1){setIdentity(values[0]);setSelected(values[0]);setLookupStatus("Unique NCT-linked program found; review evidence below.");}
    else setLookupStatus("Multiple programs share this NCT. Select the correct program.");
-  }catch(e){setLookupStatus(e instanceof Error?e.message:"Identity lookup unavailable.");}
-  finally{setLookingUp(false);}
+  }catch(e){if(sequence===lookupSequence.current)setLookupStatus(e instanceof Error?e.message:"Identity lookup unavailable.");}
+  finally{if(sequence===lookupSequence.current)setLookingUp(false);}
  }
 
  return <div style={{marginTop:8}}>
