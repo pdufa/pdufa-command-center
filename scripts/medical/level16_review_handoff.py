@@ -176,7 +176,18 @@ def build(coverage, roster, application_crosswalk, chronology):
             or chronology.get("status") != "PUBLIC_SOURCE_CHRONOLOGY_ONLY_NOT_SCIENTIFICALLY_ADJUDICATED"
             or chronology.get("finalSapPrespecificationRelativeToUnblinding") != "UNRESOLVED"
             or chronology.get("scientificReviewStatus") != "NOT_ADJUDICATED"
-            or chronology.get("fdaPredictionPermitted") is not False):
+            or chronology.get("fdaPredictionPermitted") is not False
+            or chronology.get("sourceIndependentlyAuthenticated") is not False
+            or chronology.get("statisticalDeficiencyEstablished") is not False
+            or chronology.get("databaseLockDateVerified") is not False
+            or chronology.get("unblindingDateVerified") is not False
+            or chronology.get("approvalProbability") is not None
+            or chronology.get("fdaOutcomeJudgment") is not None
+            or chronology.get("sourceEventCount") != 4
+            or chronology.get("protocolVersionPredatesRegistryPrimaryCompletion") is not True
+            or chronology.get("preCompletionProtocolExplicitlyMentionsPrimaryHochberg") is not True
+            or chronology.get("sapVersionDateAfterRegistryPrimaryCompletion") is not True
+            or chronology.get("sapExplainsBonferroniForPowerAndHochbergForPrimaryTesting") is not True):
         raise ValueError("ORCA-2 original-source chronology is unreviewed or mismatched")
     rows = []
     for nct, row in trials.items():
