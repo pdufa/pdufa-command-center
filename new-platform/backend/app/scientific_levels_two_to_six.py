@@ -72,8 +72,17 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
     phase = level_one.get("phase")
     cutoff = _day(level_one.get("assessmentCutoff"))
     verified = (level_one.get("executionStatus") == "INTAKE_ONLY"
-                and bool(trial_id) and bool(cutoff)
-                and level_one.get("phase") is not None)
+                and level_one.get("scientificValidation") == "NOT_VERIFIED"
+                and level_one.get("fdaPrediction") == "ABSTAIN"
+                and isinstance(trial_id, str) and len(trial_id) == 11
+                and trial_id.startswith("NCT") and trial_id[3:].isdigit()
+                and bool(cutoff)
+                and phase in {"EARLY_PHASE1", "PHASE1", "PHASE2", "PHASE3", "PHASE4"}
+                and level_one.get("trialStatus") in {
+                    "NOT_YET_RECRUITING", "RECRUITING", "ENROLLING_BY_INVITATION",
+                    "ACTIVE_NOT_RECRUITING", "SUSPENDED", "TERMINATED",
+                    "COMPLETED", "WITHDRAWN",
+                })
     early = phase in {"EARLY_PHASE1", "PHASE1"}
     pre_application = phase in {"EARLY_PHASE1", "PHASE1", "PHASE2"}
     results = {}
