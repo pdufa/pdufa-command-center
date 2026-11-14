@@ -115,8 +115,10 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
     def reviewed(key, name, weight, age=90): return grade(key, name, weight, reviews, today, max_age=age)
     outcome = facts.get("primaryOutcome")
     clinical_date, clinical_check = facts.get("resultsDate", ""), row.get("lastChecked", "")
-    fresh = bool(day(clinical_check) and 0 <= (today - day(clinical_check)).days <= 90 and day(clinical_date)
-                 and day(clinical_date) <= today and "CONFLICTING" not in facts.get("evidence", []))
+    checked_on, outcome_on = day(clinical_check), day(clinical_date)
+    fresh = bool(checked_on and outcome_on and outcome_on <= checked_on <= today
+                 and (today - checked_on).days <= 90
+                 and "CONFLICTING" not in facts.get("evidence", []))
     primary = measure("primaryOutcome", "Adjudicated primary endpoint", 10, outcome,
                       fraction=(1 if outcome == "SUCCESS" else 0) if outcome in {"SUCCESS", "FAILED"} and fresh else None,
                       source=row.get("phase3Source", ""), checked=clinical_check, source_date=clinical_date,
