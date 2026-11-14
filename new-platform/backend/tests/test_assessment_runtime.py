@@ -158,3 +158,23 @@ def test_first_history_read_is_empty_and_does_not_create_tables():
         with pytest.raises(HTTPException) as error:r.status(e,'NCT04576949',str(uuid4()))
         assert error.value.status_code==404
     finally:e.dispose()
+
+def test_three_levels_share_exact_source_identity_and_persist_distinct_reports(engine):
+    """Exercise the real backend engines and database, not a mocked HTTP report."""
+    source=snapshot()
+    for level in (1,2,3):
+        q=request(level)
+        run=r.create(engine,q)
+        r.execute(engine,run,lambda nct: source if nct==q.nct else pytest.fail('Wrong trial source requested'))
+        state=r.status(engine,q.nct,run)
+        assert state['status']=='COMPLETED'
+        report=state['report']
+        assert report['nct']==q.nct and report['level']==level
+        assert report['evidence']['input_sha256']==source['input_sha256']
+        assert report['evidence']['source_url'].endswith(q.nct)
+        assert report['fdaPrediction']['outcome']=='ABSTAIN'
+    versions=r.history(engine,'NCT04576949')['runs']
+    assert {v['level'] for v in versions}=={1,2,3}
+    assert len({v['runId'] for v in versions})==3
+    assert all(v['reportHash'] and v['evidence']['input_sha256']==source['input_sha256'] for v in versions)
+    assert r.history(engine,'NCT00000001')['runs']==[]
