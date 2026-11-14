@@ -66,6 +66,9 @@ def exact_nct_program_map(rows):
     for row in rows.values():
         nct = nct_id(row)
         identity = row.get("id")
+        embedded = set(re.findall(r"(?<![A-Za-z0-9])NCT[0-9]{8}(?![A-Za-z0-9])", str(identity or "")))
+        if embedded and (len(embedded) != 1 or nct not in embedded):
+            continue  # Conflicting exact identifiers must not produce a selectable program mapping.
         if isinstance(nct, str) and re.fullmatch(r"NCT[0-9]{8}", nct) and isinstance(identity, str) and identity:
             mapping.setdefault(nct, set()).add(identity)
     return {nct: sorted(identities) for nct, identities in sorted(mapping.items())}
