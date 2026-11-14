@@ -766,3 +766,20 @@ def test_level_one_ambiguous_combined_phase_does_not_infer_phase():
     intake = score(row, registry, reviews)["levelOneIntake"]
     assert intake["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
     assert intake["phase"] is None
+
+
+def test_level_one_phase_evidence_and_endpoint_assessment_survive_compact_payload():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE2"]
+    result = score(row, registry, reviews)
+    payload = compact(result)
+    level = payload["levelOneIntake"]
+    assert level["phase"] == "PHASE2"
+    assert level["trialStatus"] == "COMPLETED"
+    assert level["evidenceInventory"]["primary endpoint definition"] == "OBSERVED"
+    assert "completed Phase 3 results" in level["notYetExpected"]
+    assert level["endpointQuality"]["definitionCompleteness"] == "OBSERVED"
+    assert level["endpointQuality"]["scientificScoreStatus"] == "NOT_VALIDATED"
+    assert level["fdaPrediction"] == "ABSTAIN"
+    assert payload["scientificReadiness"]["status"] == "NOT_VERIFIED"
+    json.dumps(payload, allow_nan=False)
