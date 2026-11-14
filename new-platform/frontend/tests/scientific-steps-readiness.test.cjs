@@ -134,3 +134,13 @@ test("PAST comparison outcomes remain labeled unverified and separate from blind
  assert.match(source,/ticker and date, not by source-verified FDA event identity/);
  assert.match(source,/!reveal\?"Hidden"/);
 });
+
+
+test("exact-trial intake discards stale evidence after program or NCT changes",()=>{
+ const source=fs.readFileSync(path.join(app,"ExactTrialScientificIntake.tsx"),"utf8");
+ assert.match(source,/const requestSequence=useRef\(0\)/);
+ assert.match(source,/useEffect\(\(\)=>\(\)=>\{\+\+requestSequence\.current;\},\[nctId,programIdentity\]\)/);
+ assert.match(source,/const sequence=\+\+requestSequence\.current/);
+ assert.match(source,/if\(sequence===requestSequence\.current\)setIntake/);
+ assert.match(source,/if\(sequence===requestSequence\.current\)setError/);
+});
