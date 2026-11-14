@@ -1,3 +1,4 @@
+import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
 "use client";
 import {useMemo,useState} from "react";
 import Link from "next/link";
@@ -30,14 +31,14 @@ export default function PastPage(){
  <p><strong>{filtered.length}</strong> queued historical records for {year}. {year!=="2026"?"Historical cohort not imported for this year.":""}</p>
  <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
  <table style={{borderCollapse:"collapse",minWidth:1650,width:"100%",fontSize:13}}>
- <thead style={{background:"#e6f2ea"}}><tr>{["Ticker","NCT / Trial","Company","FDA Special Designations","Market cap ($B)","FDA / PDUFA path","Sources","7 gate checks","PDUFA date (unverified queue date)","Assessment level","Score","Confidence","Blind prediction","FDA Decision Type","FDA Decision"].map(h=><th key={h} style={{textAlign:"left",padding:10,whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
+ <thead style={{background:"#e6f2ea"}}><tr>{["Ticker","NCT / Trial","Company","FDA Special Designations","Market cap ($B)","FDA / PDUFA path","Sources","7 gate checks","PDUFA date (unverified queue date)","Assessment level","Score","Confidence","Blind prediction","FDA Decision Type","FDA Decision","PDUFA prediction","Prediction accuracy"].map(h=><th key={h} style={{textAlign:"left",padding:10,whiteSpace:"nowrap"}}>{h}</th>)}</tr></thead>
  <tbody>{filtered.map((r,i)=>{const name=r.eventKey.split("|")[2]||"Not recorded";const candidates=known.filter(k=>k.ticker===r.ticker&&k.actualFdaActionDate===r.cutoffDate);const tentative=candidates.length===1?candidates[0]:null;const comparisonLabel=candidates.length>1?"Ambiguous historical matches":candidates.length===1?"Unverified match: ":"Not verified";
  return <tr key={r.eventKey} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
  <td style={{padding:9,fontWeight:700}}>{r.ticker}</td><td style={{padding:9}}><details><summary>Not linked · enter candidate NCT</summary><label style={{fontSize:12}}>Exact NCT <input aria-label={"Candidate NCT for "+r.eventKey} value={verifiedNctByEvent[r.eventKey]??""} onChange={e=>setVerifiedNctByEvent(prev=>({...prev,[r.eventKey]:e.target.value.toUpperCase()}))} placeholder="NCT12345678" maxLength={11}/></label>{/^NCT\d{8}$/.test(verifiedNctByEvent[r.eventKey]??"")?<ExactTrialIntakeSelector cohort="PAST" nctId={verifiedNctByEvent[r.eventKey]}/>:<p style={{fontSize:11}}>Historical event-to-NCT linkage remains unverified; no intake displayed.</p>}</details></td><td style={{padding:9}}>Not recorded</td><td style={{padding:9}}>Not verified</td><td style={{padding:9}}>—</td>
  <td style={{padding:9}}>{name}</td><td style={{padding:9}}>Evidence pending</td><td style={{padding:9}}>Not assessed</td>
  <td style={{padding:9}}>{r.cutoffDate}</td><td style={{padding:9}}>Level 4 queued</td><td style={{padding:9}}>{r.level4Score??"Pending"}</td><td style={{padding:9}}>{r.confidence??"Pending"}</td><td style={{padding:9}}>{r.blindPrediction??"Pending"}</td>
- <td style={{padding:9}}>{!reveal?"Hidden":tentative?comparisonLabel+tentative.approvalType:comparisonLabel}</td><td style={{padding:9}}>{!reveal?"Hidden":tentative?comparisonLabel+tentative.actualOutcome:comparisonLabel}</td>
+ <td style={{padding:9}}>{!reveal?"Hidden":tentative?comparisonLabel+tentative.approvalType:comparisonLabel}</td><td style={{padding:9}}>{!reveal?"Hidden":tentative?comparisonLabel+tentative.actualOutcome:comparisonLabel}</td><PredictionCells nct={verifiedNctByEvent[r.eventKey]}/>
  </tr>})}</tbody></table></div>
- <p style={{fontSize:12,color:"#526458"}}>Queue dates are scheduling/cutoff metadata, not independently confirmed PDUFA dates. Historical comparisons are matched only by ticker and date, not by source-verified FDA event identity; do not treat these as confirmed FDA decisions. Decision data is deliberately separated from blind predictions. The full FOCUS schema is shown; unavailable historical fields remain explicitly unverified.</p>
+ <PredictionLegend/><p style={{fontSize:12,color:"#526458"}}>Queue dates are scheduling/cutoff metadata, not independently confirmed PDUFA dates. Historical comparisons are matched only by ticker and date, not by source-verified FDA event identity; do not treat these as confirmed FDA decisions. Decision data is deliberately separated from blind predictions. The full FOCUS schema is shown; unavailable historical fields remain explicitly unverified.</p>
  </main>;
 }
