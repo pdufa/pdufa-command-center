@@ -433,6 +433,8 @@ def create(engine, request):
 
 
 def status(engine,nct,run_id):
+    if not inspect(engine).has_table('assessment_v2_jobs'):
+        raise HTTPException(404,'Assessment run not found')
     if not NCT.fullmatch(nct) or not re.fullmatch(r'[a-f0-9-]{36}',run_id):
         raise HTTPException(422,'Exact NCT and run UUID required')
     with engine.connect() as c:
@@ -455,6 +457,8 @@ def verified_report(row):
 
 def history(engine,nct,level=None):
     if not NCT.fullmatch(nct) or (level is not None and not 1<=level<=6): raise HTTPException(422,'Exact NCT and level 1–6 required')
+    if not inspect(engine).has_table('assessment_v2_results'):
+        return {'nct':nct,'runs':[],'hasMore':False}
     with engine.connect() as c:
         query='SELECT report_json,report_hash FROM assessment_v2_results WHERE nct_id=:nct'
         if level is not None:query+=' AND level=:level'

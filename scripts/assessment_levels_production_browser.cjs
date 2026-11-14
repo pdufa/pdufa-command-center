@@ -21,13 +21,14 @@ function check(ok,code){if(!ok){const e=Error(code);e.checkId=code;throw e;}}
     // server-rendered controls before opening a browser on a rolling deploy.
     const pageProbe=await context.request.get(BASE+'/predictions/assessment?nct='+NCT);
     const html=pageProbe.ok()?await pageProbe.text():'';
-    if(html.includes('aria-label="Assessment level"')&&html.includes('aria-label="Evidence mode"')){ready=true;break;}
+    if(html.includes('aria-label="Assessment level"')&&html.includes('aria-label="Evidence mode"')&&html.includes('data-assessment-ready=')){ready=true;break;}
    }await sleep(10000);
   }
   check(ready,'FRONTEND_RUNTIME_NOT_DEPLOYED');
   phase='OWNER_LOGIN';const auth=await context.request.post(BASE+'/api/auth',{headers:{Origin:BASE},data:{password:process.env.DASHBOARD_PASSWORD}});check(auth.ok(),'OWNER_LOGIN_FAILED');
   phase='NAVIGATING_TO_ASSESSMENTS';page=await context.newPage();page.on('pageerror',e=>{result.browserErrors=(result.browserErrors||[]).concat({name:e.name,code:(e.message.match(/Minified React error #\d+/)||['UNCLASSIFIED_JS_ERROR'])[0]});});const navigation=await page.goto(BASE+'/predictions/assessment?nct='+NCT,{waitUntil:'domcontentloaded',timeout:60000});result.navigationStatus=navigation?.status();phase='LOCATING_WORKBENCH';
   const workbench=page.getByRole('region',{name:'Assessment workbench'});await workbench.waitFor({timeout:45000});
+  phase='WAITING_FOR_CLIENT_READY';await page.waitForFunction(()=>document.querySelector('section[aria-label="Assessment workbench"]')?.getAttribute('data-assessment-ready')==='true',{},{timeout:60000});
   phase='EXACT_NCT_CONTROL';check(await workbench.getByLabel('Exact NCT identifier',{exact:true}).inputValue()===NCT,'EXACT_TRIAL_SELECTION');
   for(let level=1;level<=6;level++){
    phase='LEVEL_'+level+'_READING_HISTORY';
