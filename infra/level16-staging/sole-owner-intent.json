@@ -1,0 +1,50 @@
+{
+  "schemaVersion": 1,
+  "kind": "LEVEL16_SOLE_OWNER_RESEARCH_INTENT_NOT_RUNTIME_AUTHORIZATION",
+  "recordedLocalDate": "2026-11-13",
+  "ownerPreferenceConfirmedByConversation": true,
+  "soleHumanOperator": true,
+  "siteOwnership": "SOLE_OWNER_CONTROLS_RESEARCH_ADMINISTRATION_AND_PUBLICATION_DECISIONS",
+  "authorizedOperatorSlots": 1,
+  "allowExternalEditorAccounts": false,
+  "allowOutsideReviewerAccounts": false,
+  "allowSharedAdminCredentials": false,
+  "requiredMfaForSoleOwner": true,
+  "ownerPrincipalId": null,
+  "ownerIssuer": null,
+  "ownerIdentityVerificationStatus": "NOT_CONFIGURED_OR_VERIFIED",
+  "researchMode": "OWNER_DIRECTED_PUBLIC_SOURCE_RESEARCH",
+  "researchReviewLabel": "OWNER_SELF_RESEARCH_NOT_INDEPENDENT",
+  "existingIndependentWorkflow": "UNCHANGED_OPTIONAL_SEPARATE_CERTIFICATION_PATH",
+  "sourceAuthenticity": "NOT_INDEPENDENTLY_ATTESTED",
+  "independentScientificAdjudications": 0,
+  "ownerLevelReviewsEntered": 0,
+  "publishedPredictions": 0,
+  "noPurchaseOrBillingAuthorization": true,
+  "noLiveReleaseAuthorization": true,
+  "allowedNow": [
+    "READ_ONLY_RESEARCH_PROCESSING",
+    "PRIVATE_OWNER_PREPARATION",
+    "DRAFT_PR_ENGINEERING_AND_TESTS"
+  ],
+  "requiresFurtherConcreteConfiguration": [
+    "Secure individual sole-owner account/issuer and MFA tested with real credentials",
+    "Explicit account admin control and GitHub/hosting access audit (cannot infer existing permissions)",
+    "Owner selection of infrastructure/region, exact cost and deployment target",
+    "Original clinical evidence verification with limitations labeled as owner-performed, not independent",
+    "Final evidence and statistical/scientific review of trials by owner with cited reasons",
+    "Explicit release approval scoped to real destination after security and backup checks"
+  ],
+  "protectedActionsStillDisabled": [
+    "CREATE_PAID_RESOURCES",
+    "ACTIVATE_STAGING",
+    "MERGE",
+    "DEPLOY",
+    "MIGRATE_PRODUCTION",
+    "MINT_IDENTITY",
+    "CREATE_REVIEWER",
+    "SIGN_INDEPENDENT_ATTESTATION",
+    "PUBLISH_UNCALIBRATED_FDA_PROBABILITY"
+  ],
+  "notes": "Owner alone can direct and perform proprietary research. This preference is not proof of account ownership, active sole access, original-source authenticity, independent specialist adjudication, or FDA predictive accuracy. Third-party cloud providers may have operational access under their own terms."
+}
