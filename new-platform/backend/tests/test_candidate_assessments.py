@@ -832,3 +832,15 @@ def test_exact_nct_program_map_does_not_infer_from_ticker_or_indication():
         "malformed": {"id": "COMPANY-C", "nctId": "NCT0000000X"},
     }
     assert exact_nct_program_map(rows) == {}
+
+
+def test_exact_nct_program_map_rejects_conflicting_embedded_nct():
+    from app.assessment_service import exact_nct_program_map
+    rows = {
+        "conflict": {"id": "TRIAL|NCT00000001", "nctId": "NCT00000002"},
+        "ambiguous": {"id": "NCT00000001|NCT00000002", "nctId": "NCT00000001"},
+        "valid": {"id": "TRIAL|NCT00000003", "nctId": "NCT00000003"},
+    }
+    assert exact_nct_program_map(rows) == {
+        "NCT00000003": ["TRIAL|NCT00000003"]
+    }
