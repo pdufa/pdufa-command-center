@@ -1,0 +1,38 @@
+{
+  "schema_version": 1,
+  "status": "OFFICIAL_FDA_ORIGINAL_APPROVAL_PDF_TEXT_OBSERVED_NOT_ADJUDICATED",
+  "research_cutoff": "2026-10-25",
+  "source_research_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40258696091",
+  "source_research_artifact_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/40258696091/artifacts/12623760290",
+  "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2014/206627Orig1s000Approv.pdf",
+  "retrieved_pdf_sha256": "655cdf0c02d95b43edf62465b5a1b5b6b9583fb4b5e31b1dcaa99dfe39ac589b",
+  "retrieved_pdf_bytes": 53383,
+  "pdf_page_count": 16,
+  "examined_page_indices_zero_based": [
+    0,
+    3
+  ],
+  "source_text_consistency_flags": {
+    "action_letter_application_nda206627": true,
+    "action_letter_contains_approval_wording": true,
+    "cover_application_206627_original_1": true,
+    "cover_fda_approval_date_2014_11_20": true,
+    "cover_hysingla_hydrocodone_identification": true
+  },
+  "all_target_source_text_checks_passed": true,
+  "application_reference_as_observed": "NDA206627",
+  "original_submission_reference_as_observed": "206627Orig1s000",
+  "published_drug_name": "Hysingla ER",
+  "published_approval_date": "2014-11-20",
+  "source_document_action_wording": "FDA original approval letter states approved",
+  "source_document_text_not_signed_independent_adjudication": true,
+  "verified_original_review_cycle": null,
+  "independent_regulatory_adjudication_completed": false,
+  "complete_original_nda_bla_denominator_verified": false,
+  "model_eligible_records": 0,
+  "approval_rate": null,
+  "prediction_probability": null,
+  "predictive_accuracy": null,
+  "readiness": "REVIEW_REQUIRED",
+  "note": "The exact original FDA PDF was retrieved and its cover/action page text checked against fixed NDA206627 identifiers. This is source-level document evidence, not a second independent human adjudication, historical cohort denominator or clinical predictive label."
+}
