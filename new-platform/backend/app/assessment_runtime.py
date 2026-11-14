@@ -439,7 +439,7 @@ def catalog(engine, population, query):
     if population not in {'POOL', 'FOCUS', 'HISTORICAL'} or len(query)>100:
         raise HTTPException(422, 'Valid trial population and bounded search required')
     if population == 'FOCUS':
-        records=json.loads((Path(__file__).parent/'data/focus_snapshot.json').read_text())['records']
+        records=json.loads((Path(__file__).parent/'data/assessment_trial_inventory.json').read_text())['records']
     elif population == 'POOL':
         from .source_workspace import workspace
         records=workspace()['pipeline']
