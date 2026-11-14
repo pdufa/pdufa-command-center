@@ -30,6 +30,8 @@ test("all canonical FOCUS NCTs are queued without merging indications or inventi
     assert.equal(r.prediction,"ABSTAIN");
     assert.equal(r.certainty,"NOT_VALIDATED");
     assert.equal(r.independentlyVerifiedGates,0);
+    assert.equal(r.externalReviewerRequired,false);
+    assert.equal(r.ownerReviewStatus,"OWNER_NOT_REVIEWED");
     assert.ok(r.registryUrl.endsWith("/"+r.nct));
     assert.ok(r.applications.length>0,r.nct+" not application mapped");
     for(const c of r.applications){
@@ -38,6 +40,8 @@ test("all canonical FOCUS NCTs are queued without merging indications or inventi
       assert.equal(c.partialCaseDimensions,7);
       assert.equal(c.specialistSignoff,false);
       assert.equal(c.clinicalAdjudicationComplete,false);
+      assert.equal(c.externalReviewerRequired,false);
+      assert.equal(c.ownerReviewStatus,"OWNER_NOT_REVIEWED");
       assert.ok(c.sourceLinkedDimensions<=c.partialCaseDimensions);
       assert.ok(c.sourceUrl.startsWith("https://"));
     }
@@ -53,7 +57,10 @@ test("assessment page exposes all-trial queue, exact NCT links and evidence gaps
   assert.match(page,/getFullSpecialistCase/);
   assert.match(page,/sourceDate/);
   assert.match(page,/INSUFFICIENT VERIFIED EVIDENCE/);
-  assert.match(page,/NOT ADJUDICATED/);
+  assert.match(page,/OWNER NOT REVIEWED/);
+  assert.match(page,/OWNER-ONLY ASSESSMENTS/);
+  assert.match(page,/No outside clinician, statistician/);
+  assert.doesNotMatch(page,/Independent source and current-cycle reconciliation remains required/);
   assert.match(page,/ABSTAIN/);
   assert.match(page,/clinical phase|current trial phase|PHASE \/ STATUS/i);
   assert.match(home,/href="\/predictions\/assessment"/);
