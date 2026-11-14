@@ -208,3 +208,33 @@ def test_levels_one_to_three_use_original_registry_http_response_and_persist(eng
     assert len(r.history(engine,'NCT04576949')['runs'])==3
     with engine.connect() as connection:
         assert connection.execute(text('SELECT count(*) FROM assessment_v2_sources')).scalar()==3
+
+
+def test_authenticated_http_run_levels_one_to_three_and_saved_history(engine,monkeypatch):
+    """End-to-end HTTP API, background execution, immutable results and exact-NCT history."""
+    calls=[]
+    def registry(nct):
+        calls.append(nct)
+        return snapshot(nct)
+    monkeypatch.setattr(r,'collect_registry',registry)
+    app=FastAPI()
+    app.include_router(r.router(lambda:engine,lambda:None,lambda:None,lambda:None,allow_local=True))
+    with TestClient(app) as client:
+        for level in (1,2,3):
+            response=client.post('/api/assessment-runtime/runs',json=request(level).model_dump(mode='json'))
+            assert response.status_code==202,response.text
+            run=response.json()
+            assert run['nct']=='NCT04576949' and run['runId']
+            saved=client.get('/api/assessment-runtime/runs/NCT04576949/'+run['runId'])
+            assert saved.status_code==200
+            body=saved.json()
+            assert body['status']=='COMPLETED',body.get('error')
+            assert body['report']['level']==level
+            assert body['report']['fdaPrediction']['outcome']=='ABSTAIN'
+            assert body['report']['reportHash']
+        history=client.get('/api/assessment-runtime/history/NCT04576949')
+        assert history.status_code==200
+        assert {entry['level'] for entry in history.json()['runs']}=={1,2,3}
+        assert len({entry['runId'] for entry in history.json()['runs']})==3
+        assert client.get('/api/assessment-runtime/history/NCT00000001').json()['runs']==[]
+    assert calls==['NCT04576949']*3
