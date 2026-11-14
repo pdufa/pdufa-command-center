@@ -1,0 +1,166 @@
+{
+  "asOf": "2026-11-13",
+  "source": "https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit#gid=202611061",
+  "records": [
+    {
+      "nct": "NCT05507203",
+      "ticker": "ABVX",
+      "company": "Abivax S.A."
+    },
+    {
+      "nct": "NCT05507216",
+      "ticker": "ABVX",
+      "company": "Abivax S.A."
+    },
+    {
+      "nct": "NCT04576949",
+      "ticker": "ACHV",
+      "company": "Achieve Life Sciences"
+    },
+    {
+      "nct": "NCT05206370",
+      "ticker": "ACHV",
+      "company": "Achieve Life Sciences"
+    },
+    {
+      "nct": "NCT05031780",
+      "ticker": "AGIO",
+      "company": "Agios Pharmaceuticals, Inc."
+    },
+    {
+      "nct": "NCT06747468",
+      "ticker": "AMLX",
+      "company": "Amylyx Pharmaceuticals Inc."
+    },
+    {
+      "nct": "NCT05811247",
+      "ticker": "APMD",
+      "company": "Apnimed"
+    },
+    {
+      "nct": "NCT05813275",
+      "ticker": "APMD",
+      "company": "Apnimed"
+    },
+    {
+      "nct": "NCT05059223",
+      "ticker": "AXSM",
+      "company": "Axsome Therapeutics, Inc."
+    },
+    {
+      "nct": "NCT05113745",
+      "ticker": "AXSM",
+      "company": "Axsome Therapeutics, Inc."
+    },
+    {
+      "nct": "NCT05244304",
+      "ticker": "BLTE",
+      "company": "Belite Bio, Inc."
+    },
+    {
+      "nct": "NCT05126758",
+      "ticker": "CAPR",
+      "company": "Capricor Therapeutics, Inc."
+    },
+    {
+      "nct": "NCT06445023",
+      "ticker": "CLDX",
+      "company": "Celldex Therapeutics"
+    },
+    {
+      "nct": "NCT06455202",
+      "ticker": "CLDX",
+      "company": "Celldex Therapeutics"
+    },
+    {
+      "nct": "NCT05208047",
+      "ticker": "COGT",
+      "company": "Cogent Biosciences, Inc."
+    },
+    {
+      "nct": "NCT03697109",
+      "ticker": "CORT",
+      "company": "Corcept Therapeutics"
+    },
+    {
+      "nct": "NCT04308590",
+      "ticker": "CORT",
+      "company": "Corcept Therapeutics"
+    },
+    {
+      "nct": "NCT05767346",
+      "ticker": "CYTK",
+      "company": "Cytokinetics"
+    },
+    {
+      "nct": "NCT06081894",
+      "ticker": "CYTK",
+      "company": "Cytokinetics, Inc."
+    },
+    {
+      "nct": "NCT04871282",
+      "ticker": "IMNM",
+      "company": "Immunome, Inc."
+    },
+    {
+      "nct": "NCT06553768",
+      "ticker": "MIRM",
+      "company": "Mirum Pharmaceuticals, Inc."
+    },
+    {
+      "nct": "NCT06411379",
+      "ticker": "MLTX",
+      "company": "MoonLake Immunotherapeutics AG"
+    },
+    {
+      "nct": "NCT06411899",
+      "ticker": "MLTX",
+      "company": "MoonLake Immunotherapeutics AG"
+    },
+    {
+      "nct": "NCT06153693",
+      "ticker": "MLYS",
+      "company": "Mineralys Therapeutics, Inc."
+    },
+    {
+      "nct": "NCT06343779",
+      "ticker": "PHVS",
+      "company": "Pharvaris N.V."
+    },
+    {
+      "nct": "NCT06669754",
+      "ticker": "PHVS",
+      "company": "Pharvaris N.V."
+    },
+    {
+      "nct": "NCT06087276",
+      "ticker": "PRAX",
+      "company": "Praxis Precision Medicines, Inc."
+    },
+    {
+      "nct": "NCT02500381",
+      "ticker": "SRPT",
+      "company": "Sarepta Therapeutics, Inc."
+    },
+    {
+      "nct": "NCT04544293",
+      "ticker": "SVRA",
+      "company": "Savara Inc."
+    },
+    {
+      "nct": "NCT06331299",
+      "ticker": "URGN",
+      "company": "UroGen Pharma Ltd."
+    },
+    {
+      "nct": "NCT04716231",
+      "ticker": "VERA",
+      "company": "Vera Therapeutics, Inc."
+    },
+    {
+      "nct": "NCT05662241",
+      "ticker": "ZBIO",
+      "company": "Zenas BioPharma, Inc."
+    }
+  ]
+}
