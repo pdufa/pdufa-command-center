@@ -96,7 +96,7 @@ test("changing trial NCT invalidates in-flight program lookup and selected ident
 
 test("authenticated assessment proxy preserves exact identity, backend conflict status, and private caching",()=>{
  const route=fs.readFileSync(path.join(app,"api","assessments","route.ts"),"utf8");
- assert.match(route,/!authConfigured\(\)\|\|!hasSession\(/);
+ assert.match(route,/!authConfigured\(\)\s*\|\|\s*!hasSession\(/);
  assert.match(route,/status: 401/);
  assert.match(route,/identity\.length > 512/);
  assert.match(route,/status: 422/);
