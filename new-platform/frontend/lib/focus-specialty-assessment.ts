@@ -3,8 +3,8 @@
  *
  * IMPORTANT: Mappings, dated source pointers and partial specialist-style notes
  * are not completed clinical adjudications, current FDA status checks, or
- * validated predictions. This queue is a reproducible worklist for independent
- * phase-first, evidence-backed scientific assessment.
+ * validated predictions. This queue is a reproducible, owner-only worklist
+ * for phase-first, evidence-backed scientific assessment without outside approval.
  */
 import focus from "../data/p3PostDataActive.json";
 import {APPLICATION_CYCLES} from "./medical-intelligence-applications";
@@ -18,6 +18,7 @@ export type SpecialtyCycleIntake={
   specialty:string|null;researchQuestions:number;
   partialCaseDimensions:number;sourceLinkedDimensions:number;
   specialistSignoff:false;clinicalAdjudicationComplete:false;
+  externalReviewerRequired:false;ownerReviewStatus:"OWNER_NOT_REVIEWED";
 };
 export type TrialAssessmentIntake={
   ticker:string;nct:string;company:string;rosterAsOf:string;
@@ -27,6 +28,7 @@ export type TrialAssessmentIntake={
   phaseVerified:false;scientificAssessment:"INSUFFICIENT_VERIFIED_EVIDENCE";
   prediction:"ABSTAIN";certainty:"NOT_VALIDATED";
   independentlyVerifiedGates:0;
+  externalReviewerRequired:false;ownerReviewStatus:"OWNER_NOT_REVIEWED";
   reviewRequiredGates:number;missingEvidenceGates:number;
   applications:SpecialtyCycleIntake[];
 };
@@ -53,7 +55,8 @@ export function buildFocusSpecialtyAssessmentQueue():TrialAssessmentIntake[]{
         researchQuestions:getSpecialtyTasks(cycle.id).length,
         partialCaseDimensions:dimensions.length,
         sourceLinkedDimensions:dimensions.filter(x=>typeof x.sourceUrl==="string"&&/^https:\/\//.test(x.sourceUrl)).length,
-        specialistSignoff:false as const,clinicalAdjudicationComplete:false as const
+        specialistSignoff:false as const,clinicalAdjudicationComplete:false as const,
+        externalReviewerRequired:false as const,ownerReviewStatus:"OWNER_NOT_REVIEWED" as const
       };
     });
     return {
@@ -67,6 +70,8 @@ export function buildFocusSpecialtyAssessmentQueue():TrialAssessmentIntake[]{
       scientificAssessment:"INSUFFICIENT_VERIFIED_EVIDENCE" as const,
       prediction:"ABSTAIN" as const,certainty:"NOT_VALIDATED" as const,
       independentlyVerifiedGates:0 as const,
+      externalReviewerRequired:false as const,
+      ownerReviewStatus:"OWNER_NOT_REVIEWED" as const,
       reviewRequiredGates:check.review,missingEvidenceGates:check.missing,
       applications
     };
@@ -83,5 +88,7 @@ export const FOCUS_SPECIALTY_SUMMARY={
     .filter((r,i,all)=>all.findIndex(other=>other.cycleId===r.cycleId)===i)
     .reduce((n,r)=>n+r.partialCaseDimensions,0),
   independentlyAdjudicatedTrials:0,
+  ownerReviewedTrials:0,
+  externalReviewerRequirements:0,
   validatedForecasts:0
 } as const;
