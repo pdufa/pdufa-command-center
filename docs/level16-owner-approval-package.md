@@ -1,5 +1,18 @@
 # Levels 1–6 owner approval package — NOT authorization
 
+> **ARCHIVED EXTERNAL-REVIEW DESIGN — NOT AN ACTIVE REQUIREMENT (owner decision, November 13, 2026).**
+> All outside clinical, statistical, source-attestation, challenger, regulatory,
+> qualification and multi-person adjudication gates described below were
+> **withdrawn for owner assessments at Levels 1–20**. The owner alone checks
+> and accepts results. The former five-person/A01–A14 reviewer scheme and
+> its old synthetic tests are historical/disabled engineering, not owner
+> work blockers. Use `AGENTS.md` (top directive),
+> `infra/assessment/sole-owner-levels1-20.json` and
+> `docs/level16-sole-owner-operation.md` for active policy.
+> Existing security, evidence honesty, cutoff and deployment controls remain.
+> No external review has been falsely recorded as completed.
+
+
 Current decision-by-decision preparation: [2026-11-14 A01–A14 resolution](level16-owner-approval-resolution-20261114.md). This adds evidence and owner actions; it grants no approval or live access.
 
 Prepared from commit `41611d5b6487e504ff68cfe95b71e04c10713a75` and current public
