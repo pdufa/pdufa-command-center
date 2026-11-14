@@ -59,13 +59,22 @@ def registry_rows(ids=None):
             yield item[0], dict(zip(FIELDS, item[1:1 + len(FIELDS)])), item[-2] or [], item[-1].isoformat()
 
 
+
+def exact_nct_program_map(rows):
+    """Deterministic, exact-NCT mapping; never infer programs from ticker or indication."""
+    mapping = {}
+    for row in rows.values():
+        nct = nct_id(row)
+        identity = row.get("id")
+        if isinstance(nct, str) and re.fullmatch(r"NCT[0-9]{8}", nct) and isinstance(identity, str) and identity:
+            mapping.setdefault(nct, set()).add(identity)
+    return {nct: sorted(identities) for nct, identities in sorted(mapping.items())}
+
+
 def build_index(snapshot, reviews, review_status, key, token):
     try:
         rows = rows_for(snapshot)
-        by_nct = {}
-        for row in rows.values():
-            nct = nct_id(row)
-            if nct: by_nct.setdefault(nct, []).append(row["id"])
+        by_nct = exact_nct_program_map(rows)
         records, updates, covered = {}, [], set()
         writable = os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() not in {"1", "true", "yes"}
         with Session(db.ENGINE) as session:
@@ -105,7 +114,7 @@ def build_index(snapshot, reviews, review_status, key, token):
                   "columns": ["id", "PIPELINE", "GEM_JR", "GEM", "riskFlags"],
                   "scoreColumns": ["score", "observedPoints", "coverage", "categoryPoints1to7", "categoryCoverage1to7"],
                   "records": ordered,
-                  "exactNctProgramMap": {nct: sorted(identities) for nct, identities in sorted(by_nct.items()) if re.fullmatch(r"NCT[0-9]{8}", nct)}}
+                  "exactNctProgramMap": by_nct}
         # Keep the whole-universe payload safely under Vercel's response limit.
         if len(packed(result).encode()) > 4_000_000: raise ValueError("Score index exceeds response budget")
         with _LOCK:
