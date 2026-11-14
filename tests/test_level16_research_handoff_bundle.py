@@ -28,7 +28,7 @@ class ResearchHandoffBundleTests(unittest.TestCase):
         bundle = mod.build_bundle(self.root)
         self.assertEqual(bundle["kind"], "FOCUS_LEVEL16_UNSIGNED_RESEARCH_REVIEW_BUNDLE")
         self.assertEqual(bundle["status"], "BYTE_CONSISTENCY_ONLY_NOT_EVIDENCE_AUTHENTICATION")
-        self.assertEqual(len(bundle["sourceSha256"]), 4)
+        self.assertEqual(len(bundle["sourceSha256"]), 5)
         self.assertEqual(bundle["packet"]["focusTrialCount"], 32)
         self.assertEqual(bundle["packet"]["reviewPacketsPrepared"], 32)
         self.assertEqual(sum(len(t["levels"]) for t in bundle["packet"]["trials"]), 192)
@@ -42,6 +42,29 @@ class ResearchHandoffBundleTests(unittest.TestCase):
                          "LOCAL_RESEARCH_SNAPSHOT_AND_PACKET_BYTES_MATCH_ONLY")
         self.assertFalse(result["fdaPredictionPermitted"])
         self.assertEqual(result["independentlyAdjudicatedLevels"], 0)
+
+    def test_orca2_publication_outcomes_are_embedded_as_unreviewed_case_data(self):
+        bundle = mod.build_bundle(self.root)
+        trial = next(t for t in bundle["packet"]["trials"] if t["nct"] == "NCT04576949")
+        level3 = trial["levels"][2]["publicationFindingsUnreviewed"]
+        self.assertEqual(len(level3["reportedEfficacyComparisons"]), 4)
+        self.assertEqual(level3["reportedEfficacyComparisons"][0]["activePct"], 25.3)
+        self.assertEqual(level3["reportedSafetyObservations"]["seriousAdverseEvents"]["cytisinicline"], 18)
+        self.assertFalse(level3["sourceIndependentlyAuthenticated"])
+        self.assertFalse(level3["scientificallyAdjudicated"])
+        self.assertIsNone(trial["levels"][2]["score"])
+        self.assertIsNone(trial["approvalProbability"])
+
+    def test_original_published_efficacy_cannot_be_silently_rewritten(self):
+        source = self.root / mod.SOURCES["orca2Publication"]
+        original = mod.build_bundle(self.root)
+        doc = json.loads(source.read_text(encoding="utf-8"))
+        doc["efficacy"][0]["placeboPct"] = 0.0
+        source.write_text(json.dumps(doc), encoding="utf-8")
+        with self.assertRaises(ValueError):
+            mod.build_bundle(self.root)
+        with self.assertRaises(ValueError):
+            mod.verify_bundle(original, self.root)
 
     def test_byte_identical_recomputation_is_stable(self):
         a = mod.build_bundle(self.root)
