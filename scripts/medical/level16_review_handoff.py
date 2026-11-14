@@ -72,6 +72,39 @@ def _status(collected):
     return "COLLECTED_UNREVIEWED" if collected else "NOT_COLLECTED_AVAILABILITY_UNRESOLVED"
 
 
+def _owner_question(question):
+    """Keep the scientific issue; remove withdrawn external-human instructions."""
+    if not isinstance(question, str) or not question.strip():
+        raise ValueError("A bounded evidence issue is required")
+    text = question.strip()
+    specific = {
+        "Obtain genuine authorized source authentication and independent statistical, clinical and disease-specialist review":
+            "Owner cross-checks the original source and its limitations, performs statistical, clinical and indication-specific research checks",
+        "Assign qualified disease-specialist and independent biostatistician reviews after actual source authentication and owner approvals.":
+            "Owner performs indication-specific and statistical research checks after owner source cross-checking; no outside reviewers",
+        "Conduct qualified independent statistical and disease-specialist review; challenge and adjudicate":
+            "Owner conducts statistical and indication-specific self-review, considers contradictory evidence and records an owner decision",
+    }
+    if text in specific:
+        text = specific[text]
+    else:
+        text = re.sub(r"^Independently\s+", "Owner checks: ", text, flags=re.IGNORECASE)
+        text = re.sub(r"\bindependently\b", "by the owner", text, flags=re.IGNORECASE)
+        text = re.sub(r"\bindependent\b", "owner-led", text, flags=re.IGNORECASE)
+        text = re.sub(r"\bqualified\b", "owner", text, flags=re.IGNORECASE)
+        text = re.sub(r"\bauthorized\b", "owner", text, flags=re.IGNORECASE)
+        text = re.sub(r"\breviewers\b", "owner", text, flags=re.IGNORECASE)
+        text = re.sub(r"\breviewer\b", "owner", text, flags=re.IGNORECASE)
+        text = re.sub(r"\bdisease-specialist\b", "indication-specific", text, flags=re.IGNORECASE)
+        text = re.sub(r"\bbiostatistician\b", "statistical methods", text, flags=re.IGNORECASE)
+        text = re.sub(r"\badjudicate\b", "record an owner decision", text, flags=re.IGNORECASE)
+        text = re.sub(r"\badjudication\b", "owner decision", text, flags=re.IGNORECASE)
+        text = re.sub(r"\battestation\b", "source check", text, flags=re.IGNORECASE)
+    if not 8 <= len(text) <= 4000:
+        raise ValueError("Owner review question exceeded bounds")
+    return text
+
+
 def _level_rows(row, orca_chronology, publication=None, publication3=None,
                 maple_paper=None, renal_paper=None):
     fields = {
@@ -234,6 +267,7 @@ def _level_rows(row, orca_chronology, publication=None, publication3=None,
                 "independentReviewQuestions": renal_paper["independentReviewQuestions"],
             }
             questions.extend(renal_paper["independentReviewQuestions"])
+        questions = [_owner_question(question) for question in questions]
         levels.append({
             "level": i, "name": name,
             "renalEvidenceUnreviewed": renal,
