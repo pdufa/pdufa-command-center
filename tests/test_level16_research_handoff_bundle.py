@@ -28,7 +28,7 @@ class ResearchHandoffBundleTests(unittest.TestCase):
         bundle = mod.build_bundle(self.root)
         self.assertEqual(bundle["kind"], "FOCUS_LEVEL16_UNSIGNED_RESEARCH_REVIEW_BUNDLE")
         self.assertEqual(bundle["status"], "BYTE_CONSISTENCY_ONLY_NOT_EVIDENCE_AUTHENTICATION")
-        self.assertEqual(len(bundle["sourceSha256"]), 5)
+        self.assertEqual(len(bundle["sourceSha256"]), 6)
         self.assertEqual(bundle["packet"]["focusTrialCount"], 32)
         self.assertEqual(bundle["packet"]["reviewPacketsPrepared"], 32)
         self.assertEqual(sum(len(t["levels"]) for t in bundle["packet"]["trials"]), 192)
@@ -61,6 +61,35 @@ class ResearchHandoffBundleTests(unittest.TestCase):
         doc = json.loads(source.read_text(encoding="utf-8"))
         doc["efficacy"][0]["placeboPct"] = 0.0
         source.write_text(json.dumps(doc), encoding="utf-8")
+        with self.assertRaises(ValueError):
+            mod.build_bundle(self.root)
+        with self.assertRaises(ValueError):
+            mod.verify_bundle(original, self.root)
+
+    def test_orca3_publication_replication_and_discrepancy_leads_embedded(self):
+        packet = mod.build_bundle(self.root)["packet"]
+        trial = next(x for x in packet["trials"] if x["nct"] == "NCT05206370")
+        levels = trial["levels"]
+        for idx in (2, 3, 5):
+            self.assertIsNotNone(levels[idx]["publicationFindingsUnreviewed"])
+            self.assertFalse(levels[idx]["completionPermitted"])
+            self.assertIsNone(levels[idx]["approvalProbability"])
+            self.assertFalse(levels[idx]["publicationFindingsUnreviewed"]["scientificallyAdjudicated"])
+        self.assertEqual(len(levels[2]["publicationFindingsUnreviewed"][
+            "publicationTextDiscrepanciesUnreviewed"]), 2)
+        self.assertEqual(levels[2]["publicationFindingsUnreviewed"][
+            "reportedEfficacyComparisons"][1]["activePct"], 30.3)
+        other = next(x for x in packet["trials"] if x["nct"] == "NCT04576949")
+        self.assertNotEqual(other["levels"][2]["publicationFindingsUnreviewed"]["publicationUrl"],
+                            levels[2]["publicationFindingsUnreviewed"]["publicationUrl"])
+        self.assertEqual(packet["independentlyAdjudicatedLevels"], 0)
+
+    def test_orca3_original_endpoints_cannot_be_silently_changed(self):
+        source = self.root / mod.SOURCES["orca3Publication"]
+        original = mod.build_bundle(self.root)
+        data = json.loads(source.read_text(encoding="utf-8"))
+        data["endpoints"][0]["activeCount"] = 200
+        source.write_text(json.dumps(data), encoding="utf-8")
         with self.assertRaises(ValueError):
             mod.build_bundle(self.root)
         with self.assertRaises(ValueError):
