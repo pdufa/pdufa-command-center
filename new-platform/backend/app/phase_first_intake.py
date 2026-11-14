@@ -64,7 +64,7 @@ def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=N
     known_statuses = {
         "NOT_YET_RECRUITING", "RECRUITING", "ENROLLING_BY_INVITATION",
         "ACTIVE_NOT_RECRUITING", "SUSPENDED", "TERMINATED", "COMPLETED",
-        "WITHDRAWN", "UNKNOWN_STATUS",
+        "WITHDRAWN",
     }
     normalized_status = (
         str(status_value).upper().replace(" ", "_")
