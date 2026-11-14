@@ -17,7 +17,7 @@ LOG = logging.getLogger(__name__)
 _LOCK = threading.RLock()
 _STATE = {"key": "", "building": False, "index": None, "error": "", "snapshot": None, "reviews": {}, "token": ""}
 _REVIEW_CACHE = {"at": 0, "value": {}, "status": "NOT_LOADED"}
-FIELDS = ("nct_id", "study_title", "study_design", "treatment_groups", "primary_outcomes", "secondary_outcomes", "enrollment", "status", "last_update_posted", "primary_completion_date", "has_results")
+FIELDS = ("nct_id", "phases", "study_title", "study_design", "treatment_groups", "primary_outcomes", "secondary_outcomes", "enrollment", "status", "last_update_posted", "primary_completion_date", "has_results")
 
 
 def review_evidence():
