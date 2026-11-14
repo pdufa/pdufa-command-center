@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create unadjudicated, source-traceable specialty dossier shells from FOCUS readiness.
+"""Create owner-only, source-traceable specialty dossier shells from FOCUS readiness.
 
 No invented specialist findings, efficacy conclusions, or FDA predictions.
 """
@@ -40,7 +40,8 @@ def build(matrix):
             "status": "EVIDENCE_REQUIRED",
             "sourceCitations": [],
             "clinicalFinding": None,
-            "independentReview": None,
+            "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+            "externalReviewerRequired": False,
         } for name in DIMENSIONS}
         dossiers.append({
             "nct": nct,
@@ -51,12 +52,14 @@ def build(matrix):
             "registrySourceSha256": sha if conditions else None,
             "registryLocator": routing.get("sourceLocator"),
             "dimensions": dimensions,
-            "dossierStatus": "NOT_SCIENTIFICALLY_ADJUDICATED",
+            "dossierStatus": "OWNER_NOT_REVIEWED",
             "outcomePrediction": None,
             "timingPrediction": None,
         })
     return {"schemaVersion": 1, "status": "DOSSIER_SHELLS_ONLY",
             "trialCount": len(dossiers), "scientificallyAdjudicated": 0,
+            "ownerReviewedDossiers": 0,
+            "externalReviewerRequirements": 0,
             "dossiers": dossiers}
 
 def main():
