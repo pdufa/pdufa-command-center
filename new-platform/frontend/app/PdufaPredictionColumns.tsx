@@ -1,0 +1,5 @@
+import Link from 'next/link';
+/** Predictions and accuracy require a validated, versioned FDA forecast and a verified FDA decision. */
+export function PredictionHeaders(){return <><th scope="col">PDUFA prediction</th><th scope="col">Prediction accuracy</th></>;}
+export function PredictionCells({nct}:{nct?:string}){return <><td title="Levels 1–6 currently produce evidence coverage and ABSTAIN, not calibrated FDA approval forecasts.">{nct?<Link href={'/assessments?nct='+encodeURIComponent(nct)}>Not predicted · view assessments</Link>:'Not predicted'}</td><td title="Accuracy is only scored after a source-verified FDA decision is matched to a pre-decision, versioned prediction.">Not yet measurable</td></>;}
+export function PredictionLegend(){return <p style={{fontSize:12,color:'#526458'}}>PDUFA prediction is separate from scientific evidence coverage. Accuracy is not a clinical evidence score: it requires a saved pre-decision prediction, verified FDA outcome, and exact application/event matching. Missing or unverified outcomes are never counted as correct or incorrect.</p>;}
