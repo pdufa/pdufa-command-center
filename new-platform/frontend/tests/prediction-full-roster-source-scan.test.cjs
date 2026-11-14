@@ -7,8 +7,8 @@ const roster=JSON.parse(fs.readFileSync(path.join(root,"data/p3PostDataActive.js
 const read=p=>fs.readFileSync(path.join(root,p),"utf8");
 
 test("all-FOCUS source endpoint uses exact canonical FOCUS roster and source-only diagnostics",()=>{
-  assert.equal(roster.records.length,29);
-  assert.equal(new Set(roster.records.map(x=>x.nct)).size,29);
+  assert.equal(roster.records.length,32);
+  assert.equal(new Set(roster.records.map(x=>x.nct)).size,32);
   const route=read("app/api/predictions/roster-source-scan/route.ts");
   assert.match(route,/FOCUS_SPECIALTY_ASSESSMENT_QUEUE/);
   assert.match(route,/makeEvidenceRun\(study,nct,"FULL"\)/);
@@ -46,7 +46,10 @@ test("production predictions page offers an explicit full-roster button without 
   assert.equal(scan.summary.independentlyCompletedScientificReviews,0);
   assert.equal(scan.summary.calibratedFDAForecasts,0);
   assert.equal(scan.summary.savedToDatabase,false);
-  assert.deepEqual(scan.rows.map(row=>row.nct),roster.records.map(row=>row.nct));
+  const archivedNcts=new Set(scan.rows.map(row=>row.nct));
+  assert.equal(archivedNcts.size,29);
+  assert.ok(scan.rows.every(row=>roster.records.some(r=>r.nct===row.nct)));
+  assert.deepEqual(roster.records.filter(row=>!archivedNcts.has(row.nct)).map(row=>row.nct).sort(),["NCT05031780","NCT06553768","NCT06747468"],"Do not rewrite the historical 29-trial scan to claim retrieval of later additions");
   assert.ok(scan.rows.every(row=>row.tests.length===12&&row.prediction==="ABSTAIN"&&row.certainty==="NOT_VALIDATED"));
   assert.match(ui,/SOURCE_SCANNED/);
   assert.match(ui,/Review required · ABSTAIN/);

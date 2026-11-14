@@ -42,14 +42,14 @@ test("the first historical challenge is immutable directional research with outc
   assert.match(r.researchDossierPath,/2026-blind-ino3107-historical-challenge.md/);
 });
 
-test("SMMT prospectively frozen forecast and FOCUS 29 roster remain unchanged",()=>{
+test("SMMT prospectively frozen forecast and canonical FOCUS roster remains unchanged",()=>{
   assert.equal(prospective.records.length,1);
   assert.equal(prospective.records[0].ticker,"SMMT");
   assert.equal(prospective.records[0].predictionId,"HARMONI-SMMT-PDUFA-2026-11-14-V1");
   assert.equal(prospective.records[0].actualOutcome,"PENDING");
   assert.ok(prospective.records.every(r=>r.ticker!=="INO"));
   const focus=JSON.parse(fs.readFileSync(path.join(root,"../backend/app/data/focus_snapshot.json"),"utf8"));
-  assert.equal(focus.records.length,29);
+  assert.equal(focus.records.length,32);
   assert.equal(focus.records.some(r=>r.nct==="NCT04398433"),false);
 });
 

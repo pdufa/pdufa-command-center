@@ -32,3 +32,13 @@ python scripts/medical/level16_offline_research_preview.py --output /tmp/orca2-o
 A new output path is required. This does not start a server or enable access. Originals and the generated local preview remain outside Git.
 
 Next action: the owner can inspect the six-level dossier and record evidence questions/limitations now. For live access, identify the real owner account/provider and private destination; implement and test that destination's server-side owner access/MFA, versioned persistence and rollback before separately authorized release. The concise operational handoff is `docs/level16-owner-live-access-handoff.md`; retired A01–A14 do not apply.
+
+## Broader regression repair
+
+The first explicitly dispatched full CI run exposed pre-existing 29-versus-32 roster drift and old owner-review wording. The active backend packaging mirror was dated November10 with 29 records, while the canonical FOCUS snapshot already contained 32 dated November13. The mirror now matches the canonical file byte-for-byte; the canonical roster itself and all application/historical snapshots are unchanged.
+
+The application-source health check now recognizes exactly the existing three unmapped exceptions. It reports 32 FOCUS trials, 29 mapped records, 23 provisional cycles, `mappingCoverageComplete=false` and the three explicit unmapped NCTs. Missing any other mapped row, duplicates or invented mappings remain errors and have dedicated regression cases. This changes source-coverage reporting only; no stage worker, scan schedule, production database or Levels7–20 processing was altered or run.
+
+Frontend/backend tests now distinguish current 32-trial membership from frozen historical 29-trial source cohorts and 29 provisionally mapped trials. Historical scan/research bytes, probability abstentions, outcome-exposure restrictions and exact-cycle checks were retained. No missing application cycle or historical source retrieval was invented.
+
+Final local results: 322 focused Levels1–6/owner/PostgreSQL checks; 844 frontend tests; 1185 backend tests passed with three optional tests skipped. Frontend typecheck and local build passed; retirement audit passed. Earlier local failures due to unavailable test dependencies were resolved by installing the existing CI dependency requirements in the test virtualenv. Full CI and clean-source recovery were rerun on the delivered repair commit and their actual results are linked in PR1181.

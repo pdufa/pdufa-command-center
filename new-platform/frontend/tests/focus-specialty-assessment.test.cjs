@@ -16,8 +16,8 @@ const canonical=require("../data/p3PostDataActive.json");
 
 test("all canonical FOCUS NCTs are queued without merging indications or inventing conclusions",()=>{
   assert.equal(queue.length,canonical.records.length);
-  assert.equal(summary.ncts,29);
-  assert.equal(summary.tickers,20);
+  assert.equal(summary.ncts,32);
+  assert.equal(summary.tickers,23);
   assert.equal(summary.mappedApplicationCycles,23);
   assert.equal(summary.partialClinicalDimensions,161);
   assert.equal(summary.mappedNcts,29);
@@ -33,7 +33,9 @@ test("all canonical FOCUS NCTs are queued without merging indications or inventi
     assert.equal(r.externalReviewerRequired,false);
     assert.equal(r.ownerReviewStatus,"OWNER_NOT_REVIEWED");
     assert.ok(r.registryUrl.endsWith("/"+r.nct));
-    assert.ok(r.applications.length>0,r.nct+" not application mapped");
+    if(["NCT05031780","NCT06553768","NCT06747468"].includes(r.nct))
+      assert.equal(r.applications.length,0,"Unmapped exception must remain visible without invented cycle");
+    else assert.ok(r.applications.length>0,r.nct+" not application mapped");
     for(const c of r.applications){
       assert.ok(c.specialty,c.cycleId+" missing specialty");
       assert.equal(c.researchQuestions,10);

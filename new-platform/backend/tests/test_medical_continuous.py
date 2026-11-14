@@ -10,7 +10,7 @@ NCT = "NCT00000001"
 
 
 
-def test_packaged_application_context_reconciles_all_focus_ncts():
+def test_packaged_application_context_preserves_three_unmapped_focus_exceptions():
     """Research context is source-linked but never treated as FDA-confirmed."""
     import json
     from pathlib import Path
@@ -26,7 +26,8 @@ def test_packaged_application_context_reconciles_all_focus_ncts():
     assert len(published)==23
     rows=snapshot["records"]
     assert len(rows)==29
-    assert {r["nct"] for r in rows}==set(medical.roster())
+    assert set(medical.roster()) - {r["nct"] for r in rows} == {"NCT05031780", "NCT06747468", "NCT06553768"}
+    assert {r["nct"] for r in rows} <= set(medical.roster())
     by_id={r["nct"]:r for r in rows}
     for study in published:
         for nct in study["ncts"]:
@@ -43,6 +44,9 @@ def test_packaged_application_context_reconciles_all_focus_ncts():
     health=medical.application_roster_status()
     assert health["state"]=="VALID"
     assert health["coveredNctCount"]==29
+    assert health["focusNctCount"]==32
+    assert health["mappingCoverageComplete"] is False
+    assert health["unmappedNcts"]==["NCT05031780", "NCT06553768", "NCT06747468"]
     assert health["applicationCycleCount"]==23
     assert "NCT02500381" in health["sharedIndicationUnresolvedNcts"]
     assert health["fdaApplicationStatusVerified"] is False
@@ -50,6 +54,24 @@ def test_packaged_application_context_reconciles_all_focus_ncts():
     assert capr["indication"]=="Duchenne muscular dystrophy"
     assert capr["drug"]=="Deramiocel"
     assert capr["designations"]==[]
+
+
+@pytest.mark.parametrize("change", ["drop_mapped", "duplicate", "invent_exception_mapping"])
+def test_application_map_rejects_changes_beyond_known_unmapped_exceptions(tmp_path, monkeypatch, change):
+    data=json.loads(medical.APPLICATIONS.read_text(encoding="utf-8"))
+    if change == "drop_mapped":
+        data["records"].pop()
+    elif change == "duplicate":
+        data["records"].append(data["records"][0])
+    else:
+        row=json.loads(json.dumps(data["records"][0]))
+        row["nct"]="NCT05031780"
+        data["records"].append(row)
+    path=tmp_path/"synthetic_application_map.json"
+    path.write_text(json.dumps(data),encoding="utf-8")
+    monkeypatch.setattr(medical,"APPLICATIONS",path)
+    with pytest.raises(ValueError):
+        medical.application_roster_status()
 
 
 
@@ -81,7 +103,7 @@ def test_packaged_focus_roster_matches_frontend_snapshot():
     bundled = json.loads(packaged.read_text(encoding="utf-8"))
     original = json.loads(frontend.read_text(encoding="utf-8"))
     assert bundled["asOf"] == original["asOf"]
-    assert len(bundled["records"]) == 29
+    assert len(bundled["records"]) == 32
     assert bundled["records"] == original["records"]
 
 

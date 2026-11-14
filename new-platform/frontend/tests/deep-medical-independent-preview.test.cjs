@@ -4,7 +4,11 @@ const {parseDeepMedicalSnapshot}=require('../lib/deep-medical-intelligence.ts');
 const data=require('../data/deepMedicalIntelligencePreview.json');
 test('owner-only source preview preserves original NCT identities and does not fake completion',()=>{
  const d=parseDeepMedicalSnapshot(data),active=require('../data/p3PostDataActive.json').records;
- assert.deepEqual([...new Set(d.applications.flatMap(a=>a.nctIds))].sort(),active.map(r=>r.nct).sort());
+ const represented=[...new Set(d.applications.flatMap(a=>a.nctIds))].sort();
+ const unmapped=["NCT05031780","NCT06553768","NCT06747468"];
+ assert.equal(active.length,32);assert.equal(represented.length,29);
+ assert.deepEqual(represented,active.filter(r=>!unmapped.includes(r.nct)).map(r=>r.nct).sort());
+ assert.deepEqual(active.filter(r=>!represented.includes(r.nct)).map(r=>r.nct).sort(),unmapped);
  assert.equal(d.installationLevels.length,12);assert.equal(d.inventory.completedDecisions,0);
  assert.ok(d.applications.every(a=>a.outcome.leading==='Indeterminate'&&a.timing.leading==='Indeterminate'));
  assert.ok(d.inventory.metadataScreenedTrials>d.inventory.fullyReviewedTrials);

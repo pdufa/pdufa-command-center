@@ -95,7 +95,7 @@ test("October monthly comparison never enters active FOCUS, chart depth, or past
  assert.equal(prior.rawMatches,3);
  assert.equal(prior.total,4);
  const roster=JSON.parse(fs.readFileSync(path.join(root,"../backend/app/data/focus_snapshot.json"),"utf8"));
- assert.equal(roster.records.length,29);
+ assert.equal(roster.records.length,32);
  const prospective=require("../data/fdaPredictionDecisionAudit.json");
  assert.equal(prospective.records.length,1);
  assert.equal(prospective.records[0].actualOutcome,"PENDING");

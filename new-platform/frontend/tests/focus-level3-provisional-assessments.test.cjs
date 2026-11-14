@@ -27,7 +27,7 @@ test("ASSESSMENTS visibly offers 29 FOCUS linked trials with 23 frozen prelimina
   assert.doesNotMatch(component,/setForecast|updatePrediction|writePredictions|addToAccuracy/);
 });
 test("23 FDA application cycles keep separate NCT mappings and research direction counts",()=>{
-  assert.equal(focus.records.length,29);
+  assert.equal(focus.records.length,32);
   assert.equal(research.cycles.length,23);
   assert.equal(research.kind,"CAL_FOCUS_LEVEL3_STYLE_RESEARCH_FREEZE_NOT_VALIDATED_FDA_FORECAST");
   assert.equal(research.policy.notActivePredictionEngine,true);
@@ -55,6 +55,7 @@ test("23 FDA application cycles keep separate NCT mappings and research directio
   assert.deepEqual(counts,{APPROVAL_LEAN:12,CRL_LEAN:5,ABSTAIN:5,ALREADY_APPROVED:1});
   assert.equal(ids.size,23);
   assert.equal(ncts.size,29);
+  assert.deepEqual(focus.records.filter(r=>!ncts.has(r.nct)).map(r=>r.nct).sort(),["NCT05031780","NCT06553768","NCT06747468"]);
   const srpt=research.cycles.filter(x=>x.ticker==="SRPT");
   assert.equal(srpt.length,2);
   assert.notEqual(srpt[0].cycleId,srpt[1].cycleId);
