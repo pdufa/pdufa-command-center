@@ -735,3 +735,16 @@ def test_level_one_accepts_known_registry_lifecycle_status():
     intake = score(row, registry, reviews)["levelOneIntake"]
     assert intake["executionStatus"] == "INTAKE_ONLY"
     assert intake["trialStatus"] == "ACTIVE_NOT_RECRUITING"
+
+
+def test_level_one_malformed_registry_design_and_endpoints_do_not_crash():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["study_design"] = "invalid design"
+    registry["primary_outcomes"] = {"measure": "not a list"}
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["executionStatus"] == "INTAKE_ONLY"
+    assert intake["evidenceInventory"]["trial design"] == "MISSING"
+    assert intake["evidenceInventory"]["primary endpoint definition"] == "MISSING"
+    assert intake["endpointDefinitions"] == []
+    assert intake["endpointQuality"]["score"] is None
