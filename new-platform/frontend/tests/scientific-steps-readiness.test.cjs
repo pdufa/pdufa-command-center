@@ -49,7 +49,7 @@ test("FOCUS trial rows expose explicit exact-program intake selector without aut
  const source=fs.readFileSync(path.join(app,"focus","page.tsx"),"utf8");
  const loader=fs.readFileSync(path.join(app,"ExactTrialScientificIntake.tsx"),"utf8");
  assert.match(source,/<ExactTrialIntakeSelector cohort="FOCUS" nctId=\{t\.nct\}\/>/);
- assert.match(loader,/Program identity must be verified separately/);
+ assert.match(loader,/Multiple programs require explicit selection/);
  assert.match(loader,/programIdentity=\{selected\}/);
 });
 
@@ -64,4 +64,12 @@ test("PAST requires explicit NCT and exact program before intake lookup",()=>{
  assert.match(source,/Historical event-to-NCT linkage remains unverified/);
  assert.match(source,/<ExactTrialIntakeSelector cohort="PAST" nctId=\{verifiedNctByEvent\[r\.eventKey\]\}\/>/);
  assert.ok(source.includes(String.raw`/^NCT\\d{8}$/`), "PAST must validate the exact NCT format");
+});
+
+test("exact-NCT discovery refuses ambiguous automatic selection",()=>{
+ const source=fs.readFileSync(path.join(app,"ExactTrialScientificIntake.tsx"),"utf8");
+ assert.match(source,/fetch\("\/api\/assessments"/);
+ assert.match(source,/data\.status!=="COMPLETE"/);
+ assert.match(source,/if\(values\.length===1\)/);
+ assert.match(source,/Multiple programs share this NCT/);
 });
