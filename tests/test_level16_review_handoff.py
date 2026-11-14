@@ -135,6 +135,59 @@ class Level16ReviewHandoffTests(unittest.TestCase):
             handoff.build(self.coverage, self.roster, self.applications, self.chronology,
                           orca3_publication=pub)
 
+    def test_maple_hcm_continuous_outcomes_not_abstinence_or_cross_trial(self):
+        maple = json.loads(handoff.MAPLE_HCM.read_text(encoding="utf-8"))
+        packet = handoff.build(self.coverage, self.roster, self.applications,
+                               self.chronology, maple_publication=maple)
+        trial = next(x for x in packet["trials"] if x["nct"] == "NCT05767346")
+        self.assertEqual(trial["ticker"], "CYTK")
+        self.assertEqual(trial["phaseUnreviewed"], ["PHASE3"])
+        clinical = trial["levels"][2]["publicationFindingsUnreviewed"]
+        self.assertEqual(clinical["endpointDataType"],
+                         "CONTINUOUS_EXERCISE_CAPACITY_NOT_BINARY_ABSTINENCE")
+        self.assertEqual(clinical["continuousPrimaryEndpointUnreviewed"][
+            "adjustedBetweenGroupMeanDifference"], 2.3)
+        self.assertEqual(clinical["continuousPrimaryEndpointUnreviewed"]["unit"],
+                         "mL/kg/min")
+        self.assertEqual(len(clinical["secondaryContinuousComparisonsUnreviewed"]), 6)
+        self.assertEqual(clinical["reportedEfficacyComparisons"], [])
+        self.assertEqual(clinical["reportedSafetyObservations"][
+            "seriousAdverseEvents"]["aficamten"], 7)
+        for index in (2, 3, 5):
+            item = trial["levels"][index]
+            self.assertIsNotNone(item["publicationFindingsUnreviewed"])
+            self.assertFalse(item["completionPermitted"])
+            self.assertFalse(item["publicationFindingsUnreviewed"]["scientificallyAdjudicated"])
+            self.assertIsNone(item["score"])
+            self.assertIsNone(item["approvalProbability"])
+        self.assertIsNone(trial["levels"][4]["publicationFindingsUnreviewed"])
+        self.assertIsNone(trial["levels"][0]["publicationFindingsUnreviewed"])
+        self.assertEqual(trial["actualCompletedLevels"], 0)
+        orca3 = next(x for x in packet["trials"] if x["nct"] == "NCT05206370")
+        self.assertIsNone(orca3["levels"][2]["publicationFindingsUnreviewed"])
+        self.assertEqual(packet["independentlyAdjudicatedLevels"], 0)
+        md = handoff.markdown(packet)
+        self.assertIn("REPORTED CONTINUOUS PRIMARY ENDPOINT", md)
+        self.assertIn("NOT the original NEJM study report", md)
+        self.assertIn("2.3 mL/kg/min", md)
+
+    def test_maple_hcm_forged_original_source_review_and_wrong_units_rejected(self):
+        maple = json.loads(handoff.MAPLE_HCM.read_text(encoding="utf-8"))
+        maple["sourceIndependentlyAuthenticated"] = True
+        with self.assertRaises(ValueError):
+            handoff.build(self.coverage, self.roster, self.applications,
+                          self.chronology, maple_publication=maple)
+        maple = json.loads(handoff.MAPLE_HCM.read_text(encoding="utf-8"))
+        maple["primaryEndpoint"]["unit"] = "%"
+        with self.assertRaises(ValueError):
+            handoff.build(self.coverage, self.roster, self.applications,
+                          self.chronology, maple_publication=maple)
+        maple = json.loads(handoff.MAPLE_HCM.read_text(encoding="utf-8"))
+        maple["nct"] = "NCT04576949"
+        with self.assertRaises(ValueError):
+            handoff.build(self.coverage, self.roster, self.applications,
+                          self.chronology, maple_publication=maple)
+
     def test_orca2_first_for_collected_evidence_not_highest_approval_chance(self):
         packet = self.build()
         self.assertEqual(packet["trials"][0]["nct"], "NCT04576949")
