@@ -33,10 +33,10 @@ LEVEL_NAMES = {
     6: "Disease-specific endpoint clinical relevance",
 }
 REVIEW_STEPS = [
-    "Authorized source verifier authenticates original source ownership, bytes, versions and cutoff",
-    "Separately authorized clinician or biostatistician conducts evidence-linked scientific review",
-    "Independent qualified challenger reviews findings and contradictory evidence",
-    "Separate authorized adjudicator resolves blockers and records the final decision",
+    "Owner checks original evidence, document identity, phase and date; automated source consistency aids research",
+    "AI-assisted scientific analysis presents findings, limitations and contradictory evidence to the owner",
+    "Owner evaluates competing explanations and unresolved risks; no outside challenger or credential needed",
+    "Owner records self-review decision and publication choice; never calls this independent certification",
 ]
 ORCA_NCT = "NCT04576949"
 ORCA3_NCT = "NCT05206370"
@@ -244,6 +244,9 @@ def _level_rows(row, orca_chronology, publication=None, publication3=None,
             "sourceAuthenticationStatus": "NOT_INDEPENDENTLY_AUTHENTICATED",
             "independentScientificReviewStatus": "NOT_ADJUDICATED",
             "independentChallengeStatus": "NOT_COMPLETED",
+            "ownerReviewStatus": "OWNER_NOT_REVIEWED",
+            "externalReviewerRequired": False,
+            "ownerCanReviewWithoutExternalVerification": True,
             "finalAdjudicationStatus": "NOT_COMPLETED",
             "completionPermitted": False,
             "score": None,
@@ -390,6 +393,9 @@ def build(coverage, roster, application_crosswalk, chronology,
             "firstResearchHandoffCandidate": nct == ORCA_NCT,
             "levels": levels,
             "reviewWorkflow": REVIEW_STEPS[:],
+            "ownerOnlyAssessmentMode": True,
+            "outsideReviewerCountRequired": 0,
+            "ownerAssessmentNotBlockedByExternalSignoff": True,
             "actualAuthenticatedSources": 0,
             "actualCompletedLevels": 0,
             "actualIndependentScientificReviews": 0,
@@ -417,7 +423,11 @@ def build(coverage, roster, application_crosswalk, chronology,
         "genuineQualifiedReviewersActivated": 0,
         "actualApprovalProbabilities": 0,
         "stagingActivated": False,
-        "reviewReleaseStatus": "BLOCKED_ON_OWNER_A01_A14_AND_INDEPENDENT_REVIEW",
+        "reviewReleaseStatus": "OWNER_RESEARCH_PREPARED_NO_EXTERNAL_SIGNOFF_REQUIRED",
+        "ownerOnlyAssessmentMode": True,
+        "externalReviewerGateCount": 0,
+        "externalSignoffsRequiredForScoring": 0,
+        "ownerReviewNotYetEntered": True,
         "trials": rows,
     }
 
@@ -426,10 +436,11 @@ def markdown(packet):
     if packet.get("kind") != "FOCUS_LEVELS1_6_INDEPENDENT_REVIEW_HANDOFF_RESEARCH_ONLY":
         raise ValueError("Not a research handoff")
     lines = [
-        "# FOCUS Levels 1–6 — independent review handoff (not a completed assessment)",
+        "# FOCUS Levels 1–6 — owner-only review handoff (not a completed assessment)",
         "",
-        "**UNREVIEWED, OUTCOME-EXPOSED RESEARCH; NO AUTHENTICATED SOURCES, "
-        "LIVE REVIEWERS, FDA FORECASTS OR CLINICAL SIGNOFF.**",
+        "**OWNER-ONLY, UNREVIEWED AND OUTCOME-EXPOSED RESEARCH. "
+        "NO EXTERNAL SIGNOFF IS REQUIRED. "
+        "No owner review, FDA forecast or independent medical certification has been recorded.**",
         "",
         f"Evidence cutoff: {packet['evidenceCutoffDate']}. "
         f"FOCUS: {packet['focusTrialCount']} exact NCTs; "
