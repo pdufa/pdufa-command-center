@@ -460,8 +460,22 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
        aria-pressed={!hidden&&expanded} disabled={hidden} onClick={()=>switchIn("expanded",s.key)}>
        {expanded&&!hidden?"▾":"▸"} {s.label} <small>{active}/{columns.length}</small>
       </button>
-      <button type="button" className={css.visibilityToggle} aria-pressed={hidden}
-       onClick={()=>switchIn("hiddenSegments",s.key)}>{hidden?"Restore":"Hide segment"}</button>
+      <button type="button" className={css.visibilityToggle}
+       aria-label={(active===columns.length?"Uncheck All":"Check All")+" columns in "+s.label}
+       onClick={()=>edit(l=>{
+        const allChecked=columns.every(key=>!l.hiddenColumns.includes(key));
+        return {...l,hiddenColumns:allChecked
+         ?[...new Set([...l.hiddenColumns,...columns])]
+         :l.hiddenColumns.filter(key=>!columns.includes(key))};
+       })}>{active===columns.length?"Uncheck All":"Check All"}</button>
+      <button type="button" className={css.visibilityToggle}
+       aria-expanded={expanded&&!hidden}
+       aria-label={(expanded&&!hidden?"Hide Section":"Show Section")+" "+s.label}
+       onClick={()=>edit(l=>{
+        const showing=l.hiddenSegments.includes(s.key)||!l.expanded.includes(s.key);
+        return {...l,hiddenSegments:l.hiddenSegments.filter(key=>key!==s.key),
+         expanded:showing?[...new Set([...l.expanded,s.key])]:l.expanded.filter(key=>key!==s.key)};
+       })}>{expanded&&!hidden?"Hide Section":"Show Section"}</button>
      </div>
      {(orderEditorOpen||(expanded&&!hidden))&&<div className={css.columnOptions}>
       {columns.map((key,columnIndex)=>{
