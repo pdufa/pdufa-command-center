@@ -51,6 +51,19 @@ def _valid_url(value):
         return False
 
 
+def _source_matches_trial(url, trial_id):
+    """Reject a ClinicalTrials.gov study URL that names another trial."""
+    try:
+        parsed = urlparse(url)
+        host = (parsed.hostname or "").lower()
+        if host not in {"clinicaltrials.gov", "www.clinicaltrials.gov"}:
+            return True
+        parts = parsed.path.rstrip("/").split("/")
+        return len(parts) >= 3 and parts[-2] == "study" and parts[-1] == trial_id
+    except (TypeError, ValueError):
+        return False
+
+
 def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
     """Return independent level inventories; never convert coverage into a score."""
     evidence = evidence if isinstance(evidence, dict) else {}
@@ -78,6 +91,7 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
             review_day = _day(record.get("reviewedAt"))
             url = record.get("source")
             if (record.get("nctId") != trial_id or not _valid_url(url)
+                    or not _source_matches_trial(url, trial_id)
                     or not source_day or not review_day
                     or not source_day <= review_day <= cutoff
                     or record.get("judgment") not in {"SUPPORTS", "CONCERNS", "INCONCLUSIVE"}
