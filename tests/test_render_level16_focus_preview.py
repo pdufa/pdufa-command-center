@@ -149,7 +149,7 @@ class PreviewTests(unittest.TestCase):
         html = renderer.render(evidence_report(), review_handoff=handoff_report())
         self.assertEqual(html.count("Independent review handoff — NOT ADJUDICATED"), 192)
         self.assertIn("Hochberg", html)
-        self.assertIn("NOT_ADJUDICATED", html)
+        self.assertIn("NOT ADJUDICATED", html)
         self.assertIn("Independent review", html)
         self.assertIn("UNRESOLVED", html)
         self.assertIn("NOT MEDICAL ASSESSMENTS OR FDA FORECASTS", html)
