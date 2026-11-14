@@ -18,6 +18,14 @@ class DossierBuilderTests(unittest.TestCase):
         result = module.build(self.matrix())
         self.assertEqual(result["trialCount"], 29)
         self.assertEqual(result["scientificallyAdjudicated"], 0)
+        self.assertEqual(result["ownerReviewedDossiers"], 0)
+        self.assertEqual(result["externalReviewerRequirements"], 0)
+        for dossier in result["dossiers"]:
+            self.assertEqual(dossier["dossierStatus"], "OWNER_NOT_REVIEWED")
+            for dimension in dossier["dimensions"].values():
+                self.assertEqual(dimension["ownerReviewStatus"], "OWNER_NOT_REVIEWED")
+                self.assertFalse(dimension["externalReviewerRequired"])
+                self.assertNotIn("independentReview", dimension)
         self.assertTrue(all(len(d["dimensions"]) == 8 for d in result["dossiers"]))
         self.assertTrue(all(d["outcomePrediction"] is None for d in result["dossiers"]))
 
