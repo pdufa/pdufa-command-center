@@ -125,7 +125,9 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                     or not isinstance(record.get("reviewerId"), str)
                     or not record["reviewerId"].strip()
                     or not isinstance(record.get("documentType"), str)
-                    or not record["documentType"].strip()):
+                    or not record["documentType"].strip()
+                    or not isinstance(record.get("evidenceExcerpt"), str)
+                    or not record["evidenceExcerpt"].strip()):
                 states[criterion] = "REJECTED_EVIDENCE"
                 continue
             states[criterion] = record["judgment"]
@@ -135,6 +137,7 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                 "nctId": trial_id, "rationale": record["rationale"],
                 "reviewerId": record["reviewerId"],
                 "documentType": record["documentType"],
+                "evidenceExcerpt": record["evidenceExcerpt"],
             }
         required = [c for c in criteria if states[c] != "NOT_YET_EXPECTED"]
         rejected = [c for c in criteria if states[c] == "REJECTED_EVIDENCE"]
