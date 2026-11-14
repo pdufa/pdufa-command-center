@@ -805,3 +805,30 @@ def test_exact_nct_program_index_rejects_malformed_registry_identifiers():
     assert exact_nct_program_map(rows) == {
         "NCT00000001": ["OTHER|NCT00000001", "TRIAL|NCT00000001"]
     }
+
+
+def test_exact_nct_program_map_deduplicates_and_is_order_independent():
+    from app.assessment_service import exact_nct_program_map
+    entries = [
+        ("one", {"id": "Z|NCT00000002", "nctId": "NCT00000002"}),
+        ("two", {"id": "A|NCT00000001", "nctId": "NCT00000001"}),
+        ("three", {"id": "B|NCT00000001", "nctId": "NCT00000001"}),
+        ("four", {"id": "A|NCT00000001", "nctId": "NCT00000001"}),
+        ("five", {"id": "NO_NCT", "ticker": "SAME"}),
+    ]
+    expected = {
+        "NCT00000001": ["A|NCT00000001", "B|NCT00000001"],
+        "NCT00000002": ["Z|NCT00000002"],
+    }
+    assert exact_nct_program_map(dict(entries)) == expected
+    assert exact_nct_program_map(dict(reversed(entries))) == expected
+
+
+def test_exact_nct_program_map_does_not_infer_from_ticker_or_indication():
+    from app.assessment_service import exact_nct_program_map
+    rows = {
+        "ticker_only": {"id": "COMPANY-A", "ticker": "NCT00000001"},
+        "indication_only": {"id": "COMPANY-B", "indication": "NCT00000002"},
+        "malformed": {"id": "COMPANY-C", "nctId": "NCT0000000X"},
+    }
+    assert exact_nct_program_map(rows) == {}
