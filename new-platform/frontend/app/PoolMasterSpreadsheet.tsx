@@ -8,7 +8,7 @@ import focusDesignations from "../data/focusFdaDesignations.json";
 import css from "./PoolMasterSpreadsheet.module.css";
 import TickerChartButton from "./TickerChartButton";
 import {POOL_DETAIL_FIELDS,type PoolDetailField,type PoolRegistryDetail} from "../lib/pool-registry-details";
-import {isGroupVisible,toggleColumnGroup} from "../lib/pool-column-visibility";
+import {isGroupVisible,toggleColumnGroup,setPoolSegmentVisibility,setPoolColumnVisibility} from "../lib/pool-column-visibility";
 import {normalizePoolColumnOrder,reorderPoolSegment,stepPoolSegment,movePoolColumn,stepPoolColumn} from "../lib/pool-column-order";
 
 export type PoolMasterRow={
@@ -245,6 +245,10 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
  const qualificationVisible=isGroupVisible(layout,GROUP_QUALIFICATION,COLUMNS_BY_SEGMENT);
  const toggleClinical=()=>edit(l=>({...l,...toggleColumnGroup(l,GROUP_CLINICAL,l.columnOrder)}));
  const toggleQualification=()=>edit(l=>({...l,...toggleColumnGroup(l,GROUP_QUALIFICATION,l.columnOrder)}));
+ const setSectionVisibility=(segment:string,show:boolean)=>
+  edit(l=>({...l,...setPoolSegmentVisibility(l,segment,l.columnOrder,show)}));
+ const setItemVisibility=(segment:string,key:Key,show:boolean)=>
+  edit(l=>({...l,...setPoolColumnVisibility(l,segment,key,l.columnOrder,show)}));
  const resetView=()=>edit(l=>{
   const defaults=defaultLayout(view);
   return {...l,expanded:defaults.expanded,hiddenSegments:defaults.hiddenSegments,
@@ -442,7 +446,7 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
    {orderedSegments.map((s,segmentIndex)=>{
     const hidden=layout.hiddenSegments.includes(s.key),expanded=layout.expanded.includes(s.key);
     const columns=layout.columnOrder[s.key]||[];
-    const active=columns.filter(k=>!layout.hiddenColumns.includes(k)).length;
+    const active=hidden?0:columns.filter(k=>!layout.hiddenColumns.includes(k)).length;
     return <div key={s.key} className={css.segment} data-segment={s.key}
      onDragOver={acceptDrag} onDrop={event=>dropOnSegment(event,s.key)}>
      <div className={css.segmentHead}>
@@ -456,25 +460,40 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
          onClick={()=>shiftSegment(s.key,1)}>→</button>
        </div>
       </>}
-      <button type="button" className={css.segmentToggle} aria-expanded={!hidden&&expanded}
-       aria-pressed={!hidden&&expanded} disabled={hidden} onClick={()=>switchIn("expanded",s.key)}>
-       {expanded&&!hidden?"▾":"▸"} {s.label} <small>{active}/{columns.length}</small>
+      <button type="button" className={css.segmentToggle} aria-expanded={expanded}
+       aria-pressed={expanded} onClick={()=>switchIn("expanded",s.key)}
+       aria-label={s.label+" — "+(expanded?"Close item selectors":"Open item selectors")}>
+       {expanded?"▾":"▸"} {s.label} <small>{active}/{columns.length} shown</small>
       </button>
-      <button type="button" className={css.visibilityToggle} aria-pressed={hidden}
-       onClick={()=>switchIn("hiddenSegments",s.key)}>{hidden?"Restore":"Hide segment"}</button>
+      <div className={css.visibilityPair} role="group" aria-label={s.label+" visibility"}>
+       <button type="button" data-mode="show"
+        aria-label={"SHOW ALL columns in "+s.label}
+        aria-pressed={!hidden&&expanded&&active===columns.length}
+        onClick={()=>setSectionVisibility(s.key,true)}>SHOW ALL</button>
+       <button type="button" data-mode="hide"
+        aria-label={"HIDE ALL columns in "+s.label}
+        aria-pressed={hidden}
+        onClick={()=>setSectionVisibility(s.key,false)}>HIDE ALL</button>
+      </div>
      </div>
-     {(orderEditorOpen||(expanded&&!hidden))&&<div className={css.columnOptions}>
+     {(orderEditorOpen||expanded)&&<div className={css.columnOptions}>
       {columns.map((key,columnIndex)=>{
        const c=COLUMN_LOOKUP.get(key)!;
        return <div className={css.columnOption} key={key}
         onDragOver={acceptDrag} onDrop={event=>dropOnColumn(event,s.key,key)}>
         {orderEditorOpen&&<span className={css.dragHandle} draggable="true" title={"Drag "+c.label+" to reorder"}
          onDragStart={event=>dragStart(event,"column",key)}>⠿</span>}
-        <label className={css.columnCheck}>
-         <input type="checkbox" checked={!layout.hiddenColumns.includes(key)}
-          onChange={()=>switchIn("hiddenColumns",key)}/>
-         <span>{c.label}</span>
-        </label>
+        <span className={css.columnCheck}><span>{c.label}</span></span>
+        <div className={css.itemVisibility} role="group" aria-label={c.label+" visibility"}>
+         <button type="button" data-mode="show"
+          aria-label={"SHOW "+c.label}
+          aria-pressed={!hidden&&expanded&&!layout.hiddenColumns.includes(key)}
+          onClick={()=>setItemVisibility(s.key,key,true)}>SHOW</button>
+         <button type="button" data-mode="hide"
+          aria-label={"HIDE "+c.label}
+          aria-pressed={hidden||layout.hiddenColumns.includes(key)}
+          onClick={()=>setItemVisibility(s.key,key,false)}>HIDE</button>
+        </div>
         {orderEditorOpen&&<>
          <div className={css.movePair} role="group" aria-label={"Reorder "+c.label}>
           <button type="button" aria-label={"Move "+c.label+" left"} disabled={columnIndex===0}
