@@ -375,3 +375,33 @@ def test_level_one_rejects_clinicaltrials_link_to_different_trial():
     review["source"] = "https://clinicaltrials.gov/study/NCT00000001"
     quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
     assert quality["prespecification"] == "SUPPORTS"
+
+
+def test_level_one_review_consensus_requires_all_criteria():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["reviewConsensus"] == "INSUFFICIENT_REVIEW_COVERAGE"
+    assert quality["scientificScoreStatus"] == "NOT_VALIDATED"
+    assert quality["score"] is None
+
+
+def test_level_one_review_consensus_is_not_a_prediction():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    criteria = ("prespecification", "clinicalRelevance", "multiplicityControl",
+                "estimandAndAnalysisPlan", "outcomeSuccess")
+    reviews["levelOneEndpointReviews"] = {
+        criterion: {
+            "judgment": "SUPPORTS", "nctId": "NCT00000001",
+            "source": "https://clinicaltrials.gov/study/NCT00000001",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+            "rationale": "Source and trial checked",
+        } for criterion in criteria
+    }
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["endpointQuality"]["reviewConsensus"] == "ALL_CRITERIA_SUPPORTIVE"
+    assert intake["endpointQuality"]["score"] is None
+    assert intake["fdaPrediction"] == "ABSTAIN"
+    reviews["levelOneEndpointReviews"]["outcomeSuccess"]["judgment"] = "CONCERNS"
+    assert score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]["reviewConsensus"] == "MIXED_EVIDENCE"
