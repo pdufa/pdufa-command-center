@@ -1,8 +1,27 @@
 {
   "applicationCrosswalkAsOf": "2026-11-07",
+  "applicationCrosswalkState": "PARTIAL",
   "kind": "FOCUS_NIGHTLY_PRIMARY_SOURCE_MONITOR_NOT_FDA_PREDICTIONS",
-  "pacificDate": "2026-11-11",
-  "reassessmentQueue": [],
+  "pacificDate": "2026-11-14",
+  "reassessmentQueue": [
+    {
+      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
+      "cycleId": "capr-deramiocel",
+      "ncts": [
+        "NCT05126758"
+      ],
+      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
+    },
+    {
+      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
+      "cycleId": "cldx-barzolvolimab",
+      "ncts": [
+        "NCT06445023",
+        "NCT06455202"
+      ],
+      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
+    }
+  ],
   "researchPolicy": {
     "FDAOutcomeDetermined": false,
     "independentMedicalReviewComplete": false,
@@ -12,21 +31,22 @@
     "trialMembershipOrSheetWrites": false,
     "unchangedEvidenceNotNewValidation": true
   },
-  "rosterSnapshotAsOf": "2026-11-10",
-  "runAtUTC": "2026-11-11T14:09:44.397960+00:00",
+  "rosterSnapshotAsOf": "2026-11-13",
+  "runAtUTC": "2026-11-14T13:26:03.443677+00:00",
   "schemaVersion": 1,
   "sourceAuthority": "ClinicalTrials.gov API v2; exact-NCT public records",
   "sourceRecoveryQueue": [],
   "summary": {
     "applicationCycles": 23,
-    "focusTrials": 29,
-    "newOrChangedEvidenceTrials": 0,
+    "focusTrials": 32,
+    "newOrChangedEvidenceTrials": 6,
     "predictionProbabilitiesUpdated": 0,
-    "reassessmentQueueCycles": 0,
+    "reassessmentQueueCycles": 2,
     "scientificAssessmentsRevalidated": 0,
-    "sourceRetrieved": 29,
+    "sourceRetrieved": 32,
     "sourceUnavailable": 0,
-    "status": "SOURCE_MONITOR_COMPLETE"
+    "status": "SOURCE_MONITOR_COMPLETE",
+    "unmappedApplicationNcts": 3
   },
   "trials": [
     {
@@ -214,6 +234,31 @@
       "ticker": "IMNM"
     },
     {
+      "applicationCycles": [],
+      "calibratedProbability": null,
+      "company": "Agios Pharmaceuticals, Inc.",
+      "delta": "FIRST_SOURCE_OBSERVATION",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://investor.agios.com/node/19341",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05031780",
+      "phase": [
+        "PHASE2",
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2025-10-30",
+      "registeredPrimaryOutcomeCount": 4,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "9fe9143c9d92d1427e0b50bedbf48273f5ff59ba0cd9b44b47e9c02408de563a",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05031780",
+      "ticker": "AGIO"
+    },
+    {
       "applicationCycles": [
         "axsm-axs12"
       ],
@@ -271,7 +316,7 @@
       ],
       "calibratedProbability": null,
       "company": "Capricor Therapeutics, Inc.",
-      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "delta": "REGISTRY_EVIDENCE_CHANGED",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.capricor.com/investors/sec-filings/all-sec-filings/content/0001104659-26-100071/capr-20260824xex99d1.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -286,7 +331,7 @@
       "registryStatus": "ACTIVE_NOT_RECRUITING",
       "registryUpdated": null,
       "scientificSignoff": false,
-      "sourceHash": "1acc70db02af3d20b27f4b8de4a494c4602956b15c7f5076d1e66991c0b75910",
+      "sourceHash": "48df7a2c89d71518113b522a37cf01483bf9a689f6f4ef922ea596e702d2f2d8",
       "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT05126758",
       "ticker": "CAPR"
@@ -713,7 +758,7 @@
       ],
       "calibratedProbability": null,
       "company": "Celldex Therapeutics",
-      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "delta": "REGISTRY_EVIDENCE_CHANGED",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-reports-third-quarter-financial-results-and-provides",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -722,13 +767,13 @@
         "PHASE3"
       ],
       "postedRegistryResults": false,
-      "primaryCompletion": "2026-10",
+      "primaryCompletion": "2026-08-12",
       "registeredPrimaryOutcomeCount": 1,
       "registeredSeriousAdverseEventModule": false,
       "registryStatus": "ACTIVE_NOT_RECRUITING",
       "registryUpdated": null,
       "scientificSignoff": false,
-      "sourceHash": "536f954d084324af789033d9b05826c0303bc0d6598cfc81781b7c6ee3384e83",
+      "sourceHash": "e30374474e1a9f5eb2263c94a6474ca55abd9fa8cb4b1b00b251c994eb5c2b2f",
       "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06445023",
       "ticker": "CLDX"
@@ -739,7 +784,7 @@
       ],
       "calibratedProbability": null,
       "company": "Celldex Therapeutics",
-      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "delta": "REGISTRY_EVIDENCE_CHANGED",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-reports-third-quarter-financial-results-and-provides",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -748,16 +793,40 @@
         "PHASE3"
       ],
       "postedRegistryResults": false,
-      "primaryCompletion": "2026-10",
+      "primaryCompletion": "2026-08-04",
       "registeredPrimaryOutcomeCount": 1,
       "registeredSeriousAdverseEventModule": false,
       "registryStatus": "ACTIVE_NOT_RECRUITING",
       "registryUpdated": null,
       "scientificSignoff": false,
-      "sourceHash": "d24b56af4045a4e684064c48fef6bc6de09f66a3c91dd8d0140b821e560b099f",
+      "sourceHash": "4a99f84f5856ab53f07d1335f89204b251035633492eed8970b703f11adee3e7",
       "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06455202",
       "ticker": "CLDX"
+    },
+    {
+      "applicationCycles": [],
+      "calibratedProbability": null,
+      "company": "Mirum Pharmaceuticals, Inc.",
+      "delta": "FIRST_SOURCE_OBSERVATION",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://ir.mirumpharma.com/news/news-details/2026/Mirum-Pharmaceuticals-Announces-Primary-Endpoint-Met-in-Phase-3-EXPAND-Study-of-LIVMARLI-maralixibat-in-Ultra-Rare-Cholestatic-Liver-Diseases/default.aspx",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06553768",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2026-07-29",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "6d5d766fa2dda05b591d8b198b4ad89017d985309d033cc0455d6df08e0869f2",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06553768",
+      "ticker": "MIRM"
     },
     {
       "applicationCycles": [
@@ -784,6 +853,50 @@
       "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
       "sourceUrl": "https://clinicaltrials.gov/study/NCT06669754",
       "ticker": "PHVS"
+    },
+    {
+      "applicationCycles": [],
+      "calibratedProbability": null,
+      "company": "Amylyx Pharmaceuticals Inc.",
+      "delta": "FIRST_SOURCE_OBSERVATION",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://amylyx.gcs-web.com/news-releases/news-release-details/amylyx-pharmaceuticals-reports-third-quarter-2026-financial",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06747468",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2026-07-08",
+      "registeredPrimaryOutcomeCount": 3,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "5e430e7180016ceb4e8b98cdf30d9f44dcd4221b8cb91ad9ea3754141bd4e2ef",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06747468",
+      "ticker": "AMLX"
+    }
+  ],
+  "unmappedApplicationReviewQueue": [
+    {
+      "action": "INDEPENDENT_DRUG_INDICATION_AND_FDA_CYCLE_RECONCILIATION",
+      "nct": "NCT05031780",
+      "reason": "CURRENT_FOCUS_TRIAL_HAS_NO_MAPPED_APPLICATION_CYCLE",
+      "ticker": "AGIO"
+    },
+    {
+      "action": "INDEPENDENT_DRUG_INDICATION_AND_FDA_CYCLE_RECONCILIATION",
+      "nct": "NCT06553768",
+      "reason": "CURRENT_FOCUS_TRIAL_HAS_NO_MAPPED_APPLICATION_CYCLE",
+      "ticker": "MIRM"
+    },
+    {
+      "action": "INDEPENDENT_DRUG_INDICATION_AND_FDA_CYCLE_RECONCILIATION",
+      "nct": "NCT06747468",
+      "reason": "CURRENT_FOCUS_TRIAL_HAS_NO_MAPPED_APPLICATION_CYCLE",
+      "ticker": "AMLX"
     }
   ]
 }

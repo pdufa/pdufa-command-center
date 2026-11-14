@@ -1,0 +1,902 @@
+{
+  "applicationCrosswalkAsOf": "2026-11-07",
+  "applicationCrosswalkState": "PARTIAL",
+  "kind": "FOCUS_NIGHTLY_PRIMARY_SOURCE_MONITOR_NOT_FDA_PREDICTIONS",
+  "pacificDate": "2026-11-14",
+  "reassessmentQueue": [
+    {
+      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
+      "cycleId": "capr-deramiocel",
+      "ncts": [
+        "NCT05126758"
+      ],
+      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
+    },
+    {
+      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
+      "cycleId": "cldx-barzolvolimab",
+      "ncts": [
+        "NCT06445023",
+        "NCT06455202"
+      ],
+      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
+    }
+  ],
+  "researchPolicy": {
+    "FDAOutcomeDetermined": false,
+    "independentMedicalReviewComplete": false,
+    "issuerFDARegulatoryResearchRequiredSeparately": true,
+    "phaseFirst": true,
+    "probabilitiesUpdated": false,
+    "trialMembershipOrSheetWrites": false,
+    "unchangedEvidenceNotNewValidation": true
+  },
+  "rosterSnapshotAsOf": "2026-11-13",
+  "runAtUTC": "2026-11-14T13:26:03.443677+00:00",
+  "schemaVersion": 1,
+  "sourceAuthority": "ClinicalTrials.gov API v2; exact-NCT public records",
+  "sourceRecoveryQueue": [],
+  "summary": {
+    "applicationCycles": 23,
+    "focusTrials": 32,
+    "newOrChangedEvidenceTrials": 6,
+    "predictionProbabilitiesUpdated": 0,
+    "reassessmentQueueCycles": 2,
+    "scientificAssessmentsRevalidated": 0,
+    "sourceRetrieved": 32,
+    "sourceUnavailable": 0,
+    "status": "SOURCE_MONITOR_COMPLETE",
+    "unmappedApplicationNcts": 3
+  },
+  "trials": [
+    {
+      "applicationCycles": [
+        "srpt-casimersen",
+        "srpt-golodirsen"
+      ],
+      "calibratedProbability": null,
+      "company": "Sarepta Therapeutics, Inc.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://investorrelations.sarepta.com/news-releases/news-release-details/sarepta-announces-fda-acceptance-sndas-amondys-45r-and-vyondys",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT02500381",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2024-11-12",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "b94df671093a02ca1264d8c6f4650409d5d718f745fbd1f6ef05b49a5d035035",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT02500381",
+      "ticker": "SRPT"
+    },
+    {
+      "applicationCycles": [
+        "cort-relacorilant"
+      ],
+      "calibratedProbability": null,
+      "company": "Corcept Therapeutics",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://ir.corcept.com/news-releases/news-release-details/corcept-resubmits-new-drug-application-relacorilant-treatment",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT03697109",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": true,
+      "primaryCompletion": "2024-04-08",
+      "registeredPrimaryOutcomeCount": 2,
+      "registeredSeriousAdverseEventModule": true,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "d7fc0a98c0472caadf643086d094340e3493ffe5ec04f9432b2c73d4ea90a62d",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT03697109",
+      "ticker": "CORT"
+    },
+    {
+      "applicationCycles": [
+        "cort-relacorilant"
+      ],
+      "calibratedProbability": null,
+      "company": "Corcept Therapeutics",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://ir.corcept.com/news-releases/news-release-details/corcept-therapeutics-announces-third-quarter-financial-results-5",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT04308590",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": true,
+      "primaryCompletion": "2024-09-19",
+      "registeredPrimaryOutcomeCount": 2,
+      "registeredSeriousAdverseEventModule": true,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "500cdc5a86fee55ed69379a5b80f10f23a17d73aded6cf5fa3a23c204b107902",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04308590",
+      "ticker": "CORT"
+    },
+    {
+      "applicationCycles": [
+        "svra-molgramostim"
+      ],
+      "calibratedProbability": null,
+      "company": "Savara Inc.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526344585/svra-20260630.htm",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT04544293",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": true,
+      "primaryCompletion": "2023-11-30",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": true,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "54718ae2e9dda1a75a696def2a9e5f5b407b2cbfb09aef869ebf3cc2207f4fd1",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04544293",
+      "ticker": "SVRA"
+    },
+    {
+      "applicationCycles": [
+        "achv-cytisinicline"
+      ],
+      "calibratedProbability": null,
+      "company": "Achieve Life Sciences",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-344624/achv-20260630.htm",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT04576949",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": true,
+      "primaryCompletion": "2021-12-23",
+      "registeredPrimaryOutcomeCount": 2,
+      "registeredSeriousAdverseEventModule": true,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "e5f467e64b44bf1a324f1e01319f18ed306a0650f1dd0b78578aa065c13edeb1",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04576949",
+      "ticker": "ACHV"
+    },
+    {
+      "applicationCycles": [
+        "vera-trutakna"
+      ],
+      "calibratedProbability": null,
+      "company": "Vera Therapeutics, Inc.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://veratherapeutics.gcs-web.com/news-releases/news-release-details/vera-therapeutics-provides-business-update-and-reports-third-3",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT04716231",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": true,
+      "primaryCompletion": "2025-05-15",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": true,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "de176e7e32155ce7003c73b7bc3d1b13d7f626dc5df54db2f4b95f6c7a14807f",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04716231",
+      "ticker": "VERA"
+    },
+    {
+      "applicationCycles": [
+        "imnm-desmoid"
+      ],
+      "calibratedProbability": null,
+      "company": "Immunome, Inc.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://investors.immunome.com/immunome-announces-u-s-fda-acceptance-of-new-drug-application-for-varegacestat-for-the-treatment-of-adults-with-desmoid-tumors/",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT04871282",
+      "phase": [
+        "PHASE2",
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2025-12-03",
+      "registeredPrimaryOutcomeCount": 2,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "5bc48b5cef6ef9d587f1e00ee17d154c9027c6d597d3f785206c17fbc9cf99d0",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT04871282",
+      "ticker": "IMNM"
+    },
+    {
+      "applicationCycles": [],
+      "calibratedProbability": null,
+      "company": "Agios Pharmaceuticals, Inc.",
+      "delta": "FIRST_SOURCE_OBSERVATION",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://investor.agios.com/node/19341",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05031780",
+      "phase": [
+        "PHASE2",
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2025-10-30",
+      "registeredPrimaryOutcomeCount": 4,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "9fe9143c9d92d1427e0b50bedbf48273f5ff59ba0cd9b44b47e9c02408de563a",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05031780",
+      "ticker": "AGIO"
+    },
+    {
+      "applicationCycles": [
+        "axsm-axs12"
+      ],
+      "calibratedProbability": null,
+      "company": "Axsome Therapeutics, Inc.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://www.axsome.com/news/axsome-therapeutics-announces-fda-acceptance-of-new-drug-app-13191",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05059223",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2024-03-15",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "493446ce0e17e61d6f5cf1e50d218688a025a81dbb330d6ff00b676fd3c41f12",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05059223",
+      "ticker": "AXSM"
+    },
+    {
+      "applicationCycles": [
+        "axsm-axs12"
+      ],
+      "calibratedProbability": null,
+      "company": "Axsome Therapeutics, Inc.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1579428/000119312526443752/axsm-20260930.htm",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05113745",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2024-11-15",
+      "registeredPrimaryOutcomeCount": 2,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "454f7a537aaca2eb3ac3de951dd8565cf7b5e8924a13677dd47cc68491ceaba3",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05113745",
+      "ticker": "AXSM"
+    },
+    {
+      "applicationCycles": [
+        "capr-deramiocel"
+      ],
+      "calibratedProbability": null,
+      "company": "Capricor Therapeutics, Inc.",
+      "delta": "REGISTRY_EVIDENCE_CHANGED",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://www.capricor.com/investors/sec-filings/all-sec-filings/content/0001104659-26-100071/capr-20260824xex99d1.htm",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05126758",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2025-06-18",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "48df7a2c89d71518113b522a37cf01483bf9a689f6f4ef922ea596e702d2f2d8",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05126758",
+      "ticker": "CAPR"
+    },
+    {
+      "applicationCycles": [
+        "achv-cytisinicline"
+      ],
+      "calibratedProbability": null,
+      "company": "Achieve Life Sciences",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://ir.achievelifesciences.com/sec-filings/all-sec-filings/content/0001193125-26-344624/achv-20260630.htm",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05206370",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": true,
+      "primaryCompletion": "2023-03-21",
+      "registeredPrimaryOutcomeCount": 2,
+      "registeredSeriousAdverseEventModule": true,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "976643c6f13481073c3c2c5fc49cadcb6b98c7c98f3ddd870899882d6bc34203",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05206370",
+      "ticker": "ACHV"
+    },
+    {
+      "applicationCycles": [
+        "cogt-gist"
+      ],
+      "calibratedProbability": null,
+      "company": "Cogent Biosciences, Inc.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526449926/cogt-ex99_1.htm",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05208047",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2025-09-30",
+      "registeredPrimaryOutcomeCount": 8,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "9c11e64422fd8c1b171addca7ae57abb53891ea0c53f895010250cf461f38990",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05208047",
+      "ticker": "COGT"
+    },
+    {
+      "applicationCycles": [
+        "blte-stargardt"
+      ],
+      "calibratedProbability": null,
+      "company": "Belite Bio, Inc.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://belitebio.gcs-web.com/news-releases/news-release-details/belite-bio-reports-unaudited-second-quarter-2026-financial",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05244304",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2025-08-04",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "77a2574168da2383c0048ae43433dfd35d0ee7228805e41043f15a6658bfd879",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05244304",
+      "ticker": "BLTE"
+    },
+    {
+      "applicationCycles": [
+        "abvx-uc"
+      ],
+      "calibratedProbability": null,
+      "company": "Abivax S.A.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://www.abivax.com/pipeline/",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05507203",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": true,
+      "primaryCompletion": "2025-06-24",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": true,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "8dcabe904473cae25bddfca04db3952cc0dad2da5f15b692cb49d7fefb33506a",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05507203",
+      "ticker": "ABVX"
+    },
+    {
+      "applicationCycles": [
+        "abvx-uc"
+      ],
+      "calibratedProbability": null,
+      "company": "Abivax S.A.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://www.abivax.com/pipeline/",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05507216",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": true,
+      "primaryCompletion": "2025-06-24",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": true,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "d9a5e4c15624618e87b62d7ca7599a7f4018474719de41f32f914a1c945401e1",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05507216",
+      "ticker": "ABVX"
+    },
+    {
+      "applicationCycles": [
+        "zbio-obexelimab"
+      ],
+      "calibratedProbability": null,
+      "company": "Zenas BioPharma, Inc.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://zenasbio.gcs-web.com/news-releases/news-release-details/zenas-biopharma-reports-third-quarter-2026-financial-results-and",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05662241",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2025-11-13",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "ab4b6acf4e3f60c5e2fc08eca7aed80f41a15cb68cf7f13d8f2cd4705d735b97",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05662241",
+      "ticker": "ZBIO"
+    },
+    {
+      "applicationCycles": [
+        "cytk-aficamten-ohcm"
+      ],
+      "calibratedProbability": null,
+      "company": "Cytokinetics",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447408/cytk-20260930.htm",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05767346",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": true,
+      "primaryCompletion": "2025-02-28",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": true,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "012c999035c65aeff9e4ef8d17475b83fc9f9756dc96437839fd70d421a35589",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05767346",
+      "ticker": "CYTK"
+    },
+    {
+      "applicationCycles": [
+        "apmd-ad109"
+      ],
+      "calibratedProbability": null,
+      "company": "Apnimed",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://ir.apnimed.com/news-releases/news-release-details/apnimed-reports-second-quarter-2026-financial-results-and",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05811247",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": true,
+      "primaryCompletion": "2025-05-07",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": true,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "79723732e90b858958bbae8b1dc7725e208ce4a689651714ba90ab1991cb628b",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05811247",
+      "ticker": "APMD"
+    },
+    {
+      "applicationCycles": [
+        "apmd-ad109"
+      ],
+      "calibratedProbability": null,
+      "company": "Apnimed",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://ir.apnimed.com/news-releases/news-release-details/apnimed-reports-second-quarter-2026-financial-results-and",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT05813275",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": true,
+      "primaryCompletion": "2025-03-10",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": true,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "8b428e781e914ac718f90fb97de8d2afe4d89c4c194eadaad169afdef95194b0",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT05813275",
+      "ticker": "APMD"
+    },
+    {
+      "applicationCycles": [
+        "cytk-aficamten-nhcm"
+      ],
+      "calibratedProbability": null,
+      "company": "Cytokinetics, Inc.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1061983/000119312526447198/cytk-ex99_1.htm",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06081894",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2026-08-31",
+      "registeredPrimaryOutcomeCount": 2,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "4e5217ded1606f05949bc8ecb6ae27fd314fb776d3de7d669c7a415bfc33c160",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06081894",
+      "ticker": "CYTK"
+    },
+    {
+      "applicationCycles": [
+        "prax-ulixacaltamide"
+      ],
+      "calibratedProbability": null,
+      "company": "Praxis Precision Medicines, Inc.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://ir.praxismedicines.com/news-releases/news-release-details/praxis-precision-medicines-provides-corporate-update-and-20",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06087276",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2025-10-10",
+      "registeredPrimaryOutcomeCount": 3,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "b57ce58f25185c4df8621a45c1b8297aab0b1925a73be435d0b21a552f1672e3",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06087276",
+      "ticker": "PRAX"
+    },
+    {
+      "applicationCycles": [
+        "mlys-lorundrostat"
+      ],
+      "calibratedProbability": null,
+      "company": "Mineralys Therapeutics, Inc.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://ir.mineralystx.com/news-events/press-releases/detail/127/mineralys-therapeutics-reports-third-quarter-2026-financial",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06153693",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2024-12-10",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "0f85b591d37fa3b5ad1d39f0e6529aea0f48a9fa2f1c6a3c4b7754a3de2da5aa",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06153693",
+      "ticker": "MLYS"
+    },
+    {
+      "applicationCycles": [
+        "urgn-ugn103"
+      ],
+      "calibratedProbability": null,
+      "company": "UroGen Pharma Ltd.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1668243/000143774926034769/ex_1036873.htm",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06331299",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": true,
+      "primaryCompletion": "2025-09-11",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": true,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "d23a28a36047e80f670268fe7508b1a863ca5c1b088e2388833ff24d429295ac",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06331299",
+      "ticker": "URGN"
+    },
+    {
+      "applicationCycles": [
+        "phvs-ondemand"
+      ],
+      "calibratedProbability": null,
+      "company": "Pharvaris N.V.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://ir.pharvaris.com/news-releases/news-release-details/pharvaris-announces-fda-acceptance-new-drug-application",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06343779",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2025-10-17",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "561e145427a2a33dc2c82f1ac1769757474cbf4d1de6ad83848d084a2ffe6fd0",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06343779",
+      "ticker": "PHVS"
+    },
+    {
+      "applicationCycles": [
+        "mltx-sonelokimab"
+      ],
+      "calibratedProbability": null,
+      "company": "MoonLake Immunotherapeutics AG",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1821586/000182158626000013/moonlake-pressreleasexq320.htm",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06411379",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2025-08-14",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "300ad4babbff0685b497741e4c5c33be2d824ce97842ed1d0312bbbce2d6b785",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06411379",
+      "ticker": "MLTX"
+    },
+    {
+      "applicationCycles": [
+        "mltx-sonelokimab"
+      ],
+      "calibratedProbability": null,
+      "company": "MoonLake Immunotherapeutics AG",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1821586/000182158626000013/moonlake-pressreleasexq320.htm",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06411899",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2025-09-02",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "a2b352f0fcb23a877630f2d875775c988f81ec6fb3c63d1a2934e4aeaf31a4e2",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06411899",
+      "ticker": "MLTX"
+    },
+    {
+      "applicationCycles": [
+        "cldx-barzolvolimab"
+      ],
+      "calibratedProbability": null,
+      "company": "Celldex Therapeutics",
+      "delta": "REGISTRY_EVIDENCE_CHANGED",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-reports-third-quarter-financial-results-and-provides",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06445023",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2026-08-12",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "e30374474e1a9f5eb2263c94a6474ca55abd9fa8cb4b1b00b251c994eb5c2b2f",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06445023",
+      "ticker": "CLDX"
+    },
+    {
+      "applicationCycles": [
+        "cldx-barzolvolimab"
+      ],
+      "calibratedProbability": null,
+      "company": "Celldex Therapeutics",
+      "delta": "REGISTRY_EVIDENCE_CHANGED",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-reports-third-quarter-financial-results-and-provides",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06455202",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2026-08-04",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "4a99f84f5856ab53f07d1335f89204b251035633492eed8970b703f11adee3e7",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06455202",
+      "ticker": "CLDX"
+    },
+    {
+      "applicationCycles": [],
+      "calibratedProbability": null,
+      "company": "Mirum Pharmaceuticals, Inc.",
+      "delta": "FIRST_SOURCE_OBSERVATION",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://ir.mirumpharma.com/news/news-details/2026/Mirum-Pharmaceuticals-Announces-Primary-Endpoint-Met-in-Phase-3-EXPAND-Study-of-LIVMARLI-maralixibat-in-Ultra-Rare-Cholestatic-Liver-Diseases/default.aspx",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06553768",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2026-07-29",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "6d5d766fa2dda05b591d8b198b4ad89017d985309d033cc0455d6df08e0869f2",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06553768",
+      "ticker": "MIRM"
+    },
+    {
+      "applicationCycles": [
+        "phvs-prophylaxis"
+      ],
+      "calibratedProbability": null,
+      "company": "Pharvaris N.V.",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://www.sec.gov/Archives/edgar/data/1830487/000119312526384339/phvs-ex99_1.htm",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06669754",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2026-07-21",
+      "registeredPrimaryOutcomeCount": 1,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "COMPLETED",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "4fbeb4f88aa3b85d8d225b92cce166505f8a8add79ffb99f24e859f516f0c0ab",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06669754",
+      "ticker": "PHVS"
+    },
+    {
+      "applicationCycles": [],
+      "calibratedProbability": null,
+      "company": "Amylyx Pharmaceuticals Inc.",
+      "delta": "FIRST_SOURCE_OBSERVATION",
+      "fdaOutcome": "NOT_ADJUDICATED",
+      "issuerEvidenceUrlAsRecorded": "https://amylyx.gcs-web.com/news-releases/news-release-details/amylyx-pharmaceuticals-reports-third-quarter-2026-financial",
+      "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
+      "nct": "NCT06747468",
+      "phase": [
+        "PHASE3"
+      ],
+      "postedRegistryResults": false,
+      "primaryCompletion": "2026-07-08",
+      "registeredPrimaryOutcomeCount": 3,
+      "registeredSeriousAdverseEventModule": false,
+      "registryStatus": "ACTIVE_NOT_RECRUITING",
+      "registryUpdated": null,
+      "scientificSignoff": false,
+      "sourceHash": "5e430e7180016ceb4e8b98cdf30d9f44dcd4221b8cb91ad9ea3754141bd4e2ef",
+      "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+      "sourceUrl": "https://clinicaltrials.gov/study/NCT06747468",
+      "ticker": "AMLX"
+    }
+  ],
+  "unmappedApplicationReviewQueue": [
+    {
+      "action": "INDEPENDENT_DRUG_INDICATION_AND_FDA_CYCLE_RECONCILIATION",
+      "nct": "NCT05031780",
+      "reason": "CURRENT_FOCUS_TRIAL_HAS_NO_MAPPED_APPLICATION_CYCLE",
+      "ticker": "AGIO"
+    },
+    {
+      "action": "INDEPENDENT_DRUG_INDICATION_AND_FDA_CYCLE_RECONCILIATION",
+      "nct": "NCT06553768",
+      "reason": "CURRENT_FOCUS_TRIAL_HAS_NO_MAPPED_APPLICATION_CYCLE",
+      "ticker": "MIRM"
+    },
+    {
+      "action": "INDEPENDENT_DRUG_INDICATION_AND_FDA_CYCLE_RECONCILIATION",
+      "nct": "NCT06747468",
+      "reason": "CURRENT_FOCUS_TRIAL_HAS_NO_MAPPED_APPLICATION_CYCLE",
+      "ticker": "AMLX"
+    }
+  ]
+}
