@@ -70,7 +70,8 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
     phase = level_one.get("phase")
     cutoff = _day(level_one.get("assessmentCutoff"))
     verified = level_one.get("executionStatus") == "INTAKE_ONLY" and bool(trial_id) and bool(cutoff)
-    early = phase in {"EARLY_PHASE1", "PHASE1", "PHASE2"}
+    early = phase in {"EARLY_PHASE1", "PHASE1"}
+    pre_application = phase in {"EARLY_PHASE1", "PHASE1", "PHASE2"}
     results = {}
     # Explicit evidence quality gates prevent a complete-looking dossier from
     # being treated as adjudicated when reviewers did not supply source identity.
@@ -82,7 +83,10 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
             if not verified:
                 states[criterion] = "BLOCKED_UNVERIFIED_PHASE"
                 continue
-            if early and (number, criterion) in LATE_PHASE:
+            if ((early and (number, criterion) in LATE_PHASE) or
+                    (pre_application and number == 6 and criterion in {
+                        "applicationDossier", "manufacturingReadiness", "labelingAndRiskMitigation"
+                    })):
                 states[criterion] = "NOT_YET_EXPECTED"
                 continue
             record = evidence.get(key)
@@ -114,13 +118,16 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                 "documentType": record["documentType"],
             }
         required = [c for c in criteria if states[c] != "NOT_YET_EXPECTED"]
+        rejected = [c for c in criteria if states[c] == "REJECTED_EVIDENCE"]
+        not_yet_expected = [c for c in criteria if states[c] == "NOT_YET_EXPECTED"]
         results[str(number)] = {
             "level": number, "name": name,
             "status": ("BLOCKED_UNVERIFIED_PHASE" if not verified else
                        "REVIEWED" if required and all(c in accepted for c in required) else
-                       "PARTIAL" if accepted else "AWAITING_REVIEW"),
+                       "PARTIAL" if accepted else "EVIDENCE_REJECTED" if rejected else "AWAITING_REVIEW"),
             "criteria": states, "acceptedEvidence": accepted,
             "reviewedCount": len(accepted), "requiredCount": len(required),
+            "rejectedCriteria": rejected, "notYetExpectedCriteria": not_yet_expected,
             "score": None, "scientificValidation": "NOT_VERIFIED",
             "fdaPrediction": "ABSTAIN",
             "note": "Review coverage and judgments are not validated scientific scores.",
