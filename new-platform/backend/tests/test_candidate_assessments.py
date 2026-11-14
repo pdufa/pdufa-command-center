@@ -324,3 +324,37 @@ def test_level_one_rejects_cross_trial_and_post_cutoff_reviews():
     record["nctId"] = "NCT00000001"
     record["reviewedAt"] = "2026-10-21"
     assert score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]["prespecification"] == "NOT_ASSESSED"
+
+
+def test_level_one_rejects_malformed_or_credentialed_source_urls():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    review = {
+        "judgment": "SUPPORTS", "nctId": "NCT00000001",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "rationale": "Exact-trial source reviewed",
+    }
+    for url in ("https://", "https://user:password@example.org/report",
+                "https://example.org/report with spaces", "http://example.org/report"):
+        reviews["levelOneEndpointReviews"] = {"prespecification": {**review, "source": url}}
+        quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+        assert quality["prespecification"] == "NOT_ASSESSED"
+        assert quality["reviewCoverage"]["reviewedCriteria"] == 0
+
+
+def test_level_one_review_coverage_does_not_generate_scientific_score():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["levelOneEndpointReviews"] = {
+        "clinicalRelevance": {
+            "judgment": "INCONCLUSIVE", "nctId": "NCT00000001",
+            "source": "https://example.org/trial-review",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+            "rationale": "Review cannot establish clinical relevance",
+        }
+    }
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["reviewCoverage"]["reviewedCriteria"] == 1
+    assert quality["reviewCoverage"]["totalCriteria"] == 5
+    assert quality["reviewCoverage"]["status"] == "PARTIALLY_REVIEWED"
+    assert quality["score"] is None
