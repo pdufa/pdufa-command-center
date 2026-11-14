@@ -206,5 +206,5 @@ def compact(result):
     return {"levelOneIntake": result["levelOneIntake"], "scientificReadiness": result["scientificReadiness"], "modelVersion": result["modelVersion"], "models": {name: {**{k: model[k] for k in ("score", "observedPoints", "coverage", "status")}, "categories": [{k: c[k] for k in ("id", "maximum", "score", "observedPoints", "coverage", "status")} for c in model["categories"]]} for name, model in result["models"].items()}, "riskFlags": result["riskFlags"]}
 
 def fingerprint(result):
-    stable = {key: result[key] for key in ("modelVersion", "models", "reportedStatistics", "qualification", "registryFetchedAt", "riskFlags")}
+    stable = {key: result[key] for key in ("modelVersion", "models", "levelOneIntake", "scientificReadiness", "reportedStatistics", "qualification", "registryFetchedAt", "riskFlags")}
     return hashlib.sha256(packed(stable).encode()).hexdigest()
