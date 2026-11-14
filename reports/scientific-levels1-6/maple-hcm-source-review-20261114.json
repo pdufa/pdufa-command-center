@@ -1,0 +1,211 @@
+{
+  "schemaVersion": 1,
+  "kind": "MAPLE_HCM_PUBLICATION_ABSTRACT_AND_ACC_SUMMARY_UNREVIEWED",
+  "nct": "NCT05767346",
+  "trialName": "MAPLE-HCM",
+  "drug": "aficamten",
+  "comparator": "metoprolol succinate",
+  "indication": "symptomatic obstructive hypertrophic cardiomyopathy",
+  "evidenceCutoffDate": "2026-11-14",
+  "sources": [
+    {
+      "role": "ORIGINAL_PEER_REVIEWED_ABSTRACT",
+      "url": "https://www.nejm.org/doi/10.1056/NEJMoa2504654",
+      "pmid": "40888697",
+      "doi": "10.1056/NEJMoa2504654",
+      "publishedDate": "2025-08-30",
+      "locator": "New England Journal of Medicine, 393:949–960, Abstract Methods/Results; PubMed PMID 40888697",
+      "originalSourceIndependentlyAuthenticated": false
+    },
+    {
+      "role": "INDEPENDENT_SOCIETY_SUMMARY_NOT_ORIGINAL_STUDY_REPORT",
+      "url": "https://www.acc.org/latest-in-cardiology/clinical-trials/2025/09/23/17/49/maple-hcm",
+      "publishedDate": "2025-09-24",
+      "updatedDate": "2025-11-09",
+      "locator": "American College of Cardiology MAPLE-HCM trial summary, Principal Findings, Safety, Inclusion/Exclusion",
+      "originalSourceIndependentlyAuthenticated": false
+    }
+  ],
+  "registryPhaseUnreviewed": [
+    "PHASE3"
+  ],
+  "studyDesign": {
+    "design": "INTERNATIONAL_DOUBLE_BLIND_DOUBLE_DUMMY_ACTIVE_COMPARATOR",
+    "randomized": 175,
+    "treatmentWeeks": 24,
+    "allocation": "1:1",
+    "doseArms": [
+      {
+        "id": "AFICAMTEN",
+        "randomized": 88,
+        "dailyDose": "5–20 mg aficamten; metoprolol-matched placebo"
+      },
+      {
+        "id": "METOPROLOL",
+        "randomized": 87,
+        "dailyDose": "50–200 mg metoprolol; aficamten-matched placebo"
+      }
+    ],
+    "baselineMeanAgeYears": 58,
+    "baselineMalePercent": 58.3,
+    "comparatorIsActiveDrug": true,
+    "placeboOnlyControl": false,
+    "population": "Adults with symptomatic obstructive HCM; selected patients meeting functional and LV systolic function inclusion criteria"
+  },
+  "primaryEndpoint": {
+    "id": "PRIMARY_PEAK_VO2_CHANGE_WEEK24",
+    "classification": "PRIMARY",
+    "type": "CONTINUOUS_CHANGE",
+    "name": "Peak oxygen uptake change at week 24",
+    "unit": "mL/kg/min",
+    "aficamtenMeanChange": 1.1,
+    "aficamten95CI": [
+      0.5,
+      1.7
+    ],
+    "metoprololMeanChange": -1.2,
+    "metoprolol95CI": [
+      -1.7,
+      -0.8
+    ],
+    "adjustedBetweenGroupMeanDifference": 2.3,
+    "adjustedBetweenGroup95CI": [
+      1.5,
+      3.1
+    ],
+    "sourceReportedPValue": "<0.001",
+    "sourceRole": "ORIGINAL_PEER_REVIEWED_ABSTRACT",
+    "locator": "NEJM original abstract Results, pVO2 week 24"
+  },
+  "secondaryEndpoints": [
+    {
+      "id": "NYHA_CLASS_IMPROVEMENT_W24",
+      "type": "COMPARATIVE_PERCENTAGE_POINT",
+      "name": "One-or-more NYHA functional class improvement",
+      "effect": 25,
+      "unit": "percentage points",
+      "ci95": [
+        11,
+        39
+      ],
+      "pValue": "<0.001",
+      "reportedBy": "INDEPENDENT_SOCIETY_SUMMARY_NOT_ORIGINAL_STUDY_REPORT"
+    },
+    {
+      "id": "KCCQ_CSS_W24",
+      "type": "COMPARATIVE_MEAN_CHANGE",
+      "name": "KCCQ Clinical Summary Score difference",
+      "effect": 6.9,
+      "unit": "points",
+      "ci95": [
+        2.6,
+        11.3
+      ],
+      "pValue": "0.002",
+      "reportedBy": "INDEPENDENT_SOCIETY_SUMMARY_NOT_ORIGINAL_STUDY_REPORT"
+    },
+    {
+      "id": "VALSALVA_LVOT_GRADIENT_W24",
+      "type": "COMPARATIVE_MEAN_CHANGE",
+      "name": "LVOT gradient following Valsalva difference",
+      "effect": -34.9,
+      "unit": "mm Hg",
+      "ci95": [
+        -43.4,
+        -26.4
+      ],
+      "pValue": "<0.001",
+      "reportedBy": "INDEPENDENT_SOCIETY_SUMMARY_NOT_ORIGINAL_STUDY_REPORT"
+    },
+    {
+      "id": "NT_PROBNP_PROPORTIONAL_CHANGE_W24",
+      "type": "RATIO",
+      "name": "Proportional change in NT-proBNP",
+      "effect": 0.19,
+      "unit": "ratio",
+      "ci95": [
+        0.15,
+        0.24
+      ],
+      "pValue": "<0.001",
+      "reportedBy": "INDEPENDENT_SOCIETY_SUMMARY_NOT_ORIGINAL_STUDY_REPORT"
+    },
+    {
+      "id": "LEFT_ATRIAL_VOLUME_INDEX_W24",
+      "type": "COMPARATIVE_MEAN_CHANGE",
+      "name": "Left atrial volume index difference",
+      "effect": -7,
+      "unit": "mL/m²",
+      "ci95": [
+        -9.1,
+        -4.9
+      ],
+      "pValue": "<0.001",
+      "reportedBy": "INDEPENDENT_SOCIETY_SUMMARY_NOT_ORIGINAL_STUDY_REPORT"
+    },
+    {
+      "id": "LEFT_VENTRICULAR_MASS_INDEX_W24",
+      "type": "COMPARATIVE_MEAN_CHANGE",
+      "name": "Left ventricular mass index difference",
+      "effect": -4.9,
+      "unit": "g/m²",
+      "ci95": [
+        -11.7,
+        2
+      ],
+      "pValue": "0.16",
+      "reportedBy": "INDEPENDENT_SOCIETY_SUMMARY_NOT_ORIGINAL_STUDY_REPORT"
+    }
+  ],
+  "safety": {
+    "reportRole": "INDEPENDENT_SOCIETY_SUMMARY_NOT_ORIGINAL_STUDY_REPORT",
+    "seriousAdverseEvents": {
+      "aficamten": 7,
+      "metoprolol": 6,
+      "aficamtenDenom": 88,
+      "metoprololDenom": 87
+    },
+    "adverseEventDoseReductions": {
+      "aficamten": 1,
+      "metoprolol": 4
+    },
+    "lvefBetweenGroupDifferencePercentagePoints": -4.2,
+    "lvefDifference95CI": [
+      -5.3,
+      -3.1
+    ],
+    "trialSummaryStatesSafetySimilar": true,
+    "oneDeathReportedInAficamtenArm": true,
+    "note": "ACC secondary summary reports a death after brief viral illness; attribution cannot be independently assessed from this synopsis"
+  },
+  "evidenceLimitationsUnreviewed": [
+    "The original peer-reviewed abstract gives no patient-level source data, CSR or full efficacy/safety tables.",
+    "The ACC detailed secondary effects and safety numbers are a cardiology-society summary, not independently authenticated original table extracts.",
+    "Limited 175-person sample and 24-week follow-up constrain assessment of uncommon, delayed and long-term safety risks.",
+    "Exclusions include atrial fibrillation or flutter and selected cardiovascular conditions, limiting generalizability.",
+    "Selected baseline ejection fraction and functional inclusion criteria limit extrapolation to other symptomatic HCM populations.",
+    "Observed change in left ventricular ejection fraction demands independent cardiac-function and dose-monitoring review.",
+    "Exercise capacity and symptom outcomes are not a direct demonstration of reduced mortality, hospitalization or lifelong durability.",
+    "Statistical plan, protocol amendments, endpoint hierarchy, multiplicity, database-lock and unblinding chronology remain independent-review questions.",
+    "Do not substitute results of SEQUOIA-HCM or other aficamten studies for exact MAPLE-HCM NCT05767346 results."
+  ],
+  "reviewQuestions": [
+    "Verify original publisher full paper, underlying tables and authenticated registered protocol/SAP for NCT05767346.",
+    "Reconcile active metoprolol comparator, permitted dose titration, prior beta blocker withdrawal and patient baseline exclusion criteria.",
+    "Review CPET peak VO2 measurement validity, endpoint clinical importance and missingness for original 175 randomized participants.",
+    "Check secondary outcome multiplicity hierarchy and distinctions between physiological, quality-of-life and clinical-event endpoints.",
+    "Independently evaluate left ventricular ejection fraction reductions, any transient LVEF below safety limits, serious adverse events and reported death.",
+    "Determine applicability to patients with atrial fibrillation or reduced LVEF and whether additional long-term safety is expected at the study phase.",
+    "Assign qualified disease-specialist and independent biostatistician reviews after actual source authentication and owner approvals."
+  ],
+  "sourceIndependentlyAuthenticated": false,
+  "originalClinicalTablesAuthenticated": false,
+  "qualifiedClinicalReviewCompleted": false,
+  "independentStatisticalReviewCompleted": false,
+  "finalAdjudicationCompleted": false,
+  "verifiedFdaApplicationCycle": false,
+  "clinicalScore": null,
+  "approvalProbability": null,
+  "fdaOutcomeJudgment": null,
+  "blindHistoricalPredictionPermitted": false
+}
