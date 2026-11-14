@@ -51,5 +51,31 @@ class LevelsTwoToSixContractTests(unittest.TestCase):
         self.assertTrue(all(level["status"] == "BLOCKED_UNVERIFIED_PHASE" for level in result.values()))
 
 
+    def test_verification_cannot_precede_publication(self):
+        evidence = {
+            "2.protocol": {
+                "nctId": "NCT12345678",
+                "source": "https://clinicaltrials.gov/study/NCT12345678",
+                "sourceDate": "2026-01-20",
+                "reviewedAt": "2026-01-25",
+                "sourceVerified": True,
+                "sourceVerifiedAt": "2026-01-10",
+                "sourceVerifiedBy": "reviewer-1",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "judgment": "SUPPORTS",
+                "rationale": "Protocol source review",
+                "reviewerId": "reviewer-1",
+                "documentType": "PROTOCOL",
+                "evidenceExcerpt": "Design section",
+            }
+        }
+        result = module.assess_levels_two_to_six(
+            BASE, trial_id="NCT12345678", evidence=evidence
+        )
+        self.assertEqual(result["2"]["criteria"]["protocol"], "REJECTED_EVIDENCE")
+        self.assertEqual(result["2"]["rejectionReasons"]["protocol"], "INVALID_CHRONOLOGY")
+        self.assertEqual(result["2"]["fdaPrediction"], "ABSTAIN")
+
+
 if __name__ == "__main__":
     unittest.main()
