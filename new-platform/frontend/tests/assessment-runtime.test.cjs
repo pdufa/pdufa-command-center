@@ -90,3 +90,16 @@ test('outdated POOL search cannot overwrite FOCUS search results',async()=>{
   assert.match(display,/Current cohort/);assert.doesNotMatch(display,/Stale cohort/);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
+
+test('completed assessment with mismatched level is withheld from the selected trial',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Workbench=require('../app/AssessmentWorkbench.tsx').default;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const old=global.fetch;let tree;
+ const report={runId:'c'.repeat(36),nct,level:2,name:'Registry and phase verification',mode:'CURRENT_EVIDENCE',cutoffDate:null,executedAt:'2026-11-14',engineVersion:'test',reportHash:'c'.repeat(64),scientificStatus:'EVIDENCE_GAPS',activationStatus:'NOT_ACTIVE',ownerReviewStatus:'OWNER_NOT_REVIEWED',score:{value:null,available:0,applicable:0,method:'Evidence only'},fdaPrediction:{outcome:'ABSTAIN',confidence:'UNCALIBRATED',calibration:'NONE'},context:{phases:[],phaseVerification:'UNVERIFIED',registryStatus:null,regulatoryStatus:'UNVERIFIED',indicationAnalysis:[]},checks:[],observations:[],risks:[],recommendations:[],limitations:[],evidence:{source_url:'https://clinicaltrials.gov/api/v2/studies/'+nct}};
+ global.fetch=async(url,init={})=>init.method==='POST'?Response.json({runId:report.runId,status:'QUEUED'},{status:202}):Response.json({status:'COMPLETED',progress:[],report});
+ try{
+  await act(async()=>{tree=create(React.createElement(Workbench,{selectedNct:nct}));});
+  await act(async()=>{tree.root.findAllByType('button').find(b=>b.props.children==='Run Assessment').props.onClick();});
+  assert.match(JSON.stringify(tree.toJSON()),/Assessment result identity, level, mode or historical cutoff mismatch/);
+  assert.equal(tree.root.findAllByProps({'aria-label':'Level 2 saved assessment'}).length,0);
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
+});
