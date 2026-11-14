@@ -16,7 +16,13 @@ function check(ok,code){if(!ok){const e=Error(code);e.checkId=code;throw e;}}
   phase='WAITING_FOR_DEPLOYMENT';let ready=false;
   for(let attempt=0;attempt<60;attempt++){
    const response=await context.request.get(BASE+'/api/assessments/runtime?nct='+NCT);
-   if(response.status()===401){ready=true;break;}await sleep(10000);
+   if(response.status()===401){
+    // The API already exists on the previous release. Require the actual new
+    // server-rendered controls before opening a browser on a rolling deploy.
+    const pageProbe=await context.request.get(BASE+'/predictions/assessment?nct='+NCT);
+    const html=pageProbe.ok()?await pageProbe.text():'';
+    if(html.includes('aria-label="Assessment level"')&&html.includes('aria-label="Evidence mode"')){ready=true;break;}
+   }await sleep(10000);
   }
   check(ready,'FRONTEND_RUNTIME_NOT_DEPLOYED');
   phase='OWNER_LOGIN';const auth=await context.request.post(BASE+'/api/auth',{headers:{Origin:BASE},data:{password:process.env.DASHBOARD_PASSWORD}});check(auth.ok(),'OWNER_LOGIN_FAILED');
