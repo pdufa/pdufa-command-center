@@ -147,7 +147,7 @@ class PreviewTests(unittest.TestCase):
 
     def test_review_handoff_visible_for_all_32_focus_trials(self):
         html = renderer.render(evidence_report(), review_handoff=handoff_report())
-        self.assertEqual(html.count("Independent review handoff — NOT ADJUDICATED"), 192)
+        self.assertEqual(html.count("Owner-only assessment handoff — OWNER NOT REVIEWED"), 192)
         self.assertIn("Hochberg", html)
         self.assertIn("NOT ADJUDICATED", html)
         self.assertIn("Independent review", html)
