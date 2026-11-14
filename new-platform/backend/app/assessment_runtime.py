@@ -18,9 +18,9 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, StrictInt
-from sqlalchemy import text
+from sqlalchemy import text, inspect
 
-VERSION = 'assessment-evidence-v2.0.0'
+VERSION = 'assessment-evidence-v2.0.1'
 NCT = re.compile(r'^NCT\d{8}$')
 PHASES = {'EARLY_PHASE1', 'PHASE1', 'PHASE2', 'PHASE3', 'PHASE4', 'NA'}
 NAMES = {1: 'Source identity and provenance', 2: 'Registry and phase verification',
@@ -186,6 +186,32 @@ def collect_documents(source, level):
     return source
 
 
+def retained_stream_source(engine, request):
+    """Read original append-only registry receipts; never read forecast/outcome caches."""
+    if not inspect(engine).has_table('nct_stream_sources') or not inspect(engine).has_table('nct_stream_runs'):
+        return None
+    with engine.connect() as c:
+        rows=c.execute(text('''SELECT s.*,r.nct_id FROM nct_stream_sources s
+            JOIN nct_stream_runs r ON s.run_id=r.run_id WHERE r.nct_id=:nct
+            AND s.verified_at<:end ORDER BY s.verified_at DESC'''),
+            {'nct':request.nct,'end':(request.cutoffDate+timedelta(days=1)).isoformat()}).mappings()
+        for row in rows:
+            raw=json.loads(row['document'])
+            if sha(raw)!=row['canonical_sha256'] or row['source_url']!='https://clinicaltrials.gov/api/v2/studies/'+request.nct:
+                raise ValueError('Retained original source integrity failure')
+            captured=datetime.fromisoformat(row['verified_at'].replace('Z','+00:00'))
+            if captured.tzinfo is None:raise ValueError('Historical source capture timezone is unresolved')
+            captured=captured.astimezone(timezone.utc).isoformat()
+            if captured[:10]>request.cutoffDate.isoformat():continue
+            clinical=sanitize(raw,request.nct,captured)
+            published=clinical['protocolSection']['statusModule']['lastUpdatePostDateStruct']['date']
+            if published>request.cutoffDate.isoformat():continue
+            return {'snapshot_id':'nct-stream:'+row['run_id'],'nct_id':request.nct,
+                    'captured_at':captured,'published_at':published,'source_url':row['source_url'],
+                    'raw_sha256':row['sha256'],'input_sha256':sha(clinical),'document_json':packed(clinical)}
+    return None
+
+
 def source_for(engine, request, collector=collect_registry):
     if request.mode == 'CURRENT_EVIDENCE':
         source = collect_documents(collector(request.nct), request.level)
@@ -208,6 +234,8 @@ def source_for(engine, request, collector=collect_registry):
             if sha(doc) != row['input_sha256'] or doc['protocolSection']['identificationModule']['nctId'] != request.nct:
                 raise ValueError('Historical source integrity failure')
             return dict(row)
+    retained=retained_stream_source(engine,request)
+    if retained:return retained
     raise ValueError('NO_ELIGIBLE_HISTORICAL_SNAPSHOT: no original evidence captured by this cutoff; current data cannot be backdated')
 
 
@@ -267,7 +295,8 @@ def level_three(doc, context, source):
                      'groups': r.get('groups', []), 'denominators': r.get('denoms', []), 'measurements': r.get('classes', []),
                      'reportedAnalyses': r.get('analyses', [])} for r in results]
     expected = context['resultsExpected']
-    checks = [criterion('primary_results', bool(results), 'Posted quantitative primary results are distinguished from planned endpoint text; availability is not success.', 'resultsSection.outcomeMeasuresModule', expected or bool(results)),
+    quantitative = any(r.get('denoms') and any(number(m.get('value')) is not None for cl in r.get('classes',[]) for ca in cl.get('categories',[]) for m in ca.get('measurements',[])) for r in results)
+    checks = [criterion('primary_results', quantitative, 'Posted quantitative primary results are distinguished from planned endpoint text; availability is not success.', 'resultsSection.outcomeMeasuresModule', expected or bool(results)),
               criterion('safety_observations', bool(safety), 'Report harms and exposure separately from efficacy; absent harms data do not establish safety.', 'resultsSection.adverseEventsModule', expected or bool(safety)),
               criterion('participant_flow', bool(doc['resultsSection'].get('participantFlowModule')), 'Participant flow supports attrition/exposure review, not proof of unbiased inference.', 'resultsSection.participantFlowModule', expected or bool(results))]
     if context['earlyPhase']:
@@ -302,15 +331,18 @@ def level_five(doc, context, source):
                 conflicts.append('Reported confidence interval is incomplete, reversed or excludes its point estimate: '+str(r.get('title')))
             observations.append({'endpoint': r.get('title'), 'reported': a, 'intervalCheck': 'CONSISTENT' if consistent else 'UNRESOLVED_OR_CONFLICTING',
                                  'interpretation': 'Reported analysis only. Nominal p-values do not establish family-wise significance, prespecification or clinical benefit.'})
+    reported_count=len(observations)
     sap=next((d for d in doc.get('originalDocuments',[]) if d['kind']=='hasSap' and d['verification']=='ORIGINAL_LINKED_PDF_RETRIEVED'),None)
     if sap:
         body=sap.get('extractedText','')
         terms=('estimand','multiplicity','missing data','sensitivity','alpha','interim','unblind','database lock')
         excerpts={term:[body[max(0,m.start()-100):m.end()+400] for m in list(re.finditer(re.escape(term),body,re.I))[:3]] for term in terms}
         observations.append({'originalSap':{k:v for k,v in sap.items() if k!='extractedText'},'sourceExcerpts':excerpts,'interpretation':'Original text observations; keyword presence is not statistical adequacy or proof of prespecification.'})
-    checks=[criterion('reported_analyses', bool(observations), 'Preserve reported statistical methods, effect estimates and intervals without inventing missing values.', 'resultsSection.outcomeMeasuresModule.analyses', context['resultsExpected'] or bool(observations)),
+    checks=[criterion('reported_analyses', bool(reported_count), 'Preserve reported statistical methods, effect estimates and intervals without inventing missing values.', 'resultsSection.outcomeMeasuresModule.analyses', context['resultsExpected'] or bool(reported_count)),
             criterion('sap_content', bool(sap and sap.get('extractedText')), 'Original SAP text and cited excerpts are retained where actually retrieved; statistical adequacy still requires analysis.', 'originalDocuments.hasSap', context['pivotal'] or bool(sap)),
             criterion('prespecification', False, 'SAP version/lock/unblinding chronology and multiplicity are unresolved; a posted SAP link alone cannot resolve them.', 'Original SAP/version chronology unavailable', context['pivotal'])]
+    if conflicts:
+        checks.append({'id':'reported_interval_consistency','state':'CONFLICTING','explanation':'; '.join(conflicts),'locator':'resultsSection.outcomeMeasuresModule.analyses'})
     return checks, observations + [{'conflicts': conflicts}]
 
 
@@ -344,7 +376,7 @@ def assess(request, source):
         # No downstream readiness conclusion can waive phase verification.
         checks.append(criterion('phase_first', False, 'Resolve clinical phase before applying phase-specific scientific requirements.', 'protocolSection.designModule.phases'))
     applicable=[c for c in checks if c['state'] != 'NOT_YET_EXPECTED']; available=sum(c['state']=='AVAILABLE' for c in applicable)
-    missing=[c['explanation'] for c in checks if c['state']=='MISSING']
+    missing=[c['explanation'] for c in checks if c['state'] in {'MISSING','CONFLICTING'}]
     return {'schemaVersion':2, 'kind':'TRIAL_LEVEL_EVIDENCE_ASSESSMENT', 'nct':request.nct, 'level':request.level,
             'name':NAMES[request.level], 'engineVersion':VERSION+f'/level-{request.level}', 'mode':request.mode,
             'cutoffDate':request.cutoffDate.isoformat() if request.cutoffDate else None, 'executedAt':now(),

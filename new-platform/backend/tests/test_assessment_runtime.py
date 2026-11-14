@@ -103,3 +103,47 @@ def test_auth_invalid_inputs_and_postgres_guard(engine):
     assert client.post('/api/assessment-runtime/runs',json=request(1,'BLIND_HISTORICAL').model_dump(mode='json')).status_code==422
     app2=FastAPI();app2.include_router(r.router(lambda:engine,lambda:None,lambda:None,lambda:None))
     assert TestClient(app2).post('/api/assessment-runtime/runs',json=request(1).model_dump(mode='json')).status_code==503
+
+
+def test_sap_text_never_substitutes_for_reported_numeric_analyses():
+    s=snapshot();doc=json.loads(s['document_json']);doc['resultsSection']['outcomeMeasuresModule']={}
+    doc['originalDocuments']=[{'kind':'hasSap','verification':'ORIGINAL_LINKED_PDF_RETRIEVED','extractedText':'An estimand and alpha plan'}]
+    s['document_json']=r.packed(doc);s['input_sha256']=r.sha(doc)
+    report=r.assess(request(5),s)
+    assert next(c for c in report['checks'] if c['id']=='reported_analyses')['state']=='MISSING'
+    assert next(c for c in report['checks'] if c['id']=='sap_content')['state']=='AVAILABLE'
+
+
+def test_empty_posted_primary_description_is_not_quantitative_result():
+    s=snapshot();report=r.assess(request(3),s)
+    assert next(c for c in report['checks'] if c['id']=='primary_results')['state']=='MISSING'
+
+
+def test_new_document_collection_cannot_backdate_a_printed_old_date():
+    s=r.collect_documents(snapshot(),4)
+    assert s['captured_at'][:10]==r.now()[:10]
+    q=request(4,'BLIND_HISTORICAL',date(2021,1,1))
+    with pytest.raises(ValueError,match='leakage'):r.assess(q,s)
+
+
+def test_nested_cached_answers_are_excluded():
+    raw=original();raw['protocolSection']['designModule']['designInfo']['cachedApprovalProbability']=.99
+    raw['resultsSection']['outcomeMeasuresModule']['actualFdaOutcome']='APPROVED'
+    assert 'APPROVED' not in json.dumps(r.sanitize(raw,'NCT04576949','2020-02-01T00:00:00Z'))
+    assert 'cachedApprovalProbability' not in json.dumps(r.sanitize(raw,'NCT04576949','2020-02-01T00:00:00Z'))
+
+
+@pytest.mark.parametrize('level',range(1,7))
+def test_retained_original_stream_receipts_support_historical_without_backdating_or_overwrite(engine,level):
+    raw=original();run_id=str(uuid4());raw['actualFdaOutcome']='APPROVED'
+    with engine.begin() as c:
+        c.execute(text('CREATE TABLE nct_stream_runs(run_id TEXT PRIMARY KEY,nct_id TEXT)'))
+        c.execute(text('CREATE TABLE nct_stream_sources(run_id TEXT PRIMARY KEY,source_url TEXT,sha256 TEXT,document TEXT,canonical_sha256 TEXT,verified_at TEXT)'))
+        c.execute(text('INSERT INTO nct_stream_runs VALUES(:id,:nct)'),{'id':run_id,'nct':'NCT04576949'})
+        c.execute(text('INSERT INTO nct_stream_sources VALUES(:id,:url,:rawsha,:doc,:sha,:at)'),{'id':run_id,'url':'https://clinicaltrials.gov/api/v2/studies/NCT04576949','rawsha':'b'*64,'doc':r.packed(raw),'sha':r.sha(raw),'at':'2020-02-01T00:00:00+00:00'})
+    q=request(level,'BLIND_HISTORICAL',date(2021,1,1));source=r.source_for(engine,q,lambda _:pytest.fail('No live source'))
+    report=r.assess(q,source)
+    assert source['snapshot_id']=='nct-stream:'+run_id and source['captured_at'].startswith('2020-02')
+    assert report['fdaPrediction']['outcome']=='ABSTAIN' and 'APPROVED' not in source['document_json']
+    with engine.connect() as c:
+        assert c.execute(text('SELECT document FROM nct_stream_sources')).scalar()==r.packed(raw)
