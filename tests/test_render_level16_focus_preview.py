@@ -149,10 +149,12 @@ class PreviewTests(unittest.TestCase):
         html = renderer.render(evidence_report(), review_handoff=handoff_report())
         self.assertEqual(html.count("Owner-only assessment handoff — OWNER NOT REVIEWED"), 192)
         self.assertIn("Hochberg", html)
-        self.assertIn("NOT ADJUDICATED", html)
+        self.assertIn("OWNER NOT REVIEWED", html)
         self.assertIn("Owner review", html)
         self.assertIn("UNRESOLVED", html)
-        self.assertIn("NOT MEDICAL ASSESSMENTS OR FDA FORECASTS", html)
+        self.assertIn("OWNER-ONLY RESEARCH — NO EXTERNAL VERIFICATION REQUIRED", html)
+        self.assertNotIn("EXTERNAL_APPROVAL_AND_INFRASTRUCTURE_REQUIRED", html)
+        self.assertNotIn("TRUSTED_IDENTITY_PROVIDER_REQUIRED", html)
 
     def test_review_handoff_escapes_untrusted_research_questions(self):
         handoff = handoff_report()
