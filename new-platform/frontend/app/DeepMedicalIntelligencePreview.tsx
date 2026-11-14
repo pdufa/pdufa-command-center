@@ -77,7 +77,7 @@ function ApplicationDossier({application,sourceFilter}:{application:DmiApplicati
     <h4>{argument.title}</h4>{application.arguments[argument.id].length?application.arguments[argument.id].map((item,index)=><div key={index}><p>{item.text}</p><SourceButtons ids={item.sourceIds} sources={sources} onSelect={selectSource}/></div>):<p>No supported argument recorded.</p>}
    </article>)}
   </div></div>
-  <div className={css.bodySection}><h3>Independent challenge</h3><p className={css.subtle}>{status(application.independentChallenge.status)} · {application.independentChallenge.independenceStatement}</p>
+  <div className={css.bodySection}><h3>Owner critical review</h3><p className={css.subtle}>No outside reviewer or independent signoff required. Owner checks competing arguments, source limits and unresolved evidence; no owner signoff is recorded by this preview.</p>
    {application.gaps.length>0&&<details><summary>Unresolved evidence gaps ({application.gaps.length})</summary><ul>{application.gaps.map((gap,index)=><li key={index}>{gap}</li>)}</ul></details>}
   </div>
   <div id={"dmi-sources-"+application.id} className={css.bodySection}><h3>Source documents and exact findings</h3><div className={css.sourceArea}>
