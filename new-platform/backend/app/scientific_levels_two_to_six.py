@@ -113,6 +113,12 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
             if not isinstance(record, dict):
                 states[criterion] = "NOT_ASSESSED"
                 continue
+            # Explicitly quarantine unsupported review records. A quoted
+            # excerpt alone does not prove the source was independently read.
+            if record.get("sourceVerified") is not True and record.get("availability") != "NOT_PUBLIC":
+                states[criterion] = "REJECTED_EVIDENCE"
+                rejection_reasons[criterion] = "SOURCE_NOT_VERIFIED"
+                continue
             source_day = _day(record.get("sourceDate"))
             review_day = _day(record.get("reviewedAt"))
             url = record.get("source")
@@ -155,6 +161,7 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                 "nctId": trial_id, "rationale": record["rationale"],
                 "reviewerId": record["reviewerId"],
                 "documentType": record["documentType"],
+                "sourceVerified": True,
                 "evidenceExcerpt": record["evidenceExcerpt"],
             }
         required = [c for c in criteria if states[c] != "NOT_YET_EXPECTED"]
