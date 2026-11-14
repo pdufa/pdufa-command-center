@@ -247,3 +247,24 @@ def test_level_one_phase_one_does_not_require_pivotal_dossier():
     intake = score(row, registry, reviews)["levelOneIntake"]
     assert "pivotal efficacy or marketing-application dossier" in intake["notYetExpected"]
     assert intake["requiresSourceReview"] == []
+
+
+def test_level_one_endpoint_inventory_preserves_definition_without_success_claim():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    endpoint = intake["endpointDefinitions"][0]
+    assert endpoint["measure"] == "Prespecified change"
+    assert endpoint["timeFrame"] == "12 weeks"
+    assert endpoint["definitionStatus"] == "OBSERVED"
+    assert endpoint["scientificAdjudication"] == "NOT_ASSESSED"
+    assert intake["fdaPrediction"] == "ABSTAIN"
+
+
+def test_level_one_partial_endpoint_definition_is_not_accepted():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["primary_outcomes"] = [{"measure": "Change in score"}]
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["endpointDefinitions"][0]["definitionStatus"] == "INCOMPLETE"
+    assert intake["evidenceInventory"]["primary endpoint definition"] == "MISSING"
