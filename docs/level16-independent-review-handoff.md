@@ -265,3 +265,71 @@ python scripts/audit_raas_retirement.py --check
 Tests verify all 32 NCTs and 192 levels, ORCA-2 and unmapped trial
 handling, phase changes, altered source digests, cutoff/identity
 rejections, and no fake signoff, reviewer activation or live writes.
+
+
+## Published efficacy and safety detail — first ORCA-2 clinical review case
+
+As an independent **research-only** input to clinical Levels 3, 4 and 6,
+`reports/scientific-levels1-6/orca2-publication-outcomes-20261114.json`
+records exactly attributed primary/secondary efficacy and safety findings
+from the [2023 JAMA ORCA-2 article](https://pmc.ncbi.nlm.nih.gov/articles/PMC10336611/)
+(PMID 37432430, DOI 10.1001/jama.2023.10042). The associated
+`scripts/medical/level16_orca2_publication_review.py` checks the exact
+reported comparator, endpoint type, arm denominator, effect, safety report,
+study metadata and publication identity against a fixed research-only
+source layout. It **does not** reproduce an independently verified statistical
+analysis or a source attestation. The publication's embedded protocol and
+SAP links and the independent review workflow still require examination.
+
+Original Table 2 of the article reports:
+
+| Endpoint | Cytisinicline | Placebo | Published OR (95% CI) |
+| --- | --- | --- | --- |
+| Primary, 6 weeks (weeks 3–6) | 68/269 (25.3%) | 12/271 (4.4%) | 8.0 (3.9–16.3) |
+| Primary, 12 weeks (weeks 9–12) | 88/270 (32.6%) | 19/271 (7.0%) | 6.3 (3.7–11.6) |
+| Secondary, 6-week regimen to week 24 (weeks 3–24) | 24/269 (8.9%) | 7/271 (2.6%) | 3.7 (1.5–10.2) |
+| Secondary, 12-week regimen to week 24 (weeks 9–24) | 57/270 (21.1%) | 13/271 (4.8%) | 5.3 (2.8–11.1) |
+
+All rates, odds ratios and confidence intervals are **transcribed as
+published**, not invented or recalculated FDA acceptance tests. The 2023
+paper reports missing smoking assessments classified as smoking, 810
+randomized participants but only 618 (76.3%) completing week 24. The
+safety analysis population includes 539 cytisinicline-exposed and 270
+placebo-exposed participants (a separate placebo enrollee received no drug).
+
+Importantly, the article reports **18 serious adverse events** among 539
+cytisinicline-exposed participants versus **3** among 270 placebo-exposed
+participants, and reports **0 events judged treatment-related** by
+investigators. These statements have different meanings: the latter is an
+investigator attribution, not proof that the observed imbalance is harmless.
+A death in the 6-week group, treatment discontinuations due to adverse
+events (16 vs 4), and rare-event power limitations require independent
+benefit–risk review. No unsupported safety causality judgment is made.
+
+A disease-relevance review must examine the surrogate relationship between
+biochemically verified abstinence and subsequent health outcomes, durability
+beyond 24 weeks, excluded psychiatric/cardiovascular populations, enrolled
+racial diversity, treatment adherence, and intensive behavioral support
+relative to usual care. The 2023 paper by itself does not establish a
+reduction in mortality or a generalizable comparative advantage over
+all licensed smoking cessation treatments.
+
+The original ORCA-2 **statistical chronology** is separate: the public
+March 2021 protocol describes Hochberg prior to the registry's primary
+completion, but final SAP approval relative to actual database lock or
+unblinding remains unverified. Statistical questions and clinical findings
+must not be collapsed into a numeric FDA forecast.
+
+### Run the added checks
+
+```powershell
+python -m unittest discover -s tests -p "test_level16_orca2_publication_review.py" -v
+python scripts/medical/level16_orca2_publication_review.py
+python scripts/medical/level16_review_handoff.py --nct NCT04576949 --format markdown
+```
+
+When generating an unsigned complete research handoff, the source bundle
+now binds the journal-reported outcome metadata as a **fifth** snapshot. This
+is source-text transcription and consistency checking, not independent
+authentication of the publisher's served original bits or a scientific
+review signature. No signed clinical assessments exist in these outputs.
