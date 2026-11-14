@@ -150,7 +150,7 @@ class PreviewTests(unittest.TestCase):
         self.assertEqual(html.count("Owner-only assessment handoff — OWNER NOT REVIEWED"), 192)
         self.assertIn("Hochberg", html)
         self.assertIn("NOT ADJUDICATED", html)
-        self.assertIn("Independent review", html)
+        self.assertIn("Owner review", html)
         self.assertIn("UNRESOLVED", html)
         self.assertIn("NOT MEDICAL ASSESSMENTS OR FDA FORECASTS", html)
 
