@@ -85,3 +85,10 @@ test("overlapping NCT discovery responses cannot replace the latest lookup",()=>
  assert.match(source,/if\(sequence!==lookupSequence\.current\)return/);
  assert.match(source,/if\(sequence===lookupSequence\.current\)setLookupStatus/);
 });
+
+test("changing trial NCT invalidates in-flight program lookup and selected identity",()=>{
+ const source=fs.readFileSync(path.join(app,"ExactTrialScientificIntake.tsx"),"utf8");
+ assert.match(source,/useEffect\(\(\)=>\{/);
+ assert.match(source,/\+\+lookupSequence\.current;\s*setIdentity\(""\);setSelected\(""\);setMatches\(\[\]\)/);
+ assert.match(source,/\},\[nctId\]\)/);
+});
