@@ -1,3 +1,4 @@
+import TrialLevelAssessment from "../../TrialLevelAssessment";
 import Link from "next/link";
 import type {Metadata} from "next";
 import {APPLICATION_CYCLES} from "../../../lib/medical-intelligence-applications";
@@ -54,6 +55,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
       <strong>A completed automated run is not owner acceptance or a validated FDA probability.</strong>
       The first step in every actual review is to verify current trial phase, status, intervention and indication.
     </p>
+    <TrialLevelAssessment selectedNct={selected?.nct}/>
     <LevelSixAssessmentRunner selectedNct={selected?.nct}/>
     <LevelOneFocusScores/>
     <HistoricalMonthlyLevelTrend/>

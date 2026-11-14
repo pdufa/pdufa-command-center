@@ -20,7 +20,7 @@ test('trial 14 CLDX remains insufficient rather than converting sponsor pointers
 test('a separately requested Level 3 run returns one level; existing six-level runs remain six',()=>{
  assert.equal(runAssessment({scope:'ONE',nct:'NCT04576949',level:3}).summary.levelsProcessed,1);
  assert.equal(runAssessment({scope:'ONE',nct:'NCT04576949'}).summary.levelsProcessed,6);
- for(const value of [{scope:'ALL',level:2},{scope:'ALL',level:'3'},{scope:'ALL',level:3,call:'APPROVAL_LEAN'},{scope:'ALL',level:3,ownerReviewStatus:'OWNER_ACCEPTED_WITH_LIMITATIONS'}])assert.throws(()=>parseRunRequest(value));
+ for(const value of [{scope:'ALL',level:7},{scope:'ALL',level:'3'},{scope:'ALL',level:3,call:'APPROVAL_LEAN'},{scope:'ALL',level:3,ownerReviewStatus:'OWNER_ACCEPTED_WITH_LIMITATIONS'}])assert.throws(()=>parseRunRequest(value));
 });
 test('synthetic adverse primary comparisons exercise CRL branch; no genuine trial is rewritten',()=>{
  const t=trial();for(const c of t.reportedComparisons){[c.activeAbstinent,c.placeboAbstinent]=[c.placeboAbstinent,c.activeAbstinent];[c.activeRandomized,c.placeboRandomized]=[c.placeboRandomized,c.activeRandomized];[c.activePct,c.placeboPct]=[c.placeboPct,c.activePct];c.oddsRatioReported=1/c.oddsRatioReported;c.ci95Reported=[1/c.ci95Reported[1],1/c.ci95Reported[0]];}

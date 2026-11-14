@@ -112,6 +112,18 @@ class FullTrialRecord(Base):
     fetched_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
 
 
+class LevelAssessmentRun(Base):
+    """New exact-NCT research history. There is deliberately no update/delete API."""
+    __tablename__ = "level_assessment_runs"
+    run_id: Mapped[str] = mapped_column(String(36), primary_key=True)
+    nct_id: Mapped[str] = mapped_column(String(11), nullable=False, index=True)
+    level: Mapped[int] = mapped_column(Integer, nullable=False)
+    engine_version: Mapped[str] = mapped_column(String(80), nullable=False)
+    evidence_hash: Mapped[str] = mapped_column(String(64), nullable=False)
+    report: Mapped[dict] = mapped_column(JSON, nullable=False)
+    saved_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+
+
 class CandidateAssessmentHistory(Base):
     """Append-only score/evidence changes for one immutable exact program."""
     __tablename__ = "candidate_assessment_history"
@@ -1575,3 +1587,22 @@ def save_fda_chart_overlay(program_id: str, payload: CustomFdaOverlayPayload):
             raise HTTPException(status_code=409, detail="Overlay changed elsewhere; reload first")
         session.commit()
         return {"saved": True, "programId": program_id, "version": payload.version + 1, "updatedAt": now}
+
+
+def require_level_assessment_storage():
+    """Hosted assessment writes must never acknowledge ephemeral SQLite as durable."""
+    require_storage()
+    if not DATABASE_URL.startswith("postgresql+psycopg://"):
+        raise HTTPException(503, "Level assessment history requires persistent PostgreSQL")
+
+
+@app.post("/api/assessments/trial/history", dependencies=[Depends(require_internal_key), Depends(require_level_assessment_storage)])
+def save_level_assessment(report: dict):
+    from .level_assessment_history import save
+    return save(report)
+
+
+@app.get("/api/assessments/trial/history", dependencies=[Depends(require_internal_key), Depends(require_level_assessment_storage)])
+def level_assessment_history(nct: str, level: int | None = None):
+    from .level_assessment_history import history
+    return history(nct, level)
