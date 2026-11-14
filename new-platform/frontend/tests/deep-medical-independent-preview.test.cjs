@@ -9,9 +9,14 @@ test('independent source preview preserves all current trial identities and dist
  assert.ok(d.applications.every(a=>a.outcome.leading==='Indeterminate'&&a.timing.leading==='Indeterminate'));
  assert.ok(d.inventory.metadataScreenedTrials>d.inventory.fullyReviewedTrials);
 });
-test('unsupported decision and future source cannot bypass independent review',()=>{
- let d=structuredClone(data);d.applications[0].outcome.leading='Complete Response Letter';
- assert.throws(()=>parseDeepMedicalSnapshot(d),/INDEPENDENT_CHALLENGE/);
+test('owner may record provisional sourced decision without outside challenger',()=>{
+ let d=structuredClone(data);
+ d.applications[0].outcome.leading='Complete Response Letter';
+ d.applications[0].independentChallenge.status='PENDING';
+ assert.equal(parseDeepMedicalSnapshot(d).applications[0].outcome.leading,'Complete Response Letter');
+ d=structuredClone(data);d.applications[0].outcome.leading='Complete Response Letter';
+ d.applications[0].outcome.sourceIds=[];
+ assert.throws(()=>parseDeepMedicalSnapshot(d),/OWNER_PROVISIONAL_DECISION_NEEDS_CITED_EVIDENCE/);
  d=structuredClone(data);d.sources[0].sourceDate='2099-01-01';assert.throws(()=>parseDeepMedicalSnapshot(d),/FUTURE_SOURCE/);
  d=structuredClone(data);d.legacyCompositeRating=75;assert.throws(()=>parseDeepMedicalSnapshot(d),/UNKNOWN_SCHEMA_FIELD/);
 });
