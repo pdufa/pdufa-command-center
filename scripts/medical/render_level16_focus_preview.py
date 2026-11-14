@@ -210,7 +210,7 @@ def render(report, trusted_review_reader=None, preliminary_research=None, review
                     link_html += "<p>" + label + ": " + _text("; ".join(proposal[key])) + "</p>"
             if nct in research_by_nct:
                 preliminary = research_by_nct[nct]["levels"][item["level"]-1]
-                link_html += "<p><strong>PRELIMINARY OWNER RESEARCH — OWNER NOT REVIEWED</strong></p>"
+                link_html += "<p><strong>PRELIMINARY RESEARCH — OWNER NOT REVIEWED</strong></p>"
                 if preliminary.get("preliminaryResearchInterpretation"):
                     link_html += "<p>Research interpretation: " + _text(preliminary["preliminaryResearchInterpretation"]) + "</p>"
                 if preliminary.get("publicLiteratureObservationUnreviewed"):
