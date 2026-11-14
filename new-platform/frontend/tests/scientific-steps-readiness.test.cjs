@@ -24,3 +24,12 @@ test("exact trial guard matches NCT followed by eight digits and rejects mismatc
  assert.match(component,/trial\.nctId===trial\.assessmentNctId/);
  assert.match(component,/const intake=exactTrial\?trial\?\.intake:undefined/);
 });
+
+test("FOCUS links each exact NCT to saved research without claiming an assessment",()=>{
+ const source=fs.readFileSync(path.join(app,"focus","page.tsx"),"utf8");
+ assert.ok(source.includes('href={"/analyze-now?nct="+encodeURIComponent(t.nct)}'));
+ assert.match(source,/View exact-trial research history/);
+});
+test("scientific panel fails closed when FDA prediction is not ABSTAIN",()=>{
+ assert.match(component,/intake\?\.fdaPrediction==="ABSTAIN"\?intake:undefined/);
+});
