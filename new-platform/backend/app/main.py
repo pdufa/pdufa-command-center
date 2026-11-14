@@ -1606,3 +1606,12 @@ def save_level_assessment(report: dict):
 def level_assessment_history(nct: str, level: int | None = None):
     from .level_assessment_history import history
     return history(nct, level)
+
+# Isolated assessment runtime: no worker/scanner imports or legacy score reuse.
+from . import assessment_runtime
+app.include_router(assessment_runtime.router(lambda: ENGINE, require_internal_key, require_storage, require_writes_enabled))
+
+@app.get('/api/assessment-runtime/version')
+def assessment_runtime_version():
+    return {'engineVersion': assessment_runtime.VERSION, 'levels': list(assessment_runtime.NAMES),
+            'scientificActivation': 'NOT_ACTIVE_SCIENTIFIC_GAPS', 'fdaModel': 'ABSTAIN'}
