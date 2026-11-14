@@ -131,3 +131,19 @@ def test_nested_cached_answers_are_excluded():
     raw['resultsSection']['outcomeMeasuresModule']['actualFdaOutcome']='APPROVED'
     assert 'APPROVED' not in json.dumps(r.sanitize(raw,'NCT04576949','2020-02-01T00:00:00Z'))
     assert 'cachedApprovalProbability' not in json.dumps(r.sanitize(raw,'NCT04576949','2020-02-01T00:00:00Z'))
+
+
+@pytest.mark.parametrize('level',range(1,7))
+def test_retained_original_stream_receipts_support_historical_without_backdating_or_overwrite(engine,level):
+    raw=original();run_id=str(uuid4());raw['actualFdaOutcome']='APPROVED'
+    with engine.begin() as c:
+        c.execute(text('CREATE TABLE nct_stream_runs(run_id TEXT PRIMARY KEY,nct_id TEXT)'))
+        c.execute(text('CREATE TABLE nct_stream_sources(run_id TEXT PRIMARY KEY,source_url TEXT,sha256 TEXT,document TEXT,canonical_sha256 TEXT,verified_at TEXT)'))
+        c.execute(text('INSERT INTO nct_stream_runs VALUES(:id,:nct)'),{'id':run_id,'nct':'NCT04576949'})
+        c.execute(text('INSERT INTO nct_stream_sources VALUES(:id,:url,:rawsha,:doc,:sha,:at)'),{'id':run_id,'url':'https://clinicaltrials.gov/api/v2/studies/NCT04576949','rawsha':'b'*64,'doc':r.packed(raw),'sha':r.sha(raw),'at':'2020-02-01T00:00:00+00:00'})
+    q=request(level,'BLIND_HISTORICAL',date(2021,1,1));source=r.source_for(engine,q,lambda _:pytest.fail('No live source'))
+    report=r.assess(q,source)
+    assert source['snapshot_id']=='nct-stream:'+run_id and source['captured_at'].startswith('2020-02')
+    assert report['fdaPrediction']['outcome']=='ABSTAIN' and 'APPROVED' not in source['document_json']
+    with engine.connect() as c:
+        assert c.execute(text('SELECT document FROM nct_stream_sources')).scalar()==r.packed(raw)

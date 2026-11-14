@@ -18,7 +18,7 @@ from urllib.request import Request, urlopen
 from urllib.error import HTTPError
 from fastapi import APIRouter, BackgroundTasks, Depends, HTTPException
 from pydantic import BaseModel, ConfigDict, Field, StrictInt
-from sqlalchemy import text
+from sqlalchemy import text, inspect
 
 VERSION = 'assessment-evidence-v2.0.1'
 NCT = re.compile(r'^NCT\d{8}$')
@@ -186,6 +186,32 @@ def collect_documents(source, level):
     return source
 
 
+def retained_stream_source(engine, request):
+    """Read original append-only registry receipts; never read forecast/outcome caches."""
+    if not inspect(engine).has_table('nct_stream_sources') or not inspect(engine).has_table('nct_stream_runs'):
+        return None
+    with engine.connect() as c:
+        rows=c.execute(text('''SELECT s.*,r.nct_id FROM nct_stream_sources s
+            JOIN nct_stream_runs r ON s.run_id=r.run_id WHERE r.nct_id=:nct
+            AND s.verified_at<:end ORDER BY s.verified_at DESC'''),
+            {'nct':request.nct,'end':(request.cutoffDate+timedelta(days=1)).isoformat()}).mappings()
+        for row in rows:
+            raw=json.loads(row['document'])
+            if sha(raw)!=row['canonical_sha256'] or row['source_url']!='https://clinicaltrials.gov/api/v2/studies/'+request.nct:
+                raise ValueError('Retained original source integrity failure')
+            captured=datetime.fromisoformat(row['verified_at'].replace('Z','+00:00'))
+            if captured.tzinfo is None:raise ValueError('Historical source capture timezone is unresolved')
+            captured=captured.astimezone(timezone.utc).isoformat()
+            if captured[:10]>request.cutoffDate.isoformat():continue
+            clinical=sanitize(raw,request.nct,captured)
+            published=clinical['protocolSection']['statusModule']['lastUpdatePostDateStruct']['date']
+            if published>request.cutoffDate.isoformat():continue
+            return {'snapshot_id':'nct-stream:'+row['run_id'],'nct_id':request.nct,
+                    'captured_at':captured,'published_at':published,'source_url':row['source_url'],
+                    'raw_sha256':row['sha256'],'input_sha256':sha(clinical),'document_json':packed(clinical)}
+    return None
+
+
 def source_for(engine, request, collector=collect_registry):
     if request.mode == 'CURRENT_EVIDENCE':
         source = collect_documents(collector(request.nct), request.level)
@@ -208,6 +234,8 @@ def source_for(engine, request, collector=collect_registry):
             if sha(doc) != row['input_sha256'] or doc['protocolSection']['identificationModule']['nctId'] != request.nct:
                 raise ValueError('Historical source integrity failure')
             return dict(row)
+    retained=retained_stream_source(engine,request)
+    if retained:return retained
     raise ValueError('NO_ELIGIBLE_HISTORICAL_SNAPSHOT: no original evidence captured by this cutoff; current data cannot be backdated')
 
 
