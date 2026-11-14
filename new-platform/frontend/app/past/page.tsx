@@ -1,6 +1,7 @@
 "use client";
 import {useMemo,useState} from "react";
 import Link from "next/link";
+import ScientificStepsReadiness from "../ScientificStepsReadiness";
 import historical from "../../data/level4BlindAssessmentQueue20261112.json";
 import comparisons from "../../data/blindHistoricalComparisons2026.json";
 
@@ -15,6 +16,7 @@ export default function PastPage(){
  return <main style={{maxWidth:1400,margin:"24px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif"}}>
  <nav style={{display:"flex",gap:14,marginBottom:16}}><Link href="/focus">FOCUS</Link><strong>PAST</strong><Link href="/pool">POOL</Link></nav>
  <h1>PAST — Historical PDUFA trials</h1>
+ <ScientificStepsReadiness cohort="PAST"/>
  <p>Year-by-year historical cohort. The 2026 queue is an evidence-freeze research queue, not a verified complete FDA decision census. No missing values are treated as zero or as a negative decision.</p>
  <div style={{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap",marginBottom:16}}>
  <label>Year <select aria-label="PDUFA year" value={year} onChange={e=>setYear(e.target.value)}>{Array.from({length:10},(_,i)=>2026-i).map(y=><option key={y}>{y}</option>)}</select></label>
