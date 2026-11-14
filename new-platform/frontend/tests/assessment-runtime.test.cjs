@@ -103,3 +103,24 @@ test('completed assessment with mismatched level is withheld from the selected t
   assert.equal(tree.root.findAllByProps({'aria-label':'Level 2 saved assessment'}).length,0);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
+
+test('Levels 1–3 each execute, persist and render exact-NCT evidence reports',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Workbench=require('../app/AssessmentWorkbench.tsx').default;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const old=global.fetch;let tree;const posted=[];
+ const reports=[1,2,3].map(level=>({runId:String(level).repeat(36),nct,level,name:'Scientific Level '+level,mode:'CURRENT_EVIDENCE',cutoffDate:null,executedAt:'2026-11-14',engineVersion:'test/level-'+level,reportHash:String(level).repeat(64),scientificStatus:'EVIDENCE_GAPS',activationStatus:'NOT_ACTIVE_SCIENTIFIC_GAPS',ownerReviewStatus:'OWNER_NOT_REVIEWED',score:{value:null,available:0,applicable:3,kind:'LEVEL_SPECIFIC_EVIDENCE_COVERAGE',method:'Evidence checks only'},fdaPrediction:{outcome:'ABSTAIN',confidence:'UNCALIBRATED',calibration:'NO_VALIDATED_FDA_MODEL'},context:{phases:['PHASE3'],phaseVerification:'OFFICIAL_REGISTRY_DECLARATION',registryStatus:'COMPLETED',regulatoryStatus:'UNVERIFIED',indicationAnalysis:[]},checks:[{id:'criterion',state:'NOT_VERIFIED',explanation:'Source review pending',locator:'registry'}],observations:[],risks:['Unverified evidence'],recommendations:['Review primary sources'],limitations:[],evidence:{source_url:'https://clinicaltrials.gov/api/v2/studies/'+nct}}));
+ global.fetch=async(url,init={})=>{
+  if(init.method==='POST'){const body=JSON.parse(init.body);posted.push(body);return Response.json({runId:reports[body.level-1].runId,status:'QUEUED'},{status:202});}
+  const run=String(url).match(/runId=([123]{36})/);return Response.json(run?{status:'COMPLETED',progress:[],report:reports.find(r=>r.runId===run[1])}:{runs:reports,hasMore:false});
+ };
+ try{
+  await act(async()=>{tree=create(React.createElement(Workbench,{selectedNct:nct}));});
+  for(let level=1;level<=3;level++){
+   await act(async()=>{tree.root.findByProps({'aria-label':'Assessment level'}).props.onChange({target:{value:String(level)}});});
+   await act(async()=>{tree.root.findAllByType('button').find(b=>b.props.children==='Run Assessment').props.onClick();});
+   assert.equal(posted[level-1].level,level);
+   assert.equal(posted[level-1].nct,nct);
+   assert.equal(tree.root.findAllByProps({'aria-label':'Level '+level+' saved assessment'}).length,1);
+  }
+  assert.deepEqual(posted.map(x=>x.level),[1,2,3]);
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
+});
