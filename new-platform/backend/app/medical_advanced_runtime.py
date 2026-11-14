@@ -1,7 +1,7 @@
 """Append-only research revision history and opt-in registry change detection.
 
 This module never calculates an approval, CRL or review-delay probability.
-It does not replace the 12-level clinical review or retrospective calibration.
+It does not replace owner review or retrospective calibration; no outside approval is required.
 Registry fingerprints alone cannot detect SEC, FDA or publication updates.
 """
 from __future__ import annotations
@@ -80,7 +80,8 @@ def record_revision(connection, run_id, nct):
         selected = [details[k] for k in RELATED_STAGES[i]]
         recorded = sum(x["state"] == "SOURCE_RECORDED" for x in selected)
         levels.append({"number":i+1, "id":name,
-            "reviewStatus":"NOT_INDEPENDENTLY_ADJUDICATED",
+            "reviewStatus":"OWNER_NOT_REVIEWED",
+            "externalVerificationRequired":False,
             "sourceStagesRecorded":recorded,
             "sourceStagesChecked":len(selected),
             "recordDisposition":"SOURCE_LEADS_ONLY" if selected else "HISTORICAL_CALIBRATION_MISSING",
@@ -88,17 +89,21 @@ def record_revision(connection, run_id, nct):
     report = {"modelVersion":"advanced-failure-first-v1",
         "runId":run_id,"nct":nct,"sourceDigest":digest,
         "outcomes":[{"outcome":k,"status":"ABSTAIN","probability":None,
-                     "reason":"No independently validated current-cycle review and temporal historical calibration."}
+                     "reason":"Owner source review is not completed and prospectively frozen historical calibration is unavailable; no external signoff is required."}
             for k in ("APPROVAL","CRL","REVIEW_DELAY")],
         "certainty":{"status":"NOT_VALIDATED","rating":None},
         "reviewLevels":levels,
-        "completedIndependentReviews":0,
+        "completedIndependentReviews":0,  # Legacy historical count, never an active assessment gate
+        "completedOwnerReviews":0,
+        "ownerReviewStatus":"OWNER_NOT_REVIEWED",
+        "externalReviewerRequirements":0,
+        "externalSignoffsRequired":0,
         "sourceCollectionStages":12,
         "calibrationReleasePermitted":False,
         "sourceType":"RECORDED_PUBLIC_SOURCE_CHECKS",
         "warning":"Revisions track evidence collection, not validated FDA probability or signed clinical decisions."}
     # Analyze Now is an optional report adapter over this same immutable run.
-    # Retired scoring histories remain isolated from this independent report.
+    # Retired scoring histories remain isolated from this owner-only research report.
     from .medical_on_demand import build_saved_analysis
     report["analyzeNow"]=build_saved_analysis(connection,run_id,nct,details)
     connection.execute(text("""INSERT INTO medical_prediction_revisions
