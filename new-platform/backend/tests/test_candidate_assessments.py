@@ -291,3 +291,36 @@ def test_level_one_endpoint_quality_blocks_unverified_registry():
     assert quality["definitionCompleteness"] == "UNVERIFIED"
     assert quality["prespecification"] == "UNVERIFIED"
     assert quality["score"] is None
+
+
+def test_level_one_accepts_exact_trial_source_review_without_inventing_score():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["levelOneEndpointReviews"] = {
+        "prespecification": {
+            "judgment": "SUPPORTS", "nctId": "NCT00000001",
+            "source": "https://clinicaltrials.gov/study/NCT00000001",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+            "rationale": "Protocol evidence reviewed for exact trial",
+        }
+    }
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["prespecification"] == "SUPPORTS"
+    assert quality["score"] is None
+    assert quality["reviewedEvidence"]["prespecification"]["nctId"] == "NCT00000001"
+
+
+def test_level_one_rejects_cross_trial_and_post_cutoff_reviews():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    record = {
+        "judgment": "SUPPORTS", "nctId": "NCT00000002",
+        "source": "https://clinicaltrials.gov/study/NCT00000001",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "rationale": "Evidence review",
+    }
+    reviews["levelOneEndpointReviews"] = {"prespecification": record}
+    assert score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]["prespecification"] == "NOT_ASSESSED"
+    record["nctId"] = "NCT00000001"
+    record["reviewedAt"] = "2026-10-21"
+    assert score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]["prespecification"] == "NOT_ASSESSED"
