@@ -1,0 +1,24 @@
+{
+  "status": "UNAPPROVED_CONFIGURATION_TEMPLATE",
+  "liveAccessEnabled": false,
+  "issuer": null,
+  "audience": null,
+  "approvedPublicKeys": {},
+  "algorithm": "RS256",
+  "accessTokenType": "at+jwt",
+  "strictSingleAudience": true,
+  "requiredClaims": ["iss", "aud", "sub", "exp", "iat", "nbf", "jti", "sid"],
+  "maximumAccessTokenLifetimeSeconds": 900,
+  "serverRoleSource": "level16_review.reviewer_grants",
+  "stablePersonSource": "level16_review.identity_accounts",
+  "sessionInvalidationSource": "level16_review.identity_sessions",
+  "tokenRevocationSource": "level16_review.revoked_tokens",
+  "rotation": {
+    "proposedMaximumKeyAgeDays": 90,
+    "publishNewPublicKeyBeforeRotation": true,
+    "keepOldKeyUntilAllAcceptedTokensExpire": true,
+    "revokeCompromisedSessionsImmediately": true
+  },
+  "qualificationStatus": "BLOCKED_REAL_PROVIDER_TOKEN_SAMPLE_REQUIRED",
+  "warning": "Auth0 documented RFC9068 examples do not satisfy this full contract unchanged; never relax guards or invent sid/nbf to claim compatibility"
+}

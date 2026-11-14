@@ -30,13 +30,20 @@ def _source_link(url):
     return f'<a href="{safe_url}" target="_blank" rel="noopener noreferrer">View submitted source</a>'
 
 
-def render(report, trusted_review_reader=None):
+def render(report, trusted_review_reader=None, preliminary_research=None):
     if not isinstance(report, dict) or report.get("status") != "PHASE_FIRST_EVIDENCE_TRIAGE_ONLY":
         raise ValueError("Refusing non-readiness or scientific-prediction report")
     trials = report.get("trials")
     if (not isinstance(trials, list) or not trials
             or len(trials) != report.get("focusTrialCount")):
         raise ValueError("Preview requires the complete exact-NCT FOCUS report")
+    research_by_nct = {}
+    if preliminary_research is not None:
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("level16_research_preparation", Path(__file__).with_name("level16_research_preparation.py"))
+        research = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(research)
+        research_by_nct = research.validate_snapshot(preliminary_research,[t.get("nct") for t in trials])
     byte_summary = report.get("localByteConsistency")
     if byte_summary is not None and (
         not isinstance(byte_summary, dict)
@@ -130,6 +137,18 @@ def render(report, trusted_review_reader=None):
                 for label, key in (("Proposed findings", "findingsUnreviewed"), ("Proposed reasons", "reasonsUnreviewed"),
                                    ("Contradictions", "contradictoryEvidence"), ("Limitations", "limitations"), ("Blockers", "blockers")):
                     link_html += "<p>" + label + ": " + _text("; ".join(proposal[key])) + "</p>"
+            if nct in research_by_nct:
+                preliminary = research_by_nct[nct]["levels"][item["level"]-1]
+                link_html += "<p><strong>PRELIMINARY RESEARCH — NOT INDEPENDENTLY REVIEWED</strong></p>"
+                for finding in preliminary["preliminaryFindings"]:
+                    link_html += "<p>" + _text(finding["finding"]) + ": " + _text(json.dumps(finding["sourceValue"],ensure_ascii=False)) + " · locator " + _text(finding["locator"]) + " · " + _source_link(finding["sourceUrl"]) + "</p>"
+                    link_html += "<p>Reasons: " + _text("; ".join(finding["reasons"])) + "</p>"
+                for question in preliminary.get("outstandingSourceQuestions", []):
+                    link_html += "<p>Outstanding source question: " + _text(question) + "</p>"
+                for request in preliminary["requiredEvidence"]:
+                    link_html += "<p>" + _text(request["state"]) + ": " + _text(request["requirement"]) + "</p>"
+                link_html += "<p>Limitations: " + _text("; ".join(preliminary["limitations"])) + "</p>"
+                link_html += "<p>Contradiction review: " + _text(preliminary["contradictionReviewStatus"]) + " · leads: " + _text("; ".join(preliminary["contradictoryFindings"]) or "Not adjudicated") + "</p>"
             workflow = item.get("reviewWorkflow", {})
             review_html = "<p>Scientific review: " + _text(item["scientificReviewStatus"].replace("_", " ")) + "</p>"
             for label, key in (("Source collection", "sourceCollectionStatus"),
@@ -248,9 +267,12 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--report", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
+    parser.add_argument("--preliminary-research", type=Path,
+                        help="Optional unreviewed current-source worksheets; never authorizes clinical signoff")
     args = parser.parse_args()
     document = json.loads(args.report.read_text(encoding="utf-8"))
-    html = render(document)
+    preliminary = json.loads(args.preliminary_research.read_text(encoding="utf-8")) if args.preliminary_research else None
+    html = render(document, preliminary_research=preliminary)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(html, encoding="utf-8")
     print(json.dumps({"status": "PREVIEW_ONLY", "trials": document["focusTrialCount"],

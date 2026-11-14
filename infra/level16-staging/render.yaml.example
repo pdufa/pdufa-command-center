@@ -1,0 +1,36 @@
+# REVIEW-ONLY TEMPLATE. Do not connect/sync this file before owner approval.
+# Separate NEW workspace/database; never reuse existing resource names.
+# autoDeploy off does NOT prevent a first manual creation/deploy. Nothing was created.
+previews:
+  generation: 'off'
+services:
+  - type: pserv
+    name: pdufa-level16-isolated-review-preparation
+    runtime: python
+    plan: 0.5c-512mb
+    region: oregon
+    repo: https://github.com/pdufa/pdufa-command-center
+    branch: codex/assessment-levels1-6-phase-first-20261113
+    rootDir: .
+    buildCommand: pip install -r new-platform/backend/requirements-level16-staging.txt
+    startCommand: uvicorn app.level16_staging_preparation:app --app-dir new-platform/backend --host 0.0.0.0 --port $PORT
+    autoDeployTrigger: 'off'
+    numInstances: 1
+    envVars:
+      - key: PDUFA_LEVEL16_DATABASE_URL
+        sync: false # restricted runtime login ONLY; never database owner URL
+      - key: PDUFA_LEVEL16_APPROVAL_PACKAGE
+        value: infra/level16-staging/owner-approval.json
+      - key: PDUFA_LEVEL16_LIVE_ACCESS
+        value: 'disabled'
+# Private-service readiness is probed internally at /readyz; no web-only healthCheckPath.
+# /livez returns 200 for process health; /readyz remains 503 until a separate live release.
+databases:
+  - name: pdufa-level16-isolated-review-db
+    databaseName: pdufa_level16_stage
+    user: level16_stage_owner
+    plan: 0.5c-1g
+    diskSizeGB: 1
+    region: oregon
+    postgresMajorVersion: '16'
+    ipAllowList: []

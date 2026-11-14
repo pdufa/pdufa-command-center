@@ -1,0 +1,47 @@
+{
+  "schemaVersion": 1,
+  "kind": "LEVEL16_OWNER_DECISION_PACKAGE_NOT_AUTHORIZATION",
+  "status": "UNAPPROVED",
+  "liveAccessEnabled": false,
+  "recommended": {
+    "identityProvider": "Auth0 separate development tenant; strict token contract qualification required",
+    "sourceAuthority": "Owner-designated independent source verifier; separately controlled offline RS256 signer",
+    "hosting": "New isolated Render workspace; private preparation service and separate paid PostgreSQL 16 instance",
+    "evidenceStorage": "Existing immutable PostgreSQL BYTEA tables and per-person row-level security",
+    "reviewerMinimumDistinctPeople": 5,
+    "estimatedMonthlyUsdBeforeExtras": 86.30,
+    "pricingCheckedDate": "2026-11-13"
+  },
+  "configuration": {
+    "renderWorkspaceId": null,
+    "region": null,
+    "identityIssuer": null,
+    "identityAudience": null,
+    "identityPublicKeyFingerprints": [],
+    "identityTokenContractEvidenceReference": null,
+    "sourceAuthorityIssuer": null,
+    "sourceAuthorityAudience": null,
+    "sourceAuthorityPublicKeyFingerprints": [],
+    "isolatedDatabaseResourceId": null,
+    "runtimeSecretReference": null,
+    "approvedIngressAndCallbackOrigins": [],
+    "reviewerPersonMappingEvidenceReference": null,
+    "backupEvidenceReference": null
+  },
+  "decisions": [
+    {"id":"A01","decision":"Select NEW isolated Render workspace, account administrators and region; confirm no production private-network peer","required":true,"approvalReference":null},
+    {"id":"A02","decision":"Approve individual issuer/tenant/audience, MFA and a real-token contract test for RS256 at+jwt, exact audience, sid, nbf, jti, lifetime and invalidation","required":true,"approvalReference":null},
+    {"id":"A03","decision":"Identity-proof at least five distinct people: source submitter, separate source verifier, clinician, independent challenger, final administrator; approve immutable alias/person mappings and role grants","required":true,"approvalReference":null},
+    {"id":"A04","decision":"Designate an independent original-source attestation authority, signer custody, public key fingerprints and human verification checklist","required":true,"approvalReference":null},
+    {"id":"A05","decision":"Approve separate PostgreSQL 16 instance, migration operator privileges, resource IDs, restricted runtime login and per-person evidence grants","required":true,"approvalReference":null},
+    {"id":"A06","decision":"Approve public-original acquisition/access policy, immutable storage limits, encryption, audit access and indefinite review/source history retention","required":true,"approvalReference":null},
+    {"id":"A07","decision":"Approve pinned-key overlap/rotation, <=900-second access tokens, session/token revocation owners, emergency suspension and signer recovery","required":true,"approvalReference":null},
+    {"id":"A08","decision":"Approve internal-only ingress or separately protected TLS gateway, callback origins, and browser sign-in implementation; no shared dashboard identity","required":true,"approvalReference":null},
+    {"id":"A09","decision":"Approve backups: seven-day PITR, daily encrypted export/30-day backup retention, RPO <=24h, target RTO <=4h and restore drill before live enablement","required":true,"approvalReference":null},
+    {"id":"A10","decision":"Approve current-source cutoff and outcome-exposure quarantine; this collection is not a blind historical prediction input","required":true,"approvalReference":null},
+    {"id":"A11","decision":"Approve provider billing terms and monthly budget: estimated $86.30 before storage growth, backups, egress, taxes and professional reviewer fees","required":true,"approvalReference":null},
+    {"id":"A12","decision":"Approve scientific qualifications, disease/statistical responsibilities and conflict-of-interest review for the actual reviewers","required":true,"approvalReference":null},
+    {"id":"A13","decision":"Assign exact-NCT application-cycle verification, retaining the three unmapped exceptions until evidence supports a mapping","required":true,"approvalReference":null},
+    {"id":"A14","decision":"Authorize a specific isolated staging release only after configuration, token, evidence, backup and independent-review acceptance checks; this file itself cannot authorize activation","required":true,"approvalReference":null}
+  ]
+}
