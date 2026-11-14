@@ -109,11 +109,22 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
                              and registry_as_of <= registry_checked_on <= today)
     source = "https://clinicaltrials.gov/study/" + nct if registry_eligible else ""
     design = registry.get("study_design") or {}
+    if not isinstance(design, dict):
+        design = {}
     info = design.get("designInfo") or {}
-    masking, allocation = (info.get("maskingInfo") or {}).get("masking"), info.get("allocation")
+    if not isinstance(info, dict):
+        info = {}
+    masking_info = info.get("maskingInfo") or {}
+    if not isinstance(masking_info, dict):
+        masking_info = {}
+    masking, allocation = masking_info.get("masking"), info.get("allocation")
     arms, endpoints = registry.get("treatment_groups") or [], registry.get("primary_outcomes") or []
-    control = len(arms) >= 2 and any(a.get("type") in {"ACTIVE_COMPARATOR", "PLACEBO_COMPARATOR", "SHAM_COMPARATOR", "NO_INTERVENTION"} for a in arms)
-    defined = bool(endpoints and all(e.get("measure") and e.get("timeFrame") for e in endpoints))
+    if not isinstance(arms, list):
+        arms = []
+    if not isinstance(endpoints, list):
+        endpoints = []
+    control = len(arms) >= 2 and any(isinstance(a, dict) and a.get("type") in {"ACTIVE_COMPARATOR", "PLACEBO_COMPARATOR", "SHAM_COMPARATOR", "NO_INTERVENTION"} for a in arms)
+    defined = bool(endpoints and all(isinstance(e, dict) and e.get("measure") and e.get("timeFrame") for e in endpoints))
     def reg(key, name, maximum, value, fraction, rule):
         return measure(key, name, maximum, value, fraction=fraction, rule=rule, source=source, checked=checked, source_date=registry_day)
     def reviewed(key, name, weight, age=90): return grade(key, name, weight, reviews, today, max_age=age)
