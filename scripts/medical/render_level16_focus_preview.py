@@ -51,7 +51,11 @@ def render(report, trusted_review_reader=None, preliminary_research=None, review
                 or review_handoff.get("researchIsOutcomeExposed") is not True
                 or review_handoff.get("evidenceCutoffDate") != "2026-11-14"
                 or review_handoff.get("reviewReleaseStatus")
-                != "BLOCKED_ON_OWNER_A01_A14_AND_INDEPENDENT_REVIEW"):
+                != "OWNER_RESEARCH_PREPARED_NO_EXTERNAL_SIGNOFF_REQUIRED"
+                or review_handoff.get("ownerOnlyAssessmentMode") is not True
+                or review_handoff.get("externalReviewerGateCount") != 0
+                or review_handoff.get("externalSignoffsRequiredForScoring") != 0
+                or review_handoff.get("ownerReviewNotYetEntered") is not True):
             raise ValueError("Review handoff must remain current-source research only")
         handoff_trials = review_handoff.get("trials")
         if not isinstance(handoff_trials, list) or len(handoff_trials) != 32:
@@ -70,11 +74,17 @@ def render(report, trusted_review_reader=None, preliminary_research=None, review
                     or handoff_trial.get("readyForIndependentFinalAdjudication") is not False
                     or handoff_trial.get("independentReviewerAccess") != "NOT_APPROVED_OR_ACTIVATED"
                     or handoff_trial.get("approvalProbability") is not None
-                    or handoff_trial.get("fdaOutcomeJudgment") is not None):
+                    or handoff_trial.get("fdaOutcomeJudgment") is not None
+                    or handoff_trial.get("ownerOnlyAssessmentMode") is not True
+                    or handoff_trial.get("outsideReviewerCountRequired") != 0
+                    or handoff_trial.get("ownerAssessmentNotBlockedByExternalSignoff") is not True):
                 raise ValueError("Handoff trial identity or clinical review was promoted")
             for entry in handoff_levels:
                 if (entry.get("sourceAuthenticationStatus") != "NOT_INDEPENDENTLY_AUTHENTICATED"
                         or entry.get("independentScientificReviewStatus") != "NOT_ADJUDICATED"
+                        or entry.get("ownerReviewStatus") != "OWNER_NOT_REVIEWED"
+                        or entry.get("externalReviewerRequired") is not False
+                        or entry.get("ownerCanReviewWithoutExternalVerification") is not True
                         or entry.get("independentChallengeStatus") != "NOT_COMPLETED"
                         or entry.get("finalAdjudicationStatus") != "NOT_COMPLETED"
                         or entry.get("completionPermitted") is not False
@@ -230,11 +240,11 @@ def render(report, trusted_review_reader=None, preliminary_research=None, review
                 questions = handoff_level["openReviewQuestions"]
                 if any(not isinstance(q, str) or not 1 <= len(q) <= 2000 for q in questions):
                     raise ValueError("Invalid source review question")
-                link_html += "<details><summary>Independent review handoff — NOT ADJUDICATED</summary>"
+                link_html += "<details><summary>Owner-only assessment handoff — OWNER NOT REVIEWED</summary>"
                 link_html += "<p>Source collection: " + _text(handoff_level["evidenceCollectionStatus"]) + "</p>"
                 link_html += "<p>Unreviewed phase applicability: " + _text(handoff_level["applicability"]) + "</p>"
                 link_html += "<ul>" + "".join("<li>" + _text(q) + "</li>" for q in questions) + "</ul>"
-                link_html += "<p>Qualified source verifier, clinician, independent challenger and adjudicator required.</p>"
+                link_html += "<p>Owner checks evidence, weighs limitations and records any acceptance. Outside reviewers and external signoffs are NOT required for Levels 1–20.</p>"
                 link_html += "</details>"
             workflow = item.get("reviewWorkflow", {})
             review_html = "<p>Scientific review: " + _text(item["scientificReviewStatus"].replace("_", " ")) + "</p>"
@@ -242,7 +252,7 @@ def render(report, trusted_review_reader=None, preliminary_research=None, review
                                ("Original document authentication", "originalDocumentAuthenticationStatus"),
                                ("Reviewer authorization", "reviewerAuthorizationStatus"),
                                ("Clinical review", "clinicalReviewStatus"),
-                               ("Independent challenge", "independentChallengeStatus")):
+                               ("Legacy independent challenge (inactive)", "independentChallengeStatus")):
                 review_html += "<p>" + label + ": " + _text(workflow.get(key)) + "</p>"
             review_html += "<p>Registry fields missing: " + _text(", ".join(item.get("registryFieldsNotCaptured", [])) or "None captured as missing; not a scientific completeness claim") + "</p>"
             review_html += "<p>Phase-specific applicability: " + _text(item.get("pivotalReadoutRequirement") or item.get("pivotalSAPRequirement") or "Review at current phase") + "</p>"
