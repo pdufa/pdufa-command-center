@@ -27,7 +27,7 @@ function check(ok,code){if(!ok){const e=Error(code);e.checkId=code;throw e;}}
    // Reuse only an exact previously verified v2 level result to avoid needless writes.
    const prior=await context.request.get(BASE+'/api/assessments/runtime?nct='+NCT+'&level='+level);
    const old=prior.ok()?await prior.json():{runs:[]};
-   const existing=old.runs.find(r=>r.engineVersion===`assessment-evidence-v2.0.0/level-${level}`&&r.mode==='CURRENT_EVIDENCE');
+   const existing=old.runs.find(r=>r.engineVersion===`assessment-evidence-v2.0.1/level-${level}`&&r.mode==='CURRENT_EVIDENCE');
    let report;
    await workbench.getByLabel('Assessment level',{exact:true}).selectOption(String(level));
    if(existing){
