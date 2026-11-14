@@ -43,7 +43,7 @@ class OriginalRegistryOfflinePreviewTests(unittest.TestCase):
         self.assertEqual(receipt["scientificallyAdjudicatedLevels"], 0)
         self.assertEqual(receipt["fdaForecasts"], 0)
         self.assertFalse(receipt["stagingActivated"])
-        self.assertEqual(html.count("Independent review handoff — NOT ADJUDICATED"), 192)
+        self.assertEqual(html.count("Owner-only assessment handoff — OWNER NOT REVIEWED"), 192)
         self.assertIn("Registry phase/status (captured, NOT verified)", html)
         self.assertIn("PHASE3", html)
         self.assertIn("Hochberg", html)
