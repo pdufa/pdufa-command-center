@@ -28,7 +28,7 @@ export default function ExactTrialScientificIntake({cohort,nctId,programIdentity
   setBusy(true);
   try{
    const res=await fetch("/api/assessments?identity="+encodeURIComponent(programIdentity),{cache:"no-store"});
-   if(!res.ok)throw Error(res.status===401?"Sign in to view assessment evidence.":"Assessment unavailable.");
+   if(!res.ok)throw Error(res.status===401?"Sign in to view assessment evidence.":res.status===404?"Exact program not found in the current assessment universe.":res.status===409?"Exact program identity or evidence is not verified; refresh and check the NCT.":"Assessment unavailable.");
    const data:unknown=await res.json();
    if(!data||typeof data!=="object"||Array.isArray(data))throw Error("Invalid assessment response.");
    const record=data as Assessment;
