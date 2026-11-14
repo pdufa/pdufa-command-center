@@ -69,7 +69,9 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
     evidence = evidence if isinstance(evidence, dict) else {}
     phase = level_one.get("phase")
     cutoff = _day(level_one.get("assessmentCutoff"))
-    verified = level_one.get("executionStatus") == "INTAKE_ONLY" and bool(trial_id) and bool(cutoff)
+    verified = (level_one.get("executionStatus") == "INTAKE_ONLY"
+                and bool(trial_id) and bool(cutoff)
+                and level_one.get("phase") is not None)
     early = phase in {"EARLY_PHASE1", "PHASE1"}
     pre_application = phase in {"EARLY_PHASE1", "PHASE1", "PHASE2"}
     results = {}
@@ -120,12 +122,23 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
         required = [c for c in criteria if states[c] != "NOT_YET_EXPECTED"]
         rejected = [c for c in criteria if states[c] == "REJECTED_EVIDENCE"]
         not_yet_expected = [c for c in criteria if states[c] == "NOT_YET_EXPECTED"]
+        rejected_count = len(rejected)
+        outstanding = [criterion for criterion in required if criterion not in accepted]
+        review_readiness = {
+            "accepted": len(accepted),
+            "rejected": rejected_count,
+            "outstanding": outstanding,
+            "notYetExpected": not_yet_expected,
+            "complete": bool(verified and required and not outstanding),
+            "meaning": "Evidence review completeness only; not scientific validity or FDA probability.",
+        }
         results[str(number)] = {
             "level": number, "name": name,
             "status": ("BLOCKED_UNVERIFIED_PHASE" if not verified else
                        "REVIEWED" if required and all(c in accepted for c in required) else
                        "PARTIAL" if accepted else "EVIDENCE_REJECTED" if rejected else "AWAITING_REVIEW"),
             "criteria": states, "acceptedEvidence": accepted,
+            "reviewReadiness": review_readiness,
             "reviewedCount": len(accepted), "requiredCount": len(required),
             "rejectedCriteria": rejected, "notYetExpectedCriteria": not_yet_expected,
             "score": None, "scientificValidation": "NOT_VERIFIED",
