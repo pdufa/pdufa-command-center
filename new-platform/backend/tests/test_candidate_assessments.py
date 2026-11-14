@@ -864,3 +864,23 @@ def test_exact_detail_rejects_conflicting_nct_before_registry_lookup(monkeypatch
         service.exact_detail(identity)
     assert exc.value.status_code == 409
     assert "NCT" in str(exc.value.detail)
+
+
+def test_exact_detail_rejects_missing_nct_before_registry_lookup(monkeypatch):
+    from fastapi import HTTPException
+    from app import assessment_service as service
+    identity = "PROGRAM-WITHOUT-TRIAL"
+    monkeypatch.setattr(service, "get_index", lambda: {"status": "COMPLETE"})
+    monkeypatch.setattr(service, "rows_for", lambda snapshot: {
+        identity: {"id": identity, "ticker": "SAME"}
+    })
+    monkeypatch.setattr(service, "_STATE", {
+        "snapshot": {"assessmentDate": "2026-10-20"}, "reviews": {}
+    })
+    def forbidden_registry(_):
+        raise AssertionError("Missing NCT must be rejected before registry access")
+    monkeypatch.setattr(service, "registry_rows", forbidden_registry)
+    with pytest.raises(HTTPException) as exc:
+        service.exact_detail(identity)
+    assert exc.value.status_code == 409
+    assert "NCT" in str(exc.value.detail)
