@@ -78,3 +78,10 @@ test("NCT discovery clears previously selected program before re-query",()=>{
  const source=fs.readFileSync(path.join(app,"ExactTrialScientificIntake.tsx"),"utf8");
  assert.match(source,/setSelected\(""\);setIdentity\(""\);setMatches\(\[\]\)/);
 });
+
+test("overlapping NCT discovery responses cannot replace the latest lookup",()=>{
+ const source=fs.readFileSync(path.join(app,"ExactTrialScientificIntake.tsx"),"utf8");
+ assert.match(source,/const sequence=\+\+lookupSequence\.current/);
+ assert.match(source,/if\(sequence!==lookupSequence\.current\)return/);
+ assert.match(source,/if\(sequence===lookupSequence\.current\)setLookupStatus/);
+});
