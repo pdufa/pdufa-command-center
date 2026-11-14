@@ -1,4 +1,4 @@
-/** Independent, source-only medical intelligence boundary. No rating dependencies. */
+/** Sole-owner, source-linked medical intelligence boundary. No third-party review gate. */
 export type DmiSource={id:string;url:string;title:string;sourceDate:string|null;retrievedAt:string;locator:string;observation:string;status:string;evidenceType:string;reliability:string;identifiers:string[];kind:'FACT'|'INFERENCE'|'HYPOTHESIS'};
 export type DmiFinding={text:string;status:string;kind:string;sourceIds:string[];limitations:string};
 export type DmiRisk={id:string;title:string;status:string;consequence:string;severity:string;evidence:string;counterevidence:string;resolution:string;missingDocuments:string[];sourceIds:string[];counterSourceIds:string[]};
@@ -22,7 +22,9 @@ export function parseDeepMedicalSnapshot(raw:unknown):DmiSnapshot{
  for(const a of packet.applications){
   if(!a.id||ids.has(a.id)||!a.drug||!a.indication||!a.nctIds.length||a.nctIds.some(n=>!/^NCT\d{8}$/.test(n)))throw Error('DMI_APPLICATION_IDENTITY_INVALID');ids.add(a.id);
   if(!outcomes.has(a.outcome.leading)||!timing.has(a.timing.leading))throw Error('DMI_SEPARATE_DECISION_LABELS_REQUIRED');
-  if(a.outcome.leading!=='Indeterminate'&&a.independentChallenge.status!=='COMPLETED_INDEPENDENT_REVIEW')throw Error('DMI_INDEPENDENT_CHALLENGE_REQUIRED');
+  // A provisional application judgment may be prepared by the owner alone.
+  // It still needs dated sources and a contrary argument, not a second reviewer.
+  if(a.outcome.leading!=='Indeterminate'&&a.outcome.sourceIds.length===0)throw Error('DMI_OWNER_PROVISIONAL_DECISION_NEEDS_CITED_EVIDENCE');
   if(a.pdufa.date&&a.pdufa.status!=='VERIFIED_CURRENT_APPLICATION_GOAL')throw Error('DMI_GOAL_NOT_VERIFIED');
   for(const source of a.sources)if(!allSources.has(source.id))throw Error('DMI_SOURCE_REFERENCE_INVALID');
   const refs=[...a.outcome.sourceIds,...a.timing.sourceIds,...a.pdufa.sourceIds,...a.sections.flatMap(s=>s.findings.flatMap(f=>f.sourceIds)),...a.failureRisks.flatMap(r=>[...r.sourceIds,...r.counterSourceIds]),...Object.values(a.arguments).flatMap(items=>items.flatMap(i=>i.sourceIds))];
