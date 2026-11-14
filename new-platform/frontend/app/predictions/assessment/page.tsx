@@ -37,6 +37,16 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
     <div style={{...label,letterSpacing:".12em"}}>PDUFA COMMAND CENTER · PHASE-FIRST RESEARCH INTAKE</div>
     <h1 style={{fontSize:"clamp(25px,4vw,36px)",margin:"8px 0 4px"}}>Deep Clinical Subspecialty Intelligence</h1>
     <p style={{fontSize:17,fontWeight:700,margin:"4px 0"}}>FOCUS — Complete Assessment Preparation</p>
+    <section aria-label="Owner-only assessment policy" data-testid="owner-only-assessments"
+      style={{...section,margin:"10px 0 16px",background:"#eefaf5"}}>
+      <strong>OWNER-ONLY ASSESSMENTS · LEVELS 1–20</strong>
+      <p style={{margin:"7px 0 0",fontSize:14,lineHeight:1.6}}>
+        You review and accept your own trial assessments. No outside clinician, statistician,
+        independent challenger, source attestor or third-party signoff is required.
+        Source citations, phase checks, scientific uncertainties and prediction history
+        remain available for your own assessment. No owner approval is implied before you record it.
+      </p>
+    </section>
     <p style={{maxWidth:1030,lineHeight:1.6,color:"#435f60",fontSize:14}}>
       The Level 1 section below covers 32 dated FOCUS trial records. The older specialty dossier further down
       covers a separate 29-trial intake snapshot. <strong>Neither is a validated FDA probability or 32 completed clinical PDUFA reviews.</strong>
@@ -78,7 +88,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
           FDA reportedly requires a statistically significant survival benefit;
           positive PFS and follow-up OS temper uncertainty.
           This is an uncalibrated, research-only directional forecast, not a completed
-          independent scientific review, signed clinical determination or trading signal.
+          completed owner review, validated FDA outcome probability or trading signal.
         </p>
         <p style={{fontSize:12,lineHeight:1.7,margin:"9px 0 0"}}>
           <a href="https://www.sec.gov/Archives/edgar/data/1599298/000159929826000090/smmt-20260930.htm" target="_blank" rel="noopener noreferrer">
@@ -119,7 +129,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
         ["Mapped FDA cycles",FOCUS_SPECIALTY_SUMMARY.mappedApplicationCycles],
         ["Specialty profiles",CLINICAL_SPECIALTY_PROFILES.length],
         ["Partial clinical dimensions",FOCUS_SPECIALTY_SUMMARY.partialClinicalDimensions],
-        ["Independently adjudicated",FOCUS_SPECIALTY_SUMMARY.independentlyAdjudicatedTrials]
+        ["Owner-reviewed trials",FOCUS_SPECIALTY_SUMMARY.ownerReviewedTrials]
       ].map(([name,number])=><div key={String(name)} style={{...section,padding:15}}>
         <div style={{fontSize:11,color:"#4f6969"}}>{name}</div><strong style={{fontSize:27}}>{number}</strong>
       </div>)}
@@ -129,7 +139,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
       <p style={{fontSize:13,lineHeight:1.6,margin:"7px 0 0"}}>
         The older {FOCUS_SPECIALTY_SUMMARY.ncts}-NCT specialty-intake snapshot is in this queue.
         The {FOCUS_SPECIALTY_SUMMARY.partialClinicalDimensions} specialty positions are authored research interpretations,
-        not individually independently reverified findings. Signed clinical adjudications: 0 recorded.
+        not yet checked and accepted by the owner. Owner-reviewed completions: 0 recorded.
         For the FOCUS research queue only: approved numerical FDA forecasts: 0.
         The validated production engine remains <strong>ABSTAIN</strong>;
         certainty remains <strong>NOT VALIDATED</strong>.
@@ -159,7 +169,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
               <td style={{padding:"10px 9px",borderBottom:"1px solid #d5e4df"}}>{item.applications.length?item.applications.map(a=>a.drug+" — "+a.indication).join(" / "):"Application mapping missing"}</td>
               <td style={{padding:"10px 9px",borderBottom:"1px solid #d5e4df"}}>{item.applications.reduce((n,a)=>n+a.partialCaseDimensions,0)} · research only</td>
               <td style={{padding:"10px 9px",borderBottom:"1px solid #d5e4df",fontWeight:700,color:"#6d7772"}}>Not yet assessed</td>
-              <td style={{padding:"10px 9px",borderBottom:"1px solid #d5e4df",color:"#8b5b20",fontWeight:700}}>NOT ADJUDICATED</td>
+              <td style={{padding:"10px 9px",borderBottom:"1px solid #d5e4df",color:"#8b5b20",fontWeight:700}}>OWNER NOT REVIEWED</td>
             </tr>)}</tbody>
           </table>
         </div>
@@ -201,7 +211,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
           </p>
           <p style={{fontSize:13}}>Review-cycle source (reported {cycle.sourceDate}):{" "}
             <a href={cycle.sourceUrl} target="_blank" rel="noopener noreferrer">Original issuer/regulatory reference</a>.
-            Independent source and current-cycle reconciliation remains required.
+            Owner source and current-cycle reconciliation remains to be completed. No outside verifier is required.
           </p>
           {specialty&&<div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(240px,1fr))",gap:10}}>
             {[
@@ -219,7 +229,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
             <strong style={{fontSize:16}}>Seven partial scientific investigations — source review required</strong>
             <p style={{fontSize:13}}>{fullCase.medicalQuestion}</p>
             {fullCase.dimensions.map((d,i)=><details key={i} style={{padding:"12px 0",borderTop:"1px solid #d0e1d9"}}>
-              <summary style={{cursor:"pointer",fontWeight:750,fontSize:14}}>{i+1}. {d.topic} · Not independently adjudicated</summary>
+              <summary style={{cursor:"pointer",fontWeight:750,fontSize:14}}>{i+1}. {d.topic} · Owner not reviewed</summary>
               <div style={{fontSize:13,lineHeight:1.65,margin:"10px 0"}}>
                 <p><strong>Research source summary:</strong> {d.observedClinicalEvidence}</p>
                 <p><strong>Specialty-style interpretation:</strong> {d.specialistInterpretation}</p>
@@ -239,8 +249,9 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
             </ol>
           </details>
           <p style={{fontSize:12,color:"#526c63",lineHeight:1.6}}>
-            Dossier links and interpretations are staged public-source research, not a licensed specialist sign-off,
-            full study-report verification, clinical advice, or FDA outcome probability.
+            Dossier links and interpretations are staged public-source research,
+            not an owner-accepted review, full source-data reconciliation, clinical advice,
+            or calibrated FDA outcome probability.
           </p>
         </div>}
       </section>}
