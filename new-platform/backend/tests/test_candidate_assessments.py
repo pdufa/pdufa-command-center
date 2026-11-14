@@ -634,6 +634,9 @@ def test_levels_two_to_six_require_evidence_excerpt():
         "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
         "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
         "reviewerId": "test-reviewer", "documentType": "protocol",
+        "sourceVerified": True, "sourceVerifiedAt": "2026-10-19",
+        "sourceVerifiedBy": "test-verifier",
+        "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
     }
     reviews["scientificLevelEvidence"] = {"2.protocol": record}
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
