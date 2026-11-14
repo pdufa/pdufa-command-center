@@ -283,6 +283,22 @@ def render(report, trusted_review_reader=None, preliminary_research=None, review
                 review_html += "</ol></details>"
             requests = item.get("originalEvidenceRequests", [])
             requests_text = ", ".join(map(str, requests)) if isinstance(requests, list) else ""
+            if nct in handoff_by_nct:
+                if workflow.get("status") == "AUTHORIZED_DATABASE_READBACK":
+                    raise ValueError("Owner-only preview cannot silently display legacy independently signed readback")
+                # The old readiness report contains multi-person review
+                # requirements, but they are archived engineering, NOT active
+                # owner assessment gates. Do not display their old blockers.
+                requests_text = "Owner checks phase-appropriate evidence and missing sources; no external verification."
+                review_html = (
+                    "<p>Owner self-review: OWNER NOT REVIEWED.</p>"
+                    "<p>No external clinician, statistician, source attestor, challenger or signoff required.</p>"
+                    "<p>Published source evidence and questions remain unreviewed; no FDA forecast recorded.</p>"
+                    "<p>Missing registry fields: "
+                    + _text(", ".join(item.get("registryFieldsNotCaptured", []))
+                            or "None recorded as missing; not proof of evidence completeness")
+                    + "</p>"
+                )
             lines.append(
                 "<tr><td>" + _text(item["level"]) + " · " + _text(item.get("name")) +
                 "</td><td>" + _text(item.get("readiness")) +
@@ -306,7 +322,9 @@ def render(report, trusted_review_reader=None, preliminary_research=None, review
             " · <strong>Application cycle links:</strong> " +
             _text(", ".join(trial.get("candidateApplicationCycleIdsUnverified", [])) or "None") +
             "</p><div class='tablewrap'><table><thead><tr><th>Level</th><th>Evidence status</th>"
-            "<th>Required evidence review</th><th>Submitted source leads</th><th>Scientific review</th>"
+            ("<th>Owner evidence checks</th><th>Source leads</th><th>Owner review</th>"
+             if handoff_by_nct else
+             "<th>Required evidence review</th><th>Submitted source leads</th><th>Scientific review</th>")
             "</tr></thead><tbody>" + "".join(lines) + "</tbody></table></div></div></details>"
         )
     actual_completed = sum(level.get("assessmentCompleted") is True for trial in trials for level in trial["levels"])
@@ -335,9 +353,13 @@ def render(report, trusted_review_reader=None, preliminary_research=None, review
         "<style>" + css + "</style></head><body><main>"
         "<h1>FOCUS · Scientific Levels 1–6</h1>"
         "<p>Read-only evidence review preview. Original FOCUS membership remains unchanged.</p>"
-        "<div class='notice'><strong>NOT MEDICAL ASSESSMENTS OR FDA FORECASTS.</strong>"
-        " Submitted source metadata and proposed findings are unreviewed. Authorized findings require "
-        "trusted current database readback. This page is not deployed to production.</div>"
+        ("<div class='notice'><strong>OWNER-ONLY RESEARCH — NO EXTERNAL VERIFICATION REQUIRED.</strong>"
+         " Sources and proposed findings are preliminary; owner review has not been entered."
+         " No calibrated FDA forecast or production deployment is implied.</div>"
+         if handoff_by_nct else
+         "<div class='notice'><strong>NOT MEDICAL ASSESSMENTS OR FDA FORECASTS.</strong>"
+         " Submitted source metadata and proposed findings are unreviewed. Authorized findings require "
+         "trusted current database readback. This page is not deployed to production.</div>")
         "<section class='metrics' aria-label='Assessment readiness counts'>"
         "<div class='metric'><strong>" + _text(report.get("focusTrialCount")) +
         "</strong><small>FOCUS exact NCT trials</small></div>"
@@ -347,7 +369,9 @@ def render(report, trusted_review_reader=None, preliminary_research=None, review
         "</strong><small>Trials without application mapping</small></div>"
         "<div class='metric'><strong>" + _text(report.get("sourceSubmissionCount", 0)) +
         "</strong><small>Source submissions awaiting authentication</small></div>"
-        "<div class='metric'><strong>" + _text(report.get("scientificallyAdjudicatedLevels", 0)) + "</strong><small>Independently reviewed Levels 1–6</small></div>"
+        ("<div class='metric'><strong>0</strong><small>Owner reviews recorded</small></div>"
+         if handoff_by_nct else
+         "<div class='metric'><strong>" + _text(report.get("scientificallyAdjudicatedLevels", 0)) + "</strong><small>Independently reviewed Levels 1–6</small></div>")
         + (
             "<div class='metric'><strong>" + _text(byte_summary.get("localByteMatches", 0))
             + "</strong><small>Local files matching submitted SHA-256 (NOT source-authenticated)</small></div>"
@@ -367,7 +391,7 @@ def main():
     parser.add_argument("--preliminary-research", type=Path,
                         help="Optional unreviewed current-source worksheets; never authorizes clinical signoff")
     parser.add_argument("--review-handoff", type=Path,
-                        help="Optional unreviewed 32-trial independent review preparation queue")
+                        help="Optional unreviewed 32-trial owner-only source and self-check preparation queue")
     args = parser.parse_args()
     document = json.loads(args.report.read_text(encoding="utf-8"))
     preliminary = json.loads(args.preliminary_research.read_text(encoding="utf-8")) if args.preliminary_research else None
