@@ -549,7 +549,12 @@ def test_levels_two_to_six_distinguish_unpublished_from_unreviewed():
     row, registry, reviews = fixture()
     registry["phases"] = ["PHASE3"]
     reviews["scientificLevelEvidence"] = {
-        "3.primaryEndpointResults": {"availability": "NOT_PUBLIC"}
+        "3.primaryEndpointResults": {
+            "availability": "NOT_PUBLIC", "nctId": "NCT00000001",
+            "source": "https://clinicaltrials.gov/study/NCT00000001",
+            "checkedAt": "2026-10-19",
+            "searchRationale": "Registry results section inspected; no public results",
+        }
     }
     level = score(row, registry, reviews)["levelsTwoToSix"]["3"]
     assert level["criteria"]["primaryEndpointResults"] == "UNPUBLISHED"
@@ -568,3 +573,29 @@ def test_early_phase_not_expected_overrides_unpublished_marker():
     level = score(row, registry, reviews)["levelsTwoToSix"]["3"]
     assert level["criteria"]["primaryEndpointResults"] == "NOT_YET_EXPECTED"
     assert level["unpublishedCriteria"] == []
+
+
+def test_unpublished_claim_requires_auditable_source_and_date():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "3.primaryEndpointResults": {"availability": "NOT_PUBLIC"}
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["3"]
+    assert level["criteria"]["primaryEndpointResults"] == "UNVERIFIED_UNPUBLISHED_CLAIM"
+    assert level["unpublishedCriteria"] == []
+    assert level["unverifiedUnpublishedCriteria"] == ["primaryEndpointResults"]
+
+
+def test_post_cutoff_unpublished_check_is_not_accepted():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "3.primaryEndpointResults": {
+            "availability": "NOT_PUBLIC", "nctId": "NCT00000001",
+            "source": "https://clinicaltrials.gov/study/NCT00000001",
+            "checkedAt": "2026-10-21", "searchRationale": "No public results found",
+        }
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["3"]
+    assert level["criteria"]["primaryEndpointResults"] == "UNVERIFIED_UNPUBLISHED_CLAIM"
