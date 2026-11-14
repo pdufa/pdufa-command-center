@@ -19,9 +19,9 @@ class FocusAdjudicationQueueTests(unittest.TestCase):
     def test_exact_canonical_roster(self):
         expected = {(r["ticker"], r["nct"]) for r in self.roster["records"]}
         actual = {(r["ticker"], r["nct"]) for r in self.queue["trials"]}
-        self.assertEqual(len(expected), 29)
+        self.assertEqual(len(expected), 32)
         self.assertEqual(actual, expected)
-        self.assertEqual(self.queue["trial_count"], 29)
+        self.assertEqual(self.queue["trial_count"], 32)
 
     def test_all_eight_dimensions_remain_unverified(self):
         self.assertEqual(self.queue["dimensions_per_trial"], 8)

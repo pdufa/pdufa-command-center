@@ -16,7 +16,7 @@ import urllib.error
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
-TRIALS = ROOT / "data/phase3_all_years_300m_10b_trials.csv"
+TRIALS = ROOT / "new-platform/frontend/public/phase3-census-2026-10-26.csv"
 MAX_BYTES = 500_000
 
 

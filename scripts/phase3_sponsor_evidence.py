@@ -7,7 +7,7 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-CENSUS = ROOT / "data/phase3_all_years_300m_10b_trials.csv"
+CENSUS = ROOT / "new-platform/frontend/public/phase3-census-2026-10-26.csv"
 
 def build(report):
     with CENSUS.open(encoding="utf-8-sig", newline="") as f:

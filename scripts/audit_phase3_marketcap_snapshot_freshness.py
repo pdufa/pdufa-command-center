@@ -13,8 +13,8 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-TRIALS = ROOT / "data/phase3_all_years_300m_10b_trials.csv"
-CAPS = ROOT / "data/phase_pipeline_market_caps.csv"
+TRIALS = ROOT / "new-platform/frontend/public/phase3-census-2026-10-26.csv"
+CAPS = ROOT / "data/snapshots/phase_pipeline_market_caps_2026-10-26.csv"
 LOW = 300_000_000
 HIGH = 10_000_000_000
 MAX_AGE = timedelta(hours=24)

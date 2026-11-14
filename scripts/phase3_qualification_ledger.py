@@ -12,7 +12,7 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-CENSUS = ROOT / "data/phase3_all_years_300m_10b_trials.csv"
+CENSUS = ROOT / "new-platform/frontend/public/phase3-census-2026-10-26.csv"
 GATES = (
     "registry_identity", "ticker_drug_indication_identity",
     "current_commercial_rights", "active_phase3_development",

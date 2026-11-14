@@ -1,0 +1,10 @@
+# Repository-wide offline regressions, separate from production dependencies.
+-r requirements.txt
+-r new-platform/backend/requirements-level16-staging.txt
+pytest>=8,<10
+requests>=2.32.4,<3
+google-auth>=2.40,<3
+Jinja2>=3.1.6,<4
+# Retained UI helper tests only. Does not restore the removed Streamlit app.
+streamlit>=1.50,<2
+beautifulsoup4>=4.13,<5

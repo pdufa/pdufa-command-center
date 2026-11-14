@@ -22,8 +22,8 @@ class ScanLaunchTests(unittest.TestCase):
     def test_saved_settings_match_the_active_clock_and_stage_names(self):
         config = json.loads((ROOT / "config/scan_234.json").read_text())
         schedule = config["clinical_source_schedule"]
-        self.assertEqual(schedule["pacific_daylight_time"], "22:00")
-        self.assertEqual(schedule["pacific_standard_time"], "22:00")
+        self.assertEqual(schedule["pacific_daylight_time"], "20:00")
+        self.assertEqual(schedule["pacific_standard_time"], "20:00")
         launcher = (WORKFLOWS / "pdufa-nightly-pacific-start.yml").read_text()
         self.assertEqual(schedule["cron_utc"], re.findall(r"^\s+- cron: '([^']+)'", launcher, re.M))
         self.assertEqual([tab["name"] for tab in config["tabs"]],
@@ -34,9 +34,14 @@ class ScanLaunchTests(unittest.TestCase):
     def run_dispatch(self, mode, action, fail=False):
         workflow = (WORKFLOWS / "pdufa-nightly-pacific-start.yml").read_text()
         step = workflow.split("- name: Dispatch the entire awaited sequence", 1)[1]
-        script = textwrap.dedent(step.split("run: |\n", 1)[1])
-        script = script.replace("${{ steps.pacific.outputs.scan_mode }}", mode)
-        script = script.replace("${{ steps.pacific.outputs.gem_action }}", action)
+        script = textwrap.dedent(step.split("run: |\n", 1)[1].split("\n      - name:", 1)[0])
+        for expression in re.findall(r"\$\{\{.*?\}\}", script):
+            if "night_date_pacific" in expression:
+                script = script.replace(expression, "2026-10-20")
+            elif "scan_mode" in expression:
+                script = script.replace(expression, mode)
+            else:
+                raise AssertionError("Unrecognized workflow expression: " + expression)
         with tempfile.TemporaryDirectory() as directory:
             folder = Path(directory)
             capture = folder / "request.json"
@@ -79,7 +84,7 @@ class ScanLaunchTests(unittest.TestCase):
                 result, body = self.run_dispatch(mode, action)
                 self.assertEqual(result.returncode, 0, result.stderr)
                 self.assertEqual(body, {"ref": "main", "inputs": {
-                    "scan_mode": mode, "gem_action": action}})
+                    "scan_mode": mode, "night_date_pacific": "2026-10-20"}})
 
     def test_failed_dispatch_is_not_reported_as_requested(self):
         result, _ = self.run_dispatch("DELTA", "REVERIFY_PARTIAL", fail=True)

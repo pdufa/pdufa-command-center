@@ -69,9 +69,11 @@ def prepare_pipeline(frame, as_of):
 
 
 def filter_pipeline(frame, stages, date_bands, query=""):
-    """Apply selected dimensions; an empty dimension means unrestricted."""
+    """Apply explicit selected dimensions; an empty selection displays no rows."""
     if frame.empty:
         return frame.copy()
+    if not stages or not date_bands:
+        return frame.iloc[:0].copy()
     if "current_stage" not in frame or "DATES" not in frame:
         return frame.iloc[:0].copy()
     selected = frame.loc[

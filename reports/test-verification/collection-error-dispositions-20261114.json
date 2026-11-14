@@ -1,0 +1,355 @@
+{
+  "originalCollectionErrors": 34,
+  "remainingCollectionErrors": 0,
+  "broadSuite": {
+    "passed": 2255,
+    "failed": 0,
+    "skipped": 195,
+    "errors": 0,
+    "passingSubtests": 1092,
+    "explicitRetiredCases": 153,
+    "otherSkippedCases": 42
+  },
+  "dispositions": [
+    {
+      "test": "tests/test_adhoc_dispatch.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 0,
+      "skipped": 8,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Retired import chain isolated as named skipped tests; source retained and hash-protected. Not passing active coverage.",
+      "retirementReason": "RETIRED_SURVEY_UI: legacy Streamlit import chain requires removed gem_survey_catalog; retained tests are named skips, not passing active coverage."
+    },
+    {
+      "test": "tests/test_daily_trial_recheck.py",
+      "originalError": "ModuleNotFoundError: No module named 'requests'",
+      "passed": 7,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_filings_base_amendments_ui.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 16,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_filings_live_data.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_filings_scan_controls.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 5,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_focus_phvs_prax_blte_review.py",
+      "originalError": "ModuleNotFoundError: No module named 'collect_focus_survey_evidence'",
+      "passed": 0,
+      "skipped": 3,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Retired import chain isolated as named skipped tests; source retained and hash-protected. Not passing active coverage.",
+      "retirementReason": "RETIRED_SURVEY: collect_focus_survey_evidence is permanently retired by AGENTS.md; retained tests are not scientific validation or active coverage."
+    },
+    {
+      "test": "tests/test_four_pdufa_score_tabs.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 0,
+      "skipped": 2,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately."
+    },
+    {
+      "test": "tests/test_gem_fourth_scan_block.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 8,
+      "skipped": 1,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": "RETIRED_ENTRYPOINT: named test expects a removed analysis or cancelled legacy workflow. Current retirement guards execute; old entry point is not restored."
+    },
+    {
+      "test": "tests/test_gem_lifecycle_cards.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 2,
+      "skipped": 1,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately."
+    },
+    {
+      "test": "tests/test_gem_nested_master_ui.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 0,
+      "skipped": 6,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Retired import chain isolated as named skipped tests; source retained and hash-protected. Not passing active coverage.",
+      "retirementReason": "RETIRED_SURVEY_UI: legacy Streamlit import chain requires removed gem_survey_catalog; retained tests are named skips, not passing active coverage."
+    },
+    {
+      "test": "tests/test_gem_potential_picker.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 4,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_gem_stage_dossier.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 0,
+      "skipped": 5,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Retired import chain isolated as named skipped tests; source retained and hash-protected. Not passing active coverage.",
+      "retirementReason": "RETIRED_SURVEY_UI: legacy Streamlit import chain requires removed gem_survey_catalog; retained tests are named skips, not passing active coverage."
+    },
+    {
+      "test": "tests/test_gem_visual_page.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 0,
+      "skipped": 24,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Retired import chain isolated as named skipped tests; source retained and hash-protected. Not passing active coverage.",
+      "retirementReason": "RETIRED_SURVEY_UI: legacy Streamlit import chain requires removed gem_survey_catalog; retained tests are named skips, not passing active coverage."
+    },
+    {
+      "test": "tests/test_level16_staging_identity.py",
+      "originalError": "ModuleNotFoundError: No module named 'jwt'",
+      "passed": 8,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_level16_staging_postgres.py",
+      "originalError": "ModuleNotFoundError: No module named 'jwt'",
+      "passed": 0,
+      "skipped": 22,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_navigation_merge.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 0,
+      "skipped": 4,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately."
+    },
+    {
+      "test": "tests/test_overnight_status_ui.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 4,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_p3_auto_promotion.py",
+      "originalError": "ModuleNotFoundError: No module named 'google'",
+      "passed": 11,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_p3_existing_row_refresh.py",
+      "originalError": "ModuleNotFoundError: No module named 'google'",
+      "passed": 17,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_p3_market_cap_secondary.py",
+      "originalError": "ModuleNotFoundError: No module named 'requests'",
+      "passed": 9,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_p3_pool_full_discovery.py",
+      "originalError": "ModuleNotFoundError: No module named 'google'",
+      "passed": 7,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_p3_regulatory_stage_rules.py",
+      "originalError": "ModuleNotFoundError: No module named 'google'",
+      "passed": 5,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_pdufa_circled_help_grid.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 4,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_pdufa_display_columns.py",
+      "originalError": "ImportError: `Import Jinja2` failed. DataFrame.style requires jinja2. Use pip, conda, or your preferred package management tool to install the Jinja2 package.",
+      "passed": 31,
+      "skipped": 1,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately."
+    },
+    {
+      "test": "tests/test_pipeline_ui_smoke.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 0,
+      "skipped": 10,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": "RETIRED_STREAMLIT_APP: test targets the removed root app.py; preserved as a named skip, not active coverage."
+    },
+    {
+      "test": "tests/test_scan_activity_dashboard.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 5,
+      "skipped": 1,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately."
+    },
+    {
+      "test": "tests/test_scan_status_ui.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 6,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_stage_header_overlay.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 2,
+      "skipped": 1,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately."
+    },
+    {
+      "test": "tests/test_stage_wt_tables.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 4,
+      "skipped": 1,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately."
+    },
+    {
+      "test": "tests/test_table_groups.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 19,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_ticker_toggle_panel.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 5,
+      "skipped": 1,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately."
+    },
+    {
+      "test": "tests/test_today_page.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 5,
+      "skipped": 1,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately."
+    },
+    {
+      "test": "tests/test_unified_scans_command_center.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 8,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    },
+    {
+      "test": "tests/test_unified_timing_legend.py",
+      "originalError": "ModuleNotFoundError: No module named 'streamlit'",
+      "passed": 4,
+      "skipped": 0,
+      "failed": 0,
+      "collectionErrors": 0,
+      "resolution": "Missing dependency declared/installed; supported tests executed. Any named retired UI cases are reported separately.",
+      "retirementReason": null
+    }
+  ]
+}
