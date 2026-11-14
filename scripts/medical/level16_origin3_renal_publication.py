@@ -28,6 +28,12 @@ def keys(item, expected, label):
 def unchanged(item, mapping, label):
     for name, expected in mapping.items():
         val = item.get(name)
+        # JSON normalizes 50.0 to 50, and 5.00 to 5 in some emitters.
+        # Permit numeric representation differences ONLY when values match;
+        # never let booleans (subclasses of int in Python) satisfy a count.
+        if type(expected) in (int, float) and type(val) in (int, float):
+            if val == expected:
+                continue
         if type(val) is not type(expected) or val != expected:
             raise ValueError(label + ": changed published fact " + name)
 
