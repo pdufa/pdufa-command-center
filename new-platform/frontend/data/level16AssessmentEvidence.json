@@ -406,6 +406,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -800,6 +801,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -866,7 +868,7 @@
           "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10336611/",
           "date": "2023-07-11",
           "digest": "470eb255539db3aa78a240345396e6b68b2c8ced1d39ee89c62214c8ea4a52fd",
-          "kind": "PRIMARY_TRIAL_REPORT_HTML"
+          "kind": "PUBLICATION_FULL_TEXT"
         },
         {
           "url": "https://ir.achieverx.com/news-events/press-releases/detail/10/achieve-life-sciences-announces-completion-of-last-subject-last-follow-up-visit-in-phase-3-orca-2-trial-of-cytisinicline-for-smoking-cessation",
@@ -1743,6 +1745,16 @@
           "locator": "Table 2: Secondary outcomes, Weeks 9-24"
         }
       ],
+      "publishedComparisonSource": {
+        "nct": "NCT04576949",
+        "pmid": "37432430",
+        "endpointDomain": "CO_VERIFIED_SMOKING_ABSTINENCE",
+        "sourceUrl": "https://pmc.ncbi.nlm.nih.gov/articles/PMC10336611/",
+        "retrievedAt": "2026-11-14T01:19:42.476113+00:00",
+        "publicationDate": "2023-07-11",
+        "indexedPublicationDate": "2023-07-11",
+        "documentSha256": "470eb255539db3aa78a240345396e6b68b2c8ced1d39ee89c62214c8ea4a52fd"
+      },
       "publishedSafety": {
         "population": "RECEIVED_AT_LEAST_ONE_STUDY_DOSE",
         "cytisiniclineExposed": 539,
@@ -1838,6 +1850,12 @@
           "date": "2023-04-27",
           "digest": "ed6d216b9c5dd4c4c9518f8fb2735a3cc87ed16c1e1ebfb0f918d8427389a536",
           "kind": "STATISTICAL_ANALYSIS_PLAN"
+        },
+        {
+          "url": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12012700/fullTextXML",
+          "date": "2025-04-21",
+          "digest": "a16a950ea4a56f6bdf2941b88b66b3b1ec920a1de7d13b49550c36a8c2f6ba41",
+          "kind": "PUBLICATION_FULL_TEXT"
         }
       ],
       "levels": [
@@ -2560,6 +2578,16 @@
           "locator": "Table 2, secondary continuous abstinence weeks 9–24"
         }
       ],
+      "publishedComparisonSource": {
+        "nct": "NCT05206370",
+        "pmid": "40257755",
+        "endpointDomain": "CO_VERIFIED_SMOKING_ABSTINENCE",
+        "sourceUrl": "https://www.ebi.ac.uk/europepmc/webservices/rest/PMC12012700/fullTextXML",
+        "retrievedAt": "2026-11-14T00:46:04.771636+00:00",
+        "publicationDate": "2025-04-21",
+        "indexedPublicationDate": "2025-06-01",
+        "documentSha256": "a16a950ea4a56f6bdf2941b88b66b3b1ec920a1de7d13b49550c36a8c2f6ba41"
+      },
       "publishedSafety": {
         "combinedCytisiniclineExposed": 523,
         "placeboExposed": 262,
@@ -2886,6 +2914,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -3142,6 +3171,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -3690,6 +3720,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -4277,6 +4308,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -4521,6 +4553,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -4773,6 +4806,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -5015,6 +5049,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -5264,6 +5299,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -5506,6 +5542,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -5748,6 +5785,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -6047,6 +6085,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -6777,6 +6816,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -7315,6 +7355,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -7729,6 +7770,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -7979,6 +8021,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -8232,6 +8275,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -8472,6 +8516,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -8714,6 +8759,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -8956,6 +9002,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -9225,6 +9272,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -9480,6 +9528,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -9722,6 +9771,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -9980,6 +10030,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -10223,6 +10274,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -10641,6 +10693,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -10993,6 +11046,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -11368,6 +11422,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     },
@@ -11610,6 +11665,7 @@
         }
       ],
       "reportedComparisons": [],
+      "publishedComparisonSource": null,
       "publishedSafety": null,
       "statisticalChronology": null
     }

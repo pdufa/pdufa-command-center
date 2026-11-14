@@ -30,8 +30,17 @@ class AssessmentExportTests(unittest.TestCase):
         for forbidden in ('localPath','originalBytes','scientificReviewRequirements','independent_source_authentication','privateKey'):
             self.assertNotIn(forbidden,text)
         trial=next(t for t in self.data['trials'] if t['nct']=='NCT04576949')
-        self.assertEqual(len(trial['sources']),12)  # 11 dossier sources plus the linked PubMed abstract record
+        self.assertEqual(len(trial['sources']),12)  # existing full-text receipt reused, no duplicate source
         self.assertIsNone(trial['statisticalChronology']['actualUnblindingDate'])
+
+    def test_quantitative_publications_bind_to_exact_original_receipts(self):
+        for nct, pmid in [('NCT04576949','37432430'),('NCT05206370','40257755')]:
+            trial=next(t for t in self.data['trials'] if t['nct']==nct)
+            binding=trial['publishedComparisonSource']
+            self.assertEqual((binding['nct'],binding['pmid']),(nct,pmid))
+            source=next(s for s in trial['sources'] if s['url']==binding['sourceUrl'])
+            self.assertEqual(source['digest'],binding['documentSha256'])
+            self.assertEqual(source['kind'],'PUBLICATION_FULL_TEXT')
 
     def test_orca3_columns_keep_published_counts_and_table_intervals(self):
         trial=next(t for t in self.data['trials'] if t['nct']=='NCT05206370')

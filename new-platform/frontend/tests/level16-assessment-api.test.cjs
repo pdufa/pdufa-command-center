@@ -30,3 +30,9 @@ test('malformed JSON and absent bodies cannot claim completion',async()=>{
 test('missing auth configuration fails closed without a fabricated identity provider',async()=>{
  const key=process.env.SESSION_SIGNING_KEY;delete process.env.SESSION_SIGNING_KEY;try{assert.equal((await api.POST(req({scope:'ALL'}))).status,401);}finally{process.env.SESSION_SIGNING_KEY=key;}
 });
+test('authenticated Level 3 predictor runs one or all trials without accepting caller predictions',async()=>{
+ for(const [body,expected] of [[{scope:'ONE',nct:'NCT04576949',level:3},1],[{scope:'ALL',level:3},32]]){
+  const response=await api.POST(req(body));assert.equal(response.status,200);const data=await response.json();assert.equal(data.requestedLevel,3);assert.equal(data.summary.levelsProcessed,expected);assert.ok(data.trials.every(t=>t.levels.length===1&&t.levels[0].level===3&&t.level3Prediction.ownerReviewStatus==='OWNER_NOT_REVIEWED'));assert.equal(data.trials.find(t=>t.nct==='NCT04576949').level3Prediction.call,'APPROVAL_LEAN');
+ }
+ for(const field of [{call:'APPROVAL_LEAN'},{score:99},{approvalProbability:0.99},{reviewed:true}])assert.equal((await api.POST(req({scope:'ONE',nct:'NCT04576949',level:3,...field}))).status,422);
+});
