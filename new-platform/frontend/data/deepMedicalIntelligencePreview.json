@@ -41,7 +41,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -52,7 +52,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -258,10 +258,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -273,7 +269,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-7a242be26068908f",
@@ -303,7 +303,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -315,7 +315,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -551,10 +551,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -566,7 +562,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-2445674aa787d3d8",
@@ -594,7 +594,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -605,7 +605,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -811,10 +811,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -826,7 +822,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-5f64df80bff8d548",
@@ -854,7 +854,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -865,7 +865,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -1071,10 +1071,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -1086,7 +1082,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-257f3ce7e342be30",
@@ -1116,7 +1116,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -1128,7 +1128,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -1364,10 +1364,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -1379,7 +1375,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-447851204ff05ad9",
@@ -1409,7 +1409,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -1421,7 +1421,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -1657,10 +1657,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -1672,7 +1668,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-9629b1e0ede43757",
@@ -1700,7 +1700,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -1711,7 +1711,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -1917,10 +1917,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -1932,7 +1928,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-b440f61af226bb94",
@@ -1960,7 +1960,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -1971,7 +1971,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -2177,10 +2177,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -2192,7 +2188,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-8d85bfc736284d4e",
@@ -2220,7 +2220,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -2231,7 +2231,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -2437,10 +2437,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -2452,7 +2448,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-91292cdda6cd0faa",
@@ -2482,7 +2482,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -2494,7 +2494,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -2730,10 +2730,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -2745,7 +2741,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-1f9121efecaba6c3",
@@ -2773,7 +2773,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -2784,7 +2784,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -2990,10 +2990,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -3005,7 +3001,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-332144bf80cfa2e7",
@@ -3035,7 +3035,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -3047,7 +3047,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -3283,10 +3283,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -3298,7 +3294,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-e556448816c461da",
@@ -3326,7 +3326,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -3337,7 +3337,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -3543,10 +3543,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -3558,7 +3554,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-f901bfeea53b895f",
@@ -3586,7 +3586,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -3597,7 +3597,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -3803,10 +3803,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -3818,7 +3814,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-b141495b530fe975",
@@ -3846,7 +3846,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -3857,7 +3857,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -4063,10 +4063,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -4078,7 +4074,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-a21590a4be82520c",
@@ -4106,7 +4106,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -4117,7 +4117,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -4323,10 +4323,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -4338,7 +4334,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-c3ad7985c6ed42c7",
@@ -4366,7 +4366,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -4377,7 +4377,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -4583,10 +4583,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -4598,7 +4594,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-b10f5c9686d9978e",
@@ -4626,7 +4626,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -4637,7 +4637,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -4843,10 +4843,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -4858,7 +4854,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-140e5a2c36c24c8b",
@@ -4886,7 +4886,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -4897,7 +4897,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -5103,10 +5103,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -5118,7 +5114,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-5378fe9e1556eb4c",
@@ -5148,7 +5148,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -5160,7 +5160,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -5396,10 +5396,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -5411,7 +5407,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-223d8cb55a739fec",
@@ -5439,7 +5439,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -5450,7 +5450,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -5656,10 +5656,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -5671,7 +5667,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-4a14a2fa6cd22a6e",
@@ -5699,7 +5699,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -5710,7 +5710,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -5916,10 +5916,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -5931,7 +5927,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     },
     {
       "id": "provisional-bbef011f4cab3c74",
@@ -5959,7 +5959,7 @@
       "outcome": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and an independent scientific challenge have not been adjudicated; no outcome is inferred from registry posting.",
+        "rationale": "Exact trial sources are captured. Current application identity, proposed label, all relevant evidence, and the owner's critical review have not been completed; no outcome is inferred from registry posting.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -5970,7 +5970,7 @@
       "timing": {
         "leading": "Indeterminate",
         "confidence": "Low",
-        "rationale": "No current application-specific goal date or amendment history has been independently verified, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
+        "rationale": "No current application-specific goal date or amendment history has been checked by the owner, so a by-goal decision, formal extension or missed goal cannot be distinguished.",
         "contraryArgument": "A sponsor may have supplied stronger or weaker evidence, including nonpublic quality and inspection information, than the public trial record reveals.",
         "evidenceWouldChange": "Verify the current FDA application/review cycle and source-backed efficacy, safety, quality, correspondence and opposing scientific arguments.",
         "sourceIds": [
@@ -6176,10 +6176,6 @@
           "kind": "FACT"
         }
       ],
-      "independentChallenge": {
-        "status": "PENDING",
-        "independenceStatement": "An initial source inventory is not an independent adversarial review."
-      },
       "gaps": [
         "Disease mechanism, natural history, endpoint acceptance and indication-specific failure history require source review.",
         "Target engagement and class-specific risks require original pharmacology evidence.",
@@ -6191,7 +6187,11 @@
         "Unknown or nonpublic information is a gap, not evidence of a manufacturing failure.",
         "This pointer is not independent verification of an application number, stage, current review cycle or PDUFA goal.",
         "No consistency finding is asserted until the relevant original documents are compared."
-      ]
+      ],
+      "ownerCriticalReview": {
+        "status": "OWNER_NOT_REVIEWED",
+        "notes": "The owner may critically evaluate competing evidence; no outside reviewer, source attestor, or independent signoff is required."
+      }
     }
   ],
   "sources": [
@@ -6725,7 +6725,7 @@
     },
     {
       "level": 11,
-      "name": "Historical precedents and independent challenge",
+      "name": "Historical precedents and owner critical appraisal",
       "state": "ENGINEERING_OR_EVIDENCE_INCOMPLETE",
       "evidence": "No completion claimed from source capture or a build."
     },
