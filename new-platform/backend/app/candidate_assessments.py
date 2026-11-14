@@ -13,7 +13,7 @@ from .phase_first_intake import phase_first_intake
 from .scientific_levels_two_to_six import assess_levels_two_to_six
 
 MODEL = "candidate-assessments-v1"
-NCT = re.compile(r"^NCT\d{8}$")
+NCT = re.compile(r"^NCT[0-9]{8}$")
 DOMAINS = {
     "PIPELINE": [("P1", "Clinical efficacy / effect size", 25), ("P2", "Trial design / endpoint quality", 20),
                  ("P3", "Statistical reliability", 15), ("P4", "Safety / tolerability", 15),
@@ -45,7 +45,7 @@ def source_url(value):
 def nct_id(row):
     explicit = str(row.get("nctId") or "")
     if NCT.fullmatch(explicit): return explicit
-    matches = re.findall(r"\bNCT\d{8}\b", str(row.get("id") or ""))
+    matches = re.findall(r"\bNCT[0-9]{8}\b", str(row.get("id") or ""))
     return matches[0] if len(matches) == 1 else ""
 
 def measure(key, name, maximum, value=None, *, fraction=None, rule="", source="", checked="", source_date="", state=None, note=""):
