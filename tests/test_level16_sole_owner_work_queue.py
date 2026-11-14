@@ -46,7 +46,15 @@ class SoleOwnerResearchTests(unittest.TestCase):
         self.assertFalse(report["siteLive"])
         self.assertFalse(report["sourceIndependentlyAuthenticated"])
         self.assertFalse(report["fdaForecastPublished"])
-        self.assertTrue(report["independentlyReviewedWorkflowLeftIntact"])
+        self.assertTrue(report["legacyOutsideReviewerWorkflowInactive"])
+        self.assertEqual(report["externalReviewerRequirementsForOwnerAssessments"], 0)
+        self.assertEqual(report["externalSignoffsRequiredForOwnerAssessments"], 0)
+        self.assertTrue(report["ownerAssessmentCanProceedWithoutExternalVerification"])
+        self.assertEqual(report["ownerAssessmentAppliesThroughLevel"], 20)
+        self.assertFalse(report["levels7To20EngineeringComplete"])
+        self.assertEqual(len(report["ownerOnlyReviewRequirements"]), 20)
+        self.assertTrue(all(item["outsidePeopleRequired"] == 0
+                            for item in report["ownerOnlyReviewRequirements"]))
         self.assertTrue(report["blockedOn"])
 
     def test_phases_indications_ncts_unmapped_and_levels_remain(self):
@@ -62,10 +70,32 @@ class SoleOwnerResearchTests(unittest.TestCase):
             self.assertTrue(trial["phaseUnreviewed"])
             for task in trial["ownerOnlyTasks"]:
                 self.assertEqual(task["ownerAssessmentStatus"], "NOT_ENTERED")
+                self.assertEqual(task["ownerSelfReviewStatus"], "OWNER_NOT_REVIEWED")
+                self.assertFalse(task["externalVerificationRequired"])
+                self.assertEqual(task["outsideReviewerCountRequired"], 0)
+                self.assertTrue(task["ownerCheckCanProceedWithoutIndependentSignoff"])
                 self.assertFalse(task["independentlyAuthenticated"])
                 self.assertFalse(task["independentlyAdjudicated"])
                 self.assertIsNone(task["validatedFdaProbability"])
                 self.assertTrue(task["ownerResearchQuestions"])
+
+    def test_owner_can_assess_all_levels_without_external_certification_gate(self):
+        report = single.build(self.owner_intent(), self.bundle_case())
+        self.assertEqual(report["externalReviewerRequirementsForOwnerAssessments"], 0)
+        self.assertEqual(report["externalSignoffsRequiredForOwnerAssessments"], 0)
+        self.assertTrue(report["ownerAssessmentCanProceedWithoutExternalVerification"])
+        self.assertTrue(report["legacyOutsideReviewerWorkflowInactive"])
+        self.assertTrue(all(x["ownerCheckOnly"] and
+                            x["externalSignoffsRequired"] == 0 and
+                            x["outsidePeopleRequired"] == 0
+                            for x in report["ownerOnlyReviewRequirements"]))
+        self.assertEqual(report["ownerOnlyReviewRequirements"][19]["level"], 20)
+        for trial in report["trials"]:
+            self.assertTrue(trial["ownerAssessmentNotBlockedByExternalVerification"])
+            for task in trial["ownerOnlyTasks"]:
+                self.assertFalse(task["externalVerificationRequired"])
+                self.assertEqual(task["ownerSelfReviewStatus"], "OWNER_NOT_REVIEWED")
+                self.assertTrue(task["ownerCheckCanProceedWithoutIndependentSignoff"])
 
     def test_no_owner_identity_account_or_staging_can_be_invented(self):
         cases = (
