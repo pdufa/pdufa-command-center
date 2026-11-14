@@ -5,6 +5,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import threading
 import time
 from fastapi import HTTPException
@@ -104,7 +105,7 @@ def build_index(snapshot, reviews, review_status, key, token):
                   "columns": ["id", "PIPELINE", "GEM_JR", "GEM", "riskFlags"],
                   "scoreColumns": ["score", "observedPoints", "coverage", "categoryPoints1to7", "categoryCoverage1to7"],
                   "records": ordered,
-                  "exactNctProgramMap": {nct: sorted(identities) for nct, identities in sorted(by_nct.items()) if nct.startswith("NCT") and len(nct) == 11}}
+                  "exactNctProgramMap": {nct: sorted(identities) for nct, identities in sorted(by_nct.items()) if re.fullmatch(r"NCT[0-9]{8}", nct)}}
         # Keep the whole-universe payload safely under Vercel's response limit.
         if len(packed(result).encode()) > 4_000_000: raise ValueError("Score index exceeds response budget")
         with _LOCK:
