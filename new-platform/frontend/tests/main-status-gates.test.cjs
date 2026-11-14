@@ -34,7 +34,7 @@ test("MAIN status page reports dated release proof without promoting old install
   assert.match(html,/Final trial acceptance · 32 FOCUS trials only/);
   assert.match(html,/32 unique NCTs/);
   assert.match(html,/224 trial-specific evidence checks/);
-  assert.match(html,/0 independently verified/);
+  assert.match(html,/0 owner-reviewed trial assessments recorded/);
   assert.match(html,/only trial records/);
   assert.doesNotMatch(html,/Current 31-gate scope/);
   assert.match(html,/7 active MAIN gates/);
@@ -52,7 +52,10 @@ test("MAIN status page reports dated release proof without promoting old install
   assert.match(html,/no archived scan is restored/);
   assert.match(html,/2026-10-26/);
   assert.match(html,/Still open/);
-  assert.match(html,/Not certified/);
+  assert.match(html,/Owner review pending/);
+  assert.match(html,/OWNER-ONLY ASSESSMENTS · LEVELS 1–20/);
+  assert.match(html,/No external clinical or statistical reviewer/);
+  assert.doesNotMatch(html,/require independent eligibility review/);
   assert.match(html,/ABSTAIN/);
   assert.match(html,/not a third active trial list/);
   assert.match(html,/UNKNOWN/);

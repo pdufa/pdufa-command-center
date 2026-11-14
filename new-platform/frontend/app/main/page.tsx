@@ -60,9 +60,16 @@ export default function MainStatus(){
   return <main className="shell" style={{maxWidth:1100,margin:"0 auto",padding:"20px 12px 45px"}}>
     <div className="topline">PDUFA COMMAND CENTER · MAIN</div>
     <h1>MAIN · Technical status and prediction readiness</h1>
+    <section data-testid="main-owner-only" style={{...card,background:"#eefaf5",margin:"12px 0",borderColor:"#a0cbb7"}}>
+      <strong>OWNER-ONLY ASSESSMENTS · LEVELS 1–20</strong>
+      <p style={fine}>Only you review, accept, reject or revise assessments.
+        No external clinical or statistical reviewer, source attestor, independent challenger or third-party signoff is required.
+        Exact-NCT source evidence, phase checks, missingness, history, security and prospective calibration remain internal controls.
+        No owner review or validated FDA probability is implied by system readiness.</p>
+    </section>
     <p>This is an evidence and operating-status view, <strong>not a third active trial list</strong>.
       POOL is the complete research inventory; FOCUS is the screened post-Phase-3 population.
-      P3 and P3 POST-DATA are retired spreadsheet identities; historical evidence remains read-only. Clinical Phase 3 research remains valid for FOCUS and independent medical analysis.</p>
+      P3 and P3 POST-DATA are retired spreadsheet identities; historical evidence remains read-only. Clinical Phase 3 research remains valid for FOCUS and owner-controlled medical analysis.</p>
     <section style={{...card,margin:"18px 0"}} aria-label="PDUFA Precision Monitoring Dashboard">
       <h2 style={{marginTop:0}}>Precision Monitoring Dashboard</h2>
       <p style={fine}>Read-only installation progress, live source observations, 12 medical-level checkpoints,
@@ -91,14 +98,14 @@ export default function MainStatus(){
       <p><strong>PASS — live production checks.</strong> The separately executed installation smoke
         passed public page checks, anonymous API isolation, normal dashboard login,
         backend and PostgreSQL health, POOL versus historical Phase 3 queue reconciliation,
-        and independent TOOLS Phase / FDA designation intersection counts.</p>
+        and distinct TOOLS Phase / FDA designation intersection counts.</p>
       <p>The all-phase $300M–$10B dated market-cap screen reconciled
         <strong> 2,698 of 11,644</strong> source clinical trial records:
         115 lacked verified cap data, 8,830 were outside the cap range, and 1 trial
         was excluded by the listing screen. These are <strong>not</strong> 2,698 completed
         Phase 3 programs or a certified FOCUS population. The original-source
         issuer listing, licensing rights, pivotal readout and FDA application dates
-        still require independent eligibility review.</p>
+        remain subject to your own eligibility and original-source checks; no outside reviewer is required.</p>
       <p style={fine}>This is a time-specific read-only runtime probe and not
         complete technical acceptance, a passed backup restore, a new trial promotion,
         or validated FDA prediction accuracy.</p>
@@ -110,18 +117,18 @@ export default function MainStatus(){
         status="Still open"
         detail="The active MAIN checklist contains only Core Platform and Pipeline checks. Evidence from the dated 31-gate archive is not an automatic new acceptance."/>
       <Status name="SCIENCE · trial review"
-        status="Not certified"
-        detail="Phase-correct source evidence and independently reviewed scientific investigation coverage remain incomplete. Published trial facts are not automatically scores."/>
+        status="Owner review pending"
+        detail="Phase-correct source evidence and owner-reviewed scientific investigation coverage remain incomplete. No outside reviewer is required; published facts alone are not assessment scores."/>
       <Status name="OUTCOME · FDA prediction"
         status="ABSTAIN"
-        detail="No independently calibrated PASS / CRL / EXTENSION forecast has passed the application-cycle, freeze, outcome and historical backtest gates."/>
+        detail="No prospectively calibrated PASS / CRL / EXTENSION forecast has passed the application-cycle, freeze, outcome and historical backtest checks. The owner controls assessment acceptance."/>
     </div>
     <section style={{...card,marginTop:16}} aria-label="Active MAIN Core Platform and Pipeline gates">
       <h2 style={{marginTop:0}}>Current MAIN scope · 7 gates · Core Platform and Pipeline only</h2>
       <p style={fine}>Only two sections remain in the active MAIN checklist: <strong>Core Platform (3)</strong> and <strong>Pipeline (4)</strong>.
         The other six former sections (24 gates) have been removed from active MAIN acceptance.
         Core Platform checks the shared infrastructure; Pipeline trial checks apply only to the {FOCUS_FINAL_TRIAL_AUDIT.trialCount} exact-NCT final FOCUS listing.
-        Independent FDA monitoring, source analysis and reporting continue operating. RAAS is permanently retired from active analysis, predictions, scans and installation requirements; its historical records remain read-only archives.
+        Separate FDA monitoring, source analysis and reporting continue operating. RAAS is permanently retired from active analysis, predictions, scans and installation requirements; its historical records remain read-only archives.
         Historic October 26 statuses are not fresh verification, and no archived scan is restored.</p>
       {activeScopeValid ? <details>
         <summary style={{cursor:"pointer",fontWeight:700}}>
@@ -150,8 +157,8 @@ export default function MainStatus(){
       <h2 style={{marginTop:0}}>Final trial acceptance · {FOCUS_FINAL_TRIAL_AUDIT.trialCount} FOCUS trials only</h2>
       <p><strong>{FOCUS_FINAL_TRIAL_AUDIT.trialCount} unique NCTs</strong> across {FOCUS_FINAL_TRIAL_AUDIT.uniqueCompanies} recorded tickers, from the final-list Google Sheets snapshot dated {FOCUS_FINAL_TRIAL_AUDIT.asOf}.
         These are the <strong>only trial records</strong> subject to current MAIN acceptance gate assessment. POOL and the historical Phase 3/TOOLS all-phase tallies stay as references and do not count toward the final-trial gate denominator.</p>
-      <p><strong>{FOCUS_FINAL_TRIAL_AUDIT.totalChecks} trial-specific evidence checks</strong> ({FOCUS_FINAL_TRIAL_AUDIT.checksPerTrial} per trial) · {FOCUS_FINAL_TRIAL_AUDIT.independentlyVerified} independently verified · {FOCUS_FINAL_TRIAL_AUDIT.pointers} recorded source pointers · {FOCUS_FINAL_TRIAL_AUDIT.review} requiring source review · {FOCUS_FINAL_TRIAL_AUDIT.missing} missing source evidence.</p>
-      <p style={fine}>Evidence pointers, historical market-cap figures and planned FDA filings are not independently certified eligibility or live data. The 7 active MAIN technical installation checks remain distinct from these per-trial checks; accepting platform infrastructure never makes an individual trial FDA qualified.</p>
+      <p><strong>{FOCUS_FINAL_TRIAL_AUDIT.totalChecks} trial-specific evidence checks</strong> ({FOCUS_FINAL_TRIAL_AUDIT.checksPerTrial} per trial) · 0 owner-reviewed trial assessments recorded · {FOCUS_FINAL_TRIAL_AUDIT.pointers} recorded source pointers · {FOCUS_FINAL_TRIAL_AUDIT.review} requiring source review · {FOCUS_FINAL_TRIAL_AUDIT.missing} missing source evidence.</p>
+      <p style={fine}>Evidence pointers, historical market-cap figures and planned FDA filings are not yet owner-checked eligibility or live data. The 7 active MAIN technical installation checks remain distinct from these per-trial checks; accepting platform infrastructure never makes an individual trial FDA qualified.</p>
       <Link href="/focus">Inspect all final-list trials and expandable gate findings</Link>
     </section>
     <details style={{marginTop:16}} aria-label="Archived superseded 31-gate MAIN evidence">
