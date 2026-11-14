@@ -19,6 +19,7 @@ review handoff from the exact committed research metadata snapshots:
 | `reports/scientific-levels1-6/orca2-statistical-chronology-20261114.json` | ORCA-2 original-public-source statistical chronology and unresolved lock/unblinding facts |
 | `reports/scientific-levels1-6/orca2-publication-outcomes-20261114.json` | Reported JAMA ORCA-2 primary/secondary efficacy, serious adverse events and clinical limitations—unreviewed |
 | `reports/scientific-levels1-6/orca3-publication-outcomes-20261114.json` | Distinct ORCA-3 Phase 3 paper efficacy/safety, publication CI discrepancies and source limitations—unreviewed |
+| `reports/scientific-levels1-6/maple-hcm-source-review-20261114.json` | MAPLE-HCM original NEJM abstract/secondary ACC trial summary, continuous pVO2 efficacy, distinct active comparator and safety—unreviewed |
 
 
 The script reuses the existing strict phase-first handoff and ORCA-2
