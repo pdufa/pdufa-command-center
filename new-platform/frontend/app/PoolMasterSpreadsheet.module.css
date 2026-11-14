@@ -168,3 +168,15 @@
 .registryAction button:focus-visible{outline:3px solid #279873;outline-offset:2px}
 .registryAction small{display:block;max-width:100%;overflow-wrap:anywhere;font-size:10px;line-height:1.3;color:#54715f}
 .registryAction small[role="alert"]{color:#a72e33}
+
+
+/* Explicit per-section and per-item SHOW/HIDE buttons; never change trial filtering. */
+.visibilityPair,.itemVisibility{display:inline-flex;align-items:center;gap:4px;flex-shrink:0}
+.visibilityPair button,.itemVisibility button{border:1px solid #acc4b8;background:#fff;color:#275642;border-radius:6px;
+ min-height:34px;padding:7px 9px;font:inherit;font-size:10px;font-weight:800;letter-spacing:.02em;cursor:pointer}
+.visibilityPair button[aria-pressed="true"][data-mode="show"],.itemVisibility button[aria-pressed="true"][data-mode="show"]{
+ background:#14674a;color:#fff;border-color:#14674a}
+.visibilityPair button[aria-pressed="true"][data-mode="hide"],.itemVisibility button[aria-pressed="true"][data-mode="hide"]{
+ background:#913e48;color:#fff;border-color:#913e48}
+.visibilityPair button:focus-visible,.itemVisibility button:focus-visible{outline:3px solid #279873;outline-offset:2px}
+@media(max-width:640px){.visibilityPair button,.itemVisibility button{min-height:38px;padding:7px 10px}}
