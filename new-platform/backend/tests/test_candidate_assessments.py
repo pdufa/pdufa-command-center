@@ -792,9 +792,16 @@ def test_assessment_service_fetches_registry_phase_for_phase_first_intake():
     assert "last_update_posted" in FIELDS
 
 def test_exact_nct_program_index_rejects_malformed_registry_identifiers():
-    import inspect
-    from app.assessment_service import build_index
-    source = inspect.getsource(build_index)
-    assert 're.fullmatch(r"NCT[0-9]{8}", nct)' in source
-    assert '"exactNctProgramMap"' in source
-    assert 'sorted(identities)' in source
+    from app.assessment_service import exact_nct_program_map
+    rows = {
+        "a": {"id": "TRIAL|NCT00000001", "nctId": "NCT00000001"},
+        "b": {"id": "OTHER|NCT00000001", "nctId": "NCT00000001"},
+        "c": {"id": "BAD", "nctId": "NCT1234567X"},
+    }
+    # Exercise actual nct_id extraction from the canonical pipeline row schema.
+    for row in rows.values():
+        row["phase3Source"] = "https://clinicaltrials.gov/study/" + row["nctId"]
+    rows["c"]["phase3Source"] = "https://clinicaltrials.gov/study/NCT1234567X"
+    assert exact_nct_program_map(rows) == {
+        "NCT00000001": ["OTHER|NCT00000001", "TRIAL|NCT00000001"]
+    }
