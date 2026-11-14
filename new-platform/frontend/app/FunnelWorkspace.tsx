@@ -1,5 +1,5 @@
 "use client";
-import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
+import {PredictionHeaders,PredictionCells,PredictionLegend} from './PdufaPredictionColumns';
 
 
 import { useEffect, useState, type FormEvent } from "react";
