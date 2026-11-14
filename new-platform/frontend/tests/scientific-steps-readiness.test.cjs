@@ -18,3 +18,9 @@ for(const [name,cohort] of [["pool","POOL"],["focus","FOCUS"],["past","PAST"]]){
   assert.ok(source.includes('cohort="'+cohort+'"'));
  });
 }
+
+test("exact trial guard matches NCT followed by eight digits and rejects mismatched identities",()=>{
+ assert.ok(component.includes(String.raw`/^NCT\\d{8}$/`));
+ assert.match(component,/trial\.nctId===trial\.assessmentNctId/);
+ assert.match(component,/const intake=exactTrial\?trial\?\.intake:undefined/);
+});
