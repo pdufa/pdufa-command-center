@@ -195,3 +195,15 @@ def test_level_one_requires_registry_status_as_well_as_phase():
     result = score(row, registry, reviews)
     assert result["levelOneIntake"]["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
     assert result["levelOneIntake"]["phase"] is None
+
+
+def test_phase_first_intake_changes_assessment_fingerprint():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE2"]
+    first = score(row, registry, reviews)
+    registry["phases"] = ["PHASE3"]
+    second = score(row, registry, reviews)
+    assert first["models"] == second["models"]
+    assert first["levelOneIntake"]["phase"] == "PHASE2"
+    assert second["levelOneIntake"]["phase"] == "PHASE3"
+    assert fingerprint(first) != fingerprint(second)
