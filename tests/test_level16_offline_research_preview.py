@@ -47,9 +47,9 @@ class OriginalRegistryOfflinePreviewTests(unittest.TestCase):
         self.assertIn("Registry phase/status (captured, NOT verified)", html)
         self.assertIn("PHASE3", html)
         self.assertIn("Hochberg", html)
-        self.assertIn("PRELIMINARY RESEARCH — NOT INDEPENDENTLY REVIEWED", html)
+        self.assertIn("PRELIMINARY OWNER RESEARCH — OWNER NOT REVIEWED", html)
         self.assertIn("32</strong><small>FOCUS exact NCT trials", html)
-        self.assertIn("NOT MEDICAL ASSESSMENTS OR FDA FORECASTS", html)
+        self.assertIn("OWNER-ONLY RESEARCH — NO EXTERNAL VERIFICATION REQUIRED", html)
 
     def test_original_receipt_source_digest_swap_fails_closed(self):
         self.research["trials"][0]["registrySource"]["documentSha256"] = "b" * 64
