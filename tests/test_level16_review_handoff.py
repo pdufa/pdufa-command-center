@@ -102,6 +102,39 @@ class Level16ReviewHandoffTests(unittest.TestCase):
             handoff.build(self.coverage, self.roster, self.applications,
                           self.chronology, orca_publication=publication)
 
+    def test_orca3_original_replication_research_is_unreviewed_not_cross_trial(self):
+        publication = json.loads(handoff.ORCA3_PUBLICATION.read_text(encoding="utf-8"))
+        packet = handoff.build(self.coverage, self.roster, self.applications, self.chronology,
+                               orca3_publication=publication)
+        trial = next(x for x in packet["trials"] if x["nct"] == "NCT05206370")
+        level3 = trial["levels"][2]["publicationFindingsUnreviewed"]
+        self.assertEqual(len(level3["reportedEfficacyComparisons"]), 4)
+        self.assertEqual(level3["reportedEfficacyComparisons"][0]["activeAbstinent"], 39)
+        self.assertEqual(level3["reportedEfficacyComparisons"][1]["activePct"], 30.3)
+        self.assertEqual(len(level3["publicationTextDiscrepanciesUnreviewed"]), 2)
+        self.assertEqual(level3["reportedSafetyObservations"]["seriousAdverseEvents"]["cytisinicline"], 16)
+        self.assertIn("confidence-interval", " ".join(trial["levels"][2]["openReviewQuestions"]))
+        for idx in (2, 3, 5):
+            self.assertFalse(trial["levels"][idx]["completionPermitted"])
+            self.assertFalse(trial["levels"][idx]["publicationFindingsUnreviewed"]["scientificallyAdjudicated"])
+        self.assertIsNone(trial["levels"][4]["publicationFindingsUnreviewed"])
+        self.assertEqual(trial["actualCompletedLevels"], 0)
+        orca2 = next(x for x in packet["trials"] if x["nct"] == "NCT04576949")
+        self.assertIsNone(orca2["levels"][2]["publicationFindingsUnreviewed"])
+        self.assertEqual(packet["independentlyAdjudicatedLevels"], 0)
+
+    def test_orca3_source_content_swap_or_forged_approval_rejected(self):
+        pub = json.loads(handoff.ORCA3_PUBLICATION.read_text(encoding="utf-8"))
+        pub["sourceIndependentlyAuthenticated"] = True
+        with self.assertRaises(ValueError):
+            handoff.build(self.coverage, self.roster, self.applications, self.chronology,
+                          orca3_publication=pub)
+        pub = json.loads(handoff.ORCA3_PUBLICATION.read_text(encoding="utf-8"))
+        pub["endpoints"][0]["activeCount"] = 999
+        with self.assertRaises(ValueError):
+            handoff.build(self.coverage, self.roster, self.applications, self.chronology,
+                          orca3_publication=pub)
+
     def test_orca2_first_for_collected_evidence_not_highest_approval_chance(self):
         packet = self.build()
         self.assertEqual(packet["trials"][0]["nct"], "NCT04576949")
