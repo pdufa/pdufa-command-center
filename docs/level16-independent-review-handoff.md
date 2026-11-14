@@ -143,3 +143,40 @@ count, incompatible provisional application status, claimed authenticated
 sources/reviewers, fake independent review or numerical predictions.
 This tests safe presentation of **unreviewed** work, not medical validity
 or a production website.
+
+## Fifth slice — populate preview from the 32 original registry receipts
+
+The earlier offline preview can use an empty registry checkpoint, incorrectly
+showing UNRESOLVED phase and BLOCKED_ON_REGISTRY_SOURCE even when the dated
+source-research bundle contains all 32 original registries. The new
+`scripts/medical/level16_offline_research_preview.py` uses the existing
+`level16_research_preparation.readiness_report()` function to load the actual
+captured but UNREVIEWED registry fields, preliminary worksheets, and review
+handoff into a single read-only page.
+
+It validates the exact 32 NCTs, frozen source cutoff, all 32 source receipts,
+captured digests, phase and ticker consistency with the evidence-coverage
+snapshot, provisional application relationships and six levels per trial.
+No authentication, clinical adjudication or FDA forecast is inferred.
+
+Run from the working repository checkout, specifying an existing parent
+directory **outside** the Git repository, with a new target filename:
+
+```powershell
+python scripts/medical/level16_offline_research_preview.py --output C:\PDUFA-Research\focus-level1-6-preview.html
+```
+
+The output is an offline HTML file; the command does not download clinical
+evidence or change reviewer records, scans, workspaces or production. It never
+overwrites an existing file. The stdout JSON receipt reports 32 captured
+registry sources and zero authenticated sources, completed reviews or FDA
+forecasts. The original bytes remain outside the repository.
+
+```powershell
+python -m unittest discover -s tests -p "test_level16_offline_research_preview.py" -v
+python scripts/audit_raas_retirement.py --check
+```
+
+These checks establish only the consistency of unreviewed public-source
+metadata. Real phase verification, current-status updates, approvals A01–A14,
+independent scientific review and staging activation remain separate gates.
