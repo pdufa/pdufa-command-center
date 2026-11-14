@@ -124,3 +124,12 @@ test('Levels 1–3 each execute, persist and render exact-NCT evidence reports',
   assert.deepEqual(posted.map(x=>x.level),[1,2,3]);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
+
+test('ASSESSMENTS route mounts the executable workbench and homepage links to it',()=>{
+ const page=fs.readFileSync(require('node:path').join(__dirname,'../app/assessments/page.tsx'),'utf8');
+ const home=fs.readFileSync(require('node:path').join(__dirname,'../app/page.tsx'),'utf8');
+ assert.match(page,/import AssessmentWorkbench from ['"]\.\.\/AssessmentWorkbench['"]/);
+ assert.match(page,/<AssessmentWorkbench\s*\/>/);
+ assert.match(home,/href="\/assessments"/);
+ assert.match(page,/Levels 1–3/);
+});
