@@ -180,3 +180,46 @@ python scripts/audit_raas_retirement.py --check
 These checks establish only the consistency of unreviewed public-source
 metadata. Real phase verification, current-status updates, approvals A01–A14,
 independent scientific review and staging activation remain separate gates.
+
+## Sixth engineering slice — trigger reassessment when original registry evidence changes
+
+Before activating evidence-driven reassessment, the read-only tool
+`scripts/medical/level16_registry_change_triage.py` compares **two complete,
+dated and explicitly unreviewed** FOCUS research snapshots. It verifies the
+same 32 exact NCTs, 29 provisional mappings, 23 provisional application
+cycles, saved receipt cutoff dates and source digests. It never updates a
+database, publishes a prediction or automatically carries forward old
+scientific signoffs.
+
+A new original registry SHA-256 value creates a review trigger for **all six**
+levels, even if the selected public fields appear unchanged. Changes to
+trial phase, status, indication, endpoints, results, design, population,
+listed documents or contradictions are separately reported with the
+affected levels. A registry posted-version rollback also requires review.
+Only source-receipt metadata are compared; the tool does not independently
+retrieve or authenticate the source bytes. An unchanged comparison does
+**not** mean existing research remains current or scientifically approved.
+
+Example comparison of a frozen snapshot against itself (no changes expected):
+
+```powershell
+python scripts/medical/level16_registry_change_triage.py --baseline reports/scientific-levels1-6/focus-source-research-20261114.json --candidate reports/scientific-levels1-6/focus-source-research-20261114.json > focus-evidence-change-triage.json
+```
+
+For actual new source activity, use a separately captured immutable candidate
+snapshot as `--candidate`; retain the baseline untouched. Only source
+receipts with an equal or later evidence cutoff and nondecreasing retrieval
+time are accepted. Original-document availability/contents, peer-reviewed
+trial reports, sponsor disclosures and FDA application relationships still
+require separate reconciliation. This tool is not a background monitor or
+automated reassessment scheduler.
+
+```powershell
+python -m unittest discover -s tests -p "test_level16_registry_change_triage.py" -v
+python scripts/audit_raas_retirement.py --check
+```
+
+Tests cover 32-trial invariants, changed registry hashes, changed phases
+and status, version rollback, snapshot cutoff, metadata mismatch under an
+unchanged digest, false source authentication, forged FDA outcomes and
+absence of network/production writes. These are software checks only.
