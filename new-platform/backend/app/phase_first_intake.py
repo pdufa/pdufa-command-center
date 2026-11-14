@@ -55,7 +55,7 @@ def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=N
         phases = [phases]
     if not isinstance(phases, (list, tuple)):
         phases = []
-    phases = [str(phase).upper().replace(" ", "").replace("/", "") for phase in phases]
+    phases = [str(phase).upper().replace(" ", "") for phase in phases]
     known = {"EARLY_PHASE1", "PHASE1", "PHASE2", "PHASE3", "PHASE4"}
     # Multi-phase trials must not depend on the order of registry phase tags.
     order = {"EARLY_PHASE1": 0, "PHASE1": 1, "PHASE2": 2, "PHASE3": 3, "PHASE4": 4}
