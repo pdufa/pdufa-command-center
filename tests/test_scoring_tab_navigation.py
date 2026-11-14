@@ -13,6 +13,7 @@ APP = ROOT / "new-platform/frontend/app"
 def test_active_navigation_links_only_supported_primary_destinations():
     source = (APP / "GlobalNavigation.tsx").read_text(encoding="utf-8")
     expected = {
+        "PAST": "/past",
         "POOL": "/pool",
         "INDICATIONS": "/indications",
         "FOCUS": "/focus",
