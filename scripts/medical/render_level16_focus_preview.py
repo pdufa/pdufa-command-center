@@ -30,13 +30,62 @@ def _source_link(url):
     return f'<a href="{safe_url}" target="_blank" rel="noopener noreferrer">View submitted source</a>'
 
 
-def render(report, trusted_review_reader=None, preliminary_research=None):
+def render(report, trusted_review_reader=None, preliminary_research=None, review_handoff=None):
     if not isinstance(report, dict) or report.get("status") != "PHASE_FIRST_EVIDENCE_TRIAGE_ONLY":
         raise ValueError("Refusing non-readiness or scientific-prediction report")
     trials = report.get("trials")
     if (not isinstance(trials, list) or not trials
             or len(trials) != report.get("focusTrialCount")):
         raise ValueError("Preview requires the complete exact-NCT FOCUS report")
+    handoff_by_nct = {}
+    if review_handoff is not None:
+        if (not isinstance(review_handoff, dict)
+                or review_handoff.get("kind") != "FOCUS_LEVELS1_6_INDEPENDENT_REVIEW_HANDOFF_RESEARCH_ONLY"
+                or review_handoff.get("focusTrialCount") != 32
+                or review_handoff.get("reviewPacketsPrepared") != 32
+                or review_handoff.get("independentlyAuthenticatedSources") != 0
+                or review_handoff.get("independentlyAdjudicatedLevels") != 0
+                or review_handoff.get("genuineQualifiedReviewersActivated") != 0
+                or review_handoff.get("actualApprovalProbabilities") != 0
+                or review_handoff.get("stagingActivated") is not False
+                or review_handoff.get("researchIsOutcomeExposed") is not True
+                or review_handoff.get("evidenceCutoffDate") != "2026-11-14"
+                or review_handoff.get("reviewReleaseStatus")
+                != "BLOCKED_ON_OWNER_A01_A14_AND_INDEPENDENT_REVIEW"):
+            raise ValueError("Review handoff must remain current-source research only")
+        handoff_trials = review_handoff.get("trials")
+        if not isinstance(handoff_trials, list) or len(handoff_trials) != 32:
+            raise ValueError("Handoff requires all 32 exact FOCUS NCTs")
+        for handoff_trial in handoff_trials:
+            if not isinstance(handoff_trial, dict):
+                raise ValueError("Invalid handoff record")
+            nct = handoff_trial.get("nct")
+            handoff_levels = handoff_trial.get("levels")
+            if (not isinstance(nct, str) or not NCT_RE.fullmatch(nct) or nct in handoff_by_nct
+                    or not isinstance(handoff_levels, list)
+                    or [x.get("level") for x in handoff_levels] != list(range(1, 7))
+                    or handoff_trial.get("actualCompletedLevels") != 0
+                    or handoff_trial.get("actualIndependentScientificReviews") != 0
+                    or handoff_trial.get("actualAuthenticatedSources") != 0
+                    or handoff_trial.get("readyForIndependentFinalAdjudication") is not False
+                    or handoff_trial.get("independentReviewerAccess") != "NOT_APPROVED_OR_ACTIVATED"
+                    or handoff_trial.get("approvalProbability") is not None
+                    or handoff_trial.get("fdaOutcomeJudgment") is not None):
+                raise ValueError("Handoff trial identity or clinical review was promoted")
+            for entry in handoff_levels:
+                if (entry.get("sourceAuthenticationStatus") != "NOT_INDEPENDENTLY_AUTHENTICATED"
+                        or entry.get("independentScientificReviewStatus") != "NOT_ADJUDICATED"
+                        or entry.get("independentChallengeStatus") != "NOT_COMPLETED"
+                        or entry.get("finalAdjudicationStatus") != "NOT_COMPLETED"
+                        or entry.get("completionPermitted") is not False
+                        or entry.get("score") is not None
+                        or entry.get("approvalProbability") is not None
+                        or entry.get("fdaOutcomeJudgment") is not None
+                        or not isinstance(entry.get("openReviewQuestions"), list)):
+                    raise ValueError("Preview rejects untrusted handoff signoff or prediction")
+            handoff_by_nct[nct] = handoff_trial
+        if {x.get("nct") for x in trials} != set(handoff_by_nct):
+            raise ValueError("Handoff and readiness NCT roster mismatch")
     research_by_nct = {}
     if preliminary_research is not None:
         import importlib.util
@@ -62,6 +111,18 @@ def render(report, trusted_review_reader=None, preliminary_research=None):
                 or [x.get("level") for x in levels] != list(range(1, 7))):
             raise ValueError("Malformed FOCUS trial identity or six-level report")
         seen.add(nct)
+        if nct in handoff_by_nct:
+            handoff_trial = handoff_by_nct[nct]
+            mapping = (
+                "NOT_MAPPED_APPLICATION_CYCLE"
+                if trial.get("applicationCycleVerification") == "NOT_MAPPED_APPLICATION_CYCLE"
+                else "PROVISIONAL_NOT_VERIFIED"
+            )
+            if (trial.get("applicationCycleVerification") not in (
+                    "NOT_MAPPED_APPLICATION_CYCLE", "PROVISIONAL_NOT_FDA_VERIFIED")
+                    or handoff_trial.get("applicationMappingStatus") != mapping
+                    or handoff_trial.get("ticker") != trial.get("ticker")):
+                raise ValueError("Handoff trial/application mapping differs from readiness report")
         if trial.get("fdaOutcomeJudgment") is not None or trial.get("fdaTimingJudgment") is not None:
             raise ValueError("Preview cannot display uncertified FDA predictions")
         for level in levels:
@@ -158,6 +219,23 @@ def render(report, trusted_review_reader=None, preliminary_research=None):
                     link_html += "<p>" + _text(request["state"]) + ": " + _text(request["requirement"]) + "</p>"
                 link_html += "<p>Limitations: " + _text("; ".join(preliminary["limitations"])) + "</p>"
                 link_html += "<p>Contradiction review: " + _text(preliminary["contradictionReviewStatus"]) + " · leads: " + _text("; ".join(preliminary["contradictoryFindings"]) or "Not adjudicated") + "</p>"
+            if nct in handoff_by_nct:
+                handoff_level = handoff_by_nct[nct]["levels"][item["level"] - 1]
+                if (handoff_level.get("level") != item["level"]
+                        or not isinstance(handoff_level.get("applicability"), str)
+                        or not isinstance(handoff_level.get("evidenceCollectionStatus"), str)
+                        or handoff_level.get("evidenceCollectionStatus") not in (
+                            "COLLECTED_UNREVIEWED", "NOT_COLLECTED_AVAILABILITY_UNRESOLVED")):
+                    raise ValueError("Review handoff level is inconsistent")
+                questions = handoff_level["openReviewQuestions"]
+                if any(not isinstance(q, str) or not 1 <= len(q) <= 2000 for q in questions):
+                    raise ValueError("Invalid source review question")
+                link_html += "<details><summary>Independent review handoff — NOT ADJUDICATED</summary>"
+                link_html += "<p>Source collection: " + _text(handoff_level["evidenceCollectionStatus"]) + "</p>"
+                link_html += "<p>Unreviewed phase applicability: " + _text(handoff_level["applicability"]) + "</p>"
+                link_html += "<ul>" + "".join("<li>" + _text(q) + "</li>" for q in questions) + "</ul>"
+                link_html += "<p>Qualified source verifier, clinician, independent challenger and adjudicator required.</p>"
+                link_html += "</details>"
             workflow = item.get("reviewWorkflow", {})
             review_html = "<p>Scientific review: " + _text(item["scientificReviewStatus"].replace("_", " ")) + "</p>"
             for label, key in (("Source collection", "sourceCollectionStatus"),
@@ -278,10 +356,13 @@ def main():
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--preliminary-research", type=Path,
                         help="Optional unreviewed current-source worksheets; never authorizes clinical signoff")
+    parser.add_argument("--review-handoff", type=Path,
+                        help="Optional unreviewed 32-trial independent review preparation queue")
     args = parser.parse_args()
     document = json.loads(args.report.read_text(encoding="utf-8"))
     preliminary = json.loads(args.preliminary_research.read_text(encoding="utf-8")) if args.preliminary_research else None
-    html = render(document, preliminary_research=preliminary)
+    handoff = json.loads(args.review_handoff.read_text(encoding="utf-8")) if args.review_handoff else None
+    html = render(document, preliminary_research=preliminary, review_handoff=handoff)
     args.output.parent.mkdir(parents=True, exist_ok=True)
     args.output.write_text(html, encoding="utf-8")
     print(json.dumps({"status": "PREVIEW_ONLY", "trials": document["focusTrialCount"],
