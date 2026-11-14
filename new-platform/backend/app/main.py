@@ -1378,3 +1378,13 @@ def save_fda_chart_overlay(program_id: str, payload: CustomFdaOverlayPayload):
             raise HTTPException(status_code=409, detail="Overlay changed elsewhere; reload first")
         session.commit()
         return {"saved": True, "programId": program_id, "version": payload.version + 1, "updatedAt": now}
+
+
+# Isolated owner assessment runtime; existing production schemas and workers stay intact.
+from . import assessment_runtime
+app.include_router(assessment_runtime.router(lambda: ENGINE, require_internal_key, require_storage, require_writes_enabled))
+
+@app.get('/api/assessment-runtime/version')
+def assessment_runtime_version():
+    return {'engineVersion': assessment_runtime.VERSION, 'levels': list(assessment_runtime.NAMES),
+            'scientificActivation': 'NOT_ACTIVE_SCIENTIFIC_GAPS', 'fdaModel': 'ABSTAIN'}
