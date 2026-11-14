@@ -67,6 +67,8 @@ def _source_matches_trial(url, trial_id):
 def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
     """Return independent level inventories; never convert coverage into a score."""
     evidence = evidence if isinstance(evidence, dict) else {}
+    if not isinstance(level_one, dict):
+        level_one = {}
     phase = level_one.get("phase")
     cutoff = _day(level_one.get("assessmentCutoff"))
     verified = (level_one.get("executionStatus") == "INTAKE_ONLY"
@@ -92,6 +94,11 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                 states[criterion] = "NOT_YET_EXPECTED"
                 continue
             record = evidence.get(key)
+            # A reviewed criterion may be explicitly recorded as unavailable;
+            # this is not evidence of an unfavorable clinical outcome.
+            if isinstance(record, dict) and record.get("availability") == "NOT_PUBLIC":
+                states[criterion] = "UNPUBLISHED"
+                continue
             if not isinstance(record, dict):
                 states[criterion] = "NOT_ASSESSED"
                 continue
@@ -121,12 +128,14 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
             }
         required = [c for c in criteria if states[c] != "NOT_YET_EXPECTED"]
         rejected = [c for c in criteria if states[c] == "REJECTED_EVIDENCE"]
+        unpublished = [c for c in criteria if states[c] == "UNPUBLISHED"]
         not_yet_expected = [c for c in criteria if states[c] == "NOT_YET_EXPECTED"]
         rejected_count = len(rejected)
         outstanding = [criterion for criterion in required if criterion not in accepted]
         review_readiness = {
             "accepted": len(accepted),
             "rejected": rejected_count,
+            "unpublished": unpublished,
             "outstanding": outstanding,
             "notYetExpected": not_yet_expected,
             "complete": bool(verified and required and not outstanding),
@@ -140,7 +149,8 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
             "criteria": states, "acceptedEvidence": accepted,
             "reviewReadiness": review_readiness,
             "reviewedCount": len(accepted), "requiredCount": len(required),
-            "rejectedCriteria": rejected, "notYetExpectedCriteria": not_yet_expected,
+            "rejectedCriteria": rejected, "unpublishedCriteria": unpublished,
+            "notYetExpectedCriteria": not_yet_expected,
             "score": None, "scientificValidation": "NOT_VERIFIED",
             "fdaPrediction": "ABSTAIN",
             "note": "Review coverage and judgments are not validated scientific scores.",
