@@ -92,3 +92,16 @@ test("changing trial NCT invalidates in-flight program lookup and selected ident
  assert.match(source,/\+\+lookupSequence\.current;\s*setIdentity\(""\);setSelected\(""\);setMatches\(\[\]\)/);
  assert.match(source,/\},\[nctId\]\)/);
 });
+
+
+test("authenticated assessment proxy preserves exact identity, backend conflict status, and private caching",()=>{
+ const route=fs.readFileSync(path.join(app,"api","assessments","route.ts"),"utf8");
+ assert.match(route,/!authConfigured\(\)\|\|!hasSession\(/);
+ assert.match(route,/status: 401/);
+ assert.match(route,/identity\.length > 512/);
+ assert.match(route,/status: 422/);
+ assert.match(route,/encodeURIComponent\(identity\)/);
+ assert.match(route,/status: response\.status/);
+ assert.match(route,/Cache-Control": "private, no-store"/);
+ assert.match(route,/headers: \{ "x-pdufa-internal-key": key \}/);
+});
