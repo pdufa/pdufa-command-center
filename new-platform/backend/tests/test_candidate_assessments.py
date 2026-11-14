@@ -358,3 +358,20 @@ def test_level_one_review_coverage_does_not_generate_scientific_score():
     assert quality["reviewCoverage"]["totalCriteria"] == 5
     assert quality["reviewCoverage"]["status"] == "PARTIALLY_REVIEWED"
     assert quality["score"] is None
+
+
+def test_level_one_rejects_clinicaltrials_link_to_different_trial():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    review = {
+        "judgment": "SUPPORTS", "nctId": "NCT00000001",
+        "source": "https://clinicaltrials.gov/study/NCT00000002",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "rationale": "Evidence review",
+    }
+    reviews["levelOneEndpointReviews"] = {"prespecification": review}
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["prespecification"] == "NOT_ASSESSED"
+    review["source"] = "https://clinicaltrials.gov/study/NCT00000001"
+    quality = score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]
+    assert quality["prespecification"] == "SUPPORTS"
