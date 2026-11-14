@@ -216,7 +216,11 @@ def test_authenticated_http_run_levels_one_to_three_and_saved_history(engine,mon
     def registry(nct):
         calls.append(nct)
         return snapshot(nct)
-    monkeypatch.setattr(r,'collect_registry',registry)
+    # execute() binds its collector default at definition time; inject explicitly.
+    original_execute=r.execute
+    def execute_with_registry(db,run_id):
+        return original_execute(db,run_id,registry)
+    monkeypatch.setattr(r,'execute',execute_with_registry)
     app=FastAPI()
     app.include_router(r.router(lambda:engine,lambda:None,lambda:None,lambda:None,allow_local=True))
     with TestClient(app) as client:
