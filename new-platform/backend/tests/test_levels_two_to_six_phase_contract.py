@@ -322,5 +322,16 @@ class LevelsTwoToSixContractTests(unittest.TestCase):
                 self.assertEqual(result[level]["fdaPrediction"], "ABSTAIN")
 
 
+    def test_malformed_cutoff_date_blocks_scientific_levels(self):
+        malformed = {**BASE, "assessmentCutoff": "2026-02-01FORGED"}
+        result = module.assess_levels_two_to_six(
+            malformed, trial_id="NCT12345678",
+        )
+        for level in ("2", "3", "4", "5", "6"):
+            with self.subTest(level=level):
+                self.assertEqual(result[level]["status"], "BLOCKED_UNVERIFIED_PHASE")
+                self.assertEqual(result[level]["fdaPrediction"], "ABSTAIN")
+
+
 if __name__ == "__main__":
     unittest.main()
