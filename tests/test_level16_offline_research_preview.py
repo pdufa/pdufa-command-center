@@ -47,7 +47,7 @@ class OriginalRegistryOfflinePreviewTests(unittest.TestCase):
         self.assertIn("Registry phase/status (captured, NOT verified)", html)
         self.assertIn("PHASE3", html)
         self.assertIn("Hochberg", html)
-        self.assertIn("PRELIMINARY OWNER RESEARCH — OWNER NOT REVIEWED", html)
+        self.assertIn("PRELIMINARY RESEARCH — OWNER NOT REVIEWED", html)
         self.assertIn("32</strong><small>FOCUS exact NCT trials", html)
         self.assertIn("OWNER-ONLY RESEARCH — NO EXTERNAL VERIFICATION REQUIRED", html)
 
