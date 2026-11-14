@@ -141,6 +141,26 @@ def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=N
                     "nctId": trial_id,
                     "rationale": record["rationale"],
                 }
+    # A fully populated dossier is not automatically a scientifically valid
+    # score. Separate the observed review consensus from a prediction.
+    judgments = [endpoint_quality[name] for name in sorted(review_criteria)
+                 if name in reviewed_evidence]
+    if not verified:
+        consensus = "BLOCKED_UNVERIFIED_PHASE"
+    elif len(judgments) != len(review_criteria):
+        consensus = "INSUFFICIENT_REVIEW_COVERAGE"
+    elif "CONCERNS" in judgments and "SUPPORTS" in judgments:
+        consensus = "MIXED_EVIDENCE"
+    elif "INCONCLUSIVE" in judgments:
+        consensus = "INCONCLUSIVE_EVIDENCE"
+    elif all(judgment == "SUPPORTS" for judgment in judgments):
+        consensus = "ALL_CRITERIA_SUPPORTIVE"
+    elif all(judgment == "CONCERNS" for judgment in judgments):
+        consensus = "ALL_CRITERIA_CONCERNING"
+    else:
+        consensus = "MIXED_EVIDENCE"
+    endpoint_quality["reviewConsensus"] = consensus
+    endpoint_quality["scientificScoreStatus"] = "NOT_VALIDATED"
     endpoint_quality["reviewedEvidence"] = reviewed_evidence
     endpoint_quality["reviewCoverage"] = {
         "reviewedCriteria": len(reviewed_evidence),
