@@ -6,6 +6,7 @@ or FDA approval probabilities. Missing and not-yet-expected are distinct.
 from __future__ import annotations
 
 from datetime import date
+import re
 from urllib.parse import urlparse
 
 LEVELS = {
@@ -74,8 +75,8 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
     verified = (level_one.get("executionStatus") == "INTAKE_ONLY"
                 and level_one.get("scientificValidation") == "NOT_VERIFIED"
                 and level_one.get("fdaPrediction") == "ABSTAIN"
-                and isinstance(trial_id, str) and len(trial_id) == 11
-                and trial_id.startswith("NCT") and trial_id[3:].isdigit()
+                and isinstance(trial_id, str)
+                and re.fullmatch(r"NCT[0-9]{8}", trial_id) is not None
                 and bool(cutoff)
                 and phase in {"EARLY_PHASE1", "PHASE1", "PHASE2", "PHASE3", "PHASE4"}
                 and level_one.get("trialStatus") in {
