@@ -9,6 +9,7 @@ export type PhaseFirstIntake = {
  notYetExpected:string[];
  missingEvidence:string[];
  endpointQuality:{definitionCompleteness:string;reviewCoverage?:{status:string};scientificScoreStatus:string};
+ scientificValidation:"NOT_VERIFIED";
  fdaPrediction:"ABSTAIN";
 };
 
@@ -16,7 +17,7 @@ export type PhaseFirstIntake = {
 export default function ScientificStepsReadiness({cohort,trial}:{cohort:"POOL"|"FOCUS"|"PAST";trial?:{nctId:string;intake:PhaseFirstIntake;assessmentNctId:string}}) {
  const exactTrial=Boolean(trial && /^NCT\d{8}$/.test(trial.nctId) && trial.nctId===trial.assessmentNctId);
  const intake=exactTrial?trial?.intake:undefined;
- const safeIntake=intake?.fdaPrediction==="ABSTAIN" && intake.endpointQuality?.scientificScoreStatus==="NOT_VALIDATED" && Array.isArray(intake.notYetExpected) && Array.isArray(intake.missingEvidence) && intake.evidenceInventory && typeof intake.evidenceInventory==="object"?intake:undefined;
+ const safeIntake=intake?.fdaPrediction==="ABSTAIN" && intake.scientificValidation==="NOT_VERIFIED" && intake.endpointQuality?.scientificScoreStatus==="NOT_VALIDATED" && Array.isArray(intake.notYetExpected) && Array.isArray(intake.missingEvidence) && intake.evidenceInventory && typeof intake.evidenceInventory==="object"?intake:undefined;
  const phaseVerified=safeIntake?.executionStatus==="INTAKE_ONLY";
  const steps=[
   ["1","Trial phase and status",phaseVerified? `${safeIntake?.phase} · ${safeIntake?.trialStatus}`:"Registry phase/status and chronological source verification"],
