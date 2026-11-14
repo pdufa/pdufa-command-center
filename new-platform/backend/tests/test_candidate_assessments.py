@@ -618,7 +618,26 @@ def test_levels_two_to_six_require_evidence_excerpt():
     reviews["scientificLevelEvidence"] = {"2.protocol": record}
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
     assert level["criteria"]["protocol"] == "REJECTED_EVIDENCE"
+    assert level["rejectionReasons"]["protocol"] == "MISSING_EVIDENCE_EXCERPT"
     record["evidenceExcerpt"] = "Randomization methods are described."
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
     assert level["criteria"]["protocol"] == "SUPPORTS"
     assert level["acceptedEvidence"]["protocol"]["evidenceExcerpt"] == "Randomization methods are described."
+
+
+def test_scientific_evidence_rejection_reason_distinguishes_cross_trial_source():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "2.protocol": {
+            "nctId": "NCT00000001",
+            "source": "https://clinicaltrials.gov/study/NCT00000002",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+            "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+            "reviewerId": "test-reviewer", "documentType": "protocol",
+            "evidenceExcerpt": "Randomization was performed.",
+        }
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["rejectionReasons"]["protocol"] == "SOURCE_TRIAL_MISMATCH"
+    assert level["score"] is None
