@@ -252,7 +252,7 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
  });
  const [orderEditorOpen,setOrderEditorOpen]=useState(false);
  const [reorderNotice,setReorderNotice]=useState("");
- const [phaseOpen,setPhaseOpen]=useState(false);
+ const [phaseOpen,setPhaseOpen]=useState(true);
  const [registryByNct,setRegistryByNct]=useState<Record<string,PoolRegistryDetail>>({});
  const [registryBusy,setRegistryBusy]=useState<Record<string,boolean>>({});
  const [registryError,setRegistryError]=useState<Record<string,string>>({});
