@@ -96,7 +96,7 @@ test("Column Order button toggles an editor, and reset is an independent action 
  assert.ok(component.includes('aria-controls="pool-column-editor"'));
  assert.ok(component.includes('orderEditorOpen&&<div className={css.orderEditor}'));
  assert.ok(component.includes('onClick={resetColumnOrder}'));
- assert.ok(component.includes('(orderEditorOpen||(expanded&&!hidden))'));
+ assert.ok(component.includes('(orderEditorOpen||expanded)'));
  assert.ok(component.includes('draggable={orderEditorOpen}'));
  assert.ok(component.includes('Column and segment order restored'));
  assert.ok(style.includes('.actions .resetOrder[data-editor-open="false"]'));
@@ -142,4 +142,40 @@ test("latest download category buttons appear directly under Phase, highlight in
  assert.ok(component.includes('trial rows are not classified or hidden'));
  assert.ok(style.includes('.registeredButton[aria-pressed="true"]'));
  assert.ok(style.includes('.discoveredButton[aria-pressed="true"]'));
+});
+
+
+test("POOL sections and individual columns provide explicit SHOW/HIDE controls",()=>{
+ assert.match(component,/setSectionVisibility\(s\.key,true\)/);
+ assert.match(component,/setSectionVisibility\(s\.key,false\)/);
+ assert.match(component,/setItemVisibility\(s\.key,key,true\)/);
+ assert.match(component,/setItemVisibility\(s\.key,key,false\)/);
+ assert.match(component,/>SHOW ALL<\/button>/);
+ assert.match(component,/>HIDE ALL<\/button>/);
+ assert.match(component,/>SHOW<\/button>/);
+ assert.match(component,/>HIDE<\/button>/);
+ assert.match(style,/\.visibilityPair,\.itemVisibility/);
+ assert.match(component,/\(orderEditorOpen\|\|expanded\)/);
+});
+
+test("section-by-section SHOW/HIDE retains unrelated columns and data-filter selections",()=>{
+ const {setPoolSegmentVisibility,setPoolColumnVisibility}=require("../lib/pool-column-visibility.ts");
+ const columns={clinical:["phase","status"],dates:["date"],qualifiers:["cap"],focus:["member"]};
+ const original={expanded:["clinical","dates","focus"],hiddenSegments:[],
+  hiddenColumns:["status","cap"]};
+ let state=setPoolSegmentVisibility(original,"clinical",columns,false);
+ assert.equal(state.hiddenSegments.includes("clinical"),true);
+ assert.equal(state.hiddenColumns.includes("cap"),true);
+ state=setPoolColumnVisibility(state,"clinical","phase",columns,true);
+ assert.equal(state.hiddenSegments.includes("clinical"),false);
+ assert.equal(state.hiddenColumns.includes("status"),true);
+ state=setPoolColumnVisibility(state,"clinical","phase",columns,false);
+ assert.equal(state.hiddenColumns.includes("phase"),true);
+ state=setPoolSegmentVisibility(state,"clinical",columns,true);
+ assert.equal(state.hiddenColumns.includes("phase"),false);
+ assert.equal(state.hiddenColumns.includes("status"),false);
+ assert.equal(state.hiddenColumns.includes("cap"),true);
+ assert.deepEqual(state.hiddenSegments,[]);
+ assert.deepEqual(original.hiddenColumns,["status","cap"]);
+ assert.strictEqual(setPoolColumnVisibility(state,"clinical","cap",columns,true),state);
 });

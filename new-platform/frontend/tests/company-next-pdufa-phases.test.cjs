@@ -45,10 +45,10 @@ test("clinical phase source is source-verified, nightly, read-only, and fail-clo
 });
 test("clinical registry phase snapshot remains linked by exact NCT, not ticker alone",()=>{
   assert.equal(roster.records.length,32);
-  assert.equal(evidence.summary.focusTrials,29);
-  assert.equal(evidence.trials.length,29);
+  assert.equal(evidence.summary.focusTrials,roster.records.length);
+  assert.equal(evidence.trials.length,evidence.summary.focusTrials);
   const byNct=new Map(roster.records.map(x=>[x.nct,x.ticker]));
-  assert.equal(byNct.size,32);
+  assert.equal(byNct.size,roster.records.length);
   const seen=new Set();
   for(const t of evidence.trials){
     assert.equal(t.ticker,byNct.get(t.nct));
@@ -60,6 +60,9 @@ test("clinical registry phase snapshot remains linked by exact NCT, not ticker a
     seen.add(t.nct);
   }
   const missing=roster.records.filter(r=>!seen.has(r.nct)).map(r=>r.nct).sort();
-  assert.deepEqual(missing,["NCT05031780","NCT06553768","NCT06747468"],"Preserve the dated 29-trial source cohort without pretending the three later additions were retrieved");
+  assert.deepEqual(missing,[],"All current 32 exact-NCT FOCUS trials must have registry evidence");
+  for(const nct of ["NCT05031780","NCT06553768","NCT06747468"]){
+    assert.ok(seen.has(nct),"Later FOCUS addition must be included in nightly evidence: "+nct);
+  }
   assert.match(applications,/id:|\"id\":/);
 });
