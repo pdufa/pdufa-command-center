@@ -20,6 +20,7 @@ ROSTER = ROOT / "new-platform/frontend/data/p3PostDataActive.json"
 APPLICATIONS = ROOT / "new-platform/backend/app/data/focus_application_snapshot.json"
 ORCA2 = REPORTS / "orca2-statistical-chronology-20261114.json"
 ORCA2_PUBLICATION = REPORTS / "orca2-publication-outcomes-20261114.json"
+ORCA3_PUBLICATION = REPORTS / "orca3-publication-outcomes-20261114.json"
 NCT_RE = re.compile(r"NCT[0-9]{8}\Z")
 LEVEL_NAMES = {
     1: "Original source identity and provenance",
@@ -36,6 +37,7 @@ REVIEW_STEPS = [
     "Separate authorized adjudicator resolves blockers and records the final decision",
 ]
 ORCA_NCT = "NCT04576949"
+ORCA3_NCT = "NCT05206370"
 
 
 def _source_record(record, kind, require_ticker=True):
@@ -66,7 +68,7 @@ def _status(collected):
     return "COLLECTED_UNREVIEWED" if collected else "NOT_COLLECTED_AVAILABILITY_UNRESOLVED"
 
 
-def _level_rows(row, orca_chronology, publication=None):
+def _level_rows(row, orca_chronology, publication=None, publication3=None):
     fields = {
         "originalRegistry": row["registry"],
         "registeredProtocol": row["protocol"],
@@ -122,26 +124,51 @@ def _level_rows(row, orca_chronology, publication=None):
         if row["mappingStatus"] == "NOT_MAPPED_APPLICATION_CYCLE" and i == 2:
             questions.append("No verified FDA application-cycle link: do not invent or infer one")
         published = None
-        if i in (3, 4, 6) and row["nct"] == ORCA_NCT and publication is not None:
+        selected_publication = (
+            publication if row["nct"] == ORCA_NCT else
+            publication3 if row["nct"] == ORCA3_NCT else None
+        )
+        if i in (3, 4, 6) and selected_publication is not None:
+            report = selected_publication
+            if row["nct"] == ORCA3_NCT:
+                comparisons = [
+                    {
+                        **item, "classification": item["type"], "interval": item["period"],
+                        "activeAbstinent": item["activeCount"],
+                        "activeRandomized": item["activeDenom"], "activePct": item["activePercent"],
+                        "placeboAbstinent": item["placeboCount"],
+                        "placeboRandomized": item["placeboDenom"],
+                        "placeboPct": item["placeboPercent"],
+                        "oddsRatioReported": item["publishedOddsRatio"],
+                    } for item in report["publishedEfficacyComparisons"]
+                ]
+                safety = report["publishedSafetyObservation"]
+                safety_normalized = {
+                    **safety,
+                    "seriousAdverseEvents": safety["seriousTreatmentEmergentAEs"],
+                    "cytisiniclineExposed": safety["combinedCytisiniclineExposed"],
+                }
+            else:
+                comparisons = report["publishedEfficacyComparisons"]
+                safety_normalized = report["publishedSafetyObservation"]
             published = {
-                "publicationUrl": publication["sourceUrl"],
-                "publishedDate": publication["publishedDate"],
-                "status": publication["status"],
-                "reportedEfficacyComparisons": (
-                    publication["publishedEfficacyComparisons"] if i == 3 else []
-                ),
-                "reportedSafetyObservations": (
-                    publication["publishedSafetyObservation"] if i == 3 else None
-                ),
-                "reportedTrialDesign": publication["studyDesign"] if i == 4 else None,
+                "publicationUrl": report["sourceUrl"],
+                "publishedDate": report["publishedDate"],
+                "status": report["status"],
+                "reportedEfficacyComparisons": comparisons if i == 3 else [],
+                "reportedSafetyObservations": safety_normalized if i == 3 else None,
+                "reportedTrialDesign": report["studyDesign"] if i == 4 else None,
                 "reportedClinicalLimitations": (
-                    publication["documentedLimitationsUnreviewed"] if i == 6 else []
+                    report["documentedLimitationsUnreviewed"] if i == 6 else []
                 ),
-                "independentReviewQuestions": publication["independentReviewQuestions"],
+                "publicationTextDiscrepanciesUnreviewed": (
+                    report.get("publicationTextDiscrepanciesUnreviewed", []) if i == 3 else []
+                ),
+                "independentReviewQuestions": report["independentReviewQuestions"],
                 "sourceIndependentlyAuthenticated": False,
                 "scientificallyAdjudicated": False,
             }
-            questions.extend(publication["independentReviewQuestions"])
+            questions.extend(report["independentReviewQuestions"])
         levels.append({
             "level": i, "name": name,
             "publicationFindingsUnreviewed": published,
@@ -161,7 +188,8 @@ def _level_rows(row, orca_chronology, publication=None):
     return levels
 
 
-def build(coverage, roster, application_crosswalk, chronology, orca_publication=None):
+def build(coverage, roster, application_crosswalk, chronology,
+          orca_publication=None, orca3_publication=None):
     """Build an explicitly blocked handoff for the active frozen FOCUS cohort."""
     if not isinstance(coverage, dict) or coverage.get("kind") != "LEVEL16_SCIENTIFIC_COVERAGE_NOT_EVIDENCE_COMPLETENESS":
         raise ValueError("Not an approved source-coverage research report")
@@ -222,6 +250,17 @@ def build(coverage, roster, application_crosswalk, chronology, orca_publication=
         publication = module.assess(orca_publication)
         if publication["nct"] != ORCA_NCT:
             raise ValueError("Publication outcome evidence mismatch")
+    publication3 = None
+    if orca3_publication is not None:
+        spec3 = importlib.util.spec_from_file_location(
+            "level16_orca3_publication_review",
+            Path(__file__).with_name("level16_orca3_publication_review.py"),
+        )
+        module3 = importlib.util.module_from_spec(spec3)
+        spec3.loader.exec_module(module3)
+        publication3 = module3.assess(orca3_publication)
+        if publication3["nct"] != ORCA3_NCT or ORCA3_NCT not in trials:
+            raise ValueError("ORCA-3 publication does not match frozen FOCUS")
     rows = []
     for nct, row in trials.items():
         if (row["ticker"] != registered[nct]["ticker"]
@@ -238,7 +277,7 @@ def build(coverage, roster, application_crosswalk, chronology, orca_publication=
                 raise ValueError("Source coverage must be explicit unreviewed booleans")
         if not row["registry"]:
             raise ValueError("Original registry source missing for frozen cohort")
-        levels = _level_rows(row, chronology, publication)
+        levels = _level_rows(row, chronology, publication, publication3)
         if len(levels) != 6:
             raise ValueError("Six assessment levels required")
         documentation = sum((row["registry"], row["protocol"], row["sap"], row["postedResults"]))
@@ -324,7 +363,15 @@ def markdown(packet):
                 lines.append("- " + question)
             if level.get("publicationFindingsUnreviewed") is not None:
                 pub = level["publicationFindingsUnreviewed"]
-                lines.append("- Published ORCA-2 evidence (NOT independently reviewed): " + pub["publicationUrl"])
+                lines.append("- Published trial evidence (" + trial["nct"]
+                             + ", NOT independently reviewed): " + pub["publicationUrl"])
+                for discrepancy in pub.get("publicationTextDiscrepanciesUnreviewed", []):
+                    lines.append(
+                        "- ORIGINAL ARTICLE DISCREPANCY REQUIRES SOURCE CHECK: "
+                        + discrepancy["endpointId"] + " " + discrepancy["field"]
+                        + " Table 2=" + discrepancy["table2"]
+                        + " narrative=" + discrepancy["narrative"]
+                    )
                 if level["level"] == 3:
                     for comparison in pub["reportedEfficacyComparisons"]:
                         lines.append(
@@ -368,7 +415,9 @@ def main():
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)
     packet = build(read(COVERAGE), read(ROSTER), read(APPLICATIONS),
-                   mod.assess(read(ORCA2)), orca_publication=read(ORCA2_PUBLICATION))
+                   mod.assess(read(ORCA2)),
+                   orca_publication=read(ORCA2_PUBLICATION),
+                   orca3_publication=read(ORCA3_PUBLICATION))
     if args.nct:
         if not NCT_RE.fullmatch(args.nct) or args.nct not in {t["nct"] for t in packet["trials"]}:
             parser.error("NCT not in current exact FOCUS roster")
