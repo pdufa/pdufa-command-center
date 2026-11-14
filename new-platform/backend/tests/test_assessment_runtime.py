@@ -41,8 +41,11 @@ def test_each_engine_current_persistence_retrieval(engine,level,monkeypatch):
 
 @pytest.mark.parametrize('level',range(1,7))
 def test_historical_only_reads_pre_cutoff_snapshot(engine,level):
-    r.source_for(engine,request(level),lambda _:snapshot())
-    r.source_for(engine,request(level),lambda _:snapshot(captured='2022-02-01T00:00:00+00:00',phase='PHASE1'))
+    # Seed immutable point-in-time fixtures directly. Current PDF collection must
+    # never backdate a new retrieval to a synthetic historical capture.
+    for frozen in [snapshot(),snapshot(captured='2022-02-01T00:00:00+00:00',phase='PHASE1')]:
+        with engine.begin() as c:
+            c.execute(text('INSERT INTO assessment_v2_sources(snapshot_id,nct_id,captured_at,published_at,source_url,raw_sha256,input_sha256,document_json) VALUES(:snapshot_id,:nct_id,:captured_at,:published_at,:source_url,:raw_sha256,:input_sha256,:document_json)'),frozen)
     q=request(level,'BLIND_HISTORICAL',date(2021,1,1));run=r.create(engine,q)
     def forbidden(_):raise AssertionError('No current sources or outcome cache allowed')
     r.execute(engine,run,forbidden);report=r.status(engine,q.nct,run)['report']
