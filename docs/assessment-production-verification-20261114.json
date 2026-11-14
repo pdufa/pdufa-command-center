@@ -1,0 +1,127 @@
+{
+  "status": "CURRENT_EVIDENCE_EXECUTION_VERIFIED_SCIENTIFIC_GAPS_REMAIN",
+  "startedAt": "2026-11-14T16:09:44.203Z",
+  "url": "https://pdufa-new-dashboard.vercel.app/predictions/assessment",
+  "nct": "NCT04576949",
+  "levels": [
+    {
+      "level": 1,
+      "runId": "b5917225-1972-4fb1-a1db-757d993e9c9b",
+      "engineVersion": "assessment-evidence-v2.0.1/level-1",
+      "reportHash": "73262f081bc6007e58208c4eb52ffb619f90c1d707fc70e2c54ff8ecd53fe3ef",
+      "scientificStatus": "SOURCE_CHECKS_COMPLETE_NOT_CLINICAL_VALIDATION",
+      "activationStatus": "NOT_ACTIVE_SCIENTIFIC_GAPS",
+      "current": "PASSED",
+      "historical": "MISSING_PRE_CUTOFF_SOURCE_REFUSAL_VERIFIED_NOT_A_BLIND_ASSESSMENT"
+    },
+    {
+      "level": 2,
+      "runId": "7079b970-ca04-4148-a224-4a7cbfb10958",
+      "engineVersion": "assessment-evidence-v2.0.1/level-2",
+      "reportHash": "f6d52c25c1fe33b9850987fc51f0843c4074a6910f71c4166ec36911ed9f22e2",
+      "scientificStatus": "EVIDENCE_GAPS",
+      "activationStatus": "NOT_ACTIVE_SCIENTIFIC_GAPS",
+      "current": "PASSED",
+      "historical": "MISSING_PRE_CUTOFF_SOURCE_REFUSAL_VERIFIED_NOT_A_BLIND_ASSESSMENT"
+    },
+    {
+      "level": 3,
+      "runId": "ebaa1275-0560-417d-a57b-d2e9a4b36801",
+      "engineVersion": "assessment-evidence-v2.0.1/level-3",
+      "reportHash": "fd0cce69ed20837c1607fb9f69887117a44fcb213ea4b5cb5516e3ad39d3d019",
+      "scientificStatus": "SOURCE_CHECKS_COMPLETE_NOT_CLINICAL_VALIDATION",
+      "activationStatus": "NOT_ACTIVE_SCIENTIFIC_GAPS",
+      "current": "PASSED",
+      "historical": "MISSING_PRE_CUTOFF_SOURCE_REFUSAL_VERIFIED_NOT_A_BLIND_ASSESSMENT"
+    },
+    {
+      "level": 4,
+      "runId": "6dfa872d-310b-4753-8417-0fe861584def",
+      "engineVersion": "assessment-evidence-v2.0.1/level-4",
+      "reportHash": "1df9b648e13fb835b4e41a81d737b79c86fd4f9eac0515582d80bb36ec62189b",
+      "scientificStatus": "SOURCE_CHECKS_COMPLETE_NOT_CLINICAL_VALIDATION",
+      "activationStatus": "NOT_ACTIVE_SCIENTIFIC_GAPS",
+      "current": "PASSED",
+      "historical": "MISSING_PRE_CUTOFF_SOURCE_REFUSAL_VERIFIED_NOT_A_BLIND_ASSESSMENT"
+    },
+    {
+      "level": 5,
+      "runId": "48226201-71f3-4733-a587-b689303a5a2d",
+      "engineVersion": "assessment-evidence-v2.0.1/level-5",
+      "reportHash": "7761e99e00e2a8f39052255e8f48b6222dfb208a7727faa584e1bd63aa850d7d",
+      "scientificStatus": "EVIDENCE_GAPS",
+      "activationStatus": "NOT_ACTIVE_SCIENTIFIC_GAPS",
+      "current": "PASSED",
+      "historical": "MISSING_PRE_CUTOFF_SOURCE_REFUSAL_VERIFIED_NOT_A_BLIND_ASSESSMENT"
+    },
+    {
+      "level": 6,
+      "runId": "20e24050-471d-441b-a6f9-b362e926cff4",
+      "engineVersion": "assessment-evidence-v2.0.1/level-6",
+      "reportHash": "f088f3f0b231f8c7bfe184815d91d392ec62e195e51e2f88448860e54f877910",
+      "scientificStatus": "EVIDENCE_GAPS",
+      "activationStatus": "NOT_ACTIVE_SCIENTIFIC_GAPS",
+      "current": "PASSED",
+      "historical": "MISSING_PRE_CUTOFF_SOURCE_REFUSAL_VERIFIED_NOT_A_BLIND_ASSESSMENT"
+    }
+  ],
+  "blocker": null,
+  "navigationStatus": 200,
+  "historicalRuns": [
+    {
+      "level": 1,
+      "nct": "NCT00116805",
+      "cutoff": "2026-11-13",
+      "runId": "e375abaf-d1e6-4eaf-9d0f-0b3710ebf98f",
+      "reportHash": "9d4a4aa002ddaf6c1f76b3e21dcb937a3af399c16d4d2fd4ec50e0b56476e813",
+      "engineVersion": "assessment-evidence-v2.0.1/level-1",
+      "status": "SOURCE_ISOLATION_VERIFIED_NOT_INDEPENDENT_BLIND_ACCURACY"
+    },
+    {
+      "level": 2,
+      "nct": "NCT00116805",
+      "cutoff": "2026-11-13",
+      "runId": "642137e9-779a-4c31-8c26-40d4866ee8f6",
+      "reportHash": "0c058329450c6457bbf96c09de67a7c1307bd52811f695d2e425d72810ad5507",
+      "engineVersion": "assessment-evidence-v2.0.1/level-2",
+      "status": "SOURCE_ISOLATION_VERIFIED_NOT_INDEPENDENT_BLIND_ACCURACY"
+    },
+    {
+      "level": 3,
+      "nct": "NCT00116805",
+      "cutoff": "2026-11-13",
+      "runId": "72a7d6f4-f31a-4ca0-a2d8-c3a1ba30f5bb",
+      "reportHash": "aaf46238019c1ee4d43257303cb94b300345d7c10e1b1d6ac3f4f0b0f67f985b",
+      "engineVersion": "assessment-evidence-v2.0.1/level-3",
+      "status": "SOURCE_ISOLATION_VERIFIED_NOT_INDEPENDENT_BLIND_ACCURACY"
+    },
+    {
+      "level": 4,
+      "nct": "NCT00116805",
+      "cutoff": "2026-11-13",
+      "runId": "8c48d374-a8dd-4ad5-be09-b8d5009deee9",
+      "reportHash": "056ab8f3fa937bd96eed7e50047692cd114ec80c4fdb2e89e19d6d721822dcef",
+      "engineVersion": "assessment-evidence-v2.0.1/level-4",
+      "status": "SOURCE_ISOLATION_VERIFIED_NOT_INDEPENDENT_BLIND_ACCURACY"
+    },
+    {
+      "level": 5,
+      "nct": "NCT00116805",
+      "cutoff": "2026-11-13",
+      "runId": "e390c494-899b-47eb-95b2-95b0a1cf2c3d",
+      "reportHash": "5638ecd58937a8e2f7f2293c1b3c1609dd07f24fbfeb86c03de3c187922ed535",
+      "engineVersion": "assessment-evidence-v2.0.1/level-5",
+      "status": "SOURCE_ISOLATION_VERIFIED_NOT_INDEPENDENT_BLIND_ACCURACY"
+    },
+    {
+      "level": 6,
+      "nct": "NCT00116805",
+      "cutoff": "2026-11-13",
+      "runId": "09e5a585-5dd6-468d-aea1-80cf1d7c5f24",
+      "reportHash": "d98914cd8c7823f09d7a43fd7b75bf3886237919378bdb187e54922d528dcbe0",
+      "engineVersion": "assessment-evidence-v2.0.1/level-6",
+      "status": "SOURCE_ISOLATION_VERIFIED_NOT_INDEPENDENT_BLIND_ACCURACY"
+    }
+  ],
+  "finishedAt": "2026-11-14T16:11:49.623Z"
+}

@@ -80,13 +80,26 @@ function check(ok,code){if(!ok){const e=Error(code);e.checkId=code;throw e;}}
   await workbench.getByLabel('Historical evidence cutoff',{exact:true}).fill(CUTOFF);
   for(let level=1;level<=6;level++){
    await workbench.getByLabel('Assessment level',{exact:true}).selectOption(String(level));
-   const submitted=page.waitForResponse(r=>r.url()===BASE+'/api/assessments/runtime'&&r.request().method()==='POST');
-   await workbench.getByRole('button',{name:'Run Assessment',exact:true}).click();const response=await submitted;
-   if(response.status()===409){result.historicalBlocker='NO_ELIGIBLE_ORIGINAL_PRE_CUTOFF_RECEIPT';break;}
-   check(response.status()===202,'HISTORICAL_SUBMISSION_LEVEL_'+level);const created=await response.json();let report;
-   for(let i=0;i<60;i++){
-    const response=await context.request.get(BASE+'/api/assessments/runtime?nct='+HIST+'&runId='+created.runId);check(response.ok(),'HISTORICAL_RETRIEVAL_LEVEL_'+level);const state=await response.json();
-    check(state.status!=='FAILED','HISTORICAL_EXECUTION_LEVEL_'+level);if(state.status==='COMPLETED'){report=state.report;break;}await sleep(1200);
+   const previous=await context.request.get(BASE+'/api/assessments/runtime?nct='+HIST+'&level='+level);
+   const saved=previous.ok()?await previous.json():{runs:[]};
+   const existing=saved.runs.find(r=>r.engineVersion===`assessment-evidence-v2.0.1/level-${level}`&&r.mode==='BLIND_HISTORICAL'&&r.cutoffDate===CUTOFF);
+   let report;
+   if(existing){
+    await workbench.getByRole('button',{name:'Load saved assessment history',exact:true}).click();
+    await workbench.getByText(/persisted assessment version\(s\) loaded/).waitFor({timeout:30000});
+    for(const box of await workbench.getByRole('checkbox').all())if(await box.isChecked())await box.uncheck();
+    await workbench.getByLabel(`Level ${level} · ${existing.executedAt} · ${existing.mode} · ${existing.engineVersion}`,{exact:true}).check();
+    const response=await context.request.get(BASE+'/api/assessments/runtime?nct='+HIST+'&runId='+existing.runId);
+    check(response.ok(),'HISTORICAL_RETRIEVAL_LEVEL_'+level);report=(await response.json()).report;
+   }else{
+    const submitted=page.waitForResponse(r=>r.url()===BASE+'/api/assessments/runtime'&&r.request().method()==='POST');
+    await workbench.getByRole('button',{name:'Run Assessment',exact:true}).click();const response=await submitted;
+    if(response.status()===409){result.historicalBlocker='NO_ELIGIBLE_ORIGINAL_PRE_CUTOFF_RECEIPT';break;}
+    check(response.status()===202,'HISTORICAL_SUBMISSION_LEVEL_'+level);const created=await response.json();
+    for(let i=0;i<60;i++){
+     const response=await context.request.get(BASE+'/api/assessments/runtime?nct='+HIST+'&runId='+created.runId);check(response.ok(),'HISTORICAL_RETRIEVAL_LEVEL_'+level);const state=await response.json();
+     check(state.status!=='FAILED','HISTORICAL_EXECUTION_LEVEL_'+level);if(state.status==='COMPLETED'){report=state.report;break;}await sleep(1200);
+    }
    }
    check(report&&report.level===level&&report.nct===HIST&&report.evidence.captured_at.slice(0,10)<=CUTOFF&&report.evidence.published_at<=CUTOFF,'HISTORICAL_CUTOFF_LEVEL_'+level);
    check(report.fdaPrediction.outcome==='ABSTAIN'&&report.historicalAccuracyEligible===false,'NO_FALSE_BLIND_ACCURACY_LEVEL_'+level);
