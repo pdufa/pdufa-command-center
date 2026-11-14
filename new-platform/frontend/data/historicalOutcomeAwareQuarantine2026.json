@@ -60,16 +60,16 @@
     }
   ],
   "redoPolicy": {
-    "status": "BLOCKED_UNTIL_INDEPENDENT_UNEXPOSED_EVALUATOR_AVAILABLE",
+    "status": "OWNER_ONLY_RECONSTRUCTION_ALLOWED_NOT_BLIND",
     "researchInput": "Evidence dated on or before the original FDA decision, with target application and phase confirmed",
-    "requiredIsolation": "No access to FDA outcome sources, existing case comparison files or decision-bearing text",
+    "requiredIsolation": "Owner uses predecision-dated evidence and immutable recorded cutoffs; prior outcome exposure remains disclosed, so past reconstruction is NOT independently blind",
     "steps": [
-      "CASE_SELECTED_BY_INDEPENDENT_CUSTODIAN",
-      "POINT_IN_TIME_EVIDENCE_BUNDLE_FREEZE",
-      "UNEXPOSED_EVALUATOR_WRITES_PREDICTION",
-      "PREDICTION_IMMUTABLE_FREEZE",
-      "CUSTODIAN_REVEALS_OFFICIAL_FDA_RESULT",
-      "POSTFREEZE_COMPARISON"
+      "OWNER_SELECTS_CASE_AND_PREDECISION_EVIDENCE_CUTOFF",
+      "OWNER_FREEZES_POINT_IN_TIME_EVIDENCE_BUNDLE",
+      "MODEL_RECORDS_OUTCOME_EXPOSED_RESEARCH_PREDICTION_AS_NONBLIND",
+      "PREDICTION_AND_SOURCE_VERSION_IMMUTABLE_FREEZE",
+      "OWNER_COMPARES_OFFICIAL_FDA_ACTION",
+      "NONBLIND_COMPARISON_EXCLUDED_FROM_CALIBRATION_AND_CLAIMED_BLIND_ACCURACY"
     ],
     "noReintegrationToActiveUntilOwnerExplicitlyApproves": true
   }
