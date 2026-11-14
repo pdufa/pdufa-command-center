@@ -147,6 +147,7 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                     or not _source_matches_trial(url, trial_id)
                     or not source_day or not review_day
                     or not source_day <= review_day <= cutoff
+                    or not source_day <= verification_day <= cutoff
                     or record.get("judgment") not in {"SUPPORTS", "CONCERNS", "INCONCLUSIVE"}
                     or not isinstance(record.get("rationale"), str)
                     or not record["rationale"].strip()
