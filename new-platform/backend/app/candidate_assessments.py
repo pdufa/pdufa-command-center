@@ -99,7 +99,8 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
     if registry and (not nct or registry.get("nct_id") != nct): raise ValueError("Registry identity mismatch")
     facts, tech = row.get("trialFilters") or {}, row.get("technical") or {}
     checked = registry_checked[:10]
-    registry_day = (registry.get("last_update_posted") or {}).get("date", "")
+    registry_update = registry.get("last_update_posted") or {}
+    registry_day = registry_update.get("date", "") if isinstance(registry_update, dict) else ""
     # A registry snapshot checked before the scoring cutoff can still contain a
     # future-dated amendment. Do not award registry-derived points in that case.
     registry_as_of = day(registry_day)
