@@ -57,9 +57,21 @@ def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=N
     # Multi-phase trials must not depend on the order of registry phase tags.
     order = {"EARLY_PHASE1": 0, "PHASE1": 1, "PHASE2": 2, "PHASE3": 3, "PHASE4": 4}
     status_value = registry.get("status")
-    verified = eligible and bool(phases) and all(phase in known for phase in phases) and bool(status_value)
+    # A free-form nonempty string is not sufficient to verify trial status.
+    known_statuses = {
+        "NOT_YET_RECRUITING", "RECRUITING", "ENROLLING_BY_INVITATION",
+        "ACTIVE_NOT_RECRUITING", "SUSPENDED", "TERMINATED", "COMPLETED",
+        "WITHDRAWN", "UNKNOWN_STATUS",
+    }
+    normalized_status = (
+        str(status_value).upper().replace(" ", "_")
+        if isinstance(status_value, str) else None
+    )
+    verified = (eligible and bool(phases)
+                and all(phase in known for phase in phases)
+                and normalized_status in known_statuses)
     phase = max(phases, key=order.__getitem__) if verified else None
-    status = status_value if verified else None
+    status = normalized_status if verified else None
     expected = []
     not_yet_expected = []
     if verified:
