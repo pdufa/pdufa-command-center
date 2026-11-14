@@ -1,5 +1,6 @@
-import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
 "use client";
+import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
+
 import {useMemo,useState} from "react";
 import Link from "next/link";
 import ScientificStepsReadiness from "../ScientificStepsReadiness";
