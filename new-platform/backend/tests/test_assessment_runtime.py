@@ -103,3 +103,31 @@ def test_auth_invalid_inputs_and_postgres_guard(engine):
     assert client.post('/api/assessment-runtime/runs',json=request(1,'BLIND_HISTORICAL').model_dump(mode='json')).status_code==422
     app2=FastAPI();app2.include_router(r.router(lambda:engine,lambda:None,lambda:None,lambda:None))
     assert TestClient(app2).post('/api/assessment-runtime/runs',json=request(1).model_dump(mode='json')).status_code==503
+
+
+def test_sap_text_never_substitutes_for_reported_numeric_analyses():
+    s=snapshot();doc=json.loads(s['document_json']);doc['resultsSection']['outcomeMeasuresModule']={}
+    doc['originalDocuments']=[{'kind':'hasSap','verification':'ORIGINAL_LINKED_PDF_RETRIEVED','extractedText':'An estimand and alpha plan'}]
+    s['document_json']=r.packed(doc);s['input_sha256']=r.sha(doc)
+    report=r.assess(request(5),s)
+    assert next(c for c in report['checks'] if c['id']=='reported_analyses')['state']=='MISSING'
+    assert next(c for c in report['checks'] if c['id']=='sap_content')['state']=='AVAILABLE'
+
+
+def test_empty_posted_primary_description_is_not_quantitative_result():
+    s=snapshot();report=r.assess(request(3),s)
+    assert next(c for c in report['checks'] if c['id']=='primary_results')['state']=='MISSING'
+
+
+def test_new_document_collection_cannot_backdate_a_printed_old_date():
+    s=r.collect_documents(snapshot(),4)
+    assert s['captured_at'][:10]==r.now()[:10]
+    q=request(4,'BLIND_HISTORICAL',date(2021,1,1))
+    with pytest.raises(ValueError,match='leakage'):r.assess(q,s)
+
+
+def test_nested_cached_answers_are_excluded():
+    raw=original();raw['protocolSection']['designModule']['designInfo']['cachedApprovalProbability']=.99
+    raw['resultsSection']['outcomeMeasuresModule']['actualFdaOutcome']='APPROVED'
+    assert 'APPROVED' not in json.dumps(r.sanitize(raw,'NCT04576949','2020-02-01T00:00:00Z'))
+    assert 'cachedApprovalProbability' not in json.dumps(r.sanitize(raw,'NCT04576949','2020-02-01T00:00:00Z'))
