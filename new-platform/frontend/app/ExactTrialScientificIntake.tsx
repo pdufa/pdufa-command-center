@@ -53,7 +53,7 @@ export function ExactTrialIntakeSelector({cohort,nctId}:{cohort:Cohort;nctId:str
  const [lookupStatus,setLookupStatus]=useState("");
  const [lookingUp,setLookingUp]=useState(false);
  async function lookup(){
-  setSelected("");setMatches([]);setLookupStatus("");
+  setSelected("");setIdentity("");setMatches([]);setLookupStatus("");
   if(!NCT.test(nctId)){setLookupStatus("Exact NCT required.");return;}
   setLookingUp(true);
   try{
