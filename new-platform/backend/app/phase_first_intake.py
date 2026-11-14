@@ -83,8 +83,14 @@ def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=N
         if phase in {"EARLY_PHASE1", "PHASE1", "PHASE2"}:
             not_yet_expected.append("completed Phase 3 results")
     design = registry.get("study_design") or {}
+    if not isinstance(design, dict):
+        design = {}
     design_info = design.get("designInfo") or {}
+    if not isinstance(design_info, dict):
+        design_info = {}
     endpoints = registry.get("primary_outcomes") or []
+    if not isinstance(endpoints, list):
+        endpoints = []
     evidence_inventory = {
         "registry phase and status": "OBSERVED" if verified else "UNVERIFIED",
         "trial design": ("OBSERVED" if verified and design_info else "MISSING" if verified else "UNVERIFIED"),
