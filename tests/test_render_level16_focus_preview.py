@@ -17,12 +17,25 @@ def load(name, filename):
 
 renderer = load("render_level16_focus_preview", "render_level16_focus_preview.py")
 level16 = load("phase_first_levels_1_6", "phase_first_levels_1_6.py")
+handoff_builder = load("level16_review_handoff", "level16_review_handoff.py")
+chronology_builder = load("level16_orca2_statistical_timeline", "level16_orca2_statistical_timeline.py")
 
 
 def evidence_report():
     sources = [level16.ROSTER_PATH, level16.APPLICATIONS_PATH, level16.DEFINITION_PATH]
     roster, apps, definition = [json.loads(p.read_text(encoding="utf-8")) for p in sources]
     return level16.build(roster, apps, {"results": {}}, definition)
+
+
+def handoff_report():
+    def load_json(path):
+        return json.loads(path.read_text(encoding="utf-8"))
+    return handoff_builder.build(
+        load_json(handoff_builder.COVERAGE),
+        load_json(handoff_builder.ROSTER),
+        load_json(handoff_builder.APPLICATIONS),
+        chronology_builder.assess(load_json(handoff_builder.ORCA2)),
+    )
 
 
 class PreviewTests(unittest.TestCase):
@@ -130,6 +143,70 @@ class PreviewTests(unittest.TestCase):
             "localByteReceipt"]["byteMatchStatus"] = "INDEPENDENTLY_VERIFIED"
         with self.assertRaises(ValueError):
             renderer.render(report)
+
+
+    def test_review_handoff_visible_for_all_32_focus_trials(self):
+        html = renderer.render(evidence_report(), review_handoff=handoff_report())
+        self.assertEqual(html.count("Independent review handoff — NOT ADJUDICATED"), 192)
+        self.assertIn("Hochberg", html)
+        self.assertIn("NOT_ADJUDICATED", html)
+        self.assertIn("Independent review", html)
+        self.assertIn("UNRESOLVED", html)
+        self.assertIn("NOT MEDICAL ASSESSMENTS OR FDA FORECASTS", html)
+
+    def test_review_handoff_escapes_untrusted_research_questions(self):
+        handoff = handoff_report()
+        bad = '<script>alert("x")</script>'
+        handoff["trials"][0]["levels"][0]["openReviewQuestions"].append(bad)
+        html = renderer.render(evidence_report(), review_handoff=handoff)
+        self.assertNotIn(bad, html)
+        self.assertIn("&lt;script&gt;", html)
+
+    def test_review_handoff_rejects_forged_signoff_and_probabilities(self):
+        original = handoff_report()
+        for mutation in (
+            lambda h: h.update(independentlyAuthenticatedSources=1),
+            lambda h: h.update(independentlyAdjudicatedLevels=1),
+            lambda h: h.update(stagingActivated=True),
+            lambda h: h["trials"][0].update(actualCompletedLevels=1),
+            lambda h: h["trials"][0]["levels"][0].update(score=95),
+            lambda h: h["trials"][0]["levels"][0].update(approvalProbability=0.99),
+            lambda h: h["trials"][0]["levels"][0].update(
+                sourceAuthenticationStatus="INDEPENDENTLY_AUTHENTICATED"),
+            lambda h: h["trials"][0]["levels"][0].update(
+                independentScientificReviewStatus="APPROVED"),
+            lambda h: h["trials"][0]["levels"][0].update(completionPermitted=True),
+        ):
+            handoff = copy.deepcopy(original)
+            mutation(handoff)
+            with self.assertRaises(ValueError):
+                renderer.render(evidence_report(), review_handoff=handoff)
+
+    def test_review_handoff_rejects_cross_trial_and_mapping_substitution(self):
+        handoff = handoff_report()
+        handoff["trials"][0]["nct"] = "NCT99999999"
+        with self.assertRaises(ValueError):
+            renderer.render(evidence_report(), review_handoff=handoff)
+        handoff = handoff_report()
+        handoff["trials"][0]["ticker"] = "WRONG"
+        with self.assertRaises(ValueError):
+            renderer.render(evidence_report(), review_handoff=handoff)
+        handoff = handoff_report()
+        handoff["trials"][0]["applicationMappingStatus"] = "NOT_MAPPED_APPLICATION_CYCLE"
+        with self.assertRaises(ValueError):
+            renderer.render(evidence_report(), review_handoff=handoff)
+
+    def test_review_handoff_rejects_incomplete_or_invalid_level_questions(self):
+        handoff = handoff_report()
+        handoff["trials"][0]["levels"].pop()
+        with self.assertRaises(ValueError):
+            renderer.render(evidence_report(), review_handoff=handoff)
+        handoff = handoff_report()
+        handoff["trials"][0]["levels"][0]["openReviewQuestions"] = [
+            {"reviewComplete": True}
+        ]
+        with self.assertRaises(ValueError):
+            renderer.render(evidence_report(), review_handoff=handoff)
 
 
 if __name__ == "__main__":
