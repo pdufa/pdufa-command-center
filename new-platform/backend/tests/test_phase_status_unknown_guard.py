@@ -128,5 +128,27 @@ class PhaseStatusVerificationTests(unittest.TestCase):
                 self.assertEqual(result["fdaPrediction"], "ABSTAIN")
 
 
+    def test_malformed_registry_dates_cannot_verify_phase(self):
+        for field in ("last_update_posted", "registry_checked"):
+            with self.subTest(field=field):
+                registry = {
+                    "nct_id": "NCT12345678",
+                    "phases": ["PHASE3"],
+                    "status": "RECRUITING",
+                    "last_update_posted": {"date": "2026-01-01"},
+                }
+                checked = "2026-01-02"
+                if field == "last_update_posted":
+                    registry["last_update_posted"]["date"] = "2026-01-01FORGED"
+                else:
+                    checked = "2026-01-02FORGED"
+                result = module.phase_first_intake(
+                    registry, cutoff=date(2026, 2, 1),
+                    registry_checked=checked,
+                )
+                self.assertEqual(result["executionStatus"], "BLOCKED_UNVERIFIED_PHASE")
+                self.assertEqual(result["fdaPrediction"], "ABSTAIN")
+
+
 if __name__ == "__main__":
     unittest.main()
