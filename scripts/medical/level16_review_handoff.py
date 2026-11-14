@@ -496,14 +496,14 @@ def markdown(packet):
                 f"### Level {level['level']}: {level['name']}",
                 f"Evidence: {level['evidenceCollectionStatus']}. "
                 f"Applicability: {level['applicability']}. "
-                "Scientific review: NOT_ADJUDICATED.",
+                "Owner review: OWNER_NOT_REVIEWED. No external approval required.",
             ])
             for question in level["openReviewQuestions"]:
                 lines.append("- " + question)
             if level.get("publicationFindingsUnreviewed") is not None:
                 pub = level["publicationFindingsUnreviewed"]
                 lines.append("- Published trial evidence (" + trial["nct"]
-                             + ", NOT independently reviewed): " + pub["publicationUrl"])
+                             + ", published evidence NOT owner-checked yet): " + pub["publicationUrl"])
                 for discrepancy in pub.get("publicationTextDiscrepanciesUnreviewed", []):
                     lines.append(
                         "- ORIGINAL ARTICLE DISCREPANCY REQUIRES SOURCE CHECK: "
