@@ -438,6 +438,9 @@ def test_levels_two_to_six_reject_post_cutoff_evidence():
             "reviewerId": "test-reviewer", "documentType": "protocol",
             "evidenceExcerpt": "The trial uses a randomized design.",
             "sourceVerified": True,
+            "sourceVerifiedAt": "2026-10-19",
+            "sourceVerifiedBy": "test-verifier",
+            "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
         }
     }
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
@@ -456,6 +459,9 @@ def test_levels_two_to_six_accept_valid_evidence_without_scoring():
             "reviewerId": "test-reviewer", "documentType": "protocol",
             "evidenceExcerpt": "The trial uses a randomized design.",
             "sourceVerified": True,
+            "sourceVerifiedAt": "2026-10-19",
+            "sourceVerifiedBy": "test-verifier",
+            "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
         }
     }
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
@@ -476,6 +482,9 @@ def test_levels_two_to_six_reject_registry_url_for_another_trial():
             "reviewerId": "test-reviewer", "documentType": "protocol",
             "evidenceExcerpt": "The trial uses a randomized design.",
             "sourceVerified": True,
+            "sourceVerifiedAt": "2026-10-19",
+            "sourceVerifiedBy": "test-verifier",
+            "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
     }
     reviews["scientificLevelEvidence"] = {"2.protocol": review}
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
@@ -500,6 +509,9 @@ def test_levels_two_to_six_require_review_provenance():
     record["documentType"] = "protocol"
     record["evidenceExcerpt"] = "Protocol design evidence excerpt"
     record["sourceVerified"] = True
+    record["sourceVerifiedAt"] = "2026-10-19"
+    record["sourceVerifiedBy"] = "test-verifier"
+    record["sourceVerificationMethod"] = "DIRECT_DOCUMENT_REVIEW"
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
     assert level["criteria"]["protocol"] == "SUPPORTS"
     assert level["acceptedEvidence"]["protocol"]["reviewerId"] == "test-reviewer"
@@ -525,6 +537,9 @@ def test_rejected_scientific_evidence_is_visible_in_level_status():
             "reviewerId": "test-reviewer", "documentType": "protocol",
             "evidenceExcerpt": "The trial uses a randomized design.",
             "sourceVerified": True,
+            "sourceVerifiedAt": "2026-10-19",
+            "sourceVerifiedBy": "test-verifier",
+            "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
         }
     }
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
@@ -626,6 +641,9 @@ def test_levels_two_to_six_require_evidence_excerpt():
     assert level["rejectionReasons"]["protocol"] == "MISSING_EVIDENCE_EXCERPT"
     record["evidenceExcerpt"] = "Randomization methods are described."
     record["sourceVerified"] = True
+    record["sourceVerifiedAt"] = "2026-10-19"
+    record["sourceVerifiedBy"] = "test-verifier"
+    record["sourceVerificationMethod"] = "DIRECT_DOCUMENT_REVIEW"
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
     assert level["criteria"]["protocol"] == "SUPPORTS"
     assert level["acceptedEvidence"]["protocol"]["evidenceExcerpt"] == "Randomization methods are described."
@@ -643,6 +661,9 @@ def test_scientific_evidence_rejection_reason_distinguishes_cross_trial_source()
             "reviewerId": "test-reviewer", "documentType": "protocol",
             "evidenceExcerpt": "Randomization was performed.",
             "sourceVerified": True,
+            "sourceVerifiedAt": "2026-10-19",
+            "sourceVerifiedBy": "test-verifier",
+            "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
         }
     }
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
@@ -664,6 +685,31 @@ def test_scientific_review_requires_explicit_source_verification():
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
     assert level["rejectionReasons"]["protocol"] == "SOURCE_NOT_VERIFIED"
     record["sourceVerified"] = True
+    record["sourceVerifiedAt"] = "2026-10-19"
+    record["sourceVerifiedBy"] = "test-verifier"
+    record["sourceVerificationMethod"] = "DIRECT_DOCUMENT_REVIEW"
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
     assert level["criteria"]["protocol"] == "SUPPORTS"
     assert level["score"] is None
+
+
+def test_source_verification_provenance_must_precede_cutoff():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    record = {
+        "nctId": "NCT00000001", "source": "https://example.org/protocol",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+        "reviewerId": "test-reviewer", "documentType": "protocol",
+        "evidenceExcerpt": "Randomized assignment was prespecified.",
+        "sourceVerified": True, "sourceVerifiedAt": "2026-10-21",
+        "sourceVerifiedBy": "test-verifier",
+        "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+    }
+    reviews["scientificLevelEvidence"] = {"2.protocol": record}
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["rejectionReasons"]["protocol"] == "SOURCE_VERIFICATION_PROVENANCE_MISSING"
+    record["sourceVerifiedAt"] = "2026-10-19"
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "SUPPORTS"
+    assert level["acceptedEvidence"]["protocol"]["sourceVerifiedBy"] == "test-verifier"
