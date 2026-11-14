@@ -23,6 +23,7 @@ SOURCES = {
     "focusRoster": "new-platform/frontend/data/p3PostDataActive.json",
     "candidateApplications": "new-platform/backend/app/data/focus_application_snapshot.json",
     "orca2Chronology": "reports/scientific-levels1-6/orca2-statistical-chronology-20261114.json",
+    "orca2Publication": "reports/scientific-levels1-6/orca2-publication-outcomes-20261114.json",
 }
 MAX_JSON_BYTES = 5_000_000
 KIND = "FOCUS_LEVEL16_UNSIGNED_RESEARCH_REVIEW_BUNDLE"
@@ -77,6 +78,7 @@ def build_bundle(root=ROOT):
         objects["coverage"], objects["focusRoster"],
         objects["candidateApplications"],
         statistical.assess(objects["orca2Chronology"]),
+        orca_publication=objects["orca2Publication"],
     )
     if (packet.get("focusTrialCount") != 32 or packet.get("reviewPacketsPrepared") != 32
             or packet.get("independentlyAuthenticatedSources") != 0
