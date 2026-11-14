@@ -37,21 +37,22 @@ REVIEW_STEPS = [
 ORCA_NCT = "NCT04576949"
 
 
-def _source_record(record, kind):
+def _source_record(record, kind, require_ticker=True):
     if not isinstance(record, dict) or not NCT_RE.fullmatch(str(record.get("nct", ""))):
         raise ValueError(f"{kind}: invalid exact NCT record")
-    ticker = record.get("ticker")
-    if not isinstance(ticker, str) or not ticker.strip():
-        raise ValueError(f"{kind}: missing ticker")
+    if require_ticker:
+        ticker = record.get("ticker")
+        if not isinstance(ticker, str) or not ticker.strip():
+            raise ValueError(f"{kind}: missing ticker")
     return record["nct"]
 
 
-def _index(records, kind):
+def _index(records, kind, require_ticker=True):
     if not isinstance(records, list) or not records:
         raise ValueError(f"{kind}: missing records")
     result = {}
     for record in records:
-        nct = _source_record(record, kind)
+        nct = _source_record(record, kind, require_ticker=require_ticker)
         if nct in result:
             raise ValueError(f"{kind}: duplicate NCT")
         result[nct] = record
@@ -149,7 +150,7 @@ def build(coverage, roster, application_crosswalk, chronology):
             or coverage.get("approvalProbability") is not None):
         raise ValueError("Research report cannot assert review, blind predictions or probabilities")
     registered = _index(roster.get("records"), "FOCUS roster")
-    mapped = _index(application_crosswalk.get("records"), "Application crosswalk")
+    mapped = _index(application_crosswalk.get("records"), "Application crosswalk", require_ticker=False)
     trials = _index(coverage.get("trials"), "Scientific research coverage")
     if len(registered) != 32 or set(trials) != set(registered) or not set(mapped).issubset(registered):
         raise ValueError("Exact 32-NCT FOCUS roster/crosswalk mismatch")
@@ -157,13 +158,11 @@ def build(coverage, roster, application_crosswalk, chronology):
         raise ValueError("Frozen FOCUS cohort or provisional mapping count mismatch")
     cycles = set()
     for nct, record in mapped.items():
-        if record["ticker"] != registered[nct]["ticker"]:
-            raise ValueError("Application crosswalk ticker mismatch")
         candidates = record.get("candidateApplications")
         if not isinstance(candidates, list):
             raise ValueError("Invalid provisional candidate application mapping")
         for candidate in candidates:
-            if candidate.get("ticker") != record["ticker"] or not candidate.get("cycleId"):
+            if candidate.get("ticker") != registered[nct]["ticker"] or not candidate.get("cycleId"):
                 raise ValueError("Mismatched candidate application identity")
             cycles.add(candidate["cycleId"])
     if len(cycles) != 23:
