@@ -20,7 +20,10 @@ export default function ExactTrialScientificIntake({cohort,nctId,programIdentity
  const [intake,setIntake]=useState<PhaseFirstIntake|null>(null);
  const [error,setError]=useState("");
  const [busy,setBusy]=useState(false);
+ const requestSequence=useRef(0);
+ useEffect(()=>()=>{++requestSequence.current;},[nctId,programIdentity]);
  async function load(){
+  const sequence=++requestSequence.current;
   setIntake(null);setError("");
   if(!NCT.test(nctId)||!programIdentity.trim()||programIdentity.length>512){
    setError("An exact NCT and program identity are required.");return;
@@ -34,9 +37,9 @@ export default function ExactTrialScientificIntake({cohort,nctId,programIdentity
    const record=data as Assessment;
    if(record.id!==programIdentity||record.nctId!==nctId||!validIntake(record.levelOneIntake))
     throw Error("Exact program/NCT mismatch or unverified intake; nothing displayed.");
-   setIntake(record.levelOneIntake);
-  }catch(e){setError(e instanceof Error?e.message:"Assessment unavailable.");}
-  finally{setBusy(false);}
+   if(sequence===requestSequence.current)setIntake(record.levelOneIntake);
+  }catch(e){if(sequence===requestSequence.current)setError(e instanceof Error?e.message:"Assessment unavailable.");}
+  finally{if(sequence===requestSequence.current)setBusy(false);}
  }
  return <section aria-label={"Exact "+cohort+" trial scientific intake"}>
   <button type="button" disabled={busy} onClick={()=>void load()}>{busy?"Checking exact trial…":"Load exact-trial scientific intake"}</button>
