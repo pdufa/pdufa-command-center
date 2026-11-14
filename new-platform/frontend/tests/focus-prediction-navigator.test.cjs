@@ -48,5 +48,5 @@ test("each exact-NCT choice preserves abstention and no invented numerical odds"
   assert.doesNotMatch(source,/approvalProbability:\s*\d|certaintyPercent:\s*\d/);
   const page=fs.readFileSync(path.join(root,"app/predictions/page.tsx"),"utf8");
   assert.match(page,/<FocusPredictionNavigator\/>/);
-  assert.match(page,/No numerical forecast has been independently validated/);
+  assert.match(page,/No numerical forecast has been prospectively calibrated or released/);
 });
