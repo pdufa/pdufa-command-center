@@ -368,33 +368,6 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
     </button>
    </div>
   </div>
-  <div className={css.phaseToolbar} aria-label="POOL phase selection controls">
-   <button type="button" className={css.phaseButton} data-phase-active={selectedPhases===null?"all":"filtered"}
-    aria-expanded={phaseOpen} aria-controls="pool-phase-checklist"
-    onClick={()=>setPhaseOpen(open=>!open)}>
-    <span>PHASE</span><small>{selectedPhases===null?"All Phases":selectedPhases.length+" selected"} · {phaseOpen?"Close":"Select"}</small>
-   </button>
-   <button type="button" className={css.phaseReset} onClick={()=>updatePhases(null)}>
-    Reset Phases
-   </button>
-  </div>
-  {phaseOpen&&<fieldset id="pool-phase-checklist" className={css.phasePanel}>
-   <legend>Filter POOL trials by stage</legend>
-   <div className={css.phaseSelectActions}>
-    <label><input type="checkbox" checked={selectedPhases===null}
-     onChange={()=>updatePhases(selectedPhases===null?[]:null)}/> All Phases (show everything)</label>
-    <button type="button" className={css.phaseReset} onClick={()=>updatePhases(null)}>Reset</button>
-   </div>
-   <div className={css.phaseChoices}>
-    {POOL_PHASE_OPTIONS.map(phase=><label key={phase}>
-     <input type="checkbox" checked={selectedPhases===null||selectedPhases.includes(phase)}
-      onChange={()=>updatePhases(togglePoolPhase(selectedPhases,phase as PoolPhase))}/>
-     <span>{phase}</span>
-     {stageCounts?.[phase]&&<small>{stageCounts[phase].trials.toLocaleString()}</small>}
-    </label>)}
-   </div>
-   <p>Clinical phases and recorded regulatory stages are shown. Selections filter the complete published POOL before pagination.</p>
-  </fieldset>}
   <div className={css.latestDownloadToolbar} role="group" aria-label="Latest-download trial highlighting">
    <button type="button" className={css.registeredButton}
     aria-pressed={latestDownloadChoice==="registered"}
@@ -439,6 +412,37 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
    ?"Use the arrows or drag handles below to change order; the spreadsheet updates immediately."
    :"Tap Column Order above to show ordering controls. The button opens an editor; it does not automatically rearrange your columns."}</p>
   <div className={css.segments} role="group" aria-label="POOL column segments">
+   <div className={css.segment} data-segment="phase-filter">
+    <div className={css.segmentHead}>
+     <button type="button" className={css.segmentToggle} aria-expanded={phaseOpen}
+      aria-controls="pool-phase-checklist" onClick={()=>setPhaseOpen(open=>!open)}>
+      {phaseOpen?"▾":"▸"} Phase <small>{selectedPhases===null?"All":selectedPhases.length+"/"+POOL_PHASE_OPTIONS.length}</small>
+     </button>
+     <button type="button" className={css.visibilityToggle}
+      onClick={()=>updatePhases(selectedPhases===null?[]:null)}>
+      {selectedPhases===null?"Uncheck All":"Check All"}
+     </button>
+     <button type="button" className={css.visibilityToggle} aria-expanded={phaseOpen}
+      onClick={()=>setPhaseOpen(open=>!open)}>{phaseOpen?"Hide Section":"Show Section"}</button>
+    </div>
+    {phaseOpen&&<fieldset id="pool-phase-checklist" className={css.phasePanel}>
+     <legend>Filter POOL trials by phase or regulatory stage</legend>
+     <div className={css.phaseSelectActions}>
+      <label><input type="checkbox" checked={selectedPhases===null}
+       onChange={()=>updatePhases(selectedPhases===null?[]:null)}/> All Phases (show everything)</label>
+      <button type="button" className={css.phaseReset} onClick={()=>updatePhases(null)}>Reset Phases</button>
+     </div>
+     <div className={css.phaseChoices}>
+      {POOL_PHASE_OPTIONS.map(phase=><label key={phase}>
+       <input type="checkbox" checked={selectedPhases===null||selectedPhases.includes(phase)}
+        onChange={()=>updatePhases(togglePoolPhase(selectedPhases,phase as PoolPhase))}/>
+       <span>{phase}</span>
+       {stageCounts?.[phase]&&<small>{stageCounts[phase].trials.toLocaleString()}</small>}
+      </label>)}
+     </div>
+     <p>Phase selections filter the full POOL before pagination. Hiding this section preserves selections.</p>
+    </fieldset>}
+   </div>
    {orderedSegments.map((s,segmentIndex)=>{
     const hidden=layout.hiddenSegments.includes(s.key),expanded=layout.expanded.includes(s.key);
     const columns=layout.columnOrder[s.key]||[];
@@ -460,8 +464,22 @@ export default function PoolMasterSpreadsheet({rows,loading=false,error="",selec
        aria-pressed={!hidden&&expanded} disabled={hidden} onClick={()=>switchIn("expanded",s.key)}>
        {expanded&&!hidden?"▾":"▸"} {s.label} <small>{active}/{columns.length}</small>
       </button>
-      <button type="button" className={css.visibilityToggle} aria-pressed={hidden}
-       onClick={()=>switchIn("hiddenSegments",s.key)}>{hidden?"Restore":"Hide segment"}</button>
+      <button type="button" className={css.visibilityToggle}
+       aria-label={(active===columns.length?"Uncheck All":"Check All")+" columns in "+s.label}
+       onClick={()=>edit(l=>{
+        const allChecked=columns.every(key=>!l.hiddenColumns.includes(key));
+        return {...l,hiddenColumns:allChecked
+         ?[...new Set([...l.hiddenColumns,...columns])]
+         :l.hiddenColumns.filter(key=>!columns.includes(key))};
+       })}>{active===columns.length?"Uncheck All":"Check All"}</button>
+      <button type="button" className={css.visibilityToggle}
+       aria-expanded={expanded&&!hidden}
+       aria-label={(expanded&&!hidden?"Hide Section":"Show Section")+" "+s.label}
+       onClick={()=>edit(l=>{
+        const showing=l.hiddenSegments.includes(s.key)||!l.expanded.includes(s.key);
+        return {...l,hiddenSegments:l.hiddenSegments.filter(key=>key!==s.key),
+         expanded:showing?[...new Set([...l.expanded,s.key])]:l.expanded.filter(key=>key!==s.key)};
+       })}>{expanded&&!hidden?"Hide Section":"Show Section"}</button>
      </div>
      {(orderEditorOpen||(expanded&&!hidden))&&<div className={css.columnOptions}>
       {columns.map((key,columnIndex)=>{
