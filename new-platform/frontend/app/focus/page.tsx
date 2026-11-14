@@ -21,15 +21,20 @@ export default function FocusPage(){
  return <main style={{maxWidth:1220,margin:"28px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif",color:"#173d2b"}}>
   <nav style={{display:"flex",gap:18,marginBottom:18}}><Link href="/pool">POOL</Link><Link href="/tools">TOOLS</Link></nav>
   <h1>FOCUS</h1>
-  <p><strong>{trials.length} distinct NCT trials</strong> · Final-list Phase 3 / post-Phase 3 candidates · Reported $300M–$10B market caps · Source-linked FDA pathways requiring independent verification.</p>
-  <p>Snapshot of the final Google Sheets list as of {snapshot.asOf}. Recorded listing, readout and FDA-path links are evidence pointers, not independent certification of trial eligibility or a successful nightly sync. Completed trials remain if their program may continue toward approval. No retired or historical research-only cohort is included.</p>
+  <p data-testid="focus-owner-only" style={{padding:"10px 12px",background:"#eefaf5",border:"1px solid #b9cebe",borderRadius:8}}>
+    <strong>OWNER-ONLY LEVELS 1–20:</strong> You check and accept FOCUS assessments.
+    No external scientific reviewer, source attestor, independent challenger, or third-party signoff is required.
+    Original source links, missing-evidence flags, and safety and phase checks remain.
+  </p>
+  <p><strong>{trials.length} distinct NCT trials</strong> · Final-list Phase 3 / post-Phase 3 candidates · Reported $300M–$10B market caps · Source-linked FDA pathways for owner checks; no external verification gate.</p>
+  <p>Snapshot of the final Google Sheets list as of {snapshot.asOf}. Recorded listing, readout and FDA-path links are evidence pointers, not an owner-reviewed finding of trial eligibility or a successful nightly sync. Completed trials remain if their program may continue toward approval. No retired or historical research-only cohort is included.</p>
   <p><a href={source} target="_blank" rel="noopener noreferrer" style={{fontWeight:700}}>Open and edit the source-of-truth FOCUS spreadsheet</a></p>
-  <p><Link href="/analyze-now?nct=NCT06081894">Open Analyze Now · PostgreSQL-backed saved research canary</Link> · Requires independently verified backend readiness; no FDA probabilities are released.</p>
+  <p><Link href="/analyze-now?nct=NCT06081894">Open Analyze Now · PostgreSQL-backed saved research canary</Link> · Requires secure backend readiness; no FDA probabilities are released.</p>
   <p style={{fontSize:13}}>Active research uses clinical and regulatory source observations. Historical ratings are retained separately in the read-only archive and do not contribute to this view.</p>
   <section aria-label="Final trial gate coverage" style={{border:"1px solid #b9cebe",padding:14,borderRadius:8,marginBottom:14}}>
     <h2 style={{margin:"0 0 8px",fontSize:18}}>Acceptance gates · final FOCUS trials only</h2>
     <p style={{margin:"0 0 7px"}}><strong>{finalGateAudit.trialCount} exact NCTs</strong> from the dated FOCUS list · <strong>{finalGateAudit.checksPerTrial} checks per trial</strong> · <strong>{finalGateAudit.totalChecks} trial checks</strong>.</p>
-    <p style={{margin:"0 0 7px"}}>Independently certified: <strong>{finalGateAudit.independentlyVerified}</strong> · Source pointers recorded: {finalGateAudit.pointers} · Awaiting source review: {finalGateAudit.review} · Missing evidence: {finalGateAudit.missing}.</p>
+    <p style={{margin:"0 0 7px"}}>Owner-reviewed assessments: <strong>0</strong> · Source pointers recorded: {finalGateAudit.pointers} · Awaiting source review: {finalGateAudit.review} · Missing evidence: {finalGateAudit.missing}.</p>
     <p style={{fontSize:13,margin:0}}>Only these exact final-list NCTs are evaluated; the early-phase POOL, historical Phase 3 census and all-phase TOOLS counts are not included. Recorded links or scheduled jobs are not completed clinical, regulatory or live synchronization verification. Current list as of {finalGateAudit.asOf}.</p>
   </section>
   <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
