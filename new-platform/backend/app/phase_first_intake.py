@@ -12,6 +12,8 @@ from urllib.parse import urlparse
 
 
 def _date(value):
+    if isinstance(value, date):
+        return value
     try:
         raw = value if isinstance(value, str) else ""
         if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", raw):
