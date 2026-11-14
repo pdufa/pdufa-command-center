@@ -56,3 +56,18 @@ test('parent-selected trial changes clear old evidence and switch the exact NCT'
   assert.equal(tree.root.findAllByProps({'aria-label':'Level 1 saved assessment'}).length,0);
  }finally{if(tree)await act(async()=>tree.unmount());}
 });
+
+test('saved assessment history is isolated when the parent changes trial',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Workbench=require('../app/AssessmentWorkbench.tsx').default;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const old=global.fetch,second='NCT01234567';let tree;
+ const report={runId:'b'.repeat(36),nct,level:1,name:'Source identity',mode:'CURRENT_EVIDENCE',executedAt:'2026-11-14',engineVersion:'test',reportHash:'b'.repeat(64),scientificStatus:'EVIDENCE_GAPS',activationStatus:'NOT_ACTIVE',ownerReviewStatus:'OWNER_NOT_REVIEWED',score:{value:null,available:0,applicable:0,method:'Evidence only'},fdaPrediction:{outcome:'ABSTAIN',confidence:'UNCALIBRATED',calibration:'NONE'},context:{phases:[],phaseVerification:'UNVERIFIED',registryStatus:null,regulatoryStatus:'UNVERIFIED',indicationAnalysis:[]},checks:[],observations:[],risks:[],recommendations:[],limitations:[],evidence:{source_url:'https://clinicaltrials.gov/api/v2/studies/'+nct}};
+ global.fetch=async()=>Response.json({runs:[report],hasMore:false});
+ try{
+  await act(async()=>{tree=create(React.createElement(Workbench,{selectedNct:nct}));});
+  await act(async()=>{tree.root.findAllByType('button').find(b=>b.props.children==='Load saved assessment history').props.onClick();});
+  assert.equal(tree.root.findAllByProps({'aria-label':'Level 1 saved assessment'}).length,1);
+  await act(async()=>{tree.update(React.createElement(Workbench,{selectedNct:second}));});
+  assert.equal(tree.root.findByProps({placeholder:'NCT04576949'}).props.value,second);
+  assert.equal(tree.root.findAllByProps({'aria-label':'Level 1 saved assessment'}).length,0);
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
+});
