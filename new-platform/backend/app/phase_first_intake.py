@@ -15,7 +15,7 @@ def _date(value):
         return None
 
 
-def phase_first_intake(registry, *, cutoff, registry_checked):
+def phase_first_intake(registry, *, cutoff, registry_checked, endpoint_reviews=None):
     """Return an auditable, non-scoring Level 1 phase intake."""
     cutoff_day = _date(cutoff)
     checked_day = _date(registry_checked)
@@ -85,6 +85,37 @@ def phase_first_intake(registry, *, cutoff, registry_checked):
         "score": None,
         "reason": "Endpoint definition completeness is registry metadata, not scientific quality adjudication.",
     }
+    # Independently reviewed evidence must be exact-trial, dated, sourced and
+    # chronologically available. A review records a judgment, never a probability.
+    review_criteria = {
+        "prespecification", "clinicalRelevance", "multiplicityControl",
+        "estimandAndAnalysisPlan", "outcomeSuccess",
+    }
+    reviewed_evidence = {}
+    if verified and isinstance(endpoint_reviews, dict):
+        for criterion in review_criteria:
+            record = endpoint_reviews.get(criterion)
+            if not isinstance(record, dict):
+                continue
+            evidence_day = _date(record.get("sourceDate"))
+            review_day = _date(record.get("reviewedAt"))
+            source = record.get("source")
+            trial_id = registry.get("nct_id")
+            judgment = record.get("judgment")
+            if (judgment in {"SUPPORTS", "CONCERNS", "INCONCLUSIVE"}
+                    and isinstance(source, str) and source.startswith("https://")
+                    and trial_id and record.get("nctId") == trial_id
+                    and record.get("rationale") and evidence_day and review_day
+                    and evidence_day <= review_day <= cutoff_day):
+                endpoint_quality[criterion] = judgment
+                reviewed_evidence[criterion] = {
+                    "source": source,
+                    "sourceDate": evidence_day.isoformat(),
+                    "reviewedAt": review_day.isoformat(),
+                    "nctId": trial_id,
+                    "rationale": record["rationale"],
+                }
+    endpoint_quality["reviewedEvidence"] = reviewed_evidence
     missing = ([name for name, state in evidence_inventory.items() if state == "MISSING"]
                if verified else ["Verified phase and chronological registry provenance"])
     return {
