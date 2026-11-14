@@ -63,6 +63,29 @@ function check(ok,code){if(!ok){const e=Error(code);e.checkId=code;throw e;}}
   await workbench.getByRole('button',{name:'Load saved assessment history',exact:true}).click();
   await workbench.getByText(/persisted assessment version\(s\) loaded/).waitFor({timeout:30000});
   check(await workbench.locator('article').count()>=1,'SAVED_RESULT_DISPLAY');
+  // The repository's established historical test record has retained original
+  // stream receipts. Use them only if genuinely captured by this past cutoff.
+  result.historicalRuns=[];
+  const HIST='NCT00116805',CUTOFF='2026-11-13';
+  await workbench.getByLabel('Exact NCT identifier',{exact:true}).fill(HIST);
+  await workbench.getByLabel('Evidence mode',{exact:true}).selectOption('BLIND_HISTORICAL');
+  await workbench.getByLabel('Historical evidence cutoff',{exact:true}).fill(CUTOFF);
+  for(let level=1;level<=6;level++){
+   await workbench.getByLabel('Assessment level',{exact:true}).selectOption(String(level));
+   const submitted=page.waitForResponse(r=>r.url()===BASE+'/api/assessments/runtime'&&r.request().method()==='POST');
+   await workbench.getByRole('button',{name:'Run Assessment',exact:true}).click();const response=await submitted;
+   if(response.status()===409){result.historicalBlocker='NO_ELIGIBLE_ORIGINAL_PRE_CUTOFF_RECEIPT';break;}
+   check(response.status()===202,'HISTORICAL_SUBMISSION_LEVEL_'+level);const created=await response.json();let report;
+   for(let i=0;i<60;i++){
+    const response=await context.request.get(BASE+'/api/assessments/runtime?nct='+HIST+'&runId='+created.runId);check(response.ok(),'HISTORICAL_RETRIEVAL_LEVEL_'+level);const state=await response.json();
+    check(state.status!=='FAILED','HISTORICAL_EXECUTION_LEVEL_'+level);if(state.status==='COMPLETED'){report=state.report;break;}await sleep(1200);
+   }
+   check(report&&report.level===level&&report.nct===HIST&&report.evidence.captured_at.slice(0,10)<=CUTOFF&&report.evidence.published_at<=CUTOFF,'HISTORICAL_CUTOFF_LEVEL_'+level);
+   check(report.fdaPrediction.outcome==='ABSTAIN'&&report.historicalAccuracyEligible===false,'NO_FALSE_BLIND_ACCURACY_LEVEL_'+level);
+   await workbench.getByRole('article',{name:`Level ${level} saved assessment`,exact:true}).waitFor({timeout:30000});
+   result.historicalRuns.push({level,nct:HIST,cutoff:CUTOFF,runId:report.runId,reportHash:report.reportHash,engineVersion:report.engineVersion,status:'SOURCE_ISOLATION_VERIFIED_NOT_INDEPENDENT_BLIND_ACCURACY'});
+   await page.waitForFunction(()=>{const s=document.querySelector('section[aria-label="Assessment workbench"]');return s&&Array.from(s.querySelectorAll('button')).some(b=>b.textContent==='Run Assessment'&&!b.matches(':disabled'));},{},{timeout:30000});
+  }
   result.status='CURRENT_EVIDENCE_EXECUTION_VERIFIED_SCIENTIFIC_GAPS_REMAIN';
  }catch(e){result.blocker=e.checkId||'PRODUCTION_VERIFICATION_FAILED';process.exitCode=1;}
  finally{if(browser)await browser.close();result.finishedAt=new Date().toISOString();fs.writeFileSync(output,JSON.stringify(result,null,2),{mode:0o600});if(process.env.GITHUB_STEP_SUMMARY)fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,`Assessment production verification: **${result.status}**\n\n${result.blocker||'Six current-evidence engines and persisted histories verified. Historical data/scientific gaps remain.'}\n`);console.log(result.status+(result.blocker?' ['+result.blocker+']':''));}
