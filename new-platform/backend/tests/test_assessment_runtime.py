@@ -147,3 +147,14 @@ def test_retained_original_stream_receipts_support_historical_without_backdating
     assert report['fdaPrediction']['outcome']=='ABSTAIN' and 'APPROVED' not in source['document_json']
     with engine.connect() as c:
         assert c.execute(text('SELECT document FROM nct_stream_sources')).scalar()==r.packed(raw)
+
+
+def test_first_history_read_is_empty_and_does_not_create_tables():
+    from sqlalchemy import inspect
+    e=create_engine('sqlite://')
+    try:
+        assert r.history(e,'NCT04576949')=={'nct':'NCT04576949','runs':[],'hasMore':False}
+        assert inspect(e).get_table_names()==[]
+        with pytest.raises(HTTPException) as error:r.status(e,'NCT04576949',str(uuid4()))
+        assert error.value.status_code==404
+    finally:e.dispose()

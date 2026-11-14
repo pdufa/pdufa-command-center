@@ -38,3 +38,9 @@ test('workbench uses real progress and persisted reports, and allows historical 
   await act(async()=>{tree.root.findByProps({type:'date'}).props.onChange({target:{value:'2020-01-01'}});});assert.equal(button().props.disabled,false);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
+
+test('SSR assessment controls stay disabled until client handlers are ready',()=>{
+ const React=require('react'),{renderToString}=require('react-dom/server'),Workbench=require('../app/AssessmentWorkbench.tsx').default;
+ const html=renderToString(React.createElement(Workbench,{selectedNct:nct}));
+ assert.match(html,/data-assessment-ready="false"/);assert.equal((html.match(/<fieldset disabled=""/g)||[]).length,2);
+});
