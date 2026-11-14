@@ -164,3 +164,9 @@ not a passing whole-repository suite. The retired survey engine was not restored
 The active FastAPI suite and the explicitly relevant repository integration tests
 were run separately with their actual results above. No test was removed,
 skipped newly, or weakened to hide that legacy collection limitation.
+
+Delivered-commit CI additionally detected a stale generated package in Linux and
+Windows phase-first checks (run 43635201787). Regenerated it with the unchanged
+exporter: only `rosterAsOf` changed from November 13 to November 14; retained
+source digests and clinical observations did not change. Export reproducibility
+and all **5 exporter regressions passed** before the corrective commit.
