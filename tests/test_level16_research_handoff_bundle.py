@@ -28,7 +28,7 @@ class ResearchHandoffBundleTests(unittest.TestCase):
         bundle = mod.build_bundle(self.root)
         self.assertEqual(bundle["kind"], "FOCUS_LEVEL16_UNSIGNED_RESEARCH_REVIEW_BUNDLE")
         self.assertEqual(bundle["status"], "BYTE_CONSISTENCY_ONLY_NOT_EVIDENCE_AUTHENTICATION")
-        self.assertEqual(len(bundle["sourceSha256"]), 6)
+        self.assertEqual(len(bundle["sourceSha256"]), 7)
         self.assertEqual(bundle["packet"]["focusTrialCount"], 32)
         self.assertEqual(bundle["packet"]["reviewPacketsPrepared"], 32)
         self.assertEqual(sum(len(t["levels"]) for t in bundle["packet"]["trials"]), 192)
@@ -90,6 +90,36 @@ class ResearchHandoffBundleTests(unittest.TestCase):
         data = json.loads(source.read_text(encoding="utf-8"))
         data["endpoints"][0]["activeCount"] = 200
         source.write_text(json.dumps(data), encoding="utf-8")
+        with self.assertRaises(ValueError):
+            mod.build_bundle(self.root)
+        with self.assertRaises(ValueError):
+            mod.verify_bundle(original, self.root)
+
+    def test_maple_hcm_original_vs_secondary_source_roles_and_continuous_endpoint(self):
+        bundle = mod.build_bundle(self.root)
+        trial = next(x for x in bundle["packet"]["trials"]
+                     if x["nct"] == "NCT05767346")
+        levels = trial["levels"]
+        item = levels[2]["publicationFindingsUnreviewed"]
+        self.assertEqual(item["endpointDataType"],
+                         "CONTINUOUS_EXERCISE_CAPACITY_NOT_BINARY_ABSTINENCE")
+        self.assertEqual(item["continuousPrimaryEndpointUnreviewed"][
+            "adjustedBetweenGroupMeanDifference"], 2.3)
+        self.assertEqual(item["continuousPrimaryEndpointUnreviewed"]["unit"], "mL/kg/min")
+        self.assertEqual(len(item["secondaryContinuousComparisonsUnreviewed"]), 6)
+        self.assertEqual(item["reportedEfficacyComparisons"], [])
+        self.assertFalse(item["scientificallyAdjudicated"])
+        self.assertEqual(levels[2]["independentScientificReviewStatus"], "NOT_ADJUDICATED")
+        self.assertIsNone(trial["approvalProbability"])
+        self.assertEqual(bundle["packet"]["independentlyAdjudicatedLevels"], 0)
+        self.assertEqual(mod.verify_bundle(bundle, self.root)["independentlyAuthenticatedSources"], 0)
+
+    def test_source_receipt_fails_on_changed_maple_hcm_pvo2(self):
+        path = self.root / mod.SOURCES["mapleHcm"]
+        original = mod.build_bundle(self.root)
+        data = json.loads(path.read_text(encoding="utf-8"))
+        data["primaryEndpoint"]["adjustedBetweenGroupMeanDifference"] = 9.9
+        path.write_text(json.dumps(data), encoding="utf-8")
         with self.assertRaises(ValueError):
             mod.build_bundle(self.root)
         with self.assertRaises(ValueError):
