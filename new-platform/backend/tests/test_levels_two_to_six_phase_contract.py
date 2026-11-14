@@ -77,5 +77,60 @@ class LevelsTwoToSixContractTests(unittest.TestCase):
         self.assertEqual(result["2"]["fdaPrediction"], "ABSTAIN")
 
 
+    def test_verified_exact_trial_review_is_accepted_without_scoring(self):
+        evidence = {
+            "2.protocol": {
+                "nctId": "NCT12345678",
+                "source": "https://clinicaltrials.gov/study/NCT12345678",
+                "sourceDate": "2026-01-10",
+                "reviewedAt": "2026-01-15",
+                "sourceVerified": True,
+                "sourceVerifiedAt": "2026-01-15",
+                "sourceVerifiedBy": "reviewer-1",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "judgment": "INCONCLUSIVE",
+                "rationale": "Protocol requires further clinical review",
+                "reviewerId": "reviewer-1",
+                "documentType": "PROTOCOL",
+                "evidenceExcerpt": "Design section",
+            }
+        }
+        result = module.assess_levels_two_to_six(
+            BASE, trial_id="NCT12345678", evidence=evidence
+        )
+        level = result["2"]
+        self.assertEqual(level["criteria"]["protocol"], "INCONCLUSIVE")
+        self.assertEqual(level["reviewedCount"], 1)
+        self.assertEqual(level["status"], "PARTIAL")
+        self.assertFalse(level["reviewReadiness"]["complete"])
+        self.assertIsNone(level["score"])
+        self.assertEqual(level["fdaPrediction"], "ABSTAIN")
+
+    def test_wrong_trial_review_is_rejected(self):
+        evidence = {
+            "2.protocol": {
+                "nctId": "NCT87654321",
+                "source": "https://clinicaltrials.gov/study/NCT87654321",
+                "sourceDate": "2026-01-10",
+                "reviewedAt": "2026-01-15",
+                "sourceVerified": True,
+                "sourceVerifiedAt": "2026-01-15",
+                "sourceVerifiedBy": "reviewer-1",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "judgment": "SUPPORTS",
+                "rationale": "Wrong trial evidence",
+                "reviewerId": "reviewer-1",
+                "documentType": "PROTOCOL",
+                "evidenceExcerpt": "Design section",
+            }
+        }
+        result = module.assess_levels_two_to_six(
+            BASE, trial_id="NCT12345678", evidence=evidence
+        )
+        self.assertEqual(result["2"]["criteria"]["protocol"], "REJECTED_EVIDENCE")
+        self.assertEqual(result["2"]["rejectionReasons"]["protocol"], "INVALID_TRIAL_ID")
+        self.assertEqual(result["2"]["reviewedCount"], 0)
+
+
 if __name__ == "__main__":
     unittest.main()
