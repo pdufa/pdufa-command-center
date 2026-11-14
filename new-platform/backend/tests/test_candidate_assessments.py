@@ -405,3 +405,55 @@ def test_level_one_review_consensus_is_not_a_prediction():
     assert intake["fdaPrediction"] == "ABSTAIN"
     reviews["levelOneEndpointReviews"]["outcomeSuccess"]["judgment"] = "CONCERNS"
     assert score(row, registry, reviews)["levelOneIntake"]["endpointQuality"]["reviewConsensus"] == "MIXED_EVIDENCE"
+
+
+def test_levels_two_to_six_present_and_abstain():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    result = score(row, registry, reviews)
+    assert set(result["levelsTwoToSix"]) == {"2", "3", "4", "5", "6"}
+    for level in result["levelsTwoToSix"].values():
+        assert level["score"] is None
+        assert level["fdaPrediction"] == "ABSTAIN"
+        assert level["scientificValidation"] == "NOT_VERIFIED"
+
+
+def test_levels_two_to_six_phase_two_does_not_require_pivotal_results():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE2"]
+    levels = score(row, registry, reviews)["levelsTwoToSix"]
+    assert levels["3"]["criteria"]["primaryEndpointResults"] == "NOT_YET_EXPECTED"
+    assert levels["6"]["criteria"]["applicationDossier"] == "NOT_YET_EXPECTED"
+    assert levels["2"]["criteria"]["protocol"] == "NOT_ASSESSED"
+
+
+def test_levels_two_to_six_reject_post_cutoff_evidence():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "2.protocol": {
+            "nctId": "NCT00000001", "source": "https://example.org/protocol",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-21",
+            "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+        }
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "REJECTED_EVIDENCE"
+    assert level["reviewedCount"] == 0
+
+
+def test_levels_two_to_six_accept_valid_evidence_without_scoring():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    reviews["scientificLevelEvidence"] = {
+        "2.protocol": {
+            "nctId": "NCT00000001", "source": "https://example.org/protocol",
+            "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+            "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+        }
+    }
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "SUPPORTS"
+    assert level["reviewedCount"] == 1
+    assert level["status"] == "PARTIAL"
+    assert level["score"] is None
