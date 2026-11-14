@@ -164,7 +164,7 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
                     "SOURCE_TRIAL_MISMATCH" if not _source_matches_trial(url, trial_id) else
                     "INVALID_CHRONOLOGY" if not source_day or not review_day
                         or not source_day <= review_day <= cutoff
-                        or not source_day <= verification_day <= cutoff else
+                        or not source_day <= verification_day <= review_day <= cutoff else
                     "INVALID_JUDGMENT" if record.get("judgment") not in {
                         "SUPPORTS", "CONCERNS", "INCONCLUSIVE"
                     } else
