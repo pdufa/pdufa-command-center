@@ -264,5 +264,51 @@ class LevelsTwoToSixContractTests(unittest.TestCase):
         self.assertEqual(result["5"]["fdaPrediction"], "ABSTAIN")
 
 
+    def test_wrong_trial_source_url_is_rejected_even_with_matching_nct_field(self):
+        evidence = {
+            "6.regulatoryPathway": {
+                "nctId": "NCT12345678",
+                "source": "https://clinicaltrials.gov/study/NCT87654321",
+                "sourceDate": "2026-01-10",
+                "reviewedAt": "2026-01-15",
+                "sourceVerified": True,
+                "sourceVerifiedAt": "2026-01-15",
+                "sourceVerifiedBy": "reviewer-1",
+                "sourceVerificationMethod": "REGISTRY_RECORD_REVIEW",
+                "judgment": "SUPPORTS",
+                "rationale": "Regulatory pathway review",
+                "reviewerId": "reviewer-1",
+                "documentType": "REGISTRY_RECORD",
+                "evidenceExcerpt": "Trial summary",
+            }
+        }
+        result = module.assess_levels_two_to_six(
+            BASE, trial_id="NCT12345678", evidence=evidence
+        )
+        self.assertEqual(result["6"]["criteria"]["regulatoryPathway"], "REJECTED_EVIDENCE")
+        self.assertEqual(result["6"]["rejectionReasons"]["regulatoryPathway"], "SOURCE_TRIAL_MISMATCH")
+        self.assertEqual(result["6"]["reviewedCount"], 0)
+
+    def test_unpublished_claim_checked_after_cutoff_is_unverified(self):
+        evidence = {
+            "4.seriousAdverseEvents": {
+                "availability": "NOT_PUBLIC",
+                "nctId": "NCT12345678",
+                "source": "https://clinicaltrials.gov/study/NCT12345678",
+                "checkedAt": "2026-02-02",
+                "searchRationale": "Checked registry and published safety results",
+            }
+        }
+        result = module.assess_levels_two_to_six(
+            BASE, trial_id="NCT12345678", evidence=evidence
+        )
+        self.assertEqual(
+            result["4"]["criteria"]["seriousAdverseEvents"],
+            "UNVERIFIED_UNPUBLISHED_CLAIM",
+        )
+        self.assertEqual(result["4"]["reviewedCount"], 0)
+        self.assertEqual(result["4"]["fdaPrediction"], "ABSTAIN")
+
+
 if __name__ == "__main__":
     unittest.main()
