@@ -228,3 +228,22 @@ def test_level_one_unverified_registry_never_labels_design_as_missing():
     result = score(row, registry, reviews)["levelOneIntake"]
     assert result["evidenceInventory"]["trial design"] == "UNVERIFIED"
     assert "trial design" not in result["missingEvidence"]
+
+
+def test_level_one_phase_three_requires_separate_efficacy_safety_review():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    label = "phase-appropriate efficacy and safety evidence"
+    assert intake["evidenceInventory"][label] == "NOT_ASSESSED"
+    assert label in intake["requiresSourceReview"]
+    assert label not in intake["missingEvidence"]
+    assert intake["fdaPrediction"] == "ABSTAIN"
+
+
+def test_level_one_phase_one_does_not_require_pivotal_dossier():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE1"]
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert "pivotal efficacy or marketing-application dossier" in intake["notYetExpected"]
+    assert intake["requiresSourceReview"] == []
