@@ -33,8 +33,14 @@ def packed(value):
     return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
 
 def day(value):
-    try: return date.fromisoformat(str(value or "")[:10])
-    except ValueError: return None
+    if isinstance(value, date):
+        return value
+    if not isinstance(value, str) or re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value) is None:
+        return None
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        return None
 
 def source_url(value):
     try:
