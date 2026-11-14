@@ -1,3 +1,59 @@
+# Current owner directive — SOLE OWNER Levels 1–20 (November 13, 2026)
+
+**THIS SECTION OVERRIDES ALL OLDER EXTERNAL-REVIEW REQUIREMENTS, DOCUMENTS,
+STAGING CHECKLISTS, PROMPTS AND 12-LEVEL INDEPENDENT-MEDICAL-INTELLIGENCE
+REFERENCES BELOW.** The owner explicitly rejected any mandatory outside
+scientific, clinical, statistical, regulatory or source-attestation verification
+for **every assessment level 1 through 20**, across POOL, FOCUS and the
+owner's prediction engine. Only the owner checks or accepts assessments.
+
+- **Zero external reviewers, source attestors, independent challengers,
+  medical credentials, multi-person signoffs or outside adjudicators are
+  needed** to start, run, score, retain, or publish owner-authored/private
+  AI-assisted assessment research. Do not reintroduce such people/gates at
+  Levels 7–20 or silently convert A01–A14 legacy reviewer requirements into
+  activation blockers. Do not ask the owner to recruit or pay reviewers.
+- **Single owner, one human operator**. Assessment stages use
+  `OWNER_NOT_REVIEWED`, `OWNER_REVIEW_IN_PROGRESS`,
+  `OWNER_ACCEPTED_WITH_LIMITATIONS`, `OWNER_NEEDS_EVIDENCE`,
+  `OWNER_REJECTED`, or `NOT_APPLICABLE_AT_THIS_PHASE`.
+  Owner checks are **self-review**, never `INDEPENDENTLY_ADJUDICATED` or
+  `EXTERNALLY_VERIFIED`. Do not fabricate owner signoffs or completed work.
+- **Do retain factual/automated quality checks:** exact NCT/application
+  identity, phase-specific evidence, published source citations, provenance,
+  source-version/cutoff history, numerical/statistical consistency,
+  contradictions, known-vs-missing data, historical outcome leakage and
+  regression tests. These are internal machine or owner checks, not external
+  human approval gates. Lack of an outside notarization alone never blocks
+  the owner's own assessments, but lack of evidence must remain visible.
+- **Predictions remain estimates**, not guaranteed outcomes or FDA/medical
+  certification. Preserve prospective source-freeze and historical
+  outcome-exposure integrity. With only one owner, outcome-exposed
+  reconstructions cannot be called independently blind; no outside assessor
+  is required unless the owner expressly reauthorizes one.
+- **Legacy multi-person reviewer code and A01–A14 isolated-staging
+  certification workflow are inactive, not authoritative owner-assessment
+  prerequisites.** Preserve old historical code/data without running,
+  marking approved or misrepresenting it. New owner-only configuration is
+  `infra/assessment/sole-owner-levels1-20.json`. For active workflows use
+  this governance instead. Do not fake distinct-person reviewer events or
+  disable server authentication to bypass the old certification path.
+- Actual account security, owner login/MFA, backup, source licensing,
+  cost approval, production merge and destination-specific deployment
+  permissions remain separate operational matters; this instruction
+  authorizes removing *external verification requirements*, not a purchase
+  or production deployment.
+- Levels 1–6 currently have preliminary research infrastructure. The
+  policy applies through Level 20, but does **not** mean Levels 7–20 have
+  been fully implemented, that 192 worksheets were owner-reviewed, or
+  that FDA probabilities were calibrated. Do not conflate those.
+- All future Codex agents, workers, docs, CI gates and status reporting
+  must distinguish **owner-self-reviewed** findings from independent
+  certifications. Before adding an assessment gate, check this directive.
+  Older contradictory instructions farther down this file are superseded.
+
+---
+
 # Permanent project policy
 
 ## RAAS is permanently retired
