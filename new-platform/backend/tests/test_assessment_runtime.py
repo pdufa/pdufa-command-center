@@ -178,3 +178,33 @@ def test_three_levels_share_exact_source_identity_and_persist_distinct_reports(e
     assert len({v['runId'] for v in versions})==3
     assert all(v['reportHash'] and v['evidence']['input_sha256']==source['input_sha256'] for v in versions)
     assert r.history(engine,'NCT00000001')['runs']==[]
+
+def test_levels_one_to_three_use_original_registry_http_response_and_persist(engine,monkeypatch):
+    """Exercise source HTTP receipt, sanitizer, hashing, engines and durable retrieval."""
+    raw=json.dumps(original()).encode()
+    class Response:
+        headers={'Content-Type':'application/json'}
+        def __enter__(self):return self
+        def __exit__(self,*args):return False
+        def geturl(self):return 'https://clinicaltrials.gov/api/v2/studies/NCT04576949'
+        def read(self,limit):return raw
+    calls=[]
+    def fetch(request,timeout):
+        calls.append((request.full_url,timeout))
+        return Response()
+    monkeypatch.setattr(r,'urlopen',fetch)
+    for level in (1,2,3):
+        q=request(level);run=r.create(engine,q)
+        r.execute(engine,run)
+        state=r.status(engine,q.nct,run)
+        assert state['status']=='COMPLETED',state['error']
+        report=state['report']
+        assert report['level']==level and report['nct']==q.nct
+        assert report['evidence']['raw_sha256']==__import__('hashlib').sha256(raw).hexdigest()
+        assert report['context']['phases']==['PHASE3']
+        assert report['fdaPrediction']['outcome']=='ABSTAIN'
+    assert len(calls)==3
+    assert all(url=='https://clinicaltrials.gov/api/v2/studies/NCT04576949' and timeout==25 for url,timeout in calls)
+    assert len(r.history(engine,'NCT04576949')['runs'])==3
+    with engine.connect() as connection:
+        assert connection.execute(text('SELECT count(*) FROM assessment_v2_sources')).scalar()==3
