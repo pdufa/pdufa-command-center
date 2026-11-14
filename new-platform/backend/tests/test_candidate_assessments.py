@@ -94,3 +94,4 @@ def test_market_cap_and_reported_date_are_not_valuation_or_verified_catalyst():
     assert result["models"]["GEM_JR"]["categories"][3]["coverage"] == 0
     assert result["models"]["GEM_JR"]["categories"][6]["coverage"] == 0
     json.dumps(compact(result), allow_nan=False)
+\n\ndef test_candidate_evidence_coverage_never_claims_scientific_levels_active():\n    row, registry, reviews = fixture()\n    result = score(row, registry, reviews)\n    assert result["models"]["PIPELINE"]["coverage"] == 100\n    assert result["scientificReadiness"]["levels"] == [1, 2, 3, 4, 5, 6]\n    assert result["scientificReadiness"]["status"] == "NOT_VERIFIED"\n    assert result["scientificReadiness"]["fdaPrediction"] == "ABSTAIN"\n
