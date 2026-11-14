@@ -106,3 +106,31 @@ def test_saved_registry_phase_inventory_persists_and_versions_without_review_inv
     with Session(engine) as session:
         for identity, value in frozen:
             assert session.get(main.CandidateAssessmentHistory, identity).summary == value
+
+
+def test_population_and_exposure_engines_persist_distinct_versions(isolated, monkeypatch):
+    from test_scientific_binary_effects import record
+    from test_scientific_population import measurements as population_counts
+    from test_scientific_safety_exposure import measurements as exposure_counts
+    engine,snapshot=isolated
+    identity=snapshot['pipeline'][0]['id']
+    population=record();population['measurements']=population_counts()
+    safety=record();safety['measurements']=exposure_counts()
+    reviews={identity:{'scientificLevelEvidence':{'7.treatmentSubgroupInteraction':population,'8.exposureAdjustedRates':safety}}}
+    monkeypatch.setattr(service,'review_evidence',lambda:(reviews,'AVAILABLE'))
+    with Session(engine) as session:
+        saved=session.get(main.FullTrialRecord,'NCT00000001')
+        saved.summary={**saved.summary,'phases':['PHASE3']};session.commit()
+    service.get_index(synchronous=True)
+    detail=service.exact_detail(identity)
+    assert detail['levelsSevenToTwenty']['7']['calculations']['treatmentSubgroupInteraction']['ratioOfRiskRatios']==pytest.approx(4)
+    assert detail['levelsSevenToTwenty']['8']['calculations']['exposureAdjustedRates']['incidenceRateRatio']==pytest.approx(2)
+    with Session(engine) as session:
+        old=list(session.scalars(select(main.CandidateAssessmentHistory).order_by(main.CandidateAssessmentHistory.id)))
+        frozen=[(x.id,copy.deepcopy(x.summary)) for x in old]
+        assert old[0].summary['levelsSevenToTwenty']==detail['levelsSevenToTwenty']
+    population['measurements']['subgroupA']['treatment']['events']=30
+    service.get_index(synchronous=True)
+    assert count(engine)==len(frozen)+1
+    with Session(engine) as session:
+        for key,value in frozen:assert session.get(main.CandidateAssessmentHistory,key).summary==value

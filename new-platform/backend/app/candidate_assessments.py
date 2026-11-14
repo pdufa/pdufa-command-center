@@ -13,6 +13,8 @@ from .phase_first_intake import phase_first_intake, registry_retrieved_day
 from .scientific_levels_two_to_six import assess_levels_two_to_six
 from .scientific_registry_inventory import attach_registry_inventory
 from .scientific_binary_effects import binary_effect
+from .scientific_population import assess_level_seven
+from .scientific_safety_exposure import assess_level_eight
 
 MODEL = "candidate-assessments-v1"
 NCT = re.compile(r"^NCT[0-9]{8}$")
@@ -212,7 +214,8 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
     # Evidence coverage is not proof of a validated Level 1–6 scientific engine.
     # Fail closed until independent scientific acceptance is recorded elsewhere.
     scientific_readiness = {
-        "contractVersion": "scientific-levels1-6-v1.1",
+        "contractVersion": "scientific-levels1-8-v1.2",
+        "extensionEngineLevels": [7, 8],
         "levels": [1, 2, 3, 4, 5, 6],
         "status": "NOT_VERIFIED",
         "fdaPrediction": "ABSTAIN",
@@ -232,15 +235,17 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
                 calculations[criterion] = binary_effect({**accepted, "measurements": record.get("measurements")})
         levels_two_to_six[level]["descriptiveCalculations"] = calculations
     attach_registry_inventory(level_one, levels_two_to_six, registry, trial_id=nct, retrieved_at=registry_checked)
-    return {"levelOneIntake": level_one, "levelsTwoToSix": levels_two_to_six, "scientificReadiness": scientific_readiness, "modelVersion": MODEL, "id": row["id"], "programId": row.get("programId"), "nctId": nct, "asOf": today.isoformat(), "models": models, "riskFlags": flags,
+    extensions = {"7": assess_level_seven(level_one, trial_id=nct, evidence=reviews.get("scientificLevelEvidence")),
+                  "8": assess_level_eight(level_one, trial_id=nct, evidence=reviews.get("scientificLevelEvidence"))}
+    return {"levelsSevenToTwenty": extensions, "levelOneIntake": level_one, "levelsTwoToSix": levels_two_to_six, "scientificReadiness": scientific_readiness, "modelVersion": MODEL, "id": row["id"], "programId": row.get("programId"), "nctId": nct, "asOf": today.isoformat(), "models": models, "riskFlags": flags,
             "qualification": {"savedLists": facts.get("lists", ["PIPELINE"]), "primaryOutcome": outcome, "firstFinancingClosed": facts.get("firstFinancingClosed"), "secondFinancingClosed": facts.get("secondFinancingClosed"), "note": "Scores do not alter screening, saved membership or trade entry. Only complete evidence is ranked. Uncalibrated research scores, not success probabilities."},
             "registryFetchedAt": registry_checked, "registrySourceDate": registry_day, "reportedStatistics": analyses,
             "data": {"candidate": row, "registry": registry},
             "missingEvidence": [c["id"] + ": " + m["label"] for model in models.values() for c in model["categories"] for m in c["metrics"] if m["coverage"] < m["maximum"]]}
 
 def compact(result):
-    return {"levelOneIntake": result["levelOneIntake"], "levelsTwoToSix": result["levelsTwoToSix"], "scientificReadiness": result["scientificReadiness"], "modelVersion": result["modelVersion"], "models": {name: {**{k: model[k] for k in ("score", "observedPoints", "coverage", "status")}, "categories": [{k: c[k] for k in ("id", "maximum", "score", "observedPoints", "coverage", "status")} for c in model["categories"]]} for name, model in result["models"].items()}, "riskFlags": result["riskFlags"]}
+    return {"levelsSevenToTwenty": result["levelsSevenToTwenty"], "levelOneIntake": result["levelOneIntake"], "levelsTwoToSix": result["levelsTwoToSix"], "scientificReadiness": result["scientificReadiness"], "modelVersion": result["modelVersion"], "models": {name: {**{k: model[k] for k in ("score", "observedPoints", "coverage", "status")}, "categories": [{k: c[k] for k in ("id", "maximum", "score", "observedPoints", "coverage", "status")} for c in model["categories"]]} for name, model in result["models"].items()}, "riskFlags": result["riskFlags"]}
 
 def fingerprint(result):
-    stable = {key: result[key] for key in ("modelVersion", "models", "levelOneIntake", "levelsTwoToSix", "scientificReadiness", "reportedStatistics", "qualification", "registryFetchedAt", "riskFlags")}
+    stable = {key: result[key] for key in ("modelVersion", "models", "levelsSevenToTwenty", "levelOneIntake", "levelsTwoToSix", "scientificReadiness", "reportedStatistics", "qualification", "registryFetchedAt", "riskFlags")}
     return hashlib.sha256(packed(stable).encode()).hexdigest()

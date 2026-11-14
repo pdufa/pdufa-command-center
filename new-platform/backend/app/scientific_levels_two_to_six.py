@@ -71,7 +71,7 @@ def _source_matches_trial(source, trial_id):
         return False
 
 
-def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
+def assess_review_contracts(level_one, *, trial_id, evidence=None, definitions, not_yet_expected=()):
     """Return independent level inventories; never convert coverage into a score."""
     evidence = evidence if isinstance(evidence, dict) else {}
     if not isinstance(level_one, dict):
@@ -95,7 +95,7 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
     results = {}
     # Explicit evidence quality gates prevent a complete-looking dossier from
     # being treated as adjudicated when reviewers did not supply source identity.
-    for number, (name, criteria) in LEVELS.items():
+    for number, (name, criteria) in definitions.items():
         states = {}
         accepted = {}
         rejection_reasons = {}
@@ -104,7 +104,8 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
             if not verified:
                 states[criterion] = "BLOCKED_UNVERIFIED_PHASE"
                 continue
-            if ((early and (number, criterion) in LATE_PHASE) or
+            if ((number, criterion) in not_yet_expected or
+                    (early and (number, criterion) in LATE_PHASE) or
                     (pre_application and number == 6 and criterion in {
                         "applicationDossier", "manufacturingReadiness", "labelingAndRiskMitigation"
                     })):
@@ -217,7 +218,7 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
         rejected = [c for c in criteria if states[c] == "REJECTED_EVIDENCE"]
         unpublished = [c for c in criteria if states[c] == "UNPUBLISHED"]
         unverified_unpublished = [c for c in criteria if states[c] == "UNVERIFIED_UNPUBLISHED_CLAIM"]
-        not_yet_expected = [c for c in criteria if states[c] == "NOT_YET_EXPECTED"]
+        not_yet_expected_criteria = [c for c in criteria if states[c] == "NOT_YET_EXPECTED"]
         rejected_count = len(rejected)
         outstanding = [criterion for criterion in required if criterion not in accepted]
         review_readiness = {
@@ -226,7 +227,7 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
             "unpublished": unpublished,
             "unverifiedUnpublished": unverified_unpublished,
             "outstanding": outstanding,
-            "notYetExpected": not_yet_expected,
+            "notYetExpected": not_yet_expected_criteria,
             "complete": bool(verified and required and not outstanding),
             "meaning": "Evidence review completeness only; not scientific validity or FDA probability.",
         }
@@ -241,9 +242,13 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
             "rejectedCriteria": rejected, "rejectionReasons": rejection_reasons,
             "unpublishedCriteria": unpublished,
             "unverifiedUnpublishedCriteria": unverified_unpublished,
-            "notYetExpectedCriteria": not_yet_expected,
+            "notYetExpectedCriteria": not_yet_expected_criteria,
             "score": None, "scientificValidation": "NOT_VERIFIED",
             "fdaPrediction": "ABSTAIN",
             "note": "Review coverage and judgments are not validated scientific scores.",
         }
     return results
+
+
+def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
+    return assess_review_contracts(level_one, trial_id=trial_id, evidence=evidence, definitions=LEVELS)

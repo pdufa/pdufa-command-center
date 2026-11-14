@@ -101,6 +101,7 @@ def build_index(snapshot, reviews, review_status, key, token):
                                     "models": values, "riskFlags": result["riskFlags"],
                                     "levelOneIntake": result["levelOneIntake"],
                                     "levelsTwoToSix": result["levelsTwoToSix"],
+                                    "levelsSevenToTwenty": result["levelsSevenToTwenty"],
                                     "scientificReadiness": result["scientificReadiness"],
                                 }, "assessed_at": clock})
         for nct, registry, analyses, checked in registry_rows():

@@ -35,3 +35,20 @@ test('development branch cannot trigger automatic Vercel deployment',()=>{
  assert.equal(config.git.deploymentEnabled['codex/level1-6-explicit-scientific-readiness-20261114'],false);
  assert.equal(config.crons.length,2);
 });
+const {default:Population}=require('../app/ScientificPopulationEvidence.tsx');
+test('Level 7 shows unreviewed population separately from estimable subgroup arithmetic',()=>{
+ const level={level:7,status:'AWAITING_REVIEW',score:null,fdaPrediction:'ABSTAIN',scientificValidation:'NOT_VERIFIED',criteria:{populationDefinition:'NOT_ASSESSED'},calculations:{}};
+ let html=renderToStaticMarkup(React.createElement(Population,{value:{7:level}}));
+ assert.match(html,/No reviewed, estimable subgroup interaction/);
+ level.calculations.treatmentSubgroupInteraction={ratioOfRiskRatios:4,nominal95Interval:{lower:1.47,upper:10.86},fdaPrediction:'ABSTAIN',scientificValidation:'NOT_VERIFIED'};
+ html=renderToStaticMarkup(React.createElement(Population,{value:{7:level}}));
+ assert.match(html,/4.000/);assert.match(html,/Unadjusted for multiplicity/);assert.match(html,/not an FDA probability/);
+ assert.equal(renderToStaticMarkup(React.createElement(Population,{value:{7:{...level,fdaPrediction:'APPROVAL'}}})), '');
+});
+const {default:SafetyExposure}=require('../app/ScientificSafetyExposureEvidence.tsx');
+test('Level 8 exposes event rates without substituting patient risks or FDA confidence',()=>{
+ const level={level:8,status:'PARTIAL',score:null,fdaPrediction:'ABSTAIN',scientificValidation:'NOT_VERIFIED',criteria:{exposureAdjustedRates:'INCONCLUSIVE'},calculations:{exposureAdjustedRates:{arms:[{label:'Synthetic A',eventsPer100PersonTimeUnits:20}],exposureUnit:'PERSON_YEARS',fdaPrediction:'ABSTAIN',scientificValidation:'NOT_VERIFIED'}}};
+ const html=renderToStaticMarkup(React.createElement(SafetyExposure,{value:{8:level}}));
+ assert.match(html,/20.000/);assert.match(html,/not percentages of patients/);assert.match(html,/No FDA probability/);
+ assert.equal(renderToStaticMarkup(React.createElement(SafetyExposure,{value:{8:{...level,score:99}}})), '');
+});
