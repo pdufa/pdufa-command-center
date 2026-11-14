@@ -235,6 +235,7 @@ def application_roster_status():
     if (len(by_nct) != len(rows) or not set(by_nct) <= expected
             or expected - set(by_nct) != known_unmapped):
         raise ValueError("Application map differs from the exact mapped FOCUS set and known exceptions")
+    missing = sorted(expected - set(by_nct))
     ids = set()
     ambiguous = []
     for nct, row in by_nct.items():
@@ -259,9 +260,10 @@ def application_roster_status():
                 raise ValueError("Shared study attributed to a specific unverified application")
         elif row.get("indication") not in indications or row.get("drug") not in drugs:
             raise ValueError("Study-level labels do not match exact application records")
-    return {"state": "VALID", "asOf": data["asOf"],
+    return {"state": "VALID" if not missing else "PARTIAL", "asOf": data["asOf"],
             "focusNctCount":len(expected),"coveredNctCount":len(by_nct),
             "mappingCoverageComplete":False,"unmappedNcts":sorted(known_unmapped),
+            "missingNctIds":missing,
             "applicationCycleCount":len(ids),
             "sharedIndicationUnresolvedNcts":ambiguous,
             "regulatorySourceType":"SPONSOR_SEC_RECONSTRUCTION",

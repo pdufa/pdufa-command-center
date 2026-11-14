@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-13T04:21:07.537665+00:00",
-  "latest_run_id": 43364293480,
-  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/43364293480",
-  "latest_run_started_at_utc": "2026-11-13T04:15:14Z",
+  "updated_at_utc": "2026-11-14T04:22:24.167219+00:00",
+  "latest_run_id": 43555705370,
+  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/43555705370",
+  "latest_run_started_at_utc": "2026-11-14T04:15:14Z",
   "latest_run_conclusion": null,
   "scope": "CLINICAL_POOL_PIPELINE_AND_PHASE3_RESULTS_COLLECTORS_ONLY",
   "status": "PARTIAL",
   "verification": {
-    "checked_at_utc": "2026-11-13T04:21:07.537684+00:00",
+    "checked_at_utc": "2026-11-14T04:22:24.167233+00:00",
     "artifact_integrity": "PASS",
     "all_source_coverage": "NOT_VERIFIED",
     "description": "Archived clinical reports checked against source-state JSON; no independent FDA/SEC/issuer/market verification."
@@ -19,84 +19,76 @@
       "label": "PIPELINE \u2014 trial inventory",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 43364293480,
+      "run_id": 43555705370,
       "new_records": null,
-      "changed_trials_this_execution": 82,
+      "changed_trials_this_execution": 58,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_checked": 717,
         "companies_due": 717,
-        "tracked_trials_checked": 11655,
-        "tracked_trials_total": 11655,
+        "tracked_trials_checked": 11662,
+        "tracked_trials_total": 11662,
         "registry_companies": 717,
         "companies_with_warnings": 0,
         "tracked_trials_with_warnings": 0
       },
       "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-11-13T04:19:37.843624+00:00",
+      "collected_at_utc": "2026-11-14T04:20:12.502430+00:00",
       "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/43364293480"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/43555705370"
     },
     {
       "scan": "3",
       "label": "PIPELINE \u2014 clinical enrichment",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 43364293480,
+      "run_id": 43555705370,
       "new_records": null,
       "changed_trials_this_execution": null,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_due": 717,
-        "studies_checked": 15565,
-        "matched_trials": 3731,
+        "studies_checked": 15567,
+        "matched_trials": 3733,
         "registry_companies": 717,
-        "market_cap_source_unavailable": 233
+        "market_cap_source_unavailable": 4
       },
       "collector_status": "COMPLETE WITH WARNINGS",
-      "collected_at_utc": "2026-11-13T04:20:16.356294+00:00",
+      "collected_at_utc": "2026-11-14T04:21:05.618951+00:00",
       "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/43364293480"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/43555705370"
     },
     {
       "scan": "4",
       "label": "FOCUS \u2014 published Phase 3 results",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 43364293480,
-      "new_records": 2,
+      "run_id": 43555705370,
+      "new_records": 1,
       "changed_trials_this_execution": null,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_due": 717,
-        "studies_checked": 4001,
-        "matched_posted_results": 98,
+        "studies_checked": 4041,
+        "matched_posted_results": 99,
         "registry_companies": 717
       },
       "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-11-13T04:20:44.157880+00:00",
+      "collected_at_utc": "2026-11-14T04:21:42.789532+00:00",
       "new_record_details": [
         {
-          "ticker": "PFE",
-          "drug": "fordadistrogene movaparvovec",
-          "nct_id": "NCT05689164",
-          "results_posted_at": "2026-11-12",
-          "source_url": "https://clinicaltrials.gov/study/NCT05689164",
+          "ticker": "ABBV",
+          "drug": "Bimatoprost (SR)",
+          "nct_id": "NCT03850782",
+          "results_posted_at": "2026-11-13",
+          "source_url": "https://clinicaltrials.gov/study/NCT03850782",
           "verification_status": "REGISTERED_RESULTS_POSTED"
-        },
-        {
-          "ticker": "RYTM",
-          "drug": "Placebo | Setmelanotide",
-          "nct_id": "NCT05093634",
-          "results_posted_at": "2026-11-12",
-          "source_url": "https://clinicaltrials.gov/study/NCT05093634",
-          "verification_status": "DRUG_IDENTITY_REVIEW"
         }
       ],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/43364293480"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/43555705370"
     }
   ],
   "metrics": {
@@ -113,6 +105,16 @@
     "issuer/program identity and complete source coverage audit"
   ],
   "history": [
+    {
+      "run_id": 43555705370,
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/43555705370",
+      "started_at_utc": "2026-11-14T04:15:14Z",
+      "run_conclusion": null,
+      "status": "PARTIAL",
+      "new_records": null,
+      "changed_trials": null,
+      "errors": 0
+    },
     {
       "run_id": 43364293480,
       "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/43364293480",
@@ -398,16 +400,6 @@
       "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39083281274",
       "started_at_utc": "2026-10-18T00:34:50Z",
       "run_conclusion": null,
-      "status": "PARTIAL",
-      "new_records": null,
-      "changed_trials": null,
-      "errors": 0
-    },
-    {
-      "run_id": 39020072050,
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39020072050",
-      "started_at_utc": "2026-10-17T09:09:49Z",
-      "run_conclusion": "success",
       "status": "PARTIAL",
       "new_records": null,
       "changed_trials": null,

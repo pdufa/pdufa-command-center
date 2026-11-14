@@ -16,7 +16,9 @@ def test_unavailable_postgres_is_blocked_and_read_only(tmp_path):
     assert a["storage"]["state"]=="BLOCKED"
     assert a["research"]["state"]=="BLOCKED"
     assert a["analysisNow"]["pilotSaved"] is False
-    assert a["sourceSnapshots"]["applications"]["state"]=="VALID"
+    assert a["sourceSnapshots"]["applications"]["state"]=="PARTIAL"
+    assert a["sourceSnapshots"]["applications"]["focusNctCount"]==32
+    assert a["sourceSnapshots"]["applications"]["coveredNctCount"]==29
     assert a["sourceSnapshots"]["applications"]["fdaApplicationStatusVerified"] is False
     assert set(__import__("sqlalchemy").inspect(engine).get_table_names())==before
     engine.dispose()

@@ -84,6 +84,18 @@ class FocusNightlySourceMonitorTest(unittest.TestCase):
         self.assertEqual(r["trials"][1]["sourceHash"], first["trials"][1]["sourceHash"])
         self.assertEqual(r["summary"]["status"], "PARTIAL_SOURCE_MONITOR")
 
+    def test_unmapped_application_ncts_remain_under_registry_monitoring(self):
+        self.roster["records"].append(
+            {"nct": "NCT00000003", "ticker": "THREE", "company": "Three"})
+        report = self.run_check()
+        self.assertEqual(report["summary"]["focusTrials"], 3)
+        self.assertEqual(report["summary"]["unmappedApplicationNcts"], 1)
+        self.assertEqual(report["applicationCrosswalkState"], "PARTIAL")
+        self.assertEqual(report["trials"][2]["applicationCycles"], [])
+        self.assertEqual(report["unmappedApplicationReviewQueue"][0]["nct"], "NCT00000003")
+        self.assertEqual(report["summary"]["reassessmentQueueCycles"], 3)
+        self.assertEqual(report["summary"]["scientificAssessmentsRevalidated"], 0)
+
     def test_wrong_nct_and_roster_conflicts_rejected(self):
         with self.assertRaises(ValueError):
             monitor.summarize_registry("NCT00000001", registry("NCT00000002"))
@@ -99,9 +111,12 @@ class FocusNightlySourceMonitorTest(unittest.TestCase):
         roster = monitor.load_json(monitor.ROSTER_PATH)
         applications = monitor.load_json(monitor.APPLICATIONS_PATH)
         rows, links = monitor.roster_and_cycles(roster, applications)
-        self.assertEqual(len(rows), 29)
+        self.assertEqual(len(rows), 32)
         self.assertEqual(len({c for ids in links.values() for c in ids}), 23)
         self.assertEqual(sum(map(len, links.values())), 30)
+        self.assertEqual(sum(1 for nct in links if not links[nct]), 3)
+        self.assertEqual({nct for nct in links if not links[nct]},
+                         {"NCT05031780", "NCT06747468", "NCT06553768"})
 
 
 if __name__ == "__main__":

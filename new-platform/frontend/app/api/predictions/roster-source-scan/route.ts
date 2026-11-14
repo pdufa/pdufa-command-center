@@ -82,7 +82,7 @@ async function performScan(){
   const failed=rows.filter(r=>r.sourceStatus==="SOURCE_UNAVAILABLE");
   return NextResponse.json({
     schemaVersion:1,
-    kind:"FOCUS_29_TRIAL_SOURCE_INSPECTION_NOT_VALIDATED_FDA_ASSESSMENT",
+    kind:"FOCUS_CURRENT_TRIAL_SOURCE_INSPECTION_NOT_VALIDATED_FDA_ASSESSMENT",
     startedAt,completedAt:new Date().toISOString(),
     rosterAsOf:FOCUS_SPECIALTY_ASSESSMENT_QUEUE[0]?.rosterAsOf??null,
     status:failed.length?"PARTIAL_SOURCE_SCAN":"ALL_REGISTRY_SOURCES_SCANNED",

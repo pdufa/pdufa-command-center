@@ -14,7 +14,7 @@ test("global navigation includes a working FDA prediction destination",()=>{
     assert.ok(page.includes(label),label+" outcome missing");
   }
   assert.match(page,/Deep Clinical Subspecialty Intelligence/);
-  assert.match(page,/owner-controlled scientific research/);
+  assert.match(page,/OWNER-ONLY LEVELS 1–20/);
   assert.match(page,/not yet prospectively calibrated/);
   assert.match(page,/ABSTAIN/);
   assert.match(page,/NOT VALIDATED/);

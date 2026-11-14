@@ -7,12 +7,12 @@ const read=(...p)=>fs.readFileSync(path.join(root,...p),"utf8");
 const research=JSON.parse(read("data","calFocusResearchOverlay20261110.json"));
 const focus=JSON.parse(read("data","p3PostDataActive.json"));
 
-test("ASSESSMENTS visibly offers 29 FOCUS linked trials with 23 frozen preliminary FDA calls",()=>{
+test("ASSESSMENTS distinguishes historical 29 FOCUS trials with 23 frozen preliminary FDA calls",()=>{
   const page=read("app","predictions","assessment","page.tsx");
   const component=read("app","FocusLevelThreeResearchForecasts.tsx");
   assert.match(page,/import FocusLevelThreeResearchForecasts/);
   assert.match(page,/<FocusLevelThreeResearchForecasts selectedCycleId=\{cycle\?\.cycleId\}\/>/);
-  assert.match(component,/CURRENT FOCUS · 29 EXACT NCTS · 23 FDA APPLICATION CYCLES/);
+  assert.match(component,/HISTORICAL FOCUS · 29 EXACT NCTS · 23 FDA APPLICATION CYCLES/);
   assert.match(component,/data-testid="focus-level3-cycle-prediction-table"/);
   assert.match(component,/researchSnapshotPasses\(\)/);
   assert.match(component,/selectedCycleId/);

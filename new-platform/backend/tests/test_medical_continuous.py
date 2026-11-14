@@ -42,7 +42,9 @@ def test_packaged_application_context_preserves_three_unmapped_focus_exceptions(
     assert multi["indication"]==""
     assert multi["drug"]==""
     health=medical.application_roster_status()
-    assert health["state"]=="VALID"
+    assert health["state"]=="PARTIAL"
+    assert health["focusNctCount"]==32
+    assert health["missingNctIds"]==sorted(set(medical.roster())-{r["nct"] for r in rows})
     assert health["coveredNctCount"]==29
     assert health["focusNctCount"]==32
     assert health["mappingCoverageComplete"] is False

@@ -21,6 +21,7 @@ test("all canonical FOCUS NCTs are queued without merging indications or inventi
   assert.equal(summary.mappedApplicationCycles,23);
   assert.equal(summary.partialClinicalDimensions,161);
   assert.equal(summary.mappedNcts,29);
+  assert.equal(queue.length-summary.mappedNcts,3,"new trial applications must not be inferred from historical cycles");
   assert.deepEqual(queue.map(r=>r.nct),canonical.records.map(r=>r.nct));
   assert.equal(new Set(queue.map(r=>r.nct)).size,queue.length);
   assert.equal(new Set(queue.flatMap(r=>r.applications.map(a=>a.cycleId))).size,23);

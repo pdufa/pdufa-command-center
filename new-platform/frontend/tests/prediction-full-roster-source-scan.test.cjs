@@ -22,6 +22,7 @@ test("all-FOCUS source endpoint uses exact canonical FOCUS roster and source-onl
   assert.match(route,/calibratedFDAForecasts:0/);
   assert.match(route,/savedToDatabase:false/);
   assert.match(route,/ABSTAIN/);
+  assert.match(route,/FOCUS_CURRENT_TRIAL_SOURCE_INSPECTION_NOT_VALIDATED_FDA_ASSESSMENT/);
   assert.match(route,/NOT_VALIDATED/);
   assert.match(route,/req.nextUrl.searchParams.get\("run"\)!=="source-inspection"/);
   assert.match(route,/Origin header required/);
@@ -33,7 +34,9 @@ test("production predictions page offers an explicit full-roster button without 
   const page=read("app/predictions/page.tsx");
   const ui=read("app/predictions/FullRosterSourceScan.tsx");
   assert.match(page,/<FullRosterSourceScan\/>/);
-  assert.match(ui,/Start Full FOCUS Scan — 29 Trials/);
+  assert.match(ui,/Start Full FOCUS Scan — /);
+  assert.match(ui,/CURRENT_FOCUS_COUNT/);
+  assert.match(ui,/FOCUS_CURRENT_TRIAL_SOURCE_INSPECTION_NOT_VALIDATED_FDA_ASSESSMENT/);
   assert.match(ui,/method:"POST"/);
   assert.match(ui,/onClick=\{\(\)=>void start\(\)\}/);
   assert.match(ui,/Download scan results/);

@@ -1,33 +1,25 @@
 {
   "mode": "daily",
-  "started_at": "2026-11-13T04:20:38.646244+00:00",
+  "started_at": "2026-11-14T04:21:34.221603+00:00",
   "registry_companies": 717,
   "pages": 5,
-  "studies_checked": 4001,
-  "matched_posted_results": 98,
-  "new_records": 2,
+  "studies_checked": 4041,
+  "matched_posted_results": 99,
+  "new_records": 1,
   "new_record_details": [
     {
-      "ticker": "PFE",
-      "drug": "fordadistrogene movaparvovec",
-      "nct_id": "NCT05689164",
-      "results_posted_at": "2026-11-12",
-      "source_url": "https://clinicaltrials.gov/study/NCT05689164",
+      "ticker": "ABBV",
+      "drug": "Bimatoprost (SR)",
+      "nct_id": "NCT03850782",
+      "results_posted_at": "2026-11-13",
+      "source_url": "https://clinicaltrials.gov/study/NCT03850782",
       "verification_status": "REGISTERED_RESULTS_POSTED"
-    },
-    {
-      "ticker": "RYTM",
-      "drug": "Placebo | Setmelanotide",
-      "nct_id": "NCT05093634",
-      "results_posted_at": "2026-11-12",
-      "source_url": "https://clinicaltrials.gov/study/NCT05093634",
-      "verification_status": "DRUG_IDENTITY_REVIEW"
     }
   ],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-11-13T04:20:44.090896+00:00",
-  "stored_results": 2501,
+  "finished_at": "2026-11-14T04:21:42.740769+00:00",
+  "stored_results": 2502,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
 }

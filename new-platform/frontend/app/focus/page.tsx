@@ -1,6 +1,7 @@
 import type {Metadata} from "next";
 import Link from "next/link";
 import TickerChartButton from "../TickerChartButton";
+import IndicationIntelligence from "../IndicationIntelligence";
 import CompanyDateBadges from "../CompanyDateBadges";
 import snapshot from "../../data/p3PostDataActive.json";
 import designationData from "../../data/focusFdaDesignations.json";
@@ -19,13 +20,14 @@ const finalGateByNct=new Map(finalGateAudit.rows.map(row=>[row.nct,row]));
 
 export default function FocusPage(){
  return <main style={{maxWidth:1220,margin:"28px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif",color:"#173d2b"}}>
-  <nav style={{display:"flex",gap:18,marginBottom:18}}><Link href="/pool">POOL</Link><Link href="/tools">TOOLS</Link></nav>
+  <nav style={{display:"flex",gap:18,marginBottom:18}}><Link href="/pool">POOL</Link><Link href="/indications">INDICATIONS</Link><Link href="/tools">TOOLS</Link></nav>
   <h1>FOCUS</h1>
   <p data-testid="focus-owner-only" style={{padding:"10px 12px",background:"#eefaf5",border:"1px solid #b9cebe",borderRadius:8}}>
     <strong>OWNER-ONLY LEVELS 1–20:</strong> You check and accept FOCUS assessments.
     No external scientific reviewer, source attestor, independent challenger, or third-party signoff is required.
     Original source links, missing-evidence flags, and safety and phase checks remain.
   </p>
+  <IndicationIntelligence mode="focus"/>
   <p><strong>{trials.length} distinct NCT trials</strong> · Final-list Phase 3 / post-Phase 3 candidates · Reported $300M–$10B market caps · Source-linked FDA pathways for owner checks; no external verification gate.</p>
   <p>Snapshot of the final Google Sheets list as of {snapshot.asOf}. Recorded listing, readout and FDA-path links are evidence pointers, not an owner-reviewed finding of trial eligibility or a successful nightly sync. Completed trials remain if their program may continue toward approval. No retired or historical research-only cohort is included.</p>
   <p><a href={source} target="_blank" rel="noopener noreferrer" style={{fontWeight:700}}>Open and edit the source-of-truth FOCUS spreadsheet</a></p>
