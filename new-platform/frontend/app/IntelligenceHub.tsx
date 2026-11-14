@@ -143,7 +143,7 @@ function CompanyDetails({ticker,calendar,undated,clinicalPhases,phaseCheckedAt,p
         <p><strong>Reported FDA goal:</strong> {date(current.reportedGoal)}</p>
         <p><strong>Linked NCTs:</strong> {current.ncts.map((nct,i)=><span key={nct}>
           {i?", ":""}<a href={"https://clinicaltrials.gov/study/"+nct} target="_blank" rel="noopener noreferrer">{nct}</a>
-          {" · "}<Link href={"/analyze-now?nct="+nct}>Saved revision history</Link>
+          {" · "}<Link href={"/analyze-now?nct="+nct}>Saved revision history</Link>{" · "}<Link href={"/predictions/assessment?nct="+nct}>Levels 1–6 assessments</Link>
         </span>)}</p>
         <p><strong>Scientific question:</strong> {current.criticalQuestion}</p>
         {currentResearch?<div className={styles.researchForecast}>
@@ -235,7 +235,7 @@ function NewsDetails({payload,ticker,cycleId,newsFilter,setNewsFilter,automation
       {expanded===entry.id&&<div className={styles.impact}>
         <p><strong>FDA effect:</strong> Not assessed. No decision, CRL or date revision is inferred.</p>
         <p><strong>Prediction:</strong> No verified prediction revision can be attributed to this article from the display feed. Existing versions remain immutable.</p>
-        <p><strong>Linked trial IDs:</strong> {entry.ncts.length?entry.ncts.join(", "):"None verified"}</p>
+        <p><strong>Linked trial IDs:</strong> {entry.ncts.length?entry.ncts.map(nct=><span key={nct}><Link href={"/predictions/assessment?nct="+nct}>{nct} assessments</Link>{" "}</span>):"None verified"}</p>
         <p><strong>Source:</strong> <a href={entry.sourceUrl} target="_blank" rel="noopener noreferrer">Inspect original document ↗</a></p>
       </div>}
     </article>)}</div>

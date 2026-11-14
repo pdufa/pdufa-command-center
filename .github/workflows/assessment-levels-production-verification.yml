@@ -1,0 +1,40 @@
+name: Assessment Levels 1–6 authorized production verification
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/assessment-levels-production-verification.yml'
+      - 'scripts/assessment_levels_production_browser.cjs'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: pdufa-assessment-production-verification
+  cancel-in-progress: false
+jobs:
+  verify-current-engines:
+    runs-on: ubuntu-latest
+    timeout-minutes: 24
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - name: Install pinned browser tooling without application secrets
+        run: |
+          npm install --prefix "$RUNNER_TEMP/assessment-browser" --no-audit --no-fund playwright@1.56.1
+          "$RUNNER_TEMP/assessment-browser/node_modules/.bin/playwright" install --with-deps chromium
+      - name: Execute approved NCT04576949 once per level using existing owner login
+        env:
+          DASHBOARD_PASSWORD: ${{ secrets.DASHBOARD_PASSWORD }}
+          NODE_PATH: ${{ runner.temp }}/assessment-browser/node_modules
+          ASSESSMENT_RESULT_PATH: ${{ runner.temp }}/assessment-production-verification.json
+        run: node scripts/assessment_levels_production_browser.cjs
+      - name: Retain only sanitized verification receipts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: assessment-production-verification
+          path: ${{ runner.temp }}/assessment-production-verification.json
+          if-no-files-found: ignore
+          retention-days: 14

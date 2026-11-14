@@ -1,0 +1,39 @@
+name: Assessment runtime regression and leakage checks
+on:
+  pull_request:
+    branches: [main, new-platform-bootstrap]
+    paths:
+      - 'new-platform/backend/app/assessment_runtime.py'
+      - 'new-platform/backend/tests/test_assessment_runtime.py'
+      - 'new-platform/frontend/app/AssessmentWorkbench.tsx'
+      - 'new-platform/frontend/app/api/assessments/runtime/**'
+      - 'new-platform/frontend/tests/assessment-runtime.test.cjs'
+      - '.github/workflows/assessment-runtime-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  six-backend-engines:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r new-platform/backend/requirements.txt
+      - run: PYTHONPATH=new-platform/backend pytest new-platform/backend/tests/test_assessment_runtime.py -q
+  frontend:
+    if: github.base_ref == 'main'
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci --no-audit --no-fund
+      - run: node tests/assessment-runtime.test.cjs
+      - run: npm run typecheck
+      - run: npm run build
