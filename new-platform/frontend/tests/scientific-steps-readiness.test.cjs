@@ -31,5 +31,7 @@ test("FOCUS links each exact NCT to saved research without claiming an assessmen
  assert.match(source,/View exact-trial research history/);
 });
 test("scientific panel fails closed when FDA prediction is not ABSTAIN",()=>{
- assert.match(component,/intake\?\.fdaPrediction==="ABSTAIN"\?intake:undefined/);
+ assert.match(component,/intake\?\.fdaPrediction==="ABSTAIN"/);
+ assert.match(component,/scientificScoreStatus==="NOT_VALIDATED"/);
+ assert.match(component,/Array\.isArray\(intake\.missingEvidence\)/);
 });
