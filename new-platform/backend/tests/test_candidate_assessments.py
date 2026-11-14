@@ -783,3 +783,10 @@ def test_level_one_phase_evidence_and_endpoint_assessment_survive_compact_payloa
     assert level["fdaPrediction"] == "ABSTAIN"
     assert payload["scientificReadiness"]["status"] == "NOT_VERIFIED"
     json.dumps(payload, allow_nan=False)
+
+
+def test_assessment_service_fetches_registry_phase_for_phase_first_intake():
+    from app.assessment_service import FIELDS
+    assert "phases" in FIELDS, "Phase-first assessment must receive actual registry phase"
+    assert "status" in FIELDS
+    assert "last_update_posted" in FIELDS
