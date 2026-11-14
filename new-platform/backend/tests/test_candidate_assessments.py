@@ -844,3 +844,23 @@ def test_exact_nct_program_map_rejects_conflicting_embedded_nct():
     assert exact_nct_program_map(rows) == {
         "NCT00000003": ["TRIAL|NCT00000003"]
     }
+
+
+def test_exact_detail_rejects_conflicting_nct_before_registry_lookup(monkeypatch):
+    from fastapi import HTTPException
+    from app import assessment_service as service
+    identity = "TRIAL|NCT00000001"
+    monkeypatch.setattr(service, "get_index", lambda: {"status": "COMPLETE"})
+    monkeypatch.setattr(service, "rows_for", lambda snapshot: {
+        identity: {"id": identity, "nctId": "NCT00000002"}
+    })
+    monkeypatch.setattr(service, "_STATE", {
+        "snapshot": {"assessmentDate": "2026-10-20"}, "reviews": {}
+    })
+    def forbidden_registry(_):
+        raise AssertionError("Conflicting NCT must be rejected before registry access")
+    monkeypatch.setattr(service, "registry_rows", forbidden_registry)
+    with pytest.raises(HTTPException) as exc:
+        service.exact_detail(identity)
+    assert exc.value.status_code == 409
+    assert "NCT" in str(exc.value.detail)
