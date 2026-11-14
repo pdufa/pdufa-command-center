@@ -60,7 +60,7 @@ test("23 FDA application cycles keep separate NCT mappings and research directio
   assert.equal(srpt.length,2);
   assert.notEqual(srpt[0].cycleId,srpt[1].cycleId);
 });
-test("validated engine and independent review remain gated after preview publication",()=>{
+test("owner-only preliminary research remains separate from calibrated forecasts",()=>{
   const api=read("app","api","focus-assessment-intake","route.ts");
   const page=read("app","predictions","assessment","page.tsx");
   assert.match(api,/FOCUS_SCIENTIFIC_RESEARCH_INTAKE_NOT_COMPLETED_ASSESSMENTS/);
@@ -68,5 +68,6 @@ test("validated engine and independent review remain gated after preview publica
   assert.match(api,/predictionReleasePermitted:false/);
   assert.match(page,/validated production engine remains/);
   assert.match(page,/not a prediction/);
-  assert.match(page,/Independently adjudicated/);
+  assert.match(page,/Owner-reviewed trials/);
+  assert.match(page,/No outside clinician, statistician/);
 });

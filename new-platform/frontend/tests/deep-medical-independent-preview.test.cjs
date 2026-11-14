@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 require.extensions['.ts']=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{target:ts.ScriptTarget.ES2022,module:ts.ModuleKind.CommonJS}}).outputText,f);
 const {parseDeepMedicalSnapshot}=require('../lib/deep-medical-intelligence.ts');
 const data=require('../data/deepMedicalIntelligencePreview.json');
-test('independent source preview preserves all current trial identities and distinguishes medical completion',()=>{
+test('owner-only source preview preserves the 29 historical NCTs within the current 32 without fake signoff',()=>{
  const d=parseDeepMedicalSnapshot(data),active=require('../data/p3PostDataActive.json').records;
  const current=new Set(active.map(r=>r.nct));
  const frozen=[...new Set(d.applications.flatMap(a=>a.nctIds))];
@@ -12,10 +12,18 @@ test('independent source preview preserves all current trial identities and dist
  assert.equal(d.installationLevels.length,12);assert.equal(d.inventory.completedDecisions,0);
  assert.ok(d.applications.every(a=>a.outcome.leading==='Indeterminate'&&a.timing.leading==='Indeterminate'));
  assert.ok(d.inventory.metadataScreenedTrials>d.inventory.fullyReviewedTrials);
+ assert.ok(d.applications.every(a=>a.ownerCriticalReview.status==='OWNER_NOT_REVIEWED'&&!('independentChallenge' in a)));
 });
-test('unsupported decision and future source cannot bypass independent review',()=>{
- let d=structuredClone(data);d.applications[0].outcome.leading='Complete Response Letter';
- assert.throws(()=>parseDeepMedicalSnapshot(d),/INDEPENDENT_CHALLENGE/);
+test('owner can draft source-backed provisional research without an outside challenger',()=>{
+ let d=structuredClone(data);
+ d.applications[0].outcome.leading='Complete Response Letter';
+ assert.equal(parseDeepMedicalSnapshot(d).applications[0].outcome.leading,'Complete Response Letter');
+ d=structuredClone(data);d.applications[0].outcome.leading='Complete Response Letter';d.applications[0].outcome.sourceIds=[];
+ assert.throws(()=>parseDeepMedicalSnapshot(d),/OWNER_PROVISIONAL_DECISION_NEEDS_CITED_EVIDENCE/);
+ d=structuredClone(data);d.applications[0].ownerCriticalReview.status='EXTERNALLY_VERIFIED';
+ assert.throws(()=>parseDeepMedicalSnapshot(d),/OWNER_REVIEW_STATUS_REQUIRED/);
+ d=structuredClone(data);d.applications[0].independentChallenge={status:'PENDING'};
+ assert.throws(()=>parseDeepMedicalSnapshot(d),/LEGACY_EXTERNAL_CHALLENGE_NOT_ALLOWED/);
  d=structuredClone(data);d.sources[0].sourceDate='2099-01-01';assert.throws(()=>parseDeepMedicalSnapshot(d),/FUTURE_SOURCE/);
  d=structuredClone(data);d.legacyCompositeRating=75;assert.throws(()=>parseDeepMedicalSnapshot(d),/UNKNOWN_SCHEMA_FIELD/);
 });

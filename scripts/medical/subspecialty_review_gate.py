@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed, dimension-level specialty review gate; never authors clinical findings."""
+"""Fail-closed sole-owner specialty review gate; never authors clinical findings."""
 import argparse
 import json
 from pathlib import Path
@@ -35,14 +35,17 @@ def validate(dossier):
             for c in citations
         ):
             errors.append(name + ":INVALID_CITATIONS")
-        reviewer = dimension.get("reviewer")
-        challenge = dimension.get("independentReview")
-        if not reviewer or not isinstance(challenge, dict) or not challenge.get("reviewer") or not challenge.get("critique") or reviewer == challenge.get("reviewer"):
-            errors.append(name + ":INDEPENDENT_CHALLENGE_REQUIRED")
+        # The owner alone checks the specialist research dimensions. Older
+        # independentReview/reviewer fields are ignored, never a gate.
+        if dimension.get("ownerReviewStatus") != "OWNER_ACCEPTED_WITH_LIMITATIONS":
+            errors.append(name + ":OWNER_REVIEW_NOT_ACCEPTED")
     if dossier.get("outcomePrediction") is not None or dossier.get("timingPrediction") is not None:
         errors.append("PREDICTION_NOT_PERMITTED_IN_SPECIALTY_DOSSIER")
     return {"accepted": not errors, "errors": errors,
-            "status": "REVIEW_STRUCTURE_VALIDATED_ONLY" if not errors else "REJECTED",
+            "status": "OWNER_SPECIALTY_REVIEW_STRUCTURE_ONLY" if not errors else "OWNER_REVIEW_REQUIRED",
+            "ownerOnly": True,
+            "externalReviewersRequired": 0,
+            "externalSignoffsRequired": 0,
             "scientificAccuracyVerified": False}
 
 def main():
