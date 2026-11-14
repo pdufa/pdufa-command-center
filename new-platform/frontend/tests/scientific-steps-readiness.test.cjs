@@ -123,3 +123,12 @@ test("exact assessment proxy refuses non-HTTPS backend and does not cache failed
  assert.match(route,/signal: AbortSignal\.timeout\(45000\)/);
  assert.match(route,/if\s*\(!response\.ok\)\s*return NextResponse\.json/);
 });
+
+
+test("PAST comparison outcomes remain labeled unverified and separate from blind scoring",()=>{
+ const source=fs.readFileSync(path.join(app,"past","page.tsx"),"utf8");
+ assert.match(source,/Show historical comparison data \(unverified event match; exclude from blind scoring\)/);
+ assert.match(source,/Unverified match: /);
+ assert.match(source,/ticker and date, not by source-verified FDA event identity/);
+ assert.match(source,/!reveal\?"Hidden"/);
+});
