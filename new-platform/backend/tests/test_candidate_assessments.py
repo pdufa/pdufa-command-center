@@ -437,6 +437,7 @@ def test_levels_two_to_six_reject_post_cutoff_evidence():
             "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
             "reviewerId": "test-reviewer", "documentType": "protocol",
             "evidenceExcerpt": "The trial uses a randomized design.",
+            "sourceVerified": True,
         }
     }
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
@@ -454,6 +455,7 @@ def test_levels_two_to_six_accept_valid_evidence_without_scoring():
             "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
             "reviewerId": "test-reviewer", "documentType": "protocol",
             "evidenceExcerpt": "The trial uses a randomized design.",
+            "sourceVerified": True,
         }
     }
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
@@ -473,6 +475,7 @@ def test_levels_two_to_six_reject_registry_url_for_another_trial():
         "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
             "reviewerId": "test-reviewer", "documentType": "protocol",
             "evidenceExcerpt": "The trial uses a randomized design.",
+            "sourceVerified": True,
     }
     reviews["scientificLevelEvidence"] = {"2.protocol": review}
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
@@ -496,6 +499,7 @@ def test_levels_two_to_six_require_review_provenance():
     record["reviewerId"] = "test-reviewer"
     record["documentType"] = "protocol"
     record["evidenceExcerpt"] = "Protocol design evidence excerpt"
+    record["sourceVerified"] = True
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
     assert level["criteria"]["protocol"] == "SUPPORTS"
     assert level["acceptedEvidence"]["protocol"]["reviewerId"] == "test-reviewer"
@@ -520,6 +524,7 @@ def test_rejected_scientific_evidence_is_visible_in_level_status():
             "judgment": "SUPPORTS", "rationale": "Wrong trial",
             "reviewerId": "test-reviewer", "documentType": "protocol",
             "evidenceExcerpt": "The trial uses a randomized design.",
+            "sourceVerified": True,
         }
     }
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
@@ -620,6 +625,7 @@ def test_levels_two_to_six_require_evidence_excerpt():
     assert level["criteria"]["protocol"] == "REJECTED_EVIDENCE"
     assert level["rejectionReasons"]["protocol"] == "MISSING_EVIDENCE_EXCERPT"
     record["evidenceExcerpt"] = "Randomization methods are described."
+    record["sourceVerified"] = True
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
     assert level["criteria"]["protocol"] == "SUPPORTS"
     assert level["acceptedEvidence"]["protocol"]["evidenceExcerpt"] == "Randomization methods are described."
@@ -636,8 +642,28 @@ def test_scientific_evidence_rejection_reason_distinguishes_cross_trial_source()
             "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
             "reviewerId": "test-reviewer", "documentType": "protocol",
             "evidenceExcerpt": "Randomization was performed.",
+            "sourceVerified": True,
         }
     }
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
     assert level["rejectionReasons"]["protocol"] == "SOURCE_TRIAL_MISMATCH"
+    assert level["score"] is None
+
+
+def test_scientific_review_requires_explicit_source_verification():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    record = {
+        "nctId": "NCT00000001", "source": "https://example.org/protocol",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+        "reviewerId": "test-reviewer", "documentType": "protocol",
+        "evidenceExcerpt": "Protocol defines allocation methods.",
+    }
+    reviews["scientificLevelEvidence"] = {"2.protocol": record}
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["rejectionReasons"]["protocol"] == "SOURCE_NOT_VERIFIED"
+    record["sourceVerified"] = True
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "SUPPORTS"
     assert level["score"] is None
