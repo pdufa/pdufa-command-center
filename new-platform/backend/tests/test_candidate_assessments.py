@@ -748,3 +748,21 @@ def test_level_one_malformed_registry_design_and_endpoints_do_not_crash():
     assert intake["evidenceInventory"]["primary endpoint definition"] == "MISSING"
     assert intake["endpointDefinitions"] == []
     assert intake["endpointQuality"]["score"] is None
+
+
+def test_level_one_malformed_last_update_metadata_blocks_intake():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["last_update_posted"] = "not a dated object"
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
+    assert intake["registrySourceDate"] is None
+    assert intake["fdaPrediction"] == "ABSTAIN"
+
+
+def test_level_one_ambiguous_combined_phase_does_not_infer_phase():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE1/PHASE2"]
+    intake = score(row, registry, reviews)["levelOneIntake"]
+    assert intake["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
+    assert intake["phase"] is None
