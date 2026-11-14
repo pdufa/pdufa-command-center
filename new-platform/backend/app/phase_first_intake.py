@@ -59,6 +59,18 @@ def phase_first_intake(registry, *, cutoff, registry_checked):
     # regulatory dossier completeness. These require separate source review.
     if verified and "phase-appropriate efficacy and safety evidence" in expected:
         evidence_inventory["phase-appropriate efficacy and safety evidence"] = "NOT_ASSESSED"
+    # Record whether an endpoint has a definition, not whether the endpoint
+    # was prespecified, clinically meaningful, or successfully met.
+    endpoint_details = []
+    if verified:
+        for item in endpoints if isinstance(endpoints, list) else []:
+            if isinstance(item, dict):
+                endpoint_details.append({
+                    "measure": item.get("measure"),
+                    "timeFrame": item.get("timeFrame"),
+                    "definitionStatus": "OBSERVED" if item.get("measure") and item.get("timeFrame") else "INCOMPLETE",
+                    "scientificAdjudication": "NOT_ASSESSED",
+                })
     missing = ([name for name, state in evidence_inventory.items() if state == "MISSING"]
                if verified else ["Verified phase and chronological registry provenance"])
     return {
@@ -74,6 +86,7 @@ def phase_first_intake(registry, *, cutoff, registry_checked):
         "assessmentCutoff": cutoff_day.isoformat() if cutoff_day else None,
         "expectedEvidence": expected,
         "evidenceInventory": evidence_inventory,
+        "endpointDefinitions": endpoint_details,
         "notYetExpected": not_yet_expected,
         "missingEvidence": missing,
         "requiresSourceReview": [name for name, state in evidence_inventory.items() if state == "NOT_ASSESSED"],
