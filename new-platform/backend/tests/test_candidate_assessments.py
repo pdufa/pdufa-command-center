@@ -521,3 +521,25 @@ def test_rejected_scientific_evidence_is_visible_in_level_status():
     assert level["status"] == "EVIDENCE_REJECTED"
     assert level["rejectedCriteria"] == ["protocol"]
     assert level["score"] is None
+
+
+def test_levels_two_to_six_report_outstanding_criteria_without_score():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    readiness = level["reviewReadiness"]
+    assert readiness["accepted"] == 0
+    assert readiness["rejected"] == 0
+    assert "protocol" in readiness["outstanding"]
+    assert readiness["complete"] is False
+    assert level["score"] is None
+
+
+def test_phase_one_review_readiness_excludes_not_yet_expected_items():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE1"]
+    level = score(row, registry, reviews)["levelsTwoToSix"]["3"]
+    readiness = level["reviewReadiness"]
+    assert "primaryEndpointResults" in readiness["notYetExpected"]
+    assert "primaryEndpointResults" not in readiness["outstanding"]
+    assert readiness["complete"] is False
