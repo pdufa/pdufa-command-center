@@ -97,7 +97,17 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
             # A reviewed criterion may be explicitly recorded as unavailable;
             # this is not evidence of an unfavorable clinical outcome.
             if isinstance(record, dict) and record.get("availability") == "NOT_PUBLIC":
-                states[criterion] = "UNPUBLISHED"
+                # An unsupported "not public" flag is not proof of absence.
+                checked = _day(record.get("checkedAt"))
+                source = record.get("source")
+                if (record.get("nctId") == trial_id and _valid_url(source)
+                        and _source_matches_trial(source, trial_id)
+                        and checked and checked <= cutoff
+                        and isinstance(record.get("searchRationale"), str)
+                        and record["searchRationale"].strip()):
+                    states[criterion] = "UNPUBLISHED"
+                else:
+                    states[criterion] = "UNVERIFIED_UNPUBLISHED_CLAIM"
                 continue
             if not isinstance(record, dict):
                 states[criterion] = "NOT_ASSESSED"
@@ -129,6 +139,7 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
         required = [c for c in criteria if states[c] != "NOT_YET_EXPECTED"]
         rejected = [c for c in criteria if states[c] == "REJECTED_EVIDENCE"]
         unpublished = [c for c in criteria if states[c] == "UNPUBLISHED"]
+        unverified_unpublished = [c for c in criteria if states[c] == "UNVERIFIED_UNPUBLISHED_CLAIM"]
         not_yet_expected = [c for c in criteria if states[c] == "NOT_YET_EXPECTED"]
         rejected_count = len(rejected)
         outstanding = [criterion for criterion in required if criterion not in accepted]
@@ -136,6 +147,7 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
             "accepted": len(accepted),
             "rejected": rejected_count,
             "unpublished": unpublished,
+            "unverifiedUnpublished": unverified_unpublished,
             "outstanding": outstanding,
             "notYetExpected": not_yet_expected,
             "complete": bool(verified and required and not outstanding),
@@ -150,6 +162,7 @@ def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
             "reviewReadiness": review_readiness,
             "reviewedCount": len(accepted), "requiredCount": len(required),
             "rejectedCriteria": rejected, "unpublishedCriteria": unpublished,
+            "unverifiedUnpublishedCriteria": unverified_unpublished,
             "notYetExpectedCriteria": not_yet_expected,
             "score": None, "scientificValidation": "NOT_VERIFIED",
             "fdaPrediction": "ABSTAIN",
