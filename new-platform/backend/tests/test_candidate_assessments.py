@@ -436,6 +436,7 @@ def test_levels_two_to_six_reject_post_cutoff_evidence():
             "sourceDate": "2026-10-01", "reviewedAt": "2026-10-21",
             "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
             "reviewerId": "test-reviewer", "documentType": "protocol",
+            "evidenceExcerpt": "The trial uses a randomized design.",
         }
     }
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
@@ -452,6 +453,7 @@ def test_levels_two_to_six_accept_valid_evidence_without_scoring():
             "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
             "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
             "reviewerId": "test-reviewer", "documentType": "protocol",
+            "evidenceExcerpt": "The trial uses a randomized design.",
         }
     }
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
@@ -470,6 +472,7 @@ def test_levels_two_to_six_reject_registry_url_for_another_trial():
         "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
         "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
             "reviewerId": "test-reviewer", "documentType": "protocol",
+            "evidenceExcerpt": "The trial uses a randomized design.",
     }
     reviews["scientificLevelEvidence"] = {"2.protocol": review}
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
@@ -492,6 +495,7 @@ def test_levels_two_to_six_require_review_provenance():
     assert level["criteria"]["protocol"] == "REJECTED_EVIDENCE"
     record["reviewerId"] = "test-reviewer"
     record["documentType"] = "protocol"
+    record["evidenceExcerpt"] = "Protocol design evidence excerpt"
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
     assert level["criteria"]["protocol"] == "SUPPORTS"
     assert level["acceptedEvidence"]["protocol"]["reviewerId"] == "test-reviewer"
@@ -515,6 +519,7 @@ def test_rejected_scientific_evidence_is_visible_in_level_status():
             "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
             "judgment": "SUPPORTS", "rationale": "Wrong trial",
             "reviewerId": "test-reviewer", "documentType": "protocol",
+            "evidenceExcerpt": "The trial uses a randomized design.",
         }
     }
     level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
@@ -599,3 +604,21 @@ def test_post_cutoff_unpublished_check_is_not_accepted():
     }
     level = score(row, registry, reviews)["levelsTwoToSix"]["3"]
     assert level["criteria"]["primaryEndpointResults"] == "UNVERIFIED_UNPUBLISHED_CLAIM"
+
+
+def test_levels_two_to_six_require_evidence_excerpt():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    record = {
+        "nctId": "NCT00000001", "source": "https://example.org/protocol",
+        "sourceDate": "2026-10-01", "reviewedAt": "2026-10-19",
+        "judgment": "SUPPORTS", "rationale": "Protocol reviewed",
+        "reviewerId": "test-reviewer", "documentType": "protocol",
+    }
+    reviews["scientificLevelEvidence"] = {"2.protocol": record}
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "REJECTED_EVIDENCE"
+    record["evidenceExcerpt"] = "Randomization methods are described."
+    level = score(row, registry, reviews)["levelsTwoToSix"]["2"]
+    assert level["criteria"]["protocol"] == "SUPPORTS"
+    assert level["acceptedEvidence"]["protocol"]["evidenceExcerpt"] == "Randomization methods are described."
