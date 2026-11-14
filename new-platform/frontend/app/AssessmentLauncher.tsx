@@ -12,6 +12,7 @@ export default function AssessmentLauncher({source='FOCUS'}:{source?:'POOL'|'FOC
  const selected=Array.from(new Set(input.toUpperCase().split(/[\s,;]+/).filter(Boolean)));
  async function json(url:string,init?:RequestInit){const response=await fetch(url,{cache:'no-store',...init});const body=await response.json();if(!response.ok)throw Error(body.error||'Assessment service unavailable');return body;}
  async function load(){setError('');try{const data=await json(api+'?'+new URLSearchParams({population,q:''}));setCatalog((data.trials||[]).map((r:{nct:string})=>r.nct));if((data.trials||[]).length>=50)setError('The inventory API returns at most 50 trials. Entire-list submission is blocked until paginated inventory is available; no partial list will be treated as complete.');}catch(e){setError(String(e));}}
+ function clearPopup(){if(working)return;setInput('');setScope('selected');setLevels([1,2,3,4,5,6]);setMode('CURRENT_EVIDENCE');setCutoff('');setEntries([]);setCatalog([]);setError('');setPopulation(source);}
  async function submit(){if(working)return;const ids=scope==='all'?catalog:selected;if(!ids.length||ids.some(id=>!valid(id))||!levels.length||(mode==='BLIND_HISTORICAL'&&!cutoff)||(scope==='all'&&catalog.length>=50))return;
  setWorking(true);setError('');const work=ids.flatMap(nct=>levels.map(level=>({nct,level,status:'QUEUED',detail:''})));setEntries(work);
  for(let i=0;i<work.length;i++){const task=work[i];const update=(status:string,detail:string)=>setEntries(prev=>prev.map((e,j)=>i===j?{...e,status,detail}:e));
@@ -24,7 +25,7 @@ export default function AssessmentLauncher({source='FOCUS'}:{source?:'POOL'|'FOC
  }
  return <section style={{margin:'12px 0'}}><button type="button" onClick={()=>{setOpen(!open);setError('')}} aria-expanded={open}>Assess Trials · Levels 1–6</button>
  {open&&<div role="dialog" aria-label="Scientific assessment launcher" style={{background:'#fff',color:'#173d2b',border:'2px solid #16856c',padding:16,borderRadius:12,maxWidth:740,marginTop:8}}>
- <div style={{display:'flex',justifyContent:'space-between'}}><h2>Scientific Assessment · Levels 1–6</h2><button onClick={()=>setOpen(false)}>Close</button></div>
+ <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}><h2>Scientific Assessment · Levels 1–6</h2><div style={{display:'flex',gap:8}}><button type="button" aria-label="Clear assessment popup" title="Clear selections and results" disabled={working} onClick={clearPopup}>✕ Clear</button><button type="button" aria-label="Close assessment popup" title="Close popup" onClick={()=>setOpen(false)}>✕ Close</button></div></div>
  <p>Run selected trials or an entire verified inventory. Each selected level saves its own immutable report; evidence coverage is not an FDA approval probability.</p>
  <label>Source <select value={population} disabled={working} onChange={e=>{setPopulation(e.target.value as typeof population);setCatalog([])}}><option>POOL</option><option>FOCUS</option><option>HISTORICAL</option></select></label>{' '}
  <label>Scope <select value={scope} disabled={working} onChange={e=>setScope(e.target.value)}><option value="selected">Selected trials</option><option value="all">Entire source list</option></select></label>
