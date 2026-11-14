@@ -148,3 +148,33 @@ def test_historical_primary_outcome_rejects_future_check_date():
     primary = result["models"]["PIPELINE"]["categories"][0]["metrics"][0]
     assert primary["points"] is None
     assert primary["coverage"] == 0
+
+
+def test_level_one_intake_blocks_missing_registry_phase():
+    row, registry, reviews = fixture()
+    result = score(row, registry, reviews)
+    level = result["levelOneIntake"]
+    assert level["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
+    assert level["phase"] is None
+    assert level["fdaPrediction"] == "ABSTAIN"
+    assert compact(result)["levelOneIntake"] == level
+
+
+def test_level_one_intake_phase_two_does_not_require_completed_phase_three():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE2"]
+    result = score(row, registry, reviews)
+    level = result["levelOneIntake"]
+    assert level["executionStatus"] == "INTAKE_ONLY"
+    assert level["phase"] == "PHASE2"
+    assert "completed Phase 3 results" in level["notYetExpected"]
+    assert level["scientificValidation"] == "NOT_VERIFIED"
+
+
+def test_level_one_intake_rejects_future_dated_registry_phase():
+    row, registry, reviews = fixture()
+    registry["phases"] = ["PHASE3"]
+    registry["last_update_posted"]["date"] = "2026-10-21"
+    result = score(row, registry, reviews)
+    assert result["levelOneIntake"]["executionStatus"] == "BLOCKED_UNVERIFIED_PHASE"
+    assert result["levelOneIntake"]["phase"] is None
