@@ -132,5 +132,56 @@ class LevelsTwoToSixContractTests(unittest.TestCase):
         self.assertEqual(result["2"]["reviewedCount"], 0)
 
 
+    def test_levels_three_to_six_accept_exact_review_but_never_score(self):
+        for number, criterion in (
+            (3, "statisticalAnalysisPlan"),
+            (4, "adverseEvents"),
+            (5, "indicationDefinition"),
+            (6, "regulatoryPathway"),
+        ):
+            with self.subTest(level=number):
+                evidence = {
+                    f"{number}.{criterion}": {
+                        "nctId": "NCT12345678",
+                        "source": "https://clinicaltrials.gov/study/NCT12345678",
+                        "sourceDate": "2026-01-10",
+                        "reviewedAt": "2026-01-15",
+                        "sourceVerified": True,
+                        "sourceVerifiedAt": "2026-01-15",
+                        "sourceVerifiedBy": "reviewer-1",
+                        "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                        "judgment": "INCONCLUSIVE",
+                        "rationale": "Further independent assessment required",
+                        "reviewerId": "reviewer-1",
+                        "documentType": "REGISTRY_RECORD",
+                        "evidenceExcerpt": "Study information",
+                    }
+                }
+                result = module.assess_levels_two_to_six(
+                    BASE, trial_id="NCT12345678", evidence=evidence
+                )
+                level = result[str(number)]
+                self.assertEqual(level["criteria"][criterion], "INCONCLUSIVE")
+                self.assertEqual(level["reviewedCount"], 1)
+                self.assertFalse(level["reviewReadiness"]["complete"])
+                self.assertIsNone(level["score"])
+                self.assertEqual(level["fdaPrediction"], "ABSTAIN")
+
+    def test_phase_two_late_regulatory_evidence_cannot_override_not_yet_expected(self):
+        evidence = {
+            "6.applicationDossier": {
+                "nctId": "NCT12345678",
+                "sourceVerified": True,
+                "judgment": "SUPPORTS",
+            }
+        }
+        result = module.assess_levels_two_to_six(
+            BASE, trial_id="NCT12345678", evidence=evidence
+        )
+        self.assertEqual(result["6"]["criteria"]["applicationDossier"], "NOT_YET_EXPECTED")
+        self.assertEqual(result["6"]["reviewedCount"], 0)
+        self.assertIsNone(result["6"]["score"])
+
+
 if __name__ == "__main__":
     unittest.main()
