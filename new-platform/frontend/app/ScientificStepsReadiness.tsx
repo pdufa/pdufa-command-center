@@ -13,8 +13,9 @@ export type PhaseFirstIntake = {
 };
 
 /** Optional data is accepted only when bound to the exact trial by the caller. */
-export default function ScientificStepsReadiness({cohort,trial}:{cohort:"POOL"|"FOCUS"|"PAST";trial?:{nctId:string;intake:PhaseFirstIntake}}) {
- const intake=trial?.intake;
+export default function ScientificStepsReadiness({cohort,trial}:{cohort:"POOL"|"FOCUS"|"PAST";trial?:{nctId:string;intake:PhaseFirstIntake;assessmentNctId:string}}) {
+ const exactTrial=Boolean(trial && /^NCT\\d{8}$/.test(trial.nctId) && trial.nctId===trial.assessmentNctId);
+ const intake=exactTrial?trial?.intake:undefined;
  const phaseVerified=intake?.executionStatus==="INTAKE_ONLY";
  const steps=[
   ["1","Trial phase and status",phaseVerified? `${intake.phase} · ${intake.trialStatus}`:"Registry phase/status and chronological source verification"],
