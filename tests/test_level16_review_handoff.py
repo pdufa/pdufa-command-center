@@ -2,6 +2,8 @@
 import copy
 import importlib.util
 import json
+import subprocess
+import sys
 from pathlib import Path
 import unittest
 
@@ -155,6 +157,21 @@ class Level16ReviewHandoffTests(unittest.TestCase):
         self.assertIn("UNRESOLVED", text)
         self.assertEqual(text.count("### Level "), 192)
         self.assertNotIn("FDA approval probability:", text)
+
+    def test_cli_produces_read_only_orca2_packet(self):
+        command = [sys.executable, str(SCRIPTS / "level16_review_handoff.py"),
+                   "--nct", "NCT04576949", "--format", "json"]
+        completed = subprocess.run(command, cwd=ROOT, capture_output=True, text=True,
+                                   check=True, timeout=20)
+        packet = json.loads(completed.stdout)
+        self.assertEqual(packet["selectedNctOnly"], "NCT04576949")
+        self.assertEqual(len(packet["trials"]), 1)
+        self.assertEqual(packet["reviewPacketsPrepared"], 32)
+        self.assertEqual(packet["independentlyAdjudicatedLevels"], 0)
+        self.assertEqual(packet["trials"][0]["levels"][4]["scientificReviewStatus"]
+                         if "scientificReviewStatus" in packet["trials"][0]["levels"][4]
+                         else packet["trials"][0]["levels"][4]["independentScientificReviewStatus"],
+                         "NOT_ADJUDICATED")
 
     def test_altered_phase_and_collection_status_do_not_autoadjudicate(self):
         trial = next(x for x in self.coverage["trials"] if x["nct"] == "NCT04576949")
