@@ -37,7 +37,10 @@ LATE_PHASE = {
 
 def _day(value):
     try:
-        return date.fromisoformat(str(value or "")[:10])
+        raw = value if isinstance(value, str) else ""
+        if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", raw):
+            return None
+        return date.fromisoformat(raw)
     except ValueError:
         return None
 
