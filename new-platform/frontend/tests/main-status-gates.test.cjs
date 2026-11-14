@@ -68,7 +68,8 @@ test("MAIN is reachable without adding a new active population tab",()=>{
   const home=fs.readFileSync(path.join(__dirname,"../app/page.tsx"),"utf8");
   for(const entry of ['{label:"POOL",href:"/pool"}','{label:"FOCUS",href:"/focus"}',
     '{label:"TOOLS",href:"/tools"}']) assert.ok(nav.includes(entry),entry);
-  assert.equal(nav.split(' {label:"').length-1,11);
+  assert.equal(nav.split(' {label:"').length-1,12);
+  assert.ok(nav.indexOf('label:"PAST"')<nav.indexOf('label:"POOL"'));
   assert.ok(nav.includes('{label:"INDICATIONS",href:"/indications"}'));
   assert.ok(nav.indexOf('label:"INDICATIONS"')>nav.indexOf('label:"POOL"'));
   assert.ok(nav.indexOf('label:"INDICATIONS"')<nav.indexOf('label:"FOCUS"'));
