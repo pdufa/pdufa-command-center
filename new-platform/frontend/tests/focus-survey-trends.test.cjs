@@ -13,6 +13,24 @@ for(const ext of ['.ts','.tsx'])require.extensions[ext]=(mod,file)=>mod._compile
  }}).outputText,file
 );
 const {default:Chart,focusSurveyDatum,leastSquaresFit}=require('../app/FocusSurveyTrendChart.tsx');
+const saved=require('../data/focus123EvidenceReadiness20261115.json');
+function savedTrials(){
+ const groups=new Map();
+ for(const row of saved.rows){
+  if(!groups.has(row.nct))groups.set(row.nct,[]);
+  groups.get(row.nct).push(row);
+ }
+ return [...groups.entries()].map(([nct,rows],i)=>({
+  nct,ticker:'T'+String(i+1).padStart(2,'0'),company:'Snapshot trial '+i,
+  levels:Object.fromEntries(rows.map(r=>[String(r.level),{
+   state:'COMPLETED',
+   report:{runId:r.runId,nct,level:r.level,mode:'CURRENT_EVIDENCE',
+    executedAt:r.executedAt,engineVersion:saved.researchVersion+'/level-'+r.level,
+    score:{kind:'NOT_VALIDATED',value:null}},
+   missingEvidence:Array.from({length:r.unresolved},(_,j)=>({id:'source_gap_'+j,state:'UNVERIFIED',explanation:'Source review pending'}))
+  }]))
+ }));
+}
 
 function trial(i){
  const nct='NCT'+String(i+1).padStart(8,'0');
@@ -38,7 +56,7 @@ test('survey chart metrics come from saved evidence check states, not scientific
  const t=trial(3);
  assert.equal(focusSurveyDatum(t,1,'UNRESOLVED').value,0);
  assert.equal(focusSurveyDatum(t,2,'UNRESOLVED').value,1);
- assert.equal(focusSurveyDatum(t,2,'VERIFIED_PERCENT').value,800/9);
+ assert.equal(focusSurveyDatum(t,2,'VERIFIED_PERCENT').value,null,'synthetic checks have no identity-matched immutable source snapshot');
  const bogus={...t,levels:{...t.levels,'2':{...t.levels['2'],report:{...t.levels['2'].report,nct:'NCT99999999'}}}};
  assert.equal(focusSurveyDatum(bogus,2,'UNRESOLVED').value,null,'different NCT must never be graphed');
  const noCounts={...t,levels:{...t.levels,'2':{...t.levels['2'],evidenceChecks:null}}};
@@ -49,7 +67,7 @@ test('survey chart metrics come from saved evidence check states, not scientific
 });
 
 test('all 32 FOCUS trials render 3 separate lines and 3 independent dashed fits',()=>{
- const trials=Array.from({length:32},(_,i)=>trial(i));
+ const trials=savedTrials();
  const html=renderToStaticMarkup(React.createElement(Chart,{trials,total:32,selectedNct:trials[5].nct}));
  for(const level of [1,2,3]){
   assert.match(html,new RegExp('data-survey-level="L'+level+'"'));
@@ -63,12 +81,12 @@ test('all 32 FOCUS trials render 3 separate lines and 3 independent dashed fits'
  assert.match(html,/not a time trend/);
  assert.match(html,/not a scientific score/);
  assert.match(html,/Unresolved source criteria/);
- assert.match(html,/NCT00000006/);
+ assert.match(html,new RegExp(trials[5].nct));
  assert.doesNotMatch(html,/FDA approval probability: [0-9]/);
  const noSourceMetrics=trials.map(t=>({...t,levels:Object.fromEntries([1,2,3].map(level=>[String(level),{...t.levels[level],evidenceChecks:null}]))}));
  const fallback=renderToStaticMarkup(React.createElement(Chart,{trials:noSourceMetrics,total:32}));
- assert.match(fallback,/data-testid="survey-fit-level-1"/);
- assert.match(fallback,/disabled=""[^>]*>Source-verified criteria/);
+ assert.doesNotMatch(fallback,/data-testid="survey-fit-level-1"/);
+ assert.match(fallback,/disabled=""[^>]*>L01–L03 provisional evidence-readiness scores/);
 });
 
 test('absent or misaligned reconciled NCTs fail closed without drawing partial cohort',()=>{
