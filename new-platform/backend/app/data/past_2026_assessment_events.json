@@ -1,0 +1,109 @@
+{
+  "schemaVersion": 1,
+  "year": 2026,
+  "source": "new-platform/frontend/data/level4BlindAssessmentQueue20261112.json",
+  "status": "UNVERIFIED_HISTORICAL_EVENT_QUEUE",
+  "description": "Event keys and dates are scheduling leads only, not source-verified FDA dates or exact NCT/application identities.",
+  "events": [
+    {
+      "eventKey": "RGNX|2026-02-08|rgx-121 seeking accelerated approval was submitted to the fda in march 2025",
+      "ticker": "RGNX",
+      "queueDate": "2026-02-08"
+    },
+    {
+      "eventKey": "VNDA|2026-02-21|bysanti",
+      "ticker": "VNDA",
+      "queueDate": "2026-02-21"
+    },
+    {
+      "eventKey": "ETON|2026-02-25|et-600",
+      "ticker": "ETON",
+      "queueDate": "2026-02-25"
+    },
+    {
+      "eventKey": "ALDX|2026-03-16|reproxalap",
+      "ticker": "ALDX",
+      "queueDate": "2026-03-16"
+    },
+    {
+      "eventKey": "RYTM|2026-03-20|obesity",
+      "ticker": "RYTM",
+      "queueDate": "2026-03-20"
+    },
+    {
+      "eventKey": "RCKT|2026-03-28|kresladi",
+      "ticker": "RCKT",
+      "queueDate": "2026-03-28"
+    },
+    {
+      "eventKey": "DNLI|2026-04-05|tividenofusp-alfa",
+      "ticker": "DNLI",
+      "queueDate": "2026-04-05"
+    },
+    {
+      "eventKey": "TVTX|2026-04-13|glomerulosclerosis",
+      "ticker": "TVTX",
+      "queueDate": "2026-04-13"
+    },
+    {
+      "eventKey": "MNKD|2026-05-29|sbla",
+      "ticker": "MNKD",
+      "queueDate": "2026-05-29"
+    },
+    {
+      "eventKey": "ARVN|2026-06-05|vepdegestrant",
+      "ticker": "ARVN",
+      "queueDate": "2026-06-05"
+    },
+    {
+      "eventKey": "ARQT|2026-06-29|treatment",
+      "ticker": "ARQT",
+      "queueDate": "2026-06-29"
+    },
+    {
+      "eventKey": "LNTH|2026-06-29|lnth-2501",
+      "ticker": "LNTH",
+      "queueDate": "2026-06-29"
+    },
+    {
+      "eventKey": "VRDN|2026-06-30|veligrotug to the fda in october 2025",
+      "ticker": "VRDN",
+      "queueDate": "2026-06-30"
+    },
+    {
+      "eventKey": "MNKD|2026-07-26|sbla",
+      "ticker": "MNKD",
+      "queueDate": "2026-07-26"
+    },
+    {
+      "eventKey": "LNTH|2026-08-13|mk-6240",
+      "ticker": "LNTH",
+      "queueDate": "2026-08-13"
+    },
+    {
+      "eventKey": "RARE|2026-08-23|dtx401",
+      "ticker": "RARE",
+      "queueDate": "2026-08-23"
+    },
+    {
+      "eventKey": "ZYME|2026-08-25|tevimbra",
+      "ticker": "ZYME",
+      "queueDate": "2026-08-25"
+    },
+    {
+      "eventKey": "TLX|2026-09-11|tlx101-px",
+      "ticker": "TLX",
+      "queueDate": "2026-09-11"
+    },
+    {
+      "eventKey": "IONS|2026-09-22|alexander",
+      "ticker": "IONS",
+      "queueDate": "2026-09-22"
+    },
+    {
+      "eventKey": "SRRK|2026-09-30|apitegromab",
+      "ticker": "SRRK",
+      "queueDate": "2026-09-30"
+    }
+  ]
+}
