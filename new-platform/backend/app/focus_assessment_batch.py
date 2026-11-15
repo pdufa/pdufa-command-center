@@ -155,8 +155,17 @@ def summary(engine):
                 counts[str(level)]['scored']+=int(report['score']['value'] is not None and report['score']['kind']!='LEVEL_SPECIFIC_EVIDENCE_COVERAGE')
                 counts[str(level)]['incomplete']+=int(bool(gaps) or report['score']['kind']=='NOT_VALIDATED')
             elif slot.get('state')=='FAILED':counts[str(level)]['failed']+=1
+            # This is descriptive source-document coverage, never a scientific
+            # score, efficacy estimate, calibrated FDA probability or time trend.
+            # Only explicit SOURCE_VERIFIED checks count as verified.
+            checks=report.get('checks',[]) if report else []
+            evidence_counts={'total':len(checks),
+                'sourceVerified':sum(x['state']=='SOURCE_VERIFIED' for x in checks),
+                'unresolved':sum(x['state'] in {'MISSING','UNVERIFIED','CONCERNS','NOT_ASSESSED','BLOCKED_UNVERIFIED_PHASE'} for x in checks)} if report else None
             levels[str(level)]={'state':'COMPLETED' if report else slot.get('state','NOT_RUN'),'runId':report['runId'] if report else slot.get('run_id'),'attempts':slot.get('attempts',0),
-               'error':slot.get('error'),'report':({k:report[k] for k in ('runId','nct','level','mode','engineVersion','executedAt','executionStatus','scientificStatus','score','fdaPrediction','trialIdentity','context')} if report else None),'missingEvidence':[{'id':x['id'],'state':x['state'],'explanation':x['explanation']} for x in gaps]}
+               'error':slot.get('error'),'report':({k:report[k] for k in ('runId','nct','level','mode','engineVersion','executedAt','executionStatus','scientificStatus','score','fdaPrediction','trialIdentity','context')} if report else None),
+               'evidenceChecks':evidence_counts,
+               'missingEvidence':[{'id':x['id'],'state':x['state'],'explanation':x['explanation']} for x in gaps]}
         fully+=int(all(levels[str(l)]['report'] is not None for l in (1,2,3)))
         trials.append({**member,'levels':levels})
     return {'status':'DATABASE_SAVED_RECONCILED_OWNER_ROSTER','batchId':batch,'total':len(trials),'fullyProcessed':fully,
