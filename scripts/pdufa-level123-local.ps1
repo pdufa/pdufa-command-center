@@ -132,6 +132,12 @@ import {ExactTrialIntakeSelector} from "../ExactTrialScientificIntake";
   [IO.File]::WriteAllText($pastPath,$p,$utf8)
   WorkGit @('add','--',$focus,$past)
   WorkGit @('-c','user.name=PDUFA local integration','-c','user.email=pdufa-integration@localhost','commit','-m','Preserve production sorting and add Level 1-3 tables and launchers')
+  # Repair Windows-only test portability and retain the source-verified PAST
+  # historical comparison safeguards before running the full regression suite.
+  $repair=Join-Path $repo 'scripts\pdufa-level123-repair-tests.ps1'
+  if(-not (Test-Path -LiteralPath $repair)){throw 'Missing Level 1-3 repair helper.'}
+  & powershell.exe -NoProfile -ExecutionPolicy Bypass -File $repair -Worktree $work
+  if($LASTEXITCODE -ne 0){throw 'Portable regression repair did not complete.'}
   $required=@{
     $focus=@('NumericSortSettings','FocusSavedAssessments','AssessmentLauncher','FocusLevelCells','PredictionCells','sortedTrials.map')
     $past=@('NumericSortSettings','AssessmentLauncher','ExactTrialIntakeSelector','PredictionCells','assessmentLevelLabels')
