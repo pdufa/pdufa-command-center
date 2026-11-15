@@ -8,7 +8,9 @@ const json=(body:unknown,status=200)=>NextResponse.json(body,{status,headers});
 const authorized=(req:NextRequest)=>authConfigured()&&hasSession(req.cookies.get(COOKIE_NAME)?.value);
 const nct=(value:string|null)=>!!value&&/^NCT\d{8}$/.test(value);
 async function relay(req:NextRequest,path:string,body?:unknown){
- const base=process.env.PDUFA_API_BASE_URL?.replace(/\/$/,''),key=process.env.PDUFA_INTERNAL_API_KEY;
+ const dedicated=!!(process.env.PDUFA_LEVEL123_API_BASE_URL||process.env.PDUFA_LEVEL123_INTERNAL_API_KEY);
+ const base=(dedicated?process.env.PDUFA_LEVEL123_API_BASE_URL:process.env.PDUFA_API_BASE_URL)?.replace(/\/$/,'');
+ const key=dedicated?process.env.PDUFA_LEVEL123_INTERNAL_API_KEY:process.env.PDUFA_INTERNAL_API_KEY;
  if(!base?.startsWith('https://')||!key)return json({error:'Persistent assessment backend is not configured'},503);
  try{
   const response=await fetch(base+'/api/assessment-runtime'+path,{method:body?'POST':'GET',cache:'no-store',headers:{'Content-Type':'application/json','X-Pdufa-Internal-Key':key},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.any([req.signal,AbortSignal.timeout(45000)])});
