@@ -19,7 +19,21 @@ const finalGateByNct=new Map(finalGateAudit.rows.map(row=>[row.nct,row]));
 
 export default function FocusPage(){
  const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);
- const sortedTrials=useMemo(()=>sortNumericRows(trials,sortRules,(t,c)=>c==="marketCap"?t.marketCap:c==="ticker"?t.ticker:c==="company"?t.company:c==="nct"?t.nct:c==="fdaStatus"?t.fdaStatus:c==="designationCount"?designationByNct.get(t.nct)?.designations.length??0:null,t=>t.nct),[sortRules]);
+ const sortedTrials=useMemo(()=>sortNumericRows(trials,sortRules,(t,c)=>{
+  const gate=finalGateByNct.get(t.nct);
+  const designations=designationByNct.get(t.nct)?.designations;
+  if(c==="ticker")return t.ticker;
+  if(c==="nct")return t.nct;
+  if(c==="company")return t.company;
+  if(c==="designations")return designations?.length?designations.map(d=>d.label).join(" · "):"Not verified";
+  if(c==="marketCap")return t.marketCap;
+  if(c==="fdaStatus")return t.fdaStatus;
+  if(c==="sources")return t.resultsUrl;
+  if(c==="gates")return gate?gate.independentlyVerified:null;
+  if(c==="overall")return null;
+  if(/^level(?:[1-9]|1[0-9]|20)$/.test(c))return null;
+  return null;
+ },t=>t.nct),[sortRules]);
  return <main style={{maxWidth:1220,margin:"28px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif",color:"#173d2b"}}>
   <nav style={{display:"flex",gap:18,marginBottom:18}}><Link href="/pool">POOL</Link><Link href="/indications">INDICATIONS</Link><Link href="/tools">TOOLS</Link></nav>
   <h1>FOCUS</h1>
@@ -40,7 +54,7 @@ export default function FocusPage(){
     <p style={{margin:"0 0 7px"}}>Owner-reviewed assessments: <strong>0</strong> · Source pointers recorded: {finalGateAudit.pointers} · Awaiting source review: {finalGateAudit.review} · Missing evidence: {finalGateAudit.missing}.</p>
     <p style={{fontSize:13,margin:0}}>Only these exact final-list NCTs are evaluated; the early-phase POOL, historical Phase 3 census and all-phase TOOLS counts are not included. Recorded links or scheduled jobs are not completed clinical, regulatory or live synchronization verification. Current list as of {finalGateAudit.asOf}.</p>
   </section>
-  <NumericSortSettings scope="focus" columns={[{id:"marketCap",label:"Market cap ($B)"},{id:"ticker",label:"Ticker"},{id:"company",label:"Company"},{id:"nct",label:"NCT / Trial"},{id:"fdaStatus",label:"FDA / PDUFA path"},{id:"designationCount",label:"Recorded FDA designation count"}]} onApply={setSortRules}/>
+  <NumericSortSettings scope="focus" columns={[{id:"ticker",label:"Ticker"},{id:"nct",label:"NCT / Trial"},{id:"company",label:"Company"},{id:"designations",label:"FDA Special Designations"},{id:"marketCap",label:"Market cap ($B)"},{id:"fdaStatus",label:"FDA / PDUFA path"},{id:"sources",label:"Sources"},{id:"gates",label:"7 gate checks"},{id:"overall",label:"Overall Score"},{id:"level1",label:"L1 · Trial identity"},{id:"level2",label:"L2 · Current phase"},{id:"level3",label:"L3 · Source evidence"},{id:"level4",label:"L4 · Study protocol"},{id:"level5",label:"L5 · Population"},{id:"level6",label:"L6 · Efficacy"},{id:"level7",label:"L7 · Statistics"},{id:"level8",label:"L8 · Safety"},{id:"level9",label:"L9 · Clinical benefit"},{id:"level10",label:"L10 · Comparator"},{id:"level11",label:"L11 · Subgroups"},{id:"level12",label:"L12 · Data gaps"},{id:"level13",label:"L13 · Regulatory history"},{id:"level14",label:"L14 · FDA alignment"},{id:"level15",label:"L15 · Manufacturing"},{id:"level16",label:"L16 · Benefit–risk"},{id:"level17",label:"L17 · Exceptions"},{id:"level18",label:"L18 · External evidence"},{id:"level19",label:"L19 · Confidence"},{id:"level20",label:"L20 · Integrated review"}]} onApply={setSortRules}/>
   <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
   <style>{`table.assessment-expandable:not(:has(details.assessment-toggle[open])) .assessment-level{display:none} .assessment-toggle{display:inline-block;margin-left:6px;vertical-align:middle}.assessment-toggle summary{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border:1px solid #7e9f8b;border-radius:5px;cursor:pointer;background:#fff;color:#173d2b;font-weight:800;list-style:none}.assessment-toggle summary::-webkit-details-marker{display:none}.assessment-toggle .when-open{display:none}.assessment-toggle[open] .when-open{display:inline}.assessment-toggle[open] .when-closed{display:none}`}</style>
    <table className="assessment-expandable" style={{width:"100%",borderCollapse:"collapse",minWidth:970,fontSize:14}}>

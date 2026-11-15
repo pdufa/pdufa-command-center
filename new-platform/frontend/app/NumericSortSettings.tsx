@@ -35,7 +35,7 @@ export default function NumericSortSettings({scope,columns,onApply}:{scope:"past
  {open&&<div role="dialog" aria-modal="true" aria-label="Sort Settings" style={{position:"fixed",inset:0,zIndex:1000,background:"#0008",display:"grid",placeItems:"center",padding:12}}>
  <div style={{background:"white",color:"#173d2b",padding:20,borderRadius:12,width:"min(660px,100%)",maxHeight:"85vh",overflowY:"auto"}}>
  <div style={{display:"flex",justifyContent:"space-between"}}><h2>Sort Settings — {scope.toUpperCase()}</h2><button aria-label="Close sorting popup" onClick={()=>setOpen(false)}>✕</button></div>
- <p>Choose the first numerical column, then add tie-breakers. Each direction is independent.</p>
+ <p>Choose any table column, then add more priorities. Already selected columns are excluded from the other dropdowns. Missing values sort last.</p>
  {rules.map((r,i)=><div key={i} style={{display:"flex",gap:8,alignItems:"center",marginBottom:10,flexWrap:"wrap"}}>
  <strong>{i+1}.</strong><select aria-label={`Priority ${i+1} column`} value={r.column} onChange={e=>setRules(old=>old.map((x,j)=>j===i?{...x,column:e.target.value}:x))}>{columns.filter(c=>c.id===r.column||!rules.some(x=>x.column===c.id)).map(c=><option key={c.id} value={c.id}>{c.label}</option>)}</select>
  <select aria-label={`Priority ${i+1} direction`} value={r.direction} onChange={e=>setRules(old=>old.map((x,j)=>j===i?{...x,direction:e.target.value as "asc"|"desc"}:x))}><option value="desc">High → Low</option><option value="asc">Low → High</option></select>

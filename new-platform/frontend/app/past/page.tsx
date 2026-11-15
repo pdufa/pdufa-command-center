@@ -14,7 +14,31 @@ export default function PastPage(){
  const [search,setSearch]=useState("");
  const [reveal,setReveal]=useState(false);
  const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);
- const filtered=useMemo(()=>{const subset=year==="2026"?rows.filter(r=>(r.ticker+" "+r.eventKey).toLowerCase().includes(search.toLowerCase())):[];return sortNumericRows(subset,sortRules,(r,c)=>c==="level4Score"?r.level4Score:c==="confidence"?r.confidence:c==="cutoffDate"?r.cutoffDate:c==="ticker"?r.ticker:c==="application"?r.eventKey.split("|")[2]||null:c==="prediction"?r.blindPrediction:c==="status"?r.status:null,r=>r.eventKey)},[year,search,sortRules]);
+ const filtered=useMemo(()=>{
+  const subset=year==="2026"?rows.filter(r=>(r.ticker+" "+r.eventKey).toLowerCase().includes(search.toLowerCase())):[];
+  return sortNumericRows(subset,sortRules,(r,c)=>{
+   const verified=reveal?known.find(k=>k.ticker===r.ticker&&k.actualFdaActionDate===r.cutoffDate):undefined;
+   if(c==="ticker")return r.ticker;
+   if(c==="trial")return "Not linked";
+   if(c==="company")return "Not recorded";
+   if(c==="designations")return "Not verified";
+   if(c==="marketCap")return null;
+   if(c==="application")return r.eventKey.split("|")[2]||"Not recorded";
+   if(c==="sources")return "Evidence pending";
+   if(c==="gates")return "Not assessed";
+   if(c==="cutoffDate")return r.cutoffDate;
+   if(c==="assessmentLevel")return "Level 4 queued";
+   if(c==="level4Score")return r.level4Score;
+   if(c==="confidence")return r.confidence;
+   if(c==="prediction")return r.blindPrediction;
+   if(c==="decisionType")return verified?.approvalType??null;
+   if(c==="decision")return verified?.actualOutcome??null;
+   if(c==="overall")return "Not assessed";
+   if(c==="level4")return r.level4Score;
+   if(/^level(?:[1-9]|1[0-9]|20)$/.test(c))return null;
+   return null;
+  },r=>r.eventKey);
+ },[year,search,sortRules,reveal]);
  return <main style={{maxWidth:1400,margin:"24px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif"}}>
  <nav style={{display:"flex",gap:14,marginBottom:16}}><Link href="/focus">FOCUS</Link><strong>PAST</strong><Link href="/pool">POOL</Link></nav>
  <h1>PAST — Historical PDUFA trials</h1>
@@ -24,7 +48,7 @@ export default function PastPage(){
  <label>Search <input aria-label="Search historical trials" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Ticker or application"/></label>
  <label><input type="checkbox" checked={reveal} onChange={e=>setReveal(e.target.checked)}/> Reveal verified FDA decisions (exclude from blind scoring)</label>
  </div>
- <NumericSortSettings scope="past" columns={[{id:"level4Score",label:"Overall Level 4 Score"},{id:"confidence",label:"Confidence %"},{id:"cutoffDate",label:"PDUFA queue date"},{id:"ticker",label:"Ticker"},{id:"application",label:"Application / FDA path"},{id:"prediction",label:"Blind prediction"},{id:"status",label:"Queue status"}]} onApply={setSortRules}/>
+ <NumericSortSettings scope="past" columns={[{id:"ticker",label:"Ticker"},{id:"trial",label:"NCT / Trial"},{id:"company",label:"Company"},{id:"designations",label:"FDA Special Designations"},{id:"marketCap",label:"Market cap ($B)"},{id:"application",label:"FDA / PDUFA path"},{id:"sources",label:"Sources"},{id:"gates",label:"7 gate checks"},{id:"cutoffDate",label:"PDUFA queue date"},{id:"assessmentLevel",label:"Assessment level"},{id:"level4Score",label:"Score"},{id:"confidence",label:"Confidence"},{id:"prediction",label:"Blind prediction"},{id:"decisionType",label:"FDA Decision Type"},{id:"decision",label:"FDA Decision"},{id:"overall",label:"Overall Score"},{id:"level1",label:"L1 · Trial identity"},{id:"level2",label:"L2 · Current phase"},{id:"level3",label:"L3 · Source evidence"},{id:"level4",label:"L4 · Study protocol"},{id:"level5",label:"L5 · Population"},{id:"level6",label:"L6 · Efficacy"},{id:"level7",label:"L7 · Statistics"},{id:"level8",label:"L8 · Safety"},{id:"level9",label:"L9 · Clinical benefit"},{id:"level10",label:"L10 · Comparator"},{id:"level11",label:"L11 · Subgroups"},{id:"level12",label:"L12 · Data gaps"},{id:"level13",label:"L13 · Regulatory history"},{id:"level14",label:"L14 · FDA alignment"},{id:"level15",label:"L15 · Manufacturing"},{id:"level16",label:"L16 · Benefit–risk"},{id:"level17",label:"L17 · Exceptions"},{id:"level18",label:"L18 · External evidence"},{id:"level19",label:"L19 · Confidence"},{id:"level20",label:"L20 · Integrated review"}]} onApply={setSortRules}/>
  <p><strong>{filtered.length}</strong> queued historical records for {year}. {year!=="2026"?"Historical cohort not imported for this year.":""}</p>
  <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
  <style>{`table.assessment-expandable:not(:has(details.assessment-toggle[open])) .assessment-level{display:none} .assessment-toggle{display:inline-block;margin-left:6px;vertical-align:middle}.assessment-toggle summary{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border:1px solid #7e9f8b;border-radius:5px;cursor:pointer;background:#fff;color:#173d2b;font-weight:800;list-style:none}.assessment-toggle summary::-webkit-details-marker{display:none}.assessment-toggle .when-open{display:none}.assessment-toggle[open] .when-open{display:inline}.assessment-toggle[open] .when-closed{display:none}`}</style>
