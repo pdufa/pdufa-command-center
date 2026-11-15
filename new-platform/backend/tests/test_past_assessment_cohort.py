@@ -37,7 +37,7 @@ def link(**changes):
 def test_no_fabricated_past_cohort_from_unverified_queue(engine):
     summary=past.roster(engine,2026)
     assert summary['total']==20 and summary['linked']==0
-    assert summary['ready'] is False and summary['tasks']==[]
+    assert summary['ready'] is False and summary['tasks']==[] and summary['eligibleTasks']==[]
     assert all(item['status']=='MISSING_VERIFIED_LINK' for item in summary['events'])
     year=past.roster(engine,2025)
     assert year['total'] is None and year['ready'] is False
@@ -65,8 +65,11 @@ def test_past_single_verified_link_requires_original_predecision_snapshot(engine
         c.execute(text("""INSERT INTO assessment_v2_sources
           (snapshot_id,nct_id,captured_at,published_at,source_url,raw_sha256,input_sha256,document_json)
           VALUES(:snapshot_id,:nct_id,:captured_at,:published_at,:source_url,:raw_sha256,:input_sha256,:document_json)"""),source)
-    assert past.roster(engine,2026)['linked']==1
-    assert past.roster(engine,2026)['ready'] is False  # the other 19 are not linked
+    partial=past.roster(engine,2026)
+    assert partial['linked']==1 and partial['ready'] is False  # the other 19 are not linked
+    assert partial['tasks']==[], 'A partial roster is never misreported as fully verified'
+    assert partial['eligibleTasks']==[{'nct':NCT,'cutoffDate':'2026-01-02','eventKey':EVENT}]
+    assert sum(item['status']!='READY' for item in partial['events'])==19
     with engine.begin() as c:
         with pytest.raises(Exception):
             c.execute(text("UPDATE past_assessment_event_links SET cutoff_date='2027-01-01'"))
