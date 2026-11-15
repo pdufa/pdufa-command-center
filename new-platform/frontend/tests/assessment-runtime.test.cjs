@@ -230,3 +230,35 @@ test('authenticated PAST summary relays only to persistent backend without outco
   assert.deepEqual((await response.json()).trials,[]);
  }finally{global.fetch=old;delete process.env.PDUFA_API_BASE_URL;delete process.env.PDUFA_INTERNAL_API_KEY;}
 });
+
+test('dedicated production Level 1–3 API credentials are scoped and fail closed on partial configuration',async()=>{
+ const prior=global.fetch;
+ process.env.PDUFA_API_BASE_URL='https://old-backend.example.test';
+ process.env.PDUFA_INTERNAL_API_KEY='SYNTHETIC_OLD_BACKEND_KEY';
+ process.env.PDUFA_LEVEL123_API_BASE_URL='https://assessments.example.test';
+ process.env.PDUFA_LEVEL123_INTERNAL_API_KEY='SYNTHETIC_LEVEL123_KEY';
+ const req=new NextRequest(base+'/api/assessments/runtime?focus=true',{headers:{cookie:auth.COOKIE_NAME+'='+auth.makeSession()}});
+ let calls=0;
+ global.fetch=async(url,init)=>{
+  calls++;
+  assert.equal(url,'https://assessments.example.test/api/assessment-runtime/focus');
+  assert.equal(init.headers['X-Pdufa-Internal-Key'],'SYNTHETIC_LEVEL123_KEY');
+  return Response.json({status:'DATABASE_SAVED_RECONCILED_OWNER_ROSTER',total:32,fullyProcessed:32,trials:[]});
+ };
+ try{
+  const response=await api.GET(req);
+  assert.equal(response.status,200);
+  assert.equal((await response.json()).total,32);
+  assert.equal(calls,1);
+  delete process.env.PDUFA_LEVEL123_INTERNAL_API_KEY;
+  const blocked=await api.GET(req);
+  assert.equal(blocked.status,503);
+  assert.equal(calls,1,'Must not fallback to the older backend when dedicated API configuration is incomplete');
+ }finally{
+  global.fetch=prior;
+  delete process.env.PDUFA_API_BASE_URL;
+  delete process.env.PDUFA_INTERNAL_API_KEY;
+  delete process.env.PDUFA_LEVEL123_API_BASE_URL;
+  delete process.env.PDUFA_LEVEL123_INTERNAL_API_KEY;
+ }
+});
