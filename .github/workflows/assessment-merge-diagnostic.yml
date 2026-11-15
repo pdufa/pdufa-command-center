@@ -1,5 +1,11 @@
 name: Assessment merge conflict diagnostic
 on:
+  push:
+    branches:
+      - codex/level1-6-explicit-scientific-readiness-20261114
+    paths:
+      - 'scripts/check_assessment_merge_conflicts.sh'
+      - '.github/workflows/assessment-merge-diagnostic.yml'
   pull_request:
     branches: [main]
     paths:
