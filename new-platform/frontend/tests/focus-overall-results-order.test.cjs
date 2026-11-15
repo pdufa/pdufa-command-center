@@ -51,7 +51,7 @@ test('all 32 FOCUS rows have distinct overall, direction and L01–L20 cells wit
  for(let l=1;l<=20;l++)
   assert.equal((html.match(new RegExp('data-assessment-level="L'+String(l).padStart(2,'0')+'"','g'))||[]).length,32);
  assert.equal((html.match(/>ABSTAIN<\/strong>/g)||[]).length,32);
- assert.match(html,/Research saved · unscored/);
+ assert.match(html,/Reassessment: score pending/);
  assert.match(html,/Rubric pending/);
  assert.doesNotMatch(html,/>100%|APPROVAL LEAN|CRL LEAN/);
 });
@@ -116,4 +116,44 @@ test('survey heading has original + 20 Levels horizontal collapse; initially col
  assert.match(shared,/onClick=\{onToggle\}/);
  assert.match(shared,/aria-expanded=\{expanded\}/);
  assert.match(shared,/survey-horizontal-collapse/);
+});
+
+test('all 32 saved exact-NCT research studies now render 96 provisional L01–L03 evidence scores from immutable report identifiers',()=>{
+ const snapshot=require('../data/focus123EvidenceReadiness20261115.json');
+ const {provisionalFocusScore}=require('../lib/focus-provisional-scores.ts');
+ const groups=new Map();
+ for(const x of snapshot.rows){
+  if(!groups.has(x.nct))groups.set(x.nct,[]);
+  groups.get(x.nct).push(x);
+ }
+ assert.equal(groups.size,32);
+ assert.equal(snapshot.rows.length,96);
+ const trials=[...groups.entries()].map(([nct,rows],i)=>({
+  nct,ticker:'TEST'+String(i).padStart(2,'0'),company:'Source backed fixture',
+  levels:Object.fromEntries(rows.map(r=>[String(r.level),{
+   state:'COMPLETED',report:{nct:r.nct,level:r.level,mode:'CURRENT_EVIDENCE',runId:r.runId,
+    executedAt:r.executedAt,engineVersion:snapshot.researchVersion+'/level-'+r.level,
+    score:{kind:'NOT_VALIDATED',value:null},fdaPrediction:{outcome:'ABSTAIN'}}
+  }]))
+ }));
+ for(const t of trials){
+  for(const l of [1,2,3]){
+   const row=provisionalFocusScore(t.nct,l,t.levels[String(l)].report);
+   assert.ok(row,'unverified or stale report cannot be scored: '+t.nct+' L'+l);
+   assert.ok(Number.isInteger(row.evidenceReadinessScore));
+   assert.equal(row.evidenceReadinessScore,Math.round(100*row.sourceVerified/row.applicable));
+  }
+ }
+ const html=renderToStaticMarkup(React.createElement(Matrix,{trials,initiallyExpanded:true}));
+ assert.equal((html.match(/data-testid="provisional-L01-score"/g)||[]).length,32);
+ assert.equal((html.match(/data-testid="provisional-L02-score"/g)||[]).length,32);
+ assert.equal((html.match(/data-testid="provisional-L03-score"/g)||[]).length,32);
+ assert.match(html,/Evidence readiness · provisional/);
+ assert.match(html,/Source survey · L3/);
+ assert.doesNotMatch(html,/APPROVAL LEAN|CRL LEAN|valid FDA probability/);
+ const changed=trials[0].levels['1'].report;
+ assert.equal(provisionalFocusScore(trials[0].nct,1,{...changed,runId:'different'}),null,
+  'historical snapshot may not be reused after reassessment');
+ assert.equal(provisionalFocusScore(trials[0].nct,1,{...changed,score:{kind:'VALIDATED',value:100}}),null,
+  'do not reinterpret validated or incompatible reports through this provisional system');
 });
