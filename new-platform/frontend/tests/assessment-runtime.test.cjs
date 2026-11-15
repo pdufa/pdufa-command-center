@@ -269,7 +269,7 @@ test('FOCUS and PAST use the same assessment launcher for single, selected and w
  globalThis.IS_REACT_ACT_ENVIRONMENT=true;
  for(const page of ['focus/page.tsx','past/page.tsx']){
   const source=fs.readFileSync(require('node:path').join(__dirname,'../app',page),'utf8');
-  assert.match(source,/<AssessmentLauncher source="(?:FOCUS|HISTORICAL)"\s*\/>/);
+  assert.match(source,/<AssessmentLauncher source="(?:FOCUS|HISTORICAL)"(?:\s+historicalYear=\{year\})?\s*\/>/);
  }
  for(const source of ['FOCUS','HISTORICAL']){
   let tree;
@@ -291,11 +291,11 @@ test('FOCUS and PAST use the same assessment launcher for single, selected and w
    await act(async()=>{scope().props.onChange({target:{value:'all'}});});
    assert.equal(submit().props.disabled,true);
    if(source==='HISTORICAL'){
-    const audit=tree.root.findAllByType('button').find(button=>button.props.children==='Audit whole PAST list');
+    const audit=tree.root.findAllByType('button').find(button=>button.props.children==='Audit whole PAST 2026 list');
     assert.equal(audit.props.disabled,false);
     await act(async()=>{await audit.props.onClick();});
     assert.equal(submit().props.disabled,true);
-    assert.match(JSON.stringify(tree.toJSON()),/20 of 20 events still lack server-verified/);
+    assert.match(JSON.stringify(tree.toJSON()),/20 of 20 displayed events have no verified/);
     assert.ok(tree.root.findAllByType('summary').some(node=>React.Children.toArray(node.props.children).join('')==='20 unresolved PAST event-to-trial links'));
     assert.match(JSON.stringify(tree.toJSON()),/Whole PAST stays blocked until linkage is verified/);
    }
@@ -340,4 +340,20 @@ test('PAST candidate NCT entries never masquerade as verified FDA event predicti
  assert.doesNotMatch(past,/verifiedNctByEvent/);
  assert.match(past,/<PredictionCells\s*\/>/);
  assert.doesNotMatch(past,/<PredictionCells\s+nct=\{candidateNctByEvent/);
+});
+
+
+test('PAST whole-list audit follows selected year and never uses the 2026 cohort for other years',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Launcher=require('../app/AssessmentLauncher.tsx').default;
+ globalThis.IS_REACT_ACT_ENVIRONMENT=true;let tree;
+ try{
+  await act(async()=>{tree=create(React.createElement(Launcher,{source:'HISTORICAL',historicalYear:'2025'}));});
+  await act(async()=>{tree.root.findAllByType('button')[0].props.onClick();});
+  await act(async()=>{tree.root.findByProps({'aria-label':'Assessment scope'}).props.onChange({target:{value:'all'}});});
+  const audit=tree.root.findAllByType('button').find(button=>button.props.children==='Audit whole PAST 2025 list');
+  await act(async()=>{await audit.props.onClick();});
+  assert.match(JSON.stringify(tree.toJSON()),/PAST 2025: no year-specific verified historical roster/);
+  assert.ok(!JSON.stringify(tree.toJSON()).includes('20 unresolved PAST event-to-trial links'));
+  assert.equal(tree.root.findAllByType('button').find(button=>button.props.children==='Submit assessments').props.disabled,true);
+ }finally{if(tree)await act(async()=>tree.unmount());}
 });
