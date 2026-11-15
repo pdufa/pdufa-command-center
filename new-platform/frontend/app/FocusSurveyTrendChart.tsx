@@ -77,8 +77,8 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
   <p style={{margin:'0 0 12px',fontSize:13}}>
    The solid lines connect <strong>observed trial-level evidence checks</strong> across the
    alphabetically ordered FOCUS roster. The separate dashed lines are least-squares
-   best-fit summaries for each level. Neither line is a time trend, scientific score,
-   FDA approval probability or prediction-accuracy chart.
+   best-fit summaries for each level. This is not a time trend, not a scientific score,
+   not an FDA approval probability and not a prediction-accuracy chart.
   </p>
   <div style={{display:'flex',gap:16,flexWrap:'wrap',alignItems:'center',marginBottom:12}}>
    <label>Evidence metric{' '}
