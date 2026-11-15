@@ -13,16 +13,16 @@ $stamp=Get-Date -Format 'yyyyMMdd-HHmmss'
 $work=Join-Path $HOME "pdufa-level123-$stamp"
 $branch="integration/level123-$stamp"
 $log=Join-Path $HOME "pdufa-level123-$stamp.log"
-function Git([string[]]$cmd) {
-  & git -C $repo @cmd
+function InvokeRepoGit([string[]]$cmd) {
+  & git.exe -C $repo @cmd
   if($LASTEXITCODE -ne 0){throw "Git command failed: $($cmd -join ' ')"}
 }
 function WorkGit([string[]]$cmd){
-  & git -C $work @cmd
+  & git.exe -C $work @cmd
   if($LASTEXITCODE -ne 0){throw "Worktree git command failed: $($cmd -join ' ')"}
 }
 function Conflicts {
-  @(& git -C $work diff --name-only --diff-filter=U) | Where-Object {$_ -and $_.Trim()}
+  @(& git.exe -C $work diff --name-only --diff-filter=U) | Where-Object {$_ -and $_.Trim()}
 }
 function RunCheck([string]$command,[string[]]$cmd,[string]$folder){
   Push-Location $folder
@@ -36,14 +36,14 @@ foreach($c in @('git.exe','node.exe','npm.cmd')){
   if(-not (Get-Command $c -ErrorAction SilentlyContinue)){throw "Missing $c; install it before proceeding."}
 }
 $py = if(Get-Command 'py.exe' -ErrorAction SilentlyContinue){'py.exe'}elseif(Get-Command 'python.exe' -ErrorAction SilentlyContinue){'python.exe'}else{throw 'Python 3 is required.'}
-$origin=(& git -C $repo remote get-url origin).Trim()
+$origin=(& git.exe -C $repo remote get-url origin).Trim()
 if($LASTEXITCODE -ne 0 -or $origin -notmatch 'pdufa/pdufa-command-center(\.git)?$'){throw "Unexpected repository origin: $origin"}
 Start-Transcript -Path $log | Out-Null
 try{
   Write-Host 'Levels 1-3 PAST / FOCUS / ASSESSMENTS integration (local only)' -ForegroundColor Green
   Write-Host "Existing checkout: $repo"
   Write-Host "New separate worktree: $work"
-  Git @('fetch','--no-tags','origin',
+  InvokeRepoGit @('fetch','--no-tags','origin',
      '+refs/heads/main:refs/remotes/origin/main',
      "+refs/heads/${base}:refs/remotes/origin/${base}",
      "+refs/heads/${research}:refs/remotes/origin/${research}")
@@ -56,15 +56,15 @@ try{
     @("origin/$research",$focus,'e9737cc23c26c866a5dfb954116404d710fc66e7')
   )
   foreach($g in $guard){
-    $actual=(& git -C $repo rev-parse "$($g[0]):$($g[1])").Trim()
+    $actual=(& git.exe -C $repo rev-parse "$($g[0]):$($g[1])").Trim()
     if ($LASTEXITCODE -ne 0 -or $actual -ne $g[2]){
       throw "Source changed: $($g[0]):$($g[1]). Stopped to protect newer work."
     }
   }
-  Git @('worktree','add','-b',$branch,$work,"origin/$base")
+  InvokeRepoGit @('worktree','add','-b',$branch,$work,"origin/$base")
   # First merge current production into development; the two pre-reviewed
   # UI conflicts are resolved using the foundation's pre-integrated pages.
-  & git -C $work merge --no-commit --no-ff origin/main
+  & git.exe -C $work merge --no-commit --no-ff origin/main
   if($LASTEXITCODE -ne 0){
     $conflicts=@(Conflicts)
     if($conflicts.Count -eq 0){throw 'Main merge failed without standard file conflicts.'}
@@ -77,9 +77,9 @@ try{
     }
   }
   if(@(Conflicts).Count -gt 0){throw 'Main conflicts remain.'}
-  WorkGit @('commit','-m','Integrate production with Level 1-3 assessment foundation')
+  WorkGit @('-c','user.name=PDUFA local integration','-c','user.email=pdufa-integration@localhost','commit','-m','Integrate production with Level 1-3 assessment foundation')
   # Merge 32-trial saved scientific research and assessment tabs.
-  & git -C $work merge --no-commit --no-ff "origin/$research"
+  & git.exe -C $work merge --no-commit --no-ff "origin/$research"
   if($LASTEXITCODE -ne 0){
     $conflicts=@(Conflicts)
     if($conflicts.Count -eq 0){throw 'Saved-results merge failed without standard file conflicts.'}
@@ -100,7 +100,7 @@ try{
     WorkGit @('add','--',$focus)
   }
   if(@(Conflicts).Count -gt 0){throw 'Saved-results conflicts remain.'}
-  WorkGit @('commit','-m','Integrate saved Level 1-3 FOCUS assessments')
+  WorkGit @('-c','user.name=PDUFA local integration','-c','user.email=pdufa-integration@localhost','commit','-m','Integrate saved Level 1-3 FOCUS assessments')
   $required=@{
     $focus=@('NumericSortSettings','FocusSavedAssessments','AssessmentLauncher','FocusLevelCells','PredictionCells','sortedTrials.map')
     $past=@('NumericSortSettings','AssessmentLauncher','ExactTrialIntakeSelector','PredictionCells','assessmentLevelLabels')
