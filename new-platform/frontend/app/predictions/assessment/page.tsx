@@ -1,4 +1,5 @@
 import FocusSavedAssessments from "../../FocusSavedAssessments";
+import PastSavedAssessments from "../../PastSavedAssessments";
 import AssessmentWorkbench from "../../AssessmentWorkbench";
 import Link from "next/link";
 import type {Metadata} from "next";
@@ -32,6 +33,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
     <h1>ASSESSMENTS · Scientific Levels 1–3</h1>
     <p>Run exact-trial verification, clinical design review, and efficacy/statistical assessment across FOCUS, POOL and PAST. Source statements, calculations, uncertainties and missing evidence remain separate.</p>
     <FocusSavedAssessments/>
+    <PastSavedAssessments/>
     <AssessmentWorkbench selectedNct={q.nct&&/^NCT[0-9]{8}$/.test(q.nct)?q.nct:undefined}/>
     <p><Link href="/predictions/assessment?view=legacy">Retained research histories and charts — may reveal known historical outcomes</Link></p>
   </main>;
