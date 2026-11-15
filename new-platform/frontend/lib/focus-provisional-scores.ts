@@ -34,3 +34,50 @@ export function provisionalFocusScore(nct:string,level:number,report?:Scientific
  if(!row||row.runId!==report.runId||row.executedAt!==report.executedAt)return null;
  return row;
 }
+
+
+/**
+ * Combined cross-sectional documentary readiness for all three saved research
+ * levels. Pooling the verified/applicable check COUNTS (not averaging level
+ * percentages) gives each explicitly applicable question equal weight.
+ *
+ * This is NOT a calibrated approval probability, a scientific efficacy score,
+ * the unfinished 20-dimension rubric, or a directional FDA forecast.
+ */
+export type OverallEvidenceReadiness={
+ evidenceReadinessScore:number;sourceVerified:number;applicable:number;
+ unresolved:number;levelScores:[ReadinessScore,ReadinessScore,ReadinessScore];
+};
+export type FocusReadinessLevels=Record<string,{report?:ScientificSlot}|null|undefined>;
+
+export function provisionalFocusOverall(nct:string,levels?:FocusReadinessLevels):OverallEvidenceReadiness|null{
+ if(!levels)return null;
+ const a=provisionalFocusScore(nct,1,levels['1']?.report);
+ const b=provisionalFocusScore(nct,2,levels['2']?.report);
+ const c=provisionalFocusScore(nct,3,levels['3']?.report);
+ if(!a||!b||!c)return null;
+ const levelScores:[ReadinessScore,ReadinessScore,ReadinessScore]=[a,b,c];
+ const sourceVerified=levelScores.reduce((sum,x)=>sum+x.sourceVerified,0);
+ const applicable=levelScores.reduce((sum,x)=>sum+x.applicable,0);
+ const unresolved=levelScores.reduce((sum,x)=>sum+x.unresolved,0);
+ return applicable>0?{
+   evidenceReadinessScore:Math.round(100*sourceVerified/applicable),
+   sourceVerified,applicable,unresolved,levelScores
+ }:null;
+}
+export const FOCUS_OVERALL_READINESS_METHOD=
+ 'Overall provisional evidence readiness = 100 × the sum of strictly SOURCE_VERIFIED checks across L1–L3 ÷ '+
+ 'the sum of applicable checks across L1–L3, rounded. Excludes NOT_YET_EXPECTED. '+
+ 'Not a weighted clinical score, FDA approval prediction, scientific validation, or an average of level percentages.';
+
+export function focusSavedDirection(nct:string,levels?:FocusReadinessLevels):'ABSTAIN'|'NOT AVAILABLE'{
+ // Never infer a directional FDA call or numeric confidence from evidence readiness.
+ // Only show the existing saved abstention when all three original report
+ // identities and versioned source scores still match.
+ if(!provisionalFocusOverall(nct,levels))return 'NOT AVAILABLE';
+ return [1,2,3].every(l=>{
+  const report=levels?.[String(l)]?.report;
+  return report&&report.nct===nct&&report.level===l&&report.mode==='CURRENT_EVIDENCE'&&
+   (report as {fdaPrediction?:{outcome?:string}}).fdaPrediction?.outcome==='ABSTAIN';
+ })?'ABSTAIN':'NOT AVAILABLE';
+}
