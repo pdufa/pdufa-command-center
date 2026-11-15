@@ -14,7 +14,7 @@ export default function PastPage(){
  const [search,setSearch]=useState("");
  const [reveal,setReveal]=useState(false);
  const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);
- const filtered=useMemo(()=>{const subset=year==="2026"?rows.filter(r=>(r.ticker+" "+r.eventKey).toLowerCase().includes(search.toLowerCase())):[];return sortNumericRows(subset,sortRules,(r,c)=>c==="level4Score"?r.level4Score:c==="confidence"?r.confidence:c==="L4"?r.level4Score:null,r=>r.eventKey)},[year,search,sortRules]);
+ const filtered=useMemo(()=>{const subset=year==="2026"?rows.filter(r=>(r.ticker+" "+r.eventKey).toLowerCase().includes(search.toLowerCase())):[];return sortNumericRows(subset,sortRules,(r,c)=>c==="level4Score"?r.level4Score:c==="confidence"?r.confidence:c==="cutoffDate"?r.cutoffDate:c==="ticker"?r.ticker:c==="application"?r.eventKey.split("|")[2]||null:c==="prediction"?r.blindPrediction:c==="status"?r.status:null,r=>r.eventKey)},[year,search,sortRules]);
  return <main style={{maxWidth:1400,margin:"24px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif"}}>
  <nav style={{display:"flex",gap:14,marginBottom:16}}><Link href="/focus">FOCUS</Link><strong>PAST</strong><Link href="/pool">POOL</Link></nav>
  <h1>PAST — Historical PDUFA trials</h1>
@@ -24,7 +24,7 @@ export default function PastPage(){
  <label>Search <input aria-label="Search historical trials" value={search} onChange={e=>setSearch(e.target.value)} placeholder="Ticker or application"/></label>
  <label><input type="checkbox" checked={reveal} onChange={e=>setReveal(e.target.checked)}/> Reveal verified FDA decisions (exclude from blind scoring)</label>
  </div>
- <NumericSortSettings scope="past" columns={[{id:"level4Score",label:"Overall Level 4 Score"},{id:"confidence",label:"Confidence %"},{id:"L4",label:"Level 4 detailed score"}]} onApply={setSortRules}/>
+ <NumericSortSettings scope="past" columns={[{id:"level4Score",label:"Overall Level 4 Score"},{id:"confidence",label:"Confidence %"},{id:"cutoffDate",label:"PDUFA queue date"},{id:"ticker",label:"Ticker"},{id:"application",label:"Application / FDA path"},{id:"prediction",label:"Blind prediction"},{id:"status",label:"Queue status"}]} onApply={setSortRules}/>
  <p><strong>{filtered.length}</strong> queued historical records for {year}. {year!=="2026"?"Historical cohort not imported for this year.":""}</p>
  <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
  <style>{`table.assessment-expandable:not(:has(details.assessment-toggle[open])) .assessment-level{display:none} .assessment-toggle{display:inline-block;margin-left:6px;vertical-align:middle}.assessment-toggle summary{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border:1px solid #7e9f8b;border-radius:5px;cursor:pointer;background:#fff;color:#173d2b;font-weight:800;list-style:none}.assessment-toggle summary::-webkit-details-marker{display:none}.assessment-toggle .when-open{display:none}.assessment-toggle[open] .when-open{display:inline}.assessment-toggle[open] .when-closed{display:none}`}</style>
