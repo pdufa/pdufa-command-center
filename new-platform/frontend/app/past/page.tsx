@@ -1,6 +1,7 @@
 "use client";
 import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
 import ScientificStepsReadiness from "../ScientificStepsReadiness";
+import PastSavedAssessments from "../PastSavedAssessments";
 import AssessmentLauncher from "../AssessmentLauncher";
 import {ExactTrialIntakeSelector} from "../ExactTrialScientificIntake";
 import {useMemo,useState} from "react";
@@ -46,7 +47,7 @@ export default function PastPage(){
  },[year,search,sortRules,reveal]);
  return <main style={{maxWidth:1400,margin:"24px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif"}}>
  <nav style={{display:"flex",gap:14,marginBottom:16}}><Link href="/focus">FOCUS</Link><strong>PAST</strong><Link href="/pool">POOL</Link></nav>
- <AssessmentLauncher source="HISTORICAL"/><ScientificStepsReadiness cohort="PAST"/>
+ <AssessmentLauncher source="HISTORICAL"/><ScientificStepsReadiness cohort="PAST"/><PastSavedAssessments/>
  <h1>PAST — Historical PDUFA trials</h1>
  <p>Year-by-year historical cohort. The 2026 queue is an evidence-freeze research queue, not a verified complete FDA decision census. No missing values are treated as zero or as a negative decision.</p>
  <div style={{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap",marginBottom:16}}>
