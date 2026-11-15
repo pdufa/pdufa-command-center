@@ -296,7 +296,7 @@ test('FOCUS and PAST use the same assessment launcher for single, selected and w
     await act(async()=>{await audit.props.onClick();});
     assert.equal(submit().props.disabled,true);
     assert.match(JSON.stringify(tree.toJSON()),/20 of 20 events still lack server-verified/);
-    assert.match(JSON.stringify(tree.toJSON()),/20 unresolved PAST event-to-trial links/);
+    assert.ok(tree.root.findAllByType('summary').some(node=>React.Children.toArray(node.props.children).join('')==='20 unresolved PAST event-to-trial links'));
     assert.match(JSON.stringify(tree.toJSON()),/Whole PAST stays blocked until linkage is verified/);
    }
    await act(async()=>{tree.root.findByProps({'aria-label':'Clear assessment popup'}).props.onClick();});
