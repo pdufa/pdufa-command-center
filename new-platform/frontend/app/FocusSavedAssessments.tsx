@@ -2,6 +2,7 @@
 import Link from 'next/link';
 import FocusSurveyTrendChart from './FocusSurveyTrendChart';
 import FocusOverallLevelMatrix from './FocusOverallLevelMatrix';
+import {provisionalFocusScore,FOCUS_READINESS_METHOD} from '../lib/focus-provisional-scores';
 import {readSavedFocus} from '../lib/focus-saved-records';
 import {useEffect,useState} from 'react';
 type Saved={runId:string;nct:string;level:number;mode:string;executedAt:string;engineVersion:string;executionStatus:string;score:{value:number|null;kind:string;method:string};fdaPrediction:{outcome:string;probability?:number|null;confidence:string};trialIdentity:{company:string;candidate:string;indication:string[]};context:{phases:string[]}};
@@ -23,6 +24,8 @@ export default function FocusSavedAssessments({selectedNct}:{selectedNct?:string
  },[]);
  async function batch(){setBusy(true);setError('');try{const response=await fetch(endpoint,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'FOCUS_BATCH'})});const body=await response.json();if(!response.ok)throw Error(body.error||'Batch rejected');setMessage('Bounded batch queued; completion is not confirmed.');await load();}catch(e){setError(e instanceof Error?e.message:'Batch failed');}finally{setBusy(false);}}
  const rows=(data?.trials||[]).filter(t=>(t.nct+' '+t.ticker+' '+t.company).toLowerCase().includes(filter.toLowerCase()));
+ const provisionalScores=(data?.trials||[]).reduce((count,t)=>
+  count+[1,2,3].filter(level=>!!provisionalFocusScore(t.nct,level,t.levels[String(level)]?.report)).length,0);
  return <section aria-label="Saved FOCUS Level 1–3 assessments" style={{border:'1px solid #b9cebe',borderRadius:8,padding:14,margin:'16px 0',overflowWrap:'anywhere',minWidth:0}}>
   <h2>Saved FOCUS trial surveys · Levels 1–3</h2>
   <p>Both FOCUS and ASSESSMENTS read these same versioned database records. An executed assessment with evidence gaps is not a validated numerical score. Predictions without a validated model remain ABSTAIN.</p>
@@ -36,11 +39,21 @@ export default function FocusSavedAssessments({selectedNct}:{selectedNct?:string
    <button type="button" disabled={busy} onClick={()=>{setError('');void load().then(()=>setMessage('Refreshed saved database results.')).catch(e=>setError(e.message));}}>Refresh saved results</button>{' '}
    <button type="button" disabled={busy||data.total===null||data.fullyProcessed===data.total} onClick={()=>void batch()}>Process next bounded batch</button>
    {data.total!==null&&data.fullyProcessed===data.total&&<p role="status">Every reconciled FOCUS trial already has all three research reports saved. No rerun is necessary unless new evidence warrants a new immutable version.</p>}
+   <p data-testid="focus-provisional-scores-progress">
+     <strong>Provisional evidence-readiness scores: {provisionalScores} / {(data.total??0)*3}</strong>.
+     {data.total!==null&&data.total>0&&provisionalScores===data.total*3?
+       ' All three evidence-readiness values are present for every exact FOCUS NCT.':
+       ' Unmatched or newer assessment runs are withheld until their evidence is rescored.'}
+     {' '}{FOCUS_READINESS_METHOD}
+   </p>
    <FocusOverallLevelMatrix trials={rows} selectedNct={selectedNct}/>
    <FocusSurveyTrendChart trials={data.trials} total={data.total} selectedNct={selectedNct}/>
    <div style={{overflowX:'auto',marginTop:12}}><table style={{borderCollapse:'collapse',minWidth:850,width:'100%'}}><thead><tr><th>Trial</th>{[1,2,3].filter(l=>level==='ALL'||level===String(l)).flatMap(l=>[<th key={l+'s'}>L{l} Scientific result and evidence</th>,<th key={l+'p'}>L{l} FDA prediction status</th>])}</tr></thead>
     <tbody>{rows.map(t=><tr key={t.nct} style={{borderTop:'1px solid #b9cebe'}}><td style={{padding:10}}><Link href={'/predictions/assessment?nct='+encodeURIComponent(t.nct)}>{t.nct}</Link><br/>{t.ticker} · {t.company}<br/>{t.levels['1']?.report?.trialIdentity.candidate||'Candidate not yet source-verified'}<br/>PDUFA: {t.pdufaDate||'Not assigned/verified'}<br/><Link href={'/company?ticker='+encodeURIComponent(t.ticker)}>COMPANY</Link> · <Link href="/focus">FOCUS</Link></td>
-     {[1,2,3].filter(l=>level==='ALL'||level===String(l)).flatMap(l=>{const slot=t.levels[String(l)],r=slot?.report;return [<td key={l+'s'} style={{padding:10,verticalAlign:'top'}}>{r?<><Link href={'/predictions/assessment?nct='+encodeURIComponent(t.nct)}>{r.score.kind==='NOT_VALIDATED'||r.score.kind==='LEVEL_SPECIFIC_EVIDENCE_COVERAGE'?'NOT VALIDATED / UNSCORABLE':r.score.value===null?'NOT VALIDATED / UNSCORABLE':r.score.value}</Link><br/>{r.executionStatus}<br/>{r.context.phases.join(', ')}<br/>{r.executedAt}<br/><small>{r.engineVersion}</small><details><summary>{slot.missingEvidence.length} unresolved criteria · evidence details</summary><p>{r.score.method}</p><ul>{slot.missingEvidence.map(c=><li key={c.id}>{c.id} · {c.state}: {c.explanation}</li>)}</ul><Link href={'/predictions/assessment?nct='+encodeURIComponent(t.nct)}>Open original-source findings and all saved versions</Link></details></>:<><strong>{slot?.state||'NOT RUN'}</strong><br/>{slot?.error||'No completed assessment saved'}</>}</td>,<td key={l+'p'} style={{padding:10,verticalAlign:'top'}}>{r?<>{r.fdaPrediction.outcome}<br/>Confidence: {r.fdaPrediction.probability===null||r.fdaPrediction.probability===undefined?'NOT VALIDATED':r.fdaPrediction.probability+'%'}<br/>{r.fdaPrediction.confidence}</>:'ABSTAIN — no completed result'}</td>];})}
+     {[1,2,3].filter(l=>level==='ALL'||level===String(l)).flatMap(l=>{const slot=t.levels[String(l)],r=slot?.report;return [<td key={l+'s'} style={{padding:10,verticalAlign:'top'}}>{r?<><Link href={'/predictions/assessment?nct='+encodeURIComponent(t.nct)}>{r.score.kind==='NOT_VALIDATED'||r.score.kind==='LEVEL_SPECIFIC_EVIDENCE_COVERAGE'?'NOT VALIDATED / UNSCORABLE':r.score.value===null?'NOT VALIDATED / UNSCORABLE':r.score.value}</Link><br/>{(()=>{const v=provisionalFocusScore(t.nct,l,r);return v?
+       <span><strong>Provisional evidence readiness: {v.evidenceReadinessScore}/100</strong>
+       {' '}({v.sourceVerified}/{v.applicable} source verified)<br/></span>:null;})()}
+       {r.executionStatus}<br/>{r.context.phases.join(', ')}<br/>{r.executedAt}<br/><small>{r.engineVersion}</small><details><summary>{slot.missingEvidence.length} unresolved criteria · evidence details</summary><p>{r.score.method}</p><ul>{slot.missingEvidence.map(c=><li key={c.id}>{c.id} · {c.state}: {c.explanation}</li>)}</ul><Link href={'/predictions/assessment?nct='+encodeURIComponent(t.nct)}>Open original-source findings and all saved versions</Link></details></>:<><strong>{slot?.state||'NOT RUN'}</strong><br/>{slot?.error||'No completed assessment saved'}</>}</td>,<td key={l+'p'} style={{padding:10,verticalAlign:'top'}}>{r?<>{r.fdaPrediction.outcome}<br/>Confidence: {r.fdaPrediction.probability===null||r.fdaPrediction.probability===undefined?'NOT VALIDATED':r.fdaPrediction.probability+'%'}<br/>{r.fdaPrediction.confidence}</>:'ABSTAIN — no completed result'}</td>];})}
     </tr>)}</tbody></table></div>
   </>}
  </section>;
