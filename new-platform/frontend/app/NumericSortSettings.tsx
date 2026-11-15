@@ -31,7 +31,7 @@ export default function NumericSortSettings({scope,columns,onApply}:{scope:"past
  const move=(i:number,delta:number)=>{setRules(old=>{const j=i+delta;if(j<0||j>=old.length)return old;const next=[...old];[next[i],next[j]]=[next[j],next[i]];return next})};
  const valid=rules.every(r=>columns.some(c=>c.id===r.column))&&new Set(rules.map(r=>r.column)).size===rules.length;
  return <section style={{margin:"12px 0"}}>
- <button type="button" onClick={()=>setOpen(true)}>⚙ Sort Settings</button>
+ <button type="button" onClick={()=>setOpen(true)} aria-label="Sort Display" style={{padding:"9px 14px",borderRadius:8,border:"1px solid #789987",background:"#e6f2ea",color:"#173d2b",fontWeight:700,cursor:"pointer"}}>⚙ Sort Display</button>
  {open&&<div role="dialog" aria-modal="true" aria-label="Sort Settings" style={{position:"fixed",inset:0,zIndex:1000,background:"#0008",display:"grid",placeItems:"center",padding:12}}>
  <div style={{background:"white",color:"#173d2b",padding:20,borderRadius:12,width:"min(660px,100%)",maxHeight:"85vh",overflowY:"auto"}}>
  <div style={{display:"flex",justifyContent:"space-between"}}><h2>Sort Settings — {scope.toUpperCase()}</h2><button aria-label="Close sorting popup" onClick={()=>setOpen(false)}>✕</button></div>
