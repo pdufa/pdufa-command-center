@@ -171,8 +171,14 @@ def roster(engine, year):
             if any(sum(t['nct']==n for t in tasks)>1 for n in item['ncts']):
                 item['status']='MULTI_CYCLE_NCT_REQUIRES_EVENT_SCOPED_RUNTIME'
         linked=sum(item['status']=='READY' for item in output)
+    # Partial-year operation is an auditable assessment attempt, not a
+    # claim that every event has been linked. Never return a task for an event
+    # that failed verification, source pre-cutoff checks or cycle disambiguation.
+    eligible_keys = {item['eventKey'] for item in output if item['status']=='READY'}
+    eligible_tasks = [task for task in tasks if task['eventKey'] in eligible_keys]
     ready = bool(output) and linked == len(output)
     return {'status':'VERIFIED_WHOLE_PAST_COHORT' if ready else 'PAST_RECONCILIATION_INCOMPLETE',
             'year':year,'total':len(output),'linked':linked,'ready':ready,
-            'events':output,'tasks':tasks if ready else [],
+            'events':output,'tasks':eligible_tasks if ready else [],
+            'eligibleTasks':eligible_tasks,
             'source':'APPEND_ONLY_EXACT_EVENT_APPLICATION_TRIAL_ROSTER'}
