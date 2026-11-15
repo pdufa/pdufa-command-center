@@ -100,9 +100,6 @@ def main() -> None:
 
     output.write_text(revised, encoding="utf-8", newline="\n")
     try:
-        if run_git(root, "diff", "--", OUTPUT_REL).count("-            ") > 0:
-            # Not an assertion on the diff format. Actual structural validation above governs.
-            pass
         verify = json.loads(output.read_text(encoding="utf-8"))
         if verify != after:
             raise RuntimeError("Post-write manifest validation failed")
