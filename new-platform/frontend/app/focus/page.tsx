@@ -19,7 +19,21 @@ const finalGateByNct=new Map(finalGateAudit.rows.map(row=>[row.nct,row]));
 
 export default function FocusPage(){
  const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);
- const sortedTrials=useMemo(()=>sortNumericRows(trials,sortRules,(t,c)=>c==="ticker"?t.ticker:c==="nct"?t.nct:c==="company"?t.company:c==="designations"?designationByNct.get(t.nct)?.designations.map(d=>d.label).join(", ")||null:c==="marketCap"?t.marketCap:c==="fdaStatus"?t.fdaStatus:c==="sources"?t.resultsUrl:c==="gates"?finalGateByNct.get(t.nct)?.independentlyVerified??null:null,t=>t.nct),[sortRules]);
+ const sortedTrials=useMemo(()=>sortNumericRows(trials,sortRules,(t,c)=>{
+  const gate=finalGateByNct.get(t.nct);
+  const designations=designationByNct.get(t.nct)?.designations;
+  if(c==="ticker")return t.ticker;
+  if(c==="nct")return t.nct;
+  if(c==="company")return t.company;
+  if(c==="designations")return designations?.length?designations.map(d=>d.label).join(" · "):"Not verified";
+  if(c==="marketCap")return t.marketCap;
+  if(c==="fdaStatus")return t.fdaStatus;
+  if(c==="sources")return t.resultsUrl;
+  if(c==="gates")return gate?gate.independentlyVerified:null;
+  if(c==="overall")return null;
+  if(/^level(?:[1-9]|1[0-9]|20)$/.test(c))return null;
+  return null;
+ },t=>t.nct),[sortRules]);
  return <main style={{maxWidth:1220,margin:"28px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif",color:"#173d2b"}}>
   <nav style={{display:"flex",gap:18,marginBottom:18}}><Link href="/pool">POOL</Link><Link href="/indications">INDICATIONS</Link><Link href="/tools">TOOLS</Link></nav>
   <h1>FOCUS</h1>
