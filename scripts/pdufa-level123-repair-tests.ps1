@@ -66,4 +66,21 @@ if($RunTests){
     if($LASTEXITCODE -ne 0){throw 'Frontend production build failed.'}
   }finally{Pop-Location}
   Write-Host 'FRONTEND TYPECHECK, TESTS AND BUILD PASSED' -ForegroundColor Green
+  $py=if(Get-Command 'py.exe' -ErrorAction SilentlyContinue){'py.exe'}elseif(Get-Command 'python.exe' -ErrorAction SilentlyContinue){'python.exe'}else{throw 'Python 3 not found.'}
+  $venv=Join-Path $work '.venv'
+  $python=Join-Path $venv 'Scripts\python.exe'
+  if(-not (Test-Path $python)){
+    if($py -eq 'py.exe'){& $py -3 -m venv $venv}else{& $py -m venv $venv}
+    if($LASTEXITCODE -ne 0){throw 'Python venv creation failed.'}
+  }
+  Push-Location $work
+  try{
+    & $python -m pip install -r 'new-platform/backend/requirements.txt'
+    if($LASTEXITCODE -ne 0){throw 'Backend Python dependency installation failed.'}
+    & $python -m pytest -q 'new-platform/backend'
+    if($LASTEXITCODE -ne 0){throw 'Backend tests failed.'}
+    & $python 'scripts/audit_raas_retirement.py' '--check'
+    if($LASTEXITCODE -ne 0){throw 'Retired-code integrity audit failed.'}
+  }finally{Pop-Location}
+  Write-Host 'FRONTEND, BACKEND AND RETIREMENT AUDIT PASSED LOCALLY' -ForegroundColor Green
 }
