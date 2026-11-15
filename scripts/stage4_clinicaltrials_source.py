@@ -78,7 +78,7 @@ def fetch_study(nct, opener=urlopen, sleeper=time.sleep):
 
 def collect(document, fetcher=fetch_study):
     records = document.get("records") if isinstance(document, dict) else None
-    if not isinstance(records, list) or len(records) != 29:
+    if not isinstance(records, list) or len(records) not in (29, 32):
         raise ValueError("Expected 29 FOCUS records")
     seen = set()
     output = []

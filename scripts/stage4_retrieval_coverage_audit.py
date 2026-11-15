@@ -14,15 +14,15 @@ READINESS = {"retrieval_failed", "phase_unresolved", "phase_appropriate_results_
 
 def audit(registry, triage, roster):
     records = roster.get("records") if isinstance(roster, dict) else None
-    if not isinstance(records, list) or len(records) != 29:
+    if not isinstance(records, list) or len(records) not in (29, 32):
         raise ValueError("Invalid canonical FOCUS roster")
     expected = [r.get("nct") for r in records if isinstance(r, dict)]
-    if len(expected) != 29 or len(set(expected)) != 29 or any(not isinstance(x, str) or not NCT.fullmatch(x) for x in expected):
+    if len(expected) != len(records) or len(set(expected)) != len(records) or any(not isinstance(x, str) or not NCT.fullmatch(x) for x in expected):
         raise ValueError("Invalid roster identifiers")
     if registry.get("scientific_adjudications") != 0 or triage.get("verified_scientific_adjudications") != 0:
         raise ValueError("Unexpected adjudication claim")
     a, b = registry.get("trials"), triage.get("trials")
-    if not isinstance(a, list) or not isinstance(b, list) or len(a) != 29 or len(b) != 29:
+    if not isinstance(a, list) or not isinstance(b, list) or len(a) != len(records) or len(b) != len(records):
         raise ValueError("Expected 29 records in each artifact")
     for rows in (a, b):
         if [r.get("nct") for r in rows if isinstance(r, dict)] != expected:
@@ -46,7 +46,7 @@ def audit(registry, triage, roster):
                 raise ValueError("Missing or unknown endpoint evidence classification")
             endpoint_counts[category] += 1
         counts[result["readiness"]] += 1
-    return {"total": 29, "retrieved": sum(r["status"] == "retrieved" for r in a),
+    return {"total": len(records), "retrieved": sum(r["status"] == "retrieved" for r in a),
             "failed": sum(r["status"] == "retrieval_failed" for r in a),
             "readiness_counts": counts, "endpoint_evidence_counts": endpoint_counts,
             "scientific_verification_complete": False,

@@ -18,7 +18,7 @@ import sys
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from scripts.phase3_qualification_ledger import GATES
+from scripts.phase3_qualification_ledger import GATES, registry_gate_allows_research
 from scripts.phase3_rights_review_worklist import REQUIRED_REVIEW
 
 TRIALS = 741
@@ -103,6 +103,7 @@ def build_scorecard(ledger, program, sec, pilot, worklist, reviewed):
         gates = row.get("gates")
         if (not isinstance(gates, dict) or set(gates) != set(GATES)
             or any(gates[g] not in GATE_STATES for g in GATES)
+            or ("registry_identity_gate" in w and w["registry_identity_gate"] != gates["registry_identity"])
             or row.get("qualified_pipeline") is not None
             or p.get("ticker") != row.get("ticker") or w.get("ticker") != row.get("ticker")
             or review.get("ticker") != row.get("ticker")
@@ -116,7 +117,19 @@ def build_scorecard(ledger, program, sec, pilot, worklist, reviewed):
             or review.get("checklist_independently_verified") is not False
             or review.get("qualified_pipeline") is not None):
             raise ValueError(f"{nct}: invalid original source or qualification drift")
-        if gates["registry_identity"] != "PASS" or any(
+        review_context = w.get("registry_review_context")
+        registry_allowed = gates["registry_identity"] == "PASS"
+        if isinstance(review_context, dict):
+            registry_allowed = (w.get("registry_identity_gate") == gates["registry_identity"]
+                and review_context.get("nct_id") == nct
+                and review_context.get("source") == w.get("registry_source_url")
+                and review_context.get("source_sha256") == w.get("registry_source_sha256") == row.get("source_sha256")
+                and review_context.get("current_registry_status") == w.get("registry_status")
+                and review_context.get("phase3_in_current_registry") is w.get("registry_phase3_current")
+                and (gates["registry_identity"] != "REVIEW"
+                     or w.get("research_priority") == "P2_REGISTRY_STATUS_OR_PHASE_REVIEW")
+                and registry_gate_allows_research(gates, review_context))
+        if not registry_allowed or any(
                 gates[g] != "REVIEW" for g in GATES if g != "registry_identity"):
             raise ValueError(f"{nct}: only original registry gate may be PASS at this research stage")
         for gate in GATES:
@@ -172,7 +185,8 @@ def build_scorecard(ledger, program, sec, pilot, worklist, reviewed):
         gates_detail.append({
             "gate": gate, "total": TRIALS,
             "pass": counts["PASS"], "fail": counts["FAIL"], "review": counts["REVIEW"],
-            "qualification_status": "VERIFIED_REGISTRY_IDENTITY_ONLY" if gate == "registry_identity"
+            "qualification_status": ("VERIFIED_REGISTRY_IDENTITY_ONLY" if counts["PASS"] == TRIALS
+                                     else "REGISTRY_IDENTITY_REVIEW_REQUIRED") if gate == "registry_identity"
                 else "INDEPENDENT_VERIFICATION_NOT_COMPLETE",
         })
 
@@ -240,10 +254,11 @@ def build_scorecard(ledger, program, sec, pilot, worklist, reviewed):
             ["SEC_USER_AGENT_IDENTIFYING_CONTACT_REQUIRED"] if not_attempted
             else ["NO_SEC_PRIMARY_DOCUMENTS_RETRIEVED"] if fetched == 0
             else ["TRIAL_SPECIFIC_LEGAL_RIGHTS_EVIDENCE_REVIEW"]
-        ) + ["EIGHT_NONREGISTRY_MANDATORY_GATES_REQUIRE_VERIFICATION"],
+        ) + ["EIGHT_NONREGISTRY_MANDATORY_GATES_REQUIRE_VERIFICATION"]
+          + (["REGISTRY_STATUS_OR_PHASE_CHANGE_REVIEW"] if gate_counts["registry_identity"]["REVIEW"] else []),
         "limitations": (
             "The 741 source identities are a historical trial census, not qualified "
-            "Pipeline, GEM JR or GEM entries. 741 registry PASS checks are NOT 741 "
+            "Pipeline, GEM JR or GEM entries. Registry PASS checks are NOT "
             "qualified trials. 0/741 rights verified means none independently "
             "verified in this workflow, not absence of rights. Reviewer-reported "
             "evidence is not legal adjudication. No approval probabilities or "

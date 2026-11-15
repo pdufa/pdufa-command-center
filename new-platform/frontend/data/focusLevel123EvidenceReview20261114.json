@@ -1,0 +1,744 @@
+{
+  "schemaVersion": "provisional-level123-evidence-review-v1",
+  "asOf": "2026-11-14",
+  "status": "INCOMPLETE_RESEARCH_NOT_FDA_FORECAST",
+  "methodology": "Level 1 records source pointers only; Level 2 phase/design and Level 3 efficacy/safety require source document verification. No numerical scientific scores or FDA predictions inferred from source links, dates or filings.",
+  "records": [
+    {
+      "ticker": "ABVX",
+      "nct": "NCT05507203",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": null,
+      "recordedReleaseDate": "2026-09-10",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "ABVX",
+      "nct": "NCT05507216",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": null,
+      "recordedReleaseDate": "2026-09-10",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "ACHV",
+      "nct": "NCT04576949",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": null,
+      "recordedReleaseDate": "2024-11-14",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "ACHV",
+      "nct": "NCT05206370",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": null,
+      "recordedReleaseDate": "2026-01-14",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "AGIO",
+      "nct": "NCT05031780",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "FDA requested additional safety information concerning possible REMS; major amendment extended sNDA goal date to 2027-02-01. Full benefit-risk assessment remains pending."
+      },
+      "recordedPdufaDate": "2027-02-01",
+      "recordedReleaseDate": "2025-11-19",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "AMLX",
+      "nct": "NCT06747468",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": null,
+      "recordedReleaseDate": "2026-08-18",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "APMD",
+      "nct": "NCT05811247",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2027-02-28",
+      "recordedReleaseDate": "2026-11-03",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "APMD",
+      "nct": "NCT05813275",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2027-02-28",
+      "recordedReleaseDate": "2026-09-11",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "AXSM",
+      "nct": "NCT05059223",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2027-05-01",
+      "recordedReleaseDate": "2024-03-25",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "AXSM",
+      "nct": "NCT05113745",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2027-05-01",
+      "recordedReleaseDate": "2024-11-26",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "BLTE",
+      "nct": "NCT05244304",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2027-02-12",
+      "recordedReleaseDate": null,
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "CAPR",
+      "nct": "NCT05126758",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2026-11-22",
+      "recordedReleaseDate": "2025-12-03",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "CLDX",
+      "nct": "NCT06445023",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": null,
+      "recordedReleaseDate": "2026-09-22",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "CLDX",
+      "nct": "NCT06455202",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": null,
+      "recordedReleaseDate": "2026-09-22",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "COGT",
+      "nct": "NCT05208047",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2026-11-30",
+      "recordedReleaseDate": "2025-11-10",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "CORT",
+      "nct": "NCT03697109",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2026-12-17",
+      "recordedReleaseDate": "2025-04-24",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "CORT",
+      "nct": "NCT04308590",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2026-12-17",
+      "recordedReleaseDate": "2025-08-03",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "CYTK",
+      "nct": "NCT05767346",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2026-11-14",
+      "recordedReleaseDate": "2026-06-09",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "CYTK",
+      "nct": "NCT06081894",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": null,
+      "recordedReleaseDate": "2026-08-28",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "IMNM",
+      "nct": "NCT04871282",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2027-04-28",
+      "recordedReleaseDate": "2025-12-15",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "MIRM",
+      "nct": "NCT06553768",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": null,
+      "recordedReleaseDate": "2026-10-12",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "MLTX",
+      "nct": "NCT06411379",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": null,
+      "recordedReleaseDate": "2025-09-28",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "MLTX",
+      "nct": "NCT06411899",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": null,
+      "recordedReleaseDate": "2025-09-28",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "MLYS",
+      "nct": "NCT06153693",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2026-12-22",
+      "recordedReleaseDate": "2025-03-10",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "PHVS",
+      "nct": "NCT06343779",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2027-04-23",
+      "recordedReleaseDate": "2026-10-08",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "PHVS",
+      "nct": "NCT06669754",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": null,
+      "recordedReleaseDate": "2026-09-08",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "PRAX",
+      "nct": "NCT06087276",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2027-01-29",
+      "recordedReleaseDate": "2025-10-16",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "SRPT",
+      "nct": "NCT02500381",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2027-02-28",
+      "recordedReleaseDate": "2025-11-03",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "SVRA",
+      "nct": "NCT04544293",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2026-11-22",
+      "recordedReleaseDate": "2025-08-07",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "URGN",
+      "nct": "NCT06331299",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2027-06-14",
+      "recordedReleaseDate": "2026-09-28",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "VERA",
+      "nct": "NCT04716231",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": null,
+      "recordedReleaseDate": "2026-10-01",
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    },
+    {
+      "ticker": "ZBIO",
+      "nct": "NCT05662241",
+      "level1": {
+        "sourcePointersRecorded": 2,
+        "sourcePointersExpected": 2,
+        "verifiedSourceScore": null,
+        "reason": "Links recorded; original evidence has not been independently reviewed"
+      },
+      "level2": {
+        "phaseSpecificScore": null,
+        "reason": "Exact phase, trial design and indication-specific evidence not yet independently assessed"
+      },
+      "level3": {
+        "clinicalEvidenceScore": null,
+        "fdaPrediction": "ABSTAIN",
+        "confidence": null,
+        "reason": "Endpoint effect sizes, statistical results, safety and FDA review risks not fully adjudicated"
+      },
+      "recordedPdufaDate": "2027-05-27",
+      "recordedReleaseDate": null,
+      "reviewStatus": "REQUIRES_SOURCE_REVIEW"
+    }
+  ]
+}

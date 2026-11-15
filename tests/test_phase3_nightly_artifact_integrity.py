@@ -303,3 +303,54 @@ class NightlyResearchArtifactIntegrityTests(unittest.TestCase):
 
 if __name__=="__main__":
     unittest.main()
+
+
+def changed_status_fixture(folder):
+    sample_runner_folder(folder)
+    def update(name, transform):
+        path=folder/name;data=json.loads(path.read_text());transform(data);path.write_text(json.dumps(data))
+    update('main_phase3_registry.json',lambda d:d['original_source_records'][0].update(
+        census_status='RECRUITING',current_registry_status='COMPLETED',status_matches_dated_census=False))
+    def status(d):
+        d['items'][0].update(current_registry_status='COMPLETED',status_matches_census=False)
+        d['registry_status_changed_since_saved_census']=1
+    update('main_phase3_registry_status_recency.json',status)
+    update('main_phase3_qualification_scorecard.json',lambda d:d.update(gate_checks_pass=740,gate_checks_review=5929))
+    path=folder/'main_phase3_qualification_summary.md';path.write_text(path.read_text().replace('741/6669','740/6669'))
+
+
+def test_artifact_integrity_derives_unresolved_gates_from_actual_registry_changes(tmp_path):
+    changed_status_fixture(tmp_path)
+    result=make_manifest(tmp_path,'pull_request','2026-10-26','40399999999','a'*40)
+    assert result['reconciled_scope']['verified_registry_identity_checks']==740
+    assert result['reconciled_scope']['retrieved_registry_source_identities']==741
+    assert result['reconciled_scope']['unresolved_mandatory_gate_checks']==5929
+    assert result['reconciled_scope']['qualified_pipeline_total'] is None
+
+
+def test_artifact_integrity_rejects_inflated_pass_count_after_source_change(tmp_path):
+    import pytest
+    changed_status_fixture(tmp_path)
+    path=tmp_path/'main_phase3_qualification_scorecard.json';data=json.loads(path.read_text())
+    data.update(gate_checks_pass=741,gate_checks_review=5928);path.write_text(json.dumps(data))
+    with pytest.raises(ValueError):make_manifest(tmp_path,'pull_request','2026-10-26','40399999999','a'*40)
+
+
+def test_artifact_integrity_rejects_changed_record_promoted_to_pass(tmp_path):
+    import pytest
+    from scripts.phase3_qualification_ledger import GATES
+    changed_status_fixture(tmp_path)
+    path=tmp_path/'main_phase3_qualification_ledger.json';data=json.loads(path.read_text())
+    data['records'][0]['gates']={g:'PASS' if g=='registry_identity' else 'REVIEW' for g in GATES}
+    path.write_text(json.dumps(data))
+    with pytest.raises(ValueError):make_manifest(tmp_path,'pull_request','2026-10-26','40399999999','a'*40)
+
+
+def test_artifact_integrity_rejects_forged_change_flag_types(tmp_path):
+    import pytest
+    sample_runner_folder(tmp_path)
+    path=tmp_path/'main_phase3_registry.json';data=json.loads(path.read_text())
+    data['original_source_records'][0]['phase3_in_current_registry']='yes';path.write_text(json.dumps(data))
+    path=tmp_path/'main_phase3_registry_status_recency.json';data=json.loads(path.read_text())
+    data['items'][0]['phase3_in_current_registry']='yes';path.write_text(json.dumps(data))
+    with pytest.raises(ValueError):make_manifest(tmp_path,'pull_request','2026-10-26','40399999999','a'*40)

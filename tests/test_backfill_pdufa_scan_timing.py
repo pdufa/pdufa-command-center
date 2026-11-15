@@ -4,13 +4,16 @@ import unittest
 
 from scripts.backfill_pdufa_scan_timing import ARCHIVE, HISTORY, PROVENANCE, reconcile
 import json
+from pathlib import Path
+
+FIXTURES = Path(__file__).parent / "fixtures" / "scan-timing-20261030"
 
 
 class HistoricalTimingTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        cls.saved = json.loads(ARCHIVE.read_text(encoding="utf-8"))
-        cls.history = json.loads(HISTORY.read_text(encoding="utf-8"))
+        cls.saved = json.loads((FIXTURES / "archive.json").read_text(encoding="utf-8"))
+        cls.history = json.loads((FIXTURES / "history.json").read_text(encoding="utf-8"))
 
     def test_dated_records_remain_unchanged_except_timing(self):
         original = copy.deepcopy(self.saved)

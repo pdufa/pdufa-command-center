@@ -88,7 +88,19 @@ class SectionControlTests(unittest.TestCase):
         app.secrets["PDUFA_GITHUB_TOKEN"] = "server-token"
         app.secrets["PDUFA_SCAN_CONTROL_PIN"] = "1234"
         empty = pd.DataFrame(columns=["event_key", "ticker", "category", "claim"])
+        # Controls are tested against an explicit local snapshot. Reading the
+        # changing full repository roster made this offline UI test time out
+        # before assertions and depended on other tests' Streamlit cache state.
+        from pipeline_universe import COLUMNS
+        universe = pd.DataFrame(columns=list(COLUMNS) + ["stage_tags"])
+        details = {"sec": [], "verified": [], "extensions": [],
+                   "bases": {"SEC": [], "FDA": []},
+                   "tables": {name: [] for name in ("SEC Base", "SEC Amendments", "FDA Base", "FDA Amendments")},
+                   "queue": [], "queue_notice": "", "registry": [],
+                   "reports": {}, "notes": [], "refresh_notice": ""}
         with patch("filings_scan_controls.section_runs", return_value=([], "")), \
+                patch("filings_base_amendments_ui.load_section_details", return_value=details), \
+                patch("filings_base_amendments_ui.current_pipeline_universe", return_value=universe), \
                 patch("filings_base_amendments_ui.published_filings_files", return_value=(None, "")), \
                 patch("filings_base_amendments_ui.required_issue_queue", return_value=(empty, "")), \
                 patch("filings_scan_controls.dispatch_section_scan") as submit:

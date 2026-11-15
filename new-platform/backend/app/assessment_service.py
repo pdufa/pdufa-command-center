@@ -5,6 +5,7 @@ import hashlib
 import json
 import logging
 import os
+import re
 import threading
 import time
 from fastapi import HTTPException
@@ -17,7 +18,7 @@ LOG = logging.getLogger(__name__)
 _LOCK = threading.RLock()
 _STATE = {"key": "", "building": False, "index": None, "error": "", "snapshot": None, "reviews": {}, "token": ""}
 _REVIEW_CACHE = {"at": 0, "value": {}, "status": "NOT_LOADED"}
-FIELDS = ("nct_id", "study_title", "study_design", "treatment_groups", "primary_outcomes", "secondary_outcomes", "enrollment", "status", "last_update_posted", "primary_completion_date", "has_results")
+FIELDS = ("nct_id", "phases", "study_title", "study_design", "treatment_groups", "primary_outcomes", "secondary_outcomes", "enrollment", "status", "last_update_posted", "primary_completion_date", "has_results", "eligibility", "conditions")
 
 
 def review_evidence():
@@ -55,16 +56,33 @@ def registry_rows(ids=None):
     if ids is not None: query = query.where(db.FullTrialRecord.nct_id.in_(ids))
     with Session(db.ENGINE) as session:
         for item in session.execute(query.execution_options(yield_per=100)):
-            yield item[0], dict(zip(FIELDS, item[1:1 + len(FIELDS)])), item[-2] or [], item[-1].isoformat()
+            # fetched_at is stored in UTC; SQLite drops the SQL timezone flag.
+            # Normalize this trusted database column, not arbitrary source text.
+            fetched = item[-1]
+            if fetched.tzinfo is None:
+                fetched = fetched.replace(tzinfo=timezone.utc)
+            yield item[0], dict(zip(FIELDS, item[1:1 + len(FIELDS)])), item[-2] or [], fetched.isoformat()
+
+
+
+def exact_nct_program_map(rows):
+    """Deterministic, exact-NCT mapping; never infer programs from ticker or indication."""
+    mapping = {}
+    for row in rows.values():
+        nct = nct_id(row)
+        identity = row.get("id")
+        embedded = set(re.findall(r"(?<![A-Za-z0-9])NCT[0-9]{8}(?![A-Za-z0-9])", str(identity or "")))
+        if embedded and (len(embedded) != 1 or nct not in embedded):
+            continue  # Conflicting exact identifiers must not produce a selectable program mapping.
+        if isinstance(nct, str) and re.fullmatch(r"NCT[0-9]{8}", nct) and isinstance(identity, str) and identity:
+            mapping.setdefault(nct, set()).add(identity)
+    return {nct: sorted(identities) for nct, identities in sorted(mapping.items())}
 
 
 def build_index(snapshot, reviews, review_status, key, token):
     try:
         rows = rows_for(snapshot)
-        by_nct = {}
-        for row in rows.values():
-            nct = nct_id(row)
-            if nct: by_nct.setdefault(nct, []).append(row["id"])
+        by_nct = exact_nct_program_map(rows)
         records, updates, covered = {}, [], set()
         writable = os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() not in {"1", "true", "yes"}
         with Session(db.ENGINE) as session:
@@ -79,7 +97,13 @@ def build_index(snapshot, reviews, review_status, key, token):
             records[row["id"]] = [row["id"], *values, result["riskFlags"]]
             if writable and prior.get(row["id"]) != evidence_hash:
                 updates.append({"exact_id": row["id"], "program_id": row.get("programId") or "", "model_version": MODEL,
-                                "evidence_hash": evidence_hash, "summary": {"models": values, "riskFlags": result["riskFlags"]}, "assessed_at": clock})
+                                "evidence_hash": evidence_hash, "summary": {
+                                    "models": values, "riskFlags": result["riskFlags"],
+                                    "levelOneIntake": result["levelOneIntake"],
+                                    "levelsTwoToSix": result["levelsTwoToSix"],
+                                    "levelsSevenToTwenty": result["levelsSevenToTwenty"],
+                                    "scientificReadiness": result["scientificReadiness"],
+                                }, "assessed_at": clock})
         for nct, registry, analyses, checked in registry_rows():
             for identity in by_nct.get(nct, []):
                 accept(rows[identity], registry, analyses, checked)
@@ -103,7 +127,8 @@ def build_index(snapshot, reviews, review_status, key, token):
                   "reviewSource": review_status, "historyStatus": "SAVED" if writable else "READ_ONLY", "totals": totals,
                   "columns": ["id", "PIPELINE", "GEM_JR", "GEM", "riskFlags"],
                   "scoreColumns": ["score", "observedPoints", "coverage", "categoryPoints1to7", "categoryCoverage1to7"],
-                  "records": ordered}
+                  "records": ordered,
+                  "exactNctProgramMap": by_nct}
         # Keep the whole-universe payload safely under Vercel's response limit.
         if len(packed(result).encode()) > 4_000_000: raise ValueError("Score index exceeds response budget")
         with _LOCK:
@@ -157,6 +182,11 @@ def exact_detail(identity):
     row = rows_for(snapshot).get(identity)
     if row is None: raise HTTPException(status_code=404, detail="Exact program is not in the current Pipeline universe")
     nct = nct_id(row)
+    # The detail endpoint must enforce the same exact-identity guard as the index.
+    # Otherwise a manually entered program ID could bypass NCT conflict filtering.
+    allowed = exact_nct_program_map({identity: row})
+    if not nct or identity not in allowed.get(nct, []):
+        raise HTTPException(status_code=409, detail="Conflicting or missing exact NCT identity")
     saved = next(registry_rows([nct]), None) if nct else None
     result = score_candidate(row, saved[1] if saved else None, saved[2] if saved else None, reviews.get(identity, {}),
                              today=date.fromisoformat(snapshot["assessmentDate"]), registry_checked=saved[3] if saved else "")

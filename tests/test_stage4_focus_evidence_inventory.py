@@ -13,7 +13,7 @@ class FocusEvidenceInventoryTests(unittest.TestCase):
     def test_canonical_roster(self):
         doc = json.loads(module.ROSTER.read_text(encoding="utf-8"))
         result = module.summarize(doc)
-        self.assertEqual(result["focus_trials"], 29)
+        self.assertEqual(result["focus_trials"], 32)
         self.assertFalse(result["source_links_are_verified"])
         self.assertEqual(result["independent_trial_adjudications_verified"], 0)
 

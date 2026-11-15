@@ -15,7 +15,7 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-CENSUS = ROOT / "data/phase3_all_years_300m_10b_trials.csv"
+CENSUS = ROOT / "new-platform/frontend/public/phase3-census-2026-10-26.csv"
 ISSUERS = ROOT / "new-platform/frontend/public/phase3-census-sources-2026-10-26.json"
 ABVX_CASE = ROOT / "data/research_abvx_obefazimod_rights_2026-10-26.json"
 OTHER_CASES = ROOT / "data/research_issuer_rights_claims_achv_mirm_2026-10-26.json"

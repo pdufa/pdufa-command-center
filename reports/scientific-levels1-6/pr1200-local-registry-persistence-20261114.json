@@ -1,0 +1,14 @@
+{
+  "scope": "LOCAL_SQLITE_REAL_PUBLIC_REGISTRY_NO_PRODUCTION_WRITES",
+  "nctId": "NCT04576949",
+  "source": "https://clinicaltrials.gov/api/v2/studies/NCT04576949",
+  "sourceDate": "2026-01-15",
+  "retrievedAt": "2026-11-14T19:56:36.446488+00:00",
+  "rawSha256": "39ad68a0b06ec3f4ce59092aa14114ef6eeae1d43569edfa12b23dda6b490742",
+  "intake": "INTAKE_ONLY",
+  "savedHistoryRecords": 1,
+  "allSixContractsPersistedAndRetrieved": true,
+  "scientificValidation": "NOT_VERIFIED",
+  "fdaPrediction": "ABSTAIN",
+  "reviewedCriteria": 0
+}

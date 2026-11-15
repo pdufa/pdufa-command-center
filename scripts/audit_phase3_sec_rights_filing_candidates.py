@@ -21,7 +21,7 @@ import urllib.parse
 import urllib.request
 
 ROOT = Path(__file__).resolve().parents[1]
-TRIALS = ROOT / "data/phase3_all_years_300m_10b_trials.csv"
+TRIALS = ROOT / "new-platform/frontend/public/phase3-census-2026-10-26.csv"
 SOURCES = ROOT / "new-platform/frontend/public/phase3-census-sources-2026-10-26.json"
 SEC_BASE = "https://data.sec.gov/submissions/"
 SEC_FORMS = frozenset(("10-K", "10-K/A", "20-F", "20-F/A", "10-Q", "10-Q/A",

@@ -9,5 +9,10 @@
       "path": "/api/cron/pdufa-nightly-backup-pst",
       "schedule": "15 4 * * *"
     }
-  ]
+  ],
+  "git": {
+    "deploymentEnabled": {
+      "codex/level1-6-explicit-scientific-readiness-20261114": false
+    }
+  }
 }

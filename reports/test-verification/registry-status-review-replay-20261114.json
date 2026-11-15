@@ -1,0 +1,98 @@
+{
+  "scope": "READ_ONLY_REPLAY_OF_OFFICIAL_CI_ARTIFACT_NO_PRODUCTION_WRITES",
+  "sourceRunId": 43639289871,
+  "sourceArtifactId": 14130658292,
+  "registryFileSha256": "dab7feb9514458f309909d9bba7de175d342765b85617b9516eef3bec1180486",
+  "trialCount": 741,
+  "sourceGateCountsPreserved": {
+    "PASS": 732,
+    "REVIEW": 9
+  },
+  "inputLedgerUnchanged": true,
+  "rightsVerified": 0,
+  "qualifiedTrialCount": null,
+  "casebookTrials": 741,
+  "statusChanges": [
+    {
+      "nct_id": "NCT06868264",
+      "census_status": "ACTIVE_NOT_RECRUITING",
+      "current_registry_status": "COMPLETED",
+      "phase3_in_current_registry": true,
+      "source": "https://clinicaltrials.gov/api/v2/studies/NCT06868264",
+      "source_sha256": "2372d6480ba4ca45afc7e05260210ba12db68d00f362f53f4c1c7558634c180d",
+      "fetched_at_utc": "2026-11-14T20:47:16.054014+00:00"
+    },
+    {
+      "nct_id": "NCT06295731",
+      "census_status": "ACTIVE_NOT_RECRUITING",
+      "current_registry_status": "RECRUITING",
+      "phase3_in_current_registry": true,
+      "source": "https://clinicaltrials.gov/api/v2/studies/NCT06295731",
+      "source_sha256": "8c3a8aee2ffdd1b03344f4a6a12d8fa397eff50c88be9b61f6556b9e56e5fb35",
+      "fetched_at_utc": "2026-11-14T20:47:22.816771+00:00"
+    },
+    {
+      "nct_id": "NCT06768671",
+      "census_status": "ACTIVE_NOT_RECRUITING",
+      "current_registry_status": "COMPLETED",
+      "phase3_in_current_registry": true,
+      "source": "https://clinicaltrials.gov/api/v2/studies/NCT06768671",
+      "source_sha256": "9916596aa1c1ede359e311be96b864b389355933154c5dfc9aebac7cd29cd4cf",
+      "fetched_at_utc": "2026-11-14T20:47:29.794980+00:00"
+    },
+    {
+      "nct_id": "NCT06672237",
+      "census_status": "RECRUITING",
+      "current_registry_status": "ACTIVE_NOT_RECRUITING",
+      "phase3_in_current_registry": true,
+      "source": "https://clinicaltrials.gov/api/v2/studies/NCT06672237",
+      "source_sha256": "6a19861c3ab670c4e35f44acdb3a87dd4f0feeacfd5f84e66984a49e303770d3",
+      "fetched_at_utc": "2026-11-14T20:47:31.288143+00:00"
+    },
+    {
+      "nct_id": "NCT07365826",
+      "census_status": "ACTIVE_NOT_RECRUITING",
+      "current_registry_status": "COMPLETED",
+      "phase3_in_current_registry": true,
+      "source": "https://clinicaltrials.gov/api/v2/studies/NCT07365826",
+      "source_sha256": "6c6282bad203cb9f0e1c8a33f1dbfec72e0255316bc2743c6d4b82e070e33c54",
+      "fetched_at_utc": "2026-11-14T20:47:33.792273+00:00"
+    },
+    {
+      "nct_id": "NCT07425392",
+      "census_status": "ACTIVE_NOT_RECRUITING",
+      "current_registry_status": "COMPLETED",
+      "phase3_in_current_registry": true,
+      "source": "https://clinicaltrials.gov/api/v2/studies/NCT07425392",
+      "source_sha256": "d72729653493b25a64634a3bee2cb5d6a56518eb09d6c3674eb77a304f00056e",
+      "fetched_at_utc": "2026-11-14T20:47:33.813284+00:00"
+    },
+    {
+      "nct_id": "NCT06415344",
+      "census_status": "ACTIVE_NOT_RECRUITING",
+      "current_registry_status": "TERMINATED",
+      "phase3_in_current_registry": true,
+      "source": "https://clinicaltrials.gov/api/v2/studies/NCT06415344",
+      "source_sha256": "dce053455f48bd0a7e424695958b94ffeaf5bb97374332d1478ba3484e4bf76e",
+      "fetched_at_utc": "2026-11-14T20:47:36.514534+00:00"
+    },
+    {
+      "nct_id": "NCT06617429",
+      "census_status": "ACTIVE_NOT_RECRUITING",
+      "current_registry_status": "TERMINATED",
+      "phase3_in_current_registry": true,
+      "source": "https://clinicaltrials.gov/api/v2/studies/NCT06617429",
+      "source_sha256": "cda822c830489201bdbc1636fffa83e2668747bc4a54614657b66c10d0b9d845",
+      "fetched_at_utc": "2026-11-14T20:47:36.490029+00:00"
+    },
+    {
+      "nct_id": "NCT03992430",
+      "census_status": "ACTIVE_NOT_RECRUITING",
+      "current_registry_status": "COMPLETED",
+      "phase3_in_current_registry": true,
+      "source": "https://clinicaltrials.gov/api/v2/studies/NCT03992430",
+      "source_sha256": "00590beafa5e971296048d18c5dacd9b2fb329a99c98149ccb85f260a126aff6",
+      "fetched_at_utc": "2026-11-14T20:47:39.517899+00:00"
+    }
+  ]
+}

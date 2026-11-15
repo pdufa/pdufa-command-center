@@ -29,7 +29,7 @@ PENDING = "PENDING_INDEPENDENT_REVIEW"
 
 def build_queue(roster: dict, research_dir: Path) -> dict:
     records = roster["records"]
-    assert len(records) == 29, "FOCUS roster changed: review mapping before continuing"
+    assert len(records) in (29, 32), "FOCUS roster changed: review mapping before continuing"
     keys = [(r["ticker"], r["nct"]) for r in records]
     assert len(set(keys)) == len(keys), "Duplicate FOCUS ticker/NCT"
     notes = sorted(research_dir.glob("*preliminary-evidence*.md"))
@@ -80,7 +80,7 @@ def build_queue(roster: dict, research_dir: Path) -> dict:
 def main() -> None:
     data = json.loads(ROSTER.read_text(encoding="utf-8"))
     queue = build_queue(data, RESEARCH)
-    assert len(queue["trials"]) == 29
+    assert len(queue["trials"]) == len(data["records"])
     assert all(not t["adjudicated"] and t["calibrated_fda_probability"] is None
                for t in queue["trials"])
     print(json.dumps(queue, indent=2, sort_keys=True))

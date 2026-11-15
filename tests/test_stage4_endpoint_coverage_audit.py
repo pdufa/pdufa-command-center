@@ -31,8 +31,9 @@ class CoverageAuditTests(unittest.TestCase):
         report = module.audit(a, b, roster)
         self.assertEqual(report["retrieved"], 28)
         self.assertEqual(report["failed"], 1)
-        self.assertEqual(report["endpoint_evidence_counts"]["primary_outcome_review_required"], 25)
+        self.assertEqual(report["endpoint_evidence_counts"]["primary_outcome_review_required"], 26)
         self.assertEqual(report["endpoint_evidence_counts"]["posted_primary_outcome_missing"], 1)
+        self.assertEqual(sum(report["endpoint_evidence_counts"].values()), report["retrieved"])
         self.assertEqual(report["prediction_count"], 0)
         self.assertFalse(report["scientific_verification_complete"])
 

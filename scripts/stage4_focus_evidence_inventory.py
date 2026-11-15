@@ -11,7 +11,7 @@ def summarize(document):
     if not isinstance(document, dict) or not isinstance(document.get("records"), list):
         raise ValueError("FOCUS document must contain a records list")
     records = document["records"]
-    if len(records) != 29:
+    if len(records) not in (29, 32):
         raise ValueError(f"Expected 29 FOCUS trials, got {len(records)}")
     seen = set()
     missing = []

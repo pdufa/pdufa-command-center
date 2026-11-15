@@ -21,7 +21,7 @@ if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from scripts.phase3_sec_rights_documents_pilot import validate_leads
-from scripts.phase3_qualification_ledger import GATES
+from scripts.phase3_qualification_ledger import GATES, registry_gate_allows_research
 
 TOTAL = 741
 ISSUERS = 130
@@ -126,7 +126,7 @@ def build_worklist(registry, ledger, casebook, leads, trial_join):
         recorded_gates = gate_row.get("gates")
         if (not isinstance(recorded_gates, dict)
             or set(recorded_gates) != set(GATES)
-            or recorded_gates["registry_identity"] != "PASS"
+            or not registry_gate_allows_research(recorded_gates, source)
             or recorded_gates["current_commercial_rights"] != "REVIEW"
             or gate_row.get("qualification_status") != "REVIEW"):
             raise ValueError(f"{nct}: no gate/rights promotion is permitted")
@@ -181,6 +181,10 @@ def build_worklist(registry, ledger, casebook, leads, trial_join):
             "nct_id": nct, "ticker": ticker, "census_company": company,
             "issuer_sec_cik": cik, "registry_status": source["current_registry_status"],
             "registry_phase3_current": source["phase3_in_current_registry"],
+            "registry_identity_gate": recorded_gates["registry_identity"],
+            "registry_review_context": {key: source.get(key) for key in (
+                "nct_id", "source", "source_sha256", "census_status", "current_registry_status",
+                "status_matches_dated_census", "phase3_in_current_registry")},
             "registry_source_url": SOURCE + nct,
             "registry_source_sha256": source["source_sha256"],
             "source_fetched_at_utc": source.get("fetched_at_utc"),

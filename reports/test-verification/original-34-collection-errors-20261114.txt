@@ -1,0 +1,471 @@
+
+==================================== ERRORS ====================================
+________________ ERROR collecting tests/test_adhoc_dispatch.py _________________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_adhoc_dispatch.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_adhoc_dispatch.py:7: in <module>
+    import nightly_scan_dashboard as mod
+nightly_scan_dashboard.py:15: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+______________ ERROR collecting tests/test_daily_trial_recheck.py ______________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_daily_trial_recheck.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_daily_trial_recheck.py:9: in <module>
+    from scripts import all_phase_scan as scan
+scripts/all_phase_scan.py:10: in <module>
+    import requests
+E   ModuleNotFoundError: No module named 'requests'
+__________ ERROR collecting tests/test_filings_base_amendments_ui.py ___________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_filings_base_amendments_ui.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_filings_base_amendments_ui.py:6: in <module>
+    from filings_base_amendments_ui import (table_rows, missing_research_rows,
+filings_base_amendments_ui.py:16: in <module>
+    from scan_status_ui import required_issue_queue, pacific_time
+scan_status_ui.py:18: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+_______________ ERROR collecting tests/test_filings_live_data.py _______________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_filings_live_data.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_filings_live_data.py:7: in <module>
+    from filings_base_amendments_ui import load_section_details, missing_research_rows
+filings_base_amendments_ui.py:16: in <module>
+    from scan_status_ui import required_issue_queue, pacific_time
+scan_status_ui.py:18: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+_____________ ERROR collecting tests/test_filings_scan_controls.py _____________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_filings_scan_controls.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_filings_scan_controls.py:7: in <module>
+    from streamlit.testing.v1 import AppTest
+E   ModuleNotFoundError: No module named 'streamlit'
+__________ ERROR collecting tests/test_focus_phvs_prax_blte_review.py __________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_focus_phvs_prax_blte_review.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_focus_phvs_prax_blte_review.py:13: in <module>
+    import collect_focus_survey_evidence as collector
+E   ModuleNotFoundError: No module named 'collect_focus_survey_evidence'
+_____________ ERROR collecting tests/test_four_pdufa_score_tabs.py _____________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_four_pdufa_score_tabs.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_four_pdufa_score_tabs.py:9: in <module>
+    from streamlit.testing.v1 import AppTest
+E   ModuleNotFoundError: No module named 'streamlit'
+_____________ ERROR collecting tests/test_gem_fourth_scan_block.py _____________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_gem_fourth_scan_block.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_gem_fourth_scan_block.py:8: in <module>
+    from gem_scan_block_ui import valid_gem_report, gem_block_summary_row, report_recent
+gem_scan_block_ui.py:15: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+______________ ERROR collecting tests/test_gem_lifecycle_cards.py ______________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_gem_lifecycle_cards.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_gem_lifecycle_cards.py:6: in <module>
+    from gem_trial_hierarchy_ui import trial_card_rows, _benchmark_rows
+gem_trial_hierarchy_ui.py:16: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+_____________ ERROR collecting tests/test_gem_nested_master_ui.py ______________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_gem_nested_master_ui.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_gem_nested_master_ui.py:5: in <module>
+    from gem_nested_master_ui import FACTOR_FIELDS, _score_check, _unique_sources, score_factor_inputs
+gem_nested_master_ui.py:17: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+_____________ ERROR collecting tests/test_gem_potential_picker.py ______________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_gem_potential_picker.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_gem_potential_picker.py:9: in <module>
+    from gem_potential_ui import research_program_label
+gem_potential_ui.py:9: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+_______________ ERROR collecting tests/test_gem_stage_dossier.py _______________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_gem_stage_dossier.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_gem_stage_dossier.py:8: in <module>
+    from gem_stage_dossier import exact_event, scan_health, source_date, timeline_events
+gem_stage_dossier.py:15: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+________________ ERROR collecting tests/test_gem_visual_page.py ________________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_gem_visual_page.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_gem_visual_page.py:8: in <module>
+    from gem_visual_page import _show, _rankings
+gem_visual_page.py:5: in <module>
+    from gem_stage_dossier import exact_event
+gem_stage_dossier.py:15: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+___________ ERROR collecting tests/test_level16_staging_identity.py ____________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_level16_staging_identity.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_level16_staging_identity.py:9: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+___________ ERROR collecting tests/test_level16_staging_postgres.py ____________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_level16_staging_postgres.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_level16_staging_postgres.py:23: in <module>
+    from test_level16_staging_identity import (
+tests/test_level16_staging_identity.py:9: in <module>
+    import jwt
+E   ModuleNotFoundError: No module named 'jwt'
+_______________ ERROR collecting tests/test_navigation_merge.py ________________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_navigation_merge.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_navigation_merge.py:9: in <module>
+    from streamlit.testing.v1 import AppTest
+E   ModuleNotFoundError: No module named 'streamlit'
+______________ ERROR collecting tests/test_overnight_status_ui.py ______________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_overnight_status_ui.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_overnight_status_ui.py:5: in <module>
+    from overnight_status_ui import (
+overnight_status_ui.py:13: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+_______________ ERROR collecting tests/test_p3_auto_promotion.py _______________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_p3_auto_promotion.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_p3_auto_promotion.py:13: in <module>
+    spec.loader.exec_module(promote)
+scripts/auto_promote_p3_post_data.py:18: in <module>
+    import google.auth.transport.requests
+E   ModuleNotFoundError: No module named 'google'
+____________ ERROR collecting tests/test_p3_existing_row_refresh.py ____________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_p3_existing_row_refresh.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_p3_existing_row_refresh.py:14: in <module>
+    spec.loader.exec_module(refresh)
+scripts/refresh_existing_p3_post_data.py:20: in <module>
+    import google.auth.transport.requests
+E   ModuleNotFoundError: No module named 'google'
+____________ ERROR collecting tests/test_p3_market_cap_secondary.py ____________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_p3_market_cap_secondary.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_p3_market_cap_secondary.py:9: in <module>
+    from p3_market_cap_secondary import BackupCapError, parse_source, lookup_missing_primary, fetch_source, SOURCE
+scripts/p3_market_cap_secondary.py:17: in <module>
+    import requests
+E   ModuleNotFoundError: No module named 'requests'
+____________ ERROR collecting tests/test_p3_pool_full_discovery.py _____________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_p3_pool_full_discovery.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_p3_pool_full_discovery.py:12: in <module>
+    spec.loader.exec_module(mod)
+scripts/p3_pool_full_discovery.py:23: in <module>
+    import google.auth.transport.requests
+E   ModuleNotFoundError: No module named 'google'
+___________ ERROR collecting tests/test_p3_regulatory_stage_rules.py ___________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_p3_regulatory_stage_rules.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_p3_regulatory_stage_rules.py:16: in <module>
+    spec.loader.exec_module(gate)
+scripts/auto_promote_p3_post_data.py:18: in <module>
+    import google.auth.transport.requests
+E   ModuleNotFoundError: No module named 'google'
+____________ ERROR collecting tests/test_pdufa_circled_help_grid.py ____________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_pdufa_circled_help_grid.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_pdufa_circled_help_grid.py:8: in <module>
+    from pdufa_circled_help_grid import dashboard_sheet_html
+pdufa_circled_help_grid.py:13: in <module>
+    import streamlit.components.v1 as components
+E   ModuleNotFoundError: No module named 'streamlit'
+_____________ ERROR collecting tests/test_pdufa_display_columns.py _____________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_pdufa_display_columns.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/tmp/pdufa-venv/lib/python3.12/site-packages/pandas/compat/_optional.py:158: in import_optional_dependency
+    module = importlib.import_module(name)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1387: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1360: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1324: in _find_and_load_unlocked
+    ???
+E   ModuleNotFoundError: No module named 'jinja2'
+
+The above exception was the direct cause of the following exception:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_pdufa_display_columns.py:11: in <module>
+    from pdufa_table_headers import HELP_ICON, header_config, column_width_for, style_countdown_cells
+pdufa_table_headers.py:7: in <module>
+    from pandas.io.formats.style import Styler
+/tmp/pdufa-venv/lib/python3.12/site-packages/pandas/io/formats/style.py:36: in <module>
+    jinja2 = import_optional_dependency("jinja2", extra="DataFrame.style requires jinja2.")
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/tmp/pdufa-venv/lib/python3.12/site-packages/pandas/compat/_optional.py:161: in import_optional_dependency
+    raise ImportError(msg) from err
+E   ImportError: `Import Jinja2` failed. DataFrame.style requires jinja2. Use pip, conda, or your preferred package management tool to install the Jinja2 package.
+_______________ ERROR collecting tests/test_pipeline_ui_smoke.py _______________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_pipeline_ui_smoke.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_pipeline_ui_smoke.py:10: in <module>
+    from streamlit.testing.v1 import AppTest
+E   ModuleNotFoundError: No module named 'streamlit'
+____________ ERROR collecting tests/test_scan_activity_dashboard.py ____________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_scan_activity_dashboard.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_scan_activity_dashboard.py:6: in <module>
+    import scan_activity_dashboard as viewer
+scan_activity_dashboard.py:18: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+________________ ERROR collecting tests/test_scan_status_ui.py _________________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_scan_status_ui.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_scan_status_ui.py:4: in <module>
+    from scan_status_ui import (
+scan_status_ui.py:18: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+_____________ ERROR collecting tests/test_stage_header_overlay.py ______________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_stage_header_overlay.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_stage_header_overlay.py:6: in <module>
+    from stage_header_overlay import _SCRIPT, position_stage_filter
+stage_header_overlay.py:10: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+________________ ERROR collecting tests/test_stage_wt_tables.py ________________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_stage_wt_tables.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_stage_wt_tables.py:8: in <module>
+    from stage_wt_tables import selected_stage_rows, stage_rows
+stage_wt_tables.py:10: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+_________________ ERROR collecting tests/test_table_groups.py __________________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_table_groups.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_table_groups.py:7: in <module>
+    from table_groups import MAX_COLUMNS, _filter_stage_rows, _stage_header_layout, apply_editor_changes, column_groups, column_topic
+table_groups.py:8: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+______________ ERROR collecting tests/test_ticker_toggle_panel.py ______________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_ticker_toggle_panel.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_ticker_toggle_panel.py:10: in <module>
+    from ticker_toggle_panel import (
+ticker_toggle_panel.py:12: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+__________________ ERROR collecting tests/test_today_page.py ___________________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_today_page.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_today_page.py:7: in <module>
+    from today_page import assemble
+today_page.py:6: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+_________ ERROR collecting tests/test_unified_scans_command_center.py __________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_unified_scans_command_center.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_unified_scans_command_center.py:6: in <module>
+    from unified_scans_command_center import (
+unified_scans_command_center.py:15: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+_____________ ERROR collecting tests/test_unified_timing_legend.py _____________
+ImportError while importing test module '/workspace/pdufa-command-center/tests/test_unified_timing_legend.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/importlib/__init__.py:90: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+tests/test_unified_timing_legend.py:7: in <module>
+    from unified_clinical_trading import _timing_legend_html
+unified_clinical_trading.py:6: in <module>
+    import streamlit as st
+E   ModuleNotFoundError: No module named 'streamlit'
+=============================== warnings summary ===============================
+../../tmp/pdufa-venv/lib/python3.12/site-packages/fastapi/testclient.py:1
+  /tmp/pdufa-venv/lib/python3.12/site-packages/fastapi/testclient.py:1: StarletteDeprecationWarning: Using `httpx` with `starlette.testclient` is deprecated; install `httpx2` instead.
+    from starlette.testclient import TestClient as TestClient  # noqa
+
+pdufa_circled_help_grid.py:186
+  /workspace/pdufa-command-center/pdufa_circled_help_grid.py:186: SyntaxWarning: invalid escape sequence '\-'
+    .filter(t => typeof t === 'string' && /^[A-Z][A-Z0-9.\-]{0,12}$/.test(t)))];
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR tests/test_adhoc_dispatch.py
+ERROR tests/test_daily_trial_recheck.py
+ERROR tests/test_filings_base_amendments_ui.py
+ERROR tests/test_filings_live_data.py
+ERROR tests/test_filings_scan_controls.py
+ERROR tests/test_focus_phvs_prax_blte_review.py
+ERROR tests/test_four_pdufa_score_tabs.py
+ERROR tests/test_gem_fourth_scan_block.py
+ERROR tests/test_gem_lifecycle_cards.py
+ERROR tests/test_gem_nested_master_ui.py
+ERROR tests/test_gem_potential_picker.py
+ERROR tests/test_gem_stage_dossier.py
+ERROR tests/test_gem_visual_page.py
+ERROR tests/test_level16_staging_identity.py
+ERROR tests/test_level16_staging_postgres.py
+ERROR tests/test_navigation_merge.py
+ERROR tests/test_overnight_status_ui.py
+ERROR tests/test_p3_auto_promotion.py
+ERROR tests/test_p3_existing_row_refresh.py
+ERROR tests/test_p3_market_cap_secondary.py
+ERROR tests/test_p3_pool_full_discovery.py
+ERROR tests/test_p3_regulatory_stage_rules.py
+ERROR tests/test_pdufa_circled_help_grid.py
+ERROR tests/test_pdufa_display_columns.py
+ERROR tests/test_pipeline_ui_smoke.py
+ERROR tests/test_scan_activity_dashboard.py
+ERROR tests/test_scan_status_ui.py
+ERROR tests/test_stage_header_overlay.py
+ERROR tests/test_stage_wt_tables.py
+ERROR tests/test_table_groups.py
+ERROR tests/test_ticker_toggle_panel.py
+ERROR tests/test_today_page.py
+ERROR tests/test_unified_scans_command_center.py
+ERROR tests/test_unified_timing_legend.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 34 errors during collection !!!!!!!!!!!!!!!!!!!
+2 warnings, 34 errors in 3.37s

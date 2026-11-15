@@ -1,0 +1,254 @@
+"""Phase-aware scientific assessment contracts for Levels 2–6.
+
+These are executable evidence-readiness checks, NOT validated efficacy scores
+or FDA approval probabilities. Missing and not-yet-expected are distinct.
+"""
+from __future__ import annotations
+
+from datetime import date
+import re
+from urllib.parse import urlparse
+
+LEVELS = {
+    2: ("Trial design and methodology", (
+        "protocol", "randomizationAndControl", "blindingAndBias",
+        "populationAndEligibility", "sampleSizeRationale")),
+    3: ("Statistical analysis and efficacy", (
+        "statisticalAnalysisPlan", "primaryEndpointResults", "effectSizeAndPrecision",
+        "missingDataHandling", "multiplicityAdjustment")),
+    4: ("Safety and benefit-risk", (
+        "adverseEvents", "seriousAdverseEvents", "exposureAndFollowup",
+        "discontinuations", "benefitRiskInterpretation")),
+    5: ("Indication-specific clinical assessment", (
+        "indicationDefinition", "standardOfCareComparator", "clinicalMeaningfulness",
+        "subgroupGeneralizability", "unmetNeedContext")),
+    6: ("FDA regulatory readiness", (
+        "regulatoryPathway", "agencyInteractions", "applicationDossier",
+        "manufacturingReadiness", "labelingAndRiskMitigation")),
+}
+# Requirements that are not normally due at early-phase intake. Absence
+# must not be treated as an adverse scientific finding.
+LATE_PHASE = {
+    (3, "primaryEndpointResults"), (3, "effectSizeAndPrecision"),
+    (4, "benefitRiskInterpretation"), (6, "applicationDossier"),
+    (6, "manufacturingReadiness"), (6, "labelingAndRiskMitigation"),
+}
+
+
+def _day(value):
+    try:
+        raw = value if isinstance(value, str) else ""
+        if not re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", raw):
+            return None
+        return date.fromisoformat(raw)
+    except ValueError:
+        return None
+
+
+def _valid_url(value):
+    if not isinstance(value, str) or any(ch.isspace() for ch in value):
+        return False
+    try:
+        parsed = urlparse(value)
+        return parsed.scheme == "https" and bool(parsed.hostname) and not parsed.username and not parsed.password
+    except ValueError:
+        return False
+
+
+def _source_matches_trial(source, trial_id):
+    """Require exact identity in registry API, study and registered PDF URLs."""
+    try:
+        parsed = urlparse(source)
+        host = (parsed.hostname or "").lower()
+        path = parsed.path.rstrip("/")
+        if host == "cdn.clinicaltrials.gov":
+            match = re.fullmatch(r"/large-docs/([0-9]{2})/(NCT[0-9]{8})/[^/]+\.pdf", path)
+            return bool(match and match[2] == trial_id and match[1] == trial_id[-2:])
+        if host not in {"clinicaltrials.gov", "www.clinicaltrials.gov"}:
+            return True
+        return path in {"/study/" + trial_id, "/api/v2/studies/" + trial_id}
+    except (TypeError, ValueError):
+        return False
+
+
+def assess_review_contracts(level_one, *, trial_id, evidence=None, definitions, not_yet_expected=()):
+    """Return independent level inventories; never convert coverage into a score."""
+    evidence = evidence if isinstance(evidence, dict) else {}
+    if not isinstance(level_one, dict):
+        level_one = {}
+    phase = level_one.get("phase")
+    cutoff = _day(level_one.get("assessmentCutoff"))
+    verified = (level_one.get("executionStatus") == "INTAKE_ONLY"
+                and level_one.get("scientificValidation") == "NOT_VERIFIED"
+                and level_one.get("fdaPrediction") == "ABSTAIN"
+                and isinstance(trial_id, str)
+                and re.fullmatch(r"NCT[0-9]{8}", trial_id) is not None
+                and bool(cutoff)
+                and phase in {"EARLY_PHASE1", "PHASE1", "PHASE2", "PHASE3", "PHASE4"}
+                and level_one.get("trialStatus") in {
+                    "NOT_YET_RECRUITING", "RECRUITING", "ENROLLING_BY_INVITATION",
+                    "ACTIVE_NOT_RECRUITING", "SUSPENDED", "TERMINATED",
+                    "COMPLETED", "WITHDRAWN",
+                })
+    early = phase in {"EARLY_PHASE1", "PHASE1"}
+    pre_application = phase in {"EARLY_PHASE1", "PHASE1", "PHASE2"}
+    results = {}
+    # Explicit evidence quality gates prevent a complete-looking dossier from
+    # being treated as adjudicated when reviewers did not supply source identity.
+    for number, (name, criteria) in definitions.items():
+        states = {}
+        accepted = {}
+        rejection_reasons = {}
+        for criterion in criteria:
+            key = f"{number}.{criterion}"
+            if not verified:
+                states[criterion] = "BLOCKED_UNVERIFIED_PHASE"
+                continue
+            if ((number, criterion) in not_yet_expected or
+                    (early and (number, criterion) in LATE_PHASE) or
+                    (pre_application and number == 6 and criterion in {
+                        "applicationDossier", "manufacturingReadiness", "labelingAndRiskMitigation"
+                    })):
+                states[criterion] = "NOT_YET_EXPECTED"
+                continue
+            record = evidence.get(key)
+            # A reviewed criterion may be explicitly recorded as unavailable;
+            # this is not evidence of an unfavorable clinical outcome.
+            if isinstance(record, dict) and record.get("availability") == "NOT_PUBLIC":
+                # An unsupported "not public" flag is not proof of absence.
+                checked = _day(record.get("checkedAt"))
+                source = record.get("source")
+                if (record.get("nctId") == trial_id and _valid_url(source)
+                        and _source_matches_trial(source, trial_id)
+                        and checked and checked <= cutoff
+                        and isinstance(record.get("searchRationale"), str)
+                        and record["searchRationale"].strip()):
+                    states[criterion] = "UNPUBLISHED"
+                else:
+                    states[criterion] = "UNVERIFIED_UNPUBLISHED_CLAIM"
+                continue
+            if not isinstance(record, dict):
+                states[criterion] = "NOT_ASSESSED"
+                continue
+            # Explicitly quarantine unsupported review records. A quoted
+            # excerpt alone does not prove the source was independently read.
+            if record.get("sourceVerified") is not True and record.get("availability") != "NOT_PUBLIC":
+                states[criterion] = "REJECTED_EVIDENCE"
+                rejection_reasons[criterion] = "SOURCE_NOT_VERIFIED"
+                continue
+            # Self-reported sourceVerified is not sufficient provenance.
+            # Require an identified verification actor, method, and timestamp.
+            verification_day = _day(record.get("sourceVerifiedAt"))
+            verification_actor = record.get("sourceVerifiedBy")
+            verification_method = record.get("sourceVerificationMethod")
+            if (not verification_day or verification_day > cutoff
+                    or not isinstance(verification_actor, str)
+                    or not verification_actor.strip()
+                    or verification_method not in {"DIRECT_DOCUMENT_REVIEW", "REGISTRY_RECORD_REVIEW"}):
+                states[criterion] = "REJECTED_EVIDENCE"
+                rejection_reasons[criterion] = "SOURCE_VERIFICATION_PROVENANCE_MISSING"
+                continue
+            source_day = _day(record.get("sourceDate"))
+            review_day = _day(record.get("reviewedAt"))
+            retrieval_day = _day(record.get("sourceRetrievedAt"))
+            # Legacy reviews lacking a retrieval receipt remain explicitly
+            # incomplete provenance. Never invent a collection date. Supplied
+            # receipts must satisfy the same cutoff and source chronology.
+            if "sourceRetrievedAt" in record and (
+                    not retrieval_day or not source_day or not review_day
+                    or not source_day <= retrieval_day <= verification_day <= review_day <= cutoff):
+                states[criterion] = "REJECTED_EVIDENCE"
+                rejection_reasons[criterion] = "INVALID_RETRIEVAL_CHRONOLOGY"
+                continue
+            if record.get("conflict") is True:
+                states[criterion] = "REJECTED_EVIDENCE"
+                rejection_reasons[criterion] = "CONFLICTING_EVIDENCE"
+                continue
+            url = record.get("source")
+            if (record.get("nctId") != trial_id or not _valid_url(url)
+                    or not _source_matches_trial(url, trial_id)
+                    or not source_day or not review_day
+                    or not source_day <= review_day <= cutoff
+                    or not source_day <= verification_day <= review_day <= cutoff
+                    or record.get("judgment") not in {"SUPPORTS", "CONCERNS", "INCONCLUSIVE"}
+                    or not isinstance(record.get("rationale"), str)
+                    or not record["rationale"].strip()
+                    or not isinstance(record.get("reviewerId"), str)
+                    or not record["reviewerId"].strip()
+                    or not isinstance(record.get("documentType"), str)
+                    or not record["documentType"].strip()
+                    or not isinstance(record.get("evidenceExcerpt"), str)
+                    or not record["evidenceExcerpt"].strip()):
+                states[criterion] = "REJECTED_EVIDENCE"
+                rejection_reasons[criterion] = (
+                    "INVALID_TRIAL_ID" if record.get("nctId") != trial_id else
+                    "INVALID_SOURCE_URL" if not _valid_url(url) else
+                    "SOURCE_TRIAL_MISMATCH" if not _source_matches_trial(url, trial_id) else
+                    "INVALID_CHRONOLOGY" if not source_day or not review_day
+                        or not source_day <= review_day <= cutoff
+                        or not source_day <= verification_day <= review_day <= cutoff else
+                    "INVALID_JUDGMENT" if record.get("judgment") not in {
+                        "SUPPORTS", "CONCERNS", "INCONCLUSIVE"
+                    } else
+                    "MISSING_RATIONALE" if not isinstance(record.get("rationale"), str)
+                        or not record["rationale"].strip() else
+                    "MISSING_REVIEWER" if not isinstance(record.get("reviewerId"), str)
+                        or not record["reviewerId"].strip() else
+                    "MISSING_DOCUMENT_TYPE" if not isinstance(record.get("documentType"), str)
+                        or not record["documentType"].strip() else
+                    "MISSING_EVIDENCE_EXCERPT"
+                )
+                continue
+            states[criterion] = record["judgment"]
+            accepted[criterion] = {
+                "source": url, "sourceDate": source_day.isoformat(),
+                "reviewedAt": review_day.isoformat(),
+                "nctId": trial_id, "rationale": record["rationale"],
+                "reviewerId": record["reviewerId"],
+                "documentType": record["documentType"],
+                "sourceVerified": True,
+                "sourceVerifiedAt": verification_day.isoformat(),
+                "sourceVerifiedBy": verification_actor,
+                "sourceVerificationMethod": verification_method,
+                "sourceRetrievedAt": retrieval_day.isoformat() if retrieval_day else None,
+                "retrievalProvenance": "RECORDED" if retrieval_day else "NOT_RECORDED",
+                "evidenceExcerpt": record["evidenceExcerpt"],
+            }
+        required = [c for c in criteria if states[c] != "NOT_YET_EXPECTED"]
+        rejected = [c for c in criteria if states[c] == "REJECTED_EVIDENCE"]
+        unpublished = [c for c in criteria if states[c] == "UNPUBLISHED"]
+        unverified_unpublished = [c for c in criteria if states[c] == "UNVERIFIED_UNPUBLISHED_CLAIM"]
+        not_yet_expected_criteria = [c for c in criteria if states[c] == "NOT_YET_EXPECTED"]
+        rejected_count = len(rejected)
+        outstanding = [criterion for criterion in required if criterion not in accepted]
+        review_readiness = {
+            "accepted": len(accepted),
+            "rejected": rejected_count,
+            "unpublished": unpublished,
+            "unverifiedUnpublished": unverified_unpublished,
+            "outstanding": outstanding,
+            "notYetExpected": not_yet_expected_criteria,
+            "complete": bool(verified and required and not outstanding),
+            "meaning": "Evidence review completeness only; not scientific validity or FDA probability.",
+        }
+        results[str(number)] = {
+            "level": number, "name": name,
+            "status": ("BLOCKED_UNVERIFIED_PHASE" if not verified else
+                       "REVIEWED" if required and all(c in accepted for c in required) else
+                       "PARTIAL" if accepted else "EVIDENCE_REJECTED" if rejected else "AWAITING_REVIEW"),
+            "criteria": states, "acceptedEvidence": accepted,
+            "reviewReadiness": review_readiness,
+            "reviewedCount": len(accepted), "requiredCount": len(required),
+            "rejectedCriteria": rejected, "rejectionReasons": rejection_reasons,
+            "unpublishedCriteria": unpublished,
+            "unverifiedUnpublishedCriteria": unverified_unpublished,
+            "notYetExpectedCriteria": not_yet_expected_criteria,
+            "score": None, "scientificValidation": "NOT_VERIFIED",
+            "fdaPrediction": "ABSTAIN",
+            "note": "Review coverage and judgments are not validated scientific scores.",
+        }
+    return results
+
+
+def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
+    return assess_review_contracts(level_one, trial_id=trial_id, evidence=evidence, definitions=LEVELS)

@@ -1609,7 +1609,35 @@ def level_assessment_history(nct: str, level: int | None = None):
 
 # Isolated assessment runtime: no worker/scanner imports or legacy score reuse.
 from . import assessment_runtime
-app.include_router(assessment_runtime.router(lambda: ENGINE, require_internal_key, require_storage, require_writes_enabled))
+
+# Optional dedicated assessment schema for the isolated preview service. Never
+# silently write assessment results to public when isolation is requested.
+ASSESSMENT_SCHEMA = os.getenv("PDUFA_ASSESSMENT_SCHEMA", "").strip()
+if ASSESSMENT_SCHEMA and not re.fullmatch(r"[a-z][a-z0-9_]{0,62}", ASSESSMENT_SCHEMA):
+    raise RuntimeError("Invalid PDUFA_ASSESSMENT_SCHEMA identifier")
+_ASSESSMENT_ENGINE = None
+
+def assessment_engine():
+    global _ASSESSMENT_ENGINE
+    if not ASSESSMENT_SCHEMA:
+        return ENGINE
+    if not DATABASE_URL.startswith("postgresql+psycopg://"):
+        raise HTTPException(503, "Isolated assessment schema requires PostgreSQL")
+    if _ASSESSMENT_ENGINE is None:
+        from sqlalchemy import text as sql_text
+        # Schema identifier is strictly validated above, not user supplied.
+        try:
+            with ENGINE.begin() as connection:
+                connection.execute(sql_text(f'CREATE SCHEMA IF NOT EXISTS "{ASSESSMENT_SCHEMA}"'))
+            _ASSESSMENT_ENGINE = create_engine(
+                DATABASE_URL, pool_pre_ping=True,
+                connect_args={"options": f"-csearch_path={ASSESSMENT_SCHEMA}"},
+            )
+        except Exception:
+            raise HTTPException(503, "Isolated assessment schema unavailable") from None
+    return _ASSESSMENT_ENGINE
+
+app.include_router(assessment_runtime.router(assessment_engine, require_internal_key, require_storage, require_writes_enabled))
 
 @app.get('/api/assessment-runtime/version')
 def assessment_runtime_version():

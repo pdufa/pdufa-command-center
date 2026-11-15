@@ -170,11 +170,14 @@ class Phase3RightsWorklistTests(unittest.TestCase):
 
     def test_registry_status_change_priority_forces_review(self):
         source = self.registry["original_source_records"][0]
+        source["census_status"] = source["current_registry_status"]
         source["status_matches_dated_census"] = False
-        source["current_registry_status"] = "RECRUITING"
+        source["current_registry_status"] = "COMPLETED" if source["census_status"] != "COMPLETED" else "RECRUITING"
+        self.ledger["records"][0]["gates"]["registry_identity"] = "REVIEW"
         result = self.report()
         record = next(r for r in result["items"] if r["nct_id"] == "NCT00000001")
         self.assertEqual(record["research_priority"], "P2_REGISTRY_STATUS_OR_PHASE_REVIEW")
+        self.assertEqual(record["registry_identity_gate"], "REVIEW")
 
     def test_unknown_registry_phase_flag_rejected(self):
         self.registry["original_source_records"][0]["phase3_in_current_registry"] = "yes"

@@ -76,3 +76,61 @@ def test_readonly_mode_does_not_write_histories(isolated, monkeypatch):
     monkeypatch.setenv("PDUFA_MIGRATION_READ_ONLY", "1")
     index = service.get_index(synchronous=True)
     assert index["historyStatus"] == "READ_ONLY" and count(engine) == 0
+
+
+def test_saved_registry_phase_inventory_persists_and_versions_without_review_invention(isolated):
+    engine, snapshot = isolated
+    identity = snapshot["pipeline"][0]["id"]
+    with Session(engine) as session:
+        record = session.get(main.FullTrialRecord, "NCT00000001")
+        record.summary = {**record.summary, "phases": ["PHASE3"],
+                          "conditions": ["Fixture disease"], "eligibility": {"minimumAge": "18 Years"}}
+        session.commit()
+    service.get_index(synchronous=True)
+    detail = service.exact_detail(identity)
+    assert detail["levelOneIntake"]["executionStatus"] == "INTAKE_ONLY"
+    for number in ["2", "3", "4", "5", "6"]:
+        assert detail["levelsTwoToSix"][number]["score"] is None
+        assert detail["levelsTwoToSix"][number]["fdaPrediction"] == "ABSTAIN"
+    assert detail["levelsTwoToSix"]["2"]["registryEvidenceInventory"]["populationAndEligibility"]["state"] == "AVAILABLE_NOT_REVIEWED"
+    with Session(engine) as session:
+        old = list(session.scalars(select(main.CandidateAssessmentHistory).order_by(main.CandidateAssessmentHistory.id)))
+        frozen = [(x.id, copy.deepcopy(x.summary)) for x in old]
+        assert old[0].summary["levelsTwoToSix"] == detail["levelsTwoToSix"]
+        record = session.get(main.FullTrialRecord, "NCT00000001")
+        record.summary = {**record.summary, "eligibility": {"minimumAge": "21 Years"}}
+        record.fetched_at = datetime(2026, 10, 21, tzinfo=timezone.utc)
+        session.commit()
+    service.get_index(synchronous=True)
+    assert count(engine) == len(frozen) + 1
+    with Session(engine) as session:
+        for identity, value in frozen:
+            assert session.get(main.CandidateAssessmentHistory, identity).summary == value
+
+
+def test_population_and_exposure_engines_persist_distinct_versions(isolated, monkeypatch):
+    from test_scientific_binary_effects import record
+    from test_scientific_population import measurements as population_counts
+    from test_scientific_safety_exposure import measurements as exposure_counts
+    engine,snapshot=isolated
+    identity=snapshot['pipeline'][0]['id']
+    population=record();population['measurements']=population_counts()
+    safety=record();safety['measurements']=exposure_counts()
+    reviews={identity:{'scientificLevelEvidence':{'7.treatmentSubgroupInteraction':population,'8.exposureAdjustedRates':safety}}}
+    monkeypatch.setattr(service,'review_evidence',lambda:(reviews,'AVAILABLE'))
+    with Session(engine) as session:
+        saved=session.get(main.FullTrialRecord,'NCT00000001')
+        saved.summary={**saved.summary,'phases':['PHASE3']};session.commit()
+    service.get_index(synchronous=True)
+    detail=service.exact_detail(identity)
+    assert detail['levelsSevenToTwenty']['7']['calculations']['treatmentSubgroupInteraction']['ratioOfRiskRatios']==pytest.approx(4)
+    assert detail['levelsSevenToTwenty']['8']['calculations']['exposureAdjustedRates']['incidenceRateRatio']==pytest.approx(2)
+    with Session(engine) as session:
+        old=list(session.scalars(select(main.CandidateAssessmentHistory).order_by(main.CandidateAssessmentHistory.id)))
+        frozen=[(x.id,copy.deepcopy(x.summary)) for x in old]
+        assert old[0].summary['levelsSevenToTwenty']==detail['levelsSevenToTwenty']
+    population['measurements']['subgroupA']['treatment']['events']=30
+    service.get_index(synchronous=True)
+    assert count(engine)==len(frozen)+1
+    with Session(engine) as session:
+        for key,value in frozen:assert session.get(main.CandidateAssessmentHistory,key).summary==value
