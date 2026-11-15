@@ -19,7 +19,7 @@ const finalGateByNct=new Map(finalGateAudit.rows.map(row=>[row.nct,row]));
 
 export default function FocusPage(){
  const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);
- const sortedTrials=useMemo(()=>sortNumericRows(trials,sortRules,(t,c)=>c==="marketCap"?t.marketCap:null,t=>t.nct),[sortRules]);
+ const sortedTrials=useMemo(()=>sortNumericRows(trials,sortRules,(t,c)=>c==="marketCap"?t.marketCap:c==="ticker"?t.ticker:c==="company"?t.company:c==="nct"?t.nct:c==="fdaStatus"?t.fdaStatus:c==="designationCount"?designationByNct.get(t.nct)?.designations.length??0:null,t=>t.nct),[sortRules]);
  return <main style={{maxWidth:1220,margin:"28px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif",color:"#173d2b"}}>
   <nav style={{display:"flex",gap:18,marginBottom:18}}><Link href="/pool">POOL</Link><Link href="/indications">INDICATIONS</Link><Link href="/tools">TOOLS</Link></nav>
   <h1>FOCUS</h1>
@@ -40,7 +40,7 @@ export default function FocusPage(){
     <p style={{margin:"0 0 7px"}}>Owner-reviewed assessments: <strong>0</strong> · Source pointers recorded: {finalGateAudit.pointers} · Awaiting source review: {finalGateAudit.review} · Missing evidence: {finalGateAudit.missing}.</p>
     <p style={{fontSize:13,margin:0}}>Only these exact final-list NCTs are evaluated; the early-phase POOL, historical Phase 3 census and all-phase TOOLS counts are not included. Recorded links or scheduled jobs are not completed clinical, regulatory or live synchronization verification. Current list as of {finalGateAudit.asOf}.</p>
   </section>
-  <NumericSortSettings scope="focus" columns={[{id:"marketCap",label:"Market cap ($B)"}]} onApply={setSortRules}/>
+  <NumericSortSettings scope="focus" columns={[{id:"marketCap",label:"Market cap ($B)"},{id:"ticker",label:"Ticker"},{id:"company",label:"Company"},{id:"nct",label:"NCT / Trial"},{id:"fdaStatus",label:"FDA / PDUFA path"},{id:"designationCount",label:"Recorded FDA designation count"}]} onApply={setSortRules}/>
   <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
   <style>{`table.assessment-expandable:not(:has(details.assessment-toggle[open])) .assessment-level{display:none} .assessment-toggle{display:inline-block;margin-left:6px;vertical-align:middle}.assessment-toggle summary{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border:1px solid #7e9f8b;border-radius:5px;cursor:pointer;background:#fff;color:#173d2b;font-weight:800;list-style:none}.assessment-toggle summary::-webkit-details-marker{display:none}.assessment-toggle .when-open{display:none}.assessment-toggle[open] .when-open{display:inline}.assessment-toggle[open] .when-closed{display:none}`}</style>
    <table className="assessment-expandable" style={{width:"100%",borderCollapse:"collapse",minWidth:970,fontSize:14}}>
