@@ -489,3 +489,36 @@ test('historical 2026 FDA goal dates and actual actions have independent source 
  const launcher=fs.readFileSync(require('node:path').join(__dirname,'../app/AssessmentLauncher.tsx'),'utf8');
  assert.doesNotMatch(launcher,/past2026RegulatoryResearch20261115/);
 });
+
+test('FOCUS per-trial survey display shows 3 persisted source-backed reports on both pages without scoring unvalidated research',()=>{
+ const React=require('react'),{renderToStaticMarkup}=require('react-dom/server');
+ const {FocusSurveyRowDetails,FocusLevelCells}=require('../app/FocusLevelColumns.tsx');
+ const id='NCT04576949';
+ const levels=Object.fromEntries([1,2,3].map(level=>[String(level),{
+  state:'COMPLETED',missingEvidence:[{id:'criterion_'+level,state:'MISSING',explanation:'Protocol not yet supplied'}],
+  report:{runId:String(level).repeat(36),nct:id,level,mode:'CURRENT_EVIDENCE',
+   executedAt:'2026-11-15T01:00:00Z',score:{kind:'NOT_VALIDATED',value:null},
+   fdaPrediction:{outcome:'ABSTAIN',confidence:'UNVALIDATED'}}}]));
+ let rendered=renderToStaticMarkup(React.createElement('table',null,React.createElement('tbody',null,
+  React.createElement('tr',null,React.createElement(FocusSurveyRowDetails,{nct:id,levels}),
+   React.createElement(FocusLevelCells,{nct:id,levels})))));
+ assert.match(rendered,/3\/3 surveys saved/);
+ for(const term of ['L1','L2','L3','Clinical trial design','Efficacy and statistics','MISSING','NOT VALIDATED','ABSTAIN']){
+  assert.ok(rendered.includes(term),term);
+ }
+ assert.match(rendered,/assessments\?nct=NCT04576949/);
+ assert.doesNotMatch(rendered,/FDA approval: 100|predicted approval 100/);
+ levels['3'].report.score={kind:'LEVEL_SPECIFIC_EVIDENCE_COVERAGE',value:81};
+ rendered=renderToStaticMarkup(React.createElement('table',null,React.createElement('tbody',null,
+  React.createElement('tr',null,React.createElement(FocusLevelCells,{nct:id,levels})))));
+ assert.doesNotMatch(rendered,/>81</,'documentation coverage is not a validated scientific score');
+ const focus=fs.readFileSync(require('node:path').join(__dirname,'../app/focus/page.tsx'),'utf8');
+ const assessments=fs.readFileSync(require('node:path').join(__dirname,'../app/assessments/page.tsx'),'utf8');
+ const saved=fs.readFileSync(require('node:path').join(__dirname,'../app/FocusSavedAssessments.tsx'),'utf8');
+ assert.match(focus,/new Set\(members\.map\(t=>t\.nct\)\)\.size!==expected\.size/);
+ assert.match(focus,/<FocusSurveyRowDetails nct=\{t\.nct\}/);
+ assert.match(focus,/<FocusLevelCells nct=\{t\.nct\}/);
+ assert.match(assessments,/<FocusSavedAssessments selectedNct=\{nct\}\/>/);
+ assert.match(saved,/\?nct='\+encodeURIComponent\(t\.nct\)/);
+ assert.match(saved,/data\.fullyProcessed===data\.total/);
+});
