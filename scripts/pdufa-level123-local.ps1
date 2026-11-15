@@ -3,9 +3,8 @@
 param([switch]$FullTests)
 $ErrorActionPreference='Stop'
 Set-StrictMode -Version Latest
-$repo=(git rev-parse --show-toplevel 2>$null)
-if ($LASTEXITCODE -ne 0) { throw 'Run this script from a Git checkout.' }
-$repo=$repo.Trim()
+$repo=(Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+if (-not (Test-Path (Join-Path $repo '.git'))) { throw 'Installation script must be inside a Git checkout.' }
 $base='codex/level1-6-explicit-scientific-readiness-20261114'
 $research='codex/assessment-123-catalog-audit-20261114'
 $focus='new-platform/frontend/app/focus/page.tsx'
