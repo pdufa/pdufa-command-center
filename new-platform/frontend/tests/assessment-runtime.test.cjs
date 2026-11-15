@@ -186,3 +186,45 @@ test('launcher uses the scientific contract and cannot count an unpersisted comp
 });
 
 test('both FOCUS and ASSESSMENTS mount the shared saved scientific records',()=>{for(const file of ['focus/page.tsx','assessments/page.tsx']){const source=fs.readFileSync(require('node:path').join(__dirname,'../app',file),'utf8');assert.match(source,/<FocusSavedAssessments\s*\/>/);}});
+
+
+test('PAST saved blind records display on PAST and ASSESSMENTS without fabricated scores',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Saved=require('../app/PastSavedAssessments.tsx').default;
+ globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const old=global.fetch;
+ let tree;
+ const level=level=>({runId:'saved-'+level,executedAt:'2026-11-15',name:'Synthetic level '+level,executionStatus:'COMPLETED_WITH_LIMITATIONS',score:{value:null,kind:'NOT_VALIDATED',method:'No validated scale'},fdaPrediction:{outcome:'ABSTAIN',confidence:'NOT_VALIDATED'},scientificStatus:'SOURCE_BOUND_ANALYSIS_NOT_VALIDATED',unresolved:2,sourceUrl:'https://clinicaltrials.gov/api/v2/studies/'+nct});
+ global.fetch=async url=>{
+  assert.equal(url,'/api/assessments/runtime?past=true');
+  return Response.json({status:'SAVED_BLIND_HISTORY_NOT_PAST_QUEUE_RECONCILED',truncated:false,trials:[{nct,cutoffDate:'2025-06-01',eventLinkage:'NOT_RECONCILED_TO_PAST_QUEUE',levels:{'1':level(1),'2':level(2),'3':level(3)}}]});
+ };
+ try{
+  await act(async()=>{tree=create(React.createElement(Saved));});
+  const rendered=JSON.stringify(tree.toJSON());
+  for(const l of [1,2,3])assert.match(rendered,new RegExp('L0'+l+' scientific score'));
+  assert.equal((rendered.match(/NOT VALIDATED \\/ UNSCORABLE/g)||[]).length,3);
+  assert.match(rendered,/ABSTAIN/);
+  assert.match(rendered,/not yet reconciled/);
+  for(const page of ['past/page.tsx','assessments/page.tsx','predictions/assessment/page.tsx']){
+   const source=fs.readFileSync(require('node:path').join(__dirname,'../app',page),'utf8');
+   assert.match(source,/<PastSavedAssessments\s*\/>/);
+  }
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
+});
+
+test('authenticated PAST summary relays only to persistent backend without outcome parameters',async()=>{
+ const old=global.fetch;
+ process.env.PDUFA_API_BASE_URL='https://backend.example.test';
+ process.env.PDUFA_INTERNAL_API_KEY='SYNTHETIC_INTERNAL_KEY';
+ global.fetch=async(url,init)=>{
+  assert.equal(url,'https://backend.example.test/api/assessment-runtime/past');
+  assert.equal(init.headers['X-Pdufa-Internal-Key'],'SYNTHETIC_INTERNAL_KEY');
+  return Response.json({status:'NO_SAVED_BLIND_SCIENTIFIC_RUNS',trials:[],truncated:false});
+ };
+ try{
+  const req=new NextRequest(base+'/api/assessments/runtime?past=true',{headers:{cookie:auth.COOKIE_NAME+'='+auth.makeSession()}});
+  const response=await api.GET(req);
+  assert.equal(response.status,200);
+  assert.deepEqual((await response.json()).trials,[]);
+ }finally{global.fetch=old;delete process.env.PDUFA_API_BASE_URL;delete process.env.PDUFA_INTERNAL_API_KEY;}
+});
