@@ -46,9 +46,10 @@ const python = process.platform === "win32" ? "py" : "python3";
   const result = spawnSync(python,args,{cwd:root,encoding:"utf8"});
 '@
 $census=RewriteOnce $census 'const result = spawnSync("python3",["scripts/build_phase3_census_sources.py","--check"],{cwd:root,encoding:"utf8"});' ($censusReplacement.TrimEnd())
-foreach($pair in @(@($focusPath,$f),@($pastPath,$p),@($nightlyTestPath,$nightly),@($censusTestPath,$census))){
-  [IO.File]::WriteAllText([string]$pair[0],[string]$pair[1],$enc)
-}
+[IO.File]::WriteAllText($focusPath,$f,$enc)
+[IO.File]::WriteAllText($pastPath,$p,$enc)
+[IO.File]::WriteAllText($nightlyTestPath,$nightly,$enc)
+[IO.File]::WriteAllText($censusTestPath,$census,$enc)
 & git.exe -C $work add -- 'new-platform/frontend/app/focus/page.tsx' 'new-platform/frontend/app/past/page.tsx' 'new-platform/frontend/tests/main-phase3-nightly-health.test.cjs' 'new-platform/frontend/tests/phase3-census-sources.test.cjs'
 if($LASTEXITCODE -ne 0){throw 'Failed to stage repair.'}
 & git.exe -C $work -c user.name='PDUFA local integration' -c user.email='pdufa-integration@localhost' commit -m 'Fix Level 1-3 integration labels and Windows portable tests'
