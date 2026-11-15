@@ -25,6 +25,7 @@ export async function GET(req:NextRequest){
  const q=req.nextUrl.searchParams;
  if(q.get('focus')==='true')return relay(req,'/focus');
  if(q.get('past')==='true')return relay(req,'/past');
+ if(q.has('pastRoster')){const year=q.get('pastRoster');if(!year||!/^20(?:1[7-9]|2[0-6])$/.test(year))return json({error:'Valid PAST cohort year required'},422);return relay(req,'/past/roster?year='+year);}
  if(q.has('population')){
   const population=q.get('population'),term=q.get('q')||'';
   if(!['POOL','FOCUS','HISTORICAL'].includes(population||'')||term.length>100)return json({error:'Invalid population search'},422);
