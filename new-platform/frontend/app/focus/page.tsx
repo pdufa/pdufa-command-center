@@ -1,4 +1,6 @@
-import type {Metadata} from "next";
+"use client";
+import {useMemo,useState} from "react";
+import NumericSortSettings,{sortNumericRows,type NumericSortRule} from "../NumericSortSettings";
 import Link from "next/link";
 import TickerChartButton from "../TickerChartButton";
 import IndicationIntelligence from "../IndicationIntelligence";
@@ -7,10 +9,6 @@ import snapshot from "../../data/p3PostDataActive.json";
 import designationData from "../../data/focusFdaDesignations.json";
 import {FOCUS_FINAL_TRIAL_AUDIT} from "../../lib/focus-final-gate-checks";
 
-export const metadata:Metadata={
- title:"FOCUS — Final-list Phase 3 / post-Phase 3 candidates | PDUFA",
- description:"Current final-list FOCUS trial NCTs with dated issuer capitalization and source-linked Phase 3 and FDA path pointers; acceptance under review."
-};
 const source="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit#gid=202611061";
 /** Snapshot of the user's source-of-truth Google Sheet. Historical 762-trial cohorts are not active listings. */
 const trials=snapshot.records;
@@ -20,6 +18,8 @@ const assessmentLevelLabels=["Trial identity","Current phase","Source evidence",
 const finalGateByNct=new Map(finalGateAudit.rows.map(row=>[row.nct,row]));
 
 export default function FocusPage(){
+ const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);
+ const sortedTrials=useMemo(()=>sortNumericRows(trials,sortRules,(t,c)=>c==="marketCap"?t.marketCap:null,t=>t.nct),[sortRules]);
  return <main style={{maxWidth:1220,margin:"28px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif",color:"#173d2b"}}>
   <nav style={{display:"flex",gap:18,marginBottom:18}}><Link href="/pool">POOL</Link><Link href="/indications">INDICATIONS</Link><Link href="/tools">TOOLS</Link></nav>
   <h1>FOCUS</h1>
@@ -40,11 +40,12 @@ export default function FocusPage(){
     <p style={{margin:"0 0 7px"}}>Owner-reviewed assessments: <strong>0</strong> · Source pointers recorded: {finalGateAudit.pointers} · Awaiting source review: {finalGateAudit.review} · Missing evidence: {finalGateAudit.missing}.</p>
     <p style={{fontSize:13,margin:0}}>Only these exact final-list NCTs are evaluated; the early-phase POOL, historical Phase 3 census and all-phase TOOLS counts are not included. Recorded links or scheduled jobs are not completed clinical, regulatory or live synchronization verification. Current list as of {finalGateAudit.asOf}.</p>
   </section>
+  <NumericSortSettings scope="focus" columns={[{id:"marketCap",label:"Market cap ($B)"}]} onApply={setSortRules}/>
   <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
   <style>{`table.assessment-expandable:not(:has(details.assessment-toggle[open])) .assessment-level{display:none} .assessment-toggle{display:inline-block;margin-left:6px;vertical-align:middle}.assessment-toggle summary{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border:1px solid #7e9f8b;border-radius:5px;cursor:pointer;background:#fff;color:#173d2b;font-weight:800;list-style:none}.assessment-toggle summary::-webkit-details-marker{display:none}.assessment-toggle .when-open{display:none}.assessment-toggle[open] .when-open{display:inline}.assessment-toggle[open] .when-closed{display:none}`}</style>
    <table className="assessment-expandable" style={{width:"100%",borderCollapse:"collapse",minWidth:970,fontSize:14}}>
     <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"left"}}>FDA Special Designations</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>7 gate checks</th><th style={{padding:10,whiteSpace:"nowrap",textAlign:"left"}}>Overall Score <details className="assessment-toggle"><summary aria-label="Expand or collapse 20 assessment columns" title="Expand or collapse all 20 assessment levels"><span className="when-closed">＋</span><span className="when-open">−</span></summary></details></th>{assessmentLevelLabels.map((label,i)=><th className="assessment-level" key={label} title={`Level ${i+1}: ${label}. Detailed score shown only when available.`} style={{padding:10,whiteSpace:"nowrap",textAlign:"left"}}>L{i+1} · {label}</th>)}</tr></thead>
-    <tbody>{trials.map((t,i)=>{const gateAudit=finalGateByNct.get(t.nct);const d=designationByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
+    <tbody>{sortedTrials.map((t,i)=>{const gateAudit=finalGateByNct.get(t.nct);const d=designationByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
       <td style={{padding:10,fontWeight:700}}><TickerChartButton ticker={t.ticker}/></td>
       <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a></td>
       <td style={{padding:10}}>{t.company}<CompanyDateBadges nctId={t.nct} timeline={null} recordedReleaseDate={"recordedReleaseDate" in t && typeof t.recordedReleaseDate==="string" ? t.recordedReleaseDate : null} recordedPdufaDate={"recordedPdufaDate" in t && typeof t.recordedPdufaDate==="string" ? t.recordedPdufaDate : null} releaseSource={t.resultsUrl} pdufaSource={t.regulatoryUrl}/></td>
