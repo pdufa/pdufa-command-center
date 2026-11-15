@@ -6,7 +6,7 @@ export type ReadinessScore={
  applicable:number;unresolved:number;evidenceReadinessScore:number;
 };
 type ScientificSlot={mode?:string;nct?:string;level?:number;runId?:string;
- engineVersion?:string;executedAt?:string;score?:{kind?:string;value?:number|null}}|null|undefined;
+ engineVersion?:string;executedAt?:string;score?:{kind?:string;value?:number|null};fdaPrediction?:{outcome?:string}}|null|undefined;
 
 const byKey=new Map<string,ReadinessScore>();
 for(const row of snapshot.rows){
@@ -78,6 +78,6 @@ export function focusSavedDirection(nct:string,levels?:FocusReadinessLevels):'AB
  return [1,2,3].every(l=>{
   const report=levels?.[String(l)]?.report;
   return report&&report.nct===nct&&report.level===l&&report.mode==='CURRENT_EVIDENCE'&&
-   (report as {fdaPrediction?:{outcome?:string}}).fdaPrediction?.outcome==='ABSTAIN';
+   report.fdaPrediction?.outcome==='ABSTAIN';
  })?'ABSTAIN':'NOT AVAILABLE';
 }
