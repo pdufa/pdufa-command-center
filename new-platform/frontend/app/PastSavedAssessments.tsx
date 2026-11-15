@@ -1,6 +1,5 @@
 'use client';
 import {useEffect,useState} from 'react';
-import Link from 'next/link';
 
 type SavedLevel={
  runId:string;executedAt:string;name:string;executionStatus:string;
@@ -42,7 +41,7 @@ export default function PastSavedAssessments(){
     <table style={{borderCollapse:'collapse',width:'100%',minWidth:900,fontSize:13}}>
      <thead><tr><th style={{textAlign:'left'}}>Exact trial · historical cutoff</th>{[1,2,3].flatMap(l=>[<th key={l+'score'}>L0{l} scientific score</th>,<th key={l+'prediction'}>L0{l} FDA prediction</th>])}</tr></thead>
      <tbody>{trials.map(t=><tr key={t.nct+'|'+t.cutoffDate} style={{borderTop:'1px solid #d9e5dd'}}>
-       <td style={{padding:10,verticalAlign:'top'}}><strong>{t.nct}</strong><br/>Evidence cutoff: {t.cutoffDate}<br/><small>PAST event linkage: not yet reconciled</small><br/><Link href={'/assessments?nct='+encodeURIComponent(t.nct)}>See saved versions and evidence</Link></td>
+       <td style={{padding:10,verticalAlign:'top'}}><strong>{t.nct}</strong><br/>Evidence cutoff: {t.cutoffDate}<br/><small>PAST event linkage: not yet reconciled</small><br/><a href={'/assessments?nct='+encodeURIComponent(t.nct)}>See saved versions and evidence</a></td>
        {[1,2,3].flatMap(l=>{const r=t.levels[String(l)];return [
         <td key={l+'score'} style={{padding:10,verticalAlign:'top'}}>{r?<><strong>{r.score.value===null?'NOT VALIDATED / UNSCORABLE':r.score.value}</strong><br/>{r.executionStatus}<br/>{r.executedAt}<br/><small>{r.unresolved} unresolved checks</small><br/><a target="_blank" rel="noopener noreferrer" href={r.sourceUrl}>Original source</a></>:'NOT RUN'}</td>,
         <td key={l+'prediction'} style={{padding:10,verticalAlign:'top'}}>{r?<>{r.fdaPrediction.outcome}<br/><small>{r.fdaPrediction.confidence}</small></>:'ABSTAIN — no saved assessment'}</td>
