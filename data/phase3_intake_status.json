@@ -1,24 +1,15 @@
 {
   "mode": "daily",
-  "started_at": "2026-11-14T04:21:34.221603+00:00",
+  "started_at": "2026-11-15T04:22:00.168803+00:00",
   "registry_companies": 717,
   "pages": 5,
   "studies_checked": 4041,
   "matched_posted_results": 99,
-  "new_records": 1,
-  "new_record_details": [
-    {
-      "ticker": "ABBV",
-      "drug": "Bimatoprost (SR)",
-      "nct_id": "NCT03850782",
-      "results_posted_at": "2026-11-13",
-      "source_url": "https://clinicaltrials.gov/study/NCT03850782",
-      "verification_status": "REGISTERED_RESULTS_POSTED"
-    }
-  ],
+  "new_records": 0,
+  "new_record_details": [],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-11-14T04:21:42.740769+00:00",
+  "finished_at": "2026-11-15T04:22:12.325255+00:00",
   "stored_results": 2502,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
