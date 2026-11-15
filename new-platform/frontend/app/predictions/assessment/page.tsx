@@ -31,8 +31,8 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
   const q=await searchParams;
   if(q.view!=="legacy")return <main style={{maxWidth:1300,margin:"0 auto",padding:"26px 15px 60px",color:"#122f32"}}>
     <h1>ASSESSMENTS · Scientific Levels 1–3</h1>
-    <p>Run exact-trial verification, clinical design review, and efficacy/statistical assessment across FOCUS, POOL and PAST. Source statements, calculations, uncertainties and missing evidence remain separate.</p>
-    <FocusSavedAssessments/>
+    <p>FOCUS survey Levels 1–3: database-saved reports are grouped by exact NCT trial, with per-level findings, unresolved criteria, and original-source evidence. All 96 current research reports are source-bound but not validated scientific scores or FDA forecasts. Source statements, calculations and limitations remain separate.</p>
+    <FocusSavedAssessments selectedNct={q.nct&&/^NCT[0-9]{8}$/.test(q.nct)?q.nct:undefined}/>
     <PastSavedAssessments/>
     <AssessmentWorkbench selectedNct={q.nct&&/^NCT[0-9]{8}$/.test(q.nct)?q.nct:undefined}/>
     <p><Link href="/predictions/assessment?view=legacy">Retained research histories and charts — may reveal known historical outcomes</Link></p>
