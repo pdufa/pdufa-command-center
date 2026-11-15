@@ -5,7 +5,7 @@ const api='/api/assessments/runtime';
 const valid=(s:string)=>/^NCT\d{8}$/.test(s);
 type Entry={nct:string;level:number;status:string;detail:string;cutoffDate?:string};
 type WholeTask={nct:string;cutoffDate?:string;eventKey?:string};
-export default function AssessmentLauncher({source='FOCUS',historicalYear='2026'}:{source?:'POOL'|'FOCUS'|'HISTORICAL';historicalYear?:string}){
+export default function AssessmentLauncher({source='FOCUS',historicalYear='2026',lockSource=false}:{source?:'POOL'|'FOCUS'|'HISTORICAL';historicalYear?:string;lockSource?:boolean}){
  const [open,setOpen]=useState(false),[population,setPopulation]=useState(source),[scope,setScope]=useState('selected');
  const [input,setInput]=useState(''),[singleNct,setSingleNct]=useState(''),[levels,setLevels]=useState<number[]>([1,2,3]);
  const [mode,setMode]=useState('CURRENT_EVIDENCE'),[cutoff,setCutoff]=useState(''),[entries,setEntries]=useState<Entry[]>([]);
@@ -108,7 +108,7 @@ export default function AssessmentLauncher({source='FOCUS',historicalYear='2026'
  {open&&<div role="dialog" aria-label="Scientific assessment launcher" style={{background:'#fff',color:'#173d2b',border:'2px solid #16856c',padding:16,borderRadius:12,maxWidth:740,marginTop:8}}>
  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}><h2>Scientific Assessment · Levels 1–3</h2><div style={{display:'flex',gap:8}}><button type="button" aria-label="Clear assessment popup" title="Clear selections and results" disabled={working} onClick={clearPopup}>✕ Clear</button><button type="button" aria-label="Close assessment popup" title="Close popup" onClick={()=>setOpen(false)}>✕ Close</button></div></div>
  <p>Run one trial, selected trials, or a complete source-verified PAST year or FOCUS roster. Each selected level saves its own immutable report; evidence coverage is not an FDA approval probability.</p>
- <label>Source <select value={population} disabled={working} onChange={e=>{loadVersion.current++;setPopulation(e.target.value as typeof population);setCatalog([]);setVerifiedAll(false);setMissingPast([]);setWholeTasks([]);setError('')}}><option>POOL</option><option>FOCUS</option><option>HISTORICAL</option></select></label>{' '}
+ <label>Source <select value={population} disabled={working||lockSource} onChange={e=>{loadVersion.current++;setPopulation(e.target.value as typeof population);setCatalog([]);setVerifiedAll(false);setMissingPast([]);setWholeTasks([]);setError('')}}><option>POOL</option><option>FOCUS</option><option>HISTORICAL</option></select></label>{' '}
  <label>Scope <select aria-label="Assessment scope" value={scope} disabled={working} onChange={e=>setScope(e.target.value)}><option value="single">Single trial</option><option value="selected">Selected trials</option><option value="all">Whole list</option></select></label>
  {scope==='single'?<p><label>Exact NCT for one trial <input aria-label="Single trial NCT" placeholder="NCT12345678" maxLength={11} disabled={working} value={singleNct} onChange={e=>setSingleNct(e.target.value.toUpperCase())}/></label></p>
  :scope==='selected'?<p><label>Exact NCT IDs (separated by commas or lines)<textarea style={{display:'block',width:'100%',minHeight:75}} disabled={working} value={input} onChange={e=>setInput(e.target.value)}/></label></p>
