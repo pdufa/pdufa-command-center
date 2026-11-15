@@ -154,7 +154,9 @@ def fetch_page(page_token=None):
         except HTTPError as exc:
             last_code = "SOURCE_HTTP_" + str(exc.code)
             if exc.code == 400:
-                LOG.error("PDUFA_PHASE3_SOURCE_BAD_REQUEST scope=%s page_size=%d has_page_token=%s", SCOPE_ID, PAGE_SIZE, bool(page_token))
+                # Do not silently reset an audited census on a rejected cursor.
+                last_code = "SOURCE_HTTP_400_CURSOR" if page_token else "SOURCE_HTTP_400_QUERY"
+                LOG.error("PDUFA_PHASE3_SOURCE_BAD_REQUEST scope=%s page_size=%d has_page_token=%s error_code=%s", SCOPE_ID, PAGE_SIZE, bool(page_token), last_code)
             if exc.code not in {408, 429, 500, 502, 503, 504}:
                 break
         except (URLError, TimeoutError, OSError):
