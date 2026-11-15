@@ -31,6 +31,8 @@ def require(condition):
 
 def build():
     raw = {name: (ROOT / name).read_bytes() for name in INPUTS}
+    for name in ("data/company_registry.csv", "config/snapshots/issuer_sources_2026-10-26.json"):
+        raw[name] = raw[name].replace(b"\r\n", b"\n")
     rows = lambda name: list(csv.DictReader(io.StringIO(raw[name].decode("utf-8"))))
     trials, registry, caps = [rows(name) for name in INPUTS[:3]]
     issuers = json.loads(raw[INPUTS[3]])

@@ -30,7 +30,7 @@ test("all 741 trial pointers reproduce from exact saved issuer, cap and configur
   const result = spawnSync(python,args,{cwd:root,encoding:"utf8"});
   assert.equal(result.status,0,result.stderr||result.stdout);
   for(const item of source.inputs) assert.equal(item.sha256,
-    crypto.createHash("sha256").update(fs.readFileSync(path.join(root,item.path))).digest("hex"));
+    crypto.createHash("sha256").update(["data/company_registry.csv","config/snapshots/issuer_sources_2026-10-26.json"].includes(item.path) ? Buffer.from(fs.readFileSync(path.join(root,item.path),"utf8").replace(/\r\n/g,"\n"),"utf8") : fs.readFileSync(path.join(root,item.path))).digest("hex"));
   const before=JSON.stringify(inventory);
   const directory=parsePhase3CensusSourceDirectory(source,inventory);
   assert.equal(directory.companies.length,130);
