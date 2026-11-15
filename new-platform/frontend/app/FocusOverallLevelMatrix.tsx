@@ -22,10 +22,17 @@ export function ownerSurveyStatus(nct:string,levels?:FocusTrialLevels){
     ?'ABSTAIN':'NOT AVAILABLE'};
 }
 
-export function FocusOverallHeaders(){
+export function FocusOverallHeaders({expandable=false}:{expandable?:boolean}={}){
  return <>
   <th scope="col" style={{whiteSpace:'nowrap'}}>Overall prediction survey result</th>
-  <th scope="col" style={{whiteSpace:'nowrap'}}>FDA direction</th>
+  <th scope="col" style={{whiteSpace:'nowrap'}}>FDA direction
+   {expandable&&<details className="assessment-toggle" open>
+    <summary aria-label="Show or hide all 20 assessment level columns"
+      title="Show or hide Levels 1–20">
+     <span className="when-closed">＋</span><span className="when-open">−</span>
+    </summary>
+   </details>}
+  </th>
  </>;
 }
 export function FocusTwentyHeaders({className}:{className?:string}={}){
