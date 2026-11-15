@@ -22,6 +22,7 @@ export async function GET(req:NextRequest){
  if(!authorized(req))return json({error:'Sign in to access assessments'},401);
  const q=req.nextUrl.searchParams;
  if(q.get('focus')==='true')return relay(req,'/focus');
+ if(q.get('past')==='true')return relay(req,'/past');
  if(q.has('population')){
   const population=q.get('population'),term=q.get('q')||'';
   if(!['POOL','FOCUS','HISTORICAL'].includes(population||'')||term.length>100)return json({error:'Invalid population search'},422);
