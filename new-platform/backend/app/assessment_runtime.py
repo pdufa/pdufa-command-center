@@ -564,8 +564,10 @@ def catalog(engine, population, query):
         from .source_workspace import workspace
         records=workspace()['pipeline']
     else:
-        from .phase3_catalog import catalog as historic_catalog
-        records=historic_catalog(engine,period='PREVIOUS',q=query,page_size=50)['trials']
+        from .assessment_cohort_batch import inventory
+        # PAST is the dated FDA-event queue, not registry trials completed over
+        # two years ago. Unlinked events remain visible in the cohort inventory.
+        records=inventory(engine,'HISTORICAL')['records']
     rows={}
     for item in records:
         candidates=[str(item.get(k) or '') for k in ('nct','nct_id','nctId','id')]
@@ -584,6 +586,8 @@ def router(engine_provider, auth, storage, writes, *, allow_local=False):
         value=engine_provider()
         if not allow_local and value.dialect.name!='postgresql':raise HTTPException(503,'Persistent PostgreSQL is required for assessments')
         return value
+    from .assessment_cohort_batch import router as cohort_router
+    api.include_router(cohort_router(engine, writes))
     @api.get('/past')
     def past_results():
         return saved_blind_historical(engine())

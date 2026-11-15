@@ -123,6 +123,21 @@ def execute(engine,batch_id,*,workers=2,max_items=6,collector=runtime.collect_re
 
 def summary(engine):
     saved=roster(engine)
+    # A whole-list request freezes the exact server inventory without changing
+    # owner-sheet membership. Reuse that dated manifest for shared result reads
+    # when no separately reconciled live-sheet database roster exists.
+    if not saved and inspect(engine).has_table('assessment_cohort_batches'):
+        with engine.connect() as c:
+            manifests=c.execute(text('SELECT manifest_json,manifest_hash,created_at FROM assessment_cohort_batches ORDER BY created_at DESC,batch_id DESC LIMIT 100')).mappings().all()
+        for row in manifests:
+            manifest=json.loads(row['manifest_json'])
+            if manifest['population']!='FOCUS' or manifest['scope']!='all':continue
+            if runtime.sha(manifest)!=row['manifest_hash']:raise ValueError('FOCUS batch inventory integrity failure')
+            source=manifest['source']
+            saved={'members':manifest['records'],'roster_id':row['manifest_hash'],
+                   'source_url':source['source'],'retrieved_at':source.get('asOf',row['created_at']),
+                   'source_hash':row['manifest_hash'],'authority_status':source['status']}
+            break
     if not saved:return {'status':'BLOCKED_NO_RECONCILED_DATABASE_ROSTER','total':None,'trials':[],'counts':{},'source':None}
     batch=None;slots={};latest={}
     if inspect(engine).has_table('focus_assessment_batches'):

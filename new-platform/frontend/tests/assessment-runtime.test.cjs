@@ -172,16 +172,23 @@ test('FOCUS columns show the same saved scientific records as the shared assessm
  finally{if(tree)await act(async()=>tree.unmount());Object.assign(global,old);}
 });
 
-test('launcher uses the scientific contract and cannot count an unpersisted completion',async()=>{
- const React=require('react'),{act,create}=require('react-test-renderer'),Launcher=require('../app/AssessmentLauncher.tsx').default;globalThis.IS_REACT_ACT_ENVIRONMENT=true;const old=global.fetch;let tree,posted;
- global.fetch=async(url,init={})=>{if(init.method==='POST'){posted=JSON.parse(init.body);return Response.json({runId:'a'.repeat(8)+'-'+'a'.repeat(4)+'-'+'a'.repeat(4)+'-'+'a'.repeat(4)+'-'+'a'.repeat(12)});}return Response.json({status:'COMPLETED',report:null});};
+test('launcher submits one durable exact-trial Levels 1–3 batch and does not claim queued work completed',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Launcher=require('../app/AssessmentLauncher.tsx').default;
+ globalThis.IS_REACT_ACT_ENVIRONMENT=true;const old=global.fetch;let tree,posted;
+ const bid='aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+ global.fetch=async(url,init={})=>{
+  if(init.method==='POST'){posted=JSON.parse(init.body);return Response.json({batchId:bid,population:'FOCUS',mode:'CURRENT_EVIDENCE',createdAt:'2026-11-15',status:'RESUMABLE',totalTrials:1,totalItems:3,counts:{completed:0,blocked:0,failed:0,scored:0},items:[],canResume:true,terminal:false});}
+  return Response.json({batches:[]});
+ };
  try{
-  await act(async()=>{tree=create(React.createElement(Launcher));});await act(async()=>{tree.root.findAllByType('button')[0].props.onClick();});
-  const textInput=tree.root.findAllByType('textarea')[0]||tree.root.findAllByType('input').find(i=>i.props.type!=='checkbox'&&i.props.type!=='date');
-  await act(async()=>{textInput.props.onChange({target:{value:nct}});});
-  for(const input of tree.root.findAllByType('input').filter(i=>i.props.type==='checkbox').slice(3))assert.equal(input.props.disabled,true);
-  await act(async()=>{tree.root.findAllByType('button').find(b=>b.props.children==='Submit assessments').props.onClick();await new Promise(resolve=>setTimeout(resolve,6500));});
-  assert.equal(posted.contract,'SCIENTIFIC_1_3');const rendered=JSON.stringify(tree.toJSON());assert.match(rendered,/FAILED/);assert.doesNotMatch(rendered,/3\/3 completed/);
+  await act(async()=>{tree=create(React.createElement(Launcher));});
+  await act(async()=>{tree.root.findAllByType('button')[0].props.onClick();});
+  await act(async()=>{tree.root.findByProps({'aria-label':'Assessment NCT IDs'}).props.onChange({target:{value:nct}});});
+  await act(async()=>{tree.root.findAllByType('button').find(b=>b.props.children==='Submit assessments').props.onClick();});
+  assert.equal(posted.action,'COHORT_BATCH_CREATE');assert.deepEqual(posted.levels,[1,2,3]);assert.deepEqual(posted.ncts,[nct]);
+  assert.equal(posted.scope,'selected');assert.match(posted.requestKey,/^[a-f0-9-]{36}$/);
+  const heading=tree.root.findAllByType('h3').map(h=>React.Children.toArray(h.props.children).join('')).join('');
+  assert.match(heading,/0\/3 reports saved/);assert.doesNotMatch(heading,/3\/3/);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
 

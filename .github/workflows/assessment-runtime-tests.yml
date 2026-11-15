@@ -1,11 +1,14 @@
 name: Assessment runtime regression and leakage checks
 on:
   pull_request:
-    branches: [main, new-platform-bootstrap, codex/level1-6-explicit-scientific-readiness-20261114]
+    branches: [main, new-platform-bootstrap, codex/level1-6-explicit-scientific-readiness-20261114, integration/level123-20261115-074002]
     paths:
       - 'new-platform/backend/app/assessment_runtime.py'
       - 'new-platform/backend/app/scientific_trial_assessment.py'
       - 'new-platform/backend/app/focus_assessment_batch.py'
+      - 'new-platform/backend/app/assessment_cohort_batch.py'
+      - 'new-platform/backend/app/data/assessment_past_inventory.json'
+      - 'new-platform/backend/tests/test_assessment_cohort_batch.py'
       - 'new-platform/backend/scripts/run_focus_scientific_batch.py'
       - 'new-platform/backend/tests/test_scientific_trial_assessment.py'
       - 'new-platform/backend/tests/test_focus_assessment_batch.py'
@@ -20,6 +23,7 @@ on:
       - 'new-platform/frontend/app/predictions/assessment/page.tsx'
       - 'new-platform/frontend/app/api/assessments/runtime/**'
       - 'new-platform/frontend/tests/assessment-runtime.test.cjs'
+      - 'new-platform/frontend/tests/assessment-cohort-batch.test.cjs'
       - '.github/workflows/assessment-runtime-tests.yml'
   workflow_dispatch:
 permissions:
