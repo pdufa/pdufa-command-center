@@ -5,7 +5,7 @@ const path=require('node:path');
 const ts=require('typescript');
 const React=require('react');
 const {renderToStaticMarkup}=require('react-dom/server');
-require.extensions['.tsx']=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{
+for(const ext of ['.ts','.tsx'])require.extensions[ext]=(m,f)=>m._compile(ts.transpileModule(fs.readFileSync(f,'utf8'),{
  compilerOptions:{module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,
   jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true}
 }).outputText,f);
@@ -50,7 +50,8 @@ test('all 32 FOCUS rows have distinct overall, direction and L01–L20 cells wit
  assert.equal((html.match(/data-testid="focus-overall-direction"/g)||[]).length,32);
  for(let l=1;l<=20;l++)
   assert.equal((html.match(new RegExp('data-assessment-level="L'+String(l).padStart(2,'0')+'"','g'))||[]).length,32);
- assert.equal((html.match(/>ABSTAIN<\/strong>/g)||[]).length,32);
+ assert.equal((html.match(/data-testid="overall-fda-direction"/g)||[]).length,32);
+ assert.match(html,/NOT AVAILABLE/);
  assert.match(html,/Reassessment: score pending/);
  assert.match(html,/Rubric pending/);
  assert.doesNotMatch(html,/>100%|APPROVAL LEAN|CRL LEAN/);
@@ -58,7 +59,7 @@ test('all 32 FOCUS rows have distinct overall, direction and L01–L20 cells wit
 
 test('report identity mismatch never contributes to overall survey, FDA direction or an automatic numerical score',()=>{
  const good=levelMap(),status=ownerSurveyStatus(nct,good);
- assert.deepEqual(status,{completed:3,overall:'NOT VALIDATED',direction:'ABSTAIN'});
+ assert.deepEqual(status,{completed:3,overall:'NOT VALIDATED',direction:'NOT AVAILABLE'});
  const corrupted={...good,'2':{...good['2'],report:{...good['2'].report,nct:'NCT99999999'}}};
  assert.deepEqual(ownerSurveyStatus(nct,corrupted),{
   completed:2,overall:'NOT VALIDATED',direction:'NOT AVAILABLE'});
@@ -66,8 +67,8 @@ test('report identity mismatch never contributes to overall survey, FDA directio
   React.createElement('tbody',null,React.createElement('tr',null,
    React.createElement(FocusOverviewCells,{nct,levels:good}),
    React.createElement(FocusTwentyCells,{nct,levels:good})))));
- assert.match(body,/3\/3 current research surveys saved/);
- assert.match(body,/ABSTAIN/);
+ assert.match(body,/3\/3 research surveys saved/);
+ assert.match(body,/NOT AVAILABLE/);
  assert.doesNotMatch(body,/Approval Lean|CRL Lean/);
 });
 
@@ -145,7 +146,25 @@ test('all 32 saved exact-NCT research studies now render 96 provisional L01–L0
   }
  }
  const html=renderToStaticMarkup(React.createElement(Matrix,{trials,initiallyExpanded:true}));
- assert.equal((html.match(/data-testid="provisional-L01-score"/g)||[]).length,32);
+ const {provisionalFocusOverall,focusSavedDirection}=require('../lib/focus-provisional-scores.ts');
+ assert.equal(trials.filter(t=>provisionalFocusOverall(t.nct,t.levels)).length,32);
+ assert.equal(trials.filter(t=>focusSavedDirection(t.nct,t.levels)==='ABSTAIN').length,32);
+ for(const t of trials){
+  const overall=provisionalFocusOverall(t.nct,t.levels);
+  const scores=[1,2,3].map(l=>provisionalFocusScore(t.nct,l,t.levels[l].report));
+  const totalV=scores.reduce((n,x)=>n+x.sourceVerified,0);
+  const totalA=scores.reduce((n,x)=>n+x.applicable,0);
+  assert.equal(overall.sourceVerified,totalV);
+  assert.equal(overall.applicable,totalA);
+  assert.equal(overall.evidenceReadinessScore,Math.round(100*totalV/totalA));
+  const invalid={...t.levels, '2':{...t.levels['2'],report:{...t.levels['2'].report,runId:'newer'}}};
+  assert.equal(provisionalFocusOverall(t.nct,invalid),null,'stale or reassessed report withholds overall score');
+  assert.equal(focusSavedDirection(t.nct,invalid),'NOT AVAILABLE','stale report withholds direction');
+ }
+ assert.equal((html.match(/data-testid="overall-evidence-readiness-value"/g)||[]).length,32);
+ assert.equal((html.match(/data-testid="overall-fda-direction"/g)||[]).length,32);
+ assert.equal((html.match(/>ABSTAIN<\/strong>/g)||[]).length,32);
+  assert.equal((html.match(/data-testid="provisional-L01-score"/g)||[]).length,32);
  assert.equal((html.match(/data-testid="provisional-L02-score"/g)||[]).length,32);
  assert.equal((html.match(/data-testid="provisional-L03-score"/g)||[]).length,32);
  assert.match(html,/Evidence readiness · provisional/);
