@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {useState} from 'react';
 import type {FocusTrialLevels} from './FocusLevelColumns';
 
 export const FOCUS_TWENTY_LEVEL_LABELS=[
@@ -22,17 +23,22 @@ export function ownerSurveyStatus(nct:string,levels?:FocusTrialLevels){
     ?'ABSTAIN':'NOT AVAILABLE'};
 }
 
-export function FocusOverallHeaders({expandable=false}:{expandable?:boolean}={}){
+export function FocusOverallHeaders({expanded=false,onToggle}:{
+ expanded?:boolean;onToggle?:()=>void;
+}={}){
  return <>
-  <th scope="col" style={{whiteSpace:'nowrap'}}>Overall prediction survey result</th>
-  <th scope="col" style={{whiteSpace:'nowrap'}}>FDA direction
-   {expandable&&<details className="assessment-toggle" open>
-    <summary aria-label="Show or hide all 20 assessment level columns"
-      title="Show or hide Levels 1–20">
-     <span className="when-closed">＋</span><span className="when-open">−</span>
-    </summary>
-   </details>}
+  <th scope="col" style={{whiteSpace:'nowrap'}}>
+   Overall prediction survey result
+   {onToggle&&<button type="button" onClick={onToggle} aria-expanded={expanded}
+    aria-label={(expanded?'Collapse':'Expand')+' survey Levels 1–20 horizontally'}
+    title={(expanded?'Collapse':'Expand')+' the 20 survey columns horizontally'}
+    data-testid="survey-horizontal-collapse"
+    style={{display:'inline-block',marginLeft:8,padding:'4px 9px',border:'1px solid #7e9f8b',
+      borderRadius:5,cursor:'pointer',background:'#fff',color:'#173d2b',fontWeight:800}}>
+    {expanded?'− 20 Levels':'+ 20 Levels'}
+   </button>}
   </th>
+  <th scope="col" style={{whiteSpace:'nowrap'}}>FDA direction</th>
  </>;
 }
 export function FocusTwentyHeaders({className}:{className?:string}={}){
@@ -78,9 +84,11 @@ export function FocusTwentyCells({nct,levels,loading=false,error=false,className
    </td>;
  })}</>;
 }
-export default function FocusOverallLevelMatrix({trials,selectedNct}:{
- trials:{nct:string;ticker:string;company:string;levels:FocusTrialLevels}[];selectedNct?:string;
+export default function FocusOverallLevelMatrix({trials,selectedNct,initiallyExpanded=false}:{
+ trials:{nct:string;ticker:string;company:string;levels:FocusTrialLevels}[];
+ selectedNct?:string;initiallyExpanded?:boolean;
 }){
+ const [surveyLevelsExpanded,setSurveyLevelsExpanded]=useState(initiallyExpanded);
  return <section id="focus-overall-level-matrix" aria-label="FOCUS overall prediction, direction and Levels 1–20"
   style={{margin:'16px 0',padding:12,border:'1px solid #abc9b6',borderRadius:10}}>
   <h3 style={{margin:'0 0 6px'}}>Trial result sheet · Overall → Direction → Levels 1–20</h3>
@@ -93,11 +101,12 @@ export default function FocusOverallLevelMatrix({trials,selectedNct}:{
   </p>
   <div style={{overflowX:'auto'}}>
    <table data-testid="focus-overall-direction-level20-table"
-    style={{borderCollapse:'collapse',minWidth:1900,width:'100%',fontSize:13}}>
+    style={{borderCollapse:'collapse',minWidth:surveyLevelsExpanded?1900:650,width:'100%',fontSize:13}}>
     <thead style={{background:'#e8f3ed'}}><tr>
       <th scope="col" style={{whiteSpace:'nowrap'}}>FOCUS trial</th>
-      <FocusOverallHeaders/>
-      <FocusTwentyHeaders/>
+      <FocusOverallHeaders expanded={surveyLevelsExpanded}
+        onToggle={()=>setSurveyLevelsExpanded(v=>!v)}/>
+      {surveyLevelsExpanded&&<FocusTwentyHeaders/>}
     </tr></thead>
     <tbody>{trials.map(t=><tr key={t.nct}
       style={{borderTop:'1px solid #dbe6df',background:t.nct===selectedNct?'#eff7ff':undefined}}>
@@ -106,7 +115,7 @@ export default function FocusOverallLevelMatrix({trials,selectedNct}:{
        <div style={{fontWeight:400,fontSize:12}}>{t.company}</div>
       </th>
       <FocusOverviewCells nct={t.nct} levels={t.levels}/>
-      <FocusTwentyCells nct={t.nct} levels={t.levels}/>
+      {surveyLevelsExpanded&&<FocusTwentyCells nct={t.nct} levels={t.levels}/>}
     </tr>)}</tbody>
    </table>
   </div>
