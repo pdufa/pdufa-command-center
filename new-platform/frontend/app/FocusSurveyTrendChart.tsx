@@ -1,6 +1,6 @@
 'use client';
 import {useMemo,useState} from 'react';
-import {provisionalFocusScore} from '../lib/focus-provisional-scores';
+import {provisionalFocusScore,provisionalFocusOverall,focusSavedDirection} from '../lib/focus-provisional-scores';
 
 /**
  * Cross-sectional research evidence chart for the reconciled FOCUS roster.
@@ -8,7 +8,7 @@ import {provisionalFocusScore} from '../lib/focus-provisional-scores';
  * outcome, prospective accuracy, or chronological performance trend.
  */
 type EvidenceCounts={total:number;sourceVerified:number;unresolved:number};
-type SourceReport={nct:string;level:number;mode:string;executedAt:string;runId:string;engineVersion?:string;score?:{kind:string;value:number|null}};
+type SourceReport={nct:string;level:number;mode:string;executedAt:string;runId:string;engineVersion?:string;score?:{kind:string;value:number|null};fdaPrediction?:{outcome:string}};
 type SourceSlot={state:string;report:SourceReport|null;missingEvidence?:{id:string;state:string;explanation:string}[];evidenceChecks?:EvidenceCounts|null};
 export type SurveyChartTrial={nct:string;ticker:string;company:string;levels:Record<string,SourceSlot>};
 type Metric='UNRESOLVED'|'VERIFIED_PERCENT';
@@ -16,7 +16,8 @@ type Datum={trial:SurveyChartTrial;value:number|null;at:string|null};
 
 const LEVELS=[{number:1,name:'L1 · Trial identity',color:'#186c9b'},
  {number:2,name:'L2 · Study design',color:'#9651a6'},
- {number:3,name:'L3 · Efficacy & statistics',color:'#b46122'}] as const;
+ {number:3,name:'L3 · Efficacy & statistics',color:'#b46122'},
+ {number:4,name:'Overall · evidence readiness',color:'#257d54'}] as const;
 const unresolvedStates=new Set(['MISSING','UNVERIFIED','CONCERNS','NOT_ASSESSED','BLOCKED_UNVERIFIED_PHASE']);
 const maxTrialCount=500;
 const validNct=(nct:string)=>/^NCT[0-9]{8}$/.test(nct);
@@ -43,6 +44,18 @@ export function focusSurveyDatum(trial:SurveyChartTrial,level:number,metric:Metr
  return {trial,value:null,at:report.executedAt};
 }
 
+export function focusSurveyOverallDatum(trial:SurveyChartTrial,metric:Metric):Datum{
+ const overall=provisionalFocusOverall(trial.nct,trial.levels);
+ if(!overall)return {trial,value:null,at:null};
+ return {trial,value:metric==='UNRESOLVED'?overall.unresolved:overall.evidenceReadinessScore,
+  at:trial.levels['3']?.report?.executedAt||null};
+}
+
+/** FDA predictions are categorical. ABSTAIN is never converted to an invented zero. */
+export function focusSurveyDirection(trial:SurveyChartTrial):'ABSTAIN'|'NOT AVAILABLE'{
+ return focusSavedDirection(trial.nct,trial.levels);
+}
+
 export function leastSquaresFit(points:{x:number;y:number}[]){
  if(points.length<2||points.some(p=>!Number.isFinite(p.x)||!Number.isFinite(p.y)))return null;
  const n=points.length,meanX=points.reduce((v,p)=>v+p.x,0)/n;
@@ -57,30 +70,33 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
  trials:SurveyChartTrial[];total:number|null;selectedNct?:string;
 }){
  const [metric,setMetric]=useState<Metric>('VERIFIED_PERCENT');
- const [visible,setVisible]=useState<Record<number,boolean>>({1:true,2:true,3:true});
+ const [visible,setVisible]=useState<Record<number,boolean>>({1:true,2:true,3:true,4:true});
+ const [showDirection,setShowDirection]=useState(true);
  const [showTrend,setShowTrend]=useState(true);
  const ordered=useMemo(()=>[...trials].sort((a,b)=>a.ticker.localeCompare(b.ticker)||a.nct.localeCompare(b.nct)),[trials]);
  const ids=new Set(ordered.map(t=>t.nct));
  const reconciled=total!==null&&total>0&&total<=maxTrialCount&&ordered.length===total&&
    ids.size===total&&ordered.every(t=>validNct(t.nct)&&t.ticker&&t.levels&&[1,2,3].every(level=>!!t.levels[String(level)]));
- const allSeries=LEVELS.map(level=>({level,values:reconciled?ordered.map(t=>focusSurveyDatum(t,level.number,metric)):[]}));
+ const allSeries=LEVELS.map(level=>({level,values:reconciled?ordered.map(t=>level.number===4?focusSurveyOverallDatum(t,metric):focusSurveyDatum(t,level.number,metric)):[]}));
  const validSeries=allSeries.map(s=>({...s,points:s.values.flatMap((d,i)=>d.value===null?[]:[{x:i,y:d.value}])}));
  const sourceMetricAvailable=ordered.some(t=>[1,2,3].some(l=>focusSurveyDatum(t,l,'VERIFIED_PERCENT').value!==null));
  const observed=validSeries.flatMap(s=>s.points.map(p=>p.y));
  const ceiling=metric==='VERIFIED_PERCENT'?100:Math.max(4,Math.ceil(Math.max(0,...observed)/4)*4);
- const left=74,right=1540,top=42,bottom=354,width=1610,height=492;
+ const left=74,right=1540,top=42,bottom=354,width=1610,height=598;
  const xAt=(i:number)=>left+(ordered.length===1?0:(right-left)*i/(ordered.length-1));
  const yAt=(value:number)=>bottom-(Math.min(ceiling,Math.max(0,value))/ceiling)*(bottom-top);
  const textValue=(n:number)=>metric==='VERIFIED_PERCENT'?n.toFixed(1)+'%':String(n);
  const activeSeries=validSeries.filter(s=>visible[s.level.number]);
- return <section id="focus-survey-trend-chart" aria-label="FOCUS Levels 1–3 survey results and separate best-fit lines"
+ return <section id="focus-survey-trend-chart" aria-label="FOCUS L1–L3 plus overall evidence readiness and FDA direction on one chart"
    style={{border:'1px solid #c1d5cc',borderRadius:10,padding:'14px 12px',margin:'18px 0'}}>
-  <h3 style={{margin:'0 0 6px'}}>FOCUS · Levels 1, 2 and 3 survey chart</h3>
+  <h3 style={{margin:'0 0 6px'}}>FOCUS · L1–L3, overall evidence score and FDA direction</h3>
   <p style={{margin:'0 0 12px',fontSize:13}}>
-   The solid lines connect <strong>observed trial-level evidence checks</strong> across the
-   alphabetically ordered FOCUS roster. The separate dashed lines are least-squares
-   best-fit summaries for each level. This is not a time trend, not a scientific score,
-   not an FDA approval probability and not a prediction-accuracy chart.
+   Four individually selectable solid lines show L1, L2, L3 and the pooled <strong>overall
+   provisional source-evidence-readiness score</strong>; dashed lines are independent
+   least-squares cross-trial fits, not time trends. The fifth series is the categorical
+   FDA direction (ABSTAIN when no validated prediction exists), shown below the numeric
+   graph without mapping it to zero or an approval percentage. None of these data are
+   validated efficacy scores or FDA forecast probabilities.
   </p>
   <div style={{display:'flex',gap:16,flexWrap:'wrap',alignItems:'center',marginBottom:12}}>
    <label>Evidence metric{' '}
@@ -97,7 +113,12 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
    </label>)}
    <label style={{display:'inline-flex',gap:6,alignItems:'center'}}>
     <input type="checkbox" checked={showTrend} onChange={e=>setShowTrend(e.target.checked)}/>
-    Show trend line for each visible level
+    Show individual numeric best-fit lines
+   </label>
+   <label style={{display:'inline-flex',gap:6,alignItems:'center'}}>
+    <input type="checkbox" checked={showDirection} onChange={e=>setShowDirection(e.target.checked)}
+      aria-label="Show FDA direction categorical series"/>
+    Show FDA direction (categorical)
    </label>
   </div>
   {!reconciled?<p role="alert">Verified full FOCUS source roster unavailable or mismatched. No trend or partial-trial chart is shown.</p>:
@@ -108,10 +129,10 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
      Y axis: {metric==='UNRESOLVED'?'number of unresolved evidence criteria':'provisional source-verified / applicable criterion percentage'}.
     </p>
     <div style={{overflowX:'auto',maxWidth:'100%'}}>
-     <svg role="img" aria-label="Three independent FOCUS scientific survey evidence series, each with its own least-squares cross-trial trend line"
+     <svg role="img" aria-label="Four provisional evidence numeric series with individual best-fit lines, plus a separate categorical FDA prediction direction lane"
       viewBox={'0 0 '+width+' '+height} width={width} height={height} style={{display:'block',background:'#fbfdfc',borderRadius:8}}>
-      <title>FOCUS L1, L2 and L3 evidence checks, with independent fitted lines</title>
-      <desc>Source evidence observations ordered alphabetically by ticker and NCT, not chronologically. Dashed fitted lines are cross-sectional, not temporal trends or FDA predictions.</desc>
+      <title>L1–L3 and overall provisional evidence scores, with categorical FDA direction</title>
+      <desc>Four independent scored evidence series and fits, plus categorical FDA direction. The latter is ABSTAIN rather than a numeric approval probability. Trial order is alphabetical, not time.</desc>
       {[0,1,2,3,4].map(i=>{
        const value=ceiling*i/4;
        return <g key={i}>
@@ -157,8 +178,22 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
         })}
        </g>;
       })}
+      {showDirection&&<g data-testid="survey-direction-series">
+        <rect x={left-15} y={505} width={right-left+30} height={32} rx={6} fill="#eef1f3"/>
+        <text x={left-18} y={497} textAnchor="start" fill="#344d57" fontSize={13} fontWeight="bold">
+         FDA direction · categorical (not a probability)
+        </text>
+        {ordered.map((trial,i)=>{
+         const direction=focusSurveyDirection(trial);
+         return direction==='ABSTAIN'?<g key={trial.nct} data-testid="survey-direction-abstain">
+           <circle cx={xAt(i)} cy={521} r={7} fill="#65737e"/>
+           <text x={xAt(i)} y={524} textAnchor="middle" fontSize={9} fill="#fff">A</text>
+           <title>{trial.ticker+' · '+trial.nct+' · ABSTAIN · no validated FDA forecast'}</title>
+          </g>:null;
+        })}
+       </g>}
       <text x={(left+right)/2} y={height-11} textAnchor="middle" fill="#354f58" fontSize={13}>
-       Alphabetically sorted FOCUS trials · not time
+       Alphabetically sorted FOCUS trials · numeric scores are evidence only; A = ABSTAIN
       </text>
      </svg>
     </div>
@@ -168,9 +203,39 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
       {showTrend&&s.points.length>=2?' · separate dashed fit':''}
      </span>)}
     </div>
+    <div style={{overflowX:'auto',marginTop:14}}>
+     <table data-testid="survey-overall-prediction-data-table"
+      style={{borderCollapse:'collapse',minWidth:790,width:'100%',fontSize:12}}>
+      <thead><tr>
+       <th scope="col">Trial</th><th scope="col">L1 evidence /100</th>
+       <th scope="col">L2 evidence /100</th><th scope="col">L3 evidence /100</th>
+       <th scope="col">Overall evidence /100</th><th scope="col">FDA direction</th>
+       <th scope="col">FDA approval probability</th>
+      </tr></thead>
+      <tbody>{ordered.map(t=>{
+       const values=[1,2,3].map(l=>focusSurveyDatum(t,l,'VERIFIED_PERCENT').value);
+       const overall=focusSurveyOverallDatum(t,'VERIFIED_PERCENT').value;
+       const direction=focusSurveyDirection(t);
+       return <tr key={t.nct} style={{borderTop:'1px solid #dce5e0',
+         background:t.nct===selectedNct?'#ecf5ff':undefined}}>
+        <th scope="row" style={{textAlign:'left',padding:6}}>
+         {t.ticker} · {t.nct}
+        </th>
+        {values.map((v,i)=><td key={i} style={{padding:6}}>{v===null?'—':v}</td>)}
+        <td data-testid="survey-overall-score" style={{padding:6,fontWeight:700}}>
+         {overall===null?'NOT AVAILABLE':overall}
+        </td>
+        <td data-testid="survey-prediction-direction" style={{padding:6}}>
+         {direction}
+        </td>
+        <td style={{padding:6}}>NOT VALIDATED</td>
+       </tr>;
+      })}</tbody>
+     </table>
+    </div>
     <p style={{fontSize:12,margin:'9px 0 0',color:'#465d60'}}>
-     {metric==='UNRESOLVED'?'Lower counts represent fewer outstanding documentary criteria, not better FDA outcomes.':
-      'The score counts only SOURCE_VERIFIED checks; NOT_YET_EXPECTED is excluded. Scores are evidence readiness, not clinical success.'}
+     {metric==='UNRESOLVED'?'Lower counts represent fewer unresolved documentary criteria, not FDA outcomes.':
+      'Overall is pooled SOURCE_VERIFIED / applicable checks from all three saved levels; NOT_YET_EXPECTED is excluded. No approval probability is computed.'}
      {' '}Missing reports remain gaps; an absent survey is never assigned a zero.
      Chronological improvement requires multiple dated assessment versions for the same trials.
     </p>
