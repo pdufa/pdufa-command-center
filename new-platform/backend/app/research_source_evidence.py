@@ -19,7 +19,7 @@ IR_HOSTS = {"CLDX": "ir.celldex.com", "MLTX": "ir.moonlaketx.com"}
 
 @lru_cache(maxsize=1)
 def sources():
-    values = [json.loads((ROOT / name).read_text()) for name in ("clinical.json", "financial.json")]
+    values = [json.loads((ROOT / name).read_text(encoding="utf-8")) for name in ("clinical.json", "financial.json")]
     if any(v.get("schemaVersion") != 1 for v in values):
         raise ValueError("Invalid research source version")
     return values
