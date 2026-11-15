@@ -1,9 +1,10 @@
 'use client';
 import Link from 'next/link';
+import FocusSurveyTrendChart from './FocusSurveyTrendChart';
 import {readSavedFocus} from '../lib/focus-saved-records';
 import {useEffect,useState} from 'react';
-type Saved={runId:string;nct:string;level:number;executedAt:string;engineVersion:string;executionStatus:string;score:{value:number|null;kind:string;method:string};fdaPrediction:{outcome:string;probability?:number|null;confidence:string};trialIdentity:{company:string;candidate:string;indication:string[]};context:{phases:string[]}};
-type Slot={state:string;attempts:number;error:string|null;report:Saved|null;missingEvidence:{id:string;state:string;explanation:string}[]};
+type Saved={runId:string;nct:string;level:number;mode:string;executedAt:string;engineVersion:string;executionStatus:string;score:{value:number|null;kind:string;method:string};fdaPrediction:{outcome:string;probability?:number|null;confidence:string};trialIdentity:{company:string;candidate:string;indication:string[]};context:{phases:string[]}};
+type Slot={state:string;attempts:number;error:string|null;report:Saved|null;missingEvidence:{id:string;state:string;explanation:string}[];evidenceChecks?:{total:number;sourceVerified:number;unresolved:number}|null};
 type Trial={nct:string;company:string;ticker:string;pdufaDate:string|null;levels:Record<string,Slot>};
 type Summary={status:string;total:number|null;fullyProcessed?:number;batchId?:string;counts:Record<string,{processed:number;scored:number;incomplete:number;failed:number}>;trials:Trial[];source:{source_url:string;retrieved_at:string;authority_status:string}|null};
 const endpoint='/api/assessments/runtime';
@@ -29,6 +30,7 @@ export default function FocusSavedAssessments({selectedNct}:{selectedNct?:string
   {data&&<><p>Database roster: {data.total===null?'NOT RECONCILED':data.total+' exact trials'}. All three research executions saved: <strong>{data.fullyProcessed??0} / {data.total??'?'}</strong> trials ({data.counts['1']?.processed??0}+{data.counts['2']?.processed??0}+{data.counts['3']?.processed??0} saved level reports). Roster status: {data.status.replaceAll('_',' ')}.</p>
    {data.source&&<p><a href={data.source.source_url} target="_blank" rel="noopener noreferrer">Owner roster source</a> · Retrieved {data.source.retrieved_at} · {data.source.authority_status.replaceAll('_',' ')}. PDUFA dates are owner-source reports until exact application linkage is verified.</p>}
    <ul>{[1,2,3].map(l=><li key={l}>Level {l}: {data.counts[String(l)]?.processed??0} executions saved; {data.counts[String(l)]?.scored??0} validated numerical scores; {data.counts[String(l)]?.incomplete??0} incomplete/unscorable; {data.counts[String(l)]?.failed??0} execution failures; {data.trials.reduce((count,t)=>count+(t.levels[String(l)]?.missingEvidence?.length||0),0)} unresolved source criteria.</li>)}</ul>
+   <FocusSurveyTrendChart trials={data.trials} total={data.total} selectedNct={selectedNct}/>
    <label>Filter saved FOCUS trials <input value={filter} onChange={e=>setFilter(e.target.value)}/></label>{' '}
    <label>Saved assessment level <select value={level} onChange={e=>setLevel(e.target.value)}><option value="ALL">All three levels side by side</option>{[1,2,3].map(l=><option key={l} value={l}>Level {l}</option>)}<option disabled>Future levels — unavailable</option></select></label>{' '}
    <button type="button" disabled={busy} onClick={()=>{setError('');void load().then(()=>setMessage('Refreshed saved database results.')).catch(e=>setError(e.message));}}>Refresh saved results</button>{' '}
