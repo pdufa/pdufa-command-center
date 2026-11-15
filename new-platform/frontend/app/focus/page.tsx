@@ -1,12 +1,14 @@
 "use client";
 import FocusSavedAssessments from "../FocusSavedAssessments";
-import {FocusLevelHeaders,FocusLevelSubheaders,FocusLevelCells} from '../FocusLevelColumns';
+import {FocusLevelHeaders,FocusLevelSubheaders,FocusLevelCells,type FocusTrialLevels} from '../FocusLevelColumns';
+import {FocusOverallHeaders,FocusOverviewCells,FocusTwentyHeaders,FocusTwentyCells} from '../FocusOverallLevelMatrix';
 import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
 import AssessmentLauncher from '../AssessmentLauncher';
 import ScientificStepsReadiness from '../ScientificStepsReadiness';
 import {ExactTrialIntakeSelector} from '../ExactTrialScientificIntake';
 import {useEffect,useMemo,useState} from "react";
 import {readSavedFocus} from "../../lib/focus-saved-records";
+import {provisionalFocusScore,provisionalFocusOverall} from "../../lib/focus-provisional-scores";
 import NumericSortSettings,{sortNumericRows,type NumericSortRule} from "../NumericSortSettings";
 import Link from "next/link";
 import TickerChartButton from "../TickerChartButton";
@@ -21,30 +23,39 @@ const source="https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEs
 const trials=snapshot.records;
 const designationByNct=new Map(designationData.records.map(r=>[r.nct,r]));
 const finalGateAudit=FOCUS_FINAL_TRIAL_AUDIT;
-const assessmentLevelLabels=["Trial identity","Current phase","Source evidence","Study protocol","Population","Efficacy","Statistics","Safety","Clinical benefit","Comparator","Subgroups","Data gaps","Regulatory history","FDA alignment","Manufacturing","Benefit–risk","Exceptions","External evidence","Confidence","Integrated review"];
 const finalGateByNct=new Map(finalGateAudit.rows.map(row=>[row.nct,row]));
 
 export default function FocusPage(){
  const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);
  const [surveyExpanded,setSurveyExpanded]=useState(false);
  const [savedScores,setSavedScores]=useState<Record<string,Record<string,number|null>>>({});
+ const [savedLevels,setSavedLevels]=useState<Record<string,FocusTrialLevels>>({});
  useEffect(()=>{
   let active=true;
   async function refresh(){
    try{
-    const data=await readSavedFocus() as {trials?:{nct:string;levels:Record<string,{report:{score?:{value:number|null}}|null}>}[]};
+    const data=await readSavedFocus() as {status?:string;total?:number;trials?:{nct:string;levels:FocusTrialLevels}[]};
     if(!active)return;
+    const expected=new Set(trials.map(t=>t.nct)),members=data.trials||[];
+    if(data.status!=='DATABASE_SAVED_RECONCILED_OWNER_ROSTER'||
+       data.total!==expected.size||members.length!==expected.size||
+       new Set(members.map(t=>t.nct)).size!==expected.size||
+       members.some(t=>!expected.has(t.nct)||!t.levels||[1,2,3].some(level=>{
+        const report=t.levels[String(level)]?.report;
+        return !!report&&(report.nct!==t.nct||report.level!==level||report.mode!=='CURRENT_EVIDENCE');
+       })))throw Error('Saved exact-trial source roster unavailable');
+    const levels=Object.fromEntries(members.map(t=>[t.nct,t.levels]));
     const scores:Record<string,Record<string,number|null>>={};
-    for(const trial of data.trials||[]){
-     if(!/^NCT[0-9]{8}$/.test(trial.nct))continue;
-     scores[trial.nct]={};
-     for(const level of [1,2,3]){
-      const value=trial.levels[String(level)]?.report?.score?.value;
-      scores[trial.nct][String(level)]=typeof value==='number'&&Number.isFinite(value)?value:null;
-     }
+    for(const trial of members){
+      scores[trial.nct]={};
+      for(const level of [1,2,3]){
+        scores[trial.nct][String(level)]=provisionalFocusScore(trial.nct,level,trial.levels[String(level)]?.report)?.evidenceReadinessScore??null;
+      }
+      scores[trial.nct].overall=provisionalFocusOverall(trial.nct,trial.levels)?.evidenceReadinessScore??null;
     }
+    setSavedLevels(levels);
     setSavedScores(scores);
-   }catch{if(active)setSavedScores({});}
+   }catch{if(active){setSavedLevels({});setSavedScores({});}}
   }
   void refresh();
   const timer=setInterval(()=>void refresh(),30000);
@@ -63,7 +74,8 @@ export default function FocusPage(){
   if(c==="fdaStatus")return t.fdaStatus;
   if(c==="sources")return t.resultsUrl;
   if(c==="gates")return gate?gate.independentlyVerified:null;
-  if(c==="overall")return null;
+  if(c==="overall")return savedScores[t.nct]?.overall??null;
+  if(c==="direction")return null;
   const savedLevel=/^level([1-3])$/.exec(c);
   if(savedLevel)return savedScores[t.nct]?.[savedLevel[1]]??null;
   if(/^level(?:[4-9]|1[0-9]|20)$/.test(c))return null;
@@ -73,7 +85,7 @@ export default function FocusPage(){
   <nav style={{display:"flex",gap:18,marginBottom:18}}><Link href="/pool">POOL</Link><Link href="/indications">INDICATIONS</Link><Link href="/tools">TOOLS</Link></nav>
   <h1>FOCUS</h1>
   <div aria-label="Top table sorting controls" style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",margin:"12px 0 18px"}}>
-  <NumericSortSettings scope="focus" columns={[{id:"ticker",label:"Ticker"},{id:"nct",label:"NCT / Trial"},{id:"company",label:"Company"},{id:"designations",label:"FDA Special Designations"},{id:"marketCap",label:"Market cap ($B)"},{id:"fdaStatus",label:"FDA / PDUFA path"},{id:"sources",label:"Sources"},{id:"gates",label:"7 gate checks"},{id:"overall",label:"Overall Score"},{id:"level1",label:"L01-Trial identity"},{id:"level2",label:"L02-Current phase"},{id:"level3",label:"L03-Source evidence"},{id:"level4",label:"L04-Study protocol"},{id:"level5",label:"L05-Population"},{id:"level6",label:"L06-Efficacy"},{id:"level7",label:"L07-Statistics"},{id:"level8",label:"L08-Safety"},{id:"level9",label:"L09-Clinical benefit"},{id:"level10",label:"L10-Comparator"},{id:"level11",label:"L11-Subgroups"},{id:"level12",label:"L12-Data gaps"},{id:"level13",label:"L13-Regulatory history"},{id:"level14",label:"L14-FDA alignment"},{id:"level15",label:"L15-Manufacturing"},{id:"level16",label:"L16-Benefit–risk"},{id:"level17",label:"L17-Exceptions"},{id:"level18",label:"L18-External evidence"},{id:"level19",label:"L19-Confidence"},{id:"level20",label:"L20-Integrated review"}]} onApply={setSortRules}/>
+  <NumericSortSettings scope="focus" columns={[{id:"ticker",label:"Ticker"},{id:"nct",label:"NCT / Trial"},{id:"company",label:"Company"},{id:"designations",label:"FDA Special Designations"},{id:"marketCap",label:"Market cap ($B)"},{id:"fdaStatus",label:"FDA / PDUFA path"},{id:"sources",label:"Sources"},{id:"gates",label:"7 gate checks"},{id:"overall",label:"Overall evidence readiness · provisional"},{id:"direction",label:"FDA prediction direction"},{id:"level1",label:"L01-Trial identity"},{id:"level2",label:"L02-Current phase"},{id:"level3",label:"L03-Source evidence"},{id:"level4",label:"L04-Study protocol"},{id:"level5",label:"L05-Population"},{id:"level6",label:"L06-Efficacy"},{id:"level7",label:"L07-Statistics"},{id:"level8",label:"L08-Safety"},{id:"level9",label:"L09-Clinical benefit"},{id:"level10",label:"L10-Comparator"},{id:"level11",label:"L11-Subgroups"},{id:"level12",label:"L12-Data gaps"},{id:"level13",label:"L13-Regulatory history"},{id:"level14",label:"L14-FDA alignment"},{id:"level15",label:"L15-Manufacturing"},{id:"level16",label:"L16-Benefit–risk"},{id:"level17",label:"L17-Exceptions"},{id:"level18",label:"L18-External evidence"},{id:"level19",label:"L19-Confidence"},{id:"level20",label:"L20-Integrated review"}]} onApply={setSortRules}/>
   <button type="button" aria-label="Survey Columns" aria-expanded={surveyExpanded} onClick={()=>setSurveyExpanded(v=>!v)} style={{padding:"9px 14px",borderRadius:8,border:"1px solid #789987",background:"#e6f2ea",color:"#173d2b",fontWeight:700,cursor:"pointer"}}>{surveyExpanded?"▾ Hide Survey Columns":"▸ Survey Columns"}</button>
   </div>
   <p data-testid="focus-owner-only" style={{padding:"10px 12px",background:"#eefaf5",border:"1px solid #b9cebe",borderRadius:8}}>
@@ -97,7 +109,7 @@ export default function FocusPage(){
   <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
   <style>{`table.assessment-expandable:not(.survey-expanded):not(:has(details.assessment-toggle[open])) .assessment-level{display:none} .assessment-toggle{display:inline-block;margin-left:6px;vertical-align:middle}.assessment-toggle summary{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border:1px solid #7e9f8b;border-radius:5px;cursor:pointer;background:#fff;color:#173d2b;font-weight:800;list-style:none}.assessment-toggle summary::-webkit-details-marker{display:none}.assessment-toggle .when-open{display:none}.assessment-toggle[open] .when-open{display:inline}.assessment-toggle[open] .when-closed{display:none}`}</style>
    <table className={surveyExpanded?"assessment-expandable survey-expanded":"assessment-expandable"} style={{width:"100%",borderCollapse:"collapse",minWidth:970,fontSize:14}}>
-    <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"left"}}>FDA Special Designations</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>7 gate checks</th><th style={{padding:10,whiteSpace:"nowrap",textAlign:"left"}}>Overall Score <details className="assessment-toggle"><summary aria-label="Expand or collapse 20 assessment columns" title="Expand or collapse all 20 assessment levels"><span className="when-closed">＋</span><span className="when-open">−</span></summary></details></th>{assessmentLevelLabels.map((label,i)=><th className="assessment-level" key={label} title={`Level ${i+1}: ${label}. Detailed score shown only when available.`} style={{padding:10,whiteSpace:"nowrap",textAlign:"left"}}>L{String(i+1).padStart(2,"0")}-{label}</th>)}<PredictionHeaders/><FocusLevelHeaders/></tr><tr><th colSpan={31}>Level 1-3 saved scientific research</th><FocusLevelSubheaders/></tr></thead>
+    <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"left"}}>FDA Special Designations</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>7 gate checks</th><FocusOverallHeaders expanded={surveyExpanded} onToggle={()=>setSurveyExpanded(v=>!v)}/><FocusTwentyHeaders className="assessment-level"/><PredictionHeaders/><FocusLevelHeaders/></tr><tr><th colSpan={32}>Level 1-3 saved scientific research</th><FocusLevelSubheaders/></tr></thead>
     <tbody>{sortedTrials.map((t,i)=>{const gateAudit=finalGateByNct.get(t.nct);const d=designationByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
       <td style={{padding:10,fontWeight:700}}><TickerChartButton ticker={t.ticker}/></td>
       <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a><div style={{marginTop:5,fontSize:12}}><Link href={"/analyze-now?nct="+encodeURIComponent(t.nct)}>View exact-trial research history</Link></div><details><summary>Exact-trial source intake</summary><ExactTrialIntakeSelector cohort="FOCUS" nctId={t.nct}/></details></td>
@@ -126,7 +138,7 @@ export default function FocusPage(){
           <strong>{g.title}</strong><div>{g.state==="RECORDED_POINTER"?"Source pointer only":g.state==="SOURCE_REVIEW_REQUIRED"?"Needs source review":"Missing evidence"}</div>
           <div>{g.note}</div>{g.sourceUrl&&<a href={g.sourceUrl} target="_blank" rel="noopener noreferrer">Inspect source</a>}
         </div>)}</div>
-      </details>:<span role="alert">Gate identity mismatch — not verified</span>}</td><td style={{padding:10,whiteSpace:"nowrap"}}>Not assessed</td>{assessmentLevelLabels.map((label)=><td className="assessment-level" key={label} title={label} style={{padding:10,whiteSpace:"nowrap"}}>Not assessed</td>)}<PredictionCells nct={t.nct}/><FocusLevelCells nct={t.nct}/>
+      </details>:<span role="alert">Gate identity mismatch — not verified</span>}</td><FocusOverviewCells nct={t.nct} levels={savedLevels[t.nct]}/><FocusTwentyCells nct={t.nct} levels={savedLevels[t.nct]} className="assessment-level"/><PredictionCells nct={t.nct}/><FocusLevelCells nct={t.nct} levels={savedLevels[t.nct]}/>
     </tr>;})}</tbody>
    </table>
   </div>
