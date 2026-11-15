@@ -25,7 +25,25 @@ export async function GET(req:NextRequest){
  const q=req.nextUrl.searchParams;
  if(q.get('focus')==='true')return relay(req,'/focus');
  if(q.get('past')==='true')return relay(req,'/past');
- if(q.has('pastRoster')){const year=q.get('pastRoster');if(!year||!/^20(?:1[7-9]|2[0-6])$/.test(year))return json({error:'Valid PAST cohort year required'},422);return relay(req,'/past/roster?year='+year);}
+ if(q.has('pastRoster')){
+  const year=q.get('pastRoster');
+  if(!year||!/^20(?:1[7-9]|2[0-6])$/.test(year))return json({error:'Valid PAST cohort year required'},422);
+  const response=await relay(req,'/past/roster?year='+year);
+  // A preview may reach an older deployed backend without the new endpoint.
+  // Show the unverified research queue for review, never simulate verified NCTs.
+  // All other backend failures remain explicit.
+  if(response.status===404&&year==='2026'){
+   const researchQueue=(await import('../../../../data/level4BlindAssessmentQueue20261112.json')).default;
+   const events=researchQueue.historical2026.map(item=>({
+    eventKey:item.eventKey,ticker:item.ticker,queueDate:item.cutoffDate,
+    status:'BACKEND_ROSTER_ENDPOINT_NOT_INSTALLED',ncts:[]
+   }));
+   return json({status:'PAST_RECONCILIATION_INCOMPLETE',year:2026,total:events.length,
+    linked:0,ready:false,events,tasks:[],eligibleTasks:[],
+    source:'UNVERIFIED_RESEARCH_QUEUE_ONLY_BACKEND_ENDPOINT_UNAVAILABLE'});
+  }
+  return response;
+ }
  if(q.has('population')){
   const population=q.get('population'),term=q.get('q')||'';
   if(!['POOL','FOCUS','HISTORICAL'].includes(population||'')||term.length>100)return json({error:'Invalid population search'},422);
