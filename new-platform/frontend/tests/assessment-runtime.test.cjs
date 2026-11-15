@@ -506,7 +506,7 @@ test('FOCUS per-trial survey display shows 3 persisted source-backed reports on 
  for(const term of ['L1','L2','L3','Clinical trial design','Efficacy and statistics','MISSING','NOT VALIDATED','ABSTAIN']){
   assert.ok(rendered.includes(term),term);
  }
- assert.match(rendered,/assessments\?nct=NCT04576949/);
+ assert.match(rendered,/predictions\/assessment\?nct=NCT04576949/);
  assert.doesNotMatch(rendered,/FDA approval: 100|predicted approval 100/);
  levels['3'].report.score={kind:'LEVEL_SPECIFIC_EVIDENCE_COVERAGE',value:81};
  rendered=renderToStaticMarkup(React.createElement('table',null,React.createElement('tbody',null,
