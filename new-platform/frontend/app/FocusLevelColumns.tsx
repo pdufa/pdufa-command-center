@@ -23,6 +23,7 @@ const scientific=(report:SavedFocusReport|null|undefined)=>
   :typeof report?.score?.value==='number'&&Number.isFinite(report.score.value)
    ?String(report.score.value):'NOT VALIDATED';
 const link=(nct:string)=>'/predictions/assessment?nct='+encodeURIComponent(nct);
+const exactReport=(slot:FocusTrialSlot|undefined,nct:string,level:number)=>slot?.report?.mode==='CURRENT_EVIDENCE'&&slot.report.nct===nct&&slot.report.level===level?slot.report:null;
 
 export function FocusLevelHeaders(){
  return <>{[1,2,3].map(level=><th key={level} colSpan={2} scope="colgroup" style={{textAlign:'center',whiteSpace:'nowrap'}}>Survey Level {level}</th>)}</>;
@@ -39,7 +40,7 @@ export function FocusLevelCells({nct,levels,loading=false,error=false}:{
 }){
  return <>{[1,2,3].flatMap(level=>{
   const slot=levels?.[String(level)];
-  const report=slot?.report?.mode==='CURRENT_EVIDENCE'?slot.report:null;
+  const report=exactReport(slot,nct,level);
   const state=error?'Unavailable':loading?'Loading…':slot?.state||'NOT RUN';
   const prediction=report?.fdaPrediction?.outcome;
   return [
@@ -56,14 +57,14 @@ export function FocusLevelCells({nct,levels,loading=false,error=false}:{
 export function FocusSurveyRowDetails({nct,levels,loading=false,error=false}:{
  nct:string;levels?:FocusTrialLevels;loading?:boolean;error?:boolean;
 }){
- const done=[1,2,3].filter(level=>levels?.[String(level)]?.report?.mode==='CURRENT_EVIDENCE').length;
+ const done=[1,2,3].filter(level=>exactReport(levels?.[String(level)],nct,level)).length;
  return <td style={{padding:10,minWidth:205,verticalAlign:'top'}}>
   {error?<span role="alert">Saved results unavailable</span>:loading?<span>Loading saved surveys…</span>:<>
    <details>
     <summary style={{cursor:'pointer',fontWeight:700}}>{done}/3 surveys saved · view</summary>
     <ul style={{paddingLeft:18,margin:'8px 0'}}>
      {[1,2,3].map(level=>{
-      const slot=levels?.[String(level)],report=slot?.report?.mode==='CURRENT_EVIDENCE'?slot.report:null;
+      const slot=levels?.[String(level)],report=exactReport(slot,nct,level);
       const gaps=slot?.missingEvidence||[];
       return <li key={level} style={{marginBottom:10}}>
        <strong>L{level} · {description[level]}</strong>
