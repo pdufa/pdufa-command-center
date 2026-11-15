@@ -103,7 +103,7 @@ import {ExactTrialIntakeSelector} from '../ExactTrialScientificIntake';
   $focusNctBefore='<td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a></td>'
   $focusNctAfter='<td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a><div style={{marginTop:5,fontSize:12}}><Link href={"/analyze-now?nct="+encodeURIComponent(t.nct)}>Saved research history</Link></div><details><summary>Exact-trial source intake</summary><ExactTrialIntakeSelector cohort="FOCUS" nctId={t.nct}/></details></td>'
   $f=RewriteOnce $f $focusNctBefore $focusNctAfter
-  $f=RewriteOnce $f '</tr></thead>' '<PredictionHeaders/><FocusLevelHeaders/></tr><tr><th colSpan={31}>Level 1–3 saved scientific research</th><FocusLevelSubheaders/></tr></thead>'
+  $f=RewriteOnce $f '</tr></thead>' '<PredictionHeaders/><FocusLevelHeaders/></tr><tr><th colSpan={31}>Level 1-3 saved scientific research</th><FocusLevelSubheaders/></tr></thead>'
   $focusRowEnd='title={label} style={{padding:10,whiteSpace:"nowrap"}}>Not assessed</td>)}'
   $f=RewriteOnce $f $focusRowEnd ($focusRowEnd+'<PredictionCells nct={t.nct}/><FocusLevelCells nct={t.nct}/>')
   $f=RewriteOnce $f '<p style={{fontSize:12,color:"#4f6556",marginTop:15}}>' '<PredictionLegend/><p style={{fontSize:12,color:"#4f6556",marginTop:15}}>'
@@ -119,10 +119,12 @@ import {ExactTrialIntakeSelector} from "../ExactTrialScientificIntake";
 '@
   $p=RewriteOnce $p '"use client";' ('"use client";'+[Environment]::NewLine+$pastImports)
   $p=RewriteOnce $p ' const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);' (' const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);'+[Environment]::NewLine+' const [verifiedNctByEvent,setVerifiedNctByEvent]=useState<Record<string,string>>({});')
-  $p=RewriteOnce $p '<h1>PAST — Historical PDUFA trials</h1>' ('<h1>PAST — Historical PDUFA trials</h1>'+[Environment]::NewLine+' <AssessmentLauncher source="HISTORICAL"/><ScientificStepsReadiness cohort="PAST"/>')
+  # Insert before the heading using an ASCII-only anchor so Windows PowerShell 5.1
+  # does not misdecode the Unicode em dash when loading an unsigned .ps1 file.
+  $p=RewriteOnce $p '<h1>PAST' ('<AssessmentLauncher source="HISTORICAL"/><ScientificStepsReadiness cohort="PAST"/>'+[Environment]::NewLine+' <h1>PAST')
   $p=RewriteOnce $p '<th style={{padding:10,whiteSpace:"nowrap",textAlign:"left"}}>Overall Score' '<PredictionHeaders/><th style={{padding:10,whiteSpace:"nowrap",textAlign:"left"}}>Overall Score'
   $pastNct=@'
-<td style={{padding:9}}><details><summary>Not linked · enter candidate NCT</summary><label>Exact NCT <input aria-label={"Candidate NCT for "+r.eventKey} value={verifiedNctByEvent[r.eventKey]??""} onChange={e=>setVerifiedNctByEvent(prev=>({...prev,[r.eventKey]:e.target.value.toUpperCase()}))} placeholder="NCT12345678" maxLength={11}/></label>{/^NCT\d{8}$/.test(verifiedNctByEvent[r.eventKey]??"")?<ExactTrialIntakeSelector cohort="PAST" nctId={verifiedNctByEvent[r.eventKey]}/>:<p>Historical event-to-NCT link unverified; do not use for blind scoring.</p>}</details></td>
+<td style={{padding:9}}><details><summary>Not linked - enter candidate NCT</summary><label>Exact NCT <input aria-label={"Candidate NCT for "+r.eventKey} value={verifiedNctByEvent[r.eventKey]??""} onChange={e=>setVerifiedNctByEvent(prev=>({...prev,[r.eventKey]:e.target.value.toUpperCase()}))} placeholder="NCT12345678" maxLength={11}/></label>{/^NCT\d{8}$/.test(verifiedNctByEvent[r.eventKey]??"")?<ExactTrialIntakeSelector cohort="PAST" nctId={verifiedNctByEvent[r.eventKey]}/>:<p>Historical event-to-NCT link unverified; do not use for blind scoring.</p>}</details></td>
 '@
   $p=RewriteOnce $p '<td style={{padding:9}}>Not linked</td>' $pastNct.Trim()
   $p=RewriteOnce $p '<td style={{padding:9,whiteSpace:"nowrap"}}>Not assessed</td>{assessmentLevelLabels.map' '<PredictionCells nct={verifiedNctByEvent[r.eventKey]}/><td style={{padding:9,whiteSpace:"nowrap"}}>Not assessed</td>{assessmentLevelLabels.map'
