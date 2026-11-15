@@ -520,5 +520,12 @@ test('FOCUS per-trial survey display shows 3 persisted source-backed reports on 
  assert.match(focus,/<FocusLevelCells nct=\{t\.nct\}/);
  assert.match(assessments,/<FocusSavedAssessments selectedNct=\{nct\}\/>/);
  assert.match(saved,/\?nct='\+encodeURIComponent\(t\.nct\)/);
- assert.match(saved,/data\.fullyProcessed===data\.total/);
+ assert.match(saved,/data\\.fullyProcessed===data\\.total/);
+ const nav=fs.readFileSync(require('node:path').join(__dirname,'../app/GlobalNavigation.tsx'),'utf8');
+ const navTab=fs.readFileSync(require('node:path').join(__dirname,'../app/predictions/assessment/page.tsx'),'utf8');
+ const levelsSource=fs.readFileSync(require('node:path').join(__dirname,'../app/FocusLevelColumns.tsx'),'utf8');
+ assert.match(nav,/label:"ASSESMENTS",href:"\\/predictions\\/assessment"/);
+ assert.match(navTab,/<FocusSavedAssessments selectedNct=\\{q\\.nct/);
+ assert.match(levelsSource,/const link=\\(nct:string\\)=>'\\/predictions\\/assessment\\?nct='/);
+ assert.match(saved,/'\\/predictions\\/assessment\\?nct='/);
 });
