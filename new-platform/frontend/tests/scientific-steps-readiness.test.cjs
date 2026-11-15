@@ -125,14 +125,14 @@ test("exact assessment proxy refuses non-HTTPS backend and does not cache failed
 });
 
 
-test("PAST comparison outcomes remain labeled unverified and separate from blind scoring",()=>{
+test("PAST source-linked FDA actions are revealed only by explicit opt-in and excluded from blind scoring",()=>{
  const source=fs.readFileSync(path.join(app,"past","page.tsx"),"utf8");
- assert.match(source,/Show historical comparison data \(unverified event match; exclude from blind scoring\)/);
- assert.match(source,/Unverified match: /);
- assert.match(source,/candidates\.length===1\?candidates\[0\]:null/);
- assert.match(source,/Ambiguous historical matches/);
- assert.match(source,/ticker and date, not by source-verified FDA event identity/);
+ assert.match(source,/Reveal separately sourced FDA actions \(post-outcome research; excluded from blind scoring\)/);
+ assert.match(source,/regulatoryByEvent\.get\(r\.eventKey\)/);
+ assert.match(source,/if\(c==="actualActionDate"\)return verified\?\.actualFdaActionDate/);
  assert.match(source,/!reveal\?"Hidden"/);
+ assert.match(source,/FDA event.to.NCT\/application\/review.cycle links remain unverified/);
+ assert.doesNotMatch(source,/known\.filter\(/);
 });
 
 
