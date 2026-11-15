@@ -42,7 +42,7 @@ test('all 32 FOCUS rows have distinct overall, direction and L01–L20 cells wit
     nct:'NCT'+String(i+1).padStart(8,'0')}
   }]))
  }));
- const html=renderToStaticMarkup(React.createElement(Matrix,{trials}));
+ const html=renderToStaticMarkup(React.createElement(Matrix,{trials,initiallyExpanded:true}));
  assert.match(html,/data-testid="focus-overall-direction-level20-table"/);
  const allRows=[...html.matchAll(/<tr\b/g)];
  assert.equal(allRows.length,33,'one header plus 32 independent trials');
@@ -76,7 +76,9 @@ test('FOCUS and navigated ASSESMENTS show same ordered reusable result component
  const focus=read('focus/page.tsx'),saved=read('FocusSavedAssessments.tsx');
  const navigation=read('GlobalNavigation.tsx');
  assert.match(navigation,/label:"ASSESMENTS",href:"\/predictions\/assessment"/);
- assert.match(focus,/<FocusOverallHeaders expandable\/><FocusTwentyHeaders className="assessment-level"\/>/);
+ assert.match(focus,/<FocusOverallHeaders expanded=\{surveyLevelsExpanded\}/);
+ assert.match(focus,/\{surveyLevelsExpanded&&<FocusTwentyHeaders\/>\}/);
+ assert.match(focus,/\{surveyLevelsExpanded&&<FocusTwentyCells/);
  assert.match(focus,/<FocusOverviewCells nct=\{t\.nct\}/);
  assert.match(focus,/<FocusTwentyCells nct=\{t\.nct\}/);
  assert.match(saved,/<FocusOverallLevelMatrix trials=\{rows\}/);
@@ -85,4 +87,33 @@ test('FOCUS and navigated ASSESMENTS show same ordered reusable result component
  assert.match(read('predictions/assessment/page.tsx'),/<FocusSavedAssessments selectedNct=/);
  assert.match(read('assessments/page.tsx'),/<FocusSavedAssessments selectedNct=/);
  assert.doesNotMatch(read('FocusOverallLevelMatrix.tsx'),/score\.value\s*\+|sourceVerified\s*\/\s*total.*forecast/);
+});
+
+test('survey heading has original + 20 Levels horizontal collapse; initially collapsed for FOCUS and ASSESMENTS',()=>{
+ const t={nct,ticker:'SYN',company:'Synthetic',levels:levelMap()};
+ const collapsed=renderToStaticMarkup(React.createElement(Matrix,{trials:[t]}));
+ assert.match(collapsed,/data-testid="survey-horizontal-collapse"/);
+ assert.match(collapsed,/aria-expanded="false"/);
+ assert.match(collapsed,/\+ 20 Levels/);
+ assert.match(collapsed,/Overall prediction survey result/);
+ assert.match(collapsed,/FDA direction/);
+ assert.doesNotMatch(collapsed,/L01-Trial identity/);
+ assert.doesNotMatch(collapsed,/L20-Integrated review/);
+ assert.doesNotMatch(collapsed,/data-assessment-level="L01"/);
+ const expanded=renderToStaticMarkup(React.createElement(Matrix,{trials:[t],initiallyExpanded:true}));
+ assert.match(expanded,/aria-expanded="true"/);
+ assert.match(expanded,/− 20 Levels/);
+ assert.match(expanded,/L01-Trial identity/);
+ assert.match(expanded,/L20-Integrated review/);
+ assert.equal((expanded.match(/data-assessment-level="L[0-9]{2}"/g)||[]).length,20);
+ assert.match(expanded,/data-testid="focus-overall-survey-result"/);
+ assert.match(expanded,/data-testid="focus-overall-direction"/);
+ const focus=fs.readFileSync(path.join(__dirname,'../app/focus/page.tsx'),'utf8');
+ assert.match(focus,/const \[surveyLevelsExpanded,setSurveyLevelsExpanded\]=useState\(false\)/);
+ assert.match(focus,/colSpan=\{surveyLevelsExpanded\?33:13\}/);
+ assert.doesNotMatch(focus,/assessment-toggle\[open\]/,'no legacy details hack');
+ const shared=fs.readFileSync(path.join(__dirname,'../app/FocusOverallLevelMatrix.tsx'),'utf8');
+ assert.match(shared,/onClick=\{onToggle\}/);
+ assert.match(shared,/aria-expanded=\{expanded\}/);
+ assert.match(shared,/survey-horizontal-collapse/);
 });
