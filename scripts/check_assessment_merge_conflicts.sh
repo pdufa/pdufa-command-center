@@ -9,8 +9,8 @@ if [[ -n "$(git status --porcelain)" ]]; then
   exit 2
 fi
 branch="$(git branch --show-current)"
-if [[ "$branch" != "codex/level1-6-explicit-scientific-readiness-20261114" ]]; then
-  echo "ABORT: expected assessment integration branch; found '$branch'." >&2
+if [[ -z "$branch" || "$branch" == "main" ]]; then
+  echo "ABORT: diagnostic must run on a named non-production integration branch; found '$branch'." >&2
   exit 2
 fi
 git fetch --no-tags origin main
