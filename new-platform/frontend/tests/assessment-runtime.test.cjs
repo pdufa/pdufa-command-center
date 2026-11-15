@@ -180,7 +180,7 @@ test('launcher uses the scientific contract and cannot count an unpersisted comp
   const textInput=tree.root.findAllByType('textarea')[0]||tree.root.findAllByType('input').find(i=>i.props.type!=='checkbox'&&i.props.type!=='date');
   await act(async()=>{textInput.props.onChange({target:{value:nct}});});
   for(const input of tree.root.findAllByType('input').filter(i=>i.props.type==='checkbox').slice(3))assert.equal(input.props.disabled,true);
-  await act(async()=>{tree.root.findAllByType('button').find(b=>b.props.children==='Submit assessments').props.onClick();await new Promise(resolve=>setTimeout(resolve,6500));});
+  await act(async()=>{tree.root.findAllByType('button').find(b=>['Submit assessments','Run PAST audit and eligible assessments'].includes(b.props.children)).props.onClick();await new Promise(resolve=>setTimeout(resolve,6500));});
   assert.equal(posted.contract,'SCIENTIFIC_1_3');const rendered=JSON.stringify(tree.toJSON());assert.match(rendered,/FAILED/);assert.doesNotMatch(rendered,/3\/3 completed/);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
@@ -261,4 +261,271 @@ test('dedicated production Level 1–3 API credentials are scoped and fail close
   delete process.env.PDUFA_LEVEL123_API_BASE_URL;
   delete process.env.PDUFA_LEVEL123_INTERNAL_API_KEY;
  }
+});
+
+
+test('FOCUS and PAST use the same assessment launcher for single, selected and whole-list scopes',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Launcher=require('../app/AssessmentLauncher.tsx').default;
+ globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const originalFetch=global.fetch;
+ global.fetch=async url=>{
+  if(String(url).includes('pastRoster=2026')){
+   const events=require('../data/level4BlindAssessmentQueue20261112.json').historical2026;
+   return Response.json({year:2026,total:events.length,linked:0,ready:false,status:'PAST_RECONCILIATION_INCOMPLETE',events:events.map(e=>({eventKey:e.eventKey,status:'MISSING_VERIFIED_LINK'})),tasks:[],eligibleTasks:[]});
+  }
+  throw Error('Unexpected request');
+ };
+ try{
+ for(const page of ['focus/page.tsx','past/page.tsx']){
+  const source=fs.readFileSync(require('node:path').join(__dirname,'../app',page),'utf8');
+  assert.match(source,/<AssessmentLauncher source="(?:FOCUS|HISTORICAL)"(?:\s+historicalYear=\{year\})?\s*\/>/);
+ }
+ for(const source of ['FOCUS','HISTORICAL']){
+  let tree;
+  try{
+   await act(async()=>{tree=create(React.createElement(Launcher,{source}));});
+   await act(async()=>{tree.root.findAllByType('button')[0].props.onClick();});
+   const scope=()=>tree.root.findByProps({'aria-label':'Assessment scope'});
+   const options=scope().findAllByType('option').map(option=>option.props.value);
+   assert.deepEqual(options,['single','selected','all']);
+   const submit=()=>tree.root.findAllByType('button').find(button=>['Submit assessments','Run PAST audit and eligible assessments'].includes(button.props.children));
+   await act(async()=>{scope().props.onChange({target:{value:'single'}});});
+   assert.equal(submit().props.disabled,true);
+   await act(async()=>{tree.root.findByProps({'aria-label':'Single trial NCT'}).props.onChange({target:{value:nct}});});
+   assert.equal(submit().props.disabled,false);
+   await act(async()=>{scope().props.onChange({target:{value:'selected'}});});
+   assert.equal(submit().props.disabled,true);
+   await act(async()=>{tree.root.findAllByType('textarea')[0].props.onChange({target:{value:nct}});});
+   assert.equal(submit().props.disabled,false);
+   await act(async()=>{scope().props.onChange({target:{value:'all'}});});
+   assert.equal(submit().props.disabled,true);
+   if(source==='HISTORICAL'){
+    const audit=tree.root.findAllByType('button').find(button=>button.props.children==='Audit whole PAST 2026 list');
+    assert.equal(audit.props.disabled,false);
+    await act(async()=>{await audit.props.onClick();});
+    assert.equal(submit().props.disabled,false,'whole PAST can be audited without fabricated trial links');
+    await act(async()=>{await submit().props.onClick();});
+    assert.ok(tree.root.findAllByType('h3').some(h=>React.Children.toArray(h.props.children).join('').includes('20 events not assessed')));
+    assert.match(JSON.stringify(tree.toJSON()),/NOT_ASSESSED_UNVERIFIED/);
+    assert.ok(tree.root.findAllByType('summary').some(node=>React.Children.toArray(node.props.children).join('')==='20 PAST events requiring verified linkage or evidence'));
+    assert.match(JSON.stringify(tree.toJSON()),/Whole PAST reports every event/);
+   }
+   await act(async()=>{tree.root.findByProps({'aria-label':'Clear assessment popup'}).props.onClick();});
+   assert.equal(scope().props.value,'selected');
+  }finally{if(tree)await act(async()=>tree.unmount());}
+ }
+ }finally{global.fetch=originalFetch;}
+});
+
+test('whole-list assessment requires exact verification against saved FOCUS total, not a partial catalog',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Launcher=require('../app/AssessmentLauncher.tsx').default;
+ globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const old=global.fetch;let tree,summaryTotal=3,summaryNcts=[nct,'NCT01234567'];
+ global.fetch=async url=>{
+  if(String(url).includes('focus=true'))return Response.json({status:'DATABASE_SAVED_RECONCILED_OWNER_ROSTER',source:{roster_id:'owner-roster-1'},total:summaryTotal,trials:summaryNcts.map(nct=>({nct}))});
+  return Response.json({population:'FOCUS',trials:[{nct},{nct:'NCT01234567'}]});
+ };
+ try{
+  await act(async()=>{tree=create(React.createElement(Launcher,{source:'FOCUS'}));});
+  await act(async()=>{tree.root.findAllByType('button')[0].props.onClick();});
+  const scope=tree.root.findByProps({'aria-label':'Assessment scope'});
+  await act(async()=>{scope.props.onChange({target:{value:'all'}});});
+  const load=()=>tree.root.findAllByType('button').find(button=>button.props.children==='Verify and load whole FOCUS list');
+  const submit=()=>tree.root.findAllByType('button').find(button=>['Submit assessments','Run PAST audit and eligible assessments'].includes(button.props.children));
+  await act(async()=>{await load().props.onClick();});
+  assert.equal(submit().props.disabled,true);
+  assert.match(JSON.stringify(tree.toJSON()),/FOCUS roster could not be verified as complete/);
+  summaryTotal=2;summaryNcts=[nct,'NCT99999999'];
+  await act(async()=>{await load().props.onClick();});
+  assert.equal(submit().props.disabled,true,'matching counts with different NCTs must fail');
+  summaryNcts=[nct,'NCT01234567'];
+  await act(async()=>{await load().props.onClick();});
+  assert.equal(submit().props.disabled,false);
+  assert.match(JSON.stringify(tree.toJSON()),/Full FOCUS roster confirmed/);
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
+});
+
+
+test('PAST candidate NCT entries never masquerade as verified FDA event prediction links',()=>{
+ const past=fs.readFileSync(require('node:path').join(__dirname,'../app/past/page.tsx'),'utf8');
+ assert.match(past,/candidateNctByEvent/);
+ assert.doesNotMatch(past,/verifiedNctByEvent/);
+ assert.match(past,/<PredictionCells\s*\/>/);
+ assert.doesNotMatch(past,/<PredictionCells\s+nct=\{candidateNctByEvent/);
+});
+
+
+test('PAST whole-list audit follows selected year and never uses the 2026 cohort for other years',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Launcher=require('../app/AssessmentLauncher.tsx').default;
+ globalThis.IS_REACT_ACT_ENVIRONMENT=true;let tree;
+ const originalFetch=global.fetch;
+ global.fetch=async url=>{
+  assert.match(String(url),/pastRoster=2025/);
+  return Response.json({status:'PAST_YEAR_NOT_IMPORTED',year:2025,total:null,linked:0,ready:false,events:[],tasks:[]});
+ };
+ try{
+  await act(async()=>{tree=create(React.createElement(Launcher,{source:'HISTORICAL',historicalYear:'2025'}));});
+  await act(async()=>{tree.root.findAllByType('button')[0].props.onClick();});
+  await act(async()=>{tree.root.findByProps({'aria-label':'Assessment scope'}).props.onChange({target:{value:'all'}});});
+  const audit=tree.root.findAllByType('button').find(button=>button.props.children==='Audit whole PAST 2025 list');
+  await act(async()=>{await audit.props.onClick();});
+  assert.match(JSON.stringify(tree.toJSON()),/roster incomplete or inconsistent/);
+  assert.ok(!JSON.stringify(tree.toJSON()).includes('20 PAST events requiring verified linkage or evidence'));
+  assert.equal(tree.root.findAllByType('button').find(button=>['Submit assessments','Run PAST audit and eligible assessments'].includes(button.props.children)).props.disabled,true);
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=originalFetch;}
+});
+
+
+test('ASSESSMENTS shows independently pinned FOCUS and year-selectable PAST launchers',()=>{
+ const page=fs.readFileSync(require('node:path').join(__dirname,'../app/assessments/page.tsx'),'utf8');
+ const past=fs.readFileSync(require('node:path').join(__dirname,'../app/PastAssessmentYearLauncher.tsx'),'utf8');
+ assert.match(page,/<AssessmentLauncher source="FOCUS" lockSource\s*\/>/);
+ assert.match(page,/<PastAssessmentYearLauncher\s*\/>/);
+ assert.match(past,/<AssessmentLauncher source="HISTORICAL" historicalYear=\{year\} lockSource\s*\/>/);
+ assert.match(past,/PAST assessment year/);
+});
+
+test('whole PAST activates only for an exact complete verified year and carries event-specific cutoffs',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Launcher=require('../app/AssessmentLauncher.tsx').default;
+ globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const events=require('../data/level4BlindAssessmentQueue20261112.json').historical2026;
+ const tasks=events.map((e,i)=>({eventKey:e.eventKey,nct:'NCT'+String(i+1).padStart(8,'0'),cutoffDate:'2025-12-'+String((i%20)+1).padStart(2,'0')}));
+ const old=global.fetch;let tree,complete=false;
+ global.fetch=async url=>{
+  assert.match(String(url),/pastRoster=2026/);
+  return Response.json({year:2026,total:20,linked:complete?20:19,ready:complete,
+   status:complete?'VERIFIED_WHOLE_PAST_COHORT':'PAST_RECONCILIATION_INCOMPLETE',
+   events:events.map((e,i)=>({eventKey:e.eventKey,status:complete||i!==19?'READY':'MISSING_VERIFIED_LINK'})),
+   tasks:complete?tasks:[],eligibleTasks:complete?tasks:tasks.slice(0,19)});
+ };
+ try{
+  await act(async()=>{tree=create(React.createElement(Launcher,{source:'HISTORICAL',lockSource:true}));});
+  await act(async()=>{tree.root.findAllByType('button')[0].props.onClick();});
+  await act(async()=>{tree.root.findByProps({'aria-label':'Assessment scope'}).props.onChange({target:{value:'all'}});});
+  const audit=()=>tree.root.findAllByType('button').find(b=>b.props.children==='Audit whole PAST 2026 list');
+  const submit=()=>tree.root.findAllByType('button').find(b=>['Submit assessments','Run PAST audit and eligible assessments'].includes(b.props.children));
+  await act(async()=>{await audit().props.onClick();});
+  assert.equal(submit().props.disabled,false,'partial year can report gaps and assess the 19 source-verified trials');
+  complete=true;
+  await act(async()=>{await audit().props.onClick();});
+  assert.equal(submit().props.disabled,false);
+  assert.match(JSON.stringify(tree.toJSON()),/Whole PAST audit loaded: 20 verified trials/);
+  assert.equal(tree.root.findAllByType('select').find(sel=>sel.props.value==='BLIND_HISTORICAL').props.disabled,true,'whole PAST must enforce predecision historical mode');
+  assert.equal(submit().props.disabled,false,'per-event pre-decision dates remove need for one global cutoff');
+  assert.equal(tree.root.findAllByProps({type:'date'}).length,0,'each historical event has its own predecision cutoff');
+  assert.equal(tree.root.findAllByType('select').find(sel=>sel.props.value==='HISTORICAL').props.disabled,true);
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
+});
+
+test('PAST preview can audit all unverified events if old backend lacks roster endpoint without forging trial links',async()=>{
+ const old=global.fetch;
+ process.env.PDUFA_API_BASE_URL='https://backend.example.test';
+ process.env.PDUFA_INTERNAL_API_KEY='SYNTHETIC_INTERNAL_KEY';
+ let calls=0;
+ global.fetch=async(url,init)=>{
+  assert.equal(url,'https://backend.example.test/api/assessment-runtime/past/roster?year=2026');
+  assert.equal(init.headers['X-Pdufa-Internal-Key'],'SYNTHETIC_INTERNAL_KEY');
+  calls++;
+  return Response.json({detail:'Not Found'},{status:404});
+ };
+ const get=path=>new NextRequest(base+path,{headers:{cookie:auth.COOKIE_NAME+'='+auth.makeSession()}});
+ try{
+  const response=await api.GET(get('/api/assessments/runtime?pastRoster=2026'));
+  assert.equal(response.status,200);
+  const report=await response.json();
+  assert.equal(report.year,2026);
+  assert.equal(report.total,20);
+  assert.equal(report.linked,0);
+  assert.equal(report.ready,false);
+  assert.deepEqual(report.eligibleTasks,[]);
+  assert.ok(report.events.every(row=>row.status==='BACKEND_ROSTER_ENDPOINT_NOT_INSTALLED'&&!row.ncts.length));
+  assert.equal(calls,1);
+  assert.equal((await api.GET(new NextRequest(base+'/api/assessments/runtime?pastRoster=2026'))).status,401);
+  assert.equal(calls,1,'No unauthenticated fallback to original research queue');
+ }finally{
+  global.fetch=old;
+  delete process.env.PDUFA_API_BASE_URL;
+  delete process.env.PDUFA_INTERNAL_API_KEY;
+ }
+});
+
+test('historical 2026 FDA goal dates and actual actions have independent source provenance and remain outside scientific scoring',()=>{
+ const queue=require('../data/level4BlindAssessmentQueue20261112.json').historical2026;
+ const ledger=require('../data/past2026RegulatoryResearch20261115.json');
+ assert.equal(ledger.records.length,20);
+ assert.equal(new Set(ledger.records.map(r=>r.eventKey)).size,20);
+ assert.deepEqual(new Set(ledger.records.map(r=>r.eventKey)),new Set(queue.map(r=>r.eventKey)));
+ for(const item of ledger.records){
+  const queued=queue.find(q=>q.eventKey===item.eventKey);
+  assert.equal(item.targetDate,queued.cutoffDate);
+  assert.match(item.targetEvidenceUrl,/^https:\/\//);
+  assert.match(item.actionEvidenceUrl,/^https:\/\//);
+  assert.equal(typeof item.targetSourcePreActionVerified,'boolean');
+  if(!item.targetSourcePreActionVerified)assert.equal(item.targetSourcePublishedDate,null);
+  if(item.targetSourcePreActionVerified){
+   assert.match(item.targetSourcePublishedDate,/^20\d{2}-\d{2}-\d{2}$/);
+   assert.ok(item.targetSourcePublishedDate<item.actualFdaActionDate,'pre-action source must precede FDA decision');
+  }
+  assert.equal(item.exactNctApplicationReviewCycleVerified,false);
+  assert.equal(item.scientificPrediction,null);
+  assert.equal(item.scientificScore,null);
+  assert.match(item.fdaAction,/^(APPROVED|CRL)$/);
+  if(item.actualFdaActionDate)assert.match(item.actualFdaActionDate,/^2026-\d{2}-\d{2}$/);
+  assert.equal('nct' in item,false,'target and action dates do not independently link an NCT');
+ }
+ const m=ledger.records.find(r=>r.eventKey.startsWith('MNKD|2026-07-26|'));
+ assert.match(m.product,/NOT sBLA/);
+ assert.match(m.applicationDescription,/sNDA, not sBLA/);
+ assert.equal(ledger.records.find(r=>r.eventKey.startsWith('RGNX|')).actualFdaActionDate,'2026-02-07');
+ assert.equal(ledger.records.find(r=>r.eventKey.startsWith('ARVN|')).actualFdaActionDate,'2026-05-01');
+ assert.equal(ledger.records.find(r=>r.eventKey.startsWith('DNLI|')).actualFdaActionDate,'2026-03-24');
+ assert.equal(ledger.records.find(r=>r.eventKey.startsWith('TLX|')).actualFdaActionDate,'2026-09-11');
+ const past=fs.readFileSync(require('node:path').join(__dirname,'../app/past/page.tsx'),'utf8');
+ assert.match(past,/regulatoryByEvent\.get\(r\.eventKey\)/);
+ assert.match(past,/!reveal\?"Hidden"/);
+ assert.match(past,/Actual FDA action date/);
+ assert.match(past,/regulatory\.targetSourcePreActionVerified\?/);
+ assert.match(past,/Target source withheld until outcome reveal/);
+ const launcher=fs.readFileSync(require('node:path').join(__dirname,'../app/AssessmentLauncher.tsx'),'utf8');
+ assert.doesNotMatch(launcher,/past2026RegulatoryResearch20261115/);
+});
+
+test('FOCUS per-trial survey display shows 3 persisted source-backed reports on both pages without scoring unvalidated research',()=>{
+ const React=require('react'),{renderToStaticMarkup}=require('react-dom/server');
+ const {FocusSurveyRowDetails,FocusLevelCells}=require('../app/FocusLevelColumns.tsx');
+ const id='NCT04576949';
+ const levels=Object.fromEntries([1,2,3].map(level=>[String(level),{
+  state:'COMPLETED',missingEvidence:[{id:'criterion_'+level,state:'MISSING',explanation:'Protocol not yet supplied'}],
+  report:{runId:String(level).repeat(36),nct:id,level,mode:'CURRENT_EVIDENCE',
+   executedAt:'2026-11-15T01:00:00Z',score:{kind:'NOT_VALIDATED',value:null},
+   fdaPrediction:{outcome:'ABSTAIN',confidence:'UNVALIDATED'}}}]));
+ let rendered=renderToStaticMarkup(React.createElement('table',null,React.createElement('tbody',null,
+  React.createElement('tr',null,React.createElement(FocusSurveyRowDetails,{nct:id,levels}),
+   React.createElement(FocusLevelCells,{nct:id,levels})))));
+ assert.match(rendered,/3\/3 surveys saved/);
+ for(const term of ['L1','L2','L3','Clinical trial design','Efficacy and statistics','MISSING','NOT VALIDATED','ABSTAIN']){
+  assert.ok(rendered.includes(term),term);
+ }
+ assert.match(rendered,/predictions\/assessment\?nct=NCT04576949/);
+ assert.doesNotMatch(rendered,/FDA approval: 100|predicted approval 100/);
+ levels['3'].report.score={kind:'LEVEL_SPECIFIC_EVIDENCE_COVERAGE',value:81};
+ rendered=renderToStaticMarkup(React.createElement('table',null,React.createElement('tbody',null,
+  React.createElement('tr',null,React.createElement(FocusLevelCells,{nct:id,levels})))));
+ assert.doesNotMatch(rendered,/>81</,'documentation coverage is not a validated scientific score');
+ const focus=fs.readFileSync(require('node:path').join(__dirname,'../app/focus/page.tsx'),'utf8');
+ const assessments=fs.readFileSync(require('node:path').join(__dirname,'../app/assessments/page.tsx'),'utf8');
+ const saved=fs.readFileSync(require('node:path').join(__dirname,'../app/FocusSavedAssessments.tsx'),'utf8');
+ assert.match(focus,/new Set\(members\.map\(t=>t\.nct\)\)\.size!==expected\.size/);
+ assert.match(focus,/<FocusSurveyRowDetails nct=\{t\.nct\}/);
+ assert.match(focus,/<FocusLevelCells nct=\{t\.nct\}/);
+ assert.match(assessments,/<FocusSavedAssessments selectedNct=\{nct\}\/>/);
+ assert.match(saved,/\?nct='\+encodeURIComponent\(t\.nct\)/);
+ assert.match(saved,/data\.fullyProcessed===data\.total/);
+ const nav=fs.readFileSync(require('node:path').join(__dirname,'../app/GlobalNavigation.tsx'),'utf8');
+ const navTab=fs.readFileSync(require('node:path').join(__dirname,'../app/predictions/assessment/page.tsx'),'utf8');
+ const levelsSource=fs.readFileSync(require('node:path').join(__dirname,'../app/FocusLevelColumns.tsx'),'utf8');
+ assert.match(nav,/label:"ASSESMENTS",href:"\/predictions\/assessment"/);
+ assert.match(navTab,/<FocusSavedAssessments selectedNct=\{q\.nct/);
+ assert.match(levelsSource,/const link=\(nct:string\)=>'\/predictions\/assessment\?nct='/);
+ assert.match(saved,/'\/predictions\/assessment\?nct='/);
 });

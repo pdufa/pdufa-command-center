@@ -584,6 +584,12 @@ def router(engine_provider, auth, storage, writes, *, allow_local=False):
         value=engine_provider()
         if not allow_local and value.dialect.name!='postgresql':raise HTTPException(503,'Persistent PostgreSQL is required for assessments')
         return value
+    @api.get('/past/roster')
+    def past_roster(year:int=2026):
+        if not 2017<=year<=2026:
+            raise HTTPException(422, 'Historical PAST year must be between 2017 and 2026')
+        from .past_assessment_cohort import roster
+        return roster(engine(),year)
     @api.get('/past')
     def past_results():
         return saved_blind_historical(engine())
