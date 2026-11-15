@@ -156,7 +156,17 @@ def fetch_page(page_token=None):
             if exc.code == 400:
                 # Do not silently reset an audited census on a rejected cursor.
                 last_code = "SOURCE_HTTP_400_CURSOR" if page_token else "SOURCE_HTTP_400_QUERY"
-                LOG.error("PDUFA_PHASE3_SOURCE_BAD_REQUEST scope=%s page_size=%d has_page_token=%s error_code=%s", SCOPE_ID, PAGE_SIZE, bool(page_token), last_code)
+                # Capture a bounded API explanation without logging the URL or cursor.
+                try:
+                    payload = exc.read(2048).decode("utf-8", errors="replace")
+                    parsed = json.loads(payload)
+                    explanation = parsed.get("message", "") if isinstance(parsed, dict) else ""
+                    if not isinstance(explanation, str):
+                        explanation = ""
+                    explanation = re.sub(r"[^a-zA-Z0-9 .,;:_()/-]", " ", explanation)[:300]
+                except (OSError, ValueError, UnicodeError):
+                    explanation = ""
+                LOG.error("PDUFA_PHASE3_SOURCE_BAD_REQUEST scope=%s page_size=%d has_page_token=%s error_code=%s source_message=%s", SCOPE_ID, PAGE_SIZE, bool(page_token), last_code, explanation)
             if exc.code not in {408, 429, 500, 502, 503, 504}:
                 break
         except (URLError, TimeoutError, OSError):
