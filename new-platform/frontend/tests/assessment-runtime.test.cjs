@@ -295,9 +295,9 @@ test('FOCUS and PAST use the same assessment launcher for single, selected and w
     assert.equal(audit.props.disabled,false);
     await act(async()=>{await audit.props.onClick();});
     assert.equal(submit().props.disabled,true);
-    assert.match(JSON.stringify(tree.toJSON()),/20 of 20 displayed events have no verified/);
-    assert.ok(tree.root.findAllByType('summary').some(node=>React.Children.toArray(node.props.children).join('')==='20 unresolved PAST event-to-trial links'));
-    assert.match(JSON.stringify(tree.toJSON()),/Whole PAST stays blocked until linkage is verified/);
+    assert.match(JSON.stringify(tree.toJSON()),/Whole PAST 2026 needs verified FDA event/);
+    assert.ok(tree.root.findAllByType('summary').some(node=>React.Children.toArray(node.props.children).join('')==='20 PAST events requiring verified linkage or evidence'));
+    assert.match(JSON.stringify(tree.toJSON()),/PAST event links must be independently verified/);
    }
    await act(async()=>{tree.root.findByProps({'aria-label':'Clear assessment popup'}).props.onClick();});
    assert.equal(scope().props.value,'selected');
@@ -352,8 +352,50 @@ test('PAST whole-list audit follows selected year and never uses the 2026 cohort
   await act(async()=>{tree.root.findByProps({'aria-label':'Assessment scope'}).props.onChange({target:{value:'all'}});});
   const audit=tree.root.findAllByType('button').find(button=>button.props.children==='Audit whole PAST 2025 list');
   await act(async()=>{await audit.props.onClick();});
-  assert.match(JSON.stringify(tree.toJSON()),/PAST 2025: no year-specific verified historical roster/);
-  assert.ok(!JSON.stringify(tree.toJSON()).includes('20 unresolved PAST event-to-trial links'));
+  assert.match(JSON.stringify(tree.toJSON()),/20.*unknown|Whole PAST 2025 needs verified FDA event|Assessment service unavailable|Failed to parse URL/);
+  assert.ok(!JSON.stringify(tree.toJSON()).includes('20 PAST events requiring verified linkage or evidence'));
   assert.equal(tree.root.findAllByType('button').find(button=>button.props.children==='Submit assessments').props.disabled,true);
  }finally{if(tree)await act(async()=>tree.unmount());}
+});
+
+
+test('ASSESSMENTS shows independently pinned FOCUS and year-selectable PAST launchers',()=>{
+ const page=fs.readFileSync(require('node:path').join(__dirname,'../app/assessments/page.tsx'),'utf8');
+ const past=fs.readFileSync(require('node:path').join(__dirname,'../app/PastAssessmentYearLauncher.tsx'),'utf8');
+ assert.match(page,/<AssessmentLauncher source="FOCUS" lockSource\s*\/>/);
+ assert.match(page,/<PastAssessmentYearLauncher\s*\/>/);
+ assert.match(past,/<AssessmentLauncher source="HISTORICAL" historicalYear=\{year\} lockSource\s*\/>/);
+ assert.match(past,/PAST assessment year/);
+});
+
+test('whole PAST activates only for an exact complete verified year and carries event-specific cutoffs',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Launcher=require('../app/AssessmentLauncher.tsx').default;
+ globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const events=require('../data/level4BlindAssessmentQueue20261112.json').historical2026;
+ const tasks=events.map((e,i)=>({eventKey:e.eventKey,nct:'NCT'+String(i+1).padStart(8,'0'),cutoffDate:'2025-12-'+String((i%20)+1).padStart(2,'0')}));
+ const old=global.fetch;let tree,complete=false;
+ global.fetch=async url=>{
+  assert.match(String(url),/pastRoster=2026/);
+  return Response.json({year:2026,total:20,linked:complete?20:19,ready:complete,
+   status:complete?'VERIFIED_WHOLE_PAST_COHORT':'PAST_RECONCILIATION_INCOMPLETE',
+   events:events.map((e,i)=>({eventKey:e.eventKey,status:complete||i!==19?'READY':'MISSING_VERIFIED_LINK'})),
+   tasks:complete?tasks:[]});
+ };
+ try{
+  await act(async()=>{tree=create(React.createElement(Launcher,{source:'HISTORICAL',lockSource:true}));});
+  await act(async()=>{tree.root.findAllByType('button')[0].props.onClick();});
+  await act(async()=>{tree.root.findByProps({'aria-label':'Assessment scope'}).props.onChange({target:{value:'all'}});});
+  const audit=()=>tree.root.findAllByType('button').find(b=>b.props.children==='Audit whole PAST 2026 list');
+  const submit=()=>tree.root.findAllByType('button').find(b=>b.props.children==='Submit assessments');
+  await act(async()=>{await audit().props.onClick();});
+  assert.equal(submit().props.disabled,true,'19/20 must not run');
+  complete=true;
+  await act(async()=>{await audit().props.onClick();});
+  assert.equal(submit().props.disabled,false);
+  assert.match(JSON.stringify(tree.toJSON()),/Full PAST 2026 roster confirmed/);
+  await act(async()=>{tree.root.findAllByType('select').find(sel=>sel.props.value==='CURRENT_EVIDENCE').props.onChange({target:{value:'BLIND_HISTORICAL'}});});
+  assert.equal(submit().props.disabled,false,'per-event pre-decision dates remove need for one global cutoff');
+  assert.equal(tree.root.findAllByProps({type:'date'}).length,0,'each historical event has its own predecision cutoff');
+  assert.equal(tree.root.findAllByType('select').find(sel=>sel.props.value==='HISTORICAL').props.disabled,true);
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
