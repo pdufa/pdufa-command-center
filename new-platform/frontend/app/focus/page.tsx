@@ -40,7 +40,10 @@ export default function FocusPage(){
        data.total!==expected.size||members.length!==expected.size||
        new Set(members.map(t=>t.nct)).size!==expected.size||
        members.some(t=>!expected.has(t.nct)||!t.levels||
-         [1,2,3].some(level=>!t.levels[String(level)]))){
+         [1,2,3].some(level=>{
+          const slot=t.levels[String(level)];
+          return !slot||!!(slot.report&&(slot.report.nct!==t.nct||slot.report.level!==level||slot.report.mode!=='CURRENT_EVIDENCE'));
+         }))){
      throw Error('FOCUS assessment roster does not match the exact 32-trial source list; saved results withheld.');
     }
     setSavedLevels(Object.fromEntries(members.map(t=>[t.nct,t.levels])));
@@ -55,8 +58,8 @@ export default function FocusPage(){
   window.addEventListener('focus',onFocus);
   return()=>{active=false;clearInterval(timer);window.removeEventListener('focus',onFocus);};
  },[]);
- const levelCompleted=(level:number)=>trials.filter(t=>savedLevels[t.nct]?.[String(level)]?.report?.mode==='CURRENT_EVIDENCE').length;
- const fullyProcessed=trials.filter(t=>[1,2,3].every(level=>savedLevels[t.nct]?.[String(level)]?.report?.mode==='CURRENT_EVIDENCE')).length;
+ const levelCompleted=(level:number)=>trials.filter(t=>{const r=savedLevels[t.nct]?.[String(level)]?.report;return r?.nct===t.nct&&r?.level===level&&r?.mode==='CURRENT_EVIDENCE';}).length;
+ const fullyProcessed=trials.filter(t=>[1,2,3].every(level=>{const r=savedLevels[t.nct]?.[String(level)]?.report;return r?.nct===t.nct&&r?.level===level&&r?.mode==='CURRENT_EVIDENCE';})).length;
  const sortedTrials=useMemo(()=>sortNumericRows(trials,sortRules,(t,c)=>{
   const gate=finalGateByNct.get(t.nct);
   const designations=designationByNct.get(t.nct)?.designations;
