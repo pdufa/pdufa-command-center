@@ -22,7 +22,7 @@ const scientific=(report:SavedFocusReport|null|undefined)=>
   ?'NOT VALIDATED'
   :typeof report?.score?.value==='number'&&Number.isFinite(report.score.value)
    ?String(report.score.value):'NOT VALIDATED';
-const link=(nct:string)=>'/assessments?nct='+encodeURIComponent(nct);
+const link=(nct:string)=>'/predictions/assessment?nct='+encodeURIComponent(nct);
 
 export function FocusLevelHeaders(){
  return <>{[1,2,3].map(level=><th key={level} colSpan={2} scope="colgroup" style={{textAlign:'center',whiteSpace:'nowrap'}}>Survey Level {level}</th>)}</>;
