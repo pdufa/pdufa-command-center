@@ -218,7 +218,7 @@ test("GitHub workflow integrity job name matches exact dashboard validation cont
     "../../../.github/workflows/main-phase3-evidence-qualification.yml"),"utf8");
   assert.equal(INTEGRITY_STEP,
     "Verify MAIN Phase 3 research integrity manifest [nightly-integrity-v1]");
-  assert.ok(workflow.includes("      - name: "+INTEGRITY_STEP+"\n"),
+  assert.ok(workflow.replace(/\r\n/g,"\n").includes("      - name: "+INTEGRITY_STEP+"\n"),
     "Renaming the GitHub source integrity step must fail frontend CI");
   assert.doesNotMatch(INTEGRITY_STEP,/\b(?:14|16|18)\s*(?:file|report)/i,
     "Step names cannot drift when the validated artifact grows");

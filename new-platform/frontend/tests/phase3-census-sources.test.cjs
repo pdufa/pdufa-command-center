@@ -23,7 +23,11 @@ const inventory = parsePhase3CensusCsv(input);
 const copy = value => JSON.parse(JSON.stringify(value));
 
 test("all 741 trial pointers reproduce from exact saved issuer, cap and configured source inputs",()=>{
-  const result = spawnSync("python3",["scripts/build_phase3_census_sources.py","--check"],{cwd:root,encoding:"utf8"});
+  const python = process.platform === "win32" ? "py" : "python3";
+  const args = process.platform === "win32"
+    ? ["-3","scripts/build_phase3_census_sources.py","--check"]
+    : ["scripts/build_phase3_census_sources.py","--check"];
+  const result = spawnSync(python,args,{cwd:root,encoding:"utf8"});
   assert.equal(result.status,0,result.stderr||result.stdout);
   for(const item of source.inputs) assert.equal(item.sha256,
     crypto.createHash("sha256").update(fs.readFileSync(path.join(root,item.path))).digest("hex"));
