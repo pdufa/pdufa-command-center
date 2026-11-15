@@ -14,7 +14,31 @@ export default function PastPage(){
  const [search,setSearch]=useState("");
  const [reveal,setReveal]=useState(false);
  const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);
- const filtered=useMemo(()=>{const subset=year==="2026"?rows.filter(r=>(r.ticker+" "+r.eventKey).toLowerCase().includes(search.toLowerCase())):[];return sortNumericRows(subset,sortRules,(r,c)=>c==="ticker"?r.ticker:c==="application"?r.eventKey.split("|")[2]||null:c==="cutoffDate"?r.cutoffDate:c==="assessmentLevel"?"Level 4 queued":c==="level4Score"?r.level4Score:c==="confidence"?r.confidence:c==="prediction"?r.blindPrediction:c==="decisionType"?(reveal?(known.find(k=>k.ticker===r.ticker&&k.actualFdaActionDate===r.cutoffDate)?.approvalType??null):null):c==="decision"?(reveal?(known.find(k=>k.ticker===r.ticker&&k.actualFdaActionDate===r.cutoffDate)?.actualOutcome??null):null):c==="level4"?r.level4Score:null,r=>r.eventKey)},[year,search,sortRules,reveal]);
+ const filtered=useMemo(()=>{
+  const subset=year==="2026"?rows.filter(r=>(r.ticker+" "+r.eventKey).toLowerCase().includes(search.toLowerCase())):[];
+  return sortNumericRows(subset,sortRules,(r,c)=>{
+   const verified=reveal?known.find(k=>k.ticker===r.ticker&&k.actualFdaActionDate===r.cutoffDate):undefined;
+   if(c==="ticker")return r.ticker;
+   if(c==="trial")return "Not linked";
+   if(c==="company")return "Not recorded";
+   if(c==="designations")return "Not verified";
+   if(c==="marketCap")return null;
+   if(c==="application")return r.eventKey.split("|")[2]||"Not recorded";
+   if(c==="sources")return "Evidence pending";
+   if(c==="gates")return "Not assessed";
+   if(c==="cutoffDate")return r.cutoffDate;
+   if(c==="assessmentLevel")return "Level 4 queued";
+   if(c==="level4Score")return r.level4Score;
+   if(c==="confidence")return r.confidence;
+   if(c==="prediction")return r.blindPrediction;
+   if(c==="decisionType")return verified?.approvalType??null;
+   if(c==="decision")return verified?.actualOutcome??null;
+   if(c==="overall")return "Not assessed";
+   if(c==="level4")return r.level4Score;
+   if(/^level(?:[1-9]|1[0-9]|20)$/.test(c))return null;
+   return null;
+  },r=>r.eventKey);
+ },[year,search,sortRules,reveal]);
  return <main style={{maxWidth:1400,margin:"24px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif"}}>
  <nav style={{display:"flex",gap:14,marginBottom:16}}><Link href="/focus">FOCUS</Link><strong>PAST</strong><Link href="/pool">POOL</Link></nav>
  <h1>PAST — Historical PDUFA trials</h1>
