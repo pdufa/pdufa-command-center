@@ -448,3 +448,36 @@ test('PAST preview can audit all unverified events if old backend lacks roster e
   delete process.env.PDUFA_INTERNAL_API_KEY;
  }
 });
+
+test('historical 2026 FDA goal dates and actual actions have independent source provenance and remain outside scientific scoring',()=>{
+ const queue=require('../data/level4BlindAssessmentQueue20261112.json').historical2026;
+ const ledger=require('../data/past2026RegulatoryResearch20261115.json');
+ assert.equal(ledger.records.length,20);
+ assert.equal(new Set(ledger.records.map(r=>r.eventKey)).size,20);
+ assert.deepEqual(new Set(ledger.records.map(r=>r.eventKey)),new Set(queue.map(r=>r.eventKey)));
+ for(const item of ledger.records){
+  const queued=queue.find(q=>q.eventKey===item.eventKey);
+  assert.equal(item.targetDate,queued.cutoffDate);
+  assert.match(item.targetEvidenceUrl,/^https:\/\//);
+  assert.match(item.actionEvidenceUrl,/^https:\/\//);
+  assert.equal(item.exactNctApplicationReviewCycleVerified,false);
+  assert.equal(item.scientificPrediction,null);
+  assert.equal(item.scientificScore,null);
+  assert.match(item.fdaAction,/^(APPROVED|CRL)$/);
+  if(item.actualFdaActionDate)assert.match(item.actualFdaActionDate,/^2026-\d{2}-\d{2}$/);
+  assert.equal('nct' in item,false,'target and action dates do not independently link an NCT');
+ }
+ const m=ledger.records.find(r=>r.eventKey.startsWith('MNKD|2026-07-26|'));
+ assert.match(m.product,/NOT sBLA/);
+ assert.match(m.applicationDescription,/sNDA, not sBLA/);
+ assert.equal(ledger.records.find(r=>r.eventKey.startsWith('RGNX|')).actualFdaActionDate,'2026-02-07');
+ assert.equal(ledger.records.find(r=>r.eventKey.startsWith('ARVN|')).actualFdaActionDate,'2026-05-01');
+ assert.equal(ledger.records.find(r=>r.eventKey.startsWith('DNLI|')).actualFdaActionDate,'2026-03-24');
+ assert.equal(ledger.records.find(r=>r.eventKey.startsWith('TLX|')).actualFdaActionDate,'2026-09-11');
+ const past=fs.readFileSync(require('node:path').join(__dirname,'../app/past/page.tsx'),'utf8');
+ assert.match(past,/regulatoryByEvent\.get\(r\.eventKey\)/);
+ assert.match(past,/!reveal\?"Hidden"/);
+ assert.match(past,/Actual FDA action date/);
+ const launcher=fs.readFileSync(require('node:path').join(__dirname,'../app/AssessmentLauncher.tsx'),'utf8');
+ assert.doesNotMatch(launcher,/past2026RegulatoryResearch20261115/);
+});
