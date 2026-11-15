@@ -62,7 +62,7 @@ test("POOL exact-NCT review rows provide a guarded intake selector",()=>{
 test("PAST requires explicit NCT and exact program before intake lookup",()=>{
  const source=fs.readFileSync(path.join(app,"past","page.tsx"),"utf8");
  assert.match(source,/Historical event-to-NCT linkage remains unverified/);
- assert.match(source,/<ExactTrialIntakeSelector cohort="PAST" nctId=\{verifiedNctByEvent\[r\.eventKey\]\}\/>/);
+ assert.match(source,/<ExactTrialIntakeSelector cohort="PAST" nctId=\{candidateNctByEvent\[r\.eventKey\]\}\/>/);
  assert.ok(source.includes(String.raw`/^NCT\d{8}$/`), "PAST must validate the exact NCT format");
 });
 
