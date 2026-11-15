@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "asOf": "2026-11-15",
   "dataset": "PAST_2026_POST_ACTION_REGULATORY_RESEARCH_NOT_SCIENTIFIC_INPUT",
-  "description": "Public FDA/SEC/sponsor research for regulator goal and decision dates. Data must never be fed to BLIND_HISTORICAL scoring, used to certify an exact NCT linkage, or counted as accuracy calibration.",
+  "description": "Public FDA/SEC/sponsor research for regulator goal and decision dates. Data must never be fed to BLIND_HISTORICAL scoring, used to certify an exact NCT linkage, or counted as accuracy calibration. August 13 FDA action for Tauklarify is distinct from its August 14 company announcement.",
   "records": [
     {
       "eventKey": "RGNX|2026-02-08|rgx-121 seeking accelerated approval was submitted to the fda in march 2025",
@@ -264,15 +264,15 @@
       "applicationDescription": "NDA 220496",
       "targetDate": "2026-08-13",
       "targetEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1521036/000119312526073498/lnth-20251231.htm",
-      "actionEvidenceUrl": "https://www.sec.gov/Archives/edgar/data/1521036/000119312526448622/lnth-20260930.htm",
-      "actualFdaActionDate": null,
+      "actionEvidenceUrl": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220496Orig1s000Approv.pdf",
+      "actualFdaActionDate": "2026-08-13",
       "actionReportedDate": "2026-08-14",
       "fdaAction": "APPROVED",
-      "actionSourceKind": "SEC_OR_OFFICIAL_SPONSOR",
+      "actionSourceKind": "FDA_PUBLIC",
       "exactNctApplicationReviewCycleVerified": false,
       "scientificPrediction": null,
       "scientificScore": null,
-      "caveat": "August 14 is the sponsor announcement date; exact FDA letter/action date was not independently established in this audit."
+      "caveat": "The FDA approval package confirms an August 13, 2026 action. Lantheus announced that action August 14; announcement date must not replace the FDA action date. Exact NCT/application cycle remains unverified."
     },
     {
       "eventKey": "RARE|2026-08-23|dtx401",
