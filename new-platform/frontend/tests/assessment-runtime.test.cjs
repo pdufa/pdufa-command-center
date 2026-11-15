@@ -291,7 +291,12 @@ test('FOCUS and PAST use the same assessment launcher for single, selected and w
    await act(async()=>{scope().props.onChange({target:{value:'all'}});});
    assert.equal(submit().props.disabled,true);
    if(source==='HISTORICAL'){
-    assert.equal(tree.root.findAllByType('button').find(button=>button.props.children==='Verify and load whole FOCUS list').props.disabled,true);
+    const audit=tree.root.findAllByType('button').find(button=>button.props.children==='Audit whole PAST list');
+    assert.equal(audit.props.disabled,false);
+    await act(async()=>{await audit.props.onClick();});
+    assert.equal(submit().props.disabled,true);
+    assert.match(JSON.stringify(tree.toJSON()),/20 of 20 events still lack server-verified/);
+    assert.match(JSON.stringify(tree.toJSON()),/20 unresolved PAST event-to-trial links/);
     assert.match(JSON.stringify(tree.toJSON()),/Whole PAST stays blocked until linkage is verified/);
    }
    await act(async()=>{tree.root.findByProps({'aria-label':'Clear assessment popup'}).props.onClick();});
@@ -303,9 +308,9 @@ test('FOCUS and PAST use the same assessment launcher for single, selected and w
 test('whole-list assessment requires exact verification against saved FOCUS total, not a partial catalog',async()=>{
  const React=require('react'),{act,create}=require('react-test-renderer'),Launcher=require('../app/AssessmentLauncher.tsx').default;
  globalThis.IS_REACT_ACT_ENVIRONMENT=true;
- const old=global.fetch;let tree,summaryTotal=3;
+ const old=global.fetch;let tree,summaryTotal=3,summaryNcts=[nct,'NCT01234567'];
  global.fetch=async url=>{
-  if(String(url).includes('focus=true'))return Response.json({total:summaryTotal});
+  if(String(url).includes('focus=true'))return Response.json({status:'DATABASE_SAVED_RECONCILED_OWNER_ROSTER',source:{roster_id:'owner-roster-1'},total:summaryTotal,trials:summaryNcts.map(nct=>({nct}))});
   return Response.json({population:'FOCUS',trials:[{nct},{nct:'NCT01234567'}]});
  };
  try{
@@ -318,7 +323,10 @@ test('whole-list assessment requires exact verification against saved FOCUS tota
   await act(async()=>{await load().props.onClick();});
   assert.equal(submit().props.disabled,true);
   assert.match(JSON.stringify(tree.toJSON()),/FOCUS roster could not be verified as complete/);
-  summaryTotal=2;
+  summaryTotal=2;summaryNcts=[nct,'NCT99999999'];
+  await act(async()=>{await load().props.onClick();});
+  assert.equal(submit().props.disabled,true,'matching counts with different NCTs must fail');
+  summaryNcts=[nct,'NCT01234567'];
   await act(async()=>{await load().props.onClick();});
   assert.equal(submit().props.disabled,false);
   assert.match(JSON.stringify(tree.toJSON()),/Full FOCUS roster confirmed/);
