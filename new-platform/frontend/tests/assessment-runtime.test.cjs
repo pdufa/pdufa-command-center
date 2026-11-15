@@ -416,3 +416,35 @@ test('whole PAST activates only for an exact complete verified year and carries 
   assert.equal(tree.root.findAllByType('select').find(sel=>sel.props.value==='HISTORICAL').props.disabled,true);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
+
+test('PAST preview can audit all unverified events if old backend lacks roster endpoint without forging trial links',async()=>{
+ const old=global.fetch;
+ process.env.PDUFA_API_BASE_URL='https://backend.example.test';
+ process.env.PDUFA_INTERNAL_API_KEY='SYNTHETIC_INTERNAL_KEY';
+ let calls=0;
+ global.fetch=async(url,init)=>{
+  assert.equal(url,'https://backend.example.test/api/assessment-runtime/past/roster?year=2026');
+  assert.equal(init.headers['X-Pdufa-Internal-Key'],'SYNTHETIC_INTERNAL_KEY');
+  calls++;
+  return Response.json({detail:'Not Found'},{status:404});
+ };
+ const get=path=>new NextRequest(base+path,{headers:{cookie:auth.COOKIE_NAME+'='+auth.makeSession()}});
+ try{
+  const response=await api.GET(get('/api/assessments/runtime?pastRoster=2026'));
+  assert.equal(response.status,200);
+  const report=await response.json();
+  assert.equal(report.year,2026);
+  assert.equal(report.total,20);
+  assert.equal(report.linked,0);
+  assert.equal(report.ready,false);
+  assert.deepEqual(report.eligibleTasks,[]);
+  assert.ok(report.events.every(row=>row.status==='BACKEND_ROSTER_ENDPOINT_NOT_INSTALLED'&&!row.ncts.length));
+  assert.equal(calls,1);
+  assert.equal((await api.GET(new NextRequest(base+'/api/assessments/runtime?pastRoster=2026'))).status,401);
+  assert.equal(calls,1,'No unauthenticated fallback to original research queue');
+ }finally{
+  global.fetch=old;
+  delete process.env.PDUFA_API_BASE_URL;
+  delete process.env.PDUFA_INTERNAL_API_KEY;
+ }
+});
