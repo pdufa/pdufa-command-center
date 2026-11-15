@@ -461,9 +461,9 @@ test('historical 2026 FDA goal dates and actual actions have independent source 
   assert.match(item.targetEvidenceUrl,/^https:\/\//);
   assert.match(item.actionEvidenceUrl,/^https:\/\//);
   assert.equal(typeof item.targetSourcePreActionVerified,'boolean');
-  assert.ok(item.targetSourcePreActionVerified?item.targetSourcePublishedDate:null===null);
+  if(!item.targetSourcePreActionVerified)assert.equal(item.targetSourcePublishedDate,null);
   if(item.targetSourcePreActionVerified){
-   assert.match(item.targetSourcePublishedDate,/^20\\d{2}-\\d{2}-\\d{2}$/);
+   assert.match(item.targetSourcePublishedDate,/^20\d{2}-\d{2}-\d{2}$/);
    assert.ok(item.targetSourcePublishedDate<item.actualFdaActionDate,'pre-action source must precede FDA decision');
   }
   assert.equal(item.exactNctApplicationReviewCycleVerified,false);
