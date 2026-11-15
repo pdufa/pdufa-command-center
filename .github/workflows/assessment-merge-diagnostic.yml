@@ -26,6 +26,6 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-          ref: codex/level1-6-explicit-scientific-readiness-20261114
+          ref: ${{ github.head_ref || github.ref_name }}
       - name: Verify main merge compatibility without committing
         run: bash scripts/check_assessment_merge_conflicts.sh .
