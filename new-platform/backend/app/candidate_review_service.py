@@ -342,19 +342,28 @@ def start(engine):
         return
     if _thread is not None and _thread.is_alive():
         return
-    # Wait for existing archive initialization/audit; do not compete for its lock.
+    # Archive verification can exceed the old 400-second startup deadline.
+    # Keep the evidence gate intact and retry after the archive audit finishes.
     def worker():
         import time
         from .archive_protection import dashboard
-        for _ in range(40):
+        attempts = 0
+        while True:
             try:
-                if dashboard(engine)["status"] == "PASS":
+                state = dashboard(engine)
+                if state["status"] == "PASS":
                     execute_review(engine)
                     return
-            except Exception:
-                pass
+                attempts += 1
+                if attempts == 1 or attempts % 30 == 0:
+                    LOG.warning("PDUFA_CANDIDATE_REVIEW_WAITING_FOR_ARCHIVE status=%s attempts=%d",
+                                state.get("status", "UNKNOWN"), attempts)
+            except Exception as exc:
+                attempts += 1
+                if attempts == 1 or attempts % 30 == 0:
+                    LOG.warning("PDUFA_CANDIDATE_REVIEW_ARCHIVE_CHECK_ERROR error_type=%s attempts=%d",
+                                type(exc).__name__, attempts)
             time.sleep(10)
-        LOG.error("PDUFA_CANDIDATE_REVIEW_FAILED error_type=ArchiveBaselineNotReady")
     _thread = threading.Thread(target=worker, daemon=True, name="scientific-candidate-review")
     _thread.start()
 

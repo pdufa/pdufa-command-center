@@ -167,6 +167,11 @@ def collect(c, expected_count=EXPECTED):
               and completed == scope
               and duplicate == totals["duplicate_ids"] == 0
               and all(totals[k] == 0 for k in ("invalid_ids", "bad_gzip", "invalid_json", "bad_sha256", "payload_id_mismatch", "missing_expected_records", "unexpected_records", "tracking_missing_records")))
+    totals["configured_baseline_records"] = expected_count
+    totals["baseline_count_difference"] = physical - expected_count
+    totals["download_jobs_total"] = len(jobs)
+    totals["download_jobs_incomplete"] = sum(j["status"] != "COMPLETE" for j in jobs)
+    totals["completed_scope_mismatch"] = len(completed.symmetric_difference(scope))
     return {"database": database, "totals": totals, "integrity_passed": passed,
             "entries": entries, "expected_nct_ids": sorted(scope), "jobs": jobs,
             "inventory": inventory, "scientific_ready_trials": ready,

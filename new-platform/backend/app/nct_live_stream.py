@@ -479,7 +479,7 @@ def deployed_selftest(engine):
         except HTTPError as exc:
             unauthenticated_denied = exc.code in (401, 403)
         headers = {"X-Pdufa-Internal-Key": os.environ["PDUFA_INTERNAL_API_KEY"], "Content-Type": "application/json"}
-        key = "stage1-selftest-" + os.getenv("RENDER_GIT_COMMIT", VERSION)[:40]
+        key = "stage1-selftest-" + uuid.uuid4().hex
         with urlopen(URLRequest(base, data=canonical({"request_key": key}).encode(), headers=headers), timeout=10) as response:
             created = json.load(response)
         events, first_at, final_at = [], None, None
