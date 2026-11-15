@@ -47,60 +47,88 @@ try{
      '+refs/heads/main:refs/remotes/origin/main',
      "+refs/heads/${base}:refs/remotes/origin/${base}",
      "+refs/heads/${research}:refs/remotes/origin/${research}")
-  # Known source snapshots; do not silently overwrite newer pages.
-  $guard=@(
-    @('origin/main',$focus,'9074a281a4947592a54ef957ccf6d452fbed4436'),
-    @('origin/main',$past,'f8e7cce9c6cfca1124a3b322bf40f41c1548523b'),
-    @("origin/$base",$focus,'5b111abc0101c2ec1056dacb193cbd10e51929d9'),
-    @("origin/$base",$past,'3a8baef91c9a23dfc61fe6aa739302fe271d908c'),
-    @("origin/$research",$focus,'e9737cc23c26c866a5dfb954116404d710fc66e7')
-  )
-  foreach($g in $guard){
-    $actual=(& git.exe -C $repo rev-parse "$($g[0]):$($g[1])").Trim()
-    if ($LASTEXITCODE -ne 0 -or $actual -ne $g[2]){
-      throw "Source changed: $($g[0]):$($g[1]). Stopped to protect newer work."
-    }
-  }
-  InvokeRepoGit @('worktree','add','-b',$branch,$work,"origin/$base")
-  # First merge current production into development; the two pre-reviewed
-  # UI conflicts are resolved using the foundation's pre-integrated pages.
-  & git.exe -C $work merge --no-commit --no-ff origin/main
+  # Use the latest production pages as the base. Never replace newer sorting/UI
+  # with an older assessment copy. Structural patches below will fail closed.
+  InvokeRepoGit @('worktree','add','-b',$branch,$work,'origin/main')
+  & git.exe -C $work merge --no-commit --no-ff "origin/$base"
   if($LASTEXITCODE -ne 0){
     $conflicts=@(Conflicts)
-    if($conflicts.Count -eq 0){throw 'Main merge failed without standard file conflicts.'}
+    if($conflicts.Count -eq 0){throw 'Foundation merge failed without standard file conflicts.'}
     foreach($file in $conflicts){
-      if($file -notin @($focus,$past)){throw "Unexpected main conflict: $file. Manual review required."}
+      if($file -notin @($focus,$past)){throw "Unexpected foundation conflict: $file. Manual review required."}
     }
     foreach($file in $conflicts){
       WorkGit @('checkout','--ours','--',$file)
       WorkGit @('add','--',$file)
     }
   }
-  if(@(Conflicts).Count -gt 0){throw 'Main conflicts remain.'}
-  WorkGit @('-c','user.name=PDUFA local integration','-c','user.email=pdufa-integration@localhost','commit','-m','Integrate production with Level 1-3 assessment foundation')
+  if(@(Conflicts).Count -gt 0){throw 'Foundation conflicts remain.'}
+  WorkGit @('-c','user.name=PDUFA local integration','-c','user.email=pdufa-integration@localhost','commit','-m','Integrate Level 1-3 foundation onto current production')
   # Merge 32-trial saved scientific research and assessment tabs.
   & git.exe -C $work merge --no-commit --no-ff "origin/$research"
   if($LASTEXITCODE -ne 0){
     $conflicts=@(Conflicts)
     if($conflicts.Count -eq 0){throw 'Saved-results merge failed without standard file conflicts.'}
-    foreach($file in $conflicts){if($file -ne $focus){throw "Unexpected research conflict: $file."}}
+    foreach($file in $conflicts){
+      if($file -ne $focus){throw "Unexpected research conflict: $file. Manual review required."}
+    }
     WorkGit @('checkout','--ours','--',$focus)
-    $path=Join-Path $work ($focus.Replace('/','\'))
-    $source=[IO.File]::ReadAllText($path)
-    if(-not $source.Contains('import FocusSavedAssessments from "../FocusSavedAssessments";')){
-      if(-not $source.StartsWith('"use client";')){throw 'FOCUS page is not a client component.'}
-      $source=$source.Replace('"use client";','"use client";' + "`n" + 'import FocusSavedAssessments from "../FocusSavedAssessments";')
-    }
-    if(-not $source.Contains('<FocusSavedAssessments/>')){
-      $marker='<AssessmentLauncher source="FOCUS"/>'
-      if(-not $source.Contains($marker)){throw 'Missing launcher marker; manual review required.'}
-      $source=$source.Replace($marker,$marker+'<FocusSavedAssessments/>')
-    }
-    [IO.File]::WriteAllText($path,$source,(New-Object System.Text.UTF8Encoding($false)))
     WorkGit @('add','--',$focus)
   }
   if(@(Conflicts).Count -gt 0){throw 'Saved-results conflicts remain.'}
-  WorkGit @('-c','user.name=PDUFA local integration','-c','user.email=pdufa-integration@localhost','commit','-m','Integrate saved Level 1-3 FOCUS assessments')
+  WorkGit @('-c','user.name=PDUFA local integration','-c','user.email=pdufa-integration@localhost','commit','-m','Integrate saved Level 1-3 scientific research')
+  # Graft the assessment controls onto the CURRENT production table pages.
+  # Each anchor must exist exactly once; unfamiliar UI changes require review.
+  function RewriteOnce([string]$value,[string]$needle,[string]$replacement){
+    $first=$value.IndexOf($needle,[StringComparison]::Ordinal)
+    if($first -lt 0 -or $value.IndexOf($needle,$first+1,[StringComparison]::Ordinal) -ge 0){
+      throw "Unexpected or missing page anchor: $needle"
+    }
+    return $value.Replace($needle,$replacement)
+  }
+  $utf8=New-Object System.Text.UTF8Encoding($false)
+  $focusPath=Join-Path $work ($focus.Replace('/','\'))
+  $f=[IO.File]::ReadAllText($focusPath)
+  $focusImports=@'
+import FocusSavedAssessments from "../FocusSavedAssessments";
+import {FocusLevelHeaders,FocusLevelSubheaders,FocusLevelCells} from '../FocusLevelColumns';
+import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
+import AssessmentLauncher from '../AssessmentLauncher';
+import ScientificStepsReadiness from '../ScientificStepsReadiness';
+import {ExactTrialIntakeSelector} from '../ExactTrialScientificIntake';
+'@
+  $f=RewriteOnce $f '"use client";' ('"use client";'+[Environment]::NewLine+$focusImports)
+  $f=RewriteOnce $f '<IndicationIntelligence mode="focus"/>' ('<AssessmentLauncher source="FOCUS"/><FocusSavedAssessments/><ScientificStepsReadiness cohort="FOCUS"/>'+[Environment]::NewLine+'  <IndicationIntelligence mode="focus"/>')
+  $focusNctBefore='<td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a></td>'
+  $focusNctAfter='<td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a><div style={{marginTop:5,fontSize:12}}><Link href={"/analyze-now?nct="+encodeURIComponent(t.nct)}>Saved research history</Link></div><details><summary>Exact-trial source intake</summary><ExactTrialIntakeSelector cohort="FOCUS" nctId={t.nct}/></details></td>'
+  $f=RewriteOnce $f $focusNctBefore $focusNctAfter
+  $f=RewriteOnce $f '</tr></thead>' '<PredictionHeaders/><FocusLevelHeaders/></tr><tr><th colSpan={31}>Level 1–3 saved scientific research</th><FocusLevelSubheaders/></tr></thead>'
+  $focusRowEnd='title={label} style={{padding:10,whiteSpace:"nowrap"}}>Not assessed</td>)}'
+  $f=RewriteOnce $f $focusRowEnd ($focusRowEnd+'<PredictionCells nct={t.nct}/><FocusLevelCells nct={t.nct}/>')
+  $f=RewriteOnce $f '<p style={{fontSize:12,color:"#4f6556",marginTop:15}}>' '<PredictionLegend/><p style={{fontSize:12,color:"#4f6556",marginTop:15}}>'
+  [IO.File]::WriteAllText($focusPath,$f,$utf8)
+
+  $pastPath=Join-Path $work ($past.Replace('/','\'))
+  $p=[IO.File]::ReadAllText($pastPath)
+  $pastImports=@'
+import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
+import ScientificStepsReadiness from "../ScientificStepsReadiness";
+import AssessmentLauncher from "../AssessmentLauncher";
+import {ExactTrialIntakeSelector} from "../ExactTrialScientificIntake";
+'@
+  $p=RewriteOnce $p '"use client";' ('"use client";'+[Environment]::NewLine+$pastImports)
+  $p=RewriteOnce $p ' const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);' (' const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);'+[Environment]::NewLine+' const [verifiedNctByEvent,setVerifiedNctByEvent]=useState<Record<string,string>>({});')
+  $p=RewriteOnce $p '<h1>PAST — Historical PDUFA trials</h1>' ('<h1>PAST — Historical PDUFA trials</h1>'+[Environment]::NewLine+' <AssessmentLauncher source="HISTORICAL"/><ScientificStepsReadiness cohort="PAST"/>')
+  $p=RewriteOnce $p '<th style={{padding:10,whiteSpace:"nowrap",textAlign:"left"}}>Overall Score' '<PredictionHeaders/><th style={{padding:10,whiteSpace:"nowrap",textAlign:"left"}}>Overall Score'
+  $pastNct=@'
+<td style={{padding:9}}><details><summary>Not linked · enter candidate NCT</summary><label>Exact NCT <input aria-label={"Candidate NCT for "+r.eventKey} value={verifiedNctByEvent[r.eventKey]??""} onChange={e=>setVerifiedNctByEvent(prev=>({...prev,[r.eventKey]:e.target.value.toUpperCase()}))} placeholder="NCT12345678" maxLength={11}/></label>{/^NCT\d{8}$/.test(verifiedNctByEvent[r.eventKey]??"")?<ExactTrialIntakeSelector cohort="PAST" nctId={verifiedNctByEvent[r.eventKey]}/>:<p>Historical event-to-NCT link unverified; do not use for blind scoring.</p>}</details></td>
+'@
+  $p=RewriteOnce $p '<td style={{padding:9}}>Not linked</td>' $pastNct.Trim()
+  $p=RewriteOnce $p '<td style={{padding:9,whiteSpace:"nowrap"}}>Not assessed</td>{assessmentLevelLabels.map' '<PredictionCells nct={verifiedNctByEvent[r.eventKey]}/><td style={{padding:9,whiteSpace:"nowrap"}}>Not assessed</td>{assessmentLevelLabels.map'
+  $p=RewriteOnce $p '<p style={{fontSize:12,color:"#526458"}}>' '<PredictionLegend/><p style={{fontSize:12,color:"#526458"}}>'
+  [IO.File]::WriteAllText($pastPath,$p,$utf8)
+  WorkGit @('add','--',$focus,$past)
+  WorkGit @('-c','user.name=PDUFA local integration','-c','user.email=pdufa-integration@localhost','commit','-m','Preserve production sorting and add Level 1-3 tables and launchers')
   $required=@{
     $focus=@('NumericSortSettings','FocusSavedAssessments','AssessmentLauncher','FocusLevelCells','PredictionCells','sortedTrials.map')
     $past=@('NumericSortSettings','AssessmentLauncher','ExactTrialIntakeSelector','PredictionCells','assessmentLevelLabels')
