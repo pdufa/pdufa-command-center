@@ -20,9 +20,9 @@ CANONICAL = {
     "config/snapshots/issuer_sources_2026-10-26.json": "abdab6f42d91e67047663135a5c0f4a48f4444688324445dca0b689a6d3e1094",
 }
 OLD_BUILDER = 'raw = {name: (ROOT / name).read_bytes() for name in INPUTS}'
-NEW_BUILDER = 'raw = {name: (ROOT / name).read_bytes().replace(b"\\r\\n", b"\\n") for name in INPUTS}'
+NEW_BUILDER = 'raw = {name: (ROOT / name).read_bytes() for name in INPUTS}\n    for name in ("data/company_registry.csv", "config/snapshots/issuer_sources_2026-10-26.json"):\n        raw[name] = raw[name].replace(b"\\r\\n", b"\\n")'
 OLD_TEST = 'crypto.createHash("sha256").update(fs.readFileSync(path.join(root,item.path))).digest("hex")'
-NEW_TEST = 'crypto.createHash("sha256").update(fs.readFileSync(path.join(root,item.path),"utf8").replace(/\\r\\n/g,"\\n"),"utf8").digest("hex")'
+NEW_TEST = 'crypto.createHash("sha256").update(["data/company_registry.csv","config/snapshots/issuer_sources_2026-10-26.json"].includes(item.path) ? Buffer.from(fs.readFileSync(path.join(root,item.path),"utf8").replace(/\\r\\n/g,"\\n"),"utf8") : fs.readFileSync(path.join(root,item.path))).digest("hex")'
 
 
 def cmd(*args):
