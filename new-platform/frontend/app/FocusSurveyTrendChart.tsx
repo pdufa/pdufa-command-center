@@ -95,8 +95,8 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
    provisional source-evidence-readiness score</strong>; dashed lines are independent
    least-squares cross-trial fits, not time trends. The fifth series is the categorical
    FDA direction (ABSTAIN when no validated prediction exists), shown below the numeric
-   graph without mapping it to zero or an approval percentage. None of these data are
-   validated efficacy scores or FDA forecast probabilities.
+   graph without mapping it to zero or an approval percentage. These are not validated efficacy scores
+   or FDA forecast probabilities.
   </p>
   <div style={{display:'flex',gap:16,flexWrap:'wrap',alignItems:'center',marginBottom:12}}>
    <label>Evidence metric{' '}
