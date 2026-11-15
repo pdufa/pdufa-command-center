@@ -161,3 +161,30 @@ def test_past_api_requires_verified_exact_decision_link_without_reading_outcome(
     with pytest.raises(ValueError,match='NOT_PREDECISION'):runtime.source_for(engine,request(3,'BLIND_HISTORICAL',date(2021,3,1)))
     with engine.begin() as c:c.execute(text("INSERT INTO phase3_fda_decisions VALUES ('TEST-SYNTHETIC','2021-04-01','VERIFIED','SECOND_SENTINEL')"))
     with pytest.raises(ValueError,match='AMBIGUOUS_HISTORICAL_APPLICATION'):runtime.source_for(engine,q)
+
+
+def test_saved_blind_historical_index_groups_exact_nct_cutoffs_and_never_reads_outcomes(engine,monkeypatch):
+    """PAST overview is real persisted blind work, not a backfilled prediction."""
+    frozen=source()
+    monkeypatch.setattr(runtime,'source_for',lambda *_args,**_kwargs:frozen)
+    for level in (1,2,3):
+        q=request(level,'BLIND_HISTORICAL',date(2021,1,1))
+        run_id=runtime.create(engine,q)
+        runtime.execute(engine,run_id)
+        assert runtime.status(engine,q.nct,run_id)['status']=='COMPLETED'
+    summary=runtime.saved_blind_historical(engine)
+    assert summary['status']=='SAVED_BLIND_HISTORY_NOT_PAST_QUEUE_RECONCILED'
+    assert summary['truncated'] is False
+    assert len(summary['trials'])==1
+    trial=summary['trials'][0]
+    assert trial['nct']=='NCT04576949'
+    assert trial['cutoffDate']=='2021-01-01'
+    assert trial['eventLinkage']=='NOT_RECONCILED_TO_PAST_QUEUE'
+    assert set(trial['levels'])=={'1','2','3'}
+    for value in trial['levels'].values():
+        assert value['score']['value'] is None
+        assert value['fdaPrediction']['outcome']=='ABSTAIN'
+        assert value['runId']
+    assert 'actualOutcome' not in json.dumps(summary)
+    assert 'FDA decision' not in json.dumps(summary)
+
