@@ -9,7 +9,7 @@ type Summary={status:string;total:number|null;fullyProcessed?:number;batchId?:st
 const endpoint='/api/assessments/runtime';
 export default function FocusSavedAssessments({selectedNct}:{selectedNct?:string}={}){
  const [data,setData]=useState<Summary|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[filter,setFilter]=useState(selectedNct||''),[level,setLevel]=useState('ALL'),[message,setMessage]=useState('');
- async function load(signal?:AbortSignal){const body=await readSavedFocus() as Summary;if(!signal?.aborted)setData(body);return body;}
+ async function load(signal?:AbortSignal){const body=await readSavedFocus() as Summary;if(!signal?.aborted){setData(body);setError('');}return body;}
  useEffect(()=>{setFilter(selectedNct||'');},[selectedNct]);
  useEffect(()=>{
   const controller=new AbortController();
