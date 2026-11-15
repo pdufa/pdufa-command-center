@@ -38,13 +38,14 @@ $p=RewriteOnce $p 'Decision data is deliberately separated from blind prediction
 $nightly=[IO.File]::ReadAllText($nightlyTestPath)
 $nightly=RewriteOnce $nightly 'assert.ok(workflow.includes("      - name: "+INTEGRITY_STEP+"\n"),' 'assert.ok(workflow.replace(/\r\n/g,"\n").includes("      - name: "+INTEGRITY_STEP+"\n"),'
 $census=[IO.File]::ReadAllText($censusTestPath)
-$census=RewriteOnce $census 'const result = spawnSync("python3",["scripts/build_phase3_census_sources.py","--check"],{cwd:root,encoding:"utf8"});' @'
+$censusReplacement=@'
 const python = process.platform === "win32" ? "py" : "python3";
   const args = process.platform === "win32"
     ? ["-3","scripts/build_phase3_census_sources.py","--check"]
     : ["scripts/build_phase3_census_sources.py","--check"];
   const result = spawnSync(python,args,{cwd:root,encoding:"utf8"});
-'@.TrimEnd()
+'@
+$census=RewriteOnce $census 'const result = spawnSync("python3",["scripts/build_phase3_census_sources.py","--check"],{cwd:root,encoding:"utf8"});' ($censusReplacement.TrimEnd())
 foreach($pair in @(@($focusPath,$f),@($pastPath,$p),@($nightlyTestPath,$nightly),@($censusTestPath,$census))){
   [IO.File]::WriteAllText([string]$pair[0],[string]$pair[1],$enc)
 }
