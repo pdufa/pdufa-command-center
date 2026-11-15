@@ -332,3 +332,12 @@ test('whole-list assessment requires exact verification against saved FOCUS tota
   assert.match(JSON.stringify(tree.toJSON()),/Full FOCUS roster confirmed/);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
+
+
+test('PAST candidate NCT entries never masquerade as verified FDA event prediction links',()=>{
+ const past=fs.readFileSync(require('node:path').join(__dirname,'../app/past/page.tsx'),'utf8');
+ assert.match(past,/candidateNctByEvent/);
+ assert.doesNotMatch(past,/verifiedNctByEvent/);
+ assert.match(past,/<PredictionCells\s*\/>/);
+ assert.doesNotMatch(past,/<PredictionCells\s+nct=\{candidateNctByEvent/);
+});
