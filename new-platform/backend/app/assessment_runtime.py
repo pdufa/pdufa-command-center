@@ -508,6 +508,51 @@ def history(engine,nct,level=None):
     return {'nct':nct,'runs':runs,'hasMore':len(rows)>len(runs)}
 
 
+
+def saved_blind_historical(engine):
+    """Read-only index of immutable scientific blind runs, grouped by exact NCT and cutoff.
+
+    This is NOT a claim that a run belongs to a particular PAST 2026 FDA event.
+    Neither outcomes nor cached historical comparisons are read or returned.
+    """
+    if not inspect(engine).has_table('assessment_v2_results'):
+        return {'status':'NO_SAVED_BLIND_SCIENTIFIC_RUNS','trials':[],'truncated':False}
+    with engine.connect() as c:
+        rows=c.execute(text("""SELECT nct_id,level,report_json,report_hash
+            FROM assessment_v2_results
+            WHERE mode='BLIND_HISTORICAL'
+            AND engine_version LIKE 'scientific-trial-v1.0.1/level-%'
+            AND level BETWEEN 1 AND 3
+            ORDER BY created_at DESC,run_id DESC LIMIT 301""")).all()
+    groups={}
+    for row in rows[:300]:
+        report=verified_report((row[2],row[3]))
+        if (report.get('contract')!='SCIENTIFIC_1_3'
+                or report.get('mode')!='BLIND_HISTORICAL'
+                or report.get('nct')!=row[0]
+                or report.get('level')!=row[1]
+                or not re.fullmatch(r'\\d{4}-\\d{2}-\\d{2}',str(report.get('cutoffDate') or ''))):
+            raise HTTPException(503,'Saved historical assessment identity or contract mismatch')
+        nct=report['nct'];cutoff=report['cutoffDate'];level=str(row[1])
+        key=(nct,cutoff)
+        if key not in groups:
+            groups[key]={'nct':nct,'cutoffDate':cutoff,'levels':{},
+                         'eventLinkage':'NOT_RECONCILED_TO_PAST_QUEUE'}
+        if level in groups[key]['levels']:
+            continue
+        checks=report.get('checks') or []
+        groups[key]['levels'][level]={
+            'runId':report['runId'],'executedAt':report['executedAt'],
+            'name':report['name'],'executionStatus':report['executionStatus'],
+            'score':report['score'],'fdaPrediction':report['fdaPrediction'],
+            'scientificStatus':report['scientificStatus'],
+            'unresolved':sum(c.get('state') in {'MISSING','UNVERIFIED','CONCERNS','NOT_ASSESSED','BLOCKED_UNVERIFIED_PHASE'} for c in checks),
+            'sourceUrl':report['evidence']['source_url']}
+    return {'status':'SAVED_BLIND_HISTORY_NOT_PAST_QUEUE_RECONCILED',
+            'trials':sorted(groups.values(),key=lambda x:(x['cutoffDate'],x['nct']),reverse=True),
+            'truncated':len(rows)>300}
+
+
 def catalog(engine, population, query):
     if population not in {'POOL', 'FOCUS', 'HISTORICAL'} or len(query)>100:
         raise HTTPException(422, 'Valid trial population and bounded search required')
