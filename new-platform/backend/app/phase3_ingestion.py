@@ -263,6 +263,24 @@ def sync(engine, max_pages=3, *, automatic=False, fetcher=None):
             state = _initial()
             state["last_completed_at"] = previous_complete
             state["last_automatic_execution_at"] = previous_automatic
+        # A source-rejected page token cannot be resumed. Preserve the failed
+        # sync's audit trail and its imported trial records, then start a new
+        # independently reconciled traversal once (never silently skip pages).
+        if (state.get("state") == "FAILED"
+                and state.get("error_code") == "SOURCE_HTTP_400_CURSOR"
+                and state.get("next_page_token")
+                and not state.get("cursor_recovery_attempted")):
+            prior_sync = state["sync_id"]
+            _save(engine, state, "SYNC_CURSOR_ABANDONED",
+                  {"error_code": "SOURCE_HTTP_400_CURSOR",
+                   "old_sync_id": prior_sync, "action": "START_NEW_VERIFIED_TRAVERSAL"})
+            previous_complete = state.get("last_completed_at")
+            previous_automatic = state.get("last_automatic_execution_at")
+            state = _initial()
+            state["last_completed_at"] = previous_complete
+            state["last_automatic_execution_at"] = previous_automatic
+            state["cursor_recovery_attempted"] = True
+            state["restarted_from_sync_id"] = prior_sync
         if not state.get("sync_id"):
             state["sync_id"] = str(uuid.uuid4())
         seen, imported = _counts(engine, state["sync_id"])
