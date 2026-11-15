@@ -2,26 +2,8 @@
   "applicationCrosswalkAsOf": "2026-11-07",
   "applicationCrosswalkState": "PARTIAL",
   "kind": "FOCUS_NIGHTLY_PRIMARY_SOURCE_MONITOR_NOT_FDA_PREDICTIONS",
-  "pacificDate": "2026-11-14",
-  "reassessmentQueue": [
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "capr-deramiocel",
-      "ncts": [
-        "NCT05126758"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    },
-    {
-      "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW",
-      "cycleId": "cldx-barzolvolimab",
-      "ncts": [
-        "NCT06445023",
-        "NCT06455202"
-      ],
-      "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE"
-    }
-  ],
+  "pacificDate": "2026-11-15",
+  "reassessmentQueue": [],
   "researchPolicy": {
     "FDAOutcomeDetermined": false,
     "independentMedicalReviewComplete": false,
@@ -31,17 +13,17 @@
     "trialMembershipOrSheetWrites": false,
     "unchangedEvidenceNotNewValidation": true
   },
-  "rosterSnapshotAsOf": "2026-11-13",
-  "runAtUTC": "2026-11-14T13:26:03.443677+00:00",
+  "rosterSnapshotAsOf": "2026-11-14",
+  "runAtUTC": "2026-11-15T13:51:57.518161+00:00",
   "schemaVersion": 1,
   "sourceAuthority": "ClinicalTrials.gov API v2; exact-NCT public records",
   "sourceRecoveryQueue": [],
   "summary": {
     "applicationCycles": 23,
     "focusTrials": 32,
-    "newOrChangedEvidenceTrials": 6,
+    "newOrChangedEvidenceTrials": 0,
     "predictionProbabilitiesUpdated": 0,
-    "reassessmentQueueCycles": 2,
+    "reassessmentQueueCycles": 0,
     "scientificAssessmentsRevalidated": 0,
     "sourceRetrieved": 32,
     "sourceUnavailable": 0,
@@ -237,7 +219,7 @@
       "applicationCycles": [],
       "calibratedProbability": null,
       "company": "Agios Pharmaceuticals, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://investor.agios.com/node/19341",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -316,7 +298,7 @@
       ],
       "calibratedProbability": null,
       "company": "Capricor Therapeutics, Inc.",
-      "delta": "REGISTRY_EVIDENCE_CHANGED",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://www.capricor.com/investors/sec-filings/all-sec-filings/content/0001104659-26-100071/capr-20260824xex99d1.htm",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -758,7 +740,7 @@
       ],
       "calibratedProbability": null,
       "company": "Celldex Therapeutics",
-      "delta": "REGISTRY_EVIDENCE_CHANGED",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-reports-third-quarter-financial-results-and-provides",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -784,7 +766,7 @@
       ],
       "calibratedProbability": null,
       "company": "Celldex Therapeutics",
-      "delta": "REGISTRY_EVIDENCE_CHANGED",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://celldex.gcs-web.com/news-releases/news-release-details/celldex-reports-third-quarter-financial-results-and-provides",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -808,7 +790,7 @@
       "applicationCycles": [],
       "calibratedProbability": null,
       "company": "Mirum Pharmaceuticals, Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://ir.mirumpharma.com/news/news-details/2026/Mirum-Pharmaceuticals-Announces-Primary-Endpoint-Met-in-Phase-3-EXPAND-Study-of-LIVMARLI-maralixibat-in-Ultra-Rare-Cholestatic-Liver-Diseases/default.aspx",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
@@ -858,7 +840,7 @@
       "applicationCycles": [],
       "calibratedProbability": null,
       "company": "Amylyx Pharmaceuticals Inc.",
-      "delta": "FIRST_SOURCE_OBSERVATION",
+      "delta": "NO_REGISTRY_EVIDENCE_CHANGE",
       "fdaOutcome": "NOT_ADJUDICATED",
       "issuerEvidenceUrlAsRecorded": "https://amylyx.gcs-web.com/news-releases/news-release-details/amylyx-pharmaceuticals-reports-third-quarter-2026-financial",
       "issuerEvidenceVerification": "NOT_CHECKED_IN_REGISTRY_MONITOR",
