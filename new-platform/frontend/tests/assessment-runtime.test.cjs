@@ -460,6 +460,12 @@ test('historical 2026 FDA goal dates and actual actions have independent source 
   assert.equal(item.targetDate,queued.cutoffDate);
   assert.match(item.targetEvidenceUrl,/^https:\/\//);
   assert.match(item.actionEvidenceUrl,/^https:\/\//);
+  assert.equal(typeof item.targetSourcePreActionVerified,'boolean');
+  assert.ok(item.targetSourcePreActionVerified?item.targetSourcePublishedDate:null===null);
+  if(item.targetSourcePreActionVerified){
+   assert.match(item.targetSourcePublishedDate,/^20\\d{2}-\\d{2}-\\d{2}$/);
+   assert.ok(item.targetSourcePublishedDate<item.actualFdaActionDate,'pre-action source must precede FDA decision');
+  }
   assert.equal(item.exactNctApplicationReviewCycleVerified,false);
   assert.equal(item.scientificPrediction,null);
   assert.equal(item.scientificScore,null);
@@ -478,6 +484,8 @@ test('historical 2026 FDA goal dates and actual actions have independent source 
  assert.match(past,/regulatoryByEvent\.get\(r\.eventKey\)/);
  assert.match(past,/!reveal\?"Hidden"/);
  assert.match(past,/Actual FDA action date/);
+ assert.match(past,/regulatory\.targetSourcePreActionVerified\?/);
+ assert.match(past,/Target source withheld until outcome reveal/);
  const launcher=fs.readFileSync(require('node:path').join(__dirname,'../app/AssessmentLauncher.tsx'),'utf8');
  assert.doesNotMatch(launcher,/past2026RegulatoryResearch20261115/);
 });
