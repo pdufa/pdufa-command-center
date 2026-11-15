@@ -1,0 +1,326 @@
+{
+  "sourceUrl": "https://docs.google.com/spreadsheets/d/1erY_z62b4mHhx5s_3HgJxXoJEslbLngMuQNfhcuSviU/edit#gid=202611061",
+  "retrievedAt": "2026-11-15T01:01:51.934407+00:00",
+  "members": [
+    {
+      "activeReviewStatus": "POST-P3 / NDA filing planned",
+      "company": "Abivax S.A.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT05507203",
+      "pdufaDate": null,
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "ABVX"
+    },
+    {
+      "activeReviewStatus": "POST-P3 / NDA filing planned",
+      "company": "Abivax S.A.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT05507216",
+      "pdufaDate": null,
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "ABVX"
+    },
+    {
+      "activeReviewStatus": "POST-P3 / NDA resubmission planned",
+      "company": "Achieve Life Sciences",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT04576949",
+      "pdufaDate": null,
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "ACHV"
+    },
+    {
+      "activeReviewStatus": "POST-P3 / NDA resubmission planned",
+      "company": "Achieve Life Sciences",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT05206370",
+      "pdufaDate": null,
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "ACHV"
+    },
+    {
+      "activeReviewStatus": "FDA NDA review active",
+      "company": "Apnimed",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT05811247",
+      "pdufaDate": "2027-02-28",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "APMD"
+    },
+    {
+      "activeReviewStatus": "FDA NDA review active",
+      "company": "Apnimed",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT05813275",
+      "pdufaDate": "2027-02-28",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "APMD"
+    },
+    {
+      "activeReviewStatus": "FDA filing / PDUFA active",
+      "company": "Axsome Therapeutics, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT05059223",
+      "pdufaDate": "2027-05-01",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "AXSM"
+    },
+    {
+      "activeReviewStatus": "FDA filing / PDUFA active",
+      "company": "Axsome Therapeutics, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT05113745",
+      "pdufaDate": "2027-05-01",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "AXSM"
+    },
+    {
+      "activeReviewStatus": "FDA filing / PDUFA active",
+      "company": "Belite Bio, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT05244304",
+      "pdufaDate": "2027-02-12",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "BLTE"
+    },
+    {
+      "activeReviewStatus": "FDA BLA review",
+      "company": "Capricor Therapeutics, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT05126758",
+      "pdufaDate": "2026-11-22",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "CAPR"
+    },
+    {
+      "activeReviewStatus": "FDA NDA review",
+      "company": "Cogent Biosciences, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT05208047",
+      "pdufaDate": "2026-11-30",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "COGT"
+    },
+    {
+      "activeReviewStatus": "FDA NDA review active",
+      "company": "Corcept Therapeutics",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT03697109",
+      "pdufaDate": "2026-12-17",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "CORT"
+    },
+    {
+      "activeReviewStatus": "FDA NDA review active",
+      "company": "Corcept Therapeutics",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT04308590",
+      "pdufaDate": "2026-12-17",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "CORT"
+    },
+    {
+      "activeReviewStatus": "FDA sNDA review active",
+      "company": "Cytokinetics",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT05767346",
+      "pdufaDate": "2026-11-14",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "CYTK"
+    },
+    {
+      "activeReviewStatus": "FDA filing / PDUFA active",
+      "company": "Cytokinetics, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT06081894",
+      "pdufaDate": null,
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "CYTK"
+    },
+    {
+      "activeReviewStatus": "FDA filing / PDUFA active",
+      "company": "Immunome, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT04871282",
+      "pdufaDate": "2027-04-28",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "IMNM"
+    },
+    {
+      "activeReviewStatus": "FDA NDA review",
+      "company": "Mineralys Therapeutics, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT06153693",
+      "pdufaDate": "2026-12-22",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "MLYS"
+    },
+    {
+      "activeReviewStatus": "FDA filing / PDUFA active",
+      "company": "Pharvaris N.V.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT06343779",
+      "pdufaDate": "2027-04-23",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "PHVS"
+    },
+    {
+      "activeReviewStatus": "FDA filing / PDUFA active",
+      "company": "Pharvaris N.V.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT06669754",
+      "pdufaDate": null,
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "PHVS"
+    },
+    {
+      "activeReviewStatus": "FDA NDA review",
+      "company": "Praxis Precision Medicines, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT06087276",
+      "pdufaDate": "2027-01-29",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "PRAX"
+    },
+    {
+      "activeReviewStatus": "FDA filing / PDUFA active",
+      "company": "Sarepta Therapeutics, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT02500381",
+      "pdufaDate": "2027-02-28",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "SRPT"
+    },
+    {
+      "activeReviewStatus": "FDA review reported / verify current",
+      "company": "Savara Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT04544293",
+      "pdufaDate": "2026-11-22",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "SVRA"
+    },
+    {
+      "activeReviewStatus": "FDA NDA review active",
+      "company": "UroGen Pharma Ltd.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT06331299",
+      "pdufaDate": "2027-06-14",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "URGN"
+    },
+    {
+      "activeReviewStatus": "FDA sBLA submission / ongoing",
+      "company": "Vera Therapeutics, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT04716231",
+      "pdufaDate": null,
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "VERA"
+    },
+    {
+      "activeReviewStatus": "FDA filing / PDUFA active",
+      "company": "Zenas BioPharma, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT05662241",
+      "pdufaDate": "2027-05-27",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "ZBIO"
+    },
+    {
+      "activeReviewStatus": "POST-P3 / BLA filing planned",
+      "company": "Celldex Therapeutics",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT06445023",
+      "pdufaDate": null,
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "CLDX"
+    },
+    {
+      "activeReviewStatus": "POST-P3 / BLA filing planned",
+      "company": "Celldex Therapeutics",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT06455202",
+      "pdufaDate": null,
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "CLDX"
+    },
+    {
+      "activeReviewStatus": "FDA BLA submitted / acceptance pending",
+      "company": "MoonLake Immunotherapeutics AG",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT06411899",
+      "pdufaDate": null,
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "MLTX"
+    },
+    {
+      "activeReviewStatus": "FDA BLA submitted / acceptance pending",
+      "company": "MoonLake Immunotherapeutics AG",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT06411379",
+      "pdufaDate": null,
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "MLTX"
+    },
+    {
+      "activeReviewStatus": "FDA sNDA review / PDUFA active",
+      "company": "Agios Pharmaceuticals, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT05031780",
+      "pdufaDate": "2027-02-01",
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "AGIO"
+    },
+    {
+      "activeReviewStatus": "POST-P3 / NDA filing planned",
+      "company": "Amylyx Pharmaceuticals Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT06747468",
+      "pdufaDate": null,
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "AMLX"
+    },
+    {
+      "activeReviewStatus": "POST-P3 / sNDA filing planned",
+      "company": "Mirum Pharmaceuticals, Inc.",
+      "drug": null,
+      "indication": null,
+      "nct": "NCT06553768",
+      "pdufaDate": null,
+      "pdufaStatus": "OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED",
+      "ticker": "MIRM"
+    }
+  ]
+}

@@ -1,0 +1,680 @@
+{
+  "production": false,
+  "receipts": [
+    {
+      "route": "/focus",
+      "width": 1440,
+      "rows": 32,
+      "levels": 96,
+      "reload": true,
+      "identicalSavedRunIds": true
+    },
+    {
+      "route": "/predictions/assessment",
+      "width": 1440,
+      "rows": 32,
+      "levels": 96,
+      "reload": true,
+      "identicalSavedRunIds": true
+    },
+    {
+      "route": "/focus",
+      "width": 390,
+      "rows": 32,
+      "levels": 96,
+      "reload": true,
+      "identicalSavedRunIds": true
+    },
+    {
+      "route": "/predictions/assessment",
+      "width": 390,
+      "rows": 32,
+      "levels": 96,
+      "reload": true,
+      "identicalSavedRunIds": true
+    }
+  ],
+  "trialResults": [
+    {
+      "nct": "NCT05507203",
+      "levels": {
+        "1": {
+          "runId": "4cd8dd4c-3b3e-4a5c-a336-a8547289322a",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "92790c13-af05-43d2-8fa1-c9ca9eab6e7e",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "c3bc6509-9791-41fe-83ed-f050d3fee08d",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT05507216",
+      "levels": {
+        "1": {
+          "runId": "e7543fec-af4e-483e-8717-624e220bb8d7",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "05c70f6d-29d3-43a5-a95e-67e3809b7f32",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "7564ea5a-cf4e-42ad-a626-20261dd1767e",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT04576949",
+      "levels": {
+        "1": {
+          "runId": "5b56f749-2fc1-4d01-a927-629ec2a12ce2",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "3ac9986b-7cfd-469c-afd4-176b61d44fd3",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "42d81a52-f256-4a91-88c7-0433fbe564ad",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT05206370",
+      "levels": {
+        "1": {
+          "runId": "13282498-c45e-4fa2-aabc-971427fafddb",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "f3e11bab-6173-4d97-8651-2907b0a4c408",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "4aa45293-2fec-4826-bfd6-600a5cfb880c",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT05811247",
+      "levels": {
+        "1": {
+          "runId": "03d8f9eb-a15f-4524-af8a-b5f53c3effe3",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "ae30062a-18fb-42fd-b78c-0e00bfa835b8",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "dcb84cbb-48af-4c99-906d-479c9cb8c0c8",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT05813275",
+      "levels": {
+        "1": {
+          "runId": "6da6730e-073f-45be-84a6-1339aa86244a",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "248c876d-a064-4d60-ad15-55c9fe9a3dd8",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "6ad4b726-b895-4051-95e2-11aa81e267a6",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT05059223",
+      "levels": {
+        "1": {
+          "runId": "8530702a-d376-44e0-b20c-b642309d3aee",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "a7e06f87-a945-4c31-89d7-9888841f3c6e",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "5e618f67-4a95-4537-8945-c1d59210575a",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT05113745",
+      "levels": {
+        "1": {
+          "runId": "bb3ea7bb-62b7-40cf-ac0f-2df0f013fbc4",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "9dad06de-aa92-422a-9183-f2125277f595",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "99d0a22a-ed82-43b7-a03d-e88be1d48d37",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT05244304",
+      "levels": {
+        "1": {
+          "runId": "c907848a-45ff-498b-8bb7-50375d3e2420",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "a60d7d90-7d95-4212-b77d-2ae33d5f1209",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "ef828989-bf04-4532-a385-54966a5e51f7",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT05126758",
+      "levels": {
+        "1": {
+          "runId": "ed3c75a2-2abb-4b8d-af6d-99f18bf23145",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "634c5af0-67d9-4059-8dd0-e5cadd1f5abd",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "df93284f-ad8d-4997-b2b8-f53df9e71151",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT05208047",
+      "levels": {
+        "1": {
+          "runId": "6505ec42-c7c0-4fb5-8e29-96600b351103",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "875bf586-dac1-4803-aad1-e856043cdd87",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "bdf30cfd-45f9-4bb4-90d7-eddd7a41c013",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT03697109",
+      "levels": {
+        "1": {
+          "runId": "66b147e9-2099-4e26-8277-955954969bf4",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "01647793-0ad5-4c8d-89a7-75c657af9a8a",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "7af8c773-6298-4e33-8c87-49b7f213d8e3",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT04308590",
+      "levels": {
+        "1": {
+          "runId": "a4ccab5f-e50f-48c2-823a-c8ef5602be44",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "e74465f3-bd5e-4d34-85f4-825d883ca28a",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "7a37aff9-4c77-4957-963f-16e1e80f74e8",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT05767346",
+      "levels": {
+        "1": {
+          "runId": "5b9d2150-2ffa-4399-9d31-e7e2abb5e72e",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "ec6a65de-5070-48cd-8b26-58c90063540a",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "b2848737-f505-4788-ae48-2672f9cb9f4b",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT06081894",
+      "levels": {
+        "1": {
+          "runId": "a77f3c05-3854-48bf-89a0-a6f402022925",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "77f4c317-15f5-4c1e-81db-35dc97453ec2",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "722e14e8-fcb2-4ec1-a9ac-616a39481f65",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT04871282",
+      "levels": {
+        "1": {
+          "runId": "491aa576-9487-4d8f-8d77-5a39ce72469a",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "a678b0cd-6eea-4f4a-acb7-6b209c660485",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "2a04a2a4-d5a8-4ee5-a8db-9191b8701c90",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT06153693",
+      "levels": {
+        "1": {
+          "runId": "0ac5ebb2-50fb-4b84-ab11-4818bbb2d51b",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "f3ce5b4a-a17e-41de-b529-922672eb432f",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "57e955e3-4c28-40ba-9fa3-c495187ceb1e",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT06343779",
+      "levels": {
+        "1": {
+          "runId": "c20ee1e1-4213-4021-b892-d3928e9c5c9b",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "16ebfaf6-ff32-4fed-8056-847b8b1be84f",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "5d2e0dac-41bf-4d4a-a5fb-c6c449930473",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT06669754",
+      "levels": {
+        "1": {
+          "runId": "f31300b5-b516-4f0d-933d-31c4f1db5da8",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "ff84e2a8-4922-4578-b8af-38cd1a61a7cc",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "dadb8d4e-32f4-45c1-94d6-8ef63a8be537",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT06087276",
+      "levels": {
+        "1": {
+          "runId": "eb56a4be-b035-4a35-b154-c8767093ad0f",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "f3cd35e3-38ea-4510-96b7-322ac1f382c6",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "679d2802-06f9-4dd0-87c2-fe890a129764",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT02500381",
+      "levels": {
+        "1": {
+          "runId": "f60b9488-c020-44e7-9971-509ac7d57d63",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "38814b8a-fd17-4c07-b005-286994f4ddf4",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "d88d6252-b541-4b4e-afe3-637264e73ef5",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT04544293",
+      "levels": {
+        "1": {
+          "runId": "e7c5953f-75f8-458b-9097-6c2fca5a9fe1",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "bb3067b5-6032-4d36-bcde-7edf507fa2fc",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "2b6e147b-77ba-4de6-b4aa-62b21305adf7",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT06331299",
+      "levels": {
+        "1": {
+          "runId": "1ad3aead-4833-4f93-9899-9aa70a010693",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "769b3001-5928-48a4-9406-2fb08f255498",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "b47bdc6e-bc26-4629-8304-dc1ce396e712",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT04716231",
+      "levels": {
+        "1": {
+          "runId": "09e872cc-f5a1-45ce-ac96-96e4ad8c9e27",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "f107a842-7720-4398-bda4-61ad31ca02a0",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "c5b7ee71-9a7d-4c94-aac6-8624dc16c304",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT05662241",
+      "levels": {
+        "1": {
+          "runId": "9a8b975a-85f4-4c3c-b01c-60e6325c29ea",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "d301d713-d1f1-4499-b66d-1f507f2d188e",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "83a2ce7b-d1bd-43bd-94bf-0b2c930b3486",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT06445023",
+      "levels": {
+        "1": {
+          "runId": "1d298328-610a-4405-876f-d6f68b41f5e3",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "a48f5bfb-3db0-4e3b-b364-5972b29480d2",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "8a873449-7634-4d4d-a0bf-59fafcff85a3",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT06455202",
+      "levels": {
+        "1": {
+          "runId": "5af954b9-11ee-48de-83db-bc4837e224db",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "5867fd0b-8b59-438b-a597-1de2352b5268",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "1f828b98-2ad2-41b6-bbf7-5603f5a567c5",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT06411899",
+      "levels": {
+        "1": {
+          "runId": "363efe4c-b752-4185-8c18-8520216fcf9d",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "c4a7b746-e7a1-4b30-ab54-ebcf515606c7",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "f211877f-6fb5-48b8-a362-9ae0b349ef27",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT06411379",
+      "levels": {
+        "1": {
+          "runId": "91c23393-b564-4dce-a199-dc6231502093",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "4923f3e7-a6a3-4a23-802f-e8a21938dbc8",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "8eea94ae-164f-4e27-9960-db28b387899f",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT05031780",
+      "levels": {
+        "1": {
+          "runId": "51b302d2-f7a8-4e20-baa5-6f54489b57b6",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "c17732bb-4d7f-4283-b8a4-b03403db3749",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "9f1d46cb-f1b1-4d33-b076-3356bf8c15b3",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT06747468",
+      "levels": {
+        "1": {
+          "runId": "5d0bd996-7901-4e7c-8b2c-b7a5251d1dbd",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "e4caea7f-cf8b-488e-8973-c0fb517cddcb",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "87dcfebf-0966-4812-a0f8-b12d547c2aa4",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    },
+    {
+      "nct": "NCT06553768",
+      "levels": {
+        "1": {
+          "runId": "e1677acc-3886-4135-9368-f2f4a8475b4c",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "2": {
+          "runId": "0df63f4d-333a-4281-8e05-ff00c4bc39e2",
+          "score": null,
+          "prediction": "ABSTAIN"
+        },
+        "3": {
+          "runId": "7354550f-598b-4712-8bb7-6a86fda40ac3",
+          "score": null,
+          "prediction": "ABSTAIN"
+        }
+      }
+    }
+  ],
+  "detailAutoLoad": true
+}

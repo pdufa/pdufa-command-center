@@ -1,0 +1,382 @@
+{
+  "origin": "http://localhost:3012",
+  "production": false,
+  "trials": [
+    {
+      "population": "FOCUS",
+      "nct": "NCT04576949",
+      "level": 1,
+      "runId": "4a626a8b-fc4d-408f-8555-8b57c522826b",
+      "engineVersion": "scientific-trial-v1.0.1/level-1",
+      "source": {
+        "captured_at": "2026-11-15T01:03:36.429030+00:00",
+        "input_sha256": "d4441df6c0d2c1735b3897376f859467183869aa7ea159002ba1be03ab71ed67",
+        "nct_id": "NCT04576949",
+        "published_at": "2026-01-15",
+        "raw_sha256": "39ad68a0b06ec3f4ce59092aa14114ef6eeae1d43569edfa12b23dda6b490742",
+        "snapshot_id": "e62e7a9d-6187-422c-98f9-0641e63813c7",
+        "source_url": "https://clinicaltrials.gov/api/v2/studies/NCT04576949"
+      },
+      "checks": [
+        {
+          "id": "exact_nct",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "candidate_program",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "sponsor",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "phase",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "trial_status",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "indication",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "patient_population",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "source_chronology",
+          "state": "SOURCE_VERIFIED"
+        }
+      ],
+      "score": "NOT_VALIDATED",
+      "prediction": "ABSTAIN"
+    },
+    {
+      "population": "FOCUS",
+      "nct": "NCT04576949",
+      "level": 2,
+      "runId": "5202e0c2-4032-41cd-b08c-d876d2d84006",
+      "engineVersion": "scientific-trial-v1.0.1/level-2",
+      "source": {
+        "captured_at": "2026-11-15T01:03:41.579073+00:00",
+        "input_sha256": "f5577d5d9dc2a9f2485a8086a96f28302e9e6459bfe23c3ad7ad6fe698516020",
+        "nct_id": "NCT04576949",
+        "published_at": "2026-01-15",
+        "raw_sha256": "39ad68a0b06ec3f4ce59092aa14114ef6eeae1d43569edfa12b23dda6b490742",
+        "snapshot_id": "3afeda4d-3959-4ffd-a1ad-bbc1a2c4156a",
+        "source_url": "https://clinicaltrials.gov/api/v2/studies/NCT04576949"
+      },
+      "checks": [
+        {
+          "id": "design_methodology",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "randomization_control",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "blinding_bias",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "population_eligibility",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "sample_size",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "protocol_methodology",
+          "state": "DOCUMENT_REPORTED"
+        },
+        {
+          "id": "allocation_concealment",
+          "state": "DOCUMENT_REPORTED"
+        },
+        {
+          "id": "power_rationale",
+          "state": "DOCUMENT_REPORTED"
+        },
+        {
+          "id": "protocol_amendments",
+          "state": "DOCUMENT_REPORTED"
+        }
+      ],
+      "score": "NOT_VALIDATED",
+      "prediction": "ABSTAIN"
+    },
+    {
+      "population": "FOCUS",
+      "nct": "NCT04576949",
+      "level": 3,
+      "runId": "3a210081-9a74-4811-b242-ae05cf90ac73",
+      "engineVersion": "scientific-trial-v1.0.1/level-3",
+      "source": {
+        "captured_at": "2026-11-15T01:03:47.120293+00:00",
+        "input_sha256": "522f96bc812a3fb1a49196e24123ee32dfd46587fcb21a21e677256e3c88f230",
+        "nct_id": "NCT04576949",
+        "published_at": "2026-01-15",
+        "raw_sha256": "39ad68a0b06ec3f4ce59092aa14114ef6eeae1d43569edfa12b23dda6b490742",
+        "snapshot_id": "5ad639e5-be00-4d70-8672-aa78e65055b5",
+        "source_url": "https://clinicaltrials.gov/api/v2/studies/NCT04576949"
+      },
+      "checks": [
+        {
+          "id": "registered_endpoints",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "primary_endpoint_results",
+          "state": "SOURCE_REPORTED"
+        },
+        {
+          "id": "secondary_endpoint_results",
+          "state": "SOURCE_REPORTED"
+        },
+        {
+          "id": "statistical_analysis_plan",
+          "state": "DOCUMENT_REPORTED"
+        },
+        {
+          "id": "missing_data_handling",
+          "state": "DOCUMENT_REPORTED"
+        },
+        {
+          "id": "multiplicity_adjustment",
+          "state": "DOCUMENT_REPORTED"
+        },
+        {
+          "id": "analysis_population_estimand",
+          "state": "DOCUMENT_REPORTED"
+        },
+        {
+          "id": "prespecification_timing",
+          "state": "UNVERIFIED"
+        },
+        {
+          "id": "statistical_consistency",
+          "state": "CHECKED"
+        },
+        {
+          "id": "clinical_meaningfulness",
+          "state": "SOURCE_CONTEXT_WITH_LIMITATIONS"
+        },
+        {
+          "id": "safety_benefit_risk",
+          "state": "SOURCE_REPORTED_NOT_ADJUDICATED"
+        },
+        {
+          "id": "regulatory_application_readiness",
+          "state": "NOT_ASSESSED"
+        }
+      ],
+      "score": "NOT_VALIDATED",
+      "prediction": "ABSTAIN"
+    },
+    {
+      "population": "POOL",
+      "nct": "NCT07453784",
+      "level": 1,
+      "runId": "f3944e4b-659e-4a24-89af-751c254f611d",
+      "engineVersion": "scientific-trial-v1.0.1/level-1",
+      "source": {
+        "captured_at": "2026-11-15T01:03:59.753718+00:00",
+        "input_sha256": "efc3c3fb22c7a6e95e4bbd467c399f87bef0f9159b986fc18299966fe6d3d30e",
+        "nct_id": "NCT07453784",
+        "published_at": "2026-11-13",
+        "raw_sha256": "70a31a1645065cfcecfc864b02c394959b9593d77d80b67f2f6aae0e4e576b7e",
+        "snapshot_id": "54587307-7990-497d-a93d-5763cac9c822",
+        "source_url": "https://clinicaltrials.gov/api/v2/studies/NCT07453784"
+      },
+      "checks": [
+        {
+          "id": "exact_nct",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "candidate_program",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "sponsor",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "phase",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "trial_status",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "indication",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "patient_population",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "source_chronology",
+          "state": "SOURCE_VERIFIED"
+        }
+      ],
+      "score": "NOT_VALIDATED",
+      "prediction": "ABSTAIN"
+    },
+    {
+      "population": "POOL",
+      "nct": "NCT07453784",
+      "level": 2,
+      "runId": "2b3e8cde-ac76-4fec-8317-693a5209b29e",
+      "engineVersion": "scientific-trial-v1.0.1/level-2",
+      "source": {
+        "captured_at": "2026-11-15T01:04:01.506237+00:00",
+        "input_sha256": "91f52c948623618487557242ae687931f5a1eccfc6bbecca09428fefb1324590",
+        "nct_id": "NCT07453784",
+        "published_at": "2026-11-13",
+        "raw_sha256": "70a31a1645065cfcecfc864b02c394959b9593d77d80b67f2f6aae0e4e576b7e",
+        "snapshot_id": "5c973097-8e5d-40d2-ab3d-da39cff01ef1",
+        "source_url": "https://clinicaltrials.gov/api/v2/studies/NCT07453784"
+      },
+      "checks": [
+        {
+          "id": "design_methodology",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "randomization_control",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "blinding_bias",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "population_eligibility",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "sample_size",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "protocol_methodology",
+          "state": "NOT_YET_EXPECTED"
+        },
+        {
+          "id": "allocation_concealment",
+          "state": "NOT_YET_EXPECTED"
+        },
+        {
+          "id": "power_rationale",
+          "state": "NOT_YET_EXPECTED"
+        },
+        {
+          "id": "protocol_amendments",
+          "state": "NOT_YET_EXPECTED"
+        }
+      ],
+      "score": "NOT_VALIDATED",
+      "prediction": "ABSTAIN"
+    },
+    {
+      "population": "POOL",
+      "nct": "NCT07453784",
+      "level": 3,
+      "runId": "0af6867e-1afb-462e-beca-27f06109ff1e",
+      "engineVersion": "scientific-trial-v1.0.1/level-3",
+      "source": {
+        "captured_at": "2026-11-15T01:04:02.942769+00:00",
+        "input_sha256": "91f52c948623618487557242ae687931f5a1eccfc6bbecca09428fefb1324590",
+        "nct_id": "NCT07453784",
+        "published_at": "2026-11-13",
+        "raw_sha256": "70a31a1645065cfcecfc864b02c394959b9593d77d80b67f2f6aae0e4e576b7e",
+        "snapshot_id": "cd43b398-8c40-4872-87e1-727994e0ff70",
+        "source_url": "https://clinicaltrials.gov/api/v2/studies/NCT07453784"
+      },
+      "checks": [
+        {
+          "id": "registered_endpoints",
+          "state": "SOURCE_VERIFIED"
+        },
+        {
+          "id": "primary_endpoint_results",
+          "state": "NOT_YET_EXPECTED"
+        },
+        {
+          "id": "secondary_endpoint_results",
+          "state": "NOT_YET_EXPECTED"
+        },
+        {
+          "id": "statistical_analysis_plan",
+          "state": "NOT_YET_EXPECTED"
+        },
+        {
+          "id": "missing_data_handling",
+          "state": "NOT_YET_EXPECTED"
+        },
+        {
+          "id": "multiplicity_adjustment",
+          "state": "NOT_YET_EXPECTED"
+        },
+        {
+          "id": "analysis_population_estimand",
+          "state": "NOT_YET_EXPECTED"
+        },
+        {
+          "id": "prespecification_timing",
+          "state": "NOT_YET_EXPECTED"
+        },
+        {
+          "id": "statistical_consistency",
+          "state": "NOT_ASSESSED"
+        },
+        {
+          "id": "clinical_meaningfulness",
+          "state": "NOT_ASSESSED"
+        },
+        {
+          "id": "safety_benefit_risk",
+          "state": "NOT_YET_EXPECTED"
+        },
+        {
+          "id": "regulatory_application_readiness",
+          "state": "NOT_ASSESSED"
+        }
+      ],
+      "score": "NOT_VALIDATED",
+      "prediction": "ABSTAIN"
+    }
+  ],
+  "catalogs": [
+    {
+      "population": "FOCUS",
+      "nct": "NCT04576949",
+      "choices": [
+        "Choose a trial",
+        "NCT04576949 · ACHV · Achieve Life Sciences"
+      ]
+    },
+    {
+      "population": "POOL",
+      "nct": "NCT07453784",
+      "choices": [
+        "Choose a trial",
+        "NCT07453784 · ABVX · Abivax S.A."
+      ]
+    }
+  ],
+  "past": {
+    "nct": "NCT00116805",
+    "cutoff": "2020-01-01",
+    "result": "BLOCKED_NO_VERIFIED_HISTORICAL_DECISION_LINK",
+    "passedSafeRejection": true
+  }
+}
