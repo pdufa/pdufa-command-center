@@ -50,7 +50,7 @@ try{
   # Use the latest production pages as the base. Never replace newer sorting/UI
   # with an older assessment copy. Structural patches below will fail closed.
   InvokeRepoGit @('worktree','add','-b',$branch,$work,'origin/main')
-  & git.exe -C $work merge --no-commit --no-ff "origin/$base"
+  & git.exe -C $work -c user.name='PDUFA local integration' -c user.email='pdufa-integration@localhost' merge --no-commit --no-ff "origin/$base"
   if($LASTEXITCODE -ne 0){
     $conflicts=@(Conflicts)
     if($conflicts.Count -eq 0){throw 'Foundation merge failed without standard file conflicts.'}
@@ -65,7 +65,8 @@ try{
   if(@(Conflicts).Count -gt 0){throw 'Foundation conflicts remain.'}
   WorkGit @('-c','user.name=PDUFA local integration','-c','user.email=pdufa-integration@localhost','commit','-m','Integrate Level 1-3 foundation onto current production')
   # Merge 32-trial saved scientific research and assessment tabs.
-  & git.exe -C $work merge --no-commit --no-ff "origin/$research"
+  # Use a command-scoped Git identity. No global or checkout Git config is changed.
+  & git.exe -C $work -c user.name='PDUFA local integration' -c user.email='pdufa-integration@localhost' merge --no-commit --no-ff "origin/$research"
   if($LASTEXITCODE -ne 0){
     $conflicts=@(Conflicts)
     if($conflicts.Count -eq 0){throw 'Saved-results merge failed without standard file conflicts.'}
