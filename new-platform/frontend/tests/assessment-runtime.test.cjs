@@ -180,7 +180,7 @@ test('launcher uses the scientific contract and cannot count an unpersisted comp
   const textInput=tree.root.findAllByType('textarea')[0]||tree.root.findAllByType('input').find(i=>i.props.type!=='checkbox'&&i.props.type!=='date');
   await act(async()=>{textInput.props.onChange({target:{value:nct}});});
   for(const input of tree.root.findAllByType('input').filter(i=>i.props.type==='checkbox').slice(3))assert.equal(input.props.disabled,true);
-  await act(async()=>{tree.root.findAllByType('button').find(b=>b.props.children==='Submit assessments').props.onClick();await new Promise(resolve=>setTimeout(resolve,6500));});
+  await act(async()=>{tree.root.findAllByType('button').find(b=>['Submit assessments','Run PAST audit and eligible assessments'].includes(b.props.children)).props.onClick();await new Promise(resolve=>setTimeout(resolve,6500));});
   assert.equal(posted.contract,'SCIENTIFIC_1_3');const rendered=JSON.stringify(tree.toJSON());assert.match(rendered,/FAILED/);assert.doesNotMatch(rendered,/3\/3 completed/);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
@@ -288,7 +288,7 @@ test('FOCUS and PAST use the same assessment launcher for single, selected and w
    const scope=()=>tree.root.findByProps({'aria-label':'Assessment scope'});
    const options=scope().findAllByType('option').map(option=>option.props.value);
    assert.deepEqual(options,['single','selected','all']);
-   const submit=()=>tree.root.findAllByType('button').find(button=>button.props.children==='Submit assessments');
+   const submit=()=>tree.root.findAllByType('button').find(button=>['Submit assessments','Run PAST audit and eligible assessments'].includes(button.props.children));
    await act(async()=>{scope().props.onChange({target:{value:'single'}});});
    assert.equal(submit().props.disabled,true);
    await act(async()=>{tree.root.findByProps({'aria-label':'Single trial NCT'}).props.onChange({target:{value:nct}});});
@@ -331,7 +331,7 @@ test('whole-list assessment requires exact verification against saved FOCUS tota
   const scope=tree.root.findByProps({'aria-label':'Assessment scope'});
   await act(async()=>{scope.props.onChange({target:{value:'all'}});});
   const load=()=>tree.root.findAllByType('button').find(button=>button.props.children==='Verify and load whole FOCUS list');
-  const submit=()=>tree.root.findAllByType('button').find(button=>button.props.children==='Submit assessments');
+  const submit=()=>tree.root.findAllByType('button').find(button=>['Submit assessments','Run PAST audit and eligible assessments'].includes(button.props.children));
   await act(async()=>{await load().props.onClick();});
   assert.equal(submit().props.disabled,true);
   assert.match(JSON.stringify(tree.toJSON()),/FOCUS roster could not be verified as complete/);
@@ -371,7 +371,7 @@ test('PAST whole-list audit follows selected year and never uses the 2026 cohort
   await act(async()=>{await audit.props.onClick();});
   assert.match(JSON.stringify(tree.toJSON()),/roster incomplete or inconsistent/);
   assert.ok(!JSON.stringify(tree.toJSON()).includes('20 PAST events requiring verified linkage or evidence'));
-  assert.equal(tree.root.findAllByType('button').find(button=>button.props.children==='Submit assessments').props.disabled,true);
+  assert.equal(tree.root.findAllByType('button').find(button=>['Submit assessments','Run PAST audit and eligible assessments'].includes(button.props.children)).props.disabled,true);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=originalFetch;}
 });
 
@@ -403,7 +403,7 @@ test('whole PAST activates only for an exact complete verified year and carries 
   await act(async()=>{tree.root.findAllByType('button')[0].props.onClick();});
   await act(async()=>{tree.root.findByProps({'aria-label':'Assessment scope'}).props.onChange({target:{value:'all'}});});
   const audit=()=>tree.root.findAllByType('button').find(b=>b.props.children==='Audit whole PAST 2026 list');
-  const submit=()=>tree.root.findAllByType('button').find(b=>b.props.children==='Submit assessments');
+  const submit=()=>tree.root.findAllByType('button').find(b=>['Submit assessments','Run PAST audit and eligible assessments'].includes(b.props.children));
   await act(async()=>{await audit().props.onClick();});
   assert.equal(submit().props.disabled,false,'partial year can report gaps and assess the 19 source-verified trials');
   complete=true;
