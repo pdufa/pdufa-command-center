@@ -153,6 +153,8 @@ def fetch_page(page_token=None):
                               "retrieved_at": stamp(), "http_status": 200, "verification_status": "VERIFIED"}
         except HTTPError as exc:
             last_code = "SOURCE_HTTP_" + str(exc.code)
+            if exc.code == 400:
+                LOG.error("PDUFA_PHASE3_SOURCE_BAD_REQUEST scope=%s page_size=%d has_page_token=%s", SCOPE_ID, PAGE_SIZE, bool(page_token))
             if exc.code not in {408, 429, 500, 502, 503, 504}:
                 break
         except (URLError, TimeoutError, OSError):
