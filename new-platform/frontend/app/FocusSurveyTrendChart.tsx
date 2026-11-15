@@ -1,5 +1,6 @@
 'use client';
 import {useMemo,useState} from 'react';
+import {provisionalFocusScore} from '../lib/focus-provisional-scores';
 
 /**
  * Cross-sectional research evidence chart for the reconciled FOCUS roster.
@@ -7,7 +8,7 @@ import {useMemo,useState} from 'react';
  * outcome, prospective accuracy, or chronological performance trend.
  */
 type EvidenceCounts={total:number;sourceVerified:number;unresolved:number};
-type SourceReport={nct:string;level:number;mode:string;executedAt:string;runId:string};
+type SourceReport={nct:string;level:number;mode:string;executedAt:string;runId:string;engineVersion?:string;score?:{kind:string;value:number|null}};
 type SourceSlot={state:string;report:SourceReport|null;missingEvidence?:{id:string;state:string;explanation:string}[];evidenceChecks?:EvidenceCounts|null};
 export type SurveyChartTrial={nct:string;ticker:string;company:string;levels:Record<string,SourceSlot>};
 type Metric='UNRESOLVED'|'VERIFIED_PERCENT';
@@ -34,11 +35,12 @@ export function focusSurveyDatum(trial:SurveyChartTrial,level:number,metric:Metr
    return {trial,value:null,at:report.executedAt};
   return {trial,value:gaps.length,at:report.executedAt};
  }
- if(!checkCounts||!Number.isInteger(checkCounts.total)||checkCounts.total<=0||
-    !Number.isInteger(checkCounts.sourceVerified)||checkCounts.sourceVerified<0||
-    checkCounts.sourceVerified>checkCounts.total)
-  return {trial,value:null,at:report.executedAt};
- return {trial,value:100*checkCounts.sourceVerified/checkCounts.total,at:report.executedAt};
+ const snap=provisionalFocusScore(trial.nct,level,report);
+ if(snap)return {trial,value:snap.evidenceReadinessScore,at:report.executedAt};
+ // Older or mismatched report versions cannot borrow scores from the snapshot.
+ // When the backend supplies raw checks but no matching run, leave the score
+ // absent rather than silently substituting a different percentage method.
+ return {trial,value:null,at:report.executedAt};
 }
 
 export function leastSquaresFit(points:{x:number;y:number}[]){
@@ -54,7 +56,7 @@ export function leastSquaresFit(points:{x:number;y:number}[]){
 export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
  trials:SurveyChartTrial[];total:number|null;selectedNct?:string;
 }){
- const [metric,setMetric]=useState<Metric>('UNRESOLVED');
+ const [metric,setMetric]=useState<Metric>('VERIFIED_PERCENT');
  const [visible,setVisible]=useState<Record<number,boolean>>({1:true,2:true,3:true});
  const [showTrend,setShowTrend]=useState(true);
  const ordered=useMemo(()=>[...trials].sort((a,b)=>a.ticker.localeCompare(b.ticker)||a.nct.localeCompare(b.nct)),[trials]);
@@ -85,7 +87,7 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
     <select aria-label="Survey chart metric" value={metric}
       onChange={e=>setMetric(e.target.value as Metric)}>
      <option value="UNRESOLVED">Unresolved source criteria · count</option>
-     <option value="VERIFIED_PERCENT" disabled={!sourceMetricAvailable}>Source-verified criteria · % of recorded checks</option>
+     <option value="VERIFIED_PERCENT" disabled={!sourceMetricAvailable}>L01–L03 provisional evidence-readiness scores · %</option>
     </select>
    </label>
    {LEVELS.map(l=><label key={l.number} style={{fontWeight:650,display:'inline-flex',alignItems:'center',gap:5}}>
@@ -103,7 +105,7 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
    <>
     <p style={{fontSize:12,margin:'0 0 6px'}}>
      {ordered.length} distinct FOCUS trials · X axis: ticker / exact NCT, alphabetical (not dates) ·
-     Y axis: {metric==='UNRESOLVED'?'number of unresolved evidence criteria':'percent of all recorded checks explicitly SOURCE_VERIFIED'}.
+     Y axis: {metric==='UNRESOLVED'?'number of unresolved evidence criteria':'provisional source-verified / applicable criterion percentage'}.
     </p>
     <div style={{overflowX:'auto',maxWidth:'100%'}}>
      <svg role="img" aria-label="Three independent FOCUS scientific survey evidence series, each with its own least-squares cross-trial trend line"
@@ -168,7 +170,7 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
     </div>
     <p style={{fontSize:12,margin:'9px 0 0',color:'#465d60'}}>
      {metric==='UNRESOLVED'?'Lower counts represent fewer outstanding documentary criteria, not better FDA outcomes.':
-      'Only checks expressly marked SOURCE_VERIFIED count; other documented or expected criteria are not automatically treated as failures.'}
+      'The score counts only SOURCE_VERIFIED checks; NOT_YET_EXPECTED is excluded. Scores are evidence readiness, not clinical success.'}
      {' '}Missing reports remain gaps; an absent survey is never assigned a zero.
      Chronological improvement requires multiple dated assessment versions for the same trials.
     </p>
