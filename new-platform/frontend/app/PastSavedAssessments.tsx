@@ -25,7 +25,7 @@ export default function PastSavedAssessments(){
   }catch(e){if(!signal?.aborted)setError(e instanceof Error?e.message:'Cannot load saved history');}
   finally{if(!signal?.aborted)setBusy(false);}
  }
- useEffect(()=>{const controller=new AbortController();void load(controller.signal);return()=>controller.abort();},[]);
+ useEffect(()=>{const controller=new AbortController();const refresh=()=>void load(controller.signal);refresh();if(typeof window!=='undefined')window.addEventListener('pdufa:assessment-saved',refresh);return()=>{controller.abort();if(typeof window!=='undefined')window.removeEventListener('pdufa:assessment-saved',refresh);};},[]);
  const trials=(data?.trials||[]).filter(t=>(t.nct+' '+t.cutoffDate).toLowerCase().includes(filter.toLowerCase()));
  return <section aria-label="PAST saved blind Level 1–3 assessments" style={{border:'1px solid #b9cebe',borderRadius:8,padding:14,margin:'16px 0'}}>
   <h2>PAST · Saved blind historical assessments · Levels 1–3</h2>

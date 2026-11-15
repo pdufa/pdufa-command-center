@@ -22,7 +22,8 @@ export function FocusLevelCells({nct}:{nct:string}){
   const interval=setInterval(()=>void refresh(),30000);
   const onFocus=()=>void refresh();
   window.addEventListener('focus',onFocus);
-  return()=>{active=false;clearInterval(interval);window.removeEventListener('focus',onFocus);};
+  window.addEventListener('pdufa:assessment-saved',onFocus);
+  return()=>{active=false;clearInterval(interval);window.removeEventListener('focus',onFocus);window.removeEventListener('pdufa:assessment-saved',onFocus);};
  },[nct]);
  return <>{[1,2,3].flatMap(level=>{const report=reports?.filter(r=>r.level===level&&r.mode==='CURRENT_EVIDENCE').sort((a,b)=>b.executedAt.localeCompare(a.executedAt))[0];const prediction=report?.fdaPrediction?.outcome;return [
  <td key={level+'p'} title={report?'Saved assessment '+report.runId:'No saved current-evidence assessment; results must be executed and verified'}>{report?(prediction&&prediction!=='ABSTAIN'?prediction:'ABSTAIN · not predicted'):error?'Unavailable':'Not predicted'}</td>,
