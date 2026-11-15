@@ -305,7 +305,7 @@ test('FOCUS and PAST use the same assessment launcher for single, selected and w
     await act(async()=>{await audit.props.onClick();});
     assert.equal(submit().props.disabled,false,'whole PAST can be audited without fabricated trial links');
     await act(async()=>{await submit().props.onClick();});
-    assert.match(JSON.stringify(tree.toJSON()),/20 events not assessed/);
+    assert.ok(tree.root.findAllByType('h3').some(h=>React.Children.toArray(h.props.children).join('').includes('20 events not assessed')));
     assert.match(JSON.stringify(tree.toJSON()),/NOT_ASSESSED_UNVERIFIED/);
     assert.ok(tree.root.findAllByType('summary').some(node=>React.Children.toArray(node.props.children).join('')==='20 PAST events requiring verified linkage or evidence'));
     assert.match(JSON.stringify(tree.toJSON()),/Whole PAST reports every event/);
