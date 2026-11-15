@@ -202,7 +202,9 @@ test('PAST saved blind records display on PAST and ASSESSMENTS without fabricate
   await act(async()=>{tree=create(React.createElement(Saved));});
   const rendered=JSON.stringify(tree.toJSON());
   for(const l of [1,2,3])assert.match(rendered,new RegExp('L0'+l+' scientific score'));
-  assert.equal(rendered.split('NOT VALIDATED / UNSCORABLE').length-1,3);
+  const cells=tree.root.findAllByType('tbody')[0].findAllByType('td');
+  assert.equal(cells.length,7);
+  for(const position of [1,3,5])assert.match(JSON.stringify(cells[position].props.children),/NOT VALIDATED \/ UNSCORABLE/);
   assert.match(rendered,/ABSTAIN/);
   assert.match(rendered,/not yet reconciled/);
   for(const page of ['past/page.tsx','assessments/page.tsx','predictions/assessment/page.tsx']){
