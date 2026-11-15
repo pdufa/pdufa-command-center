@@ -21,6 +21,8 @@ async function relay(req:NextRequest,path:string,body?:unknown){
 export async function GET(req:NextRequest){
  if(!authorized(req))return json({error:'Sign in to access assessments'},401);
  const q=req.nextUrl.searchParams;
+ if(q.get('focus')==='true')return relay(req,'/focus');
+ if(q.get('past')==='true')return relay(req,'/past');
  if(q.has('population')){
   const population=q.get('population'),term=q.get('q')||'';
   if(!['POOL','FOCUS','HISTORICAL'].includes(population||'')||term.length>100)return json({error:'Invalid population search'},422);
@@ -41,7 +43,9 @@ export async function POST(req:NextRequest){
   while(true){const {done,value}=await reader.read();if(done)break;size+=value.byteLength;if(size>1024){await reader.cancel();return json({error:'Request too large'},413);}chunks.push(value);}
   data=JSON.parse(Buffer.concat(chunks).toString('utf8'));
  }catch{return json({error:'Invalid JSON'},422);}
- if(!data||typeof data!=='object'||Array.isArray(data)||Object.keys(data).some(k=>!['nct','level','mode','cutoffDate'].includes(k))||typeof data.nct!=='string'||!nct(data.nct)||!Number.isInteger(data.level)||Number(data.level)<1||Number(data.level)>6||!['CURRENT_EVIDENCE','BLIND_HISTORICAL'].includes(String(data.mode)))return json({error:'Exact NCT, selected level 1–6 and assessment mode required; no caller evidence or scoring claims allowed'},422);
+ if(data&&data.action==='FOCUS_BATCH'&&Object.keys(data).length===1)return relay(req,'/focus/batch',{});
+ if(!data||typeof data!=='object'||Array.isArray(data)||Object.keys(data).some(k=>!['nct','level','mode','cutoffDate','contract'].includes(k))||typeof data.nct!=='string'||!nct(data.nct)||!Number.isInteger(data.level)||Number(data.level)<1||Number(data.level)>6||!['CURRENT_EVIDENCE','BLIND_HISTORICAL'].includes(String(data.mode)))return json({error:'Exact NCT, selected level 1–6 and assessment mode required; no caller evidence or scoring claims allowed'},422);
+ if('contract' in data&&(!['LEGACY_SOURCE_AUDIT','SCIENTIFIC_1_3'].includes(String(data.contract))||(data.contract==='SCIENTIFIC_1_3'&&Number(data.level)>3)))return json({error:'Scientific contract supports Levels 1–3 only'},422);
  if(data.mode==='CURRENT_EVIDENCE'&&'cutoffDate' in data)return json({error:'Current mode does not accept historical cutoff'},422);
  if(data.mode==='BLIND_HISTORICAL'&&(typeof data.cutoffDate!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(data.cutoffDate)||!Number.isFinite(Date.parse(data.cutoffDate+'T00:00:00Z'))||new Date(data.cutoffDate+'T00:00:00Z').toISOString().slice(0,10)!==data.cutoffDate||data.cutoffDate>=new Date().toISOString().slice(0,10)))return json({error:'Valid past historical cutoff required'},422);
  return relay(req,'/runs',data);

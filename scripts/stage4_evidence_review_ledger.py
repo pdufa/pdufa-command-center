@@ -9,10 +9,10 @@ LEDGER = ROOT / "research/focus/stage4-evidence-review.json"
 
 def validate(roster, ledger):
     records = roster.get("records")
-    if not isinstance(records, list) or len(records) != 29:
+    if not isinstance(records, list) or len(records) not in (29, 32):
         raise ValueError("Expected canonical 29-trial FOCUS roster")
     ncts = {r.get("nct") for r in records}
-    if len(ncts) != 29:
+    if len(ncts) != len(records):
         raise ValueError("Duplicate or missing roster NCT")
     if not isinstance(ledger, list):
         raise ValueError("Review ledger must be a list")
@@ -35,7 +35,7 @@ def validate(roster, ledger):
             if not item["source_url"].startswith("https://"):
                 raise ValueError("Verified review requires HTTPS source")
             verified += 1
-    return {"focus_trials": 29, "ledger_entries": len(ledger), "documented_verifications": verified,
+    return {"focus_trials": len(records), "ledger_entries": len(ledger), "documented_verifications": verified,
             "note": "Metadata completeness does not independently establish scientific validity"}
 
 def main():

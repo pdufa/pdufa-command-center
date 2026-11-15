@@ -1,4 +1,6 @@
 "use client";
+import {PredictionHeaders,PredictionCells,PredictionLegend} from './PdufaPredictionColumns';
+
 
 import { useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
@@ -13,6 +15,7 @@ import LiveRegistryReview from "./LiveRegistryReview";
 import PipelineSponsorReadout from "./PipelineSponsorReadout";
 import BatchRegistryExport from "./BatchRegistryExport";
 import PoolMasterSpreadsheet from "./PoolMasterSpreadsheet";
+import {ExactTrialIntakeSelector} from "./ExactTrialScientificIntake";
 import IndicationIntelligence from "./IndicationIntelligence";
 import {type PoolPhaseSelection} from "../lib/pool-phase-options";
 import type {PoolSortSpec} from "../lib/pool-full-sort";
@@ -194,14 +197,14 @@ export default function FunnelWorkspace({section}:{section:"pool"|"pipeline"}) {
        {section==="pipeline"&&<><p className={styles.muted}>Timeline columns count Pacific calendar days from the verified public Phase 3 readout release to today and to the FDA PDUFA target. Research ends at PDUFA − 3. Unverified dates never become numerical countdowns.</p><p className={styles.muted}>Competitive columns are source-gated. A blank assessment is neither zero nor evidence of failure. Expand each cell for its reason, exact purpose and required verification.</p><CompetitiveColumnPurposes /></>}
        <div className={styles.scroll}><table className={styles.table}>
          <thead><tr>
-           {["NCT","Ticker","Company","Drug","Indication"].map(k=><th key={k}>{k}</th>)}<PipelineTimelineHeaders /><CompetitiveAssessmentHeaders />{["Registry status","Cap at census","POOL match","Screening status","Current SOC cost ($/12 mo)","Proposed cost ($/12 mo)","Details"].map(k=><th key={k}>{k}</th>)}
+           {["NCT","Ticker","Company","Drug","Indication"].map(k=><th key={k}>{k}</th>)}<PipelineTimelineHeaders /><CompetitiveAssessmentHeaders /><PredictionHeaders />{["Registry status","Cap at census","POOL match","Screening status","Current SOC cost ($/12 mo)","Proposed cost ($/12 mo)","Details"].map(k=><th key={k}>{k}</th>)}
          </tr></thead>
          <tbody>{page.rows.map(r=>isReview(r)?
            <tr key={r.nctId}>
-             <td><a href={r.sourceUrl} target="_blank" rel="noopener noreferrer">{r.nctId}</a></td>
+             <td><a href={r.sourceUrl} target="_blank" rel="noopener noreferrer">{r.nctId}</a>{section==="pool"&&<details><summary>Steps 1–3 · exact-program intake</summary><ExactTrialIntakeSelector cohort="POOL" nctId={r.nctId}/></details>}</td>
              <td>{r.ticker}</td><td>{r.company}</td><td>{display(r.drug)}</td><td>{display(r.indication)}</td>
              <PipelineTimelineCells dates={r.timeline} today={today}/>
-             <CompetitiveAssessmentCells row={r}/>
+             <CompetitiveAssessmentCells row={r}/><PredictionCells nct={r.nctId}/>
              <td>{r.censusStatus}</td><td>${r.capUsd.toLocaleString()}<small>as of {r.capAsOf.slice(0,10)}</small></td>
              <td>{r.poolStatus}</td><td>{r.qualification}</td>
              <td>{formatCost(calculateTherapyCosts(r.therapyCostComparison).currentUsd)}</td>

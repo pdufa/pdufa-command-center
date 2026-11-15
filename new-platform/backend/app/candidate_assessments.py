@@ -9,8 +9,15 @@ import math
 import re
 from urllib.parse import urlparse
 
+from .phase_first_intake import phase_first_intake, registry_retrieved_day
+from .scientific_levels_two_to_six import assess_levels_two_to_six
+from .scientific_registry_inventory import attach_registry_inventory
+from .scientific_binary_effects import binary_effect
+from .scientific_population import assess_level_seven
+from .scientific_safety_exposure import assess_level_eight
+
 MODEL = "candidate-assessments-v1"
-NCT = re.compile(r"^NCT\d{8}$")
+NCT = re.compile(r"^NCT[0-9]{8}$")
 DOMAINS = {
     "PIPELINE": [("P1", "Clinical efficacy / effect size", 25), ("P2", "Trial design / endpoint quality", 20),
                  ("P3", "Statistical reliability", 15), ("P4", "Safety / tolerability", 15),
@@ -30,8 +37,14 @@ def packed(value):
     return json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
 
 def day(value):
-    try: return date.fromisoformat(str(value or "")[:10])
-    except ValueError: return None
+    if isinstance(value, date):
+        return value
+    if not isinstance(value, str) or re.fullmatch(r"[0-9]{4}-[0-9]{2}-[0-9]{2}", value) is None:
+        return None
+    try:
+        return date.fromisoformat(value)
+    except ValueError:
+        return None
 
 def source_url(value):
     try:
@@ -42,7 +55,7 @@ def source_url(value):
 def nct_id(row):
     explicit = str(row.get("nctId") or "")
     if NCT.fullmatch(explicit): return explicit
-    matches = re.findall(r"\bNCT\d{8}\b", str(row.get("id") or ""))
+    matches = re.findall(r"\bNCT[0-9]{8}\b", str(row.get("id") or ""))
     return matches[0] if len(matches) == 1 else ""
 
 def measure(key, name, maximum, value=None, *, fraction=None, rule="", source="", checked="", source_date="", state=None, note=""):
@@ -95,22 +108,43 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
     nct = nct_id(row)
     if registry and (not nct or registry.get("nct_id") != nct): raise ValueError("Registry identity mismatch")
     facts, tech = row.get("trialFilters") or {}, row.get("technical") or {}
-    checked = registry_checked[:10]
-    source = "https://clinicaltrials.gov/study/" + nct if nct and registry and day(checked) and day(checked) <= today else ""
+    checked_day = registry_retrieved_day(registry_checked)
+    checked = checked_day.isoformat() if checked_day else ""
+    registry_update = registry.get("last_update_posted") or {}
+    registry_day = registry_update.get("date", "") if isinstance(registry_update, dict) else ""
+    # A registry snapshot checked before the scoring cutoff can still contain a
+    # future-dated amendment. Do not award registry-derived points in that case.
+    registry_as_of = day(registry_day)
+    registry_checked_on = day(checked)
+    registry_eligible = bool(nct and registry and registry_as_of and registry_checked_on
+                             and registry_as_of <= registry_checked_on <= today)
+    source = "https://clinicaltrials.gov/study/" + nct if registry_eligible else ""
     design = registry.get("study_design") or {}
+    if not isinstance(design, dict):
+        design = {}
     info = design.get("designInfo") or {}
-    masking, allocation = (info.get("maskingInfo") or {}).get("masking"), info.get("allocation")
+    if not isinstance(info, dict):
+        info = {}
+    masking_info = info.get("maskingInfo") or {}
+    if not isinstance(masking_info, dict):
+        masking_info = {}
+    masking, allocation = masking_info.get("masking"), info.get("allocation")
     arms, endpoints = registry.get("treatment_groups") or [], registry.get("primary_outcomes") or []
-    control = len(arms) >= 2 and any(a.get("type") in {"ACTIVE_COMPARATOR", "PLACEBO_COMPARATOR", "SHAM_COMPARATOR", "NO_INTERVENTION"} for a in arms)
-    defined = bool(endpoints and all(e.get("measure") and e.get("timeFrame") for e in endpoints))
-    registry_day = (registry.get("last_update_posted") or {}).get("date", "")
+    if not isinstance(arms, list):
+        arms = []
+    if not isinstance(endpoints, list):
+        endpoints = []
+    control = len(arms) >= 2 and any(isinstance(a, dict) and a.get("type") in {"ACTIVE_COMPARATOR", "PLACEBO_COMPARATOR", "SHAM_COMPARATOR", "NO_INTERVENTION"} for a in arms)
+    defined = bool(endpoints and all(isinstance(e, dict) and e.get("measure") and e.get("timeFrame") for e in endpoints))
     def reg(key, name, maximum, value, fraction, rule):
         return measure(key, name, maximum, value, fraction=fraction, rule=rule, source=source, checked=checked, source_date=registry_day)
     def reviewed(key, name, weight, age=90): return grade(key, name, weight, reviews, today, max_age=age)
     outcome = facts.get("primaryOutcome")
     clinical_date, clinical_check = facts.get("resultsDate", ""), row.get("lastChecked", "")
-    fresh = bool(day(clinical_check) and 0 <= (today - day(clinical_check)).days <= 90 and day(clinical_date)
-                 and day(clinical_date) <= today and "CONFLICTING" not in facts.get("evidence", []))
+    checked_on, outcome_on = day(clinical_check), day(clinical_date)
+    fresh = bool(checked_on and outcome_on and outcome_on <= checked_on <= today
+                 and (today - checked_on).days <= 90
+                 and "CONFLICTING" not in facts.get("evidence", []))
     primary = measure("primaryOutcome", "Adjudicated primary endpoint", 10, outcome,
                       fraction=(1 if outcome == "SUCCESS" else 0) if outcome in {"SUCCESS", "FAILED"} and fresh else None,
                       source=row.get("phase3Source", ""), checked=clinical_check, source_date=clinical_date,
@@ -177,15 +211,41 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
     if facts.get("safety") == "FLAGGED": flags.append("Unresolved safety flag")
     if facts.get("dilution") == "FLAGGED": flags.append("New dilution flag")
     if "CONFLICTING" in facts.get("evidence", []): flags.append("Conflicting source evidence")
-    return {"modelVersion": MODEL, "id": row["id"], "programId": row.get("programId"), "nctId": nct, "asOf": today.isoformat(), "models": models, "riskFlags": flags,
+    # Evidence coverage is not proof of a validated Level 1–6 scientific engine.
+    # Fail closed until independent scientific acceptance is recorded elsewhere.
+    scientific_readiness = {
+        "contractVersion": "scientific-levels1-8-v1.2",
+        "extensionEngineLevels": [7, 8],
+        "levels": [1, 2, 3, 4, 5, 6],
+        "status": "NOT_VERIFIED",
+        "fdaPrediction": "ABSTAIN",
+        "reason": "This candidate evidence rubric does not validate six independent scientific assessments or an FDA prediction model.",
+    }
+    level_one = phase_first_intake(registry, cutoff=today.isoformat(), registry_checked=registry_checked,
+                                   endpoint_reviews=reviews.get("levelOneEndpointReviews"))
+    levels_two_to_six = assess_levels_two_to_six(level_one, trial_id=nct, evidence=reviews.get("scientificLevelEvidence"))
+    scientific_records = reviews.get("scientificLevelEvidence") or {}
+    for level, criteria in (("3", ("effectSizeAndPrecision",)),
+                            ("4", ("adverseEvents", "seriousAdverseEvents", "discontinuations"))):
+        calculations = {}
+        for criterion in criteria:
+            accepted = levels_two_to_six[level]["acceptedEvidence"].get(criterion)
+            if accepted:
+                record = scientific_records.get(level + "." + criterion, {})
+                calculations[criterion] = binary_effect({**accepted, "measurements": record.get("measurements")})
+        levels_two_to_six[level]["descriptiveCalculations"] = calculations
+    attach_registry_inventory(level_one, levels_two_to_six, registry, trial_id=nct, retrieved_at=registry_checked)
+    extensions = {"7": assess_level_seven(level_one, trial_id=nct, evidence=reviews.get("scientificLevelEvidence")),
+                  "8": assess_level_eight(level_one, trial_id=nct, evidence=reviews.get("scientificLevelEvidence"))}
+    return {"levelsSevenToTwenty": extensions, "levelOneIntake": level_one, "levelsTwoToSix": levels_two_to_six, "scientificReadiness": scientific_readiness, "modelVersion": MODEL, "id": row["id"], "programId": row.get("programId"), "nctId": nct, "asOf": today.isoformat(), "models": models, "riskFlags": flags,
             "qualification": {"savedLists": facts.get("lists", ["PIPELINE"]), "primaryOutcome": outcome, "firstFinancingClosed": facts.get("firstFinancingClosed"), "secondFinancingClosed": facts.get("secondFinancingClosed"), "note": "Scores do not alter screening, saved membership or trade entry. Only complete evidence is ranked. Uncalibrated research scores, not success probabilities."},
             "registryFetchedAt": registry_checked, "registrySourceDate": registry_day, "reportedStatistics": analyses,
             "data": {"candidate": row, "registry": registry},
             "missingEvidence": [c["id"] + ": " + m["label"] for model in models.values() for c in model["categories"] for m in c["metrics"] if m["coverage"] < m["maximum"]]}
 
 def compact(result):
-    return {"modelVersion": result["modelVersion"], "models": {name: {**{k: model[k] for k in ("score", "observedPoints", "coverage", "status")}, "categories": [{k: c[k] for k in ("id", "maximum", "score", "observedPoints", "coverage", "status")} for c in model["categories"]]} for name, model in result["models"].items()}, "riskFlags": result["riskFlags"]}
+    return {"levelsSevenToTwenty": result["levelsSevenToTwenty"], "levelOneIntake": result["levelOneIntake"], "levelsTwoToSix": result["levelsTwoToSix"], "scientificReadiness": result["scientificReadiness"], "modelVersion": result["modelVersion"], "models": {name: {**{k: model[k] for k in ("score", "observedPoints", "coverage", "status")}, "categories": [{k: c[k] for k in ("id", "maximum", "score", "observedPoints", "coverage", "status")} for c in model["categories"]]} for name, model in result["models"].items()}, "riskFlags": result["riskFlags"]}
 
 def fingerprint(result):
-    stable = {key: result[key] for key in ("modelVersion", "models", "reportedStatistics", "qualification", "registryFetchedAt", "riskFlags")}
+    stable = {key: result[key] for key in ("modelVersion", "models", "levelsSevenToTwenty", "levelOneIntake", "levelsTwoToSix", "scientificReadiness", "reportedStatistics", "qualification", "registryFetchedAt", "riskFlags")}
     return hashlib.sha256(packed(stable).encode()).hexdigest()

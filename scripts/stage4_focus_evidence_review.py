@@ -12,7 +12,7 @@ ROSTER = ROOT / "new-platform/frontend/data/p3PostDataActive.json"
 
 def make_worklist(document):
     records = document.get("records") if isinstance(document, dict) else None
-    if not isinstance(records, list) or len(records) != 29:
+    if not isinstance(records, list) or len(records) not in (29, 32):
         raise ValueError("Expected exactly 29 FOCUS records")
     worklist = []
     seen = set()

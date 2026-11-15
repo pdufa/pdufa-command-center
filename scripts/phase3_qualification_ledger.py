@@ -12,7 +12,7 @@ from pathlib import Path
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-CENSUS = ROOT / "data/phase3_all_years_300m_10b_trials.csv"
+CENSUS = ROOT / "new-platform/frontend/public/phase3-census-2026-10-26.csv"
 GATES = (
     "registry_identity", "ticker_drug_indication_identity",
     "current_commercial_rights", "active_phase3_development",
@@ -21,6 +21,28 @@ GATES = (
 )
 UNKNOWN = "REVIEW"
 VALID = {"PASS", "FAIL", "REVIEW"}
+
+def registry_gate_allows_research(gates, source):
+    """Keep a source-confirmed registry change in REVIEW, never promote it.
+
+    Consumers must still verify exact NCT, ticker, source URL and digest binding.
+    An unexplained REVIEW does not qualify for this research-only path.
+    """
+    if not isinstance(gates, dict) or not isinstance(source, dict):
+        return False
+    state = gates.get("registry_identity")
+    if state == "PASS":
+        return all(key not in source or source[key] is True for key in
+                   ("status_matches_dated_census", "phase3_in_current_registry"))
+    matches, phase3 = source.get("status_matches_dated_census"), source.get("phase3_in_current_registry")
+    if state != "REVIEW" or type(matches) is not bool or type(phase3) is not bool:
+        return False
+    if not phase3:
+        return True
+    before, current = source.get("census_status"), source.get("current_registry_status")
+    return (matches is False and isinstance(before, str) and bool(before.strip())
+            and isinstance(current, str) and bool(current.strip()) and before != current)
+
 
 def build_ledger(source_report):
     with CENSUS.open(encoding="utf-8-sig", newline="") as handle:

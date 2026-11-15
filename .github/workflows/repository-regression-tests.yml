@@ -1,0 +1,38 @@
+name: Supported repository regressions and explicit retirement inventory
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'tests/**'
+      - 'scripts/**'
+      - 'requirements*.txt'
+      - 'config/scan_234.json'
+      - 'pipeline_display.py'
+      - '.github/workflows/repository-regression-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  broad-repository-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install declared offline test dependencies
+        run: pip install -r requirements-test.txt
+      - name: Verify permanent retirement safeguards
+        run: python scripts/audit_raas_retirement.py --check
+      - name: Run the broad root suite with explicit per-test dispositions
+        run: python -m pytest tests -q --disposition-report="$RUNNER_TEMP/test-dispositions.json" --junitxml="$RUNNER_TEMP/root-tests.xml"
+      - name: Retain executed and retired test dispositions
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-test-dispositions
+          path: |
+            ${{ runner.temp }}/test-dispositions.json
+            ${{ runner.temp }}/root-tests.xml
+          retention-days: 14

@@ -14,11 +14,11 @@ class AuditTests(unittest.TestCase):
         self.roster = json.loads((PATH.parents[1] / "new-platform/frontend/data/p3PostDataActive.json").read_text())
         ids = [r["nct"] for r in self.roster["records"]]
         self.registry = {"scientific_adjudications": 0, "trials": [{"nct": n, "status": "retrieved", "prediction": None} for n in ids]}
-        self.triage = {"verified_scientific_adjudications": 0, "trials": [{"nct": n, "readiness": "phase_unresolved", "verified": False, "prediction": None} for n in ids]}
+        self.triage = {"verified_scientific_adjudications": 0, "trials": [{"nct": n, "readiness": "phase_unresolved", "endpoint_evidence": "endpoint_metadata_unavailable", "verified": False, "prediction": None} for n in ids]}
 
     def test_valid_unverified_coverage(self):
         result = module.audit(self.registry, self.triage, self.roster)
-        self.assertEqual(result["retrieved"], 29)
+        self.assertEqual(result["retrieved"], 32)
         self.assertFalse(result["scientific_verification_complete"])
 
     def test_missing_trial_fails(self):

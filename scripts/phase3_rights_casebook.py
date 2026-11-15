@@ -9,6 +9,10 @@ import re
 import sys
 from pathlib import Path
 
+if __package__ in (None, ""):
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from scripts.phase3_qualification_ledger import registry_gate_allows_research
+
 EXPECTED_TRIALS = 741
 EXPECTED_ISSUERS = 130
 CIK = re.compile(r"^[0-9]{10}$")
@@ -69,7 +73,7 @@ def build_casebook(ledger, registry, sponsor_queue, rights_gaps):
             or sponsor.get("source_sha256") != source.get("source_sha256")
             or not isinstance(source.get("source_sha256"), str)
             or not SHA256.fullmatch(source["source_sha256"])
-            or record.get("gates", {}).get("registry_identity") != "PASS"
+            or not registry_gate_allows_research(record.get("gates", {}), source)
             or record.get("gates", {}).get("current_commercial_rights") != "REVIEW"
             or record.get("qualified_pipeline") is not None
             or sponsor.get("review_gate") != "current_commercial_rights"

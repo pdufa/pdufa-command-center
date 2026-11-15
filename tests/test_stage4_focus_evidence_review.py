@@ -13,7 +13,7 @@ class EvidenceReviewTests(unittest.TestCase):
     def test_worklist_is_unverified_and_complete(self):
         doc = json.loads(module.ROSTER.read_text(encoding="utf-8"))
         output = module.make_worklist(doc)
-        self.assertEqual(len(output["trials"]), 29)
+        self.assertEqual(len(output["trials"]), 32)
         self.assertEqual(output["verified_predictions"], 0)
         self.assertTrue(all(t["adjudication"] is None and t["prediction"] is None for t in output["trials"]))
         self.assertTrue(all(t["evidence_status"] == "unverified" for t in output["trials"]))

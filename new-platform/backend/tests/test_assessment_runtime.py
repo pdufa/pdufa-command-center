@@ -158,3 +158,87 @@ def test_first_history_read_is_empty_and_does_not_create_tables():
         with pytest.raises(HTTPException) as error:r.status(e,'NCT04576949',str(uuid4()))
         assert error.value.status_code==404
     finally:e.dispose()
+
+def test_three_levels_share_exact_source_identity_and_persist_distinct_reports(engine):
+    """Exercise the real backend engines and database, not a mocked HTTP report."""
+    source=snapshot()
+    for level in (1,2,3):
+        q=request(level)
+        run=r.create(engine,q)
+        r.execute(engine,run,lambda nct: snapshot() if nct==q.nct else pytest.fail('Wrong trial source requested'))
+        state=r.status(engine,q.nct,run)
+        assert state['status']=='COMPLETED'
+        report=state['report']
+        assert report['nct']==q.nct and report['level']==level
+        assert report['evidence']['input_sha256']==source['input_sha256']
+        assert report['evidence']['source_url'].endswith(q.nct)
+        assert report['fdaPrediction']['outcome']=='ABSTAIN'
+    versions=r.history(engine,'NCT04576949')['runs']
+    assert {v['level'] for v in versions}=={1,2,3}
+    assert len({v['runId'] for v in versions})==3
+    assert all(v['reportHash'] and v['evidence']['input_sha256']==source['input_sha256'] for v in versions)
+    assert r.history(engine,'NCT00000001')['runs']==[]
+
+def test_levels_one_to_three_use_original_registry_http_response_and_persist(engine,monkeypatch):
+    """Exercise source HTTP receipt, sanitizer, hashing, engines and durable retrieval."""
+    raw=json.dumps(original()).encode()
+    class Response:
+        headers={'Content-Type':'application/json'}
+        def __enter__(self):return self
+        def __exit__(self,*args):return False
+        def geturl(self):return 'https://clinicaltrials.gov/api/v2/studies/NCT04576949'
+        def read(self,limit):return raw
+    calls=[]
+    def fetch(request,timeout):
+        calls.append((request.full_url,timeout))
+        return Response()
+    monkeypatch.setattr(r,'urlopen',fetch)
+    for level in (1,2,3):
+        q=request(level);run=r.create(engine,q)
+        r.execute(engine,run)
+        state=r.status(engine,q.nct,run)
+        assert state['status']=='COMPLETED',state['error']
+        report=state['report']
+        assert report['level']==level and report['nct']==q.nct
+        assert report['evidence']['raw_sha256']==__import__('hashlib').sha256(raw).hexdigest()
+        assert report['context']['phases']==['PHASE3']
+        assert report['fdaPrediction']['outcome']=='ABSTAIN'
+    assert len(calls)==3
+    assert all(url=='https://clinicaltrials.gov/api/v2/studies/NCT04576949' and timeout==25 for url,timeout in calls)
+    assert len(r.history(engine,'NCT04576949')['runs'])==3
+    with engine.connect() as connection:
+        assert connection.execute(text('SELECT count(*) FROM assessment_v2_sources')).scalar()==3
+
+
+def test_authenticated_http_run_levels_one_to_three_and_saved_history(engine,monkeypatch):
+    """End-to-end HTTP API, background execution, immutable results and exact-NCT history."""
+    calls=[]
+    def registry(nct):
+        calls.append(nct)
+        return snapshot(nct)
+    # execute() binds its collector default at definition time; inject explicitly.
+    original_execute=r.execute
+    def execute_with_registry(db,run_id):
+        return original_execute(db,run_id,registry)
+    monkeypatch.setattr(r,'execute',execute_with_registry)
+    app=FastAPI()
+    app.include_router(r.router(lambda:engine,lambda:None,lambda:None,lambda:None,allow_local=True))
+    with TestClient(app) as client:
+        for level in (1,2,3):
+            response=client.post('/api/assessment-runtime/runs',json=request(level).model_dump(mode='json'))
+            assert response.status_code==202,response.text
+            run=response.json()
+            assert run['nct']=='NCT04576949' and run['runId']
+            saved=client.get('/api/assessment-runtime/runs/NCT04576949/'+run['runId'])
+            assert saved.status_code==200
+            body=saved.json()
+            assert body['status']=='COMPLETED',body.get('error')
+            assert body['report']['level']==level
+            assert body['report']['fdaPrediction']['outcome']=='ABSTAIN'
+            assert body['report']['reportHash']
+        history=client.get('/api/assessment-runtime/history/NCT04576949')
+        assert history.status_code==200
+        assert {entry['level'] for entry in history.json()['runs']}=={1,2,3}
+        assert len({entry['runId'] for entry in history.json()['runs']})==3
+        assert client.get('/api/assessment-runtime/history/NCT00000001').json()['runs']==[]
+    assert calls==['NCT04576949']*3

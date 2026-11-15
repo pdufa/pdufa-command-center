@@ -1,3 +1,5 @@
+import FocusSavedAssessments from "../../FocusSavedAssessments";
+import PastSavedAssessments from "../../PastSavedAssessments";
 import AssessmentWorkbench from "../../AssessmentWorkbench";
 import Link from "next/link";
 import type {Metadata} from "next";
@@ -17,16 +19,24 @@ import UltomirisHistoricalLevelThreePanel from "../../UltomirisHistoricalLevelTh
 import {getAssessmentPieData} from "../../../lib/focus-assessment-chart";
 
 export const metadata:Metadata={
-  title:"FOCUS Scientific Assessment Readiness | PDUFA",
-  description:"Run phase-first Levels 1–6 owner research for one FOCUS trial or all 32, with source-linked findings, uncertainty and evidence gaps."
+  title:"Scientific Trial Assessments | PDUFA",
+  description:"Execute source-bound scientific Levels 1–3 for exact FOCUS, POOL and historical trials, with evidence, statistics, limitations and saved versions."
 };
-type Params={nct?:string;cycle?:string};
+type Params={nct?:string;cycle?:string;view?:string};
 const section={border:"1px solid #c3d9d5",background:"#fff",borderRadius:13,padding:"clamp(13px,2vw,20px)"} as const;
 const badge={padding:"6px 10px",border:"1px solid #c48e4c",background:"#fff6e8",borderRadius:7,color:"#825013",fontSize:12,fontWeight:800} as const;
 const label={fontSize:11,letterSpacing:".075em",fontWeight:800,color:"#216258"} as const;
 
 export default async function AssessmentPage({searchParams}:{searchParams:Promise<Params>}){
   const q=await searchParams;
+  if(q.view!=="legacy")return <main style={{maxWidth:1300,margin:"0 auto",padding:"26px 15px 60px",color:"#122f32"}}>
+    <h1>ASSESSMENTS · Scientific Levels 1–3</h1>
+    <p>Run exact-trial verification, clinical design review, and efficacy/statistical assessment across FOCUS, POOL and PAST. Source statements, calculations, uncertainties and missing evidence remain separate.</p>
+    <FocusSavedAssessments/>
+    <PastSavedAssessments/>
+    <AssessmentWorkbench selectedNct={q.nct&&/^NCT[0-9]{8}$/.test(q.nct)?q.nct:undefined}/>
+    <p><Link href="/predictions/assessment?view=legacy">Retained research histories and charts — may reveal known historical outcomes</Link></p>
+  </main>;
   const pies=getAssessmentPieData();
   const selected=FOCUS_SPECIALTY_ASSESSMENT_QUEUE.find(x=>x.nct===q.nct)??FOCUS_SPECIALTY_ASSESSMENT_QUEUE[0];
   const cycle=selected?.applications.find(x=>x.cycleId===q.cycle)??selected?.applications[0]??null;
@@ -55,6 +65,7 @@ export default async function AssessmentPage({searchParams}:{searchParams:Promis
       <strong>A completed automated run is not owner acceptance or a validated FDA probability.</strong>
       The first step in every actual review is to verify current trial phase, status, intervention and indication.
     </p>
+    <FocusSavedAssessments/>
     <AssessmentWorkbench selectedNct={q.nct&&/^NCT\d{8}$/.test(q.nct)?q.nct:selected?.nct}/>
     <details><summary>Retained collected-evidence research runner · session-only</summary>
       <LevelSixAssessmentRunner selectedNct={selected?.nct}/>

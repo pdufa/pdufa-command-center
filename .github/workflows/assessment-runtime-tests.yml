@@ -1,11 +1,23 @@
 name: Assessment runtime regression and leakage checks
 on:
   pull_request:
-    branches: [main, new-platform-bootstrap]
+    branches: [main, new-platform-bootstrap, codex/level1-6-explicit-scientific-readiness-20261114]
     paths:
       - 'new-platform/backend/app/assessment_runtime.py'
+      - 'new-platform/backend/app/scientific_trial_assessment.py'
+      - 'new-platform/backend/app/focus_assessment_batch.py'
+      - 'new-platform/backend/scripts/run_focus_scientific_batch.py'
+      - 'new-platform/backend/tests/test_scientific_trial_assessment.py'
+      - 'new-platform/backend/tests/test_focus_assessment_batch.py'
       - 'new-platform/backend/tests/test_assessment_runtime.py'
       - 'new-platform/frontend/app/AssessmentWorkbench.tsx'
+      - 'new-platform/frontend/app/ScientificTrialFindings.tsx'
+      - 'new-platform/frontend/app/FocusSavedAssessments.tsx'
+      - 'new-platform/frontend/app/FocusLevelColumns.tsx'
+      - 'new-platform/frontend/app/AssessmentLauncher.tsx'
+      - 'new-platform/frontend/lib/focus-saved-records.ts'
+      - 'new-platform/frontend/app/focus/page.tsx'
+      - 'new-platform/frontend/app/predictions/assessment/page.tsx'
       - 'new-platform/frontend/app/api/assessments/runtime/**'
       - 'new-platform/frontend/tests/assessment-runtime.test.cjs'
       - '.github/workflows/assessment-runtime-tests.yml'
@@ -21,9 +33,9 @@ jobs:
         with:
           python-version: '3.12'
       - run: pip install -r new-platform/backend/requirements.txt
-      - run: PYTHONPATH=new-platform/backend pytest new-platform/backend/tests/test_assessment_runtime.py -q
+      - run: PYTHONPATH=new-platform/backend pytest new-platform/backend/tests -q
   frontend:
-    if: github.base_ref == 'main'
+    if: github.base_ref != 'new-platform-bootstrap'
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -34,6 +46,6 @@ jobs:
         with:
           node-version: '24'
       - run: npm ci --no-audit --no-fund
-      - run: node tests/assessment-runtime.test.cjs
+      - run: npm test
       - run: npm run typecheck
       - run: npm run build

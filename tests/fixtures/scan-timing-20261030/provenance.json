@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "7cc445e8eb1dd9c2a96d5cb37e5aa2a999c7fab3",
+  "scope": "IMMUTABLE_GIT_TEST_FIXTURE_NOT_CURRENT_PRODUCTION_DATA",
+  "sources": {
+    "archive.json": {
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/7cc445e8eb1dd9c2a96d5cb37e5aa2a999c7fab3/data/daily_scan_results.json",
+      "sha256": "ad8bf363aee25a20dfbee7d8f9aea313ff9dea57dc6228eef3edd439d5987e27"
+    },
+    "history.json": {
+      "sourceUrl": "https://github.com/pdufa/pdufa-command-center/blob/7cc445e8eb1dd9c2a96d5cb37e5aa2a999c7fab3/data/nightly_scan_report.json",
+      "sha256": "60e033858c4307169baab1377ddc2f1eef8541193229b6733d58a5e341c7b5d5"
+    }
+  }
+}

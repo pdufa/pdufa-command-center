@@ -41,7 +41,7 @@ class ClinicalTrialsSourceTests(unittest.TestCase):
     def test_failures_are_recorded_not_counted_as_verified(self):
         roster = json.loads(module.ROSTER.read_text(encoding="utf-8"))
         result = module.collect(roster, fetcher=lambda nct: (_ for _ in ()).throw(TimeoutError()))
-        self.assertEqual(len(result["trials"]), 29)
+        self.assertEqual(len(result["trials"]), 32)
         self.assertTrue(all(t["status"] == "retrieval_failed" for t in result["trials"]))
         self.assertEqual(result["scientific_adjudications"], 0)
 

@@ -1,0 +1,106 @@
+{
+  "scope": "READ_ONLY_LOCAL_REPLAY_OF_ACTUAL_CI_FILES_NOT_A_DEPLOYMENT",
+  "sourceRunId": 43640455033,
+  "sourceArtifactId": 14132315598,
+  "filesVerified": 16,
+  "reconciledScope": {
+    "historical_trial_count": 741,
+    "issuer_research_pointer_count": 130,
+    "registry_status_review_rows": 741,
+    "registry_status_changed_vs_dated_census": 9,
+    "registry_posted_updates_older_than_365_days": 0,
+    "retrieved_registry_source_identities": 741,
+    "verified_registry_identity_checks": 732,
+    "mandatory_gate_checks": 6669,
+    "unresolved_mandatory_gate_checks": 5937,
+    "commercial_rights_review_slots": 4446,
+    "rights_slots_with_submissions": 0,
+    "sec_issuer_indexes_fetched": 130,
+    "sec_primary_documents_attempted": 0,
+    "sec_primary_documents_fetched": 0,
+    "independently_verified_commercial_rights": 0,
+    "qualified_pipeline_total": null
+  },
+  "fileHashes": [
+    {
+      "name": "main_phase3_registry.json",
+      "bytes": 1121641,
+      "sha256": "37df9ad15eac4e9acc154701dc5bccf8ed59c12effe5505e316002a107c138b1"
+    },
+    {
+      "name": "main_phase3_registry_status_recency.json",
+      "bytes": 865697,
+      "sha256": "21af1d28340c077cb84df576c23d06164ce9aeb0c94ec84999717f58ca1e0803"
+    },
+    {
+      "name": "main_phase3_registry_status_review.csv",
+      "bytes": 341500,
+      "sha256": "5179c69e8a60c3670040f9bca5a5c4923e7dd71399e0e4fdb1089ffba30e681f"
+    },
+    {
+      "name": "main_phase3_qualification_ledger.json",
+      "bytes": 673419,
+      "sha256": "13ecc648bf653ad9a0b5bc6e7f6a204c4894a7ab966febc5e4dc2839ce4b58af"
+    },
+    {
+      "name": "main_phase3_sponsor_rights_queue.json",
+      "bytes": 540711,
+      "sha256": "006ccd0b22706e7e42fa47e57703756a825a79b7c8b411fd6bd975911bb090cd"
+    },
+    {
+      "name": "main_phase3_rights_gaps.json",
+      "bytes": 571679,
+      "sha256": "f0693f07ee58948c95a5b8d7080a31449e6b3c3656eb485b6befe7d89c8fd3a3"
+    },
+    {
+      "name": "main_phase3_rights_casebook.json",
+      "bytes": 751333,
+      "sha256": "7f4d9f401ebd6e90cd02156d5bad7491f7418207cf4ba4f21b147996cfc8afe9"
+    },
+    {
+      "name": "main_phase3_program_identity.json",
+      "bytes": 839077,
+      "sha256": "4b884efcec19af8387d0e145e317b9be8650eb567696f4e37d34b27f1bf9a721"
+    },
+    {
+      "name": "main_phase3_sec_rights_leads.json",
+      "bytes": 583331,
+      "sha256": "eaeb86cd3ac4bef6bdc1ee155bd2a0da849d80ae45a87f4ccbb8305927a65bc5"
+    },
+    {
+      "name": "main_phase3_sec_primary_documents_pilot.json",
+      "bytes": 59776,
+      "sha256": "fc7abdf01bb0cc5302a18f324a2e72ddb99c90aeea5747d2f2204472f7d1be1f"
+    },
+    {
+      "name": "main_phase3_sec_trial_rights_join.json",
+      "bytes": 1169506,
+      "sha256": "3d56bd6b0fdb8f39a57be9123e45a03c30d83ecbfb8ac8faabbdaeaba70d1a6b"
+    },
+    {
+      "name": "main_phase3_rights_review_worklist.json",
+      "bytes": 2687369,
+      "sha256": "24a50294635c476fd0f99a69277d21716bb5d8d8360f240382573aae8d60d51f"
+    },
+    {
+      "name": "main_phase3_rights_review_worklist.csv",
+      "bytes": 799641,
+      "sha256": "f1506b65fe98344a7ce447464cc56b8bfc038928d61c702402d325d2ba5c682a"
+    },
+    {
+      "name": "main_phase3_rights_review_submissions_coverage.json",
+      "bytes": 1269942,
+      "sha256": "3d3567e9a400a078cfbc1a507d93f4df3871b48e73eb93db010b2056120d2329"
+    },
+    {
+      "name": "main_phase3_qualification_scorecard.json",
+      "bytes": 3931,
+      "sha256": "4e3ebc44862021ef4e92ecb079e62e4899f0f7e5cc070785b84c7ba740b341f4"
+    },
+    {
+      "name": "main_phase3_qualification_summary.md",
+      "bytes": 2950,
+      "sha256": "9d4ed9a1c0a83bacbe864655071aa234ec702b7949415f8ec989402f1a25958d"
+    }
+  ]
+}

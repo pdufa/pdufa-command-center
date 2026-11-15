@@ -1,0 +1,358 @@
+{
+  "test_focus_phvs_prax_blte_review.py": {
+    "reason": "RETIRED_SURVEY: collect_focus_survey_evidence is permanently retired by AGENTS.md; retained tests are not scientific validation or active coverage.",
+    "policy": "AGENTS.md: RAAS is permanently retired",
+    "replacement": "new-platform/backend/tests/test_scientific_saved_registry.py; exact-trial source identity, no legacy survey execution",
+    "sourceSha256": "e738d8781effa228e1113f4a1429ecaefbd4f050014b26757a8b6d97085f4369"
+  },
+  "test_adhoc_dispatch.py": {
+    "reason": "RETIRED_SURVEY_UI: legacy Streamlit import chain requires removed gem_survey_catalog; retained tests are named skips, not passing active coverage.",
+    "policy": "AGENTS.md: permanently retired survey execution; root app.py removed",
+    "replacement": "new-platform/frontend/tests/candidate-assessments.test.cjs and backend exact-program/authentication regressions",
+    "sourceSha256": "1e2805c1561fa8b82392dc7c5825c56b3a1a2a873e00a877448ffe640d412dcb"
+  },
+  "test_gem_nested_master_ui.py": {
+    "reason": "RETIRED_SURVEY_UI: legacy Streamlit import chain requires removed gem_survey_catalog; retained tests are named skips, not passing active coverage.",
+    "policy": "AGENTS.md: permanently retired survey execution; root app.py removed",
+    "replacement": "new-platform/frontend/tests/candidate-assessments.test.cjs and backend exact-program/authentication regressions",
+    "sourceSha256": "af1f89e524f5b82698e6ed98aaccbab2474c7ac5f6a92d49b5ec596ac7835934"
+  },
+  "test_gem_stage_dossier.py": {
+    "reason": "RETIRED_SURVEY_UI: legacy Streamlit import chain requires removed gem_survey_catalog; retained tests are named skips, not passing active coverage.",
+    "policy": "AGENTS.md: permanently retired survey execution; root app.py removed",
+    "replacement": "new-platform/frontend/tests/candidate-assessments.test.cjs and backend exact-program/authentication regressions",
+    "sourceSha256": "3c219dfdbd70a9ff99eae90c479684223a10137da6fa6ad940edc7cd5c973a45"
+  },
+  "test_gem_visual_page.py": {
+    "reason": "RETIRED_SURVEY_UI: legacy Streamlit import chain requires removed gem_survey_catalog; retained tests are named skips, not passing active coverage.",
+    "policy": "AGENTS.md: permanently retired survey execution; root app.py removed",
+    "replacement": "new-platform/frontend/tests/candidate-assessments.test.cjs and backend exact-program/authentication regressions",
+    "sourceSha256": "dd7befabeec4c57ddb6e601320734f8a6132430c37de8c2ff929b8f58844a293"
+  },
+  "test_raas_active_phase3_source_screen.py": {
+    "reason": "RETIRED_RAAS_FEATURE: this suite executes retired score/review/alert entry points. Preserved but not counted as supported coverage. Retirement and source-integrity guards remain executable.",
+    "policy": "AGENTS.md: never execute or require RAAS calculations or cancelled workflows",
+    "replacement": "test_raas_retirement_guard.py; test_raas_retired_commands.py; active scientific evidence regressions",
+    "sourceSha256": "43f1e360bd440da2aae925fbc4f2bc133d66a58ccdd0c64212646aa6629774a9"
+  },
+  "test_raas_current_accepted_fda_applications.py": {
+    "reason": "RETIRED_RAAS_FEATURE: this suite executes retired score/review/alert entry points. Preserved but not counted as supported coverage. Retirement and source-integrity guards remain executable.",
+    "policy": "AGENTS.md: never execute or require RAAS calculations or cancelled workflows",
+    "replacement": "test_raas_retirement_guard.py; test_raas_retired_commands.py; active scientific evidence regressions",
+    "sourceSha256": "1d77000ec6f4a55857ff0a7bdd72d1e22d8f00d40751d60488207c32d6ca86a4"
+  },
+  "test_raas_current_pipeline_top_metric_audit.py": {
+    "reason": "RETIRED_RAAS_FEATURE: this suite executes retired score/review/alert entry points. Preserved but not counted as supported coverage. Retirement and source-integrity guards remain executable.",
+    "policy": "AGENTS.md: never execute or require RAAS calculations or cancelled workflows",
+    "replacement": "test_raas_retirement_guard.py; test_raas_retired_commands.py; active scientific evidence regressions",
+    "sourceSha256": "5d3a1f86f027db31f10f6b6a7a428ec1afe92476c5e0d970eb434cb0d32844a9"
+  },
+  "test_raas_all_trial_partial_metric_ratings.py": {
+    "reason": "RETIRED_RAAS_FEATURE: this suite executes retired score/review/alert entry points. Preserved but not counted as supported coverage. Retirement and source-integrity guards remain executable.",
+    "policy": "AGENTS.md: never execute or require RAAS calculations or cancelled workflows",
+    "replacement": "test_raas_retirement_guard.py; test_raas_retired_commands.py; active scientific evidence regressions",
+    "sourceSha256": "d0e6369e29df289185bcff87330313842b3ef0a1b99cdf6f4f933d20dd32888e"
+  },
+  "test_raas_ten_trial_clinical_pilot.py": {
+    "reason": "RETIRED_RAAS_FEATURE: this suite executes retired score/review/alert entry points. Preserved but not counted as supported coverage. Retirement and source-integrity guards remain executable.",
+    "policy": "AGENTS.md: never execute or require RAAS calculations or cancelled workflows",
+    "replacement": "test_raas_retirement_guard.py; test_raas_retired_commands.py; active scientific evidence regressions",
+    "sourceSha256": "97b4bbfb01c0ddfc283a5ec8adc5d466b0d4538fe2b6f6811fb7b052d4515028"
+  },
+  "test_raas_trial_score_ledger.py": {
+    "reason": "RETIRED_RAAS_FEATURE: this suite executes retired score/review/alert entry points. Preserved but not counted as supported coverage. Retirement and source-integrity guards remain executable.",
+    "policy": "AGENTS.md: never execute or require RAAS calculations or cancelled workflows",
+    "replacement": "test_raas_retirement_guard.py; test_raas_retired_commands.py; active scientific evidence regressions",
+    "sourceSha256": "525c6abbe81925eb4aeb2c26d11b4a45b19d27978eb148f6ae49c26aa1ae7188"
+  },
+  "test_telegram_raas_source_change_alert.py": {
+    "reason": "RETIRED_RAAS_FEATURE: this suite executes retired score/review/alert entry points. Preserved but not counted as supported coverage. Retirement and source-integrity guards remain executable.",
+    "policy": "AGENTS.md: never execute or require RAAS calculations or cancelled workflows",
+    "replacement": "test_raas_retirement_guard.py; test_raas_retired_commands.py; active scientific evidence regressions",
+    "sourceSha256": "4cfb467a73be7a1a2cd6362f087da5cdb5e5ed0b704c7d5be594a05aefa94be1"
+  },
+  "test_stage_wt_tables.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_ui_only_connects_existing_stage_collections"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "878976a7a55154e5d4469841d305fa02512f066ef66783daddd4cff8532afcff"
+  },
+  "test_today_page.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_standalone_today_removed_and_gem_reference_workspace_installed"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "ab110f650c8e03e93ba868c19e8e42926638684a298de10d68224afdb083aef1"
+  },
+  "test_market_bulk_ui.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_prephase_3_not_rendered_and_workflow_is_manual"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "bbd1318cd9d27a46b375dda1102450332cda927064e78ce05f595e52863f274a"
+  },
+  "test_startup_import_race.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_missing_dependency_is_not_retried",
+      "test_module_code_keyerror_is_not_retried",
+      "test_normal_import_and_render_arguments",
+      "test_render_data_keyerror_is_not_retried",
+      "test_repeated_eviction_is_bounded",
+      "test_single_hot_reload_eviction_recovers"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "7354c5264e6492cfe000fd52f25effac269f75f78a9c92cebfda9f3bb1091644"
+  },
+  "test_pdufa_display_columns.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_custom_pdufa_chart_has_no_wide_legend_and_only_colors_day_cells"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "99296d24f3361f926da692651a5d8b53f3b4569ec330c234d329e6ffa88772bb"
+  },
+  "test_phase2_p_evidence.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_pre_readout_pipeline_displays_observation_without_scoring_from_it"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "dbadf27c50335af77040e41390a4a116934d33ce2d7ecafef43395454dbc3821"
+  },
+  "test_four_pdufa_score_tabs.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_every_subtab_exposes_same_scoring_columns",
+      "test_gem_jr_and_gem_keep_distinct_qualification_contract"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "48794241882ea019500e7f53560fdfbac47970558dd965ad603c1af5d62025dd"
+  },
+  "test_navigation_merge.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_old_prediction_and_optimizer_bookmarks_redirect_to_pipeline",
+      "test_prediction_ui_retired_but_saved_model_sources_untouched",
+      "test_primary_navigation_has_no_prediction_engine",
+      "test_saved_standalone_scans_navigation_migrates_to_nested_scans"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "d60f41ec21501cba1d15892024088a841f7fc4e016ced1e034bd4da9c9231d36"
+  },
+  "test_site_scorecard.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_missing_checks_remain_unknown_without_invented_success",
+      "test_partial_scan_success_never_awards_full_source_coverage",
+      "test_manual_push_run_does_not_prove_ad_hoc_email_audit",
+      "test_latest_failed_ci_does_not_reuse_older_green",
+      "test_stale_success_is_not_pass"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "34a0220ae713caa6d2cfd7218a9ea536418c7ffce36e252e849beba7ae4a1b50"
+  },
+  "test_pipeline_display.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_stage_and_date_controls_are_both_present_above_chart",
+      "test_trade_workflow_lives_inside_pipeline_without_master_grid",
+      "test_pipeline_mobile_selectors_precede_both_count_charts"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "83e299930f60a7d3b58a7422f22032501a72a575fa737ce9da6ba8389721e4cf"
+  },
+  "test_stage_header_overlay.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_prediction_grid_places_checkbox_inside_header"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "31243c0c1aa93cfce389b96ec8637bde81b5cf2f257a4182b0d69cdb7fd79200"
+  },
+  "test_ticker_toggle_panel.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_every_section_has_first_columns_and_shared_callbacks"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "a555e1b6c430849731effe02204ff7d688a69f1867b5f0142570af142eeae2b8"
+  },
+  "test_sec_financing_closure_ui.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_core_pre_phase3_remains_blank"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "67bc076a96db0b6e0895e1be8a8c1323d3eb4ff0656a53dda9105831b2777006"
+  },
+  "test_pre_phase3_trading.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_source_app_exposes_candidates_without_hidden_toggle"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "b126e0fcf918f2d5901c471db56ec67ad9152b53391945175c36dd69b3c04c79"
+  },
+  "test_scan_activity_dashboard.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_single_pdufa_scans_tab_replaces_top_level_duplicate"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "a93a65afac369cd1ff3a5ed481548e9b9efd4eca88e612321511c1d01146d487"
+  },
+  "test_sec_step4_ui.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_sec_page_does_not_modify_blank_prephase_or_auto_scan"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "a4712b0157fd93fc4409b0cd61a45070fa9f77be5680e82989ca134162df34aa"
+  },
+  "test_gem_lifecycle_cards.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_card_and_previous_list_wiring"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: named test requires removed root app.py; original assertions retained. Modern Next.js rendering tests run separately.",
+    "policy": "Removed root app.py and current Next.js/FastAPI architecture",
+    "replacement": "new-platform/frontend/tests and new-platform/backend/tests",
+    "sourceSha256": "f3a4b1617542e4c0d19b1dfd25183caea698ef8517f9bf3e0d9853ce58d2daeb"
+  },
+  "test_market_step5_ui.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_pre_phase3_remains_blank_and_step5_does_not_inject_ui"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: test targets the removed root app.py; preserved as a named skip, not active coverage.",
+    "policy": "Current Next.js/FastAPI architecture; removed app.py",
+    "replacement": "new-platform/frontend/tests",
+    "sourceSha256": "a738818081be6c3089151bd041bc26ecdb0e7e1105e975d3c8472a974ace822f"
+  },
+  "test_pipeline_ui_smoke.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_gem_jr_and_gem_are_separate_full_width_tabs",
+      "test_legacy_pipeline_navigation_migrates_to_pdufa",
+      "test_legacy_pre_phase3_main_navigation_redirects_to_subtab",
+      "test_old_phase3_daily_tab_selection_migrates",
+      "test_pipeline_opens_with_both_selectors_and_empty_chart",
+      "test_plan_tab_removed_but_saved_plan_preserved",
+      "test_pre_phase3_full_priority_order_and_separate_clinical_pilots",
+      "test_pre_phase3_subtab_never_fabricates_success_probability",
+      "test_retired_extended_research_bookmark_does_not_restore_old_layout",
+      "test_watchlist_add_remove_survives_master_table_removal"
+    ],
+    "reason": "RETIRED_STREAMLIT_APP: test targets the removed root app.py; preserved as a named skip, not active coverage.",
+    "policy": "Current Next.js/FastAPI architecture; removed app.py",
+    "replacement": "new-platform/frontend/tests",
+    "sourceSha256": "bd1a11587c24cd6dfbecc063afe98dfc7ca6d9145cb3788ceac2e7a92ec39710"
+  },
+  "test_focus_cldx_mltx_company_primary.py": {
+    "reason": "RETIRED_SURVEY_FEED: tests require removed benefit-assessment-research.json, not the current evidence contracts. Retained without restoring the retired feed.",
+    "policy": "AGENTS.md permanent survey retirement",
+    "replacement": "Current exact-NCT scientific source inventories and verification tests",
+    "sourceSha256": "ddd119617e9e0554a79ee000c5a26c1a9fe05e09da1c46005ce61efbc6dff73e"
+  },
+  "test_focus_external_primary_evidence.py": {
+    "reason": "RETIRED_SURVEY_FEED: tests require removed benefit-assessment-research.json, not the current evidence contracts. Retained without restoring the retired feed.",
+    "policy": "AGENTS.md permanent survey retirement",
+    "replacement": "Current exact-NCT scientific source inventories and verification tests",
+    "sourceSha256": "e329da7bdc51959275b4eff8a7f96c5db16bcc83ae7d69f027e1e3f6dcfe6a4f"
+  },
+  "test_focus_peak_origin3_review.py": {
+    "reason": "RETIRED_SURVEY_FEED: tests require removed benefit-assessment-research.json, not the current evidence contracts. Retained without restoring the retired feed.",
+    "policy": "AGENTS.md permanent survey retirement",
+    "replacement": "Current exact-NCT scientific source inventories and verification tests",
+    "sourceSha256": "334d520fe103a662d5c444d4d6fb84aa36815e1ad40cea0da0d161bc418f67ab"
+  },
+  "test_gem_financing_batch_review.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_no_invented_financing_for_known_phase3",
+      "test_repository_entire_financing_block_stays_visible",
+      "test_same_event_duplicate_finance_record_cannot_clear"
+    ],
+    "reason": "SUPERSEDED_MANDATORY_FINANCING: current source_cleared_gems explicitly makes financing optional research evidence; these retained tests require the former mandatory financing gate. No trading gate changed.",
+    "policy": "gem_verified_snapshot.py current source contract",
+    "replacement": "test_gem_verified_snapshot.py; source identity and trade authorization regressions",
+    "sourceSha256": "bf50dda72506f7a70f984b965752f168cae182badc6a65d5e17e16abd48eecf8"
+  },
+  "test_alks_protocol_safety_applicability.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_site_exposes_audit_per_exact_nct_and_distinguishes_outcomes"
+    ],
+    "reason": "RETIRED_ENTRYPOINT: named test expects a removed analysis or cancelled legacy workflow. Current retirement guards execute; old entry point is not restored.",
+    "policy": "AGENTS.md permanent retirement and existing retired route/workflow",
+    "replacement": "test_retired_legacy_workflows_scope.py; test_raas_retirement_guard.py; current frontend tests",
+    "sourceSha256": "e3e5b5bb3ab1438dc046d4050251927092b7e1ef5a9c2327d4a5dff7b03f64b3"
+  },
+  "test_gem_fourth_scan_block.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_gems_workflow_and_nightly_controls_are_wired_as_fourth_block"
+    ],
+    "reason": "RETIRED_ENTRYPOINT: named test expects a removed analysis or cancelled legacy workflow. Current retirement guards execute; old entry point is not restored.",
+    "policy": "AGENTS.md permanent retirement and existing retired route/workflow",
+    "replacement": "test_retired_legacy_workflows_scope.py; test_raas_retirement_guard.py; current frontend tests",
+    "sourceSha256": "e17310b0718e582ed61834bd8f61ccc32b001d8a136d44a6fb9e5068c26617a3"
+  },
+  "test_gem_readiness_audit.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_offline_daily_archival_workflow_has_no_brokerage_action"
+    ],
+    "reason": "RETIRED_ENTRYPOINT: named test expects a removed analysis or cancelled legacy workflow. Current retirement guards execute; old entry point is not restored.",
+    "policy": "AGENTS.md permanent retirement and existing retired route/workflow",
+    "replacement": "test_retired_legacy_workflows_scope.py; test_raas_retirement_guard.py; current frontend tests",
+    "sourceSha256": "7b479749af6c2719673e5a985301e1097483cef723be940427cff88eaace4840"
+  },
+  "test_scan_configuration_audit.py": {
+    "collectionMode": "SKIP_NAMED_TESTS",
+    "nodes": [
+      "test_renamed_pipeline_acceptance_is_monitored_and_eligible"
+    ],
+    "reason": "RETIRED_ENTRYPOINT: named test expects a removed analysis or cancelled legacy workflow. Current retirement guards execute; old entry point is not restored.",
+    "policy": "AGENTS.md permanent retirement and existing retired route/workflow",
+    "replacement": "test_retired_legacy_workflows_scope.py; test_raas_retirement_guard.py; current frontend tests",
+    "sourceSha256": "61f127527892d0601f9b68dcbffbbd78eca1527dba67b5cf671d6c8d64ebcb5f"
+  }
+}

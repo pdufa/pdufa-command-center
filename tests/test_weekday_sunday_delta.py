@@ -18,22 +18,22 @@ def stamp(value):
 class SundayScheduleTests(unittest.TestCase):
     def test_sunday_pacific_full_even_after_midnight_recovery(self):
         for at, cron in (
-            ("2026-10-19T05:00:00Z", "0 5 * * *"),
+            ("2026-10-19T03:00:00Z", "0 3 * * *"),
             ("2026-10-19T08:05:00Z", "5 8 * * *"),
-            ("2026-11-09T06:00:00Z", "0 6 * * *"),
+            ("2026-11-09T04:00:00Z", "0 4 * * *"),
         ):
             with self.subTest(at=at):
                 r = decision("schedule", cron, [], now=stamp(at))
                 self.assertTrue(r["run"])
                 self.assertEqual(r["scan_mode"], "FULL")
-                self.assertEqual(r["gem_action"], "RESCAN_ALL")
+                self.assertNotIn("gem_action", r)
 
     def test_other_nights_are_delta(self):
-        r = decision("schedule", "0 5 * * *", [],
-                     now=stamp("2026-10-20T05:00:00Z"))
+        r = decision("schedule", "0 3 * * *", [],
+                     now=stamp("2026-10-20T03:00:00Z"))
         self.assertTrue(r["run"])
         self.assertEqual(r["scan_mode"], "DELTA")
-        self.assertEqual(r["gem_action"], "REVERIFY_PARTIAL")
+        self.assertNotIn("gem_action", r)
 
     def test_manual_full_sunday_but_monday_manual_is_delta(self):
         sun = decision("workflow_dispatch", "", [],

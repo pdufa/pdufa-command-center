@@ -1,0 +1,26 @@
+{
+  "scope": "LOCAL_MEMORY_DATABASE_REAL_PUBLIC_SOURCE_NO_PRODUCTION_WRITES",
+  "nctId": "NCT04576949",
+  "sourceUrl": "https://clinicaltrials.gov/api/v2/studies/NCT04576949",
+  "retrievedAt": "2026-11-14T20:37:16.238646+00:00",
+  "sourceDate": "2026-01-15",
+  "rawSha256": "39ad68a0b06ec3f4ce59092aa14114ef6eeae1d43569edfa12b23dda6b490742",
+  "persistedLevels": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8
+  ],
+  "allContractsRetrievedUnchanged": true,
+  "scientificEvidenceReviews": 0,
+  "validatedAssessments": 0,
+  "fdaPrediction": "ABSTAIN",
+  "extensionVersions": {
+    "7": "scientific-population-v1",
+    "8": "scientific-safety-exposure-v1"
+  }
+}

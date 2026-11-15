@@ -217,8 +217,16 @@ def audit(root: Path = ROOT, check_policy: bool = True) -> dict:
                 pinned_count += 1
                 if not path.is_file():
                     add('HISTORICAL_RECORD_DELETED', path, 'Pinned read-only historical record is absent.')
-                elif hashlib.sha256(path.read_bytes()).hexdigest() != record['sha256']:
-                    add('HISTORICAL_RECORD_MODIFIED', path, 'Pinned read-only historical record differs from its preserved baseline.')
+                else:
+                    raw = path.read_bytes()
+                    checksum_matches = hashlib.sha256(raw).hexdigest() == record['sha256']
+                    # Git for Windows may expand canonical LF into checkout CRLF.
+                    # Accept only that exact EOL transformation and only on Windows;
+                    # the pinned manifest and all other content remain immutable.
+                    windows_eol_only = (os.name == 'nt' and b'\r\n' in raw and
+                                        hashlib.sha256(raw.replace(b'\r\n', b'\n')).hexdigest() == record['sha256'])
+                    if not (checksum_matches or windows_eol_only):
+                        add('HISTORICAL_RECORD_MODIFIED', path, 'Pinned read-only historical record differs from its preserved baseline.')
         except (OSError, ValueError, KeyError, TypeError):
             add('HISTORICAL_MANIFEST_INVALID', pinned, 'Read-only archive manifest failed validation.')
 
