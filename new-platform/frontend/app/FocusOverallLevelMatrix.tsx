@@ -2,9 +2,10 @@
 import Link from 'next/link';
 import {useState} from 'react';
 import type {FocusTrialLevels} from './FocusLevelColumns';
+import {provisionalFocusScore,FOCUS_READINESS_METHOD} from '../lib/focus-provisional-scores';
 
 export const FOCUS_TWENTY_LEVEL_LABELS=[
- 'Trial identity','Current phase','Source evidence','Study protocol','Population',
+ 'Trial identity','Clinical design','Efficacy / statistics evidence','Study protocol','Population',
  'Efficacy','Statistics','Safety','Clinical benefit','Comparator',
  'Subgroups','Data gaps','Regulatory history','FDA alignment','Manufacturing',
  'Benefit–risk','Exceptions','External evidence','Confidence','Integrated review'
@@ -71,16 +72,24 @@ export function FocusTwentyCells({nct,levels,loading=false,error=false,className
  const href='/predictions/assessment?nct='+encodeURIComponent(nct);
  return <>{FOCUS_TWENTY_LEVEL_LABELS.map((name,i)=>{
   const level=i+1,report=level<=3?reportFor(levels,nct,level):null;
-  // Saved scientific L1–3 reports do not automatically complete or score the
-  // independent 20-dimension rubric. They may be inspected for future scoring.
+  const provisional=level<=3?provisionalFocusScore(nct,level,report):null;
+  // Provisional numerical documentary evidence coverage is NOT a validated
+  // trial scientific-strength rating, an FDA approval probability or forecast.
   return <td key={name} data-assessment-level={'L'+String(level).padStart(2,'0')}
-    className={className} title={'L'+level+' '+name+': independent 20-level rubric score pending. '+
-       (report?'Current scientific research is saved separately.':'No mapped current research report.')}
+    className={className} title={provisional?
+       'L'+level+' · '+FOCUS_READINESS_METHOD+' '+provisional.sourceVerified+' of '+
+        provisional.applicable+' applicable criteria strictly SOURCE_VERIFIED. Run '+provisional.runId:
+       'L'+level+' '+name+': provisional evidence score unavailable or rubric pending.'}
     style={{padding:10,whiteSpace:'nowrap'}}>
-    {error?'Unavailable':loading?'Loading…':
-      <>{'Rubric pending'}{report&&<div style={{fontSize:12}}>
-        <Link href={href}>Research saved · unscored</Link>
-       </div>}</>}
+    {error?'Unavailable':loading?'Loading…':provisional?
+      <><strong data-testid={'provisional-L'+String(level).padStart(2,'0')+'-score'}>{provisional.evidenceReadinessScore}/100</strong>
+       <div style={{fontSize:12}}>Evidence readiness · provisional</div>
+       <div style={{fontSize:12}}>{provisional.sourceVerified}/{provisional.applicable} verified checks</div>
+       <Link href={href}>Source survey · L{level}</Link>
+      </>:<>
+       <span>{report&&level<=3?'Reassessment: score pending':'Rubric pending'}</span>
+       {report&&<div style={{fontSize:12}}><Link href={href}>Research saved · scientific score not validated</Link></div>}
+      </>}
    </td>;
  })}</>;
 }
@@ -93,11 +102,11 @@ export default function FocusOverallLevelMatrix({trials,selectedNct,initiallyExp
   style={{margin:'16px 0',padding:12,border:'1px solid #abc9b6',borderRadius:10}}>
   <h3 style={{margin:'0 0 6px'}}>Trial result sheet · Overall → Direction → Levels 1–20</h3>
   <p style={{fontSize:13,margin:'0 0 10px'}}>
-   The overall result is the scientifically validated prediction-survey finding,
-   not an average of evidence counts. Levels 1–3 have saved research reports,
-   but none is a validated numerical rubric score. Levels 4–20 of this rubric
-   are pending. An FDA direction remains ABSTAIN until supported by an independently
-   defined and validated forecast process; no approval percentage is implied.
+   Overall result and FDA direction are not inferred by averaging source checks.
+   L01–L03 show provisional documentation evidence-readiness scores out of 100,
+   independently calculated from exact saved reports; these are not validated
+   scientific-strength scores, efficacy ratings or FDA probabilities.
+   L04–L20 remain pending. Actual FDA direction remains ABSTAIN.
   </p>
   <div style={{overflowX:'auto'}}>
    <table data-testid="focus-overall-direction-level20-table"
