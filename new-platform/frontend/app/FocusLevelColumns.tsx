@@ -1,5 +1,6 @@
 'use client';
 import Link from 'next/link';
+import {provisionalFocusScore} from '../lib/focus-provisional-scores';
 
 type SavedFocusReport={
  runId:string;nct:string;level:number;executedAt:string;mode:string;
@@ -41,6 +42,7 @@ export function FocusLevelCells({nct,levels,loading=false,error=false}:{
  return <>{[1,2,3].flatMap(level=>{
   const slot=levels?.[String(level)];
   const report=exactReport(slot,nct,level);
+  const provisional=provisionalFocusScore(nct,level,report);
   const state=error?'Unavailable':loading?'Loading…':slot?.state||'NOT RUN';
   const prediction=report?.fdaPrediction?.outcome;
   return [
@@ -48,7 +50,9 @@ export function FocusLevelCells({nct,levels,loading=false,error=false}:{
     {report?(prediction&&prediction!=='ABSTAIN'?prediction:'ABSTAIN · not validated'):state}
    </td>,
    <td key={level+'s'} title={report?'Saved source-linked scientific research; numerical scientific validation is separate':'No completed current-evidence scientific report'} style={{whiteSpace:'nowrap'}}>
-    {report?<Link href={link(nct)}>{scientific(report)} · saved</Link>:state}
+    {report?<Link href={link(nct)}>{provisional?
+     'Provisional evidence '+provisional.evidenceReadinessScore+'/100 · scientific NOT VALIDATED':
+     scientific(report)+' · saved'}</Link>:state}
    </td>
   ];
  })}</>;
@@ -65,10 +69,11 @@ export function FocusSurveyRowDetails({nct,levels,loading=false,error=false}:{
     <ul style={{paddingLeft:18,margin:'8px 0'}}>
      {[1,2,3].map(level=>{
       const slot=levels?.[String(level)],report=exactReport(slot,nct,level);
+      const provisional=provisionalFocusScore(nct,level,report);
       const gaps=slot?.missingEvidence||[];
       return <li key={level} style={{marginBottom:10}}>
        <strong>L{level} · {description[level]}</strong>
-       {report?<><div>COMPLETED · Scientific score: {scientific(report)}</div>
+       {report?<><div>COMPLETED · Scientific score: {scientific(report)}</div>{provisional&&<div><strong>Provisional evidence readiness: {provisional.evidenceReadinessScore}/100</strong> · {provisional.sourceVerified}/{provisional.applicable} verified checks</div>}
         <div>FDA call: {report.fdaPrediction?.outcome||'ABSTAIN'}</div>
         <div>Unresolved criteria: {gaps.length}</div>
         {gaps.length>0&&<details><summary>View evidence gaps</summary><ul>{gaps.map(g=><li key={g.id}>{g.id} · {g.state}: {g.explanation}</li>)}</ul></details>}
