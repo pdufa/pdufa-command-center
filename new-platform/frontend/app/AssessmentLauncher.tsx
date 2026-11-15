@@ -21,7 +21,7 @@ export default function AssessmentLauncher({source='FOCUS'}:{source?:'POOL'|'FOC
     json(api+'?'+new URLSearchParams({population:'FOCUS',q:''})),
     json(api+'?focus=true')
    ]);
-   const ids=Array.from(new Set((inventory.trials||[]).map((r:{nct:string})=>r.nct)));
+   const ids:string[]=Array.from(new Set<string>((inventory.trials||[]).map((r:{nct:string})=>r.nct)));
    if(inventory.population!=='FOCUS'||!Number.isInteger(summary.total)||summary.total<1||summary.total>=50||ids.length!==summary.total||ids.some(id=>!valid(id))){
     setError('FOCUS roster could not be verified as complete; no partial or unlinked batch will be submitted.');return;
    }
