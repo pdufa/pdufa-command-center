@@ -26,7 +26,7 @@ function savedTrials(){
    state:'COMPLETED',
    report:{runId:r.runId,nct,level:r.level,mode:'CURRENT_EVIDENCE',
     executedAt:r.executedAt,engineVersion:saved.researchVersion+'/level-'+r.level,
-    score:{kind:'NOT_VALIDATED',value:null}},
+    score:{kind:'NOT_VALIDATED',value:null},fdaPrediction:{outcome:'ABSTAIN'}},
    missingEvidence:Array.from({length:r.unresolved},(_,j)=>({id:'source_gap_'+j,state:'UNVERIFIED',explanation:'Source review pending'}))
   }]))
  }));
@@ -75,15 +75,29 @@ test('all 32 FOCUS trials render 3 separate lines and 3 independent dashed fits'
   assert.match(html,new RegExp('Show Level '+level+' survey line'));
  }
  assert.match(html,/Survey chart metric/);
- assert.match(html,/Show trend line for each visible level/);
+ assert.match(html,/Show individual numeric best-fit lines/);
+ assert.match(html,/Show FDA direction \(categorical\)/);
  assert.match(html,/32 distinct FOCUS trials/);
  assert.match(html,/not time/);
- assert.match(html,/not a time trend/);
- assert.match(html,/not a scientific score/);
+ assert.match(html,/not time trends/);
+ assert.match(html,/not validated efficacy scores/);
  assert.match(html,/Unresolved source criteria/);
  assert.match(html,new RegExp(trials[5].nct));
  assert.doesNotMatch(html,/FDA approval probability: [0-9]/);
- const noSourceMetrics=trials.map(t=>({...t,levels:Object.fromEntries([1,2,3].map(level=>[String(level),{...t.levels[level],evidenceChecks:null}]))}));
+ const {provisionalFocusOverall,focusSavedDirection}=require('../lib/focus-provisional-scores.ts');
+ const scores=trials.map(t=>provisionalFocusOverall(t.nct,t.levels)?.evidenceReadinessScore);
+ assert.equal(scores.filter(x=>x!==undefined).length,32);
+ assert.equal((html.match(/data-testid="survey-overall-score"/g)||[]).length,32);
+ assert.equal((html.match(/data-testid="survey-prediction-direction"/g)||[]).length,32);
+ assert.equal((html.match(/data-testid="survey-direction-abstain"/g)||[]).length,32);
+ assert.match(html,/data-survey-level="L4"/);
+ assert.match(html,/data-testid="survey-fit-level-4"/);
+ assert.match(html,/Show FDA direction \(categorical\)/);
+ for(const score of scores)assert.ok(score>=0&&score<=100);
+ for(const t of trials)assert.equal(focusSavedDirection(t.nct,t.levels),'ABSTAIN');
+ assert.doesNotMatch(html,/FDA approval probability: [1-9][0-9]*%/);
+
+ const noSourceMetrics=trials.map(t=>({...t,levels:Object.fromEntries([1,2,3].map(level=>[String(level),{...t.levels[level],evidenceChecks:null,report:{...t.levels[level].report,runId:'stale'}}]))}));
  const fallback=renderToStaticMarkup(React.createElement(Chart,{trials:noSourceMetrics,total:32}));
  assert.doesNotMatch(fallback,/data-testid="survey-fit-level-1"/);
  assert.match(fallback,/disabled=""[^>]*>L01–L03 provisional evidence-readiness scores/);
