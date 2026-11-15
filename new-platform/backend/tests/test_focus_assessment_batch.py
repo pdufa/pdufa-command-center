@@ -32,6 +32,14 @@ def test_batch_persists_three_independent_versions_and_idempotently_resumes(engi
     assert all(report['counts'][str(l)]['processed']==1 and report['counts'][str(l)]['scored']==0 for l in (1,2,3))
     slots=report['trials'][0]['levels'];assert all(s['report']['mode']=='CURRENT_EVIDENCE' for s in slots.values());assert len({s['report']['runId'] for s in slots.values()})==3
     assert all(s['report']['score']['value'] is None and s['report']['fdaPrediction']['outcome']=='ABSTAIN' for s in slots.values())
+    # Descriptive per-level source check counts, never a substitute score.
+    for level,slot in slots.items():
+        checks=runtime.history(engine,'NCT04576949',int(level))['runs'][0]['checks']
+        metrics=slot['evidenceChecks']
+        assert metrics['total']==len(checks) and metrics['total']>0
+        assert metrics['sourceVerified']==sum(c['state']=='SOURCE_VERIFIED' for c in checks)
+        assert metrics['unresolved']==len(slot['missingEvidence'])
+        assert slot['report']['score']['kind']=='NOT_VALIDATED'
     repeated=batch.execute(engine,id,workers=1,max_items=3,collector=lambda _:pytest.fail('Completed slots must not run twice'))
     assert repeated['fullyProcessed']==1
     assert len(runtime.history(engine,'NCT04576949')['runs'])==3
