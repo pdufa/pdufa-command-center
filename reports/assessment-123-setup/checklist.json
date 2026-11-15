@@ -1,0 +1,411 @@
+{
+  "schemaVersion": 1,
+  "request": "Existing 123-assessment setup; do not interpret as Levels 1\u20133",
+  "auditedAtUtc": "2026-11-15T01:46:30.349174+00:00",
+  "userFacingDatePacific": "2026-11-14",
+  "status": "BLOCKED_AUTHORITATIVE_123_CATALOG_NOT_LOCATED",
+  "requestedAssessmentCount": 123,
+  "verifiedCatalogEntryCount": 0,
+  "verifiedCompletionCount": 0,
+  "unidentifiedRequestedAssessments": 123,
+  "implementedCount": null,
+  "partiallyImplementedCount": null,
+  "missingImplementationCount": null,
+  "evidencePopulatedCount": null,
+  "countMeaning": "Zero catalog-mapped completions verified. Null implementation/evidence counts are UNKNOWN, not zero implementation. No 123-item denominator has been independently established.",
+  "assessmentChecklist": [],
+  "checklistBlocker": "Cannot create 123 named checklist entries without inventing IDs, names, categories, applicability or scoring rules. All 123 requested entries remain unidentified until the authoritative catalog is supplied.",
+  "catalogsInspected": [
+    {
+      "path": "infra/assessment/sole-owner-levels1-20.json",
+      "kind": "Owner-only governance through Level 20; not a 123-assessment catalog"
+    },
+    {
+      "path": "new-platform/backend/app/science_40_question_catalog.json",
+      "kind": "40 distinct SCIENCE questions S01\u2013S40; no authoritative mapping to the requested 123",
+      "count": 40
+    },
+    {
+      "path": "new-platform/backend/app/assessment_runtime.py",
+      "kind": "Six legacy evidence-coverage engines, plus a separate explicit scientific Levels 1\u20133 contract; neither defines 123 assessments"
+    },
+    {
+      "path": "new-platform/frontend/data/focusLevel123EvidenceReview20261114.json",
+      "kind": "32 trial rows with level1/level2/level3 fields; not 123 assessment definitions"
+    }
+  ],
+  "unmappedKnownScientificQuestions": [
+    {
+      "id": "S01",
+      "layer": 1,
+      "layerName": "Clinical efficacy",
+      "question": "Was the primary endpoint met?",
+      "requiredEvidence": "protocol and efficacy results"
+    },
+    {
+      "id": "S02",
+      "layer": 1,
+      "layerName": "Clinical efficacy",
+      "question": "Is the effect size clinically meaningful?",
+      "requiredEvidence": "protocol and efficacy results"
+    },
+    {
+      "id": "S03",
+      "layer": 1,
+      "layerName": "Clinical efficacy",
+      "question": "Are secondary endpoints supportive?",
+      "requiredEvidence": "protocol and efficacy results"
+    },
+    {
+      "id": "S04",
+      "layer": 1,
+      "layerName": "Clinical efficacy",
+      "question": "Are results consistent across relevant subgroups?",
+      "requiredEvidence": "protocol and efficacy results"
+    },
+    {
+      "id": "S05",
+      "layer": 1,
+      "layerName": "Clinical efficacy",
+      "question": "Is durability of benefit adequately demonstrated?",
+      "requiredEvidence": "protocol and efficacy results"
+    },
+    {
+      "id": "S06",
+      "layer": 2,
+      "layerName": "Statistical integrity",
+      "question": "Was the statistical analysis plan finalized before relevant data review?",
+      "requiredEvidence": "SAP and statistical report"
+    },
+    {
+      "id": "S07",
+      "layer": 2,
+      "layerName": "Statistical integrity",
+      "question": "Were multiplicity and type I error controlled?",
+      "requiredEvidence": "SAP and statistical report"
+    },
+    {
+      "id": "S08",
+      "layer": 2,
+      "layerName": "Statistical integrity",
+      "question": "Were missing data and intercurrent events appropriately handled?",
+      "requiredEvidence": "SAP and statistical report"
+    },
+    {
+      "id": "S09",
+      "layer": 2,
+      "layerName": "Statistical integrity",
+      "question": "Are sensitivity analyses consistent with the primary result?",
+      "requiredEvidence": "SAP and statistical report"
+    },
+    {
+      "id": "S10",
+      "layer": 2,
+      "layerName": "Statistical integrity",
+      "question": "Are uncertainty estimates and statistical assumptions credible?",
+      "requiredEvidence": "SAP and statistical report"
+    },
+    {
+      "id": "S11",
+      "layer": 3,
+      "layerName": "Trial design",
+      "question": "Is the population appropriate for the proposed indication?",
+      "requiredEvidence": "protocol and amendments"
+    },
+    {
+      "id": "S12",
+      "layer": 3,
+      "layerName": "Trial design",
+      "question": "Is the comparator clinically and regulatorily appropriate?",
+      "requiredEvidence": "protocol and amendments"
+    },
+    {
+      "id": "S13",
+      "layer": 3,
+      "layerName": "Trial design",
+      "question": "Were randomization, blinding, and bias controls adequate?",
+      "requiredEvidence": "protocol and amendments"
+    },
+    {
+      "id": "S14",
+      "layer": 3,
+      "layerName": "Trial design",
+      "question": "Were sample size and statistical power justified?",
+      "requiredEvidence": "protocol and amendments"
+    },
+    {
+      "id": "S15",
+      "layer": 3,
+      "layerName": "Trial design",
+      "question": "Were protocol deviations and amendments adequately managed?",
+      "requiredEvidence": "protocol and amendments"
+    },
+    {
+      "id": "S16",
+      "layer": 4,
+      "layerName": "Safety",
+      "question": "Are serious adverse events adequately characterized?",
+      "requiredEvidence": "safety dataset and clinical study report"
+    },
+    {
+      "id": "S17",
+      "layer": 4,
+      "layerName": "Safety",
+      "question": "Are treatment-related discontinuations acceptable in context?",
+      "requiredEvidence": "safety dataset and clinical study report"
+    },
+    {
+      "id": "S18",
+      "layer": 4,
+      "layerName": "Safety",
+      "question": "Are organ-specific and laboratory toxicities adequately assessed?",
+      "requiredEvidence": "safety dataset and clinical study report"
+    },
+    {
+      "id": "S19",
+      "layer": 4,
+      "layerName": "Safety",
+      "question": "Are exposure duration and long-term safety sufficient?",
+      "requiredEvidence": "safety dataset and clinical study report"
+    },
+    {
+      "id": "S20",
+      "layer": 4,
+      "layerName": "Safety",
+      "question": "Is the overall benefit-risk balance favorable for the intended population?",
+      "requiredEvidence": "safety dataset and clinical study report"
+    },
+    {
+      "id": "S21",
+      "layer": 5,
+      "layerName": "Reproducibility",
+      "question": "Are results consistent across independent studies or cohorts?",
+      "requiredEvidence": "registry, publication, and independent review"
+    },
+    {
+      "id": "S22",
+      "layer": 5,
+      "layerName": "Reproducibility",
+      "question": "Are published results consistent with registry and sponsor disclosures?",
+      "requiredEvidence": "registry, publication, and independent review"
+    },
+    {
+      "id": "S23",
+      "layer": 5,
+      "layerName": "Reproducibility",
+      "question": "Can principal analyses be independently reproduced or verified?",
+      "requiredEvidence": "registry, publication, and independent review"
+    },
+    {
+      "id": "S24",
+      "layer": 5,
+      "layerName": "Reproducibility",
+      "question": "Are data integrity and audit-trail requirements adequately supported?",
+      "requiredEvidence": "registry, publication, and independent review"
+    },
+    {
+      "id": "S25",
+      "layer": 5,
+      "layerName": "Reproducibility",
+      "question": "Are unresolved inconsistencies and conflicting evidence addressed?",
+      "requiredEvidence": "registry, publication, and independent review"
+    },
+    {
+      "id": "S26",
+      "layer": 6,
+      "layerName": "Regulatory pathway",
+      "question": "Is the application type and indication correctly identified?",
+      "requiredEvidence": "FDA correspondence and application record"
+    },
+    {
+      "id": "S27",
+      "layer": 6,
+      "layerName": "Regulatory pathway",
+      "question": "Are relevant FDA interactions and agreements documented?",
+      "requiredEvidence": "FDA correspondence and application record"
+    },
+    {
+      "id": "S28",
+      "layer": 6,
+      "layerName": "Regulatory pathway",
+      "question": "Are endpoint and evidence requirements appropriate for the pathway?",
+      "requiredEvidence": "FDA correspondence and application record"
+    },
+    {
+      "id": "S29",
+      "layer": 6,
+      "layerName": "Regulatory pathway",
+      "question": "Are regulatory deficiencies, inspections, and review risks assessed?",
+      "requiredEvidence": "FDA correspondence and application record"
+    },
+    {
+      "id": "S30",
+      "layer": 6,
+      "layerName": "Regulatory pathway",
+      "question": "Are special designations and their actual implications verified?",
+      "requiredEvidence": "FDA correspondence and application record"
+    },
+    {
+      "id": "S31",
+      "layer": 7,
+      "layerName": "Manufacturing and quality",
+      "question": "Is the manufacturing process adequately characterized?",
+      "requiredEvidence": "CMC quality and manufacturing records"
+    },
+    {
+      "id": "S32",
+      "layer": 7,
+      "layerName": "Manufacturing and quality",
+      "question": "Are process validation and commercial-scale readiness supported?",
+      "requiredEvidence": "CMC quality and manufacturing records"
+    },
+    {
+      "id": "S33",
+      "layer": 7,
+      "layerName": "Manufacturing and quality",
+      "question": "Are specifications, stability, and analytical methods adequate?",
+      "requiredEvidence": "CMC quality and manufacturing records"
+    },
+    {
+      "id": "S34",
+      "layer": 7,
+      "layerName": "Manufacturing and quality",
+      "question": "Are manufacturing facilities and quality systems review-ready?",
+      "requiredEvidence": "CMC quality and manufacturing records"
+    },
+    {
+      "id": "S35",
+      "layer": 7,
+      "layerName": "Manufacturing and quality",
+      "question": "Are critical CMC deficiencies and supply-chain risks addressed?",
+      "requiredEvidence": "CMC quality and manufacturing records"
+    },
+    {
+      "id": "S36",
+      "layer": 8,
+      "layerName": "External validity and comparators",
+      "question": "Does the trial population represent intended clinical use?",
+      "requiredEvidence": "systematic comparator cohort and clinical context"
+    },
+    {
+      "id": "S37",
+      "layer": 8,
+      "layerName": "External validity and comparators",
+      "question": "Are treatment effects transferable to relevant clinical settings?",
+      "requiredEvidence": "systematic comparator cohort and clinical context"
+    },
+    {
+      "id": "S38",
+      "layer": 8,
+      "layerName": "External validity and comparators",
+      "question": "Are historical FDA submissions identified without selection bias?",
+      "requiredEvidence": "systematic comparator cohort and clinical context"
+    },
+    {
+      "id": "S39",
+      "layer": 8,
+      "layerName": "External validity and comparators",
+      "question": "Are differences in indication, mechanism, endpoint, and era accounted for?",
+      "requiredEvidence": "systematic comparator cohort and clinical context"
+    },
+    {
+      "id": "S40",
+      "layer": 8,
+      "layerName": "External validity and comparators",
+      "question": "Are competing treatments and current standard of care considered?",
+      "requiredEvidence": "systematic comparator cohort and clinical context"
+    }
+  ],
+  "searchScope": {
+    "readableJsonFilesInspected": 994,
+    "jsonFileSizeLimitBytes": 5000000,
+    "arraysWithExactly123Entries": 0,
+    "textSearch": "AGENTS, implementation notes, configuration, active backend/frontend source and catalogs; exact 123-assessment phrases not found",
+    "openPullRequestMetadataReviewed": [
+      1200,
+      1201,
+      1202,
+      1178,
+      1175,
+      1174,
+      1173,
+      1172
+    ]
+  },
+  "retiredExclusions": [
+    "RAAS",
+    "Gem",
+    "Gem Jr"
+  ],
+  "predictionPolicy": "No undefined assessment contributes to any score, outcome prediction, certainty rating or blind accuracy. Existing research predictions remain ABSTAIN without validated model evidence.",
+  "existingIntegrationRepairs": [
+    "Preserved upstream exact-NCT request revisions and stale history/search isolation",
+    "Scientific contract used by both individual workbench and multi-trial launcher",
+    "FOCUS columns and ASSESSMENTS share the same saved database selection",
+    "Deep-linked exact NCT auto-loads history; comparisons retain three independent levels",
+    "Launcher rejects unpersisted or mismatched completion responses; future scientific levels disabled"
+  ],
+  "nightly": {
+    "existingWorkflow": ".github/workflows/focus-nightly-source-reassessment.yml",
+    "existingMonitor": "scripts/focus_nightly_source_monitor.py",
+    "notificationWorkflows": [
+      ".github/workflows/focus-telegram-news.yml",
+      ".github/workflows/pdufa-clinical-scan-end-email.yml"
+    ],
+    "assessment123Integration": "BLOCKED_UNDEFINED_CATALOG; no undefined assessment is scheduled or notified",
+    "notificationsSent": false
+  },
+  "externalBlockers": [
+    "Authoritative 123-item assessment catalog and scoring/applicability definitions are absent from the inspected setup",
+    "No mapping permits identifying which existing scientific questions or methods belong to the requested 123",
+    "No validated numerical scientific/FDA prediction model is installed for the existing Level 1\u20133 execution path",
+    "Existing staging database persistence is verified; a deployed isolated staging website is not verified"
+  ],
+  "priorStatePreserved": {
+    "branch": "codex/level1-6-explicit-scientific-readiness-20261114",
+    "localCommit": "5dcfc3b3bbf84df9776af553aabc53016866d90c",
+    "inProgressSynchronizationTarget": "ccbfcb1278a1d2fe8eb41e0c3cfb7c0e6abab130",
+    "note": "Original worktree and unfinished merge state left intact. This dedicated continuation branch starts from the existing published development commit and ports the preserved implementation changes without completing a merge."
+  },
+  "nextRequiredInput": "Repository path, branch or document containing the authoritative 123 IDs, names, categories, phase/indication applicability and scoring rules.",
+  "cohortReconciliation": {
+    "focus": {
+      "uniqueTrials": 32,
+      "authority": "Fresh owner-sheet read reconciled into isolated staging database; production has no FOCUS membership table",
+      "sourceReceipt": "reports/focus-scientific-20261115/owner-roster.json",
+      "scientificLevelExecutions": 96,
+      "meaning": "Existing separate Level 1\u20133 research records; not 123 assessment IDs"
+    },
+    "pool": {
+      "asOf": "2026-11-14",
+      "pipelineProgramRows": 11861,
+      "exactClinicalTrialRows": 11664,
+      "uniqueExactClinicalTrials": 11664,
+      "status": null,
+      "sourceKeys": [
+        "mode",
+        "asOf",
+        "fetchedAt",
+        "disclaimer",
+        "marketCapRange",
+        "trialFilterSchema",
+        "pipeline",
+        "members",
+        "sourceHealth"
+      ],
+      "interpretation": "PIPELINE workspace rows include regulatory programs; do not label the entire count unique clinical trials."
+    },
+    "past": {
+      "catalogTrials": 14858,
+      "previousPeriodClinicalTrials": 13646,
+      "cutoff": "2024-11-15",
+      "filterSource": "new-platform/backend/app/phase3_catalog.py:_period_sql and _cutoff",
+      "recordsWithDecisionDate": 22,
+      "meaning": "Read-only database counts. The PAST catalog uses older clinical completion, not verified FDA-outcome adjudication; no claim these are eligible blind FDA cases."
+    },
+    "indications": {
+      "uniqueTaxonomyTerms": 5168,
+      "meaning": "Existing MeSH taxonomy terms, not a count of assessed indications; no undefined 123-item applicability rules are applied."
+    }
+  }
+}

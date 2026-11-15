@@ -12,7 +12,8 @@
   ],
   "git": {
     "deploymentEnabled": {
-      "codex/level1-6-explicit-scientific-readiness-20261114": false
+      "codex/level1-6-explicit-scientific-readiness-20261114": false,
+      "codex/assessment-123-catalog-audit-20261114": false
     }
   }
 }

@@ -1,0 +1,55 @@
+{
+  "catalogMapping": "BLOCKED_AUTHORITATIVE_123_CATALOG_NOT_LOCATED",
+  "verifiedCompletionCountOutOfRequested123": 0,
+  "existingSeparateImplementation": {
+    "backend": {
+      "passed": 1390,
+      "failed": 0,
+      "skipped": 2,
+      "subtestsPassed": 28,
+      "command": "cd new-platform/backend && python -m pytest -q"
+    },
+    "frontend": {
+      "passed": 944,
+      "failed": 0,
+      "skipped": 0,
+      "command": "cd new-platform/frontend && npm test"
+    },
+    "repository": {
+      "passed": 2265,
+      "failed": 0,
+      "skipped": 195,
+      "subtestsPassed": 1092,
+      "command": "python -m pytest tests -q --disposition-report=/tmp/root-test-dispositions.json"
+    },
+    "nightlyAndNotificationRegressionSubset": {
+      "passed": 14,
+      "failed": 0,
+      "command": "python -m pytest tests/test_focus_nightly_source_monitor.py tests/test_focus_telegram_news.py -q"
+    },
+    "retirementAudit": {
+      "passed": true,
+      "activeDependenciesRemaining": 0,
+      "command": "python scripts/audit_raas_retirement.py --check"
+    },
+    "typecheck": "PASS",
+    "productionBuild": "PASS",
+    "browser": "PASS_LOCAL_1440_AND_390",
+    "browserCases": [
+      "FOCUS saved table and separate columns use identical saved run IDs",
+      "/assessments and /predictions/assessment show the same 32 saved trials and 96 independent level records",
+      "Reload preserves results at desktop and mobile widths",
+      "Exact-NCT detail link auto-loads three versions"
+    ],
+    "scopeWarning": "These checks verify the existing scientific Levels 1\u20133 continuation, not 123 defined assessments."
+  },
+  "sourcePopulatedTrials": {
+    "officialRegistry": 32,
+    "quantitativePostedEndpoints": 12,
+    "eligibleOriginalProtocolOrSap": 11,
+    "validatedNumericalScores": 0,
+    "fdaOutcomePredictions": "ABSTAIN"
+  },
+  "deployment": "NONE",
+  "productionDataWritesDuringContinuation": false
+}

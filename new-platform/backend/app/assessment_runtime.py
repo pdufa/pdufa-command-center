@@ -21,14 +21,14 @@ from pydantic import BaseModel, ConfigDict, Field, StrictInt
 from sqlalchemy import text, inspect
 
 VERSION = 'assessment-evidence-v2.0.1'
-NCT = re.compile(r'^NCT\d{8}$')
+NCT = re.compile(r'^NCT[0-9]{8}$')
 PHASES = {'EARLY_PHASE1', 'PHASE1', 'PHASE2', 'PHASE3', 'PHASE4', 'NA'}
 NAMES = {1: 'Source identity and provenance', 2: 'Registry and phase verification',
          3: 'Clinical results evidence', 4: 'Trial design and protocol investigation',
          5: 'Statistical analysis and multiplicity', 6: 'Endpoint clinical relevance'}
 # No application outcomes, cached forecasts, reference narratives or derived
 # browse features cross this explicit scoring boundary.
-PROTOCOL = {'identificationModule': ('nctId', 'briefTitle', 'officialTitle'),
+PROTOCOL = {'identificationModule': ('nctId', 'briefTitle', 'officialTitle', 'orgStudyIdInfo', 'acronym'),
             'statusModule': ('overallStatus', 'lastUpdatePostDateStruct', 'primaryCompletionDateStruct', 'completionDateStruct'),
             'sponsorCollaboratorsModule': ('leadSponsor',),
             'conditionsModule': ('conditions',),
@@ -52,12 +52,15 @@ def sha(v):
 
 class RunInput(BaseModel):
     model_config = ConfigDict(extra='forbid')
-    nct: str = Field(pattern=r'^NCT\d{8}$')
+    nct: str = Field(pattern=r'^NCT[0-9]{8}$')
     level: StrictInt = Field(ge=1, le=6)
     mode: str = Field(pattern=r'^(CURRENT_EVIDENCE|BLIND_HISTORICAL)$')
     cutoffDate: date | None = None
+    contract: str = Field(default='LEGACY_SOURCE_AUDIT', pattern=r'^(LEGACY_SOURCE_AUDIT|SCIENTIFIC_1_3)$')
 
     def checked(self):
+        if self.contract == 'SCIENTIFIC_1_3' and self.level > 3:
+            raise HTTPException(422, 'Scientific execution currently supports Levels 1–3 only')
         if self.mode == 'BLIND_HISTORICAL':
             if not self.cutoffDate or self.cutoffDate >= datetime.now(timezone.utc).date():
                 raise HTTPException(422, 'Blind Historical requires a valid past cutoff date')
@@ -69,6 +72,7 @@ class RunInput(BaseModel):
 def initialize(engine):
     """Additive isolated schema; no alterations to existing research tables."""
     with engine.begin() as c:
+        if engine.dialect.name=='postgresql':c.execute(text('SELECT pg_advisory_xact_lock(839201631)'))
         c.execute(text('''CREATE TABLE IF NOT EXISTS assessment_v2_jobs (
             run_id TEXT PRIMARY KEY, nct_id VARCHAR(11) NOT NULL, request_json TEXT NOT NULL,
             status TEXT NOT NULL, progress_json TEXT NOT NULL, created_at TEXT NOT NULL,
@@ -176,7 +180,8 @@ def collect_documents(source, level):
                 pages.append((page.extract_text() or '')[:20000])
                 if sum(map(len,pages))>250000:break
             body='\n'.join(pages)[:250000]
-            receipt.update(verification='ORIGINAL_LINKED_PDF_RETRIEVED',sha256=hashlib.sha256(raw).hexdigest(),capturedAt=now(),
+            page_evidence=[{'page':i+1,'text':v} for i,v in enumerate(pages)]
+            receipt.update(pages=page_evidence,verification='ORIGINAL_LINKED_PDF_RETRIEVED',sha256=hashlib.sha256(raw).hexdigest(),capturedAt=now(),
                            extractedPages=len(pages),totalPages=len(pdf.pages),extractedText=body)
         except Exception:
             receipt['limitations'].append('Original document could not be retrieved or parsed; no document-content inference made.')
@@ -212,9 +217,29 @@ def retained_stream_source(engine, request):
     return None
 
 
+def scientific_historical_target(engine, request):
+    """Read verified exact-trial decision dates only; never select outcome labels."""
+    required={'phase3_trial_applications','phase3_fda_decisions'}
+    if not all(inspect(engine).has_table(name) for name in required):
+        raise ValueError('NO_VERIFIED_HISTORICAL_DECISION_LINK: exact trial/application/decision-date linkage is required before a blind scientific run')
+    with engine.connect() as c:
+        rows=c.execute(text("""SELECT DISTINCT d.application_id,d.decision_date
+            FROM phase3_trial_applications a JOIN phase3_fda_decisions d ON d.application_id=a.application_id
+            WHERE a.nct_id=:nct AND a.verification_status='VERIFIED' AND d.verification_status='VERIFIED'"""),{'nct':request.nct}).mappings().all()
+    if not rows:raise ValueError('NO_VERIFIED_HISTORICAL_DECISION_LINK: no exact verified application/decision-date association')
+    if len(rows)!=1:raise ValueError('AMBIGUOUS_HISTORICAL_APPLICATION: select and verify the exact indication/review cycle; no first-match inference')
+    target=dict(rows[0]);value=target['decision_date']
+    if not isinstance(value,str) or not re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}',value):raise ValueError('Verified historical decision date is invalid')
+    decision=date.fromisoformat(value)
+    if decision>datetime.now(timezone.utc).date() or not request.cutoffDate<decision:
+        raise ValueError('HISTORICAL_CUTOFF_NOT_PREDECISION: cutoff must precede the verified historical decision date')
+    return {**target,'verification':'EXACT_VERIFIED_LINK_DATE_ONLY_NO_OUTCOME_LABEL_READ'}
+
+
 def source_for(engine, request, collector=collect_registry):
     if request.mode == 'CURRENT_EVIDENCE':
-        source = collect_documents(collector(request.nct), request.level)
+        document_level = ({1:1,2:4,3:5}[request.level] if request.contract=='SCIENTIFIC_1_3' else request.level)
+        source = collect_documents(collector(request.nct), document_level)
         if source['nct_id'] != request.nct or source['input_sha256'] != sha(json.loads(source['document_json'])):
             raise ValueError('Collected evidence identity/digest mismatch')
         with engine.begin() as c:
@@ -224,6 +249,7 @@ def source_for(engine, request, collector=collect_registry):
         return source
     # A current-source cache is NEVER consulted. Both original capture and
     # source publication must precede the cutoff, independently of revision date.
+    target=scientific_historical_target(engine,request) if request.contract=='SCIENTIFIC_1_3' else None
     cutoff = request.cutoffDate.isoformat()
     with engine.connect() as c:
         rows = c.execute(text('''SELECT * FROM assessment_v2_sources WHERE nct_id=:nct
@@ -233,9 +259,9 @@ def source_for(engine, request, collector=collect_registry):
             doc = json.loads(row['document_json'])
             if sha(doc) != row['input_sha256'] or doc['protocolSection']['identificationModule']['nctId'] != request.nct:
                 raise ValueError('Historical source integrity failure')
-            return dict(row)
+            return {**dict(row),**({'historicalTarget':target} if target else {})}
     retained=retained_stream_source(engine,request)
-    if retained:return retained
+    if retained:return {**retained,**({'historicalTarget':target} if target else {})}
     raise ValueError('NO_ELIGIBLE_HISTORICAL_SNAPSHOT: no original evidence captured by this cutoff; current data cannot be backdated')
 
 
@@ -364,6 +390,9 @@ ENGINES={1:level_one,2:level_two,3:level_three,4:level_four,5:level_five,6:level
 
 
 def assess(request, source):
+    if request.contract == 'SCIENTIFIC_1_3':
+        from .scientific_trial_assessment import assess_scientific
+        return assess_scientific(request, source)
     doc=json.loads(source['document_json']); context=clinical_context(doc)
     if sha(doc) != source['input_sha256']:
         raise ValueError('Frozen evidence input digest mismatch')
@@ -410,6 +439,14 @@ def execute(engine, run_id, collector=collect_registry):
         source=source_for(engine,request,collector)
         progress(engine,run_id,f'EXECUTING_LEVEL_{request.level}')
         report=assess(request,source);report['runId']=run_id
+        if request.contract=='SCIENTIFIC_1_3' and request.mode=='CURRENT_EVIDENCE':
+            from .focus_assessment_batch import roster
+            saved=roster(engine)
+            members=[m for m in saved['members'] if m['nct']==request.nct] if saved else []
+            if len(members)==1:
+                member=members[0]
+                report['ownerRoster']={'rosterId':saved['roster_id'],'sourceUrl':saved['source_url'],'retrievedAt':saved['retrieved_at'],'identity':member,'meaning':'Owner-reported exact-NCT cohort identity, not scientific or FDA application verification; never used by scoring'}
+                report['trialIdentity'].update(ticker=member['ticker'],issuerCompany=member['company'],tickerStatus='OWNER_ROSTER_REPORTED_NOT_INDEPENDENTLY_VERIFIED',pdufaDate=member.get('pdufaDate'),pdufaVerification='OWNER_SOURCE_REPORTED_NOT_APPLICATION_VERIFIED')
         progress(engine,run_id,'PERSISTING_IMMUTABLE_RESULT')
         with engine.begin() as c:
             c.execute(text('''INSERT INTO assessment_v2_results(run_id,nct_id,level,engine_version,mode,created_at,report_hash,report_json)
@@ -475,7 +512,9 @@ def catalog(engine, population, query):
     if population not in {'POOL', 'FOCUS', 'HISTORICAL'} or len(query)>100:
         raise HTTPException(422, 'Valid trial population and bounded search required')
     if population == 'FOCUS':
-        records=json.loads((Path(__file__).parent/'data/assessment_trial_inventory.json').read_text())['records']
+        from .focus_assessment_batch import roster
+        saved=roster(engine)
+        records=saved['members'] if saved else json.loads((Path(__file__).parent/'data/assessment_trial_inventory.json').read_text())['records']
     elif population == 'POOL':
         from .source_workspace import workspace
         records=workspace()['pipeline']
@@ -500,6 +539,18 @@ def router(engine_provider, auth, storage, writes, *, allow_local=False):
         value=engine_provider()
         if not allow_local and value.dialect.name!='postgresql':raise HTTPException(503,'Persistent PostgreSQL is required for assessments')
         return value
+    @api.get('/focus')
+    def focus_results():
+        from .focus_assessment_batch import summary
+        return summary(engine())
+    @api.post('/focus/batch',status_code=202,dependencies=[Depends(writes)])
+    def focus_batch(tasks:BackgroundTasks):
+        from .focus_assessment_batch import create,execute
+        db=engine()
+        try:batch=create(db)
+        except ValueError as exc:raise HTTPException(409,str(exc)) from None
+        tasks.add_task(execute,db,batch)
+        return {'batchId':batch,'status':'BOUNDED_BATCH_QUEUED','maximumItems':6}
     @api.post('/runs',status_code=202,dependencies=[Depends(writes)])
     def start(request:RunInput, tasks:BackgroundTasks):
         db=engine();request.checked()
