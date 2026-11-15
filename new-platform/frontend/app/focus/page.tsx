@@ -137,7 +137,7 @@ export default function FocusPage(){
           <strong>{g.title}</strong><div>{g.state==="RECORDED_POINTER"?"Source pointer only":g.state==="SOURCE_REVIEW_REQUIRED"?"Needs source review":"Missing evidence"}</div>
           <div>{g.note}</div>{g.sourceUrl&&<a href={g.sourceUrl} target="_blank" rel="noopener noreferrer">Inspect source</a>}
         </div>)}</div>
-      </details>:<span role="alert">Gate identity mismatch — not verified</span>}</td><td style={{padding:10,whiteSpace:"nowrap"}} title="Separate 20-dimensional integrated scientific rubric has no validated score; the saved Levels 1–3 survey results are shown in the dedicated survey columns.">Not validated</td>{assessmentLevelLabels.map((label)=><td className="assessment-level" key={label} title={label} style={{padding:10,whiteSpace:"nowrap"}}>Not assessed</td>)}<PredictionCells nct={t.nct}/><FocusLevelCells nct={t.nct} levels={savedLevels[t.nct]} loading={savedLoading} error={!!savedError}/>
+      </details>:<span role="alert">Gate identity mismatch — not verified</span>}</td><td style={{padding:10,whiteSpace:"nowrap"}} title="Separate 20-dimensional integrated scientific rubric has no validated score; the saved Levels 1–3 survey results are shown in the dedicated survey columns.">Not validated</td>{assessmentLevelLabels.map((label)=><td className="assessment-level" key={label} title={`${label}: separate 20-dimension scientific rubric still pending; this is distinct from the completed Level 1–3 trial surveys.`} style={{padding:10,whiteSpace:"nowrap"}}>Rubric pending</td>)}<PredictionCells nct={t.nct}/><FocusLevelCells nct={t.nct} levels={savedLevels[t.nct]} loading={savedLoading} error={!!savedError}/>
     </tr>;})}</tbody>
    </table>
   </div>
