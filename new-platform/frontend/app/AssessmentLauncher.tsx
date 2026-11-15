@@ -58,16 +58,52 @@ export default function AssessmentLauncher({source='FOCUS',historicalYear='2026'
   }catch(e){if(version===loadVersion.current)setError(e instanceof Error?e.message:String(e));}
  }
  function clearPopup(){if(working)return;loadVersion.current++;setInput('');setSingleNct('');setScope('selected');setLevels([1,2,3]);setMode('CURRENT_EVIDENCE');setCutoff('');setEntries([]);setCatalog([]);setVerifiedAll(false);setMissingPast([]);setWholeTasks([]);setError('');setPopulation(source);}
- async function submit(){if(working)return;const ids=scope==='all'?catalog:scope==='single'?[singleNct.trim().toUpperCase()]:selected;if(!ids.length||ids.some(id=>!valid(id))||!levels.length||(mode==='BLIND_HISTORICAL'&&!cutoff)||(scope==='all'&&!verifiedAll)){setError('Choose valid exact-NCT trials, Levels 1–3 and a valid evidence mode. Entire-list batches require a verified complete FOCUS roster.');return;}
- setWorking(true);setError('');const work=ids.flatMap(nct=>levels.map(level=>({nct,level,status:'QUEUED',detail:''})));setEntries(work);
- for(let i=0;i<work.length;i++){const task=work[i];const update=(status:string,detail:string)=>setEntries(prev=>prev.map((e,j)=>i===j?{...e,status,detail}:e));
- try{update('SUBMITTING','');const created=await json(api,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({nct:task.nct,level:task.level,mode,contract:'SCIENTIFIC_1_3',...(mode==='BLIND_HISTORICAL'?{cutoffDate:cutoff}:{})})});
- if(typeof created.runId!=='string'||!/^[a-f0-9-]{36}$/.test(created.runId))throw Error('No valid run ID returned');update('RUNNING',created.runId);
- let done=false;for(let attempt=0;attempt<90;attempt++){await new Promise(resolve=>setTimeout(resolve,2000));const result=await json(api+'?'+new URLSearchParams({nct:task.nct,runId:created.runId}));if(result.status==='FAILED')throw Error(result.error||'Assessment failed');if(result.status==='COMPLETED'){if(!result.report||result.report.runId!==created.runId||result.report.nct!==task.nct||result.report.level!==task.level||result.report.mode!==mode||result.report.contract!=='SCIENTIFIC_1_3'||(mode==='BLIND_HISTORICAL'&&result.report.cutoffDate!==cutoff))throw Error('Saved assessment identity, level, mode or contract mismatch');update('COMPLETED',created.runId);done=true;break;}}
- if(!done)update('PENDING','Check saved history; execution not yet confirmed');
- }catch(e){update('FAILED',e instanceof Error?e.message:String(e));}
- }setWorking(false);
+ async function submit(){
+  if(working)return;
+  const ids=scope==='all'?catalog:scope==='single'?[singleNct.trim().toUpperCase()]:selected;
+  const pastWhole=scope==='all'&&population==='HISTORICAL';
+  const hasPastCutoffs=pastWhole&&wholeTasks.length===ids.length&&wholeTasks.every(t=>valid(t.nct)&&t.cutoffDate);
+  if(!ids.length||ids.some(id=>!valid(id))||!levels.length||
+    (mode==='BLIND_HISTORICAL'&&!cutoff&&!hasPastCutoffs)||
+    (scope==='all'&&(!verifiedAll||(pastWhole&&!hasPastCutoffs)))){
+   setError('Choose valid exact-NCT trials, Levels 1–3, and an evidence mode. Whole-list runs require a complete verified source roster.');return;
+  }
+  setWorking(true);setError('');
+  const tasks:WholeTask[]=pastWhole?wholeTasks:ids.map(nct=>({nct}));
+  const work:Entry[]=tasks.flatMap(t=>levels.map(level=>({
+   nct:t.nct,level,status:'QUEUED',detail:'',...(mode==='BLIND_HISTORICAL'?{cutoffDate:pastWhole?t.cutoffDate:cutoff}:{})
+  })));
+  setEntries(work);
+  for(let i=0;i<work.length;i++){
+   const task=work[i];
+   const update=(status:string,detail:string)=>setEntries(prev=>prev.map((e,j)=>i===j?{...e,status,detail}:e));
+   try{
+    update('SUBMITTING','');
+    const created=await json(api,{method:'POST',headers:{'Content-Type':'application/json'},
+     body:JSON.stringify({nct:task.nct,level:task.level,mode,contract:'SCIENTIFIC_1_3',
+     ...(mode==='BLIND_HISTORICAL'?{cutoffDate:task.cutoffDate}:{})})});
+    if(typeof created.runId!=='string'||!/^[a-f0-9-]{36}$/.test(created.runId))throw Error('No valid run ID returned');
+    update('RUNNING',created.runId);
+    let done=false;
+    for(let attempt=0;attempt<90;attempt++){
+     await new Promise(resolve=>setTimeout(resolve,2000));
+     const result=await json(api+'?'+new URLSearchParams({nct:task.nct,runId:created.runId}));
+     if(result.status==='FAILED')throw Error(result.error||'Assessment failed');
+     if(result.status==='COMPLETED'){
+      if(!result.report||result.report.runId!==created.runId||result.report.nct!==task.nct||
+        result.report.level!==task.level||result.report.mode!==mode||
+        result.report.contract!=='SCIENTIFIC_1_3'||
+        (mode==='BLIND_HISTORICAL'&&result.report.cutoffDate!==task.cutoffDate))
+       throw Error('Saved assessment identity, level, mode, or cutoff mismatch');
+      update('COMPLETED',created.runId);done=true;break;
+     }
+    }
+    if(!done)update('PENDING','Check saved history; execution not yet confirmed');
+   }catch(e){update('FAILED',e instanceof Error?e.message:String(e));}
+  }
+  setWorking(false);
  }
+
  return <section style={{margin:'12px 0'}}><button type="button" onClick={()=>{setOpen(!open);setError('')}} aria-expanded={open}>Assess Trials · Levels 1–3</button>
  {open&&<div role="dialog" aria-label="Scientific assessment launcher" style={{background:'#fff',color:'#173d2b',border:'2px solid #16856c',padding:16,borderRadius:12,maxWidth:740,marginTop:8}}>
  <div style={{display:'flex',justifyContent:'space-between',alignItems:'center',gap:12}}><h2>Scientific Assessment · Levels 1–3</h2><div style={{display:'flex',gap:8}}><button type="button" aria-label="Clear assessment popup" title="Clear selections and results" disabled={working} onClick={clearPopup}>✕ Clear</button><button type="button" aria-label="Close assessment popup" title="Close popup" onClick={()=>setOpen(false)}>✕ Close</button></div></div>
