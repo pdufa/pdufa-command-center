@@ -262,3 +262,65 @@ test('dedicated production Level 1–3 API credentials are scoped and fail close
   delete process.env.PDUFA_LEVEL123_INTERNAL_API_KEY;
  }
 });
+
+
+test('FOCUS and PAST use the same assessment launcher for single, selected and whole-list scopes',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Launcher=require('../app/AssessmentLauncher.tsx').default;
+ globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ for(const page of ['focus/page.tsx','past/page.tsx']){
+  const source=fs.readFileSync(require('node:path').join(__dirname,'../app',page),'utf8');
+  assert.match(source,/<AssessmentLauncher source="(?:FOCUS|HISTORICAL)"\s*\/>/);
+ }
+ for(const source of ['FOCUS','HISTORICAL']){
+  let tree;
+  try{
+   await act(async()=>{tree=create(React.createElement(Launcher,{source}));});
+   await act(async()=>{tree.root.findAllByType('button')[0].props.onClick();});
+   const scope=()=>tree.root.findByProps({'aria-label':'Assessment scope'});
+   const options=scope().findAllByType('option').map(option=>option.props.value);
+   assert.deepEqual(options,['single','selected','all']);
+   const submit=()=>tree.root.findAllByType('button').find(button=>button.props.children==='Submit assessments');
+   await act(async()=>{scope().props.onChange({target:{value:'single'}});});
+   assert.equal(submit().props.disabled,true);
+   await act(async()=>{tree.root.findByProps({'aria-label':'Single trial NCT'}).props.onChange({target:{value:nct}});});
+   assert.equal(submit().props.disabled,false);
+   await act(async()=>{scope().props.onChange({target:{value:'selected'}});});
+   assert.equal(submit().props.disabled,true);
+   await act(async()=>{tree.root.findAllByType('textarea')[0].props.onChange({target:{value:nct}});});
+   assert.equal(submit().props.disabled,false);
+   await act(async()=>{scope().props.onChange({target:{value:'all'}});});
+   assert.equal(submit().props.disabled,true);
+   if(source==='HISTORICAL'){
+    assert.equal(tree.root.findAllByType('button').find(button=>button.props.children==='Verify and load whole FOCUS list').props.disabled,true);
+    assert.match(JSON.stringify(tree.toJSON()),/Whole PAST stays blocked until linkage is verified/);
+   }
+   await act(async()=>{tree.root.findByProps({'aria-label':'Clear assessment popup'}).props.onClick();});
+   assert.equal(scope().props.value,'selected');
+  }finally{if(tree)await act(async()=>tree.unmount());}
+ }
+});
+
+test('whole-list assessment requires exact verification against saved FOCUS total, not a partial catalog',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Launcher=require('../app/AssessmentLauncher.tsx').default;
+ globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const old=global.fetch;let tree,summaryTotal=3;
+ global.fetch=async url=>{
+  if(String(url).includes('focus=true'))return Response.json({total:summaryTotal});
+  return Response.json({population:'FOCUS',trials:[{nct},{nct:'NCT01234567'}]});
+ };
+ try{
+  await act(async()=>{tree=create(React.createElement(Launcher,{source:'FOCUS'}));});
+  await act(async()=>{tree.root.findAllByType('button')[0].props.onClick();});
+  const scope=tree.root.findByProps({'aria-label':'Assessment scope'});
+  await act(async()=>{scope.props.onChange({target:{value:'all'}});});
+  const load=()=>tree.root.findAllByType('button').find(button=>button.props.children==='Verify and load whole FOCUS list');
+  const submit=()=>tree.root.findAllByType('button').find(button=>button.props.children==='Submit assessments');
+  await act(async()=>{await load().props.onClick();});
+  assert.equal(submit().props.disabled,true);
+  assert.match(JSON.stringify(tree.toJSON()),/FOCUS roster could not be verified as complete/);
+  summaryTotal=2;
+  await act(async()=>{await load().props.onClick();});
+  assert.equal(submit().props.disabled,false);
+  assert.match(JSON.stringify(tree.toJSON()),/Full FOCUS roster confirmed/);
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
+});
