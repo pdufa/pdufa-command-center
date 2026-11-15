@@ -5,11 +5,15 @@ on:
       - codex/level1-6-explicit-scientific-readiness-20261114
     paths:
       - 'scripts/check_assessment_merge_conflicts.sh'
+      - 'new-platform/frontend/app/focus/page.tsx'
+      - 'new-platform/frontend/app/past/page.tsx'
       - '.github/workflows/assessment-merge-diagnostic.yml'
   pull_request:
     branches: [main]
     paths:
       - 'scripts/check_assessment_merge_conflicts.sh'
+      - 'new-platform/frontend/app/focus/page.tsx'
+      - 'new-platform/frontend/app/past/page.tsx'
       - '.github/workflows/assessment-merge-diagnostic.yml'
   workflow_dispatch:
 permissions:
