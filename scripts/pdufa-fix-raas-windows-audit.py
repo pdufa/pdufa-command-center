@@ -19,7 +19,7 @@ AUDIT = "scripts/audit_raas_retirement.py"
 MANIFEST = "archives/raas/read-only-record-manifest.json"
 OLD = """                elif hashlib.sha256(path.read_bytes()).hexdigest() != record['sha256']:
                     add('HISTORICAL_RECORD_MODIFIED', path, 'Pinned read-only historical record differs from its preserved baseline.')"""
-NEW = """                else:
+NEW = r"""                else:
                     raw = path.read_bytes()
                     checksum_matches = hashlib.sha256(raw).hexdigest() == record['sha256']
                     # Git for Windows may expand canonical LF into checkout CRLF.
@@ -84,15 +84,18 @@ def main() -> None:
     audit_path = root / AUDIT
     original = audit_path.read_bytes()
     before = original.decode("utf-8")
-    if before.count(OLD) != 1:
-        if before.count(NEW) == 1:
+    newline = "\r\n" if b"\r\n" in original else "\n"
+    normalized = before.replace("\r\n", "\n")
+    if normalized.count(OLD) != 1:
+        if normalized.count(NEW) == 1:
             print("The RAAS source fix is already present.")
             changed = False
         else:
             raise RuntimeError("Unexpected audit source. Refused to patch any file.")
     else:
         changed = True
-        audit_path.write_text(before.replace(OLD, NEW), encoding="utf-8")
+        patched = normalized.replace(OLD, NEW).replace("\n", newline)
+        audit_path.write_bytes(patched.encode("utf-8"))
 
     try:
         completed = subprocess.run(
@@ -117,8 +120,7 @@ def main() -> None:
                 f"RAAS audit still failed ({len(failures)} violations): {samples}"
             )
         if changed:
-            git(root, "add", "--", AUDIT)
-            # --only prevents any unrelated staged files being included.
+            # --only stages and commits this exact tracked file and nothing else.
             git(root, "-c", "user.name=PDUFA local integration",
                 "-c", "user.email=pdufa-integration@localhost",
                 "commit", "--only", "-m",
