@@ -267,6 +267,15 @@ test('dedicated production Level 1–3 API credentials are scoped and fail close
 test('FOCUS and PAST use the same assessment launcher for single, selected and whole-list scopes',async()=>{
  const React=require('react'),{act,create}=require('react-test-renderer'),Launcher=require('../app/AssessmentLauncher.tsx').default;
  globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const originalFetch=global.fetch;
+ global.fetch=async url=>{
+  if(String(url).includes('pastRoster=2026')){
+   const events=require('../data/level4BlindAssessmentQueue20261112.json').historical2026;
+   return Response.json({year:2026,total:events.length,linked:0,ready:false,status:'PAST_RECONCILIATION_INCOMPLETE',events:events.map(e=>({eventKey:e.eventKey,status:'MISSING_VERIFIED_LINK'})),tasks:[]});
+  }
+  throw Error('Unexpected request');
+ };
+ try{
  for(const page of ['focus/page.tsx','past/page.tsx']){
   const source=fs.readFileSync(require('node:path').join(__dirname,'../app',page),'utf8');
   assert.match(source,/<AssessmentLauncher source="(?:FOCUS|HISTORICAL)"(?:\s+historicalYear=\{year\})?\s*\/>/);
@@ -303,6 +312,7 @@ test('FOCUS and PAST use the same assessment launcher for single, selected and w
    assert.equal(scope().props.value,'selected');
   }finally{if(tree)await act(async()=>tree.unmount());}
  }
+ }finally{global.fetch=originalFetch;}
 });
 
 test('whole-list assessment requires exact verification against saved FOCUS total, not a partial catalog',async()=>{
@@ -346,6 +356,11 @@ test('PAST candidate NCT entries never masquerade as verified FDA event predicti
 test('PAST whole-list audit follows selected year and never uses the 2026 cohort for other years',async()=>{
  const React=require('react'),{act,create}=require('react-test-renderer'),Launcher=require('../app/AssessmentLauncher.tsx').default;
  globalThis.IS_REACT_ACT_ENVIRONMENT=true;let tree;
+ const originalFetch=global.fetch;
+ global.fetch=async url=>{
+  assert.match(String(url),/pastRoster=2025/);
+  return Response.json({status:'PAST_YEAR_NOT_IMPORTED',year:2025,total:null,linked:0,ready:false,events:[],tasks:[]});
+ };
  try{
   await act(async()=>{tree=create(React.createElement(Launcher,{source:'HISTORICAL',historicalYear:'2025'}));});
   await act(async()=>{tree.root.findAllByType('button')[0].props.onClick();});
@@ -355,7 +370,7 @@ test('PAST whole-list audit follows selected year and never uses the 2026 cohort
   assert.match(JSON.stringify(tree.toJSON()),/20.*unknown|Whole PAST 2025 needs verified FDA event|Assessment service unavailable|Failed to parse URL/);
   assert.ok(!JSON.stringify(tree.toJSON()).includes('20 PAST events requiring verified linkage or evidence'));
   assert.equal(tree.root.findAllByType('button').find(button=>button.props.children==='Submit assessments').props.disabled,true);
- }finally{if(tree)await act(async()=>tree.unmount());}
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=originalFetch;}
 });
 
 
