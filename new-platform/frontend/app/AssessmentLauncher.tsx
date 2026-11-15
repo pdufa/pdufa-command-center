@@ -4,14 +4,14 @@ import pastQueue from '../data/level4BlindAssessmentQueue20261112.json';
 const api='/api/assessments/runtime';
 const valid=(s:string)=>/^NCT\d{8}$/.test(s);
 type Entry={nct:string;level:number;status:string;detail:string};
-export default function AssessmentLauncher({source='FOCUS'}:{source?:'POOL'|'FOCUS'|'HISTORICAL'}){
+export default function AssessmentLauncher({source='FOCUS',historicalYear='2026'}:{source?:'POOL'|'FOCUS'|'HISTORICAL';historicalYear?:string}){
  const [open,setOpen]=useState(false),[population,setPopulation]=useState(source),[scope,setScope]=useState('selected');
  const [input,setInput]=useState(''),[singleNct,setSingleNct]=useState(''),[levels,setLevels]=useState<number[]>([1,2,3]);
  const [mode,setMode]=useState('CURRENT_EVIDENCE'),[cutoff,setCutoff]=useState(''),[entries,setEntries]=useState<Entry[]>([]);
  const [working,setWorking]=useState(false),[error,setError]=useState(''),[catalog,setCatalog]=useState<string[]>([]),[verifiedAll,setVerifiedAll]=useState(false);
  const [missingPast,setMissingPast]=useState<string[]>([]);
  const loadVersion=useRef(0);
- useEffect(()=>{setPopulation(source)},[source]);
+ useEffect(()=>{setPopulation(source);loadVersion.current++;setCatalog([]);setVerifiedAll(false);setMissingPast([])},[source,historicalYear]);
  const selected=Array.from(new Set(input.toUpperCase().split(/[\s,;]+/).filter(Boolean)));
  async function json(url:string,init?:RequestInit){const response=await fetch(url,{cache:'no-store',...init});const body=await response.json();if(!response.ok)throw Error(body.error||'Assessment service unavailable');return body;}
  async function load(){
@@ -20,9 +20,13 @@ export default function AssessmentLauncher({source='FOCUS'}:{source?:'POOL'|'FOC
   // This manifest is the exact 2026 PAST page cohort, NOT the broader trial
   // history catalog. Ticker/date alone cannot establish application identity.
   if(population==='HISTORICAL'){
+   if(historicalYear!=='2026'){
+    setError('PAST '+historicalYear+': no year-specific verified historical roster has been imported. Whole-list submission is unavailable, not an empty or completed list.');
+    return;
+   }
    const events=pastQueue.historical2026;
    setMissingPast(events.map(event=>event.eventKey));
-   setError('PAST 2026: '+events.length+' of '+events.length+' events still lack server-verified trial/application/review-cycle links and pre-cutoff evidence. Whole PAST cannot execute until these records are reconciled; no partial history will be labeled complete.');
+   setError('PAST 2026: '+events.length+' of '+events.length+' displayed events have no verified NCT/application/review-cycle mapping in the current queue. Pre-cutoff evidence availability remains unverified. Whole PAST cannot execute until reconciliation is complete.');
    return;
   }
   if(population!=='FOCUS'){setError('Whole POOL roster is not yet paginated and fully verified; no truncated list will be submitted.');return;}
@@ -60,7 +64,7 @@ export default function AssessmentLauncher({source='FOCUS'}:{source?:'POOL'|'FOC
  <label>Scope <select aria-label="Assessment scope" value={scope} disabled={working} onChange={e=>setScope(e.target.value)}><option value="single">Single trial</option><option value="selected">Selected trials</option><option value="all">Whole list</option></select></label>
  {scope==='single'?<p><label>Exact NCT for one trial <input aria-label="Single trial NCT" placeholder="NCT12345678" maxLength={11} disabled={working} value={singleNct} onChange={e=>setSingleNct(e.target.value.toUpperCase())}/></label></p>
  :scope==='selected'?<p><label>Exact NCT IDs (separated by commas or lines)<textarea style={{display:'block',width:'100%',minHeight:75}} disabled={working} value={input} onChange={e=>setInput(e.target.value)}/></label></p>
- :<p><button type="button" disabled={working} onClick={()=>void load()}>{population==='FOCUS'?'Verify and load whole FOCUS list':population==='HISTORICAL'?'Audit whole PAST list':'Check whole POOL availability'}</button> {catalog.length} verified NCTs loaded. {verifiedAll?'Full FOCUS roster confirmed.':'Entire-list submit blocked until complete source membership is verified.'}</p>}
+ :<p><button type="button" disabled={working} onClick={()=>void load()}>{population==='FOCUS'?'Verify and load whole FOCUS list':population==='HISTORICAL'?'Audit whole PAST '+historicalYear+' list':'Check whole POOL availability'}</button> {catalog.length} verified NCTs loaded. {verifiedAll?'Full FOCUS roster confirmed.':'Entire-list submit blocked until complete source membership is verified.'}</p>}
  {scope==='all'&&population==='HISTORICAL'&&missingPast.length>0&&<details open><summary>{missingPast.length} unresolved PAST event-to-trial links</summary><ul>{missingPast.map(event=><li key={event}>{event}</li>)}</ul><p>These entries need source-verified NCT, application/review cycle, decision-date association and historical source snapshots. Ticker-only matching is prohibited.</p></details>}
  {population==='HISTORICAL'&&<p role="note">PAST event rows are not yet reconciled to verified exact-NCT records. Single and selected NCT assessments may be run but will be saved by NCT, not automatically linked to a PAST event. Whole PAST stays blocked until linkage is verified.</p>}
  <fieldset disabled={working}><legend>Selected levels</legend>{[1,2,3,4,5,6].map(level=><label key={level} style={{display:'inline-block',marginRight:12}}><input type="checkbox" disabled={level>3} checked={levels.includes(level)} onChange={e=>setLevels(current=>e.target.checked?[...current,level].sort():current.filter(n=>n!==level))}/> {level}</label>)}</fieldset>
