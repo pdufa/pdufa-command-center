@@ -12,8 +12,23 @@ $branch=(& git.exe -C $work branch --show-current).Trim()
 if($branch -notmatch '^integration/level123-\d{8}-\d{6}$'){
   throw "Expected a local Level 1-3 integration branch; got: $branch"
 }
-$changed=@(& git.exe -C $work status --porcelain)
-if($changed.Count -gt 0){throw 'Worktree has uncommitted changes; stop to protect existing work.'}
+# Windows case-insensitive checkout exposes an existing filename collision,
+# and TypeScript may leave an untracked incremental build cache. Both are
+# unrelated to the four repair targets. Never stage, delete, reset, or stash them.
+$changed=@(& git.exe -C $work status --porcelain --untracked-files=all)
+if($LASTEXITCODE -ne 0){throw 'Could not inspect worktree status.'}
+$allowed=@(
+  ' M research/focus/MLYS-LAUNCH-HTN-preliminary-evidence-2026-11-10.md',
+  '?? new-platform/frontend/tsconfig.tsbuildinfo'
+)
+foreach($entry in $changed){
+  if($allowed -cnotcontains $entry){
+    throw "Unexpected uncommitted change, preserved without modification: $entry"
+  }
+}
+if($changed.Count -gt 0){
+  Write-Host 'Preserving existing case-collision research file and TypeScript build cache.' -ForegroundColor Yellow
+}
 function RewriteOnce([string]$body,[string]$original,[string]$replacement){
   $i=$body.IndexOf($original,[StringComparison]::Ordinal)
   if($i -lt 0 -or $body.IndexOf($original,$i+1,[StringComparison]::Ordinal) -ge 0){
