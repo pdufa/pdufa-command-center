@@ -295,3 +295,58 @@ def test_http_456_blind_historical_requires_verified_link_without_outcome_access
         assert 'OUTCOME_MUST_NEVER_LEAK' not in runtime.packed(report)
         assert client.get('/api/assessment-runtime/history/NCT04576949'
                           '?contract=SCIENTIFIC_1_6').json()['runs'][0]['runId'] == run_id
+
+
+def test_synthetic_456_history_cursor_pages_all_versions_without_offset_drift(engine):
+    """All 58 456 versions remain available even when new reports are inserted."""
+    for i in range(58):
+        q = request(4 if i % 2 else 5)
+        run_id = runtime.create(engine, q)
+        report = {'contract': 'SCIENTIFIC_1_6', 'nct': q.nct,
+                  'level': q.level, 'runId': run_id,
+                  'score': {'value': None, 'kind': 'NOT_VALIDATED'},
+                  'fdaPrediction': {'outcome': 'ABSTAIN', 'probability': None}}
+        with engine.begin() as conn:
+            conn.execute(text('''INSERT INTO assessment_v2_results
+                (run_id,nct_id,level,engine_version,mode,created_at,report_hash,report_json)
+                VALUES(:run,:nct,:level,'synthetic-paging','CURRENT_EVIDENCE',:created,:hash,:report)'''),
+                {'run': run_id, 'nct': q.nct, 'level': q.level,
+                 'created': f'2030-01-01T00:00:{i:02d}+00:00',
+                 'hash': runtime.sha(report), 'report': runtime.packed(report)})
+    first = runtime.history(engine, 'NCT04576949', contract='SCIENTIFIC_1_6')
+    assert len(first['runs']) == 50 and first['hasMore'] is True
+    assert isinstance(first['nextCursor'], str) and '|' in first['nextCursor']
+    # A new report saved after viewing page one must not move older pages.
+    q = request(6)
+    new_run = runtime.create(engine, q)
+    new_report = {'contract': 'SCIENTIFIC_1_6', 'nct': q.nct,
+                  'level': 6, 'runId': new_run}
+    with engine.begin() as conn:
+        conn.execute(text('''INSERT INTO assessment_v2_results
+            (run_id,nct_id,level,engine_version,mode,created_at,report_hash,report_json)
+            VALUES(:run,:nct,6,'synthetic-paging','CURRENT_EVIDENCE',:created,:hash,:report)'''),
+            {'run': new_run, 'nct': q.nct,
+             'created': '2031-01-01T00:00:00+00:00',
+             'hash': runtime.sha(new_report), 'report': runtime.packed(new_report)})
+    second = runtime.history(engine, 'NCT04576949',
+                             contract='SCIENTIFIC_1_6', before=first['nextCursor'])
+    assert len(second['runs']) == 8 and second['hasMore'] is False
+    assert second['nextCursor'] is None
+    ids = [run['runId'] for run in first['runs'] + second['runs']]
+    assert len(ids) == len(set(ids)) == 58
+    assert new_run not in ids
+    assert runtime.history(engine, 'NCT04576949', contract='SCIENTIFIC_1_3')['runs'] == []
+
+    app = FastAPI()
+    app.include_router(runtime.router(lambda: engine, lambda: None, lambda: None,
+                                      lambda: None, allow_local=True))
+    with TestClient(app) as client:
+        url = '/api/assessment-runtime/history/NCT04576949'
+        response = client.get(url, params={
+            'contract': 'SCIENTIFIC_1_6', 'before': first['nextCursor']})
+        assert response.status_code == 200
+        assert len(response.json()['runs']) == 8
+        for invalid in ('', 'bad', '2030-01-01T00:00:00+00:00|BAD', '2030-01-01T00:00:00|'
+                        + 'a'*36):
+            assert client.get(url, params={'contract': 'SCIENTIFIC_1_6',
+                                           'before': invalid}).status_code == 422
