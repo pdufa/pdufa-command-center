@@ -50,6 +50,30 @@ def validate_historical_intake_package(
             errors.append(prefix + "INVALID_CUTOFF")
             continue
         errors.extend(prefix + error for error in result["errors"])
+    # Every frozen evidence citation must have an identical intake provenance record.
+    # Conversely, intake-only citations cannot silently bypass the frozen evidence set.
+    frozen_citations = set()
+    for index, record in enumerate(evidence):
+        if not isinstance(record, dict):
+            continue
+        key = (record.get("nct_id"), record.get("application_id"), record.get("indication"))
+        items = record.get("evidence", [])
+        if not isinstance(items, list):
+            continue
+        for item in items:
+            if isinstance(item, dict):
+                frozen_citations.add(key + tuple(item.get(field) for field in
+                    ("source_url", "sha256", "published_on", "retrieved_on")))
+    intake_citations = set()
+    for record in source_records:
+        if isinstance(record, dict):
+            intake_citations.add(tuple(record.get(field) for field in
+                ("nct_id", "application_id", "indication", "source_url",
+                 "sha256", "published_on", "retrieved_on")))
+    if frozen_citations - intake_citations:
+        errors.append("FROZEN_EVIDENCE_MISSING_SOURCE_PROVENANCE")
+    if intake_citations - frozen_citations:
+        errors.append("SOURCE_INTAKE_NOT_IN_FROZEN_EVIDENCE")
     return {
         "ready_for_independent_blind_review": not errors,
         "historical_trial_count": frozen["historical_trial_count"],
