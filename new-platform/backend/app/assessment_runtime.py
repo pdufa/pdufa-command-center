@@ -547,7 +547,13 @@ def history(engine,nct,level=None,contract=None,before=None):
     runs=[];size=0
     for row in rows[:50]:
         size+=len(row[0].encode())
-        if size>3_000_000:break
+        if size>3_000_000:
+            if not runs:
+                # Do not imply an empty page has a continuation cursor when
+                # its first immutable report alone exceeds our response budget.
+                # Owners can retrieve this report by its exact run ID.
+                raise HTTPException(413,'Saved assessment exceeds history response budget; retrieve by exact run ID')
+            break
         runs.append(verified_report(row))
     has_more=len(rows)>len(runs)
     last=rows[len(runs)-1] if runs else None
