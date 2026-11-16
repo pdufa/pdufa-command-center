@@ -1,0 +1,20 @@
+name: Avenue 1 collector isolated validation
+on:
+  push:
+    branches:
+      - feature/avenue1-pool-evidence-collector-20261116
+  workflow_dispatch:
+jobs:
+  offline-validation:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Compile collector
+        run: python -m py_compile scripts/avenue1_pool_evidence_collector.py
+      - name: Run isolated collector tests
+        run: python -m unittest discover -s tests -p 'test_avenue1_pool_evidence_collector.py' -v
