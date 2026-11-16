@@ -5,6 +5,7 @@ on:
     paths:
       - 'new-platform/backend/assessment_levels_07_20/**'
       - 'new-platform/backend/tests/test_isolated_level*.py'
+      - 'new-platform/backend/tests/test_isolated_dispatch.py'
       - '.github/workflows/isolated-levels-10-20-tests.yml'
   workflow_dispatch:
 permissions:
@@ -34,7 +35,7 @@ jobs:
           print("All 12 Level 9-20 contracts and test files present")
           PY
       - name: Run isolated Levels 7-20 tests
-        run: PYTHONPATH=new-platform/backend python -m pytest -q new-platform/backend/tests/test_isolated_level*.py
+        run: PYTHONPATH=new-platform/backend python -m pytest -q new-platform/backend/tests/test_isolated_level*.py new-platform/backend/tests/test_isolated_dispatch.py
       - name: Ensure no production imports or writes
         run: |
           python - <<'PY'
