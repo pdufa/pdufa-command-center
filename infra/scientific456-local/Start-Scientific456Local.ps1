@@ -1,30 +1,31 @@
-# Local-only, free Level 456 staging. Never touches running PowerShell tests.
-# Generates secrets once into a gitignored .env and keeps writes disabled.
+# Start a LOCAL ONLY Level 456 PostgreSQL sandbox; no production services.
+# The PowerShell window running other tests is unaffected.
 $ErrorActionPreference = "Stop"
 $compose = Join-Path $PSScriptRoot "compose.yaml"
 $envFile = Join-Path $PSScriptRoot ".env"
 
 if (-not (Get-Command docker -ErrorAction SilentlyContinue)) {
-    throw "Docker Desktop is not available. Install or start it before running this script."
+    throw "Docker Desktop is unavailable. Install or start it first."
 }
 & docker compose version | Out-Null
 if ($LASTEXITCODE -ne 0) {
-    throw "Docker Compose is not available. No containers were changed."
+    throw "Docker Compose is unavailable. No containers were changed."
 }
 
-# A remote Docker context would create containers somewhere other than this PC.
-# Bind-to-loopback on a remote host is NOT equivalent to local-only staging.
+# Refuse remote Docker contexts: local loopback on a remote Docker engine
+# would not be a local-only sandbox on this Windows PC.
 $contextJson = & docker context inspect
 if ($LASTEXITCODE -ne 0) {
-    throw "Cannot inspect Docker context. No containers were changed."
+    throw "Could not inspect Docker context. No containers were changed."
 }
-$contexts = @(($contextJson -join [Environment]::NewLine | ConvertFrom-Json))
+$contextText = $contextJson -join [Environment]::NewLine
+$contexts = @($contextText | ConvertFrom-Json)
 if ($contexts.Count -ne 1) {
     throw "Docker context was not uniquely identified. No containers were changed."
 }
 $dockerHost = [string]$contexts[0].Endpoints.docker.Host
 if ($dockerHost -notmatch '^(npipe|unix)://') {
-    throw "Remote Docker context refused: use local Docker Desktop, not TCP or SSH."
+    throw "Remote Docker context refused. Use local Docker Desktop rather than TCP or SSH."
 }
 
 if (-not (Test-Path -LiteralPath $envFile)) {
@@ -44,53 +45,27 @@ if (-not (Test-Path -LiteralPath $envFile)) {
             "SCIENTIFIC456_INTERNAL_API_KEY=$apiKey" + [Environment]::NewLine
     $utf8 = New-Object System.Text.UTF8Encoding -ArgumentList $false
     [System.IO.File]::WriteAllText($envFile, $body, $utf8)
-    Write-Host "Created local credentials in ignored .env (not displayed)." -ForegroundColor Green
+    Write-Host "Generated independent local secrets in gitignored .env (values hidden)." -ForegroundColor Green
 }
 
 $entries = @(Get-Content -LiteralPath $envFile)
-if ($entries.Count -ne 2 -or
-    @($entries | Where-Object { $_ -match '^SCIENTIFIC456_DB_PASSWORD=[0-9a-f]{64}
-& docker compose --env-file $envFile -f $compose up -d --build
-if ($LASTEXITCODE -ne 0) {
-    throw "Docker Compose could not start Level 456 staging. No production service was modified."
-}
-
-Write-Host "Service startup requested. Check status using:" -ForegroundColor Cyan
-Write-Host "docker compose --env-file `"$envFile`" -f `"$compose`" ps"
-Write-Host "docker compose --env-file `"$envFile`" -f `"$compose`" logs --tail=40 api"
-Write-Host "Read-only API: http://127.0.0.1:8765/api/assessment-runtime/version"
-Write-Host "Database readiness: http://127.0.0.1:8765/api/assessment-runtime/health"
-Write-Host "Assessment writes remain disabled (PDUFA_MIGRATION_READ_ONLY=1)." -ForegroundColor Yellow
- }).Count -ne 1 -or
-    @($entries | Where-Object { $_ -match '^SCIENTIFIC456_INTERNAL_API_KEY=[0-9a-f]{64}
-& docker compose --env-file $envFile -f $compose up -d --build
-if ($LASTEXITCODE -ne 0) {
-    throw "Docker Compose could not start Level 456 staging. No production service was modified."
-}
-
-Write-Host "Service startup requested. Check status using:" -ForegroundColor Cyan
-Write-Host "docker compose --env-file `"$envFile`" -f `"$compose`" ps"
-Write-Host "docker compose --env-file `"$envFile`" -f `"$compose`" logs --tail=40 api"
-Write-Host "Read-only API: http://127.0.0.1:8765/api/assessment-runtime/version"
-Write-Host "Database readiness: http://127.0.0.1:8765/api/assessment-runtime/health"
-Write-Host "Assessment writes remain disabled (PDUFA_MIGRATION_READ_ONLY=1)." -ForegroundColor Yellow
- }).Count -ne 1) {
-    throw "Local .env must contain only two valid generated staging credentials. No containers were changed."
+$dbMatches = @($entries | Where-Object { $_ -match '^SCIENTIFIC456_DB_PASSWORD=[0-9a-f]{64}$' })
+$keyMatches = @($entries | Where-Object { $_ -match '^SCIENTIFIC456_INTERNAL_API_KEY=[0-9a-f]{64}$' })
+if ($entries.Count -ne 2 -or $dbMatches.Count -ne 1 -or $keyMatches.Count -ne 1) {
+    throw "The local .env must contain exactly two generated 64-character secrets. No containers were changed."
 }
 & docker compose --env-file $envFile -f $compose config --quiet
 if ($LASTEXITCODE -ne 0) {
-    throw "Docker Compose staging configuration is invalid. No containers were changed."
+    throw "Local Docker Compose config is invalid. No containers were changed."
 }
 
-Write-Host "Starting isolated local PostgreSQL and read-only Level 456 API..." -ForegroundColor Cyan
+Write-Host "Starting independent PostgreSQL and read-only Level 456 API..." -ForegroundColor Cyan
 & docker compose --env-file $envFile -f $compose up -d --build
 if ($LASTEXITCODE -ne 0) {
-    throw "Docker Compose could not start Level 456 staging. No production service was modified."
+    throw "Local Level 456 Docker startup failed. Production was not touched."
 }
 
-Write-Host "Service startup requested. Check status using:" -ForegroundColor Cyan
-Write-Host "docker compose --env-file `"$envFile`" -f `"$compose`" ps"
-Write-Host "docker compose --env-file `"$envFile`" -f `"$compose`" logs --tail=40 api"
-Write-Host "Read-only API: http://127.0.0.1:8765/api/assessment-runtime/version"
-Write-Host "Database readiness: http://127.0.0.1:8765/api/assessment-runtime/health"
-Write-Host "Assessment writes remain disabled (PDUFA_MIGRATION_READ_ONLY=1)." -ForegroundColor Yellow
+Write-Host "Local version: http://127.0.0.1:8765/api/assessment-runtime/version"
+Write-Host "Local readiness: http://127.0.0.1:8765/api/assessment-runtime/health"
+Write-Host "Run the separate Test-Scientific456Local.ps1 for a read-only smoke test."
+Write-Host "Assessment writes remain disabled." -ForegroundColor Yellow
