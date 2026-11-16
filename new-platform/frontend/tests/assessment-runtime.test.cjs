@@ -187,6 +187,11 @@ test('shared saved FOCUS table renders persisted independent levels and explicit
 
 test('FOCUS columns show the same saved scientific records as the shared assessment table',async()=>{
  const React=require('react'),{act,create}=require('react-test-renderer');globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ // Next/Link schedules idle work via self; install only the browser globals
+ // this renderer needs, and restore them after unmount.
+ const oldSelf=global.self,oldWindow=global.window;
+ global.self=globalThis;
+ global.window={addEventListener(){},removeEventListener(){}};
  // The FOCUS page fetches one shared roster and passes the exact-NCT slots to
  // each row. Individual cells must not issue separate API requests.
  const levels=Object.fromEntries([1,2,3].map(level=>[String(level),{state:'COMPLETED',report:{runId:'saved-'+level,nct,level,mode:'CURRENT_EVIDENCE',executedAt:'2026-11-15',score:{value:null,kind:'NOT_VALIDATED'},fdaPrediction:{outcome:'ABSTAIN',confidence:'NOT_VALIDATED'}}}]));
@@ -199,7 +204,11 @@ test('FOCUS columns show the same saved scientific records as the shared assessm
   assert.equal((json.match(/NOT VALIDATED · saved/g)||[]).length,3);
   assert.equal((json.match(/ABSTAIN · not validated/g)||[]).length,3);
   for(let l=1;l<=3;l++)assert.match(json,new RegExp('Saved saved-'+l));
- }finally{if(tree)await act(async()=>tree.unmount());}
+ }finally{
+  if(tree)await act(async()=>tree.unmount());
+  if(oldSelf===undefined)delete global.self;else global.self=oldSelf;
+  if(oldWindow===undefined)delete global.window;else global.window=oldWindow;
+ }
 });
 
 test('launcher uses the scientific contract and cannot count an unpersisted completion',async()=>{
