@@ -1,0 +1,46 @@
+name: Frontend test hang diagnostic (non-production)
+on:
+  push:
+    branches:
+      - plan/isolated-levels-7-20-20261116
+    paths:
+      - '.github/workflows/frontend-test-diagnostic.yml'
+      - 'new-platform/frontend/tests/**'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolate-test-shards:
+    name: Frontend tests shard ${{ matrix.shard }} of 8
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7]
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: npm
+          cache-dependency-path: new-platform/frontend/package-lock.json
+      - name: Install frontend dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Execute bounded test shard with per-file output
+        shell: bash
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          set -euo pipefail
+          mapfile -t files < <(find tests -maxdepth 1 -name '*.test.cjs' -type f | LC_ALL=C sort)
+          selected=()
+          for i in "${!files[@]}"; do
+            if (( i % 8 == SHARD )); then selected+=("${files[i]}"); fi
+          done
+          printf 'Shard %s: %s of %s files\n' "$SHARD" "${#selected[@]}" "${#files[@]}"
+          printf 'FILE %s\n' "${selected[@]}"
+          timeout --signal=TERM --kill-after=15s 480s node --test --test-concurrency=1 --test-reporter=spec "${selected[@]}"
