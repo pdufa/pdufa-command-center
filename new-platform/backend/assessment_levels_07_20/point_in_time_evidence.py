@@ -50,6 +50,12 @@ def validate_point_in_time_evidence(record: dict[str, Any]) -> dict[str, Any]:
                 errors.append(prefix + "INVALID_SOURCE")
         if not isinstance(item.get("sha256"), str) or len(item["sha256"]) != 64 or any(c not in "0123456789abcdef" for c in item["sha256"]):
             errors.append(prefix + "INVALID_HASH")
+        if any(k in item for k in ("fda_outcome", "actual_decision", "approval_status", "outcome_label")):
+            errors.append(prefix + "OUTCOME_LEAKAGE")
+        published = _parse_day(item.get("published_on"))
+        retrieved = _parse_day(item.get("retrieved_on"))
+        if published is not None and retrieved is not None and published > retrieved:
+            errors.append(prefix + "PUBLISHED_AFTER_RETRIEVAL")
         for field in ("published_on", "retrieved_on"):
             day = _parse_day(item.get(field))
             if day is None:
