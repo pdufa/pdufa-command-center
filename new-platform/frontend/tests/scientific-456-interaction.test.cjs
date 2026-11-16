@@ -120,3 +120,34 @@ test('load older research versions paginates by cursor and retains first page',a
   assert.doesNotMatch(output,/Load older 456 versions/);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=oldFetch;}
 });
+
+
+test('older-history control stays reachable after an entirely rejected first page',async()=>{
+ const oldFetch=global.fetch;let tree;
+ const cursor='2026-11-15T00:00:00+00:00|'+uuid;
+ let calls=0;
+ global.fetch=async url=>{
+  calls++;
+  const parsed=new URL(String(url),'https://owner.example.test');
+  assert.equal(parsed.searchParams.get('contract'),'SCIENTIFIC_1_6');
+  if(parsed.searchParams.has('before')){
+   assert.equal(parsed.searchParams.get('before'),cursor);
+   return Response.json({nct,runs:[report],hasMore:false,nextCursor:null});
+  }
+  return Response.json({nct,runs:[{...report,checks:[null]}],hasMore:true,nextCursor:cursor});
+ };
+ try{
+  await act(async()=>{tree=create(React.createElement(Workspace,{cohort:'ASSESSMENTS',initialNct:nct}));});
+  await act(async()=>{await Promise.resolve();});
+  assert.doesNotMatch(text(tree),/Saved 456 assessment versions/);
+  const buttons=tree.root.findAllByType('button');
+  const older=buttons.find(x=>x.props.children==='Load older 456 versions');
+  assert.ok(older,'Pagination must remain possible if no report on this page is renderable');
+  await act(async()=>{older.props.onClick();});
+  await act(async()=>{await Promise.resolve();});
+  assert.equal(calls,2);
+  assert.match(text(tree),/Saved 456 assessment versions/);
+  assert.match(text(tree),/Risk-benefit unknown/);
+  assert.doesNotMatch(text(tree),/Load older 456 versions/);
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=oldFetch;}
+});
