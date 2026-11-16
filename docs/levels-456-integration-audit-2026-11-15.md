@@ -41,3 +41,11 @@ This is an initial code audit and CI setup, **not** a completed L04–L06 clinic
 - Client-side reports show evidence provenance, checks, risks, recommendations, original citations and multiple immutable saved versions. Missing evidence or uncertain FDA application details remain unknown. No numeric clinical score, directional FDA call or FDA approval percentage is published.
 - **This development-branch integration is not live.** No isolated 456 service or credentials have been configured by these changes, and no data has been backfilled. It cannot be declared end-to-end functional until the isolated backend is configured and exact-NCT request, persistence, history, security, historical isolation and fresh frontend tests pass.
 - New frontend tests: \`new-platform/frontend/tests/scientific-456-workspace.test.cjs\`. Run \`npm.cmd test\`, \`npm.cmd run typecheck\` and \`npm.cmd run build\` from \`new-platform/frontend\`, plus complete backend tests and retirement audit before any owner deployment decision.
+
+## Contract-first saved 456 history (additive fix)
+
+The isolated scientific history route now accepts `contract=SCIENTIFIC_1_6` and filters by that exact value **inside the database before its 50-record result limit**. This prevents saved L04–L06 research from being crowded out by newer L01–L03 versions of the same exact NCT. Unfiltered existing history requests keep their previous meaning and response schema. PostgreSQL uses a JSONB contract selector; SQLite regression fixtures use `json_extract`. The frontend explicitly forwards this contract to its isolated backend; no 123 fallback occurs. Tests cover both frontend routing and a synthetic database history saturated with 55 newer 123 records.
+
+Additionally, opt-in 456 POST requests default to denied unless `PDUFA_LEVEL456_BACKEND_ENABLED=1` is set on the isolated backend. They remain disabled for unconfigured services. Trial inventory JSON decoding specifies UTF-8 explicitly to avoid Windows locale decode errors.
+
+**No automatic results backfill, production merge, staging service provisioning, or deployment occurred.** Latest full frontend and backend tests must pass after this change.
