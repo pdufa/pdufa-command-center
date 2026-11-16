@@ -28,6 +28,12 @@ if ($dockerHost -notmatch '^(npipe|unix)://') {
     throw "Remote Docker context refused. Use local Docker Desktop rather than TCP or SSH."
 }
 
+# PostgreSQL requires Linux containers; Windows container mode cannot run it.
+$osType = & docker info --format '{{.OSType}}'
+if ($LASTEXITCODE -ne 0 -or [string]$osType -ne 'linux') {
+    throw "Docker Desktop must be running with Linux containers. No containers were changed."
+}
+
 if (-not (Test-Path -LiteralPath $envFile)) {
     $rng = [System.Security.Cryptography.RandomNumberGenerator]::Create()
     try {
