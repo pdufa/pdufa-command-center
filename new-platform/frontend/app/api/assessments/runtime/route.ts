@@ -24,7 +24,7 @@ async function relay(req:NextRequest,path:string,body?:unknown,scientific456=fal
   const response=await fetch(base+'/api/assessment-runtime'+path,{method:body?'POST':'GET',cache:'no-store',headers:{'Content-Type':'application/json','X-Pdufa-Internal-Key':key},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.any([req.signal,AbortSignal.timeout(45000)])});
   if(!response.headers.get('content-type')?.includes('application/json'))return json({error:'Assessment backend unavailable'},503);
   const data=await response.json();
-  if(!response.ok)return json({error:typeof data.detail==='string'?data.detail:'Assessment backend rejected this request'},[401,403,404,409,422].includes(response.status)?response.status:503);
+  if(!response.ok)return json({error:typeof data.detail==='string'?data.detail:'Assessment backend rejected this request'},[401,403,404,409,413,422].includes(response.status)?response.status:503);
   return json(data,response.status);
  }catch{return json({error:'Assessment backend could not be reached; no completion confirmed'},503);}
 }
