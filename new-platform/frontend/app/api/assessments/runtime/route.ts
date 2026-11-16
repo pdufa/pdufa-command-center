@@ -7,10 +7,10 @@ const headers={'Cache-Control':'private, no-store','X-Content-Type-Options':'nos
 const json=(body:unknown,status=200)=>NextResponse.json(body,{status,headers});
 const authorized=(req:NextRequest)=>authConfigured()&&hasSession(req.cookies.get(COOKIE_NAME)?.value);
 const nct=(value:string|null)=>!!value&&/^NCT\d{8}$/.test(value);
-async function relay(req:NextRequest,path:string,body?:unknown){
+async function relay(req:NextRequest,path:string,body?:unknown,scientific456=false){
  const dedicated=!!(process.env.PDUFA_LEVEL123_API_BASE_URL||process.env.PDUFA_LEVEL123_INTERNAL_API_KEY);
- const base=(dedicated?process.env.PDUFA_LEVEL123_API_BASE_URL:process.env.PDUFA_API_BASE_URL)?.replace(/\/$/,'');
- const key=dedicated?process.env.PDUFA_LEVEL123_INTERNAL_API_KEY:process.env.PDUFA_INTERNAL_API_KEY;
+ const base=(scientific456?process.env.PDUFA_LEVEL456_API_BASE_URL:dedicated?process.env.PDUFA_LEVEL123_API_BASE_URL:process.env.PDUFA_API_BASE_URL)?.replace(/\/$/,'');
+ const key=scientific456?process.env.PDUFA_LEVEL456_INTERNAL_API_KEY:dedicated?process.env.PDUFA_LEVEL123_INTERNAL_API_KEY:process.env.PDUFA_INTERNAL_API_KEY;
  if(!base?.startsWith('https://')||!key)return json({error:'Persistent assessment backend is not configured'},503);
  try{
   const response=await fetch(base+'/api/assessment-runtime'+path,{method:body?'POST':'GET',cache:'no-store',headers:{'Content-Type':'application/json','X-Pdufa-Internal-Key':key},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.any([req.signal,AbortSignal.timeout(45000)])});
@@ -23,6 +23,8 @@ async function relay(req:NextRequest,path:string,body?:unknown){
 export async function GET(req:NextRequest){
  if(!authorized(req))return json({error:'Sign in to access assessments'},401);
  const q=req.nextUrl.searchParams;
+ if(q.has('contract')&&q.get('contract')!=='SCIENTIFIC_1_6')return json({error:'Unsupported assessment history contract'},422);
+ if(q.get('contract')==='SCIENTIFIC_1_6'&&(q.has('focus')||q.has('past')||q.has('population')))return json({error:'Level 456 history requires one exact NCT'},422);
  if(q.get('focus')==='true')return relay(req,'/focus');
  if(q.get('past')==='true')return relay(req,'/past');
  if(q.has('population')){
@@ -32,7 +34,7 @@ export async function GET(req:NextRequest){
  }
  const id=q.get('nct'),run=q.get('runId'),level=q.get('level');
  if(!nct(id)||(level!==null&&!/^[1-6]$/.test(level))||(run!==null&&!/^[a-f0-9-]{36}$/.test(run)))return json({error:'Exact NCT, optional run UUID and level 1–6 required'},422);
- return relay(req,run?'/runs/'+id+'/'+run:'/history/'+id+(level?'?level='+level:''));
+ return relay(req,run?'/runs/'+id+'/'+run:'/history/'+id+(level?'?level='+level:''),undefined,q.get('contract')==='SCIENTIFIC_1_6');
 }
 export async function POST(req:NextRequest){
  if(!authorized(req))return json({error:'Sign in to run assessments'},401);
@@ -47,8 +49,8 @@ export async function POST(req:NextRequest){
  }catch{return json({error:'Invalid JSON'},422);}
  if(data&&data.action==='FOCUS_BATCH'&&Object.keys(data).length===1)return relay(req,'/focus/batch',{});
  if(!data||typeof data!=='object'||Array.isArray(data)||Object.keys(data).some(k=>!['nct','level','mode','cutoffDate','contract'].includes(k))||typeof data.nct!=='string'||!nct(data.nct)||!Number.isInteger(data.level)||Number(data.level)<1||Number(data.level)>6||!['CURRENT_EVIDENCE','BLIND_HISTORICAL'].includes(String(data.mode)))return json({error:'Exact NCT, selected level 1–6 and assessment mode required; no caller evidence or scoring claims allowed'},422);
- if('contract' in data&&(!['LEGACY_SOURCE_AUDIT','SCIENTIFIC_1_3'].includes(String(data.contract))||(data.contract==='SCIENTIFIC_1_3'&&Number(data.level)>3)))return json({error:'Scientific contract supports Levels 1–3 only'},422);
+ if('contract' in data&&(!['LEGACY_SOURCE_AUDIT','SCIENTIFIC_1_3','SCIENTIFIC_1_6'].includes(String(data.contract))||(data.contract==='SCIENTIFIC_1_3'&&Number(data.level)>3)))return json({error:'Selected scientific contract does not support this level'},422);
  if(data.mode==='CURRENT_EVIDENCE'&&'cutoffDate' in data)return json({error:'Current mode does not accept historical cutoff'},422);
  if(data.mode==='BLIND_HISTORICAL'&&(typeof data.cutoffDate!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(data.cutoffDate)||!Number.isFinite(Date.parse(data.cutoffDate+'T00:00:00Z'))||new Date(data.cutoffDate+'T00:00:00Z').toISOString().slice(0,10)!==data.cutoffDate||data.cutoffDate>=new Date().toISOString().slice(0,10)))return json({error:'Valid past historical cutoff required'},422);
- return relay(req,'/runs',data);
+ return relay(req,'/runs',data,data.contract==='SCIENTIFIC_1_6');
 }
