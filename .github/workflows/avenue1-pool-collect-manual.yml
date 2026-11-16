@@ -1,5 +1,12 @@
 name: Avenue 1 full POOL evidence collection (manual)
 on:
+  push:
+    branches:
+      - feature/avenue1-pool-evidence-collector-20261116
+    paths:
+      - '.github/workflows/avenue1-pool-collect-manual.yml'
+      - 'scripts/avenue1_pool_evidence_collector.py'
+      - 'tests/test_avenue1_pool_evidence_collector.py'
   workflow_dispatch:
     inputs:
       test_limit:
@@ -30,7 +37,7 @@ jobs:
           python -m py_compile scripts/avenue1_pool_evidence_collector.py
           python -m unittest discover -s tests -p 'test_avenue1_pool_evidence_collector.py' -v
       - name: Collect public evidence from authenticated full POOL
-        run: python scripts/avenue1_pool_evidence_collector.py --output-dir artifacts/avenue1 --limit "${{ inputs.test_limit }}"
+        run: python scripts/avenue1_pool_evidence_collector.py --output-dir artifacts/avenue1 --limit "${{ github.event_name == 'push' && '5' || inputs.test_limit }}"
       - name: Retain evidence and coverage report for review
         if: always()
         uses: actions/upload-artifact@v4
