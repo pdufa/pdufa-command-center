@@ -525,7 +525,9 @@ def history(engine,nct,level=None,contract=None,before=None):
         if at.tzinfo is None:
             raise HTTPException(422,'Invalid saved-history page cursor')
     if not inspect(engine).has_table('assessment_v2_results'):
-        return {'nct':nct,'runs':[],'hasMore':False,'nextCursor':None}
+        # Preserve the historical empty-response shape for databases that have
+        # never had assessment tables; no continuation is possible.
+        return {'nct':nct,'runs':[],'hasMore':False}
     with engine.connect() as c:
         query='SELECT report_json,report_hash,created_at,run_id FROM assessment_v2_results WHERE nct_id=:nct'
         bindings={'nct':nct,'level':level,'contract':contract,
