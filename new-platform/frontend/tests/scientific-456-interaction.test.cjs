@@ -53,6 +53,22 @@ test('history loads only exact-NCT 456 reports, leaving older/123 records separa
   assert.doesNotMatch(output,/22222222/);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
+test('malformed nested findings are withheld instead of crashing the trial panel',async()=>{
+ const old=global.fetch;let tree;
+ global.fetch=async()=>Response.json({nct,runs:[
+  {...report,runId:'44444444-4444-4444-4444-444444444444',checks:[null]},
+  {...report,runId:'55555555-5555-5555-5555-555555555555',risks:[null]},
+  {...report,runId:'66666666-6666-6666-6666-666666666666',evidence:null},
+  report],hasMore:false});
+ try{
+  await act(async()=>{tree=create(React.createElement(Workspace,{cohort:'ASSESSMENTS',initialNct:nct}));});
+  await act(async()=>{await Promise.resolve();});
+  const output=text(tree);
+  assert.match(output,/1 saved 456 research version/);
+  assert.match(output,/Risk-benefit unknown/);
+  for(const invalid of ['44444444','55555555','66666666'])assert.doesNotMatch(output,new RegExp(invalid));
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
+});
 test('changing selected NCT clears previously saved clinical evidence from display',async()=>{
  const old=global.fetch;let tree;
  global.fetch=async()=>Response.json({nct,runs:[report],hasMore:false});
