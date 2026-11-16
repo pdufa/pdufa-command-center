@@ -48,6 +48,29 @@ def test_standalone_only_exposes_scientific_456_and_reports_disabled_state(clien
     assert client.post("/api/assessment-runtime/runs", json=body(4), headers=HEADERS).status_code == 503
 
 
+def test_readiness_checks_database_and_opt_in_without_exposing_details(client, monkeypatch):
+    ready = client.get("/api/assessment-runtime/health")
+    assert ready.status_code == 200
+    assert ready.json() == {"status": "READY",
+                            "stagingMode": "SCIENTIFIC_456_ISOLATED_ONLY",
+                            "fdaModel": "ABSTAIN"}
+    monkeypatch.setenv("PDUFA_LEVEL456_BACKEND_ENABLED", "0")
+    assert client.get("/api/assessment-runtime/health").status_code == 503
+    monkeypatch.setenv("PDUFA_LEVEL456_BACKEND_ENABLED", "1")
+    monkeypatch.delenv("PDUFA_INTERNAL_API_KEY")
+    assert client.get("/api/assessment-runtime/health").status_code == 503
+    monkeypatch.setenv("PDUFA_INTERNAL_API_KEY", KEY)
+
+    class UnavailableDatabase:
+        def connect(self):
+            raise RuntimeError("SENSITIVE_DATABASE_CONNECTION_DETAIL")
+
+    staging.app.dependency_overrides[staging.isolated_engine] = lambda: UnavailableDatabase()
+    failed = client.get("/api/assessment-runtime/health")
+    assert failed.status_code == 503
+    assert "SENSITIVE_DATABASE_CONNECTION_DETAIL" not in failed.text
+
+
 def test_staging_requires_its_secret_and_rejects_123_or_unknown_contracts(client):
     assert client.get("/api/assessment-runtime/history/NCT04576949?contract=SCIENTIFIC_1_6").status_code == 401
     assert client.get("/api/assessment-runtime/history/NCT04576949?contract=SCIENTIFIC_1_6",
