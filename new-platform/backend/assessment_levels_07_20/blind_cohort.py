@@ -12,6 +12,21 @@ _NCT = re.compile(r"NCT[0-9]{8}\Z")
 _HASH = re.compile(r"[0-9a-f]{64}\Z")
 
 
+_OUTCOME_KEYS = frozenset({
+    "fda_outcome", "actual_decision", "approval_status", "outcome_label",
+    "fda_decision", "decision_result", "approval_date",
+})
+
+
+def _contains_outcome_fields(value: Any) -> bool:
+    if isinstance(value, dict):
+        return any(key in _OUTCOME_KEYS or _contains_outcome_fields(child)
+                   for key, child in value.items())
+    if isinstance(value, (list, tuple)):
+        return any(_contains_outcome_fields(child) for child in value)
+    return False
+
+
 def _day(value: Any) -> date | None:
     if not isinstance(value, str) or len(value) != 10:
         return None
