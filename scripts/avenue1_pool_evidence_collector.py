@@ -55,17 +55,29 @@ def study_evidence(nct):
         "ten_category_scoring": "PENDING_EVIDENCE_REVIEW"
     }
 
-def find_ncts(value):
-    """Find all exact NCTs recursively; no FOCUS or market-cap filtering."""
-    if isinstance(value, dict):
-        for item in value.values():
-            yield from find_ncts(item)
-    elif isinstance(value, list):
-        for item in value:
-            yield from find_ncts(item)
-    elif isinstance(value, str):
-        import re
-        yield from re.findall(r"\bNCT\d{8}\b", value.upper())
+def find_ncts(snapshot):
+    """Use ONLY exact TRIAL|NCT records from the unrestricted POOL pipeline."""
+    import re
+    if not isinstance(snapshot, dict) or not isinstance(snapshot.get("pipeline"), list):
+        raise RuntimeError("Unexpected POOL schema: pipeline list missing")
+    rows = snapshot["pipeline"]
+    health = snapshot.get("sourceHealth") or {}
+    parity = health.get("pipelineSourceParity") or health.get("streamlitPipelineParity") or {}
+    if health.get("state") == "STALE" or parity.get("exactPrograms") != len(rows):
+        raise RuntimeError("POOL source freshness/parity not verified")
+    ids = []
+    seen = set()
+    for row in rows:
+        if not isinstance(row, dict) or not isinstance(row.get("id"), str):
+            raise RuntimeError("Invalid POOL row identity")
+        identity = row["id"]
+        if re.fullmatch(r"TRIAL\\|NCT\\d{8}", identity):
+            nct = identity.split("|", 1)[1]
+            if nct in seen:
+                raise RuntimeError("Duplicate POOL trial identity: " + nct)
+            seen.add(nct)
+            ids.append(nct)
+    return sorted(ids)
 
 def main():
     p = argparse.ArgumentParser()
@@ -73,7 +85,7 @@ def main():
     p.add_argument("--limit", type=int, default=0, help="Optional test limit; 0 means all")
     args = p.parse_args()
     raw = pool_records()
-    ids = sorted(set(find_ncts(raw)))
+    ids = find_ncts(raw)
     if not ids:
         raise RuntimeError("No exact NCT identifiers in authenticated POOL source; schema review required")
     out = Path(args.output_dir)
