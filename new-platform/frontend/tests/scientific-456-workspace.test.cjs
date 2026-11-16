@@ -102,6 +102,12 @@ test('456 requests use dedicated HTTPS credentials, never production 123 credent
   assert.equal((await api.GET(get({nct,contract:'SCIENTIFIC_1_6'}))).status,503);
   process.env.PDUFA_LEVEL456_INTERNAL_API_KEY='ISOLATED_SECRET';
   assert.equal(urls.length,6,'Shared production host or secret must never be used');
+  global.fetch=async()=>Response.json({
+   detail:'Saved assessment exceeds history response budget; retrieve by exact run ID'
+  },{status:413});
+  const oversize=await api.GET(get({nct,contract:'SCIENTIFIC_1_6'}));
+  assert.equal(oversize.status,413,'An oversized history report must remain an explicit bounded failure');
+  assert.match((await oversize.json()).error,/exact run ID/);
   delete process.env.PDUFA_LEVEL456_API_BASE_URL;
   delete process.env.PDUFA_LEVEL456_INTERNAL_API_KEY;
   assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'}))).status,503);
