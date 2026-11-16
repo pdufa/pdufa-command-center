@@ -9,8 +9,8 @@ from datetime import date
 import re
 from typing import Any
 
-_HASH = re.compile(r"[0-9a-f]{64}\\Z")
-_NCT = re.compile(r"NCT[0-9]{8}\\Z")
+_HASH = re.compile(r"[0-9a-f]{64}\Z")
+_NCT = re.compile(r"NCT[0-9]{8}\Z")
 _OUTCOMES = frozenset({"fda_outcome", "actual_decision", "approval_status",
                        "outcome_label", "fda_decision", "decision_result", "approval_date"})
 
