@@ -79,7 +79,8 @@ jobs:
           assert "download_discovery_source(" in downloader
           assert "destination.write_bytes(data)" in downloader
           assert "destination.exists()" in downloader
-          assert 'urlsplit(response.url).scheme != "https"' in downloader
+          assert 'final_url.scheme != "https"' in downloader
+          assert 'final_url.username or final_url.password' in downloader
           assert "package_discovery_source_bytes(" in downloader
           for file in root.glob("*.py"):
               if file.name in {"historical_report.py", "discovery_download.py"}:
