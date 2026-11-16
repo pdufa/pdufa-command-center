@@ -57,3 +57,11 @@ The isolated 456 research workspace now provides **Load older 456 versions** whe
 The database applies the exact NCT, level (when selected), and `SCIENTIFIC_1_6` contract filters **before** page selection, and verifies every returned report hash. The frontend validates cursor syntax, keeps previously loaded versions, rejects malformed nested findings, and shows a dedicated button for older pages. Existing unpaginated history callers still receive their initial bounded page.
 
 Added regression coverage for 58 synthetic saved scientific reports across two pages, concurrent newer insertion, malformed cursors, and retrieval through both dedicated staging and frontend proxy. **These changes postdate the owner's previous 26-test pass and are not yet test-verified.** No deployment or production data changes were made.
+
+## Paging safety follow-up (development only)
+
+When the most recent history page contains only malformed reports rejected by the frontend display guard, the **Load older 456 versions** control remains available outside the visible report list, so valid older versions are still reachable without showing malformed data.
+
+If a **single** immutable report exceeds the backend's bounded history response budget (3 MB), the history API now returns an explicit HTTP 413 instead of silently returning an empty page with `hasMore=true` but no usable `nextCursor`. The report stays saved and remains accessible through its exact-NCT run-ID status lookup. The authenticated Next.js relay preserves this 413 and its safe explanation. Added backend and frontend regression tests for both cases.
+
+**The newly added paging-safety tests are not yet verified.** Previous 26 passing targeted backend tests predate these changes.
