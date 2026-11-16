@@ -18,7 +18,7 @@ $contextJson = & docker context inspect
 if ($LASTEXITCODE -ne 0) {
     throw "Cannot inspect Docker context. No containers were changed."
 }
-$contexts = @(($contextJson | ConvertFrom-Json))
+$contexts = @(($contextJson -join [Environment]::NewLine | ConvertFrom-Json))
 if ($contexts.Count -ne 1) {
     throw "Docker context was not uniquely identified. No containers were changed."
 }
