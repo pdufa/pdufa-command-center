@@ -1,0 +1,48 @@
+# Local-only, isolated Level 456 PostgreSQL and research API.
+# No production database, background scans, broker access, or public port.
+name: pdufa-scientific456-local
+
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: scientific456
+      POSTGRES_USER: scientific456_app
+      POSTGRES_PASSWORD: ${SCIENTIFIC456_DB_PASSWORD:?Set SCIENTIFIC456_DB_PASSWORD in the ignored .env}
+    volumes:
+      - scientific456_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U scientific456_app -d scientific456"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    restart: "no"
+
+  api:
+    build:
+      context: ../../new-platform/backend
+      dockerfile: Dockerfile.scientific456
+    ports:
+      - "127.0.0.1:8765:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgresql+psycopg://scientific456_app:${SCIENTIFIC456_DB_PASSWORD}@postgres:5432/scientific456
+      PDUFA_LEVEL456_DATABASE_NAME: scientific456
+      PDUFA_REQUIRE_POSTGRES: "1"
+      PDUFA_INTERNAL_API_KEY: ${SCIENTIFIC456_INTERNAL_API_KEY:?Set SCIENTIFIC456_INTERNAL_API_KEY in the ignored .env}
+      PDUFA_LEVEL456_BACKEND_ENABLED: "1"
+      PDUFA_MIGRATION_READ_ONLY: "1"
+      PDUFA_MIGRATION_COPY_ON_BOOT: "0"
+      PDUFA_MEDICAL_BATCH_AUTORUN: "0"
+      PDUFA_INSTALL_MONITOR_ENABLED: "0"
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/assessment-runtime/health', timeout=4).read()"]
+      interval: 10s
+      timeout: 6s
+      retries: 12
+    restart: "no"
+
+volumes:
+  scientific456_pgdata:
