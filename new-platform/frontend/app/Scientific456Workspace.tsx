@@ -121,7 +121,8 @@ export default function Scientific456Workspace({cohort,initialNct}:{cohort:Cohor
    if(response.hasMore===true&&(typeof response.nextCursor!=='string'||!response.nextCursor.includes('|')))
     throw Error('Older saved versions exist, but the isolated backend did not supply a valid page cursor');
    setRuns(existing=>older?[...existing,...reports.filter(r=>!existing.some(x=>x.runId===r.runId))]:reports);
-   if(!older)setExpanded(reports.slice(0,1).map(r=>r.runId));
+   if(older){if(reports.length)setExpanded(existing=>[...existing,reports[0].runId].filter((id,i,a)=>a.indexOf(id)===i).slice(-3));}
+   else setExpanded(reports.slice(0,1).map(r=>r.runId));
    setHasMore(response.hasMore===true);
    setNextCursor(typeof response.nextCursor==='string'?response.nextCursor:null);
    setStatus(reports.length
@@ -168,6 +169,7 @@ export default function Scientific456Workspace({cohort,initialNct}:{cohort:Cohor
  return <section id="scientific456" aria-label={cohort+' scientific Levels 4–6 research'} aria-busy={busy||!ready} data-scientific456-ready={ready?"true":"false"} style={{border:'1px solid #9cbca9',padding:16,borderRadius:10,margin:'14px 0',color:'#173d2b'}}>
   <h3 style={{marginTop:0}}>Scientific L04–L06 · Saved research and execution</h3>
   <p>Separate, opt-in scientific reviews for safety/benefit-risk, indication-specific clinical evidence and FDA application readiness. No validated scientific score, FDA forecast or confidence percentage is implied. Original Levels 123 remain separate.</p>
+  <p><strong>Research status: NOT VALIDATED · FDA prediction: ABSTAIN.</strong> No calibrated approval odds are available at any selected level.</p>
   <p><strong>{cohort}</strong> · Exact NCT selection only. Each level saves a separate version; source gaps remain visible. There is no all-trials batch in this workspace.</p>
   <label>Exact NCT <input aria-label="456 exact NCT" value={nct} placeholder="NCT04576949" onChange={e=>changeNct(e.target.value)} style={{minWidth:170}}/></label>{' '}
   <label>Scientific level <select aria-label="456 scientific level" value={level} onChange={e=>setLevel(Number(e.target.value))}>
