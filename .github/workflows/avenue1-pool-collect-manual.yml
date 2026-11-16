@@ -1,0 +1,41 @@
+name: Avenue 1 full POOL evidence collection (manual)
+on:
+  workflow_dispatch:
+    inputs:
+      test_limit:
+        description: '0 = every POOL trial; otherwise test first N trials'
+        required: true
+        default: '0'
+        type: choice
+        options:
+          - '0'
+          - '5'
+          - '25'
+jobs:
+  collect:
+    runs-on: ubuntu-latest
+    timeout-minutes: 180
+    permissions:
+      contents: read
+    env:
+      PDUFA_API_BASE_URL: ${{ secrets.PDUFA_API_BASE_URL }}
+      PDUFA_INTERNAL_API_KEY: ${{ secrets.PDUFA_INTERNAL_API_KEY }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate collector before fetching
+        run: |
+          python -m py_compile scripts/avenue1_pool_evidence_collector.py
+          python -m unittest discover -s tests -p 'test_avenue1_pool_evidence_collector.py' -v
+      - name: Collect public evidence from authenticated full POOL
+        run: python scripts/avenue1_pool_evidence_collector.py --output-dir artifacts/avenue1 --limit "${{ inputs.test_limit }}"
+      - name: Retain evidence and coverage report for review
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: avenue1-pool-clinical-evidence
+          path: artifacts/avenue1/
+          retention-days: 30
+          if-no-files-found: warn
