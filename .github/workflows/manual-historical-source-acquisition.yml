@@ -1,0 +1,36 @@
+name: Manual historical source acquisition (research only)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  collect-keynote522:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out isolated branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download pre-decision publication (discovery only)
+        env:
+          PYTHONPATH: new-platform/backend
+        run: |
+          python -m assessment_levels_07_20.discovery_download \
+            --url 'https://www.nejm.org/doi/pdf/10.1056/NEJMoa1910549' \
+            --output research-output/keynote522-2020-publication.pdf
+      - name: Upload retrieved bytes and provenance metadata
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: keynote522-discovery-source
+          path: research-output/
+          if-no-files-found: error
+          retention-days: 14
