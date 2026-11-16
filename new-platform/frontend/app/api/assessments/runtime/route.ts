@@ -43,8 +43,10 @@ export async function GET(req:NextRequest){
  const id=q.get('nct'),run=q.get('runId'),level=q.get('level'),before=q.get('before');
  if(!nct(id)||(level!==null&&!/^[1-6]$/.test(level))||(run!==null&&!/^[a-f0-9-]{36}$/.test(run)))return json({error:'Exact NCT, optional run UUID and level 1–6 required'},422);
  const contract=q.get('contract');
+ const cursorParts=before?.split('|');
  if(before!==null&&(contract!=='SCIENTIFIC_1_6'||run!==null||before.length>130||
-    !/^[0-9TZ:+.\\-]{20,64}\\|[a-f0-9-]{36}$/.test(before)))
+    cursorParts?.length!==2||!/^[0-9TZ:+.-]{20,64}$/.test(cursorParts[0])||
+    !/^[a-f0-9-]{36}$/.test(cursorParts[1])))
   return json({error:'Scientific 456 history requires a valid older-page cursor'},422);
  const historyQuery=new URLSearchParams();
  if(level)historyQuery.set('level',level);
