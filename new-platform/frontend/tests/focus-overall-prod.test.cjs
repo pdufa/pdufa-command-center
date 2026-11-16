@@ -69,8 +69,8 @@ test('current main FOCUS Survey Columns and numeric sorting retained alongside o
  const saved=fs.readFileSync(path.join(__dirname,'../app/FocusSavedAssessments.tsx'),'utf8');
  assert.match(focus,/aria-label="Survey Columns"/);
  assert.match(focus,/<FocusOverallHeaders expanded=\{surveyExpanded\}/);
- assert.match(focus,/values\\.overall=provisionalFocusOverall\\(nct,levels\\)\\?\\.evidenceReadinessScore/);
- assert.match(focus,/if\\(c===\"overall\"\\)return savedScores\\[t.nct\\]\\?\\.overall/);
+ assert.match(focus,/values\.overall=provisionalFocusOverall\(nct,levels\)\?\.evidenceReadinessScore/);
+ assert.match(focus,/if\(c==="overall"\)return savedScores\[t.nct\]\?\.overall/);
  assert.match(saved,/<FocusOverallLevelMatrix trials=\{rows\}/);
  assert.match(saved,/<FocusSurveyTrendChart trials=\{data.trials\}/);
 });
