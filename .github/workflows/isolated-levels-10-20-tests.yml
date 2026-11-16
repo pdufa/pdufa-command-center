@@ -1,0 +1,36 @@
+name: Isolated Levels 10-20 contract tests
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'new-platform/backend/assessment_levels_07_20/**'
+      - 'new-platform/backend/tests/test_isolated_level*.py'
+      - '.github/workflows/isolated-levels-10-20-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test runner only
+        run: python -m pip install pytest
+      - name: Run isolated Levels 10-20 tests
+        run: PYTHONPATH=new-platform/backend python -m pytest -q new-platform/backend/tests/test_isolated_level*.py
+      - name: Ensure no production imports or writes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root = Path("new-platform/backend/assessment_levels_07_20")
+          forbidden = ("from app", "import app", "sqlalchemy", "requests", "httpx", "subprocess", "open(")
+          for file in root.glob("*.py"):
+              content = file.read_text()
+              for token in forbidden:
+                  assert token not in content, (file, token)
+          print("Isolated module import/write guard passed")
+          PY
