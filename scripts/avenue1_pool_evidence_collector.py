@@ -48,10 +48,10 @@ def study_evidence(nct):
     # Raw results are preserved for review; no efficacy claim is inferred.
     clinical_dimensions = {
         "primary_endpoint": (protocol.get("outcomesModule") or {}).get("primaryOutcomes", []),
-        "effect_magnitude": outcomes.get("outcomeMeasures", []),
+        "effect_magnitude": outcomes.get("outcomeMeasures") or [],
         "statistical_reliability": [
-            analysis for measure in outcomes.get("outcomeMeasures", [])
-            for analysis in measure.get("analyses", [])
+            analysis for measure in (outcomes.get("outcomeMeasures") or [])
+            for analysis in (measure.get("analyses") or [])
         ],
         "clinical_meaningfulness": "REQUIRES_CLINICAL_REVIEW",
         "standard_of_care_comparator": arms,
