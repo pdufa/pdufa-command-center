@@ -65,7 +65,7 @@ def isolated_engine():
     return _database_engine()
 
 
-@api.get("/health", include_in_schema=False)
+@api.get("/health", include_in_schema=False, dependencies=[Depends(require_staging_enabled)])
 def health(db=Depends(isolated_engine)):
     """Read-only readiness probe for isolated staging monitoring.
 
