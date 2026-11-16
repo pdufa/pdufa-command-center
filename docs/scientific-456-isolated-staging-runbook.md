@@ -94,6 +94,8 @@ The verifier accepts the dedicated API's `stagingMode=SCIENTIFIC_456_ISOLATED_ON
 
 A successful preflight also requires that the backend explicitly advertises `scientific456Enabled=true` after `PDUFA_LEVEL456_BACKEND_ENABLED=1` is set on staging. Keep this unset on production.
 
+Dedicated staging also exposes `GET /api/assessment-runtime/health` for read-only readiness monitoring. It returns HTTP 200 with `status=READY` only when the service is enabled, a staging secret is configured, and the isolated database answers `SELECT 1`. Failures return HTTP 503 without leaking database diagnostics. Uptime Kuma can monitor this endpoint, but it must not be confused with an assessment-completion guarantee. The preflight checks this route for the dedicated staging application.
+
 The staging backend has a safe read-only metadata route:
 `GET /api/assessment-runtime/version`, advertising both scientific contracts and ABSTAIN status. The preflight also makes an authenticated GET for the fictitious NCT00000000 history. It does **not** submit a clinical trial or write a report.
 
