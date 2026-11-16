@@ -14,7 +14,7 @@ import secrets
 from typing import Annotated
 
 from fastapi import APIRouter, BackgroundTasks, Depends, FastAPI, Header, HTTPException
-from sqlalchemy import create_engine
+from sqlalchemy import create_engine, text
 from sqlalchemy.engine import make_url
 
 from . import assessment_runtime as runtime
@@ -63,6 +63,26 @@ def _database_engine():
 def isolated_engine():
     require_staging_enabled()
     return _database_engine()
+
+
+@api.get("/health", include_in_schema=False)
+def health(db=Depends(isolated_engine)):
+    """Read-only readiness probe for isolated staging monitoring.
+
+    An enable flag alone never counts as ready; the staging database must
+    accept a SELECT. No trial data, credentials or database name is exposed.
+    """
+    if not os.getenv("PDUFA_INTERNAL_API_KEY"):
+        raise HTTPException(503, "Isolated staging authentication is not configured")
+    try:
+        with db.connect() as connection:
+            result = connection.execute(text("SELECT 1")).scalar_one()
+        if result != 1:
+            raise ValueError("Database readiness query did not pass")
+    except Exception:
+        raise HTTPException(503, "Isolated scientific 456 storage unavailable") from None
+    return {"status": "READY", "stagingMode": "SCIENTIFIC_456_ISOLATED_ONLY",
+            "fdaModel": "ABSTAIN"}
 
 
 @api.get("/version")
