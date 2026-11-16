@@ -71,7 +71,7 @@ def find_ncts(snapshot):
         if not isinstance(row, dict) or not isinstance(row.get("id"), str):
             raise RuntimeError("Invalid POOL row identity")
         identity = row["id"]
-        if re.fullmatch(r"TRIAL\\|NCT\\d{8}", identity):
+        if re.fullmatch(r"TRIAL\|NCT\d{8}", identity):
             nct = identity.split("|", 1)[1]
             if nct in seen:
                 raise RuntimeError("Duplicate POOL trial identity: " + nct)
