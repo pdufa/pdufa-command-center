@@ -1,4 +1,5 @@
 """Dedicated scientific 456 staging routes, authentication and isolation checks."""
+from pathlib import Path
 import pytest
 from fastapi import HTTPException
 from fastapi.testclient import TestClient
@@ -154,3 +155,38 @@ def test_dedicated_service_rejects_sqlite_or_wrong_named_postgres(monkeypatch):
         staging._database_engine()
     assert err.value.status_code == 503
     staging._database_engine.cache_clear()
+
+
+def test_local_free_staging_compose_cannot_reach_production_or_write_assessments():
+    """Local fallback must be isolated and read-only by default."""
+    root = Path(__file__).resolve().parents[3]
+    config = (root / 'infra/scientific456-local/compose.yaml').read_text(encoding='utf-8')
+    launcher = (root / 'infra/scientific456-local/Start-Scientific456Local.ps1').read_text(encoding='utf-8')
+    ignore = (root / '.gitignore').read_text(encoding='utf-8')
+    assert 'name: pdufa-scientific456-local' in config
+    assert 'image: postgres:16-alpine' in config
+    assert 'POSTGRES_DB: scientific456' in config
+    assert 'POSTGRES_USER: scientific456_app' in config
+    assert 'scientific456_pgdata:/var/lib/postgresql/data' in config
+    assert config.count('ports:') == 1
+    assert '"127.0.0.1:8765:8000"' in config
+    assert 'Dockerfile.scientific456' in config
+    for required in (
+        'PDUFA_LEVEL456_DATABASE_NAME: scientific456',
+        'PDUFA_REQUIRE_POSTGRES: "1"',
+        'PDUFA_MIGRATION_READ_ONLY: "1"',
+        'PDUFA_MIGRATION_COPY_ON_BOOT: "0"',
+        'PDUFA_MEDICAL_BATCH_AUTORUN: "0"',
+        'PDUFA_INSTALL_MONITOR_ENABLED: "0"',
+    ):
+        assert required in config
+    assert 'PDUFA_LEVEL456_BACKEND_ENABLED: "1"' in config
+    assert 'SCIENTIFIC456_INTERNAL_API_KEY' in config
+    assert 'SCIENTIFIC456_DB_PASSWORD' in config
+    assert 'localhost:5432' not in config
+    assert '.env' in ignore
+    assert 'WriteAllText($envFile' in launcher
+    assert 'RandomNumberGenerator' in launcher
+    assert 'up -d --build' in launcher
+    assert not any(k in config for k in ('ALPACA_API_KEY', 'TELEGRAM_BOT_TOKEN',
+                                         'PDUFA_API_BASE_URL', 'PDUFA_LEVEL123_API_BASE_URL'))
