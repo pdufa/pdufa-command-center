@@ -79,6 +79,10 @@ test('456 requests use dedicated HTTPS credentials, never production 123 credent
   assert.equal(urls.length,4);
   assert.equal(urls[3],'https://isolated-456.example.test/api/assessment-runtime/history/'+nct+'?contract=SCIENTIFIC_1_6',
    'The isolated backend must filter 456 reports before its 50-record limit');
+  const status=await api.GET(get({nct,runId,contract:'SCIENTIFIC_1_6'}));
+  assert.equal(status.status,200);
+  assert.equal(urls[4],'https://isolated-456.example.test/api/assessment-runtime/runs/'+nct+'/'+runId+'?contract=SCIENTIFIC_1_6',
+   'The isolated backend must validate run-ID ownership before returning data');
   assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_3'}))).status,422);
   for(const level of [1,2,3])assert.equal((await api.POST(post({nct,level,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'}))).status,422);
   assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6',score:88}))).status,422);
@@ -90,12 +94,12 @@ test('456 requests use dedicated HTTPS credentials, never production 123 credent
   process.env.PDUFA_LEVEL456_INTERNAL_API_KEY=process.env.PDUFA_LEVEL123_INTERNAL_API_KEY;
   assert.equal((await api.GET(get({nct,contract:'SCIENTIFIC_1_6'}))).status,503);
   process.env.PDUFA_LEVEL456_INTERNAL_API_KEY='ISOLATED_SECRET';
-  assert.equal(urls.length,4,'Shared production host or secret must never be used');
+  assert.equal(urls.length,5,'Shared production host or secret must never be used');
   delete process.env.PDUFA_LEVEL456_API_BASE_URL;
   delete process.env.PDUFA_LEVEL456_INTERNAL_API_KEY;
   assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'}))).status,503);
   assert.equal((await api.GET(get({nct,contract:'SCIENTIFIC_1_6'}))).status,503);
-  assert.equal(urls.length,4,'No fallback to the configured 123 backend');
+  assert.equal(urls.length,5,'No fallback to the configured 123 backend');
  }finally{
   global.fetch=old;
   for(const v of vars)if(originals[v]===undefined)delete process.env[v];else process.env[v]=originals[v];
