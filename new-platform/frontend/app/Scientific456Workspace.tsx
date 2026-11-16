@@ -25,14 +25,28 @@ const labels:{[level:number]:string}={
 const validNct=(value:string)=>/^NCT[0-9]{8}$/.test(value);
 const human=(value:string)=>value.replaceAll('_',' ');
 const validRun=(value:unknown)=>typeof value==='string'&&/^[a-f0-9-]{36}$/.test(value);
+const textOnly=(value:unknown)=>typeof value==='string';
+const safeTextList=(value:unknown)=>Array.isArray(value)&&value.every(textOnly);
+function validCheck(value:unknown):value is Check{
+ if(!value||typeof value!=='object'||Array.isArray(value))return false;
+ const check=value as Partial<Check>;
+ return textOnly(check.id)&&textOnly(check.state)&&textOnly(check.explanation)&&textOnly(check.locator);
+}
 function is456(value:unknown,nct:string):value is Report{
- if(!value||typeof value!=='object')return false;
+ if(!value||typeof value!=='object'||Array.isArray(value))return false;
  const r=value as Partial<Report>;
  return r.contract==='SCIENTIFIC_1_6'&&r.nct===nct&&
   [4,5,6].includes(r.level as number)&&validRun(r.runId)&&
+  textOnly(r.name)&&['CURRENT_EVIDENCE','BLIND_HISTORICAL'].includes(r.mode as string)&&
+  (r.cutoffDate===null||textOnly(r.cutoffDate))&&textOnly(r.executedAt)&&
+  textOnly(r.engineVersion)&&textOnly(r.executionStatus)&&
+  textOnly(r.scientificStatus)&&textOnly(r.ownerReviewStatus)&&
   !!r.score&&r.score.kind==='NOT_VALIDATED'&&r.score.value===null&&
   !!r.fdaPrediction&&r.fdaPrediction.outcome==='ABSTAIN'&&r.fdaPrediction.probability===null&&
-  Array.isArray(r.checks)&&Array.isArray(r.risks)&&Array.isArray(r.recommendations)&&
+  Array.isArray(r.checks)&&r.checks.every(validCheck)&&
+  safeTextList(r.risks)&&safeTextList(r.recommendations)&&safeTextList(r.limitations)&&
+  !!r.evidence&&textOnly(r.evidence.input_sha256)&&textOnly(r.evidence.captured_at)&&
+  textOnly(r.evidence.source_url)&&
   typeof r.reportHash==='string'&&/^[a-f0-9]{64}$/.test(r.reportHash);
 }
 async function read(url:string,init?:RequestInit):Promise<Record<string,unknown>>{
