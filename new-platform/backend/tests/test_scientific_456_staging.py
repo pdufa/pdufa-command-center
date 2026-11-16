@@ -187,6 +187,15 @@ def test_local_free_staging_compose_cannot_reach_production_or_write_assessments
     assert '.env' in ignore
     assert 'WriteAllText($envFile' in launcher
     assert 'RandomNumberGenerator' in launcher
+    assert 'docker context inspect' in launcher
+    assert "Remote Docker context refused" in launcher
+    assert 'config --quiet' in launcher
     assert 'up -d --build' in launcher
+    verifier = (root / 'infra/scientific456-local/Test-Scientific456Local.ps1').read_text(encoding='utf-8')
+    assert 'Invoke-RestMethod -Method Get' in verifier
+    assert '$base/health' in verifier and '$base/version' in verifier
+    assert 'NCT00000000?contract=SCIENTIFIC_1_6' in verifier
+    assert 'PDUFA_MIGRATION_READ_ONLY: "1"' in verifier
+    assert 'Invoke-RestMethod -Method Post' not in verifier
     assert not any(k in config for k in ('ALPACA_API_KEY', 'TELEGRAM_BOT_TOKEN',
                                          'PDUFA_API_BASE_URL', 'PDUFA_LEVEL123_API_BASE_URL'))
