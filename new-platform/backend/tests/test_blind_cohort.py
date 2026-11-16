@@ -65,3 +65,19 @@ def test_missing_or_malformed_trials_rejected(trials):
 def test_nonmapping_rejected():
     with pytest.raises(TypeError):
         validate_blind_cohort(None)
+
+
+def test_nested_fda_outcome_is_rejected():
+    manifest = valid_manifest()
+    manifest["trials"][0]["source_metadata"] = {"history": [{"fda_decision": "approved"}]}
+    result = validate_blind_cohort(manifest)
+    assert not result["eligible_for_blind_review"]
+    assert "TRIAL_0_OUTCOME_LEAKAGE" in result["errors"]
+
+
+def test_manifest_level_outcome_is_rejected():
+    manifest = valid_manifest()
+    manifest["metadata"] = {"decision_result": "approved"}
+    result = validate_blind_cohort(manifest)
+    assert not result["eligible_for_blind_review"]
+    assert "MANIFEST_OUTCOME_LEAKAGE" in result["errors"]
