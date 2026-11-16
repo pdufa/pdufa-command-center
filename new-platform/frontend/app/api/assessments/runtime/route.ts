@@ -40,12 +40,16 @@ export async function GET(req:NextRequest){
   if(!['POOL','FOCUS','HISTORICAL'].includes(population||'')||term.length>100)return json({error:'Invalid population search'},422);
   return relay(req,'/trials?'+new URLSearchParams({population:population!,q:term}));
  }
- const id=q.get('nct'),run=q.get('runId'),level=q.get('level');
+ const id=q.get('nct'),run=q.get('runId'),level=q.get('level'),before=q.get('before');
  if(!nct(id)||(level!==null&&!/^[1-6]$/.test(level))||(run!==null&&!/^[a-f0-9-]{36}$/.test(run)))return json({error:'Exact NCT, optional run UUID and level 1–6 required'},422);
  const contract=q.get('contract');
+ if(before!==null&&(contract!=='SCIENTIFIC_1_6'||run!==null||before.length>130||
+    !/^[0-9TZ:+.\\-]{20,64}\\|[a-f0-9-]{36}$/.test(before)))
+  return json({error:'Scientific 456 history requires a valid older-page cursor'},422);
  const historyQuery=new URLSearchParams();
  if(level)historyQuery.set('level',level);
  if(contract)historyQuery.set('contract',contract);
+ if(before)historyQuery.set('before',before);
  const historyPath='/history/'+id+(historyQuery.size?'?'+historyQuery:'');
  const runPath='/runs/'+id+'/'+run+(contract?'?contract='+encodeURIComponent(contract):'');
  return relay(req,run?runPath:historyPath,undefined,contract==='SCIENTIFIC_1_6');
