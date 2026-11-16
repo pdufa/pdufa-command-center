@@ -31,7 +31,7 @@ export function FocusLevelHeaders(){
 }
 export function FocusLevelSubheaders(){
  return <>{[1,2,3].flatMap(level=>[
-  <th key={level+'p'}>FDA prediction</th>,<th key={level+'s'}>Scientific score / saved report</th>
+  <th key={level+'p'}>FDA Forecast Status</th>,<th key={level+'s'}>Evidence Readiness / Saved Report</th>
  ])}</>;
 }
 
