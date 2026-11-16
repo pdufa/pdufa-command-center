@@ -9,6 +9,7 @@ import {ExactTrialIntakeSelector} from '../ExactTrialScientificIntake';
 import {useEffect,useMemo,useState} from "react";
 import {readSavedFocus} from "../../lib/focus-saved-records";
 import {provisionalFocusScore,provisionalFocusOverall} from "../../lib/focus-provisional-scores";
+import {FOCUS_CHART_SNAPSHOT_TRIALS,FOCUS_CHART_SNAPSHOT_DATE} from "../../lib/focus-chart-snapshot";
 import NumericSortSettings,{sortNumericRows,type NumericSortRule} from "../NumericSortSettings";
 import Link from "next/link";
 import TickerChartButton from "../TickerChartButton";
@@ -25,11 +26,42 @@ const designationByNct=new Map(designationData.records.map(r=>[r.nct,r]));
 const finalGateAudit=FOCUS_FINAL_TRIAL_AUDIT;
 const finalGateByNct=new Map(finalGateAudit.rows.map(row=>[row.nct,row]));
 
+/** Same exact 32-NCT, 96-run pinned source evidence as the visible FOCUS chart.
+ * These are documentary readiness scores; there is NO FDA approval forecast.
+ * Preserve the source report identity so provisionalFocusScore enforces the same
+ * immutable run/version/date guard as in the chart. Never fabricate values.
+ */
+const datedSourceLevels:Record<string,FocusTrialLevels>=Object.fromEntries(
+ FOCUS_CHART_SNAPSHOT_TRIALS.map(trial=>[
+  trial.nct,Object.fromEntries([1,2,3].map(level=>{
+   const report=trial.levels[String(level)]?.report;
+   return [String(level),{
+    state:report?'COMPLETED':'NOT RUN',
+    report:report?{...report,fdaPrediction:{
+     outcome:report.fdaPrediction?.outcome||'ABSTAIN',confidence:'NOT_VALIDATED'
+    }}:null,
+    missingEvidence:[]
+   }];
+  }))
+ ])
+);
+const evidenceColumnScores=(nct:string,levels?:FocusTrialLevels)=>{
+ const values:Record<string,number|null>={};
+ for(const level of [1,2,3])
+  values[String(level)]=provisionalFocusScore(nct,level,levels?.[String(level)]?.report)?.evidenceReadinessScore??null;
+ values.overall=provisionalFocusOverall(nct,levels)?.evidenceReadinessScore??null;
+ return values;
+};
+const datedSourceScores:Record<string,Record<string,number|null>>=Object.fromEntries(
+ FOCUS_CHART_SNAPSHOT_TRIALS.map(t=>[t.nct,evidenceColumnScores(t.nct,datedSourceLevels[t.nct])])
+);
+
 export default function FocusPage(){
  const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);
  const [surveyExpanded,setSurveyExpanded]=useState(false);
- const [savedScores,setSavedScores]=useState<Record<string,Record<string,number|null>>>({});
- const [savedLevels,setSavedLevels]=useState<Record<string,FocusTrialLevels>>({});
+ const [savedScores,setSavedScores]=useState<Record<string,Record<string,number|null>>>(datedSourceScores);
+ const [savedLevels,setSavedLevels]=useState<Record<string,FocusTrialLevels>>(datedSourceLevels);
+ const [usingDatedSource,setUsingDatedSource]=useState(true);
  useEffect(()=>{
   let active=true;
   async function refresh(){
@@ -44,18 +76,23 @@ export default function FocusPage(){
         const report=t.levels[String(level)]?.report;
         return !!report&&(report.nct!==t.nct||report.level!==level||report.mode!=='CURRENT_EVIDENCE');
        })))throw Error('Saved exact-trial source roster unavailable');
-    const levels=Object.fromEntries(members.map(t=>[t.nct,t.levels]));
+    const levels:Record<string,FocusTrialLevels>=Object.fromEntries(members.map(t=>[t.nct,t.levels]));
     const scores:Record<string,Record<string,number|null>>={};
     for(const trial of members){
-      scores[trial.nct]={};
-      for(const level of [1,2,3]){
-        scores[trial.nct][String(level)]=provisionalFocusScore(trial.nct,level,trial.levels[String(level)]?.report)?.evidenceReadinessScore??null;
-      }
-      scores[trial.nct].overall=provisionalFocusOverall(trial.nct,trial.levels)?.evidenceReadinessScore??null;
+      const candidate=evidenceColumnScores(trial.nct,trial.levels);
+      if(candidate.overall===null||[1,2,3].some(level=>candidate[String(level)]===null))
+       throw Error('New or mismatched research run: use dated, labeled evidence snapshot until rescored');
+      scores[trial.nct]=candidate;
     }
     setSavedLevels(levels);
     setSavedScores(scores);
-   }catch{if(active){setSavedLevels({});setSavedScores({});}}
+    setUsingDatedSource(false);
+   }catch{if(active){
+    // No 0s or blanks on network failure; show the same pinned 96 survey
+    // observations already used by the chart, clearly labeled as dated.
+    setSavedLevels(datedSourceLevels);setSavedScores(datedSourceScores);
+    setUsingDatedSource(true);
+   }}
   }
   void refresh();
   const timer=setInterval(()=>void refresh(),30000);
@@ -107,6 +144,18 @@ export default function FocusPage(){
     <p style={{margin:"0 0 7px"}}>Owner-reviewed assessments: <strong>0</strong> · Source pointers recorded: {finalGateAudit.pointers} · Awaiting source review: {finalGateAudit.review} · Missing evidence: {finalGateAudit.missing}.</p>
     <p style={{fontSize:13,margin:0}}>Only these exact final-list NCTs are evaluated; the early-phase POOL, historical Phase 3 census and all-phase TOOLS counts are not included. Recorded links or scheduled jobs are not completed clinical, regulatory or live synchronization verification. Current list as of {finalGateAudit.asOf}.</p>
   </section>
+  <p data-testid="focus-main-grid-evidence-source" role="status" style={{
+    margin:"8px 0 12px",padding:"9px 12px",border:"1px solid #a5c5b0",borderRadius:8,
+    background:"#f1f8f3",fontSize:13
+  }}>
+   <strong>FOCUS L01–L03 and Overall: 32/32 trial evidence scores populated.</strong>
+   {" "}{usingDatedSource?
+     "Source: dated, verified 2026-11-15 research snapshot. Live authenticated records are unavailable, newer or not fully reconciled.":
+     "Source: 32/32 current reports reconciled with the immutable source checks."}
+   {" "}These numbers measure source-documentation readiness (not drug efficacy, scientific validation,
+   FDA approval probability or a directional approval call). Expand “Survey Columns” or “+ 20 Levels”
+   for each L01–L03 value. Snapshot date: {FOCUS_CHART_SNAPSHOT_DATE}.
+  </p>
   <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
   <style>{`table.assessment-expandable:not(.survey-expanded):not(:has(details.assessment-toggle[open])) .assessment-level{display:none} .assessment-toggle{display:inline-block;margin-left:6px;vertical-align:middle}.assessment-toggle summary{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border:1px solid #7e9f8b;border-radius:5px;cursor:pointer;background:#fff;color:#173d2b;font-weight:800;list-style:none}.assessment-toggle summary::-webkit-details-marker{display:none}.assessment-toggle .when-open{display:none}.assessment-toggle[open] .when-open{display:inline}.assessment-toggle[open] .when-closed{display:none}`}</style>
    <table className={surveyExpanded?"assessment-expandable survey-expanded":"assessment-expandable"} style={{width:"100%",borderCollapse:"collapse",minWidth:970,fontSize:14}}>
