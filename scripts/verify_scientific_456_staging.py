@@ -67,6 +67,8 @@ def main() -> int:
             raise ValueError("Backend does not preserve original 123 contract")
         if version.get("fdaModel") != "ABSTAIN":
             raise ValueError("Backend does not advertise unvalidated FDA model abstention")
+        if version.get("scientific456Enabled") is not True:
+            raise ValueError("Staging backend is not explicitly enabled for scientific 456")
         # A fictitious exact-NCT read checks storage/auth availability without
         # consulting a real trial or creating an assessment.
         probe = Request(base + "/api/assessment-runtime/history/NCT00000000",
