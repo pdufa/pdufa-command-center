@@ -49,3 +49,11 @@ The isolated scientific history route now accepts `contract=SCIENTIFIC_1_6` and 
 Additionally, opt-in 456 POST requests default to denied unless `PDUFA_LEVEL456_BACKEND_ENABLED=1` is set on the isolated backend. They remain disabled for unconfigured services. Trial inventory JSON decoding specifies UTF-8 explicitly to avoid Windows locale decode errors.
 
 **No automatic results backfill, production merge, staging service provisioning, or deployment occurred.** Latest full frontend and backend tests must pass after this change.
+
+## Saved history beyond 50 versions (new development addition)
+
+The isolated 456 research workspace now provides **Load older 456 versions** when more immutable saved reports exist. The backend implements **keyset pagination**, ordering by the immutable `created_at, run_id` pair. The returned `nextCursor` must be supplied as a `before` query parameter on subsequent history reads. This avoids offset drift if a new assessment is saved between page requests.
+
+The database applies the exact NCT, level (when selected), and `SCIENTIFIC_1_6` contract filters **before** page selection, and verifies every returned report hash. The frontend validates cursor syntax, keeps previously loaded versions, rejects malformed nested findings, and shows a dedicated button for older pages. Existing unpaginated history callers still receive their initial bounded page.
+
+Added regression coverage for 58 synthetic saved scientific reports across two pages, concurrent newer insertion, malformed cursors, and retrieval through both dedicated staging and frontend proxy. **These changes postdate the owner's previous 26-test pass and are not yet test-verified.** No deployment or production data changes were made.
