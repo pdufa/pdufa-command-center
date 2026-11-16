@@ -61,6 +61,8 @@ class RunInput(BaseModel):
     def checked(self):
         if self.contract == 'SCIENTIFIC_1_3' and self.level > 3:
             raise HTTPException(422, 'Scientific execution currently supports Levels 1–3 only')
+        if self.contract == 'SCIENTIFIC_1_6' and self.level < 4:
+            raise HTTPException(422, 'Isolated scientific execution supports Levels 4–6 only')
         if self.mode == 'BLIND_HISTORICAL':
             if not self.cutoffDate or self.cutoffDate >= datetime.now(timezone.utc).date():
                 raise HTTPException(422, 'Blind Historical requires a valid past cutoff date')
