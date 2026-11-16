@@ -28,5 +28,31 @@ class CollectorTests(unittest.TestCase):
         self.assertFalse(result["results_posted"])
         self.assertEqual(result["ten_category_scoring"], "PENDING_EVIDENCE_REVIEW")
 
+    def test_extracts_ten_dimensions_without_assigning_scores(self):
+        payload = {
+            "protocolSection": {
+                "designModule": {"designInfo": {"allocation": "RANDOMIZED"}},
+                "outcomesModule": {"primaryOutcomes": [{"measure": "Response"}]},
+                "armsInterventionsModule": {"armGroups": [{"label": "Placebo"}]},
+            },
+            "resultsSection": {"outcomeMeasuresModule": {"outcomeMeasures": [
+                {"title": "Response", "analyses": [{"pValue": "0.01"}]},
+            ]}},
+        }
+        with patch("scripts.avenue1_pool_evidence_collector.fetch_json", return_value=payload):
+            result = study_evidence("NCT05507203")
+        dimensions = result["clinical_dimensions"]
+        self.assertEqual(len(dimensions), 10)
+        self.assertEqual(dimensions["statistical_reliability"][0]["pValue"], "0.01")
+        self.assertEqual(dimensions["standard_of_care_comparator"][0]["label"], "Placebo")
+        self.assertEqual(result["ten_category_scoring"], "PENDING_EVIDENCE_REVIEW")
+
+    def test_null_registry_results_lists_are_safe(self):
+        payload = {"resultsSection": {"outcomeMeasuresModule": {"outcomeMeasures": None}}}
+        with patch("scripts.avenue1_pool_evidence_collector.fetch_json", return_value=payload):
+            result = study_evidence("NCT05507203")
+        self.assertEqual(result["clinical_dimensions"]["effect_magnitude"], [])
+        self.assertEqual(result["clinical_dimensions"]["statistical_reliability"], [])
+
 if __name__ == "__main__":
     unittest.main()
