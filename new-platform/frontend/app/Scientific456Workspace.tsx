@@ -182,9 +182,9 @@ export default function Scientific456Workspace({cohort,initialNct}:{cohort:Cohor
    {valid&&<Link href={'/assessments?nct='+encodeURIComponent(nct)+'#scientific456'}>Open this trial in ASSESSMENTS</Link>}
   </p>
   {status&&<p role="status">{status}</p>}{error&&<p role="alert">{error}</p>}
+  {hasMore&&<p>Additional older saved versions are available. <button type="button" disabled={!ready||busy||!nextCursor} onClick={()=>void history(nct,true)}>Load older 456 versions</button></p>}
   {runs.length>0&&<div><h4>Saved 456 assessment versions · {nct}</h4>
    <p>Only exact-NCT SCIENTIFIC_1_6 reports with unvalidated scientific scores and an abstaining FDA prediction are displayed. Choose versions to expand.</p>
-   {hasMore&&<p>Additional older saved versions are available. <button type="button" disabled={!ready||busy||!nextCursor} onClick={()=>void history(nct,true)}>Load older 456 versions</button></p>}
    <ul>{runs.map(r=><li key={r.runId}><label><input type="checkbox" checked={expanded.includes(r.runId)} onChange={e=>setExpanded(old=>e.target.checked?[...old,r.runId]:old.filter(x=>x!==r.runId))}/> L0{r.level} · {r.mode} · {r.executedAt} · {r.engineVersion} · NOT VALIDATED · ABSTAIN</label></li>)}</ul>
    {runs.filter(r=>expanded.includes(r.runId)).map(r=><ReportDetail key={r.runId} report={r}/>)}
   </div>}
