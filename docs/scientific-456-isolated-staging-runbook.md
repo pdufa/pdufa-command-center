@@ -102,12 +102,33 @@ git pull --ff-only
 powershell -NoProfile -ExecutionPolicy Bypass -File ".\infra\scientific456-local\Start-Scientific456Local.ps1"
 ```
 
-Docker Desktop and Docker Compose must already be available. The script
-prints the safe version and health URLs; the user can view those with the
-browser or `Invoke-RestMethod`. **No write test is authorized by this
-launcher**, and the local container has no link to the cloud Render service.
-Local Docker resources may consume PC CPU/disk. Never commit the generated
-`.env` or share its secrets.
+Docker Desktop and Docker Compose must already be available. The launcher
+refuses **SSH/TCP/remote Docker contexts** and will create containers only
+through the local Docker Desktop socket. It checks that the ignored `.env`
+contains only the two 64-character generated credentials and validates the
+Compose configuration before starting. The script prints the version and health
+URLs but **does not run assessments or write reports**.
+
+After the containers are running, verify everything with a second, **read-only**
+PowerShell command:
+
+```powershell
+powershell -NoProfile -ExecutionPolicy Bypass -File ".\\infra\\scientific456-local\\Test-Scientific456Local.ps1"
+```
+
+This checks version/contract, standalone PostgreSQL readiness and authenticated
+empty synthetic-NCT history. It makes only **GET** requests on
+`http://127.0.0.1:8765`, and it never displays the secrets. An empty
+history read **does not certify run persistence**. Even when this check passes,
+`PDUFA_MIGRATION_READ_ONLY=1` deliberately blocks new assessments.
+
+**Localhost is not accessible from the public Vercel application**. This
+zero-cloud-cost fallback verifies the independent backend; it does not make
+Levels 456 usable from the live public dashboard. Cloud integration still
+requires a separately owned accessible database/backend, protected HTTPS
+credentials and explicit staging approval. The local container has no link
+to the cloud Render service. Docker resources consume local PC CPU/disk.
+Never commit the generated `.env` or share its secrets.
 
 ## Verify local code without provisioning
 
