@@ -22,7 +22,7 @@ export default function NumericSortSettings({scope,columns,onApply}:{scope:"past
  const [open,setOpen]=useState(false);
  const [quickOpen,setQuickOpen]=useState(false);
  const [quickColumn,setQuickColumn]=useState(columns[0]?.id??"");
- const [quickDirection,setQuickDirection]=useState<"asc"|"desc">("asc");
+ const [quickDirection,setQuickDirection]=useState<"asc"|"desc">(scope==="focus"?"desc":"asc");
  const [rules,setRules]=useState<NumericSortRule[]>([]);
  const [name,setName]=useState("");
  const [presets,setPresets]=useState<Preset[]>([]);
@@ -37,11 +37,11 @@ export default function NumericSortSettings({scope,columns,onApply}:{scope:"past
  <button type="button" onClick={()=>setQuickOpen(true)} aria-label="Column Sort Popup" style={{padding:"9px 14px",borderRadius:8,border:"1px solid #789987",background:"#e6f2ea",color:"#173d2b",fontWeight:700,cursor:"pointer"}}>↕ Column Sort Popup</button>
  <button type="button" onClick={()=>setOpen(true)} aria-label="Sort Display" style={{padding:"9px 14px",borderRadius:8,border:"1px solid #789987",background:"#e6f2ea",color:"#173d2b",fontWeight:700,cursor:"pointer"}}>⚙ Sort Display</button>
  {quickOpen&&<div role="dialog" aria-modal="true" aria-label="Column Sort Popup" style={{position:"fixed",inset:0,zIndex:1000,background:"#0008",display:"grid",placeItems:"center",padding:12}}>
- <div style={{background:"white",color:"#173d2b",padding:20,borderRadius:12,width:"min(460px,100%)",maxHeight:"85vh",overflowY:"auto"}}>
+ <div style={{background:"white",color:"#173d2b",padding:20,borderRadius:12,width:"min(460px,100%)",maxWidth:"100%",boxSizing:"border-box",maxHeight:"85vh",overflowY:"auto"}}>
  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center"}}><h2>Column Sort Popup — {scope.toUpperCase()}</h2><button aria-label="Close column sort popup" onClick={()=>setQuickOpen(false)}>✕</button></div>
  <p>Sort the trial list by one column. For multiple priorities and saved setups, use Sort Display.</p>
- <label>Column <select aria-label="Column to sort" value={quickColumn} onChange={e=>setQuickColumn(e.target.value)}>{columns.map(c=><option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
- <label style={{display:"block",marginTop:12}}>Direction <select aria-label="Column sort direction" value={quickDirection} onChange={e=>setQuickDirection(e.target.value as "asc"|"desc")}><option value="asc">Low → High / A → Z</option><option value="desc">High → Low / Z → A</option></select></label>
+ <label style={{display:"block"}}>Column <select style={{display:"block",width:"100%",maxWidth:"100%",boxSizing:"border-box",padding:"10px 8px",fontSize:14,textOverflow:"ellipsis"}} aria-label="Column to sort" value={quickColumn} onChange={e=>setQuickColumn(e.target.value)}>{columns.map(c=><option key={c.id} value={c.id}>{c.label}</option>)}</select></label>
+ <label style={{display:"block",marginTop:12}}>Direction <select style={{maxWidth:"100%",boxSizing:"border-box",padding:"8px 4px"}} aria-label="Column sort direction" value={quickDirection} onChange={e=>setQuickDirection(e.target.value as "asc"|"desc")}><option value="asc">Low → High / A → Z</option><option value="desc">High → Low / Z → A</option></select></label>
  <div style={{display:"flex",gap:8,justifyContent:"flex-end",marginTop:16}}><button onClick={()=>setQuickOpen(false)}>Cancel</button><button onClick={()=>{onApply([]);setRules([]);setQuickOpen(false)}}>Reset</button><button disabled={!columns.some(c=>c.id===quickColumn)} onClick={()=>{const next=[{column:quickColumn,direction:quickDirection}];setRules(next);onApply(next);setQuickOpen(false)}}>Apply Sort</button></div>
  </div></div>}
  {open&&<div role="dialog" aria-modal="true" aria-label="Sort Settings" style={{position:"fixed",inset:0,zIndex:1000,background:"#0008",display:"grid",placeItems:"center",padding:12}}>
