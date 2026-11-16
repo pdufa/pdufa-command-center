@@ -76,6 +76,7 @@ export default function Scientific456Workspace({cohort,initialNct}:{cohort:Cohor
  const [status,setStatus]=useState('');
  const [error,setError]=useState('');
  const [busy,setBusy]=useState(false);
+ const [ready,setReady]=useState(false);
  const [expanded,setExpanded]=useState<string[]>([]);
  const [hasMore,setHasMore]=useState(false);
  const revision=useRef(0);
@@ -87,7 +88,7 @@ export default function Scientific456Workspace({cohort,initialNct}:{cohort:Cohor
   setNct(value.trim().toUpperCase());
   setRuns([]);setExpanded([]);setStatus('');setError('');setHasMore(false);
  }
- useEffect(()=>()=>{revision.current++;controller.current?.abort();},[]);
+ useEffect(()=>{setReady(true);return()=>{revision.current++;controller.current?.abort();};},[]);
  useEffect(()=>{if(initialNct&&validNct(initialNct)&&initialNct!==nct)changeNct(initialNct);},[initialNct]);
  async function history(id=nct){
   if(!validNct(id))return;
@@ -141,7 +142,7 @@ export default function Scientific456Workspace({cohort,initialNct}:{cohort:Cohor
  }
  const valid=validNct(nct);
  const pastValid=mode==='CURRENT_EVIDENCE'||(/^\d{4}-\d{2}-\d{2}$/.test(cutoff)&&cutoff<new Date().toISOString().slice(0,10));
- return <section id="scientific456" aria-label={cohort+' scientific Levels 4–6 research'} aria-busy={busy} style={{border:'1px solid #9cbca9',padding:16,borderRadius:10,margin:'14px 0',color:'#173d2b'}}>
+ return <section id="scientific456" aria-label={cohort+' scientific Levels 4–6 research'} aria-busy={busy||!ready} data-scientific456-ready={ready?"true":"false"} style={{border:'1px solid #9cbca9',padding:16,borderRadius:10,margin:'14px 0',color:'#173d2b'}}>
   <h3 style={{marginTop:0}}>Scientific L04–L06 · Saved research and execution</h3>
   <p>Separate, opt-in scientific reviews for safety/benefit-risk, indication-specific clinical evidence and FDA application readiness. No validated scientific score, FDA forecast or confidence percentage is implied. Original Levels 123 remain separate.</p>
   <p><strong>{cohort}</strong> · Exact NCT selection only. Each level saves a separate version; source gaps remain visible. There is no all-trials batch in this workspace.</p>
@@ -153,8 +154,8 @@ export default function Scientific456Workspace({cohort,initialNct}:{cohort:Cohor
    <option value="CURRENT_EVIDENCE">Current evidence</option><option value="BLIND_HISTORICAL">Blind historical cutoff</option>
   </select></label>
   {mode==='BLIND_HISTORICAL'&&<p><label>Pre-decision cutoff <input aria-label="456 historical cutoff" type="date" value={cutoff} onChange={e=>setCutoff(e.target.value)}/></label> Only eligible original snapshots captured before the cutoff are allowed. No current-data fallback and no certification of the owner's outcome unawareness.</p>}
-  <p><button type="button" disabled={!valid||!pastValid||busy} onClick={()=>void run()}>Run selected scientific level</button>{' '}
-   <button type="button" disabled={!valid||busy} onClick={()=>void history()}>Load saved 456 history</button>{' '}
+  <p><button type="button" disabled={!ready||!valid||!pastValid||busy} onClick={()=>void run()}>Run selected scientific level</button>{' '}
+   <button type="button" disabled={!ready||!valid||busy} onClick={()=>void history()}>Load saved 456 history</button>{' '}
    {valid&&<Link href={'/assessments?nct='+encodeURIComponent(nct)+'#scientific456'}>Open this trial in ASSESSMENTS</Link>}
   </p>
   {status&&<p role="status">{status}</p>}{error&&<p role="alert">{error}</p>}
