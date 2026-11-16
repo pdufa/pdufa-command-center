@@ -27,7 +27,8 @@ if (-not (Test-Path -LiteralPath $envFile)) {
     $apiKey = ([BitConverter]::ToString($keyBytes)).Replace("-", "").ToLowerInvariant()
     $body = "SCIENTIFIC456_DB_PASSWORD=$dbPassword" + [Environment]::NewLine +
             "SCIENTIFIC456_INTERNAL_API_KEY=$apiKey" + [Environment]::NewLine
-    [System.IO.File]::WriteAllText($envFile, $body, (New-Object System.Text.UTF8Encoding($false)))
+    $utf8 = New-Object System.Text.UTF8Encoding -ArgumentList $false
+    [System.IO.File]::WriteAllText($envFile, $body, $utf8)
     Write-Host "Created local credentials in ignored .env (not displayed)." -ForegroundColor Green
 }
 
