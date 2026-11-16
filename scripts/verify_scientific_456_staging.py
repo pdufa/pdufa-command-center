@@ -63,7 +63,10 @@ def main() -> int:
             version = json.loads(response.read(32768))
         if version.get("scientificContracts", {}).get("SCIENTIFIC_1_6") != [4, 5, 6]:
             raise ValueError("Backend does not advertise isolated 456 scientific contract")
-        if version.get("scientificContracts", {}).get("SCIENTIFIC_1_3") != [1, 2, 3]:
+        if version.get("stagingMode") == "SCIENTIFIC_456_ISOLATED_ONLY":
+            if version.get("legacy123Separate") is not True or version.get("levels") != [4, 5, 6]:
+                raise ValueError("Dedicated staging does not confirm isolation from original 123")
+        elif version.get("scientificContracts", {}).get("SCIENTIFIC_1_3") != [1, 2, 3]:
             raise ValueError("Backend does not preserve original 123 contract")
         if version.get("fdaModel") != "ABSTAIN":
             raise ValueError("Backend does not advertise unvalidated FDA model abstention")
@@ -71,7 +74,7 @@ def main() -> int:
             raise ValueError("Staging backend is not explicitly enabled for scientific 456")
         # A fictitious exact-NCT read checks storage/auth availability without
         # consulting a real trial or creating an assessment.
-        probe = Request(base + "/api/assessment-runtime/history/NCT00000000",
+        probe = Request(base + "/api/assessment-runtime/history/NCT00000000?contract=SCIENTIFIC_1_6",
                         headers={"Accept": "application/json", "X-Pdufa-Internal-Key": key},
                         method="GET")
         with urlopen(probe, timeout=20) as response:
