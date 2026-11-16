@@ -474,14 +474,20 @@ def create(engine, request):
     return run_id
 
 
-def status(engine,nct,run_id):
+def status(engine,nct,run_id,contract=None):
     if not inspect(engine).has_table('assessment_v2_jobs'):
         raise HTTPException(404,'Assessment run not found')
     if not NCT.fullmatch(nct) or not re.fullmatch(r'[a-f0-9-]{36}',run_id):
         raise HTTPException(422,'Exact NCT and run UUID required')
+    if contract is not None and contract not in {'SCIENTIFIC_1_3','SCIENTIFIC_1_6'}:
+        raise HTTPException(422,'Supported scientific run contract required')
     with engine.connect() as c:
         row=c.execute(text('SELECT * FROM assessment_v2_jobs WHERE run_id=:id AND nct_id=:nct'),{'id':run_id,'nct':nct}).mappings().first()
         if not row: raise HTTPException(404,'Assessment run not found for this exact NCT')
+        # A pending, failed or completed job of another framework must not be
+        # served through a claimed scientific contract.
+        if contract is not None and json.loads(row['request_json']).get('contract')!=contract:
+            raise HTTPException(404,'Assessment run not found for this scientific contract')
         result=c.execute(text('SELECT report_json,report_hash FROM assessment_v2_results WHERE run_id=:id'),{'id':run_id}).first()
     state=row['status'];error=row['error']
     if state in {'QUEUED','RUNNING'} and datetime.fromisoformat(row['updated_at']) < datetime.now(timezone.utc)-timedelta(minutes=3):
@@ -632,7 +638,7 @@ def router(engine_provider, auth, storage, writes, *, allow_local=False):
         run_id=create(db,request);tasks.add_task(execute,db,run_id)
         return {'runId':run_id,'nct':request.nct,'status':'QUEUED'}
     @api.get('/runs/{nct}/{run_id}')
-    def read(nct:str,run_id:str):return status(engine(),nct,run_id)
+    def read(nct:str,run_id:str,contract:str|None=None):return status(engine(),nct,run_id,contract)
     @api.get('/trials')
     def choices(population:str='FOCUS',q:str=''):
         return catalog(engine(),population,q)
