@@ -27,6 +27,8 @@ def validate_blind_cohort(manifest: dict[str, Any]) -> dict[str, Any]:
     if not isinstance(manifest, dict):
         raise TypeError("Cohort manifest must be a dictionary")
     errors: list[str] = []
+    if any(key in _OUTCOME_KEYS or _contains_outcome_fields(value) for key, value in manifest.items() if key != "trials"):
+        errors.append("MANIFEST_OUTCOME_LEAKAGE")
     trials = manifest.get("trials")
     if not isinstance(trials, list) or not trials:
         errors.append("MISSING_TRIALS")
@@ -61,7 +63,7 @@ def validate_blind_cohort(manifest: dict[str, Any]) -> dict[str, Any]:
         if not isinstance(trial.get("snapshot_sha256"), str) or not _HASH.fullmatch(trial["snapshot_sha256"]):
             errors.append(prefix + "INVALID_SNAPSHOT_HASH")
         # Outcome fields must never be available in a blind feature manifest.
-        if any(k in trial for k in ("fda_outcome", "actual_decision", "approval_status", "outcome_label")):
+        if _contains_outcome_fields(trial):
             errors.append(prefix + "OUTCOME_LEAKAGE")
     return {
         "eligible_for_blind_review": not errors,
