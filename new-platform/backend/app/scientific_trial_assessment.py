@@ -213,6 +213,16 @@ def level_three(doc,context,source,documents):
 
 
 ENGINES={1:level_one,2:level_two,3:level_three}
+EXTENDED_VERSION='scientific-trial-v1.1.0'
+
+def selected_contract(request):
+    """Explicit opt-in: old SCIENTIFIC_1_3 reports and taxonomy stay unchanged."""
+    if request.contract == 'SCIENTIFIC_1_3':
+        return ENGINES,NAMES,VERSION
+    if request.contract == 'SCIENTIFIC_1_6':
+        from .scientific_levels_four_to_six import ENGINES as extended, NAMES as extended_names
+        return {**ENGINES,**extended},{**NAMES,**extended_names},EXTENDED_VERSION
+    raise ValueError('Unknown scientific contract')
 
 
 def assess_scientific(request,source):
@@ -227,13 +237,14 @@ def assess_scientific(request,source):
     if day(doc['protocolSection']['statusModule']['lastUpdatePostDateStruct']['date']) != published:raise ValueError('Registry revision does not match its provenance receipt')
     context=clinical_context(doc)
     documents,rejected=document_evidence(doc,source,cutoff)
+    engines,names,version=selected_contract(request)
     prerequisite={};selected=None;phase_ok=bool(context['phases']) and 'NA' not in context['phases'] and context['registryStatus'] in STATUSES
     for level in range(1,request.level+1):
         if level>1 and not phase_ok:
             checks=[finding('phase_first','BLOCKED_UNVERIFIED_PHASE','Resolve exact trial phase and status before scientific evaluation.','official registry')];observations=[]
-        else:checks,observations=ENGINES[level](doc,context,source,documents)
+        else:checks,observations=engines[level](doc,context,source,documents)
         selected={'checks':checks,'observations':observations}
-        if level<request.level:prerequisite[str(level)]={'name':NAMES[level],'engineVersion':VERSION+'/level-'+str(level),**selected}
+        if level<request.level:prerequisite[str(level)]={'name':names[level],'engineVersion':version+'/level-'+str(level),**selected}
     checks=selected['checks'];observations=selected['observations'];gaps=[x for x in checks if x['state'] in {'MISSING','UNVERIFIED','CONCERNS','NOT_ASSESSED','BLOCKED_UNVERIFIED_PHASE'}]
     p=doc['protocolSection'];ident=p['identificationModule'];sponsor=p['sponsorCollaboratorsModule'].get('leadSponsor',{})
     risks=[x['explanation'] for x in gaps]+[x['reason'] for x in rejected]
@@ -246,8 +257,8 @@ def assess_scientific(request,source):
             ticker=matches[0].get('ticker');issuer=matches[0].get('company')
             inventory_citation={'source_url':inventory['source'],'asOf':inventory['asOf'],'meaning':'Exact-NCT owner inventory label; not independent listed-issuer verification. Not used by scientific calculations.'}
     drugs=[x.get('name') for x in p['armsInterventionsModule'].get('interventions',[]) if x.get('type') in {'DRUG','BIOLOGICAL','COMBINATION_PRODUCT'} and isinstance(x.get('name'),str) and x['name'].lower()!='placebo']
-    return {'schemaVersion':3,'kind':'EXECUTED_SCIENTIFIC_TRIAL_ASSESSMENT','contract':'SCIENTIFIC_1_3','nct':request.nct,'level':request.level,
-            'name':NAMES[request.level],'engineVersion':VERSION+'/level-'+str(request.level),'mode':request.mode,
+    return {'schemaVersion':3,'kind':'EXECUTED_SCIENTIFIC_TRIAL_ASSESSMENT','contract':request.contract,'nct':request.nct,'level':request.level,
+            'name':names[request.level],'engineVersion':version+'/level-'+str(request.level),'mode':request.mode,
             'cutoffDate':request.cutoffDate.isoformat() if request.cutoffDate else None,'executedAt':now(),
             'executionStatus':'COMPLETED_WITH_LIMITATIONS' if phase_ok else 'BLOCKED_UNVERIFIED_PHASE',
             'scientificStatus':'SOURCE_BOUND_ANALYSIS_NOT_VALIDATED','activationStatus':'RESEARCH_EXECUTION_ONLY','ownerReviewStatus':'OWNER_NOT_REVIEWED',
