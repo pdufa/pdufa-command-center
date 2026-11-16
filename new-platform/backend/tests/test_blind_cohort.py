@@ -68,7 +68,7 @@ def test_nonmapping_rejected():
 
 
 def test_nested_fda_outcome_is_rejected():
-    manifest = valid_manifest()
+    manifest = sample()
     manifest["trials"][0]["source_metadata"] = {"history": [{"fda_decision": "approved"}]}
     result = validate_blind_cohort(manifest)
     assert not result["eligible_for_blind_review"]
@@ -76,7 +76,7 @@ def test_nested_fda_outcome_is_rejected():
 
 
 def test_manifest_level_outcome_is_rejected():
-    manifest = valid_manifest()
+    manifest = sample()
     manifest["metadata"] = {"decision_result": "approved"}
     result = validate_blind_cohort(manifest)
     assert not result["eligible_for_blind_review"]
