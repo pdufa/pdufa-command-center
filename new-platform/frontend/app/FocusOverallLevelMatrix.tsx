@@ -27,7 +27,7 @@ export function FocusOverallHeaders({expanded=false,onToggle}:{
 }={}){
  return <>
   <th scope="col" style={{whiteSpace:'nowrap'}}>
-   Overall prediction survey result
+   Overall Evidence Readiness Score
    {onToggle&&<button type="button" onClick={onToggle} aria-expanded={expanded}
     aria-label={(expanded?'Collapse':'Expand')+' survey Levels 1–20 horizontally'}
     title={(expanded?'Collapse':'Expand')+' the 20 survey columns horizontally'}
@@ -37,7 +37,7 @@ export function FocusOverallHeaders({expanded=false,onToggle}:{
     {expanded?'− 20 Levels':'+ 20 Levels'}
    </button>}
   </th>
-  <th scope="col" style={{whiteSpace:'nowrap'}}>FDA direction</th>
+  <th scope="col" style={{whiteSpace:'nowrap'}}>FDA Prediction Status</th>
  </>;
 }
 export function FocusTwentyHeaders({className,startLevel=1,endLevel=20}:{
@@ -76,7 +76,7 @@ export function FocusOverviewCells({nct,levels,loading=false,error=false}:{
   <td data-testid="focus-overall-direction" style={{padding:10,whiteSpace:'nowrap'}}>
    {error?'Unavailable':loading?'Loading…':<>
     <strong data-testid="overall-fda-direction">{status.direction}</strong>
-    <div style={{fontSize:12}}>FDA direction · no validated numerical prediction</div>
+    <div style={{fontSize:12}}>FDA Prediction Status · no validated numerical prediction</div>
    </>}
   </td>
  </>;
@@ -124,7 +124,7 @@ export default function FocusOverallLevelMatrix({trials,selectedNct,initiallyExp
    (source-verified checks / applicable checks), NOT an FDA approval probability or
    scientific efficacy assessment. L01–L03 show their own provisional evidence numbers.
    L04–L20 remain pending, scientific prediction is NOT VALIDATED and the saved
-   FDA direction is ABSTAIN. Nothing here implies an approval or rejection lean.
+   FDA Prediction Status is ABSTAIN. Nothing here implies an approval or rejection lean.
   </p>
   <div style={{overflowX:'auto'}}>
    <table data-testid="focus-overall-direction-level20-table"
