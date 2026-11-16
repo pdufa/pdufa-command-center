@@ -77,6 +77,12 @@ def test_original_123_scientific_contract_remains_unchanged():
         request(4, contract="SCIENTIFIC_1_3").checked()
 
 
+def test_isolated_contract_cannot_run_original_levels_123():
+    for level in (1, 2, 3):
+        with pytest.raises(Exception, match='Levels 4–6 only'):
+            request(level).checked()
+
+
 def test_456_historical_source_chronology_and_answer_separation():
     q = request(4, mode="BLIND_HISTORICAL", cutoff=date(2021, 1, 1))
     base = runtime.assess(q, source())
