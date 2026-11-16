@@ -2,6 +2,7 @@
 import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
 import ScientificStepsReadiness from "../ScientificStepsReadiness";
 import PastSavedAssessments from "../PastSavedAssessments";
+import Scientific456Workspace from "../Scientific456Workspace";
 import AssessmentLauncher from "../AssessmentLauncher";
 import {ExactTrialIntakeSelector} from "../ExactTrialScientificIntake";
 import {useMemo,useState} from "react";
@@ -48,7 +49,7 @@ export default function PastPage(){
  },[year,search,sortRules,reveal]);
  return <main style={{maxWidth:1400,margin:"24px auto",padding:"0 16px",fontFamily:"system-ui,sans-serif"}}>
  <nav style={{display:"flex",gap:14,marginBottom:16}}><Link href="/focus">FOCUS</Link><strong>PAST</strong><Link href="/pool">POOL</Link></nav>
- <AssessmentLauncher source="HISTORICAL"/><ScientificStepsReadiness cohort="PAST"/><PastSavedAssessments/>
+ <AssessmentLauncher source="HISTORICAL"/><ScientificStepsReadiness cohort="PAST"/><PastSavedAssessments/><details><summary style={{cursor:"pointer",fontWeight:700}}>L04–L06 saved blind/current scientific research · exact NCT required</summary><Scientific456Workspace cohort="PAST"/></details>
  <h1>PAST — Historical PDUFA trials</h1>
   <div aria-label="Top table sorting controls" style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",margin:"12px 0 18px"}}>
  <NumericSortSettings scope="past" columns={[{id:"ticker",label:"Ticker"},{id:"trial",label:"NCT / Trial"},{id:"company",label:"Company"},{id:"designations",label:"FDA Special Designations"},{id:"marketCap",label:"Market cap ($B)"},{id:"application",label:"FDA / PDUFA path"},{id:"sources",label:"Sources"},{id:"gates",label:"7 gate checks"},{id:"cutoffDate",label:"PDUFA queue date"},{id:"assessmentLevel",label:"Assessment level"},{id:"level4Score",label:"Score"},{id:"confidence",label:"Confidence"},{id:"prediction",label:"Blind prediction"},{id:"decisionType",label:"FDA Decision Type"},{id:"decision",label:"FDA Decision"},{id:"overall",label:"Overall Score"},{id:"level1",label:"L01-Trial identity"},{id:"level2",label:"L02-Current phase"},{id:"level3",label:"L03-Source evidence"},{id:"level4",label:"L04-Study protocol"},{id:"level5",label:"L05-Population"},{id:"level6",label:"L06-Efficacy"},{id:"level7",label:"L07-Statistics"},{id:"level8",label:"L08-Safety"},{id:"level9",label:"L09-Clinical benefit"},{id:"level10",label:"L10-Comparator"},{id:"level11",label:"L11-Subgroups"},{id:"level12",label:"L12-Data gaps"},{id:"level13",label:"L13-Regulatory history"},{id:"level14",label:"L14-FDA alignment"},{id:"level15",label:"L15-Manufacturing"},{id:"level16",label:"L16-Benefit–risk"},{id:"level17",label:"L17-Exceptions"},{id:"level18",label:"L18-External evidence"},{id:"level19",label:"L19-Confidence"},{id:"level20",label:"L20-Integrated review"}]} onApply={setSortRules}/>
