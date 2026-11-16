@@ -54,3 +54,19 @@ def test_secondary_source_blocks_review():
     manifest, evidence, predictions, artifacts, sources = sample()
     sources[0]["source_type"] = "SECONDARY_DISCOVERY"
     assert not validate_historical_intake_package(manifest, evidence, predictions, artifacts, sources)["ready_for_independent_blind_review"]
+
+
+def test_frozen_citation_without_matching_source_is_rejected():
+    manifest, evidence, predictions, artifacts, sources = sample()
+    evidence[0]["evidence"][0]["sha256"] = "c" * 64
+    result = validate_historical_intake_package(manifest, evidence, predictions, artifacts, sources)
+    assert "FROZEN_EVIDENCE_MISSING_SOURCE_PROVENANCE" in result["errors"]
+
+
+def test_intake_source_without_frozen_citation_is_rejected():
+    manifest, evidence, predictions, artifacts, sources = sample()
+    extra = dict(sources[0])
+    extra["source_url"] = "https://www.fda.gov/another"
+    sources.append(extra)
+    result = validate_historical_intake_package(manifest, evidence, predictions, artifacts, sources)
+    assert "SOURCE_INTAKE_NOT_IN_FROZEN_EVIDENCE" in result["errors"]
