@@ -65,7 +65,7 @@ def find_ncts(value):
             yield from find_ncts(item)
     elif isinstance(value, str):
         import re
-        yield from re.findall(r"\\bNCT\\d{8}\\b", value.upper())
+        yield from re.findall(r"\bNCT\d{8}\b", value.upper())
 
 def main():
     p = argparse.ArgumentParser()
@@ -87,7 +87,7 @@ def main():
     with (out / "clinical-evidence.jsonl").open("w") as f:
         for nct in ids[:args.limit or None]:
             try:
-                f.write(json.dumps(study_evidence(nct)) + "\\n")
+                f.write(json.dumps(study_evidence(nct)) + "\n")
                 done += 1
             except Exception as exc:
                 errors.append({"nct": nct, "error_type": type(exc).__name__})
