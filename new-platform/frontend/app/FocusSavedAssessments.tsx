@@ -43,7 +43,7 @@ export default function FocusSavedAssessments({selectedNct}:{selectedNct?:string
   <h2>Saved FOCUS trial surveys · Levels 1–3</h2>
   <p>Both FOCUS and ASSESSMENTS read these same versioned database records. An executed assessment with evidence gaps is not a validated numerical score. Predictions without a validated model remain ABSTAIN.</p>
   <div id="focus-chart-quick-view" data-testid="focus-chart-immediate-panel"
-    style={{margin:'12px 0 20px',padding:'10px 12px',border:'2px solid #7baf99',borderRadius:10}}>
+    style={{margin:'12px 0 20px',padding:'10px 12px',border:'2px solid #7baf99',borderRadius:10,scrollMarginTop:104}}>
    <h3 style={{margin:'0 0 5px'}}>FOCUS chart · Levels 1–3 + Overall + FDA direction</h3>
    <p role="status" style={{fontSize:13,margin:'4px 0 10px'}}>
     {liveComplete?'Latest authenticated reports: all 32 FOCUS trials reconciled.':

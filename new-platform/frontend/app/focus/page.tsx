@@ -162,7 +162,7 @@ export default function FocusPage(){
     .focus-mobile-score-view th,.focus-mobile-score-view td{overflow:hidden;text-overflow:clip}
    }
   `}</style>
-  <h2 id="focus-site-spreadsheet" style={{fontSize:22,margin:"12px 0 6px"}}>FOCUS spreadsheet · Overall Score + L01–L03 (32 trials)</h2>
+  <h2 id="focus-site-spreadsheet" style={{fontSize:22,margin:"12px 0 6px",scrollMarginTop:104}}>FOCUS spreadsheet · Overall Score + L01–L03 (32 trials)</h2>
   <p style={{fontSize:13,margin:"0 0 8px"}}>On phones, the compact score grid shows Overall and L01–L03 without sideways scrolling. The full spreadsheet below keeps the same scores immediately after the ticker; L04–L20 appear only when Survey Columns is expanded.</p>
   <p data-testid="focus-main-grid-evidence-source" role="status" style={{
     margin:"8px 0 12px",padding:"9px 12px",border:"1px solid #a5c5b0",borderRadius:8,
@@ -179,7 +179,7 @@ export default function FocusPage(){
   <div id="focus-sort-feedback" data-testid="focus-sort-feedback" role="status"
    aria-live="polite" style={{margin:"12px 0 8px",padding:"9px 12px",
     border:"1px solid #95bea0",background:"#f1f8f3",borderRadius:8,fontSize:13,
-    scrollMarginTop:16}}>
+    scrollMarginTop:104}}>
    {sortRules.length?<>
     <strong>Sort applied: {sortRules.map((r,i)=>
      (i+1)+". "+(r.column==="overall"?"Overall Score":/^level[0-9]+$/.test(r.column)?
