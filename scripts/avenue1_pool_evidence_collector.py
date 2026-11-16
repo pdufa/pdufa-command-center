@@ -133,12 +133,31 @@ def main():
                       if row["id"].startswith("TRIAL|NCT") and row["id"].split("|", 1)[1] in ids}
     errors = []
     done = 0
+    dimension_counts = {name: 0 for name in (
+        "primary_endpoint", "effect_magnitude", "statistical_reliability",
+        "clinical_meaningfulness", "standard_of_care_comparator",
+        "durability", "subgroup_consistency", "replication",
+        "endpoint_relevance", "evidence_quality")}
+    missing_by_trial = []
     with (out / "clinical-evidence.jsonl").open("w") as f:
         for nct in ids[:args.limit or None]:
             try:
                 evidence = study_evidence(nct)
                 evidence["pool_record"] = trial_metadata[nct]
                 evidence["pool_source_as_of"] = raw.get("asOf")
+                dimensions = evidence["clinical_dimensions"]
+                missing = []
+                for name, value in dimensions.items():
+                    has_evidence = bool(value) and not (
+                        isinstance(value, str) and value.startswith("REQUIRES_")
+                    )
+                    if name == "evidence_quality":
+                        has_evidence = bool(value.get("allocation") or value.get("masking") or value.get("references"))
+                    if has_evidence:
+                        dimension_counts[name] += 1
+                    else:
+                        missing.append(name)
+                missing_by_trial.append({"nct": nct, "missing_dimensions": missing})
                 f.write(json.dumps(evidence) + "\n")
                 done += 1
             except Exception as exc:
@@ -147,6 +166,9 @@ def main():
     (out / "collection-status.json").write_text(json.dumps({
         "pool_nct_count": len(ids), "attempted": min(len(ids), args.limit) if args.limit else len(ids),
         "collected": done, "errors": errors,
+        "dimension_evidence_counts": dimension_counts,
+        "missing_dimensions_by_trial": missing_by_trial,
+        "coverage_note": "Field presence is not proof of clinical sufficiency or efficacy.",
         "note": "Results posting is not proof of efficacy or superiority; no scores assigned."
     }, indent=2))
     print(f"POOL NCTs={len(ids)}; collected={done}; errors={len(errors)}")
