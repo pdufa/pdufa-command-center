@@ -94,8 +94,10 @@ def find_ncts(snapshot):
     rows = snapshot["pipeline"]
     health = snapshot.get("sourceHealth") or {}
     parity = health.get("pipelineSourceParity") or health.get("streamlitPipelineParity") or {}
-    if health.get("state") == "STALE" or parity.get("exactPrograms") != len(rows):
+    if health.get("state") != "FRESH" or parity.get("exactPrograms") != len(rows):
         raise RuntimeError("POOL source freshness/parity not verified")
+    if (health.get("clinicalRows", 0) + health.get("regulatoryRows", 0)) != len(rows):
+        raise RuntimeError("POOL clinical/regulatory source counts do not match pipeline")
     ids = []
     seen = set()
     for row in rows:
