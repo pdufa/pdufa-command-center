@@ -72,5 +72,6 @@ test('current main FOCUS Survey Columns and numeric sorting retained alongside o
  assert.match(focus,/values\.overall=provisionalFocusOverall\(nct,levels\)\?\.evidenceReadinessScore/);
  assert.match(focus,/if\(c==="overall"\)return savedScores\[t.nct\]\?\.overall/);
  assert.match(saved,/<FocusOverallLevelMatrix trials=\{rows\}/);
- assert.match(saved,/<FocusSurveyTrendChart trials=\{data.trials\}/);
+ assert.match(saved,/<FocusSurveyTrendChart trials=\{chartTrials\}/);
+ assert.match(saved,/const chartTrials=liveComplete\?data!\.trials:FOCUS_CHART_SNAPSHOT_TRIALS/);
 });
