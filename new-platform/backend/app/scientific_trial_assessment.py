@@ -216,10 +216,14 @@ ENGINES={1:level_one,2:level_two,3:level_three}
 EXTENDED_VERSION='scientific-trial-v1.1.0'
 
 def selected_contract(request):
-    """Explicit opt-in: old SCIENTIFIC_1_3 reports and taxonomy stay unchanged."""
+    """Enforce scientific level range even for direct, non-HTTP execution."""
     if request.contract == 'SCIENTIFIC_1_3':
+        if request.level not in (1,2,3):
+            raise ValueError('SCIENTIFIC_1_3 supports Levels 1–3 only')
         return ENGINES,NAMES,VERSION
     if request.contract == 'SCIENTIFIC_1_6':
+        if request.level not in (4,5,6):
+            raise ValueError('SCIENTIFIC_1_6 supports Levels 4–6 only')
         from .scientific_levels_four_to_six import ENGINES as extended, NAMES as extended_names
         return {**ENGINES,**extended},{**NAMES,**extended_names},EXTENDED_VERSION
     raise ValueError('Unknown scientific contract')
