@@ -10,6 +10,7 @@ from datetime import date, datetime, timezone, timedelta
 import hashlib
 import io
 import json
+import os
 import math
 import re
 from uuid import uuid4
@@ -605,7 +606,12 @@ def router(engine_provider, auth, storage, writes, *, allow_local=False):
         return {'batchId':batch,'status':'BOUNDED_BATCH_QUEUED','maximumItems':6}
     @api.post('/runs',status_code=202,dependencies=[Depends(writes)])
     def start(request:RunInput, tasks:BackgroundTasks):
-        db=engine();request.checked()
+        request.checked()
+        # A production backend carrying this code must never accept opt-in 456
+        # assessment jobs unless the operator explicitly enables the staging runtime.
+        if request.contract=='SCIENTIFIC_1_6' and os.getenv('PDUFA_LEVEL456_BACKEND_ENABLED')!='1':
+            raise HTTPException(503,'Isolated Level 456 assessment backend is not enabled')
+        db=engine()
         if request.mode=='BLIND_HISTORICAL':
             initialize(db)
             try:source_for(db,request)
