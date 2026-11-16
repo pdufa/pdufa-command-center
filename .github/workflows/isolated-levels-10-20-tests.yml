@@ -69,12 +69,24 @@ jobs:
               content = file.read_text()
               for token in forbidden:
                   assert token not in content, (file, token)
-          # historical_report is the sole offline file reader; no output file or write mode.
+          # Only explicit research CLI may persist downloaded source bytes.
+          # All other isolated modules remain read-only and production-disconnected.
           report = (root / "historical_report.py").read_text()
           assert "with Path(path).open(\"r\", encoding=\"utf-8\")" in report
           assert "open(\"w" not in report and "write_text(" not in report
+          downloader = (root / "discovery_download.py").read_text()
+          assert 'if __name__ == "__main__":' in downloader
+          assert "download_discovery_source(" in downloader
+          assert "destination.write_bytes(data)" in downloader
+          assert "destination.exists()" in downloader
+          assert 'urlsplit(response.url).scheme != "https"' in downloader
+          assert "package_discovery_source_bytes(" in downloader
           for file in root.glob("*.py"):
-              if file.name != "historical_report.py":
-                  assert "open(" not in file.read_text(), file
+              if file.name in {"historical_report.py", "discovery_download.py"}:
+                  continue
+              content = file.read_text()
+              assert "open(" not in content, file
+              assert "write_bytes(" not in content, file
+              assert "write_text(" not in content, file
           print("Isolated module import/write guard passed")
           PY
