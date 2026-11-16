@@ -112,7 +112,20 @@ def test_staging_persists_456_without_starting_main_scans(client, monkeypatch):
     history = client.get("/api/assessment-runtime/history/NCT04576949?contract=SCIENTIFIC_1_6",
                          headers=HEADERS)
     assert history.status_code == 200
-    assert {x["level"] for x in history.json()["runs"]} == {4, 5, 6}
+    reports = history.json()["runs"]
+    assert {x["level"] for x in reports} == {4, 5, 6}
+    # Dedicated staging preserves the same exact-contract keyset semantics.
+    cursor = reports[0]["executedAt"] + "|" + reports[0]["runId"]
+    older = client.get("/api/assessment-runtime/history/NCT04576949",
+                       headers=HEADERS,
+                       params={"contract": "SCIENTIFIC_1_6", "before": cursor})
+    assert older.status_code == 200
+    assert len(older.json()["runs"]) == 2
+    assert reports[0]["runId"] not in {x["runId"] for x in older.json()["runs"]}
+    assert client.get("/api/assessment-runtime/history/NCT04576949",
+                      headers=HEADERS,
+                      params={"contract": "SCIENTIFIC_1_6",
+                              "before": "invalid"}).status_code == 422
 
 
 def test_read_only_staging_does_not_accept_new_jobs(client, monkeypatch):
