@@ -74,6 +74,7 @@ test('456 requests use dedicated HTTPS credentials, never production 123 credent
   assert.deepEqual((await history.json()).runs,[]);
   assert.equal(urls.length,4);
   assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_3'}))).status,422);
+  for(const level of [1,2,3])assert.equal((await api.POST(post({nct,level,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'}))).status,422);
   assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6',score:88}))).status,422);
   assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'},{origin:'https://evil.example.test'}))).status,403);
   assert.equal((await api.GET(get({nct,contract:'SPOOFED'}))).status,422);
