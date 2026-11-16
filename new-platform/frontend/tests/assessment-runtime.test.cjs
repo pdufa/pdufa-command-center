@@ -158,18 +158,57 @@ test('saved scientific findings render actual source passages and contrasts with
 });
 test('shared saved FOCUS table renders persisted independent levels and explicit unscorable values',async()=>{
  const React=require('react'),{act,create}=require('react-test-renderer'),Saved=require('../app/FocusSavedAssessments.tsx').default;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
- const old=global.fetch,oldSelf=global.self;global.self=globalThis;let tree;const levels={};for(let level=1;level<=3;level++)levels[level]={state:'COMPLETED',attempts:1,error:null,missingEvidence:[{id:'unresolved',state:'UNVERIFIED',explanation:'Synthetic missing evidence'}],report:{runId:'synthetic-'+level,nct,level,executionStatus:'COMPLETED_WITH_LIMITATIONS',executedAt:'2026-11-15',engineVersion:'synthetic/level-'+level,score:{value:null,kind:'NOT_VALIDATED',method:'No validated formula'},fdaPrediction:{outcome:'ABSTAIN',probability:null,confidence:'NOT_VALIDATED'},trialIdentity:{candidate:'Synthetic drug'},context:{phases:['PHASE3']}}};
+ const old={fetch:global.fetch,self:global.self,window:global.window};global.self=globalThis;
+ global.window={addEventListener(){},removeEventListener(){}};
+ let tree;const levels={};
+ for(let level=1;level<=3;level++)levels[level]={state:'COMPLETED',attempts:1,error:null,missingEvidence:[{id:'unresolved',state:'UNVERIFIED',explanation:'Synthetic missing evidence'}],report:{runId:'synthetic-'+level,nct,level,mode:'CURRENT_EVIDENCE',executionStatus:'COMPLETED_WITH_LIMITATIONS',executedAt:'2026-11-15',engineVersion:'synthetic/level-'+level,score:{value:null,kind:'NOT_VALIDATED',method:'No validated formula'},fdaPrediction:{outcome:'ABSTAIN',probability:null,confidence:'NOT_VALIDATED'},trialIdentity:{candidate:'Synthetic drug'},context:{phases:['PHASE3']}}};
  global.fetch=async url=>{assert.equal(url,'/api/assessments/runtime?focus=true');return Response.json({total:1,fullyProcessed:1,status:'SYNTHETIC_SAVED_FIXTURE',counts:{},source:null,trials:[{nct,ticker:'SYN',company:'Synthetic',pdufaDate:null,levels}]});};
- try{await act(async()=>{tree=create(React.createElement(Saved));});const rendered=JSON.stringify(tree.toJSON());for(let l=1;l<=3;l++)assert.ok(tree.root.findAllByType('th').some(th=>React.Children.toArray(th.props.children).join('')==='L'+l+' Score'));assert.match(rendered,/NOT VALIDATED \/ UNSCORABLE/);assert.match(rendered,/ABSTAIN/);assert.equal(tree.root.findAllByType('tbody')[0].findAllByType('tr').length,1);}
- finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;if(oldSelf===undefined)delete global.self;else global.self=oldSelf;}
+ try{
+  await act(async()=>{tree=create(React.createElement(Saved));});
+  const table=tree.root.findAllByType('table').find(t=>t.findAllByType('th').some(th=>React.Children.toArray(th.props.children).join('')==='L1 Scientific result and evidence'));
+  assert.ok(table,'The current shared saved-reports table must be present');
+  for(let l=1;l<=3;l++){
+   assert.ok(table.findAllByType('th').some(th=>React.Children.toArray(th.props.children).join('')==='L'+l+' Scientific result and evidence'));
+   assert.ok(table.findAllByType('th').some(th=>React.Children.toArray(th.props.children).join('')==='L'+l+' FDA prediction status'));
+  }
+  const textOf=node=>typeof node==='string'||typeof node==='number'?String(node):node?.children?node.children.map(textOf).join(''):'';
+  const rendered=table.findAllByType('td').map(textOf).join('\\n');
+  assert.equal((rendered.match(/NOT VALIDATED \/ UNSCORABLE/g)||[]).length,3);
+  assert.equal((rendered.match(/ABSTAIN/g)||[]).length,3);
+  assert.equal(table.findAllByType('tbody')[0].findAllByType('tr').length,1);
+  for(let l=1;l<=3;l++)assert.match(rendered,new RegExp('synthetic/level-'+l));
+ }finally{
+  if(tree)await act(async()=>tree.unmount());
+  global.fetch=old.fetch;
+  if(old.self===undefined)delete global.self;else global.self=old.self;
+  if(old.window===undefined)delete global.window;else global.window=old.window;
+ }
 });
 
 test('FOCUS columns show the same saved scientific records as the shared assessment table',async()=>{
  const React=require('react'),{act,create}=require('react-test-renderer');globalThis.IS_REACT_ACT_ENVIRONMENT=true;
- const old={fetch:global.fetch,self:global.self,window:global.window};global.self=globalThis;global.window={addEventListener(){},removeEventListener(){}};let tree;
- global.fetch=async url=>{assert.equal(url,'/api/assessments/runtime?focus=true');return Response.json({trials:[{nct,levels:Object.fromEntries([1,2,3].map(level=>[String(level),{report:{runId:'saved-'+level,nct,level,mode:'CURRENT_EVIDENCE',executedAt:'2026-11-15',score:{value:null,kind:'NOT_VALIDATED'},fdaPrediction:{outcome:'ABSTAIN',confidence:'NOT_VALIDATED'}}}]))}]});};
- try{const Cells=require('../app/FocusLevelColumns.tsx').FocusLevelCells;await act(async()=>{tree=create(React.createElement(Cells,{nct}));});const json=JSON.stringify(tree.toJSON());assert.equal((json.match(/NOT VALIDATED \/ UNSCORABLE/g)||[]).length,3);assert.equal((json.match(/ABSTAIN · not predicted/g)||[]).length,3);for(let l=1;l<=3;l++)assert.match(json,new RegExp('Saved assessment saved-'+l));}
- finally{if(tree)await act(async()=>tree.unmount());Object.assign(global,old);}
+ // Next/Link schedules idle work via self; install only the browser globals
+ // this renderer needs, and restore them after unmount.
+ const oldSelf=global.self,oldWindow=global.window;
+ global.self=globalThis;
+ global.window={addEventListener(){},removeEventListener(){}};
+ // The FOCUS page fetches one shared roster and passes the exact-NCT slots to
+ // each row. Individual cells must not issue separate API requests.
+ const levels=Object.fromEntries([1,2,3].map(level=>[String(level),{state:'COMPLETED',report:{runId:'saved-'+level,nct,level,mode:'CURRENT_EVIDENCE',executedAt:'2026-11-15',score:{value:null,kind:'NOT_VALIDATED'},fdaPrediction:{outcome:'ABSTAIN',confidence:'NOT_VALIDATED'}}}]));
+ const Cells=require('../app/FocusLevelColumns.tsx').FocusLevelCells;
+ let tree;
+ try{
+  await act(async()=>{tree=create(React.createElement(Cells,{nct,levels}));});
+  const json=JSON.stringify(tree.toJSON());
+  assert.equal(tree.root.findAllByType('td').length,6);
+  assert.equal((json.match(/NOT VALIDATED · saved/g)||[]).length,3);
+  assert.equal((json.match(/ABSTAIN · not validated/g)||[]).length,3);
+  for(let l=1;l<=3;l++)assert.match(json,new RegExp('Saved saved-'+l));
+ }finally{
+  if(tree)await act(async()=>tree.unmount());
+  if(oldSelf===undefined)delete global.self;else global.self=oldSelf;
+  if(oldWindow===undefined)delete global.window;else global.window=oldWindow;
+ }
 });
 
 test('launcher uses the scientific contract and cannot count an unpersisted completion',async()=>{

@@ -10,6 +10,7 @@ from datetime import date, datetime, timezone, timedelta
 import hashlib
 import io
 import json
+import os
 import math
 import re
 from uuid import uuid4
@@ -56,11 +57,13 @@ class RunInput(BaseModel):
     level: StrictInt = Field(ge=1, le=6)
     mode: str = Field(pattern=r'^(CURRENT_EVIDENCE|BLIND_HISTORICAL)$')
     cutoffDate: date | None = None
-    contract: str = Field(default='LEGACY_SOURCE_AUDIT', pattern=r'^(LEGACY_SOURCE_AUDIT|SCIENTIFIC_1_3)$')
+    contract: str = Field(default='LEGACY_SOURCE_AUDIT', pattern=r'^(LEGACY_SOURCE_AUDIT|SCIENTIFIC_1_3|SCIENTIFIC_1_6)$')
 
     def checked(self):
         if self.contract == 'SCIENTIFIC_1_3' and self.level > 3:
             raise HTTPException(422, 'Scientific execution currently supports Levels 1–3 only')
+        if self.contract == 'SCIENTIFIC_1_6' and self.level < 4:
+            raise HTTPException(422, 'Isolated scientific execution supports Levels 4–6 only')
         if self.mode == 'BLIND_HISTORICAL':
             if not self.cutoffDate or self.cutoffDate >= datetime.now(timezone.utc).date():
                 raise HTTPException(422, 'Blind Historical requires a valid past cutoff date')
@@ -238,7 +241,9 @@ def scientific_historical_target(engine, request):
 
 def source_for(engine, request, collector=collect_registry):
     if request.mode == 'CURRENT_EVIDENCE':
-        document_level = ({1:1,2:4,3:5}[request.level] if request.contract=='SCIENTIFIC_1_3' else request.level)
+        document_level = ({1:1,2:4,3:5}[request.level] if request.contract=='SCIENTIFIC_1_3' else
+                          (1 if request.level==1 else 4 if request.level==2 else 5)
+                          if request.contract=='SCIENTIFIC_1_6' else request.level)
         source = collect_documents(collector(request.nct), document_level)
         if source['nct_id'] != request.nct or source['input_sha256'] != sha(json.loads(source['document_json'])):
             raise ValueError('Collected evidence identity/digest mismatch')
@@ -249,7 +254,7 @@ def source_for(engine, request, collector=collect_registry):
         return source
     # A current-source cache is NEVER consulted. Both original capture and
     # source publication must precede the cutoff, independently of revision date.
-    target=scientific_historical_target(engine,request) if request.contract=='SCIENTIFIC_1_3' else None
+    target=scientific_historical_target(engine,request) if request.contract in {'SCIENTIFIC_1_3','SCIENTIFIC_1_6'} else None
     cutoff = request.cutoffDate.isoformat()
     with engine.connect() as c:
         rows = c.execute(text('''SELECT * FROM assessment_v2_sources WHERE nct_id=:nct
@@ -390,7 +395,7 @@ ENGINES={1:level_one,2:level_two,3:level_three,4:level_four,5:level_five,6:level
 
 
 def assess(request, source):
-    if request.contract == 'SCIENTIFIC_1_3':
+    if request.contract in {'SCIENTIFIC_1_3', 'SCIENTIFIC_1_6'}:
         from .scientific_trial_assessment import assess_scientific
         return assess_scientific(request, source)
     doc=json.loads(source['document_json']); context=clinical_context(doc)
@@ -469,14 +474,20 @@ def create(engine, request):
     return run_id
 
 
-def status(engine,nct,run_id):
+def status(engine,nct,run_id,contract=None):
     if not inspect(engine).has_table('assessment_v2_jobs'):
         raise HTTPException(404,'Assessment run not found')
     if not NCT.fullmatch(nct) or not re.fullmatch(r'[a-f0-9-]{36}',run_id):
         raise HTTPException(422,'Exact NCT and run UUID required')
+    if contract is not None and contract not in {'SCIENTIFIC_1_3','SCIENTIFIC_1_6'}:
+        raise HTTPException(422,'Supported scientific run contract required')
     with engine.connect() as c:
         row=c.execute(text('SELECT * FROM assessment_v2_jobs WHERE run_id=:id AND nct_id=:nct'),{'id':run_id,'nct':nct}).mappings().first()
         if not row: raise HTTPException(404,'Assessment run not found for this exact NCT')
+        # A pending, failed or completed job of another framework must not be
+        # served through a claimed scientific contract.
+        if contract is not None and json.loads(row['request_json']).get('contract')!=contract:
+            raise HTTPException(404,'Assessment run not found for this scientific contract')
         result=c.execute(text('SELECT report_json,report_hash FROM assessment_v2_results WHERE run_id=:id'),{'id':run_id}).first()
     state=row['status'];error=row['error']
     if state in {'QUEUED','RUNNING'} and datetime.fromisoformat(row['updated_at']) < datetime.now(timezone.utc)-timedelta(minutes=3):
@@ -492,20 +503,62 @@ def verified_report(row):
     return {**report,'reportHash':row[1]}
 
 
-def history(engine,nct,level=None):
-    if not NCT.fullmatch(nct) or (level is not None and not 1<=level<=6): raise HTTPException(422,'Exact NCT and level 1–6 required')
+def history(engine,nct,level=None,contract=None,before=None):
+    if not NCT.fullmatch(nct) or (level is not None and not 1<=level<=6):
+        raise HTTPException(422,'Exact NCT and level 1–6 required')
+    if contract is not None and contract not in {'SCIENTIFIC_1_3','SCIENTIFIC_1_6'}:
+        raise HTTPException(422,'Supported scientific history contract required')
+    # Keyset pagination retains every immutable version while avoiding offset
+    # drift when another research report is saved during browsing.
+    cursor_at=None;cursor_run=None
+    if before is not None:
+        if not isinstance(before,str) or len(before)>130 or '|' not in before:
+            raise HTTPException(422,'Invalid saved-history page cursor')
+        cursor_at,cursor_run=before.rsplit('|',1)
+        if (not re.fullmatch(r'[a-f0-9-]{36}',cursor_run) or
+            not re.fullmatch(r'[0-9TZ:+.-]{20,64}',cursor_at)):
+            raise HTTPException(422,'Invalid saved-history page cursor')
+        try:
+            at=datetime.fromisoformat(cursor_at.replace('Z','+00:00'))
+        except ValueError:
+            raise HTTPException(422,'Invalid saved-history page cursor') from None
+        if at.tzinfo is None:
+            raise HTTPException(422,'Invalid saved-history page cursor')
     if not inspect(engine).has_table('assessment_v2_results'):
+        # Preserve the historical empty-response shape for databases that have
+        # never had assessment tables; no continuation is possible.
         return {'nct':nct,'runs':[],'hasMore':False}
     with engine.connect() as c:
-        query='SELECT report_json,report_hash FROM assessment_v2_results WHERE nct_id=:nct'
+        query='SELECT report_json,report_hash,created_at,run_id FROM assessment_v2_results WHERE nct_id=:nct'
+        bindings={'nct':nct,'level':level,'contract':contract,
+                  'cursor_at':cursor_at,'cursor_run':cursor_run}
         if level is not None:query+=' AND level=:level'
-        rows=c.execute(text(query+' ORDER BY created_at DESC,run_id DESC LIMIT 51'),{'nct':nct,'level':level}).all()
+        if contract is not None:
+            # Apply contract filtering before pagination and truncation.
+            if engine.dialect.name=='postgresql':
+                query+=" AND CAST(report_json AS jsonb)->>'contract'=:contract"
+            elif engine.dialect.name=='sqlite':
+                query+=" AND json_extract(report_json,'$.contract')=:contract"
+            else:
+                raise HTTPException(503,'Scientific contract history filtering unavailable')
+        if cursor_at is not None:
+            query+=' AND (created_at<:cursor_at OR (created_at=:cursor_at AND run_id<:cursor_run))'
+        rows=c.execute(text(query+' ORDER BY created_at DESC,run_id DESC LIMIT 51'),bindings).all()
     runs=[];size=0
     for row in rows[:50]:
         size+=len(row[0].encode())
-        if size>3_000_000:break
+        if size>3_000_000:
+            if not runs:
+                # Do not imply an empty page has a continuation cursor when
+                # its first immutable report alone exceeds our response budget.
+                # Owners can retrieve this report by its exact run ID.
+                raise HTTPException(413,'Saved assessment exceeds history response budget; retrieve by exact run ID')
+            break
         runs.append(verified_report(row))
-    return {'nct':nct,'runs':runs,'hasMore':len(rows)>len(runs)}
+    has_more=len(rows)>len(runs)
+    last=rows[len(runs)-1] if runs else None
+    return {'nct':nct,'runs':runs,'hasMore':has_more,
+            'nextCursor':last[2]+'|'+last[3] if has_more and last is not None else None}
 
 
 
@@ -601,7 +654,12 @@ def router(engine_provider, auth, storage, writes, *, allow_local=False):
         return {'batchId':batch,'status':'BOUNDED_BATCH_QUEUED','maximumItems':6}
     @api.post('/runs',status_code=202,dependencies=[Depends(writes)])
     def start(request:RunInput, tasks:BackgroundTasks):
-        db=engine();request.checked()
+        request.checked()
+        # A production backend carrying this code must never accept opt-in 456
+        # assessment jobs unless the operator explicitly enables the staging runtime.
+        if request.contract=='SCIENTIFIC_1_6' and os.getenv('PDUFA_LEVEL456_BACKEND_ENABLED')!='1':
+            raise HTTPException(503,'Isolated Level 456 assessment backend is not enabled')
+        db=engine()
         if request.mode=='BLIND_HISTORICAL':
             initialize(db)
             try:source_for(db,request)
@@ -609,10 +667,10 @@ def router(engine_provider, auth, storage, writes, *, allow_local=False):
         run_id=create(db,request);tasks.add_task(execute,db,run_id)
         return {'runId':run_id,'nct':request.nct,'status':'QUEUED'}
     @api.get('/runs/{nct}/{run_id}')
-    def read(nct:str,run_id:str):return status(engine(),nct,run_id)
+    def read(nct:str,run_id:str,contract:str|None=None):return status(engine(),nct,run_id,contract)
     @api.get('/trials')
     def choices(population:str='FOCUS',q:str=''):
         return catalog(engine(),population,q)
     @api.get('/history/{nct}')
-    def read_history(nct:str,level:int|None=None):return history(engine(),nct,level)
+    def read_history(nct:str,level:int|None=None,contract:str|None=None,before:str|None=None):return history(engine(),nct,level,contract,before)
     return api

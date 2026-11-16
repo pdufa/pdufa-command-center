@@ -1,0 +1,120 @@
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const fs=require('node:fs');
+const path=require('node:path');
+const ts=require('typescript');
+const React=require('react');
+const {renderToStaticMarkup}=require('react-dom/server');
+for(const ext of ['.ts','.tsx'])require.extensions[ext]=(m,f)=>m._compile(
+ ts.transpileModule(fs.readFileSync(f,'utf8'),{compilerOptions:{
+  module:ts.ModuleKind.CommonJS,target:ts.ScriptTarget.ES2022,
+  jsx:ts.JsxEmit.ReactJSX,esModuleInterop:true
+ }}).outputText,f
+);
+const {NextRequest}=require('next/server');
+const auth=require('../lib/auth.ts');
+const api=require('../app/api/assessments/runtime/route.ts');
+const Workspace=require('../app/Scientific456Workspace.tsx').default;
+process.env.DASHBOARD_PASSWORD='SYNTHETIC_RUNTIME_PASSWORD';
+process.env.SESSION_SIGNING_KEY='SYNTHETIC_RUNTIME_KEY_01234567890123456789';
+const base='https://owner.example.test',nct='NCT04576949',runId='a'.repeat(8)+'-'+['a'.repeat(4),'a'.repeat(4),'a'.repeat(4),'a'.repeat(12)].join('-');
+function post(body,extra={}){
+ return new NextRequest(base+'/api/assessments/runtime',{method:'POST',headers:{
+  origin:base,'content-type':'application/json',cookie:auth.COOKIE_NAME+'='+auth.makeSession(),...extra
+ },body:JSON.stringify(body)});
+}
+function get(query){
+ return new NextRequest(base+'/api/assessments/runtime?'+new URLSearchParams(query),{
+  headers:{cookie:auth.COOKIE_NAME+'='+auth.makeSession()}
+ });
+}
+test('four independent page mounts expose the 456 scientific workspace',()=>{
+ for(const [page,cohort] of [['focus','FOCUS'],['past','PAST'],['pool','POOL'],['assessments','ASSESSMENTS']]){
+  const text=fs.readFileSync(path.join(__dirname,'../app',page,'page.tsx'),'utf8');
+  assert.match(text,new RegExp('<Scientific456Workspace cohort="'+cohort+'"'));
+ }
+ const focus=fs.readFileSync(path.join(__dirname,'../app/focus/page.tsx'),'utf8');
+ assert.match(focus,/L04–L06 saved scientific research/);
+ assert.match(focus,/assessments\?nct=/);
+ const past=fs.readFileSync(path.join(__dirname,'../app/past/page.tsx'),'utf8');
+ assert.match(past,/Manual NCT entry does not establish historical event linkage or blind eligibility/);
+});
+test('456 workspace lists correct evidence domains, exact-NCT selection and blind history',()=>{
+ const current=renderToStaticMarkup(React.createElement(Workspace,{cohort:'FOCUS',initialNct:nct}));
+ const historical=renderToStaticMarkup(React.createElement(Workspace,{cohort:'PAST'}));
+ for(const s of ['Safety and benefit-risk','Indication-specific clinical assessment','FDA regulatory readiness'])
+  assert.ok(current.includes(s));
+ assert.match(current,/SCIENTIFIC|Scientific L04–L06/);
+ assert.match(current,/NCT04576949/);
+ assert.match(current,/NOT VALIDATED/);
+ assert.match(current,/No validated scientific score/);
+ assert.match(historical,/Pre-decision cutoff/);
+ assert.match(historical,/Blind historical cutoff/);
+ assert.match(current,/data-scientific456-ready="false"/);
+ assert.match(current,/disabled=""/);
+});
+test('456 requests use dedicated HTTPS credentials, never production 123 credentials',async()=>{
+ const vars=['PDUFA_LEVEL456_API_BASE_URL','PDUFA_LEVEL456_INTERNAL_API_KEY','PDUFA_LEVEL123_API_BASE_URL','PDUFA_LEVEL123_INTERNAL_API_KEY'];
+ const originals=Object.fromEntries(vars.map(x=>[x,process.env[x]]));
+ const old=global.fetch,urls=[];
+ process.env.PDUFA_LEVEL456_API_BASE_URL='https://isolated-456.example.test';
+ process.env.PDUFA_LEVEL456_INTERNAL_API_KEY='ISOLATED_SECRET';
+ process.env.PDUFA_LEVEL123_API_BASE_URL='https://production-123.example.test';
+ process.env.PDUFA_LEVEL123_INTERNAL_API_KEY='PRODUCTION_SECRET';
+ global.fetch=async(url,init)=>{
+  urls.push(String(url));
+  assert.match(String(url),/^https:\/\/isolated-456\.example\.test\/api\/assessment-runtime\//);
+  assert.equal(init.headers['X-Pdufa-Internal-Key'],'ISOLATED_SECRET');
+  if(init.method==='POST')return Response.json({status:'QUEUED',runId},{status:202});
+  return Response.json({nct,runs:[],hasMore:false});
+ };
+ try{
+  for(const level of [4,5,6]){
+   const response=await api.POST(post({nct,level,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'}));
+   assert.equal(response.status,202);
+  }
+  const history=await api.GET(get({nct,contract:'SCIENTIFIC_1_6'}));
+  assert.equal(history.status,200);
+  assert.deepEqual((await history.json()).runs,[]);
+  assert.equal(urls.length,4);
+  assert.equal(urls[3],'https://isolated-456.example.test/api/assessment-runtime/history/'+nct+'?contract=SCIENTIFIC_1_6',
+   'The isolated backend must filter 456 reports before its 50-record limit');
+  const status=await api.GET(get({nct,runId,contract:'SCIENTIFIC_1_6'}));
+  assert.equal(status.status,200);
+  assert.equal(urls[4],'https://isolated-456.example.test/api/assessment-runtime/runs/'+nct+'/'+runId+'?contract=SCIENTIFIC_1_6',
+   'The isolated backend must validate run-ID ownership before returning data');
+  const cursor='2026-11-15T00:00:00+00:00|'+runId;
+  const older=await api.GET(get({nct,contract:'SCIENTIFIC_1_6',before:cursor}));
+  assert.equal(older.status,200);
+  assert.equal(urls[5],'https://isolated-456.example.test/api/assessment-runtime/history/'+nct+
+   '?'+new URLSearchParams({contract:'SCIENTIFIC_1_6',before:cursor}));
+  assert.equal((await api.GET(get({nct,contract:'SCIENTIFIC_1_6',before:'bad'}))).status,422);
+  assert.equal((await api.GET(get({nct,contract:'SCIENTIFIC_1_6',before:'2026-11-15T00:00:00+00:00|'+runId,runId}))).status,422);
+  assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_3'}))).status,422);
+  for(const level of [1,2,3])assert.equal((await api.POST(post({nct,level,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'}))).status,422);
+  assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6',score:88}))).status,422);
+  assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'},{origin:'https://evil.example.test'}))).status,403);
+  assert.equal((await api.GET(get({nct,contract:'SPOOFED'}))).status,422);
+  process.env.PDUFA_LEVEL456_API_BASE_URL=process.env.PDUFA_LEVEL123_API_BASE_URL;
+  assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'}))).status,503);
+  process.env.PDUFA_LEVEL456_API_BASE_URL='https://isolated-456.example.test';
+  process.env.PDUFA_LEVEL456_INTERNAL_API_KEY=process.env.PDUFA_LEVEL123_INTERNAL_API_KEY;
+  assert.equal((await api.GET(get({nct,contract:'SCIENTIFIC_1_6'}))).status,503);
+  process.env.PDUFA_LEVEL456_INTERNAL_API_KEY='ISOLATED_SECRET';
+  assert.equal(urls.length,6,'Shared production host or secret must never be used');
+  global.fetch=async()=>Response.json({
+   detail:'Saved assessment exceeds history response budget; retrieve by exact run ID'
+  },{status:413});
+  const oversize=await api.GET(get({nct,contract:'SCIENTIFIC_1_6'}));
+  assert.equal(oversize.status,413,'An oversized history report must remain an explicit bounded failure');
+  assert.match((await oversize.json()).error,/exact run ID/);
+  delete process.env.PDUFA_LEVEL456_API_BASE_URL;
+  delete process.env.PDUFA_LEVEL456_INTERNAL_API_KEY;
+  assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'}))).status,503);
+  assert.equal((await api.GET(get({nct,contract:'SCIENTIFIC_1_6'}))).status,503);
+  assert.equal(urls.length,6,'No fallback to the configured 123 backend');
+ }finally{
+  global.fetch=old;
+  for(const v of vars)if(originals[v]===undefined)delete process.env[v];else process.env[v]=originals[v];
+ }
+});

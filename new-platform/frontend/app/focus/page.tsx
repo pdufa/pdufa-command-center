@@ -1,5 +1,6 @@
 "use client";
 import FocusSavedAssessments from "../FocusSavedAssessments";
+import Scientific456Workspace from "../Scientific456Workspace";
 import {FocusLevelHeaders,FocusLevelSubheaders,FocusLevelCells,type FocusTrialLevels} from '../FocusLevelColumns';
 import {FocusOverallHeaders,FocusOverviewCells,FocusTwentyHeaders,FocusTwentyCells} from '../FocusOverallLevelMatrix';
 import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredictionColumns';
@@ -249,7 +250,7 @@ export default function FocusPage(){
     <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><FocusOverallHeaders expanded={surveyExpanded} onToggle={()=>setSurveyExpanded(v=>!v)}/><FocusTwentyHeaders startLevel={1} endLevel={3}/><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"left"}}>FDA Special Designations</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>7 gate checks</th>{surveyExpanded&&<FocusTwentyHeaders className="assessment-level" startLevel={4} endLevel={20}/>}<PredictionHeaders/><FocusLevelHeaders/></tr><tr><th colSpan={surveyExpanded?32:15}>Level 1-3 saved scientific research</th><FocusLevelSubheaders/></tr></thead>
     <tbody>{sortedTrials.map((t,i)=>{const gateAudit=finalGateByNct.get(t.nct);const d=designationByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
       <td style={{padding:10,fontWeight:700}}><TickerChartButton ticker={t.ticker}/></td><FocusOverviewCells nct={t.nct} levels={savedLevels[t.nct]}/><FocusTwentyCells nct={t.nct} levels={savedLevels[t.nct]} startLevel={1} endLevel={3}/>
-      <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a><div style={{marginTop:5,fontSize:12}}><Link href={"/analyze-now?nct="+encodeURIComponent(t.nct)}>View exact-trial research history</Link></div><details><summary>Exact-trial source intake</summary><ExactTrialIntakeSelector cohort="FOCUS" nctId={t.nct}/></details></td>
+      <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a><div style={{marginTop:5,fontSize:12}}><Link href={"/analyze-now?nct="+encodeURIComponent(t.nct)}>View exact-trial research history</Link><div><Link href={"/assessments?nct="+encodeURIComponent(t.nct)+"#scientific456"}>L04–L06 saved scientific research</Link></div></div><details><summary>Exact-trial source intake</summary><ExactTrialIntakeSelector cohort="FOCUS" nctId={t.nct}/></details></td>
       <td style={{padding:10}}>{t.company}<CompanyDateBadges nctId={t.nct} timeline={null} recordedReleaseDate={"recordedReleaseDate" in t && typeof t.recordedReleaseDate==="string" ? t.recordedReleaseDate : null} recordedPdufaDate={"recordedPdufaDate" in t && typeof t.recordedPdufaDate==="string" ? t.recordedPdufaDate : null} releaseSource={t.resultsUrl} pdufaSource={t.regulatoryUrl}/></td>
       <td style={{padding:10,minWidth:220,verticalAlign:"top",fontSize:12}}>
        {d?.designations.length?<><strong>{d.designations.map(x=>x.label).join(" · ")}</strong>
@@ -284,7 +285,7 @@ export default function FocusPage(){
     No external scientific reviewer, source attestor, independent challenger, or third-party signoff is required.
     Original source links, missing-evidence flags, and safety and phase checks remain.
   </p>
-  <AssessmentLauncher source="FOCUS"/><FocusSavedAssessments/><ScientificStepsReadiness cohort="FOCUS"/>
+  <AssessmentLauncher source="FOCUS"/><FocusSavedAssessments/><details><summary style={{cursor:"pointer",fontWeight:700}}>L04–L06 scientific research · saved versions, evidence gaps, historical mode</summary><Scientific456Workspace cohort="FOCUS"/></details><ScientificStepsReadiness cohort="FOCUS"/>
   <IndicationIntelligence mode="focus"/>
   <p><strong>{trials.length} distinct NCT trials</strong> · Final-list Phase 3 / post-Phase 3 candidates · Reported $300M–$10B market caps · Source-linked FDA pathways for owner checks; no external verification gate.</p>
   <p>Snapshot of the final Google Sheets list as of {snapshot.asOf}. Recorded listing, readout and FDA-path links are evidence pointers, not an owner-reviewed finding of trial eligibility or a successful nightly sync. Completed trials remain if their program may continue toward approval. No retired or historical research-only cohort is included.</p>

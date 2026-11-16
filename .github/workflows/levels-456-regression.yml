@@ -1,0 +1,40 @@
+name: Levels 456 isolated regression gate
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'new-platform/backend/**'
+      - 'new-platform/frontend/**'
+      - 'scripts/audit_raas_retirement.py'
+      - '.github/workflows/levels-456-regression.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: levels-456-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  backend-and-retirement:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: pip install -r new-platform/backend/requirements.txt
+      - run: python scripts/audit_raas_retirement.py --check
+      - run: PYTHONPATH=new-platform/backend pytest new-platform/backend/tests -q
+  frontend-regression:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: new-platform/frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+      - run: npm ci --no-audit --no-fund
+      - run: npm test
+      - run: npm run typecheck
+      - run: npm run build

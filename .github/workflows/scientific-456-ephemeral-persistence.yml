@@ -1,0 +1,92 @@
+name: Scientific 456 ephemeral PostgreSQL persistence (synthetic only)
+
+on:
+  push:
+    branches: ["feature/levels-456-isolated"]
+    paths:
+      - ".github/workflows/scientific-456-ephemeral-persistence.yml"
+      - ".github/scripts/verify_scientific456_ephemeral_persistence.py"
+      - "infra/scientific456-local/**"
+      - "new-platform/backend/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scientific-456-ephemeral-write-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  postgres-synthetic-persistence:
+    name: Synthetic L04-L06 persistence, blind chronology, immutable PostgreSQL
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      COMPOSE_FILE: infra/scientific456-local/compose.yaml
+      COMPOSE_PROJECT_NAME: scientific456-ci-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate temporary secrets without exporting them to logs
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          printf 'SCIENTIFIC456_DB_PASSWORD=%s\nSCIENTIFIC456_INTERNAL_API_KEY=%s\n' \
+            "$(openssl rand -hex 32)" "$(openssl rand -hex 32)" \
+            > infra/scientific456-local/.env
+          docker compose --env-file infra/scientific456-local/.env config --quiet
+
+      - name: Boot only the CI-owned isolated PostgreSQL and read-only API
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose --env-file infra/scientific456-local/.env up -d --build --wait
+
+      - name: Execute synthetic-only writable test inside separate short-lived process
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The long-lived API container remains PDUFA_MIGRATION_READ_ONLY=1.
+          # These test-only overrides apply solely to this 'python -' process,
+          # never to the running Uvicorn API or any cloud service.
+          docker compose --env-file infra/scientific456-local/.env exec -T \
+            -e CI=true \
+            -e SCIENTIFIC456_EPHEMERAL_TEST=1 \
+            -e PDUFA_MIGRATION_READ_ONLY=0 \
+            api python - < .github/scripts/verify_scientific456_ephemeral_persistence.py
+
+      - name: Confirm live staging HTTP server still rejects assessment submissions
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from urllib.error import HTTPError
+          from urllib.request import Request, urlopen
+
+          env = dict(line.split('=', 1) for line in
+                     Path('infra/scientific456-local/.env').read_text().splitlines())
+          body = json.dumps({'nct':'NCT00000000','level':4,
+                             'mode':'CURRENT_EVIDENCE','contract':'SCIENTIFIC_1_6'}).encode()
+          request = Request('http://127.0.0.1:8765/api/assessment-runtime/runs',
+                            method='POST',data=body,
+                            headers={'X-Pdufa-Internal-Key':env['SCIENTIFIC456_INTERNAL_API_KEY'],
+                                     'Content-Type':'application/json'})
+          try:
+              urlopen(request, timeout=10)
+          except HTTPError as exc:
+              assert exc.code == 503, 'Long-running service write-denial must persist'
+          else:
+              raise AssertionError('Long-running staging service unexpectedly accepted a write')
+          print('PASS running staging API remains read-only after disposable write-mode test')
+          PY
+
+      - name: Always destroy the entire disposable database and test credentials
+        if: always()
+        shell: bash
+        run: |
+          docker compose --env-file infra/scientific456-local/.env down --volumes --remove-orphans || true
+          rm -f infra/scientific456-local/.env

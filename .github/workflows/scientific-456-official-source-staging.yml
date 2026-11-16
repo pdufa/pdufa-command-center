@@ -1,0 +1,93 @@
+name: Scientific 456 official-current FOCUS source smoke (ephemeral only)
+
+on:
+  push:
+    branches: ["feature/levels-456-isolated"]
+    paths:
+      - ".github/workflows/scientific-456-official-source-staging.yml"
+      - ".github/scripts/verify_scientific456_official_current.py"
+      - "infra/scientific456-local/**"
+      - "new-platform/backend/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scientific-456-official-current-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  focus-current-verified-intake:
+    name: Actual CT.gov source, ephemeral PostgreSQL, unvalidated L04-L06
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      COMPOSE_FILE: infra/scientific456-local/compose.yaml
+      COMPOSE_PROJECT_NAME: scientific456-ci-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate independent one-time database/API credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          printf 'SCIENTIFIC456_DB_PASSWORD=%s\nSCIENTIFIC456_INTERNAL_API_KEY=%s\n' \
+            "$(openssl rand -hex 32)" "$(openssl rand -hex 32)" \
+            > infra/scientific456-local/.env
+          docker compose --env-file infra/scientific456-local/.env config --quiet
+
+      - name: Boot fresh, isolated PostgreSQL and read-only API
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose --env-file infra/scientific456-local/.env up -d --build --wait
+
+      - name: Run exact FOCUS NCT current-source tests in a separate process
+        shell: bash
+        run: |
+          set -euo pipefail
+          # No permanent service flags or production credentials change. The
+          # test-only process writes exclusively to disposable PostgreSQL.
+          # Source network access is limited by the Python collector to the
+          # exact, public ClinicalTrials.gov NCT04576949 API endpoint.
+          docker compose --env-file infra/scientific456-local/.env exec -T \
+            -e CI=true \
+            -e SCIENTIFIC456_EPHEMERAL_OFFICIAL_TEST=1 \
+            -e PDUFA_MIGRATION_READ_ONLY=0 \
+            api python - < .github/scripts/verify_scientific456_official_current.py
+
+      - name: Verify the persistent HTTP service remained read-only
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from urllib.error import HTTPError
+          from urllib.request import Request, urlopen
+
+          env = dict(line.split('=', 1) for line in
+                     Path('infra/scientific456-local/.env').read_text().splitlines())
+          payload = json.dumps({'nct':'NCT04576949','level':4,
+                                'mode':'CURRENT_EVIDENCE','contract':'SCIENTIFIC_1_6'}).encode()
+          request = Request('http://127.0.0.1:8765/api/assessment-runtime/runs',
+                            method='POST', data=payload,
+                            headers={'Content-Type':'application/json',
+                                     'X-Pdufa-Internal-Key':env['SCIENTIFIC456_INTERNAL_API_KEY']})
+          try:
+              urlopen(request, timeout=10)
+          except HTTPError as error:
+              assert error.code == 503, 'Live staging API must reject research writes'
+          else:
+              raise AssertionError('Live staging API unexpectedly accepted a clinical run')
+          print('PASS running staging API still refuses saved research execution')
+          PY
+
+      - name: Always destroy temporary source data, Postgres volume and credentials
+        if: always()
+        shell: bash
+        run: |
+          docker compose --env-file infra/scientific456-local/.env down --volumes --remove-orphans || true
+          rm -f infra/scientific456-local/.env
