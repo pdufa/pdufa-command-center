@@ -1,6 +1,7 @@
 'use client';
 import Link from 'next/link';
 import FocusSurveyTrendChart from './FocusSurveyTrendChart';
+import {FOCUS_CHART_SNAPSHOT_TRIALS,FOCUS_CHART_SNAPSHOT_DATE} from '../lib/focus-chart-snapshot';
 import FocusOverallLevelMatrix from './FocusOverallLevelMatrix';
 import {provisionalFocusScore,FOCUS_READINESS_METHOD} from '../lib/focus-provisional-scores';
 import {readSavedFocus} from '../lib/focus-saved-records';
@@ -26,9 +27,32 @@ export default function FocusSavedAssessments({selectedNct}:{selectedNct?:string
  const rows=(data?.trials||[]).filter(t=>(t.nct+' '+t.ticker+' '+t.company).toLowerCase().includes(filter.toLowerCase()));
  const provisionalScores=(data?.trials||[]).reduce((count,t)=>
   count+[1,2,3].filter(level=>!!provisionalFocusScore(t.nct,level,t.levels[String(level)]?.report)).length,0);
+ // Never hide the chart while a protected API request is loading, unavailable
+ // or signed out: render the fully reconciled source-checked dated snapshot
+ // in the initial HTML. Upgrade to current data only with 32/32 exact NCTs
+ // and all 96 identity-validated source-report scores.
+ const sourceNcts=new Set(FOCUS_CHART_SNAPSHOT_TRIALS.map(t=>t.nct));
+ const liveComplete=!!data&&data.total===FOCUS_CHART_SNAPSHOT_TRIALS.length&&
+   data.total===32&&data.trials.length===32&&
+   new Set(data.trials.map(t=>t.nct)).size===32&&
+   data.trials.every(t=>sourceNcts.has(t.nct)&&[1,2,3].every(l=>
+     !!provisionalFocusScore(t.nct,l,t.levels[String(l)]?.report)));
+ const chartTrials=liveComplete?data!.trials:FOCUS_CHART_SNAPSHOT_TRIALS;
+ const chartTotal=chartTrials.length;
  return <section aria-label="Saved FOCUS Level 1–3 assessments" style={{border:'1px solid #b9cebe',borderRadius:8,padding:14,margin:'16px 0',overflowWrap:'anywhere',minWidth:0}}>
   <h2>Saved FOCUS trial surveys · Levels 1–3</h2>
   <p>Both FOCUS and ASSESSMENTS read these same versioned database records. An executed assessment with evidence gaps is not a validated numerical score. Predictions without a validated model remain ABSTAIN.</p>
+  <div id="focus-chart-quick-view" data-testid="focus-chart-immediate-panel"
+    style={{margin:'12px 0 20px',padding:'10px 12px',border:'2px solid #7baf99',borderRadius:10}}>
+   <h3 style={{margin:'0 0 5px'}}>FOCUS chart · Levels 1–3 + Overall + FDA direction</h3>
+   <p role="status" style={{fontSize:13,margin:'4px 0 10px'}}>
+    {liveComplete?'Latest authenticated reports: all 32 FOCUS trials reconciled.':
+      'Visible source-checked snapshot dated '+FOCUS_CHART_SNAPSHOT_DATE+
+      '. This snapshot remains visible when authenticated saved assessments are loading or unavailable; newer reports may differ.'}
+    {' '}All numeric scores show provisional documentation readiness, not FDA approval likelihood.
+   </p>
+   <FocusSurveyTrendChart trials={chartTrials} total={chartTotal} selectedNct={selectedNct}/>
+  </div>
   {error&&<p role="alert">{error}</p>}{message&&<p role="status">{message}</p>}
   {!data&&!error&&<p role="status">Loading persisted assessments…</p>}
   {data&&<><p>Database roster: {data.total===null?'NOT RECONCILED':data.total+' exact trials'}. All three research executions saved: <strong>{data.fullyProcessed??0} / {data.total??'?'}</strong> trials ({data.counts['1']?.processed??0}+{data.counts['2']?.processed??0}+{data.counts['3']?.processed??0} saved level reports). Roster status: {data.status.replaceAll('_',' ')}.</p>
@@ -47,7 +71,6 @@ export default function FocusSavedAssessments({selectedNct}:{selectedNct?:string
      {' '}{FOCUS_READINESS_METHOD}
    </p>
    <FocusOverallLevelMatrix trials={rows} selectedNct={selectedNct}/>
-   <FocusSurveyTrendChart trials={data.trials} total={data.total} selectedNct={selectedNct}/>
    <div style={{overflowX:'auto',marginTop:12}}><table style={{borderCollapse:'collapse',minWidth:850,width:'100%'}}><thead><tr><th>Trial</th>{[1,2,3].filter(l=>level==='ALL'||level===String(l)).flatMap(l=>[<th key={l+'s'}>L{l} Scientific result and evidence</th>,<th key={l+'p'}>L{l} FDA prediction status</th>])}</tr></thead>
     <tbody>{rows.map(t=><tr key={t.nct} style={{borderTop:'1px solid #b9cebe'}}><td style={{padding:10}}><Link href={'/predictions/assessment?nct='+encodeURIComponent(t.nct)}>{t.nct}</Link><br/>{t.ticker} · {t.company}<br/>{t.levels['1']?.report?.trialIdentity.candidate||'Candidate not yet source-verified'}<br/>PDUFA: {t.pdufaDate||'Not assigned/verified'}<br/><Link href={'/company?ticker='+encodeURIComponent(t.ticker)}>COMPANY</Link> · <Link href="/focus">FOCUS</Link></td>
      {[1,2,3].filter(l=>level==='ALL'||level===String(l)).flatMap(l=>{const slot=t.levels[String(l)],r=slot?.report;return [<td key={l+'s'} style={{padding:10,verticalAlign:'top'}}>{r?<><Link href={'/predictions/assessment?nct='+encodeURIComponent(t.nct)}>{r.score.kind==='NOT_VALIDATED'||r.score.kind==='LEVEL_SPECIFIC_EVIDENCE_COVERAGE'?'NOT VALIDATED / UNSCORABLE':r.score.value===null?'NOT VALIDATED / UNSCORABLE':r.score.value}</Link><br/>{(()=>{const v=provisionalFocusScore(t.nct,l,r);return v?
