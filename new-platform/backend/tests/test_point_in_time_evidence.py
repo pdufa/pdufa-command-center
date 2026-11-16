@@ -65,3 +65,20 @@ def test_invalid_cutoff_fails_closed():
 def test_nonmapping_rejected():
     with pytest.raises(TypeError):
         validate_point_in_time_evidence(None)
+
+
+def test_reject_evidence_published_after_retrieval():
+    record = sample()
+    record["evidence"][0]["published_on"] = "2026-04-22"
+    result = validate_point_in_time_evidence(record)
+    assert not result["eligible_for_owner_review"]
+    assert "EVIDENCE_0_PUBLISHED_AFTER_RETRIEVAL" in result["errors"]
+
+
+def test_reject_nested_outcome_leakage():
+    record = sample()
+    record["evidence"][0]["fda_outcome"] = "approved"
+    result = validate_point_in_time_evidence(record)
+    assert not result["eligible_for_owner_review"]
+    assert "EVIDENCE_0_OUTCOME_LEAKAGE" in result["errors"]
+    assert result["fda_prediction"] == "ABSTAIN"
