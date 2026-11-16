@@ -58,6 +58,17 @@ const datedSourceScores:Record<string,Record<string,number|null>>=Object.fromEnt
 
 export default function FocusPage(){
  const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);
+ // A successful sort should visibly change which FOCUS rows the owner sees,
+ // not just silently close the modal while the table remains off screen.
+ const applyFocusSort=(next:NumericSortRule[])=>{
+  setSortRules(next);
+  window.requestAnimationFrame(()=>window.requestAnimationFrame(()=>{
+   document.getElementById('focus-sort-feedback')?.scrollIntoView({
+    behavior:'smooth',block:'start'
+   });
+   tableScrollRef.current?.scrollTo({left:0,behavior:'auto'});
+  }));
+ };
  const [surveyExpanded,setSurveyExpanded]=useState(false);
  const tableScrollRef=useRef<HTMLDivElement>(null);
  // The full research table can be horizontally scrolled on phones; provide
@@ -131,10 +142,10 @@ export default function FocusPage(){
   <p><a href="#focus-site-spreadsheet" style={{display:"inline-block",padding:"9px 13px",background:"#edf8ef",border:"1px solid #789987",borderRadius:7,fontWeight:700,marginRight:10}}>Open FOCUS spreadsheet · Overall + L01–L03</a></p>
   <p><a href="#focus-chart-quick-view" style={{display:"inline-block",padding:"9px 13px",background:"#e8f3ed",border:"1px solid #7baf99",borderRadius:7,fontWeight:700}}>View four-line FOCUS chart</a></p>
   <div aria-label="Top table sorting controls" style={{display:"flex",alignItems:"center",gap:10,flexWrap:"wrap",margin:"12px 0 18px"}}>
-  <NumericSortSettings scope="focus" columns={[{id:"overall",label:"Overall prediction survey result — Evidence Readiness /100"},{id:"ticker",label:"Ticker"},{id:"nct",label:"NCT / Trial"},{id:"company",label:"Company"},{id:"designations",label:"FDA Special Designations"},{id:"marketCap",label:"Market cap ($B)"},{id:"fdaStatus",label:"FDA / PDUFA path"},{id:"sources",label:"Sources"},{id:"gates",label:"7 gate checks"},{id:"direction",label:"FDA prediction direction"},{id:"level1",label:"L01-Trial identity"},{id:"level2",label:"L02-Current phase"},{id:"level3",label:"L03-Source evidence"},{id:"level4",label:"L04-Study protocol"},{id:"level5",label:"L05-Population"},{id:"level6",label:"L06-Efficacy"},{id:"level7",label:"L07-Statistics"},{id:"level8",label:"L08-Safety"},{id:"level9",label:"L09-Clinical benefit"},{id:"level10",label:"L10-Comparator"},{id:"level11",label:"L11-Subgroups"},{id:"level12",label:"L12-Data gaps"},{id:"level13",label:"L13-Regulatory history"},{id:"level14",label:"L14-FDA alignment"},{id:"level15",label:"L15-Manufacturing"},{id:"level16",label:"L16-Benefit–risk"},{id:"level17",label:"L17-Exceptions"},{id:"level18",label:"L18-External evidence"},{id:"level19",label:"L19-Confidence"},{id:"level20",label:"L20-Integrated review"}]} onApply={setSortRules}/>
+  <NumericSortSettings scope="focus" columns={[{id:"overall",label:"Overall prediction survey result — Evidence Readiness /100"},{id:"ticker",label:"Ticker"},{id:"nct",label:"NCT / Trial"},{id:"company",label:"Company"},{id:"designations",label:"FDA Special Designations"},{id:"marketCap",label:"Market cap ($B)"},{id:"fdaStatus",label:"FDA / PDUFA path"},{id:"sources",label:"Sources"},{id:"gates",label:"7 gate checks"},{id:"direction",label:"FDA prediction direction"},{id:"level1",label:"L01-Trial identity"},{id:"level2",label:"L02-Current phase"},{id:"level3",label:"L03-Source evidence"},{id:"level4",label:"L04-Study protocol"},{id:"level5",label:"L05-Population"},{id:"level6",label:"L06-Efficacy"},{id:"level7",label:"L07-Statistics"},{id:"level8",label:"L08-Safety"},{id:"level9",label:"L09-Clinical benefit"},{id:"level10",label:"L10-Comparator"},{id:"level11",label:"L11-Subgroups"},{id:"level12",label:"L12-Data gaps"},{id:"level13",label:"L13-Regulatory history"},{id:"level14",label:"L14-FDA alignment"},{id:"level15",label:"L15-Manufacturing"},{id:"level16",label:"L16-Benefit–risk"},{id:"level17",label:"L17-Exceptions"},{id:"level18",label:"L18-External evidence"},{id:"level19",label:"L19-Confidence"},{id:"level20",label:"L20-Integrated review"}]} onApply={applyFocusSort}/>
   <button type="button" data-testid="focus-overall-sort-control"
     aria-label="Sort Overall prediction survey result"
-    onClick={()=>setSortRules([{column:"overall",direction:
+    onClick={()=>applyFocusSort([{column:"overall",direction:
       sortRules.length===1&&sortRules[0].column==="overall"&&sortRules[0].direction==="desc"?"asc":"desc"}])}
     style={{padding:"9px 14px",borderRadius:8,border:"1px solid #789987",
       background:"#e6f2ea",color:"#173d2b",fontWeight:700,cursor:"pointer"}}>
@@ -165,6 +176,24 @@ export default function FocusPage(){
    FDA approval probability or a directional approval call). L01–L03 scores are visible beside Overall;
    expand Survey Columns for L04–L20. Snapshot date: {FOCUS_CHART_SNAPSHOT_DATE}.
   </p>
+  <div id="focus-sort-feedback" data-testid="focus-sort-feedback" role="status"
+   aria-live="polite" style={{margin:"12px 0 8px",padding:"9px 12px",
+    border:"1px solid #95bea0",background:"#f1f8f3",borderRadius:8,fontSize:13,
+    scrollMarginTop:16}}>
+   {sortRules.length?<>
+    <strong>Sort applied: {sortRules.map((r,i)=>
+     (i+1)+". "+(r.column==="overall"?"Overall Score":/^level[0-9]+$/.test(r.column)?
+      "Level "+r.column.slice(5):r.column)+" · "+
+      (r.direction==="desc"?"High → Low":"Low → High")).join(" / ")}</strong>
+    {" "}· {sortedTrials.length} trials
+    <div data-testid="focus-sort-confirmation-rows" style={{marginTop:4}}>
+     First: {sortedTrials[0]?.ticker} ({sortedTrials[0]?.nct.slice(-4)}) ·
+     Overall {sortedTrials[0]?savedScores[sortedTrials[0].nct]?.overall??"—":"—"}/100
+     {" "} | Last: {sortedTrials.at(-1)?.ticker} ({sortedTrials.at(-1)?.nct.slice(-4)}) ·
+     Overall {sortedTrials.at(-1)?savedScores[sortedTrials.at(-1)!.nct]?.overall??"—":"—"}/100
+    </div>
+   </>:<span>Original FOCUS trial order · {sortedTrials.length} trials. Apply a column sort to see the active order here.</span>}
+  </div>
   <section className="focus-mobile-score-view" data-testid="focus-mobile-score-view"
    aria-label="FOCUS mobile score columns: Overall and Levels 1, 2, 3"
    style={{border:"1px solid #b9cebe",borderRadius:9,margin:"12px 0",padding:"8px 5px",background:"#fff"}}>
