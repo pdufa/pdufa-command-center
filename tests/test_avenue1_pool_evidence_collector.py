@@ -5,7 +5,7 @@ from scripts.avenue1_pool_evidence_collector import find_ncts, study_evidence
 class CollectorTests(unittest.TestCase):
     def test_only_trial_records_in_whole_pool(self):
         snapshot = {
-            "sourceHealth": {"state": "FRESH", "pipelineSourceParity": {"exactPrograms": 4}},
+            "sourceHealth": {"state": "FRESH", "clinicalRows": 3, "regulatoryRows": 1, "pipelineSourceParity": {"exactPrograms": 4}},
             "pipeline": [
                 {"id": "TRIAL|NCT05507203", "ticker": "ABVX"},
                 {"id": "RESULT|NCT05507216", "ticker": "ABVX"},
@@ -19,6 +19,20 @@ class CollectorTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             find_ncts({"pipeline": [{"id": "TRIAL|NCT05507203"}],
                        "sourceHealth": {"state": "STALE", "pipelineSourceParity": {"exactPrograms": 1}}})
+
+    def test_rejects_unknown_freshness(self):
+        snapshot = {"pipeline": [{"id": "TRIAL|NCT05507203"}],
+                    "sourceHealth": {"state": "UNKNOWN", "clinicalRows": 1,
+                                     "regulatoryRows": 0, "pipelineSourceParity": {"exactPrograms": 1}}}
+        with self.assertRaises(RuntimeError):
+            find_ncts(snapshot)
+
+    def test_rejects_source_count_mismatch(self):
+        snapshot = {"pipeline": [{"id": "TRIAL|NCT05507203"}],
+                    "sourceHealth": {"state": "FRESH", "clinicalRows": 0,
+                                     "regulatoryRows": 0, "pipelineSourceParity": {"exactPrograms": 1}}}
+        with self.assertRaises(RuntimeError):
+            find_ncts(snapshot)
 
     def test_results_not_inferred_when_missing(self):
         payload = {"protocolSection": {"statusModule": {"overallStatus": "COMPLETED"},
