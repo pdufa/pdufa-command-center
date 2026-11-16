@@ -1,6 +1,9 @@
 """Additive L04–L06 scientific research contract: no changes to saved 123."""
 from datetime import date
 import pytest
+from fastapi import FastAPI
+from fastapi.testclient import TestClient
+from sqlalchemy import text
 
 from app import assessment_runtime as runtime
 from app import scientific_trial_assessment as scientific
@@ -108,3 +111,29 @@ def test_456_runs_persist_as_separate_immutable_reports(engine, monkeypatch, lev
     assert saved["report"]["contract"] == "SCIENTIFIC_1_6"
     assert saved["report"]["level"] == level
     assert saved["report"]["fdaPrediction"]["outcome"] == "ABSTAIN"
+
+
+def test_staging_456_http_requires_explicit_opt_in_and_preserves_123(engine, monkeypatch):
+    """No 456 writes if the runtime has not been explicitly enabled."""
+    monkeypatch.delenv('PDUFA_LEVEL456_BACKEND_ENABLED', raising=False)
+    monkeypatch.setattr(runtime, 'execute', lambda db, run_id: None)
+    app = FastAPI()
+    app.include_router(runtime.router(lambda: engine, lambda: None, lambda: None,
+                                      lambda: None, allow_local=True))
+    url = '/api/assessment-runtime/runs'
+    with TestClient(app) as client:
+        refused = client.post(url, json=request(4).model_dump(mode='json'))
+        assert refused.status_code == 503
+        with engine.connect() as connection:
+            assert connection.execute(text('SELECT count(*) FROM assessment_v2_jobs')).scalar_one() == 0
+        # The existing 123 path remains independently usable.
+        original = client.post(url, json=request(1, contract='SCIENTIFIC_1_3').model_dump(mode='json'))
+        assert original.status_code == 202
+        monkeypatch.setenv('PDUFA_LEVEL456_BACKEND_ENABLED', '1')
+        accepted = client.post(url, json=request(4).model_dump(mode='json'))
+        assert accepted.status_code == 202
+        result = client.get('/api/assessment-runtime/runs/NCT04576949/'+accepted.json()['runId'])
+        assert result.status_code == 200
+        assert result.json()['status'] == 'QUEUED'
+        with engine.connect() as connection:
+            assert connection.execute(text('SELECT count(*) FROM assessment_v2_jobs')).scalar_one() == 2
