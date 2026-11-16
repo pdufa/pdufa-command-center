@@ -171,11 +171,12 @@ test('shared saved FOCUS table renders persisted independent levels and explicit
    assert.ok(table.findAllByType('th').some(th=>React.Children.toArray(th.props.children).join('')==='L'+l+' Scientific result and evidence'));
    assert.ok(table.findAllByType('th').some(th=>React.Children.toArray(th.props.children).join('')==='L'+l+' FDA prediction status'));
   }
-  const rendered=JSON.stringify(table.toJSON());
+  const textOf=node=>typeof node==='string'||typeof node==='number'?String(node):node?.children?node.children.map(textOf).join(''):'';
+  const rendered=table.findAllByType('td').map(textOf).join('\\n');
   assert.equal((rendered.match(/NOT VALIDATED \/ UNSCORABLE/g)||[]).length,3);
   assert.equal((rendered.match(/ABSTAIN/g)||[]).length,3);
   assert.equal(table.findAllByType('tbody')[0].findAllByType('tr').length,1);
-  for(let l=1;l<=3;l++)assert.match(rendered,new RegExp('synthetic-'+l));
+  for(let l=1;l<=3;l++)assert.match(rendered,new RegExp('synthetic/level-'+l));
  }finally{
   if(tree)await act(async()=>tree.unmount());
   global.fetch=old.fetch;
