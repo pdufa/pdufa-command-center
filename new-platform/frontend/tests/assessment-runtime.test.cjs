@@ -167,8 +167,8 @@ test('shared saved FOCUS table renders persisted independent levels and explicit
 test('FOCUS columns show the same saved scientific records as the shared assessment table',async()=>{
  const React=require('react'),{act,create}=require('react-test-renderer');globalThis.IS_REACT_ACT_ENVIRONMENT=true;
  const old={fetch:global.fetch,self:global.self,window:global.window};global.self=globalThis;global.window={addEventListener(){},removeEventListener(){}};let tree;
- global.fetch=async url=>{assert.equal(url,'/api/assessments/runtime?focus=true');return Response.json({trials:[{nct,levels:Object.fromEntries([1,2,3].map(level=>[String(level),{report:{runId:'saved-'+level,nct,level,mode:'CURRENT_EVIDENCE',executedAt:'2026-11-15',score:{value:null,kind:'NOT_VALIDATED'},fdaPrediction:{outcome:'ABSTAIN',confidence:'NOT_VALIDATED'}}}]))}]});};
- try{const Cells=require('../app/FocusLevelColumns.tsx').FocusLevelCells;await act(async()=>{tree=create(React.createElement(Cells,{nct}));});const json=JSON.stringify(tree.toJSON());assert.equal((json.match(/NOT VALIDATED \/ UNSCORABLE/g)||[]).length,3);assert.equal((json.match(/ABSTAIN · not predicted/g)||[]).length,3);for(let l=1;l<=3;l++)assert.match(json,new RegExp('Saved assessment saved-'+l));}
+  const levels=Object.fromEntries([1,2,3].map(level=>[String(level),{state:'COMPLETED',report:{runId:'saved-'+level,nct,level,mode:'CURRENT_EVIDENCE',executedAt:'2026-11-15',score:{value:null,kind:'NOT_VALIDATED'},fdaPrediction:{outcome:'ABSTAIN',confidence:'NOT_VALIDATED'}}}]));
+  try{const Cells=require('../app/FocusLevelColumns.tsx').FocusLevelCells;await act(async()=>{tree=create(React.createElement(Cells,{nct,levels}));});const json=JSON.stringify(tree.toJSON());assert.equal((json.match(/NOT VALIDATED \\u00b7 saved/g)||[]).length,3);assert.equal((json.match(/ABSTAIN \\u00b7 not validated/g)||[]).length,3);assert.equal((json.match(/Saved saved-[1-3]/g)||[]).length,3);}
  finally{if(tree)await act(async()=>tree.unmount());Object.assign(global,old);}
 });
 
