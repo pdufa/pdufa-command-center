@@ -137,3 +137,40 @@ def test_staging_456_http_requires_explicit_opt_in_and_preserves_123(engine, mon
         assert result.json()['status'] == 'QUEUED'
         with engine.connect() as connection:
             assert connection.execute(text('SELECT count(*) FROM assessment_v2_jobs')).scalar_one() == 2
+
+
+def test_history_contract_filter_is_applied_before_fifty_result_limit(engine, monkeypatch):
+    """Many new 123 reports must never hide older saved scientific 456 evidence."""
+    monkeypatch.setattr(runtime, 'collect_documents', lambda value, document_level: value)
+    q = request(4)
+    original_run = runtime.create(engine, q)
+    runtime.execute(engine, original_run, lambda _: source())
+    assert runtime.status(engine, q.nct, original_run)['status'] == 'COMPLETED'
+    for i in range(55):
+        old_q = request(1, contract='SCIENTIFIC_1_3')
+        old_run = runtime.create(engine, old_q)
+        report = {'contract': 'SCIENTIFIC_1_3', 'nct': q.nct, 'level': 1,
+                  'runId': old_run, 'fdaPrediction': {'outcome': 'ABSTAIN'}}
+        with engine.begin() as conn:
+            conn.execute(text('''INSERT INTO assessment_v2_results
+                (run_id,nct_id,level,engine_version,mode,created_at,report_hash,report_json)
+                VALUES(:run,:nct,1,'old-science-1','CURRENT_EVIDENCE',:created,:hash,:report)'''),
+                {'run': old_run, 'nct': q.nct, 'created': f'2035-01-01T00:00:{i:02d}+00:00',
+                 'hash': runtime.sha(report), 'report': runtime.packed(report)})
+    unfiltered = runtime.history(engine, q.nct)
+    assert len(unfiltered['runs']) == 50
+    assert unfiltered['hasMore'] is True
+    filtered = runtime.history(engine, q.nct, contract='SCIENTIFIC_1_6')
+    assert filtered['hasMore'] is False
+    assert len(filtered['runs']) == 1
+    assert filtered['runs'][0]['runId'] == original_run
+    assert filtered['runs'][0]['level'] == 4
+    assert filtered['runs'][0]['contract'] == 'SCIENTIFIC_1_6'
+    app = FastAPI()
+    app.include_router(runtime.router(lambda: engine, lambda: None, lambda: None,
+                                      lambda: None, allow_local=True))
+    with TestClient(app) as client:
+        response = client.get('/api/assessment-runtime/history/NCT04576949?contract=SCIENTIFIC_1_6')
+        assert response.status_code == 200
+        assert len(response.json()['runs']) == 1
+        assert client.get('/api/assessment-runtime/history/NCT04576949?contract=untrusted').status_code == 422
