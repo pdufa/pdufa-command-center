@@ -25,6 +25,7 @@ on:
       - 'new-platform/backend/tests/test_historical_collection_progress.py'
       - 'new-platform/backend/tests/test_historical_discovery_gate.py'
       - 'new-platform/backend/tests/test_historical_source_bytes.py'
+      - 'new-platform/backend/tests/test_discovery_source_packaging.py'
       - 'docs/data/keynote522_discovery_only.json'
       - 'new-platform/backend/tests/test_historical_worklist_cli.py'
       - '.github/workflows/isolated-levels-10-20-tests.yml'
