@@ -20,3 +20,13 @@ Tracking: #1226; development branch: `feature/levels-456-isolated`.
 ## Status
 
 This is an initial code audit and CI setup, **not** a completed L04–L06 clinical scoring implementation. No production deployment is authorized.
+
+## Additive L04–L06 scientific execution (development branch only)
+
+- New **opt-in** backend request contract: `SCIENTIFIC_1_6`. Its L04–L06 taxonomy is defined explicitly in `new-platform/backend/app/scientific_levels_four_to_six.py`, separate from `LEGACY_SOURCE_AUDIT`.
+- The existing `SCIENTIFIC_1_3` request contract still rejects levels above L03 and retains its original scientific implementation/version. Existing L01–L03 reports and frontend selections are not migrated or overwritten.
+- Source collection for `SCIENTIFIC_1_6` retains the existing original NCT / publication/capture chronology and optional original protocol/SAP evidence; historical requests still require the verified review-cycle date linkage.
+- Each new level reports source observations, missing/not-yet-expected evidence, owner-not-reviewed status and `ABSTAIN` with null approval probability. There are **no validated clinical score percentages**.
+- New tests: `new-platform/backend/tests/test_scientific_levels_four_to_six.py`. These test the opt-in contract, separate evidence domains, no invented forecast, historical isolation, 123 compatibility and immutable persistence.
+- **Not yet connected to the FOCUS/PAST/POOL/ASSESSMENTS display**, no bulk 456 evidence backfill, no score publication or approval forecasts. No production deployment authorized.
+- **Engineering verification pending** after this code change; previous local backend/frontend passes predate the new module and cannot be cited as its validation.
