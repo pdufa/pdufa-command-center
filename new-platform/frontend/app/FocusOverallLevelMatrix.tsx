@@ -58,7 +58,14 @@ export function FocusOverviewCells({nct,levels,loading=false,error=false}:{
      {evidence?evidence.evidenceReadinessScore+'/100':'Pending'}
     </strong>
     <div style={{fontSize:12}}>Overall evidence readiness · provisional</div>
-    {evidence&&<div style={{fontSize:12}}>{evidence.sourceVerified}/{evidence.applicable} source-verified checks</div>}
+    {evidence&&<>
+     <div style={{fontSize:12}}>{evidence.sourceVerified}/{evidence.applicable} source-verified checks</div>
+     <div data-testid="focus-overall-level123-inline" style={{fontSize:12}}>
+      L01 {evidence.levelScores[0].evidenceReadinessScore}/100 ·
+      {' '}L02 {evidence.levelScores[1].evidenceReadinessScore}/100 ·
+      {' '}L03 {evidence.levelScores[2].evidenceReadinessScore}/100
+     </div>
+    </>}
     <div style={{fontSize:12}}>Scientific prediction: {status.overall}</div>
     <div style={{fontSize:12}}>{status.completed}/3 research surveys saved</div>
     <Link href={'/predictions/assessment?nct='+encodeURIComponent(nct)}>See calculation and evidence</Link>
