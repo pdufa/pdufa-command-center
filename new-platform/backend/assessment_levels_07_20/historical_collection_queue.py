@@ -7,13 +7,13 @@ from __future__ import annotations
 
 from typing import Any
 
-from .historical_intake_inventory import summarize_historical_intake_inventory
+from .historical_intake_inventory import summarize_historical_intake
 
 
 def plan_historical_source_collection(
     manifest: dict[str, Any], source_records: list[dict[str, Any]]
 ) -> dict[str, Any]:
-    inventory = summarize_historical_intake_inventory(manifest, source_records)
+    inventory = summarize_historical_intake(manifest, source_records)
     tasks: list[dict[str, Any]] = []
     for row in inventory["trial_inventory"]:
         for source_type in row["missing_priority_source_types"]:
