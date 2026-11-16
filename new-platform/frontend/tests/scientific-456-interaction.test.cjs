@@ -85,3 +85,38 @@ test('changing selected NCT clears previously saved clinical evidence from displ
   assert.match(output,/NCT00000002/);
  }finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;}
 });
+
+
+test('load older research versions paginates by cursor and retains first page',async()=>{
+ const oldFetch=global.fetch;let tree;
+ const olderId='77777777-7777-7777-7777-777777777777';
+ const cursor='2026-11-15T00:00:00+00:00|'+uuid;
+ const calls=[];
+ global.fetch=async url=>{
+  const parsed=new URL(String(url),'https://owner.example.test');
+  calls.push(parsed);
+  assert.equal(parsed.searchParams.get('contract'),'SCIENTIFIC_1_6');
+  if(parsed.searchParams.has('before')){
+   assert.equal(parsed.searchParams.get('before'),cursor);
+   return Response.json({nct,runs:[{...report,runId:olderId}],hasMore:false,nextCursor:null});
+  }
+  return Response.json({nct,runs:[report],hasMore:true,nextCursor:cursor});
+ };
+ try{
+  await act(async()=>{tree=create(React.createElement(Workspace,{cohort:'ASSESSMENTS',initialNct:nct}));});
+  await act(async()=>{await Promise.resolve();});
+  assert.match(text(tree),/Load older 456 versions/);
+  await act(async()=>{
+   const button=tree.root.findAllByType('button').find(x=>x.props.children==='Load older 456 versions');
+   assert.ok(button,'Older-history continuation button must be visible');
+   button.props.onClick();
+  });
+  await act(async()=>{await Promise.resolve();});
+  const output=text(tree);
+  assert.equal(calls.length,2);
+  assert.match(output,/2 saved 456 assessment versions|Saved 456 assessment versions/);
+  assert.match(output,new RegExp(uuid));
+  assert.match(output,new RegExp(olderId));
+  assert.doesNotMatch(output,/Load older 456 versions/);
+ }finally{if(tree)await act(async()=>tree.unmount());global.fetch=oldFetch;}
+});
