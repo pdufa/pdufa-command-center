@@ -28,3 +28,29 @@ def test_does_not_mutate_input():
     before = dict(record)
     inspect_isolated_level(7, record)
     assert record == before
+
+
+def test_dispatch_rejects_validator_level_identity_mismatch(monkeypatch):
+    from assessment_levels_07_20 import isolated_dispatch
+
+    monkeypatch.setitem(isolated_dispatch._VALIDATORS, 7, lambda record: {
+        "level": 8, "scientific_status": "NOT_VERIFIED",
+        "scientific_score": None, "fda_prediction": "ABSTAIN",
+    })
+    with pytest.raises(RuntimeError, match="level mismatch"):
+        inspect_isolated_level(7, {})
+
+
+@pytest.mark.parametrize("unsafe_result", [
+    {"scientific_status": "VERIFIED", "scientific_score": None, "fda_prediction": "ABSTAIN"},
+    {"scientific_status": "NOT_VERIFIED", "scientific_score": 99, "fda_prediction": "ABSTAIN"},
+    {"scientific_status": "NOT_VERIFIED", "scientific_score": None, "fda_prediction": "APPROVAL"},
+])
+def test_dispatch_rejects_unsafe_scoring_or_prediction(monkeypatch, unsafe_result):
+    from assessment_levels_07_20 import isolated_dispatch
+
+    monkeypatch.setitem(isolated_dispatch._VALIDATORS, 7, lambda record: {
+        "level": 7, **unsafe_result,
+    })
+    with pytest.raises(RuntimeError, match="fail closed"):
+        inspect_isolated_level(7, {})
