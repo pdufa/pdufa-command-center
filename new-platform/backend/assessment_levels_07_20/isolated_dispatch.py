@@ -40,6 +40,8 @@ def inspect_isolated_level(level: int, record: Mapping[str, Any]) -> dict[str, A
     if not isinstance(record, Mapping):
         raise TypeError("Assessment input must be a mapping")
     result = _VALIDATORS[level](dict(record))
+    if not isinstance(result, Mapping):
+        raise RuntimeError("Isolated assessment contract must fail closed: invalid result type")
     if result.get("level") != level:
         raise RuntimeError("Assessment validator level mismatch")
     if result.get("scientific_status") != "NOT_VERIFIED" or result.get("scientific_score") is not None or result.get("fda_prediction") != "ABSTAIN":
