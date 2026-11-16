@@ -148,7 +148,7 @@ export default function FocusPage(){
      "Source: 32/32 current reports reconciled with the immutable source checks."}
    {" "}These numbers measure source-documentation readiness (not drug efficacy, scientific validation,
    FDA approval probability or a directional approval call). Expand “Survey Columns” or “+ 20 Levels”
-   for each L01–L03 value. Snapshot date: {FOCUS_CHART_SNAPSHOT_DATE}.
+   L01–L03 scores are visible beside Overall; expand Survey Columns for L04–L20. Snapshot date: {FOCUS_CHART_SNAPSHOT_DATE}.
   </p>
   <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
   <style>{`table.assessment-expandable:not(.survey-expanded):not(:has(details.assessment-toggle[open])) .assessment-level{display:none} .assessment-toggle{display:inline-block;margin-left:6px;vertical-align:middle}.assessment-toggle summary{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border:1px solid #7e9f8b;border-radius:5px;cursor:pointer;background:#fff;color:#173d2b;font-weight:800;list-style:none}.assessment-toggle summary::-webkit-details-marker{display:none}.assessment-toggle .when-open{display:none}.assessment-toggle[open] .when-open{display:inline}.assessment-toggle[open] .when-closed{display:none}`}</style>
