@@ -12,6 +12,34 @@
 - Save/load uses the existing `assessment_v2_` PostgreSQL tables and verifies immutable report digests on read.
 - The UI chooses the 456 destination only when the explicit contract is SCIENTIFIC_1_6. It refuses to reuse the configured legacy/123 base URL or secret.
 
+## Dedicated 456-only staging application (recommended)
+
+A minimal, independently bootable API is available as
+`new-platform/backend/app/scientific_456_staging.py`.
+Its routes are restricted to scientific 456 version metadata,
+exact-NCT run creation, run status and saved history; it **does not import**
+`app.main` and does **not** register any FOCUS batch, PAST summary, live scan,
+scheduler or trading routes.
+
+To launch from `new-platform/backend` **only after a distinct staging database
+and backend environment are provisioned and authorized**:
+
+```bash
+uvicorn app.scientific_456_staging:app --host 0.0.0.0 --port 8000
+```
+
+A separate non-root image is in `new-platform/backend/Dockerfile.scientific456`.
+Select it explicitly when configuring the new staging service; the default
+backend Dockerfile still launches `app.main`. Provisioning and deployment
+remain **pending and require separate authorization**.
+
+This dedicated application fails closed unless the enable flag is set, its
+secret is configured, `PDUFA_REQUIRE_POSTGRES=1`, and
+`PDUFA_LEVEL456_DATABASE_NAME` names the PostgreSQL database in `DATABASE_URL`
+(the name must include `456`, e.g. `scientific456`). The database must
+be independent of production; a schema inside production does not satisfy
+this condition. It does not create, select or migrate the database for you.
+
 ## Isolated service — planning, not provisioned by this PR
 
 **Require a dedicated backend environment and dedicated PostgreSQL database or Neon project**, not the production database and not a production database branch casually reused by an autonomous worker. Obtain authorization for resource creation and possible costs before provisioning.
@@ -22,9 +50,10 @@ Configure on the **new isolated backend service**:
 | --- | --- |
 | `DATABASE_URL` | Unique isolated PostgreSQL database connection, not the production URL |
 | `PDUFA_REQUIRE_POSTGRES` | `1` |
+| `PDUFA_LEVEL456_DATABASE_NAME` | Name of a separate PostgreSQL database (must include `456`); must match `DATABASE_URL` |
 | `PDUFA_LEVEL456_BACKEND_ENABLED` | `1` only on the isolated staging service; default disabled everywhere else |
 | `PDUFA_INTERNAL_API_KEY` | New unique secret, stored as a secret environment variable |
-| `PDUFA_ASSESSMENT_SCHEMA` | Optional isolated schema such as `scientific456`; defense-in-depth, not a substitute for database isolation |
+| `PDUFA_ASSESSMENT_SCHEMA` | Not used by the dedicated 456-only application; separate database is required |
 | `PDUFA_MIGRATION_COPY_ON_BOOT` | `0` |
 | `PDUFA_MEDICAL_BATCH_AUTORUN` | `0` |
 | `PDUFA_INSTALL_MONITOR_ENABLED` | `0` |
@@ -60,6 +89,8 @@ npm.cmd run build
 These tests must be rerun after every code revision. Past passes are not evidence for untested later changes.
 
 ## Read-only staging check — only after a separate service exists
+
+The verifier accepts the dedicated API's `stagingMode=SCIENTIFIC_456_ISOLATED_ONLY` response (original Levels 123 live elsewhere), or the earlier combined compatibility metadata. For the dedicated application, an empty history lookup requires `contract=SCIENTIFIC_1_6`.
 
 A successful preflight also requires that the backend explicitly advertises `scientific456Enabled=true` after `PDUFA_LEVEL456_BACKEND_ENABLED=1` is set on staging. Keep this unset on production.
 
