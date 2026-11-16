@@ -1,4 +1,8 @@
 import unittest
+import json
+import tempfile
+import sys
+from pathlib import Path
 from unittest.mock import patch
 from scripts.avenue1_pool_evidence_collector import find_ncts, study_evidence
 
@@ -67,6 +71,30 @@ class CollectorTests(unittest.TestCase):
             result = study_evidence("NCT05507203")
         self.assertEqual(result["clinical_dimensions"]["effect_magnitude"], [])
         self.assertEqual(result["clinical_dimensions"]["statistical_reliability"], [])
+
+
+    def test_collection_coverage_and_missing_fields_are_reported(self):
+        from scripts.avenue1_pool_evidence_collector import main
+        snapshot = {
+            "asOf": "2026-11-16",
+            "sourceHealth": {"state": "FRESH", "clinicalRows": 1,
+                "regulatoryRows": 0, "pipelineSourceParity": {"exactPrograms": 1}},
+            "pipeline": [{"id": "TRIAL|NCT05507203", "ticker": "ABVX"}],
+        }
+        payload = {"protocolSection": {"outcomesModule": {
+            "primaryOutcomes": [{"measure": "Clinical remission"}]}}}
+        with tempfile.TemporaryDirectory() as directory:
+            with patch("scripts.avenue1_pool_evidence_collector.pool_records", return_value=snapshot), \
+                 patch("scripts.avenue1_pool_evidence_collector.fetch_json", return_value=payload), \
+                 patch("scripts.avenue1_pool_evidence_collector.time.sleep"), \
+                 patch.object(sys, "argv", ["collector", "--output-dir", directory]):
+                self.assertEqual(main(), 0)
+            status = json.loads((Path(directory) / "collection-status.json").read_text())
+            self.assertEqual(status["collected"], 1)
+            self.assertEqual(status["dimension_evidence_counts"]["primary_endpoint"], 1)
+            self.assertEqual(status["dimension_evidence_counts"]["effect_magnitude"], 0)
+            self.assertIn("effect_magnitude", status["missing_dimensions_by_trial"][0]["missing_dimensions"])
+            self.assertEqual(len((Path(directory) / "clinical-evidence.jsonl").read_text().splitlines()), 1)
 
 if __name__ == "__main__":
     unittest.main()
