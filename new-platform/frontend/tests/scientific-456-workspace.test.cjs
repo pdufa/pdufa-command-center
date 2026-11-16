@@ -77,6 +77,8 @@ test('456 requests use dedicated HTTPS credentials, never production 123 credent
   assert.equal(history.status,200);
   assert.deepEqual((await history.json()).runs,[]);
   assert.equal(urls.length,4);
+  assert.equal(urls[3],'https://isolated-456.example.test/api/assessment-runtime/history/'+nct+'?contract=SCIENTIFIC_1_6',
+   'The isolated backend must filter 456 reports before its 50-record limit');
   assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_3'}))).status,422);
   for(const level of [1,2,3])assert.equal((await api.POST(post({nct,level,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'}))).status,422);
   assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6',score:88}))).status,422);
