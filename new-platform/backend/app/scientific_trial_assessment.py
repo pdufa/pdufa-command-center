@@ -251,7 +251,7 @@ def assess_scientific(request,source):
     if request.level==3:risks+=['No independently verified prespecification/lock/unblinding reconciliation.','Nominal statistical findings do not establish multiplicity-controlled clinical benefit or FDA approval.']
     ticker=None;issuer=None;inventory_citation=None
     if request.mode=='CURRENT_EVIDENCE':
-        inventory=json.loads((Path(__file__).parent/'data/assessment_trial_inventory.json').read_text())
+        inventory=json.loads((Path(__file__).parent/'data/assessment_trial_inventory.json').read_text(encoding='utf-8'))
         matches=[x for x in inventory['records'] if x.get('nct')==request.nct]
         if len(matches)==1:
             ticker=matches[0].get('ticker');issuer=matches[0].get('company')
