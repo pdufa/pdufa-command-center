@@ -1,4 +1,4 @@
-name: Isolated Levels 10-20 contract tests
+name: Isolated Levels 9-20 contract tests
 on:
   pull_request:
     branches: [main]
@@ -20,7 +20,20 @@ jobs:
           python-version: '3.12'
       - name: Install test runner only
         run: python -m pip install pytest
-      - name: Run isolated Levels 10-20 tests
+      - name: Verify Level 9-20 module and test coverage
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root = Path("new-platform/backend")
+          modules = sorted((root / "assessment_levels_07_20").glob("level*.py"))
+          tests = sorted((root / "tests").glob("test_isolated_level*.py"))
+          for level in range(9, 21):
+              tag = f"level{level:02d}" if level == 9 else f"level{level}"
+              assert any(p.name.startswith(tag + "_") for p in modules), f"Missing module {tag}"
+              assert any(p.name.startswith("test_isolated_" + tag + "_") for p in tests), f"Missing tests {tag}"
+          print("All 12 Level 9-20 contracts and test files present")
+          PY
+      - name: Run isolated Levels 9-20 tests
         run: PYTHONPATH=new-platform/backend python -m pytest -q new-platform/backend/tests/test_isolated_level*.py
       - name: Ensure no production imports or writes
         run: |
