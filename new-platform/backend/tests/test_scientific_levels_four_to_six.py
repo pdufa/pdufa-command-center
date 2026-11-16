@@ -210,3 +210,88 @@ def test_run_status_checks_scientific_contract_before_returning_pending_job(engi
                           +'?contract=SCIENTIFIC_1_6').status_code == 404
         assert client.get('/api/assessment-runtime/runs/NCT04576949/'+isolated_run
                           +'?contract=SCIENTIFIC_1_6').status_code == 200
+
+
+@pytest.mark.parametrize('level', [4, 5, 6])
+def test_http_scientific_456_run_persists_and_reads_exact_contract(engine, monkeypatch, level):
+    """Exercise the HTTP boundary, executor, immutable report and filtered history."""
+    monkeypatch.setenv('PDUFA_LEVEL456_BACKEND_ENABLED', '1')
+    monkeypatch.setattr(runtime, 'collect_documents', lambda value, document_level: value)
+    original_execute = runtime.execute
+    def execute_with_registry(db, run_id):
+        return original_execute(db, run_id, lambda nct: source() if nct=='NCT04576949'
+                                else pytest.fail('Unexpected registry trial'))
+    monkeypatch.setattr(runtime, 'execute', execute_with_registry)
+    app = FastAPI()
+    app.include_router(runtime.router(lambda: engine, lambda: None, lambda: None,
+                                      lambda: None, allow_local=True))
+    with TestClient(app) as client:
+        posted = client.post('/api/assessment-runtime/runs', json=request(level).model_dump(mode='json'))
+        assert posted.status_code == 202, posted.text
+        run_id = posted.json()['runId']
+        run_url = '/api/assessment-runtime/runs/NCT04576949/'+run_id
+        saved = client.get(run_url+'?contract=SCIENTIFIC_1_6')
+        assert saved.status_code == 200, saved.text
+        body = saved.json()
+        assert body['status'] == 'COMPLETED', body.get('error')
+        report = body['report']
+        assert report['runId'] == run_id and report['contract'] == 'SCIENTIFIC_1_6'
+        assert report['level'] == level and report['nct'] == 'NCT04576949'
+        assert report['score']['kind'] == 'NOT_VALIDATED'
+        assert report['score']['value'] is None
+        assert report['fdaPrediction']['outcome'] == 'ABSTAIN'
+        assert report['fdaPrediction']['probability'] is None
+        assert report['reportHash'] and report['evidence']['input_sha256']
+        assert client.get(run_url+'?contract=SCIENTIFIC_1_3').status_code == 404
+        history = client.get('/api/assessment-runtime/history/NCT04576949'
+                             '?contract=SCIENTIFIC_1_6').json()
+        assert history['hasMore'] is False
+        assert len(history['runs']) == 1 and history['runs'][0]['runId'] == run_id
+        assert client.get('/api/assessment-runtime/history/NCT00000001'
+                          '?contract=SCIENTIFIC_1_6').json()['runs'] == []
+
+
+def test_http_456_blind_historical_requires_verified_link_without_outcome_access(engine, monkeypatch):
+    """Blind execution reads only a previously captured exact-NCT snapshot."""
+    monkeypatch.setenv('PDUFA_LEVEL456_BACKEND_ENABLED', '1')
+    app = FastAPI()
+    app.include_router(runtime.router(lambda: engine, lambda: None, lambda: None,
+                                      lambda: None, allow_local=True))
+    request_body = request(6, mode='BLIND_HISTORICAL', cutoff=date(2021, 1, 1))
+    with TestClient(app) as client:
+        denied = client.post('/api/assessment-runtime/runs', json=request_body.model_dump(mode='json'))
+        assert denied.status_code == 409
+        assert 'NO_VERIFIED_HISTORICAL_DECISION_LINK' in denied.text
+        with engine.connect() as c:
+            assert c.execute(text('SELECT count(*) FROM assessment_v2_jobs')).scalar_one() == 0
+
+    with engine.begin() as c:
+        c.execute(text('CREATE TABLE phase3_trial_applications(nct_id TEXT,application_id TEXT,verification_status TEXT)'))
+        c.execute(text('CREATE TABLE phase3_fda_decisions(application_id TEXT,decision_date TEXT,verification_status TEXT,decision TEXT)'))
+        c.execute(text("INSERT INTO phase3_trial_applications VALUES ('NCT04576949','TEST-456-APPLICATION','VERIFIED')"))
+        c.execute(text("INSERT INTO phase3_fda_decisions VALUES ('TEST-456-APPLICATION','2021-02-01','VERIFIED','OUTCOME_MUST_NEVER_LEAK')"))
+        c.execute(text('''INSERT INTO assessment_v2_sources
+            (snapshot_id,nct_id,captured_at,published_at,source_url,raw_sha256,input_sha256,document_json)
+            VALUES (:snapshot_id,:nct_id,:captured_at,:published_at,:source_url,:raw_sha256,:input_sha256,:document_json)'''),source())
+
+    # Any accidental current registry access must fail rather than backfill history.
+    original_execute = runtime.execute
+    monkeypatch.setattr(runtime, 'execute',
+                        lambda db, run_id: original_execute(
+                            db, run_id, lambda _: pytest.fail('Historical current-source fallback')))
+    with TestClient(app) as client:
+        created = client.post('/api/assessment-runtime/runs', json=request_body.model_dump(mode='json'))
+        assert created.status_code == 202, created.text
+        run_id = created.json()['runId']
+        state = client.get('/api/assessment-runtime/runs/NCT04576949/'+run_id
+                           +'?contract=SCIENTIFIC_1_6')
+        assert state.status_code == 200
+        report = state.json()['report']
+        assert state.json()['status'] == 'COMPLETED', state.json().get('error')
+        assert report['mode'] == 'BLIND_HISTORICAL'
+        assert report['cutoffDate'] == '2021-01-01'
+        assert report['contract'] == 'SCIENTIFIC_1_6'
+        assert report['fdaPrediction']['outcome'] == 'ABSTAIN'
+        assert 'OUTCOME_MUST_NEVER_LEAK' not in runtime.packed(report)
+        assert client.get('/api/assessment-runtime/history/NCT04576949'
+                          '?contract=SCIENTIFIC_1_6').json()['runs'][0]['runId'] == run_id
