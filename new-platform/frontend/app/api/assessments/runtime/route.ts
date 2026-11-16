@@ -42,7 +42,12 @@ export async function GET(req:NextRequest){
  }
  const id=q.get('nct'),run=q.get('runId'),level=q.get('level');
  if(!nct(id)||(level!==null&&!/^[1-6]$/.test(level))||(run!==null&&!/^[a-f0-9-]{36}$/.test(run)))return json({error:'Exact NCT, optional run UUID and level 1–6 required'},422);
- return relay(req,run?'/runs/'+id+'/'+run:'/history/'+id+(level?'?level='+level:''),undefined,q.get('contract')==='SCIENTIFIC_1_6');
+ const contract=q.get('contract');
+ const historyQuery=new URLSearchParams();
+ if(level)historyQuery.set('level',level);
+ if(contract)historyQuery.set('contract',contract);
+ const historyPath='/history/'+id+(historyQuery.size?'?'+historyQuery:'');
+ return relay(req,run?'/runs/'+id+'/'+run:historyPath,undefined,contract==='SCIENTIFIC_1_6');
 }
 export async function POST(req:NextRequest){
  if(!authorized(req))return json({error:'Sign in to run assessments'},401);
