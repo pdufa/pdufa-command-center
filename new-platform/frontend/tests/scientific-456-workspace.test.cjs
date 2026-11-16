@@ -36,6 +36,8 @@ test('four independent page mounts expose the 456 scientific workspace',()=>{
  const focus=fs.readFileSync(path.join(__dirname,'../app/focus/page.tsx'),'utf8');
  assert.match(focus,/L04–L06 saved scientific research/);
  assert.match(focus,/assessments\?nct=/);
+ const past=fs.readFileSync(path.join(__dirname,'../app/past/page.tsx'),'utf8');
+ assert.match(past,/Manual NCT entry does not establish historical event linkage or blind eligibility/);
 });
 test('456 workspace lists correct evidence domains, exact-NCT selection and blind history',()=>{
  const current=renderToStaticMarkup(React.createElement(Workspace,{cohort:'FOCUS',initialNct:nct}));
@@ -48,6 +50,8 @@ test('456 workspace lists correct evidence domains, exact-NCT selection and blin
  assert.match(current,/No validated scientific score/);
  assert.match(historical,/Pre-decision cutoff/);
  assert.match(historical,/Blind historical cutoff/);
+ assert.match(current,/data-scientific456-ready="false"/);
+ assert.match(current,/disabled=""/);
 });
 test('456 requests use dedicated HTTPS credentials, never production 123 credentials',async()=>{
  const vars=['PDUFA_LEVEL456_API_BASE_URL','PDUFA_LEVEL456_INTERNAL_API_KEY','PDUFA_LEVEL123_API_BASE_URL','PDUFA_LEVEL123_INTERNAL_API_KEY'];
