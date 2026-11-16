@@ -350,3 +350,26 @@ def test_synthetic_456_history_cursor_pages_all_versions_without_offset_drift(en
                         + 'a'*36):
             assert client.get(url, params={'contract': 'SCIENTIFIC_1_6',
                                            'before': invalid}).status_code == 422
+
+
+def test_oversized_first_history_entry_is_explicit_error_not_dead_end_cursor(engine):
+    """History never returns hasMore with zero rows and no continuation cursor."""
+    q = request(4)
+    run_id = runtime.create(engine, q)
+    report = {'runId': run_id, 'nct': q.nct, 'contract': 'SCIENTIFIC_1_6',
+              'level': q.level, 'note': 'X' * 3_000_010}
+    with engine.begin() as c:
+        c.execute(text('''INSERT INTO assessment_v2_results
+            (run_id,nct_id,level,engine_version,mode,created_at,report_hash,report_json)
+            VALUES(:run,:nct,:level,'synthetic-oversize','CURRENT_EVIDENCE',:created,:hash,:report)'''),
+            {'run': run_id, 'nct': q.nct, 'level': q.level,
+             'created': '2030-01-01T00:00:00+00:00',
+             'hash': runtime.sha(report), 'report': runtime.packed(report)})
+    with pytest.raises(HTTPException) as exc:
+        runtime.history(engine, q.nct, contract='SCIENTIFIC_1_6')
+    assert exc.value.status_code == 413
+    assert 'exact run ID' in str(exc.value.detail)
+    # The full saved report remains intact, accessible through its exact run.
+    saved = runtime.status(engine, q.nct, run_id, 'SCIENTIFIC_1_6')
+    assert saved['report']['reportHash'] == runtime.sha(report)
+    assert len(saved['report']['note']) == 3_000_010
