@@ -1642,4 +1642,5 @@ app.include_router(assessment_runtime.router(assessment_engine, require_internal
 @app.get('/api/assessment-runtime/version')
 def assessment_runtime_version():
     return {'engineVersion': assessment_runtime.VERSION, 'levels': list(assessment_runtime.NAMES),
+            'scientificContracts': {'SCIENTIFIC_1_3': [1, 2, 3], 'SCIENTIFIC_1_6': [4, 5, 6]},
             'scientificActivation': 'NOT_ACTIVE_SCIENTIFIC_GAPS', 'fdaModel': 'ABSTAIN'}
