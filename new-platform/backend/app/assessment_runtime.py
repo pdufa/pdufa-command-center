@@ -497,14 +497,27 @@ def verified_report(row):
     return {**report,'reportHash':row[1]}
 
 
-def history(engine,nct,level=None):
-    if not NCT.fullmatch(nct) or (level is not None and not 1<=level<=6): raise HTTPException(422,'Exact NCT and level 1–6 required')
+def history(engine,nct,level=None,contract=None):
+    if not NCT.fullmatch(nct) or (level is not None and not 1<=level<=6):
+        raise HTTPException(422,'Exact NCT and level 1–6 required')
+    if contract is not None and contract not in {'SCIENTIFIC_1_3','SCIENTIFIC_1_6'}:
+        raise HTTPException(422,'Supported scientific history contract required')
     if not inspect(engine).has_table('assessment_v2_results'):
         return {'nct':nct,'runs':[],'hasMore':False}
     with engine.connect() as c:
         query='SELECT report_json,report_hash FROM assessment_v2_results WHERE nct_id=:nct'
+        bindings={'nct':nct,'level':level,'contract':contract}
         if level is not None:query+=' AND level=:level'
-        rows=c.execute(text(query+' ORDER BY created_at DESC,run_id DESC LIMIT 51'),{'nct':nct,'level':level}).all()
+        if contract is not None:
+            # Filter before LIMIT; otherwise 50 newer 123 runs can hide saved
+            # 456 results. Only the JSON contract is used, never user forecasts.
+            if engine.dialect.name=='postgresql':
+                query+=" AND CAST(report_json AS jsonb)->>'contract'=:contract"
+            elif engine.dialect.name=='sqlite':
+                query+=" AND json_extract(report_json,'$.contract')=:contract"
+            else:
+                raise HTTPException(503,'Scientific contract history filtering unavailable')
+        rows=c.execute(text(query+' ORDER BY created_at DESC,run_id DESC LIMIT 51'),bindings).all()
     runs=[];size=0
     for row in rows[:50]:
         size+=len(row[0].encode())
@@ -624,5 +637,5 @@ def router(engine_provider, auth, storage, writes, *, allow_local=False):
     def choices(population:str='FOCUS',q:str=''):
         return catalog(engine(),population,q)
     @api.get('/history/{nct}')
-    def read_history(nct:str,level:int|None=None):return history(engine(),nct,level)
+    def read_history(nct:str,level:int|None=None,contract:str|None=None):return history(engine(),nct,level,contract)
     return api
