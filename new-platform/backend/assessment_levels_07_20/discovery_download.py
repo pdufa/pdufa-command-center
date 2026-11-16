@@ -23,8 +23,11 @@ def download_discovery_source(url: str, destination: Path, *, max_bytes: int = 2
         raise ValueError("Credential-bearing URLs are forbidden")
     request = Request(url, headers={"User-Agent": "PDUFA-Research-Discovery/1.0"})
     with urlopen(request, timeout=30) as response:
-        if urlsplit(response.url).scheme != "https":
+        final_url = urlsplit(response.url)
+        if final_url.scheme != "https" or not final_url.hostname:
             raise ValueError("Redirect to non-HTTPS URL forbidden")
+        if final_url.username or final_url.password:
+            raise ValueError("Credential-bearing redirect URL forbidden")
         data = response.read(max_bytes + 1)
     if not data or len(data) > max_bytes:
         raise ValueError("Empty or oversized document")
