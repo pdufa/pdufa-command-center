@@ -9,7 +9,7 @@ from datetime import date
 from typing import Any
 import re
 
-NCT = re.compile(r"NCT[0-9]{8}\\Z", re.ASCII)
+NCT = re.compile(r"NCT[0-9]{8}$", re.ASCII)
 REQUIRED = ("nct_id", "indication", "disease_subtype", "treatment_setting",
             "source_url", "published_on", "retrieved_on", "cutoff_on",
             "guideline_version", "comparator")
