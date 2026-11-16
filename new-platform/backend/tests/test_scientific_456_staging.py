@@ -187,7 +187,9 @@ def test_local_free_staging_compose_cannot_reach_production_or_write_assessments
     assert '.env' in ignore
     assert 'WriteAllText($envFile' in launcher
     assert 'RandomNumberGenerator' in launcher
+    assert launcher.count('Where-Object { $_ -match') == 2
     assert 'docker context inspect' in launcher
+    assert "docker info --format '{{.OSType}}'" in launcher
     assert "Remote Docker context refused" in launcher
     assert 'config --quiet' in launcher
     assert 'up -d --build' in launcher
