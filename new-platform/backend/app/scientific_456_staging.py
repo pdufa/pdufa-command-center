@@ -129,10 +129,11 @@ def status(nct: str, run_id: str, contract: str, db=Depends(isolated_engine)):
 
 
 @secured.get("/history/{nct}")
-def history(nct: str, contract: str, level: int | None = None, db=Depends(isolated_engine)):
+def history(nct: str, contract: str, level: int | None = None, before: str | None = None,
+            db=Depends(isolated_engine)):
     if contract != "SCIENTIFIC_1_6":
         raise HTTPException(422, "Scientific 456 history contract required")
-    return runtime.history(db, nct, level, contract)
+    return runtime.history(db, nct, level, contract, before)
 
 
 app.include_router(api)
