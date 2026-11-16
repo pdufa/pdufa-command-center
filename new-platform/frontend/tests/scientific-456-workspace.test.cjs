@@ -77,6 +77,13 @@ test('456 requests use dedicated HTTPS credentials, never production 123 credent
   assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6',score:88}))).status,422);
   assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'},{origin:'https://evil.example.test'}))).status,403);
   assert.equal((await api.GET(get({nct,contract:'SPOOFED'}))).status,422);
+  process.env.PDUFA_LEVEL456_API_BASE_URL=process.env.PDUFA_LEVEL123_API_BASE_URL;
+  assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'}))).status,503);
+  process.env.PDUFA_LEVEL456_API_BASE_URL='https://isolated-456.example.test';
+  process.env.PDUFA_LEVEL456_INTERNAL_API_KEY=process.env.PDUFA_LEVEL123_INTERNAL_API_KEY;
+  assert.equal((await api.GET(get({nct,contract:'SCIENTIFIC_1_6'}))).status,503);
+  process.env.PDUFA_LEVEL456_INTERNAL_API_KEY='ISOLATED_SECRET';
+  assert.equal(urls.length,4,'Shared production host or secret must never be used');
   delete process.env.PDUFA_LEVEL456_API_BASE_URL;
   delete process.env.PDUFA_LEVEL456_INTERNAL_API_KEY;
   assert.equal((await api.POST(post({nct,level:4,mode:'CURRENT_EVIDENCE',contract:'SCIENTIFIC_1_6'}))).status,503);
