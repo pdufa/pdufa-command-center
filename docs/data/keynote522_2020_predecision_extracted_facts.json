@@ -41,7 +41,9 @@
       "pembrolizumab": 78,
       "placebo": 73
     },
-    "median_followup_months": 15.5
+    "median_followup_months": 15.5,
+    "event_free_survival_hazard_ratio_context": "Early exploratory event-count comparison at median 15.5 months follow-up; NOT the later confirmatory EFS interim analysis reported in 2022.",
+    "pcr_interim_sample_context": "First 602 randomized participants, not the full 1174 randomized trial population."
   },
   "controls": {
     "status": "DISCOVERY_ONLY",
@@ -50,6 +52,6 @@
     "scientific_score": null,
     "approval_prediction": null,
     "accuracy_evaluated": false,
-    "note": "Published pre-decision, but currently retrieved text is not an authenticated historical snapshot. Exclude from frozen blind inputs until independent archival validation."
+    "note": "Discovery-only, 2020 paper facts cross-checked against PubMed PMID 32101663. Later 2022 EFS publication and 2026 FDA labels are outcome/post-decision sources and excluded. No authenticated point-in-time snapshot or source-byte hash; not eligible for frozen blind input."
   }
 }
