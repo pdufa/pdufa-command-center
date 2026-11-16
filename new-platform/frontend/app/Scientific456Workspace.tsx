@@ -55,9 +55,10 @@ async function read(url:string,init?:RequestInit):Promise<Record<string,unknown>
  if(!response.ok)throw Error(typeof body.error==='string'?body.error:'Isolated scientific 456 backend unavailable');
  return body as Record<string,unknown>;
 }
-function viewUrl(nct:string,runId?:string){
+function viewUrl(nct:string,runId?:string,before?:string){
  const q=new URLSearchParams({nct,contract:'SCIENTIFIC_1_6'});
  if(runId)q.set('runId',runId);
+ if(before)q.set('before',before);
  return endpoint+'?'+q;
 }
 function ReportDetail({report:r}:{report:Report}){
@@ -93,6 +94,7 @@ export default function Scientific456Workspace({cohort,initialNct}:{cohort:Cohor
  const [ready,setReady]=useState(false);
  const [expanded,setExpanded]=useState<string[]>([]);
  const [hasMore,setHasMore]=useState(false);
+ const [nextCursor,setNextCursor]=useState<string|null>(null);
  const revision=useRef(0);
  const controller=useRef<AbortController|null>(null);
  function changeNct(value:string){
@@ -100,24 +102,31 @@ export default function Scientific456Workspace({cohort,initialNct}:{cohort:Cohor
   controller.current?.abort();
   setBusy(false);
   setNct(value.trim().toUpperCase());
-  setRuns([]);setExpanded([]);setStatus('');setError('');setHasMore(false);
+  setRuns([]);setExpanded([]);setStatus('');setError('');setHasMore(false);setNextCursor(null);
  }
  useEffect(()=>{setReady(true);return()=>{revision.current++;controller.current?.abort();};},[]);
  useEffect(()=>{if(initialNct&&validNct(initialNct)&&initialNct!==nct)changeNct(initialNct);},[initialNct]);
- async function history(id=nct){
-  if(!validNct(id))return;
+ async function history(id=nct,older=false){
+  if(!validNct(id)||(older&&!nextCursor))return;
   const current=revision.current;
   controller.current?.abort();
   const abort=new AbortController();controller.current=abort;
-  setBusy(true);setError('');setStatus('Loading saved 456 versions…');
+  setBusy(true);setError('');setStatus(older?'Loading older saved 456 versions…':'Loading saved 456 versions…');
   try{
-   const response=await read(viewUrl(id),{signal:abort.signal});
+   const response=await read(viewUrl(id,undefined,older?nextCursor||undefined:undefined),{signal:abort.signal});
    if(abort.signal.aborted||current!==revision.current)return;
    if(!Array.isArray(response.runs))throw Error('Invalid saved assessment history response');
    // Never mix original 123, legacy 456, other NCTs or unsupported predictions.
    const reports=response.runs.filter((r:unknown)=>is456(r,id)) as Report[];
-   setRuns(reports);setExpanded(reports.slice(0,1).map(r=>r.runId));setHasMore(response.hasMore===true);
-   setStatus(reports.length?reports.length+' saved 456 research version(s) loaded.':'No validated-identity scientific 456 reports saved for this NCT.');
+   if(response.hasMore===true&&(typeof response.nextCursor!=='string'||!response.nextCursor.includes('|')))
+    throw Error('Older saved versions exist, but the isolated backend did not supply a valid page cursor');
+   setRuns(existing=>older?[...existing,...reports.filter(r=>!existing.some(x=>x.runId===r.runId))]:reports);
+   if(!older)setExpanded(reports.slice(0,1).map(r=>r.runId));
+   setHasMore(response.hasMore===true);
+   setNextCursor(typeof response.nextCursor==='string'?response.nextCursor:null);
+   setStatus(reports.length
+    ?(older?'Loaded '+reports.length+' older saved 456 research version(s).':reports.length+' saved 456 research version(s) loaded.')
+    :'No further validated-identity scientific 456 reports returned for this NCT.');
   }catch(e){if(!abort.signal.aborted&&current===revision.current)setError(e instanceof Error?e.message:'Saved history unavailable');}
   finally{if(!abort.signal.aborted&&current===revision.current)setBusy(false);}
  }
@@ -175,7 +184,7 @@ export default function Scientific456Workspace({cohort,initialNct}:{cohort:Cohor
   {status&&<p role="status">{status}</p>}{error&&<p role="alert">{error}</p>}
   {runs.length>0&&<div><h4>Saved 456 assessment versions · {nct}</h4>
    <p>Only exact-NCT SCIENTIFIC_1_6 reports with unvalidated scientific scores and an abstaining FDA prediction are displayed. Choose versions to expand.</p>
-   {hasMore&&<p>History has additional older results beyond the bounded response; not all versions were returned.</p>}
+   {hasMore&&<p>Additional older saved versions are available. <button type="button" disabled={!ready||busy||!nextCursor} onClick={()=>void history(nct,true)}>Load older 456 versions</button></p>}
    <ul>{runs.map(r=><li key={r.runId}><label><input type="checkbox" checked={expanded.includes(r.runId)} onChange={e=>setExpanded(old=>e.target.checked?[...old,r.runId]:old.filter(x=>x!==r.runId))}/> L0{r.level} · {r.mode} · {r.executedAt} · {r.engineVersion} · NOT VALIDATED · ABSTAIN</label></li>)}</ul>
    {runs.filter(r=>expanded.includes(r.runId)).map(r=><ReportDetail key={r.runId} report={r}/>)}
   </div>}
