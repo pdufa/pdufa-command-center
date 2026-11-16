@@ -29,7 +29,9 @@ test('visible FOCUS table leads with Overall and L01–L03 immediately after tic
  const head=source.slice(secondHeader,source.indexOf('</thead>',secondHeader));
  const tic=head.indexOf('>Ticker</th>'),overall=head.indexOf('<FocusOverallHeaders'),first3=head.indexOf('<FocusTwentyHeaders startLevel={1} endLevel={3}/>'),nct=head.indexOf('>NCT / Trial</th>'),later=head.indexOf('<FocusTwentyHeaders className="assessment-level" startLevel={4} endLevel={20}/>');
  assert.ok(tic>=0&&tic<overall&&overall<first3&&first3<nct&&later>nct,JSON.stringify({tic,overall,first3,nct,later}));
- const rows=source.slice(source.indexOf('<tbody>{sortedTrials.map('),source.indexOf('</tbody>',source.indexOf('<tbody>{sortedTrials.map(')));
+ const gridStart=source.indexOf('<tbody>{sortedTrials.map(',secondHeader);
+  assert.ok(gridStart>secondHeader,'Main FOCUS grid body missing');
+  const rows=source.slice(gridStart,source.indexOf('</tbody>',gridStart));
  const r0=rows.indexOf('<TickerChartButton ticker={t.ticker}/>'),rO=rows.indexOf('<FocusOverviewCells'),r3=rows.indexOf('<FocusTwentyCells nct={t.nct} levels={savedLevels[t.nct]} startLevel={1} endLevel={3}/>'),rN=rows.indexOf('clinicaltrials.gov/study/');
  assert.ok(r0>=0&&r0<rO&&rO<r3,JSON.stringify({r0,rO,r3,rN}));
  assert.match(rows,/clinicaltrials\.gov\/study\//);
