@@ -15,6 +15,7 @@ on:
       - 'new-platform/backend/tests/test_frozen_artifacts.py'
       - 'new-platform/backend/tests/test_cohort_snapshot_integrity.py'
       - 'new-platform/backend/tests/test_prediction_ledger.py'
+      - 'new-platform/backend/tests/test_blind_prediction_package.py'
       - '.github/workflows/isolated-levels-10-20-tests.yml'
   workflow_dispatch:
 permissions:
@@ -44,7 +45,7 @@ jobs:
           print("All 14 Level 7-20 contracts and test files present")
           PY
       - name: Run isolated Levels 7-20 tests
-        run: PYTHONPATH=new-platform/backend python -m pytest -q new-platform/backend/tests/test_isolated_level*.py new-platform/backend/tests/test_isolated_dispatch.py new-platform/backend/tests/test_blind_cohort.py new-platform/backend/tests/test_point_in_time_evidence.py new-platform/backend/tests/test_evaluation_readiness.py new-platform/backend/tests/test_historical_preflight.py new-platform/backend/tests/test_historical_coverage.py new-platform/backend/tests/test_historical_report.py new-platform/backend/tests/test_frozen_artifacts.py new-platform/backend/tests/test_cohort_snapshot_integrity.py new-platform/backend/tests/test_prediction_ledger.py
+        run: PYTHONPATH=new-platform/backend python -m pytest -q new-platform/backend/tests/test_isolated_level*.py new-platform/backend/tests/test_isolated_dispatch.py new-platform/backend/tests/test_blind_cohort.py new-platform/backend/tests/test_point_in_time_evidence.py new-platform/backend/tests/test_evaluation_readiness.py new-platform/backend/tests/test_historical_preflight.py new-platform/backend/tests/test_historical_coverage.py new-platform/backend/tests/test_historical_report.py new-platform/backend/tests/test_frozen_artifacts.py new-platform/backend/tests/test_cohort_snapshot_integrity.py new-platform/backend/tests/test_prediction_ledger.py new-platform/backend/tests/test_blind_prediction_package.py
       - name: Ensure no production imports or writes
         run: |
           python - <<'PY'
