@@ -117,6 +117,8 @@ def main():
     p.add_argument("--output-dir", default="artifacts/avenue1")
     p.add_argument("--limit", type=int, default=0, help="Optional test limit; 0 means all")
     args = p.parse_args()
+    if args.limit < 0:
+        p.error("--limit must be zero (all) or a positive integer")
     raw = pool_records()
     ids = find_ncts(raw)
     if not ids:
@@ -127,12 +129,17 @@ def main():
         "nct_count": len(ids), "ncts": ids, "source": "authenticated backend /api/workspace",
         "as_of": datetime.now(timezone.utc).isoformat()
     }, indent=2))
+    trial_metadata = {row["id"].split("|", 1)[1]: row for row in raw["pipeline"]
+                      if row["id"].startswith("TRIAL|NCT") and row["id"].split("|", 1)[1] in ids}
     errors = []
     done = 0
     with (out / "clinical-evidence.jsonl").open("w") as f:
         for nct in ids[:args.limit or None]:
             try:
-                f.write(json.dumps(study_evidence(nct)) + "\n")
+                evidence = study_evidence(nct)
+                evidence["pool_record"] = trial_metadata[nct]
+                evidence["pool_source_as_of"] = raw.get("asOf")
+                f.write(json.dumps(evidence) + "\n")
                 done += 1
             except Exception as exc:
                 errors.append({"nct": nct, "error_type": type(exc).__name__})
