@@ -86,7 +86,7 @@ def main() -> int:
                       safeToRunResearch=False, nextStep="Opt-in exact-NCT persistence test requires separate authorization")
         print(json.dumps(report, indent=2))
         return 0
-    except (ValueError, HTTPError, URLError, OSError, json.JSONDecodeError, KeyError, TypeError) as exc:
+    except (ValueError, HTTPError, URLError, OSError, json.JSONDecodeError, KeyError, TypeError, AttributeError) as exc:
         # Never include URL/path, response bodies or credentials in errors.
         report["reason"] = type(exc).__name__ + ": staging unavailable or contract not verified"
         print(json.dumps(report, indent=2))
