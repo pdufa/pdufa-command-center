@@ -12,6 +12,9 @@ const React=require('react');
 const {act,create}=require('react-test-renderer');
 const Workspace=require('../app/Scientific456Workspace.tsx').default;
 globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+// Next.js Link effects expect a browser-like global during React test rendering.
+global.self=globalThis;
+global.window={addEventListener(){},removeEventListener(){}};
 const nct='NCT04576949';
 const other='NCT00000002';
 const uuid='11111111-1111-1111-1111-111111111111';
