@@ -6,7 +6,7 @@ import {PredictionHeaders,PredictionCells,PredictionLegend} from '../PdufaPredic
 import AssessmentLauncher from '../AssessmentLauncher';
 import ScientificStepsReadiness from '../ScientificStepsReadiness';
 import {ExactTrialIntakeSelector} from '../ExactTrialScientificIntake';
-import {useEffect,useMemo,useState} from "react";
+import {useEffect,useMemo,useRef,useState} from "react";
 import {readSavedFocus} from "../../lib/focus-saved-records";
 import {provisionalFocusScore,provisionalFocusOverall} from "../../lib/focus-provisional-scores";
 import {FOCUS_CHART_SNAPSHOT_TRIALS,FOCUS_CHART_SNAPSHOT_DATE} from "../../lib/focus-chart-snapshot";
@@ -59,6 +59,13 @@ const datedSourceScores:Record<string,Record<string,number|null>>=Object.fromEnt
 export default function FocusPage(){
  const [sortRules,setSortRules]=useState<NumericSortRule[]>([]);
  const [surveyExpanded,setSurveyExpanded]=useState(false);
+ const tableScrollRef=useRef<HTMLDivElement>(null);
+ // The full research table can be horizontally scrolled on phones; provide
+ // a deterministic way back to the primary source-backed evidence columns.
+ const showScoreColumns=()=>{
+  setSurveyExpanded(false);
+  tableScrollRef.current?.scrollTo({left:0,behavior:'smooth'});
+ };
  const [savedScores,setSavedScores]=useState<Record<string,Record<string,number|null>>>(datedSourceScores);
  const [savedLevels,setSavedLevels]=useState<Record<string,FocusTrialLevels>>(datedSourceLevels);
  const [usingDatedSource,setUsingDatedSource]=useState(true);
@@ -136,8 +143,16 @@ export default function FocusPage(){
   </button>
   <button type="button" aria-label="Survey Columns" aria-expanded={surveyExpanded} onClick={()=>setSurveyExpanded(v=>!v)} style={{padding:"9px 14px",borderRadius:8,border:"1px solid #789987",background:"#e6f2ea",color:"#173d2b",fontWeight:700,cursor:"pointer"}}>{surveyExpanded?"▾ Hide Survey Columns":"▸ Survey Columns"}</button>
   </div>
+  <style>{`
+   .focus-mobile-score-view{display:none}
+   @media (max-width:740px){
+    .focus-mobile-score-view{display:block}
+    .focus-mobile-score-view table{table-layout:fixed;width:100%}
+    .focus-mobile-score-view th,.focus-mobile-score-view td{overflow:hidden;text-overflow:clip}
+   }
+  `}</style>
   <h2 id="focus-site-spreadsheet" style={{fontSize:22,margin:"12px 0 6px"}}>FOCUS spreadsheet · Overall Score + L01–L03 (32 trials)</h2>
-  <p style={{fontSize:13,margin:"0 0 8px"}}>The primary trial table is directly below. Overall Score, FDA direction, and L01–L03 appear immediately after the ticker; L04–L20 stay optional under Survey Columns.</p>
+  <p style={{fontSize:13,margin:"0 0 8px"}}>On phones, the compact score grid shows Overall and L01–L03 without sideways scrolling. The full spreadsheet below keeps the same scores immediately after the ticker; L04–L20 appear only when Survey Columns is expanded.</p>
   <p data-testid="focus-main-grid-evidence-source" role="status" style={{
     margin:"8px 0 12px",padding:"9px 12px",border:"1px solid #a5c5b0",borderRadius:8,
     background:"#f1f8f3",fontSize:13
@@ -147,13 +162,57 @@ export default function FocusPage(){
      "Source: dated, verified 2026-11-15 research snapshot. Live authenticated records are unavailable, newer or not fully reconciled.":
      "Source: 32/32 current reports reconciled with the immutable source checks."}
    {" "}These numbers measure source-documentation readiness (not drug efficacy, scientific validation,
-   FDA approval probability or a directional approval call). Expand “Survey Columns” or “+ 20 Levels”
-   L01–L03 scores are visible beside Overall; expand Survey Columns for L04–L20. Snapshot date: {FOCUS_CHART_SNAPSHOT_DATE}.
+   FDA approval probability or a directional approval call). L01–L03 scores are visible beside Overall;
+   expand Survey Columns for L04–L20. Snapshot date: {FOCUS_CHART_SNAPSHOT_DATE}.
   </p>
-  <div style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
-  <style>{`table.assessment-expandable:not(.survey-expanded):not(:has(details.assessment-toggle[open])) .assessment-level{display:none} .assessment-toggle{display:inline-block;margin-left:6px;vertical-align:middle}.assessment-toggle summary{display:inline-flex;align-items:center;justify-content:center;width:25px;height:25px;border:1px solid #7e9f8b;border-radius:5px;cursor:pointer;background:#fff;color:#173d2b;font-weight:800;list-style:none}.assessment-toggle summary::-webkit-details-marker{display:none}.assessment-toggle .when-open{display:none}.assessment-toggle[open] .when-open{display:inline}.assessment-toggle[open] .when-closed{display:none}`}</style>
+  <section className="focus-mobile-score-view" data-testid="focus-mobile-score-view"
+   aria-label="FOCUS mobile score columns: Overall and Levels 1, 2, 3"
+   style={{border:"1px solid #b9cebe",borderRadius:9,margin:"12px 0",padding:"8px 5px",background:"#fff"}}>
+   <div style={{fontSize:13,fontWeight:700,margin:"2px 5px 8px"}}>All 32 trials · Overall + Level 1, 2, 3</div>
+   <table style={{borderCollapse:"collapse",fontSize:12,width:"100%",tableLayout:"fixed"}}
+     data-testid="focus-mobile-score-table">
+    <colgroup><col style={{width:"24%"}}/><col style={{width:"19%"}}/>
+     <col style={{width:"19%"}}/><col style={{width:"19%"}}/><col style={{width:"19%"}}/></colgroup>
+    <thead style={{background:"#e6f2ea"}}>
+     <tr><th scope="col" style={{textAlign:"left",padding:"9px 4px"}}>Ticker / trial</th>
+      <th scope="col" style={{padding:"9px 2px"}}>Overall</th>
+      <th scope="col" style={{padding:"9px 2px"}}>L01</th>
+      <th scope="col" style={{padding:"9px 2px"}}>L02</th>
+      <th scope="col" style={{padding:"9px 2px"}}>L03</th></tr>
+    </thead>
+    <tbody>{sortedTrials.map(t=><tr key={t.nct} style={{borderTop:"1px solid #dbe9de"}}>
+     <th scope="row" style={{textAlign:"left",padding:"8px 4px",fontWeight:700}}>
+      <Link href={"/predictions/assessment?nct="+encodeURIComponent(t.nct)}>{t.ticker}</Link>
+      <div style={{fontSize:10,fontWeight:400}}>{t.nct.slice(-4)}</div>
+     </th>
+     {(["overall","1","2","3"] as const).map(key=><td
+       key={key} data-testid={"focus-mobile-score-"+key} style={{
+        textAlign:"center",padding:"8px 2px",fontWeight:key==="overall"?800:600,
+        background:key==="overall"?"#eff7f0":undefined
+       }}>{savedScores[t.nct]?.[key]??"—"}</td>)}
+    </tr>)}</tbody>
+   </table>
+   <p style={{fontSize:11,margin:"8px 5px 3px",color:"#526458"}}>
+    Provisional source-documentation readiness /100, not FDA approval predictions.
+    Scores are from the dated 2026-11-15 snapshot unless 32 current reports reconcile.
+   </p>
+  </section>
+  <div style={{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap",margin:"8px 0"}}>
+   <button type="button" data-testid="focus-reset-horizontal-scroll"
+    onClick={showScoreColumns}
+    style={{padding:"9px 13px",border:"1px solid #789987",borderRadius:8,
+      background:"#e6f2ea",fontWeight:700,color:"#173d2b",cursor:"pointer"}}>
+    ◀ Show Overall + L01–L03 columns
+   </button>
+   <span style={{fontSize:12,color:"#526458"}}>In the full spreadsheet, this returns to the leftmost scores.</span>
+  </div>
+  <div ref={tableScrollRef} data-testid="focus-full-table-scroller"
+    style={{overflowX:"auto",border:"1px solid #b9cebe",borderRadius:8}}>
+
+  {/* Collapsed research columns are removed from the DOM, not just hidden
+      with :has CSS, which was unreliable in the phone's table layout. */}
    <table className={surveyExpanded?"assessment-expandable survey-expanded":"assessment-expandable"} style={{width:"100%",borderCollapse:"collapse",minWidth:970,fontSize:14}}>
-    <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><FocusOverallHeaders expanded={surveyExpanded} onToggle={()=>setSurveyExpanded(v=>!v)}/><FocusTwentyHeaders startLevel={1} endLevel={3}/><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"left"}}>FDA Special Designations</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>7 gate checks</th><FocusTwentyHeaders className="assessment-level" startLevel={4} endLevel={20}/><PredictionHeaders/><FocusLevelHeaders/></tr><tr><th colSpan={32}>Level 1-3 saved scientific research</th><FocusLevelSubheaders/></tr></thead>
+    <thead style={{background:"#e6f2ea"}}><tr><th style={{padding:10,textAlign:"left"}}>Ticker</th><FocusOverallHeaders expanded={surveyExpanded} onToggle={()=>setSurveyExpanded(v=>!v)}/><FocusTwentyHeaders startLevel={1} endLevel={3}/><th style={{padding:10,textAlign:"left"}}>NCT / Trial</th><th style={{padding:10,textAlign:"left"}}>Company</th><th style={{padding:10,textAlign:"left"}}>FDA Special Designations</th><th style={{padding:10,textAlign:"right"}}>Market cap ($B)</th><th style={{padding:10,textAlign:"left"}}>FDA / PDUFA path</th><th style={{padding:10}}>Sources</th><th style={{padding:10}}>7 gate checks</th>{surveyExpanded&&<FocusTwentyHeaders className="assessment-level" startLevel={4} endLevel={20}/>}<PredictionHeaders/><FocusLevelHeaders/></tr><tr><th colSpan={surveyExpanded?32:15}>Level 1-3 saved scientific research</th><FocusLevelSubheaders/></tr></thead>
     <tbody>{sortedTrials.map((t,i)=>{const gateAudit=finalGateByNct.get(t.nct);const d=designationByNct.get(t.nct);return <tr key={t.nct} style={{borderTop:"1px solid #dbe9de",background:i%2?"#f7faf8":"white"}}>
       <td style={{padding:10,fontWeight:700}}><TickerChartButton ticker={t.ticker}/></td><FocusOverviewCells nct={t.nct} levels={savedLevels[t.nct]}/><FocusTwentyCells nct={t.nct} levels={savedLevels[t.nct]} startLevel={1} endLevel={3}/>
       <td style={{padding:10}}><a href={"https://clinicaltrials.gov/study/"+t.nct} target="_blank" rel="noopener noreferrer">{t.nct}</a><div style={{marginTop:5,fontSize:12}}><Link href={"/analyze-now?nct="+encodeURIComponent(t.nct)}>View exact-trial research history</Link></div><details><summary>Exact-trial source intake</summary><ExactTrialIntakeSelector cohort="FOCUS" nctId={t.nct}/></details></td>
@@ -182,7 +241,7 @@ export default function FocusPage(){
           <strong>{g.title}</strong><div>{g.state==="RECORDED_POINTER"?"Source pointer only":g.state==="SOURCE_REVIEW_REQUIRED"?"Needs source review":"Missing evidence"}</div>
           <div>{g.note}</div>{g.sourceUrl&&<a href={g.sourceUrl} target="_blank" rel="noopener noreferrer">Inspect source</a>}
         </div>)}</div>
-      </details>:<span role="alert">Gate identity mismatch — not verified</span>}</td><FocusTwentyCells nct={t.nct} levels={savedLevels[t.nct]} className="assessment-level" startLevel={4} endLevel={20}/><PredictionCells nct={t.nct}/><FocusLevelCells nct={t.nct} levels={savedLevels[t.nct]}/>
+      </details>:<span role="alert">Gate identity mismatch — not verified</span>}</td>{surveyExpanded&&<FocusTwentyCells nct={t.nct} levels={savedLevels[t.nct]} className="assessment-level" startLevel={4} endLevel={20}/>}<PredictionCells nct={t.nct}/><FocusLevelCells nct={t.nct} levels={savedLevels[t.nct]}/>
     </tr>;})}</tbody>
    </table>
   </div>
