@@ -35,10 +35,10 @@ test('visible FOCUS table leads with Overall and L01–L03 immediately after tic
 
 test('L01–L03 survey columns render without the collapsed assessment-level CSS class',()=>{
  const h=renderToStaticMarkup(React.createElement('tr',null,React.createElement(FocusTwentyHeaders,{startLevel:1,endLevel:3})));
- for(const n of ['L01-','L02-','L03-'])assert.ok(h.includes(n));
- assert.ok(!h.includes('L04-')&&!h.includes('assessment-level'));
+ for(const n of ['L01','L02','L03'])assert.ok(h.includes('title="'+n+' —'));
+ assert.ok(!h.includes('title="L04 —')&&!h.includes('assessment-level'));
  const tail=renderToStaticMarkup(React.createElement('tr',null,React.createElement(FocusTwentyHeaders,{startLevel:4,endLevel:20,className:'assessment-level'})));
- assert.ok(!tail.includes('L01-')&&tail.includes('L20-')&&tail.includes('assessment-level'));
+ assert.ok(!tail.includes('title="L01 —')&&tail.includes('title="L20 —')&&tail.includes('assessment-level'));
 });
 
 test('visible FOCUS website grid contains all 32 evidence numbers each for L01 L02 L03 and overall',()=>{
