@@ -6,6 +6,9 @@ on:
       - 'new-platform/backend/assessment_levels_07_20/**'
       - 'new-platform/backend/tests/test_isolated_level*.py'
       - 'new-platform/backend/tests/test_isolated_dispatch.py'
+      - 'new-platform/backend/tests/test_blind_cohort.py'
+      - 'new-platform/backend/tests/test_point_in_time_evidence.py'
+      - 'new-platform/backend/tests/test_evaluation_readiness.py'
       - '.github/workflows/isolated-levels-10-20-tests.yml'
   workflow_dispatch:
 permissions:
@@ -32,10 +35,10 @@ jobs:
               tag = f"level{level:02d}" if level <= 9 else f"level{level}"
               assert any(p.name.startswith(tag + "_") for p in modules), f"Missing module {tag}"
               assert any(p.name.startswith("test_isolated_" + tag + "_") for p in tests), f"Missing tests {tag}"
-          print("All 12 Level 9-20 contracts and test files present")
+          print("All 14 Level 7-20 contracts and test files present")
           PY
       - name: Run isolated Levels 7-20 tests
-        run: PYTHONPATH=new-platform/backend python -m pytest -q new-platform/backend/tests/test_isolated_level*.py new-platform/backend/tests/test_isolated_dispatch.py
+        run: PYTHONPATH=new-platform/backend python -m pytest -q new-platform/backend/tests/test_isolated_level*.py new-platform/backend/tests/test_isolated_dispatch.py new-platform/backend/tests/test_blind_cohort.py new-platform/backend/tests/test_point_in_time_evidence.py new-platform/backend/tests/test_evaluation_readiness.py
       - name: Ensure no production imports or writes
         run: |
           python - <<'PY'
