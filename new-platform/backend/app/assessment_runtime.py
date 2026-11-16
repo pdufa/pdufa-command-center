@@ -503,33 +503,54 @@ def verified_report(row):
     return {**report,'reportHash':row[1]}
 
 
-def history(engine,nct,level=None,contract=None):
+def history(engine,nct,level=None,contract=None,before=None):
     if not NCT.fullmatch(nct) or (level is not None and not 1<=level<=6):
         raise HTTPException(422,'Exact NCT and level 1–6 required')
     if contract is not None and contract not in {'SCIENTIFIC_1_3','SCIENTIFIC_1_6'}:
         raise HTTPException(422,'Supported scientific history contract required')
+    # Keyset pagination retains every immutable version while avoiding offset
+    # drift when another research report is saved during browsing.
+    cursor_at=None;cursor_run=None
+    if before is not None:
+        if not isinstance(before,str) or len(before)>130 or '|' not in before:
+            raise HTTPException(422,'Invalid saved-history page cursor')
+        cursor_at,cursor_run=before.rsplit('|',1)
+        if (not re.fullmatch(r'[a-f0-9-]{36}',cursor_run) or
+            not re.fullmatch(r'[0-9TZ:+.\\-]{20,64}',cursor_at)):
+            raise HTTPException(422,'Invalid saved-history page cursor')
+        try:
+            at=datetime.fromisoformat(cursor_at.replace('Z','+00:00'))
+        except ValueError:
+            raise HTTPException(422,'Invalid saved-history page cursor') from None
+        if at.tzinfo is None:
+            raise HTTPException(422,'Invalid saved-history page cursor')
     if not inspect(engine).has_table('assessment_v2_results'):
-        return {'nct':nct,'runs':[],'hasMore':False}
+        return {'nct':nct,'runs':[],'hasMore':False,'nextCursor':None}
     with engine.connect() as c:
-        query='SELECT report_json,report_hash FROM assessment_v2_results WHERE nct_id=:nct'
-        bindings={'nct':nct,'level':level,'contract':contract}
+        query='SELECT report_json,report_hash,created_at,run_id FROM assessment_v2_results WHERE nct_id=:nct'
+        bindings={'nct':nct,'level':level,'contract':contract,
+                  'cursor_at':cursor_at,'cursor_run':cursor_run}
         if level is not None:query+=' AND level=:level'
         if contract is not None:
-            # Filter before LIMIT; otherwise 50 newer 123 runs can hide saved
-            # 456 results. Only the JSON contract is used, never user forecasts.
+            # Apply contract filtering before pagination and truncation.
             if engine.dialect.name=='postgresql':
                 query+=" AND CAST(report_json AS jsonb)->>'contract'=:contract"
             elif engine.dialect.name=='sqlite':
                 query+=" AND json_extract(report_json,'$.contract')=:contract"
             else:
                 raise HTTPException(503,'Scientific contract history filtering unavailable')
+        if cursor_at is not None:
+            query+=' AND (created_at<:cursor_at OR (created_at=:cursor_at AND run_id<:cursor_run))'
         rows=c.execute(text(query+' ORDER BY created_at DESC,run_id DESC LIMIT 51'),bindings).all()
     runs=[];size=0
     for row in rows[:50]:
         size+=len(row[0].encode())
         if size>3_000_000:break
         runs.append(verified_report(row))
-    return {'nct':nct,'runs':runs,'hasMore':len(rows)>len(runs)}
+    has_more=len(rows)>len(runs)
+    last=rows[len(runs)-1] if runs else None
+    return {'nct':nct,'runs':runs,'hasMore':has_more,
+            'nextCursor':last[2]+'|'+last[3] if has_more and last is not None else None}
 
 
 
@@ -643,5 +664,5 @@ def router(engine_provider, auth, storage, writes, *, allow_local=False):
     def choices(population:str='FOCUS',q:str=''):
         return catalog(engine(),population,q)
     @api.get('/history/{nct}')
-    def read_history(nct:str,level:int|None=None,contract:str|None=None):return history(engine(),nct,level,contract)
+    def read_history(nct:str,level:int|None=None,contract:str|None=None,before:str|None=None):return history(engine(),nct,level,contract,before)
     return api
