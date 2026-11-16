@@ -54,3 +54,12 @@ def test_dispatch_rejects_unsafe_scoring_or_prediction(monkeypatch, unsafe_resul
     })
     with pytest.raises(RuntimeError, match="fail closed"):
         inspect_isolated_level(7, {})
+
+
+@pytest.mark.parametrize("malformed", [None, [], "invalid", 42])
+def test_dispatch_fails_closed_on_nonmapping_validator_result(monkeypatch, malformed):
+    from assessment_levels_07_20 import isolated_dispatch
+
+    monkeypatch.setitem(isolated_dispatch._VALIDATORS, 7, lambda record: malformed)
+    with pytest.raises(RuntimeError, match="fail closed"):
+        inspect_isolated_level(7, {})
