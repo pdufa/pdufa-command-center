@@ -84,6 +84,16 @@ def test_isolated_contract_cannot_run_original_levels_123():
     for level in (1, 2, 3):
         with pytest.raises(Exception, match='Levels 4–6 only'):
             request(level).checked()
+        # Direct research execution is independently guarded; a caller must
+        # never be able to label an original 123 report as scientific 456.
+        with pytest.raises(ValueError, match='Levels 4–6 only'):
+            runtime.assess(request(level), source())
+
+
+def test_direct_123_execution_rejects_level_456():
+    for level in (4, 5, 6):
+        with pytest.raises(ValueError, match='Levels 1–3 only'):
+            runtime.assess(request(level, contract='SCIENTIFIC_1_3'), source())
 
 
 def test_456_historical_source_chronology_and_answer_separation():
