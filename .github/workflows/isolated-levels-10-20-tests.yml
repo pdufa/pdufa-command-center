@@ -47,10 +47,17 @@ jobs:
           python - <<'PY'
           from pathlib import Path
           root = Path("new-platform/backend/assessment_levels_07_20")
-          forbidden = ("from app", "import app", "sqlalchemy", "requests", "httpx", "subprocess", "open(")
+          forbidden = ("from app", "import app", "sqlalchemy", "requests", "httpx", "subprocess")
           for file in root.glob("*.py"):
               content = file.read_text()
               for token in forbidden:
                   assert token not in content, (file, token)
+          # historical_report is the sole offline file reader; no output file or write mode.
+          report = (root / "historical_report.py").read_text()
+          assert "with Path(path).open(\"r\", encoding=\"utf-8\")" in report
+          assert "open(\"w" not in report and "write_text(" not in report
+          for file in root.glob("*.py"):
+              if file.name != "historical_report.py":
+                  assert "open(" not in file.read_text(), file
           print("Isolated module import/write guard passed")
           PY
