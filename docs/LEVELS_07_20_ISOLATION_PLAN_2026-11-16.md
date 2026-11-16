@@ -24,3 +24,9 @@ Keep all Levels 7–20 disabled and out of active workflows until separate owner
 
 ## Current verification
 The repository's `infra/assessment/sole-owner-levels1-20.json` states `levels7To20EngineeringComplete: false`. No implementation or tests are asserted by this planning document. Levels 1–6 remain untouched by this branch's intended change.
+
+## Verified engineering checkpoint — 2026-11-16
+- Draft PR #1229 at commit `79e275fd` contains 14 isolated evidence-contract validators (Levels 7–20), an opt-in read-only dispatcher, and corresponding deterministic contract tests. They are **not** production prediction engines or scientifically calibrated FDA probability models.
+- GitHub Actions passed on this exact commit: isolated Levels 7–20 contract tests (`43927146127`), frontend diagnostic eight-shard suite (`43927130257`), assessment runtime regression/leakage (`43927144048`), main CI (`43927143351`), Next.js frontend (`43927143321`), isolated source recovery (`43927143311`), WT UI (`43927143029`), and retired workflow guard (`43927143930`).
+- This checkpoint supersedes the older planning-only status above; it does **not** alter the repository's authoritative `levels7To20EngineeringComplete: false` flag. The scientific requirements inventory, independent evidence/acceptance review, calibrated predictive validation, and owner-approved integration remain incomplete.
+- **Activation remains false.** No merge, deployment, scheduler connection, production data mutation, or changes to Levels 1–6 are authorized by these passing tests.
