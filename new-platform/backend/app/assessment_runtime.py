@@ -516,7 +516,7 @@ def history(engine,nct,level=None,contract=None,before=None):
             raise HTTPException(422,'Invalid saved-history page cursor')
         cursor_at,cursor_run=before.rsplit('|',1)
         if (not re.fullmatch(r'[a-f0-9-]{36}',cursor_run) or
-            not re.fullmatch(r'[0-9TZ:+.\\-]{20,64}',cursor_at)):
+            not re.fullmatch(r'[0-9TZ:+.-]{20,64}',cursor_at)):
             raise HTTPException(422,'Invalid saved-history page cursor')
         try:
             at=datetime.fromisoformat(cursor_at.replace('Z','+00:00'))
