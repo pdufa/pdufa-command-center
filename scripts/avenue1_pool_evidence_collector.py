@@ -41,7 +41,38 @@ def study_evidence(nct):
     study = fetch_json("https://clinicaltrials.gov/api/v2/studies/" + nct)
     protocol = study.get("protocolSection") or {}
     results = study.get("resultsSection") or {}
+    outcomes = results.get("outcomeMeasuresModule") or {}
+    arms = (protocol.get("armsInterventionsModule") or {}).get("armGroups", [])
+    references = (protocol.get("referencesModule") or {}).get("references", [])
+    baseline = (results.get("baselineCharacteristicsModule") or {})
+    # Raw results are preserved for review; no efficacy claim is inferred.
+    clinical_dimensions = {
+        "primary_endpoint": (protocol.get("outcomesModule") or {}).get("primaryOutcomes", []),
+        "effect_magnitude": outcomes.get("outcomeMeasures", []),
+        "statistical_reliability": [
+            analysis for measure in outcomes.get("outcomeMeasures", [])
+            for analysis in measure.get("analyses", [])
+        ],
+        "clinical_meaningfulness": "REQUIRES_CLINICAL_REVIEW",
+        "standard_of_care_comparator": arms,
+        "durability": "REQUIRES_TIMEFRAME_REVIEW",
+        "subgroup_consistency": "REQUIRES_SUBGROUP_REVIEW",
+        "replication": "REQUIRES_INDEPENDENT_TRIAL_REVIEW",
+        "endpoint_relevance": "REQUIRES_INDICATION_REVIEW",
+        "evidence_quality": {
+            "allocation": (protocol.get("designModule") or {}).get("designInfo", {}).get("allocation"),
+            "masking": (protocol.get("designModule") or {}).get("designInfo", {}).get("maskingInfo"),
+            "baseline_characteristics_posted": bool(baseline),
+            "references": references,
+        },
+    }
     return {
+        "clinical_dimensions": clinical_dimensions,
+        "source_provenance": {
+            "registry": "ClinicalTrials.gov",
+            "nct": nct,
+            "posted_results_available": bool(results),
+        },
         "nct": nct,
         "phase": (protocol.get("designModule") or {}).get("phases", []),
         "status": (protocol.get("statusModule") or {}).get("overallStatus"),
