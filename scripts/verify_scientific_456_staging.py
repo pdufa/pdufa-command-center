@@ -72,6 +72,19 @@ def main() -> int:
             raise ValueError("Backend does not advertise unvalidated FDA model abstention")
         if version.get("scientific456Enabled") is not True:
             raise ValueError("Staging backend is not explicitly enabled for scientific 456")
+        if version.get("stagingMode") == "SCIENTIFIC_456_ISOLATED_ONLY":
+            # A read-only SELECT must succeed before declaring dedicated
+            # staging ready; an enable flag is insufficient.
+            health_request = Request(base + "/api/assessment-runtime/health",
+                                     headers={"Accept": "application/json"}, method="GET")
+            with urlopen(health_request, timeout=20) as response:
+                if response.geturl() != health_request.full_url:
+                    raise ValueError("Unexpected redirect in staging health probe")
+                if "application/json" not in response.headers.get("Content-Type", ""):
+                    raise ValueError("Staging health response is not JSON")
+                health = json.loads(response.read(8192))
+            if health.get("status") != "READY" or health.get("stagingMode") != "SCIENTIFIC_456_ISOLATED_ONLY":
+                raise ValueError("Isolated staging database readiness not verified")
         # A fictitious exact-NCT read checks storage/auth availability without
         # consulting a real trial or creating an assessment.
         probe = Request(base + "/api/assessment-runtime/history/NCT00000000?contract=SCIENTIFIC_1_6",
