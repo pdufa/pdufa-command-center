@@ -29,6 +29,10 @@ export function focusSurveyDatum(trial:SurveyChartTrial,level:number,metric:Metr
   return {trial,value:null,at:null};
  const checkCounts=slot.evidenceChecks;
  if(metric==='UNRESOLVED'){
+  // A pinned source report contains a checked unresolved count even when
+  // the protected API has not supplied the individual missing-evidence list.
+  const snap=provisionalFocusScore(trial.nct,level,report);
+  if(snap)return {trial,value:snap.unresolved,at:report.executedAt};
   const gaps=slot.missingEvidence;
   // Raw, unscored evidence gaps were present in the saved summaries before
   // the newer descriptive check-count API. Do not infer a missing array as 0.
