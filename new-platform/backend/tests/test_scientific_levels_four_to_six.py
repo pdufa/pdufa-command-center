@@ -1,0 +1,104 @@
+"""Additive L04–L06 scientific research contract: no changes to saved 123."""
+from datetime import date
+import pytest
+
+from app import assessment_runtime as runtime
+from app import scientific_trial_assessment as scientific
+from test_assessment_runtime import engine
+from test_scientific_trial_assessment import source, revise
+
+
+def request(level, *, contract="SCIENTIFIC_1_6", mode="CURRENT_EVIDENCE", cutoff=None):
+    return runtime.RunInput(nct="NCT04576949", level=level, mode=mode,
+                            cutoffDate=cutoff, contract=contract)
+
+
+@pytest.mark.parametrize("level,name", [
+    (4, "Safety and benefit-risk"),
+    (5, "Indication-specific clinical assessment"),
+    (6, "FDA regulatory readiness"),
+])
+def test_opt_in_scientific_456_evaluates_original_sources_without_fda_prediction(level, name):
+    report = runtime.assess(request(level), source())
+    assert report["contract"] == "SCIENTIFIC_1_6"
+    assert report["level"] == level
+    assert report["name"] == name
+    assert report["kind"] == "EXECUTED_SCIENTIFIC_TRIAL_ASSESSMENT"
+    assert report["engineVersion"].startswith(scientific.EXTENDED_VERSION)
+    assert report["score"]["kind"] == "NOT_VALIDATED"
+    assert report["score"]["value"] is None
+    assert report["fdaPrediction"]["outcome"] == "ABSTAIN"
+    assert report["fdaPrediction"]["probability"] is None
+    assert report["historicalAccuracyEligible"] is False
+    assert set(report["prerequisiteAssessments"]) == {str(i) for i in range(1, level)}
+    assert report["checks"]
+
+
+def test_safety_and_regulatory_unknowns_are_not_counted_as_clearance():
+    report = runtime.assess(request(4), source())
+    checks = {x["id"]: x for x in report["checks"]}
+    assert checks["benefit_risk_interpretation"]["state"] == "UNVERIFIED"
+    assert checks["benefit_risk_interpretation"]["value"] is None
+    regulatory = runtime.assess(request(6), source())
+    checks = {x["id"]: x for x in regulatory["checks"]}
+    assert checks["application_identity_and_pathway"]["state"] == "UNVERIFIED"
+    assert checks["manufacturing_and_inspection"]["state"] == "UNVERIFIED"
+    assert regulatory["observations"][0]["reviewTiming"] == "NOT_EVALUATED"
+
+
+def test_indication_standard_of_care_and_thresholds_are_unverified():
+    report = runtime.assess(request(5), source())
+    checks = {x["id"]: x for x in report["checks"]}
+    assert checks["indication_definition"]["state"] == "SOURCE_VERIFIED"
+    assert checks["standard_of_care_context"]["state"] == "UNVERIFIED"
+    assert checks["meaningful_effect_threshold"]["state"] == "UNVERIFIED"
+
+
+def test_early_phase_not_dinged_for_unavailable_regulatory_submission():
+    def edit(doc):
+        doc["protocolSection"]["designModule"]["phases"] = ["PHASE1"]
+        doc["protocolSection"]["statusModule"]["overallStatus"] = "RECRUITING"
+        doc["resultsSection"] = {}
+    report = runtime.assess(request(6), revise(source(), edit))
+    checks = {x["id"]: x for x in report["checks"]}
+    assert checks["application_dossier"]["state"] == "NOT_YET_EXPECTED"
+    assert checks["manufacturing_and_inspection"]["state"] == "NOT_YET_EXPECTED"
+    assert report["fdaPrediction"]["outcome"] == "ABSTAIN"
+
+
+def test_original_123_scientific_contract_remains_unchanged():
+    for level in (1, 2, 3):
+        report = runtime.assess(request(level, contract="SCIENTIFIC_1_3"), source())
+        assert report["contract"] == "SCIENTIFIC_1_3"
+        assert report["name"] == scientific.NAMES[level]
+        assert report["engineVersion"] == scientific.VERSION + "/level-" + str(level)
+        assert report["score"]["value"] is None
+    with pytest.raises(Exception, match="Levels 1–3 only"):
+        request(4, contract="SCIENTIFIC_1_3").checked()
+
+
+def test_456_historical_source_chronology_and_answer_separation():
+    q = request(4, mode="BLIND_HISTORICAL", cutoff=date(2021, 1, 1))
+    base = runtime.assess(q, source())
+    modified = revise(source(), lambda doc: doc.update({
+        "fdaActualOutcome": "APPROVED",
+        "cachedPrediction": {"probability": 0.99},
+    }))
+    compared = runtime.assess(q, modified)
+    assert base["checks"] == compared["checks"]
+    assert base["observations"] == compared["observations"]
+    with pytest.raises(ValueError, match="leakage|chronology"):
+        runtime.assess(request(6, mode="BLIND_HISTORICAL", cutoff=date(2019, 1, 1)), source())
+
+
+@pytest.mark.parametrize("level", [4, 5, 6])
+def test_456_runs_persist_as_separate_immutable_reports(engine, monkeypatch, level):
+    monkeypatch.setattr(runtime, "collect_documents", lambda value, document_level: value)
+    q = request(level)
+    run_id = runtime.create(engine, q)
+    runtime.execute(engine, run_id, lambda _: source())
+    saved = runtime.status(engine, q.nct, run_id)
+    assert saved["status"] == "COMPLETED"
+    assert saved["report"]["contract"] == "SCIENTIFIC_1_6"
+    assert saved["report"]["level"] == level
+    assert saved["report"]["fdaPrediction"]["outcome"] == "ABSTAIN"
