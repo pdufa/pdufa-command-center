@@ -34,12 +34,20 @@ def download_discovery_source(url: str, destination: Path, *, max_bytes: int = 2
     retrieved_at = datetime.now(timezone.utc).isoformat()
     record = package_discovery_source_bytes(url, data, retrieved_at)
     destination.parent.mkdir(parents=True, exist_ok=True)
-    if destination.exists() or destination.with_suffix(destination.suffix + ".json").exists():
+    metadata = destination.with_suffix(destination.suffix + ".json")
+    if destination.exists() or metadata.exists():
         raise FileExistsError("Destination already exists; refusing overwrite")
-    destination.write_bytes(data)
-    destination.with_suffix(destination.suffix + ".json").write_text(
-        json.dumps(record, indent=2) + "\n", encoding="utf-8"
-    )
+    # Exclusive creation protects against accidental replacement and concurrent runs.
+    # If metadata persistence fails, remove the newly created document to avoid
+    # leaving an untracked artifact that could be mistaken for verified evidence.
+    with destination.open("xb") as handle:
+        handle.write(data)
+    try:
+        with metadata.open("x", encoding="utf-8") as handle:
+            handle.write(json.dumps(record, indent=2) + "\n")
+    except BaseException:
+        destination.unlink(missing_ok=True)
+        raise
     return record
 
 
