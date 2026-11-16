@@ -1,0 +1,120 @@
+name: Scientific 456 ephemeral PostgreSQL smoke (isolated)
+
+on:
+  push:
+    branches: ["feature/levels-456-isolated"]
+    paths:
+      - ".github/workflows/scientific-456-ephemeral-postgres.yml"
+      - "infra/scientific456-local/**"
+      - "new-platform/backend/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: scientific-456-ephemeral-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  isolated-postgres-readonly:
+    name: Isolated PostgreSQL readiness and write-denial
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      COMPOSE_FILE: infra/scientific456-local/compose.yaml
+      COMPOSE_PROJECT_NAME: scientific456-ci-${{ github.run_id }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Generate throwaway credentials on the runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          printf 'SCIENTIFIC456_DB_PASSWORD=%s\nSCIENTIFIC456_INTERNAL_API_KEY=%s\n' \
+            "$(openssl rand -hex 32)" "$(openssl rand -hex 32)" \
+            > infra/scientific456-local/.env
+          test "$(wc -l < infra/scientific456-local/.env)" -eq 2
+          docker compose --env-file infra/scientific456-local/.env config --quiet
+
+      - name: Start completely disposable PostgreSQL and read-only staging API
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose --env-file infra/scientific456-local/.env up -d --build --wait
+
+      - name: Check actual PostgreSQL, authenticated history, abstention and denied writes
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          from urllib.request import Request, urlopen
+          from urllib.error import HTTPError
+
+          # Secrets are local to the ephemeral runner. Never print the key.
+          env = dict(line.split('=', 1) for line in
+                     Path('infra/scientific456-local/.env').read_text().splitlines())
+          base = 'http://127.0.0.1:8765/api/assessment-runtime'
+          auth = {'X-Pdufa-Internal-Key': env['SCIENTIFIC456_INTERNAL_API_KEY']}
+
+          def request(path, method='GET', headers=None, body=None):
+              data = json.dumps(body).encode('utf-8') if body is not None else None
+              h = dict(headers or {})
+              if data is not None:
+                  h['Content-Type'] = 'application/json'
+              req = Request(base + path, method=method, headers=h, data=data)
+              try:
+                  with urlopen(req, timeout=12) as response:
+                      return response.status, json.load(response)
+              except HTTPError as e:
+                  return e.code, json.loads(e.read().decode('utf-8'))
+
+          status, version = request('/version')
+          assert status == 200, 'Version endpoint unavailable'
+          assert version.get('stagingMode') == 'SCIENTIFIC_456_ISOLATED_ONLY'
+          assert version.get('levels') == [4, 5, 6]
+          assert version.get('scientific456Enabled') is True
+          assert version.get('fdaModel') == 'ABSTAIN'
+          assert version.get('legacy123Separate') is True
+          print('PASS independent scientific456-only version and abstention')
+
+          status, ready = request('/health')
+          assert status == 200 and ready.get('status') == 'READY'
+          print('PASS real PostgreSQL-backed readiness')
+
+          history_path = '/history/NCT00000000?contract=SCIENTIFIC_1_6'
+          status, _ = request(history_path)
+          assert status == 401, 'Unauthenticated history must be denied'
+          status, history = request(history_path, headers=auth)
+          assert status == 200 and history.get('runs') == []
+          assert history.get('hasMore') is False
+          print('PASS authentication and empty synthetic-NCT history')
+
+          payload = {'nct':'NCT04576949','level':4,
+                     'mode':'CURRENT_EVIDENCE','contract':'SCIENTIFIC_1_6'}
+          status, _ = request('/runs',method='POST',headers=auth,body=payload)
+          assert status == 503, 'The read-only staging API must refuse writes'
+          print('PASS valid scientific assessment run refused in read-only mode')
+
+          payload['contract'] = 'SCIENTIFIC_1_3'
+          status, _ = request('/runs',method='POST',headers=auth,body=payload)
+          assert status == 422, 'The staging API must not accept 123 contracts'
+          print('PASS cross-contract request denied')
+          PY
+
+          # The write-denial check must not even create assessment tables.
+          rows="$(docker compose --env-file infra/scientific456-local/.env exec -T postgres \
+            psql -U scientific456_app -d scientific456 -tAc \
+            "SELECT count(*) FROM information_schema.tables WHERE table_schema='public' AND table_name LIKE 'assessment_v2_%';")"
+          test "$rows" = "0"
+          echo "PASS no assessment tables or reports written"
+
+      - name: Always destroy throwaway database, volume and credentials
+        if: always()
+        shell: bash
+        run: |
+          docker compose --env-file infra/scientific456-local/.env down --volumes --remove-orphans || true
+          rm -f infra/scientific456-local/.env
