@@ -69,6 +69,46 @@ Configure in the **development/preview frontend environment only**:
 
 Keep existing `PDUFA_LEVEL123_*` and `PDUFA_API_*` variables separate. Do not add or change secrets in GitHub source files. Do not point the new frontend variables at a live 123 backend.
 
+## Free local PostgreSQL staging fallback (code added, not yet run on owner's PC)
+
+On 2026-11-16, a **new Render free-plan service** named
+`pdufa-scientific456-isolated-preview`
+(`srv-dbth1g0n74is73bt8580`) was created from
+`Dockerfile.scientific456`, with automatic deploy disabled, no connection
+string, no staging API key, `PDUFA_LEVEL456_BACKEND_ENABLED=0`, and
+`PDUFA_MIGRATION_READ_ONLY=1`. Its initial isolated image deployment
+completed successfully, but **the public service cannot execute or store
+assessments** until it has a dedicated PostgreSQL database and credentials.
+
+Render rejected a second free Postgres instance because the workspace already
+has one. Neon is on a Launch plan; **no new chargeable database or Neon project
+was created**, and no production database or production Neon branch was changed.
+
+For a free, physically separate database on the owner's **own PC**, use
+`infra/scientific456-local/compose.yaml`. It starts PostgreSQL 16 with a
+distinct Docker named volume and the isolated 456 API. PostgreSQL is **not
+published to the host**. The API binds **only** to 127.0.0.1:8765.
+Secrets are generated once in `infra/scientific456-local/.env`, ignored by
+Git, and not printed. The backend is enabled for local read-only checks but
+`PDUFA_MIGRATION_READ_ONLY=1` denies assessment writes. It imports no
+production main application, does not inherit production environment variables,
+and does not run a scheduler or broker.
+
+From a **separate** PowerShell (do not stop an existing test window):
+
+```powershell
+cd "C:\Users\asiri\Desktop\pdufa-levels-456"
+git pull --ff-only
+powershell -NoProfile -ExecutionPolicy Bypass -File ".\infra\scientific456-local\Start-Scientific456Local.ps1"
+```
+
+Docker Desktop and Docker Compose must already be available. The script
+prints the safe version and health URLs; the user can view those with the
+browser or `Invoke-RestMethod`. **No write test is authorized by this
+launcher**, and the local container has no link to the cloud Render service.
+Local Docker resources may consume PC CPU/disk. Never commit the generated
+`.env` or share its secrets.
+
 ## Verify local code without provisioning
 
 From `C:\Users\asiri\Desktop\pdufa-levels-456`:
