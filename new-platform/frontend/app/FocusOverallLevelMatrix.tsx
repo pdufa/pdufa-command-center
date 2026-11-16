@@ -40,11 +40,13 @@ export function FocusOverallHeaders({expanded=false,onToggle}:{
   <th scope="col" style={{whiteSpace:'nowrap'}}>FDA direction</th>
  </>;
 }
-export function FocusTwentyHeaders({className}:{className?:string}={}){
+export function FocusTwentyHeaders({className,startLevel=1,endLevel=20}:{
+ className?:string;startLevel?:number;endLevel?:number;
+}={}){
  return <>{FOCUS_TWENTY_LEVEL_LABELS.map((name,i)=>
-  <th scope="col" className={className} key={name}
+  i+1>=startLevel&&i+1<=endLevel?<th scope="col" className={className} key={name}
     title={'L'+String(i+1).padStart(2,'0')+' — '+name}
-    style={{whiteSpace:'nowrap'}}>L{String(i+1).padStart(2,'0')}-{name}</th>)}</>;
+    style={{whiteSpace:'nowrap'}}>L{String(i+1).padStart(2,'0')}-{name}</th>:null)}</>;
 }
 export function FocusOverviewCells({nct,levels,loading=false,error=false}:{
  nct:string;levels?:FocusTrialLevels;loading?:boolean;error?:boolean;
@@ -79,12 +81,15 @@ export function FocusOverviewCells({nct,levels,loading=false,error=false}:{
   </td>
  </>;
 }
-export function FocusTwentyCells({nct,levels,loading=false,error=false,className}:{
+export function FocusTwentyCells({nct,levels,loading=false,error=false,className,startLevel=1,endLevel=20}:{
  nct:string;levels?:FocusTrialLevels;loading?:boolean;error?:boolean;className?:string;
+ startLevel?:number;endLevel?:number;
 }){
  const href='/predictions/assessment?nct='+encodeURIComponent(nct);
  return <>{FOCUS_TWENTY_LEVEL_LABELS.map((name,i)=>{
-  const level=i+1,report=level<=3?reportFor(levels,nct,level):null;
+  const level=i+1;
+  if(level<startLevel||level>endLevel)return null;
+  const report=level<=3?reportFor(levels,nct,level):null;
   const provisional=level<=3?provisionalFocusScore(nct,level,report):null;
   // Provisional numerical documentary evidence coverage is NOT a validated
   // trial scientific-strength rating, an FDA approval probability or forecast.
