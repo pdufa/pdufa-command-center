@@ -47,7 +47,8 @@ export async function GET(req:NextRequest){
  if(level)historyQuery.set('level',level);
  if(contract)historyQuery.set('contract',contract);
  const historyPath='/history/'+id+(historyQuery.size?'?'+historyQuery:'');
- return relay(req,run?'/runs/'+id+'/'+run:historyPath,undefined,contract==='SCIENTIFIC_1_6');
+ const runPath='/runs/'+id+'/'+run+(contract?'?contract='+encodeURIComponent(contract):'');
+ return relay(req,run?runPath:historyPath,undefined,contract==='SCIENTIFIC_1_6');
 }
 export async function POST(req:NextRequest){
  if(!authorized(req))return json({error:'Sign in to run assessments'},401);
