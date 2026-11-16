@@ -11,6 +11,14 @@ async function relay(req:NextRequest,path:string,body?:unknown,scientific456=fal
  const dedicated=!!(process.env.PDUFA_LEVEL123_API_BASE_URL||process.env.PDUFA_LEVEL123_INTERNAL_API_KEY);
  const base=(scientific456?process.env.PDUFA_LEVEL456_API_BASE_URL:dedicated?process.env.PDUFA_LEVEL123_API_BASE_URL:process.env.PDUFA_API_BASE_URL)?.replace(/\/$/,'');
  const key=scientific456?process.env.PDUFA_LEVEL456_INTERNAL_API_KEY:dedicated?process.env.PDUFA_LEVEL123_INTERNAL_API_KEY:process.env.PDUFA_INTERNAL_API_KEY;
+ // Fail closed if an isolated 456 connection accidentally reuses a configured
+ // production/123 endpoint or credential. No implicit fallback is permitted.
+ if(scientific456){
+  const otherBases=[process.env.PDUFA_LEVEL123_API_BASE_URL,process.env.PDUFA_API_BASE_URL].filter((v):v is string=>!!v).map(v=>v.replace(/\/$/,''));
+  const otherKeys=[process.env.PDUFA_LEVEL123_INTERNAL_API_KEY,process.env.PDUFA_INTERNAL_API_KEY].filter((v):v is string=>!!v);
+  if((base&&otherBases.includes(base))||(key&&otherKeys.includes(key)))
+   return json({error:'Level 456 requires an isolated backend and distinct credentials'},503);
+ }
  if(!base?.startsWith('https://')||!key)return json({error:'Persistent assessment backend is not configured'},503);
  try{
   const response=await fetch(base+'/api/assessment-runtime'+path,{method:body?'POST':'GET',cache:'no-store',headers:{'Content-Type':'application/json','X-Pdufa-Internal-Key':key},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.any([req.signal,AbortSignal.timeout(45000)])});
