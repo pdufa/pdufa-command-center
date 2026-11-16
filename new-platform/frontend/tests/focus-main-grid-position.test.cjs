@@ -24,9 +24,9 @@ test('FOCUS website spreadsheet is above the chart, gate checks, research and in
 });
 
 test('visible FOCUS table leads with Overall and L01–L03 immediately after ticker before long metadata',()=>{
- const head=source.slice(source.indexOf('<thead style={{background:"#e6f2ea"}}>'),source.indexOf('</thead>'));
+ const head=source.slice(source.indexOf('<thead style={{background:"#e6f2ea"}}>'),source.indexOf('</thead>',source.indexOf('<thead style={{background:"#e6f2ea"}}>')));
  const tic=head.indexOf('>Ticker</th>'),overall=head.indexOf('<FocusOverallHeaders'),first3=head.indexOf('<FocusTwentyHeaders startLevel={1} endLevel={3}/>'),nct=head.indexOf('>NCT / Trial</th>'),later=head.indexOf('<FocusTwentyHeaders className="assessment-level" startLevel={4} endLevel={20}/>');
- assert.ok(tic>=0&&tic<overall&&overall<first3&&first3<nct&&later>nct);
+ assert.ok(tic>=0&&tic<overall&&overall<first3&&first3<nct&&later>nct,JSON.stringify({tic,overall,first3,nct,later}));
  const rows=source.slice(source.indexOf('<tbody>{sortedTrials.map('),source.indexOf('</tbody>',source.indexOf('<tbody>{sortedTrials.map(')));
  const r0=rows.indexOf('<TickerChartButton ticker={t.ticker}/>'),rO=rows.indexOf('<FocusOverviewCells'),r3=rows.indexOf('<FocusTwentyCells nct={t.nct} levels={savedLevels[t.nct]} startLevel={1} endLevel={3}/>'),rN=rows.indexOf('clinicaltrials.gov/study/');
  assert.ok(r0>=0&&r0<rO&&rO<r3&&r3<rN);
