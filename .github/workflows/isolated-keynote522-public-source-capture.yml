@@ -1,0 +1,30 @@
+name: Isolated KEYNOTE-522 public source capture
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  capture-public-research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Download only the pre-decision 2020 PubMed record
+        env:
+          PYTHONPATH: new-platform/backend
+        run: |
+          mkdir -p research-artifacts
+          python -m assessment_levels_07_20.discovery_download \
+            --url 'https://www.ncbi.nlm.nih.gov/research/bionlp/RESTful/pubmed.cgi/BioC_json/32101663/unicode' \
+            --output research-artifacts/keynote522_2020_pubmed_bioc.json
+      - name: Upload discovery-only source bytes and true retrieval metadata
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: keynote522-2020-public-source-discovery
+          path: research-artifacts/
+          retention-days: 30
+          if-no-files-found: error
