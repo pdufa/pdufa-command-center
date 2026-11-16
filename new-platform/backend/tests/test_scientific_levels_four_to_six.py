@@ -1,7 +1,7 @@
 """Additive L04–L06 scientific research contract: no changes to saved 123."""
 from datetime import date
 import pytest
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
 from fastapi.testclient import TestClient
 from sqlalchemy import text
 
@@ -184,3 +184,29 @@ def test_history_contract_filter_is_applied_before_fifty_result_limit(engine, mo
         assert response.status_code == 200
         assert len(response.json()['runs']) == 1
         assert client.get('/api/assessment-runtime/history/NCT04576949?contract=untrusted').status_code == 422
+
+
+def test_run_status_checks_scientific_contract_before_returning_pending_job(engine):
+    original = request(1, contract='SCIENTIFIC_1_3')
+    isolated = request(4)
+    original_run = runtime.create(engine, original)
+    isolated_run = runtime.create(engine, isolated)
+    assert runtime.status(engine, original.nct, original_run, 'SCIENTIFIC_1_3')['status'] == 'QUEUED'
+    assert runtime.status(engine, isolated.nct, isolated_run, 'SCIENTIFIC_1_6')['status'] == 'QUEUED'
+    with pytest.raises(HTTPException) as err:
+        runtime.status(engine, original.nct, original_run, 'SCIENTIFIC_1_6')
+    assert err.value.status_code == 404
+    with pytest.raises(HTTPException) as err:
+        runtime.status(engine, isolated.nct, isolated_run, 'SCIENTIFIC_1_3')
+    assert err.value.status_code == 404
+    with pytest.raises(HTTPException) as err:
+        runtime.status(engine, isolated.nct, isolated_run, 'BAD_CONTRACT')
+    assert err.value.status_code == 422
+    app = FastAPI()
+    app.include_router(runtime.router(lambda: engine, lambda: None, lambda: None,
+                                      lambda: None, allow_local=True))
+    with TestClient(app) as client:
+        assert client.get('/api/assessment-runtime/runs/NCT04576949/'+original_run
+                          +'?contract=SCIENTIFIC_1_6').status_code == 404
+        assert client.get('/api/assessment-runtime/runs/NCT04576949/'+isolated_run
+                          +'?contract=SCIENTIFIC_1_6').status_code == 200
