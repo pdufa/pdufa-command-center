@@ -91,6 +91,26 @@ jobs:
           Path('research-output/briefing-amendment-table-pages.json').write_text(json.dumps(report,indent=2)+'\\n')
           print(json.dumps({'table_body_candidate_pages':report['table_body_candidate_pages'],'extracted_page_numbers':[x['pdf_page'] for x in pages],'previews':[{'page':x['pdf_page'],'text':x['text'][:900]} for x in pages[:4]]},indent=2))
           PY
+      - name: Normalize dated amendment ledger from verified table body
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,re
+          data=json.loads(Path('research-output/briefing-amendment-table-pages.json').read_text())
+          body=[p for p in data['extracted_pages'] if 'Table 8 Summary of Key Changes' in p['text'] and p['pdf_page']>=8]
+          if len(body)!=1: raise SystemExit('Expected exactly one Table 8 body page')
+          page=body[0]
+          t=' '.join(page['text'].split())
+          entries=[]
+          patterns=[('ORIGINAL','05-Dec-2016',r'Protocol\\s*\\(05-Dec-2016\\)'),('AMENDMENT_01','16-Dec-2016',r'Amendment\\s*01\\s*\\(16-Dec-2016\\)'),('AMENDMENT_02','01-May-2018',r'Amendment\\s*02\\s*\\(01-May-2018\\)')]
+          for name,date,pat in patterns:
+              m=re.search(pat,t,re.I)
+              if not m: raise SystemExit('Required amendment entry missing: '+name)
+              entries.append({'entry':name,'amendment_date':date,'source_pdf_page':page['pdf_page'],'evidence_excerpt':t[m.start():m.start()+900],'source_kind':'2021_BRIEFING_RETROSPECTIVE_TABLE','original_amendment_bytes_acquired':False,'eligible_for_pre_2021_02_cutoff':False,'blind_eligible':False})
+          report={'trial':'NCT03036488','status':'DISCOVERY_ONLY','source_sha256':'d60e17a8b819637cc959b55c12b24f562081b349dd75994e2a45859c881e3903','historical_snapshot_verified':False,'blind_eligible':False,'entries':entries,'requires_manual_cutoff_review':True}
+          Path('research-output/briefing-amendment-ledger.json').write_text(json.dumps(report,indent=2)+'\\n')
+          print(json.dumps({'source_pdf_page':page['pdf_page'],'entries':entries},indent=2))
+          PY
       - name: Upload source and provenance
         uses: actions/upload-artifact@v4
         with:
