@@ -15,6 +15,7 @@ from .scientific_registry_inventory import attach_registry_inventory
 from .scientific_binary_effects import binary_effect
 from .scientific_population import assess_level_seven
 from .scientific_safety_exposure import assess_level_eight
+from .scientific_levels_nine_to_twenty import assess_levels_nine_to_twenty
 
 MODEL = "candidate-assessments-v1"
 NCT = re.compile(r"^NCT[0-9]{8}$")
@@ -214,8 +215,10 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
     # Evidence coverage is not proof of a validated Level 1–6 scientific engine.
     # Fail closed until independent scientific acceptance is recorded elsewhere.
     scientific_readiness = {
-        "contractVersion": "scientific-levels1-8-v1.2",
+        "contractVersion": "scientific-levels1-20-evidence-contract-v1",
         "extensionEngineLevels": [7, 8],
+        "scientificEngineLevels": list(range(1, 9)),
+        "contractOnlyLevels": list(range(9, 21)),
         "levels": [1, 2, 3, 4, 5, 6],
         "status": "NOT_VERIFIED",
         "fdaPrediction": "ABSTAIN",
@@ -237,6 +240,9 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
     attach_registry_inventory(level_one, levels_two_to_six, registry, trial_id=nct, retrieved_at=registry_checked)
     extensions = {"7": assess_level_seven(level_one, trial_id=nct, evidence=reviews.get("scientificLevelEvidence")),
                   "8": assess_level_eight(level_one, trial_id=nct, evidence=reviews.get("scientificLevelEvidence"))}
+    extensions.update(assess_levels_nine_to_twenty(
+        level_one, trial_id=nct, evidence=reviews.get("scientificLevelEvidence"),
+        prior_levels={**levels_two_to_six, **extensions}))
     return {"levelsSevenToTwenty": extensions, "levelOneIntake": level_one, "levelsTwoToSix": levels_two_to_six, "scientificReadiness": scientific_readiness, "modelVersion": MODEL, "id": row["id"], "programId": row.get("programId"), "nctId": nct, "asOf": today.isoformat(), "models": models, "riskFlags": flags,
             "qualification": {"savedLists": facts.get("lists", ["PIPELINE"]), "primaryOutcome": outcome, "firstFinancingClosed": facts.get("firstFinancingClosed"), "secondFinancingClosed": facts.get("secondFinancingClosed"), "note": "Scores do not alter screening, saved membership or trade entry. Only complete evidence is ranked. Uncalibrated research scores, not success probabilities."},
             "registryFetchedAt": registry_checked, "registrySourceDate": registry_day, "reportedStatistics": analyses,

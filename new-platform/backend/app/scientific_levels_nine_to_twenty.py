@@ -1,0 +1,142 @@
+"""Evidence-review contracts for scientific Levels 9–20.
+
+This is deliberately NOT a suite of completed scientific engines.
+No composite ratings, inferred regulatory decisions or calibrated FDA
+probabilities are generated. Source-reviewed findings remain tied to the
+same exact trial, phase and point-in-time cutoff as the existing Levels 2–8.
+"""
+from __future__ import annotations
+
+from .scientific_levels_two_to_six import assess_review_contracts
+
+VERSION = "scientific-contracts-09-20-v1"
+
+LEVELS = {
+    9: ("Benefit-risk integration", (
+        "benefitEvidence", "harmEvidence", "comparabilityAndFollowup",
+        "clinicalContext", "contradictionsAndUncertainty")),
+    10: ("Disease and standard-of-care dossier", (
+        "diseaseAndSubtype", "treatmentSetting", "datedGuidelines",
+        "standardOfCare", "comparatorApplicability")),
+    11: ("Unmet need and therapeutic context", (
+        "populationBurden", "availableAlternatives", "remainingUnmetNeed",
+        "patientRelevantOutcomes", "accessAndEligibility")),
+    12: ("Reproducibility and independent studies", (
+        "independentStudyIdentity", "populationComparability", "endpointComparability",
+        "nonduplicateCohorts", "heterogeneityAndSynthesisPlan")),
+    13: ("Application and filing readiness", (
+        "exactApplicationIdentity", "acceptedFiling", "submissionChronology",
+        "dossierCompleteness", "agencyQuestions")),
+    14: ("FDA pathways and designations", (
+        "officialDesignationEvidence", "designationIndicationMatch",
+        "applicationCycleLink", "pathwayRequirements", "designationChanges")),
+    15: ("FDA precedent and advisory evidence", (
+        "precedentSelection", "applicationAndIndicationComparability",
+        "officialAdvisoryRecord", "voteAndRationale", "targetOutcomeLeakage")),
+    16: ("Manufacturing and inspection uncertainty", (
+        "facilityApplicationLink", "manufacturingInformation", "inspectionEvidence",
+        "qualityAndSupply", "unknownVersusDeficiency")),
+    17: ("Sponsor disclosure consistency", (
+        "datedDisclosureVersions", "exactProgramIdentity", "contradictionLedger",
+        "reconciliationEvidence", "materialChanges")),
+    18: ("Scientific challenge and alternative explanations", (
+        "strongestCounterargument", "alternativeCausality", "biasAndConfounding",
+        "contradictionResolution", "ownerCriticalReview")),
+    19: ("Prospective decisions and calibration eligibility", (
+        "outcomeUnexposedSourceFreeze", "predictionModelArtifact",
+        "prospectivePredictionTimestamp", "independentOutcomeSeparation",
+        "outOfSampleCalibration")),
+    20: ("FDA outcome and review-timing monitoring", (
+        "exactApplicationCycleLink", "originalGoalDate", "goalDateRevisions",
+        "officialActionAndDate", "postPredictionOutcomeComparison")),
+}
+assert tuple(LEVELS) == tuple(range(9, 21))
+
+# In these phases or statuses, an absent downstream observation is not a
+# negative result. Evidence explicitly supplied by the owner is still checked.
+_PRE_APPLICATION = {
+    13: {"acceptedFiling", "submissionChronology", "dossierCompleteness", "agencyQuestions"},
+    14: {"applicationCycleLink"},
+    15: {"officialAdvisoryRecord", "voteAndRationale"},
+    16: {"facilityApplicationLink", "inspectionEvidence"},
+    20: {"exactApplicationCycleLink", "originalGoalDate", "goalDateRevisions",
+         "officialActionAndDate", "postPredictionOutcomeComparison"},
+}
+_PRE_RESULT = {
+    9: {"benefitEvidence", "harmEvidence", "comparabilityAndFollowup",
+        "contradictionsAndUncertainty"},
+    12: {"populationComparability", "endpointComparability",
+         "nonduplicateCohorts", "heterogeneityAndSynthesisPlan"},
+}
+
+def _reviewed_criteria(level):
+    """Return criterion names with accepted source-reviewed evidence, never scores."""
+    if not isinstance(level, dict) or level.get("scientificValidation") != "NOT_VERIFIED" or level.get("fdaPrediction") != "ABSTAIN" or level.get("score") is not None:
+        return []
+    evidence = level.get("acceptedEvidence")
+    if not isinstance(evidence, dict):
+        return []
+    return sorted(k for k, v in evidence.items()
+                  if isinstance(v, dict) and v.get("sourceVerified") is True
+                  and v.get("retrievalProvenance") == "RECORDED")
+
+def _benefit_risk_dependencies(prior_levels):
+    """Upstream evidence inventory; no inference that a drug is safe/effective."""
+    prior = prior_levels if isinstance(prior_levels, dict) else {}
+    details = {}
+    for number in ("3", "4", "5", "7", "8"):
+        details[number] = _reviewed_criteria(prior.get(number))
+    return {
+        "benefitEvidenceReviewed": bool(details["3"]),
+        "harmEvidenceReviewed": bool(details["4"] or details["8"]),
+        "indicationContextReviewed": bool(details["5"]),
+        "populationEvidenceReviewed": bool(details["7"]),
+        "upstreamAcceptedCriterionNames": details,
+        "limitations": [
+            "Upstream evidence is an inventory of reviewed source records, not a finding of efficacy or safety.",
+            "Level 9 requires comparable population, endpoint definitions and follow-up plus explicit owner clinical judgment.",
+            "An FDA approval outcome or probability cannot be calculated from these review counts.",
+        ],
+    }
+
+def assess_levels_nine_to_twenty(level_one, *, trial_id, evidence=None, prior_levels=None):
+    """Return independent phase-aware evidence contracts, without claiming engine completion."""
+    intake = level_one if isinstance(level_one, dict) else {}
+    evidence = evidence if isinstance(evidence, dict) else {}
+    pre_app = intake.get("phase") in {"EARLY_PHASE1", "PHASE1", "PHASE2"}
+    pre_result = intake.get("trialStatus") in {
+        "NOT_YET_RECRUITING", "RECRUITING", "ENROLLING_BY_INVITATION"}
+    not_due = set()
+    for number, criteria in LEVELS.items():
+        for criterion in criteria[1]:
+            if (pre_app and criterion in _PRE_APPLICATION.get(number, set())) or (
+                    pre_result and criterion in _PRE_RESULT.get(number, set())):
+                # A supplied record still undergoes normal evidence checks.
+                if not evidence.get(f"{number}.{criterion}"):
+                    not_due.add((number, criterion))
+    results = assess_review_contracts(
+        intake, trial_id=trial_id, evidence=evidence, definitions=LEVELS,
+        not_yet_expected=not_due,
+    )
+    for number, result in results.items():
+        result["contractVersion"] = VERSION
+        result["methodStatus"] = "EVIDENCE_CONTRACT_ONLY_NOT_IMPLEMENTED_SCIENTIFIC_ENGINE"
+        result["validationStatus"] = "NOT_VALIDATED"
+        result["limitations"] = [
+            "This contract records evidence availability and owner review; it is not a completed scientific assessment.",
+            "Unknown or unpublished evidence is not a negative clinical/regulatory finding.",
+            "No composite score, FDA approval probability, trading signal or synthetic owner signoff.",
+        ]
+    nine = results["9"]
+    deps = _benefit_risk_dependencies(prior_levels)
+    nine["benefitRiskEvidenceAlignment"] = deps
+    nine["methodStatus"] = "PARTIAL_EVIDENCE_RECONCILIATION_NOT_CLINICAL_CONCLUSION"
+    nine["integrationStatus"] = (
+        "BLOCKED_UPSTREAM_EVIDENCE"
+        if not (deps["benefitEvidenceReviewed"] and deps["harmEvidenceReviewed"]
+                and deps["indicationContextReviewed"])
+        else "AWAITING_OWNER_BENEFIT_RISK_JUDGMENT"
+    )
+    if nine["reviewReadiness"]["complete"] and nine["integrationStatus"] == "AWAITING_OWNER_BENEFIT_RISK_JUDGMENT":
+        nine["integrationStatus"] = "REVIEWED_SOURCES_REQUIRE_CLINICAL_SYNTHESIS"
+    return results
