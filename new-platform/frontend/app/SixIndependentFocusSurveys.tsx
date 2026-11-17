@@ -28,7 +28,7 @@ export default function SixIndependentFocusSurveys(){
   const byNct=new Map(extra.trials.map(t=>[t.nct,t]));
   setData({...base,trials:base.trials.map(t=>({...t,levels:{...t.levels,...(byNct.get(t.nct)?.levels||{})}}))});
  }
- useEffect(()=>{let active=true;Promise.all([readSavedFocus(),fetch('/api/assessments/runtime?focusLevels456=true',{cache:'no-store'}).then(async r=>{if(!r.ok)throw Error('L4–L6 saved results unavailable');return r.json() as Promise<Summary>;})]).then(([base,extra])=>{if(!active)return;const byNct=new Map(extra.trials.map(t=>[t.nct,t]));setData({...base,trials:base.trials.map(t=>({...t,levels:{...t.levels,...(byNct.get(t.nct)?.levels||{})}}))});}).catch(e=>{if(active)setError(e instanceof Error?e.message:'Survey data unavailable');});return()=>{active=false;};},[]);
+ useEffect(()=>{let active=true;Promise.all([readSavedFocus() as Promise<Summary>,fetch('/api/assessments/runtime?focusLevels456=true',{cache:'no-store'}).then(async r=>{if(!r.ok)throw Error('L4–L6 saved results unavailable');return r.json() as Promise<Summary>;})]).then(([base,extra])=>{if(!active)return;const byNct=new Map(extra.trials.map(t=>[t.nct,t]));setData({...base,trials:base.trials.map(t=>({...t,levels:{...t.levels,...(byNct.get(t.nct)?.levels||{})}}))});}).catch(e=>{if(active)setError(e instanceof Error?e.message:'Survey data unavailable');});return()=>{active=false;};},[]);
  async function run456(){
   if(batchPending)return;
   setBatchPending(true);
