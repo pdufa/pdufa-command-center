@@ -11,6 +11,7 @@ from .scientific_levels_two_to_six import assess_review_contracts
 from .scientific_benefit_harm import align_benefit_harm
 from .scientific_standard_care import compare_standard_care
 from .scientific_therapeutic_context import therapeutic_context
+from .scientific_replication_candidates import screen_replication_candidates
 
 VERSION = "scientific-contracts-09-20-v1"
 
@@ -151,4 +152,8 @@ def assess_levels_nine_to_twenty(level_one, *, trial_id, evidence=None, prior_le
     eleven["therapeuticContext"] = therapeutic_context(
         eleven, evidence, intake.get("assessmentCutoff"))
     eleven["methodStatus"] = "PARTIAL_DESCRIPTIVE_BURDEN_AND_ALTERNATIVES_NOT_UNMET_NEED_VALIDATION"
+    twelve = results["12"]
+    twelve["replicationCandidates"] = screen_replication_candidates(
+        twelve, evidence, trial_id=trial_id, cutoff=intake.get("assessmentCutoff"))
+    twelve["methodStatus"] = "PARTIAL_CROSS_STUDY_IDENTITY_SCREEN_NOT_REPLICATION_VALIDATION"
     return results
