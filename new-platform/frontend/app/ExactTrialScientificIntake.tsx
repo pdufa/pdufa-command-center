@@ -5,6 +5,7 @@ import ScientificStepsReadiness,{type PhaseFirstIntake} from "./ScientificStepsR
 import ScientificLevelsEvidence from "./ScientificLevelsEvidence";
 import ScientificPopulationEvidence from "./ScientificPopulationEvidence";
 import ScientificSafetyExposureEvidence from "./ScientificSafetyExposureEvidence";
+import ScientificAdvancedLevelsEvidence from "./ScientificAdvancedLevelsEvidence";
 
 const NCT=/^NCT\d{8}$/;
 type Cohort="POOL"|"FOCUS"|"PAST";
@@ -52,6 +53,7 @@ export default function ExactTrialScientificIntake({cohort,nctId,programIdentity
  return <section aria-label={"Exact "+cohort+" trial scientific intake"}>
   <button type="button" disabled={busy} onClick={()=>void load()}>{busy?"Checking exact trial…":"Load exact-trial scientific intake"}</button>
   {error&&<p role="alert">{error}</p>}
+  {intake&&<ScientificAdvancedLevelsEvidence value={extensions}/>}
   {intake&&<ScientificSafetyExposureEvidence value={extensions}/>}
   {intake&&<ScientificPopulationEvidence value={extensions}/>}
   {intake&&<ScientificLevelsEvidence value={levels}/>}
