@@ -94,7 +94,9 @@ def test_changed_roster_and_missing_shard_fail_before_any_network(tmp_path):
                    searcher=lambda n: calls.append(n))
     assert calls == []
     assert not (tmp_path / "retry").exists()
-    roster, source = fixtures(tmp_path / "new-input")
+    new_workspace = tmp_path / "new-input"
+    new_workspace.mkdir()
+    roster, source = fixtures(new_workspace)
     roster.write_text(roster.read_text().replace(nct(7), nct(9)))
     with pytest.raises(ValueError, match="Checkpoint does not match"):
         tool.recovery_plan(roster, source, count=3)
