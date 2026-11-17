@@ -26,12 +26,38 @@ method and partial Level 8 exposure-rate method.
   **contract-only levels (9–20)**. All new scores are null and FDA
   predictions ABSTAIN; no prospective accuracy is implied.
 
+## Additional development — November 17
+
+**Level 9 now includes `scientific-benefit-harm-alignment-v1`.** This method
+only operates on two separately accepted owner-reviewed benefit/harm source
+records with dated retrieval receipts. It checks declared analysis population,
+treatment/comparator arm identity, follow-up days and time origin. Discordant
+study contexts require explicit review and never get pooled. Identical metadata
+do **not** establish comparable clinical effects, efficacy, causality, harm
+severity or overall benefit-risk. A positive benefit-risk verdict is never
+generated.
+
+**Level 10 now includes `scientific-standard-care-context-v1`.** This method
+compares source-reviewed guideline and standard-of-care statements for disease,
+subtype, care setting and region, with a strict guideline-effective-date cutoff.
+It shows structural mismatch, not whether any therapy is appropriate or any
+guideline is current. Source availability and author/reviewer claims must not
+be promoted to external verification or a clinical recommendation.
+
+Both Level 9 and 10 produce partial **research methods only**. Scientific scores
+stay null, FDA decisions ABSTAIN and whole-level status NOT_VERIFIED. Earlier
+Levels 1–8 and all original prediction-history records remain unchanged.
+Tests exercise matching and mismatching contexts, invalid booleans/counts,
+wrong-trial and post-cutoff evidence, absent retrieval receipt and early-phase
+abstention. GitHub CI on the final delivered commit must verify the tests; no
+local-only or prior-commit run proves delivery.
+
 ## Completion gates
 
 | Level | Research question and method still needed before scientific completion |
 |---|---|
-| 9 | Owner review of comparable benefit/harm evidence, population and follow-up; indication-specific synthesis, contradictions and uncertainty |
-| 10 | Dated disease/subtype/setting guideline and standard-care comparator dossier |
+| 9 | Partial evidence-context alignment implemented; clinical meaningfulness, contradictory harms/benefits and owner indication-specific synthesis still outstanding |
+| 10 | Partial dated guideline/comparator context matching implemented; source completeness, guideline applicability and actual owner clinical adjudication still outstanding |
 | 11 | Patient-specific burden, alternatives, unmet need and source-grounded outcome meaningfulness |
 | 12 | Independent cohort identity, nonduplicated studies, heterogeneity and prespecified synthesis |
 | 13 | Exact application/cycle identity, filing acceptance, dated dossier/agency evidence |
