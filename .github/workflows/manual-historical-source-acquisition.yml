@@ -38,6 +38,13 @@ jobs:
               --url 'https://pubmed.ncbi.nlm.nih.gov/32101663/' \
               --output research-output/keynote522-2020-pubmed-record.html
           fi
+      - name: Retrieve independent pre-decision sponsor announcement
+        env:
+          PYTHONPATH: new-platform/backend
+        run: |
+          python -m assessment_levels_07_20.discovery_download \
+            --url 'https://www.merck.com/news/merck-announces-phase-3-keynote-522-trial-met-dual-primary-endpoint-of-event-free-survival-efs-in-patients-with-high-risk-early-stage-triple-negative-breast-cancer-tnbc/' \
+            --output research-output/keynote522-2021-sponsor-release.html
       - name: Upload retrieved bytes and provenance metadata
         if: success()
         uses: actions/upload-artifact@v4
