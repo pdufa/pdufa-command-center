@@ -6,10 +6,11 @@ import ScientificLevelsEvidence from "./ScientificLevelsEvidence";
 import ScientificPopulationEvidence from "./ScientificPopulationEvidence";
 import ScientificSafetyExposureEvidence from "./ScientificSafetyExposureEvidence";
 import ScientificAdvancedLevelsEvidence from "./ScientificAdvancedLevelsEvidence";
+import AdvancedEvidenceResearchQueue from "./AdvancedEvidenceResearchQueue";
 
 const NCT=/^NCT\d{8}$/;
 type Cohort="POOL"|"FOCUS"|"PAST";
-type Assessment={id?:unknown;nctId?:unknown;levelOneIntake?:unknown;levelsTwoToSix?:unknown;levelsSevenToTwenty?:unknown};
+type Assessment={id?:unknown;nctId?:unknown;levelOneIntake?:unknown;levelsTwoToSix?:unknown;levelsSevenToTwenty?:unknown;advancedEvidenceQueue?:unknown};
 function validIntake(value:unknown):value is PhaseFirstIntake {
  if(!value||typeof value!=="object"||Array.isArray(value))return false;
  const x=value as Record<string,unknown>;
@@ -25,13 +26,14 @@ export default function ExactTrialScientificIntake({cohort,nctId,programIdentity
  const [intake,setIntake]=useState<PhaseFirstIntake|null>(null);
  const [levels,setLevels]=useState<unknown>(null);
  const [extensions,setExtensions]=useState<unknown>(null);
+ const [advancedQueue,setAdvancedQueue]=useState<unknown>(null);
  const [error,setError]=useState("");
  const [busy,setBusy]=useState(false);
  const requestSequence=useRef(0);
  useEffect(()=>()=>{++requestSequence.current;},[nctId,programIdentity]);
  async function load(){
   const sequence=++requestSequence.current;
-  setIntake(null);setError("");setLevels(null);setExtensions(null);
+  setIntake(null);setError("");setLevels(null);setExtensions(null);setAdvancedQueue(null);
   if(!NCT.test(nctId)||!programIdentity.trim()||programIdentity.length>512){
    setError("An exact NCT and program identity are required.");return;
   }
@@ -47,12 +49,14 @@ export default function ExactTrialScientificIntake({cohort,nctId,programIdentity
    if(sequence===requestSequence.current)setIntake(record.levelOneIntake);
    if(sequence===requestSequence.current)setLevels(record.levelsTwoToSix);
    if(sequence===requestSequence.current)setExtensions(record.levelsSevenToTwenty);
+   if(sequence===requestSequence.current)setAdvancedQueue(record.advancedEvidenceQueue);
   }catch(e){if(sequence===requestSequence.current)setError(e instanceof Error?e.message:"Assessment unavailable.");}
   finally{if(sequence===requestSequence.current)setBusy(false);}
  }
  return <section aria-label={"Exact "+cohort+" trial scientific intake"}>
   <button type="button" disabled={busy} onClick={()=>void load()}>{busy?"Checking exact trial…":"Load exact-trial scientific intake"}</button>
   {error&&<p role="alert">{error}</p>}
+  {intake&&<AdvancedEvidenceResearchQueue value={advancedQueue} nctId={nctId}/>}
   {intake&&<ScientificAdvancedLevelsEvidence value={extensions}/>}
   {intake&&<ScientificSafetyExposureEvidence value={extensions}/>}
   {intake&&<ScientificPopulationEvidence value={extensions}/>}
