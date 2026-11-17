@@ -134,3 +134,78 @@ def test_population_and_exposure_engines_persist_distinct_versions(isolated, mon
     assert count(engine)==len(frozen)+1
     with Session(engine) as session:
         for key,value in frozen:assert session.get(main.CandidateAssessmentHistory,key).summary==value
+
+
+def test_compact_queue_is_present_in_append_only_assessment_history(isolated):
+    engine, snapshot = isolated
+    exact_id = snapshot["pipeline"][0]["id"]
+    with Session(engine) as session:
+        record = session.get(main.FullTrialRecord, "NCT00000001")
+        record.summary = {**record.summary, "phases": ["PHASE3"]}
+        session.commit()
+    service.get_index(synchronous=True)
+    detail = service.exact_detail(exact_id)
+    queue = detail["advancedEvidenceQueue"]
+    assert queue["status"] == "RESEARCH_QUEUE_READY"
+    assert queue["unresolvedCriteria"] == 60
+    assert len(detail["history"]) == 1
+    history = detail["history"][0]["advancedEvidenceQueue"]
+    assert history["nctId"] == "NCT00000001"
+    assert history["status"] == queue["status"]
+    assert history["unresolvedCriteria"] == 60
+    assert len(history["taskStates"]) == 60
+    assert history["taskStates"][0][0].startswith("NCT00000001:L")
+    assert all(len(x) == 3 for x in history["taskStates"])
+    assert history["score"] is None and history["fdaPrediction"] == "ABSTAIN"
+    assert "tasks" not in history  # no duplicate full queue prose
+    with Session(engine) as session:
+        old = list(session.scalars(
+            select(main.CandidateAssessmentHistory)
+            .where(main.CandidateAssessmentHistory.exact_id == exact_id)
+        ))
+        old_history_id = old[0].id
+        frozen = copy.deepcopy(old[0].summary["advancedEvidenceQueue"])
+        saved = session.get(main.FullTrialRecord, "NCT00000001")
+        saved.summary = {**saved.summary, "phases": ["PHASE1"]}
+        saved.fetched_at = datetime(2026, 10, 21, tzinfo=timezone.utc)
+        session.commit()
+    service.get_index(synchronous=True)
+    with Session(engine) as session:
+        old_version = session.get(main.CandidateAssessmentHistory, old_history_id)
+        assert old_version.summary["advancedEvidenceQueue"] == frozen
+    newer = service.exact_detail(exact_id)["history"][0]["advancedEvidenceQueue"]
+    assert newer["deferredTaskIds"]
+    assert newer["taskStates"] != frozen["taskStates"]
+
+
+def test_whole_universe_queue_totals_are_counts_not_clinical_coverage(isolated):
+    engine, snapshot = isolated
+    # One source-linked program with a verified phase, one without a registry.
+    with Session(engine) as session:
+        source = session.get(main.FullTrialRecord, "NCT00000001")
+        source.summary = {**source.summary, "phases": ["PHASE3"]}
+        session.commit()
+    index = service.get_index(synchronous=True)
+    totals = index["advancedResearchQueueTotals"]
+    assert totals["programs"] == index["total"] == 2
+    assert totals["readyPrograms"] == 1
+    assert totals["blockedPrograms"] == 1
+    assert totals["noActiveGapPrograms"] == 0
+    assert totals["activeTasks"] == 60
+    assert totals["deferredCriteria"] == 0
+    assert totals["reviewedCriteria"] == 0
+    assert len(totals["byLevel"]) == 12
+    assert all(totals["byLevel"][str(n)]["active"] == 5 for n in range(9, 21))
+    assert "not an FDA prediction" in totals["meaning"]
+    assert len(index["records"]) == 2
+    assert all(len(record) == 5 for record in index["records"])
+
+
+def test_unverified_entire_universe_cannot_masquerade_as_missing_evidence(isolated):
+    _, _snapshot = isolated
+    index = service.get_index(synchronous=True)
+    totals = index["advancedResearchQueueTotals"]
+    assert totals["programs"] == 2
+    assert totals["blockedPrograms"] == 2
+    assert totals["activeTasks"] == 0
+    assert totals["reviewedCriteria"] == 0

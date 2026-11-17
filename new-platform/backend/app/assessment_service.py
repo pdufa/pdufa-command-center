@@ -13,6 +13,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from . import main as db
 from .candidate_assessments import MODEL, compact, fingerprint, nct_id, packed, score_candidate
+from .scientific_advanced_research_queue import compact_historical_research_queue
 
 LOG = logging.getLogger(__name__)
 _LOCK = threading.RLock()
@@ -84,6 +85,20 @@ def build_index(snapshot, reviews, review_status, key, token):
         rows = rows_for(snapshot)
         by_nct = exact_nct_program_map(rows)
         records, updates, covered = {}, [], set()
+        research_queue_totals = {
+            "scope": "SCIENTIFIC_LEVELS_09_TO_20",
+            "methodVersion": "scientific-advanced-research-queue-v1",
+            "programs": 0,
+            "readyPrograms": 0,
+            "blockedPrograms": 0,
+            "noActiveGapPrograms": 0,
+            "activeTasks": 0,
+            "deferredCriteria": 0,
+            "reviewedCriteria": 0,
+            "meaning": "Workload across all exact programs; not an FDA prediction or validated scientific score.",
+            "byLevel": {str(n): {"active": 0, "deferred": 0, "reviewed": 0}
+                        for n in range(9, 21)},
+        }
         writable = os.getenv("PDUFA_MIGRATION_READ_ONLY", "").lower() not in {"1", "true", "yes"}
         with Session(db.ENGINE) as session:
             latest = select(func.max(db.CandidateAssessmentHistory.id)).group_by(db.CandidateAssessmentHistory.exact_id)
@@ -93,6 +108,28 @@ def build_index(snapshot, reviews, review_status, key, token):
         def accept(row, registry=None, analyses=None, checked=""):
             result = score_candidate(row, registry, analyses, reviews.get(row["id"], {}), today=date.fromisoformat(snapshot["assessmentDate"]), registry_checked=checked)
             values = tuple_summary(result)
+            research_queue = result["advancedEvidenceQueue"]
+            research_queue_totals["programs"] += 1
+            research_queue_totals["activeTasks"] += research_queue["unresolvedCriteria"]
+            research_queue_totals["deferredCriteria"] += len(research_queue["deferred"])
+            research_queue_totals["reviewedCriteria"] += research_queue["reviewedCriteria"]
+            if research_queue["status"] == "RESEARCH_QUEUE_READY":
+                research_queue_totals["readyPrograms"] += 1
+            elif research_queue["status"] == "BLOCKED_UNVERIFIED_INTAKE":
+                research_queue_totals["blockedPrograms"] += 1
+            elif research_queue["status"] == "NO_ACTIVE_GAPS_NOT_SCIENTIFIC_VALIDATION":
+                research_queue_totals["noActiveGapPrograms"] += 1
+            else:
+                raise ValueError("Unrecognized research queue status")
+            for task in research_queue["tasks"]:
+                research_queue_totals["byLevel"][str(task["level"])]["active"] += 1
+            for item in research_queue["deferred"]:
+                research_queue_totals["byLevel"][str(item["level"])]["deferred"] += 1
+            for number in range(9, 21):
+                research_queue_totals["byLevel"][str(number)]["reviewed"] += (
+                    result["levelsSevenToTwenty"][str(number)]["reviewedCount"]
+                    if research_queue["status"] != "BLOCKED_UNVERIFIED_INTAKE" else 0
+                )
             evidence_hash = fingerprint(result)
             records[row["id"]] = [row["id"], *values, result["riskFlags"]]
             if writable and prior.get(row["id"]) != evidence_hash:
@@ -103,6 +140,7 @@ def build_index(snapshot, reviews, review_status, key, token):
                                     "levelsTwoToSix": result["levelsTwoToSix"],
                                     "levelsSevenToTwenty": result["levelsSevenToTwenty"],
                                     "scientificReadiness": result["scientificReadiness"],
+                                    "advancedEvidenceQueue": compact_historical_research_queue(result["advancedEvidenceQueue"]),
                                 }, "assessed_at": clock})
         for nct, registry, analyses, checked in registry_rows():
             for identity in by_nct.get(nct, []):
@@ -128,7 +166,8 @@ def build_index(snapshot, reviews, review_status, key, token):
                   "columns": ["id", "PIPELINE", "GEM_JR", "GEM", "riskFlags"],
                   "scoreColumns": ["score", "observedPoints", "coverage", "categoryPoints1to7", "categoryCoverage1to7"],
                   "records": ordered,
-                  "exactNctProgramMap": by_nct}
+                  "exactNctProgramMap": by_nct,
+                  "advancedResearchQueueTotals": research_queue_totals}
         # Keep the whole-universe payload safely under Vercel's response limit.
         if len(packed(result).encode()) > 4_000_000: raise ValueError("Score index exceeds response budget")
         with _LOCK:

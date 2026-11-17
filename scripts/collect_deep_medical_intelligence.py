@@ -203,10 +203,12 @@ def build_inventory(pool_path=None, csv_path=None, focus_path=None, links_path=N
 
 
 class RegistryClient:
-    def __init__(self, report=REPORT, timeout=35, retries=3):
+    def __init__(self, report=REPORT, timeout=35, retries=3, request_delay=0):
+        if not isinstance(request_delay, (int, float)) or not 0 <= request_delay <= 60:
+            raise ValueError('Registry request delay must be between 0 and 60 seconds')
         self.report = report; self.cache = report / 'registry-cache'; self.cache.mkdir(parents=True, exist_ok=True)
         self.state = read(report / 'ingestion-state.json', {'schemaVersion': 1, 'sources': {}, 'attempts': []})
-        self.timeout = timeout; self.retries = retries
+        self.timeout = timeout; self.retries = retries; self.request_delay = request_delay
 
     def save(self):
         write(self.report / 'ingestion-state.json', self.state)
@@ -238,19 +240,33 @@ class RegistryClient:
 
     def fetch(self, nct, resume=False):
         old_doc, source = self.cached(nct)
-        if resume and source and str(source.get('lastSuccessfulRemoteRetrievalAt', '')).startswith(now()[:10]):
+        if resume and old_doc is not None and source and str(source.get('lastSuccessfulRemoteRetrievalAt', '')).startswith(now()[:10]):
             return nct, old_doc, None, 'RESUMED_CURRENT_DAY_REMOTE_CAPTURE'
         url = 'https://clinicaltrials.gov/api/v2/studies/' + nct
         error = None
         for attempt in range(self.retries):
             try:
+                if self.request_delay:
+                    time.sleep(self.request_delay)
                 with urlopen(Request(url, headers={'User-Agent': 'PDUFA exact-NCT public-source clinical research'}), timeout=self.timeout) as response:
                     document = json.load(response)
                 registry_identity(nct, document)
                 return nct, document, None, 'OFFICIAL_CT_GOV_API_V2'
             except (HTTPError, URLError, TimeoutError, ValueError, OSError) as exc:
                 error = type(exc).__name__ + ': ' + str(exc)[:300]
-                if attempt + 1 < self.retries: time.sleep(min(8, 2 ** attempt))
+                if attempt + 1 < self.retries:
+                    if isinstance(exc, HTTPError) and exc.code == 429:
+                        # Honor bounded numeric Retry-After; otherwise back off
+                        # to avoid hammering a rate-limited public source.
+                        retry_after = exc.headers.get('Retry-After') if exc.headers else None
+                        if (isinstance(retry_after, str) and retry_after.isascii()
+                                and retry_after.isdecimal()):
+                            delay = min(60, max(10, int(retry_after)))
+                        else:
+                            delay = min(60, 10 * (attempt + 1))
+                        time.sleep(delay)
+                    else:
+                        time.sleep(min(8, 2 ** attempt))
         return nct, old_doc, error, 'REMOTE_SOURCE_UNAVAILABLE_PRIOR_CACHE_PRESERVED' if old_doc else 'SOURCE_UNAVAILABLE'
 
 
@@ -301,10 +317,28 @@ def trial_analysis(record, document=None, source=None, error=None):
             'missingEvidence': ['Independent original-source interpretation and relevant publications, statistical plans, clinical significance, safety context and limitations remain to be reviewed.'] + ([] if document else ['Complete official registry packet not yet captured by this independent collector.'])}
 
 
+def uncaptured_source_ncts(selected, client):
+    """Select only IDs whose original raw packet is absent; no inference from 429."""
+    return {nct for nct in selected if client.cached(nct)[0] is None}
+
+
+def latest_source_job_status(selected, events):
+    """Keep historical source attempts but evaluate only latest event per exact NCT."""
+    latest = {}
+    for event in events:
+        if isinstance(event, dict) and event.get('nctId') in selected:
+            latest[event['nctId']] = event
+    if len(latest) != len(selected):
+        return 'COMPLETED_WITH_SOURCE_ERRORS'
+    return ('COMPLETED_WITH_SOURCE_ERRORS'
+            if any(entry.get('error') for entry in latest.values()) else 'COMPLETED')
+
+
 def run(args, root=ROOT, report=None):
     report = report or root / 'reports/deep-medical-intelligence'
     inventory = build_inventory(links_path=args.links, root=root)
-    client = RegistryClient(report, retries=args.retries, timeout=args.timeout)
+    client = RegistryClient(report, retries=args.retries, timeout=args.timeout,
+                            request_delay=getattr(args, 'request_delay', 0))
     ncts = {r['nctId'] for r in inventory['records']}
     imported = import_official_caches(client, ncts, root)
     selected = set(args.nct)
@@ -314,6 +348,10 @@ def run(args, root=ROOT, report=None):
         selected |= ncts
     if selected - ncts:
         raise ValueError('NCT_NOT_IN_EXACT_INVENTORY:' + ','.join(sorted(selected - ncts)))
+    if getattr(args, 'missing_only', False):
+        if not args.resume:
+            raise ValueError('MISSING_ONLY_REQUIRES_RESUME_FROM_SAVED_SOURCE_ARCHIVE')
+        selected = uncaptured_source_ncts(selected, client)
     job_path = report / 'ingestion-job.json'
     job = read(job_path, {'schemaVersion': 1, 'attemptedNcts': [], 'events': []})
     if selected:
@@ -331,7 +369,7 @@ def run(args, root=ROOT, report=None):
                 client.save()
                 if nct not in job['attemptedNcts']: job['attemptedNcts'].append(nct)
                 job['events'].append(event); write(job_path, job)
-        job.update({'finishedAt': now(), 'state': 'COMPLETED_WITH_SOURCE_ERRORS' if any(e['error'] for e in job['events'] if e['nctId'] in selected) else 'COMPLETED'})
+        job.update({'finishedAt': now(), 'state': latest_source_job_status(selected, job['events'])})
         write(job_path, job)
     analyses = []
     for record in inventory['records']:
@@ -372,6 +410,8 @@ def main(argv=None):
     p.add_argument('--resume', action='store_true')
     p.add_argument('--fetch-focus', action='store_true', help='Fresh official source fetch for current FOCUS and explicitly linked NCTs.')
     p.add_argument('--fetch-all', action='store_true', help='Persistent resumable official-source ingestion for the entire POOL, without a trial-count cap.')
+    p.add_argument('--missing-only', action='store_true', help='With --resume, retry only exact NCTs lacking a verified saved raw packet.')
+    p.add_argument('--request-delay', type=float, default=0, help='Seconds to pace each official API attempt (use >=3 with a single recovery worker).')
     p.add_argument('--nct', action='append', default=[])
     p.add_argument('--report', action='store_true')
     p.add_argument('--links', type=Path)
@@ -381,6 +421,8 @@ def main(argv=None):
     args = p.parse_args(argv)
     if not (args.all or args.report or args.nct or args.fetch_focus or args.fetch_all): p.error('Choose --all, --nct, --fetch-focus, --fetch-all or --report')
     if min(args.workers, args.retries, args.timeout) < 1: p.error('workers/retries/timeout must be positive')
+    if not 0 <= args.request_delay <= 60: p.error('request-delay must be between 0 and 60')
+    if args.missing_only and not args.resume: p.error('--missing-only requires --resume')
     run(args)
 
 if __name__ == '__main__':

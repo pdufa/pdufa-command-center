@@ -1,0 +1,121 @@
+name: POOL exact-NCT PubMed shards (read-only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/levels-09-20-development-20261117
+    paths:
+      - .github/workflows/pool-pubmed-research.yml
+
+permissions:
+  contents: read
+
+jobs:
+  source-gate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run offline exact-trial and tampering regressions once
+        run: |
+          python -m pip install pytest
+          python -m pytest -q new-platform/backend/tests/test_pool_pubmed_discovery.py new-platform/backend/tests/test_pool_pubmed_shards.py new-platform/backend/tests/test_pool_source_coverage_manifest.py
+      - name: Avoid duplicate PubMed traffic from legacy monolithic job
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          for attempt in $(seq 1 110); do
+            state=$(gh api "repos/${GH_REPO}/actions/runs/44111648841" --jq .status)
+            if [ "$state" = completed ]; then
+              echo "Legacy source job completed; safe to start bounded shards."
+              exit 0
+            fi
+            sleep 30
+          done
+          echo "Legacy source collector still running; refusing concurrent NCBI querying."
+          exit 1
+
+  discover-shards:
+    needs: source-gate
+    if: github.ref == 'refs/heads/codex/levels-09-20-development-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    strategy:
+      fail-fast: false
+      max-parallel: 2
+      matrix:
+        shard: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Query only assigned exact-NCT shard
+        id: discovery
+        continue-on-error: true
+        env:
+          SHARD: ${{ matrix.shard }}
+        run: |
+          file=$(printf 'reports/pool-research/shards/shard-%02d.json' "$SHARD")
+          python scripts/medical/pool_pubmed_shards.py \
+            --roster new-platform/frontend/data/tools-pool-snapshot.json \
+            --shard-index "$SHARD" --shard-count 32 --output "$file"
+      - name: Retain unreviewed per-shard checkpoint even on query failures
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pool-pubmed-shard-${{ matrix.shard }}
+          path: reports/pool-research/shards/shard-*.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Reject partial source shard as completed
+        if: steps.discovery.outcome != 'success'
+        run: |
+          echo 'Shard incomplete; the artifact remains unreviewed and retryable.'
+          exit 1
+
+  reconcile-coverage:
+    needs: discover-shards
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve individual NCT-shard research artifacts
+        uses: actions/download-artifact@v4
+        with:
+          pattern: pool-pubmed-shard-*
+          merge-multiple: true
+          path: reports/pool-research/shards
+      - name: Merge only if every exact-NCT shard agrees with source roster
+        id: merge
+        continue-on-error: true
+        run: |
+          python scripts/medical/pool_pubmed_shards.py \
+            --roster new-platform/frontend/data/tools-pool-snapshot.json \
+            --shard-count 32 --shard-dir reports/pool-research/shards \
+            --output reports/pool-research/pool-pubmed-unreviewed.json
+      - name: Preserve merged unreviewed source research separately
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pool-pubmed-whole-roster-reconciliation
+          path: reports/pool-research/pool-pubmed-unreviewed.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Refuse incomplete original-source coverage claim
+        if: steps.merge.outcome != 'success'
+        run: |
+          echo 'Some NCT queries missing/retry-required; no source-complete claim.'
+          exit 1

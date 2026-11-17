@@ -1,0 +1,66 @@
+name: FOCUS primary endpoint crosswalk (source-only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/levels-09-20-development-20261117
+    paths:
+      - .github/workflows/focus-primary-endpoint-crosswalk.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  source-primary-crosswalk:
+    if: github.ref == 'refs/heads/codex/levels-09-20-development-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate source integrity and scoring-abstention regressions
+        run: |
+          python -m pip install pytest
+          python -m pytest -q new-platform/backend/tests/test_focus_primary_endpoint_crosswalk.py
+      - name: Retrieve exact original registry source packet archive
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 44120924177
+          name: pool-registry-recovery-44120924177
+          github-token: ${{ github.token }}
+          path: reports/deep-medical-intelligence
+      - name: Retrieve independently reconciled all-FOCUS source review queue
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 44141393879
+          name: focus-source-review-queue-44141393879
+          github-token: ${{ github.token }}
+          path: reports/focus-evidence
+      - name: Cross-check posted primary measures against registered outcomes
+        id: audit
+        continue-on-error: true
+        run: |
+          python scripts/medical/focus_primary_endpoint_crosswalk.py \
+            --registry-archive reports/deep-medical-intelligence \
+            --focus-review-queue reports/focus-evidence/focus-32-review-queue.json \
+            --json-out reports/focus-evidence/primary-registered-posted-crosswalk.json \
+            --md-out reports/focus-evidence/primary-registered-posted-crosswalk.md
+      - name: Preserve immutable research-only primary crosswalk
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-primary-crosswalk-${{ github.run_id }}
+          path: |
+            reports/focus-evidence/primary-registered-posted-crosswalk.json
+            reports/focus-evidence/primary-registered-posted-crosswalk.md
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Never mark unvalidated clinical results as completed scoring
+        if: steps.audit.outcome != 'success'
+        run: |
+          echo 'FOCUS primary endpoint crosswalk incomplete; scientific score remains abstaining.'
+          exit 1

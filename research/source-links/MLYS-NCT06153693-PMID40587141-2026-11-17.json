@@ -1,0 +1,58 @@
+{
+  "schemaVersion": 1,
+  "kind": "ORIGINAL_PUBLISHER_EXACT_NCT_LINK_AUDIT",
+  "auditDate": "2026-11-17",
+  "studyNctId": "NCT06153693",
+  "focusTicker": "MLYS",
+  "trialShortName": "Launch-HTN",
+  "publication": {
+    "pmid": "40587141",
+    "doi": "10.1001/jama.2025.9413",
+    "title": "Lorundrostat in Participants With Uncontrolled Hypertension and Treatment-Resistant Hypertension: The Launch-HTN Randomized Clinical Trial",
+    "publishedOnline": "2025-06-30",
+    "publisher": "JAMA",
+    "publisherUrl": "https://jamanetwork.com/journals/jama/fullarticle/2835763",
+    "pubmedUrl": "https://pubmed.ncbi.nlm.nih.gov/40587141/",
+    "exactNctIdPrintedInPublisherAbstract": true,
+    "studyDesignAsReported": "Phase 3 randomized double-blind placebo-controlled clinical trial",
+    "publisherReportedPrimaryOutcome": "Change in automated office systolic blood pressure at week 6, 50 mg lorundrostat vs placebo",
+    "publisherReportedPrimaryResults": {
+      "randomizedParticipants": 1083,
+      "pooled50mgEvaluableGroupSize": 808,
+      "week6OfficeSbpChangeLorundrostatMmHg": -16.9,
+      "week6OfficeSbpChangePlaceboMmHg": -7.9,
+      "placeboAdjustedMeanDifferenceMmHg": -9.1,
+      "confidenceInterval95MmHg": [
+        -13.3,
+        -4.9
+      ],
+      "reportedPValue": "<0.001"
+    },
+    "publisherReportedSafetyCaveat": "Hyponatremia, hyperkalemia, and reduction in kidney function were more frequent with lorundrostat than placebo."
+  },
+  "identityReview": {
+    "outcome": "PRIMARY_PUBLISHER_EXPLICITLY_NAMES_EXACT_NCT",
+    "sourceLineRange": "JAMA web article abstract and Trial Registration section",
+    "supportedFacts": [
+      "studyNctId",
+      "publication.pmid",
+      "publication.doi",
+      "publication.title",
+      "publication.publishedOnline"
+    ],
+    "limitations": [
+      "This verifies a bibliographic link to the NCT, not all trial endpoints or analysis populations.",
+      "Publisher-reported effect estimates have not been independently reanalyzed or adjudicated.",
+      "Publication date must be compared with a frozen historical prediction cutoff to avoid look-ahead."
+    ]
+  },
+  "evidenceStatus": "PUBLISHER_REPORTED_ORIGINAL_PUBLICATION_LINK_NOT_CLINICALLY_ADJUDICATED",
+  "clinicalScientificReviewComplete": false,
+  "clinicalFindingsIndependentlyValidated": false,
+  "fdaApplicationIdentityVerified": false,
+  "fdaReviewCycleVerified": false,
+  "fdaPrediction": "ABSTAIN",
+  "scientificScore": null,
+  "blindBacktestRule": "EXCLUDE_UNLESS_PUBLICATION_DATE_ON_OR_BEFORE_HISTORICAL_PREDICTION_CUTOFF",
+  "productionWritePermitted": false
+}

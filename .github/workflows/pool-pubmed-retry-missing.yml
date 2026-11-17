@@ -1,0 +1,90 @@
+name: POOL PubMed exact-NCT missing-query retry (manual, read-only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/levels-09-20-development-20261117
+    paths:
+      - .github/pdufa-pubmed-recovery-trigger-20261117.txt
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  retry-missing:
+    if: github.ref == 'refs/heads/codex/levels-09-20-development-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 70
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Refuse overlapping original PubMed shard execution
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          state=$(gh api "repos/$GH_REPO/actions/runs/44117022600" --jq '.status')
+          test "$state" = completed || {
+            echo 'Original PubMed shards still running; refuse duplicate NCBI traffic.'
+            exit 1
+          }
+      - name: Verify immutable shard retry tests
+        run: |
+          python -m pip install pytest
+          python -m pytest -q new-platform/backend/tests/test_pool_pubmed_discovery.py new-platform/backend/tests/test_pool_pubmed_shards.py new-platform/backend/tests/test_pool_pubmed_retry_missing.py
+      - name: Restore ALL original shards from one completed source run
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 44117022600
+          pattern: pool-pubmed-shard-*
+          merge-multiple: true
+          github-token: ${{ github.token }}
+          path: reports/pool-research/original-shards
+      - name: Retry only NCTs with failed or incomplete PubMed queries
+        id: recovery
+        continue-on-error: true
+        run: |
+          python scripts/medical/pool_pubmed_retry_missing.py \
+            --roster new-platform/frontend/data/tools-pool-snapshot.json \
+            --source-shards reports/pool-research/original-shards \
+            --retry-shards reports/pool-research/retry-shards \
+            --merged-output reports/pool-research/pool-pubmed-retried.json
+      - name: Restore completed full-inventory exact-NCT registry archive
+        if: steps.recovery.outcome == 'success'
+        id: registry
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 44120924177
+          name: pool-registry-recovery-44120924177
+          github-token: ${{ github.token }}
+          path: reports/deep-medical-intelligence
+      - name: Cross-check entire POOL registry vs PubMed source inventories
+        if: steps.recovery.outcome == 'success' && steps.registry.outcome == 'success'
+        id: integrity
+        continue-on-error: true
+        run: |
+          python scripts/medical/pool_source_coverage_manifest.py \
+            --registry-dir reports/deep-medical-intelligence \
+            --pubmed reports/pool-research/pool-pubmed-retried.json \
+            --output reports/pool-research/whole-pool-source-coverage.json
+      - name: Preserve exact-NCT retry receipts and whole-POOL report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pool-pubmed-retry-${{ github.run_id }}
+          path: |
+            reports/pool-research/retry-shards
+            reports/pool-research/pool-pubmed-retried.json
+            reports/pool-research/whole-pool-source-coverage.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Fail closed if any source query is still unresolved
+        if: steps.recovery.outcome != 'success' || steps.registry.outcome != 'success' || steps.integrity.outcome != 'success'
+        run: |
+          echo 'Unreviewed PubMed query coverage remains incomplete. No scientific review or prediction.'
+          exit 1

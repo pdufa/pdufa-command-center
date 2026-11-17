@@ -1,0 +1,98 @@
+name: POOL registry missing-packet recovery (read-only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/levels-09-20-development-20261117
+    paths:
+      - .github/workflows/pool-registry-recovery.yml
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  recover:
+    if: github.ref == 'refs/heads/codex/levels-09-20-development-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify cache and latest-event behavior
+        run: |
+          python -m pip install pytest
+          python -m pytest -q tests/test_pool_registry_resume.py
+      - name: Restore saved exact-NCT raw packets from prior run
+        uses: actions/download-artifact@v4
+        with:
+          name: pool-registry-raw-research
+          run-id: 44112507426
+          github-token: ${{ github.token }}
+          path: reports/deep-medical-intelligence
+      - name: Confirm all primary input file digests before resuming
+        run: |
+          python - <<'PY'
+          import hashlib, json
+          from pathlib import Path
+          saved=json.loads(Path("reports/deep-medical-intelligence/inventory.json").read_text())
+          names={x["path"]: x["sha256"] for x in saved["sourceFiles"]}
+          expected={"new-platform/frontend/data/tools-pool-snapshot.json",
+                    "data/all_phase_trials.csv",
+                    "new-platform/frontend/data/p3PostDataActive.json"}
+          assert set(names)==expected
+          for path, digest in names.items():
+              assert hashlib.sha256(Path(path).read_bytes()).hexdigest()==digest, path
+          assert saved["counts"]["uniqueInventoryNcts"]==11667
+          assert saved["counts"]["rawRegistryPacketsCaptured"]==11626
+          assert saved["counts"]["fullySourceReviewed"]==0
+          print("MATCHING_SOURCE_SNAPSHOT_AND_RAW_RESEARCH_ONLY")
+          PY
+      - name: Recover uncaptured registry packets without discarding earlier sources
+        id: fetch
+        continue-on-error: true
+        run: |
+          python scripts/collect_deep_medical_intelligence.py \
+            --all --fetch-all --resume --workers 4 --retries 3 --timeout 25
+      - name: Verify full raw source coverage or document remaining missing records
+        id: audit
+        if: always()
+        continue-on-error: true
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          base=Path("reports/deep-medical-intelligence")
+          inventory=json.loads((base/"inventory.json").read_text())
+          summary=json.loads((base/"ingestion-summary.json").read_text())
+          job=json.loads((base/"ingestion-job.json").read_text())
+          count=inventory["counts"]["uniqueInventoryNcts"]
+          entries=inventory["records"]
+          ncts={x["nctId"] for x in entries}
+          captured={x["nctId"] for x in entries if x.get("rawRegistryCaptured")}
+          assert len(entries)==len(ncts)==count
+          assert inventory["counts"]["fullySourceReviewed"]==0
+          assert inventory["counts"]["scientificReviewIncomplete"]==count
+          assert summary["counts"]["rawRegistryPacketsCaptured"]==len(captured)
+          print("UNCAPTURED_NCTS",sorted(ncts-captured))
+          assert len(captured)==count, "Source packets remain missing"
+          assert job["state"]=="COMPLETED"
+          assert set(job["attemptedNcts"])>=ncts
+          print("ALL_RAW_REGISTRY_PACKETS_PRESENT_NOT_SCIENTIFICALLY_REVIEWED",count)
+          PY
+      - name: Preserve partial or complete source recovery as research artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pool-registry-recovery-${{ github.run_id }}
+          path: reports/deep-medical-intelligence/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Do not claim completion if any original source is missing
+        if: always() && (steps.fetch.outcome != 'success' || steps.audit.outcome != 'success')
+        run: |
+          echo "Incomplete original-source capture; artifact remains unreviewed."
+          exit 1

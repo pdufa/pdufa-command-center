@@ -1,0 +1,75 @@
+name: FOCUS 32 source-review readiness queue (read-only, no scores)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/levels-09-20-development-20261117
+    paths:
+      - .github/focus-source-review-queue-trigger-20261117.txt
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  focus-source-readiness:
+    if: github.ref == 'refs/heads/codex/levels-09-20-development-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Offline exact-NCT, provenance and abstention regression tests
+        run: |
+          python -m pip install pytest
+          python -m pytest -q new-platform/backend/tests/test_focus_source_review_queue.py
+      - name: Recover verified original registry packets
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 44120924177
+          name: pool-registry-recovery-44120924177
+          github-token: ${{ github.token }}
+          path: reports/deep-medical-intelligence
+      - name: Recover reconciled complete PubMed source research
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 44140703430
+          name: pool-pubmed-retry-44140703430
+          github-token: ${{ github.token }}
+          path: reports/pool-research
+      - name: Recover the three FOCUS-only exact-NCT PubMed searches
+        uses: actions/download-artifact@v4
+        with:
+          run-id: 44124684408
+          name: focus-outside-pool-pubmed-unreviewed
+          github-token: ${{ github.token }}
+          path: reports/pool-research
+      - name: Generate original-source readiness queue for all 32 FOCUS NCTs
+        id: queue
+        continue-on-error: true
+        run: |
+          python scripts/medical/focus_source_review_queue.py \
+            --focus new-platform/frontend/data/p3PostDataActive.json \
+            --pool new-platform/frontend/data/tools-pool-snapshot.json \
+            --registry-dir reports/deep-medical-intelligence \
+            --pool-pubmed reports/pool-research/pool-pubmed-retried.json \
+            --focus-only-pubmed reports/pool-research/focus-outside-pool-pubmed.json \
+            --coverage reports/pool-research/whole-pool-source-coverage.json \
+            --output-json reports/focus-evidence/focus-32-review-queue.json \
+            --output-md reports/focus-evidence/focus-32-review-queue.md
+      - name: Save unscored source-readiness evidence as a separate artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-source-review-queue-${{ github.run_id }}
+          path: reports/focus-evidence/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Fail closed if source completeness or NCT identity is uncertain
+        if: steps.queue.outcome != 'success'
+        run: |
+          echo "FOCUS exact-NCT source queue not validated; no scores or predictions."
+          exit 1

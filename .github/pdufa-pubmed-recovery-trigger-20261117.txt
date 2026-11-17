@@ -1,0 +1,6 @@
+POOL PubMed targeted source retry
+Development-branch one-time push trigger, 2026-11-17.
+Original read-only PubMed shards workflow run: 44117022600 (completed, 6 failures among 11,664 exact NCT queries).
+Recovered registry run: 44120924177 (11,667/11,667 raw packets).
+This trigger starts a read-only recovery and source-integrity workflow; it makes no production changes.
+All trial publications and clinical findings remain unreviewed; source matching does not imply FDA success.

@@ -1,0 +1,236 @@
+{
+  "schemaVersion": 1,
+  "kind": "FOCUS_EXTERNAL_PRIMARY_STATISTICS_CROSSCHECK_DEVELOPMENT_ONLY",
+  "auditDate": "2026-11-17",
+  "scope": "Two completed Phase 3 ABTECT induction primary outcomes and ORIGIN 3 interim Phase 3 primary outcome; not broad 32-trial clinical signoff",
+  "sourceProvenanceRule": "External original publication or sponsor statistics recorded separately from ClinicalTrials.gov resultsSection analyses; do not populate absent registry analyses",
+  "trials": [
+    {
+      "ticker": "ABVX",
+      "nctId": "NCT05507203",
+      "trialName": "ABTECT-1",
+      "sponsorStudyId": "ABX464-105",
+      "phaseAtFrozenSnapshot": "PHASE3",
+      "registryPacketSha256": "2e12b3e724f146b81a3ec0c1be5c6543180c198a4892758587de1983b111efb3",
+      "registryPrimary": "Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8",
+      "registryPrimaryTimeFrame": "8 weeks",
+      "registryPrimaryAnalysesPosted": 0,
+      "externalSource": {
+        "type": "SPONSOR_ORIGINAL_RELEASE",
+        "published": "2025-07-22",
+        "url": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week",
+        "crosscheckCompanyFilingUrl": "https://ir.abivax.com/node/12081/html",
+        "claimStatus": "REPORTED_SPONSOR_NOT_INDEPENDENTLY_ADJUDICATED"
+      },
+      "endpointResults": {
+        "units": "Patients in remission at week 8; denominator randomized/treated as disclosed",
+        "arms": [
+          {
+            "dose": "placebo",
+            "n": 158,
+            "responders": 4,
+            "percentReported": 2.5
+          },
+          {
+            "dose": "obefazimod 25 mg",
+            "n": 160,
+            "responders": 38,
+            "percentReported": 23.8
+          },
+          {
+            "dose": "obefazimod 50 mg",
+            "n": 318,
+            "responders": 69,
+            "percentReported": 21.7
+          }
+        ],
+        "comparisonsVersusPlacebo": [
+          {
+            "dose": "obefazimod 25 mg",
+            "adjustedRiskDifferencePercentagePoints": 21.4,
+            "pValueReported": "<0.0001",
+            "sponsorReportedSignificant": true
+          },
+          {
+            "dose": "obefazimod 50 mg",
+            "adjustedRiskDifferencePercentagePoints": 19.3,
+            "pValueReported": "<0.0001",
+            "sponsorReportedSignificant": true
+          }
+        ],
+        "methodAsDescribedBySponsor": "Mantel-Haenszel adjusted common risk differences; missing week-8 outcomes handled by NRI",
+        "statisticalMethodIndependentReplication": false
+      },
+      "safety": {
+        "origin": "SPONSOR_RELEASE",
+        "sponsorReportedAnyTEAEPercent": {
+          "placebo": 53.2,
+          "mg25": 46.9,
+          "mg50": 59.4
+        },
+        "independentSafetyAdjudication": false
+      },
+      "externalStatisticalComparisonIdentified": true,
+      "registryStatisticalComparisonStillAbsent": true,
+      "clinicalScientificReviewComplete": false,
+      "score": null,
+      "prediction": "ABSTAIN"
+    },
+    {
+      "ticker": "ABVX",
+      "nctId": "NCT05507216",
+      "trialName": "ABTECT-2",
+      "sponsorStudyId": "ABX464-106",
+      "phaseAtFrozenSnapshot": "PHASE3",
+      "registryPacketSha256": "3a8405e558b04e1028c6790a2f0d4f7fb4aca6d60d590125882e2c75995b9e12",
+      "registryPrimary": "Proportion of Subjects Who Achieve Clinical Remission Per Modified Mayo Score at Week 8",
+      "registryPrimaryTimeFrame": "8 weeks",
+      "registryPrimaryAnalysesPosted": 0,
+      "externalSource": {
+        "type": "SPONSOR_ORIGINAL_RELEASE",
+        "published": "2025-07-22",
+        "url": "https://ir.abivax.com/news-releases/news-release-details/abivax-announces-positive-phase-3-results-both-abtect-8-week",
+        "crosscheckCompanyFilingUrl": "https://ir.abivax.com/node/12081/html",
+        "claimStatus": "REPORTED_SPONSOR_NOT_INDEPENDENTLY_ADJUDICATED"
+      },
+      "endpointResults": {
+        "units": "Patients in remission at week 8; denominator randomized/treated as disclosed",
+        "arms": [
+          {
+            "dose": "placebo",
+            "n": 159,
+            "responders": 10,
+            "percentReported": 6.3
+          },
+          {
+            "dose": "obefazimod 25 mg",
+            "n": 159,
+            "responders": 18,
+            "percentReported": 11.3
+          },
+          {
+            "dose": "obefazimod 50 mg",
+            "n": 318,
+            "responders": 63,
+            "percentReported": 19.8
+          }
+        ],
+        "comparisonsVersusPlacebo": [
+          {
+            "dose": "obefazimod 25 mg",
+            "adjustedRiskDifferencePercentagePoints": 5.1,
+            "pValueReported": "0.1034",
+            "sponsorReportedSignificant": false
+          },
+          {
+            "dose": "obefazimod 50 mg",
+            "adjustedRiskDifferencePercentagePoints": 13.4,
+            "pValueReported": "0.0001",
+            "sponsorReportedSignificant": true
+          }
+        ],
+        "methodAsDescribedBySponsor": "Mantel-Haenszel adjusted common risk differences; missing week-8 outcomes handled by NRI",
+        "statisticalMethodIndependentReplication": false
+      },
+      "safety": {
+        "origin": "SPONSOR_RELEASE",
+        "sponsorReportedAnyTEAEPercent": {
+          "placebo": 48.4,
+          "mg25": 50.9,
+          "mg50": 61
+        },
+        "independentSafetyAdjudication": false
+      },
+      "externalStatisticalComparisonIdentified": true,
+      "registryStatisticalComparisonStillAbsent": true,
+      "clinicalScientificReviewComplete": false,
+      "score": null,
+      "prediction": "ABSTAIN"
+    },
+    {
+      "ticker": "VERA",
+      "nctId": "NCT04716231",
+      "trialName": "ORIGIN 3",
+      "sponsorStudyId": "VT-001-0050",
+      "phaseAtFrozenSnapshot": "PHASE3",
+      "registryPacketSha256": "e87b72ea73912046078c75e06de3a009931f7ad20b9c946184de63f3a32e22e6",
+      "registryPrimary": "Percentage Change From Baseline in Urine Protein to Creatinine Ratio (UPCR)",
+      "registryPrimaryTimeFrame": "36 Weeks",
+      "registryPrimaryAnalysesPosted": 0,
+      "trialDesignCaution": "NCT04716231 is a multi-part Phase 2b/Phase 3 study; original ORIGIN 2b week-24 readout is not the ORIGIN 3 week-36 primary endpoint.",
+      "externalSource": {
+        "type": "PEER_REVIEWED_ABSTRACT_PLUS_SPONSOR_RELEASE",
+        "published": "2025-11-06",
+        "publisher": "New England Journal of Medicine",
+        "doi": "10.1056/NEJMoa2510198",
+        "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa2510198",
+        "sponsorUrl": "https://ir.veratx.com/news-releases/news-release-details/vera-therapeutics-announces-positive-origin-phase-3-data/",
+        "claimStatus": "PUBLISHED_SUMMARY_AND_SPONSOR_REPORTED_NOT_INDEPENDENTLY_REANALYZED"
+      },
+      "endpointResults": {
+        "measurement": "Percentage reduction in 24-hour UPCR from baseline to week 36",
+        "registryPostedArms": [
+          {
+            "dose": "atacicept 150 mg",
+            "n": 106,
+            "reductionPercent": 46
+          },
+          {
+            "dose": "placebo",
+            "n": 97,
+            "reductionPercent": 7
+          }
+        ],
+        "peerReviewedAbstractAtaciceptReductionPercent": 45.7,
+        "peerReviewedAbstractPlaceboReductionPercent": 6.8,
+        "peerReviewedAbstractGeometricMeanBetweenGroupDifferencePercentagePoints": 41.8,
+        "confidenceInterval95PercentagePoints": [
+          28.9,
+          52.3
+        ],
+        "pValueReported": "<0.001",
+        "sponsorRoundedPlaceboAdjustedReductionPercent": 42,
+        "sponsorReportedPValue": "<0.0001",
+        "independentStatisticalReplication": false
+      },
+      "regulatoryOutcomeSeparateFromPrediction": {
+        "regulator": "US_FDA",
+        "product": "TRUTAKNA (atacicept-vymj)",
+        "applicationType": "BLA",
+        "applicationNumber": "761486",
+        "approvalType": "ACCELERATED_APPROVAL",
+        "actionDate": "2026-07-07",
+        "fdaSourceUrl": "https://www.accessdata.fda.gov/scripts/purplebooksearch/index.cfm?blaNo=761486&event=productdetails",
+        "fdaNotableApprovalUrl": "https://www.fda.gov/drugs/news-events-human-drugs/notable-approvals-drugs",
+        "indication": "Reduce proteinuria in adults with primary IgA nephropathy at risk for disease progression",
+        "continuedApprovalCaveat": "Accelerated approval based on reduced proteinuria; long-term effect on kidney-function decline not established in initial approval; clinical benefit verification may be required.",
+        "historicalOutcomeKnown": true,
+        "mustNeverEnterFrozenHistoricalPredictorFeatures": true
+      },
+      "externalStatisticalComparisonIdentified": true,
+      "registryStatisticalComparisonStillAbsent": true,
+      "clinicalScientificReviewComplete": false,
+      "score": null,
+      "prediction": "ABSTAIN"
+    }
+  ],
+  "counts": {
+    "focusTrialsWithExternalStatisticalEvidence": 3,
+    "trialDoseComparisons": 5,
+    "knownFdaHistoricalOutcomesRecordedSeparately": 1,
+    "independentlyAdjudicatedTrials": 0,
+    "scoredTrials": 0,
+    "fdaProbabilitiesComputed": 0
+  },
+  "remainingReviewNeeds": [
+    "Confirm versioned protocol and SAP prespecification, estimand, multiplicity and dose-control analysis for each trial",
+    "Independently replicate statistics using correct populations and treatment policies where publicly possible",
+    "Adjudicate full safety, missingness and longer-term follow-up",
+    "Protect historical blind predictions by excluding source events dated later than each frozen cutoff",
+    "Track FDA application mapping separately from clinical source review; do not equate published significance with future FDA approval"
+  ],
+  "allSourcesCutoffDated": true,
+  "scientificReviewComplete": false,
+  "productionWriteAllowed": false,
+  "historicalBlindBacktestPolicy": "STRICT_EVIDENCE_DATE_AS_OF_OR_BEFORE_FROZEN_PREDICTION_CUTOFF; FDA outcomes sequestered from predictor input"
+}
