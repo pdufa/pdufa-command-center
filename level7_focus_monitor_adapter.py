@@ -20,10 +20,10 @@ def persist_focus_monitor_report(store: EvidenceStore, report: dict) -> dict:
     trials = report.get("trials")
     if not isinstance(trials, list):
         raise ValueError("Missing trial observations")
-    store.initialize()
-    added, unchanged = 0, 0
-    seen = set()
+    records, seen = [], set()
     for trial in trials:
+        if not isinstance(trial, dict):
+            raise ValueError("Invalid trial observation")
         nct = trial.get("nct")
         if not isinstance(nct, str) or not _NCT.fullmatch(nct) or nct in seen:
             raise ValueError("Invalid or duplicate NCT in monitor report")
@@ -31,8 +31,6 @@ def persist_focus_monitor_report(store: EvidenceStore, report: dict) -> dict:
         status = trial.get("sourceStatus")
         if status not in ("OFFICIAL_REGISTRY_RETRIEVED", "OFFICIAL_SOURCE_UNAVAILABLE"):
             raise ValueError("Unexpected source status")
-        # A monitor summary is not the original registry response. Its
-        # sourceHash remains metadata, never a digest of the summary.
         observation = {
             "nct": nct, "sourceStatus": status,
             "registrySourceHash": trial.get("sourceHash"),
@@ -41,16 +39,14 @@ def persist_focus_monitor_report(store: EvidenceStore, report: dict) -> dict:
         }
         content = (json.dumps(observation, sort_keys=True).encode("utf-8")
                    if status == "OFFICIAL_REGISTRY_RETRIEVED" else None)
-        record = make_record(
+        records.append(make_record(
             trial_id=nct, source_id="FOCUS_NIGHTLY_MONITOR_OBSERVATION",
             source_url="https://clinicaltrials.gov/study/" + nct,
             publisher="FOCUS nightly monitor (derived observation)",
             source_version=stamp, retrieved_at=stamp, content=content,
             status="unverified" if content is not None else "inaccessible",
             notes="Derived monitor metadata; not a verified primary registry document",
-        )
-        if store.add(record):
-            added += 1
-        else:
-            unchanged += 1
-    return {"added": added, "unchanged": unchanged, "trials": len(seen)}
+        ))
+    store.initialize()
+    result = store.add_many(records)
+    return {**result, "trials": len(seen)}
