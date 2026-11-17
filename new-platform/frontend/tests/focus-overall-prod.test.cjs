@@ -71,5 +71,5 @@ test('current main FOCUS Survey Columns and numeric sorting retained alongside o
  assert.match(focus,/<FocusOverallHeaders expanded=\{surveyExpanded\}/);
  assert.match(focus,/<FocusOverviewCells nct=\{t.nct\} levels=\{savedLevels\[t.nct\]\}/);
  assert.match(saved,/<FocusOverallLevelMatrix trials=\{rows\}/);
- assert.match(saved,/<FocusSurveyTrendChart trials=\{data.trials\}/);
+ assert.match(saved,/<FocusSurveyTrendChart trials=\{chartTrials\}/);
 });
