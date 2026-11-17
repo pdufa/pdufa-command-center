@@ -24,7 +24,24 @@ def compare(frontend: dict, backend: dict) -> dict:
             result[nct] = row
         return result
     f, b = index(frontend), index(backend)
+    field_differences = {}
+    for nct in sorted(f.keys() & b.keys()):
+        differing = sorted(
+            key for key in f[nct].keys() | b[nct].keys()
+            if f[nct].get(key) != b[nct].get(key)
+        )
+        if differing:
+            field_differences[nct] = {
+                "ticker": f[nct].get("ticker"),
+                "fields": differing,
+                "frontendMarketCap": f[nct].get("marketCap") if "marketCap" in differing else None,
+                "backendMarketCap": b[nct].get("marketCap") if "marketCap" in differing else None,
+            }
     return {
+        "fieldDifferences": field_differences,
+        "marketCapOnlyDrift": bool(field_differences) and all(
+            row["fields"] == ["marketCap"] for row in field_differences.values()
+        ) and f.keys() == b.keys(),
         "frontendAsOf": frontend.get("asOf"),
         "backendAsOf": backend.get("asOf"),
         "frontendCount": len(f),
