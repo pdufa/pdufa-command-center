@@ -13,6 +13,7 @@ from .scientific_standard_care import compare_standard_care
 from .scientific_therapeutic_context import therapeutic_context
 from .scientific_replication_candidates import screen_replication_candidates
 from .scientific_regulatory_context import assess_filing, assess_designation
+from .scientific_precedent_manufacturing import assess_precedent, assess_manufacturing
 
 VERSION = "scientific-contracts-09-20-v1"
 
@@ -166,4 +167,12 @@ def assess_levels_nine_to_twenty(level_one, *, trial_id, evidence=None, prior_le
         fourteen, evidence, trial_id=trial_id, cutoff=intake.get("assessmentCutoff"),
         filing_context=thirteen["filingContext"])
     fourteen["methodStatus"] = "PARTIAL_ORIGINAL_DESIGNATION_SOURCE_LEAD_NOT_FDA_VERIFICATION"
+    fifteen = results["15"]
+    fifteen["precedentContext"] = assess_precedent(
+        fifteen, evidence, cutoff=intake.get("assessmentCutoff"), filing_context=thirteen["filingContext"])
+    fifteen["methodStatus"] = "PARTIAL_HISTORICAL_PRECEDENT_SOURCE_SCREEN_NOT_TARGET_PREDICTION"
+    sixteen = results["16"]
+    sixteen["manufacturingContext"] = assess_manufacturing(
+        sixteen, evidence, cutoff=intake.get("assessmentCutoff"), filing_context=thirteen["filingContext"])
+    sixteen["methodStatus"] = "PARTIAL_CMC_PUBLIC_RECORD_UNCERTAINTY_SCREEN_NOT_INSPECTION_FINDING"
     return results
