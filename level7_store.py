@@ -1,4 +1,4 @@
-"""Opt-in SQLite persistence for Level 7 evidence records; never touches production DB."""
+"""Opt-in SQLite persistence for Level 7 evidence records; no production DB access."""
 from __future__ import annotations
 from dataclasses import asdict
 import json
@@ -17,16 +17,27 @@ class EvidenceStore:
                 source_version TEXT NOT NULL, record_json TEXT NOT NULL,
                 PRIMARY KEY (trial_id, source_id, source_version))''')
 
-    def add(self, record: EvidenceRecord) -> bool:
-        payload = json.dumps(asdict(record), sort_keys=True)
+    def add_many(self, records: list[EvidenceRecord]) -> dict:
+        """All-or-nothing batch: a duplicate conflict rolls back the full report."""
+        added, unchanged = 0, 0
         with sqlite3.connect(self.path) as db:
-            row = db.execute('SELECT record_json FROM level7_evidence WHERE trial_id=? AND source_id=? AND source_version=?', record.identity).fetchone()
-            if row:
-                if row[0] != payload:
-                    raise ValueError('Conflicting evidence for existing source version')
-                return False
-            db.execute('INSERT INTO level7_evidence VALUES (?, ?, ?, ?)', (*record.identity, payload))
-            return True
+            for record in records:
+                payload = json.dumps(asdict(record), sort_keys=True)
+                row = db.execute(
+                    'SELECT record_json FROM level7_evidence WHERE trial_id=? AND source_id=? AND source_version=?',
+                    record.identity).fetchone()
+                if row:
+                    if row[0] != payload:
+                        raise ValueError('Conflicting evidence for existing source version')
+                    unchanged += 1
+                else:
+                    db.execute('INSERT INTO level7_evidence VALUES (?, ?, ?, ?)',
+                               (*record.identity, payload))
+                    added += 1
+        return {"added": added, "unchanged": unchanged}
+
+    def add(self, record: EvidenceRecord) -> bool:
+        return bool(self.add_many([record])["added"])
 
     def history(self, trial_id: str) -> list[EvidenceRecord]:
         with sqlite3.connect(self.path) as db:
