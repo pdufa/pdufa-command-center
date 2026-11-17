@@ -2,7 +2,7 @@
   "applicationCrosswalkAsOf": "2026-11-07",
   "applicationCrosswalkState": "PARTIAL",
   "kind": "FOCUS_NIGHTLY_PRIMARY_SOURCE_MONITOR_NOT_FDA_PREDICTIONS",
-  "pacificDate": "2026-11-16",
+  "pacificDate": "2026-11-17",
   "reassessmentQueue": [],
   "researchPolicy": {
     "FDAOutcomeDetermined": false,
@@ -13,8 +13,8 @@
     "trialMembershipOrSheetWrites": false,
     "unchangedEvidenceNotNewValidation": true
   },
-  "rosterSnapshotAsOf": "2026-11-14",
-  "runAtUTC": "2026-11-16T15:36:00.162277+00:00",
+  "rosterSnapshotAsOf": "2026-11-16",
+  "runAtUTC": "2026-11-17T15:55:24.467587+00:00",
   "schemaVersion": 1,
   "sourceAuthority": "ClinicalTrials.gov API v2; exact-NCT public records",
   "sourceRecoveryQueue": [],
