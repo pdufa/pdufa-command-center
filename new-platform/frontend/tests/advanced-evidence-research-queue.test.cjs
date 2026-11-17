@@ -68,3 +68,31 @@ test("exact program loader includes read-only research queue",()=>{
  assert.match(source,/advancedEvidenceQueue/);
  assert.match(source,/nctId=\{nctId\}/);
 });
+
+
+test("unsearched original-source leads are visible, not scientific findings",()=>{
+ const value=good();
+ value.researchAvenues=Object.fromEntries(
+  Array.from({length:12},(_,i)=>{
+   const n=i+9, url=n===19?[]:n===13?["https://www.fda.gov/drugsatfda"]:
+    ["https://clinicaltrials.gov/study/"+NCT];
+   return [String(n),{level:n,status:"UNSEARCHED_CANDIDATE_LEADS",
+    sourceClass:"ORIGINAL_DOCUMENTS",instruction:"Find dated source material",
+    identityGate:"Do not infer results from the search link",
+    sourceLeads:url.map((x)=>({name:"Original-source search",url:x})),
+    reviewResult:null,fdaPrediction:"ABSTAIN"}];
+  })
+ );
+ assert.equal(validAdvancedResearchQueue(value,NCT),true);
+ const html=renderToStaticMarkup(React.createElement(Queue,{value,nctId:NCT}));
+ assert.match(html,/Original-source research leads/);
+ assert.match(html,/Not yet searched/);
+ assert.match(html,/Owner-controlled record required/);
+ assert.match(html,/www.fda.gov\\/drugsatfda/);
+ value.researchAvenues["20"].sourceLeads=[{
+  name:"Bad",url:"javascript:alert(1)"
+ }];
+ assert.equal(validAdvancedResearchQueue(value,NCT),false);
+ const rejected=renderToStaticMarkup(React.createElement(Queue,{value,nctId:NCT}));
+ assert.doesNotMatch(rejected,/javascript:/);
+});
