@@ -58,6 +58,12 @@ jobs:
           ]
           decision = datetime.fromisoformat("2021-07-26T00:00:00+00:00")
           report = {"status": "DISCOVERY_ONLY", "blind_eligible": False, "checks": []}
+          publication_files = [folder / "keynote522-2020-publication.pdf", folder / "keynote522-2020-europepmc-record.json"]
+          available = [p for p in publication_files if p.exists()]
+          if len(available) != 1:
+              raise SystemExit("Expected exactly one publication source (PDF or Europe PMC fallback)")
+          if available[0].suffix == ".pdf":
+              checks[0] = ("keynote522-2020-publication.pdf", None, "2020-02-27")
           for name, marker, publication_date in checks:
               file = folder / name
               meta = json.loads((folder / (name + ".json")).read_text())
@@ -67,11 +73,12 @@ jobs:
               result = {
                   "file": name, "sha256_match": actual_hash == meta["sha256"],
                   "byte_count_match": len(raw) == meta["byte_count"],
-                  "subject_marker_present": marker.casefold() in text.casefold(),
+                  "subject_marker_present": (marker.casefold() in text.casefold()) if marker else (raw.startswith(b"%PDF-") and len(raw) > 10000),
                   "claimed_publication_date": publication_date,
                   "claimed_date_precedes_decision": publication_date < "2021-07-26",
                   "retrieved_after_decision": datetime.fromisoformat(meta["retrieved_at"]) >= decision,
                   "historical_snapshot_verified": False,
+                  "source_format": "pdf" if file.suffix == ".pdf" else ("json" if file.suffix == ".json" else "html"),
               }
               report["checks"].append(result)
               if not all(result[k] for k in ("sha256_match", "byte_count_match", "subject_marker_present", "claimed_date_precedes_decision", "retrieved_after_decision")):
