@@ -16,6 +16,13 @@ class AssessmentExportTests(unittest.TestCase):
         self.assertEqual(json.loads(m.OUTPUT.read_text(encoding='utf-8')),self.data)
         self.assertEqual(len(self.data['sourceSnapshotDigests']),4)
 
+    def test_historical_roster_date_does_not_follow_current_market_cap_refresh(self):
+        self.assertEqual(self.data['rosterAsOf'], '2026-11-14')
+        self.assertEqual(self.data['evidenceCutoffDate'], '2026-11-14')
+        current = json.loads((ROOT / 'new-platform/frontend/data/p3PostDataActive.json').read_text())
+        self.assertEqual({t['nct'] for t in self.data['trials']},
+                         {t['nct'] for t in current['records']})
+
     def test_32_trials_192_levels_and_unmapped_exceptions_are_preserved(self):
         self.assertEqual(len(self.data['trials']),32)
         self.assertEqual(sum(len(t['levels']) for t in self.data['trials']),192)
