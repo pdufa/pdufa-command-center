@@ -35,8 +35,8 @@ jobs:
           else
             echo 'Journal PDF unavailable; retrieving PubMed bibliographic record instead.'
             python -m assessment_levels_07_20.discovery_download \
-              --url 'https://pubmed.ncbi.nlm.nih.gov/32101663/' \
-              --output research-output/keynote522-2020-pubmed-record.html
+              --url 'https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:32101663%20AND%20SRC:MED&format=json' \
+              --output research-output/keynote522-2020-europepmc-record.json
           fi
       - name: Retrieve independent pre-decision sponsor announcement
         env:
