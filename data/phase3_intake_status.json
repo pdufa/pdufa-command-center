@@ -1,16 +1,41 @@
 {
   "mode": "daily",
-  "started_at": "2026-11-16T11:18:39.629534+00:00",
+  "started_at": "2026-11-17T04:23:19.798738+00:00",
   "registry_companies": 717,
   "pages": 4,
-  "studies_checked": 3989,
-  "matched_posted_results": 99,
-  "new_records": 0,
-  "new_record_details": [],
+  "studies_checked": 3994,
+  "matched_posted_results": 100,
+  "new_records": 3,
+  "new_record_details": [
+    {
+      "ticker": "NVO",
+      "drug": "Liraglutide | Placebo",
+      "nct_id": "NCT04775082",
+      "results_posted_at": "2026-11-16",
+      "source_url": "https://clinicaltrials.gov/study/NCT04775082",
+      "verification_status": "DRUG_IDENTITY_REVIEW"
+    },
+    {
+      "ticker": "NVO",
+      "drug": "Dasiglucagon | Glucagon",
+      "nct_id": "NCT06588504",
+      "results_posted_at": "2026-11-16",
+      "source_url": "https://clinicaltrials.gov/study/NCT06588504",
+      "verification_status": "DRUG_IDENTITY_REVIEW"
+    },
+    {
+      "ticker": "AZN",
+      "drug": "Olaparib 300mg tablets",
+      "nct_id": "NCT03534453",
+      "results_posted_at": "2026-11-16",
+      "source_url": "https://clinicaltrials.gov/study/NCT03534453",
+      "verification_status": "REGISTERED_RESULTS_POSTED"
+    }
+  ],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-11-16T11:18:46.501483+00:00",
-  "stored_results": 2502,
+  "finished_at": "2026-11-17T04:23:30.480941+00:00",
+  "stored_results": 2505,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
 }
