@@ -22,13 +22,17 @@ export default function SixIndependentFocusSurveys(){
  useEffect(()=>{if(!trendNct){setHistory([]);setHistoryError('');return;}const controller=new AbortController();setHistory([]);setHistoryError('');fetch('/api/assessments/runtime?'+new URLSearchParams({nct:trendNct,level:String(selected)}),{cache:'no-store',signal:controller.signal}).then(async r=>{const body=await r.json();if(!r.ok)throw Error(body.error||'History unavailable');return body;}).then(body=>{if(!controller.signal.aborted)setHistory((Array.isArray(body.runs)?body.runs:[]).filter((r:Report&{nct?:string;level?:number})=>r.nct===trendNct&&r.level===selected).sort((a:Report,b:Report)=>a.executedAt.localeCompare(b.executedAt)));}).catch(e=>{if(!controller.signal.aborted)setHistoryError(e instanceof Error?e.message:'History unavailable');});return()=>controller.abort();},[trendNct,selected]);
  async function refresh(){
   const base=await readSavedFocus() as Summary;
-  const response=await fetch('/api/assessments/runtime?focusLevels456=true',{cache:'no-store'});
-  if(!response.ok)throw Error('L4–L6 saved results unavailable ('+response.status+')');
-  const extra=await response.json() as Summary;
-  const byNct=new Map(extra.trials.map(t=>[t.nct,t]));
-  setData({...base,trials:base.trials.map(t=>({...t,levels:{...t.levels,...(byNct.get(t.nct)?.levels||{})}}))});
+  setData(base);
+  try{
+   const response=await fetch('/api/assessments/runtime?focusLevels456=true',{cache:'no-store'});
+   if(!response.ok)throw Error('L4–L6 saved results unavailable ('+response.status+')');
+   const extra=await response.json() as Summary;
+   const byNct=new Map(extra.trials.map(t=>[t.nct,t]));
+   setData({...base,trials:base.trials.map(t=>({...t,levels:{...t.levels,...(byNct.get(t.nct)?.levels||{})}}))});
+   setError('');
+  }catch(e){setError((e instanceof Error?e.message:'L4–L6 unavailable')+'; L1–L3 records remain visible.');}
  }
- useEffect(()=>{let active=true;Promise.all([readSavedFocus() as Promise<Summary>,fetch('/api/assessments/runtime?focusLevels456=true',{cache:'no-store'}).then(async r=>{if(!r.ok)throw Error('L4–L6 saved results unavailable');return r.json() as Promise<Summary>;})]).then(([base,extra])=>{if(!active)return;const byNct=new Map(extra.trials.map(t=>[t.nct,t]));setData({...base,trials:base.trials.map(t=>({...t,levels:{...t.levels,...(byNct.get(t.nct)?.levels||{})}}))});}).catch(e=>{if(active)setError(e instanceof Error?e.message:'Survey data unavailable');});return()=>{active=false;};},[]);
+ useEffect(()=>{refresh().catch(e=>setError(e instanceof Error?e.message:'Survey data unavailable'));},[]);
  async function run456(){
   if(batchPending)return;
   setBatchPending(true);
@@ -58,10 +62,10 @@ export default function SixIndependentFocusSurveys(){
    </tbody></table></div>
   </>}
   {trendNct&&<div aria-label="Selected trial score history" style={{padding:12,marginTop:12,border:'1px solid #7baf99',borderRadius:8}}>
-   <h3>{trendNct} · Survey L{selected} historical scores</h3>
+   <h3>{trendNct} · Survey L{selected} evidence-coverage history</h3>
    <button type="button" onClick={()=>setTrendNct('')}>Close history</button>
    {historyError&&<p role="alert">{historyError}</p>}
-   {!historyError&&(()=>{const points=history.filter(r=>r.score?.value!=null&&Number.isFinite(r.score.value)&&r.score.kind!=='NOT_VALIDATED'&&Number.isFinite(Date.parse(r.executedAt)));if(points.length<2)return <p>Insufficient validated historical observations ({points.length} available; at least two required).</p>;const values=points.map(r=>r.score!.value as number);const min=Math.min(...values),max=Math.max(...values),range=max-min||1;return <><svg viewBox="0 0 600 180" role="img" aria-label={`Historical score trend for ${trendNct} at Level ${selected}`} style={{width:'100%',maxWidth:700,height:180}}><polyline fill="none" stroke="#23785c" strokeWidth="3" points={values.map((v,i)=>`${20+i*560/(values.length-1)},${160-(v-min)*140/range}`).join(' ')}/>{values.map((v,i)=><circle key={i} cx={20+i*560/(values.length-1)} cy={160-(v-min)*140/range} r="4" fill="#23785c"/> )}</svg><p>{points.length} saved observations · {points[0].executedAt} to {points[points.length-1].executedAt}</p></>;})()}
+   {!historyError&&(()=>{const points=history.filter(r=>r.score?.value!=null&&Number.isFinite(r.score.value)&&r.score.kind!=='NOT_VALIDATED'&&Number.isFinite(Date.parse(r.executedAt)));if(points.length<2)return <p>Insufficient timestamped evidence-coverage observations ({points.length} available; at least two required).</p>;const values=points.map(r=>r.score!.value as number);const min=Math.min(...values),max=Math.max(...values),range=max-min||1;return <><svg viewBox="0 0 600 180" role="img" aria-label={`Evidence-coverage trend for ${trendNct} at Level ${selected}`} style={{width:'100%',maxWidth:700,height:180}}><polyline fill="none" stroke="#23785c" strokeWidth="3" points={values.map((v,i)=>`${20+i*560/(values.length-1)},${160-(v-min)*140/range}`).join(' ')}/>{values.map((v,i)=><circle key={i} cx={20+i*560/(values.length-1)} cy={160-(v-min)*140/range} r="4" fill="#23785c"/> )}</svg><p>{points.length} saved observations · {points[0].executedAt} to {points[points.length-1].executedAt}</p></>;})()}
   </div>}
   <p><small>Historical trends require at least two independently saved, timestamped scores for the same trial and level. Historical observations are fetched separately from the saved per-trial, per-level history endpoint. Levels 4–6 remain explicitly pending where no executable survey report exists.</small></p>
  </section>;
