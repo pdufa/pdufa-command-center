@@ -175,3 +175,36 @@ def test_compact_queue_is_present_in_append_only_assessment_history(isolated):
     newer = service.exact_detail(exact_id)["history"][0]["advancedEvidenceQueue"]
     assert newer["deferredTaskIds"]
     assert newer["taskStates"] != frozen["taskStates"]
+
+
+def test_whole_universe_queue_totals_are_counts_not_clinical_coverage(isolated):
+    engine, snapshot = isolated
+    # One source-linked program with a verified phase, one without a registry.
+    with Session(engine) as session:
+        source = session.get(main.FullTrialRecord, "NCT00000001")
+        source.summary = {**source.summary, "phases": ["PHASE3"]}
+        session.commit()
+    index = service.get_index(synchronous=True)
+    totals = index["advancedResearchQueueTotals"]
+    assert totals["programs"] == index["total"] == 2
+    assert totals["readyPrograms"] == 1
+    assert totals["blockedPrograms"] == 1
+    assert totals["noActiveGapPrograms"] == 0
+    assert totals["activeTasks"] == 60
+    assert totals["deferredCriteria"] == 0
+    assert totals["reviewedCriteria"] == 0
+    assert len(totals["byLevel"]) == 12
+    assert all(totals["byLevel"][str(n)]["active"] == 5 for n in range(9, 21))
+    assert "not an FDA prediction" in totals["meaning"]
+    assert len(index["records"]) == 2
+    assert all(len(record) == 5 for record in index["records"])
+
+
+def test_unverified_entire_universe_cannot_masquerade_as_missing_evidence(isolated):
+    _, _snapshot = isolated
+    index = service.get_index(synchronous=True)
+    totals = index["advancedResearchQueueTotals"]
+    assert totals["programs"] == 2
+    assert totals["blockedPrograms"] == 2
+    assert totals["activeTasks"] == 0
+    assert totals["reviewedCriteria"] == 0
