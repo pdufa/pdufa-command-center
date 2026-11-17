@@ -12,6 +12,7 @@ from .scientific_benefit_harm import align_benefit_harm
 from .scientific_standard_care import compare_standard_care
 from .scientific_therapeutic_context import therapeutic_context
 from .scientific_replication_candidates import screen_replication_candidates
+from .scientific_regulatory_context import assess_filing, assess_designation
 
 VERSION = "scientific-contracts-09-20-v1"
 
@@ -156,4 +157,13 @@ def assess_levels_nine_to_twenty(level_one, *, trial_id, evidence=None, prior_le
     twelve["replicationCandidates"] = screen_replication_candidates(
         twelve, evidence, trial_id=trial_id, cutoff=intake.get("assessmentCutoff"))
     twelve["methodStatus"] = "PARTIAL_CROSS_STUDY_IDENTITY_SCREEN_NOT_REPLICATION_VALIDATION"
+    thirteen = results["13"]
+    thirteen["filingContext"] = assess_filing(
+        thirteen, evidence, trial_id=trial_id, cutoff=intake.get("assessmentCutoff"))
+    thirteen["methodStatus"] = "PARTIAL_EXACT_APPLICATION_SOURCE_RECONCILIATION_NOT_FDA_CERTIFICATION"
+    fourteen = results["14"]
+    fourteen["designationContext"] = assess_designation(
+        fourteen, evidence, trial_id=trial_id, cutoff=intake.get("assessmentCutoff"),
+        filing_context=thirteen["filingContext"])
+    fourteen["methodStatus"] = "PARTIAL_ORIGINAL_DESIGNATION_SOURCE_LEAD_NOT_FDA_VERIFICATION"
     return results
