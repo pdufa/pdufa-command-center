@@ -41,11 +41,11 @@ def execute(engine,batch_id,*,workers=2,max_items=6,collector=runtime.collect_re
         if not batch or batch[0]!=VERSION:
             raise ValueError('Not an isolated L4–L6 batch')
         interrupted=c.execute(text("""SELECT * FROM focus_assessment_items
-            WHERE batch_id=:b AND state IN ('RUNNING','FAILED') AND run_id IS NOT NULL"""),
+            WHERE batch_id=:b AND state IN ('RUNNING','FAILED')"""),
             {'b':batch_id}).mappings().all()
     for slot in interrupted:
-        state=runtime.status(engine,slot['nct_id'],slot['run_id'])
-        completed=state['status']=='COMPLETED' and state['report'] is not None
+        state=runtime.status(engine,slot['nct_id'],slot['run_id']) if slot['run_id'] else None
+        completed=bool(state and state['status']=='COMPLETED' and state['report'] is not None)
         stale=datetime.fromisoformat(slot['updated_at'])<datetime.now(timezone.utc)-timedelta(minutes=10)
         if completed or (slot['state']=='RUNNING' and stale):
             with engine.begin() as c:
