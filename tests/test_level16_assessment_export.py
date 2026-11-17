@@ -1,8 +1,6 @@
 """The website runner receives reproducible, source-bound owner research only."""
 import importlib.util
 import json
-import subprocess
-import tempfile
 from pathlib import Path
 import unittest
 
@@ -13,31 +11,11 @@ m=importlib.util.module_from_spec(spec);spec.loader.exec_module(m)
 class AssessmentExportTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
-        # Other repository tests may rewrite the working FOCUS roster.
-        # Rebuild this committed evidence package against its committed,
-        # immutable roster rather than a test-mutated working-tree copy.
-        prep=m.module('level16_research_preparation')
-        original=prep.ROSTER
-        with tempfile.TemporaryDirectory() as tmp:
-            immutable=Path(tmp)/'focus.json'
-            immutable.write_bytes(subprocess.check_output(
-                ['git','show','HEAD:new-platform/frontend/data/p3PostDataActive.json'],
-                cwd=ROOT))
-            try:
-                prep.ROSTER=immutable
-                # m.build() imports a fresh preparation module, so expose the
-                # immutable roster to that module via its module loader.
-                load_original=m.module
-                def load(name):
-                    result=load_original(name)
-                    if name=='level16_research_preparation':
-                        result.ROSTER=immutable
-                    return result
-                m.module=load
-                cls.data=m.build()
-            finally:
-                m.module=load_original
-                prep.ROSTER=original
+        cls.data=m.build()
+
+    def test_historical_export_keeps_its_original_roster_date(self):
+        self.assertEqual(self.data['rosterAsOf'], '2026-11-14')
+        self.assertEqual(json.loads(m.HISTORICAL_ROSTER.read_text(encoding='utf-8'))['asOf'], '2026-11-14')
 
     def test_committed_package_reproduces_retained_research_inputs(self):
         self.assertEqual(json.loads(m.OUTPUT.read_text(encoding='utf-8')),self.data)
