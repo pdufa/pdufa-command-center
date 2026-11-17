@@ -1,0 +1,48 @@
+name: FOCUS-only NCT PubMed discovery (read-only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/levels-09-20-development-20261117
+    paths:
+      - .github/workflows/focus-outside-pool-pubmed.yml
+
+permissions:
+  contents: read
+
+jobs:
+  focus-publication-gaps:
+    if: github.ref == 'refs/heads/codex/levels-09-20-development-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate exact FOCUS-only identity and source boundaries offline
+        run: |
+          python -m pip install pytest
+          python -m pytest -q new-platform/backend/tests/test_focus_outside_pool_pubmed.py
+      - name: Query FOCUS trials outside POOL as unreviewed leads
+        id: source
+        continue-on-error: true
+        run: |
+          python scripts/medical/focus_outside_pool_pubmed.py \
+            --focus new-platform/frontend/data/p3PostDataActive.json \
+            --pool new-platform/frontend/data/tools-pool-snapshot.json \
+            --output reports/pool-research/focus-outside-pool-pubmed.json
+      - name: Save unreviewed FOCUS-only research artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: focus-outside-pool-pubmed-unreviewed
+          path: reports/pool-research/focus-outside-pool-pubmed.json
+          retention-days: 14
+          if-no-files-found: warn
+      - name: Never mark incomplete FOCUS sources as verified
+        if: steps.source.outcome != 'success'
+        run: |
+          echo "Some FOCUS-only NCT searches incomplete; no evidence review or prediction."
+          exit 1
