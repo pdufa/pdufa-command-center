@@ -105,3 +105,44 @@ def build_advanced_research_queue(intake, levels, *, trial_id):
         "reviewedCriteria": reviewed_count,
         "unresolvedCriteria": len(tasks),
     }
+
+
+def compact_historical_research_queue(queue):
+    """Bounded auditable queue history; no copied excerpts or sensitive source text.
+
+    Keep states and exact criterion identities so each dated version can be
+    compared; task actions can be derived from the immutable state catalog.
+    """
+    if not isinstance(queue, dict) or queue.get("methodVersion") != VERSION:
+        raise ValueError("Invalid research queue for historical summary")
+    tasks, deferred = queue.get("tasks"), queue.get("deferred")
+    if not isinstance(tasks, list) or not isinstance(deferred, list):
+        raise ValueError("Invalid historical queue items")
+    if len(tasks) > 60 or len(deferred) > 60:
+        raise ValueError("Research queue exceeds fixed 60-criterion inventory")
+    states = []
+    for task in tasks:
+        if (not isinstance(task, dict) or task.get("state") not in _VALID_STATES
+                or not isinstance(task.get("id"), str)):
+            raise ValueError("Invalid historical task state or identity")
+        states.append([task["id"], task["state"], task.get("rejectionReason")])
+    deferred_ids = []
+    for item in deferred:
+        if (not isinstance(item, dict) or item.get("state") != "NOT_YET_EXPECTED"
+                or not isinstance(item.get("id"), str)):
+            raise ValueError("Invalid historical deferred task")
+        deferred_ids.append(item["id"])
+    return {
+        "methodVersion": VERSION,
+        "nctId": queue["nctId"],
+        "asOf": queue["asOf"],
+        "status": queue["status"],
+        "reviewedCriteria": queue["reviewedCriteria"],
+        "unresolvedCriteria": queue["unresolvedCriteria"],
+        "taskStates": states,
+        "deferredTaskIds": deferred_ids,
+        "scientificValidation": "NOT_VERIFIED",
+        "fdaPrediction": "ABSTAIN",
+        "score": None,
+        "note": "Saved source-workflow states only. Not validated scientific scores or FDA predictions.",
+    }

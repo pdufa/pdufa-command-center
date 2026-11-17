@@ -134,3 +134,44 @@ def test_population_and_exposure_engines_persist_distinct_versions(isolated, mon
     assert count(engine)==len(frozen)+1
     with Session(engine) as session:
         for key,value in frozen:assert session.get(main.CandidateAssessmentHistory,key).summary==value
+
+
+def test_compact_queue_is_present_in_append_only_assessment_history(isolated):
+    engine, snapshot = isolated
+    exact_id = snapshot["pipeline"][0]["id"]
+    with Session(engine) as session:
+        record = session.get(main.FullTrialRecord, "NCT00000001")
+        record.summary = {**record.summary, "phases": ["PHASE3"]}
+        session.commit()
+    service.get_index(synchronous=True)
+    detail = service.exact_detail(exact_id)
+    queue = detail["advancedEvidenceQueue"]
+    assert queue["status"] == "RESEARCH_QUEUE_READY"
+    assert queue["unresolvedCriteria"] == 60
+    assert len(detail["history"]) == 1
+    history = detail["history"][0]["advancedEvidenceQueue"]
+    assert history["nctId"] == "NCT00000001"
+    assert history["status"] == queue["status"]
+    assert history["unresolvedCriteria"] == 60
+    assert len(history["taskStates"]) == 60
+    assert history["taskStates"][0][0].startswith("NCT00000001:L")
+    assert all(len(x) == 3 for x in history["taskStates"])
+    assert history["score"] is None and history["fdaPrediction"] == "ABSTAIN"
+    assert "tasks" not in history  # no duplicate full queue prose
+    with Session(engine) as session:
+        old = list(session.scalars(
+            select(main.CandidateAssessmentHistory)
+            .where(main.CandidateAssessmentHistory.exact_id == exact_id)
+        ))
+        frozen = copy.deepcopy(old[0].summary["advancedEvidenceQueue"])
+        saved = session.get(main.FullTrialRecord, "NCT00000001")
+        saved.summary = {**saved.summary, "phases": ["PHASE1"]}
+        saved.fetched_at = datetime(2026, 10, 21, tzinfo=timezone.utc)
+        session.commit()
+    service.get_index(synchronous=True)
+    with Session(engine) as session:
+        old_version = session.get(main.CandidateAssessmentHistory, old[0].id)
+        assert old_version.summary["advancedEvidenceQueue"] == frozen
+    newer = service.exact_detail(exact_id)["history"][0]["advancedEvidenceQueue"]
+    assert newer["deferredTaskIds"]
+    assert newer["taskStates"] != frozen["taskStates"]

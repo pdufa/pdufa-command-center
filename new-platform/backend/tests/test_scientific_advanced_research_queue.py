@@ -92,3 +92,20 @@ def test_candidate_compact_and_version_history_preserve_queue():
     edited["advancedEvidenceQueue"]["tasks"][0]["state"] = "REJECTED_EVIDENCE"
     assert fingerprint(original) != fingerprint(edited)
     assert original["advancedEvidenceQueue"]["tasks"][0]["state"] == "NOT_ASSESSED"
+
+
+def test_historical_queue_summary_preserves_id_and_state_without_full_text():
+    from app.scientific_advanced_research_queue import compact_historical_research_queue
+    value = build()
+    history = compact_historical_research_queue(value)
+    assert history["methodVersion"] == value["methodVersion"]
+    assert history["nctId"] == value["nctId"]
+    assert history["unresolvedCriteria"] == len(history["taskStates"]) == 60
+    assert history["taskStates"][0][1] == "NOT_ASSESSED"
+    assert "tasks" not in history
+    assert history["score"] is None
+    broken = deepcopy(value)
+    broken["tasks"][0]["state"] = "APPROVED"
+    import pytest
+    with pytest.raises(ValueError):
+        compact_historical_research_queue(broken)

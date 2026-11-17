@@ -13,6 +13,7 @@ from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 from . import main as db
 from .candidate_assessments import MODEL, compact, fingerprint, nct_id, packed, score_candidate
+from .scientific_advanced_research_queue import compact_historical_research_queue
 
 LOG = logging.getLogger(__name__)
 _LOCK = threading.RLock()
@@ -103,6 +104,7 @@ def build_index(snapshot, reviews, review_status, key, token):
                                     "levelsTwoToSix": result["levelsTwoToSix"],
                                     "levelsSevenToTwenty": result["levelsSevenToTwenty"],
                                     "scientificReadiness": result["scientificReadiness"],
+                                    "advancedEvidenceQueue": compact_historical_research_queue(result["advancedEvidenceQueue"]),
                                 }, "assessed_at": clock})
         for nct, registry, analyses, checked in registry_rows():
             for identity in by_nct.get(nct, []):
