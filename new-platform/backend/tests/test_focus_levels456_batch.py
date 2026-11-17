@@ -44,3 +44,21 @@ def test_wrong_batch_identity_rejected(engine):
     old_id=existing.create(engine)
     with pytest.raises(ValueError,match='isolated'):
         batch456.execute(engine,old_id,workers=1,max_items=1,collector=lambda _:snapshot())
+
+def test_stale_claim_without_run_id_is_retried(engine,monkeypatch):
+    from datetime import datetime, timezone, timedelta
+    monkeypatch.setattr(runtime,'collect_documents',lambda source,level:source)
+    existing.import_roster(engine,roster())
+    batch_id=batch456.create(engine)
+    old=(datetime.now(timezone.utc)-timedelta(minutes=15)).isoformat()
+    with engine.begin() as c:
+        c.execute(text("""UPDATE focus_assessment_items
+            SET state='RUNNING',attempts=1,run_id=NULL,updated_at=:at
+            WHERE batch_id=:b AND level=4"""),{'at':old,'b':batch_id})
+    result=batch456.execute(engine,batch_id,workers=1,max_items=1,collector=lambda _:snapshot())
+    assert result['trials'][0]['levels']['4']['state']=='COMPLETED'
+    with engine.connect() as c:
+        slot=c.execute(text("""SELECT attempts,run_id FROM focus_assessment_items
+            WHERE batch_id=:b AND level=4"""),{'b':batch_id}).one()
+    assert slot[0]==2 and slot[1]
+    assert len(runtime.history(engine,'NCT04576949',4)['runs'])==1
