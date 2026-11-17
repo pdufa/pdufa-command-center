@@ -9,6 +9,7 @@ from __future__ import annotations
 
 from .scientific_levels_two_to_six import assess_review_contracts
 from .scientific_benefit_harm import align_benefit_harm
+from .scientific_standard_care import compare_standard_care
 
 VERSION = "scientific-contracts-09-20-v1"
 
@@ -141,4 +142,8 @@ def assess_levels_nine_to_twenty(level_one, *, trial_id, evidence=None, prior_le
     )
     if nine["reviewReadiness"]["complete"] and nine["integrationStatus"] == "AWAITING_OWNER_BENEFIT_RISK_JUDGMENT":
         nine["integrationStatus"] = "REVIEWED_SOURCES_REQUIRE_CLINICAL_SYNTHESIS"
+    ten = results["10"]
+    ten["standardOfCareContext"] = compare_standard_care(
+        ten, evidence, intake.get("assessmentCutoff"))
+    ten["methodStatus"] = "PARTIAL_DATED_CONTEXT_ALIGNMENT_NOT_STANDARD_OF_CARE_VALIDATION"
     return results
