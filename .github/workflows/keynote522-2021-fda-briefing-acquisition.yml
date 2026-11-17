@@ -102,7 +102,7 @@ jobs:
           page=body[0]
           t=' '.join(page['text'].split())
           entries=[]
-          patterns=[('ORIGINAL','05-Dec-2016',r'Protocol\s*\(05-Dec-2016\)'),('AMENDMENT_01','16-Dec-2016',r'Amendment\s*01\s*\(16-Dec-2016\)'),('AMENDMENT_02','01-May-2018',r'Amendment\s*02\s*\(01-May-2018\)')]
+          patterns=[('ORIGINAL','05-Dec-2016',r'Protocol\s*\(05-Dec-2016\)'),('AMENDMENT_01','16-Dec-2016',r'Amendment\s*01\s*\(16-Dec-2016\)'),('AMENDMENT_02','01-May-2018',r'Amendment\s*02\s*\(01-May-2018\)'),('AMENDMENT_03','17-Oct-2018',r'Amendment\s*03\s*\(17-Oct-2018\)'),('AMENDMENT_04','26-Feb-2020',r'Amendment\s*04\s*\(26-FEB-2020\)')]
           for name,date,pat in patterns:
               m=re.search(pat,t,re.I)
               if not m: raise SystemExit('Required amendment entry missing: '+name)
