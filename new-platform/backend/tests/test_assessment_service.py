@@ -163,6 +163,7 @@ def test_compact_queue_is_present_in_append_only_assessment_history(isolated):
             select(main.CandidateAssessmentHistory)
             .where(main.CandidateAssessmentHistory.exact_id == exact_id)
         ))
+        old_history_id = old[0].id
         frozen = copy.deepcopy(old[0].summary["advancedEvidenceQueue"])
         saved = session.get(main.FullTrialRecord, "NCT00000001")
         saved.summary = {**saved.summary, "phases": ["PHASE1"]}
@@ -170,7 +171,7 @@ def test_compact_queue_is_present_in_append_only_assessment_history(isolated):
         session.commit()
     service.get_index(synchronous=True)
     with Session(engine) as session:
-        old_version = session.get(main.CandidateAssessmentHistory, old[0].id)
+        old_version = session.get(main.CandidateAssessmentHistory, old_history_id)
         assert old_version.summary["advancedEvidenceQueue"] == frozen
     newer = service.exact_detail(exact_id)["history"][0]["advancedEvidenceQueue"]
     assert newer["deferredTaskIds"]

@@ -88,7 +88,7 @@ def test_tampered_registry_cache_and_wrong_trial_rejected(tmp_path):
     cache.write_text(json.dumps({"protocolSection": {"identificationModule": {"nctId": "NCT00000002"}}}))
     with pytest.raises(ValueError, match="Wrong exact-NCT"):
         tool.build(folder, file)
-    folder, file = fixtures(tmp_path)
+    folder, file = fixtures(tmp_path / "new-digest-fixture")
     statefile = folder / "ingestion-state.json"
     state = json.loads(statefile.read_text())
     state["sources"][NCT]["versions"][0]["fingerprint"] = "c" * 64
@@ -104,7 +104,7 @@ def test_forbidden_pubmed_lead_promotion_and_traversal_rejected(tmp_path):
     file.write_text(json.dumps(value))
     with pytest.raises(ValueError, match="trust boundary"):
         tool.build(folder, file)
-    folder, file = fixtures(tmp_path)
+    folder, file = fixtures(tmp_path / "new-path-fixture")
     statefile = folder / "ingestion-state.json"
     state = json.loads(statefile.read_text())
     state["sources"][NCT]["versions"][0]["cachePath"] = "../../other-file.json"
