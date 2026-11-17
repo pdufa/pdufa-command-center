@@ -7,8 +7,8 @@ from __future__ import annotations
 import re
 from level7_evidence import EvidenceLedger, EvidenceRecord, make_record
 
-_SHA = re.compile(r"[a-f0-9]{40}\Z")
-_SAFE_PATH = re.compile(r"data/(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\Z")
+_SHA = re.compile(r"[a-f0-9]{40}\\\Z")
+_SAFE_PATH = re.compile(r"data/(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\\\Z")
 
 def record_published_snapshot(
     ledger: EvidenceLedger, *, trial_id: str, relative_path: str,
