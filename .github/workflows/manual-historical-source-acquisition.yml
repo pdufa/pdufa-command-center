@@ -23,9 +23,16 @@ jobs:
         env:
           PYTHONPATH: new-platform/backend
         run: |
-          python -m assessment_levels_07_20.discovery_download \
+          if python -m assessment_levels_07_20.discovery_download \
             --url 'https://www.nejm.org/doi/pdf/10.1056/NEJMoa1910549' \
-            --output research-output/keynote522-2020-publication.pdf
+            --output research-output/keynote522-2020-publication.pdf; then
+            echo 'Original journal PDF retrieved.'
+          else
+            echo 'Journal PDF unavailable; retrieving PubMed bibliographic record instead.'
+            python -m assessment_levels_07_20.discovery_download \
+              --url 'https://pubmed.ncbi.nlm.nih.gov/32101663/' \
+              --output research-output/keynote522-2020-pubmed-record.html
+          fi
       - name: Upload retrieved bytes and provenance metadata
         if: success()
         uses: actions/upload-artifact@v4
