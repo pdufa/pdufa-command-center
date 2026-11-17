@@ -45,6 +45,40 @@ jobs:
           python -m assessment_levels_07_20.discovery_download \
             --url 'https://www.merck.com/news/merck-announces-phase-3-keynote-522-trial-met-dual-primary-endpoint-of-event-free-survival-efs-in-patients-with-high-risk-early-stage-triple-negative-breast-cancer-tnbc/' \
             --output research-output/keynote522-2021-sponsor-release.html
+      - name: Validate acquired source content and historical dates
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json, hashlib, re
+          from datetime import datetime, timezone
+          folder = Path("research-output")
+          checks = [
+              ("keynote522-2020-pubmed-record.html", "32101663", "2020-02-27"),
+              ("keynote522-2021-sponsor-release.html", "KEYNOTE-522", "2021-05-13"),
+          ]
+          decision = datetime.fromisoformat("2021-07-26T00:00:00+00:00")
+          report = {"status": "DISCOVERY_ONLY", "blind_eligible": False, "checks": []}
+          for name, marker, publication_date in checks:
+              file = folder / name
+              meta = json.loads((folder / (name + ".json")).read_text())
+              raw = file.read_bytes()
+              actual_hash = hashlib.sha256(raw).hexdigest()
+              text = raw.decode("utf-8", errors="replace")
+              result = {
+                  "file": name, "sha256_match": actual_hash == meta["sha256"],
+                  "byte_count_match": len(raw) == meta["byte_count"],
+                  "subject_marker_present": marker.casefold() in text.casefold(),
+                  "claimed_publication_date": publication_date,
+                  "claimed_date_precedes_decision": publication_date < "2021-07-26",
+                  "retrieved_after_decision": datetime.fromisoformat(meta["retrieved_at"]) >= decision,
+                  "historical_snapshot_verified": False,
+              }
+              report["checks"].append(result)
+              if not all(result[k] for k in ("sha256_match", "byte_count_match", "subject_marker_present", "claimed_date_precedes_decision", "retrieved_after_decision")):
+                  raise SystemExit(f"Source verification failed: {result}")
+          (folder / "content-checks.json").write_text(json.dumps(report, indent=2) + "\\n")
+          print(json.dumps(report, indent=2))
+          PY
       - name: Upload retrieved bytes and provenance metadata
         if: success()
         uses: actions/upload-artifact@v4
