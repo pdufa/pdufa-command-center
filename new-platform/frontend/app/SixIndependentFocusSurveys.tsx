@@ -14,6 +14,7 @@ export default function SixIndependentFocusSurveys(){
  const [data,setData]=useState<Summary|null>(null);
  const [error,setError]=useState('');
  const [batchStatus,setBatchStatus]=useState('');
+ const [batchPending,setBatchPending]=useState(false);
  const [filter,setFilter]=useState('');
  const [trendNct,setTrendNct]=useState('');
  const [history,setHistory]=useState<Report[]>([]);
@@ -29,9 +30,12 @@ export default function SixIndependentFocusSurveys(){
  }
  useEffect(()=>{let active=true;Promise.all([readSavedFocus(),fetch('/api/assessments/runtime?focusLevels456=true',{cache:'no-store'}).then(async r=>{if(!r.ok)throw Error('L4–L6 saved results unavailable');return r.json() as Promise<Summary>;})]).then(([base,extra])=>{if(!active)return;const byNct=new Map(extra.trials.map(t=>[t.nct,t]));setData({...base,trials:base.trials.map(t=>({...t,levels:{...t.levels,...(byNct.get(t.nct)?.levels||{})}}))});}).catch(e=>{if(active)setError(e instanceof Error?e.message:'Survey data unavailable');});return()=>{active=false;};},[]);
  async function run456(){
+  if(batchPending)return;
+  setBatchPending(true);
   setBatchStatus('Submitting bounded L4–L6 evidence batch…');
   try{const r=await fetch('/api/assessments/runtime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'FOCUS_LEVELS456_BATCH'})});const body=await r.json();if(!r.ok)throw Error(body.error||'Batch rejected');setBatchStatus('Up to six L4–L6 trial-level assessments queued. Refresh after execution; repeat to continue the 96 slots. No FDA probabilities are implied.');}
   catch(e){setBatchStatus(e instanceof Error?e.message:'Batch unavailable');}
+  finally{setBatchPending(false);}
  }
  const trials=data?.trials||[];
  const rows=trials.filter(t=>(t.nct+' '+t.ticker+' '+t.company).toLowerCase().includes(filter.toLowerCase()));
@@ -43,7 +47,7 @@ export default function SixIndependentFocusSurveys(){
    {levels.map(l=><button type="button" key={l} aria-pressed={selected===l} onClick={()=>{setSelected(l);setTrendNct('');}} style={{padding:'9px 14px',borderRadius:7,border:'1px solid #7baf99',background:selected===l?'#d8efe5':'transparent',fontWeight:selected===l?700:400}}>Survey L{l}</button>)}
   </nav>
   <h3>Survey L{selected} · FOCUS trials</h3>
-  <button type="button" onClick={run456}>Run next 6 L4–L6 evidence surveys</button> <button type="button" onClick={()=>{setError('');refresh().catch(e=>setError(e instanceof Error?e.message:'Refresh failed'));}}>Refresh saved results</button>
+  {selected>=4&&<button type="button" onClick={run456} disabled={batchPending}>Run next 6 L4–L6 evidence surveys</button>} <button type="button" onClick={()=>{setError('');refresh().catch(e=>setError(e instanceof Error?e.message:'Refresh failed'));}}>Refresh saved results</button>
   {batchStatus&&<p role="status">{batchStatus}</p>}
   {error&&<p role="alert">{error}</p>}
   {!data&&!error&&<p role="status">Loading saved FOCUS records…</p>}
