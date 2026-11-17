@@ -37,6 +37,12 @@ export default function SixIndependentFocusSurveys(){
    {rows.map(t=>{const slot=t.levels[String(selected)];const report=slot?.report;const score=report?.score;const validScore=score&&score.value!==null&&score.kind!=='NOT_VALIDATED';return <tr key={t.nct}><td><Link href={'/predictions/assessment?nct='+encodeURIComponent(t.nct)}>{t.nct}</Link><br/>{t.ticker} · {t.company}</td><td>{report?'Saved · '+report.executedAt:slot?.state||'NOT RUN'}{slot?.missingEvidence?.length?' · '+slot.missingEvidence.length+' unresolved criteria':''}</td><td>{validScore?score.value:'NOT VALIDATED'}</td><td>{report?.fdaPrediction?.outcome||'ABSTAIN'}</td><td>{report?.fdaPrediction?.probability==null?'NOT VALIDATED':report.fdaPrediction.probability+'%'}</td><td><button type="button" onClick={()=>setTrendNct(t.nct)}>View L{selected} history</button></td></tr>;})}
    </tbody></table></div>
   </>}
+  {trendNct&&<div aria-label="Selected trial score history" style={{padding:12,marginTop:12,border:'1px solid #7baf99',borderRadius:8}}>
+   <h3>{trendNct} · Survey L{selected} historical scores</h3>
+   <button type="button" onClick={()=>setTrendNct('')}>Close history</button>
+   {historyError&&<p role="alert">{historyError}</p>}
+   {!historyError&&(()=>{const points=history.filter(r=>r.score?.value!=null&&Number.isFinite(r.score.value)&&r.score.kind!=='NOT_VALIDATED'&&Number.isFinite(Date.parse(r.executedAt)));if(points.length<2)return <p>Insufficient validated historical observations ({points.length} available; at least two required).</p>;const values=points.map(r=>r.score!.value as number);const min=Math.min(...values),max=Math.max(...values),range=max-min||1;return <><svg viewBox="0 0 600 180" role="img" aria-label={`Historical score trend for ${trendNct} at Level ${selected}`} style={{width:'100%',maxWidth:700,height:180}}><polyline fill="none" stroke="#23785c" strokeWidth="3" points={values.map((v,i)=>`${20+i*560/(values.length-1)},${160-(v-min)*140/range}`).join(' ')}/>{values.map((v,i)=><circle key={i} cx={20+i*560/(values.length-1)} cy={160-(v-min)*140/range} r="4" fill="#23785c"/> )}</svg><p>{points.length} saved observations · {points[0].executedAt} to {points[points.length-1].executedAt}</p></>;})()}
+  </div>}
   <p><small>Historical trends require at least two independently saved, timestamped scores for the same trial and level. Historical observations are fetched separately from the saved per-trial, per-level history endpoint. Levels 4–6 remain explicitly pending where no executable survey report exists.</small></p>
  </section>;
 }
