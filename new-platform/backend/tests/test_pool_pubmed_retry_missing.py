@@ -115,7 +115,7 @@ def test_tampered_source_shard_and_duplicate_destination_rejected(tmp_path):
 
 def test_retry_limit_must_not_induce_unbounded_source_traffic(tmp_path):
     roster, source = fixtures(tmp_path)
-    with pytest.raises(ValueError, match="recovery bound"):
+    with pytest.raises(ValueError, match="Retry bound"):
         tool.retry(roster, source, tmp_path / "retry",
                    tmp_path / "merged.json", count=3, max_queries=0,
                    searcher=hit)
