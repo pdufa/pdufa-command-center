@@ -83,3 +83,19 @@ def test_32_trial_roster_creates_96_isolated_slots_and_bounded_six(engine,monkey
     with engine.connect() as c:
         assert c.execute(text("""SELECT COUNT(*) FROM focus_assessment_items
             WHERE batch_id=:b AND state='PENDING'"""),{'b':batch_id}).scalar()==90
+
+def test_levels456_api_owner_auth_and_missing_roster(engine):
+    from fastapi import FastAPI, HTTPException
+    from fastapi.testclient import TestClient
+    def denied(): raise HTTPException(401,'Owner required')
+    def allowed(): return None
+    app=FastAPI()
+    app.include_router(runtime.router(lambda:engine,denied,allowed,allowed,allow_local=True))
+    client=TestClient(app)
+    assert client.get('/api/assessment-runtime/focus/levels456').status_code==401
+    assert client.post('/api/assessment-runtime/focus/levels456/batch').status_code==401
+    app.dependency_overrides[denied]=allowed
+    response=client.get('/api/assessment-runtime/focus/levels456')
+    assert response.status_code==200
+    assert response.json()['total'] is None
+    assert client.post('/api/assessment-runtime/focus/levels456/batch').status_code==409
