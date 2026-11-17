@@ -160,13 +160,13 @@ test('shared saved FOCUS table renders persisted independent levels and explicit
  const React=require('react'),{act,create}=require('react-test-renderer'),Saved=require('../app/FocusSavedAssessments.tsx').default;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
  const old=global.fetch,oldSelf=global.self,oldWindow=global.window;global.self=globalThis;global.window={addEventListener(){},removeEventListener(){}};let tree;const levels={};for(let level=1;level<=3;level++)levels[level]={state:'COMPLETED',attempts:1,error:null,missingEvidence:[{id:'unresolved',state:'UNVERIFIED',explanation:'Synthetic missing evidence'}],report:{runId:'synthetic-'+level,nct,level,executionStatus:'COMPLETED_WITH_LIMITATIONS',executedAt:'2026-11-15',engineVersion:'synthetic/level-'+level,score:{value:null,kind:'NOT_VALIDATED',method:'No validated formula'},fdaPrediction:{outcome:'ABSTAIN',probability:null,confidence:'NOT_VALIDATED'},trialIdentity:{candidate:'Synthetic drug'},context:{phases:['PHASE3']}}};
  global.fetch=async url=>{assert.equal(url,'/api/assessments/runtime?focus=true');return Response.json({total:1,fullyProcessed:1,status:'SYNTHETIC_SAVED_FIXTURE',counts:{},source:null,trials:[{nct,ticker:'SYN',company:'Synthetic',pdufaDate:null,levels}]});};
- try{await act(async()=>{tree=create(React.createElement(Saved));});const rendered=JSON.stringify(tree.toJSON());for(let l=1;l<=3;l++)assert.ok(tree.root.findAllByType('th').some(th=>React.Children.toArray(th.props.children).join('')==='L'+l+' Score'));assert.match(rendered,/NOT VALIDATED \/ UNSCORABLE/);assert.match(rendered,/ABSTAIN/);assert.equal(tree.root.findAllByType('tbody')[0].findAllByType('tr').length,1);}
+ try{await act(async()=>{tree=create(React.createElement(Saved));});const rendered=JSON.stringify(tree.toJSON());for(let l=1;l<=3;l++)assert.ok(tree.root.findAllByType('th').some(th=>React.Children.toArray(th.props.children).join('')==='L'+l+' Scientific result and evidence'));assert.match(rendered,/NOT VALIDATED \/ UNSCORABLE/);assert.match(rendered,/ABSTAIN/);assert.equal(tree.root.findAllByType('tbody')[0].findAllByType('tr').length,1);}
  finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;if(oldSelf===undefined)delete global.self;else global.self=oldSelf;if(oldWindow===undefined)delete global.window;else global.window=oldWindow;}
 });
 
 test('FOCUS columns show the same saved scientific records as the shared assessment table',async()=>{
  const React=require('react'),{act,create}=require('react-test-renderer');globalThis.IS_REACT_ACT_ENVIRONMENT=true;
- const Cells=require('../app/FocusLevelColumns.tsx').FocusLevelCells;let tree;
+ const Cells=require('../app/FocusLevelColumns.tsx').FocusLevelCells;let tree;const oldSelf=global.self;global.self=globalThis;
  // The parent owns the authenticated roster request and supplies exact-NCT slots.
  const levels=Object.fromEntries([1,2,3].map(level=>[String(level),{
   state:'COMPLETED',report:{runId:'saved-'+level,nct,level,mode:'CURRENT_EVIDENCE',executedAt:'2026-11-15',
@@ -181,7 +181,7 @@ test('FOCUS columns show the same saved scientific records as the shared assessm
    assert.match(JSON.stringify(cells[(level-1)*2+1].props.children),/NOT VALIDATED · saved/);
    assert.equal(cells[(level-1)*2].props.title,'Saved saved-'+level);
   }
- }finally{if(tree)await act(async()=>tree.unmount());}
+ }finally{if(tree)await act(async()=>tree.unmount());if(oldSelf===undefined)delete global.self;else global.self=oldSelf;}
 });
 
 test('launcher uses the scientific contract and cannot count an unpersisted completion',async()=>{
