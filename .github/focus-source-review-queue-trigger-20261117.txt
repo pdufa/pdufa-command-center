@@ -1,0 +1,3 @@
+One-time 2026-11-17 development branch marker for a read-only 32-FOCUS source-review readiness queue.
+Preconditions: registry recovery run 44120924177, PubMed whole-POOL recovery run 44140703430, FOCUS-only PubMed run 44124684408.
+No scientific scoring, FDA prediction, deployment, or roster mutation authorized.
