@@ -37,7 +37,7 @@ export default function SixIndependentFocusSurveys(){
   if(batchPending)return;
   setBatchPending(true);
   setBatchStatus('Submitting bounded L4–L6 evidence batch…');
-  try{const r=await fetch('/api/assessments/runtime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'FOCUS_LEVELS456_BATCH'})});const body=await r.json();if(!r.ok)throw Error(body.error||'Batch rejected');setBatchStatus('Up to six L4–L6 trial-level assessments queued. Refresh after execution; repeat to continue the 96 slots. No FDA probabilities are implied.');}
+  try{const r=await fetch('/api/assessments/runtime',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'FOCUS_LEVELS456_BATCH'})});const body=await r.json();if(!r.ok)throw Error(body.error||'Batch rejected');setBatchStatus('Batch request completed for up to six L4–L6 trial-level assessments. Refreshing saved results; repeat to continue the 96 slots. No FDA probabilities are implied.');await refresh();}
   catch(e){setBatchStatus(e instanceof Error?e.message:'Batch unavailable');}
   finally{setBatchPending(false);}
  }
