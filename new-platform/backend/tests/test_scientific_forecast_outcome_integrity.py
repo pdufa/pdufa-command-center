@@ -9,6 +9,8 @@ M = "b" * 64
 
 def reviewed(m):
     x = reviewed_record()
+    x.update(sourceDate="2026-01-18", sourceRetrievedAt="2026-01-19",
+             sourceVerifiedAt="2026-01-20", reviewedAt="2026-01-21")
     x["measurements"] = m
     return x
 

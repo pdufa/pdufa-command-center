@@ -9,6 +9,7 @@ from __future__ import annotations
 from datetime import date, datetime, timezone
 import re
 from urllib.parse import urlparse
+from .scientific_event_chronology import event_covered_by_review
 
 VERSION = "scientific-forecast-outcome-integrity-v1"
 _SHA = re.compile(r"[a-f0-9]{64}")
@@ -103,7 +104,10 @@ def assess_prospective_metadata(level, evidence, *, trial_id, cutoff):
             or prediction.get("sourceFreezeSha256") != source_hash
             or prediction.get("modelArtifactSha256") != model_hash
             or not isinstance(prediction.get("predictionId"), str)
-            or not 0 < len(prediction["predictionId"].strip()) <= 128):
+            or not 0 < len(prediction["predictionId"].strip()) <= 128
+            or not event_covered_by_review(level, fields[0], freeze_time.date(), cutoff)
+            or not event_covered_by_review(level, fields[1], model_time.date(), cutoff)
+            or not event_covered_by_review(level, fields[2], prediction_time.date(), cutoff)):
         return {**base, "status": "REJECTED_FREEZE_METADATA",
                 "reason": "Exact-trial digests, ordered timezone-aware timestamps, cutoff and prediction artifact reference must reconcile."}
     return {
@@ -146,7 +150,8 @@ def assess_outcome_chronology(level, evidence, *, trial_id, cutoff, filing_conte
             or _application(goal) != app_key or _application(outcome) != app_key
             or not goal_date or not action_date or not cutoff_day
             or action_date > cutoff_day or goal_date > cutoff_day
-            or outcome.get("officialAction") not in _ACTIONS):
+            or outcome.get("officialAction") not in _ACTIONS
+            or not event_covered_by_review(level, "officialActionAndDate", action_date, cutoff)):
         return {**base, "status": "REJECTED_ACTION_RECORD",
                 "reason": "Exact application/cycle, trial, official original dates, and supported FDA action classification required."}
     action = outcome["officialAction"]

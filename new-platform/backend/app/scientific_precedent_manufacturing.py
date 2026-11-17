@@ -7,6 +7,7 @@ from __future__ import annotations
 from datetime import date
 import re
 from urllib.parse import urlparse
+from .scientific_event_chronology import event_covered_by_review
 
 VERSION = "scientific-precedent-cmc-screen-v1"
 _APP = re.compile(r"[0-9]{6}")
@@ -79,7 +80,8 @@ def assess_precedent(level, evidence, *, cutoff, filing_context=None):
             and prior_app["applicationNumber"] == target_app["applicationNumber"]
             or action not in _ACTIONS or not decided or not asof or decided > asof
             or not isinstance(indication, str) or not 0 < len(indication.strip()) <= 400
-            or not isinstance(modality, str) or not 0 < len(modality.strip()) <= 400):
+            or not isinstance(modality, str) or not 0 < len(modality.strip()) <= 400
+            or not event_covered_by_review(level, "precedentSelection", decided, cutoff)):
         return {**base, "status": "REJECTED_PRECEDENT",
                 "reason": "Different exact FDA application, historical dated official action, indication and modality required."}
     return {**base, "status": "HISTORICAL_PRECEDENT_SOURCE_ONLY",
@@ -119,7 +121,9 @@ def assess_manufacturing(level, evidence, *, cutoff, filing_context=None):
         return {**base, "status": "REJECTED_APPLICATION_LINK",
                 "reason": "Inspection record must explicitly match target application and review cycle."}
     asof, checked = _day(cutoff), _day(raw.get("checkedAt"))
-    if not asof or not checked or checked > asof:
+    if (not asof or not checked or checked > asof
+            or not event_covered_by_review(level, "inspectionEvidence", checked,
+                                              cutoff, source_after_event=False)):
         return {**base, "status": "REJECTED_CHRONOLOGY",
                 "reason": "Original public-record check date must precede assessment cutoff."}
     facility = raw.get("facilityIdentifier")

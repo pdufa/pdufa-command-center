@@ -8,6 +8,7 @@ from __future__ import annotations
 from datetime import date
 import re
 from urllib.parse import urlparse
+from .scientific_event_chronology import event_covered_by_review
 
 VERSION = "scientific-regulatory-context-v1"
 _TYPES = {"NDA", "BLA", "ANDA"}
@@ -87,7 +88,8 @@ def assess_filing(level, evidence, *, trial_id, cutoff):
                 "reason": "Both original-source records must explicitly agree on exact NCT, indication, application ID and review cycle."}
     received, accepted, asof = (_date(filing.get("receivedDate")),
                                 _date(filing.get("acceptanceDate")), _date(cutoff))
-    if not received or not accepted or not asof or not received <= accepted <= asof:
+    if (not received or not accepted or not asof or not received <= accepted <= asof
+            or not event_covered_by_review(level, "acceptedFiling", accepted, cutoff)):
         return {**base, "status": "REJECTED_CHRONOLOGY",
                 "reason": "Both receipt and filing-acceptance dates must be exact and no later than the assessment cutoff."}
     return {**base, "status": "DATED_FILING_RECORDS_RECONCILED_NOT_AGENCY_CERTIFICATION",
@@ -119,7 +121,8 @@ def assess_designation(level, evidence, *, trial_id, cutoff, filing_context=None
     issued, asof = _date(values.get("designationDate")), _date(cutoff)
     if (designation not in _DESIGNATIONS or nct != trial_id
             or not isinstance(indication, str) or not 0 < len(indication.strip()) <= 400
-            or not issued or not asof or issued > asof):
+            or not issued or not asof or issued > asof
+            or not event_covered_by_review(level, "officialDesignationEvidence", issued, cutoff)):
         return {**base, "status": "REJECTED_MEASUREMENTS",
                 "reason": "Designation, exact trial, indication and valid original announcement date must precede cutoff."}
     app = ((filing_context or {}).get("candidateApplicationCycle")

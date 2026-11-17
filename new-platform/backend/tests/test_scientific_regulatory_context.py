@@ -7,6 +7,8 @@ from test_scientific_levels_nine_to_twenty import NCT, intake, reviewed_record
 def official(measurements):
     value = reviewed_record()
     value["source"] = "https://www.fda.gov/drugs/research/official-original-record"
+    value.update(sourceDate="2026-01-27", sourceRetrievedAt="2026-01-28",
+                 sourceVerifiedAt="2026-01-29", reviewedAt="2026-01-30")
     value["measurements"] = measurements
     return value
 
