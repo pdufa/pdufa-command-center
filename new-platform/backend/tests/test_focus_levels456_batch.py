@@ -62,3 +62,24 @@ def test_stale_claim_without_run_id_is_retried(engine,monkeypatch):
             WHERE batch_id=:b AND level=4"""),{'b':batch_id}).one()
     assert slot[0]==2 and slot[1]
     assert len(runtime.history(engine,'NCT04576949',4)['runs'])==1
+
+def test_32_trial_roster_creates_96_isolated_slots_and_bounded_six(engine,monkeypatch):
+    monkeypatch.setattr(runtime,'collect_documents',lambda source,level:source)
+    document=roster()
+    document['members']=[
+        {'nct':f'NCT{index:08d}','ticker':f'S{index}','company':f'Synthetic {index}','pdufaDate':None}
+        for index in range(1,33)
+    ]
+    existing.import_roster(engine,document)
+    batch_id=batch456.create(engine)
+    with engine.connect() as c:
+        assert c.execute(text('SELECT COUNT(*) FROM focus_assessment_items WHERE batch_id=:b'),
+                         {'b':batch_id}).scalar()==96
+    result=batch456.execute(engine,batch_id,workers=1,max_items=6,
+                            collector=lambda nct:snapshot(nct=nct))
+    assert result['total']==32
+    assert sum(slot['state']=='COMPLETED'
+               for trial in result['trials'] for slot in trial['levels'].values())==6
+    with engine.connect() as c:
+        assert c.execute(text("""SELECT COUNT(*) FROM focus_assessment_items
+            WHERE batch_id=:b AND state='PENDING'"""),{'b':batch_id}).scalar()==90
