@@ -1,0 +1,49 @@
+name: POOL exact-NCT PubMed leads (read-only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/levels-09-20-development-20261117
+    paths:
+      - scripts/medical/pool_pubmed_discovery.py
+      - new-platform/backend/tests/test_pool_pubmed_discovery.py
+      - .github/workflows/pool-pubmed-research.yml
+
+permissions:
+  contents: read
+
+jobs:
+  discover:
+    if: github.ref == 'refs/heads/codex/levels-09-20-development-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify synthetic exact-POOL boundaries
+        run: |
+          python -m pip install pytest
+          python -m pytest -q new-platform/backend/tests/test_pool_pubmed_discovery.py
+      - name: Query full current POOL, preserving failures
+        id: discovery
+        continue-on-error: true
+        run: |
+          python scripts/medical/pool_pubmed_discovery.py \
+            --roster new-platform/frontend/data/tools-pool-snapshot.json \
+            --output reports/pool-research/pool-pubmed-unreviewed.json
+      - name: Upload unreviewed source-lead artifact only
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pool-pubmed-unreviewed
+          path: reports/pool-research/pool-pubmed-unreviewed.json
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Fail if full POOL query run is incomplete
+        if: steps.discovery.outcome != 'success'
+        run: |
+          echo "Partial POOL source discovery is not completion."
+          exit 1
