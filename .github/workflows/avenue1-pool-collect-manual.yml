@@ -36,6 +36,16 @@ jobs:
         run: |
           python -m py_compile scripts/avenue1_pool_evidence_collector.py
           python -m unittest discover -s tests -p 'test_avenue1_pool_evidence_collector.py' -v
+      - name: Verify authenticated POOL configuration
+        env:
+          PDUFA_API_BASE_URL: ${{ secrets.PDUFA_API_BASE_URL }}
+          PDUFA_INTERNAL_API_KEY: ${{ secrets.PDUFA_INTERNAL_API_KEY }}
+        run: |
+          if [ -z "$PDUFA_API_BASE_URL" ] || [ -z "$PDUFA_INTERNAL_API_KEY" ]; then
+            echo "::error::Avenue 1 requires both GitHub Actions secrets: PDUFA_API_BASE_URL and PDUFA_INTERNAL_API_KEY"
+            exit 1
+          fi
+          echo "Both Avenue 1 GitHub Actions secrets are configured (values hidden)."
       - name: Collect public evidence from authenticated full POOL
         run: python scripts/avenue1_pool_evidence_collector.py --output-dir artifacts/avenue1 --limit "${{ github.event_name == 'push' && '5' || inputs.test_limit }}"
       - name: Retain evidence and coverage report for review
