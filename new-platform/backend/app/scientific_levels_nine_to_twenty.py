@@ -137,6 +137,7 @@ def assess_levels_nine_to_twenty(level_one, *, trial_id, evidence=None, prior_le
     )
     for number, result in results.items():
         result["contractVersion"] = VERSION
+        result["nctId"] = trial_id
         result["methodStatus"] = "EVIDENCE_CONTRACT_ONLY_NOT_IMPLEMENTED_SCIENTIFIC_ENGINE"
         result["validationStatus"] = "NOT_VALIDATED"
         result["limitations"] = [

@@ -22,6 +22,7 @@ def test_exact_nct_unreviewed_work_queue_all_twelve_levels():
     assert result["tasks"][0]["action"] == "COLLECT_AND_REVIEW_SOURCE"
     assert result["tasks"][0]["priorityOrder"] == 1
     assert result["tasks"][-1]["priorityOrder"] == 60
+    assert all(t["id"].startswith(NCT + ":L") for t in result["tasks"])
     assert result["score"] is None
     assert result["fdaPrediction"] == "ABSTAIN"
     assert result["sourceReviewCompletion"] == "NOT_ESTABLISHED"

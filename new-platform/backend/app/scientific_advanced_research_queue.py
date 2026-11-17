@@ -59,6 +59,7 @@ def build_advanced_research_queue(intake, levels, *, trial_id):
     for number, (_, expected) in LEVELS.items():
         record = levels.get(str(number))
         if (not isinstance(record, dict) or record.get("level") != number or
+                record.get("nctId") != trial_id or
                 record.get("score") is not None or
                 record.get("scientificValidation") != "NOT_VERIFIED" or
                 record.get("fdaPrediction") != "ABSTAIN" or
