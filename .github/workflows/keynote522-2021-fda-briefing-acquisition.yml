@@ -62,6 +62,35 @@ jobs:
           Path('research-output/briefing-content-review.json').write_text(json.dumps(report,indent=2)+'\n')
           print(json.dumps({'pages':len(reader.pages),'candidate_page_count':len(matches),'first_matches':matches[:5],'blind_eligible':False},indent=2))
           PY
+      - name: Extract full protocol amendment table pages for review
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from pypdf import PdfReader
+          import json
+          reader=PdfReader('research-output/keynote522-2021-fda-briefing.pdf')
+          # Locate the body by actual page text, not the table-of-contents reference.
+          candidates=[]
+          for i,page in enumerate(reader.pages):
+              t=page.extract_text() or ''
+              low=' '.join(t.casefold().split())
+              if ('summary of key changes' in low and 'protocol' in low) or ('05-dec-2016' in low and '01-may-2018' in low):
+                  candidates.append((i,t))
+          if not candidates:
+              raise SystemExit('No protocol amendment table body candidate found')
+          selected=[]
+          for i,t in candidates:
+              if i<8: # likely TOC, not body
+                  continue
+              for j in range(max(0,i-1),min(len(reader.pages),i+3)):
+                  if j not in selected: selected.append(j)
+          if not selected:
+              raise SystemExit('Only TOC candidate found; cannot assert body extraction')
+          pages=[{'pdf_page':j+1,'text':reader.pages[j].extract_text() or ''} for j in selected]
+          report={'status':'DISCOVERY_ONLY','blind_eligible':False,'historical_snapshot_verified':False,'table_body_candidate_pages':[i+1 for i,t in candidates if i>=8],'extracted_pages':pages,'requires_manual_table_verification':True}
+          Path('research-output/briefing-amendment-table-pages.json').write_text(json.dumps(report,indent=2)+'\\n')
+          print(json.dumps({'table_body_candidate_pages':report['table_body_candidate_pages'],'extracted_page_numbers':[x['pdf_page'] for x in pages],'previews':[{'page':x['pdf_page'],'text':x['text'][:900]} for x in pages[:4]]},indent=2))
+          PY
       - name: Upload source and provenance
         uses: actions/upload-artifact@v4
         with:
