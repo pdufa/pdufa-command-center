@@ -1,0 +1,71 @@
+name: POOL full ClinicalTrials.gov raw source collection (read-only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - codex/levels-09-20-development-20261117
+    paths:
+      - .github/workflows/pool-clinicaltrials-raw-research.yml
+
+permissions:
+  contents: read
+
+jobs:
+  raw-registry:
+    if: github.ref == 'refs/heads/codex/levels-09-20-development-20261117'
+    runs-on: ubuntu-latest
+    timeout-minutes: 100
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Retrieve original exact-NCT registry packets
+        id: registry
+        continue-on-error: true
+        run: |
+          python scripts/collect_deep_medical_intelligence.py \
+            --all --fetch-all --resume \
+            --workers 4 --retries 2 --timeout 25
+      - name: Audit inventory completeness and no fabricated scientific reviews
+        id: audit
+        if: always()
+        continue-on-error: true
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          base = Path("reports/deep-medical-intelligence")
+          summary = json.loads((base / "ingestion-summary.json").read_text())
+          inventory = json.loads((base / "inventory.json").read_text())
+          state = json.loads((base / "ingestion-job.json").read_text())
+          total = inventory["counts"]["uniqueInventoryNcts"]
+          rows = inventory["records"]
+          ids = {row["nctId"] for row in rows}
+          captured = {row["nctId"] for row in rows if row.get("rawRegistryCaptured")}
+          pool_ids = {row["nctId"] for row in rows if row["membership"]["pool"]}
+          assert len(rows) == len(ids) == total
+          assert pool_ids and pool_ids.issubset(captured)
+          assert len(captured) == total, "Incomplete original registry coverage"
+          assert state["state"] == "COMPLETED", "Source fetch errors"
+          assert set(state["attemptedNcts"]) >= ids, "Not every exact NCT attempted"
+          assert inventory["counts"]["fullySourceReviewed"] == 0
+          assert inventory["counts"]["scientificReviewIncomplete"] == total
+          assert summary["counts"]["rawRegistryPacketsCaptured"] == total
+          assert inventory["ingestion"]["remainingFetchQueue"] == 0
+          print("RAW_REGISTRY_ONLY_NOT_CLINICALLY_REVIEWED", total)
+          PY
+      - name: Save raw source evidence artifact without changing repository
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pool-registry-raw-research
+          path: reports/deep-medical-intelligence/
+          if-no-files-found: warn
+          retention-days: 14
+      - name: Reject false whole-inventory completion claims
+        if: always() && (steps.registry.outcome != 'success' || steps.audit.outcome != 'success')
+        run: |
+          echo "Whole-POOL registry source capture incomplete; artifact remains research-only."
+          exit 1
