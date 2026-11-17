@@ -2,6 +2,11 @@ name: Manual historical source acquisition (research only)
 
 on:
   workflow_dispatch:
+  push:
+    branches:
+      - plan/isolated-levels-7-20-20261116
+    paths:
+      - .github/workflows/manual-historical-source-acquisition.yml
 
 permissions:
   contents: read
