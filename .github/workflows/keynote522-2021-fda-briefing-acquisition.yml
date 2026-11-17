@@ -1,0 +1,120 @@
+name: KEYNOTE-522 2021 FDA briefing acquisition (research only)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - plan/isolated-levels-7-20-20261116
+    paths:
+      - .github/workflows/keynote522-2021-fda-briefing-acquisition.yml
+permissions:
+  contents: read
+jobs:
+  acquire-briefing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Acquire official 2021 briefing or report access failure
+        env:
+          PYTHONPATH: new-platform/backend
+        run: |
+          mkdir -p research-output
+          if python -m assessment_levels_07_20.discovery_download \
+            --url 'https://www.fda.gov/media/145654' \
+            --output research-output/keynote522-2021-fda-briefing.pdf; then
+            echo 'Official FDA endpoint acquired'
+          else
+            echo 'FDA endpoint inaccessible; trying secondary publicly hosted briefing'
+            python -m assessment_levels_07_20.discovery_download \
+              --url 'https://fda.report/media/145654/ODAC-20210209-CombinedFDA%26MerckBackgrounder.pdf' \
+              --output research-output/keynote522-2021-fda-briefing.pdf
+          fi
+      - name: Verify bytes and extract dated amendment references
+        run: |
+          python -m pip install --disable-pip-version-check 'pypdf==5.9.0'
+          python - <<'PY'
+          from pathlib import Path
+          from pypdf import PdfReader
+          import hashlib,json,re
+          p=Path('research-output/keynote522-2021-fda-briefing.pdf')
+          b=p.read_bytes()
+          m=json.loads(Path(str(p)+'.json').read_text())
+          if not b.startswith(b'%PDF-') or len(b)<10000:
+              raise SystemExit('Not a substantive PDF')
+          if hashlib.sha256(b).hexdigest()!=m['sha256'] or len(b)!=m['byte_count']:
+              raise SystemExit('Source byte integrity failure')
+          reader=PdfReader(str(p))
+          terms=['keynote-522','05-dec-2016','01-may-2018','protocol amendment','summary of key changes']
+          matches=[]
+          for i,page in enumerate(reader.pages):
+              t=' '.join((page.extract_text() or '').split())
+              if any(x in t.casefold() for x in terms):
+                  snippets=[]
+                  for match in list(re.finditer(r'(?i)(KEYNOTE.522|05.Dec.2016|01.May.2018|protocol amendment|summary of key changes)',t))[:6]:
+                      snippets.append(t[max(0,match.start()-100):match.end()+180])
+                  matches.append({'page':i+1,'snippets':snippets})
+          report={'status':'DISCOVERY_ONLY','source':m['source_url'],'sha256':m['sha256'],'byte_count':len(b),'retrieved_at':m['retrieved_at'],'pages':len(reader.pages),'candidate_pages':matches[:90],'historical_snapshot_verified':False,'blind_eligible':False,'accuracy_evaluated':False,'requires_manual_source_and_cutoff_review':True}
+          Path('research-output/briefing-content-review.json').write_text(json.dumps(report,indent=2)+'\n')
+          print(json.dumps({'pages':len(reader.pages),'candidate_page_count':len(matches),'first_matches':matches[:5],'blind_eligible':False},indent=2))
+          PY
+      - name: Extract full protocol amendment table pages for review
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          from pypdf import PdfReader
+          import json
+          reader=PdfReader('research-output/keynote522-2021-fda-briefing.pdf')
+          # Locate the body by actual page text, not the table-of-contents reference.
+          candidates=[]
+          for i,page in enumerate(reader.pages):
+              t=page.extract_text() or ''
+              low=' '.join(t.casefold().split())
+              if ('summary of key changes' in low and 'protocol' in low) or ('05-dec-2016' in low and '01-may-2018' in low):
+                  candidates.append((i,t))
+          if not candidates:
+              raise SystemExit('No protocol amendment table body candidate found')
+          selected=[]
+          for i,t in candidates:
+              if i<8: # likely TOC, not body
+                  continue
+              for j in range(max(0,i-1),min(len(reader.pages),i+3)):
+                  if j not in selected: selected.append(j)
+          if not selected:
+              raise SystemExit('Only TOC candidate found; cannot assert body extraction')
+          pages=[{'pdf_page':j+1,'text':reader.pages[j].extract_text() or ''} for j in selected]
+          report={'status':'DISCOVERY_ONLY','blind_eligible':False,'historical_snapshot_verified':False,'table_body_candidate_pages':[i+1 for i,t in candidates if i>=8],'extracted_pages':pages,'requires_manual_table_verification':True}
+          Path('research-output/briefing-amendment-table-pages.json').write_text(json.dumps(report,indent=2)+'\n')
+          print(json.dumps({'table_body_candidate_pages':report['table_body_candidate_pages'],'extracted_page_numbers':[x['pdf_page'] for x in pages],'previews':[{'page':x['pdf_page'],'text':x['text'][:900]} for x in pages[:4]]},indent=2))
+          PY
+      - name: Normalize dated amendment ledger from verified table body
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json,re
+          data=json.loads(Path('research-output/briefing-amendment-table-pages.json').read_text())
+          body=[p for p in data['extracted_pages'] if 'Table 8 Summary of Key Changes' in p['text'] and p['pdf_page']>=8]
+          if len(body)!=1: raise SystemExit('Expected exactly one Table 8 body page')
+          page=body[0]
+          t=' '.join(page['text'].split())
+          entries=[]
+          patterns=[('ORIGINAL','05-Dec-2016',r'Protocol\s*\(05-Dec-2016\)'),('AMENDMENT_01','16-Dec-2016',r'Amendment\s*01\s*\(16-Dec-2016\)'),('AMENDMENT_02','01-May-2018',r'Amendment\s*02\s*\(01-May-2018\)'),('AMENDMENT_03','17-Oct-2018',r'Amendment\s*03\s*\(17-Oct-2018\)'),('AMENDMENT_04','26-Feb-2020',r'Amendment\s*04\s*\(26-FEB-2020\)')]
+          for name,date,pat in patterns:
+              m=re.search(pat,t,re.I)
+              if not m: raise SystemExit('Required amendment entry missing: '+name)
+              entries.append({'entry':name,'amendment_date':date,'source_pdf_page':page['pdf_page'],'evidence_excerpt':t[m.start():m.start()+900],'source_kind':'2021_BRIEFING_RETROSPECTIVE_TABLE','original_amendment_bytes_acquired':False,'eligible_for_pre_2021_02_cutoff':False,'blind_eligible':False})
+          report={'trial':'NCT03036488','status':'DISCOVERY_ONLY','source_sha256':'d60e17a8b819637cc959b55c12b24f562081b349dd75994e2a45859c881e3903','historical_snapshot_verified':False,'blind_eligible':False,'entries':entries,'requires_manual_cutoff_review':True}
+          Path('research-output/briefing-amendment-ledger.json').write_text(json.dumps(report,indent=2)+'\n')
+          print(json.dumps({'source_pdf_page':page['pdf_page'],'entries':entries},indent=2))
+          PY
+      - name: Upload source and provenance
+        uses: actions/upload-artifact@v4
+        with:
+          name: keynote522-2021-fda-briefing-discovery
+          path: research-output/
+          retention-days: 14
+          if-no-files-found: error

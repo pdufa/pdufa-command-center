@@ -1,0 +1,57 @@
+{
+  "schema_version": "1",
+  "event": {
+    "trial_id": "NCT03036488",
+    "application_id": "BLA 125514/S-089",
+    "indication": "high-risk early-stage triple-negative breast cancer"
+  },
+  "source": {
+    "title": "Pembrolizumab for Early Triple-Negative Breast Cancer",
+    "doi": "10.1056/NEJMoa1910549",
+    "pmid": "32101663",
+    "publication_date": "2020-02-26",
+    "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa1910549",
+    "source_type": "PEER_REVIEWED",
+    "retrieval_method": "public web text discovery",
+    "retrieved_at_verified": false,
+    "source_bytes_sha256": null,
+    "point_in_time_snapshot_verified": false
+  },
+  "reported_trial_facts": {
+    "phase": 3,
+    "randomization_ratio": "2:1",
+    "total_randomized": 1174,
+    "pembrolizumab_group": 784,
+    "placebo_group": 390,
+    "pcr_interim_sample": 602,
+    "pcr_pembrolizumab_percent": 64.8,
+    "pcr_placebo_percent": 51.2,
+    "pcr_difference_percentage_points": 13.6,
+    "pcr_difference_95ci": [
+      5.4,
+      21.8
+    ],
+    "pcr_p_value": "<0.001",
+    "event_free_survival_hazard_ratio": 0.63,
+    "event_free_survival_95ci": [
+      0.43,
+      0.93
+    ],
+    "grade_3_or_higher_treatment_related_adverse_events_percent": {
+      "pembrolizumab": 78,
+      "placebo": 73
+    },
+    "median_followup_months": 15.5,
+    "event_free_survival_hazard_ratio_context": "Early exploratory event-count comparison at median 15.5 months follow-up; NOT the later confirmatory EFS interim analysis reported in 2022.",
+    "pcr_interim_sample_context": "First 602 randomized participants, not the full 1174 randomized trial population."
+  },
+  "controls": {
+    "status": "DISCOVERY_ONLY",
+    "outcome_exposed_in_source": false,
+    "blind_cohort_eligible": false,
+    "scientific_score": null,
+    "approval_prediction": null,
+    "accuracy_evaluated": false,
+    "note": "Discovery-only, 2020 paper facts cross-checked against PubMed PMID 32101663. Later 2022 EFS publication and 2026 FDA labels are outcome/post-decision sources and excluded. No authenticated point-in-time snapshot or source-byte hash; not eligible for frozen blind input."
+  }
+}

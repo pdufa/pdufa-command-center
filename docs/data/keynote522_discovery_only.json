@@ -1,0 +1,41 @@
+{
+  "schema_version": "1",
+  "status": "DISCOVERY_ONLY",
+  "research_date": "2026-11-16",
+  "blind_eligible": false,
+  "source_bytes_verified": false,
+  "events": [
+    {
+      "nct_id": "NCT03036488",
+      "application_id": "BLA125514/S-089",
+      "indication": "High-risk early-stage triple-negative breast cancer",
+      "trial_phase": "PHASE3",
+      "decision_date": "2021-07-26",
+      "decision_date_source": "https://www.asco.org/practice-policy/policy-issues-statements/asco-in-action/fda-approves-pembrolizumab-high-risk-early",
+      "sources": [
+        {
+          "source_type": "PEER_REVIEWED",
+          "url": "https://www.nejm.org/doi/full/10.1056/NEJMoa1910549",
+          "published_on": "2020-02-26",
+          "publication_date_note": "NEJM online publication February 26, 2020; print issue February 27, 2020",
+          "outcome_exposing": false,
+          "verified_historical_bytes": false
+        },
+        {
+          "source_type": "SPONSOR_RELEASE",
+          "url": "https://www.merck.com/news/merck-announces-phase-3-keynote-522-trial-met-dual-primary-endpoint-of-event-free-survival-efs-in-patients-with-high-risk-early-stage-triple-negative-breast-cancer-tnbc/",
+          "published_on": "2021-05-13",
+          "outcome_exposing": false,
+          "verified_historical_bytes": false
+        },
+        {
+          "source_type": "FDA",
+          "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2021/125514Orig1s089s114ltr_.pdf",
+          "outcome_exposing": true,
+          "quarantine": "OUTCOME_ONLY",
+          "verified_historical_bytes": false
+        }
+      ]
+    }
+  ]
+}

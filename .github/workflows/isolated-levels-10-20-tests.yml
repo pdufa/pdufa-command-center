@@ -1,0 +1,97 @@
+name: Isolated Levels 7-20 contract tests
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'new-platform/backend/assessment_levels_07_20/**'
+      - 'new-platform/backend/tests/test_isolated_level*.py'
+      - 'new-platform/backend/tests/test_isolated_dispatch.py'
+      - 'new-platform/backend/tests/test_blind_cohort.py'
+      - 'new-platform/backend/tests/test_point_in_time_evidence.py'
+      - 'new-platform/backend/tests/test_evaluation_readiness.py'
+      - 'new-platform/backend/tests/test_historical_preflight.py'
+      - 'new-platform/backend/tests/test_historical_coverage.py'
+      - 'new-platform/backend/tests/test_historical_report.py'
+      - 'new-platform/backend/tests/test_frozen_artifacts.py'
+      - 'new-platform/backend/tests/test_cohort_snapshot_integrity.py'
+      - 'new-platform/backend/tests/test_prediction_ledger.py'
+      - 'new-platform/backend/tests/test_blind_prediction_package.py'
+      - 'new-platform/backend/tests/test_frozen_blind_package.py'
+      - 'new-platform/backend/tests/test_historical_source_intake.py'
+      - 'new-platform/backend/tests/test_historical_intake_package.py'
+      - 'new-platform/backend/tests/test_historical_intake_inventory.py'
+      - 'new-platform/backend/tests/test_historical_collection_queue.py'
+      - 'new-platform/backend/tests/test_historical_research_worklist.py'
+      - 'new-platform/backend/tests/test_historical_collection_progress.py'
+      - 'new-platform/backend/tests/test_historical_discovery_gate.py'
+      - 'new-platform/backend/tests/test_historical_source_bytes.py'
+      - 'new-platform/backend/tests/test_discovery_source_packaging.py'
+      - 'new-platform/backend/tests/test_discovery_download.py'
+      - 'docs/data/keynote522_discovery_only.json'
+      - 'docs/data/keynote522_2020_predecision_extracted_facts.json'
+      - 'new-platform/backend/tests/test_historical_worklist_cli.py'
+      - 'new-platform/backend/tests/test_keynote522_discovery_facts.py'
+      - '.github/workflows/isolated-levels-10-20-tests.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  isolated-contracts:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install test runner only
+        run: python -m pip install pytest
+      - name: Verify Level 7-20 module and test coverage
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root = Path("new-platform/backend")
+          modules = sorted((root / "assessment_levels_07_20").glob("level*.py"))
+          tests = sorted((root / "tests").glob("test_isolated_level*.py"))
+          for level in range(7, 21):
+              tag = f"level{level:02d}" if level <= 9 else f"level{level}"
+              assert any(p.name.startswith(tag + "_") for p in modules), f"Missing module {tag}"
+              assert any(p.name.startswith("test_isolated_" + tag + "_") for p in tests), f"Missing tests {tag}"
+          print("All 14 Level 7-20 contracts and test files present")
+          PY
+      - name: Run isolated Levels 7-20 tests
+        run: PYTHONPATH=new-platform/backend python -m pytest -q new-platform/backend/tests/test_isolated_level*.py new-platform/backend/tests/test_isolated_dispatch.py new-platform/backend/tests/test_blind_cohort.py new-platform/backend/tests/test_point_in_time_evidence.py new-platform/backend/tests/test_evaluation_readiness.py new-platform/backend/tests/test_historical_preflight.py new-platform/backend/tests/test_historical_coverage.py new-platform/backend/tests/test_historical_report.py new-platform/backend/tests/test_frozen_artifacts.py new-platform/backend/tests/test_cohort_snapshot_integrity.py new-platform/backend/tests/test_prediction_ledger.py new-platform/backend/tests/test_blind_prediction_package.py new-platform/backend/tests/test_frozen_blind_package.py new-platform/backend/tests/test_historical_source_intake.py new-platform/backend/tests/test_historical_intake_package.py new-platform/backend/tests/test_historical_intake_inventory.py new-platform/backend/tests/test_historical_collection_queue.py new-platform/backend/tests/test_historical_research_worklist.py new-platform/backend/tests/test_historical_collection_progress.py new-platform/backend/tests/test_historical_worklist_cli.py new-platform/backend/tests/test_historical_discovery_gate.py new-platform/backend/tests/test_historical_source_bytes.py new-platform/backend/tests/test_discovery_source_packaging.py new-platform/backend/tests/test_discovery_download.py new-platform/backend/tests/test_keynote522_discovery_facts.py
+      - name: Ensure no production imports or writes
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          root = Path("new-platform/backend/assessment_levels_07_20")
+          forbidden = ("from app", "import app", "sqlalchemy", "requests", "httpx", "subprocess")
+          for file in root.glob("*.py"):
+              content = file.read_text()
+              for token in forbidden:
+                  assert token not in content, (file, token)
+          # Only explicit research CLI may persist downloaded source bytes.
+          # All other isolated modules remain read-only and production-disconnected.
+          report = (root / "historical_report.py").read_text()
+          assert "with Path(path).open(\"r\", encoding=\"utf-8\")" in report
+          assert "open(\"w" not in report and "write_text(" not in report
+          downloader = (root / "discovery_download.py").read_text()
+          assert 'if __name__ == "__main__":' in downloader
+          assert "download_discovery_source(" in downloader
+          assert 'destination.open("xb")' in downloader
+          assert 'metadata.open("x", encoding="utf-8")' in downloader
+          assert "destination.unlink(missing_ok=True)" in downloader
+          assert "destination.exists()" in downloader
+          assert 'final_url.scheme != "https"' in downloader
+          assert 'final_url.username or final_url.password' in downloader
+          assert "package_discovery_source_bytes(" in downloader
+          for file in root.glob("*.py"):
+              if file.name in {"historical_report.py", "discovery_download.py"}:
+                  continue
+              content = file.read_text()
+              assert "open(" not in content, file
+              assert "write_bytes(" not in content, file
+              assert "write_text(" not in content, file
+          print("Isolated module import/write guard passed")
+          PY

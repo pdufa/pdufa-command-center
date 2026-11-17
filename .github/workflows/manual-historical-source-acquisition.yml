@@ -1,0 +1,96 @@
+name: Manual historical source acquisition (research only)
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - plan/isolated-levels-7-20-20261116
+    paths:
+      - .github/workflows/manual-historical-source-acquisition.yml
+
+permissions:
+  contents: read
+
+jobs:
+  collect-keynote522:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Check out isolated branch
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Configure Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Download pre-decision publication (discovery only)
+        env:
+          PYTHONPATH: new-platform/backend
+        run: |
+          if python -m assessment_levels_07_20.discovery_download \
+            --url 'https://www.nejm.org/doi/pdf/10.1056/NEJMoa1910549' \
+            --output research-output/keynote522-2020-publication.pdf; then
+            echo 'Original journal PDF retrieved.'
+          else
+            echo 'Journal PDF unavailable; retrieving Europe PMC structured bibliographic record instead.'
+            python -m assessment_levels_07_20.discovery_download \
+              --url 'https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:32101663%20AND%20SRC:MED&format=json' \
+              --output research-output/keynote522-2020-europepmc-record.json
+          fi
+      - name: Retrieve independent pre-decision sponsor announcement
+        env:
+          PYTHONPATH: new-platform/backend
+        run: |
+          python -m assessment_levels_07_20.discovery_download \
+            --url 'https://www.merck.com/news/merck-announces-phase-3-keynote-522-trial-met-dual-primary-endpoint-of-event-free-survival-efs-in-patients-with-high-risk-early-stage-triple-negative-breast-cancer-tnbc/' \
+            --output research-output/keynote522-2021-sponsor-release.html
+      - name: Validate acquired source content and historical dates
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import json, hashlib, re
+          from datetime import datetime, timezone
+          folder = Path("research-output")
+          checks = [
+              ("keynote522-2020-europepmc-record.json", "32101663", "2020-02-27"),
+              ("keynote522-2021-sponsor-release.html", "KEYNOTE-522", "2021-05-13"),
+          ]
+          decision = datetime.fromisoformat("2021-07-26T00:00:00+00:00")
+          report = {"status": "DISCOVERY_ONLY", "blind_eligible": False, "checks": []}
+          publication_files = [folder / "keynote522-2020-publication.pdf", folder / "keynote522-2020-europepmc-record.json"]
+          available = [p for p in publication_files if p.exists()]
+          if len(available) != 1:
+              raise SystemExit("Expected exactly one publication source (PDF or Europe PMC fallback)")
+          if available[0].suffix == ".pdf":
+              checks[0] = ("keynote522-2020-publication.pdf", None, "2020-02-27")
+          for name, marker, publication_date in checks:
+              file = folder / name
+              meta = json.loads((folder / (name + ".json")).read_text())
+              raw = file.read_bytes()
+              actual_hash = hashlib.sha256(raw).hexdigest()
+              text = raw.decode("utf-8", errors="replace")
+              result = {
+                  "file": name, "sha256_match": actual_hash == meta["sha256"],
+                  "byte_count_match": len(raw) == meta["byte_count"],
+                  "subject_marker_present": (marker.casefold() in text.casefold()) if marker else (raw.startswith(b"%PDF-") and len(raw) > 10000),
+                  "claimed_publication_date": publication_date,
+                  "claimed_date_precedes_decision": publication_date < "2021-07-26",
+                  "retrieved_after_decision": datetime.fromisoformat(meta["retrieved_at"]) >= decision,
+                  "historical_snapshot_verified": False,
+                  "source_format": "pdf" if file.suffix == ".pdf" else ("json" if file.suffix == ".json" else "html"),
+              }
+              report["checks"].append(result)
+              if not all(result[k] for k in ("sha256_match", "byte_count_match", "subject_marker_present", "claimed_date_precedes_decision", "retrieved_after_decision")):
+                  raise SystemExit(f"Source verification failed: {result}")
+          (folder / "content-checks.json").write_text(json.dumps(report, indent=2) + "\\n")
+          print(json.dumps(report, indent=2))
+          PY
+      - name: Upload retrieved bytes and provenance metadata
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: keynote522-discovery-source
+          path: research-output/
+          if-no-files-found: error
+          retention-days: 14
