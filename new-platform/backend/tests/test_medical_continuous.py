@@ -203,7 +203,10 @@ def test_duplicate_active_run_and_no_auto_start_from_read(engine):
 
 
 
-def test_startup_requeues_all_29_unfinished_focus_runs(engine, monkeypatch):
+def test_startup_requeues_all_29_unfinished_focus_runs(engine, monkeypatch, tmp_path):
+    # Use a temporary roster: tests must never rewrite the packaged FOCUS source.
+    fixture_roster = tmp_path / "focus_startup_roster.json"
+    monkeypatch.setattr(medical, "FOCUS", fixture_roster)
     # Simulate the full FOCUS roster and a restart with more than 25 pending runs.
     records = [{"nct": f"NCT{i:08d}", "ticker": "TEST", "company": "Fixture"}
                for i in range(1, 30)]
