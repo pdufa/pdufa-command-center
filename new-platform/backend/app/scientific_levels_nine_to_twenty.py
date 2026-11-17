@@ -89,16 +89,25 @@ def _reviewed_criteria(level):
                   and v.get("retrievalProvenance") == "RECORDED")
 
 def _benefit_risk_dependencies(prior_levels):
-    """Upstream evidence inventory; no inference that a drug is safe/effective."""
+    """Require topic-specific reviewed inputs, not unrelated review counts.
+
+    A reviewed SAP, for example, does not establish reviewed endpoint results.
+    These are narrow evidence-presence gates, never scientific validity.
+    """
     prior = prior_levels if isinstance(prior_levels, dict) else {}
     details = {}
-    for number in ("3", "4", "5", "7", "8"):
+    for number in ("2", "3", "4", "5", "7", "8"):
         details[number] = _reviewed_criteria(prior.get(number))
+    efficacy = {"primaryEndpointResults", "effectSizeAndPrecision"}
+    harms = {"adverseEvents", "seriousAdverseEvents", "discontinuations"}
+    context = {"indicationDefinition", "clinicalMeaningfulness", "standardOfCareComparator"}
     return {
-        "benefitEvidenceReviewed": bool(details["3"]),
-        "harmEvidenceReviewed": bool(details["4"] or details["8"]),
-        "indicationContextReviewed": bool(details["5"]),
-        "populationEvidenceReviewed": bool(details["7"]),
+        "benefitEvidenceReviewed": bool(set(details["3"]) & efficacy),
+        "harmEvidenceReviewed": bool(set(details["4"]) & harms
+                                     or "exposureAdjustedRates" in details["8"]),
+        "indicationContextReviewed": bool(set(details["5"]) & context),
+        "populationEvidenceReviewed": ("populationDefinition" in details["7"]
+                                       or "populationAndEligibility" in details["2"]),
         "upstreamAcceptedCriterionNames": details,
         "limitations": [
             "Upstream evidence is an inventory of reviewed source records, not a finding of efficacy or safety.",
@@ -140,14 +149,19 @@ def assess_levels_nine_to_twenty(level_one, *, trial_id, evidence=None, prior_le
     nine["benefitRiskEvidenceAlignment"] = deps
     nine["benefitHarmContextComparison"] = align_benefit_harm(nine, evidence)
     nine["methodStatus"] = "PARTIAL_EVIDENCE_RECONCILIATION_NOT_CLINICAL_CONCLUSION"
-    nine["integrationStatus"] = (
-        "BLOCKED_UPSTREAM_EVIDENCE"
-        if not (deps["benefitEvidenceReviewed"] and deps["harmEvidenceReviewed"]
-                and deps["indicationContextReviewed"])
-        else "AWAITING_OWNER_BENEFIT_RISK_JUDGMENT"
-    )
-    if nine["reviewReadiness"]["complete"] and nine["integrationStatus"] == "AWAITING_OWNER_BENEFIT_RISK_JUDGMENT":
+    evidence_ready = (deps["benefitEvidenceReviewed"] and deps["harmEvidenceReviewed"]
+                      and deps["indicationContextReviewed"])
+    context_state = nine["benefitHarmContextComparison"]["status"]
+    if not evidence_ready:
+        nine["integrationStatus"] = "BLOCKED_UPSTREAM_EVIDENCE"
+    elif context_state == "CONTEXT_DIFFERENCES_REQUIRE_OWNER_REVIEW":
+        nine["integrationStatus"] = "CONTEXT_DIFFERENCES_REQUIRE_OWNER_REVIEW"
+    elif context_state != "DESCRIPTIVE_CONTEXT_ALIGNMENT_ONLY":
+        nine["integrationStatus"] = "BLOCKED_LEVEL_NINE_CONTEXT"
+    elif nine["reviewReadiness"]["complete"]:
         nine["integrationStatus"] = "REVIEWED_SOURCES_REQUIRE_CLINICAL_SYNTHESIS"
+    else:
+        nine["integrationStatus"] = "AWAITING_OWNER_BENEFIT_RISK_JUDGMENT"
     ten = results["10"]
     ten["standardOfCareContext"] = compare_standard_care(
         ten, evidence, intake.get("assessmentCutoff"))
