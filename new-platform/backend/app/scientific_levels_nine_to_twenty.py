@@ -10,6 +10,7 @@ from __future__ import annotations
 from .scientific_levels_two_to_six import assess_review_contracts
 from .scientific_benefit_harm import align_benefit_harm
 from .scientific_standard_care import compare_standard_care
+from .scientific_therapeutic_context import therapeutic_context
 
 VERSION = "scientific-contracts-09-20-v1"
 
@@ -146,4 +147,8 @@ def assess_levels_nine_to_twenty(level_one, *, trial_id, evidence=None, prior_le
     ten["standardOfCareContext"] = compare_standard_care(
         ten, evidence, intake.get("assessmentCutoff"))
     ten["methodStatus"] = "PARTIAL_DATED_CONTEXT_ALIGNMENT_NOT_STANDARD_OF_CARE_VALIDATION"
+    eleven = results["11"]
+    eleven["therapeuticContext"] = therapeutic_context(
+        eleven, evidence, intake.get("assessmentCutoff"))
+    eleven["methodStatus"] = "PARTIAL_DESCRIPTIVE_BURDEN_AND_ALTERNATIVES_NOT_UNMET_NEED_VALIDATION"
     return results
