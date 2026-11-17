@@ -238,7 +238,7 @@ class RegistryClient:
 
     def fetch(self, nct, resume=False):
         old_doc, source = self.cached(nct)
-        if resume and source and str(source.get('lastSuccessfulRemoteRetrievalAt', '')).startswith(now()[:10]):
+        if resume and old_doc is not None and source and str(source.get('lastSuccessfulRemoteRetrievalAt', '')).startswith(now()[:10]):
             return nct, old_doc, None, 'RESUMED_CURRENT_DAY_REMOTE_CAPTURE'
         url = 'https://clinicaltrials.gov/api/v2/studies/' + nct
         error = None
@@ -301,6 +301,18 @@ def trial_analysis(record, document=None, source=None, error=None):
             'missingEvidence': ['Independent original-source interpretation and relevant publications, statistical plans, clinical significance, safety context and limitations remain to be reviewed.'] + ([] if document else ['Complete official registry packet not yet captured by this independent collector.'])}
 
 
+def latest_source_job_status(selected, events):
+    """Keep historical source attempts but evaluate only latest event per exact NCT."""
+    latest = {}
+    for event in events:
+        if isinstance(event, dict) and event.get('nctId') in selected:
+            latest[event['nctId']] = event
+    if len(latest) != len(selected):
+        return 'COMPLETED_WITH_SOURCE_ERRORS'
+    return ('COMPLETED_WITH_SOURCE_ERRORS'
+            if any(entry.get('error') for entry in latest.values()) else 'COMPLETED')
+
+
 def run(args, root=ROOT, report=None):
     report = report or root / 'reports/deep-medical-intelligence'
     inventory = build_inventory(links_path=args.links, root=root)
@@ -331,7 +343,7 @@ def run(args, root=ROOT, report=None):
                 client.save()
                 if nct not in job['attemptedNcts']: job['attemptedNcts'].append(nct)
                 job['events'].append(event); write(job_path, job)
-        job.update({'finishedAt': now(), 'state': 'COMPLETED_WITH_SOURCE_ERRORS' if any(e['error'] for e in job['events'] if e['nctId'] in selected) else 'COMPLETED'})
+        job.update({'finishedAt': now(), 'state': latest_source_job_status(selected, job['events'])})
         write(job_path, job)
     analyses = []
     for record in inventory['records']:
