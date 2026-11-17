@@ -1,0 +1,71 @@
+name: KEYNOTE-522 2021 FDA briefing acquisition (research only)
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - plan/isolated-levels-7-20-20261116
+    paths:
+      - .github/workflows/keynote522-2021-fda-briefing-acquisition.yml
+permissions:
+  contents: read
+jobs:
+  acquire-briefing:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Acquire official 2021 briefing or report access failure
+        env:
+          PYTHONPATH: new-platform/backend
+        run: |
+          mkdir -p research-output
+          if python -m assessment_levels_07_20.discovery_download \
+            --url 'https://www.fda.gov/media/145654' \
+            --output research-output/keynote522-2021-fda-briefing.pdf; then
+            echo 'Official FDA endpoint acquired'
+          else
+            echo 'FDA endpoint inaccessible; trying secondary publicly hosted briefing'
+            python -m assessment_levels_07_20.discovery_download \
+              --url 'https://fda.report/media/145654/ODAC-20210209-CombinedFDA%26MerckBackgrounder.pdf' \
+              --output research-output/keynote522-2021-fda-briefing.pdf
+          fi
+      - name: Verify bytes and extract dated amendment references
+        run: |
+          python -m pip install --disable-pip-version-check 'pypdf==5.9.0'
+          python - <<'PY'
+          from pathlib import Path
+          from pypdf import PdfReader
+          import hashlib,json,re
+          p=Path('research-output/keynote522-2021-fda-briefing.pdf')
+          b=p.read_bytes()
+          m=json.loads(Path(str(p)+'.json').read_text())
+          if not b.startswith(b'%PDF-') or len(b)<10000:
+              raise SystemExit('Not a substantive PDF')
+          if hashlib.sha256(b).hexdigest()!=m['sha256'] or len(b)!=m['byte_count']:
+              raise SystemExit('Source byte integrity failure')
+          reader=PdfReader(str(p))
+          terms=['keynote-522','05-dec-2016','01-may-2018','protocol amendment','summary of key changes']
+          matches=[]
+          for i,page in enumerate(reader.pages):
+              t=' '.join((page.extract_text() or '').split())
+              if any(x in t.casefold() for x in terms):
+                  snippets=[]
+                  for match in list(re.finditer(r'(?i)(KEYNOTE.522|05.Dec.2016|01.May.2018|protocol amendment|summary of key changes)',t))[:6]:
+                      snippets.append(t[max(0,match.start()-100):match.end()+180])
+                  matches.append({'page':i+1,'snippets':snippets})
+          report={'status':'DISCOVERY_ONLY','source':m['source_url'],'sha256':m['sha256'],'byte_count':len(b),'retrieved_at':m['retrieved_at'],'pages':len(reader.pages),'candidate_pages':matches[:90],'historical_snapshot_verified':False,'blind_eligible':False,'accuracy_evaluated':False,'requires_manual_source_and_cutoff_review':True}
+          Path('research-output/briefing-content-review.json').write_text(json.dumps(report,indent=2)+'\n')
+          print(json.dumps({'pages':len(reader.pages),'candidate_page_count':len(matches),'first_matches':matches[:5],'blind_eligible':False},indent=2))
+          PY
+      - name: Upload source and provenance
+        uses: actions/upload-artifact@v4
+        with:
+          name: keynote522-2021-fda-briefing-discovery
+          path: research-output/
+          retention-days: 14
+          if-no-files-found: error
