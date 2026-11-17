@@ -55,6 +55,33 @@ jobs:
           Path('research-output/protocol-verification.json').write_text(json.dumps(report, indent=2) + '\n')
           print(json.dumps(report, indent=2))
           PY
+      - name: Extract PDF revision and endpoint review candidates (not eligibility)
+        run: |
+          python -m pip install --disable-pip-version-check 'pypdf==5.9.0'
+          python - <<'PY'
+          from pathlib import Path
+          import json, re
+          from pypdf import PdfReader
+          path = Path('research-output/keynote522-protocol-sap.pdf')
+          reader = PdfReader(str(path))
+          page_count = len(reader.pages)
+          if page_count < 5:
+              raise SystemExit('Protocol PDF has unexpectedly few pages')
+          terms = ('protocol amendment', 'protocol version', 'statistical analysis plan', 'primary endpoint', 'event-free survival', 'pathological complete response', 'document date', 'version date')
+          samples = []
+          for i, page in enumerate(reader.pages):
+              page_text = page.extract_text() or ''
+              if i < 12 or any(t in page_text.casefold() for t in terms):
+                  hits = [t for t in terms if t in page_text.casefold()]
+                  if i < 12 or hits:
+                      snippets = []
+                      for match in list(re.finditer(r'(?i)(?:protocol amendment|protocol version|statistical analysis plan|primary endpoint|event.free survival|pathological complete response|document date|version date)', page_text))[:8]:
+                          snippets.append(' '.join(page_text[max(0,match.start()-90):match.end()+140].split()))
+                      samples.append({'page': i + 1, 'matched_terms': hits, 'snippets': snippets, 'front_matter_excerpt': ' '.join(page_text[:1100].split()) if i < 12 else None})
+          report = {'status':'DISCOVERY_ONLY','blind_eligible':False,'historical_snapshot_verified':False,'protocol_revision_date_verified':False,'page_count':page_count,'candidate_pages':samples[:100],'requires_manual_version_review':True}
+          Path('research-output/protocol-revision-review.json').write_text(json.dumps(report,indent=2)+'\\n')
+          print(json.dumps({'page_count':page_count,'candidate_page_count':len(samples),'first_pages':samples[:4]},indent=2))
+          PY
       - name: Upload protocol bytes and checks
         uses: actions/upload-artifact@v4
         with:
