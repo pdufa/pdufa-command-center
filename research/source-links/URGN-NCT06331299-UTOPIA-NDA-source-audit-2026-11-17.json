@@ -1,0 +1,111 @@
+{
+  "schemaVersion": 1,
+  "kind": "FOCUS_EXACT_NCT_SPONSOR_AND_REGULATORY_SOURCE_TRIAGE",
+  "assessmentDate": "2026-11-17",
+  "ticker": "URGN",
+  "nctId": "NCT06331299",
+  "trialName": "UTOPIA",
+  "indication": "Recurrent low-grade intermediate-risk non-muscle-invasive bladder cancer in adults",
+  "intervention": "UGN-103 (mitomycin) intravesical solution",
+  "studyDesign": {
+    "phase": "PHASE3",
+    "design": "single-arm, multicenter",
+    "originalSponsorReportedEnrolled": 99,
+    "dosing": "75 mg intravesical weekly for six weeks",
+    "primaryEndpoint": "3-month complete response rate",
+    "note": "Single-arm study; non-randomized comparisons with ENVISION are not direct efficacy comparisons."
+  },
+  "sourceLinks": [
+    {
+      "type": "ORIGINAL_CONFERENCE_ABSTRACT",
+      "publisher": "ASCO Journal of Clinical Oncology meeting abstract",
+      "url": "https://ascopubs.org/doi/10.1200/JCO.2026.44.16_suppl.4604",
+      "doi": "10.1200/JCO.2026.44.16_suppl.4604",
+      "publishedOnline": "2026-05-27",
+      "explicitExactNctIdentifier": true,
+      "status": "PUBLISHER_INDEX_EXACT_NCT_SOURCE_IDENTIFIED_NO_INDEPENDENT_ADJUDICATION"
+    },
+    {
+      "type": "SPONSOR_CLINICAL_RESULTS_RELEASE",
+      "publisher": "UroGen Pharma Ltd.",
+      "url": "https://investors.urogen.com/node/11591/pdf",
+      "publicationDate": "2026-05-15",
+      "explicitExactNctIdentifier": true,
+      "status": "SPONSOR_REPORTED_NOT_INDEPENDENTLY_REANALYZED"
+    },
+    {
+      "type": "SPONSOR_REGULATORY_NEWS_RELEASE",
+      "publisher": "UroGen Pharma Ltd.",
+      "url": "https://urogen.gcs-web.com/news-releases/news-release-details/urogen-announces-fda-acceptance-new-drug-application-ugn-103",
+      "publicationDate": "2026-10-19",
+      "explicitExactNctIdentifier": true,
+      "status": "SPONSOR_REPORTS_FDA_NDA_ACCEPTED_AND_PDUFA_TARGET_NOT_FDA_DECISION"
+    },
+    {
+      "type": "SEC_10Q_COMPANY_REGULATORY_DISCLOSURE",
+      "publisher": "SEC-hosted UroGen Pharma Ltd. Form 10-Q",
+      "url": "https://www.sec.gov/Archives/edgar/data/1668243/000143774926034780/urgn20260930_10q.htm",
+      "filingPeriodEnd": "2026-09-30",
+      "filingMonth": "2026-11",
+      "status": "SEC_PUBLISHED_COMPANY_DISCLOSURE_CONFIRMS_NDA_REVIEW_AND_TARGET_DATE"
+    },
+    {
+      "type": "NCI_PROTOCOL_IDENTITY",
+      "publisher": "US National Cancer Institute",
+      "url": "https://www.cancer.gov/research/participate/clinical-trials-search/v?id=NCI-2025-00695",
+      "explicitExactNctIdentifier": true,
+      "status": "GOVERNMENT_TRIAL_IDENTITY_AND_PRIMARY_OUTCOME_DEFINITION"
+    }
+  ],
+  "sponsorReportedClinicalResults": {
+    "primaryEndpoint": "Complete response at 3 months",
+    "analysisPopulation": "Intent-to-treat, per published ASCO abstract coverage",
+    "completeResponses": 77,
+    "enrolledDenominator": 99,
+    "responseRatePercent": 77.8,
+    "responseRate95CI_percent": [
+      68.3,
+      85.5
+    ],
+    "conditionalSixMonthDurationOfResponseKM_percent": 94.5,
+    "conditionalSixMonthDurationOfResponse95CI_percent": [
+      86.1,
+      97.9
+    ],
+    "sixMonthDurationPopulation": "Patients who achieved complete response at month 3",
+    "caution": "The 94.5% DOR is conditional on initial response, not a 94.5% complete response rate among all 99."
+  },
+  "regulatoryEvent": {
+    "type": "NDA_ACCEPTED_FOR_REVIEW_SPONSOR_REPORTED",
+    "sponsorAnnouncementDate": "2026-10-19",
+    "secCorroboration": "2026-11",
+    "pdufaTargetActionDate": "2027-06-14",
+    "applicationNumber": null,
+    "applicationNumberIndependentlyVerified": false,
+    "fdaOriginalFilingLetterRetrieved": false,
+    "approvalDecision": "NOT_REPORTED",
+    "acceptedForReviewDoesNotMeanApproved": true,
+    "sourceUrl": "https://urogen.gcs-web.com/news-releases/news-release-details/urogen-announces-fda-acceptance-new-drug-application-ugn-103"
+  },
+  "evidenceReview": {
+    "exactTrialLinkSupported": true,
+    "sponsorReleaseSourceVerified": true,
+    "secCompanyRegulatoryDisclosureRead": true,
+    "independentEndpointReanalysisComplete": false,
+    "independentSafetyReviewComplete": false,
+    "clinicalScientificReviewComplete": false,
+    "fdaReviewDecisionVerified": false,
+    "originalFDAAcceptanceLetterReviewed": false,
+    "outstanding": [
+      "Compare protocol prespecification, clinical population, statistical estimand, multiplicity, and missing outcomes",
+      "Review harms, withdrawals, long-term follow-up and comparative limitations",
+      "Seek source FDA application identification and independently verifiable review documents if public",
+      "Freeze publication dates against any historical prediction cutoff, never look ahead"
+    ]
+  },
+  "scientificScore": null,
+  "fdaApprovalProbability": null,
+  "fdaPrediction": "ABSTAIN",
+  "historicalBlindBacktestRule": "SOURCE_DATE_MUST_BE_BEFORE_OR_ON_FROZEN_PREDICTION_CUTOFF",
+  "allowedProductionWrites": false
+}
