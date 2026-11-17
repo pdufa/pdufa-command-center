@@ -38,7 +38,7 @@ jobs:
         with:
           run-id: 44141393879
           name: focus-source-review-queue-44141393879
-          github-token: TOKEN_PLACEHOLDER
+          github-token: ${{ github.token }}
           path: reports/focus-evidence
       - name: Cross-check posted primary measures against registered outcomes
         id: audit
