@@ -1,0 +1,14 @@
+# Isolated Render preview: execute synthetic regressions at build time.
+# Never launch app.main, production workers, or a live assessment batch.
+FROM python:3.12-slim
+WORKDIR /service
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+COPY app/ ./app/
+COPY tests/ ./tests/
+RUN python -m pytest -q tests/test_assessment_runtime.py tests/test_focus_assessment_batch.py tests/test_focus_levels456_batch.py
+RUN useradd --create-home --uid 10001 --shell /usr/sbin/nologin pdufa
+USER pdufa
+EXPOSE 8000
+CMD ["uvicorn", "app.render_test_status:app", "--host", "0.0.0.0", "--port", "8000"]
