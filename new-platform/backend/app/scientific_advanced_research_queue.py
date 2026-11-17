@@ -9,6 +9,7 @@ from datetime import date
 import re
 
 from .scientific_levels_nine_to_twenty import LEVELS
+from .scientific_research_avenues import candidate_research_avenues
 
 VERSION = "scientific-advanced-research-queue-v1"
 _VALID_STATES = {
@@ -104,6 +105,7 @@ def build_advanced_research_queue(intake, levels, *, trial_id):
         "deferred": deferred,
         "reviewedCriteria": reviewed_count,
         "unresolvedCriteria": len(tasks),
+        "researchAvenues": candidate_research_avenues(trial_id),
     }
 
 
