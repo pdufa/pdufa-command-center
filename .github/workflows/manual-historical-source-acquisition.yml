@@ -33,7 +33,7 @@ jobs:
             --output research-output/keynote522-2020-publication.pdf; then
             echo 'Original journal PDF retrieved.'
           else
-            echo 'Journal PDF unavailable; retrieving PubMed bibliographic record instead.'
+            echo 'Journal PDF unavailable; retrieving Europe PMC structured bibliographic record instead.'
             python -m assessment_levels_07_20.discovery_download \
               --url 'https://www.ebi.ac.uk/europepmc/webservices/rest/search?query=EXT_ID:32101663%20AND%20SRC:MED&format=json' \
               --output research-output/keynote522-2020-europepmc-record.json
@@ -53,7 +53,7 @@ jobs:
           from datetime import datetime, timezone
           folder = Path("research-output")
           checks = [
-              ("keynote522-2020-pubmed-record.html", "32101663", "2020-02-27"),
+              ("keynote522-2020-europepmc-record.json", "32101663", "2020-02-27"),
               ("keynote522-2021-sponsor-release.html", "KEYNOTE-522", "2021-05-13"),
           ]
           decision = datetime.fromisoformat("2021-07-26T00:00:00+00:00")
