@@ -107,5 +107,33 @@
   "fdaApprovalProbability": null,
   "fdaPrediction": "ABSTAIN",
   "historicalBlindBacktestRule": "SOURCE_DATE_MUST_BE_BEFORE_OR_ON_FROZEN_PREDICTION_CUTOFF",
-  "allowedProductionWrites": false
+  "allowedProductionWrites": false,
+  "registryPacketVerification": {
+    "sourceSystem": "ClinicalTrials.gov API v2",
+    "exactNctId": "NCT06331299",
+    "preservedGitHubArtifactId": 14349176150,
+    "preservedGitHubWorkflowRunId": 44120924177,
+    "sourcePacketCanonicalSha256": "15eac8f0c55e3eff205f89feb67f3177f0166af88bb30412621e44da6064c0ad",
+    "postedRecordLastUpdateDate": "2026-10-22",
+    "trialOverallStatusAtSnapshot": "COMPLETED",
+    "primaryCompletionDate": "2025-09-11",
+    "studyCompletionDate": "2026-09-15",
+    "resultsFirstPostedDate": "2026-09-28",
+    "primaryPosted": {
+      "title": "Complete Response Rate (CRR)",
+      "timeFrame": "3 months",
+      "analysisPopulation": "All patients who received any dose of UGN-103 (ITT analysis set).",
+      "denominator": 99,
+      "unit": "percentage of participants",
+      "valuePercent": 77.8,
+      "confidenceInterval95Percent": [
+        68.3,
+        85.5
+      ]
+    },
+    "secondarySixMonthDurationOfResponseRegistryStatus": "NOT_POSTED",
+    "distinction": "Sponsor May 15, 2026 six-month durability estimates are not the same as independently posted ClinicalTrials.gov secondary outcome results in the October 22 registry snapshot.",
+    "independentRawContentHashVerified": true,
+    "clinicallyAdjudicated": false
+  }
 }

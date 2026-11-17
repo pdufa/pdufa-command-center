@@ -41,3 +41,23 @@ must be cutoff-date screened for blind backtesting. Data are development-
 only, without automatic production updates.
 
 Research record: research/source-links/URGN-NCT06331299-UTOPIA-NDA-source-audit-2026-11-17.json
+
+
+## Primary result cross-check against archived official registry
+
+The independently preserved ClinicalTrials.gov API-v2 packet for NCT06331299
+was downloaded as part of the successfully completed raw POOL recovery
+workflow 44120924177 (artifact 14349176150). Its canonical JSON SHA-256
+is 15eac8f0c55e3eff205f89feb67f3177f0166af88bb30412621e44da6064c0ad.
+
+The October 22, 2026 registry snapshot lists trial status COMPLETED, primary
+completion September 11, 2025, study completion September 15, 2026, and
+results first posted September 28, 2026. Its original PRIMARY measure is
+the 3-month complete response rate of **77.8% (95% CI 68.3–85.5), N=99**,
+matching the sponsor-reported primary figure.
+
+**Critically, the registry secondary outcome for Duration of Response in
+3-month responders is marked NOT_POSTED.** The sponsor's conditional
+six-month DOR Kaplan–Meier estimate (94.5%) must be shown with sponsor
+provenance, rather than mislabeled as a posted ClinicalTrials.gov secondary
+result. No independent clinical/statistical validation has been completed.
