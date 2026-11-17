@@ -28,7 +28,8 @@ export function validAdvancedResearchQueue(value:unknown,nctId:string):value is 
   value.scientificValidation!=="NOT_VERIFIED"||value.fdaPrediction!=="ABSTAIN"||
   !Array.isArray(value.tasks)||!Array.isArray(value.deferred)||
   value.tasks.length>60||value.deferred.length>60||
-  !Number.isInteger(value.reviewedCriteria)||!Number.isInteger(value.unresolvedCriteria)||
+  typeof value.reviewedCriteria!=="number"||typeof value.unresolvedCriteria!=="number"||
+  !Number.isSafeInteger(value.reviewedCriteria)||!Number.isSafeInteger(value.unresolvedCriteria)||
   value.reviewedCriteria<0||value.unresolvedCriteria!==value.tasks.length)return false;
  if(value.status==="BLOCKED_UNVERIFIED_INTAKE"&&(value.tasks.length||value.deferred.length))return false;
  const ids=new Set<string>();
