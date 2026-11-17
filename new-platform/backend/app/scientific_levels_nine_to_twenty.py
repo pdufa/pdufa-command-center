@@ -8,6 +8,7 @@ same exact trial, phase and point-in-time cutoff as the existing Levels 2–8.
 from __future__ import annotations
 
 from .scientific_levels_two_to_six import assess_review_contracts
+from .scientific_benefit_harm import align_benefit_harm
 
 VERSION = "scientific-contracts-09-20-v1"
 
@@ -130,6 +131,7 @@ def assess_levels_nine_to_twenty(level_one, *, trial_id, evidence=None, prior_le
     nine = results["9"]
     deps = _benefit_risk_dependencies(prior_levels)
     nine["benefitRiskEvidenceAlignment"] = deps
+    nine["benefitHarmContextComparison"] = align_benefit_harm(nine, evidence)
     nine["methodStatus"] = "PARTIAL_EVIDENCE_RECONCILIATION_NOT_CLINICAL_CONCLUSION"
     nine["integrationStatus"] = (
         "BLOCKED_UPSTREAM_EVIDENCE"
