@@ -13,7 +13,7 @@ def precedent():
 def inspect():
     return {"applicationType": "NDA", "applicationNumber": "123456", "reviewCycle": 1,
             "publicInformation": "PUBLIC_RECORD_EXISTS", "facilityIdentifier": "SYNTHETIC-FACILITY",
-            "checkedAt": "2026-01-12"}
+            "checkedAt": "2026-01-27"}
 
 
 def assess(data):

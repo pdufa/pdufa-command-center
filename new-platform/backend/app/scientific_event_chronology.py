@@ -40,4 +40,6 @@ def event_covered_by_review(level, criterion, event_day, cutoff, *,
         return False
     if source_after_event and happened > source:
         return False
+    if not source_after_event and happened < source:
+        return False
     return True

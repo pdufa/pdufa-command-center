@@ -49,3 +49,6 @@ def test_availability_check_can_follow_original_source_but_not_retrieval():
     assert not event_covered_by_review(receipt(), "officialActionAndDate",
                                        "2026-01-28", "2026-02-01",
                                        source_after_event=False)
+    assert not event_covered_by_review(receipt(), "officialActionAndDate",
+                                       "2026-01-24", "2026-02-01",
+                                       source_after_event=False)
