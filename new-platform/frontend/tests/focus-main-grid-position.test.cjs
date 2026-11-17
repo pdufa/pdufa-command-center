@@ -24,7 +24,9 @@ test('FOCUS website spreadsheet is above the chart, gate checks, research and in
 });
 
 test('visible FOCUS table leads with Overall and L01–L03 immediately after ticker before long metadata',()=>{
- const head=source.slice(source.indexOf('<thead style={{background:"#e6f2ea"}}>'),source.indexOf('</thead>'));
+ const mainTable=source.indexOf('id="focus-site-spreadsheet"');
+ const headStart=source.indexOf('<thead style={{background:"#e6f2ea"}}>',mainTable);
+ const head=source.slice(headStart,source.indexOf('</thead>',headStart));
  const tic=head.indexOf('>Ticker</th>'),overall=head.indexOf('<FocusOverallHeaders'),first3=head.indexOf('<FocusTwentyHeaders startLevel={1} endLevel={3}/>'),nct=head.indexOf('>NCT / Trial</th>'),later=head.indexOf('<FocusTwentyHeaders className="assessment-level" startLevel={4} endLevel={20}/>');
  assert.ok(tic>=0&&tic<overall&&overall<first3&&first3<nct&&later>nct);
  const rows=source.slice(source.indexOf('<tbody>{sortedTrials.map('),source.indexOf('</tbody>',source.indexOf('<tbody>{sortedTrials.map(')));
