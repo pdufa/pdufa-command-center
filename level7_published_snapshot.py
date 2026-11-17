@@ -4,7 +4,11 @@ Caller supplies bytes already retrieved by the existing source pipeline.
 This module performs no network calls or writes to production.
 """
 from __future__ import annotations
+import re
 from level7_evidence import EvidenceLedger, EvidenceRecord, make_record
+
+_SHA = re.compile(r"[a-f0-9]{40}\Z")
+_SAFE_PATH = re.compile(r"data/(?:[A-Za-z0-9_.-]+/)*[A-Za-z0-9_.-]+\Z")
 
 def record_published_snapshot(
     ledger: EvidenceLedger, *, trial_id: str, relative_path: str,
@@ -12,11 +16,13 @@ def record_published_snapshot(
     publisher: str = "PDUFA published source snapshot",
     status: str = "unverified",
 ) -> EvidenceRecord:
-    """Store provenance for a trial-specific published snapshot, never score it."""
-    if not relative_path.startswith("data/") or ".." in relative_path.split("/"):
+    """Record a snapshot without claiming clinical or FDA verification."""
+    if not _SAFE_PATH.fullmatch(relative_path) or any(
+        segment in (".", "..") for segment in relative_path.split("/")
+    ):
         raise ValueError("Expected safe data/ path")
-    if not revision or "/" in revision or ".." in revision:
-        raise ValueError("Expected immutable source revision")
+    if revision != "main" and not _SHA.fullmatch(revision):
+        raise ValueError("Expected exact 40-character immutable Git SHA or main")
     if revision == "main" and status == "verified":
         raise ValueError("Mutable main cannot establish an immutable verified revision")
     if content is None and status not in ("missing", "inaccessible"):
