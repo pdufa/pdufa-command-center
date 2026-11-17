@@ -15,6 +15,7 @@ from .scientific_replication_candidates import screen_replication_candidates
 from .scientific_regulatory_context import assess_filing, assess_designation
 from .scientific_precedent_manufacturing import assess_precedent, assess_manufacturing
 from .scientific_disclosure_challenge import assess_disclosure, assess_challenge
+from .scientific_forecast_outcome_integrity import assess_prospective_metadata, assess_outcome_chronology
 
 VERSION = "scientific-contracts-09-20-v1"
 
@@ -184,4 +185,13 @@ def assess_levels_nine_to_twenty(level_one, *, trial_id, evidence=None, prior_le
     eighteen["challengeContext"] = assess_challenge(
         eighteen, evidence, trial_id=trial_id)
     eighteen["methodStatus"] = "PARTIAL_COUNTERARGUMENT_RECORD_NOT_OWNER_ADJUDICATION"
+    nineteen = results["19"]
+    nineteen["prospectiveIntegrity"] = assess_prospective_metadata(
+        nineteen, evidence, trial_id=trial_id, cutoff=intake.get("assessmentCutoff"))
+    nineteen["methodStatus"] = "PARTIAL_FROZEN_FORECAST_METADATA_NOT_CALIBRATED_PREDICTION"
+    twenty = results["20"]
+    twenty["outcomeChronology"] = assess_outcome_chronology(
+        twenty, evidence, trial_id=trial_id, cutoff=intake.get("assessmentCutoff"),
+        filing_context=thirteen["filingContext"])
+    twenty["methodStatus"] = "PARTIAL_POSTDECISION_ACTION_TIMELINE_NOT_VALIDATED_ACCURACY"
     return results
