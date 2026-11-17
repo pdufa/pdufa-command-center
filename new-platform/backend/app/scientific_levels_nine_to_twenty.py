@@ -14,6 +14,7 @@ from .scientific_therapeutic_context import therapeutic_context
 from .scientific_replication_candidates import screen_replication_candidates
 from .scientific_regulatory_context import assess_filing, assess_designation
 from .scientific_precedent_manufacturing import assess_precedent, assess_manufacturing
+from .scientific_disclosure_challenge import assess_disclosure, assess_challenge
 
 VERSION = "scientific-contracts-09-20-v1"
 
@@ -175,4 +176,12 @@ def assess_levels_nine_to_twenty(level_one, *, trial_id, evidence=None, prior_le
     sixteen["manufacturingContext"] = assess_manufacturing(
         sixteen, evidence, cutoff=intake.get("assessmentCutoff"), filing_context=thirteen["filingContext"])
     sixteen["methodStatus"] = "PARTIAL_CMC_PUBLIC_RECORD_UNCERTAINTY_SCREEN_NOT_INSPECTION_FINDING"
+    seventeen = results["17"]
+    seventeen["disclosureContext"] = assess_disclosure(
+        seventeen, evidence, trial_id=trial_id, cutoff=intake.get("assessmentCutoff"))
+    seventeen["methodStatus"] = "PARTIAL_DATED_DISCLOSURE_CHANGE_SCREEN_NOT_MATERIALITY_FINDING"
+    eighteen = results["18"]
+    eighteen["challengeContext"] = assess_challenge(
+        eighteen, evidence, trial_id=trial_id)
+    eighteen["methodStatus"] = "PARTIAL_COUNTERARGUMENT_RECORD_NOT_OWNER_ADJUDICATION"
     return results
