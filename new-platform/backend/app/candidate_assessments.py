@@ -16,6 +16,7 @@ from .scientific_binary_effects import binary_effect
 from .scientific_population import assess_level_seven
 from .scientific_safety_exposure import assess_level_eight
 from .scientific_levels_nine_to_twenty import assess_levels_nine_to_twenty
+from .scientific_advanced_research_queue import build_advanced_research_queue
 
 MODEL = "candidate-assessments-v1"
 NCT = re.compile(r"^NCT[0-9]{8}$")
@@ -243,15 +244,17 @@ def score_candidate(row, registry=None, analyses=None, reviews=None, *, today=No
     extensions.update(assess_levels_nine_to_twenty(
         level_one, trial_id=nct, evidence=reviews.get("scientificLevelEvidence"),
         prior_levels={**levels_two_to_six, **extensions}))
-    return {"levelsSevenToTwenty": extensions, "levelOneIntake": level_one, "levelsTwoToSix": levels_two_to_six, "scientificReadiness": scientific_readiness, "modelVersion": MODEL, "id": row["id"], "programId": row.get("programId"), "nctId": nct, "asOf": today.isoformat(), "models": models, "riskFlags": flags,
+    advanced_queue = build_advanced_research_queue(
+        level_one, {str(n): extensions[str(n)] for n in range(9, 21)}, trial_id=nct)
+    return {"advancedEvidenceQueue": advanced_queue, "levelsSevenToTwenty": extensions, "levelOneIntake": level_one, "levelsTwoToSix": levels_two_to_six, "scientificReadiness": scientific_readiness, "modelVersion": MODEL, "id": row["id"], "programId": row.get("programId"), "nctId": nct, "asOf": today.isoformat(), "models": models, "riskFlags": flags,
             "qualification": {"savedLists": facts.get("lists", ["PIPELINE"]), "primaryOutcome": outcome, "firstFinancingClosed": facts.get("firstFinancingClosed"), "secondFinancingClosed": facts.get("secondFinancingClosed"), "note": "Scores do not alter screening, saved membership or trade entry. Only complete evidence is ranked. Uncalibrated research scores, not success probabilities."},
             "registryFetchedAt": registry_checked, "registrySourceDate": registry_day, "reportedStatistics": analyses,
             "data": {"candidate": row, "registry": registry},
             "missingEvidence": [c["id"] + ": " + m["label"] for model in models.values() for c in model["categories"] for m in c["metrics"] if m["coverage"] < m["maximum"]]}
 
 def compact(result):
-    return {"levelsSevenToTwenty": result["levelsSevenToTwenty"], "levelOneIntake": result["levelOneIntake"], "levelsTwoToSix": result["levelsTwoToSix"], "scientificReadiness": result["scientificReadiness"], "modelVersion": result["modelVersion"], "models": {name: {**{k: model[k] for k in ("score", "observedPoints", "coverage", "status")}, "categories": [{k: c[k] for k in ("id", "maximum", "score", "observedPoints", "coverage", "status")} for c in model["categories"]]} for name, model in result["models"].items()}, "riskFlags": result["riskFlags"]}
+    return {"advancedEvidenceQueue": result["advancedEvidenceQueue"], "levelsSevenToTwenty": result["levelsSevenToTwenty"], "levelOneIntake": result["levelOneIntake"], "levelsTwoToSix": result["levelsTwoToSix"], "scientificReadiness": result["scientificReadiness"], "modelVersion": result["modelVersion"], "models": {name: {**{k: model[k] for k in ("score", "observedPoints", "coverage", "status")}, "categories": [{k: c[k] for k in ("id", "maximum", "score", "observedPoints", "coverage", "status")} for c in model["categories"]]} for name, model in result["models"].items()}, "riskFlags": result["riskFlags"]}
 
 def fingerprint(result):
-    stable = {key: result[key] for key in ("modelVersion", "models", "levelsSevenToTwenty", "levelOneIntake", "levelsTwoToSix", "scientificReadiness", "reportedStatistics", "qualification", "registryFetchedAt", "riskFlags")}
+    stable = {key: result[key] for key in ("modelVersion", "models", "levelsSevenToTwenty", "levelOneIntake", "levelsTwoToSix", "scientificReadiness", "advancedEvidenceQueue", "reportedStatistics", "qualification", "registryFetchedAt", "riskFlags")}
     return hashlib.sha256(packed(stable).encode()).hexdigest()
