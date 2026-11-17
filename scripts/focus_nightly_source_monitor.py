@@ -167,6 +167,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--current", type=Path, default=CURRENT_PATH)
     parser.add_argument("--archive", type=Path, required=True)
+    parser.add_argument("--level7-db", type=Path, default=None,
+                        help="Opt-in local Level 7 SQLite provenance ledger; no production DB")
     args = parser.parse_args()
     report = build_report(load_json(ROSTER_PATH), load_json(APPLICATIONS_PATH),
                           load_json(args.current, missing_ok=True), fetch_registry)
@@ -177,6 +179,13 @@ def main():
         raise SystemExit("Refuse to overwrite immutable run archive")
     args.archive.parent.mkdir(parents=True, exist_ok=True)
     args.current.parent.mkdir(parents=True, exist_ok=True)
+    if args.level7_db is not None:
+        import sys
+        sys.path.insert(0, str(ROOT))
+        from level7_store import EvidenceStore
+        from level7_focus_monitor_adapter import persist_focus_monitor_report
+        persisted = persist_focus_monitor_report(EvidenceStore(args.level7_db), report)
+        print("Level 7 opt-in evidence observations:", canonical(persisted))
     data = json.dumps(report, indent=2, sort_keys=True) + "\n"
     args.archive.write_text(data, encoding="utf-8")
     args.current.write_text(data, encoding="utf-8")
