@@ -66,7 +66,7 @@ class Level7MonitorCliTests(unittest.TestCase):
                     "--level7-coverage-output", str(output)]
             with patch.object(sys, "argv", argv), patch.object(
                 monitor, "build_report", return_value=report
-            ), patch.object(monitor, "load_json", return_value={}):
+            ), patch.object(monitor, "load_json", side_effect=lambda path, missing_ok=False: roster if Path(path) == monitor.ROSTER_PATH else {}):
                 monitor.main()
             payload = json.loads(output.read_text(encoding="utf-8"))
             self.assertEqual(payload["total"], 32)
