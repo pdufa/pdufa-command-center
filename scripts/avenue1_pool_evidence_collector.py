@@ -41,16 +41,16 @@ def study_evidence(nct):
     study = fetch_json("https://clinicaltrials.gov/api/v2/studies/" + nct)
     protocol = study.get("protocolSection") or {}
     results = study.get("resultsSection") or {}
-    outcomes = results.get("outcomeMeasuresModule") or {}
+    outcomes = results.get("outcomeMeasuresModule") or {}\n    measures = outcomes.get("outcomeMeasures") or []\n    if not isinstance(measures, list) or any(not isinstance(m, dict) for m in measures):\n        raise ValueError("Invalid ClinicalTrials.gov outcome measure schema")
     arms = (protocol.get("armsInterventionsModule") or {}).get("armGroups") or []
     references = (protocol.get("referencesModule") or {}).get("references") or []
     baseline = (results.get("baselineCharacteristicsModule") or {})
     # Null registry collections are treated as absent, not as clinical evidence.\n    # Raw results are preserved for review; no efficacy claim is inferred.
     clinical_dimensions = {
         "primary_endpoint": (protocol.get("outcomesModule") or {}).get("primaryOutcomes", []),
-        "effect_magnitude": outcomes.get("outcomeMeasures") or [],
+        "effect_magnitude": measures,
         "statistical_reliability": [
-            analysis for measure in (outcomes.get("outcomeMeasures") or [])
+            analysis for measure in measures
             for analysis in (measure.get("analyses") or [])
         ],
         "clinical_meaningfulness": "REQUIRES_CLINICAL_REVIEW",
@@ -77,7 +77,7 @@ def study_evidence(nct):
         "phase": (protocol.get("designModule") or {}).get("phases", []),
         "status": (protocol.get("statusModule") or {}).get("overallStatus"),
         "results_posted": bool(results),
-        "primary_outcomes": (results.get("outcomeMeasuresModule") or {}).get("outcomeMeasures", []),
+        "primary_outcomes": measures,
         "protocol_outcomes": (protocol.get("outcomesModule") or {}).get("primaryOutcomes", []),
         "adverse_events": results.get("adverseEventsModule"),
         "source": "https://clinicaltrials.gov/study/" + nct,
