@@ -207,7 +207,56 @@ def validate_snapshot(directory):
         raise ValueError("Snapshot has no verified full-year denominator")
     if not measured["verified_comparisons"] and manifest["calibration"] is not None:
         raise ValueError("Calibration requires eligible observed predictions")
+    if (directory / "lead-reconciliation.json").exists():
+        validate_lead_reconciliation(directory, rows, manifest)
     return checked
+
+
+def validate_lead_reconciliation(directory, rows, manifest):
+    """Require a traceable disposition for every inherited unverified row."""
+    previous = json.loads((directory.parent / "assessments.json").read_text(encoding="utf-8"))
+    ledger = json.loads((directory / "lead-reconciliation.json").read_text(encoding="utf-8"))
+    with (directory / "lead-reconciliation.csv").open(newline="", encoding="utf-8") as handle:
+        displayed = list(csv.DictReader(handle))
+    if displayed != [
+        {key: json.dumps(value, ensure_ascii=False) if isinstance(value, list) else value
+         for key, value in item.items()}
+        for item in ledger
+    ]:
+        raise ValueError("Lead ledger CSV and JSON differ")
+    old = {row["record_id"]: row for row in previous}
+    current = {row["record_id"]: row for row in rows}
+    reviewed = Counter(item["record_id"] for item in ledger)
+    expected = {key for key, row in old.items() if row["verification_status"] != "VERIFIED"}
+    if set(reviewed) != expected or any(count != 1 for count in reviewed.values()):
+        raise ValueError("Every prior lead requires exactly one disposition")
+    if not set(old) <= set(current):
+        raise ValueError("Inherited worklist record removed")
+    dispositions = Counter()
+    for item in ledger:
+        key = item["record_id"]
+        before, after = old[key], current[key]
+        category = item["disposition"]
+        dispositions[category] += 1
+        if category not in {"VERIFIED", "DUPLICATE", "NOT_PDUFA", "BLOCKED"}:
+            raise ValueError("Unknown lead disposition")
+        if category != after["verification_status"] or not item["reason"] or not timestamp(item["reviewed_at"]):
+            raise ValueError("Lead disposition is not supported by the event row")
+        if item["previous_goal_date"] != before["pdufa_date"]:
+            raise ValueError("Inherited lead date changed in the provenance ledger")
+        if not item["source_urls"] or not all(source_url(url) for url in item["source_urls"]):
+            raise ValueError("Invalid lead reconciliation provenance")
+        if category == "DUPLICATE":
+            canonical = current.get(item.get("canonical_record_id"))
+            if not canonical or canonical["verification_status"] != "VERIFIED" or canonical is after:
+                raise ValueError("Duplicate lacks a distinct verified canonical record")
+    if dict(dispositions) != manifest["prior_lead_dispositions"]:
+        raise ValueError("Manifest disposition totals disagree with the ledger")
+    preserved = ("prediction", "prediction_kind", "prediction_frozen_at",
+                 "evidence_cutoff_at", "model_version", "prior_prediction_artifacts")
+    for key, row in old.items():
+        if row["prediction_frozen_at"] and any(row[field] != current[key][field] for field in preserved):
+            raise ValueError("Inherited prediction freeze changed")
 
 
 if __name__ == "__main__":

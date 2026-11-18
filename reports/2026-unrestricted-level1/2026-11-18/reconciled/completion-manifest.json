@@ -1,0 +1,133 @@
+{
+  "as_of": "2026-11-18T18:25:46+00:00",
+  "complete": false,
+  "full_year_denominator": null,
+  "provisional_external_count": 196,
+  "goal_worklist_rows": 99,
+  "distinct_verified_events": 60,
+  "goal_worklist_unverified_rows": 39,
+  "source_linked_clinical_assessments": 73,
+  "clinical_assessments_of_verified_events": 60,
+  "verified_events_with_clinical_evidence_blocker": 0,
+  "worklist_rows_without_clinical_assessment": 26,
+  "directional_assessments_of_verified_events": 24,
+  "prospective_verified_freezes": 2,
+  "prospective_identity_blocked_assessments": 12,
+  "fda_application_submission_status_rows": 332,
+  "fda_status_rows_without_verified_goal_crosswalk": 306,
+  "historical_scoring": {
+    "historical": 58,
+    "future": 2,
+    "past_goal_unresolved": 0,
+    "correct": 0,
+    "incorrect": 0,
+    "verified_comparisons": 0,
+    "accuracy_pct": null
+  },
+  "calibration": null,
+  "missing_fields_on_worklist": {
+    "application_id": 27,
+    "review_cycle": 39,
+    "supplement": 28,
+    "indication": 3,
+    "goal_source_url": 23,
+    "phase": 26,
+    "trial_ids": 71,
+    "endpoint": 26,
+    "effect_size": 26,
+    "statistical_significance": 53,
+    "safety": 26,
+    "ticker": 2,
+    "confidence_percent": 99
+  },
+  "prediction_archive_review": {
+    "legacy_2026_directional_freeze_rows": 194,
+    "legacy_2026_retrospective_assessments": 20,
+    "level1_pilot_eligible_comparisons": 0,
+    "separate_preaction_harmoni_research_pilot": {
+      "correct": 1,
+      "denominator": 1,
+      "level1_eligible": false
+    },
+    "legacy_data_reason": "Directional model versions are distinct from Level 1 and lack an exact application-cycle and immutable public evidence join in this audit."
+  },
+  "source_snapshots": {
+    "Drugs@FDA": {
+      "url": "https://www.fda.gov/media/89850/download",
+      "retrieved_at": "2026-11-18T17:35:33+00:00",
+      "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+    },
+    "Calendar index": {
+      "url": "https://www.pdufa.bio/search-index.json",
+      "retrieved_at": "2026-11-18T17:35:33+00:00",
+      "sha256": "3eac8e851eee9421b125a17d12aef3c8d9a1a3c4dbbc956f4048785a49f4646a"
+    },
+    "Calendar archive": {
+      "url": "https://www.pdufa.bio/research/fda-decision-timing/fda-decision-timing-2026-v41.csv",
+      "repository_revision": "59e6e44d4effc67d87e4772ac289ff2a97cddb15"
+    },
+    "Assyro page": {
+      "url": "https://www.assyro.com/tools/pdufa-calendar/2026",
+      "retrieved_at": "2026-11-18T17:37:33Z",
+      "sha256": "12ee73b105086168129fe8e4b9e923bc19cd1802a23e6e2039a21db30645318b"
+    }
+  },
+  "blockers": [
+    {
+      "id": "DENOMINATOR",
+      "finding": "Public FDA sources expose action records and selected review files. They do not enumerate every application and review goal across pending, private, delayed or undisclosed cases. Other calendar counts differ and include action dates or placeholders.",
+      "next_action": "Acquire a disclosed exact-goal export and original filing sources for the claimed provisional cohort. Match them to public application IDs and track any inaccessible targets as unobservable."
+    },
+    {
+      "id": "IDENTITY",
+      "finding": "Pending claims frequently omit the application or supplement number, and some candidates lack a direct goal source or have approximate dates.",
+      "next_action": "Crosswalk official filing notices, action letters and sponsor disclosures to exact cycle, supplement and indication. Review unresolved aliases before counting them."
+    },
+    {
+      "id": "CLINICAL",
+      "finding": "Most FDA action letters and calendar rows do not contain pivotal estimates, tests or comparative safety.",
+      "next_action": "Obtain indication-matched pivotal protocols, dated registry versions, trial publications and FDA reviews. Record nulls and blockers when results are inaccessible."
+    },
+    {
+      "id": "HISTORICAL",
+      "finding": "No eligible historical Level 1 comparisons were established. The contemporaneous HARMONi pilot belongs to a separate research series.",
+      "next_action": "Locate immutable pre-action Level 1 versions and contemporaneous evidence manifests. Verify exact cycle and earliest public outcome before scoring."
+    },
+    {
+      "id": "YEAR_OPEN",
+      "finding": "The collection date is November 18, before the end of the 2026 calendar year.",
+      "next_action": "Append a new dated snapshot after year-end and reconcile late announcements, additional decisions and amendments."
+    }
+  ],
+  "fda_crl_letter_references": 33,
+  "fda_crl_letter_references_without_verified_goal_crosswalk": 27,
+  "verified_clinical_assessment_coverage_pct": 100.0,
+  "verified_event_counts_by_goal_month": {
+    "2026-01": 1,
+    "2026-02": 3,
+    "2026-03": 3,
+    "2026-04": 4,
+    "2026-05": 3,
+    "2026-06": 9,
+    "2026-07": 8,
+    "2026-08": 9,
+    "2026-09": 8,
+    "2026-10": 6,
+    "2026-11": 4,
+    "2026-12": 2
+  },
+  "verified_outcome_counts": {
+    "APPROVE": 51,
+    "CRL": 7,
+    "": 2
+  },
+  "actionable_blocked_2026_rows": 37,
+  "prior_lead_dispositions": {
+    "VERIFIED": 21,
+    "BLOCKED": 37,
+    "NOT_PDUFA": 1
+  },
+  "retrospective_verified_assessments": 58,
+  "baseline_snapshot_commit": "238802e66be16934473b2e68ec683c428cddc32d",
+  "source_crosswalks": "The parent snapshot retains the baseline FDA submission and CRL inventories. The lead reconciliation ledger records the newer findings."
+}
