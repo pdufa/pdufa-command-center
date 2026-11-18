@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-18T19:29:45.816388+00:00",
+  "as_of": "2026-11-18T19:37:45.815458+00:00",
   "complete": false,
   "full_year_denominator": null,
   "provisional_external_count": 196,
@@ -32,7 +32,7 @@
     "indication": 2,
     "goal_source_url": 16,
     "phase": 20,
-    "trial_ids": 63,
+    "trial_ids": 61,
     "endpoint": 20,
     "effect_size": 20,
     "statistical_significance": 45,

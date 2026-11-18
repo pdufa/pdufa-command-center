@@ -25,10 +25,10 @@
   ],
   "level1_assessment_records": 66,
   "all_requested_assessment_fields_populated": 0,
-  "clinical_fields_populated": 28,
+  "clinical_fields_populated": 30,
   "verified_events_with_evidence_gaps": 66,
   "missing_verified_fields": {
-    "trial_ids": 36,
+    "trial_ids": 34,
     "phase": 0,
     "endpoint": 0,
     "effect_size": 0,

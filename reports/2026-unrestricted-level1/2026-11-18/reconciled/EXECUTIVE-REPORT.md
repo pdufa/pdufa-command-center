@@ -12,7 +12,7 @@
 | Outside cohort | 3 |
 | Verified cycles with a Level 1 assessment and documented gaps | 66 |
 | Verified cycles with every requested field populated | 0 |
-| Verified cycles with phase, trial ID, endpoint, effect size, statistical analysis and safety fields populated | 28 |
+| Verified cycles with phase, trial ID, endpoint, effect size, statistical analysis and safety fields populated | 30 |
 | Outcome-aware retrospective assessments | 64 |
 | Frozen prospective assessments | 2 |
 | Eligible blind Level 1 comparisons | 0 |
@@ -24,7 +24,7 @@ Lirafugratinib retains the original September 27 and later September 25 sponsor-
 
 The follow-up resolved two calendar placeholders. FDA review packages establish August 29 for rusfertide, approved August 28, and September 25 for tavapadon, approved the same day. FDA labels also supplied pivotal evidence for Afrezza and Vyvgart. The Afrezza label confirms the pediatric noninferiority endpoint was missed, so the outcome-aware assessment is INDETERMINATE despite the known approval. Merck confirmed the ifinatamab deruxtecan BLA withdrawal. Its exact application number remains unresolved. FDA labeling identifies the Rhapsido supplement. Its exact PDUFA date remains unresolved. [Rusfertide review](https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220605Orig1s000RiskR.pdf) · [Tavapadon review](https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220415Orig1s000RiskR.pdf) · [Afrezza label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/022472s029lbl.pdf) · [Vyvgart label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761195s016lbl761304s018lbl.pdf) · [Merck withdrawal](https://www.merck.com/news/ifinatamab-deruxtecan-biologics-license-application-for-certain-patients-with-previously-treated-extensive-stage-small-cell-lung-cancer-voluntarily-withdrawn/)
 
-No verified cycle lacks a recorded judgment. All 66 have a documented evidence or calibration gap. The export contains 36 verified cycles without an exact trial ID and 22 without a populated statistical-analysis field. These counts overlap.
+No verified cycle lacks a recorded judgment. All 66 have a documented evidence or calibration gap. The export contains 34 verified cycles without an exact trial ID and 22 without a populated statistical-analysis field. These counts overlap.
 
 The 66 verified cycles comprise 57 approvals, seven complete responses and two pending decisions. Clinical field counts can include explicit limitations. Numerical confidence remains blank because the cohort has no validated calibration. [Coverage](coverage.json) · [Row-level blockers](blocker-manifest.json)
 
@@ -36,3 +36,5 @@ Resume with the 30 rows in the blocker manifest. Crosswalk pending applications 
 - [Historical accuracy report](HISTORICAL-ACCURACY.md)
 - [Interface compatibility report](INTERFACE-COMPATIBILITY.md)
 - [Test report](TEST-REPORT.md)
+
+FDA labeling added exact trial identities, numerical efficacy, statistical analysis and safety findings for olezarsen and sotatercept. The assessments remain outcome-aware. [Olezarsen label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218614s004lbl.pdf) · [Sotatercept label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761363s012s016s017lbl.pdf)

@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-18T19:29:45.816388+00:00",
+  "as_of": "2026-11-18T19:37:45.815458+00:00",
   "complete": false,
   "year_population_blockers": [
     {
@@ -736,15 +736,14 @@
       "application_id": "NDA218614",
       "goal_date": "2026-06-30",
       "reason": [
-        "Full pancreatitis estimates and comparative hepatic safety",
-        "Exact ClinicalTrials.gov identity not confirmed"
+        "Precision of dose-specific pancreatitis estimates and longer-term safety.",
+        "Calibrated numerical confidence unavailable"
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/874015/000114036126017637/ef20071749_ex99-1.htm",
         "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218614s004lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
         "confidence_percent"
       ]
     },
@@ -1117,14 +1116,14 @@
       "application_id": "BLA761363",
       "goal_date": "2026-09-21",
       "reason": [
-        "Exact NCT, event breakdown and quantitative long-term safety"
+        "Component-specific precision and longer follow-up after early termination.",
+        "Calibrated numerical confidence unavailable"
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/310158/000031015826000212/mrk-20260630.htm",
         "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761363s012s016s017lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
         "confidence_percent"
       ]
     },

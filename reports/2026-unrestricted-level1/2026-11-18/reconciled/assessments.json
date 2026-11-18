@@ -1842,7 +1842,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v3",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-06-24",
     "outcome_published_at": "",
@@ -1874,21 +1874,29 @@
         "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218614Orig1s004ltr.pdf",
         "retrieved_at": "2026-11-18T17:37:25.208346+00:00",
         "sha256": "dff27bd09d74859e3101610e15a1c900b85b12d002dd73330c4cd11386b965b5"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218614s004lbl.pdf",
+        "retrieved_at": "2026-11-18T19:36:47Z",
+        "sha256": "9ce24f21dccc08002cb9b84c8de6cb7103586ca59f070d2a3a0b992feab4fa02"
       }
     ],
-    "trial_ids": [],
-    "phase": "3",
-    "endpoint": "Month 6 fasting triglycerides in severe hypertriglyceridemia",
-    "effect_size": "In Trial 2, placebo-corrected percent change −63% (50 mg) and −72% (80 mg).",
-    "statistical_significance": "Both p<0.0001",
-    "safety": "FDA label added a warning for liver enzyme abnormalities.",
+    "trial_ids": [
+      "NCT05079919",
+      "NCT05552326"
+    ],
+    "phase": "Phase 3",
+    "endpoint": "Percent change in fasting triglycerides from baseline to month 6.",
+    "effect_size": "Placebo-adjusted changes −63% and −72% in CORE, and −49% and −55% in CORE2. Pooled pancreatitis rate ratios were 0.15 (95% CI 0.05–0.40) and 0.17 (0.06–0.47), respectively.",
+    "statistical_significance": "All four primary comparisons p<0.0001.",
+    "safety": "Injection-site reactions and liver enzyme elevations were more frequent than on placebo.",
     "assessment": "APPROVE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "MODERATE",
-    "rationale": "Large randomized triglyceride effects support clinical usefulness in severe hypertriglyceridemia; direct pancreatitis benefit needs separate appraisal.",
+    "rationale": "Concordant triglyceride reduction and lower pooled pancreatitis rates support the reviewed indication. FDA action was already public.",
     "evidence_gaps": [
-      "Full pancreatitis estimates and comparative hepatic safety",
-      "Exact ClinicalTrials.gov identity not confirmed"
+      "Precision of dose-specific pancreatitis estimates and longer-term safety.",
+      "Calibrated numerical confidence unavailable"
     ],
     "evidence_sources": [
       {
@@ -1900,7 +1908,7 @@
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "2026-11-18T17:53:51+00:00",
+    "assessment_recorded_at": "2026-11-18T19:37:45.815458+00:00",
     "record_id": "2026-L1-023",
     "confidence_percent": "",
     "ticker": "IONS",
@@ -3796,7 +3804,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v2",
+    "model_version": "level1-owner-research-2026-11-18-v3",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-09-21",
     "outcome_published_at": "",
@@ -3828,20 +3836,28 @@
         "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761363Orig1s012,s016,s017ltr.pdf",
         "retrieved_at": "2026-11-18T17:37:25.464132+00:00",
         "sha256": "147414a8a66891c32eb9fe7ace06b96eec3acaaac9001f94f8029d330387f1b0"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761363s012s016s017lbl.pdf",
+        "retrieved_at": "2026-11-18T19:36:47Z",
+        "sha256": "5134c380e1e2ec5da356ece6c42242f854bd1b920ad1e9dcdef0a1fa9a0dcc26"
       }
     ],
-    "trial_ids": [],
-    "phase": "3",
-    "endpoint": "HYPERION time to death or first clinical worsening event",
-    "effect_size": "HR 0.24 (95% CI 0.14–0.41); 76 vs 121 planned events.",
-    "statistical_significance": "p<0.0001",
-    "safety": "Review bleeding and hematologic risks. S-016 and S-017 safety updates are separate submissions.",
+    "trial_ids": [
+      "NCT04811092"
+    ],
+    "phase": "Phase 3",
+    "endpoint": "HYPERION time to death or first confirmed morbidity event.",
+    "effect_size": "HR 0.24 (95% CI 0.14–0.41). Trial stopped before the planned event total (76 observed, 121 planned).",
+    "statistical_significance": "Primary comparison p<0.0001.",
+    "safety": "Label warns of erythrocytosis, severe thrombocytopenia and serious bleeding.",
     "assessment": "APPROVE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "MODERATE",
-    "rationale": "A large randomized effect supports the HYPERION label update. Earlier stopping and component-level effects limit certainty.",
+    "rationale": "The randomized result supports reduced clinical worsening. Early termination limits precision for less frequent component events. FDA action was already public.",
     "evidence_gaps": [
-      "Exact NCT, event breakdown and quantitative long-term safety"
+      "Component-specific precision and longer follow-up after early termination.",
+      "Calibrated numerical confidence unavailable"
     ],
     "evidence_sources": [
       {
@@ -3853,7 +3869,7 @@
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
+    "assessment_recorded_at": "2026-11-18T19:37:45.815458+00:00",
     "record_id": "2026-L1-047",
     "confidence_percent": "",
     "ticker": "MRK",

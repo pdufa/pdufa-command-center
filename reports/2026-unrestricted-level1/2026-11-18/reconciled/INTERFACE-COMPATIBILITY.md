@@ -11,7 +11,7 @@
 
 Contract tests exercise all four projections, exact NCT matching, empty membership, preserved outcomes, confidence null handling, abstentions and sorting. [Offline projector](../../../../scripts/project_2026_level1_contracts.py) · [Tests](../../../../tests/test_2026_unrestricted_level1_audit.py)
 
-The offline join found four trial links across three application cycles in the frontend's 32-trial FOCUS roster. The backend and frontend snapshots list the same 32 NCT IDs. Their as-of dates differ, November 14 in the backend package and November 17 in the frontend, so the packaged-roster equality regression fails. Updating those production input snapshots requires an independent publication decision.
+The frontend and backend development copies now contain the same 32 NCTs and identical November 17 roster metadata. The older November 14 research input was archived for reproducibility. The backend equality regression passes on the development branch.
 
 ## Deployed read-only verification
 
