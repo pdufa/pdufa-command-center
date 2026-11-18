@@ -91,7 +91,7 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
    ids.size===total&&ordered.every(t=>validNct(t.nct)&&t.ticker&&t.levels&&[1,2,3].every(level=>!!t.levels[String(level)]));
  const allSeries=LEVELS.map(level=>({level,values:reconciled?ordered.map(t=>focusSurveyDatum(t,level.number,metric)):[]}));
  const validSeries=allSeries.map(s=>({...s,points:s.values.flatMap((d,i)=>d.value===null?[]:[{x:i,y:d.value}])}));
- const sourceMetricAvailable=ordered.some(t=>[1,2,3].some(l=>focusSurveyDatum(t,l,'VERIFIED_PERCENT').value!==null));
+ const sourceMetricAvailable=ordered.some(t=>[1,2,3,4,5,6].some(l=>focusSurveyDatum(t,l,'VERIFIED_PERCENT').value!==null));
  const observed=validSeries.flatMap(s=>s.points.map(p=>p.y));
  const ceiling=metric==='VERIFIED_PERCENT'?100:Math.max(4,Math.ceil(Math.max(0,...observed)/4)*4);
  const left=74,right=1540,top=42,bottom=354,width=1610,height=598;
@@ -104,7 +104,7 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
   <h3 style={{margin:'0 0 6px'}}>FOCUS · L1–L6 independent evidence scores and FDA direction</h3>
   <p style={{margin:'0 0 12px',fontSize:13}}>
    Six individually selectable solid lines show L1–L6 source evidence coverage when saved reports exist; dashed lines are independent
-   least-squares cross-trial fits, not time trends. The fifth series is the categorical
+   least-squares cross-trial fits, not time trends. The separate lane is the categorical
    FDA direction (ABSTAIN when no validated prediction exists), shown below the numeric
    graph without mapping it to zero or an approval percentage. These are not validated efficacy scores
    or FDA forecast probabilities.
@@ -216,15 +216,15 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
     </div>
     <div style={{overflowX:'auto',marginTop:14}}>
      <table data-testid="survey-overall-prediction-data-table"
-      style={{borderCollapse:'collapse',minWidth:790,width:'100%',fontSize:12}}>
+      style={{borderCollapse:'collapse',minWidth:1050,width:'100%',fontSize:12}}>
       <thead><tr>
        <th scope="col">Trial</th><th scope="col">L1 evidence /100</th>
-       <th scope="col">L2 evidence /100</th><th scope="col">L3 evidence /100</th>
+       <th scope="col">L2 evidence /100</th><th scope="col">L3 evidence /100</th>\n       <th scope="col">L4 evidence /100</th><th scope="col">L5 evidence /100</th><th scope="col">L6 evidence /100</th>
        <th scope="col">Overall evidence /100</th><th scope="col">FDA direction</th>
        <th scope="col">FDA approval probability</th>
       </tr></thead>
       <tbody>{ordered.map(t=>{
-       const values=[1,2,3].map(l=>focusSurveyDatum(t,l,'VERIFIED_PERCENT').value);
+       const values=[1,2,3,4,5,6].map(l=>focusSurveyDatum(t,l,'VERIFIED_PERCENT').value);
        const overall=focusSurveyOverallDatum(t,'VERIFIED_PERCENT').value;
        const direction=focusSurveyDirection(t);
        return <tr key={t.nct} style={{borderTop:'1px solid #dce5e0',
