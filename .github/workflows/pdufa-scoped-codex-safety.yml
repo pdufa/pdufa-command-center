@@ -1,0 +1,41 @@
+name: PDUFA Scoped Codex Automation Safety
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-scoped-codex-development.yml'
+      - '.github/workflows/pdufa-scoped-codex-safety.yml'
+      - '.github/codex/**'
+      - 'scripts/select_continuous_codex_task.py'
+      - 'scripts/check_continuous_codex_patch.py'
+      - 'tests/test_scoped_continuous_codex_setup.py'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/pdufa-scoped-codex-development.yml'
+      - '.github/workflows/pdufa-scoped-codex-safety.yml'
+      - '.github/codex/**'
+      - 'scripts/select_continuous_codex_task.py'
+      - 'scripts/check_continuous_codex_patch.py'
+      - 'tests/test_scoped_continuous_codex_setup.py'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  fail-closed-gate-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Verify queue approval, isolation and guarded automation
+        run: python -m unittest discover -s tests -p 'test_scoped_continuous_codex_setup.py' -v
+      - name: Audit permanent analysis-retirement rules
+        run: python scripts/audit_raas_retirement.py --check
