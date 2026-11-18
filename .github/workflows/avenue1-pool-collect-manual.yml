@@ -48,6 +48,21 @@ jobs:
           echo "Both Avenue 1 GitHub Actions secrets are configured (values hidden)."
       - name: Collect public evidence from authenticated full POOL
         run: python scripts/avenue1_pool_evidence_collector.py --output-dir artifacts/avenue1 --limit "${{ github.event_name == 'push' && '5' || inputs.test_limit }}"
+      - name: Verify collection report integrity
+        if: success()
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("artifacts/avenue1/collection-status.json").read_text())
+          assert report["attempted"] > 0, "No trials attempted"
+          assert report["collected"] + report["error_count"] == report["attempted"], "Collection count mismatch"
+          assert report["coverage_percent"] == round(100 * report["collected"] / report["attempted"], 2), "Coverage calculation mismatch"
+          if report["full_pool_collection_complete"]:
+              assert report["full_pool_run"] and report["error_count"] == 0
+              assert report["collected"] == report["pool_nct_count"]
+          print("Collection report verified; full_pool_collection_complete=" + str(report["full_pool_collection_complete"]))
+          PY
       - name: Retain evidence and coverage report for review
         if: always()
         uses: actions/upload-artifact@v4
