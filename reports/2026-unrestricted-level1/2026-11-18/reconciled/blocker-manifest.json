@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-18T19:44:10.255814+00:00",
+  "as_of": "2026-11-18T19:55:15.320935+00:00",
   "complete": false,
   "year_population_blockers": [
     {
@@ -355,11 +355,13 @@
     {
       "record_id": "2026-L1-095",
       "drug": "KERENDIA (finerenone), T1D-CKD",
-      "application_id": "",
+      "application_id": "NDA215341",
       "goal_date": "2026-12-31",
-      "reason": "The finerenone type 1 diabetes indication requires a cycle-specific supplement number and exact FDA date. A December 31 placeholder cannot establish either.",
+      "reason": "Drugs@FDA records the September 16, 2026 approval of NDA 215341/S-011. The FDA label matches CKD associated with type 1 diabetes. The December 31 calendar date remains unverified as a goal.",
       "sources": [
-        "https://www.pdufa.bio/ticker/BAYRY"
+        "https://www.pdufa.bio/ticker/BAYRY",
+        "https://www.fda.gov/media/89850/download",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215341s011lbl.pdf"
       ]
     },
     {
@@ -509,10 +511,12 @@
       "application_id": "BLA761055",
       "goal_date": "2026-04-27",
       "reason": [
-        "PK comparability, exact pediatric cohorts and arm-level safety"
+        "Precision of safety and performance in the youngest approved CSU age group.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
-        "https://www.fda.gov/media/194749/download"
+        "https://www.fda.gov/media/194749/download",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761055s074lbl.pdf"
       ],
       "missing_required_fields": [
         "trial_ids",
@@ -628,16 +632,16 @@
       "application_id": "NDA215960",
       "goal_date": "2026-06-18",
       "reason": [
-        "Effect and confidence interval, safety table, NCT",
-        "Exact ClinicalTrials.gov identity not confirmed"
+        "Comparative precision for individual pathogens and uncommon harms.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/1701108/000119312526221567/d147628dex991.htm",
         "https://www.sec.gov/Archives/edgar/data/1701108/000119312526458593/spro-20260930.htm",
-        "https://utebzihcp.com/efficacy-safety/primary-endpoint/"
+        "https://utebzihcp.com/efficacy-safety/primary-endpoint/",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215960Origs000lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
         "confidence_percent"
       ]
     },
@@ -914,14 +918,14 @@
       "application_id": "BLA125869",
       "goal_date": "2026-08-05",
       "reason": [
-        "Exact trial registry IDs, age-band effect and duration of protection"
+        "Comparative effectiveness across seasons and safety precision in rare events.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.fda.gov/media/194140/download?attachment=",
         "https://www.fda.gov/media/194538/download"
       ],
       "missing_required_fields": [
-        "trial_ids",
         "confidence_percent"
       ]
     },
@@ -1034,7 +1038,8 @@
       "application_id": "BLA761166",
       "goal_date": "2026-08-30",
       "reason": [
-        "Trial registry IDs, response statistics and comparative safety"
+        "Exact registry crosswalk and longer-term comparative risks.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://us.pharmaessentia.com/fda-confirms-a-pdufa-goal-date-of-august-30-2026-for-the-sbla-submission-of-ropeginterferon-alfa-2b-njft-in-essential-thrombocythemia-et/",
@@ -1042,7 +1047,6 @@
       ],
       "missing_required_fields": [
         "trial_ids",
-        "statistical_significance",
         "confidence_percent"
       ]
     },
@@ -1069,7 +1073,7 @@
       "application_id": "NDA218592",
       "goal_date": "2026-09-11",
       "reason": [
-        "Reader-level sensitivity, specificity and adverse-event rates.",
+        "Generalizability of reader agreement and precision of pediatric performance.",
         "Numerical confidence is not calibrated."
       ],
       "sources": [
@@ -1079,7 +1083,6 @@
         "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218592Orig1s000lbl.pdf"
       ],
       "missing_required_fields": [
-        "statistical_significance",
         "confidence_percent"
       ]
     },
@@ -1195,7 +1198,7 @@
       "application_id": "NDA208081",
       "goal_date": "2026-09-28",
       "reason": [
-        "Clearance rates, durability and safety.",
+        "Exact prespecified test result, durability and comparative harms.",
         "Numerical confidence is not calibrated."
       ],
       "sources": [
@@ -1403,11 +1406,13 @@
       "application_id": "NDA215390",
       "goal_date": "2026-11-14",
       "reason": [
-        "Exact NCT, outpatient endpoints and adverse-event rates"
+        "Public registry link for Study 3 and exact comparative efficacy analysis for the unsupervised setting.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/1720893/000110465926061773/tm2614679d1_ex99-1.htm",
-        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=215390"
+        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=215390",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215390s003lbl.pdf"
       ],
       "missing_required_fields": [
         "trial_ids",
@@ -1515,15 +1520,15 @@
       "application_id": "BLA125806",
       "goal_date": "2026-03-28",
       "reason": [
-        "Exact NCT and clinical outcomes, safety and long-term confirmation"
+        "Confirmation of clinical benefit and long-term safety.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/1281895/000114036125038030/ef20057000_ex99-1.htm",
-        "https://www.fda.gov/media/191993/download"
+        "https://www.fda.gov/media/191993/download",
+        "https://www.fda.gov/media/191722/download"
       ],
       "missing_required_fields": [
-        "trial_ids",
-        "statistical_significance",
         "confidence_percent"
       ]
     },
@@ -1541,6 +1546,72 @@
         "https://www.fda.gov/news-events/press-announcements/fda-approves-drug-treat-neurologic-manifestations-hunter-syndrome",
         "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761485Orig1s000IntegratedR.pdf",
         "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761485s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-100",
+      "drug": "Ambelvist (gadoquatrane)",
+      "application_id": "NDA219627",
+      "goal_date": "2026-06-12",
+      "reason": [
+        "Primary visualization estimates and full final label safety.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/219627Orig1s000OtherR.pdf"
+      ],
+      "missing_required_fields": [
+        "statistical_significance",
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-101",
+      "drug": "Cypsedo (cipepofol)",
+      "application_id": "NDA220482",
+      "goal_date": "2026-05-30",
+      "reason": [
+        "Precision of uncommon safety events and generalizability to unstable patients.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220482Orig1s000RiskR.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-102",
+      "drug": "Zaynich (cefepime–zidebactam)",
+      "application_id": "NDA220787",
+      "goal_date": "2026-05-30",
+      "reason": [
+        "Precision in selected pathogen and renal-risk subgroups.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220787Orig1s000RiskR.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-103",
+      "drug": "Etcamah (camizestrant)",
+      "application_id": "NDA220359",
+      "goal_date": "2026-08-27",
+      "reason": [
+        "Confirmatory treatment-strategy and mature survival outcomes.",
+        "Whether a further exact goal amendment occurred between August 27 and the September 4 approval.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220359Orig1s000RiskR.pdf"
       ],
       "missing_required_fields": [
         "confidence_percent"

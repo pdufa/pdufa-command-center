@@ -1964,16 +1964,18 @@
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
     "disposition": "BLOCKED",
-    "reason": "The finerenone type 1 diabetes indication requires a cycle-specific supplement number and exact FDA date. A December 31 placeholder cannot establish either.",
-    "application_id": "",
-    "supplement": "",
-    "review_cycle": "",
+    "reason": "Drugs@FDA records the September 16, 2026 approval of NDA 215341/S-011. The FDA label matches CKD associated with type 1 diabetes. The December 31 calendar date remains unverified as a goal.",
+    "application_id": "NDA215341",
+    "supplement": "S-011",
+    "review_cycle": "SUPPLEMENT",
     "goal_date": "2026-12-31",
-    "action_date": "",
+    "action_date": "2026-09-16",
     "source_urls": [
-      "https://www.pdufa.bio/ticker/BAYRY"
+      "https://www.pdufa.bio/ticker/BAYRY",
+      "https://www.fda.gov/media/89850/download",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215341s011lbl.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "reviewed_at": "2026-11-18T19:55:15.320935+00:00",
     "resolution_class": "UNRESOLVED_WITH_REASON",
     "source_rechecks": [
       {

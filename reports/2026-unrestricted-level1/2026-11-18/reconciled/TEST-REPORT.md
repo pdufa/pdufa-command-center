@@ -32,3 +32,5 @@ python smoke_test.py
 The audit suite validates CSV and JSON parity, duplicate keys, source receipts, date history, prospective cutoffs, retrospective exclusions, immutable inherited freezes and exact row-level blocker coverage.
 
 The evidence recheck reproduced the full-suite totals on November 18. Root pytest reported 2,293 passed and 195 skipped, backend pytest reported 1,387 passed and two skipped, and npm test reported 981 passed. There were zero failures. The final revised exports also passed the 20 focused tests, both snapshot validators, the standalone smoke check, CSV/JSON parity, and direct checks for row-level recheck coverage, trial applicability and calibration status. Frontend typecheck passed.
+
+The four-cycle discovery update and clinical evidence refresh changed report data only. The final 20 focused export and interface checks, both snapshot validators and CSV/JSON reconciliation checks passed. The prior full-suite baseline remains 4,661 passed, zero failed, and 197 skipped.

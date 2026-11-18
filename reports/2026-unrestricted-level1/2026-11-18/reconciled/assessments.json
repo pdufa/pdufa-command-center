@@ -631,7 +631,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v5",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-04-22",
     "outcome_published_at": "",
@@ -668,6 +668,11 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761055s074lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:40Z",
+        "sha256": "8e7214a1fdeda6e01f3e17b0fe2179cd4042a8b45e707a0dfef196d06aae5024"
       }
     ],
     "trial_ids": [],
@@ -681,7 +686,8 @@
     "confidence": "LOW",
     "rationale": "The FDA review supports the age extension through an extrapolation framework. Quantitative evaluation of that bridge remains open.",
     "evidence_gaps": [
-      "PK comparability, exact pediatric cohorts and arm-level safety"
+      "Precision of safety and performance in the youngest approved CSU age group.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -689,19 +695,25 @@
         "published_on": "",
         "retrieved_at": "2026-11-18T18:01:23.955304+00:00",
         "sha256": "5b3d407e6499812ace32e3f06cb9f0ed064d1f51df2a313142a084bb9a7055ab"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761055s074lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:40Z",
+        "sha256": "8e7214a1fdeda6e01f3e17b0fe2179cd4042a8b45e707a0dfef196d06aae5024",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:53:39.121394+00:00",
     "record_id": "2026-L1-008",
     "confidence_percent": "",
     "ticker": "REGN/SNY",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
     "confidence_basis": "Qualitative judgment; no calibrated percentage available",
     "confidence_calibration_status": "NOT_CALIBRATED",
-    "trial_id_status": "UNRESOLVED",
-    "trial_id_status_reason": ""
+    "trial_id_status": "NOT_APPLICABLE",
+    "trial_id_status_reason": "The pediatric CSU extension uses efficacy from studies in ages 12 and older plus pediatric pharmacokinetics and safety, without a separate pivotal efficacy trial in ages 2–11."
   },
   {
     "application_id": "NDA216964",
@@ -1351,7 +1363,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v5",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-06-17",
     "outcome_published_at": "",
@@ -1383,21 +1395,28 @@
         "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/215960Orig1s000ltr.pdf",
         "retrieved_at": "2026-11-18T17:37:25.318179+00:00",
         "sha256": "51b15615760c890c0fc90321ece230f97742021065c62263f0758798b75f2c1e"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215960Origs000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:54:12Z",
+        "sha256": "c0372581b247e4eb92a4c78b670bcd513ab2ed15d508bce415a8a67540e1b7d4"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT06059846"
+    ],
     "phase": "3",
     "endpoint": "PIVOT-PO clinical plus microbiological response at test of cure",
-    "effect_size": "Oral tebipenem achieved noninferiority to IV imipenem-cilastatin; absolute arm risks not confirmed here.",
-    "statistical_significance": "One-sided p=0.003 against efficacy boundary 0.009",
+    "effect_size": "Composite response 58.5% versus 60.2% with imipenem-cilastatin. Difference −1.3 percentage points (95% CI −7.5 to 4.8).",
+    "statistical_significance": "FDA label concludes noninferiority on the composite test-of-cure endpoint.",
     "safety": "Antibiotic class adverse events and resistance stewardship are important; full FDA comparison pending.",
     "assessment": "APPROVE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "MODERATE",
     "rationale": "A controlled noninferiority result supports a limited-alternatives oral option. The conclusion depends on pathogen susceptibility and the prespecified margin.",
     "evidence_gaps": [
-      "Effect and confidence interval, safety table, NCT",
-      "Exact ClinicalTrials.gov identity not confirmed"
+      "Comparative precision for individual pathogens and uncommon harms.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -1411,18 +1430,24 @@
         "published_on": "",
         "retrieved_at": "2026-11-18T17:52:20.223373+00:00",
         "sha256": "43e3ecd703b5ff183e129af079827f5bec64fabbe4fe57df1907594a0073d338"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215960Origs000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:54:12Z",
+        "sha256": "c0372581b247e4eb92a4c78b670bcd513ab2ed15d508bce415a8a67540e1b7d4",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "2026-11-18T17:53:51+00:00",
+    "assessment_recorded_at": "2026-11-18T19:55:15.320935+00:00",
     "record_id": "2026-L1-016",
     "confidence_percent": "",
     "ticker": "GSK/SPRO",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
     "confidence_basis": "Qualitative judgment; no calibrated percentage available",
     "confidence_calibration_status": "NOT_CALIBRATED",
-    "trial_id_status": "UNRESOLVED",
+    "trial_id_status": "IDENTIFIED",
     "trial_id_status_reason": ""
   },
   {
@@ -2931,7 +2956,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v5",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-08-05",
     "outcome_published_at": "",
@@ -2963,20 +2988,29 @@
         "url": "https://www.fda.gov/vaccines-blood-biologics/vaccines/mflusiva",
         "retrieved_at": "2026-11-18T17:56:08.447819+00:00",
         "sha256": "093730a6c39030636c06f2d73db671a6fac0021ac729e5bcc5cc1b3073d6c5e7"
+      },
+      {
+        "url": "https://www.fda.gov/media/194538/download",
+        "retrieved_at": "2026-11-18T19:54:48Z",
+        "sha256": "0c93aaca6ba0a2740d330146a0d4225a2314553917e9141b6e99c82a9a497575"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT06602024",
+      "NCT05827978"
+    ],
     "phase": "3",
-    "endpoint": "RT-PCR confirmed protocol-defined influenza-like illness vs standard-dose influenza vaccine",
-    "effect_size": "Relative efficacy 26.6% (95% CI 16.7–35.4) among adults 50 and older.",
-    "statistical_significance": "Met prespecified noninferiority criterion; older-adult accelerated indication used immunogenicity evidence.",
+    "endpoint": "Protocol-defined RT-PCR-confirmed influenza-like illness in the phase 3 efficacy trial.",
+    "effect_size": "Relative efficacy 26.6% (95% CI 16.7 to 35.4) versus a standard-dose comparator in adults aged at least 50 years.",
+    "statistical_significance": "The FDA reports that the prespecified noninferiority threshold was met.",
     "safety": "FDA evaluated reactogenicity and about six months of safety follow-up.",
     "assessment": "APPROVE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "MODERATE",
     "rationale": "Controlled evidence supports clinical benefit and is supplemented by immunogenicity for the accelerated age subgroup.",
     "evidence_gaps": [
-      "Exact trial registry IDs, age-band effect and duration of protection"
+      "Comparative effectiveness across seasons and safety precision in rare events.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -2988,14 +3022,14 @@
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_PENDING",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:55:15.320935+00:00",
     "record_id": "2026-L1-034",
     "confidence_percent": "",
     "ticker": "MRNA",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
     "confidence_basis": "Qualitative judgment; no calibrated percentage available",
     "confidence_calibration_status": "NOT_CALIBRATED",
-    "trial_id_status": "UNRESOLVED",
+    "trial_id_status": "IDENTIFIED",
     "trial_id_status_reason": ""
   },
   {
@@ -3524,7 +3558,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v5",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-08-28",
     "outcome_published_at": "",
@@ -3563,20 +3597,26 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761166s013lbl.pdf",
+        "retrieved_at": "2026-11-18T19:54:12Z",
+        "sha256": "3947a0401ac9e9adafe5eb9ac645f32b792b31466125c7408b2363d4f391ab5f"
       }
     ],
     "trial_ids": [],
     "phase": "3",
     "endpoint": "Hematologic response in essential thrombocythemia",
-    "effect_size": "Exact response and durability estimates by arm need extraction.",
-    "statistical_significance": "",
+    "effect_size": "Durable modified ELN response at months 9 and 12 was 34/91 (37.4%) versus 3/83 (3.6%) with anagrelide.",
+    "statistical_significance": "FDA label reports difference 33.9 percentage points (95% CI 23.5–44.4).",
     "safety": "Interferon-class neuropsychiatric, autoimmune and other serious warnings require review.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
     "rationale": "The new indication and trial class are sourced. Effect size and safety require direct label extraction.",
     "evidence_gaps": [
-      "Trial registry IDs, response statistics and comparative safety"
+      "Exact registry crosswalk and longer-term comparative risks.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -3588,7 +3628,7 @@
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:55:15.320935+00:00",
     "record_id": "2026-L1-041",
     "confidence_percent": "",
     "ticker": "6446.TW",
@@ -3704,7 +3744,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v4",
+    "model_version": "level1-owner-research-2026-11-18-v5",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-09-11",
     "outcome_published_at": "",
@@ -3753,15 +3793,15 @@
     ],
     "phase": "DIAGNOSTIC_REGISTRATION",
     "endpoint": "PET imaging of suspected glioma",
-    "effect_size": "Quantitative performance by reader and reference standard needs extraction.",
-    "statistical_significance": "",
+    "effect_size": "Against the composite reference standard, three readers reported patient-level PPA 73%, 83%, and 70% and NPA 59%, 48%, and 64%.",
+    "statistical_significance": "Study 1 reports reader-level 95% intervals. PPA intervals were 61–82%, 73–90%, and 58–79%. NPA intervals were 47–71%, 36–60%, and 51–75%.",
     "safety": "Review diagnostic radiation exposure and application-specific adverse events.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
     "rationale": "FDA confirms an imaging indication. Diagnostic operating characteristics and resubmission review details remain open.",
     "evidence_gaps": [
-      "Reader-level sensitivity, specificity and adverse-event rates.",
+      "Generalizability of reader agreement and precision of pediatric performance.",
       "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
@@ -3786,7 +3826,7 @@
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
+    "assessment_recorded_at": "2026-11-18T19:53:39.121394+00:00",
     "record_id": "2026-L1-043",
     "confidence_percent": "",
     "ticker": "TLX.AX",
@@ -4487,7 +4527,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v4",
+    "model_version": "level1-owner-research-2026-11-18-v5",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-09-09",
     "outcome_published_at": "",
@@ -4538,7 +4578,7 @@
     ],
     "phase": "3",
     "endpoint": "Composite clinical and histologic clearance of superficial basal cell carcinoma",
-    "effect_size": "Trial examined a preselected target lesion; exact treatment and control clearance rates need extraction.",
+    "effect_size": "Composite target lesion response was 95/145 (66%) versus 2/42 (5%) at week 12.",
     "statistical_significance": "",
     "safety": "Local photosensitivity and treatment-site reactions require review.",
     "assessment": "INDETERMINATE",
@@ -4546,7 +4586,7 @@
     "confidence": "LOW",
     "rationale": "The sponsor’s stated endpoint is clinically relevant for local lesion clearance. Exact estimates, recurrence and tolerability remain open.",
     "evidence_gaps": [
-      "Clearance rates, durability and safety.",
+      "Exact prespecified test result, durability and comparative harms.",
       "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
@@ -4573,7 +4613,7 @@
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
+    "assessment_recorded_at": "2026-11-18T19:53:39.121394+00:00",
     "record_id": "2026-L1-052",
     "confidence_percent": "",
     "ticker": "BFRI",
@@ -5963,7 +6003,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v5",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-11-13",
     "outcome_published_at": "",
@@ -6000,6 +6040,11 @@
         "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=215390",
         "retrieved_at": "2026-11-18T18:50:27Z",
         "sha256": "f9a4d75014923e936e733dfec6adb139dbfeb60cf9ee6790c90d5d7df6ed07cf"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215390s003lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "7f6ef90939f4ca125303641177750e32296f650a737d347587a2d2c91eed8bd9"
       }
     ],
     "trial_ids": [],
@@ -6007,13 +6052,14 @@
     "endpoint": "At-home SERENITY assessment for acute agitation",
     "effect_size": "At-home safety and efficacy outcome definitions need direct label and FDA review.",
     "statistical_significance": "",
-    "safety": "Sedation, hypotension and bradycardia are material; out-of-facility use needs separate assessment.",
+    "safety": "At-home Study 3 randomized 208 adults. FDA label reports somnolence in 55% versus 42%, dry mouth 15% versus 4%, and dizziness 11% versus 3%.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
     "rationale": "The at-home supplement is confirmed. Extrapolation and safety outside supervised settings remain open.",
     "evidence_gaps": [
-      "Exact NCT, outpatient endpoints and adverse-event rates"
+      "Public registry link for Study 3 and exact comparative efficacy analysis for the unsupervised setting.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -6025,11 +6071,17 @@
       {
         "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=215390",
         "published_on": ""
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215390s003lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "7f6ef90939f4ca125303641177750e32296f650a737d347587a2d2c91eed8bd9",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_PENDING",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:53:39.121394+00:00",
     "record_id": "2026-L1-069",
     "confidence_percent": "",
     "ticker": "BTAI",
@@ -8023,9 +8075,9 @@
     "trial_id_status_reason": ""
   },
   {
-    "application_id": "",
-    "review_cycle": "",
-    "supplement": "",
+    "application_id": "NDA215341",
+    "review_cycle": "SUPPLEMENT",
+    "supplement": "S-011",
     "indication": "Chronic kidney disease associated with type 1 diabetes (new indication)",
     "pdufa_date": "2026-12-31",
     "goal_source_url": "",
@@ -8036,22 +8088,28 @@
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
     "model_version": "level1-owner-research-2026-11-18-v1",
-    "actual_outcome": "",
-    "outcome_action_date": "",
+    "actual_outcome": "APPROVE",
+    "outcome_action_date": "2026-09-16",
     "outcome_published_at": "",
-    "source_url": "",
+    "source_url": "https://www.fda.gov/media/89850/download",
     "drug": "KERENDIA (finerenone), T1D-CKD",
-    "application_type": "",
+    "application_type": "NDA",
     "sponsor": "Bayer",
     "original_pdufa_date": "",
     "goal_date_history": [],
     "review_cycle_basis": "",
-    "regulatory_status": "CALENDAR_DECIDED",
+    "regulatory_status": "APPROVE",
     "approval_route": "",
     "verification_status": "BLOCKED",
     "applicability": "GOAL_DATE_CANDIDATE",
     "origin_url": "https://www.pdufa.bio/ticker/BAYRY",
-    "source_receipts": [],
+    "source_receipts": [
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      }
+    ],
     "trial_ids": [],
     "phase": "",
     "endpoint": "",
@@ -8063,13 +8121,8 @@
     "confidence": "LOW",
     "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
     "evidence_gaps": [
-      "The finerenone type 1 diabetes indication requires a cycle-specific supplement number and exact FDA date. A December 31 placeholder cannot establish either.",
-      "Exact application number, supplement and review cycle require primary-source reconciliation",
-      "Goal date requires direct FDA or sponsor confirmation",
-      "Calendar reports month precision; date may be a placeholder",
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "Drugs@FDA records the September 16, 2026 approval of NDA 215341/S-011. The FDA label matches CKD associated with type 1 diabetes. The December 31 calendar date remains unverified as a goal.",
+      "Exact pivotal endpoint and safety extraction pending for the application-specific judgment."
     ],
     "evidence_sources": [],
     "prior_prediction_artifacts": [],
@@ -8159,7 +8212,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v5",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-03-26",
     "outcome_published_at": "",
@@ -8195,37 +8248,51 @@
         "document_excerpt": "STN: 125806",
         "sha256": "79557cefd5bd1f2cf4381af054f3ec33bc61c0c8cb634fd108f0df3f401e6348",
         "representation": "UTF-8 source excerpt"
+      },
+      {
+        "url": "https://www.fda.gov/media/191722/download",
+        "retrieved_at": "2026-11-18T19:54:12Z",
+        "sha256": "04f0d90402c961abd53781c7de4c9c565aa9580a561a80fc88b09ce879c26ac4"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT03812263"
+    ],
     "phase": "REGISTRATION_STUDY",
     "endpoint": "Clinical and biomarker evidence in severe pediatric LAD-I",
-    "effect_size": "Quantitative marker effect, survival and infection rates require full FDA review.",
-    "statistical_significance": "",
+    "effect_size": "CD18 improved in all seven evaluable patients, with median expression 54% at month 12 and 50% at month 24. CD11a improved in all nine.",
+    "statistical_significance": "Single-arm descriptive biomarker result. A randomized comparative test was not available.",
     "safety": "Long-term safety, conditioning and serious infectious risks need adjudication.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
     "rationale": "An exact accelerated-approval cycle is identified. Clinical magnitude and safety need further review.",
     "evidence_gaps": [
-      "Exact NCT and clinical outcomes, safety and long-term confirmation"
+      "Confirmation of clinical benefit and long-term safety.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
         "url": "https://www.fda.gov/media/191993/download",
         "published_on": ""
+      },
+      {
+        "url": "https://www.fda.gov/media/191722/download",
+        "retrieved_at": "2026-11-18T19:54:12Z",
+        "sha256": "04f0d90402c961abd53781c7de4c9c565aa9580a561a80fc88b09ce879c26ac4",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:55:15.320935+00:00",
     "record_id": "2026-L1-097",
     "confidence_percent": "",
     "ticker": "RCKT",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
     "confidence_basis": "Qualitative judgment; no calibrated percentage available",
     "confidence_calibration_status": "NOT_CALIBRATED",
-    "trial_id_status": "UNRESOLVED",
+    "trial_id_status": "IDENTIFIED",
     "trial_id_status_reason": ""
   },
   {
@@ -8396,6 +8463,347 @@
     "confidence_basis": "Qualitative judgment; no calibrated percentage available",
     "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
     "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
+  },
+  {
+    "application_id": "NDA219627",
+    "review_cycle": "INITIAL",
+    "supplement": "NONE",
+    "indication": "Contrast-enhanced MRI to visualize lesions with abnormal vascularity in adult and pediatric patients",
+    "pdufa_date": "2026-06-12",
+    "goal_source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/219627Orig1s000OtherR.pdf",
+    "prediction": "",
+    "prediction_kind": "OUTCOME_AWARE",
+    "prediction_frozen_at": "",
+    "evidence_cutoff_at": "",
+    "latest_evidence_published_at": "",
+    "freeze_source_url": "",
+    "model_version": "level1-owner-research-2026-11-18-v5",
+    "actual_outcome": "APPROVE",
+    "outcome_action_date": "2026-06-12",
+    "outcome_published_at": "",
+    "source_url": "https://www.fda.gov/media/89850/download",
+    "drug": "Ambelvist (gadoquatrane)",
+    "application_type": "NDA",
+    "sponsor": "Bayer HealthCare Pharmaceuticals Inc.",
+    "original_pdufa_date": "",
+    "goal_date_history": [
+      {
+        "date": "2026-06-12",
+        "status": "CURRENT",
+        "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/219627Orig1s000OtherR.pdf"
+      }
+    ],
+    "review_cycle_basis": "FDA review cover or inspection table identifies the application and goal. Drugs@FDA ORIG 1 AP records the action.",
+    "regulatory_status": "APPROVE",
+    "approval_route": "",
+    "verification_status": "VERIFIED",
+    "applicability": "GOAL_DATE_CANDIDATE",
+    "origin_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/219627Orig1s000OtherR.pdf",
+    "source_receipts": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/219627Orig1s000OtherR.pdf",
+        "retrieved_at": "2026-11-18T19:51:01Z",
+        "sha256": "0fb8a40f85812655585bacab77c3768317836b1b9190ea73d154b8ec53710c52"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      }
+    ],
+    "trial_ids": [
+      "NCT05915702",
+      "NCT05915728"
+    ],
+    "phase": "Phase 3",
+    "endpoint": "Lesion enhancement, border delineation, and internal morphology on blinded MRI reads.",
+    "effect_size": "FDA review identifies two pivotal paired imaging comparisons. Exact effect estimates remain unextracted.",
+    "statistical_significance": "",
+    "safety": "Review discusses limited pregnancy data and potential higher exposure in certain populations.",
+    "assessment": "INDETERMINATE",
+    "assessment_kind": "OUTCOME_AWARE",
+    "confidence": "LOW",
+    "rationale": "FDA action was already known. The pivotal design addresses lesion visualization, but a directional review needs primary effect estimates and the final safety analysis.",
+    "evidence_gaps": [
+      "Primary visualization estimates and full final label safety.",
+      "Numerical confidence is not calibrated."
+    ],
+    "evidence_sources": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/219627Orig1s000OtherR.pdf",
+        "retrieved_at": "2026-11-18T19:51:01Z",
+        "sha256": "0fb8a40f85812655585bacab77c3768317836b1b9190ea73d154b8ec53710c52",
+        "published_on": ""
+      }
+    ],
+    "prior_prediction_artifacts": [],
+    "action_alignment_status": "FDA_ACTION_RECORDED",
+    "assessment_recorded_at": "2026-11-18T19:53:39.121394+00:00",
+    "record_id": "2026-L1-100",
+    "confidence_percent": "",
+    "ticker": "BAYRY",
+    "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
+  },
+  {
+    "application_id": "NDA220482",
+    "review_cycle": "INITIAL",
+    "supplement": "NONE",
+    "indication": "Induction of general anesthesia in adults undergoing elective procedures",
+    "pdufa_date": "2026-05-30",
+    "goal_source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220482Orig1s000RiskR.pdf",
+    "prediction": "",
+    "prediction_kind": "OUTCOME_AWARE",
+    "prediction_frozen_at": "",
+    "evidence_cutoff_at": "",
+    "latest_evidence_published_at": "",
+    "freeze_source_url": "",
+    "model_version": "level1-owner-research-2026-11-18-v5",
+    "actual_outcome": "APPROVE",
+    "outcome_action_date": "2026-05-29",
+    "outcome_published_at": "",
+    "source_url": "https://www.fda.gov/media/89850/download",
+    "drug": "Cypsedo (cipepofol)",
+    "application_type": "NDA",
+    "sponsor": "Haisco-USA Pharmaceuticals, Inc.",
+    "original_pdufa_date": "",
+    "goal_date_history": [
+      {
+        "date": "2026-05-30",
+        "status": "CURRENT",
+        "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220482Orig1s000RiskR.pdf"
+      }
+    ],
+    "review_cycle_basis": "FDA review cover or inspection table identifies the application and goal. Drugs@FDA ORIG 1 AP records the action.",
+    "regulatory_status": "APPROVE",
+    "approval_route": "",
+    "verification_status": "VERIFIED",
+    "applicability": "GOAL_DATE_CANDIDATE",
+    "origin_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220482Orig1s000RiskR.pdf",
+    "source_receipts": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220482Orig1s000RiskR.pdf",
+        "retrieved_at": "2026-11-18T19:51:06Z",
+        "sha256": "61b2ec50aaeb1f980868367364ff43ebb1e92867c0c3eb250e2211f838e9165c"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      }
+    ],
+    "trial_ids": [
+      "NCT04711837",
+      "NCT05478174",
+      "NCT05486416"
+    ],
+    "phase": "Phase 3",
+    "endpoint": "Successful induction measured by MOAA/S ≤1 without rescue medication and at most one top-up dose.",
+    "effect_size": "Pooled induction success was 99.3% in both arms. FDA reports treatment difference CI −1.23 to 1.96 percentage points.",
+    "statistical_significance": "FDA review concluded that cipepofol demonstrated noninferiority to propofol.",
+    "safety": "Review identifies hypotension and respiratory or cardiovascular depression risks.",
+    "assessment": "APPROVE",
+    "assessment_kind": "OUTCOME_AWARE",
+    "confidence": "MODERATE",
+    "rationale": "FDA action was already known. The controlled induction endpoint supports noninferiority, with expected anesthetic safety risks.",
+    "evidence_gaps": [
+      "Precision of uncommon safety events and generalizability to unstable patients.",
+      "Numerical confidence is not calibrated."
+    ],
+    "evidence_sources": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220482Orig1s000RiskR.pdf",
+        "retrieved_at": "2026-11-18T19:51:06Z",
+        "sha256": "61b2ec50aaeb1f980868367364ff43ebb1e92867c0c3eb250e2211f838e9165c",
+        "published_on": ""
+      }
+    ],
+    "prior_prediction_artifacts": [],
+    "action_alignment_status": "APPROVED_BEFORE_GOAL",
+    "assessment_recorded_at": "2026-11-18T19:53:39.121394+00:00",
+    "record_id": "2026-L1-101",
+    "confidence_percent": "",
+    "ticker": "002653.SZ",
+    "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
+  },
+  {
+    "application_id": "NDA220787",
+    "review_cycle": "INITIAL",
+    "supplement": "NONE",
+    "indication": "Complicated urinary tract infections, including acute pyelonephritis, in adults",
+    "pdufa_date": "2026-05-30",
+    "goal_source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220787Orig1s000RiskR.pdf",
+    "prediction": "",
+    "prediction_kind": "OUTCOME_AWARE",
+    "prediction_frozen_at": "",
+    "evidence_cutoff_at": "",
+    "latest_evidence_published_at": "",
+    "freeze_source_url": "",
+    "model_version": "level1-owner-research-2026-11-18-v5",
+    "actual_outcome": "APPROVE",
+    "outcome_action_date": "2026-05-29",
+    "outcome_published_at": "",
+    "source_url": "https://www.fda.gov/media/89850/download",
+    "drug": "Zaynich (cefepime–zidebactam)",
+    "application_type": "NDA",
+    "sponsor": "Wockhardt BIO AG",
+    "original_pdufa_date": "",
+    "goal_date_history": [
+      {
+        "date": "2026-05-30",
+        "status": "CURRENT",
+        "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220787Orig1s000RiskR.pdf"
+      }
+    ],
+    "review_cycle_basis": "FDA review cover or inspection table identifies the application and goal. Drugs@FDA ORIG 1 AP records the action.",
+    "regulatory_status": "APPROVE",
+    "approval_route": "",
+    "verification_status": "VERIFIED",
+    "applicability": "GOAL_DATE_CANDIDATE",
+    "origin_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220787Orig1s000RiskR.pdf",
+    "source_receipts": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220787Orig1s000RiskR.pdf",
+        "retrieved_at": "2026-11-18T19:51:07Z",
+        "sha256": "24b457e54c02b793ecd80df19083e1dba1e37094918fe4ac37e97b2db6c50c9c"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      }
+    ],
+    "trial_ids": [
+      "NCT04979806"
+    ],
+    "phase": "Phase 3",
+    "endpoint": "Clinical cure and microbiological eradication at test of cure.",
+    "effect_size": "Success 89.0% versus 68.4% with meropenem. Difference 20.6 percentage points (95% CI 12.3–29.5).",
+    "statistical_significance": "Lower confidence limit exceeded the prespecified −15-point noninferiority margin.",
+    "safety": "FDA review lists hypersensitivity, neurotoxicity, and C. difficile-associated diarrhea.",
+    "assessment": "APPROVE",
+    "assessment_kind": "OUTCOME_AWARE",
+    "confidence": "MODERATE",
+    "rationale": "FDA action was already known. The randomized comparison met the noninferiority criterion for the combined clinical and microbiological endpoint.",
+    "evidence_gaps": [
+      "Precision in selected pathogen and renal-risk subgroups.",
+      "Numerical confidence is not calibrated."
+    ],
+    "evidence_sources": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220787Orig1s000RiskR.pdf",
+        "retrieved_at": "2026-11-18T19:51:07Z",
+        "sha256": "24b457e54c02b793ecd80df19083e1dba1e37094918fe4ac37e97b2db6c50c9c",
+        "published_on": ""
+      }
+    ],
+    "prior_prediction_artifacts": [],
+    "action_alignment_status": "APPROVED_BEFORE_GOAL",
+    "assessment_recorded_at": "2026-11-18T19:53:39.121394+00:00",
+    "record_id": "2026-L1-102",
+    "confidence_percent": "",
+    "ticker": "WOCKPHARMA.NS",
+    "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
+  },
+  {
+    "application_id": "NDA220359",
+    "review_cycle": "INITIAL",
+    "supplement": "NONE",
+    "indication": "With a CDK4/6 inhibitor for ESR1-mutated HR-positive HER2-negative locally advanced or metastatic breast cancer",
+    "pdufa_date": "2026-08-27",
+    "goal_source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220359Orig1s000RiskR.pdf",
+    "prediction": "",
+    "prediction_kind": "OUTCOME_AWARE",
+    "prediction_frozen_at": "",
+    "evidence_cutoff_at": "",
+    "latest_evidence_published_at": "",
+    "freeze_source_url": "",
+    "model_version": "level1-owner-research-2026-11-18-v5",
+    "actual_outcome": "APPROVE",
+    "outcome_action_date": "2026-09-04",
+    "outcome_published_at": "",
+    "source_url": "https://www.fda.gov/media/89850/download",
+    "drug": "Etcamah (camizestrant)",
+    "application_type": "NDA",
+    "sponsor": "AstraZeneca Pharmaceuticals LP",
+    "original_pdufa_date": "2026-05-27",
+    "goal_date_history": [
+      {
+        "date": "2026-05-27",
+        "status": "SUPERSEDED",
+        "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220359Orig1s000RiskR.pdf"
+      },
+      {
+        "date": "2026-08-27",
+        "status": "CURRENT",
+        "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220359Orig1s000RiskR.pdf"
+      }
+    ],
+    "review_cycle_basis": "FDA review cover or inspection table identifies the application and goal. Drugs@FDA ORIG 1 AP records the action.",
+    "regulatory_status": "APPROVE",
+    "approval_route": "Accelerated approval",
+    "verification_status": "VERIFIED",
+    "applicability": "GOAL_DATE_CANDIDATE",
+    "origin_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220359Orig1s000RiskR.pdf",
+    "source_receipts": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220359Orig1s000RiskR.pdf",
+        "retrieved_at": "2026-11-18T19:51:05Z",
+        "sha256": "54a21fb3c4fae2795930fb97d47acfc48729fa55cc1f068950ec5fedceb1d00e"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      }
+    ],
+    "trial_ids": [
+      "NCT04964934"
+    ],
+    "phase": "Phase 3",
+    "endpoint": "SERENA-6 progression-free survival after detection of ESR1 mutation during aromatase inhibitor and CDK4/6 therapy.",
+    "effect_size": "Median PFS 16.0 versus 9.2 months, HR 0.44 (95% CI 0.31–0.60).",
+    "statistical_significance": "Primary comparison p<0.00001.",
+    "safety": "FDA risk review evaluates bradycardia and visual effects. Interim overall survival was inconclusive.",
+    "assessment": "APPROVE",
+    "assessment_kind": "OUTCOME_AWARE",
+    "confidence": "MODERATE",
+    "rationale": "FDA action was already known. The PFS benefit supports the accelerated approval assessment. Overall survival and treatment-strategy outcomes remain uncertain.",
+    "evidence_gaps": [
+      "Confirmatory treatment-strategy and mature survival outcomes.",
+      "Whether a further exact goal amendment occurred between August 27 and the September 4 approval.",
+      "Numerical confidence is not calibrated."
+    ],
+    "evidence_sources": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220359Orig1s000RiskR.pdf",
+        "retrieved_at": "2026-11-18T19:51:05Z",
+        "sha256": "54a21fb3c4fae2795930fb97d47acfc48729fa55cc1f068950ec5fedceb1d00e",
+        "published_on": ""
+      }
+    ],
+    "prior_prediction_artifacts": [],
+    "action_alignment_status": "FDA_ACTION_RECORDED",
+    "assessment_recorded_at": "2026-11-18T19:53:39.121394+00:00",
+    "record_id": "2026-L1-103",
+    "confidence_percent": "",
+    "ticker": "AZN",
+    "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
     "trial_id_status_reason": ""
   }
 ]
