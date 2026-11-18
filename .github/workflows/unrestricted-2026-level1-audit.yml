@@ -3,9 +3,12 @@ on:
   pull_request:
     paths:
       - 'scripts/audit_2026_unrestricted_level1.py'
+      - 'reports/2026-unrestricted-level1/**'
       - 'tests/test_2026_unrestricted_level1_audit.py'
       - '.github/workflows/unrestricted-2026-level1-audit.yml'
   workflow_dispatch:
+permissions:
+  contents: read
 jobs:
   unit-tests:
     runs-on: ubuntu-latest
@@ -16,3 +19,5 @@ jobs:
           python-version: '3.11'
       - name: Run isolated audit regression tests
         run: python -m unittest discover -s tests -p 'test_2026_unrestricted_level1_audit.py' -v
+      - name: Validate the frozen assessment exports
+        run: python scripts/audit_2026_unrestricted_level1.py --snapshot reports/2026-unrestricted-level1/2026-11-18
