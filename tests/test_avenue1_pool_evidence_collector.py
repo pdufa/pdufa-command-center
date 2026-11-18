@@ -38,6 +38,23 @@ class CollectorTests(unittest.TestCase):
         with self.assertRaises(RuntimeError):
             find_ncts(snapshot)
 
+    def test_duplicate_trial_identity_rejected(self):
+        snapshot = {
+            "sourceHealth": {"state": "FRESH", "clinicalRows": 2,
+                             "regulatoryRows": 0, "pipelineSourceParity": {"exactPrograms": 2}},
+            "pipeline": [{"id": "TRIAL|NCT05507203"}, {"id": "TRIAL|NCT05507203"}],
+        }
+        with self.assertRaisesRegex(RuntimeError, "Duplicate POOL trial identity"):
+            find_ncts(snapshot)
+
+    def test_non_trial_rows_are_not_mistaken_for_trials(self):
+        snapshot = {
+            "sourceHealth": {"state": "FRESH", "clinicalRows": 1,
+                             "regulatoryRows": 1, "pipelineSourceParity": {"exactPrograms": 2}},
+            "pipeline": [{"id": "FDA|NCT05507203"}, {"id": "RESULT|NCT05507216"}],
+        }
+        self.assertEqual(find_ncts(snapshot), [])
+
     def test_results_not_inferred_when_missing(self):
         payload = {"protocolSection": {"statusModule": {"overallStatus": "COMPLETED"},
                    "outcomesModule": {"primaryOutcomes": [{"measure": "Clinical remission"}]}}}
