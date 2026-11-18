@@ -1,5 +1,7 @@
 # 2026 PDUFA Level 1 executive report
 
+[Open the latest reconciled export and checkpoint report](reconciled/EXECUTIVE-REPORT.md). The files in this directory preserve the earlier snapshot.
+
 **Status on November 18, 2026 — partial public-source reconciliation.** The full-year denominator is unresolved. The proposed count of 196 is provisional and has no verified row-level export in this audit. Some review goals and pending application identifiers are undisclosed or unavailable in the public records reviewed. The year is still open.
 
 | Measure | Count |

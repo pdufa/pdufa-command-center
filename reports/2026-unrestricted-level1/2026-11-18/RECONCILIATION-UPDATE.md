@@ -1,5 +1,7 @@
 # November 18 reconciliation update
 
+[Open the latest reconciled export and checkpoint report](reconciled/EXECUTIVE-REPORT.md). The files in this directory preserve the earlier snapshot.
+
 **Status: partial.** This update recovers the reconciliation ledger after the managed workspace went offline. The published assessment CSV and JSON in this directory retain the prior 37-cycle snapshot. The supplemental ledger preserves changes and primary source links for the next integrated export.
 
 ## Coverage and completion
