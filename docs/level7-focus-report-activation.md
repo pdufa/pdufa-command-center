@@ -1,0 +1,34 @@
+# Level 7 FOCUS report activation (development only)
+
+Level 7 is an **evidence inventory**, not a clinical score or FDA approval prediction.
+
+## Requirements
+- A real SQLite evidence store initialized using `level7_store.EvidenceStore`.
+- Records must be sourced and persisted through the verified Level 7 ingestion pipeline; the packaged FOCUS roster is **not evidence**.
+- The report must reconcile against the exact 32 unique NCTs in `new-platform/frontend/data/p3PostDataActive.json`.
+- The report path must be readable by the running Next.js server. Do not expose the SQLite database or report artifact as a public static asset.
+
+## Generate and serve
+From repository root:
+
+```bash
+python scripts/level7_focus_report.py --db /secure/path/level7-evidence.sqlite3 --output /secure/path/focus-level7-report.json
+```
+
+Configure the **server-only** environment variable for the Next.js frontend:
+
+```text
+FOCUS_LEVEL7_COVERAGE_REPORT_PATH=/secure/path/focus-level7-report.json
+```
+
+The FOCUS page displays the Level 7 coverage panel. Its API endpoint `/api/focus-level7-coverage` reads this file and validates roster membership and totals. It fails closed with HTTP 503 if the variable is missing or the report is invalid. An empty initialized evidence database yields 32 `NO_LEVEL7_EVIDENCE` rows, not completed assessments.
+
+## Acceptance criteria
+1. Run `python -m unittest discover -s tests -p 'test_level7_*.py' -v` and `python scripts/check_focus_snapshot_alignment.py`.
+2. Generate a report from the **actual** evidence database, not a blank fixture.
+3. Verify exactly 32 distinct NCT rows, their status counts, and `fdaPrediction: null` for each.
+4. Confirm that `/api/focus-level7-coverage` serves the validated report and the FOCUS panel renders it.
+5. Confirm missing/corrupt report returns 503 and does not display fabricated coverage.
+6. Keep the development PR unmerged and production deployment disabled until explicitly authorized.
+
+The code and passing CI alone do not satisfy steps 2–4. Do not mark Level 7 operational until the real database and deployed development environment are verified.
