@@ -27,8 +27,10 @@ class EvidenceStore:
 
     def add_many(self, records: list[EvidenceRecord]) -> dict:
         """All-or-nothing batch: a duplicate conflict rolls back the full report."""
+        if self.read_only:
+            raise PermissionError('Read-only evidence store cannot accept records')
         added, unchanged = 0, 0
-        with sqlite3.connect(self.path) as db:
+        with self._connect() as db:
             for record in records:
                 # Directly constructed records must satisfy persistence gates.
                 if record.status not in (
@@ -59,7 +61,7 @@ class EvidenceStore:
         return bool(self.add_many([record])["added"])
 
     def history(self, trial_id: str) -> list[EvidenceRecord]:
-        with sqlite3.connect(self.path) as db:
+        with self._connect() as db:
             rows = db.execute('SELECT record_json FROM level7_evidence WHERE trial_id=?', (trial_id,)).fetchall()
         return sorted((EvidenceRecord(**json.loads(row[0])) for row in rows),
                       key=lambda r: (r.retrieved_at, r.source_id, r.source_version))
