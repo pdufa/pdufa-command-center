@@ -42,6 +42,48 @@ class Level7MonitorCliTests(unittest.TestCase):
             self.assertEqual(len(history), 1)
             self.assertEqual(history[0].status, "unverified")
 
+    def test_opt_in_monitor_emits_32_trial_coverage_report(self):
+        with tempfile.TemporaryDirectory() as folder:
+            base = Path(folder)
+            archive, current, db, output = (
+                base / "archive.json", base / "current.json",
+                base / "evidence.sqlite3", base / "coverage.json")
+            roster = json.loads(monitor.ROSTER_PATH.read_text(encoding="utf-8"))
+            ncts = [row["nct"] for row in roster["records"]]
+            self.assertEqual(len(ncts), 32)
+            report = {
+                "kind": "FOCUS_NIGHTLY_PRIMARY_SOURCE_MONITOR_NOT_FDA_PREDICTIONS",
+                "runAtUTC": "2026-11-18T12:00:00+00:00",
+                "summary": {"sourceRetrieved": 1, "sourceUnavailable": 31},
+                "trials": [
+                    {"nct": nct, "sourceStatus": "OFFICIAL_REGISTRY_RETRIEVED",
+                     "sourceHash": "abc", "delta": "FIRST_SOURCE_OBSERVATION"}
+                    for nct in ncts
+                ],
+            }
+            argv = ["focus_nightly_source_monitor.py", "--archive", str(archive),
+                    "--current", str(current), "--level7-db", str(db),
+                    "--level7-coverage-output", str(output)]
+            with patch.object(sys, "argv", argv), patch.object(
+                monitor, "build_report", return_value=report
+            ), patch.object(monitor, "load_json", return_value={}):
+                monitor.main()
+            payload = json.loads(output.read_text(encoding="utf-8"))
+            self.assertEqual(payload["total"], 32)
+            self.assertEqual(len(payload["trials"]), 32)
+            self.assertTrue(all(row["fdaPrediction"] is None for row in payload["trials"]))
+            self.assertTrue(archive.exists())
+
+    def test_coverage_output_requires_explicit_database(self):
+        with tempfile.TemporaryDirectory() as folder:
+            output = Path(folder) / "coverage.json"
+            argv = ["focus_nightly_source_monitor.py", "--archive",
+                    str(Path(folder) / "archive.json"),
+                    "--level7-coverage-output", str(output)]
+            with patch.object(sys, "argv", argv), self.assertRaises(SystemExit):
+                monitor.main()
+            self.assertFalse(output.exists())
+
     def test_default_cli_does_not_create_level7_database(self):
         with tempfile.TemporaryDirectory() as folder:
             base = Path(folder)
