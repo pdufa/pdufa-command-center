@@ -1,0 +1,6 @@
+drug_name,active_ingredient,approval_date,approved_indication_summary,source_url,application_id,pdufa_date,level1_prediction,cohort_classification
+Klygefa,gefurulimab-gaks,2026-11-13,Anti-acetylcholine receptor antibody-positive generalized myasthenia gravis,https://www.fda.gov/drugs/novel-drug-approvals-fda/novel-drug-approvals-2026,,,,FDA_APPROVAL_ONLY_NOT_PDUFA_VERIFIED
+Pimjetmi,pimicotinib,2026-11-13,Symptomatic tenosynovial giant cell tumor where surgery risks severe morbidity,https://www.fda.gov/drugs/novel-drug-approvals-fda/novel-drug-approvals-2026,,,,FDA_APPROVAL_ONLY_NOT_PDUFA_VERIFIED
+Sunharbo,asundexian,2026-11-09,Stroke risk reduction following recent non-cardioembolic ischemic stroke or high-risk TIA,https://www.fda.gov/drugs/novel-drug-approvals-fda/novel-drug-approvals-2026,,,,FDA_APPROVAL_ONLY_NOT_PDUFA_VERIFIED
+Hibsago,bepirovirsen,2026-10-20,Chronic hepatitis B in certain adults without cirrhosis alongside antiviral therapy,https://www.fda.gov/drugs/novel-drug-approvals-fda/novel-drug-approvals-2026,,,,FDA_APPROVAL_ONLY_NOT_PDUFA_VERIFIED
+Hovilpri,pritelivir,2026-10-09,Refractory mucocutaneous herpes simplex in immunocompromised adults,https://www.fda.gov/drugs/novel-drug-approvals-fda/novel-drug-approvals-2026,,,,FDA_APPROVAL_ONLY_NOT_PDUFA_VERIFIED
