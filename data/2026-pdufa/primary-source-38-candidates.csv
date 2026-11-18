@@ -1,0 +1,39 @@
+source_row,ticker,drug_or_application,fda_action_date,pdufa_goal_date,source_url,application_id,predecision_evidence_status,blind_prediction_status
+1,NUVB,IBTROZI taletrectinib sNDA,2026-09-16,2027-01-04,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+2,CORT,Relacorilant plus nab-paclitaxel,2026-03-25,2026-07-11,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+3,IBRX,ANKTIVA plus BCG papillary,2026-10-14,2027-01-06,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+4,NUVL,Zidesamtinib,2026-07-22,2026-09-18,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+5,PHAR,Joenja pediatric APDS,2026-09-11,2026-10-24,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+6,RHHBY,Giredestrant plus everolimus,2026-11-16,2026-12-18,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+7,IONS,Zilganersen,2026-09-03,2026-09-22,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+8,BFRI,Ameluz,2026-09-09,2026-09-28,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+9,SRRK,ISEMBYLD apitegromab,2026-09-11,2026-09-30,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+10,IONS,Olezarsen CORE,2026-06-24,2026-06-30,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+11,GSK,Hibsago bepirovirsen,2026-10-20,2026-10-26,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+12,OTLK,Bevacizumab,2026-07-24,2026-07-29,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+13,VRDN,Veligrotug,2026-06-26,2026-06-30,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+14,BMY,Iberdomide daratumumab dexamethasone,2026-08-13,2026-08-17,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+15,RARE,DTX401,2026-08-19,2026-08-23,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+16,CELC,Gedatolisib plus fulvestrant,2026-07-14,2026-07-17,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+17,MNKD,FUROSCIX ReadyFlow,2026-07-23,2026-07-26,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+18,VTRS,MR-100A-01,2026-07-28,2026-07-30,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+19,RARE,FAYUVI,2026-09-17,2026-09-19,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+20,GSK/SPRO,Tebipenem HBr,2026-06-17,2026-06-18,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+21,INCY/MIRM,Atebrioz,2026-09-25,2026-09-26,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+22,RHHBY,Tecentriq adjuvant,2026-10-08,2026-10-09,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+23,IRD/VTRS,Phentolamine ophthalmic,2026-10-16,2026-10-17,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+24,SMMT,Ivonescimab,2026-11-13,2026-11-14,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+25,ACHV,Cytisinicline,2026-06-20,2026-06-20,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+26,ARQT,ZORYVE cream,2026-06-29,2026-06-29,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+27,UNCY,Oxylanthanum carbonate,2026-06-29,2026-06-29,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+28,VERA,Atacicept,2026-07-07,2026-07-07,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+29,OTSKY,Centanafadine,2026-07-24,2026-07-24,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+30,MRNA,MFLUSIVA,2026-08-05,2026-08-05,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+31,LNTH,MK-6240,2026-08-13,2026-08-13,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+32,JAZZ/ZYME,Ziihera,2026-08-25,2026-08-25,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+33,GILD,Bictegravir and lenacapavir,2026-08-27,2026-08-27,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+34,TLX,Pixclara,2026-09-11,2026-09-11,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+35,MRK,WINREVAIR,2026-09-21,2026-09-21,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+36,RHHBY,Enspryng thyroid eye,2026-10-15,2026-10-15,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+37,INO,VOCERYQ,2026-10-30,2026-10-30,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
+38,REPL,TUDRIQEV,2026-08-06,2026-08-02,https://www.pdufa.bio/research/fda-decision-timing,,not_collected,not_scored
