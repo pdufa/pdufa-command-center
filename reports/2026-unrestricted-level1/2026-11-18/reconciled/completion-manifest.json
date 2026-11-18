@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-18T19:37:45.815458+00:00",
+  "as_of": "2026-11-18T19:44:10.255814+00:00",
   "complete": false,
   "full_year_denominator": null,
   "provisional_external_count": 196,
@@ -26,16 +26,16 @@
   },
   "calibration": null,
   "missing_fields_on_worklist": {
-    "application_id": 22,
-    "review_cycle": 29,
-    "supplement": 23,
+    "application_id": 20,
+    "review_cycle": 27,
+    "supplement": 21,
     "indication": 2,
     "goal_source_url": 16,
     "phase": 20,
-    "trial_ids": 61,
+    "trial_ids": 48,
     "endpoint": 20,
     "effect_size": 20,
-    "statistical_significance": 45,
+    "statistical_significance": 39,
     "safety": 20,
     "ticker": 2,
     "confidence_percent": 99
@@ -70,6 +70,11 @@
       "url": "https://www.assyro.com/tools/pdufa-calendar/2026",
       "retrieved_at": "2026-11-18T17:37:33Z",
       "sha256": "12ee73b105086168129fe8e4b9e923bc19cd1802a23e6e2039a21db30645318b"
+    },
+    "Drugs@FDA recheck": {
+      "url": "https://www.fda.gov/media/89850/download",
+      "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+      "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
     }
   },
   "blockers": [

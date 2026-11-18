@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-18T19:37:45.815458+00:00",
+  "as_of": "2026-11-18T19:44:10.255814+00:00",
   "complete": false,
   "year_population_blockers": [
     {
@@ -43,12 +43,13 @@
     {
       "record_id": "2026-L1-021",
       "drug": "Truqap - (CAPItello-281)",
-      "application_id": "",
+      "application_id": "NDA218197",
       "goal_date": "2026-06-30",
-      "reason": "The source lead gives June 30 without an exact primary goal. The FDA S-006 letter concerns a later capivasertib submission; its relationship to the CAPItello-281 date needs resolution.",
+      "reason": "Drugs@FDA identifies NDA 218197/S-004 for the June 12 CAPItello-281 action. S-006 is a later supplement. The June 30 calendar claim remains an unverified goal.",
       "sources": [
         "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218197Orig1s006ltr.pdf",
-        "https://www.pdufa.bio/ticker/AZN"
+        "https://www.pdufa.bio/ticker/AZN",
+        "https://www.fda.gov/media/89850/download"
       ]
     },
     {
@@ -79,12 +80,13 @@
     {
       "record_id": "2026-L1-057",
       "drug": "Jaypirca (pirtobrutinib) - previously untreated CLL/SLL",
-      "application_id": "",
+      "application_id": "NDA216059",
       "goal_date": "2026-10-02",
-      "reason": "FDA confirms October first-line CLL/SLL action. October 2 calendar entry repeats the action, and the first-line application’s actual goal remains unverified.",
+      "reason": "Drugs@FDA identifies NDA 216059/S-006 as the October 2 approval for first-line CLL/SLL. The exact PDUFA goal remains unverified.",
       "sources": [
         "https://www.fda.gov/drugs/cancer-approvals/fda-approves-pirtobrutinib-previously-untreated-chronic-lymphocytic-leukemia-or-small-lymphocytic",
-        "https://www.pdufa.bio/fda-decision/LLY-2026-10-02"
+        "https://www.pdufa.bio/fda-decision/LLY-2026-10-02",
+        "https://www.fda.gov/media/89850/download"
       ]
     },
     {
@@ -129,11 +131,12 @@
       "drug": "Pimjetmi (pimicotinib) - tenosynovial giant cell tumor",
       "application_id": "NDA220414",
       "goal_date": "2026-11-10",
-      "reason": "Drugs@FDA confirms NDA 220414 and November 10 effective approval date. The calendar action cannot establish the exact PDUFA goal.",
+      "reason": "Drugs@FDA confirms NDA 220414 and November 10 effective approval date. The calendar action cannot establish the exact PDUFA goal. FDA’s novel-approvals index separately lists November 13. Retain the November 10 application action and reconcile the index discrepancy before using either date as a goal.",
       "sources": [
         "https://www.fda.gov/drugs/cancer-approvals/fda-approves-pimicotinib-symptomatic-tenosynovial-giant-cell-tumor",
         "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220414",
-        "https://www.pdufa.bio/fda-decision/MKKGY-2026-11-10"
+        "https://www.pdufa.bio/fda-decision/MKKGY-2026-11-10",
+        "https://www.fda.gov/drugs/novel-drug-approvals-fda/novel-drug-approvals-2026"
       ]
     },
     {
@@ -522,14 +525,14 @@
       "application_id": "NDA216964",
       "goal_date": "2026-04-28",
       "reason": [
-        "Exact NCTs, noninferiority margin, arm-level viral failure and safety"
+        "Longer-term comparative resistance and safety.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
-        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/216964s000MultidisciplineR.pdf"
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/216964s000MultidisciplineR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/216964Orig1s000lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
-        "statistical_significance",
         "confidence_percent"
       ]
     },
@@ -608,14 +611,14 @@
       "application_id": "NDA219835",
       "goal_date": "2026-06-05",
       "reason": [
-        "Mutation-stratum PFS estimate, exact trial and safety tables"
+        "Mature overall survival, longer follow-up, and comparative safety precision.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
-        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/219835Orig1s000RiskR.pdf"
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/219835Orig1s000RiskR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219835Orig1s000lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
-        "statistical_significance",
         "confidence_percent"
       ]
     },
@@ -716,17 +719,17 @@
       "application_id": "BLA761530",
       "goal_date": "2026-06-30",
       "reason": [
-        "Exact trial registry IDs and full chronic-disease comparative estimate",
-        "Exact ClinicalTrials.gov identity not confirmed"
+        "Full chronic-disease comparative estimate and safety precision.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/1590750/000119312526205010/d149508dex991.htm",
         "https://pubmed.ncbi.nlm.nih.gov/42223386/",
         "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761530Orig1s000StatR.pdf",
-        "https://dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=11bc286a-5411-45af-af3f-69ad38efb610&type=display"
+        "https://dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=11bc286a-5411-45af-af3f-69ad38efb610&type=display",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761530Orig1s000lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
         "confidence_percent"
       ]
     },
@@ -786,15 +789,16 @@
       "application_id": "NDA219908",
       "goal_date": "2026-07-17",
       "reason": [
-        "Regimen-specific PFS estimates and comparative safety"
+        "Longer-term overall survival and regimen-specific comparative safety.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/1603454/000149315226026761/form8-k.htm",
         "https://www.fda.gov/drugs/cancer-approvals/fda-approves-gedatolisib-fulvestrant-or-without-palbociclib-hr-positive-her2-negative-locally",
-        "https://www.dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=959d73ef-831f-4005-956c-210702270bda"
+        "https://www.dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=959d73ef-831f-4005-956c-210702270bda",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219908Orig1s000lbl.pdf"
       ],
       "missing_required_fields": [
-        "statistical_significance",
         "confidence_percent"
       ]
     },
@@ -804,14 +808,15 @@
       "application_id": "BLA761445",
       "goal_date": "2026-07-23",
       "reason": [
-        "Study identity, bioavailability margins and administration-related event rates"
+        "Bioavailability margins and administration-related event rates.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/1121404/000119312526180848/d137048dex992.htm",
-        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761445Orig1s000Correctedltr.pdf"
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761445Orig1s000Correctedltr.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761445Orig1s000lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
         "statistical_significance",
         "confidence_percent"
       ]
@@ -1064,15 +1069,16 @@
       "application_id": "NDA218592",
       "goal_date": "2026-09-11",
       "reason": [
-        "Reader-level sensitivity/specificity, trial linkage and adverse-event rates"
+        "Reader-level sensitivity, specificity and adverse-event rates.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.globenewswire.com/news-release/2026/04/09/3271481/0/en/FDA-Accepts-NDA-for-TLX101-Px-Pixclara.html",
         "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218592Orig1s000ltr.pdf",
-        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/218592Orig1s000OtherR.pdf"
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/218592Orig1s000OtherR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218592Orig1s000lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
         "statistical_significance",
         "confidence_percent"
       ]
@@ -1133,14 +1139,15 @@
       "application_id": "NDA220210",
       "goal_date": "2026-09-22",
       "reason": [
-        "Exact study phase and NCT, smaller-dose and nonambulatory subgroup analysis, adverse-event table"
+        "Exact study phase, smaller-dose and nonambulatory subgroup analysis, and adverse-event table.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/874015/000114036126029960/ef20078953_ex99-1.htm",
-        "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=af6ca330-46d3-4ed6-b2af-bd6db3133fd1"
+        "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=af6ca330-46d3-4ed6-b2af-bd6db3133fd1",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220210Orig1s000lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
         "confidence_percent"
       ]
     },
@@ -1150,16 +1157,16 @@
       "application_id": "NDA221198",
       "goal_date": "2026-09-26",
       "reason": [
-        "Prespecified statistical estimate, clinical-function follow-up, exact NCT and safety rates"
+        "Prespecified p-value, clinical-function follow-up, and safety rates.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/1759425/000175942526000036/mirm-20260506xexx991.htm",
         "https://content.govdelivery.com/accounts/USFDA/bulletins/42c900b",
-        "https://www.sec.gov/Archives/edgar/data/1759425/000175942526000049/mirm-20260925.htm"
+        "https://www.sec.gov/Archives/edgar/data/1759425/000175942526000049/mirm-20260925.htm",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/221198Orig1s000lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
-        "statistical_significance",
         "confidence_percent"
       ]
     },
@@ -1188,14 +1195,15 @@
       "application_id": "NDA208081",
       "goal_date": "2026-09-28",
       "reason": [
-        "NCT, clearance rates, durable response and safety"
+        "Clearance rates, durability and safety.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/1858685/000149315226022875/ex99-1.htm",
-        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/208081Orig1s040ltr.pdf"
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/208081Orig1s040ltr.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/208081s040lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
         "statistical_significance",
         "confidence_percent"
       ]
@@ -1288,14 +1296,14 @@
       "application_id": "BLA761149",
       "goal_date": "2026-10-15",
       "reason": [
-        "Exact trial IDs, statistical estimates and comparative safety"
+        "Comparative safety and interpretation of discordant pivotal results.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.gene.com/media/press-releases/15118/2026-06-29/fda-grants-priority-review-to-genentechs",
         "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761149s008lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
         "confidence_percent"
       ]
     },
@@ -1305,15 +1313,15 @@
       "application_id": "NDA217064",
       "goal_date": "2026-10-17",
       "reason": [
-        "Exact study identity, responder rates, inferential test and safety"
+        "Longer-term durability and uncommon safety events.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.globenewswire.com/news-release/2026/02/25/3244435/0/en/Opus-Genetics-Announces-FDA-Acceptance-of-Supplemental-New-Drug-Application-for-Phentolamine-Ophthalmic-Solution-0-75-for-the-Treatment-of-Presbyopia.html",
-        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/217064Orig1s005ltr.pdf"
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/217064Orig1s005ltr.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/217064s005lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
-        "statistical_significance",
         "confidence_percent"
       ]
     },
@@ -1341,7 +1349,8 @@
       "application_id": "NDA221276",
       "goal_date": "2026-10-26",
       "reason": [
-        "Trial-specific effects, longer-term recurrence and safety"
+        "Longer-term recurrence and safety.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/874015/000114036126029960/ef20078953_ex99-1.htm",
@@ -1350,7 +1359,6 @@
         "https://us.gsk.com/en-us/media/press-releases/hibsago-bepirovirsen-approved-in-the-us-for-the-treatment-of-chronic-hepatitis-b-chb/"
       ],
       "missing_required_fields": [
-        "trial_ids",
         "confidence_percent"
       ]
     },
@@ -1413,15 +1421,15 @@
       "application_id": "NDA219083",
       "goal_date": "2026-11-14",
       "reason": [
-        "Exact NCT, effect and CI, and cardiac safety tables"
+        "Exact peak oxygen uptake effect and CI, and cardiac safety tables.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/1061983/000119312526206360/cytk-ex99_1.htm",
-        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219083"
+        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219083",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219083s002lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
-        "statistical_significance",
         "confidence_percent"
       ]
     },
@@ -1525,15 +1533,16 @@
       "application_id": "BLA761485",
       "goal_date": "2026-04-05",
       "reason": [
-        "Exact trial registry ID, confirmatory clinical outcome and long-term safety"
+        "Confirmatory clinical outcomes and long-term safety.",
+        "Numerical confidence is not calibrated."
       ],
       "sources": [
         "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761485Orig1s000RiskR.pdf",
         "https://www.fda.gov/news-events/press-announcements/fda-approves-drug-treat-neurologic-manifestations-hunter-syndrome",
-        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761485Orig1s000IntegratedR.pdf"
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761485Orig1s000IntegratedR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761485s000lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
         "confidence_percent"
       ]
     }

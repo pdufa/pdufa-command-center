@@ -75,7 +75,10 @@
     "confidence_percent": "",
     "ticker": "ATRA",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA125840",
@@ -165,7 +168,10 @@
     "confidence_percent": "",
     "ticker": "RGNX",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA220358",
@@ -247,7 +253,10 @@
     "confidence_percent": "",
     "ticker": "VNDA",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "NOT_APPLICABLE",
+    "trial_id_status_reason": "505(b)(2) bridge uses prior iloperidone efficacy trials. A distinct pivotal efficacy trial for milsaperidone is not applicable to this evidence entry."
   },
   {
     "application_id": "NDA219873",
@@ -329,7 +338,10 @@
     "confidence_percent": "",
     "ticker": "ETON",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA216442",
@@ -418,7 +430,10 @@
     "confidence_percent": "",
     "ticker": "ALDX",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA213793",
@@ -500,7 +515,10 @@
     "confidence_percent": "",
     "ticker": "RYTM",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA216403",
@@ -595,7 +613,10 @@
     "confidence_percent": "",
     "ticker": "TVTX",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761055",
@@ -677,7 +698,10 @@
     "confidence_percent": "",
     "ticker": "REGN/SNY",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA216964",
@@ -692,7 +716,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-04-20",
     "outcome_published_at": "",
@@ -729,20 +753,29 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/216964Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:40Z",
+        "sha256": "fdd8982acfd5dea2d5acb97e9916abef778cb894bf80343a5ecfc808de85a21e"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT05631093",
+      "NCT05630755"
+    ],
     "phase": "3",
-    "endpoint": "Maintenance of HIV-1 RNA suppression at Week 48",
-    "effect_size": "FDA reviewed two switch studies against continuing suppressive therapy. Exact arm-specific RNA failure rates and margins need extraction.",
-    "statistical_significance": "",
+    "endpoint": "Week 48 HIV-1 RNA ≥50 copies/mL.",
+    "effect_size": "Switch versus comparator treatment differences −3.6 percentage points (95% CI −7.8 to −0.8) and +0.9 (−1.9 to 2.9).",
+    "statistical_significance": "Upper confidence limits remained below the 4-percentage-point noninferiority margin.",
     "safety": "Review labeling for potential drug interactions and CD4/lymphocyte effects.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "The switch design is directly relevant, but the trial-specific noninferiority estimate and safety require review.",
+    "rationale": "Both randomized switch trials support retention of viral suppression within the prespecified margin. The FDA action was already known.",
     "evidence_gaps": [
-      "Exact NCTs, noninferiority margin, arm-level viral failure and safety"
+      "Longer-term comparative resistance and safety.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -750,16 +783,25 @@
         "published_on": "",
         "retrieved_at": "2026-11-18T18:01:24.590461+00:00",
         "sha256": "dd65777258cbf334295f0adecb92970d50a4e0e98692bcd0a81ef33c28a4c4a4"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/216964Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:40Z",
+        "sha256": "fdd8982acfd5dea2d5acb97e9916abef778cb894bf80343a5ecfc808de85a21e",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
     "record_id": "2026-L1-009",
     "confidence_percent": "",
     "ticker": "MRK",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761183",
@@ -817,7 +859,10 @@
     "confidence_percent": "",
     "ticker": "SNY",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761195",
@@ -913,7 +958,10 @@
     "confidence_percent": "",
     "ticker": "ARGX",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA018342",
@@ -1001,7 +1049,10 @@
     "confidence_percent": "",
     "ticker": "GSK",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA022472",
@@ -1096,7 +1147,10 @@
     "confidence_percent": "",
     "ticker": "MNKD",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761394",
@@ -1180,7 +1234,10 @@
     "confidence_percent": "",
     "ticker": "4568.T/AZN",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA219835",
@@ -1195,7 +1252,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-05-01",
     "outcome_published_at": "",
@@ -1232,20 +1289,28 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219835Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:40Z",
+        "sha256": "882bd50afd165011f15eaab5d0d0ce51249702f57191534ed05969af78de2012"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT05654623"
+    ],
     "phase": "3",
-    "endpoint": "VERITAC-2 progression-free survival in ESR1-mutated cancer",
-    "effect_size": "Randomized efficacy evidence in the biomarker-defined group; exact efficacy and safety estimates require review.",
-    "statistical_significance": "",
+    "endpoint": "Progression-free survival in ESR1-mutated VERITAC-2 participants.",
+    "effect_size": "Median PFS 5.0 versus 2.1 months, HR 0.57 (95% CI 0.42–0.77).",
+    "statistical_significance": "One-sided stratified log-rank p=0.0001 against alpha 0.01875.",
     "safety": "QT and other safety risks should be checked against the label and FDA risk review.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "The FDA risk review establishes the exact application; remaining endpoint and safety extraction limits a directional call.",
+    "rationale": "The randomized progression-free survival benefit supports the biomarker-defined indication. Overall survival was immature at this analysis. The FDA action was already known.",
     "evidence_gaps": [
-      "Mutation-stratum PFS estimate, exact trial and safety tables"
+      "Mature overall survival, longer follow-up, and comparative safety precision.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -1253,16 +1318,25 @@
         "published_on": "",
         "retrieved_at": "2026-11-18T18:01:24.566022+00:00",
         "sha256": "3a7d210d4819e098cca7fb2b0440d4f56bded48a813a088d7fc67b2f1ab4e733"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219835Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:40Z",
+        "sha256": "882bd50afd165011f15eaab5d0d0ce51249702f57191534ed05969af78de2012",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
     "record_id": "2026-L1-015",
     "confidence_percent": "",
     "ticker": "ARVN/PFE",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA215960",
@@ -1346,7 +1420,10 @@
     "confidence_percent": "",
     "ticker": "GSK/SPRO",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA218995",
@@ -1433,7 +1510,10 @@
     "confidence_percent": "",
     "ticker": "ACHV",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA216900",
@@ -1515,7 +1595,10 @@
     "confidence_percent": "",
     "ticker": "LNTH",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA215985",
@@ -1593,7 +1676,10 @@
     "confidence_percent": "",
     "ticker": "ARQT",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA218607",
@@ -1678,12 +1764,15 @@
     "confidence_percent": "",
     "ticker": "UNCY",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
-    "application_id": "",
-    "review_cycle": "",
-    "supplement": "",
+    "application_id": "NDA218197",
+    "review_cycle": "SUPPLEMENT",
+    "supplement": "S-004",
     "indication": "Dephosphorylated Phosphatase and Tensin Homolog (dPTEN) Hormone-Sensitive Prostate Cancer (HSPC)",
     "pdufa_date": "2026-06-30",
     "goal_source_url": "",
@@ -1694,22 +1783,28 @@
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
     "model_version": "level1-owner-research-2026-11-18-v1",
-    "actual_outcome": "",
-    "outcome_action_date": "",
+    "actual_outcome": "APPROVE",
+    "outcome_action_date": "2026-06-12",
     "outcome_published_at": "",
-    "source_url": "",
+    "source_url": "https://www.fda.gov/media/89850/download",
     "drug": "Truqap - (CAPItello-281)",
-    "application_type": "",
+    "application_type": "NDA",
     "sponsor": "AstraZeneca/Alexion",
     "original_pdufa_date": "",
     "goal_date_history": [],
     "review_cycle_basis": "",
-    "regulatory_status": "CALENDAR_DECIDED",
+    "regulatory_status": "APPROVE",
     "approval_route": "",
     "verification_status": "BLOCKED",
     "applicability": "GOAL_DATE_CANDIDATE",
     "origin_url": "https://www.pdufa.bio/ticker/AZN",
-    "source_receipts": [],
+    "source_receipts": [
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      }
+    ],
     "trial_ids": [],
     "phase": "",
     "endpoint": "",
@@ -1721,7 +1816,7 @@
     "confidence": "LOW",
     "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
     "evidence_gaps": [
-      "The source lead gives June 30 without an exact primary goal. The FDA S-006 letter concerns a later capivasertib submission; its relationship to the CAPItello-281 date needs resolution.",
+      "Drugs@FDA identifies NDA 218197/S-004 for the June 12 CAPItello-281 action. S-006 is a later supplement. The June 30 calendar claim remains an unverified goal.",
       "Exact application number, supplement and review cycle require primary-source reconciliation",
       "Goal date requires direct FDA or sponsor confirmation",
       "Calendar reports month precision; date may be a placeholder",
@@ -1737,7 +1832,10 @@
     "confidence_percent": "",
     "ticker": "AZN",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761530",
@@ -1752,7 +1850,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-06-26",
     "outcome_published_at": "",
@@ -1784,9 +1882,17 @@
         "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761530Orig1s000ltr.pdf",
         "retrieved_at": "2026-11-18T17:37:26.567252+00:00",
         "sha256": "f1033b435abc06d8be4dc63ac4d1caf5455967e991b7dcfa253d30ea9609b997"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761530Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "19954f585c92f156b536e2fca6ccf54a5349ef4745508ada6f2fb56cb97fd4f7"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT05176639",
+      "NCT06021054"
+    ],
     "phase": "3",
     "endpoint": "Week 15 proptosis response in THRIVE and THRIVE-2",
     "effect_size": "THRIVE (active disease), 70% vs 5%; FDA THRIVE-2 treated response estimated at 57.3%.",
@@ -1797,8 +1903,8 @@
     "confidence": "MODERATE",
     "rationale": "Large controlled effects in active disease support benefit with material safety monitoring. Chronic-disease comparator and generalizability need further review.",
     "evidence_gaps": [
-      "Exact trial registry IDs and full chronic-disease comparative estimate",
-      "Exact ClinicalTrials.gov identity not confirmed"
+      "Full chronic-disease comparative estimate and safety precision.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -1818,16 +1924,25 @@
         "published_on": "",
         "retrieved_at": "2026-11-18T17:52:19.925346+00:00",
         "sha256": "2963600e959003898f2c5bdd3f47bfff490eb65e15f7018e17a6287bf87d7e6b"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761530Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "19954f585c92f156b536e2fca6ccf54a5349ef4745508ada6f2fb56cb97fd4f7",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "2026-11-18T17:53:51+00:00",
+    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
     "record_id": "2026-L1-022",
     "confidence_percent": "",
     "ticker": "VRDN",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA218614",
@@ -1913,7 +2028,10 @@
     "confidence_percent": "",
     "ticker": "IONS",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761486",
@@ -1998,7 +2116,10 @@
     "confidence_percent": "",
     "ticker": "VERA",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA220641",
@@ -2077,7 +2198,10 @@
     "confidence_percent": "",
     "ticker": "CORT",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA220848",
@@ -2152,7 +2276,10 @@
     "confidence_percent": "",
     "ticker": "MRK",
     "assessment_disposition": "EXCLUDED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA219908",
@@ -2167,7 +2294,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-07-14",
     "outcome_published_at": "",
@@ -2199,6 +2326,11 @@
         "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/219908Orig1s000ltr.pdf",
         "retrieved_at": "2026-11-18T17:37:25.037403+00:00",
         "sha256": "fbf84c8b67addefb29ad8f5c0d4d11b5f04dbc85bbc846e9062e1330e28f69c9"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219908Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "34121271e477b7192d2e2e85cda90a8f29d163eda3098f8aee4de23a70a46e3d"
       }
     ],
     "trial_ids": [
@@ -2206,15 +2338,16 @@
     ],
     "phase": "3",
     "endpoint": "VIKTORIA-1 PFS",
-    "effect_size": "Randomized benefit reported in both experimental regimens; exact effect estimates require article extraction.",
-    "statistical_significance": "",
+    "effect_size": "FDA label PFS hazard ratios 0.24 (95% CI 0.17–0.35) and 0.33 (0.24–0.48) for the two regimens versus shared control.",
+    "statistical_significance": "Both prespecified PFS comparisons p<0.0001.",
     "safety": "Rash 30% including 6% grade 3 with the triplet; uncontrolled diabetes was excluded.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
     "rationale": "The phase 3 comparison supports evaluation of the targeted combinations. Comparative effect size and metabolic risks need further verification.",
     "evidence_gaps": [
-      "Regimen-specific PFS estimates and comparative safety"
+      "Longer-term overall survival and regimen-specific comparative safety.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -2228,16 +2361,25 @@
         "published_on": "",
         "retrieved_at": "2026-11-18T17:52:20.345521+00:00",
         "sha256": "3c626901cdd0de736b62a044e091800adb748e75dc456d8402782ae4c8389cda"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219908Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "34121271e477b7192d2e2e85cda90a8f29d163eda3098f8aee4de23a70a46e3d",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "2026-11-18T17:53:51+00:00",
+    "assessment_recorded_at": "2026-11-18T19:44:10.255814+00:00",
     "record_id": "2026-L1-027",
     "confidence_percent": "",
     "ticker": "CELC",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761445",
@@ -2252,7 +2394,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-07-09",
     "outcome_published_at": "",
@@ -2289,9 +2431,18 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761445Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "87a46c93f0a1c59565109e25369629f76199c363653cb6b13ef6f4d771718fe6"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT05405166",
+      "NCT05704049",
+      "NCT05889221"
+    ],
     "phase": "REGISTRATION_STUDY",
     "endpoint": "Subcutaneous presentation exposure and administration comparability",
     "effect_size": "Quantitative pharmacokinetic and formulation bridge not extracted.",
@@ -2302,7 +2453,8 @@
     "confidence": "LOW",
     "rationale": "The corrected FDA action binds the presentation. Comparator exposure and safety need full review.",
     "evidence_gaps": [
-      "Study identity, bioavailability margins and administration-related event rates"
+      "Bioavailability margins and administration-related event rates.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -2310,16 +2462,25 @@
         "published_on": "",
         "retrieved_at": "2026-11-18T18:01:37.916292+00:00",
         "sha256": "9e8490f7e29716c81874aff4319a874c4c0933aa15e6713034af3374497642b7"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761445Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "87a46c93f0a1c59565109e25369629f76199c363653cb6b13ef6f4d771718fe6",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
     "record_id": "2026-L1-028",
     "confidence_percent": "",
     "ticker": "SNY",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA218145",
@@ -2404,7 +2565,10 @@
     "confidence_percent": "",
     "ticker": "4578.T",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA209988",
@@ -2481,7 +2645,10 @@
     "confidence_percent": "",
     "ticker": "MNKD",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "NOT_APPLICABLE",
+    "trial_id_status_reason": "The assessed supplement adds the ReadyFlow device presentation. This entry requires device/bridging evidence rather than a new pivotal efficacy trial."
   },
   {
     "application_id": "BLA761320",
@@ -2572,7 +2739,10 @@
     "confidence_percent": "",
     "ticker": "OTLK",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA219990",
@@ -2655,7 +2825,10 @@
     "confidence_percent": "",
     "ticker": "VTRS",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA125827",
@@ -2740,7 +2913,10 @@
     "confidence_percent": "",
     "ticker": "REPL",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA125869",
@@ -2817,7 +2993,10 @@
     "confidence_percent": "",
     "ticker": "MRNA",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA220496",
@@ -2899,7 +3078,10 @@
     "confidence_percent": "",
     "ticker": "LNTH",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA221075",
@@ -2976,7 +3158,10 @@
     "confidence_percent": "",
     "ticker": "BMY",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA125858",
@@ -3061,7 +3246,10 @@
     "confidence_percent": "",
     "ticker": "RARE",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761375",
@@ -3148,7 +3336,10 @@
     "confidence_percent": "",
     "ticker": "BIIB/4523.T",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761416",
@@ -3228,7 +3419,10 @@
     "confidence_percent": "",
     "ticker": "JAZZ/ZYME",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA221104",
@@ -3312,7 +3506,10 @@
     "confidence_percent": "",
     "ticker": "GILD",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761166",
@@ -3396,7 +3593,10 @@
     "confidence_percent": "",
     "ticker": "6446.TW",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761508",
@@ -3486,7 +3686,10 @@
     "confidence_percent": "",
     "ticker": "REGN",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA218592",
@@ -3501,7 +3704,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-09-11",
     "outcome_published_at": "",
@@ -3538,9 +3741,16 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218592Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "caef954e1ac03992db97fccbfbe1ddcd8dd3ae2a3eea7163d31d3a7861378696"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT04044937"
+    ],
     "phase": "DIAGNOSTIC_REGISTRATION",
     "endpoint": "PET imaging of suspected glioma",
     "effect_size": "Quantitative performance by reader and reference standard needs extraction.",
@@ -3551,7 +3761,8 @@
     "confidence": "LOW",
     "rationale": "FDA confirms an imaging indication. Diagnostic operating characteristics and resubmission review details remain open.",
     "evidence_gaps": [
-      "Reader-level sensitivity/specificity, trial linkage and adverse-event rates"
+      "Reader-level sensitivity, specificity and adverse-event rates.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -3565,16 +3776,25 @@
         "published_on": "",
         "retrieved_at": "2026-11-18T18:01:26.176714+00:00",
         "sha256": "3aa4e553611b60c7e2479c97b7b4a3fcbe9978c0ddf01b815f84c4846808774a"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218592Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "caef954e1ac03992db97fccbfbe1ddcd8dd3ae2a3eea7163d31d3a7861378696",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
     "record_id": "2026-L1-043",
     "confidence_percent": "",
     "ticker": "TLX.AX",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA218881",
@@ -3633,7 +3853,10 @@
     "confidence_percent": "",
     "ticker": "LLY",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA220185",
@@ -3712,7 +3935,10 @@
     "confidence_percent": "",
     "ticker": "NUVL",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA125845",
@@ -3789,7 +4015,10 @@
     "confidence_percent": "",
     "ticker": "RARE",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761363",
@@ -3874,7 +4103,10 @@
     "confidence_percent": "",
     "ticker": "MRK",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA220210",
@@ -3889,7 +4121,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v2",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-09-03",
     "outcome_published_at": "",
@@ -3921,9 +4153,16 @@
         "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220210Orig1s000ltr.pdf",
         "retrieved_at": "2026-11-18T17:37:26.786671+00:00",
         "sha256": "76401d5e1d7023d8a5c9a1bd863230f6f3723a6872e4382e230f8e76a2f78007"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220210Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "25734f6fd281f53bdf9fc7a0999805641f46a9301dd5f62d1de1f7e47475d5a0"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT04849741"
+    ],
     "phase": "REGISTRATION_STUDY",
     "endpoint": "Week 61 gait speed on 10-meter walk test, Stratum 1",
     "effect_size": "−2.1% vs −35.4%; adjusted difference 33.3 percentage points (95% CI 1.44–65.25).",
@@ -3934,7 +4173,8 @@
     "confidence": "MODERATE",
     "rationale": "The prespecified clinical endpoint suggests preservation of gait speed in the analyzed population. The wide interval and small sample constrain the effect estimate.",
     "evidence_gaps": [
-      "Exact study phase and NCT, smaller-dose and nonambulatory subgroup analysis, adverse-event table"
+      "Exact study phase, smaller-dose and nonambulatory subgroup analysis, and adverse-event table.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -3942,16 +4182,25 @@
         "published_on": "",
         "retrieved_at": "2026-11-18T17:56:10.211915+00:00",
         "sha256": "5544c7f8bcf31d75c4019f7bc524acb074d3029d2a8a39e97dd59fc569efd5f2"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220210Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "25734f6fd281f53bdf9fc7a0999805641f46a9301dd5f62d1de1f7e47475d5a0",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
+    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
     "record_id": "2026-L1-048",
     "confidence_percent": "",
     "ticker": "IONS",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA125486",
@@ -4015,7 +4264,10 @@
     "confidence_percent": "",
     "ticker": "RHHBY",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA221198",
@@ -4030,7 +4282,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v2",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-09-25",
     "outcome_published_at": "",
@@ -4062,20 +4314,28 @@
         "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/221198Orig1s000ltr.pdf",
         "retrieved_at": "2026-11-18T17:37:24.549717+00:00",
         "sha256": "5dee8c301e2e10e56ab1b019fefd5aa54979ed9a6f84e343a89a79615f188cdd"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/221198Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "0711c79def4f65992982237e59c54293c3ce1c0d7e4758cdf0ef6025e45699e5"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT05090891"
+    ],
     "phase": "2",
     "endpoint": "PROGRESS week 24 total new heterotopic ossification volume",
-    "effect_size": "Mean change −3.2 cm³ vs +24.6 cm³.",
-    "statistical_significance": "",
+    "effect_size": "Mean change in new heterotopic ossification volume −3.2 versus +24.6 cm³. Hodges–Lehmann difference −15.8 cm³ (95% CI −32.1 to −6.0).",
+    "statistical_significance": "The label reports a 95% CI excluding zero. It does not report a primary p-value.",
     "safety": "FDA identified fetal-harm risk. Longer-term safety requires review.",
     "assessment": "APPROVE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "MODERATE",
     "rationale": "The randomized effect on new bone formation is supportive in FOP. Functional benefit and longer-term safety remain uncertain.",
     "evidence_gaps": [
-      "Prespecified statistical estimate, clinical-function follow-up, exact NCT and safety rates"
+      "Prespecified p-value, clinical-function follow-up, and safety rates.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -4089,16 +4349,25 @@
         "published_on": "",
         "retrieved_at": "2026-11-18T17:56:10.179682+00:00",
         "sha256": "87cf860dacc15bda0661aad108d9c911d81aec60005965f2b2858c62ad7a7c17"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/221198Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "0711c79def4f65992982237e59c54293c3ce1c0d7e4758cdf0ef6025e45699e5",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
+    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
     "record_id": "2026-L1-050",
     "confidence_percent": "",
     "ticker": "INCY/MIRM",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA220425",
@@ -4200,7 +4469,10 @@
     "confidence_percent": "",
     "ticker": "",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA208081",
@@ -4215,7 +4487,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-09-09",
     "outcome_published_at": "",
@@ -4254,9 +4526,16 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/208081s040lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "fc842af2775ba26f4b1321e3b757529c8f2e84761c14fbd7a0214215b1ae9ab6"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT03573401"
+    ],
     "phase": "3",
     "endpoint": "Composite clinical and histologic clearance of superficial basal cell carcinoma",
     "effect_size": "Trial examined a preselected target lesion; exact treatment and control clearance rates need extraction.",
@@ -4267,7 +4546,8 @@
     "confidence": "LOW",
     "rationale": "The sponsor’s stated endpoint is clinically relevant for local lesion clearance. Exact estimates, recurrence and tolerability remain open.",
     "evidence_gaps": [
-      "NCT, clearance rates, durable response and safety"
+      "Clearance rates, durability and safety.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -4283,16 +4563,25 @@
         "published_on": "",
         "retrieved_at": "2026-11-18T17:37:25.137882+00:00",
         "sha256": "66e1b5901da5e7a153758999a268ea771cce02dc9717e30f8e71ae5ace6b3507"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/208081s040lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "fc842af2775ba26f4b1321e3b757529c8f2e84761c14fbd7a0214215b1ae9ab6",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
     "record_id": "2026-L1-052",
     "confidence_percent": "",
     "ticker": "BFRI",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA220106",
@@ -4382,7 +4671,10 @@
     "confidence_percent": "",
     "ticker": "ROIV",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA220860",
@@ -4479,7 +4771,10 @@
     "confidence_percent": "",
     "ticker": "TAK",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA220605",
@@ -4569,7 +4864,10 @@
     "confidence_percent": "",
     "ticker": "PTGX/TAK",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761463",
@@ -4648,12 +4946,15 @@
     "confidence_percent": "",
     "ticker": "SRRK",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
-    "application_id": "",
-    "review_cycle": "",
-    "supplement": "",
+    "application_id": "NDA216059",
+    "review_cycle": "SUPPLEMENT",
+    "supplement": "S-006",
     "indication": "Oncology Adult patients with previously untreated chronic lymphocytic leukemia (CLL) or small lymphocytic lymphoma (SLL) with no known 17p deletion",
     "pdufa_date": "2026-10-02",
     "goal_source_url": "",
@@ -4664,22 +4965,28 @@
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
     "model_version": "level1-owner-research-2026-11-18-v1",
-    "actual_outcome": "",
-    "outcome_action_date": "",
+    "actual_outcome": "APPROVE",
+    "outcome_action_date": "2026-10-02",
     "outcome_published_at": "",
-    "source_url": "",
+    "source_url": "https://www.fda.gov/media/89850/download",
     "drug": "Jaypirca (pirtobrutinib) - previously untreated CLL/SLL",
-    "application_type": "",
+    "application_type": "NDA",
     "sponsor": "ELI LILLY & Co",
     "original_pdufa_date": "",
     "goal_date_history": [],
     "review_cycle_basis": "",
-    "regulatory_status": "CALENDAR_DECIDED",
+    "regulatory_status": "APPROVE",
     "approval_route": "",
     "verification_status": "BLOCKED",
     "applicability": "GOAL_DATE_CANDIDATE",
     "origin_url": "https://www.pdufa.bio/fda-decision/LLY-2026-10-02",
-    "source_receipts": [],
+    "source_receipts": [
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      }
+    ],
     "trial_ids": [],
     "phase": "",
     "endpoint": "",
@@ -4691,7 +4998,7 @@
     "confidence": "LOW",
     "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
     "evidence_gaps": [
-      "FDA confirms October first-line CLL/SLL action. October 2 calendar entry repeats the action, and the first-line application’s actual goal remains unverified.",
+      "Drugs@FDA identifies NDA 216059/S-006 as the October 2 approval for first-line CLL/SLL. The exact PDUFA goal remains unverified.",
       "Exact application number, supplement and review cycle require primary-source reconciliation",
       "Goal date requires direct FDA or sponsor confirmation",
       "Trial phase and pivotal trial identity",
@@ -4706,7 +5013,10 @@
     "confidence_percent": "",
     "ticker": "LLY",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA218436",
@@ -4770,7 +5080,10 @@
     "confidence_percent": "",
     "ticker": "NVS",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761034",
@@ -4856,7 +5169,10 @@
     "confidence_percent": "",
     "ticker": "RHHBY",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -4930,7 +5246,10 @@
     "confidence_percent": "",
     "ticker": "4568.T/MRK",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761149",
@@ -4945,7 +5264,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-10-15",
     "outcome_published_at": "",
@@ -4984,20 +5303,29 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761149s008lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "4e4751503ec4879f4b26c8e520da3f6b9eaf53fb63d8d086ad396c2d850ab7a4"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT05987423",
+      "NCT06106828"
+    ],
     "phase": "3",
     "endpoint": "Proptosis response at week 24 in SatraGO-1 and SatraGO-2",
-    "effect_size": "SatraGO-2 53% vs 23%; SatraGO-1 49% vs 31%, sponsor reported.",
-    "statistical_significance": "SatraGO-2 met significance; SatraGO-1 did not.",
+    "effect_size": "Active thyroid eye disease proptosis response at week 24 was 49.0% versus 31.2% in Study 3 and 52.9% versus 23.4% in Study 4.",
+    "statistical_significance": "Study 3 p=0.07 and missed its prespecified endpoint. Study 4 p<0.01.",
     "safety": "FDA label includes treatment-specific monitoring and infection concerns; exact trial rates pending.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "One pivotal study met the endpoint and the other did not. The mixed replication and comparative safety call for further review.",
+    "rationale": "FDA labeling shows a positive Study 4 and a missed endpoint in Study 3. The discordance limits replication confidence. The FDA action was already known.",
     "evidence_gaps": [
-      "Exact trial IDs, statistical estimates and comparative safety"
+      "Comparative safety and interpretation of discordant pivotal results.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -5017,12 +5345,15 @@
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
     "record_id": "2026-L1-061",
     "confidence_percent": "",
     "ticker": "RHHBY",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA217064",
@@ -5037,7 +5368,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-10-16",
     "outcome_published_at": "",
@@ -5074,20 +5405,29 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/217064s005lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "8d562792dd5481875d95bf3b436b81d624c9c127af308c512e5f1495a2fc0d85"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT05646719",
+      "NCT06542497"
+    ],
     "phase": "3",
-    "endpoint": "Near visual acuity in presbyopia trials",
-    "effect_size": "Exact arm-level proportions achieving the near-vision threshold need confirmation.",
-    "statistical_significance": "",
+    "endpoint": "Day 8 near-vision improvement of at least 15 letters without a loss of five or more letters in distance vision.",
+    "effect_size": "VEGA-2: 22.6% versus 11.0%. VEGA-3: 27.2% versus 11.5%.",
+    "statistical_significance": "Day 8 p<0.01 in each pivotal study.",
     "safety": "Eye irritation and ocular tolerability should be checked against FDA labeling.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "The sNDA and action are verified. Comparative efficacy and safety have evidence blockers.",
+    "rationale": "The randomized near-vision endpoint replicated across both studies. The FDA action was already known.",
     "evidence_gaps": [
-      "Exact study identity, responder rates, inferential test and safety"
+      "Longer-term durability and uncommon safety events.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -5095,16 +5435,25 @@
         "published_on": "",
         "retrieved_at": "2026-11-18T18:01:38.460254+00:00",
         "sha256": "b95a1bdd121d13a3f7ed146fe35beb070f02e949d2848135824193adfe6acff4"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/217064s005lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:41Z",
+        "sha256": "8d562792dd5481875d95bf3b436b81d624c9c127af308c512e5f1495a2fc0d85",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_PENDING",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
     "record_id": "2026-L1-062",
     "confidence_percent": "",
     "ticker": "IRD/VTRS",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA217759",
@@ -5186,7 +5535,10 @@
     "confidence_percent": "",
     "ticker": "PHAR",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA221276",
@@ -5201,7 +5553,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v2",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-10-20",
     "outcome_published_at": "",
@@ -5233,20 +5585,29 @@
         "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/221276Orig1s000Ltr.pdf",
         "retrieved_at": "2026-11-18T17:37:25.873266+00:00",
         "sha256": "299ff01e6025b9680a4ff4786ea0fb07800a37e0c45cc77eb9d8e9e606d1f10e"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/221276Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:42Z",
+        "sha256": "622a173efec4e8e2279aba1110d2ac170498bdce8fb323d98ba4a960eb3af39c"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT05630807",
+      "NCT05630820"
+    ],
     "phase": "3",
     "endpoint": "B-Well sustained functional cure after stopping background NA therapy",
-    "effect_size": "Pooled response 233/1,220 (19%) vs 0/614 (0%).",
-    "statistical_significance": "Both controlled trials reported significant effects; exact study-level statistics require verification.",
+    "effect_size": "Functional cure endpoint in 127/650 versus 0/328 in B-Well 1 and 106/570 versus 0/286 in B-Well 2.",
+    "statistical_significance": "Primary comparisons p<0.0001 in both trials.",
     "safety": "Hepatic monitoring and therapy-withdrawal risk remain relevant.",
     "assessment": "APPROVE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "MODERATE",
     "rationale": "Controlled functional-cure responses support efficacy in selected patients with suppressed HBV DNA and no cirrhosis. The absolute responder fraction and generalizability constrain the assessment.",
     "evidence_gaps": [
-      "Trial-specific effects, longer-term recurrence and safety"
+      "Longer-term recurrence and safety.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -5268,12 +5629,15 @@
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
+    "assessment_recorded_at": "2026-11-18T19:44:10.255814+00:00",
     "record_id": "2026-L1-064",
     "confidence_percent": "",
     "ticker": "GSK/IONS",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA125825",
@@ -5350,7 +5714,10 @@
     "confidence_percent": "",
     "ticker": "INO",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA221291",
@@ -5414,7 +5781,10 @@
     "confidence_percent": "",
     "ticker": "BAYRY",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA220414",
@@ -5463,7 +5833,7 @@
     "confidence": "LOW",
     "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
     "evidence_gaps": [
-      "Drugs@FDA confirms NDA 220414 and November 10 effective approval date. The calendar action cannot establish the exact PDUFA goal.",
+      "Drugs@FDA confirms NDA 220414 and November 10 effective approval date. The calendar action cannot establish the exact PDUFA goal. FDA’s novel-approvals index separately lists November 13. Retain the November 10 application action and reconcile the index discrepancy before using either date as a goal.",
       "Exact application number, supplement and review cycle require primary-source reconciliation",
       "Goal date requires direct FDA or sponsor confirmation",
       "Trial phase and pivotal trial identity",
@@ -5478,7 +5848,10 @@
     "confidence_percent": "",
     "ticker": "MKKGY",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761524",
@@ -5572,7 +5945,10 @@
     "confidence_percent": "",
     "ticker": "SMMT",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA215390",
@@ -5658,7 +6034,10 @@
     "confidence_percent": "",
     "ticker": "BTAI",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA219083",
@@ -5673,7 +6052,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-11-13",
     "outcome_published_at": "",
@@ -5710,20 +6089,28 @@
         "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219083",
         "retrieved_at": "2026-11-18T18:50:28Z",
         "sha256": "83c34110088d5ec6ff6ccdda1300535aaafc7c569a6dd410ddecaeb1dfc6c143"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219083s002lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:42Z",
+        "sha256": "61ab1b756a1c96f47e2f0380ded55ca38dacc2add5e2fdb25b10738ce704df47"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT05767346"
+    ],
     "phase": "3",
-    "endpoint": "MAPLE-HCM peak oxygen uptake vs metoprolol",
-    "effect_size": "Exact adjusted pVO2 treatment difference needs review of the outcome tables.",
-    "statistical_significance": "",
+    "endpoint": "MAPLE-HCM week 24 change in peak oxygen uptake compared with metoprolol.",
+    "effect_size": "FDA label reports at least one NYHA class improvement in 51% versus 26% and a Valsalva LVOT gradient difference of −33 mmHg (95% CI −43 to −25).",
+    "statistical_significance": "FDA reports the primary endpoint was met but cautions that metoprolol blunts heart rate. NYHA comparison p<0.001 and gradient comparison p<0.0001.",
     "safety": "Cardiac systolic dysfunction and monitoring are important in the drug class; comparative safety requires review.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "The supplement adds trial evidence to labeling. Quantifying comparative functional benefit and cardiac safety remains open.",
+    "rationale": "The FDA label describes favorable functional and hemodynamic results, with limits on interpretation of the primary comparator. The label update was already public.",
     "evidence_gaps": [
-      "Exact NCT, effect and CI, and cardiac safety tables"
+      "Exact peak oxygen uptake effect and CI, and cardiac safety tables.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -5735,16 +6122,25 @@
       {
         "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219083",
         "published_on": ""
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/219083s002lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:42Z",
+        "sha256": "61ab1b756a1c96f47e2f0380ded55ca38dacc2add5e2fdb25b10738ce704df47",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_PENDING",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
     "record_id": "2026-L1-070",
     "confidence_percent": "",
     "ticker": "CYTK",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -5797,7 +6193,10 @@
     "confidence_percent": "",
     "ticker": "NVCR",
     "assessment_disposition": "EXCLUDED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -5876,7 +6275,10 @@
     "confidence_percent": "",
     "ticker": "SVRA",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA125842",
@@ -5981,7 +6383,10 @@
     "confidence_percent": "",
     "ticker": "CAPR",
     "assessment_disposition": "FROZEN_PROSPECTIVE",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -6057,7 +6462,10 @@
     "confidence_percent": "",
     "ticker": "SNY",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -6136,7 +6544,10 @@
     "confidence_percent": "",
     "ticker": "BBIO",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -6213,7 +6624,10 @@
     "confidence_percent": "",
     "ticker": "NUVL",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -6288,7 +6702,10 @@
     "confidence_percent": "",
     "ticker": "PYPD",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -6361,7 +6778,10 @@
     "confidence_percent": "",
     "ticker": "COGT",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -6420,7 +6840,10 @@
     "confidence_percent": "",
     "ticker": "REGN",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA125486",
@@ -6485,7 +6908,10 @@
     "confidence_percent": "",
     "ticker": "RHHBY",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -6571,7 +6997,10 @@
     "confidence_percent": "",
     "ticker": "RHHBY",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA219972",
@@ -6636,7 +7065,10 @@
     "confidence_percent": "",
     "ticker": "BAYRY",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -6711,7 +7143,10 @@
     "confidence_percent": "",
     "ticker": "VRTX",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -6780,7 +7215,10 @@
     "confidence_percent": "",
     "ticker": "VNDA/ANAB",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA219398",
@@ -6866,7 +7304,10 @@
     "confidence_percent": "",
     "ticker": "",
     "assessment_disposition": "FROZEN_PROSPECTIVE",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA220791",
@@ -6957,7 +7398,10 @@
     "confidence_percent": "",
     "ticker": "RHHBY",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -7032,7 +7476,10 @@
     "confidence_percent": "",
     "ticker": "MLYS",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -7101,7 +7548,10 @@
     "confidence_percent": "",
     "ticker": "GILD",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -7176,7 +7626,10 @@
     "confidence_percent": "",
     "ticker": "VTRS",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -7261,7 +7714,10 @@
     "confidence_percent": "",
     "ticker": "PRAX",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -7336,7 +7792,10 @@
     "confidence_percent": "",
     "ticker": "COGT",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -7395,7 +7854,10 @@
     "confidence_percent": "",
     "ticker": "NVO",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -7454,7 +7916,10 @@
     "confidence_percent": "",
     "ticker": "RHHBY",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA220415",
@@ -7552,7 +8017,10 @@
     "confidence_percent": "",
     "ticker": "ABBV",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "",
@@ -7611,7 +8079,10 @@
     "confidence_percent": "",
     "ticker": "BAYRY",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761108",
@@ -7670,7 +8141,10 @@
     "confidence_percent": "",
     "ticker": "AZN",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA125806",
@@ -7749,7 +8223,10 @@
     "confidence_percent": "",
     "ticker": "RCKT",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "BLA761485",
@@ -7764,7 +8241,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v4",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-03-24",
     "outcome_published_at": "",
@@ -7803,9 +8280,16 @@
         "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761485Orig1s000Approv.pdf",
         "retrieved_at": "2026-11-18T18:51:14Z",
         "sha256": "c18b90e5bdd1f6577143f0302e8d7eb3068cd063127b70910289872c171b860a"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761485s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:42Z",
+        "sha256": "04552ae4d18199c2f385d91b9770d9488999af283d6c2064687f7e3e4d5433f4"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT04251026"
+    ],
     "phase": "1/2",
     "endpoint": "CSF heparan sulfate reduction at week 24",
     "effect_size": "Mean reduction of 91% among 44 measured patients in a 47-patient single-arm trial.",
@@ -7816,7 +8300,8 @@
     "confidence": "LOW",
     "rationale": "FDA considered the biomarker reasonably likely to predict benefit. Demonstrated neurologic benefit and long-term safety are still evidence gaps.",
     "evidence_gaps": [
-      "Exact trial registry ID, confirmatory clinical outcome and long-term safety"
+      "Confirmatory clinical outcomes and long-term safety.",
+      "Numerical confidence is not calibrated."
     ],
     "evidence_sources": [
       {
@@ -7826,16 +8311,25 @@
       {
         "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761485Orig1s000IntegratedR.pdf",
         "published_on": ""
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761485s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:41:42Z",
+        "sha256": "04552ae4d18199c2f385d91b9770d9488999af283d6c2064687f7e3e4d5433f4",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:43:38.857171+00:00",
     "record_id": "2026-L1-098",
     "confidence_percent": "",
     "ticker": "DNLI",
     "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "NOT_CALIBRATED",
+    "trial_id_status": "IDENTIFIED",
+    "trial_id_status_reason": ""
   },
   {
     "application_id": "NDA216196",
@@ -7899,6 +8393,9 @@
     "confidence_percent": "",
     "ticker": "AGIO",
     "assessment_disposition": "IDENTITY_BLOCKED",
-    "confidence_basis": "Qualitative judgment; no calibrated percentage available"
+    "confidence_basis": "Qualitative judgment; no calibrated percentage available",
+    "confidence_calibration_status": "INSUFFICIENT_EVIDENCE",
+    "trial_id_status": "UNRESOLVED",
+    "trial_id_status_reason": ""
   }
 ]

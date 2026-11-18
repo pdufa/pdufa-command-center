@@ -20,7 +20,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761055Orig1s074ltr.pdf",
       "https://www.assyro.com/tools/pdufa-calendar/2026"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-009",
@@ -43,7 +45,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/216964Orig1s000ltr.pdf",
       "https://www.assyro.com/tools/pdufa-calendar/2026"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-010",
@@ -65,7 +69,28 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761183Orig1s013ltr.pdf",
       "https://www.assyro.com/tools/pdufa-calendar/2026"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761183Orig1s013ltr.pdf",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "f003a43665ffae97b07dfecbe2e0a7a5dcc06ace5e4b4a48ef8d4a0533e86072"
+      },
+      {
+        "url": "https://www.assyro.com/tools/pdufa-calendar/2026",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "12ee73b105086168129fe8e4b9e923bc19cd1802a23e6e2039a21db30645318b"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-011",
@@ -88,7 +113,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761195Orig1s016;%20761304Orig1s018ltr.pdf",
       "https://www.assyro.com/tools/pdufa-calendar/2026"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-013",
@@ -111,7 +138,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/022472Orig1s029.ltr.pdf",
       "https://www.assyro.com/tools/pdufa-calendar/2026"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-014",
@@ -134,7 +163,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761394Orig1s003ltr.pdf",
       "https://www.assyro.com/tools/pdufa-calendar/2026"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-015",
@@ -157,7 +188,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/219835Orig1s000ltr.pdf",
       "https://www.assyro.com/tools/pdufa-calendar/2026"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-018",
@@ -180,7 +213,9 @@
       "https://download.open.fda.gov/crl/CRL_NDA216900_20260626_Redacted.pdf",
       "https://www.pdufa.bio/ticker/LNTH"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-021",
@@ -192,17 +227,39 @@
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
     "disposition": "BLOCKED",
-    "reason": "The source lead gives June 30 without an exact primary goal. The FDA S-006 letter concerns a later capivasertib submission; its relationship to the CAPItello-281 date needs resolution.",
-    "application_id": "",
-    "supplement": "",
-    "review_cycle": "",
+    "reason": "Drugs@FDA identifies NDA 218197/S-004 for the June 12 CAPItello-281 action. S-006 is a later supplement. The June 30 calendar claim remains an unverified goal.",
+    "application_id": "NDA218197",
+    "supplement": "S-004",
+    "review_cycle": "SUPPLEMENT",
     "goal_date": "2026-06-30",
-    "action_date": "",
+    "action_date": "2026-06-12",
     "source_urls": [
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218197Orig1s006ltr.pdf",
-      "https://www.pdufa.bio/ticker/AZN"
+      "https://www.pdufa.bio/ticker/AZN",
+      "https://www.fda.gov/media/89850/download"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T19:43:38.857171+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218197Orig1s006ltr.pdf",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "f449c63237f14648b420b0df793149a728760a5e58b72486c46ab2e6dc4742f9"
+      },
+      {
+        "url": "https://www.pdufa.bio/ticker/AZN",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "e384bff2b4e8c093988b282c419130d5fb89dd6dd833263121f4500cb615df65"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-026",
@@ -226,7 +283,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220848Orig1s000RiskR.pdf",
       "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220848Orig1s000Approv.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00",
+    "resolution_class": "NOT_PDUFA",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-028",
@@ -249,7 +308,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761445Orig1s000Correctedltr.pdf",
       "https://www.assyro.com/tools/pdufa-calendar/2026"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-034",
@@ -274,7 +335,9 @@
       "https://www.sec.gov/Archives/edgar/data/1682852/000168285226000147/exhibit9912026q2pressrelea.htm",
       "https://www.fda.gov/media/194121/download"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-035",
@@ -298,7 +361,9 @@
       "https://www.pdufa.bio/fda-decision/LNTH-2026-08-13",
       "https://www.sec.gov/Archives/edgar/data/1521036/000119312525268103/lnth-ex99_1.htm"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-038",
@@ -321,7 +386,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761375Orig1s001ltr.pdf",
       "https://www.assyro.com/tools/pdufa-calendar/2026"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-041",
@@ -344,7 +411,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761166Orig1s03ltr.pdf",
       "https://www.assyro.com/tools/pdufa-calendar/2026"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-042",
@@ -369,7 +438,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761508Orig1s000Approv.pdf",
       "https://pubmed.ncbi.nlm.nih.gov/42805227/"
     ],
-    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-043",
@@ -393,7 +464,9 @@
       "https://www.pdufa.bio/fda-decision/TLX-2026-09-14",
       "https://telixpharma.com/news-views/fda-accepts-nda-for-tlx101-px-pixclara/"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-044",
@@ -417,7 +490,28 @@
       "https://www.pdufa.bio/ticker/LLY",
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218881Orig1s001ltr.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.fda.gov/drugs/cancer-approvals/fda-approves-imlunestrant-combination-abemaciclib-er-positive-her2-negative-esr1-mutated-advanced-or",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "51f8578632e56905117c0493befe5acdd98736b8de211682afc11f8168a0240a"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218881",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "d88164626a9939ab5ae65924c6222d4d0a87209ef9aa557a134075120df7d451"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-049",
@@ -440,7 +534,28 @@
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=125486",
       "https://www.pdufa.bio/fda-decision/RHHBY-2026-09-25"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.fda.gov/drugs/news-events-human-drugs/fda-approves-drug-treat-idiopathic-nephrotic-syndrome-patients-2-years-and-older",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "a6ad6951e5d1262ab96048fcd7b87e8e8c66cc3e4bdcbf35b2ec810efeb05344"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=125486",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "e433c538ee1b8ca8dbeb508f912f5c74728aa62e3ad88c20b57cfd6021189d57"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-051",
@@ -466,7 +581,9 @@
       "https://www.fda.gov/drugs/cancer-approvals/fda-approves-lirafugratinib-previously-treated-unresectable-locally-advanced-or-metastatic",
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220425Orig1s000ltr.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-052",
@@ -490,7 +607,9 @@
       "https://www.pdufa.bio/fda-decision/BFRI-2026-09-09",
       "https://www.sec.gov/Archives/edgar/data/1858685/000149315226042508/ex99-1.htm"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-053",
@@ -515,7 +634,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220106Orig1s000Approv.pdf",
       "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220106Orig1s000lbl.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-054",
@@ -539,7 +660,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220860Orig1s000Approv.pdf",
       "https://www.govinfo.gov/content/pkg/FR-2026-11-12/xhtml/FR-2026-11-12.html"
     ],
-    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-055",
@@ -563,7 +686,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220605Orig1s000Approv.pdf",
       "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220605Orig1s000lbl.pdf"
     ],
-    "reviewed_at": "2026-11-18T19:29:45.816388+00:00"
+    "reviewed_at": "2026-11-18T19:29:45.816388+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-057",
@@ -575,17 +700,39 @@
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
     "disposition": "BLOCKED",
-    "reason": "FDA confirms October first-line CLL/SLL action. October 2 calendar entry repeats the action, and the first-line application’s actual goal remains unverified.",
-    "application_id": "",
-    "supplement": "",
-    "review_cycle": "",
+    "reason": "Drugs@FDA identifies NDA 216059/S-006 as the October 2 approval for first-line CLL/SLL. The exact PDUFA goal remains unverified.",
+    "application_id": "NDA216059",
+    "supplement": "S-006",
+    "review_cycle": "SUPPLEMENT",
     "goal_date": "2026-10-02",
-    "action_date": "",
+    "action_date": "2026-10-02",
     "source_urls": [
       "https://www.fda.gov/drugs/cancer-approvals/fda-approves-pirtobrutinib-previously-untreated-chronic-lymphocytic-leukemia-or-small-lymphocytic",
-      "https://www.pdufa.bio/fda-decision/LLY-2026-10-02"
+      "https://www.pdufa.bio/fda-decision/LLY-2026-10-02",
+      "https://www.fda.gov/media/89850/download"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T19:43:38.857171+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.fda.gov/drugs/cancer-approvals/fda-approves-pirtobrutinib-previously-untreated-chronic-lymphocytic-leukemia-or-small-lymphocytic",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "b4ae9502f81e5505670288b4e6d6d2e00344ff315b95e5d75484c79afa76407e"
+      },
+      {
+        "url": "https://www.pdufa.bio/fda-decision/LLY-2026-10-02",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "1b3c8765908cf906074b69bb29841ff8e33c203ea9d36f64693fadbd610c2015"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-058",
@@ -608,7 +755,28 @@
       "https://www.pdufa.bio/fda-decision/NVS-2026-10-06",
       "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218436s001lbl.pdf"
     ],
-    "reviewed_at": "2026-11-18T19:29:45.816388+00:00"
+    "reviewed_at": "2026-11-18T19:29:45.816388+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.novartis.com/news/media-releases/novartis-rhapsido-remibrutinib-receives-fda-approval-first-treatment-symptomatic-dermographism-sd-expanding-its-use-beyond-chronic-spontaneous-urticaria-csu",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "d741b1e456d391bafafa74858e8007eb44665912df6f8b356bc4df8cf677f244"
+      },
+      {
+        "url": "https://www.pdufa.bio/fda-decision/NVS-2026-10-06",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "c62517014718a1e07dc5988b1cc5b04458487a80d7ed1045d9fa5b0e6581d10b"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-059",
@@ -632,7 +800,9 @@
       "https://www.pdufa.bio/fda-decision/RHHBY-2026-10-08",
       "https://www.fda.gov/drugs/resources-information-approved-drugs/fda-approves-atezolizumab-combination-chemotherapy-stage-iii-mismatch-repair-deficient-colon-cancer"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-060",
@@ -656,7 +826,28 @@
       "https://www.pdufa.bio/pdufa/MRK-ifinatamab-deruxtecan",
       "https://www.merck.com/news/ifinatamab-deruxtecan-biologics-license-application-for-certain-patients-with-previously-treated-extensive-stage-small-cell-lung-cancer-voluntarily-withdrawn/"
     ],
-    "reviewed_at": "2026-11-18T19:29:45.816388+00:00"
+    "reviewed_at": "2026-11-18T19:29:45.816388+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.merck.com/news/ifinatamab-deruxtecan-granted-priority-review-in-the-u-s-for-adult-patients-with-previously-treated-extensive-stage-small-cell-lung-cancer-who-experienced-disease-progression-on-or-after-platinum-bas/",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "1a8108d0288d6456b4c7ade12df9b1104435894b54c71a942fc9d05fff2017ce"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/310158/000162828026029802/mrk-20260331.htm",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "77924d86200b5edaaa526a465cc2e30623f10111f09b423beb8aee2e09c77e2b"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-061",
@@ -679,7 +870,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761149Orig1s008ltr.pdf",
       "https://www.pdufa.bio/fda-decision/RHHBY-2026-10-15"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-062",
@@ -704,7 +897,9 @@
       "https://ir.opusgtx.com/press-releases/detail/519/opus-genetics-announces-fda-acceptance-of-supplemental-new-drug-application-for-phentolamine-ophthalmic-solution-0-75-for-the-treatment-of-presbyopia",
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=217064"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-063",
@@ -728,7 +923,9 @@
       "https://www.pdufa.bio/fda-decision/PHAR-2026-09-11",
       "https://www.sec.gov/Archives/edgar/data/1828316/000182831626000037/fdaapprovespharmingsjoenja.htm"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-065",
@@ -753,7 +950,9 @@
       "https://www.sec.gov/Archives/edgar/data/1055726/000105572626000019/ino-33126x8kex991.htm",
       "https://www.fda.gov/news-events/press-announcements/fda-approves-first-plasmid-dna-based-immunotherapy-adults-recurrent-respiratory-papillomatosis"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-066",
@@ -776,7 +975,28 @@
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=221291",
       "https://www.pdufa.bio/fda-decision/BAYRY-2026-11-09"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.fda.gov/news-events/press-announcements/fda-approves-first-factor-xla-inhibitor-help-prevent-stroke-certain-adults-high-risk",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "9dd1c2167204163094a3f605d86c771df987d2570436b5038dedd905c6f4a43c"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=221291",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "b78f2b7812179ae6e626a225d738e2739370dba14e7c8d77c107007815ceeb7e"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-067",
@@ -788,7 +1008,7 @@
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
     "disposition": "BLOCKED",
-    "reason": "Drugs@FDA confirms NDA 220414 and November 10 effective approval date. The calendar action cannot establish the exact PDUFA goal.",
+    "reason": "Drugs@FDA confirms NDA 220414 and November 10 effective approval date. The calendar action cannot establish the exact PDUFA goal. FDA’s novel-approvals index separately lists November 13. Retain the November 10 application action and reconcile the index discrepancy before using either date as a goal.",
     "application_id": "NDA220414",
     "supplement": "NONE",
     "review_cycle": "",
@@ -797,9 +1017,31 @@
     "source_urls": [
       "https://www.fda.gov/drugs/cancer-approvals/fda-approves-pimicotinib-symptomatic-tenosynovial-giant-cell-tumor",
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220414",
-      "https://www.pdufa.bio/fda-decision/MKKGY-2026-11-10"
+      "https://www.pdufa.bio/fda-decision/MKKGY-2026-11-10",
+      "https://www.fda.gov/drugs/novel-drug-approvals-fda/novel-drug-approvals-2026"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.fda.gov/drugs/cancer-approvals/fda-approves-pimicotinib-symptomatic-tenosynovial-giant-cell-tumor",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "c13198c8093a7803b35cf6af8759f37ae4271a169b9e8b9c4ccc5761da5da593"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220414",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "e21a5fe51a857a4c1b907e0617bf61c75db0af21bde28bbcb47df9d8cf0a658d"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-069",
@@ -822,7 +1064,9 @@
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=215390",
       "https://www.pdufa.bio/fda-decision/TEVA-2026-11-16"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-070",
@@ -845,7 +1089,9 @@
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219083",
       "https://www.pdufa.bio/fda-decision/CYTK-2026-11-16"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-071",
@@ -867,7 +1113,9 @@
       "https://www.sec.gov/Archives/edgar/data/1645113/000164511326000085/nvcr-20261109.htm",
       "https://www.pdufa.bio/fda-decision/NVCR-2026-11-09"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "NOT_PDUFA",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-072",
@@ -889,7 +1137,28 @@
       "https://www.sec.gov/Archives/edgar/data/1160308/000119312526219371/svra-20260331.htm",
       "https://www.pdufa.bio/pdufa/SVRA-molbreevi"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1160308/000119312526219371/svra-20260331.htm",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "a0c940d5845bbecfa95b1ebd351432dfbd4cbb2ed640479d938381372ab3d9d8"
+      },
+      {
+        "url": "https://www.pdufa.bio/pdufa/SVRA-molbreevi",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "81c65c19553e5189d2db8f6a452e583c575fc30726157a00a53d41bd32fba9ee"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-074",
@@ -910,7 +1179,22 @@
     "source_urls": [
       "https://www.sanofi.com/en/media-room/press-releases/2026/2026-05-28-05-00-00-3302498"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.sanofi.com/en/media-room/press-releases/2026/2026-05-28-05-00-00-3302498",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "ebf8a6662ccb49f6da6901556730b33c74c82528ab9cc58549142c89f2a819ab"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-075",
@@ -932,7 +1216,28 @@
       "https://www.sec.gov/Archives/edgar/data/1743881/000174388126000026/bbio-20260630xex991.htm",
       "https://www.pdufa.bio/pdufa/BBIO-bbp-418"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1743881/000174388126000026/bbio-20260630xex991.htm",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "6fb4842f9601730286d8a7f5b882829530edc8027691273ee62126fed9fb5647"
+      },
+      {
+        "url": "https://www.pdufa.bio/pdufa/BBIO-bbp-418",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "ddd2c8b25a31ce87450781a340e7ab5c773ab8a49b6413eb0a15062025837271"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-076",
@@ -955,7 +1260,28 @@
       "https://investors.nuvalent.com/2026-05-27-Nuvalent-Announces-Key-Program-and-Business-Updates,-Strengthening-Foundation-for-Global-Leadership-in-ROS1-and-ALK-positive-NSCLC",
       "https://www.pdufa.bio/fda-decision/GSK-2026-11-17"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.fda.gov/drugs/cancer-approvals/fda-grants-accelerated-approval-neladalkib-previously-treated-locally-advanced-or-metastatic-alk",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "c9e876dd82539f082d60a0b33a002112cda17b25f810b4aca9fd916ab2bda302"
+      },
+      {
+        "url": "https://investors.nuvalent.com/2026-05-27-Nuvalent-Announces-Key-Program-and-Business-Updates,-Strengthening-Foundation-for-Global-Leadership-in-ROS1-and-ALK-positive-NSCLC",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "cfb47ff17a9932c351dc9760c5a7144fc890a94c72c9afa1ee2a42b49ec151e0"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-077",
@@ -977,7 +1303,28 @@
       "https://www.sec.gov/Archives/edgar/data/1611842/000121390026082564/ea029964201ex99-1.htm",
       "https://www.pdufa.bio/pdufa/PYPD-d-plex100"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1611842/000121390026082564/ea029964201ex99-1.htm",
+        "retrieved_at": "2026-11-18T19:42:32Z",
+        "http_status": "000",
+        "sha256": ""
+      },
+      {
+        "url": "https://www.pdufa.bio/pdufa/PYPD-d-plex100",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "714c317a76fef1c66cbfbf565386d3b8e909b7d32ae0ab2cdbe174cb60ee0431"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-078",
@@ -999,7 +1346,28 @@
       "https://www.sec.gov/Archives/edgar/data/1622229/000119312526341315/cogt-ex99_1.htm",
       "https://www.pdufa.bio/pdufa/COGT-bezuclastinib"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526341315/cogt-ex99_1.htm",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "649d2c9ff5c239d312524f6aafbfa5185db52721498890db21d528865a14f60c"
+      },
+      {
+        "url": "https://www.pdufa.bio/pdufa/COGT-bezuclastinib",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "0e1998b935618daf8e305e5ff27881d76813ad01b3cdcc4205804254dcb1defe"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-079",
@@ -1021,7 +1389,28 @@
       "https://newsroom.regeneron.com/news-releases/news-release-details/regeneron-reports-third-quarter-2026-financial-and-operating/",
       "https://www.pdufa.bio/pdufa/REGN-cemdisiran"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://newsroom.regeneron.com/news-releases/news-release-details/regeneron-reports-third-quarter-2026-financial-and-operating/",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "a7ffbfdf6394b6067ac878e15581658b49fe534a1bb62a1fdf566a907ecd7f65"
+      },
+      {
+        "url": "https://www.pdufa.bio/pdufa/REGN-cemdisiran",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "8ce8af1ed1241f2dfff8cd0d1a40a7c4bb1ed07576303fa72ad87f91b46188b1"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-080",
@@ -1044,7 +1433,28 @@
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=125486",
       "https://www.pdufa.bio/fda-decision/RHHBY-2026-11-13"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.gene.com/media/press-releases/15143/2026-11-15/genentechs-gazyva-becomes-the-first-fda-",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "e599c3bf3b43d19baf38dd1c5f0546491cb4d2a86a116cd75f5802b7697a7d84"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=125486",
+        "retrieved_at": "2026-11-18T19:42:23Z",
+        "http_status": "200",
+        "sha256": "e433c538ee1b8ca8dbeb508f912f5c74728aa62e3ad88c20b57cfd6021189d57"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-081",
@@ -1066,7 +1476,28 @@
       "https://www.gene.com/media/press-releases/15115/2026-06-01/fda-accepts-new-drug-application-for-gen",
       "https://www.pdufa.bio/pdufa/RHHBY-giredestrant"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.gene.com/media/press-releases/15115/2026-06-01/fda-accepts-new-drug-application-for-gen",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "b776be16c9a14ec5af0a010707f77cbc0fe042e3d283d07b99b2290b77b48051"
+      },
+      {
+        "url": "https://www.pdufa.bio/pdufa/RHHBY-giredestrant",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "13402d8ea6aab89b08961a18556e251215e91af4cea84db543a2c43425e8db23"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-082",
@@ -1089,7 +1520,28 @@
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219972",
       "https://www.pdufa.bio/ticker/BAYRY"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.fda.gov/drugs/cancer-approvals/fda-grants-accelerated-approval-sevabertinib-locally-advanced-or-metastatic-non-squamous-non-small",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "8cd2659d8ebb5db457333bccf2bc1b2e7d2465efe8df84618347be0a20d120c0"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219972",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "6b0b970825e5bf0eecc9343b4b6a7924bdd68cc822fdaa110395cf456eaa469e"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-083",
@@ -1112,7 +1564,28 @@
       "https://www.sec.gov/Archives/edgar/data/875320/000087532026000256/ex-991_q22026.htm",
       "https://www.pdufa.bio/pdufa/VRTX-povetacicept"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://news.vrtx.com/news-releases/news-release-details/vertex-announces-us-fda-acceptance-biologics-license-application",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "508d197c54ecabd3a0155879b63ee6851a6f25931cc726afbc7d6fcec0f24d56"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/875320/000087532026000256/ex-991_q22026.htm",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "917dc8f575f92edf29b8aa90ecf3ad7d1b6eb964c9b7316f958c3c35e8a3bf0c"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-084",
@@ -1134,7 +1607,28 @@
       "https://www.sec.gov/Archives/edgar/data/1347178/000162828026053308/vnda8-k852026exhibit991.htm",
       "https://www.pdufa.bio/pdufa/VNDA-imsidolimab"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1347178/000162828026053308/vnda8-k852026exhibit991.htm",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "63b67535ae7c0e59bafa84b92855fe36b2f190c4e4bbf21ddcf29668891dd2ac"
+      },
+      {
+        "url": "https://www.pdufa.bio/pdufa/VNDA-imsidolimab",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "fb21a072121c87a51fd47f7e87c62f8ac30b9dd18e42b6dd31eb18501b1313d3"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-087",
@@ -1157,7 +1651,28 @@
       "https://www.globenewswire.com/news-release/2026/11/04/3395833/0/en/mineralys-therapeutics-reports-third-quarter-2026-financial-results-and-provides-corporate-update.html",
       "https://www.pdufa.bio/pdufa/MLYS-lorundrostat"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000048/mlys-20260306.htm",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "df6bd140af1fa3f6a79c77d304dfa61afcb1b467173d8713602ae7eac864eee7"
+      },
+      {
+        "url": "https://www.globenewswire.com/news-release/2026/11/04/3395833/0/en/mineralys-therapeutics-reports-third-quarter-2026-financial-results-and-provides-corporate-update.html",
+        "retrieved_at": "2026-11-18T19:42:25Z",
+        "http_status": "200",
+        "sha256": "b0614eb061c4c8dc1c69a2c6198ec304d319089ec985e178dbd9abc5e2be988e"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-088",
@@ -1180,7 +1695,28 @@
       "https://www.gilead.com/news/news-details/2026/gilead-and-kite-advance-leadership-with-new-data-across-pipeline-and-portfolio-at-ash-2026",
       "https://www.pdufa.bio/pdufa/GILD-anito-cel"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1786205/000119312526076876/aclx-20251231.htm",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "4df47388434cf90377104c87a7c2525462e855dfa10ef173e4823167c1553b35"
+      },
+      {
+        "url": "https://www.gilead.com/news/news-details/2026/gilead-and-kite-advance-leadership-with-new-data-across-pipeline-and-portfolio-at-ash-2026",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "5808bfc2270d7be222ccc401719f249d3622a58c4a045c01e6a14cc1d32971d7"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-089",
@@ -1202,7 +1738,28 @@
       "https://www.sec.gov/Archives/edgar/data/1792044/000179204426000037/exhibit991-2q26earningsrel.htm",
       "https://www.pdufa.bio/pdufa/VTRS-mr-107a-02"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1792044/000179204426000037/exhibit991-2q26earningsrel.htm",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "ec7285f0a162e46f6c912f67cb5119f04b6b54ff8c3fcd1299d7e7775785509c"
+      },
+      {
+        "url": "https://www.pdufa.bio/pdufa/VTRS-mr-107a-02",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "5e6ae7762d3c715ebba664f3d4724b9c66cea2ef967db71cef3a66d6992c1e2a"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-090",
@@ -1224,7 +1781,28 @@
       "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000069/prax-20260629.htm",
       "https://www.pdufa.bio/pdufa/PRAX-relutrigine"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000069/prax-20260629.htm",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "83dc93dbda1036da7d1a1121ff234f96ab1d5ecf6c292fcd0dad1d0d17787ba1"
+      },
+      {
+        "url": "https://www.pdufa.bio/pdufa/PRAX-relutrigine",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "808be08b4d8a2638d6587c799799bc23a3299c562fea2e14b716029e8dc2fc08"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-091",
@@ -1246,7 +1824,28 @@
       "https://www.sec.gov/Archives/edgar/data/1622229/000119312526341315/cogt-ex99_1.htm",
       "https://www.pdufa.bio/pdufa/COGT-bezuclastinib-summit"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1622229/000119312526341315/cogt-ex99_1.htm",
+        "retrieved_at": "2026-11-18T19:42:33Z",
+        "http_status": "000",
+        "sha256": ""
+      },
+      {
+        "url": "https://www.pdufa.bio/pdufa/COGT-bezuclastinib-summit",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "2dbe08407a9df74efb8974c85d058383897657813e5e55e925ab8a9fe7b63631"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-092",
@@ -1268,7 +1867,28 @@
       "https://www.novonordisk.com/news-and-media/news-and-ir-materials/news-details.html?id=920561",
       "https://www.pdufa.bio/pdufa/NVO-am833"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.novonordisk.com/news-and-media/news-and-ir-materials/news-details.html?id=920561",
+        "retrieved_at": "2026-11-18T19:42:26Z",
+        "http_status": "200",
+        "sha256": "3240714a2ae9ee727b60c4b2ce475f545579d75d1a29b5021542801f4ff748c9"
+      },
+      {
+        "url": "https://www.pdufa.bio/pdufa/NVO-am833",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "d14f099c93d92e7090ce54f2a6b45758b07dc3c9c583829ef7ca8176a508a74d"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-093",
@@ -1289,7 +1909,22 @@
     "source_urls": [
       "https://www.pdufa.bio/pdufa/RHHBY-gazyva"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.pdufa.bio/pdufa/RHHBY-gazyva",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "85c8f01f35e54cb0be44bd33b6f13bb200c31e6b71e87c0c9d579789c3eb45ab"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-094",
@@ -1315,7 +1950,9 @@
       "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220415Orig1s000Approv.pdf",
       "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220415Orig1s000lbl.pdf"
     ],
-    "reviewed_at": "2026-11-18T19:29:45.816388+00:00"
+    "reviewed_at": "2026-11-18T19:29:45.816388+00:00",
+    "resolution_class": "VERIFIED",
+    "source_rechecks": []
   },
   {
     "record_id": "2026-L1-095",
@@ -1336,7 +1973,22 @@
     "source_urls": [
       "https://www.pdufa.bio/ticker/BAYRY"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:25:46+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.pdufa.bio/ticker/BAYRY",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "3f81c98d6742dd2de3faa5dd9848f78b9f95f021c8852969730f791dc1883a1f"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   },
   {
     "record_id": "2026-L1-096",
@@ -1360,6 +2012,27 @@
       "https://www.pdufa.bio/fda-decision/AZN-2026-10-21",
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/125166Orig1s455%2C%20761108Orig1s046ltr.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00",
+    "resolution_class": "UNRESOLVED_WITH_REASON",
+    "source_rechecks": [
+      {
+        "url": "https://www.astrazeneca.com/media-centre/press-releases/2026/ultomiris-granted-priority-review-in-the-us-as-treatment-for-adults-with-immunoglobulin-a-nephropathy.html",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "29fa28909af4d340a1807ae725aba71c0e3779ef263cfec75a7749339afc2339"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761108",
+        "retrieved_at": "2026-11-18T19:42:24Z",
+        "http_status": "200",
+        "sha256": "94a3487ff9bc0ec612af77495ca0c3096d1b6eba3a80136fae0d593751c8eaad"
+      },
+      {
+        "url": "https://www.fda.gov/media/89850/download",
+        "retrieved_at": "2026-11-18T19:43:38.857171+00:00",
+        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
+        "http_status": "200"
+      }
+    ]
   }
 ]
