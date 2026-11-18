@@ -203,7 +203,7 @@ def main():
             output = args.level7_coverage_output
             output.parent.mkdir(parents=True, exist_ok=True)
             temp = output.with_suffix(output.suffix + ".tmp")
-            temp.write_text(json.dumps(coverage, indent=2, sort_keys=True) + "\\n",
+            temp.write_text(json.dumps(coverage, indent=2, sort_keys=True) + "\n",
                             encoding="utf-8")
             temp.replace(output)
     data = json.dumps(report, indent=2, sort_keys=True) + "\n"
