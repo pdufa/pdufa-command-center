@@ -36,16 +36,17 @@ def audit(path, asof, expected):
             continue
         if due.year != 2026:
             issues.append({"row": index, "issue": "outside 2026"})
-        if not r["source_url"].strip():
+        has_source = bool(r["source_url"].strip())
+        if not has_source:
             issues.append({"row": index, "issue": "missing outcome/evidence source"})
         if due <= asof:
             historical += 1
             # Point-in-time frozen records only; retrospectively reconstructed
             # predictions are not certified blind.
-            if not frozen or not cutoff or frozen > due or cutoff > frozen or (published and frozen >= published):
+            if not frozen or not cutoff or frozen > due or cutoff > frozen or (published and frozen >= published) or not has_source:
                 issues.append({"row": index, "issue": "no verifiable pre-outcome freeze"})
                 continue
-            if r["prediction"] not in YES or r["actual_outcome"] not in YES or not published:
+            if r["prediction"] not in YES or r["actual_outcome"] not in YES or not published or published > asof:
                 issues.append({"row": index, "issue": "prediction/outcome missing or unsupported"})
                 continue
             if r["prediction"] == r["actual_outcome"]:
