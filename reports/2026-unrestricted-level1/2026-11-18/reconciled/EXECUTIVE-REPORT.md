@@ -5,15 +5,15 @@
 | Measure | Count |
 | --- | ---: |
 | Pinned baseline rows recovered | 96 of 96 |
-| Integrated worklist records | 103 |
-| Verified 2026 cycles | 70 |
+| Integrated worklist records | 104 |
+| Verified 2026 cycles | 71 |
 | Unresolved in-scope leads | 30 |
 | Duplicate worklist records | 0 |
 | Outside cohort | 3 |
-| Verified cycles with a Level 1 assessment and documented gaps | 70 |
+| Verified cycles with a Level 1 assessment and documented gaps | 71 |
 | Verified cycles with every requested field populated | 0 |
-| Verified cycles with phase, trial ID, endpoint, effect size, statistical analysis and safety fields populated | 48 |
-| Outcome-aware retrospective assessments | 68 |
+| Verified cycles with phase, trial ID, endpoint, effect size, statistical analysis and safety fields populated | 49 |
+| Outcome-aware retrospective assessments | 69 |
 | Frozen prospective assessments | 2 |
 | Eligible blind Level 1 comparisons | 0 |
 | Historical blind accuracy | Unavailable |
@@ -24,9 +24,9 @@ Lirafugratinib retains the original September 27 and later September 25 sponsor-
 
 The follow-up resolved two calendar placeholders. FDA review packages establish August 29 for rusfertide, approved August 28, and September 25 for tavapadon, approved the same day. FDA labels also supplied pivotal evidence for Afrezza and Vyvgart. The Afrezza label confirms the pediatric noninferiority endpoint was missed, so the outcome-aware assessment is INDETERMINATE despite the known approval. Merck confirmed the ifinatamab deruxtecan BLA withdrawal. Its exact application number remains unresolved. FDA labeling identifies the Rhapsido supplement. Its exact PDUFA date remains unresolved. [Rusfertide review](https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220605Orig1s000RiskR.pdf) · [Tavapadon review](https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220415Orig1s000RiskR.pdf) · [Afrezza label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/022472s029lbl.pdf) · [Vyvgart label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761195s016lbl761304s018lbl.pdf) · [Merck withdrawal](https://www.merck.com/news/ifinatamab-deruxtecan-biologics-license-application-for-certain-patients-with-previously-treated-extensive-stage-small-cell-lung-cancer-voluntarily-withdrawn/)
 
-No verified cycle lacks a recorded judgment. All 70 have a documented evidence or calibration gap. The export contains 18 verified cycles without a trial ID (three not applicable to the specific assessment and 15 unresolved) and 14 without a populated statistical-analysis field. These counts overlap.
+No verified cycle lacks a recorded judgment. All 71 have a documented evidence or calibration gap. The export contains 18 verified cycles without a trial ID (three not applicable to the specific assessment and 15 unresolved) and 14 without a populated statistical-analysis field. These counts overlap.
 
-The 70 verified cycles comprise 61 approvals, seven complete responses and two pending decisions. Clinical field counts can include explicit limitations. Numerical confidence remains blank because the cohort has no validated calibration. [Coverage](coverage.json) · [Row-level blockers](blocker-manifest.json)
+The 71 verified cycles comprise 62 approvals, seven complete responses and two pending decisions. Clinical field counts can include explicit limitations. Numerical confidence remains blank because the cohort has no validated calibration. [Coverage](coverage.json) · [Row-level blockers](blocker-manifest.json)
 
 Resume with the 30 rows in the blocker manifest. Crosswalk pending applications to an exact FDA docket and obtain original acceptance or amendment disclosures for decisions with unknown goals. Revisit the unjoined FDA action and CRL records in a dated year-end refresh. [FDA submission crosswalk](../fda-submission-status-crosswalk.csv) · [FDA CRL crosswalk](../fda-crl-letter-crosswalk.csv)
 
@@ -51,3 +51,9 @@ FDA labeling supplied exact trial IDs for 13 previously missing events and fille
 The independent discovery pass screened 86 FDA original NDA/BLA approval records outside the previously verified original-application cohort. FDA review documents and action records established four new 2026 cycles: Ambelvist (NDA 219627), Cypsedo (NDA 220482), Zaynich (NDA 220787), and Etcamah (NDA 220359). Etcamah retains its original May 27 and amended August 27 FDA goals alongside its September 4 action. A further amendment was not independently located. Ambelvist received an INDETERMINATE retrospective judgment pending quantitative visualization results. [FDA source receipts and assessment rows](assessments.json)
 
 The same follow-up records the exact finerenone supplement and September 16 action. The PDUFA goal remains unverified. FDA documents supplied three further exact trial IDs and numerical or expressly descriptive statistical results for additional previously assessed cycles. The review also documented why a separate pivotal efficacy trial does not apply to the Dupixent pediatric CSU extension. [Reconciliation ledger](lead-reconciliation.json) · [Remaining blockers](blocker-manifest.json)
+
+## Follow-up on the 30 open leads
+
+The independent search pass preserved every lead ID and identified the specific missing fact and next research step for each. None qualified for promotion, duplicate closure, or removal from scope. FDA labels and notices corroborated applications for several known actions, but did not establish exact goals. Sponsor and SEC notices confirmed several pending goals without disclosing application numbers. The CMS anito-cel coding package did not supply a BLA number. Searches that initially returned service errors were retried in serial batches. The table retains original source links and the strongest row-specific follow-up source. [Complete 30-row resolution table](30-LEAD-RESOLUTION.md) · [CSV](30-lead-resolution.csv) · [JSON](30-lead-resolution.json)
+
+A separate search of supplemental approvals identified pediatric Camzyos, NDA 214998/S-013, as a new verified 2026 cycle. The sponsor first assigned September 30 and Drugs@FDA records approval on that day. FDA labeling supplies the SCOUT-HCM endpoint, treatment contrast and heart-failure warning. The recorded judgment is outcome-aware. Tukysa, Onswik and other action-only records still need independent goal sources. The sponsor’s Ibtrozi action preceded its 2027 goal, so that action alone did not establish a 2026 PDUFA cycle. [Camzyos FDA label](https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/214998s013lbl.pdf)

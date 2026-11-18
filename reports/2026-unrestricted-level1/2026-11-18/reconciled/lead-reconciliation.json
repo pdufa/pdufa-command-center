@@ -22,7 +22,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-009",
@@ -47,7 +50,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-010",
@@ -66,6 +72,7 @@
     "goal_date": "2026-04-29",
     "action_date": "",
     "source_urls": [
+      "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761183s013lbl.pdf",
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761183Orig1s013ltr.pdf",
       "https://www.assyro.com/tools/pdufa-calendar/2026"
     ],
@@ -90,7 +97,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "FDA S-013 label establishes the stage 2 diabetes indication. The separate S-010 review is for another filing.",
+    "next_action": "Locate the S-013 filing or amendment letter with an exact goal.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-011",
@@ -115,7 +125,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-013",
@@ -140,7 +153,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-014",
@@ -165,7 +181,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-015",
@@ -190,7 +209,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-018",
@@ -215,7 +237,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-021",
@@ -234,6 +259,7 @@
     "goal_date": "2026-06-30",
     "action_date": "2026-06-12",
     "source_urls": [
+      "https://www.fda.gov/drugs/cancer-approvals/fda-approves-capivasertib-abiraterone-and-prednisone-pten-deficient-androgen-pathway-modulation",
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218197Orig1s006ltr.pdf",
       "https://www.pdufa.bio/ticker/AZN",
       "https://www.fda.gov/media/89850/download"
@@ -259,7 +285,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "FDA CAPItello-281 announcement confirms June 12 action, not June 30 target.",
+    "next_action": "Obtain NDA 218197/S-004 filing or review cover with the original deadline.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-026",
@@ -285,7 +314,10 @@
     ],
     "reviewed_at": "2026-11-18T18:45:03.792777+00:00",
     "resolution_class": "NOT_PDUFA",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-028",
@@ -310,7 +342,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-034",
@@ -337,7 +372,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-035",
@@ -363,7 +401,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-038",
@@ -388,7 +429,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-041",
@@ -413,7 +457,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-042",
@@ -440,7 +487,10 @@
     ],
     "reviewed_at": "2026-11-18T18:45:03.792777+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-043",
@@ -466,7 +516,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-044",
@@ -485,6 +538,7 @@
     "goal_date": "2026-09-18",
     "action_date": "2026-09-18",
     "source_urls": [
+      "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218881s001lbl.pdf",
       "https://www.fda.gov/drugs/cancer-approvals/fda-approves-imlunestrant-combination-abemaciclib-er-positive-her2-negative-esr1-mutated-advanced-or",
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218881",
       "https://www.pdufa.bio/ticker/LLY",
@@ -511,7 +565,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "EMBER-3 FDA notice and label identify the combination indication; the public action date does not establish the goal.",
+    "next_action": "Locate Lilly’s sNDA acceptance or agency goal letter for S-001.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-049",
@@ -530,6 +587,7 @@
     "goal_date": "2026-09-25",
     "action_date": "2026-09-25",
     "source_urls": [
+      "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/125486s043lbl.pdf",
       "https://www.fda.gov/drugs/news-events-human-drugs/fda-approves-drug-treat-idiopathic-nephrotic-syndrome-patients-2-years-and-older",
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=125486",
       "https://www.pdufa.bio/fda-decision/RHHBY-2026-09-25"
@@ -555,7 +613,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "FDA S-043 label and Genentech action statement identify idiopathic nephrotic syndrome separately from S-044.",
+    "next_action": "Locate the S-043 original goal in the sponsor acceptance letter or FDA review cover.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-051",
@@ -583,7 +644,10 @@
     ],
     "reviewed_at": "2026-11-18T18:45:03.792777+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-052",
@@ -609,7 +673,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-053",
@@ -636,7 +703,10 @@
     ],
     "reviewed_at": "2026-11-18T18:45:03.792777+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-054",
@@ -662,7 +732,10 @@
     ],
     "reviewed_at": "2026-11-18T18:45:03.792777+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-055",
@@ -688,7 +761,10 @@
     ],
     "reviewed_at": "2026-11-18T19:29:45.816388+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-057",
@@ -732,7 +808,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "FDA first-line CLL/SLL announcement agrees with the S-006 action record.",
+    "next_action": "Locate Lilly’s S-006 acceptance notice or the FDA goal letter.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-058",
@@ -751,6 +830,7 @@
     "goal_date": "2026-10-06",
     "action_date": "",
     "source_urls": [
+      "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218436Orig1s001ltr.pdf",
       "https://www.novartis.com/news/media-releases/novartis-rhapsido-remibrutinib-receives-fda-approval-first-treatment-symptomatic-dermographism-sd-expanding-its-use-beyond-chronic-spontaneous-urticaria-csu",
       "https://www.pdufa.bio/fda-decision/NVS-2026-10-06",
       "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218436s001lbl.pdf"
@@ -776,7 +856,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "FDA letter confirms S-001 was received December 11, 2025 and identifies the action; a receipt date cannot establish the goal.",
+    "next_action": "Obtain the S-001 assignment or updated review goal from Novartis or FDA.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-059",
@@ -802,7 +885,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-060",
@@ -847,7 +933,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Merck’s withdrawal announcement corroborates the disposition. The withdrawal does not erase the assigned goal.",
+    "next_action": "Obtain the BLA/STN from the applicant’s original filing or withdrawal acknowledgment.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-061",
@@ -872,7 +961,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-062",
@@ -899,7 +991,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-063",
@@ -925,7 +1020,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-065",
@@ -952,7 +1050,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-066",
@@ -996,7 +1097,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "FDA announcement identifies the secondary stroke prevention approval.",
+    "next_action": "Obtain NDA 221291 review cover or Bayer acceptance notice with a goal distinct from the approval.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-067",
@@ -1015,6 +1119,7 @@
     "goal_date": "2026-11-10",
     "action_date": "2026-11-10",
     "source_urls": [
+      "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220414Orig1s000ltr.pdf",
       "https://www.fda.gov/drugs/cancer-approvals/fda-approves-pimicotinib-symptomatic-tenosynovial-giant-cell-tumor",
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220414",
       "https://www.pdufa.bio/fda-decision/MKKGY-2026-11-10",
@@ -1041,7 +1146,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "FDA approval letter and EMD Serono release corroborate the application and the November 10 action.",
+    "next_action": "Request or locate the exact assigned goal and preserve the separate November 13 index entry.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-069",
@@ -1066,7 +1174,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-070",
@@ -1091,7 +1202,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-071",
@@ -1115,7 +1229,10 @@
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
     "resolution_class": "NOT_PDUFA",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-072",
@@ -1158,7 +1275,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Savara’s extension leaves November 22 as the disclosed goal. Calendar references repeat the same disclosure.",
+    "next_action": "Locate the active BLA/STN on the action letter or dated sponsor correspondence.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-074",
@@ -1194,7 +1314,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Sanofi’s acceptance gives November 25 for type 3 Gaucher disease.",
+    "next_action": "Locate the original venglustat NDA identifier on FDA correspondence or an action record.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-075",
@@ -1213,6 +1336,7 @@
     "goal_date": "2026-11-27",
     "action_date": "",
     "source_urls": [
+      "https://www.sec.gov/Archives/edgar/data/1743881/000174388126000034/bbio-20260930.htm",
       "https://www.sec.gov/Archives/edgar/data/1743881/000174388126000026/bbio-20260630xex991.htm",
       "https://www.pdufa.bio/pdufa/BBIO-bbp-418"
     ],
@@ -1237,7 +1361,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "BridgeBio Q3 10-Q confirms November 27 and the same LGMD2I/R9 submission.",
+    "next_action": "Locate the FDA NDA number in the action record or a filing attachment.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-076",
@@ -1256,6 +1383,7 @@
     "goal_date": "2026-11-27",
     "action_date": "2026-11-17",
     "source_urls": [
+      "https://clinicaltrials.gov/study/NCT05384626",
       "https://www.fda.gov/drugs/cancer-approvals/fda-grants-accelerated-approval-neladalkib-previously-treated-locally-advanced-or-metastatic-alk",
       "https://investors.nuvalent.com/2026-05-27-Nuvalent-Announces-Key-Program-and-Business-Updates,-Strengthening-Foundation-for-Global-Leadership-in-ROS1-and-ALK-positive-NSCLC",
       "https://www.pdufa.bio/fda-decision/GSK-2026-11-17"
@@ -1281,7 +1409,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "ALKOVE-1 registry identifies the pivotal trial, and FDA confirms accelerated approval. The NCT does not provide the NDA number.",
+    "next_action": "Crosswalk the approval letter for Nelkarmi or the next updated Drugs@FDA archive to the November 27 goal.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-077",
@@ -1324,7 +1455,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "PolyPid SEC acceptance confirms indication, priority review and November 28.",
+    "next_action": "Locate the D-PLEX100 NDA identifier from the FDA or sponsor filing correspondence.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-078",
@@ -1367,7 +1501,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Cogent’s acceptance confirms the PEAK GIST combination and November 30.",
+    "next_action": "Obtain the PEAK NDA number and keep it separate from SUMMIT and advanced mastocytosis.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-079",
@@ -1386,6 +1523,7 @@
     "goal_date": "2026-11-30",
     "action_date": "",
     "source_urls": [
+      "https://investor.regeneron.com/news-releases/news-release-details/cemdisiran-regulatory-submissions-accepted-review-fda-and-ema",
       "https://newsroom.regeneron.com/news-releases/news-release-details/regeneron-reports-third-quarter-2026-financial-and-operating/",
       "https://www.pdufa.bio/pdufa/REGN-cemdisiran"
     ],
@@ -1410,7 +1548,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Regeneron’s acceptance specifies November by month only.",
+    "next_action": "Obtain the assigned day and matching application number from the filing or action record.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-080",
@@ -1429,6 +1570,7 @@
     "goal_date": "2026-11-30",
     "action_date": "2026-11-13",
     "source_urls": [
+      "https://www.fda.gov/drugs/news-events-human-drugs/fda-approves-first-drug-treat-adults-primary-membranous-nephropathy",
       "https://www.gene.com/media/press-releases/15143/2026-11-15/genentechs-gazyva-becomes-the-first-fda-",
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=125486",
       "https://www.pdufa.bio/fda-decision/RHHBY-2026-11-13"
@@ -1454,7 +1596,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Genentech priority-review release and FDA PMN action are separate pieces of evidence; neither establishes November 30 as the goal.",
+    "next_action": "Locate the S-044 exact original or amended target in Genentech or FDA correspondence.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-081",
@@ -1497,7 +1642,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Genentech’s advanced evERA and early lidERA programs are separate indications and submissions.",
+    "next_action": "Obtain the adjuvant lidERA application identity before counting the November 30 sponsor target.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-082",
@@ -1541,7 +1689,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "FDA’s September notice concerns the 2026 indication and a separate date from the 2025 initial application.",
+    "next_action": "Locate the exact S-001 goal and reject November 30 unless supported by filing correspondence.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-083",
@@ -1560,6 +1711,7 @@
     "goal_date": "2026-11-30",
     "action_date": "",
     "source_urls": [
+      "https://www.sec.gov/Archives/edgar/data/875320/000087532026000291/vrtx-20260930.htm",
       "https://news.vrtx.com/news-releases/news-release-details/vertex-announces-us-fda-acceptance-biologics-license-application",
       "https://www.sec.gov/Archives/edgar/data/875320/000087532026000256/ex-991_q22026.htm",
       "https://www.pdufa.bio/pdufa/VRTX-povetacicept"
@@ -1585,7 +1737,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Vertex Q3 10-Q reiterates November 30 for the adult IgAN accelerated BLA.",
+    "next_action": "Locate the filing acknowledgment or action letter with the BLA/STN.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-084",
@@ -1628,7 +1783,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "FDA orphan designation establishes the product and indication; designation does not identify the pending BLA.",
+    "next_action": "Crosswalk Vanda’s December 12 filing to an action letter or filing acknowledgment with the STN.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-087",
@@ -1647,6 +1805,7 @@
     "goal_date": "2026-12-22",
     "action_date": "",
     "source_urls": [
+      "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000144/mlys-20260930.htm",
       "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000048/mlys-20260306.htm",
       "https://www.globenewswire.com/news-release/2026/11/04/3395833/0/en/mineralys-therapeutics-reports-third-quarter-2026-financial-results-and-provides-corporate-update.html",
       "https://www.pdufa.bio/pdufa/MLYS-lorundrostat"
@@ -1672,7 +1831,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Mineralys Q3 10-Q confirms December 22 for the hypertension submission.",
+    "next_action": "Locate the NDA number in FDA correspondence or an action record.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-088",
@@ -1691,6 +1853,7 @@
     "goal_date": "2026-12-23",
     "action_date": "",
     "source_urls": [
+      "https://www.cms.gov/files/document/fall-2025-icd-10-pcs-update-materials.pdf",
       "https://www.sec.gov/Archives/edgar/data/1786205/000119312526076876/aclx-20251231.htm",
       "https://www.gilead.com/news/news-details/2026/gilead-and-kite-advance-leadership-with-new-data-across-pipeline-and-portfolio-at-ash-2026",
       "https://www.pdufa.bio/pdufa/GILD-anito-cel"
@@ -1716,7 +1879,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "CMS anito-cel procedure-coding material identifies the product but does not give a BLA/STN.",
+    "next_action": "Crosswalk the December 23 sponsor goal to a CBER action letter or licensed product listing.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-089",
@@ -1759,7 +1925,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Viatris acceptance and filing identify fast-acting oral meloxicam.",
+    "next_action": "Locate the original MR-107A-02 NDA identifier before joining it to the December 27 goal.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-090",
@@ -1778,6 +1947,7 @@
     "goal_date": "2026-12-27",
     "action_date": "",
     "source_urls": [
+      "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000089/prax-20260930.htm",
       "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000069/prax-20260629.htm",
       "https://www.pdufa.bio/pdufa/PRAX-relutrigine"
     ],
@@ -1802,7 +1972,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Praxis Q3 filing distinguishes relutrigine from ulixacaltamide. September 27 and December 27 remain documented.",
+    "next_action": "Locate the relutrigine NDA number without joining to the other Praxis submission.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-091",
@@ -1845,7 +2018,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Cogent’s investor releases separate SUMMIT nonadvanced mastocytosis, PEAK GIST, and advanced mastocytosis.",
+    "next_action": "Locate the SUMMIT-specific NDA identifier for the December 30 goal.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-092",
@@ -1888,7 +2064,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Novo’s quarter-level guidance and a normalized calendar date cannot establish a December 31 goal.",
+    "next_action": "Locate a sponsor or FDA source with both the exact current goal and the NDA identifier.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-093",
@@ -1907,6 +2086,7 @@
     "goal_date": "2026-12-31",
     "action_date": "",
     "source_urls": [
+      "https://www.roche.com/media/releases/med-cor-2026-04-21",
       "https://www.pdufa.bio/pdufa/RHHBY-gazyva"
     ],
     "reviewed_at": "2026-11-18T18:25:46+00:00",
@@ -1924,7 +2104,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "Roche’s ALLEGORY filing-acceptance release establishes the SLE application independently of the two renal indications.",
+    "next_action": "Locate the ALLEGORY supplement number and exact goal or FDA review cover.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-094",
@@ -1952,7 +2135,10 @@
     ],
     "reviewed_at": "2026-11-18T19:29:45.816388+00:00",
     "resolution_class": "VERIFIED",
-    "source_rechecks": []
+    "source_rechecks": [],
+    "followup_finding": "",
+    "next_action": "",
+    "followup_checked_at": ""
   },
   {
     "record_id": "2026-L1-095",
@@ -1971,6 +2157,7 @@
     "goal_date": "2026-12-31",
     "action_date": "2026-09-16",
     "source_urls": [
+      "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/215341Orig1s011ltr.pdf",
       "https://www.pdufa.bio/ticker/BAYRY",
       "https://www.fda.gov/media/89850/download",
       "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215341s011lbl.pdf"
@@ -1990,7 +2177,10 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "FDA label and approval letter corroborate S-011 in type 1 diabetic CKD. The priority-review announcement does not establish the goal.",
+    "next_action": "Locate the S-011 FDA goal assignment and retain September 16 as the action date.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   },
   {
     "record_id": "2026-L1-096",
@@ -2009,10 +2199,10 @@
     "goal_date": "2026-12-31",
     "action_date": "2026-10-21",
     "source_urls": [
+      "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/125166Orig1s455%2C%20761108Orig1s046ltr.pdf",
       "https://www.astrazeneca.com/media-centre/press-releases/2026/ultomiris-granted-priority-review-in-the-us-as-treatment-for-adults-with-immunoglobulin-a-nephropathy.html",
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761108",
-      "https://www.pdufa.bio/fda-decision/AZN-2026-10-21",
-      "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/125166Orig1s455%2C%20761108Orig1s046ltr.pdf"
+      "https://www.pdufa.bio/fda-decision/AZN-2026-10-21"
     ],
     "reviewed_at": "2026-11-18T18:45:03.792777+00:00",
     "resolution_class": "UNRESOLVED_WITH_REASON",
@@ -2035,6 +2225,9 @@
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786",
         "http_status": "200"
       }
-    ]
+    ],
+    "followup_finding": "FDA joint letter distinguishes ravulizumab S-046 from other BLA actions.",
+    "next_action": "Locate the S-046 goal assignment and distinguish it from the October 21 action.",
+    "followup_checked_at": "2026-11-18T20:03:10.675218+00:00"
   }
 ]

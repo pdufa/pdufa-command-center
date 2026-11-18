@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-18T19:55:15.320935+00:00",
+  "as_of": "2026-11-18T20:03:10.675218+00:00",
   "complete": false,
   "year_population_blockers": [
     {
@@ -36,6 +36,7 @@
       "goal_date": "2026-04-29",
       "reason": "FDA letter confirms S-013 approval for the age-related stage 2 diabetes label change on April 20. April 29 appears in the calendar but no S-013 primary goal document was located. The S-010/S-014 review concerns separate June actions.",
       "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761183s013lbl.pdf",
         "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/761183Orig1s013ltr.pdf",
         "https://www.assyro.com/tools/pdufa-calendar/2026"
       ]
@@ -47,6 +48,7 @@
       "goal_date": "2026-06-30",
       "reason": "Drugs@FDA identifies NDA 218197/S-004 for the June 12 CAPItello-281 action. S-006 is a later supplement. The June 30 calendar claim remains an unverified goal.",
       "sources": [
+        "https://www.fda.gov/drugs/cancer-approvals/fda-approves-capivasertib-abiraterone-and-prednisone-pten-deficient-androgen-pathway-modulation",
         "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218197Orig1s006ltr.pdf",
         "https://www.pdufa.bio/ticker/AZN",
         "https://www.fda.gov/media/89850/download"
@@ -59,6 +61,7 @@
       "goal_date": "2026-09-18",
       "reason": "FDA confirms NDA 218881/S-001. Exact PDUFA goal and amendment history remain unverified.",
       "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218881s001lbl.pdf",
         "https://www.fda.gov/drugs/cancer-approvals/fda-approves-imlunestrant-combination-abemaciclib-er-positive-her2-negative-esr1-mutated-advanced-or",
         "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218881",
         "https://www.pdufa.bio/ticker/LLY",
@@ -72,6 +75,7 @@
       "goal_date": "2026-09-25",
       "reason": "FDA action on the idiopathic-nephrotic-syndrome supplement is established. The attributed September 25 date matches the action and lacks an independent goal-date source.",
       "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/125486s043lbl.pdf",
         "https://www.fda.gov/drugs/news-events-human-drugs/fda-approves-drug-treat-idiopathic-nephrotic-syndrome-patients-2-years-and-older",
         "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=125486",
         "https://www.pdufa.bio/fda-decision/RHHBY-2026-09-25"
@@ -96,6 +100,7 @@
       "goal_date": "2026-10-06",
       "reason": "FDA labeling identifies NDA 218436/S-001 for symptomatic dermographism. October 6 is the action date, and an exact PDUFA goal is still unverified.",
       "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218436Orig1s001ltr.pdf",
         "https://www.novartis.com/news/media-releases/novartis-rhapsido-remibrutinib-receives-fda-approval-first-treatment-symptomatic-dermographism-sd-expanding-its-use-beyond-chronic-spontaneous-urticaria-csu",
         "https://www.pdufa.bio/fda-decision/NVS-2026-10-06",
         "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218436s001lbl.pdf"
@@ -133,6 +138,7 @@
       "goal_date": "2026-11-10",
       "reason": "Drugs@FDA confirms NDA 220414 and November 10 effective approval date. The calendar action cannot establish the exact PDUFA goal. FDA’s novel-approvals index separately lists November 13. Retain the November 10 application action and reconcile the index discrepancy before using either date as a goal.",
       "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220414Orig1s000ltr.pdf",
         "https://www.fda.gov/drugs/cancer-approvals/fda-approves-pimicotinib-symptomatic-tenosynovial-giant-cell-tumor",
         "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220414",
         "https://www.pdufa.bio/fda-decision/MKKGY-2026-11-10",
@@ -167,6 +173,7 @@
       "goal_date": "2026-11-27",
       "reason": "BridgeBio’s filing identifies the priority NDA for LGMD2I/R9 and November 27. The filing does not disclose the pending FDA application number.",
       "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1743881/000174388126000034/bbio-20260930.htm",
         "https://www.sec.gov/Archives/edgar/data/1743881/000174388126000026/bbio-20260630xex991.htm",
         "https://www.pdufa.bio/pdufa/BBIO-bbp-418"
       ]
@@ -178,6 +185,7 @@
       "goal_date": "2026-11-27",
       "reason": "November 27 is sponsor-disclosed and FDA announced accelerated approval November 17 for the labeled indication. The exact NDA number was absent from the prior-day archive and FDA notification reviewed.",
       "sources": [
+        "https://clinicaltrials.gov/study/NCT05384626",
         "https://www.fda.gov/drugs/cancer-approvals/fda-grants-accelerated-approval-neladalkib-previously-treated-locally-advanced-or-metastatic-alk",
         "https://investors.nuvalent.com/2026-05-27-Nuvalent-Announces-Key-Program-and-Business-Updates,-Strengthening-Foundation-for-Global-Leadership-in-ROS1-and-ALK-positive-NSCLC",
         "https://www.pdufa.bio/fda-decision/GSK-2026-11-17"
@@ -212,6 +220,7 @@
       "goal_date": "2026-11-30",
       "reason": "Regeneron materials give a November decision window for cemdisiran in gMG. The calendar maps the window to November 30; confirm exact goal, approved or pending path and NDA identity.",
       "sources": [
+        "https://investor.regeneron.com/news-releases/news-release-details/cemdisiran-regulatory-submissions-accepted-review-fda-and-ema",
         "https://newsroom.regeneron.com/news-releases/news-release-details/regeneron-reports-third-quarter-2026-financial-and-operating/",
         "https://www.pdufa.bio/pdufa/REGN-cemdisiran"
       ]
@@ -223,6 +232,7 @@
       "goal_date": "2026-11-30",
       "reason": "FDA and Genentech confirm approval November 13 and Drugs@FDA lists S-044. The sponsor materials reviewed do not turn the November window into a confirmed November 30 goal.",
       "sources": [
+        "https://www.fda.gov/drugs/news-events-human-drugs/fda-approves-first-drug-treat-adults-primary-membranous-nephropathy",
         "https://www.gene.com/media/press-releases/15143/2026-11-15/genentechs-gazyva-becomes-the-first-fda-",
         "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=125486",
         "https://www.pdufa.bio/fda-decision/RHHBY-2026-11-13"
@@ -258,6 +268,7 @@
       "goal_date": "2026-11-30",
       "reason": "Vertex confirms November 30 for the priority accelerated IgA nephropathy BLA. The exact pending BLA number was not established from FDA sources.",
       "sources": [
+        "https://www.sec.gov/Archives/edgar/data/875320/000087532026000291/vrtx-20260930.htm",
         "https://news.vrtx.com/news-releases/news-release-details/vertex-announces-us-fda-acceptance-biologics-license-application",
         "https://www.sec.gov/Archives/edgar/data/875320/000087532026000256/ex-991_q22026.htm",
         "https://www.pdufa.bio/pdufa/VRTX-povetacicept"
@@ -281,6 +292,7 @@
       "goal_date": "2026-12-22",
       "reason": "Mineralys confirms December 22 for the hypertension NDA. The exact pending application number is absent from the acceptance filing.",
       "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000144/mlys-20260930.htm",
         "https://www.sec.gov/Archives/edgar/data/1933414/000193341426000048/mlys-20260306.htm",
         "https://www.globenewswire.com/news-release/2026/11/04/3395833/0/en/mineralys-therapeutics-reports-third-quarter-2026-financial-results-and-provides-corporate-update.html",
         "https://www.pdufa.bio/pdufa/MLYS-lorundrostat"
@@ -293,6 +305,7 @@
       "goal_date": "2026-12-23",
       "reason": "Arcellx filing establishes December 23 for fourth-line or later myeloma; the pending BLA/STN was not located in public filings.",
       "sources": [
+        "https://www.cms.gov/files/document/fall-2025-icd-10-pcs-update-materials.pdf",
         "https://www.sec.gov/Archives/edgar/data/1786205/000119312526076876/aclx-20251231.htm",
         "https://www.gilead.com/news/news-details/2026/gilead-and-kite-advance-leadership-with-new-data-across-pipeline-and-portfolio-at-ash-2026",
         "https://www.pdufa.bio/pdufa/GILD-anito-cel"
@@ -316,6 +329,7 @@
       "goal_date": "2026-12-27",
       "reason": "Praxis documents the major amendment and extension from September 27 to December 27. The pending NDA number is not identified in its reviewed filing.",
       "sources": [
+        "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000089/prax-20260930.htm",
         "https://www.sec.gov/Archives/edgar/data/1689548/000168954826000069/prax-20260629.htm",
         "https://www.pdufa.bio/pdufa/PRAX-relutrigine"
       ]
@@ -349,6 +363,7 @@
       "goal_date": "2026-12-31",
       "reason": "The lupus ALLEGORY application is distinct from the idiopathic and membranous nephropathy supplements. The December 31 calendar value remains a window placeholder without exact target or supplement evidence.",
       "sources": [
+        "https://www.roche.com/media/releases/med-cor-2026-04-21",
         "https://www.pdufa.bio/pdufa/RHHBY-gazyva"
       ]
     },
@@ -359,6 +374,7 @@
       "goal_date": "2026-12-31",
       "reason": "Drugs@FDA records the September 16, 2026 approval of NDA 215341/S-011. The FDA label matches CKD associated with type 1 diabetes. The December 31 calendar date remains unverified as a goal.",
       "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/215341Orig1s011ltr.pdf",
         "https://www.pdufa.bio/ticker/BAYRY",
         "https://www.fda.gov/media/89850/download",
         "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/215341s011lbl.pdf"
@@ -371,10 +387,10 @@
       "goal_date": "2026-12-31",
       "reason": "FDA confirms BLA 761108/S-046 for proteinuria in adult primary IgA nephropathy. Exact goal and amendment history remain unavailable.",
       "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/125166Orig1s455%2C%20761108Orig1s046ltr.pdf",
         "https://www.astrazeneca.com/media-centre/press-releases/2026/ultomiris-granted-priority-review-in-the-us-as-treatment-for-adults-with-immunoglobulin-a-nephropathy.html",
         "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761108",
-        "https://www.pdufa.bio/fda-decision/AZN-2026-10-21",
-        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/125166Orig1s455%2C%20761108Orig1s046ltr.pdf"
+        "https://www.pdufa.bio/fda-decision/AZN-2026-10-21"
       ]
     }
   ],
@@ -1612,6 +1628,23 @@
       ],
       "sources": [
         "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220359Orig1s000RiskR.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-104",
+      "drug": "Camzyos (mavacamten), pediatric oHCM",
+      "application_id": "NDA214998",
+      "goal_date": "2026-09-30",
+      "reason": [
+        "Longer follow-up and precision for uncommon pediatric harms.",
+        "Numerical confidence is not calibrated."
+      ],
+      "sources": [
+        "https://news.bms.com/news/corporate-financial/2026/U-S--Food-and-Drug-Administration-Accepts-for-Priority-Review-Bristol-Myers-Squibbs-Supplemental-New-Drug-Application-for-Camzyos-mavacamten-to-Treat-Adolescents-with-Symptomatic-Obstructive-Hypertrophic-Cardiomyopathy-oHCM/default.aspx",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/214998s013lbl.pdf"
       ],
       "missing_required_fields": [
         "confidence_percent"

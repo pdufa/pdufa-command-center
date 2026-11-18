@@ -1,22 +1,22 @@
 {
-  "as_of": "2026-11-18T19:55:15.320935+00:00",
+  "as_of": "2026-11-18T20:03:10.675218+00:00",
   "complete": false,
   "full_year_denominator": null,
   "provisional_external_count": 196,
-  "goal_worklist_rows": 103,
-  "distinct_verified_events": 70,
+  "goal_worklist_rows": 104,
+  "distinct_verified_events": 71,
   "goal_worklist_unverified_rows": 33,
-  "source_linked_clinical_assessments": 83,
-  "clinical_assessments_of_verified_events": 70,
+  "source_linked_clinical_assessments": 84,
+  "clinical_assessments_of_verified_events": 71,
   "verified_events_with_clinical_evidence_blocker": 0,
   "worklist_rows_without_clinical_assessment": 20,
-  "directional_assessments_of_verified_events": 33,
+  "directional_assessments_of_verified_events": 34,
   "prospective_verified_freezes": 2,
   "prospective_identity_blocked_assessments": 12,
   "fda_application_submission_status_rows": 332,
   "fda_status_rows_without_verified_goal_crosswalk": 306,
   "historical_scoring": {
-    "historical": 68,
+    "historical": 69,
     "future": 2,
     "past_goal_unresolved": 0,
     "correct": 0,
@@ -38,7 +38,7 @@
     "statistical_significance": 37,
     "safety": 20,
     "ticker": 2,
-    "confidence_percent": 103
+    "confidence_percent": 104
   },
   "prediction_archive_review": {
     "legacy_2026_directional_freeze_rows": 194,
@@ -116,14 +116,14 @@
     "2026-06": 10,
     "2026-07": 8,
     "2026-08": 14,
-    "2026-09": 10,
+    "2026-09": 11,
     "2026-10": 6,
     "2026-11": 4,
     "2026-12": 2
   },
   "verified_outcome_counts": {
     "CRL": 7,
-    "APPROVE": 61,
+    "APPROVE": 62,
     "PENDING": 2
   },
   "actionable_blocked_2026_rows": 30,
@@ -132,16 +132,17 @@
     "BLOCKED": 30,
     "NOT_PDUFA": 2
   },
-  "retrospective_verified_assessments": 68,
+  "retrospective_verified_assessments": 69,
   "baseline_snapshot_commit": "238802e66be16934473b2e68ec683c428cddc32d",
   "source_crosswalks": "The parent snapshot retains the baseline FDA submission and CRL inventories. The lead reconciliation ledger records the newer findings.",
-  "verified_events_with_documented_evidence_gaps": 70,
+  "verified_events_with_documented_evidence_gaps": 71,
   "clinical_coverage_definition": "Clinical assessment coverage counts verified rows with a phase entry. Evidence gaps and missing requested fields are tracked in coverage.json and blocker-manifest.json.",
   "additional_verified_cycles": [
     "2026-L1-100",
     "2026-L1-101",
     "2026-L1-102",
-    "2026-L1-103"
+    "2026-L1-103",
+    "2026-L1-104"
   ],
   "additional_discovery_basis": "Screened original NDA/BLA approvals from the Drugs@FDA submission archive for independent review-package goal evidence. Cross-referenced new rows by application identity and preserved the known goal amendment."
 }
