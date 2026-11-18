@@ -112,6 +112,15 @@ class CollectorTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "Invalid ClinicalTrials.gov"):
                     study_evidence("NCT05507203")
 
+    def test_null_design_info_is_not_scored_as_evidence(self):
+        payload = {"protocolSection": {"designModule": {"designInfo": None}}}
+        with patch("scripts.avenue1_pool_evidence_collector.fetch_json", return_value=payload):
+            result = study_evidence("NCT05507203")
+        quality = result["clinical_dimensions"]["evidence_quality"]
+        self.assertIsNone(quality["allocation"])
+        self.assertIsNone(quality["masking"])
+        self.assertEqual(result["ten_category_scoring"], "PENDING_EVIDENCE_REVIEW")
+
     def test_null_registry_arm_and_reference_lists_are_safe(self):
         payload = {"protocolSection": {
             "armsInterventionsModule": {"armGroups": None},
