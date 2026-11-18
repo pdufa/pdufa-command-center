@@ -8,6 +8,19 @@ Level 7 is an **evidence inventory**, not a clinical score or FDA approval predi
 - The report must reconcile against the exact 32 unique NCTs in `new-platform/frontend/data/p3PostDataActive.json`.
 - The report path must be readable by the running Next.js server. Do not expose the SQLite database or report artifact as a public static asset.
 
+## Optional nightly monitor export (development only)
+When the nightly monitor is explicitly invoked with a persistent, writable Level 7 SQLite path, it can also produce the coverage report in the same run:
+
+```bash
+python scripts/focus_nightly_source_monitor.py \
+  --archive /secure/path/archive/monitor-YYYYMMDD.json \
+  --current /secure/path/focus-monitor-current.json \
+  --level7-db /secure/path/level7-evidence.sqlite3 \
+  --level7-coverage-output /secure/path/focus-level7-report.json
+```
+
+The export requires `--level7-db`, does not run by default, and is not a primary-source verification or FDA prediction. The archive path must be new for each run. Do not put the SQLite file or report under a public/static directory. The monitor-derived records are unverified until separately corroborated.
+
 ## Generate and serve
 From repository root:
 
