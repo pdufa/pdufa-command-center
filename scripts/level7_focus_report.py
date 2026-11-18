@@ -35,7 +35,7 @@ def run(db_path: Path, snapshot_path: Path = SNAPSHOT) -> dict:
         ).fetchone()
     if not present:
         raise ValueError("Level 7 evidence table not initialized")
-    result = focus_level7_coverage(EvidenceStore(db_path), members)
+    result = focus_level7_coverage(EvidenceStore(db_path, read_only=True), members)
     result["rosterAsOf"] = snapshot.get("asOf")
     result["source"] = snapshot.get("source")
     return result
