@@ -599,6 +599,19 @@ def router(engine_provider, auth, storage, writes, *, allow_local=False):
         except ValueError as exc:raise HTTPException(409,str(exc)) from None
         tasks.add_task(execute,db,batch)
         return {'batchId':batch,'status':'BOUNDED_BATCH_QUEUED','maximumItems':6}
+    @api.get('/focus/levels456')
+    def focus_levels456_results():
+        from .focus_levels456_batch import summary
+        return summary(engine())
+    @api.post('/focus/levels456/batch',status_code=202,dependencies=[Depends(writes)])
+    def focus_levels456_batch(tasks:BackgroundTasks):
+        from .focus_levels456_batch import create,execute
+        db=engine()
+        try:batch=create(db)
+        except ValueError as exc:raise HTTPException(409,str(exc)) from None
+        tasks.add_task(execute,db,batch)
+        return {'batchId':batch,'status':'BOUNDED_L456_EVIDENCE_BATCH_QUEUED','maximumItems':6,
+                'predictionStatus':'ABSTAIN_NOT_CALIBRATED'}
     @api.post('/runs',status_code=202,dependencies=[Depends(writes)])
     def start(request:RunInput, tasks:BackgroundTasks):
         db=engine();request.checked()

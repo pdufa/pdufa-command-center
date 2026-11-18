@@ -12,8 +12,11 @@ type Trial={nct:string;company:string;ticker:string;pdufaDate:string|null;levels
 type Summary={status:string;total:number|null;fullyProcessed?:number;batchId?:string;counts:Record<string,{processed:number;scored:number;incomplete:number;failed:number}>;trials:Trial[];source:{source_url:string;retrieved_at:string;authority_status:string}|null};
 const endpoint='/api/assessments/runtime';
 export default function FocusSavedAssessments({selectedNct}:{selectedNct?:string}={}){
+ const [extra456,setExtra456]=useState<Summary|null>(null);
  const [data,setData]=useState<Summary|null>(null),[error,setError]=useState(''),[busy,setBusy]=useState(false),[filter,setFilter]=useState(selectedNct||''),[level,setLevel]=useState('ALL'),[message,setMessage]=useState('');
- async function load(signal?:AbortSignal){const body=await readSavedFocus() as Summary;if(!signal?.aborted){setData(body);setError('');}return body;}
+ async function load(signal?:AbortSignal){const body=await readSavedFocus() as Summary;if(!signal?.aborted){setData(body);setError('');}
+  try{const response=await fetch('/api/assessments/runtime?focusLevels456=true',{cache:'no-store',signal});if(!response.ok)throw Error('L4–L6 results unavailable');const extra=await response.json() as Summary;if(!signal?.aborted)setExtra456(extra);}catch{if(!signal?.aborted)setExtra456(null);}
+  return body;}
  useEffect(()=>{setFilter(selectedNct||'');},[selectedNct]);
  useEffect(()=>{
   const controller=new AbortController();
@@ -37,20 +40,28 @@ export default function FocusSavedAssessments({selectedNct}:{selectedNct?:string
    new Set(data.trials.map(t=>t.nct)).size===32&&
    data.trials.every(t=>sourceNcts.has(t.nct)&&[1,2,3].every(l=>
      !!provisionalFocusScore(t.nct,l,t.levels[String(l)]?.report)));
- const chartTrials=liveComplete?data!.trials:FOCUS_CHART_SNAPSHOT_TRIALS;
+ // Match L4–L6 only by exact NCT; never replace verified L1–L3 snapshot evidence.
+ const extraByNct=new Map((extra456?.trials||[]).map(t=>[t.nct,t]));
+ const chartTrials=(liveComplete?data!.trials:FOCUS_CHART_SNAPSHOT_TRIALS).map(t=>{
+  const extra=extraByNct.get(t.nct);
+  const additional=Object.fromEntries([4,5,6].filter(l=>extra?.levels?.[String(l)]).map(l=>[String(l),extra!.levels[String(l)]]));
+  return {...t,levels:{...t.levels,...additional}};
+ });
  const chartTotal=chartTrials.length;
- return <section aria-label="Saved FOCUS Level 1–3 assessments" style={{border:'1px solid #b9cebe',borderRadius:8,padding:14,margin:'16px 0',overflowWrap:'anywhere',minWidth:0}}>
+ const level456Counts=[4,5,6].map(l=>({level:l,count:chartTrials.filter(t=>{const r=t.levels[String(l)]?.report;return r?.nct===t.nct&&r?.level===l&&r?.mode==='CURRENT_EVIDENCE'&&r?.score?.kind==='LEVEL_SPECIFIC_EVIDENCE_COVERAGE'&&typeof r.score.value==='number';}).length}));
+ return <section aria-label="Saved FOCUS Level 1–6 assessments" style={{border:'1px solid #b9cebe',borderRadius:8,padding:14,margin:'16px 0',overflowWrap:'anywhere',minWidth:0}}>
   <h2>Saved FOCUS trial surveys · Levels 1–3</h2>
   <p>Both FOCUS and ASSESSMENTS read these same versioned database records. An executed assessment with evidence gaps is not a validated numerical score. Predictions without a validated model remain ABSTAIN.</p>
   <div id="focus-chart-quick-view" data-testid="focus-chart-immediate-panel"
     style={{margin:'12px 0 20px',padding:'10px 12px',border:'2px solid #7baf99',borderRadius:10,scrollMarginTop:104}}>
-   <h3 style={{margin:'0 0 5px'}}>FOCUS chart · Levels 1–3 + Overall + FDA direction</h3>
+   <h3 style={{margin:'0 0 5px'}}>FOCUS chart · Levels 1–6 + FDA direction</h3>
    <p role="status" style={{fontSize:13,margin:'4px 0 10px'}}>
     {liveComplete?'Latest authenticated reports: all 32 FOCUS trials reconciled.':
       'Visible source-checked snapshot dated '+FOCUS_CHART_SNAPSHOT_DATE+
       '. This snapshot remains visible when authenticated saved assessments are loading or unavailable; newer reports may differ.'}
     {' '}All numeric scores show provisional documentation readiness, not FDA approval likelihood.
    </p>
+   <p role="status" style={{fontSize:13}}>L4–L6 saved numeric report coverage: {level456Counts.map(x=>'L'+x.level+' '+x.count+'/'+chartTotal).join(' · ')}. {level456Counts.some(x=>x.count<2)?'A dashed trend line requires at least two saved numeric reports at that level. Missing levels are not fabricated.':''}</p>
    <FocusSurveyTrendChart trials={chartTrials} total={chartTotal} selectedNct={selectedNct}/>
   </div>
   {error&&<p role="alert">{error}</p>}{message&&<p role="status">{message}</p>}
