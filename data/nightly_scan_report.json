@@ -1,14 +1,14 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-17T04:24:04.077641+00:00",
-  "latest_run_id": 44015887085,
-  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/44015887085",
-  "latest_run_started_at_utc": "2026-11-17T04:15:17Z",
+  "updated_at_utc": "2026-11-18T03:59:15.257420+00:00",
+  "latest_run_id": 44233285968,
+  "latest_run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/44233285968",
+  "latest_run_started_at_utc": "2026-11-18T03:51:14Z",
   "latest_run_conclusion": null,
   "scope": "CLINICAL_POOL_PIPELINE_AND_PHASE3_RESULTS_COLLECTORS_ONLY",
   "status": "PARTIAL",
   "verification": {
-    "checked_at_utc": "2026-11-17T04:24:04.077657+00:00",
+    "checked_at_utc": "2026-11-18T03:59:15.257443+00:00",
     "artifact_integrity": "PASS",
     "all_source_coverage": "NOT_VERIFIED",
     "description": "Archived clinical reports checked against source-state JSON; no independent FDA/SEC/issuer/market verification."
@@ -19,92 +19,76 @@
       "label": "PIPELINE \u2014 trial inventory",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 44015887085,
+      "run_id": 44233285968,
       "new_records": null,
-      "changed_trials_this_execution": 35,
+      "changed_trials_this_execution": 55,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_checked": 717,
         "companies_due": 717,
-        "tracked_trials_checked": 11664,
-        "tracked_trials_total": 11664,
+        "tracked_trials_checked": 11670,
+        "tracked_trials_total": 11670,
         "registry_companies": 717,
         "companies_with_warnings": 0,
         "tracked_trials_with_warnings": 0
       },
       "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-11-17T04:19:43.643673+00:00",
+      "collected_at_utc": "2026-11-18T03:55:30.202256+00:00",
       "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/44015887085"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/44233285968"
     },
     {
       "scan": "3",
       "label": "PIPELINE \u2014 clinical enrichment",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 44015887085,
+      "run_id": 44233285968,
       "new_records": null,
       "changed_trials_this_execution": null,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_due": 717,
-        "studies_checked": 15550,
-        "matched_trials": 3729,
+        "studies_checked": 15571,
+        "matched_trials": 3733,
         "registry_companies": 717,
         "market_cap_source_unavailable": 4
       },
       "collector_status": "COMPLETE WITH WARNINGS",
-      "collected_at_utc": "2026-11-17T04:22:47.489602+00:00",
+      "collected_at_utc": "2026-11-18T03:58:25.839537+00:00",
       "new_record_details": [],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/44015887085"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/44233285968"
     },
     {
       "scan": "4",
       "label": "FOCUS \u2014 published Phase 3 results",
       "status": "PARTIAL",
       "artifact_integrity": "PASS",
-      "run_id": 44015887085,
-      "new_records": 3,
+      "run_id": 44233285968,
+      "new_records": 1,
       "changed_trials_this_execution": null,
       "errors_count": 0,
       "issues": [],
       "metrics": {
         "companies_due": 717,
-        "studies_checked": 3994,
-        "matched_posted_results": 100,
+        "studies_checked": 4011,
+        "matched_posted_results": 99,
         "registry_companies": 717
       },
       "collector_status": "COMPLETE",
-      "collected_at_utc": "2026-11-17T04:23:30.591351+00:00",
+      "collected_at_utc": "2026-11-18T03:58:52.962005+00:00",
       "new_record_details": [
         {
-          "ticker": "NVO",
-          "drug": "Liraglutide | Placebo",
-          "nct_id": "NCT04775082",
-          "results_posted_at": "2026-11-16",
-          "source_url": "https://clinicaltrials.gov/study/NCT04775082",
+          "ticker": "REGN",
+          "drug": "Garetosmab | Placebo",
+          "nct_id": "NCT05394116",
+          "results_posted_at": "2026-11-17",
+          "source_url": "https://clinicaltrials.gov/study/NCT05394116",
           "verification_status": "DRUG_IDENTITY_REVIEW"
-        },
-        {
-          "ticker": "NVO",
-          "drug": "Dasiglucagon | Glucagon",
-          "nct_id": "NCT06588504",
-          "results_posted_at": "2026-11-16",
-          "source_url": "https://clinicaltrials.gov/study/NCT06588504",
-          "verification_status": "DRUG_IDENTITY_REVIEW"
-        },
-        {
-          "ticker": "AZN",
-          "drug": "Olaparib 300mg tablets",
-          "nct_id": "NCT03534453",
-          "results_posted_at": "2026-11-16",
-          "source_url": "https://clinicaltrials.gov/study/NCT03534453",
-          "verification_status": "REGISTERED_RESULTS_POSTED"
         }
       ],
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/44015887085"
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/44233285968"
     }
   ],
   "metrics": {
@@ -121,6 +105,16 @@
     "issuer/program identity and complete source coverage audit"
   ],
   "history": [
+    {
+      "run_id": 44233285968,
+      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/44233285968",
+      "started_at_utc": "2026-11-18T03:51:14Z",
+      "run_conclusion": null,
+      "status": "PARTIAL",
+      "new_records": null,
+      "changed_trials": null,
+      "errors": 0
+    },
     {
       "run_id": 44015887085,
       "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/44015887085",
@@ -405,16 +399,6 @@
       "run_id": 39538520869,
       "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39538520869",
       "started_at_utc": "2026-10-21T03:25:49Z",
-      "run_conclusion": null,
-      "status": "PARTIAL",
-      "new_records": null,
-      "changed_trials": null,
-      "errors": 0
-    },
-    {
-      "run_id": 39369399911,
-      "run_url": "https://github.com/pdufa/pdufa-command-center/actions/runs/39369399911",
-      "started_at_utc": "2026-10-20T04:24:25Z",
       "run_conclusion": null,
       "status": "PARTIAL",
       "new_records": null,
