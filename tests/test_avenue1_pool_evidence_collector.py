@@ -73,6 +73,32 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(result["clinical_dimensions"]["statistical_reliability"], [])
 
 
+    def test_collection_partial_failure_does_not_claim_completion(self):
+        from scripts.avenue1_pool_evidence_collector import main
+        snapshot = {
+            "asOf": "2026-11-17",
+            "sourceHealth": {"state": "FRESH", "clinicalRows": 2,
+                "regulatoryRows": 0, "pipelineSourceParity": {"exactPrograms": 2}},
+            "pipeline": [{"id": "TRIAL|NCT05507203"}, {"id": "TRIAL|NCT05507216"}],
+        }
+        def fake_fetch(url):
+            if url.endswith("NCT05507216"):
+                raise RuntimeError("simulated source failure")
+            return {"protocolSection": {"outcomesModule": {"primaryOutcomes": [{"measure": "Response"}]}}}
+        with tempfile.TemporaryDirectory() as directory:
+            with patch("scripts.avenue1_pool_evidence_collector.pool_records", return_value=snapshot), \
+                 patch("scripts.avenue1_pool_evidence_collector.fetch_json", side_effect=fake_fetch), \
+                 patch("scripts.avenue1_pool_evidence_collector.time.sleep"), \
+                 patch.object(sys, "argv", ["collector", "--output-dir", directory]):
+                self.assertEqual(main(), 2)
+            status = json.loads((Path(directory) / "collection-status.json").read_text())
+            self.assertEqual(status["attempted"], 2)
+            self.assertEqual(status["collected"], 1)
+            self.assertEqual(status["error_count"], 1)
+            self.assertEqual(status["coverage_percent"], 50.0)
+            self.assertTrue(status["full_pool_run"])
+            self.assertFalse(status["full_pool_collection_complete"])
+
     def test_collection_coverage_and_missing_fields_are_reported(self):
         from scripts.avenue1_pool_evidence_collector import main
         snapshot = {
