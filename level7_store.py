@@ -7,11 +7,19 @@ from pathlib import Path
 from level7_evidence import EvidenceRecord
 
 class EvidenceStore:
-    def __init__(self, path: str | Path):
+    def __init__(self, path: str | Path, *, read_only: bool = False):
         self.path = str(path)
+        self.read_only = read_only
+
+    def _connect(self):
+        if self.read_only:
+            return sqlite3.connect(Path(self.path).resolve().as_uri() + '?mode=ro', uri=True)
+        return sqlite3.connect(self.path)
 
     def initialize(self):
-        with sqlite3.connect(self.path) as db:
+        if self.read_only:
+            raise PermissionError('Read-only evidence store cannot be initialized')
+        with self._connect() as db:
             db.execute('''CREATE TABLE IF NOT EXISTS level7_evidence (
                 trial_id TEXT NOT NULL, source_id TEXT NOT NULL,
                 source_version TEXT NOT NULL, record_json TEXT NOT NULL,
