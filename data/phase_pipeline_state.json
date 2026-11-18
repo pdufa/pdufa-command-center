@@ -1,5 +1,5 @@
 {
-  "started_at": "2026-11-18T03:55:38.931740+00:00",
+  "started_at": "2026-11-18T04:16:19.536018+00:00",
   "status": "COMPLETE WITH WARNINGS",
   "registry_companies": 717,
   "scope": "Industry Phase 2/3 records updated since 2024-11-18",
@@ -9,37 +9,11 @@
   "pages_scanned": 16,
   "complete": true,
   "errors": [],
-  "new_master_programs": [
-    {
-      "ticker": "LRMR",
-      "drug": "Nomlabofusp",
-      "nct_id": "NCT07778836"
-    },
-    {
-      "ticker": "SMMT",
-      "drug": "AK112 Injection",
-      "nct_id": "NCT06396065"
-    },
-    {
-      "ticker": "SMMT",
-      "drug": "Drug: Ivonescimab Injection",
-      "nct_id": "NCT07228832"
-    },
-    {
-      "ticker": "SMMT",
-      "drug": "Ivonescimab Injection",
-      "nct_id": "NCT05899608"
-    },
-    {
-      "ticker": "SMMT",
-      "drug": "Ridinilazole",
-      "nct_id": "NCT03595553"
-    }
-  ],
-  "finished_at": "2026-11-18T03:58:25.720131+00:00",
+  "new_master_programs": [],
+  "finished_at": "2026-11-18T04:19:17.255549+00:00",
   "stored_trials": 7444,
-  "phase2_programs": 1020,
-  "master_programs": 140,
+  "phase2_programs": 1025,
+  "master_programs": 142,
   "review_trials": 3119,
   "market_cap_verified_tickers": 416,
   "market_cap_listing_excluded_tickers": 1,
