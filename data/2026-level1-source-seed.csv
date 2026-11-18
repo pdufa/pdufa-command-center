@@ -1,0 +1,6 @@
+application_id,review_cycle,indication,pdufa_date,prediction,prediction_frozen_at,evidence_cutoff_at,actual_outcome,outcome_published_at,source_url
+BLA761524,1,EGFR-mutated advanced NSCLC,2026-11-14,,,,CRL,2026-11-13T00:00:00Z,https://www.pdufa.bio/crl/2026/november
+NDA219083,S-002,Hypertrophic cardiomyopathy,2026-11-14,,,,APPROVAL,2026-11-13T00:00:00Z,https://www.pdufa.bio/fda-approval-letters
+NDA215390,S-003,Agitation associated with bipolar disorder,2026-11-14,,,,APPROVAL,2026-11-13T00:00:00Z,https://www.pdufa.bio/fda-approval-letters
+BLA125486,S-044,Primary membranous nephropathy,2026-11-13,,,,APPROVAL,2026-11-13T00:00:00Z,https://www.pdufa.bio/fda-approval-letters
+BLA761108,S-046,IgA nephropathy,2026-10-21,,,,APPROVAL,2026-10-21T00:00:00Z,https://www.pdufa.bio/fda-approval-letters
