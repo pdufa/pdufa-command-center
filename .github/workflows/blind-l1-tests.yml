@@ -18,6 +18,6 @@ jobs:
         with:
           python-version: '3.11'
       - name: Run blind backtest tests
-        run: python -m unittest discover -s scripts -p 'test_blind_l1_2026_backtest.py' -v
+        run: python -m unittest discover -s scripts -p 'test_*2026*.py' -v
       - name: Compile scripts
         run: python -m py_compile scripts/blind_l1_2026_backtest.py scripts/reconcile_2026_pdufa_ledger.py
