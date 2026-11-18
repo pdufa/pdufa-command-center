@@ -41,11 +41,19 @@ def study_evidence(nct):
     study = fetch_json("https://clinicaltrials.gov/api/v2/studies/" + nct)
     protocol = study.get("protocolSection") or {}
     results = study.get("resultsSection") or {}
-    outcomes = results.get("outcomeMeasuresModule") or {}\n    measures = outcomes.get("outcomeMeasures") or []\n    if not isinstance(measures, list) or any(not isinstance(m, dict) for m in measures):\n        raise ValueError("Invalid ClinicalTrials.gov outcome measure schema")
-    for measure in measures:\n        analyses = measure.get("analyses") or []\n        if not isinstance(analyses, list) or any(not isinstance(a, dict) for a in analyses):\n            raise ValueError("Invalid ClinicalTrials.gov outcome analysis schema")\n    arms = (protocol.get("armsInterventionsModule") or {}).get("armGroups") or []
+    outcomes = results.get("outcomeMeasuresModule") or {}
+    measures = outcomes.get("outcomeMeasures") or []
+    if not isinstance(measures, list) or any(not isinstance(m, dict) for m in measures):
+        raise ValueError("Invalid ClinicalTrials.gov outcome measure schema")
+    for measure in measures:
+        analyses = measure.get("analyses") or []
+        if not isinstance(analyses, list) or any(not isinstance(a, dict) for a in analyses):
+            raise ValueError("Invalid ClinicalTrials.gov outcome analysis schema")
+    arms = (protocol.get("armsInterventionsModule") or {}).get("armGroups") or []
     references = (protocol.get("referencesModule") or {}).get("references") or []
     baseline = (results.get("baselineCharacteristicsModule") or {})
-    # Null registry collections are treated as absent, not as clinical evidence.\n    # Raw results are preserved for review; no efficacy claim is inferred.
+    # Null registry collections are treated as absent, not as clinical evidence.
+    # Raw results are preserved for review; no efficacy claim is inferred.
     clinical_dimensions = {
         "primary_endpoint": (protocol.get("outcomesModule") or {}).get("primaryOutcomes", []),
         "effect_magnitude": measures,
@@ -158,7 +166,8 @@ def main():
                     else:
                         missing.append(name)
                 missing_by_trial.append({"nct": nct, "missing_dimensions": missing})
-                f.write(json.dumps(evidence) + "\n")
+                f.write(json.dumps(evidence) + "
+")
                 done += 1
             except Exception as exc:
                 errors.append({"nct": nct, "error_type": type(exc).__name__})
