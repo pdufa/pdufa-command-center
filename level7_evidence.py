@@ -35,6 +35,8 @@ def make_record(*, trial_id: str, source_id: str, source_url: str,
                 retrieved_at: str | None = None, notes: str = "") -> EvidenceRecord:
     if not trial_id.strip() or not source_id.strip() or not source_version.strip():
         raise ValueError("Trial, source, and version identifiers are required")
+    if status not in ("verified", "unverified", "missing", "inaccessible", "conflicting"):
+        raise ValueError("Unknown evidence status")
     if status == "verified" and (content is None or not source_url or not publisher):
         raise ValueError("Verified evidence requires content, source URL and publisher")
     if status in ("missing", "inaccessible") and content is not None:
