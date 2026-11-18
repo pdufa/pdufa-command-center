@@ -17,7 +17,9 @@ type Datum={trial:SurveyChartTrial;value:number|null;at:string|null};
 const LEVELS=[{number:1,name:'L1 · Trial identity',color:'#186c9b'},
  {number:2,name:'L2 · Study design',color:'#9651a6'},
  {number:3,name:'L3 · Efficacy & statistics',color:'#b46122'},
- {number:4,name:'Overall · evidence readiness',color:'#257d54'}] as const;
+ {number:4,name:'L4 · Evidence coverage',color:'#257d54'},
+ {number:5,name:'L5 · Evidence coverage',color:'#c23c68'},
+ {number:6,name:'L6 · Evidence coverage',color:'#6b6e17'}] as const;
 const unresolvedStates=new Set(['MISSING','UNVERIFIED','CONCERNS','NOT_ASSESSED','BLOCKED_UNVERIFIED_PHASE']);
 const maxTrialCount=500;
 const validNct=(nct:string)=>/^NCT[0-9]{8}$/.test(nct);
@@ -42,6 +44,12 @@ export function focusSurveyDatum(trial:SurveyChartTrial,level:number,metric:Metr
  }
  const snap=provisionalFocusScore(trial.nct,level,report);
  if(snap)return {trial,value:snap.evidenceReadinessScore,at:report.executedAt};
+ // L4–L6 only expose their own saved, numeric evidence-coverage results.
+ // Never synthesize missing scores from L1–L3 or treat them as FDA probabilities.
+ if(level>=4&&level<=6&&report.score?.kind==='LEVEL_SPECIFIC_EVIDENCE_COVERAGE'&&
+    typeof report.score.value==='number'&&Number.isFinite(report.score.value)&&
+    report.score.value>=0&&report.score.value<=100)
+  return {trial,value:report.score.value,at:report.executedAt};
  // Older or mismatched report versions cannot borrow scores from the snapshot.
  // When the backend supplies raw checks but no matching run, leave the score
  // absent rather than silently substituting a different percentage method.
@@ -74,14 +82,14 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
  trials:SurveyChartTrial[];total:number|null;selectedNct?:string;
 }){
  const [metric,setMetric]=useState<Metric>('VERIFIED_PERCENT');
- const [visible,setVisible]=useState<Record<number,boolean>>({1:true,2:true,3:true,4:true});
+ const [visible,setVisible]=useState<Record<number,boolean>>({1:true,2:true,3:true,4:true,5:true,6:true});
  const [showDirection,setShowDirection]=useState(true);
  const [showTrend,setShowTrend]=useState(true);
  const ordered=useMemo(()=>[...trials].sort((a,b)=>a.ticker.localeCompare(b.ticker)||a.nct.localeCompare(b.nct)),[trials]);
  const ids=new Set(ordered.map(t=>t.nct));
  const reconciled=total!==null&&total>0&&total<=maxTrialCount&&ordered.length===total&&
    ids.size===total&&ordered.every(t=>validNct(t.nct)&&t.ticker&&t.levels&&[1,2,3].every(level=>!!t.levels[String(level)]));
- const allSeries=LEVELS.map(level=>({level,values:reconciled?ordered.map(t=>level.number===4?focusSurveyOverallDatum(t,metric):focusSurveyDatum(t,level.number,metric)):[]}));
+ const allSeries=LEVELS.map(level=>({level,values:reconciled?ordered.map(t=>focusSurveyDatum(t,level.number,metric)):[]}));
  const validSeries=allSeries.map(s=>({...s,points:s.values.flatMap((d,i)=>d.value===null?[]:[{x:i,y:d.value}])}));
  const sourceMetricAvailable=ordered.some(t=>[1,2,3].some(l=>focusSurveyDatum(t,l,'VERIFIED_PERCENT').value!==null));
  const observed=validSeries.flatMap(s=>s.points.map(p=>p.y));
@@ -91,12 +99,11 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
  const yAt=(value:number)=>bottom-(Math.min(ceiling,Math.max(0,value))/ceiling)*(bottom-top);
  const textValue=(n:number)=>metric==='VERIFIED_PERCENT'?n.toFixed(1)+'%':String(n);
  const activeSeries=validSeries.filter(s=>visible[s.level.number]);
- return <section id="focus-survey-trend-chart" aria-label="FOCUS L1–L3 plus overall evidence readiness and FDA direction on one chart"
+ return <section id="focus-survey-trend-chart" aria-label="FOCUS L1–L6 independent evidence surveys and FDA direction on one chart"
    style={{border:'1px solid #c1d5cc',borderRadius:10,padding:'14px 12px',margin:'18px 0'}}>
-  <h3 style={{margin:'0 0 6px'}}>FOCUS · L1–L3, overall evidence score and FDA direction</h3>
+  <h3 style={{margin:'0 0 6px'}}>FOCUS · L1–L6 independent evidence scores and FDA direction</h3>
   <p style={{margin:'0 0 12px',fontSize:13}}>
-   Four individually selectable solid lines show L1, L2, L3 and the pooled <strong>overall
-   provisional source-evidence-readiness score</strong>; dashed lines are independent
+   Six individually selectable solid lines show L1–L6 source evidence coverage when saved reports exist; dashed lines are independent
    least-squares cross-trial fits, not time trends. The fifth series is the categorical
    FDA direction (ABSTAIN when no validated prediction exists), shown below the numeric
    graph without mapping it to zero or an approval percentage. These are not validated efficacy scores
@@ -107,7 +114,7 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
     <select aria-label="Survey chart metric" value={metric}
       onChange={e=>setMetric(e.target.value as Metric)}>
      <option value="UNRESOLVED">Unresolved source criteria · count</option>
-     <option value="VERIFIED_PERCENT" disabled={!sourceMetricAvailable}>L01–L03 provisional evidence-readiness scores · %</option>
+     <option value="VERIFIED_PERCENT" disabled={!sourceMetricAvailable}>L1–L6 saved evidence-coverage scores · %</option>
     </select>
    </label>
    {LEVELS.map(l=><label key={l.number} style={{fontWeight:650,display:'inline-flex',alignItems:'center',gap:5}}>
@@ -133,10 +140,10 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
      Y axis: {metric==='UNRESOLVED'?'number of unresolved evidence criteria':'provisional source-verified / applicable criterion percentage'}.
     </p>
     <div style={{overflowX:'auto',maxWidth:'100%'}}>
-     <svg role="img" aria-label="Four provisional evidence numeric series with individual best-fit lines, plus a separate categorical FDA prediction direction lane"
+     <svg role="img" aria-label="Six independent evidence numeric series with individual best-fit lines, plus a separate categorical FDA prediction direction lane"
       viewBox={'0 0 '+width+' '+height} width={width} height={height} style={{display:'block',background:'#fbfdfc',borderRadius:8}}>
-      <title>L1–L3 and overall provisional evidence scores, with categorical FDA direction</title>
-      <desc>Four independent scored evidence series and fits, plus categorical FDA direction. The latter is ABSTAIN rather than a numeric approval probability. Trial order is alphabetical, not time.</desc>
+      <title>L1–L6 saved evidence scores, with categorical FDA direction</title>
+      <desc>Six independent evidence series and fits where reports exist, plus categorical FDA direction. The latter is ABSTAIN rather than a numeric approval probability. Trial order is alphabetical, not time.</desc>
       {[0,1,2,3,4].map(i=>{
        const value=ceiling*i/4;
        return <g key={i}>
@@ -239,7 +246,7 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
     </div>
     <p style={{fontSize:12,margin:'9px 0 0',color:'#465d60'}}>
      {metric==='UNRESOLVED'?'Lower counts represent fewer unresolved documentary criteria, not FDA outcomes.':
-      'Overall is pooled SOURCE_VERIFIED / applicable checks from all three saved levels; NOT_YET_EXPECTED is excluded. No approval probability is computed.'}
+      'L1–L3 provisional readiness and L4–L6 level-specific evidence coverage are separate methods. No approval probability is computed.'}
      {' '}Missing reports remain gaps; an absent survey is never assigned a zero.
      Chronological improvement requires multiple dated assessment versions for the same trials.
     </p>
