@@ -1,0 +1,9 @@
+source,source_record_id,ticker,drug,indication,decision_date,application_id,source_url,source_status,source_retrieved_at
+pdufa.bio,2026-11-17-GSK,GSK,Neladalkib,ALK-positive NSCLC,2026-11-17,,https://www.pdufa.bio/fda-this-month,decided,2026-11-17
+pdufa.bio,2026-11-16-CYTK,CYTK,Aficamten,Obstructive hypertrophic cardiomyopathy,2026-11-16,,https://www.pdufa.bio/fda-this-month,decided,2026-11-17
+pdufa.bio,2026-11-16-TEVA,TEVA,IGALMI,At-home agitation in bipolar disorder or schizophrenia,2026-11-16,,https://www.pdufa.bio/fda-this-month,decided,2026-11-17
+pdufa.bio,2026-11-16-RHHBY,RHHBY,Giredestrant plus everolimus,ESR1-mutated metastatic breast cancer,2026-11-16,,https://www.pdufa.bio/fda-this-month,decided,2026-11-17
+pdufa.bio,2026-11-13-SMMT,SMMT,Ivonescimab,Not yet independently verified,2026-11-13,,https://www.pdufa.bio/fda-this-month,decided,2026-11-17
+pdufa.bio,2026-11-13-RHHBY,RHHBY,Gazyva,Primary membranous nephropathy,2026-11-13,,https://www.pdufa.bio/fda-this-month,decided,2026-11-17
+pdufa.bio,2026-11-10-MKKGY,MKKGY,Pimicotinib,Tenosynovial giant cell tumor,2026-11-10,,https://www.pdufa.bio/fda-this-month,decided,2026-11-17
+pdufa.bio,2026-11-09-BAYRY,BAYRY,Asundexian,Secondary stroke prevention,2026-11-09,,https://www.pdufa.bio/fda-this-month,decided,2026-11-17
