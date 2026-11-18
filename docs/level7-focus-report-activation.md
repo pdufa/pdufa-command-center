@@ -2,6 +2,17 @@
 
 Level 7 is an **evidence inventory**, not a clinical score or FDA approval prediction.
 
+## Read-only activation preflight
+
+Before generating or serving a report, inspect the actual evidence store:
+
+```bash
+python scripts/level7_activation_preflight.py --db /secure/path/level7-evidence.sqlite3
+python scripts/level7_activation_preflight.py --db /secure/path/level7-evidence.sqlite3 --report /secure/path/focus-level7-report.json
+```
+
+The preflight never creates or changes the database or report. It distinguishes a missing database, invalid schema, unavailable evidence report, and a report that matches the current 32-member roster and stored evidence. An initialized but empty store can be ready to generate a **coverage-only** report with zero evidence; this is **not** an operational scientific assessment. A matching local file also does not prove the hosted frontend can read it.
+
 ## Requirements
 - A real SQLite evidence store initialized using `level7_store.EvidenceStore`.
 - Records must be sourced and persisted through the verified Level 7 ingestion pipeline; the packaged FOCUS roster is **not evidence**.
