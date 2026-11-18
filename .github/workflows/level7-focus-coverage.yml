@@ -1,0 +1,23 @@
+name: Level 7 FOCUS evidence coverage checks
+on:
+  pull_request:
+    paths:
+      - 'level7_*.py'
+      - 'scripts/level7_focus_report.py'
+      - 'tests/test_level7_*.py'
+      - '.github/workflows/level7-focus-coverage.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  level7-focus:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Run Level 7 storage and FOCUS coverage regressions
+        run: python -m unittest discover -s tests -p 'test_level7_*.py' -v
+      - name: Validate packaged FOCUS roster alignment
+        run: python scripts/check_focus_snapshot_alignment.py
