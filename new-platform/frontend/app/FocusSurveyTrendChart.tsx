@@ -219,7 +219,8 @@ export default function FocusSurveyTrendChart({trials,total,selectedNct}:{
       style={{borderCollapse:'collapse',minWidth:1050,width:'100%',fontSize:12}}>
       <thead><tr>
        <th scope="col">Trial</th><th scope="col">L1 evidence /100</th>
-       <th scope="col">L2 evidence /100</th><th scope="col">L3 evidence /100</th>\n       <th scope="col">L4 evidence /100</th><th scope="col">L5 evidence /100</th><th scope="col">L6 evidence /100</th>
+       <th scope="col">L2 evidence /100</th><th scope="col">L3 evidence /100</th>
+       <th scope="col">L4 evidence /100</th><th scope="col">L5 evidence /100</th><th scope="col">L6 evidence /100</th>
        <th scope="col">Overall evidence /100</th><th scope="col">FDA direction</th>
        <th scope="col">FDA approval probability</th>
       </tr></thead>
