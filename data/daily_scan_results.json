@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "updated_at_utc": "2026-11-18T04:14:22.612321+00:00",
+  "updated_at_utc": "2026-11-18T04:14:50.271994+00:00",
   "days": [
     {
       "date_pacific": "2026-11-17",
@@ -11,7 +11,7 @@
       "scheduled_8pm_pacific_utc": "2026-11-18T04:00:00+00:00",
       "start_delay_minutes": -9,
       "scan_night_source": "ACTUAL_START_DATE_FALLBACK",
-      "registered_at_utc": "2026-11-18T04:14:22.611427+00:00",
+      "registered_at_utc": "2026-11-18T04:14:50.271131+00:00",
       "sections": {
         "master": {
           "previous": null,
