@@ -2,9 +2,9 @@
   "schema_version": 1,
   "scope": "PDUFA_ONLY_EXCLUDING_INBOX_TRASH_SPAM",
   "status": "CHECKED",
-  "checked_at_utc": "2026-11-06T05:05:11.672813+00:00",
-  "total_count": 3756,
-  "unread_count": 3751,
+  "checked_at_utc": "2026-11-18T04:15:19.884473+00:00",
+  "total_count": 8071,
+  "unread_count": 8066,
   "excluded_labels": [
     "INBOX",
     "TRASH",
