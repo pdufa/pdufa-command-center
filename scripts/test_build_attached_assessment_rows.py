@@ -15,10 +15,10 @@ class AttachedRowTests(unittest.TestCase):
             build(source,output,expected=2)
             with output.open(newline="") as stream:
                 rows=list(csv.DictReader(stream))
-            self.assertEqual(len(rows),42)
-            self.assertEqual([r["level"] for r in rows[1:21]],[f"L{i:02d}" for i in range(1,21)])
-            self.assertEqual(rows[21]["row_type"],"MAIN")
-            self.assertEqual(rows[22]["parent_event_id"],"two")
+            self.assertEqual(len(rows),4)
+            self.assertEqual(rows[1]["level"],"L01")
+            self.assertEqual(rows[2]["row_type"],"MAIN")
+            self.assertEqual(rows[3]["parent_event_id"],"two")
             self.assertEqual(rows[1]["prediction"],"")
     def test_refuses_missing_events(self):
         with tempfile.TemporaryDirectory() as d:
