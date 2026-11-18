@@ -10,12 +10,14 @@
 
 ## Giredestrant + everolimus (Wilserdly)
 - FDA reports approval on **2026-11-16**, **four weeks before the FDA goal date**.
-- Source: https://www.fda.gov/drugs/cancer-approvals/fda-approves-giredestrant-combination-everolimus-er-positive-her2-negative-esr1-mutated-locally
-- Status: **FDA_ACTION_CONFIRMED_PDUFA_DATE_NOT_EXACTLY_VERIFIED**. Do not use 2026-11-16 as PDUFA date or infer an exact calendar day from 'four weeks'.
+- Sources:
+  - https://www.fda.gov/drugs/cancer-approvals/fda-approves-giredestrant-combination-everolimus-er-positive-her2-negative-esr1-mutated-locally
+  - https://www.gene.com/media/press-releases/15132/2026-09-30/genentechs-giredestrant-combination-sign
+- Status: **FDA_ACTION_CONFIRMED_PDUFA_DATE_VERIFIED_FROM_SPONSOR**. The FDA action date was 2026-11-16, while Genentech's September 30, 2026 press release explicitly gives a **2026-12-18** PDUFA goal date for the evERA advanced-disease application. This is separate from the **2026-11-30** goal date for the lidERA early-stage application. Do not conflate these distinct applications.
 - FDA confirms evERA Breast Cancer NCT05306340: ESR1-mutant subgroup HR 0.38 (95% CI 0.27–0.54); median PFS 10 vs 5.5 months; OS immature. Safety signals include stomatitis, pneumonitis and bradycardia warning.
 - Existing Level 1 assessment remains retrospective, not blind.
 
 ## Dataset handling
 - Keep source-specific dates alongside their URLs until conflict is resolved.
 - Never count novel-drug approval entries as complete PDUFA events.
-- Do not mark either record as eligible for a validated historical blind-accuracy denominator based on these sources alone.
+- Do not mark either record as eligible for a validated historical blind-accuracy denominator based on these sources alone. A verified goal date is not a frozen pre-outcome prediction.
