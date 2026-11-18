@@ -47,8 +47,8 @@ export default function FocusSavedAssessments({selectedNct}:{selectedNct?:string
   const additional=Object.fromEntries([4,5,6].filter(l=>extra?.levels?.[String(l)]).map(l=>[String(l),extra!.levels[String(l)]]));
   return {...t,levels:{...t.levels,...additional}};
  });
- const chartTotal=chartTrials.length;
- return <section aria-label="Saved FOCUS Level 1–3 assessments" style={{border:'1px solid #b9cebe',borderRadius:8,padding:14,margin:'16px 0',overflowWrap:'anywhere',minWidth:0}}>
+ const chartTotal=chartTrials.length;\n const level456Counts=[4,5,6].map(l=>({level:l,count:chartTrials.filter(t=>{const r=t.levels[String(l)]?.report;return r?.nct===t.nct&&r?.level===l&&r?.mode==='CURRENT_EVIDENCE'&&r?.score?.kind==='LEVEL_SPECIFIC_EVIDENCE_COVERAGE'&&typeof r.score.value==='number';}).length}));
+ return <section aria-label="Saved FOCUS Level 1–6 assessments" style={{border:'1px solid #b9cebe',borderRadius:8,padding:14,margin:'16px 0',overflowWrap:'anywhere',minWidth:0}}>
   <h2>Saved FOCUS trial surveys · Levels 1–3</h2>
   <p>Both FOCUS and ASSESSMENTS read these same versioned database records. An executed assessment with evidence gaps is not a validated numerical score. Predictions without a validated model remain ABSTAIN.</p>
   <div id="focus-chart-quick-view" data-testid="focus-chart-immediate-panel"
@@ -60,7 +60,7 @@ export default function FocusSavedAssessments({selectedNct}:{selectedNct?:string
       '. This snapshot remains visible when authenticated saved assessments are loading or unavailable; newer reports may differ.'}
     {' '}All numeric scores show provisional documentation readiness, not FDA approval likelihood.
    </p>
-   <FocusSurveyTrendChart trials={chartTrials} total={chartTotal} selectedNct={selectedNct}/>
+   <p role="status" style={{fontSize:13}}>L4–L6 saved numeric report coverage: {level456Counts.map(x=>'L'+x.level+' '+x.count+'/'+chartTotal).join(' · ')}. {level456Counts.some(x=>x.count<2)?'A dashed trend line requires at least two saved numeric reports at that level. Missing levels are not fabricated.':''}</p>\n   <FocusSurveyTrendChart trials={chartTrials} total={chartTotal} selectedNct={selectedNct}/>
   </div>
   {error&&<p role="alert">{error}</p>}{message&&<p role="status">{message}</p>}
   {!data&&!error&&<p role="status">Loading persisted assessments…</p>}
