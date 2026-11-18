@@ -1,0 +1,13 @@
+ticker,drug,application_id,fda_action_date,source_url,verification_scope
+NUVB,IBTROZI taletrectinib sNDA,NDA 219713 S-004,2026-09-16,https://www.pdufa.bio/fda-approval-letters,application_id_and_action_date
+SRRK,ISEMBYLD apitegromab,BLA 761463 ORIG-1,2026-09-11,https://www.pdufa.bio/fda-approval-letters,application_id_and_action_date
+PHAR,Joenja leniolisib,NDA 217759 S-006,2026-09-11,https://www.pdufa.bio/fda-approval-letters,application_id_and_action_date
+BFRI,Ameluz aminolevulinic acid,NDA 208081 S-040,2026-09-09,https://www.pdufa.bio/fda-approval-letters,application_id_and_action_date
+IONS,Zilganersen,NDA 220210 ORIG-1,2026-09-03,https://www.pdufa.bio/fda-approval-letters,application_id_and_action_date
+RARE,FAYUVI rebisufligene etisparvovec,CBER approval letter,2026-09-17,https://www.pdufa.bio/fda-approval-letters,action_date_only
+TLX,Pixclara,NDA 218592 ORIG-1,2026-09-11,https://www.pdufa.bio/fda-approval-letters,application_id_and_action_date
+MRK,WINREVAIR sotatercept,BLA 761363 S-017,2026-09-21,https://www.pdufa.bio/fda-approval-letters,application_id_and_action_date
+RHHBY,Enspryng satralizumab,BLA 761149 S-008,2026-10-15,https://www.pdufa.bio/fda-approval-letters,application_id_and_action_date
+IBRX,ANKTIVA plus BCG,BLA 761336,2026-10-14,https://www.pdufa.bio/fda-approval-letters,application_id_and_action_date
+GSK,Hibsago bepirovirsen,NDA 221276 ORIG-1,2026-10-20,https://www.pdufa.bio/fda-approval-letters,application_id_and_action_date
+RHHBY,Giredestrant plus everolimus,FDA oncology approval notification,2026-11-16,https://www.pdufa.bio/fda-approval-letters,action_date_only
