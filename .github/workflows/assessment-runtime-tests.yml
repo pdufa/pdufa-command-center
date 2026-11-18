@@ -32,6 +32,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
+      - name: Verify packaged FOCUS roster matches frontend source
+        run: python scripts/check_focus_snapshot_alignment.py
       - run: pip install -r new-platform/backend/requirements.txt
       - run: PYTHONPATH=new-platform/backend pytest new-platform/backend/tests -q
   frontend:
