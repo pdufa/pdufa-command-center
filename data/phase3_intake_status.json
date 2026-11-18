@@ -1,24 +1,15 @@
 {
   "mode": "daily",
-  "started_at": "2026-11-18T03:58:47.749778+00:00",
+  "started_at": "2026-11-18T04:19:50.897367+00:00",
   "registry_companies": 717,
   "pages": 5,
   "studies_checked": 4011,
   "matched_posted_results": 99,
-  "new_records": 1,
-  "new_record_details": [
-    {
-      "ticker": "REGN",
-      "drug": "Garetosmab | Placebo",
-      "nct_id": "NCT05394116",
-      "results_posted_at": "2026-11-17",
-      "source_url": "https://clinicaltrials.gov/study/NCT05394116",
-      "verification_status": "DRUG_IDENTITY_REVIEW"
-    }
-  ],
+  "new_records": 0,
+  "new_record_details": [],
   "complete": true,
   "errors": [],
-  "finished_at": "2026-11-18T03:58:52.902214+00:00",
+  "finished_at": "2026-11-18T04:20:03.973564+00:00",
   "stored_results": 2506,
   "unpublished_partial_rows": 0,
   "status": "COMPLETE"
