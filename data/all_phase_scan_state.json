@@ -1,20 +1,20 @@
 {
   "run_date": "2026-11-18",
   "scan_mode": "DELTA",
-  "finished_at": "2026-11-18T03:55:30.057605+00:00",
+  "finished_at": "2026-11-18T04:16:08.158519+00:00",
   "registry_companies": 717,
   "companies_checked": 717,
   "companies_with_warnings": 0,
-  "trials_stored": 11670,
+  "trials_stored": 11672,
   "status": "COMPLETE",
   "complete": true,
-  "tracked_trials_total": 11670,
-  "tracked_trials_checked": 11670,
+  "tracked_trials_total": 11672,
+  "tracked_trials_checked": 11672,
   "tracked_trials_with_warnings": 0,
-  "changed_trials_this_execution": 55,
+  "changed_trials_this_execution": 0,
   "changed_trials_today": 55,
-  "tracked_nct_direct_fetches": 5515,
-  "tracked_nct_sponsor_reuse": 6155,
+  "tracked_nct_direct_fetches": 2,
+  "tracked_nct_sponsor_reuse": 11670,
   "scope": "DELTA: all company sponsor inventories for new/amended trials; exact-NCT fetch only for unmatched trial IDs",
   "limitations": "Discovery uses exact lead-sponsor matching; existing NCT IDs bypass sponsor matching. FDA/SEC/market sources are separate.",
   "checks": {
@@ -79917,6 +79917,18 @@
     "NCT07939971": {
       "status": "COMPLETE",
       "checked_at": "2026-11-18T03:55:29.807253+00:00",
+      "changed_fields": [],
+      "first_direct_refresh": true
+    },
+    "NCT07940777": {
+      "status": "COMPLETE",
+      "checked_at": "2026-11-18T04:16:07.917664+00:00",
+      "changed_fields": [],
+      "first_direct_refresh": true
+    },
+    "NCT07941609": {
+      "status": "COMPLETE",
+      "checked_at": "2026-11-18T04:16:07.917668+00:00",
       "changed_fields": [],
       "first_direct_refresh": true
     }
