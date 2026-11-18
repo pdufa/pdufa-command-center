@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Build one main row plus L01-L20 child rows per sourced FDA event.
+"""Build one main row plus one L01 child row per sourced FDA event.
 
 This tool NEVER invents event records or assessment results.
 It refuses to pad an incomplete source ledger to the target count.
@@ -36,12 +36,12 @@ def build(source, output, expected=183):
             common = {k:r.get(k,"") for k in ("event_id","ticker","drug","indication","decision_date","source_url")}
             writer.writerow({**common,"row_type":"MAIN","parent_event_id":r["event_id"],
                              "verification_status":"PENDING"})
-            for n in range(1,21):
+            for n in (1,):
                 writer.writerow({**common,"row_type":"ASSESSMENT",
                                  "parent_event_id":r["event_id"],"level":f"L{n:02d}",
                                  "evidence_status":"NOT_COLLECTED",
                                  "verification_status":"PENDING"})
-    print(f"Wrote {expected} main rows and {expected*20} attached assessment rows to {output}")
+    print(f"Wrote {expected} main rows and {expected} L01 assessment rows to {output}")
 
 if __name__ == "__main__":
     parser=argparse.ArgumentParser()
