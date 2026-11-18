@@ -82,6 +82,24 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(dimensions["standard_of_care_comparator"][0]["label"], "Placebo")
         self.assertEqual(result["ten_category_scoring"], "PENDING_EVIDENCE_REVIEW")
 
+    def test_significant_p_value_and_placebo_do_not_prove_soc_superiority(self):
+        payload = {
+            "protocolSection": {
+                "armsInterventionsModule": {"armGroups": [
+                    {"label": "Investigational treatment"},
+                    {"label": "Placebo", "type": "PLACEBO_COMPARATOR"},
+                ]},
+            },
+            "resultsSection": {"outcomeMeasuresModule": {"outcomeMeasures": [
+                {"title": "Response", "analyses": [{"pValue": "0.001"}]},
+            ]}},
+        }
+        with patch("scripts.avenue1_pool_evidence_collector.fetch_json", return_value=payload):
+            result = study_evidence("NCT05507203")
+        self.assertEqual(result["superiority_to_active_soc"], "NOT_ESTABLISHED_WITHOUT_COMPARATOR_REVIEW")
+        self.assertEqual(result["ten_category_scoring"], "PENDING_EVIDENCE_REVIEW")
+        self.assertEqual(result["clinical_dimensions"]["statistical_reliability"][0]["pValue"], "0.001")
+
     def test_null_registry_results_lists_are_safe(self):
         payload = {"resultsSection": {"outcomeMeasuresModule": {"outcomeMeasures": None}}}
         with patch("scripts.avenue1_pool_evidence_collector.fetch_json", return_value=payload):
