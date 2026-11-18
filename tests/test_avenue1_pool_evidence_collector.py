@@ -90,6 +90,16 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(result["clinical_dimensions"]["statistical_reliability"], [])
 
 
+    def test_null_registry_arm_and_reference_lists_are_safe(self):
+        payload = {"protocolSection": {
+            "armsInterventionsModule": {"armGroups": None},
+            "referencesModule": {"references": None},
+        }}
+        with patch("scripts.avenue1_pool_evidence_collector.fetch_json", return_value=payload):
+            result = study_evidence("NCT05507203")
+        self.assertEqual(result["clinical_dimensions"]["standard_of_care_comparator"], [])
+        self.assertEqual(result["clinical_dimensions"]["evidence_quality"]["references"], [])
+
     def test_collection_partial_failure_does_not_claim_completion(self):
         from scripts.avenue1_pool_evidence_collector import main
         snapshot = {
