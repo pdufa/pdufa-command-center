@@ -90,6 +90,17 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(result["clinical_dimensions"]["statistical_reliability"], [])
 
 
+    def test_malformed_outcome_analyses_fail_closed(self):
+        for bad in ({"pValue": "0.01"}, ["not-an-analysis"], [None]):
+            payload = {"resultsSection": {"outcomeMeasuresModule": {
+                "outcomeMeasures": [{"title": "Response", "analyses": bad}],
+            }}}
+            with self.subTest(bad=bad), patch(
+                "scripts.avenue1_pool_evidence_collector.fetch_json", return_value=payload
+            ):
+                with self.assertRaisesRegex(ValueError, "Invalid ClinicalTrials.gov outcome analysis"):
+                    study_evidence("NCT05507203")
+
     def test_malformed_outcome_measures_fail_closed(self):
         for bad in ({"unexpected": "mapping"}, [None], ["not-a-measure"]):
             payload = {"resultsSection": {"outcomeMeasuresModule": {
