@@ -163,9 +163,16 @@ def main():
             except Exception as exc:
                 errors.append({"nct": nct, "error_type": type(exc).__name__})
             time.sleep(0.15)
+    attempted = min(len(ids), args.limit) if args.limit else len(ids)
     (out / "collection-status.json").write_text(json.dumps({
-        "pool_nct_count": len(ids), "attempted": min(len(ids), args.limit) if args.limit else len(ids),
-        "collected": done, "errors": errors,
+        "pool_nct_count": len(ids),
+        "attempted": attempted,
+        "collected": done,
+        "error_count": len(errors),
+        "coverage_percent": round(100 * done / attempted, 2),
+        "full_pool_run": attempted == len(ids),
+        "full_pool_collection_complete": attempted == len(ids) and done == len(ids) and not errors,
+        "errors": errors,
         "dimension_evidence_counts": dimension_counts,
         "missing_dimensions_by_trial": missing_by_trial,
         "coverage_note": "Field presence is not proof of clinical sufficiency or efficacy.",
