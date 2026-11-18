@@ -35,6 +35,24 @@ class Level7AtomicityTests(unittest.TestCase):
                 )
             self.assertEqual(store.history("NCT00000001"), [])
 
+    def test_invalid_direct_record_rolls_back_earlier_batch_insert(self):
+        with tempfile.TemporaryDirectory() as folder:
+            store = EvidenceStore(Path(folder) / "evidence.sqlite3")
+            store.initialize()
+            def record(nct):
+                return make_record(
+                    trial_id=nct, source_id="registry",
+                    source_url="https://clinicaltrials.gov/study/" + nct,
+                    publisher="registry", source_version="v1",
+                    content=b"source", retrieved_at="2026-11-17T00:00:00+00:00",
+                )
+            first = record("NCT00000001")
+            invalid = replace(record("NCT00000002"), status="approved")
+            with self.assertRaisesRegex(ValueError, "Unknown evidence status"):
+                store.add_many([first, invalid])
+            self.assertEqual(store.history("NCT00000001"), [])
+            self.assertEqual(store.history("NCT00000002"), [])
+
     def test_batch_conflict_rolls_back_prior_insert(self):
         with tempfile.TemporaryDirectory() as folder:
             store = EvidenceStore(Path(folder) / "evidence.sqlite3")
