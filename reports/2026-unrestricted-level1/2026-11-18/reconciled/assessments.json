@@ -212,6 +212,11 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220358",
+        "retrieved_at": "2026-11-18T18:50:28Z",
+        "sha256": "c48592c9b7945dfaf62d558f889909fa1933f5df6142878561b96706ecc35a37"
       }
     ],
     "trial_ids": [],
@@ -289,6 +294,11 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219873",
+        "retrieved_at": "2026-11-18T18:50:28Z",
+        "sha256": "00d31555605db733b5188328e9e40e81bda759a8576723178a3d4ec9993c0f7e"
       }
     ],
     "trial_ids": [],
@@ -542,6 +552,11 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=216403",
+        "retrieved_at": "2026-11-18T18:50:28Z",
+        "sha256": "c0d2ca2c4ac8924292ebc1250b3ba724dc2c5f2f1402f8fb5c365890daa8556e"
       }
     ],
     "trial_ids": [
@@ -931,6 +946,11 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=018342",
+        "retrieved_at": "2026-11-18T18:50:27Z",
+        "sha256": "da86a4518d5cb89e982d72b63b421e8f0df0494d0e3077633c4a7a3daa7178b8"
       }
     ],
     "trial_ids": [],
@@ -986,7 +1006,7 @@
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-05-29",
     "outcome_published_at": "",
-    "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/022472Orig1s029.ltr.pdf",
+    "source_url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=022472",
     "drug": "AFREZZA",
     "application_type": "BLA",
     "sponsor": "MANNKIND",
@@ -1014,6 +1034,11 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=022472",
+        "retrieved_at": "2026-11-18T18:51:12Z",
+        "sha256": "322fdac354cfb7f45346c63b8dc11f4de90f03571875e7943667ba27dc32b056"
       }
     ],
     "trial_ids": [],
@@ -5507,6 +5532,11 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=215390",
+        "retrieved_at": "2026-11-18T18:50:27Z",
+        "sha256": "f9a4d75014923e936e733dfec6adb139dbfeb60cf9ee6790c90d5d7df6ed07cf"
       }
     ],
     "trial_ids": [],
@@ -5588,6 +5618,11 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=219083",
+        "retrieved_at": "2026-11-18T18:50:28Z",
+        "sha256": "83c34110088d5ec6ff6ccdda1300535aaafc7c569a6dd410ddecaeb1dfc6c143"
       }
     ],
     "trial_ids": [],
@@ -7613,7 +7648,7 @@
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-03-24",
     "outcome_published_at": "",
-    "source_url": "https://www.fda.gov/news-events/press-announcements/fda-approves-drug-treat-neurologic-manifestations-hunter-syndrome",
+    "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761485Orig1s000Approv.pdf",
     "drug": "Avlayah (tividenofusp alfa)",
     "application_type": "BLA",
     "sponsor": "Denali Therapeutics",
@@ -7643,6 +7678,11 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761485Orig1s000Approv.pdf",
+        "retrieved_at": "2026-11-18T18:51:14Z",
+        "sha256": "c18b90e5bdd1f6577143f0302e8d7eb3068cd063127b70910289872c171b860a"
       }
     ],
     "trial_ids": [],

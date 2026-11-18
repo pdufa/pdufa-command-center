@@ -141,5 +141,45 @@ class RecoveredContractTests(unittest.TestCase):
         self.assertTrue(all(r["predictedOutcome"] == "ABSTAIN" for r in frozen))
 
 
+    def test_blocker_and_coverage_exports_account_for_every_row(self):
+        import json
+        from collections import Counter
+
+        coverage = json.loads((self.snapshot / "coverage.json").read_text())
+        blockers = json.loads((self.snapshot / "blocker-manifest.json").read_text())
+        grouped = [row["record_id"] for group in (
+            "identity_or_goal_blockers", "verified_evidence_gaps", "outside_scope",
+        ) for row in blockers[group]]
+        self.assertEqual(Counter(grouped), Counter(row["record_id"] for row in self.rows))
+        self.assertEqual(coverage["unresolved_in_scope"], len(blockers["identity_or_goal_blockers"]))
+        self.assertEqual(coverage["verified"], self.totals["distinct_verified_events"])
+        self.assertIsNone(coverage["full_year_denominator"])
+        self.assertTrue(all(row["reason"] and row["sources"] for row in blockers["identity_or_goal_blockers"]))
+
+    def test_frozen_focus_snapshot_join_preserves_existing_trial_population(self):
+        import json
+        from scripts.project_2026_level1_contracts import project
+
+        frontend = Path(__file__).resolve().parents[1] / "new-platform" / "frontend"
+        roster = json.loads((frontend / "data" / "p3PostDataActive.json").read_text())
+        eligible = {row["nct"] for row in roster["records"]}
+        focus = project(self.rows, pool_ncts=set(), focus_ncts=eligible)["FOCUS"]
+        self.assertEqual(len(eligible), 32)
+        self.assertTrue(focus)
+        self.assertTrue({row["nct"] for row in focus} <= eligible)
+        self.assertEqual(len({(row["nct"], row["applicationCycleId"]) for row in focus}), len(focus))
+
+
+    def test_verified_decisions_and_goals_have_document_receipts(self):
+        for row in self.rows:
+            if row["verification_status"] != "VERIFIED":
+                continue
+            with self.subTest(record_id=row["record_id"]):
+                urls = {receipt["url"] for receipt in row["source_receipts"]}
+                self.assertIn(row["goal_source_url"], urls)
+                if row["actual_outcome"]:
+                    self.assertIn(row["source_url"], urls)
+
+
 if __name__ == "__main__":
     unittest.main()
