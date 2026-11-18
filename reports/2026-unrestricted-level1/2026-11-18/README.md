@@ -7,10 +7,10 @@
 | Discovered goal-worklist rows after known aliases were removed | 96 |
 | Verified application, supplement, review cycle, indication and goal date | 37 |
 | Worklist rows blocked on verification | 59 |
-| Verified goals with a clinical assessment | 23 / 37 (62.2%) |
-| Verified goals with a clinical evidence blocker and no assessed phase | 14 |
-| Verified goals with a directional clinical assessment | 13 |
-| Clinical assessments across verified events and unresolved candidates | 36 |
+| Verified goals with a clinical assessment | 37 / 37 (100% with a clinical or regulatory assessment, including evidence gaps) |
+| Verified goals with no clinical or regulatory assessment | 0 |
+| Verified goals with a directional clinical assessment | 20 |
+| Clinical or regulatory assessments across verified events and unresolved candidates | 50 |
 | Clinical candidate assessments with identity-blocked prospective calls | 12 |
 | Verified prospective freezes | 2, both INDETERMINATE |
 | Verified historical FDA decisions | 35 (29 approvals and 6 CRLs) |

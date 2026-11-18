@@ -172,7 +172,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-02-20",
     "outcome_published_at": "",
@@ -207,24 +207,29 @@
       }
     ],
     "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
+    "phase": "NOT_APPLICABLE_505B2_BRIDGE",
+    "endpoint": "Schizophrenia and acute bipolar mania symptom scales in referenced iloperidone studies",
+    "effect_size": "Product-specific clinical effect size not independently established in this review.",
     "statistical_significance": "",
-    "safety": "",
+    "safety": "FDA labeling includes QT prolongation, metabolic and extrapyramidal risks.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
+    "rationale": "The efficacy evidence relies on bridging to iloperidone, so a product-level judgment requires reviewing exposure comparability and safety.",
     "evidence_gaps": [
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "Full relative-bioavailability bridge and condition-specific trial estimates"
     ],
-    "evidence_sources": [],
+    "evidence_sources": [
+      {
+        "url": "https://dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=254a1c01-4a4c-4bdd-85d6-1f23f2e4e6f8&type=display",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:09.159450+00:00",
+        "sha256": "726b0a7cf259857769a1923bc5bacd57f7473c221224accff027bd8b7bb4fe3f"
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-003"
   },
   {
@@ -1302,7 +1307,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "CRL",
     "outcome_action_date": "2026-06-29",
     "outcome_published_at": "",
@@ -1336,25 +1341,38 @@
         "sha256": "432a142bf95687d39d4eccca8b005ad1e3d3c532a100642c3ef1bae8fd08ebe3"
       }
     ],
-    "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
-    "assessment": "INDETERMINATE",
-    "assessment_kind": "OUTCOME_AWARE",
-    "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
-    "evidence_gaps": [
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+    "trial_ids": [
+      "NCT01560884"
     ],
-    "evidence_sources": [],
+    "phase": "1",
+    "endpoint": "Phosphate handling and safety in a short phase 1 dose-escalation study",
+    "effect_size": "Small healthy-volunteer trial; intended dialysis-population effect requires separate evidence.",
+    "statistical_significance": "",
+    "safety": "FDA identified CGMP inspection concerns; detailed dialysis-population GI safety remains unassessed.",
+    "assessment": "CRL",
+    "assessment_kind": "OUTCOME_AWARE",
+    "confidence": "MODERATE",
+    "rationale": "FDA identified facility deficiencies requiring satisfactory corrective responses. Phase 1 pharmacology cannot resolve manufacturing or dialysis-population questions.",
+    "evidence_gaps": [
+      "FDA facility corrective action and exposure, safety and efficacy in target population"
+    ],
+    "evidence_sources": [
+      {
+        "url": "https://pubmed.ncbi.nlm.nih.gov/39617673/",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:08.802245+00:00",
+        "sha256": "3adc6f129b45db45477b0ac9b39ec3cab028065a6d58dcd72ee9821a4d46cc99"
+      },
+      {
+        "url": "https://download.open.fda.gov/crl/CRL_NDA218607_20260629.pdf",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:37:26.690656+00:00",
+        "sha256": "432a142bf95687d39d4eccca8b005ad1e3d3c532a100642c3ef1bae8fd08ebe3"
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-020"
   },
   {
@@ -1927,7 +1945,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-07-24",
     "outcome_published_at": "",
@@ -1961,25 +1979,38 @@
         "sha256": "332f1e202598aedf2ae6eda97c59f4e8c96a77230896cc92628f55c69b8f3663"
       }
     ],
-    "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
+    "trial_ids": [
+      "NCT03605680"
+    ],
+    "phase": "3",
+    "endpoint": "Day 42 AISRS in adults and ADHD-RS-5 total score in pediatric studies",
+    "effect_size": "Reported adult AISRS changes −10.1 and −9.73 in two dose groups versus −6.98 placebo in one trial.",
+    "statistical_significance": "Dose and population effects varied; exact prespecified test results by trial require review.",
+    "safety": "Review suicidality, abuse/misuse, dependence and other labeled safety risks.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
+    "rationale": "Controlled ADHD symptom improvement is supportive. The pediatric efficacy and tolerability, and the adult formulation bridge, need comparative review.",
     "evidence_gaps": [
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "All adult and pediatric trial effects; formulation bridge and quantitative safety"
     ],
-    "evidence_sources": [],
+    "evidence_sources": [
+      {
+        "url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=ecfa41cc-c8c8-419b-8da3-ee5b819398c2",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:08.912805+00:00",
+        "sha256": "e562f9abd3334d4464ffc8f8ef6d9bdd6d31fce2cfae2a20e69d0de75d6adf5b"
+      },
+      {
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13538204/",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:08.990859+00:00",
+        "sha256": "9ee2de860f459e30217dff49ca0918e0d21a1b5b4c071191ace3225bc746993e"
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-029"
   },
   {
@@ -1995,7 +2026,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-07-23",
     "outcome_published_at": "",
@@ -2030,24 +2061,29 @@
       }
     ],
     "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
+    "phase": "NOT_APPLICABLE_DEVICE_SUPPLEMENT",
+    "endpoint": "Readiness and operation of the SCP-111 autoinjector",
+    "effect_size": "The supplement added a drug–device presentation. Exact device bridging and bioavailability data need review.",
     "statistical_significance": "",
-    "safety": "",
+    "safety": "Existing furosemide risks include volume and electrolyte depletion. Device-specific use errors require review.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
+    "rationale": "The FDA letter identifies the device addition. The approach cannot infer comparability without reviewing device, delivery and bridging evidence.",
     "evidence_gaps": [
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "Device reliability, human-factors and comparative exposure package"
     ],
-    "evidence_sources": [],
+    "evidence_sources": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/209988Orig1s007correctedltr.pdf",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:37:25.037973+00:00",
+        "sha256": "fa55c9445a9e20a4e875ed6cb0e45f5c6dbd50e26e28fd555ac3710d5e575d9a"
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-030"
   },
   {
@@ -2063,7 +2099,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-07-24",
     "outcome_published_at": "",
@@ -2097,25 +2133,44 @@
         "sha256": "67891d4a54d1ac0306a04941d3b8c3bad0f96b1a60f3334225e643ab45e1f4ab"
       }
     ],
-    "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
+    "trial_ids": [
+      "NCT03834753"
+    ],
+    "phase": "3",
+    "endpoint": "NORSE TWO proportion gaining ≥15 ETDRS letters at month 11",
+    "effect_size": "NORSE TWO met its gain endpoint. In NORSE EIGHT at week 8, mean changes were +4.2 vs +6.3 letters compared with ranibizumab.",
+    "statistical_significance": "NORSE EIGHT did not meet its noninferiority criterion.",
+    "safety": "Intravitreal administration carries ocular safety risks, including infection and intraocular inflammation.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
+    "rationale": "Results differ across outcome definitions and time points. The decision requires reconciling the trials and FDA’s evaluation of the resubmission.",
     "evidence_gaps": [
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "NORSE TWO exact responders and safety rates; FDA resolution of NORSE EIGHT uncertainties"
     ],
-    "evidence_sources": [],
+    "evidence_sources": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761320s000lbl.pdf",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:09.588372+00:00",
+        "sha256": "330cb851e6ab981ac13cb05254fd2a1f2690d100c52428b8e4fcf1cd2dde2aee"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761320Orig1s000OtherActionLtrs.pdf",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:09.198282+00:00",
+        "sha256": "e301e14c8686370dd20342d6f6c92162e7aae8fae4f018249dedbe2225edd590"
+      },
+      {
+        "url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=7f9a3014-b3d4-4943-a83a-92a77d8f947c",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:09.173249+00:00",
+        "sha256": "4cff04eb0880263016a0d04965dfecda5a35082319207574761bdd02aa5d3a14"
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-031"
   },
   {
@@ -2131,7 +2186,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-07-28",
     "outcome_published_at": "",
@@ -2165,25 +2220,36 @@
         "sha256": "5450bfa14272e780a54e16a30c71bce3bc9059e20eb10d640750806a49714d5c"
       }
     ],
-    "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
+    "trial_ids": [
+      "NCT05139121"
+    ],
+    "phase": "3",
+    "endpoint": "Luminous study Pearl Index",
+    "effect_size": "4.14 pregnancies per 100 woman-years (95% CI 2.77–5.95).",
+    "statistical_significance": "Single-arm estimate; no comparative significance test.",
+    "safety": "Combined hormonal contraceptive thromboembolic risk and BMI-related limitations apply.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
+    "rationale": "The one-arm trial quantifies observed contraceptive efficacy. Comparative adherence, pregnancy risk and safety remain uncertain.",
     "evidence_gaps": [
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "Detailed adhesion, event rates and alternative contraceptive context"
     ],
-    "evidence_sources": [],
+    "evidence_sources": [
+      {
+        "url": "https://investor.viatris.com/news-releases/news-release-details/viatris-receives-us-fda-approval-gwyn-lotm-once-weekly",
+        "published_on": ""
+      },
+      {
+        "url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=e92741f4-87fe-429f-b5b5-c558ed5f4fa9",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:09.326061+00:00",
+        "sha256": "2482178f9607609fbc07420e9f3de9c6d4482430499f63627a71684bb9b0a6d3"
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-032"
   },
   {
@@ -2199,7 +2265,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-08-06",
     "outcome_published_at": "",
@@ -2233,26 +2299,38 @@
         "sha256": "bf72c2c8b925781467dfc112b4cdd3507962e849a44a02bc4e68ff716e5136fd"
       }
     ],
-    "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
+    "trial_ids": [
+      "NCT03767348"
+    ],
+    "phase": "2",
+    "endpoint": "IGNYTE objective response rate and response duration",
+    "effect_size": "FDA ORR 24.2% (95% CI 15.8–34.3); median DOR 14.1 months (95% CI 10.7 to not reached).",
+    "statistical_significance": "Single-arm response estimate; no randomized comparison.",
+    "safety": "The combination has immune-mediated and administration-related risks. Comparative rates require review.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
+    "rationale": "Durable responses support activity. FDA identified methodological limitations that affect response interpretation; confirmatory evidence matters.",
     "evidence_gaps": [
-      "Resolve this FDA action to a specific review cycle",
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "Confirmatory randomized benefit, systemic response and comparative safety"
     ],
-    "evidence_sources": [],
+    "evidence_sources": [
+      {
+        "url": "https://www.fda.gov/drugs/cancer-approvals/fda-grants-accelerated-approval-vusolimogene-oderparepvec-wtpg-combination-nivolumab-melanoma",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:09.570764+00:00",
+        "sha256": "5f9ceb09b9592a6459462a10ec28d9ced1b98468b9ce84e21283f47674e49e6b"
+      },
+      {
+        "url": "https://www.fda.gov/media/194230/download",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:09.539610+00:00",
+        "sha256": "b7108845def1b88f9091e773d40ad821fc089db9d4cc25930e3b2337f0966122"
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_PENDING",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-033"
   },
   {
@@ -2474,7 +2552,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-08-19",
     "outcome_published_at": "",
@@ -2508,26 +2586,38 @@
         "sha256": "bf72c2c8b925781467dfc112b4cdd3507962e849a44a02bc4e68ff716e5136fd"
       }
     ],
-    "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
-    "assessment": "INDETERMINATE",
-    "assessment_kind": "OUTCOME_AWARE",
-    "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
-    "evidence_gaps": [
-      "Resolve this FDA action to a specific review cycle",
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+    "trial_ids": [
+      "NCT05139316"
     ],
-    "evidence_sources": [],
+    "phase": "3",
+    "endpoint": "GlucoGene change in daily cornstarch intake at week 48",
+    "effect_size": "LS mean reduction 41% vs 10%.",
+    "statistical_significance": "p<0.0001",
+    "safety": "Hepatic reactions require monitoring; treatment effect and durable control should be followed.",
+    "assessment": "APPROVE",
+    "assessment_kind": "OUTCOME_AWARE",
+    "confidence": "MODERATE",
+    "rationale": "Reduced dependence on nutritional glucose replacement in a randomized trial supports benefit, with ongoing safety and metabolic monitoring.",
+    "evidence_gaps": [
+      "Long-term durability and comparative hepatic and hypoglycemia event counts"
+    ],
+    "evidence_sources": [
+      {
+        "url": "https://pmc.ncbi.nlm.nih.gov/articles/PMC13529436/",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:09.923406+00:00",
+        "sha256": "efa36f9a1bddbb70026f0f8faef0144290793ad28e25cfd52332d00ece287771"
+      },
+      {
+        "url": "https://www.fda.gov/media/194583/download",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:09.476874+00:00",
+        "sha256": "b577065c3c2ae36b3b2b460f3b9e38921eeeafafe68b8742c423f1592c7e6a4e"
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_PENDING",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-037"
   },
   {
@@ -2672,7 +2762,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-08-27",
     "outcome_published_at": "",
@@ -2706,25 +2796,37 @@
         "sha256": "4d29b57a67cb7f4acf132f789e2e62a282445a855c1d9d289e959581be52c22d"
       }
     ],
-    "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
+    "trial_ids": [
+      "NCT05502341",
+      "NCT06333808"
+    ],
+    "phase": "3",
+    "endpoint": "ARTISTRY-1 and ARTISTRY-2 maintenance of virologic suppression",
+    "effect_size": "FDA evaluated 557 and 574 participants respectively; exact arm failure percentages and CI need extraction.",
+    "statistical_significance": "Comparative noninferiority review requires exact estimates and margin.",
+    "safety": "Consider the label warning for hepatitis B exacerbation after discontinuation and review treatment-emergent events by arm.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
+    "rationale": "Switch evidence applies to a virologically suppressed population. The exact noninferiority margin and subgroup safety need verification.",
     "evidence_gaps": [
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "Arm-specific virologic failure and noninferiority margin, resistance and safety"
     ],
-    "evidence_sources": [],
+    "evidence_sources": [
+      {
+        "url": "https://www.dailymed.nlm.nih.gov/dailymed/fda/fdaDrugXsl.cfm?setid=072a3c7e-33fb-4a87-ba21-3d8dad3f5c48&type=display",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:09.733064+00:00",
+        "sha256": "a7790bb6b78f0e3344560a29a69bd381c1ccbd83b4d50b8e1634471166161765"
+      },
+      {
+        "url": "https://www.gilead.com/news/news-details/2026/u-s--fda-approves-gileads-bixlenvo-a-new-once-daily-single-tablet-option-for-virologically-suppressed-adults-with-hiv-including-those-on-complex-regimens?trk=test",
+        "published_on": ""
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-040"
   },
   {
@@ -3040,7 +3142,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-09-17",
     "outcome_published_at": "",
@@ -3075,25 +3177,29 @@
       }
     ],
     "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
-    "assessment": "INDETERMINATE",
+    "phase": "REGISTRATION_STUDY_AND_LONG_TERM_FOLLOW_UP",
+    "endpoint": "ABT-001 and LTFU-ABO-102 Bayley cognitive raw score change age 24–60 months",
+    "effect_size": "FDA review table 47 reports 22.0 points versus limited matched natural history (95% CI 13.6–30.4).",
+    "statistical_significance": "Sensitivity analysis p<0.0001; expanded treated set had a smaller estimate.",
+    "safety": "Immune and delivery risks and long-term neurodevelopmental safety need review.",
+    "assessment": "APPROVE",
     "assessment_kind": "OUTCOME_AWARE",
-    "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
+    "confidence": "MODERATE",
+    "rationale": "The cognitive trajectories and sensitivity analyses favor benefit in children with preserved baseline function. External-control matching limits causal certainty.",
     "evidence_gaps": [
-      "Resolve this FDA action to a specific review cycle",
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "Long-term clinical and safety follow-up, exact clinical registry IDs and comparability of external controls"
     ],
-    "evidence_sources": [],
+    "evidence_sources": [
+      {
+        "url": "https://www.fda.gov/media/195731/download",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:16.663323+00:00",
+        "sha256": "d4b690cedc06f0cc1b2870bc9f19edfab7cd6b72c2dd7d0fc60e620e00e486ba"
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_PENDING",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-046"
   },
   {
@@ -3109,7 +3215,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-09-21",
     "outcome_published_at": "",
@@ -3144,24 +3250,29 @@
       }
     ],
     "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
-    "assessment": "INDETERMINATE",
+    "phase": "3",
+    "endpoint": "HYPERION time to death or first clinical worsening event",
+    "effect_size": "HR 0.24 (95% CI 0.14–0.41); 76 vs 121 planned events.",
+    "statistical_significance": "p<0.0001",
+    "safety": "Review bleeding and hematologic risks. S-016 and S-017 safety updates are separate submissions.",
+    "assessment": "APPROVE",
     "assessment_kind": "OUTCOME_AWARE",
-    "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
+    "confidence": "MODERATE",
+    "rationale": "A large randomized effect supports the HYPERION label update. Earlier stopping and component-level effects limit certainty.",
     "evidence_gaps": [
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "Exact NCT, event breakdown and quantitative long-term safety"
     ],
-    "evidence_sources": [],
+    "evidence_sources": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761363s012s016s017lbl.pdf",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:09.538762+00:00",
+        "sha256": "5134c380e1e2ec5da356ece6c42242f854bd1b920ad1e9dcdef0a1fa9a0dcc26"
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-047"
   },
   {
@@ -3177,7 +3288,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-09-03",
     "outcome_published_at": "",
@@ -3212,24 +3323,29 @@
       }
     ],
     "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
-    "assessment": "INDETERMINATE",
+    "phase": "REGISTRATION_STUDY",
+    "endpoint": "Week 61 gait speed on 10-meter walk test, Stratum 1",
+    "effect_size": "−2.1% vs −35.4%; adjusted difference 33.3 percentage points (95% CI 1.44–65.25).",
+    "statistical_significance": "p=0.041",
+    "safety": "Intrathecal delivery and long-term safety require application-level review.",
+    "assessment": "APPROVE",
     "assessment_kind": "OUTCOME_AWARE",
-    "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
+    "confidence": "MODERATE",
+    "rationale": "The prespecified clinical endpoint suggests preservation of gait speed in the analyzed population. The wide interval and small sample constrain the effect estimate.",
     "evidence_gaps": [
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "Exact study phase and NCT, smaller-dose and nonambulatory subgroup analysis, adverse-event table"
     ],
-    "evidence_sources": [],
+    "evidence_sources": [
+      {
+        "url": "https://dailymed.nlm.nih.gov/dailymed/drugInfo.cfm?setid=af6ca330-46d3-4ed6-b2af-bd6db3133fd1",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:10.211915+00:00",
+        "sha256": "5544c7f8bcf31d75c4019f7bc524acb074d3029d2a8a39e97dd59fc569efd5f2"
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-048"
   },
   {
@@ -3298,7 +3414,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-09-25",
     "outcome_published_at": "",
@@ -3333,24 +3449,35 @@
       }
     ],
     "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
+    "phase": "2",
+    "endpoint": "PROGRESS week 24 total new heterotopic ossification volume",
+    "effect_size": "Mean change −3.2 cm³ vs +24.6 cm³.",
     "statistical_significance": "",
-    "safety": "",
-    "assessment": "INDETERMINATE",
+    "safety": "FDA identified fetal-harm risk. Longer-term safety requires review.",
+    "assessment": "APPROVE",
     "assessment_kind": "OUTCOME_AWARE",
-    "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
+    "confidence": "MODERATE",
+    "rationale": "The randomized effect on new bone formation is supportive in FOP. Functional benefit and longer-term safety remain uncertain.",
     "evidence_gaps": [
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "Prespecified statistical estimate, clinical-function follow-up, exact NCT and safety rates"
     ],
-    "evidence_sources": [],
+    "evidence_sources": [
+      {
+        "url": "https://content.govdelivery.com/accounts/USFDA/bulletins/42c900b",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:10.097834+00:00",
+        "sha256": "774c7bf6d9ce51e041d86afc03ad28b1cedbfc18d3720c1024f4e077f01cc97f"
+      },
+      {
+        "url": "https://www.sec.gov/Archives/edgar/data/1759425/000175942526000049/mirm-20260925.htm",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:10.179682+00:00",
+        "sha256": "87cf860dacc15bda0661aad108d9c911d81aec60005965f2b2858c62ad7a7c17"
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-050"
   },
   {
@@ -4147,7 +4274,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-10-20",
     "outcome_published_at": "",
@@ -4182,24 +4309,39 @@
       }
     ],
     "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
-    "assessment": "INDETERMINATE",
+    "phase": "3",
+    "endpoint": "B-Well sustained functional cure after stopping background NA therapy",
+    "effect_size": "Pooled response 233/1,220 (19%) vs 0/614 (0%).",
+    "statistical_significance": "Both controlled trials reported significant effects; exact study-level statistics require verification.",
+    "safety": "Hepatic monitoring and therapy-withdrawal risk remain relevant.",
+    "assessment": "APPROVE",
     "assessment_kind": "OUTCOME_AWARE",
-    "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
+    "confidence": "MODERATE",
+    "rationale": "Controlled functional-cure responses support efficacy in selected patients with suppressed HBV DNA and no cirrhosis. The absolute responder fraction and generalizability constrain the assessment.",
     "evidence_gaps": [
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "Trial-specific effects, longer-term recurrence and safety"
     ],
-    "evidence_sources": [],
+    "evidence_sources": [
+      {
+        "url": "https://www.nejm.org/doi/10.1056/NEJMoa2515131",
+        "published_on": ""
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/221276Orig1s000lbl.pdf",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:09.866102+00:00",
+        "sha256": "622a173efec4e8e2279aba1110d2ac170498bdce8fb323d98ba4a960eb3af39c"
+      },
+      {
+        "url": "https://us.gsk.com/en-us/media/press-releases/hibsago-bepirovirsen-approved-in-the-us-for-the-treatment-of-chronic-hepatitis-b-chb/",
+        "published_on": "",
+        "retrieved_at": "2026-11-18T17:56:10.151810+00:00",
+        "sha256": "07bf6d12c51928ace683121cc4f973dd7ccf3bc96bb512ffc354afd52af1e48e"
+      }
+    ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "FDA_DOCUMENT_RETRIEVED",
-    "assessment_recorded_at": "",
+    "assessment_recorded_at": "2026-11-18T17:57:26+00:00",
     "record_id": "2026-L1-064"
   },
   {

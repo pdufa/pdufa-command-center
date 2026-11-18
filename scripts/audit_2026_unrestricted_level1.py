@@ -3,6 +3,7 @@
 
 import argparse
 import csv
+import hashlib
 import json
 import re
 from collections import Counter
@@ -154,12 +155,22 @@ def validate_snapshot(directory):
         if row["actual_outcome"] and row["assessment_kind"] != "OUTCOME_AWARE":
             raise ValueError("Known outcome omitted from temporal classification")
         receipts = {entry["url"] for entry in row["source_receipts"]}
-        if row in verified and row["goal_source_url"] not in receipts:
+        if row["verification_status"] == "VERIFIED" and row["goal_source_url"] not in receipts:
             raise ValueError("Verified goal missing retrieval receipt")
         for entry in row["source_receipts"]:
             if not (source_url(entry["url"]) and timestamp(entry["retrieved_at"])
                     and re.fullmatch(r"[0-9a-f]{64}", entry["sha256"])):
                 raise ValueError("Invalid source receipt")
+            if entry.get("representation") == "UTF-8 source excerpt":
+                digest = hashlib.sha256(entry["document_excerpt"].encode()).hexdigest()
+                if digest != entry["sha256"]:
+                    raise ValueError("Source-excerpt digest differs")
+        current_goals = [item for item in row["goal_date_history"] if item["status"] == "CURRENT"]
+        if row["goal_source_url"] and (
+            len(current_goals) != 1 or current_goals[0]["date"] != row["pdufa_date"]
+            or current_goals[0]["source_url"] != row["goal_source_url"]
+        ):
+            raise ValueError("Current goal and amendment history diverge")
         if row["prediction_kind"] == "PROSPECTIVE":
             cutoff = timestamp(row["evidence_cutoff_at"])
             frozen = timestamp(row["prediction_frozen_at"])
