@@ -29,7 +29,7 @@ def run(db_path: Path, snapshot_path: Path = SNAPSHOT) -> dict:
         raise ValueError("FOCUS roster has missing or duplicate NCT identities")
     if not db_path.is_file():
         raise FileNotFoundError("Level 7 evidence database does not exist")
-    with sqlite3.connect(db_path) as connection:
+    with sqlite3.connect(db_path.resolve().as_uri() + '?mode=ro', uri=True) as connection:
         present = connection.execute(
             "SELECT 1 FROM sqlite_master WHERE type='table' AND name='level7_evidence'"
         ).fetchone()
