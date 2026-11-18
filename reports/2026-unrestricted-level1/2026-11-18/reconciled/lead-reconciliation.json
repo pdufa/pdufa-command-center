@@ -213,18 +213,20 @@
     "previous_origin_url": "https://www.pdufa.bio/ticker/MRK",
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
-    "disposition": "BLOCKED",
-    "reason": "Cross-check the product approval letter and exact FDA goal for enlicitide. The calendar’s July 16 assertion is not independently established by an approval announcement.",
-    "application_id": "",
-    "supplement": "",
-    "review_cycle": "",
-    "goal_date": "2026-07-16",
-    "action_date": "",
+    "disposition": "NOT_PDUFA",
+    "reason": "FDA lists a February 22, 2027 PDUFA goal, July 13, 2026 review completion, and July 15 approval. Excluded from the 2026 goal cohort.",
+    "application_id": "NDA220848",
+    "supplement": "NONE",
+    "review_cycle": "INITIAL",
+    "goal_date": "2027-02-22",
+    "action_date": "2026-07-15",
     "source_urls": [
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=221027",
-      "https://www.pdufa.bio/ticker/MRK"
+      "https://www.pdufa.bio/ticker/MRK",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220848Orig1s000RiskR.pdf",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220848Orig1s000Approv.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
   },
   {
     "record_id": "2026-L1-028",
@@ -353,18 +355,21 @@
     "previous_origin_url": "https://www.pdufa.bio/pdufa/REGN",
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
-    "disposition": "BLOCKED",
-    "reason": "Confirm whether the reported August 31 date is a month-end estimate or an actual FDA goal. Regeneron program updates do not resolve exact BLA number, cycle and date together.",
-    "application_id": "",
-    "supplement": "",
-    "review_cycle": "",
-    "goal_date": "2026-08-31",
-    "action_date": "",
+    "disposition": "VERIFIED",
+    "reason": "FDA documents original BLA761508, PDUFA goal 2026-08-19, and approval action 2026-08-19. The prior calendar date remains as an unverified claim.",
+    "application_id": "BLA761508",
+    "supplement": "NONE",
+    "review_cycle": "INITIAL",
+    "goal_date": "2026-08-19",
+    "action_date": "2026-08-19",
     "source_urls": [
       "https://newsroom.regeneron.com/news-releases/news-release-details/regeneron-reports-third-quarter-2026-financial-and-operating/",
-      "https://www.pdufa.bio/pdufa/REGN"
+      "https://www.pdufa.bio/pdufa/REGN",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761508Orig1s000RiskR.pdf",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761508Orig1s000Approv.pdf",
+      "https://pubmed.ncbi.nlm.nih.gov/42805227/"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
   },
   {
     "record_id": "2026-L1-043",
@@ -400,18 +405,19 @@
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
     "disposition": "BLOCKED",
-    "reason": "FDA confirms EMBER-3 combination approval September 18 and Drugs@FDA identifies S-001. The lead repeats the action date; a separate exact scheduled goal is unverified.",
+    "reason": "FDA confirms NDA 218881/S-001. Exact PDUFA goal and amendment history remain unverified.",
     "application_id": "NDA218881",
     "supplement": "S-001",
-    "review_cycle": "",
+    "review_cycle": "SUPPLEMENT",
     "goal_date": "2026-09-18",
     "action_date": "2026-09-18",
     "source_urls": [
       "https://www.fda.gov/drugs/cancer-approvals/fda-approves-imlunestrant-combination-abemaciclib-er-positive-her2-negative-esr1-mutated-advanced-or",
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218881",
-      "https://www.pdufa.bio/ticker/LLY"
+      "https://www.pdufa.bio/ticker/LLY",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218881Orig1s001ltr.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
   },
   {
     "record_id": "2026-L1-049",
@@ -445,18 +451,22 @@
     "previous_origin_url": "https://www.assyro.com/tools/pdufa-calendar/2026",
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
-    "disposition": "BLOCKED",
-    "reason": "FDA approves NDA 220425 September 23. September 27 appears in a launch/review lead, but this pass did not secure the primary archived target statement.",
+    "disposition": "VERIFIED",
+    "reason": "FDA confirms the original NDA and September 23 approval. The sponsor first disclosed September 27 and later stated September 25. FDA amendment documentation was not located.",
     "application_id": "NDA220425",
     "supplement": "NONE",
-    "review_cycle": "",
-    "goal_date": "2026-09-27",
-    "action_date": "",
+    "review_cycle": "INITIAL",
+    "goal_date": "2026-09-25",
+    "action_date": "2026-09-23",
     "source_urls": [
       "https://www.fda.gov/drugs/cancer-approvals/fda-approves-lirafugratinib-previously-treated-unresectable",
-      "https://www.assyro.com/tools/pdufa-calendar/2026"
+      "https://www.assyro.com/tools/pdufa-calendar/2026",
+      "https://elevartx.com/2026/03/30/elevar-fda-acceptance-lira/",
+      "https://elevartx.com/2026/09/22/elevar-conditional-acceptance-lyrfigtu/",
+      "https://www.fda.gov/drugs/cancer-approvals/fda-approves-lirafugratinib-previously-treated-unresectable-locally-advanced-or-metastatic",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220425Orig1s000ltr.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
   },
   {
     "record_id": "2026-L1-052",
@@ -491,18 +501,21 @@
     "previous_origin_url": "https://www.pdufa.bio/pdufa/ROIV",
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
-    "disposition": "BLOCKED",
-    "reason": "September 30 is not confirmed as an exact goal. August action and the VALOR indication need exact original goal verification before the crosswalk can be counted.",
+    "disposition": "VERIFIED",
+    "reason": "FDA documents original NDA220106, PDUFA goal 2026-08-28, and approval action 2026-08-27. The prior calendar date remains as an unverified claim.",
     "application_id": "NDA220106",
     "supplement": "NONE",
-    "review_cycle": "",
-    "goal_date": "2026-09-30",
+    "review_cycle": "INITIAL",
+    "goal_date": "2026-08-28",
     "action_date": "2026-08-27",
     "source_urls": [
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220106",
-      "https://www.pdufa.bio/pdufa/ROIV"
+      "https://www.pdufa.bio/pdufa/ROIV",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220106Orig1s000OtherR.pdf",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220106Orig1s000Approv.pdf",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220106Orig1s000lbl.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
   },
   {
     "record_id": "2026-L1-054",
@@ -513,17 +526,20 @@
     "previous_origin_url": "https://www.pdufa.bio/pdufa/TAK",
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
-    "disposition": "BLOCKED",
-    "reason": "September 30 is a month-end calendar claim. The exact goal, FDA NDA number and application-cycle action need a primary crosswalk.",
-    "application_id": "",
-    "supplement": "",
-    "review_cycle": "",
-    "goal_date": "2026-09-30",
-    "action_date": "",
+    "disposition": "VERIFIED",
+    "reason": "FDA documents original NDA220860, PDUFA goal 2026-08-10, and approval action 2026-08-05. The prior calendar date remains as an unverified claim. DEA scheduling publication sets the statutory approval date separately.",
+    "application_id": "NDA220860",
+    "supplement": "NONE",
+    "review_cycle": "INITIAL",
+    "goal_date": "2026-08-10",
+    "action_date": "2026-08-05",
     "source_urls": [
-      "https://www.pdufa.bio/pdufa/TAK"
+      "https://www.pdufa.bio/pdufa/TAK",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220860Orig1s000MultidisciplineR.pdf",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220860Orig1s000Approv.pdf",
+      "https://www.govinfo.gov/content/pkg/FR-2026-11-12/xhtml/FR-2026-11-12.html"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
   },
   {
     "record_id": "2026-L1-055",
@@ -1324,17 +1340,18 @@
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
     "disposition": "BLOCKED",
-    "reason": "Sponsor described a fourth-quarter goal window; FDA approved the IgAN S-046 indication in October. Exact original target day is still unverified.",
+    "reason": "FDA confirms BLA 761108/S-046 for proteinuria in adult primary IgA nephropathy. Exact goal and amendment history remain unavailable.",
     "application_id": "BLA761108",
     "supplement": "S-046",
-    "review_cycle": "",
+    "review_cycle": "SUPPLEMENT",
     "goal_date": "2026-12-31",
     "action_date": "2026-10-21",
     "source_urls": [
       "https://www.astrazeneca.com/media-centre/press-releases/2026/ultomiris-granted-priority-review-in-the-us-as-treatment-for-adults-with-immunoglobulin-a-nephropathy.html",
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761108",
-      "https://www.pdufa.bio/fda-decision/AZN-2026-10-21"
+      "https://www.pdufa.bio/fda-decision/AZN-2026-10-21",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/125166Orig1s455%2C%20761108Orig1s046ltr.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T18:45:03.792777+00:00"
   }
 ]

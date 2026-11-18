@@ -92,5 +92,54 @@ class Level1AuditTests(unittest.TestCase):
         result = run([row()], expected=196)
         self.assertFalse(result["complete"])
 
+
+
+class RecoveredContractTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        import json
+        from scripts.audit_2026_unrestricted_level1 import validate_snapshot
+
+        parent = Path(__file__).resolve().parents[1] / "reports/2026-unrestricted-level1/2026-11-18"
+        cls.snapshot = parent / "reconciled"
+        cls.totals = validate_snapshot(cls.snapshot)
+        cls.rows = json.loads((cls.snapshot / "assessments.json").read_text())
+
+    def test_past_excludes_prospective_and_keeps_outcomes_out_of_blind_metrics(self):
+        from scripts.project_2026_level1_contracts import project
+
+        past = project(self.rows, pool_ncts=set(), focus_ncts=set())["PAST"]
+        self.assertEqual(len(past), self.totals["historical_scoring"]["historical"])
+        self.assertTrue(all(r["actualOutcome"] and r["blindPrediction"] is None for r in past))
+        self.assertEqual(len({r["eventKey"] for r in past}), len(past))
+
+    def test_pool_is_an_exact_trial_join_against_existing_eligibility(self):
+        from scripts.project_2026_level1_contracts import project
+
+        nct = "NCT04526106"
+        views = project(self.rows, pool_ncts={nct}, focus_ncts=set())
+        self.assertEqual([r["id"] for r in views["POOL"]], [nct])
+        self.assertFalse(views["FOCUS"])
+
+    def test_focus_matches_only_existing_focus_roster_membership(self):
+        from scripts.project_2026_level1_contracts import project
+
+        views = project(self.rows, pool_ncts=set(), focus_ncts={"NCT04526106"})
+        self.assertFalse(views["POOL"])
+        self.assertEqual([r["nct"] for r in views["FOCUS"]], ["NCT04526106"])
+
+    def test_assessments_keep_versions_and_do_not_invent_numeric_confidence(self):
+        from scripts.project_2026_level1_contracts import project
+
+        items = project(self.rows, pool_ncts=set(), focus_ncts=set())["ASSESSMENTS"]
+        self.assertEqual(len(items), self.totals["distinct_verified_events"])
+        self.assertEqual(len({r["assessmentVersionId"] for r in items}), len(items))
+        self.assertTrue(all(r["level"] == 1 and r["confidencePercent"] is None for r in items))
+        self.assertEqual([r["pdufaDate"] for r in items], sorted(r["pdufaDate"] for r in items))
+        frozen = [r for r in items if r["frozenAt"]]
+        self.assertEqual(len(frozen), self.totals["historical_scoring"]["future"])
+        self.assertTrue(all(r["predictedOutcome"] == "ABSTAIN" for r in frozen))
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -2018,12 +2018,12 @@
     "confidence_basis": "Qualitative judgment; no calibrated percentage available"
   },
   {
-    "application_id": "",
-    "review_cycle": "",
-    "supplement": "",
+    "application_id": "NDA220848",
+    "review_cycle": "INITIAL",
+    "supplement": "NONE",
     "indication": "Cardiovascular Hypercholesterolemia incl. HeFH (LDL-C lowering)",
-    "pdufa_date": "2026-07-16",
-    "goal_source_url": "",
+    "pdufa_date": "2027-02-22",
+    "goal_source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220848Orig1s000RiskR.pdf",
     "prediction": "",
     "prediction_kind": "OUTCOME_AWARE",
     "prediction_frozen_at": "",
@@ -2031,22 +2031,44 @@
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
     "model_version": "level1-owner-research-2026-11-18-v1",
-    "actual_outcome": "",
-    "outcome_action_date": "",
+    "actual_outcome": "APPROVE",
+    "outcome_action_date": "2026-07-15",
     "outcome_published_at": "",
-    "source_url": "",
+    "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220848Orig1s000Approv.pdf",
     "drug": "Lipfendra (enlicitide decanoate)",
-    "application_type": "",
+    "application_type": "NDA",
     "sponsor": "Merck & Co., Inc.",
     "original_pdufa_date": "",
-    "goal_date_history": [],
+    "goal_date_history": [
+      {
+        "date": "2026-07-16",
+        "status": "UNVERIFIED_CALENDAR_CLAIM",
+        "source_url": "https://www.pdufa.bio/ticker/MRK"
+      },
+      {
+        "date": "2027-02-22",
+        "status": "CURRENT",
+        "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220848Orig1s000RiskR.pdf"
+      }
+    ],
     "review_cycle_basis": "",
-    "regulatory_status": "CALENDAR_DECIDED",
+    "regulatory_status": "FDA_REVIEW_COMPLETED_OUTSIDE_GOAL_COHORT",
     "approval_route": "",
-    "verification_status": "BLOCKED",
-    "applicability": "GOAL_DATE_CANDIDATE",
+    "verification_status": "NOT_PDUFA",
+    "applicability": "GOAL_OUTSIDE_2026",
     "origin_url": "https://www.pdufa.bio/ticker/MRK",
-    "source_receipts": [],
+    "source_receipts": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220848Orig1s000RiskR.pdf",
+        "retrieved_at": "2026-11-18T18:39:41Z",
+        "sha256": "5185451ea3e63c24d51f66e6e4320822a63a7b112eb8c25ac7c74af03d2053c7"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220848Orig1s000Approv.pdf",
+        "retrieved_at": "2026-11-18T18:42:57Z",
+        "sha256": "46e0610913143a52e335ed6075698a8b6f0c6d33f7d66d939cab9f6022c8ea4c"
+      }
+    ],
     "trial_ids": [],
     "phase": "",
     "endpoint": "",
@@ -2056,14 +2078,9 @@
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
+    "rationale": "The original NDA risk review lists February 22, 2027 as the PDUFA goal and July 13, 2026 as the review completion date.",
     "evidence_gaps": [
-      "Cross-check the product approval letter and exact FDA goal for enlicitide. The calendar’s July 16 assertion is not independently established by an approval announcement.",
-      "Exact application number, supplement and review cycle require primary-source reconciliation",
-      "Goal date requires direct FDA or sponsor confirmation",
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "The July 16 calendar claim is unsupported as a PDUFA goal. The verified goal falls outside the cohort."
     ],
     "evidence_sources": [],
     "prior_prediction_artifacts": [],
@@ -2072,7 +2089,7 @@
     "record_id": "2026-L1-026",
     "confidence_percent": "",
     "ticker": "MRK",
-    "assessment_disposition": "IDENTITY_BLOCKED",
+    "assessment_disposition": "EXCLUDED",
     "confidence_basis": "Qualitative judgment; no calibrated percentage available"
   },
   {
@@ -3320,12 +3337,12 @@
     "confidence_basis": "Qualitative judgment; no calibrated percentage available"
   },
   {
-    "application_id": "",
-    "review_cycle": "",
-    "supplement": "",
-    "indication": "Fibrodysplasia Ossificans Progressiva (FOP)",
-    "pdufa_date": "2026-08-31",
-    "goal_source_url": "",
+    "application_id": "BLA761508",
+    "review_cycle": "INITIAL",
+    "supplement": "NONE",
+    "indication": "Adults with fibrodysplasia ossificans progressiva",
+    "pdufa_date": "2026-08-19",
+    "goal_source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761508Orig1s000RiskR.pdf",
     "prediction": "",
     "prediction_kind": "OUTCOME_AWARE",
     "prediction_frozen_at": "",
@@ -3333,49 +3350,80 @@
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
     "model_version": "level1-owner-research-2026-11-18-v1",
-    "actual_outcome": "",
-    "outcome_action_date": "",
+    "actual_outcome": "APPROVE",
+    "outcome_action_date": "2026-08-19",
     "outcome_published_at": "",
-    "source_url": "",
+    "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761508Orig1s000Approv.pdf",
     "drug": "Garetosmab - (OPTIMA)",
-    "application_type": "",
+    "application_type": "BLA",
     "sponsor": "Regeneron Pharmaceuticals Inc.",
     "original_pdufa_date": "",
-    "goal_date_history": [],
-    "review_cycle_basis": "",
-    "regulatory_status": "CALENDAR_DECIDED",
-    "approval_route": "",
-    "verification_status": "BLOCKED",
+    "goal_date_history": [
+      {
+        "date": "2026-08-31",
+        "status": "UNVERIFIED_CALENDAR_CLAIM",
+        "source_url": "https://www.pdufa.bio/pdufa/REGN"
+      },
+      {
+        "date": "2026-08-19",
+        "status": "CURRENT",
+        "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761508Orig1s000RiskR.pdf"
+      }
+    ],
+    "review_cycle_basis": "Original application documented by FDA. The calendar date was an unverified lead.",
+    "regulatory_status": "APPROVE",
+    "approval_route": "Traditional approval",
+    "verification_status": "VERIFIED",
     "applicability": "GOAL_DATE_CANDIDATE",
     "origin_url": "https://www.pdufa.bio/pdufa/REGN",
-    "source_receipts": [],
-    "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
-    "assessment": "INDETERMINATE",
-    "assessment_kind": "OUTCOME_AWARE",
-    "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
-    "evidence_gaps": [
-      "Confirm whether the reported August 31 date is a month-end estimate or an actual FDA goal. Regeneron program updates do not resolve exact BLA number, cycle and date together.",
-      "Exact application number, supplement and review cycle require primary-source reconciliation",
-      "Goal date requires direct FDA or sponsor confirmation",
-      "Calendar reports month precision; date may be a placeholder",
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+    "source_receipts": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761508Orig1s000RiskR.pdf",
+        "retrieved_at": "2026-11-18T18:42:57Z",
+        "sha256": "9fb416b7dedd60717c43a11ce0373e050d49f11de8dc70617eb1ecddf9f80621"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/761508Orig1s000Approv.pdf",
+        "retrieved_at": "2026-11-18T18:42:57Z",
+        "sha256": "9cf6058ebf5ad0aa015fb057a2c2f88538f4245111a42af3bd15b193899cb574"
+      },
+      {
+        "url": "https://pubmed.ncbi.nlm.nih.gov/42805227/",
+        "retrieved_at": "2026-11-18T18:43:57Z",
+        "sha256": "11d1f7d838c0c7ede0676433b50a4ec0f6f2d70e3cc10f0b6ec04a202bebd2b8"
+      }
     ],
-    "evidence_sources": [],
+    "trial_ids": [
+      "NCT05394116"
+    ],
+    "phase": "Phase 3",
+    "endpoint": "CT-measured total new heterotopic bone lesions and treatment-emergent adverse events of special interest through week 56",
+    "effect_size": "19 new lesions with placebo versus 1 (rate ratio 0.06, 95% CI 0.00–0.73) and 2 (0.10, 0.01–0.76) in the two active arms.",
+    "statistical_significance": "Reported p=0.027 and 0.026 for the 3 and 10 mg/kg arms versus placebo.",
+    "safety": "Treatment-emergent adverse events of special interest in 1/21, 0/19, and 4/23 participants respectively. No deaths reported in OPTIMA.",
+    "assessment": "APPROVE",
+    "assessment_kind": "OUTCOME_AWARE",
+    "confidence": "MODERATE",
+    "rationale": "A randomized trial showed a large reduction in new lesions. Small sample and dose-related adverse events limit safety certainty.",
+    "evidence_gaps": [
+      "Longer-term controlled clinical function and uncommon safety events",
+      "Calibrated numerical confidence unavailable"
+    ],
+    "evidence_sources": [
+      {
+        "url": "https://pubmed.ncbi.nlm.nih.gov/42805227/",
+        "retrieved_at": "2026-11-18T18:43:57Z",
+        "sha256": "11d1f7d838c0c7ede0676433b50a4ec0f6f2d70e3cc10f0b6ec04a202bebd2b8",
+        "published_on": ""
+      }
+    ],
     "prior_prediction_artifacts": [],
-    "action_alignment_status": "",
-    "assessment_recorded_at": "",
+    "action_alignment_status": "FDA_ACTION_RECORDED",
+    "assessment_recorded_at": "2026-11-18T18:45:03.792777+00:00",
     "record_id": "2026-L1-042",
     "confidence_percent": "",
     "ticker": "REGN",
-    "assessment_disposition": "IDENTITY_BLOCKED",
+    "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
     "confidence_basis": "Qualitative judgment; no calibrated percentage available"
   },
   {
@@ -3468,7 +3516,7 @@
   },
   {
     "application_id": "NDA218881",
-    "review_cycle": "",
+    "review_cycle": "SUPPLEMENT",
     "supplement": "S-001",
     "indication": "Oncology ER-positive, HER2-negative, ESR1-mutated advanced or metastatic breast cancer, in combination with abemaciclib",
     "pdufa_date": "2026-09-18",
@@ -3483,7 +3531,7 @@
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-09-18",
     "outcome_published_at": "",
-    "source_url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=218881",
+    "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218881Orig1s001ltr.pdf",
     "drug": "Inluriyo (imlunestrant) + Verzenio (abemaciclib) - (EMBER-3)",
     "application_type": "NDA",
     "sponsor": "ELI LILLY & Co",
@@ -3497,9 +3545,9 @@
     "origin_url": "https://www.pdufa.bio/ticker/LLY",
     "source_receipts": [
       {
-        "url": "https://www.fda.gov/media/89850/download",
-        "retrieved_at": "2026-11-18T17:35:33+00:00",
-        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/218881Orig1s001ltr.pdf",
+        "retrieved_at": "2026-11-18T18:42:57Z",
+        "sha256": "8be8e4685289b6c68691b710887716cfaf58af92056c87e00c31c6051b1b3aad"
       }
     ],
     "trial_ids": [],
@@ -3513,12 +3561,7 @@
     "confidence": "LOW",
     "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
     "evidence_gaps": [
-      "FDA confirms EMBER-3 combination approval September 18 and Drugs@FDA identifies S-001. The lead repeats the action date; a separate exact scheduled goal is unverified.",
-      "Exact application number, supplement and review cycle require primary-source reconciliation",
-      "Goal date requires direct FDA or sponsor confirmation",
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "FDA confirms NDA 218881/S-001 for the combination. The September 18 calendar entry still lacks direct evidence of an exact PDUFA goal."
     ],
     "evidence_sources": [],
     "prior_prediction_artifacts": [],
@@ -3989,11 +4032,11 @@
   },
   {
     "application_id": "NDA220425",
-    "review_cycle": "",
+    "review_cycle": "INITIAL",
     "supplement": "NONE",
-    "indication": "",
-    "pdufa_date": "2026-09-27",
-    "goal_source_url": "",
+    "indication": "Previously treated unresectable, locally advanced or metastatic cholangiocarcinoma with FGFR2 fusion or other rearrangement in adults",
+    "pdufa_date": "2026-09-25",
+    "goal_source_url": "https://elevartx.com/2026/09/22/elevar-conditional-acceptance-lyrfigtu/",
     "prediction": "",
     "prediction_kind": "OUTCOME_AWARE",
     "prediction_frozen_at": "",
@@ -4001,48 +4044,92 @@
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
     "model_version": "level1-owner-research-2026-11-18-v1",
-    "actual_outcome": "",
-    "outcome_action_date": "",
+    "actual_outcome": "APPROVE",
+    "outcome_action_date": "2026-09-23",
     "outcome_published_at": "",
-    "source_url": "",
+    "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220425Orig1s000ltr.pdf",
     "drug": "lirafugratinib",
     "application_type": "NDA",
     "sponsor": "Elevar Therapeutics",
-    "original_pdufa_date": "",
-    "goal_date_history": [],
-    "review_cycle_basis": "",
-    "regulatory_status": "CALENDAR_DECIDED",
-    "approval_route": "",
-    "verification_status": "BLOCKED",
+    "original_pdufa_date": "2026-09-27",
+    "goal_date_history": [
+      {
+        "date": "2026-09-27",
+        "status": "SUPERSEDED",
+        "source_url": "https://elevartx.com/2026/03/30/elevar-fda-acceptance-lira/"
+      },
+      {
+        "date": "2026-09-25",
+        "status": "CURRENT",
+        "source_url": "https://elevartx.com/2026/09/22/elevar-conditional-acceptance-lyrfigtu/"
+      }
+    ],
+    "review_cycle_basis": "FDA approval letter identifies January 27 receipt and the original NDA. The September sponsor disclosure gives the latest publicly reported target. The FDA amendment notice or an explanation for the two-day difference is unavailable.",
+    "regulatory_status": "APPROVE",
+    "approval_route": "Traditional approval",
+    "verification_status": "VERIFIED",
     "applicability": "GOAL_DATE_CANDIDATE",
     "origin_url": "https://www.assyro.com/tools/pdufa-calendar/2026",
-    "source_receipts": [],
-    "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
-    "assessment": "INDETERMINATE",
-    "assessment_kind": "OUTCOME_AWARE",
-    "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
-    "evidence_gaps": [
-      "FDA approves NDA 220425 September 23. September 27 appears in a launch/review lead, but this pass did not secure the primary archived target statement.",
-      "Calendar payload omits the per-event primary goal document",
-      "Verify application-cycle indication and amendment history",
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+    "source_receipts": [
+      {
+        "url": "https://elevartx.com/2026/03/30/elevar-fda-acceptance-lira/",
+        "retrieved_at": "2026-11-18T18:39:41Z",
+        "sha256": "c7f626fabf60e830012c6f49899075c2cad0f94328522ceec369017a83c98604"
+      },
+      {
+        "url": "https://elevartx.com/2026/09/22/elevar-conditional-acceptance-lyrfigtu/",
+        "retrieved_at": "2026-11-18T18:39:41Z",
+        "sha256": "8217ba42e0975e57d170a7085d613931391061659749d8b583dff94a8d1e6106"
+      },
+      {
+        "url": "https://www.fda.gov/drugs/cancer-approvals/fda-approves-lirafugratinib-previously-treated-unresectable-locally-advanced-or-metastatic",
+        "retrieved_at": "2026-11-18T18:39:41Z",
+        "sha256": "fc2acd57c205ed87c8d5f1ac5345cd61fa428546f3456ff64758bf29f1a52854"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220425Orig1s000ltr.pdf",
+        "retrieved_at": "2026-11-18T18:39:41Z",
+        "sha256": "6a03fe038968a84cd56fa85e6f5b3c6cf82d6f140df4d3d14b579f68fe905ca1"
+      }
     ],
-    "evidence_sources": [],
+    "trial_ids": [
+      "NCT04526106"
+    ],
+    "phase": "Phase 1/2",
+    "endpoint": "Independent review RECIST v1.1 objective response rate and duration of response",
+    "effect_size": "116 patients. ORR 46% (95% CI 36–55), median DOR 11.8 months (95% CI 7.5–13.0).",
+    "statistical_significance": "Estimation with 95% CIs. No comparative hypothesis test reported in the FDA notice.",
+    "safety": "FDA lists ocular toxicity, hyperphosphatemia and soft tissue mineralization, and embryofetal toxicity.",
+    "assessment": "APPROVE",
+    "assessment_kind": "OUTCOME_AWARE",
+    "confidence": "MODERATE",
+    "rationale": "The independent responses and their durability support benefit in the reviewed indication. The single-arm design and safety monitoring requirements limit comparative inference. FDA approval was known when this assessment was recorded.",
+    "evidence_gaps": [
+      "Controlled comparative efficacy and safety estimates",
+      "FDA notice explaining the difference between the two sponsor-disclosed goal dates",
+      "Calibrated numerical confidence unavailable"
+    ],
+    "evidence_sources": [
+      {
+        "url": "https://www.fda.gov/drugs/cancer-approvals/fda-approves-lirafugratinib-previously-treated-unresectable-locally-advanced-or-metastatic",
+        "retrieved_at": "2026-11-18T18:39:41Z",
+        "sha256": "fc2acd57c205ed87c8d5f1ac5345cd61fa428546f3456ff64758bf29f1a52854",
+        "published_on": "2026-09-23"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220425Orig1s000ltr.pdf",
+        "retrieved_at": "2026-11-18T18:39:41Z",
+        "sha256": "6a03fe038968a84cd56fa85e6f5b3c6cf82d6f140df4d3d14b579f68fe905ca1",
+        "published_on": "2026-09-23"
+      }
+    ],
     "prior_prediction_artifacts": [],
-    "action_alignment_status": "",
-    "assessment_recorded_at": "",
+    "action_alignment_status": "APPROVED_BEFORE_GOAL",
+    "assessment_recorded_at": "2026-11-18T18:45:03.792777+00:00",
     "record_id": "2026-L1-051",
     "confidence_percent": "",
     "ticker": "",
-    "assessment_disposition": "IDENTITY_BLOCKED",
+    "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
     "confidence_basis": "Qualitative judgment; no calibrated percentage available"
   },
   {
@@ -4139,11 +4226,11 @@
   },
   {
     "application_id": "NDA220106",
-    "review_cycle": "",
+    "review_cycle": "INITIAL",
     "supplement": "NONE",
-    "indication": "Dermatomyositis (DM)",
-    "pdufa_date": "2026-09-30",
-    "goal_source_url": "",
+    "indication": "Adult dermatomyositis",
+    "pdufa_date": "2026-08-28",
+    "goal_source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220106Orig1s000OtherR.pdf",
     "prediction": "",
     "prediction_kind": "OUTCOME_AWARE",
     "prediction_frozen_at": "",
@@ -4154,61 +4241,86 @@
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-08-27",
     "outcome_published_at": "",
-    "source_url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220106",
+    "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220106Orig1s000Approv.pdf",
     "drug": "Brepocitinib - (VALOR)",
     "application_type": "NDA",
     "sponsor": "Roivant Sciences Ltd.",
     "original_pdufa_date": "",
-    "goal_date_history": [],
-    "review_cycle_basis": "",
+    "goal_date_history": [
+      {
+        "date": "2026-09-30",
+        "status": "UNVERIFIED_CALENDAR_CLAIM",
+        "source_url": "https://www.pdufa.bio/pdufa/ROIV"
+      },
+      {
+        "date": "2026-08-28",
+        "status": "CURRENT",
+        "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220106Orig1s000OtherR.pdf"
+      }
+    ],
+    "review_cycle_basis": "Original application documented by FDA. The calendar date was an unverified lead.",
     "regulatory_status": "APPROVE",
-    "approval_route": "",
-    "verification_status": "BLOCKED",
+    "approval_route": "Traditional approval",
+    "verification_status": "VERIFIED",
     "applicability": "GOAL_DATE_CANDIDATE",
     "origin_url": "https://www.pdufa.bio/pdufa/ROIV",
     "source_receipts": [
       {
-        "url": "https://www.fda.gov/media/89850/download",
-        "retrieved_at": "2026-11-18T17:35:33+00:00",
-        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220106Orig1s000OtherR.pdf",
+        "retrieved_at": "2026-11-18T18:43:27Z",
+        "sha256": "bf29d651da379402014a2262c9749e6242d791a2eb91bafab92ff9b5d101bfd6"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220106Orig1s000Approv.pdf",
+        "retrieved_at": "2026-11-18T18:43:26Z",
+        "sha256": "4020d1abb3f0eb6261784105d600ca72d6c2258a99b8fd4cdd10e479b38f64a4"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220106Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T18:43:57Z",
+        "sha256": "4356e3ad316e4737bbaa9eec051f8158f8d16323d314612561b77011ea1e638d"
       }
     ],
-    "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
-    "assessment": "INDETERMINATE",
-    "assessment_kind": "OUTCOME_AWARE",
-    "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
-    "evidence_gaps": [
-      "September 30 is not confirmed as an exact goal. August action and the VALOR indication need exact original goal verification before the crosswalk can be counted.",
-      "Exact application number, supplement and review cycle require primary-source reconciliation",
-      "Goal date requires direct FDA or sponsor confirmation",
-      "Calendar reports quarter precision; date may be a placeholder",
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+    "trial_ids": [
+      "NCT05437263"
     ],
-    "evidence_sources": [],
+    "phase": "Phase 3",
+    "endpoint": "Week 52 mean Total Improvement Score, a six-domain myositis composite",
+    "effect_size": "Least-squares mean 47.5 versus 33.3, a difference of 14.2 points (95% CI 5.5–22.9) between the approved dose and placebo.",
+    "statistical_significance": "Adjusted ANCOVA 95% CI excludes zero. Label does not give a primary p-value.",
+    "safety": "Boxed warning for serious infection, mortality, malignancy, major cardiovascular events, and thrombosis.",
+    "assessment": "APPROVE",
+    "assessment_kind": "OUTCOME_AWARE",
+    "confidence": "MODERATE",
+    "rationale": "Controlled improvement on a prespecified composite supports benefit. The boxed warnings and limited sample constrain safety certainty.",
+    "evidence_gaps": [
+      "Longer follow-up and precision for rare safety events",
+      "Calibrated numerical confidence unavailable"
+    ],
+    "evidence_sources": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220106Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T18:43:57Z",
+        "sha256": "4356e3ad316e4737bbaa9eec051f8158f8d16323d314612561b77011ea1e638d",
+        "published_on": ""
+      }
+    ],
     "prior_prediction_artifacts": [],
-    "action_alignment_status": "",
-    "assessment_recorded_at": "",
+    "action_alignment_status": "FDA_ACTION_RECORDED",
+    "assessment_recorded_at": "2026-11-18T18:45:03.792777+00:00",
     "record_id": "2026-L1-053",
     "confidence_percent": "",
     "ticker": "ROIV",
-    "assessment_disposition": "IDENTITY_BLOCKED",
+    "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
     "confidence_basis": "Qualitative judgment; no calibrated percentage available"
   },
   {
-    "application_id": "",
-    "review_cycle": "",
-    "supplement": "",
-    "indication": "Narcolepsy type 1 (NT1)",
-    "pdufa_date": "2026-09-30",
-    "goal_source_url": "",
+    "application_id": "NDA220860",
+    "review_cycle": "INITIAL",
+    "supplement": "NONE",
+    "indication": "Narcolepsy type 1 in adults",
+    "pdufa_date": "2026-08-10",
+    "goal_source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220860Orig1s000MultidisciplineR.pdf",
     "prediction": "",
     "prediction_kind": "OUTCOME_AWARE",
     "prediction_frozen_at": "",
@@ -4216,49 +4328,87 @@
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
     "model_version": "level1-owner-research-2026-11-18-v1",
-    "actual_outcome": "",
-    "outcome_action_date": "",
+    "actual_outcome": "APPROVE",
+    "outcome_action_date": "2026-08-05",
     "outcome_published_at": "",
-    "source_url": "",
+    "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220860Orig1s000Approv.pdf",
     "drug": "Oveporexton (TAK-861-2001)",
-    "application_type": "",
+    "application_type": "NDA",
     "sponsor": "Takeda Pharmaceutical Co Ltd",
     "original_pdufa_date": "",
-    "goal_date_history": [],
-    "review_cycle_basis": "",
-    "regulatory_status": "CALENDAR_DECIDED",
-    "approval_route": "",
-    "verification_status": "BLOCKED",
+    "goal_date_history": [
+      {
+        "date": "2026-09-30",
+        "status": "UNVERIFIED_CALENDAR_CLAIM",
+        "source_url": "https://www.pdufa.bio/pdufa/TAK"
+      },
+      {
+        "date": "2026-08-10",
+        "status": "CURRENT",
+        "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220860Orig1s000MultidisciplineR.pdf"
+      }
+    ],
+    "review_cycle_basis": "Original application documented by FDA. The calendar date was an unverified lead. FDA action recorded August 5. The letter applies 21 USC 355(x) to the November 12 DEA scheduling publication.",
+    "regulatory_status": "FDA_APPROVED_2026-08-05; STATUTORY_APPROVAL_DATE_2026-11-12",
+    "approval_route": "Traditional approval",
+    "verification_status": "VERIFIED",
     "applicability": "GOAL_DATE_CANDIDATE",
     "origin_url": "https://www.pdufa.bio/pdufa/TAK",
-    "source_receipts": [],
-    "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
-    "assessment": "INDETERMINATE",
-    "assessment_kind": "OUTCOME_AWARE",
-    "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
-    "evidence_gaps": [
-      "September 30 is a month-end calendar claim. The exact goal, FDA NDA number and application-cycle action need a primary crosswalk.",
-      "Exact application number, supplement and review cycle require primary-source reconciliation",
-      "Goal date requires direct FDA or sponsor confirmation",
-      "Calendar reports quarter precision; date may be a placeholder",
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+    "source_receipts": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220860Orig1s000MultidisciplineR.pdf",
+        "retrieved_at": "2026-11-18T18:42:58Z",
+        "sha256": "1eb92e1cb155bbc3bf9696092ad982e5045f286ceae3498a0b22200edebf3f88"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220860Orig1s000Approv.pdf",
+        "retrieved_at": "2026-11-18T18:42:57Z",
+        "sha256": "576e1ff90924c5ed2b998d4e24b37a644388ae5f5d8c3a08818a36cb91391504"
+      },
+      {
+        "url": "https://www.govinfo.gov/content/pkg/FR-2026-11-12/xhtml/FR-2026-11-12.html",
+        "retrieved_at": "2026-11-18T18:43:58Z",
+        "sha256": "94afa494804a4a3683e029d96149c96f515da0e93c98d9495a47ff9d29c2f830"
+      }
     ],
-    "evidence_sources": [],
+    "trial_ids": [
+      "NCT06470828",
+      "NCT06505031"
+    ],
+    "phase": "Phase 3",
+    "endpoint": "Week 12 change in mean sleep latency on the Maintenance of Wakefulness Test",
+    "effect_size": "Placebo-adjusted improvement at the 2 mg trial dose was 17.20 minutes (95% CI 13.66–20.73) and 20.09 (16.57–23.61) across two trials.",
+    "statistical_significance": "Both 2 mg comparisons p<0.0001.",
+    "safety": "Review reports insomnia, frequent urination, urinary urgency, and excess salivation as common adverse events.",
+    "assessment": "APPROVE",
+    "assessment_kind": "OUTCOME_AWARE",
+    "confidence": "MODERATE",
+    "rationale": "Two placebo-controlled Phase 3 trials show consistent effects on objective wakefulness. Evidence in adults over 65 is limited.",
+    "evidence_gaps": [
+      "Long-term controlled effects and precision in adults over 65",
+      "Calibrated numerical confidence unavailable"
+    ],
+    "evidence_sources": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220860Orig1s000MultidisciplineR.pdf",
+        "retrieved_at": "2026-11-18T18:42:58Z",
+        "sha256": "1eb92e1cb155bbc3bf9696092ad982e5045f286ceae3498a0b22200edebf3f88",
+        "published_on": ""
+      },
+      {
+        "url": "https://www.govinfo.gov/content/pkg/FR-2026-11-12/xhtml/FR-2026-11-12.html",
+        "retrieved_at": "2026-11-18T18:43:58Z",
+        "sha256": "94afa494804a4a3683e029d96149c96f515da0e93c98d9495a47ff9d29c2f830",
+        "published_on": ""
+      }
+    ],
     "prior_prediction_artifacts": [],
-    "action_alignment_status": "",
-    "assessment_recorded_at": "",
+    "action_alignment_status": "FDA_ACTION_RECORDED",
+    "assessment_recorded_at": "2026-11-18T18:45:03.792777+00:00",
     "record_id": "2026-L1-054",
     "confidence_percent": "",
     "ticker": "TAK",
-    "assessment_disposition": "IDENTITY_BLOCKED",
+    "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
     "confidence_basis": "Qualitative judgment; no calibrated percentage available"
   },
   {
@@ -7310,7 +7460,7 @@
   },
   {
     "application_id": "BLA761108",
-    "review_cycle": "",
+    "review_cycle": "SUPPLEMENT",
     "supplement": "S-046",
     "indication": "Primary IgA nephropathy at risk of disease progression (reduce proteinuria; accelerated approval)",
     "pdufa_date": "2026-12-31",
@@ -7325,13 +7475,13 @@
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-10-21",
     "outcome_published_at": "",
-    "source_url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=761108",
+    "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/125166Orig1s455%2C%20761108Orig1s046ltr.pdf",
     "drug": "Ultomiris (ravulizumab) - IgA nephropathy",
     "application_type": "BLA",
     "sponsor": "AstraZeneca/Alexion",
     "original_pdufa_date": "",
     "goal_date_history": [],
-    "review_cycle_basis": "",
+    "review_cycle_basis": "FDA letter identifies original receipt on April 21, 2026 and BLA 761108/S-046.",
     "regulatory_status": "APPROVE",
     "approval_route": "",
     "verification_status": "BLOCKED",
@@ -7339,9 +7489,9 @@
     "origin_url": "https://www.pdufa.bio/fda-decision/AZN-2026-10-21",
     "source_receipts": [
       {
-        "url": "https://www.fda.gov/media/89850/download",
-        "retrieved_at": "2026-11-18T17:35:33+00:00",
-        "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/125166Orig1s455%2C%20761108Orig1s046ltr.pdf",
+        "retrieved_at": "2026-11-18T18:39:41Z",
+        "sha256": "f803e2d71eadf2bb4ebc7425961572a35b6da909dc5bffef7b8746d3913a4de7"
       }
     ],
     "trial_ids": [],
@@ -7355,13 +7505,7 @@
     "confidence": "LOW",
     "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
     "evidence_gaps": [
-      "Sponsor described a fourth-quarter goal window; FDA approved the IgAN S-046 indication in October. Exact original target day is still unverified.",
-      "Exact application number, supplement and review cycle require primary-source reconciliation",
-      "Goal date requires direct FDA or sponsor confirmation",
-      "Calendar reports month precision; date may be a placeholder",
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+      "FDA confirms BLA 761108/S-046 and the indication. Exact original/current PDUFA goal remains unverified. December 31 is an unconfirmed calendar date."
     ],
     "evidence_sources": [],
     "prior_prediction_artifacts": [],
