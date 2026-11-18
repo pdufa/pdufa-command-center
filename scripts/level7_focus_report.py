@@ -48,7 +48,10 @@ def main() -> int:
     result = run(args.db)
     payload = json.dumps(result, indent=2, sort_keys=True) + "\n"
     if args.output:
-        args.output.write_text(payload, encoding="utf-8")
+        args.output.parent.mkdir(parents=True, exist_ok=True)
+        temp = args.output.with_suffix(args.output.suffix + ".tmp")
+        temp.write_text(payload, encoding="utf-8")
+        temp.replace(args.output)
     else:
         print(payload, end="")
     return 0
