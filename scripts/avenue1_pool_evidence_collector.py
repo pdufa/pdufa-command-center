@@ -52,6 +52,7 @@ def study_evidence(nct):
     arms = (protocol.get("armsInterventionsModule") or {}).get("armGroups") or []
     references = (protocol.get("referencesModule") or {}).get("references") or []
     baseline = (results.get("baselineCharacteristicsModule") or {})
+    design_info = (protocol.get("designModule") or {}).get("designInfo") or {}
     # Null registry collections are treated as absent, not as clinical evidence.
     # Raw results are preserved for review; no efficacy claim is inferred.
     clinical_dimensions = {
@@ -68,8 +69,8 @@ def study_evidence(nct):
         "replication": "REQUIRES_INDEPENDENT_TRIAL_REVIEW",
         "endpoint_relevance": "REQUIRES_INDICATION_REVIEW",
         "evidence_quality": {
-            "allocation": (protocol.get("designModule") or {}).get("designInfo", {}).get("allocation"),
-            "masking": (protocol.get("designModule") or {}).get("designInfo", {}).get("maskingInfo"),
+            "allocation": design_info.get("allocation"),
+            "masking": design_info.get("maskingInfo"),
             "baseline_characteristics_posted": bool(baseline),
             "references": references,
         },
