@@ -1,0 +1,23 @@
+name: Blind L1 backtest tests
+on:
+  pull_request:
+    paths:
+      - 'scripts/blind_l1_2026_backtest.py'
+      - 'scripts/test_blind_l1_2026_backtest.py'
+      - 'scripts/reconcile_2026_pdufa_ledger.py'
+      - '.github/workflows/blind-l1-tests.yml'
+  workflow_dispatch:
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run blind backtest tests
+        run: python -m unittest discover -s scripts -p 'test_blind_l1_2026_backtest.py' -v
+      - name: Compile scripts
+        run: python -m py_compile scripts/blind_l1_2026_backtest.py scripts/reconcile_2026_pdufa_ledger.py
