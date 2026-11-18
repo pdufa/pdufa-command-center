@@ -42,7 +42,7 @@ def study_evidence(nct):
     protocol = study.get("protocolSection") or {}
     results = study.get("resultsSection") or {}
     outcomes = results.get("outcomeMeasuresModule") or {}\n    measures = outcomes.get("outcomeMeasures") or []\n    if not isinstance(measures, list) or any(not isinstance(m, dict) for m in measures):\n        raise ValueError("Invalid ClinicalTrials.gov outcome measure schema")
-    arms = (protocol.get("armsInterventionsModule") or {}).get("armGroups") or []
+    for measure in measures:\n        analyses = measure.get("analyses") or []\n        if not isinstance(analyses, list) or any(not isinstance(a, dict) for a in analyses):\n            raise ValueError("Invalid ClinicalTrials.gov outcome analysis schema")\n    arms = (protocol.get("armsInterventionsModule") or {}).get("armGroups") or []
     references = (protocol.get("referencesModule") or {}).get("references") or []
     baseline = (results.get("baselineCharacteristicsModule") or {})
     # Null registry collections are treated as absent, not as clinical evidence.\n    # Raw results are preserved for review; no efficacy claim is inferred.
