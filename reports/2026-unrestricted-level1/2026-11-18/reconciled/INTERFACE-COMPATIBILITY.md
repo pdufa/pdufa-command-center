@@ -12,3 +12,9 @@
 Contract tests exercise all four projections, exact NCT matching, empty membership, preserved outcomes, confidence null handling, abstentions and sorting. [Offline projector](../../../../scripts/project_2026_level1_contracts.py) · [Tests](../../../../tests/test_2026_unrestricted_level1_audit.py)
 
 The offline join found four trial links across three application cycles in the frontend's 32-trial FOCUS roster. The backend and frontend snapshots list the same 32 NCT IDs. Their as-of dates differ, November 14 in the backend package and November 17 in the frontend, so the packaged-roster equality regression fails. Updating those production input snapshots requires an independent publication decision.
+
+## Deployed read-only verification
+
+On November 18, 2026, the deployed PAST, POOL, FOCUS and ASSESSMENTS page routes returned HTTP 200 HTML. Their live data contracts remained protected. GET requests to the deployed POOL scope-funnel endpoint and the PAST, FOCUS and ASSESSMENTS runtime endpoints returned HTTP 401 JSON. The public frontend OpenAPI path returned 404. The configured backend OpenAPI probe did not return a response within 15 seconds. This verified route availability and authentication behavior. An authorized read-only owner session or redacted production schema export is needed to compare live payload fields and nullability. The development branch retains the offline mappings because the deployed checks established no compatible payload change.
+
+The checkout and deployed paths use distinct semantics. PAST has a historical queue and saved assessments; POOL serves a screened trial funnel; FOCUS joins exact NCTs and owner-saved reports; ASSESSMENTS serves authenticated, versioned readouts. The Level 1 workbook is application-cycle research across market caps. The four route shells do not establish compatibility with that workbook.

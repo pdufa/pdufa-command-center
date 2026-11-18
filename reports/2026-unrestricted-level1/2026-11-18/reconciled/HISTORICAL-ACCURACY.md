@@ -2,8 +2,8 @@
 
 | Measure | Count |
 | --- | ---: |
-| Verified historical decisions | 62 |
-| Outcome-aware retrospective assessments | 62 |
+| Verified historical decisions | 64 |
+| Outcome-aware retrospective assessments | 64 |
 | Correct eligible predecision predictions | 0 |
 | Incorrect eligible predecision predictions | 0 |
 | Eligible predecision prediction and outcome pairs | 0 |

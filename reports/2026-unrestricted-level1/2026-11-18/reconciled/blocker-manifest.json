@@ -1,5 +1,5 @@
 {
-  "as_of": "2026-11-18T18:51:14Z",
+  "as_of": "2026-11-18T19:29:45.816388+00:00",
   "complete": false,
   "year_population_blockers": [
     {
@@ -77,16 +77,6 @@
       ]
     },
     {
-      "record_id": "2026-L1-055",
-      "drug": "Rusfertide - (REVIVE)",
-      "application_id": "",
-      "goal_date": "2026-09-30",
-      "reason": "September 30 appears as a calendar estimate. Obtain the exact target from the filed NDA acceptance or dated sponsor communication and its matching FDA application identity.",
-      "sources": [
-        "https://www.pdufa.bio/ticker/PTGX"
-      ]
-    },
-    {
       "record_id": "2026-L1-057",
       "drug": "Jaypirca (pirtobrutinib) - previously untreated CLL/SLL",
       "application_id": "",
@@ -100,12 +90,13 @@
     {
       "record_id": "2026-L1-058",
       "drug": "Rhapsido (remibrutinib) - symptomatic dermographism",
-      "application_id": "",
+      "application_id": "NDA218436",
       "goal_date": "2026-10-06",
-      "reason": "Novartis confirms FDA approval for symptomatic dermographism. October 6 is an action lead; the filed supplement number and original exact PDUFA date remain unverified.",
+      "reason": "FDA labeling identifies NDA 218436/S-001 for symptomatic dermographism. October 6 is the action date, and an exact PDUFA goal is still unverified.",
       "sources": [
         "https://www.novartis.com/news/media-releases/novartis-rhapsido-remibrutinib-receives-fda-approval-first-treatment-symptomatic-dermographism-sd-expanding-its-use-beyond-chronic-spontaneous-urticaria-csu",
-        "https://www.pdufa.bio/fda-decision/NVS-2026-10-06"
+        "https://www.pdufa.bio/fda-decision/NVS-2026-10-06",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218436s001lbl.pdf"
       ]
     },
     {
@@ -113,11 +104,12 @@
       "drug": "Ifinatamab deruxtecan (I-DXd)",
       "application_id": "",
       "goal_date": "2026-10-10",
-      "reason": "Sponsor establishes October 10 for the ES-SCLC BLA. The reported pre-goal withdrawal is a nonbinary disposition; exact BLA number and direct withdrawal record remain unverified.",
+      "reason": "Merck confirms the October 10-goal small cell lung cancer application was voluntarily withdrawn September 25 after FDA feedback. The exact BLA number remains unavailable.",
       "sources": [
         "https://www.merck.com/news/ifinatamab-deruxtecan-granted-priority-review-in-the-u-s-for-adult-patients-with-previously-treated-extensive-stage-small-cell-lung-cancer-who-experienced-disease-progression-on-or-after-platinum-bas/",
         "https://www.sec.gov/Archives/edgar/data/310158/000162828026029802/mrk-20260331.htm",
-        "https://www.pdufa.bio/pdufa/MRK-ifinatamab-deruxtecan"
+        "https://www.pdufa.bio/pdufa/MRK-ifinatamab-deruxtecan",
+        "https://www.merck.com/news/ifinatamab-deruxtecan-biologics-license-application-for-certain-patients-with-previously-treated-extensive-stage-small-cell-lung-cancer-voluntarily-withdrawn/"
       ]
     },
     {
@@ -358,18 +350,6 @@
       ]
     },
     {
-      "record_id": "2026-L1-094",
-      "drug": "JUVMO (tavapadon)",
-      "application_id": "NDA220415",
-      "goal_date": "2026-12-31",
-      "reason": "FDA letter identifies NDA 220415 and September 25 effective approval. The December 31 calendar value is unsupported as an exact PDUFA goal.",
-      "sources": [
-        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220415Orig1s000ltr.pdf",
-        "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220415",
-        "https://www.pdufa.bio/pdufa/ABBV-tavapadon"
-      ]
-    },
-    {
       "record_id": "2026-L1-095",
       "drug": "KERENDIA (finerenone), T1D-CKD",
       "application_id": "",
@@ -559,15 +539,14 @@
       "application_id": "BLA761195",
       "goal_date": "2026-05-10",
       "reason": [
-        "ADAPT-SERON exact NCT, effect size, statistical method and arm-level safety"
+        "Detailed serologic subgroup and formulation-specific safety estimates",
+        "Calibrated numerical confidence unavailable"
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/1697862/000110465926003037/tm262983d1_ex99-1.htm",
         "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761195s016lbl761304s018lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
-        "statistical_significance",
         "confidence_percent"
       ]
     },
@@ -594,15 +573,16 @@
       "application_id": "BLA022472",
       "goal_date": "2026-05-29",
       "reason": [
-        "Age-band-specific A1c effect, noninferiority analysis, NCT and pulmonary safety"
+        "Full FDA benefit–risk rationale for approval despite missed endpoint",
+        "Age-band and diabetes-type estimates",
+        "Calibrated numerical confidence unavailable"
       ],
       "sources": [
         "https://www.sec.gov/Archives/edgar/data/899460/000119312526243074/mnkd-20260527.htm",
-        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/022472Orig1s029.ltr.pdf"
+        "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/022472Orig1s029.ltr.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/022472s029lbl.pdf"
       ],
       "missing_required_fields": [
-        "trial_ids",
-        "statistical_significance",
         "confidence_percent"
       ]
     },
@@ -1256,6 +1236,23 @@
       ]
     },
     {
+      "record_id": "2026-L1-055",
+      "drug": "Rusfertide - (REVIVE)",
+      "application_id": "NDA220605",
+      "goal_date": "2026-08-29",
+      "reason": [
+        "Long-term comparative effects on thrombosis and disease progression",
+        "Calibrated numerical confidence unavailable"
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220605Orig1s000RiskR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220605Orig1s000lbl.pdf"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
       "record_id": "2026-L1-056",
       "drug": "ISEMBYLD (apitegromab-mstn) - (SAPPHIRE)",
       "application_id": "BLA761463",
@@ -1482,6 +1479,24 @@
         "https://www.gene.com/media/press-releases/15100/2026-02-19/fda-accepts-new-drug-application-for-gen",
         "https://www.fda.gov/drugs/cancer-approvals/fda-approves-giredestrant-combination-everolimus-er-positive-her2-negative-esr1-mutated-locally",
         "https://www.roche.com/media/releases/med-cor-2026-11-16b"
+      ],
+      "missing_required_fields": [
+        "confidence_percent"
+      ]
+    },
+    {
+      "record_id": "2026-L1-094",
+      "drug": "JUVMO (tavapadon)",
+      "application_id": "NDA220415",
+      "goal_date": "2026-09-25",
+      "reason": [
+        "Durability and uncommon harms beyond the controlled study periods",
+        "Calibrated numerical confidence unavailable",
+        "Resolve Study 2 p-value discrepancy between the FDA label narrative and table."
+      ],
+      "sources": [
+        "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220415Orig1s000RiskR.pdf",
+        "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220415Orig1s000lbl.pdf"
       ],
       "missing_required_fields": [
         "confidence_percent"

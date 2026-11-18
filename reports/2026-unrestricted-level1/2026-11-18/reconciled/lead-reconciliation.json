@@ -550,17 +550,20 @@
     "previous_origin_url": "https://www.pdufa.bio/ticker/PTGX",
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
-    "disposition": "BLOCKED",
-    "reason": "September 30 appears as a calendar estimate. Obtain the exact target from the filed NDA acceptance or dated sponsor communication and its matching FDA application identity.",
-    "application_id": "",
-    "supplement": "",
-    "review_cycle": "",
-    "goal_date": "2026-09-30",
-    "action_date": "",
+    "disposition": "VERIFIED",
+    "reason": "FDA documents NDA220605, original review goal 2026-08-29, and approval 2026-08-28. The calendar estimate 2026-09-30 is retained in the date history.",
+    "application_id": "NDA220605",
+    "supplement": "NONE",
+    "review_cycle": "INITIAL",
+    "goal_date": "2026-08-29",
+    "action_date": "2026-08-28",
     "source_urls": [
-      "https://www.pdufa.bio/ticker/PTGX"
+      "https://www.pdufa.bio/ticker/PTGX",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220605Orig1s000RiskR.pdf",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220605Orig1s000Approv.pdf",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220605Orig1s000lbl.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T19:29:45.816388+00:00"
   },
   {
     "record_id": "2026-L1-057",
@@ -594,17 +597,18 @@
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
     "disposition": "BLOCKED",
-    "reason": "Novartis confirms FDA approval for symptomatic dermographism. October 6 is an action lead; the filed supplement number and original exact PDUFA date remain unverified.",
-    "application_id": "",
-    "supplement": "",
-    "review_cycle": "",
+    "reason": "FDA labeling identifies NDA 218436/S-001 for symptomatic dermographism. October 6 is the action date, and an exact PDUFA goal is still unverified.",
+    "application_id": "NDA218436",
+    "supplement": "S-001",
+    "review_cycle": "SUPPLEMENT",
     "goal_date": "2026-10-06",
     "action_date": "",
     "source_urls": [
       "https://www.novartis.com/news/media-releases/novartis-rhapsido-remibrutinib-receives-fda-approval-first-treatment-symptomatic-dermographism-sd-expanding-its-use-beyond-chronic-spontaneous-urticaria-csu",
-      "https://www.pdufa.bio/fda-decision/NVS-2026-10-06"
+      "https://www.pdufa.bio/fda-decision/NVS-2026-10-06",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218436s001lbl.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T19:29:45.816388+00:00"
   },
   {
     "record_id": "2026-L1-059",
@@ -640,18 +644,19 @@
     "previous_goal_source_url": "https://www.sec.gov/Archives/edgar/data/310158/000162828026029802/mrk-20260331.htm",
     "previous_action_source_url": "",
     "disposition": "BLOCKED",
-    "reason": "Sponsor establishes October 10 for the ES-SCLC BLA. The reported pre-goal withdrawal is a nonbinary disposition; exact BLA number and direct withdrawal record remain unverified.",
+    "reason": "Merck confirms the October 10-goal small cell lung cancer application was voluntarily withdrawn September 25 after FDA feedback. The exact BLA number remains unavailable.",
     "application_id": "",
     "supplement": "",
     "review_cycle": "",
     "goal_date": "2026-10-10",
-    "action_date": "",
+    "action_date": "2026-09-25",
     "source_urls": [
       "https://www.merck.com/news/ifinatamab-deruxtecan-granted-priority-review-in-the-u-s-for-adult-patients-with-previously-treated-extensive-stage-small-cell-lung-cancer-who-experienced-disease-progression-on-or-after-platinum-bas/",
       "https://www.sec.gov/Archives/edgar/data/310158/000162828026029802/mrk-20260331.htm",
-      "https://www.pdufa.bio/pdufa/MRK-ifinatamab-deruxtecan"
+      "https://www.pdufa.bio/pdufa/MRK-ifinatamab-deruxtecan",
+      "https://www.merck.com/news/ifinatamab-deruxtecan-biologics-license-application-for-certain-patients-with-previously-treated-extensive-stage-small-cell-lung-cancer-voluntarily-withdrawn/"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T19:29:45.816388+00:00"
   },
   {
     "record_id": "2026-L1-061",
@@ -1295,19 +1300,22 @@
     "previous_origin_url": "https://www.pdufa.bio/pdufa/ABBV-tavapadon",
     "previous_goal_source_url": "",
     "previous_action_source_url": "",
-    "disposition": "BLOCKED",
-    "reason": "FDA letter identifies NDA 220415 and September 25 effective approval. The December 31 calendar value is unsupported as an exact PDUFA goal.",
+    "disposition": "VERIFIED",
+    "reason": "FDA documents NDA220415, original review goal 2026-09-25, and approval 2026-09-25. The calendar estimate 2026-12-31 is retained in the date history.",
     "application_id": "NDA220415",
     "supplement": "NONE",
-    "review_cycle": "",
-    "goal_date": "2026-12-31",
+    "review_cycle": "INITIAL",
+    "goal_date": "2026-09-25",
     "action_date": "2026-09-25",
     "source_urls": [
       "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/220415Orig1s000ltr.pdf",
       "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220415",
-      "https://www.pdufa.bio/pdufa/ABBV-tavapadon"
+      "https://www.pdufa.bio/pdufa/ABBV-tavapadon",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220415Orig1s000RiskR.pdf",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220415Orig1s000Approv.pdf",
+      "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220415Orig1s000lbl.pdf"
     ],
-    "reviewed_at": "2026-11-18T18:25:46+00:00"
+    "reviewed_at": "2026-11-18T19:29:45.816388+00:00"
   },
   {
     "record_id": "2026-L1-095",

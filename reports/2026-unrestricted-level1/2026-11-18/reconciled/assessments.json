@@ -832,7 +832,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-05-08",
     "outcome_published_at": "",
@@ -869,20 +869,28 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761195s016lbl761304s018lbl.pdf",
+        "retrieved_at": "2026-11-18T19:28:29Z",
+        "sha256": "b4f0c432ae6a7b8313a088302283ffa96915067af3e261b166dc80b257275eaa"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT06298552"
+    ],
     "phase": "3",
-    "endpoint": "ADAPT-SERON MG-ADL change in AChR antibody-seronegative gMG",
-    "effect_size": "Trial-specific effect needs extraction for the IV and SC forms and applicable planned analysis.",
-    "statistical_significance": "",
-    "safety": "Full cohort-specific safety, including infection and immunoglobulin effects, needs review.",
+    "endpoint": "ADAPT-SERON part A change in MG-ADL total score at week 4.",
+    "effect_size": "IV efgartigimod versus placebo least-squares mean difference −1.46 points (95% CI −2.50 to −0.41).",
+    "statistical_significance": "Primary comparison p=0.0068.",
+    "safety": "The label describes infection, hypersensitivity and infusion-related risks.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "FDA confirmed the exact supplement and patient population. Quantitative efficacy and adverse events remain evidence blockers.",
+    "rationale": "The pivotal randomized study showed improved activities of daily living in the population lacking AChR antibodies. Both supplement approvals were already observable.",
     "evidence_gaps": [
-      "ADAPT-SERON exact NCT, effect size, statistical method and arm-level safety"
+      "Detailed serologic subgroup and formulation-specific safety estimates",
+      "Calibrated numerical confidence unavailable"
     ],
     "evidence_sources": [
       {
@@ -890,11 +898,17 @@
         "published_on": "",
         "retrieved_at": "2026-11-18T18:01:23.613721+00:00",
         "sha256": "b4f0c432ae6a7b8313a088302283ffa96915067af3e261b166dc80b257275eaa"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/761195s016lbl761304s018lbl.pdf",
+        "retrieved_at": "2026-11-18T19:28:29Z",
+        "sha256": "b4f0c432ae6a7b8313a088302283ffa96915067af3e261b166dc80b257275eaa",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:29:45.816388+00:00",
     "record_id": "2026-L1-011",
     "confidence_percent": "",
     "ticker": "ARGX",
@@ -1002,7 +1016,7 @@
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v3",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-05-29",
     "outcome_published_at": "",
@@ -1039,30 +1053,45 @@
         "url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=022472",
         "retrieved_at": "2026-11-18T18:51:12Z",
         "sha256": "322fdac354cfb7f45346c63b8dc11f4de90f03571875e7943667ba27dc32b056"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/022472s029lbl.pdf",
+        "retrieved_at": "2026-11-18T19:28:29Z",
+        "sha256": "518d52224f864c4b251a1150e367880417b5cceed970b82edf14b989c361a7d7"
       }
     ],
-    "trial_ids": [],
+    "trial_ids": [
+      "NCT04974528"
+    ],
     "phase": "3",
-    "endpoint": "HbA1c change in pediatric INHALE-1",
-    "effect_size": "Noninferiority and absolute HbA1c change require FDA label extraction.",
-    "statistical_significance": "",
-    "safety": "Inhaled insulin has bronchospasm risk in chronic lung disease and requires pulmonary assessment; hypoglycemia remains important.",
+    "endpoint": "INHALE-1 change in HbA1c through week 26, noninferiority margin 0.4 percentage points.",
+    "effect_size": "Adjusted difference 0.18 percentage points (95% CI −0.07 to 0.44), inhaled insulin versus rapid-acting analog.",
+    "statistical_significance": "Noninferiority was not established. Adjusted one-sided p=0.058 versus the 0.025 threshold.",
+    "safety": "Boxed warning for acute bronchospasm in chronic lung disease. Label calls for spirometry and notes pulmonary-function decline.",
     "assessment": "INDETERMINATE",
     "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
-    "rationale": "The pediatric label extension is source-backed. Benefit-risk requires an age-specific efficacy and safety review.",
+    "rationale": "FDA approved the pediatric indication. The pivotal pediatric noninferiority endpoint was missed and type 2 representation was limited. Pivotal efficacy alone leaves the original approval decision uncertain.",
     "evidence_gaps": [
-      "Age-band-specific A1c effect, noninferiority analysis, NCT and pulmonary safety"
+      "Full FDA benefit–risk rationale for approval despite missed endpoint",
+      "Age-band and diabetes-type estimates",
+      "Calibrated numerical confidence unavailable"
     ],
     "evidence_sources": [
       {
         "url": "https://www.accessdata.fda.gov/drugsatfda_docs/appletter/2026/022472Orig1s029.ltr.pdf",
         "published_on": ""
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/022472s029lbl.pdf",
+        "retrieved_at": "2026-11-18T19:28:29Z",
+        "sha256": "518d52224f864c4b251a1150e367880417b5cceed970b82edf14b989c361a7d7",
+        "published_on": ""
       }
     ],
     "prior_prediction_artifacts": [],
     "action_alignment_status": "",
-    "assessment_recorded_at": "2026-11-18T18:25:46+00:00",
+    "assessment_recorded_at": "2026-11-18T19:29:45.816388+00:00",
     "record_id": "2026-L1-013",
     "confidence_percent": "",
     "ticker": "MNKD",
@@ -4437,62 +4466,93 @@
     "confidence_basis": "Qualitative judgment; no calibrated percentage available"
   },
   {
-    "application_id": "",
-    "review_cycle": "",
-    "supplement": "",
-    "indication": "Polycythemia vera",
-    "pdufa_date": "2026-09-30",
-    "goal_source_url": "",
+    "application_id": "NDA220605",
+    "review_cycle": "INITIAL",
+    "supplement": "NONE",
+    "indication": "Treatment of erythrocytosis in adults with polycythemia vera",
+    "pdufa_date": "2026-08-29",
+    "goal_source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220605Orig1s000RiskR.pdf",
     "prediction": "",
     "prediction_kind": "OUTCOME_AWARE",
     "prediction_frozen_at": "",
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
-    "actual_outcome": "",
-    "outcome_action_date": "",
+    "model_version": "level1-owner-research-2026-11-18-v2",
+    "actual_outcome": "APPROVE",
+    "outcome_action_date": "2026-08-28",
     "outcome_published_at": "",
-    "source_url": "",
+    "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220605Orig1s000Approv.pdf",
     "drug": "Rusfertide - (REVIVE)",
-    "application_type": "",
+    "application_type": "NDA",
     "sponsor": "Protagonist Therapeutics Inc.",
     "original_pdufa_date": "",
-    "goal_date_history": [],
-    "review_cycle_basis": "",
-    "regulatory_status": "CALENDAR_DECIDED",
+    "goal_date_history": [
+      {
+        "date": "2026-09-30",
+        "status": "UNVERIFIED_CALENDAR_CLAIM",
+        "source_url": "https://www.pdufa.bio/ticker/PTGX"
+      },
+      {
+        "date": "2026-08-29",
+        "status": "CURRENT",
+        "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220605Orig1s000RiskR.pdf"
+      }
+    ],
+    "review_cycle_basis": "FDA original NDA risk review and approval package establish identity and distinguish the goal from the decision.",
+    "regulatory_status": "APPROVE",
     "approval_route": "",
-    "verification_status": "BLOCKED",
+    "verification_status": "VERIFIED",
     "applicability": "GOAL_DATE_CANDIDATE",
     "origin_url": "https://www.pdufa.bio/ticker/PTGX",
-    "source_receipts": [],
-    "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
-    "assessment": "INDETERMINATE",
-    "assessment_kind": "OUTCOME_AWARE",
-    "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
-    "evidence_gaps": [
-      "September 30 appears as a calendar estimate. Obtain the exact target from the filed NDA acceptance or dated sponsor communication and its matching FDA application identity.",
-      "Exact application number, supplement and review cycle require primary-source reconciliation",
-      "Goal date requires direct FDA or sponsor confirmation",
-      "Calendar reports quarter precision; date may be a placeholder",
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+    "source_receipts": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220605Orig1s000RiskR.pdf",
+        "retrieved_at": "2026-11-18T19:27:20Z",
+        "sha256": "83c7fe8cad8333fcf6160fdb7d1b3cbe1e90ea3790a3acb523e7760439c8c4b9"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220605Orig1s000Approv.pdf",
+        "retrieved_at": "2026-11-18T19:27:20Z",
+        "sha256": "267987c6d2c26ca015be9cf2c5d98dad0d1e3a5d4b8f10bcb255d1195c5fbe52"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220605Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:28:29Z",
+        "sha256": "7b08ed41783dd34df83397351d3fbd2f96fd0721e98b5e346a9617ade244a5d3"
+      }
     ],
-    "evidence_sources": [],
+    "trial_ids": [
+      "NCT05210790"
+    ],
+    "phase": "Phase 3",
+    "endpoint": "VERIFY hematocrit control and phlebotomy-based response during weeks 20–32.",
+    "effect_size": "113/147 (76.9%) versus 48/146 (32.9%). Adjusted risk difference 43.8 percentage points (95% CI 33.5–54.2).",
+    "statistical_significance": "Primary comparison p<0.0001, stratified Cochran–Mantel–Haenszel.",
+    "safety": "FDA label warns of new or worsening thrombocytosis, injection-site reactions and embryo-fetal toxicity. It reports injection-site reactions and anemia as common.",
+    "assessment": "APPROVE",
+    "assessment_kind": "OUTCOME_AWARE",
+    "confidence": "MODERATE",
+    "rationale": "The randomized, placebo-controlled Phase 3 result supports hematocrit control. The FDA approval was known when this assessment was recorded.",
+    "evidence_gaps": [
+      "Long-term comparative effects on thrombosis and disease progression",
+      "Calibrated numerical confidence unavailable"
+    ],
+    "evidence_sources": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220605Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:28:29Z",
+        "sha256": "7b08ed41783dd34df83397351d3fbd2f96fd0721e98b5e346a9617ade244a5d3",
+        "published_on": ""
+      }
+    ],
     "prior_prediction_artifacts": [],
-    "action_alignment_status": "",
-    "assessment_recorded_at": "",
+    "action_alignment_status": "FDA_ACTION_RECORDED",
+    "assessment_recorded_at": "2026-11-18T19:29:45.816388+00:00",
     "record_id": "2026-L1-055",
     "confidence_percent": "",
     "ticker": "PTGX/TAK",
-    "assessment_disposition": "IDENTITY_BLOCKED",
+    "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
     "confidence_basis": "Qualitative judgment; no calibrated percentage available"
   },
   {
@@ -4633,9 +4693,9 @@
     "confidence_basis": "Qualitative judgment; no calibrated percentage available"
   },
   {
-    "application_id": "",
-    "review_cycle": "",
-    "supplement": "",
+    "application_id": "NDA218436",
+    "review_cycle": "SUPPLEMENT",
+    "supplement": "S-001",
     "indication": "Immunology Adults with symptomatic dermographism (SD) inadequately controlled by H1 antihistamines",
     "pdufa_date": "2026-10-06",
     "goal_source_url": "",
@@ -4651,7 +4711,7 @@
     "outcome_published_at": "",
     "source_url": "",
     "drug": "Rhapsido (remibrutinib) - symptomatic dermographism",
-    "application_type": "",
+    "application_type": "NDA",
     "sponsor": "Novartis Ag",
     "original_pdufa_date": "",
     "goal_date_history": [],
@@ -4661,7 +4721,13 @@
     "verification_status": "BLOCKED",
     "applicability": "GOAL_DATE_CANDIDATE",
     "origin_url": "https://www.pdufa.bio/fda-decision/NVS-2026-10-06",
-    "source_receipts": [],
+    "source_receipts": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/218436s001lbl.pdf",
+        "retrieved_at": "2026-11-18T19:28:29Z",
+        "sha256": "2c2ce55f4196b93d4d7fd0d01d91c3e29306237074e8037a21d19cc7b53a6d1f"
+      }
+    ],
     "trial_ids": [],
     "phase": "",
     "endpoint": "",
@@ -4673,7 +4739,7 @@
     "confidence": "LOW",
     "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
     "evidence_gaps": [
-      "Novartis confirms FDA approval for symptomatic dermographism. October 6 is an action lead; the filed supplement number and original exact PDUFA date remain unverified.",
+      "FDA labeling identifies NDA 218436/S-001 for symptomatic dermographism. October 6 is the action date, and an exact PDUFA goal is still unverified.",
       "Exact application number, supplement and review cycle require primary-source reconciliation",
       "Goal date requires direct FDA or sponsor confirmation",
       "Trial phase and pivotal trial identity",
@@ -4784,16 +4850,16 @@
     "pdufa_date": "2026-10-10",
     "goal_source_url": "https://www.sec.gov/Archives/edgar/data/310158/000162828026029802/mrk-20260331.htm",
     "prediction": "",
-    "prediction_kind": "",
+    "prediction_kind": "OUTCOME_AWARE",
     "prediction_frozen_at": "",
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
     "model_version": "level1-owner-research-2026-11-18-v1",
-    "actual_outcome": "",
-    "outcome_action_date": "",
+    "actual_outcome": "WITHDRAWN",
+    "outcome_action_date": "2026-09-25",
     "outcome_published_at": "",
-    "source_url": "",
+    "source_url": "https://www.merck.com/news/ifinatamab-deruxtecan-biologics-license-application-for-certain-patients-with-previously-treated-extensive-stage-small-cell-lung-cancer-voluntarily-withdrawn/",
     "drug": "Ifinatamab deruxtecan (I-DXd)",
     "application_type": "",
     "sponsor": "Merck & Co., Inc.",
@@ -4806,7 +4872,7 @@
       }
     ],
     "review_cycle_basis": "",
-    "regulatory_status": "CALENDAR_WITHDRAWN",
+    "regulatory_status": "SPONSOR_CONFIRMED_WITHDRAWAL",
     "approval_route": "",
     "verification_status": "BLOCKED",
     "applicability": "GOAL_DATE_CANDIDATE",
@@ -4816,6 +4882,11 @@
         "url": "https://www.sec.gov/Archives/edgar/data/310158/000162828026029802/mrk-20260331.htm",
         "retrieved_at": "2026-11-18T17:37:25.759474+00:00",
         "sha256": "77924d86200b5edaaa526a465cc2e30623f10111f09b423beb8aee2e09c77e2b"
+      },
+      {
+        "url": "https://www.merck.com/news/ifinatamab-deruxtecan-biologics-license-application-for-certain-patients-with-previously-treated-extensive-stage-small-cell-lung-cancer-voluntarily-withdrawn/",
+        "retrieved_at": "2026-11-18T19:28:30Z",
+        "sha256": "d8e214157b08097240357c99fc6b47afd5e4d053d82e6a065baae04d673bc96e"
       }
     ],
     "trial_ids": [],
@@ -4825,11 +4896,11 @@
     "statistical_significance": "",
     "safety": "",
     "assessment": "INDETERMINATE",
-    "assessment_kind": "UNRESOLVED_OUTCOME_STATUS",
+    "assessment_kind": "OUTCOME_AWARE",
     "confidence": "LOW",
     "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
     "evidence_gaps": [
-      "Sponsor establishes October 10 for the ES-SCLC BLA. The reported pre-goal withdrawal is a nonbinary disposition; exact BLA number and direct withdrawal record remain unverified.",
+      "Merck confirms the October 10-goal small cell lung cancer application was voluntarily withdrawn September 25 after FDA feedback. The exact BLA number remains unavailable.",
       "Exact application number, supplement and review cycle require primary-source reconciliation",
       "Trial phase and pivotal trial identity",
       "Endpoint, effect size and statistical analysis",
@@ -7371,31 +7442,42 @@
   },
   {
     "application_id": "NDA220415",
-    "review_cycle": "",
+    "review_cycle": "INITIAL",
     "supplement": "NONE",
-    "indication": "Neurology Parkinson's disease in adults (once daily, with or without levodopa)",
-    "pdufa_date": "2026-12-31",
-    "goal_source_url": "",
+    "indication": "Treatment of Parkinson disease in adults",
+    "pdufa_date": "2026-09-25",
+    "goal_source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220415Orig1s000RiskR.pdf",
     "prediction": "",
     "prediction_kind": "OUTCOME_AWARE",
     "prediction_frozen_at": "",
     "evidence_cutoff_at": "",
     "latest_evidence_published_at": "",
     "freeze_source_url": "",
-    "model_version": "level1-owner-research-2026-11-18-v1",
+    "model_version": "level1-owner-research-2026-11-18-v2",
     "actual_outcome": "APPROVE",
     "outcome_action_date": "2026-09-25",
     "outcome_published_at": "",
-    "source_url": "https://www.accessdata.fda.gov/scripts/cder/daf/index.cfm?event=overview.process&ApplNo=220415",
+    "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220415Orig1s000Approv.pdf",
     "drug": "JUVMO (tavapadon)",
     "application_type": "NDA",
     "sponsor": "AbbVie",
     "original_pdufa_date": "",
-    "goal_date_history": [],
-    "review_cycle_basis": "",
+    "goal_date_history": [
+      {
+        "date": "2026-12-31",
+        "status": "UNVERIFIED_CALENDAR_CLAIM",
+        "source_url": "https://www.pdufa.bio/pdufa/ABBV-tavapadon"
+      },
+      {
+        "date": "2026-09-25",
+        "status": "CURRENT",
+        "source_url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220415Orig1s000RiskR.pdf"
+      }
+    ],
+    "review_cycle_basis": "FDA original NDA risk review and approval package establish identity and distinguish the goal from the decision.",
     "regulatory_status": "APPROVE",
     "approval_route": "",
-    "verification_status": "BLOCKED",
+    "verification_status": "VERIFIED",
     "applicability": "GOAL_DATE_CANDIDATE",
     "origin_url": "https://www.pdufa.bio/pdufa/ABBV-tavapadon",
     "source_receipts": [
@@ -7403,35 +7485,57 @@
         "url": "https://www.fda.gov/media/89850/download",
         "retrieved_at": "2026-11-18T17:35:33+00:00",
         "sha256": "b12bacbe8520c9969b12261fa2db0d1fef75303c5ba94e9a4e9a76eff51e3786"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220415Orig1s000RiskR.pdf",
+        "retrieved_at": "2026-11-18T19:27:21Z",
+        "sha256": "c0955a448ff2bdbcfc98582691cb52310e3347dd3fda6f78d41e8b0f6b1285af"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/nda/2026/220415Orig1s000Approv.pdf",
+        "retrieved_at": "2026-11-18T19:27:20Z",
+        "sha256": "b54e1422f8e0bf2db8c41e66a4fa1b32b009efa262961638d0b38d2f2c027a53"
+      },
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220415Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:28:29Z",
+        "sha256": "93a86a800d34bf2f88656f57e5e48676049c68411429e8a48b3004f05f2ac4b0"
       }
     ],
-    "trial_ids": [],
-    "phase": "",
-    "endpoint": "",
-    "effect_size": "",
-    "statistical_significance": "",
-    "safety": "",
-    "assessment": "INDETERMINATE",
-    "assessment_kind": "OUTCOME_AWARE",
-    "confidence": "LOW",
-    "rationale": "Application-linked pivotal efficacy and safety were not reviewed to a level that supports a directional call.",
-    "evidence_gaps": [
-      "FDA letter identifies NDA 220415 and September 25 effective approval. The December 31 calendar value is unsupported as an exact PDUFA goal.",
-      "Exact application number, supplement and review cycle require primary-source reconciliation",
-      "Goal date requires direct FDA or sponsor confirmation",
-      "Calendar reports month precision; date may be a placeholder",
-      "Trial phase and pivotal trial identity",
-      "Endpoint, effect size and statistical analysis",
-      "Application-specific safety evidence"
+    "trial_ids": [
+      "NCT04201093",
+      "NCT04223193",
+      "NCT04542499"
     ],
-    "evidence_sources": [],
+    "phase": "Phase 3",
+    "endpoint": "Week 26 motor-function endpoints without and with concomitant levodopa. Adjunctive study measured ON time without troublesome dyskinesia.",
+    "effect_size": "Study 1 Week 26 MDS-UPDRS Part II differences −2.5 and −2.6 points. Study 2 difference −1.5 points. Adjunctive study ON time difference +1.1 hours (95% CI 0.6–1.7).",
+    "statistical_significance": "Study 1 table reports p<0.0001 for both fixed doses. Study 2 table reports p=0.0007, while its narrative says p<0.0001. Study 3 primary endpoint p<0.0001.",
+    "safety": "Label includes somnolence and sudden onset of sleep, orthostatic hypotension, hallucinations, impulse-control disorders and dyskinesia.",
+    "assessment": "APPROVE",
+    "assessment_kind": "OUTCOME_AWARE",
+    "confidence": "MODERATE",
+    "rationale": "Controlled Phase 3 trials support functional benefit in early and adjunctive treatment. The FDA approval was known when this assessment was recorded.",
+    "evidence_gaps": [
+      "Durability and uncommon harms beyond the controlled study periods",
+      "Calibrated numerical confidence unavailable",
+      "Resolve Study 2 p-value discrepancy between the FDA label narrative and table."
+    ],
+    "evidence_sources": [
+      {
+        "url": "https://www.accessdata.fda.gov/drugsatfda_docs/label/2026/220415Orig1s000lbl.pdf",
+        "retrieved_at": "2026-11-18T19:28:29Z",
+        "sha256": "93a86a800d34bf2f88656f57e5e48676049c68411429e8a48b3004f05f2ac4b0",
+        "published_on": ""
+      }
+    ],
     "prior_prediction_artifacts": [],
-    "action_alignment_status": "",
-    "assessment_recorded_at": "",
+    "action_alignment_status": "FDA_ACTION_RECORDED",
+    "assessment_recorded_at": "2026-11-18T19:29:45.816388+00:00",
     "record_id": "2026-L1-094",
     "confidence_percent": "",
     "ticker": "ABBV",
-    "assessment_disposition": "IDENTITY_BLOCKED",
+    "assessment_disposition": "OUTCOME_AWARE_WITH_EVIDENCE_GAPS",
     "confidence_basis": "Qualitative judgment; no calibrated percentage available"
   },
   {
