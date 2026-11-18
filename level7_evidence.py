@@ -54,6 +54,8 @@ class EvidenceLedger:
         self._records: dict[tuple[str, str, str], EvidenceRecord] = {}
 
     def add(self, record: EvidenceRecord) -> bool:
+        if record.status not in ("verified", "unverified", "missing", "inaccessible", "conflicting"):
+            raise ValueError("Unknown evidence status")
         prior = self._records.get(record.identity)
         if prior is not None:
             if prior != record:
