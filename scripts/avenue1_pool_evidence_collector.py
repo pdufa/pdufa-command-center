@@ -166,8 +166,7 @@ def main():
                     else:
                         missing.append(name)
                 missing_by_trial.append({"nct": nct, "missing_dimensions": missing})
-                f.write(json.dumps(evidence) + "
-")
+                f.write(json.dumps(evidence) + "\n")
                 done += 1
             except Exception as exc:
                 errors.append({"nct": nct, "error_type": type(exc).__name__})
