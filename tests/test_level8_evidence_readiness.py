@@ -2,10 +2,10 @@ import unittest
 from level7_evidence import make_record
 from level8_evidence_readiness import assess_evidence_readiness
 
-def record(source, status="verified", version="v1", stamp="2026-11-17T00:00:00+00:00"):
+def record(source, status="verified", version="v1", stamp="2026-11-17T00:00:00+00:00", publisher=None):
     return make_record(
         trial_id="NCT00000001", source_id=source,
-        source_url="https://example.org/" + source, publisher="source",
+        source_url="https://example.org/" + source, publisher=publisher or source,
         source_version=version,
         content=None if status in ("missing", "inaccessible") else b"published",
         status=status, retrieved_at=stamp,
@@ -23,6 +23,14 @@ class Level8EvidenceReadinessTests(unittest.TestCase):
         ])
         self.assertEqual(result.status, "EVIDENCE_INCOMPLETE")
         self.assertEqual(result.verified_sources, 1)
+
+    def test_two_documents_from_same_publisher_are_not_independent(self):
+        result = assess_evidence_readiness("NCT00000001", [
+            record("registry-a", publisher="registry"),
+            record("registry-b", publisher="REGISTRY"),
+        ])
+        self.assertEqual(result.status, "EVIDENCE_INCOMPLETE")
+        self.assertEqual(result.verified_sources, 2)
 
     def test_conflict_blocks_readiness(self):
         result = assess_evidence_readiness("NCT00000001", [
