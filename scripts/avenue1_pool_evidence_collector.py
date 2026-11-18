@@ -42,10 +42,10 @@ def study_evidence(nct):
     protocol = study.get("protocolSection") or {}
     results = study.get("resultsSection") or {}
     outcomes = results.get("outcomeMeasuresModule") or {}
-    arms = (protocol.get("armsInterventionsModule") or {}).get("armGroups", [])
-    references = (protocol.get("referencesModule") or {}).get("references", [])
+    arms = (protocol.get("armsInterventionsModule") or {}).get("armGroups") or []
+    references = (protocol.get("referencesModule") or {}).get("references") or []
     baseline = (results.get("baselineCharacteristicsModule") or {})
-    # Raw results are preserved for review; no efficacy claim is inferred.
+    # Null registry collections are treated as absent, not as clinical evidence.\n    # Raw results are preserved for review; no efficacy claim is inferred.
     clinical_dimensions = {
         "primary_endpoint": (protocol.get("outcomesModule") or {}).get("primaryOutcomes", []),
         "effect_magnitude": outcomes.get("outcomeMeasures") or [],
