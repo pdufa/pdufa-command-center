@@ -6,6 +6,20 @@ from level7_store import EvidenceStore
 from level7_focus_monitor_adapter import persist_focus_monitor_report
 
 class Level7AtomicityTests(unittest.TestCase):
+    def test_unknown_status_cannot_be_persisted(self):
+        with tempfile.TemporaryDirectory() as folder:
+            store = EvidenceStore(Path(folder) / "evidence.sqlite3")
+            store.initialize()
+            with self.assertRaisesRegex(ValueError, "Unknown evidence status"):
+                make_record(
+                    trial_id="NCT00000001", source_id="registry",
+                    source_url="https://clinicaltrials.gov/study/NCT00000001",
+                    publisher="registry", source_version="v1",
+                    content=b"source", status="approved",
+                    retrieved_at="2026-11-17T00:00:00+00:00",
+                )
+            self.assertEqual(store.history("NCT00000001"), [])
+
     def test_batch_conflict_rolls_back_prior_insert(self):
         with tempfile.TemporaryDirectory() as folder:
             store = EvidenceStore(Path(folder) / "evidence.sqlite3")
