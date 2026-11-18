@@ -22,8 +22,11 @@ SNAPSHOT = ROOT / "new-platform/frontend/data/p3PostDataActive.json"
 def run(db_path: Path, snapshot_path: Path = SNAPSHOT) -> dict:
     snapshot = json.loads(snapshot_path.read_text(encoding="utf-8"))
     members = snapshot.get("records")
-    if not isinstance(members, list) or not members:
-        raise ValueError("Missing FOCUS roster records")
+    if not isinstance(members, list) or len(members) != 32:
+        raise ValueError("FOCUS report requires exactly 32 roster records")
+    ncts = [member.get("nct") if isinstance(member, dict) else None for member in members]
+    if len(set(ncts)) != 32 or any(not isinstance(nct, str) for nct in ncts):
+        raise ValueError("FOCUS roster has missing or duplicate NCT identities")
     if not db_path.is_file():
         raise FileNotFoundError("Level 7 evidence database does not exist")
     with sqlite3.connect(db_path) as connection:
