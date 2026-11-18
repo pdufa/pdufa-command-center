@@ -90,6 +90,17 @@ class CollectorTests(unittest.TestCase):
         self.assertEqual(result["clinical_dimensions"]["statistical_reliability"], [])
 
 
+    def test_malformed_outcome_measures_fail_closed(self):
+        for bad in ({"unexpected": "mapping"}, [None], ["not-a-measure"]):
+            payload = {"resultsSection": {"outcomeMeasuresModule": {
+                "outcomeMeasures": bad,
+            }}}
+            with self.subTest(bad=bad), patch(
+                "scripts.avenue1_pool_evidence_collector.fetch_json", return_value=payload
+            ):
+                with self.assertRaisesRegex(ValueError, "Invalid ClinicalTrials.gov"):
+                    study_evidence("NCT05507203")
+
     def test_null_registry_arm_and_reference_lists_are_safe(self):
         payload = {"protocolSection": {
             "armsInterventionsModule": {"armGroups": None},
