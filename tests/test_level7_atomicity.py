@@ -2,11 +2,23 @@ import tempfile
 from dataclasses import replace
 import unittest
 from pathlib import Path
-from level7_evidence import make_record
+from level7_evidence import make_record, EvidenceLedger
 from level7_store import EvidenceStore
 from level7_focus_monitor_adapter import persist_focus_monitor_report
 
 class Level7AtomicityTests(unittest.TestCase):
+    def test_direct_dataclass_bypass_rejected_in_memory(self):
+        ledger = EvidenceLedger()
+        valid = make_record(
+            trial_id="NCT00000001", source_id="registry",
+            source_url="https://clinicaltrials.gov/study/NCT00000001",
+            publisher="registry", source_version="v1",
+            content=b"source", retrieved_at="2026-11-17T00:00:00+00:00",
+        )
+        with self.assertRaisesRegex(ValueError, "Unknown evidence status"):
+            ledger.add(replace(valid, status="approved"))
+        self.assertEqual(ledger.history("NCT00000001"), [])
+
     def test_direct_dataclass_bypass_rejected_at_storage_boundary(self):
         with tempfile.TemporaryDirectory() as folder:
             store = EvidenceStore(Path(folder) / "evidence.sqlite3")
