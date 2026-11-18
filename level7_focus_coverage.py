@@ -22,6 +22,8 @@ def focus_level7_coverage(store: EvidenceStore, members: list[dict]) -> dict:
             raise ValueError("Invalid or duplicate FOCUS NCT")
         seen.add(nct)
         records = store.history(nct)
+        if any(record.status not in ("verified", "unverified", "missing", "inaccessible", "conflicting") for record in records):
+            raise ValueError("Unsupported persisted evidence status")
         latest = {}
         for record in records:
             previous = latest.get(record.source_id)
