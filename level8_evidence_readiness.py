@@ -51,11 +51,13 @@ def assess_evidence_readiness(
         reasons.append("Unavailable source evidence is not negative clinical evidence")
     if counts["unverified"]:
         reasons.append("Unverified evidence requires source validation")
-    if counts["verified"] < minimum_verified_sources:
-        reasons.append("Insufficient independently verified source coverage")
+    independent_publishers = {r.publisher.strip().casefold() for r in latest.values()
+                              if r.status == "verified" and r.publisher.strip()}
+    if len(independent_publishers) < minimum_verified_sources:
+        reasons.append("Insufficient independently verified publisher coverage")
     if counts["conflicting"]:
         status = "CONFLICT_REVIEW"
-    elif counts["verified"] >= minimum_verified_sources and not (
+    elif len(independent_publishers) >= minimum_verified_sources and not (
         counts["unverified"] or counts["missing"] or counts["inaccessible"]
     ):
         status = "READY_FOR_SCIENTIFIC_REVIEW"
