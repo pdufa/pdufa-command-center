@@ -6,6 +6,7 @@ on:
     paths:
       - 'scripts/blind_six_levels_2026.py'
       - 'scripts/report_blind_six_levels_2026.py'
+      - 'scripts/score_scientific_backtest_2026.py'
       - 'tests/test_blind_six_levels_2026.py'
       - 'tests/test_report_blind_six_levels_2026.py'
       - '.github/workflows/blind-six-level-backtest.yml'
@@ -13,6 +14,7 @@ on:
     paths:
       - 'scripts/blind_six_levels_2026.py'
       - 'scripts/report_blind_six_levels_2026.py'
+      - 'scripts/score_scientific_backtest_2026.py'
       - 'tests/test_blind_six_levels_2026.py'
       - 'tests/test_report_blind_six_levels_2026.py'
       - '.github/workflows/blind-six-level-backtest.yml'
