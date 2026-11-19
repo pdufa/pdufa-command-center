@@ -1,5 +1,6 @@
 import {ExactTrialIntakeSelector} from "../ExactTrialScientificIntake";
 import focusSnapshot from "../../data/p3PostDataActive.json";
+import focusBaseline from "../../data/focusScientificBaseline20261119.json";
 import HistoricalScientificBacktest from "../HistoricalScientificBacktest";
 import historicalPilot from "../../data/historicalScientificPilot2026.json";
 import FocusSavedAssessments from "../FocusSavedAssessments";
@@ -17,6 +18,17 @@ export default async function AssessmentsPage({searchParams}:{searchParams:Promi
   <h1>ASSESSMENTS</h1>
   <section aria-label="FOCUS scientific evidence Levels 1–6">
    <h2>FOCUS evidence · Levels 1–6</h2>
+   <figure aria-labelledby="focus-evidence-baseline">
+    <figcaption id="focus-evidence-baseline">FOCUS evidence baseline · <time dateTime={focusBaseline.assessmentDate}>{focusBaseline.assessmentDate}</time></figcaption>
+    <p>Trials with registry intake or partial criterion findings. The trend will start with the next comparable saved run.</p>
+    <ul>
+     {focusBaseline.levels.map(({level,trialsWithFindings})=><li key={level}>
+      <span>L{String(level).padStart(2,"0")} </span>
+      <meter min={0} max={focusBaseline.trialCount} value={trialsWithFindings} aria-label={`Level ${level} trials with intake or partial findings`}/>
+      {" "}{trialsWithFindings} / {focusBaseline.trialCount}
+     </li>)}
+    </ul>
+   </figure>
    <form method="get" action="/assessments">
     <label>FOCUS trial <select name="nct" defaultValue={focusTrial?.nct??""} required>
      <option value="">Select a trial</option>

@@ -1,0 +1,31 @@
+{
+  "assessmentDate": "2026-11-19",
+  "trialCount": 32,
+  "version": "focus-current-level16-v1",
+  "levels": [
+    {
+      "level": 1,
+      "trialsWithFindings": 32
+    },
+    {
+      "level": 2,
+      "trialsWithFindings": 32
+    },
+    {
+      "level": 3,
+      "trialsWithFindings": 13
+    },
+    {
+      "level": 4,
+      "trialsWithFindings": 13
+    },
+    {
+      "level": 5,
+      "trialsWithFindings": 32
+    },
+    {
+      "level": 6,
+      "trialsWithFindings": 0
+    }
+  ]
+}
