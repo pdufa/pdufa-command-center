@@ -45,7 +45,7 @@ test('interactive FOCUS single-column popup actually applies chosen direction',a
  const column=tree.root.findByProps({'aria-label':'Column to sort'});
  assert.equal(column.props.value,'overall');
  const options=column.findAllByType('option');
- assert.equal(options[0].props.children,'Overall Score /100');
+ assert.equal(options[0].children.join(''),'Overall Score /100');
  assert.equal(options.find(o=>o.props.value==='level4').props.disabled,true);
  assert.equal(options.find(o=>o.props.value==='direction').props.disabled,true);
  const direction=tree.root.findByProps({'aria-label':'Column sort direction'});

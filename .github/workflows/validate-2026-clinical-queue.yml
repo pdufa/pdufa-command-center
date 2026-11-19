@@ -1,0 +1,39 @@
+name: Validate clinical priority queue
+on:
+  push:
+    branches: [feature/2026-blind-l1-183-backtest]
+    paths:
+      - 'scripts/prioritize_2026_clinical_backlog.py'
+      - 'scripts/validate_2026_clinical_queue.py'
+      - 'data/backtest/2026-clinical-evidence-backlog.csv'
+      - 'data/backtest/2026-clinical-priority-queue.csv'
+      - '.github/workflows/validate-2026-clinical-queue.yml'
+  pull_request:
+    paths:
+      - 'scripts/prioritize_2026_clinical_backlog.py'
+      - 'scripts/validate_2026_clinical_queue.py'
+      - 'data/backtest/2026-clinical-evidence-backlog.csv'
+      - 'data/backtest/2026-clinical-priority-queue.csv'
+      - '.github/workflows/validate-2026-clinical-queue.yml'
+permissions:
+  contents: read
+jobs:
+  validate-queue:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Validate existing queue against evidence backlog
+        run: |
+          python scripts/validate_2026_clinical_queue.py \
+            data/backtest/2026-clinical-evidence-backlog.csv \
+            data/backtest/2026-clinical-priority-queue.csv
+      - name: Verify queue generator produces same file
+        run: |
+          python scripts/prioritize_2026_clinical_backlog.py \
+            --input data/backtest/2026-clinical-evidence-backlog.csv \
+            --output /tmp/2026-clinical-priority-queue.csv
+          diff -u data/backtest/2026-clinical-priority-queue.csv /tmp/2026-clinical-priority-queue.csv

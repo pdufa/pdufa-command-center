@@ -1,0 +1,65 @@
+name: Blind six-level backtest checks
+on:
+  push:
+    branches:
+      - feature/2026-blind-l1-183-backtest
+    paths:
+      - 'scripts/blind_six_levels_2026.py'
+      - 'scripts/report_blind_six_levels_2026.py'
+      - 'scripts/score_scientific_backtest_2026.py'
+      - 'scripts/blind_scientific_2026.py'
+      - 'tests/test_blind_scientific_2026.py'
+      - 'new-platform/backend/app/scientific_levels_two_to_six.py'
+      - 'tests/test_blind_six_levels_2026.py'
+      - 'tests/test_report_blind_six_levels_2026.py'
+      - '.github/workflows/blind-six-level-backtest.yml'
+  pull_request:
+    paths:
+      - 'scripts/blind_six_levels_2026.py'
+      - 'scripts/report_blind_six_levels_2026.py'
+      - 'scripts/score_scientific_backtest_2026.py'
+      - 'scripts/blind_scientific_2026.py'
+      - 'tests/test_blind_scientific_2026.py'
+      - 'new-platform/backend/app/scientific_levels_two_to_six.py'
+      - 'tests/test_blind_six_levels_2026.py'
+      - 'tests/test_report_blind_six_levels_2026.py'
+      - '.github/workflows/blind-six-level-backtest.yml'
+permissions:
+  contents: write
+jobs:
+  blind-backtest-tests:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Run six-level blind-backtest regression tests
+        run: |
+          python -m unittest discover -s tests -p 'test_blind_six_levels_2026.py' -v
+          python -m unittest discover -s tests -p 'test_report_blind_six_levels_2026.py' -v
+          python -m unittest discover -s tests -p 'test_blind_scientific_2026.py' -v
+      - name: Regenerate retained-source Level 1-6 assessment evidence for review
+        run: |
+          python scripts/medical/export_level16_assessment_evidence.py
+          python -m json.tool new-platform/frontend/data/level16AssessmentEvidence.json > /dev/null
+      - name: Upload regenerated assessment evidence (review only)
+        uses: actions/upload-artifact@v4
+        with:
+          name: level16-regenerated-evidence
+          path: new-platform/frontend/data/level16AssessmentEvidence.json
+          retention-days: 7
+      - name: Commit regenerated evidence to development branch only
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/feature/2026-blind-l1-183-backtest') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'feature/2026-blind-l1-183-backtest')
+        run: |
+          git fetch origin feature/2026-blind-l1-183-backtest
+          git checkout -B feature/2026-blind-l1-183-backtest origin/feature/2026-blind-l1-183-backtest
+          python scripts/medical/export_level16_assessment_evidence.py
+          if ! git diff --quiet -- new-platform/frontend/data/level16AssessmentEvidence.json; then
+            git config user.name 'github-actions[bot]'
+            git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+            git add new-platform/frontend/data/level16AssessmentEvidence.json
+            git commit -m 'Regenerate retained-source Level 1-6 evidence artifact'
+            git push origin HEAD:feature/2026-blind-l1-183-backtest
+          fi

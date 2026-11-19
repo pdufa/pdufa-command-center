@@ -1,0 +1,42 @@
+name: Historical FDA outcome ledger audit
+on:
+  push:
+    branches:
+      - feature/2026-blind-l1-183-backtest
+    paths:
+      - 'scripts/audit_historical_universe.py'
+      - 'scripts/audit_2026_fda_action_candidates.py'
+      - 'scripts/test_audit_2026_fda_action_candidates.py'
+      - 'data/backtest/fda-official-2026-novel-approvals-50-outcome-only-2026-11-18.csv'
+      - '.github/workflows/historical-fda-ledger-audit.yml'
+  pull_request:
+    paths:
+      - 'scripts/audit_historical_universe.py'
+      - 'scripts/audit_2026_fda_action_candidates.py'
+      - 'scripts/test_audit_2026_fda_action_candidates.py'
+      - 'data/backtest/fda-official-2026-novel-approvals-50-outcome-only-2026-11-18.csv'
+      - '.github/workflows/historical-fda-ledger-audit.yml'
+permissions:
+  contents: read
+jobs:
+  audit-outcomes:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Test source candidate classification and quarantine
+        run: python -m unittest discover -s scripts -p test_audit_2026_fda_action_candidates.py -v
+      - name: Audit quarantined FDA outcome subset
+        run: |
+          python scripts/audit_historical_universe.py \
+            --input data/backtest/fda-official-2026-novel-approvals-50-outcome-only-2026-11-18.csv \
+            --target 196 --output audit-report.json
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: fda-outcome-ledger-audit
+          path: audit-report.json
+          if-no-files-found: warn

@@ -1,0 +1,946 @@
+{
+  "protocol": "CANONICAL_HISTORICAL_FDA_DIRECTION_V1",
+  "rule_set": "SCIENTIFIC_L01_L06_HISTORICAL_DIRECTION_V1",
+  "expected_events": 1,
+  "cutoff_days": 30,
+  "feature_snapshots": [
+    {
+      "event": {
+        "event_id": "PDUFA26-TIMING-035",
+        "application_number": "BLA761363",
+        "review_cycle": "SUPPL:12",
+        "drug": "WINREVAIR",
+        "indication": "Pulmonary arterial hypertension",
+        "decision_date": "2026-09-21"
+      },
+      "evidence": {
+        "event_id": "PDUFA26-TIMING-035",
+        "application_number": "BLA761363",
+        "review_cycle": "SUPPL:12",
+        "outcome_exposure": "OUTCOME_UNEXPOSED",
+        "trial_set_rationale": "The contemporaneous sponsor filing record names HYPERION as the pivotal trial for this specific filing. The independently reconciled outcome-free FDA handoff supplies BLA761363 SUPPL:12. Other historical sotatercept studies address different populations and are not included as pivotal trials for this supplement.",
+        "trials": [
+          {
+            "nct_id": "NCT04811092",
+            "linkage": {
+              "source": "https://www.merck.com/news/merck-highlights-progress-advancing-broad-diverse-pipeline/",
+              "sourceDate": "2026-02-03",
+              "sourceVersionUrl": "https://www.sec.gov/Archives/edgar/data/310158/000110465926009495/tm264564d1_ex99-1.htm",
+              "sourceVersionDate": "2026-02-03",
+              "sourceRetrievedAt": "2026-11-19",
+              "sourceVerifiedAt": "2026-11-19",
+              "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+              "reviewedAt": "2026-11-19",
+              "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+              "rationale": "The sponsor names WINREVAIR, the accepted sBLA, HYPERION and the September 21 goal date. Journal and official registry link HYPERION to this exact NCT. The outcome-free FDA case custodian independently crosswalked the application and precise supplement."
+            },
+            "registry": {
+              "document": {
+                "protocolSection": {
+                  "identificationModule": {
+                    "nctId": "NCT04811092"
+                  },
+                  "statusModule": {
+                    "overallStatus": "TERMINATED",
+                    "lastUpdatePostDateStruct": {
+                      "date": "2026-06-08",
+                      "type": "ACTUAL"
+                    }
+                  },
+                  "designModule": {
+                    "studyType": "INTERVENTIONAL",
+                    "phases": [
+                      "PHASE3"
+                    ],
+                    "designInfo": {
+                      "allocation": "RANDOMIZED",
+                      "interventionModel": "PARALLEL",
+                      "primaryPurpose": "TREATMENT",
+                      "maskingInfo": {
+                        "masking": "DOUBLE",
+                        "maskingDescription": "Double-blind",
+                        "whoMasked": [
+                          "PARTICIPANT",
+                          "INVESTIGATOR"
+                        ]
+                      }
+                    },
+                    "enrollmentInfo": {
+                      "count": 321,
+                      "type": "ACTUAL"
+                    }
+                  },
+                  "outcomesModule": {
+                    "primaryOutcomes": [
+                      {
+                        "measure": "Median Time to Clinical Worsening",
+                        "timeFrame": "Up to ~35 months"
+                      }
+                    ]
+                  }
+                }
+              },
+              "documentSha256": "76d0aaeecb74dbbc6b3061fc97c916dd7f5463d66c7e5a2590c5da2fdb613bb4",
+              "sourceVersionUrl": "https://clinicaltrials.gov/study/NCT04811092?tab=history&a=57#version-content-panel",
+              "sourceVersionDate": "2026-06-08",
+              "sourceRetrievedAt": "2026-11-19"
+            },
+            "reviews": {
+              "2.protocol": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "The published abstract and exact registry were examined. The original protocol, amendment sequence and prospective deviations have not yet been reviewed."
+              },
+              "2.randomizationAndControl": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30",
+                "sourceRetrievedAt": "2026-11-19",
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "rationale": "Concurrent randomized control matches an add-on treatment question. The primary paper was cross-referenced against the exact registry.",
+                "status": "REVIEWED",
+                "judgment": "SUPPORTS",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "evidenceExcerpt": "Randomized placebo-controlled add-on comparison, 160 per group, with double or triple baseline PAH therapy.",
+                "material_blocker": false
+              },
+              "2.blindingAndBias": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30",
+                "sourceRetrievedAt": "2026-11-19",
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "rationale": "Masking mitigates assessment bias. Early termination and possible changes to follow-up warrant original protocol and SAP review before judging overall bias.",
+                "status": "REVIEWED",
+                "judgment": "INCONCLUSIVE",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "evidenceExcerpt": "Study registry lists participant and investigator masking and says a blinded independent committee adjudicated clinical worsening. The study stopped early after loss of equipoise.",
+                "material_blocker": false
+              },
+              "2.populationAndEligibility": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30",
+                "sourceRetrievedAt": "2026-11-19",
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "rationale": "The article defines a coherent early-treatment population. Other classes and disease-duration strata should be kept separate.",
+                "status": "REVIEWED",
+                "judgment": "SUPPORTS",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "evidenceExcerpt": "Adults had WHO functional class II or III pulmonary arterial hypertension diagnosed less than one year earlier and intermediate or high mortality risk while receiving double or triple background therapy.",
+                "material_blocker": false
+              },
+              "2.sampleSizeRationale": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "The abstract reports the included population. The original target event count, recruitment assumptions and statistical consequences of early termination have not been reviewed."
+              },
+              "3.statisticalAnalysisPlan": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "The primary paper abstract and registry identify the primary analysis. The original SAP and amendments need direct review."
+              },
+              "3.primaryEndpointResults": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30",
+                "sourceRetrievedAt": "2026-11-19",
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "rationale": "The randomized comparison supports a favorable direction for the time-to-first clinical-worsening composite in the enrolled setting. It does not establish a mortality effect.",
+                "status": "REVIEWED",
+                "judgment": "SUPPORTS",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "evidenceExcerpt": "Clinical worsening: 17/160 participants receiving sotatercept versus 59/160 on placebo. HR 0.24 (95% CI 0.14\u20130.41), p<0.001.",
+                "material_blocker": false
+              },
+              "3.effectSizeAndPrecision": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30",
+                "sourceRetrievedAt": "2026-11-19",
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "rationale": "An effect size and uncertainty were reported for the primary endpoint. Component-wise precision and longer-term effects are distinct.",
+                "status": "REVIEWED",
+                "judgment": "SUPPORTS",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "evidenceExcerpt": "Clinical-worsening composite HR 0.24 with 95% CI 0.14\u20130.41, at 13.2 months median follow-up.",
+                "material_blocker": false
+              },
+              "3.missingDataHandling": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "Missingness and censoring by arm on the primary endpoint need original SAP, disposition and sensitivity analysis review."
+              },
+              "3.multiplicityAdjustment": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "The abstract provides the primary endpoint p-value. The SAP or protocol testing hierarchy for secondary endpoints and subgroup findings has not been reviewed."
+              },
+              "4.adverseEvents": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30",
+                "sourceRetrievedAt": "2026-11-19",
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "rationale": "The events are documented, but the abstract does not establish severity, comparative exposure-adjusted risk, or sufficient completeness for a benefit-risk judgment.",
+                "status": "REVIEWED",
+                "judgment": "INCONCLUSIVE",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "evidenceExcerpt": "The most common adverse events with sotatercept were epistaxis (31.9%) and telangiectasia (26.2%).",
+                "material_blocker": false
+              },
+              "4.seriousAdverseEvents": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "Serious harms by arm and graded attribution need direct complete results table review. Lack of a reviewed table does not establish absence."
+              },
+              "4.exposureAndFollowup": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30",
+                "sourceRetrievedAt": "2026-11-19",
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "rationale": "Reported follow-up is usable for context. Arm-specific exposure and completeness after stopping have not been adjudicated.",
+                "status": "REVIEWED",
+                "judgment": "INCONCLUSIVE",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "evidenceExcerpt": "Median follow-up was 13.2 months. Trial stopped early after loss of clinical equipoise.",
+                "material_blocker": false
+              },
+              "4.discontinuations": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "Reasons for discontinuation and cohort flow need exact full results or supplemental tables."
+              },
+              "4.benefitRiskInterpretation": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "A reviewed, arm-specific synthesis of serious harms, follow-up, discontinuations and the composite endpoint has not yet been performed."
+              },
+              "5.indicationDefinition": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30",
+                "sourceRetrievedAt": "2026-11-19",
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "rationale": "Supports clinically specific linkage for the HYPERION population named in the filing announcement.",
+                "status": "REVIEWED",
+                "judgment": "SUPPORTS",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "evidenceExcerpt": "Trial enrolled early diagnosed WHO class II or III PAH at intermediate or high risk on double or triple background therapy.",
+                "material_blocker": false
+              },
+              "5.standardOfCareComparator": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30",
+                "sourceRetrievedAt": "2026-11-19",
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "rationale": "Appropriate to an add-on efficacy question in the trial. The contemporary standard-of-care landscape and treatment sequences still need a separate dated review.",
+                "status": "REVIEWED",
+                "judgment": "INCONCLUSIVE",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "evidenceExcerpt": "Both arms continued double or triple baseline treatment. The intervention compared sotatercept add-on with placebo add-on.",
+                "material_blocker": false
+              },
+              "5.clinicalMeaningfulness": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30",
+                "sourceRetrievedAt": "2026-11-19",
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "rationale": "Result favors the composite, especially its exercise component. Threshold-specific clinical relevance and component interpretation need fuller adjudication.",
+                "status": "REVIEWED",
+                "judgment": "INCONCLUSIVE",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "evidenceExcerpt": "Composite events 17 versus 59. Exercise deterioration events 8 versus 46, unplanned PAH hospitalization 3 versus 14, and deaths 7 versus 6.",
+                "material_blocker": false
+              },
+              "5.subgroupGeneralizability": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "No direct review of prespecification, interaction effects, or transportability outside the study population has been completed."
+              },
+              "5.unmetNeedContext": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "No original dated disease-guideline or burden review has been completed for the early-diagnosis population."
+              },
+              "6.regulatoryPathway": {
+                "source": "https://www.merck.com/news/merck-highlights-progress-advancing-broad-diverse-pipeline/",
+                "sourceDate": "2026-02-03",
+                "sourceVersionUrl": "https://www.sec.gov/Archives/edgar/data/310158/000110465926009495/tm264564d1_ex99-1.htm",
+                "sourceVersionDate": "2026-02-03",
+                "sourceRetrievedAt": "2026-11-19",
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "rationale": "Merck identified HYPERION as the basis of a WINREVAIR supplemental BLA accepted for review. The announcement establishes filing context only.",
+                "status": "REVIEWED",
+                "judgment": "INCONCLUSIVE",
+                "documentType": "ISSUER_SEC_EXHIBIT",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "evidenceExcerpt": "Merck reported acceptance of a new sBLA supported by HYPERION and a September 21, 2026 PDUFA goal date.",
+                "material_blocker": false
+              },
+              "6.agencyInteractions": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "The public sponsor filing acceptance is documented. Detailed FDA correspondence or review feedback scoped to this supplement has not been verified."
+              },
+              "6.applicationDossier": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "The public record links the pivotal trial to the supplement. An original pre-cutoff dossier and complete submitted evidence inventory remain unverified."
+              },
+              "6.manufacturingReadiness": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "No reviewed pre-cutoff manufacturing, CMC or inspection proof specific to this supplement was available in the examined sources."
+              },
+              "6.labelingAndRiskMitigation": {
+                "status": "UNKNOWN",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "reviewedAt": "2026-11-19",
+                "rationale": "The planned labeling update was reported. Specific proposed language, negotiations and risk mitigation content were not verified from public pre-cutoff sources."
+              }
+            }
+          }
+        ]
+      },
+      "scientific_ratings": [
+        {
+          "nct_id": "NCT04811092",
+          "L01": {
+            "level": 1,
+            "name": "Phase-first evidence intake",
+            "executionStatus": "INTAKE_ONLY",
+            "scientificValidation": "NOT_VERIFIED",
+            "fdaPrediction": "ABSTAIN",
+            "phase": "PHASE3",
+            "trialStatus": "TERMINATED",
+            "registrySourceDate": "2026-06-08",
+            "assessmentCutoff": "2026-08-22",
+            "expectedEvidence": [
+              "registry phase and status",
+              "trial design",
+              "primary endpoint definition",
+              "phase-appropriate efficacy and safety evidence"
+            ],
+            "evidenceInventory": {
+              "registry phase and status": "OBSERVED",
+              "trial design": "OBSERVED",
+              "primary endpoint definition": "OBSERVED",
+              "phase-appropriate efficacy and safety evidence": "NOT_ASSESSED"
+            },
+            "endpointDefinitions": [
+              {
+                "measure": "Median Time to Clinical Worsening",
+                "timeFrame": "Up to ~35 months",
+                "definitionStatus": "OBSERVED",
+                "scientificAdjudication": "NOT_ASSESSED"
+              }
+            ],
+            "endpointQuality": {
+              "definitionCompleteness": "OBSERVED",
+              "prespecification": "NOT_ASSESSED",
+              "clinicalRelevance": "NOT_ASSESSED",
+              "multiplicityControl": "NOT_ASSESSED",
+              "estimandAndAnalysisPlan": "NOT_ASSESSED",
+              "outcomeSuccess": "NOT_ASSESSED",
+              "score": null,
+              "reason": "Endpoint definition completeness is registry metadata, not scientific quality adjudication.",
+              "reviewConsensus": "INSUFFICIENT_REVIEW_COVERAGE",
+              "scientificScoreStatus": "NOT_VALIDATED",
+              "reviewedEvidence": {},
+              "reviewCoverage": {
+                "reviewedCriteria": 0,
+                "totalCriteria": 5,
+                "status": "NOT_REVIEWED",
+                "note": "Coverage counts accepted review records, not independently verified science or predictive accuracy."
+              }
+            },
+            "notYetExpected": [],
+            "missingEvidence": [],
+            "requiresSourceReview": [
+              "phase-appropriate efficacy and safety evidence"
+            ],
+            "note": "OBSERVED means present in eligible registry metadata, not clinically adjudicated. NOT_ASSESSED requires separate source review; it is not missing evidence or scientific scoring.",
+            "registryVersionAvailableAt": "2026-06-08",
+            "registryRetrievedAt": "2026-11-19"
+          },
+          "L02": {
+            "level": 2,
+            "name": "Trial design and methodology",
+            "status": "PARTIAL",
+            "criteria": {
+              "protocol": "NOT_ASSESSED",
+              "randomizationAndControl": "SUPPORTS",
+              "blindingAndBias": "INCONCLUSIVE",
+              "populationAndEligibility": "SUPPORTS",
+              "sampleSizeRationale": "NOT_ASSESSED"
+            },
+            "acceptedEvidence": {
+              "randomizationAndControl": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "reviewedAt": "2026-11-19",
+                "nctId": "NCT04811092",
+                "rationale": "Concurrent randomized control matches an add-on treatment question. The primary paper was cross-referenced against the exact registry.",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerified": true,
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "sourceRetrievedAt": "2026-11-19",
+                "retrievalProvenance": "RECORDED",
+                "evidenceExcerpt": "Randomized placebo-controlled add-on comparison, 160 per group, with double or triple baseline PAH therapy.",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30"
+              },
+              "blindingAndBias": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "reviewedAt": "2026-11-19",
+                "nctId": "NCT04811092",
+                "rationale": "Masking mitigates assessment bias. Early termination and possible changes to follow-up warrant original protocol and SAP review before judging overall bias.",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerified": true,
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "sourceRetrievedAt": "2026-11-19",
+                "retrievalProvenance": "RECORDED",
+                "evidenceExcerpt": "Study registry lists participant and investigator masking and says a blinded independent committee adjudicated clinical worsening. The study stopped early after loss of equipoise.",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30"
+              },
+              "populationAndEligibility": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "reviewedAt": "2026-11-19",
+                "nctId": "NCT04811092",
+                "rationale": "The article defines a coherent early-treatment population. Other classes and disease-duration strata should be kept separate.",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerified": true,
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "sourceRetrievedAt": "2026-11-19",
+                "retrievalProvenance": "RECORDED",
+                "evidenceExcerpt": "Adults had WHO functional class II or III pulmonary arterial hypertension diagnosed less than one year earlier and intermediate or high mortality risk while receiving double or triple background therapy.",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30"
+              }
+            },
+            "reviewReadiness": {
+              "accepted": 3,
+              "rejected": 0,
+              "unpublished": [],
+              "unverifiedUnpublished": [],
+              "outstanding": [
+                "protocol",
+                "sampleSizeRationale"
+              ],
+              "notYetExpected": [],
+              "complete": false,
+              "meaning": "Evidence review completeness only; not scientific validity or FDA probability."
+            },
+            "reviewedCount": 3,
+            "requiredCount": 5,
+            "rejectedCriteria": [],
+            "rejectionReasons": {},
+            "unpublishedCriteria": [],
+            "unverifiedUnpublishedCriteria": [],
+            "notYetExpectedCriteria": [],
+            "score": null,
+            "scientificValidation": "NOT_VERIFIED",
+            "fdaPrediction": "ABSTAIN",
+            "note": "Review coverage and judgments are not validated scientific scores."
+          },
+          "L03": {
+            "level": 3,
+            "name": "Statistical analysis and efficacy",
+            "status": "PARTIAL",
+            "criteria": {
+              "statisticalAnalysisPlan": "NOT_ASSESSED",
+              "primaryEndpointResults": "SUPPORTS",
+              "effectSizeAndPrecision": "SUPPORTS",
+              "missingDataHandling": "NOT_ASSESSED",
+              "multiplicityAdjustment": "NOT_ASSESSED"
+            },
+            "acceptedEvidence": {
+              "primaryEndpointResults": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "reviewedAt": "2026-11-19",
+                "nctId": "NCT04811092",
+                "rationale": "The randomized comparison supports a favorable direction for the time-to-first clinical-worsening composite in the enrolled setting. It does not establish a mortality effect.",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerified": true,
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "sourceRetrievedAt": "2026-11-19",
+                "retrievalProvenance": "RECORDED",
+                "evidenceExcerpt": "Clinical worsening: 17/160 participants receiving sotatercept versus 59/160 on placebo. HR 0.24 (95% CI 0.14\u20130.41), p<0.001.",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30"
+              },
+              "effectSizeAndPrecision": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "reviewedAt": "2026-11-19",
+                "nctId": "NCT04811092",
+                "rationale": "An effect size and uncertainty were reported for the primary endpoint. Component-wise precision and longer-term effects are distinct.",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerified": true,
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "sourceRetrievedAt": "2026-11-19",
+                "retrievalProvenance": "RECORDED",
+                "evidenceExcerpt": "Clinical-worsening composite HR 0.24 with 95% CI 0.14\u20130.41, at 13.2 months median follow-up.",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30"
+              }
+            },
+            "reviewReadiness": {
+              "accepted": 2,
+              "rejected": 0,
+              "unpublished": [],
+              "unverifiedUnpublished": [],
+              "outstanding": [
+                "statisticalAnalysisPlan",
+                "missingDataHandling",
+                "multiplicityAdjustment"
+              ],
+              "notYetExpected": [],
+              "complete": false,
+              "meaning": "Evidence review completeness only; not scientific validity or FDA probability."
+            },
+            "reviewedCount": 2,
+            "requiredCount": 5,
+            "rejectedCriteria": [],
+            "rejectionReasons": {},
+            "unpublishedCriteria": [],
+            "unverifiedUnpublishedCriteria": [],
+            "notYetExpectedCriteria": [],
+            "score": null,
+            "scientificValidation": "NOT_VERIFIED",
+            "fdaPrediction": "ABSTAIN",
+            "note": "Review coverage and judgments are not validated scientific scores."
+          },
+          "L04": {
+            "level": 4,
+            "name": "Safety and benefit-risk",
+            "status": "PARTIAL",
+            "criteria": {
+              "adverseEvents": "INCONCLUSIVE",
+              "seriousAdverseEvents": "NOT_ASSESSED",
+              "exposureAndFollowup": "INCONCLUSIVE",
+              "discontinuations": "NOT_ASSESSED",
+              "benefitRiskInterpretation": "NOT_ASSESSED"
+            },
+            "acceptedEvidence": {
+              "adverseEvents": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "reviewedAt": "2026-11-19",
+                "nctId": "NCT04811092",
+                "rationale": "The events are documented, but the abstract does not establish severity, comparative exposure-adjusted risk, or sufficient completeness for a benefit-risk judgment.",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerified": true,
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "sourceRetrievedAt": "2026-11-19",
+                "retrievalProvenance": "RECORDED",
+                "evidenceExcerpt": "The most common adverse events with sotatercept were epistaxis (31.9%) and telangiectasia (26.2%).",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30"
+              },
+              "exposureAndFollowup": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "reviewedAt": "2026-11-19",
+                "nctId": "NCT04811092",
+                "rationale": "Reported follow-up is usable for context. Arm-specific exposure and completeness after stopping have not been adjudicated.",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerified": true,
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "sourceRetrievedAt": "2026-11-19",
+                "retrievalProvenance": "RECORDED",
+                "evidenceExcerpt": "Median follow-up was 13.2 months. Trial stopped early after loss of clinical equipoise.",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30"
+              }
+            },
+            "reviewReadiness": {
+              "accepted": 2,
+              "rejected": 0,
+              "unpublished": [],
+              "unverifiedUnpublished": [],
+              "outstanding": [
+                "seriousAdverseEvents",
+                "discontinuations",
+                "benefitRiskInterpretation"
+              ],
+              "notYetExpected": [],
+              "complete": false,
+              "meaning": "Evidence review completeness only; not scientific validity or FDA probability."
+            },
+            "reviewedCount": 2,
+            "requiredCount": 5,
+            "rejectedCriteria": [],
+            "rejectionReasons": {},
+            "unpublishedCriteria": [],
+            "unverifiedUnpublishedCriteria": [],
+            "notYetExpectedCriteria": [],
+            "score": null,
+            "scientificValidation": "NOT_VERIFIED",
+            "fdaPrediction": "ABSTAIN",
+            "note": "Review coverage and judgments are not validated scientific scores."
+          },
+          "L05": {
+            "level": 5,
+            "name": "Indication-specific clinical assessment",
+            "status": "PARTIAL",
+            "criteria": {
+              "indicationDefinition": "SUPPORTS",
+              "standardOfCareComparator": "INCONCLUSIVE",
+              "clinicalMeaningfulness": "INCONCLUSIVE",
+              "subgroupGeneralizability": "NOT_ASSESSED",
+              "unmetNeedContext": "NOT_ASSESSED"
+            },
+            "acceptedEvidence": {
+              "indicationDefinition": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "reviewedAt": "2026-11-19",
+                "nctId": "NCT04811092",
+                "rationale": "Supports clinically specific linkage for the HYPERION population named in the filing announcement.",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerified": true,
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "sourceRetrievedAt": "2026-11-19",
+                "retrievalProvenance": "RECORDED",
+                "evidenceExcerpt": "Trial enrolled early diagnosed WHO class II or III PAH at intermediate or high risk on double or triple background therapy.",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30"
+              },
+              "standardOfCareComparator": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "reviewedAt": "2026-11-19",
+                "nctId": "NCT04811092",
+                "rationale": "Appropriate to an add-on efficacy question in the trial. The contemporary standard-of-care landscape and treatment sequences still need a separate dated review.",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerified": true,
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "sourceRetrievedAt": "2026-11-19",
+                "retrievalProvenance": "RECORDED",
+                "evidenceExcerpt": "Both arms continued double or triple baseline treatment. The intervention compared sotatercept add-on with placebo add-on.",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30"
+              },
+              "clinicalMeaningfulness": {
+                "source": "https://pubmed.ncbi.nlm.nih.gov/41025556/",
+                "sourceDate": "2025-09-30",
+                "reviewedAt": "2026-11-19",
+                "nctId": "NCT04811092",
+                "rationale": "Result favors the composite, especially its exercise component. Threshold-specific clinical relevance and component interpretation need fuller adjudication.",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "documentType": "PRIMARY_JOURNAL_ARTICLE_ABSTRACT",
+                "sourceVerified": true,
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "sourceRetrievedAt": "2026-11-19",
+                "retrievalProvenance": "RECORDED",
+                "evidenceExcerpt": "Composite events 17 versus 59. Exercise deterioration events 8 versus 46, unplanned PAH hospitalization 3 versus 14, and deaths 7 versus 6.",
+                "sourceVersionUrl": "https://doi.org/10.1056/NEJMoa2508170",
+                "sourceVersionDate": "2025-09-30"
+              }
+            },
+            "reviewReadiness": {
+              "accepted": 3,
+              "rejected": 0,
+              "unpublished": [],
+              "unverifiedUnpublished": [],
+              "outstanding": [
+                "subgroupGeneralizability",
+                "unmetNeedContext"
+              ],
+              "notYetExpected": [],
+              "complete": false,
+              "meaning": "Evidence review completeness only; not scientific validity or FDA probability."
+            },
+            "reviewedCount": 3,
+            "requiredCount": 5,
+            "rejectedCriteria": [],
+            "rejectionReasons": {},
+            "unpublishedCriteria": [],
+            "unverifiedUnpublishedCriteria": [],
+            "notYetExpectedCriteria": [],
+            "score": null,
+            "scientificValidation": "NOT_VERIFIED",
+            "fdaPrediction": "ABSTAIN",
+            "note": "Review coverage and judgments are not validated scientific scores."
+          },
+          "L06": {
+            "level": 6,
+            "name": "FDA regulatory readiness",
+            "status": "PARTIAL",
+            "criteria": {
+              "regulatoryPathway": "INCONCLUSIVE",
+              "agencyInteractions": "NOT_ASSESSED",
+              "applicationDossier": "NOT_ASSESSED",
+              "manufacturingReadiness": "NOT_ASSESSED",
+              "labelingAndRiskMitigation": "NOT_ASSESSED"
+            },
+            "acceptedEvidence": {
+              "regulatoryPathway": {
+                "source": "https://www.merck.com/news/merck-highlights-progress-advancing-broad-diverse-pipeline/",
+                "sourceDate": "2026-02-03",
+                "reviewedAt": "2026-11-19",
+                "nctId": "NCT04811092",
+                "rationale": "Merck identified HYPERION as the basis of a WINREVAIR supplemental BLA accepted for review. The announcement establishes filing context only.",
+                "reviewerId": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "documentType": "ISSUER_SEC_EXHIBIT",
+                "sourceVerified": true,
+                "sourceVerifiedAt": "2026-11-19",
+                "sourceVerifiedBy": "CODEX_HISTORICAL_EVIDENCE_WORKER_2",
+                "sourceVerificationMethod": "DIRECT_DOCUMENT_REVIEW",
+                "sourceRetrievedAt": "2026-11-19",
+                "retrievalProvenance": "RECORDED",
+                "evidenceExcerpt": "Merck reported acceptance of a new sBLA supported by HYPERION and a September 21, 2026 PDUFA goal date.",
+                "sourceVersionUrl": "https://www.sec.gov/Archives/edgar/data/310158/000110465926009495/tm264564d1_ex99-1.htm",
+                "sourceVersionDate": "2026-02-03"
+              }
+            },
+            "reviewReadiness": {
+              "accepted": 1,
+              "rejected": 0,
+              "unpublished": [],
+              "unverifiedUnpublished": [],
+              "outstanding": [
+                "agencyInteractions",
+                "applicationDossier",
+                "manufacturingReadiness",
+                "labelingAndRiskMitigation"
+              ],
+              "notYetExpected": [],
+              "complete": false,
+              "meaning": "Evidence review completeness only; not scientific validity or FDA probability."
+            },
+            "reviewedCount": 1,
+            "requiredCount": 5,
+            "rejectedCriteria": [],
+            "rejectionReasons": {},
+            "unpublishedCriteria": [],
+            "unverifiedUnpublishedCriteria": [],
+            "notYetExpectedCriteria": [],
+            "score": null,
+            "scientificValidation": "NOT_VERIFIED",
+            "fdaPrediction": "ABSTAIN",
+            "note": "Review coverage and judgments are not validated scientific scores."
+          }
+        }
+      ]
+    }
+  ],
+  "predictions": [
+    {
+      "event_id": "PDUFA26-TIMING-035",
+      "application_number": "BLA761363",
+      "review_cycle": "SUPPL:12",
+      "drug": "WINREVAIR",
+      "indication": "Pulmonary arterial hypertension",
+      "decision_date": "2026-09-21",
+      "level": "L01",
+      "cutoff_date": "2026-08-22",
+      "prediction": "ABSTAIN",
+      "reason": "trial_identity_alone_is_not_directional_evidence",
+      "criterion_references": [],
+      "protocol": "CANONICAL_HISTORICAL_FDA_DIRECTION_V1"
+    },
+    {
+      "event_id": "PDUFA26-TIMING-035",
+      "application_number": "BLA761363",
+      "review_cycle": "SUPPL:12",
+      "drug": "WINREVAIR",
+      "indication": "Pulmonary arterial hypertension",
+      "decision_date": "2026-09-21",
+      "level": "L02",
+      "cutoff_date": "2026-08-22",
+      "prediction": "ABSTAIN",
+      "reason": "incomplete_or_inconclusive_level_evidence",
+      "criterion_references": [
+        "NCT04811092:protocol:NOT_ASSESSED",
+        "NCT04811092:blindingAndBias:INCONCLUSIVE",
+        "NCT04811092:sampleSizeRationale:NOT_ASSESSED"
+      ],
+      "protocol": "CANONICAL_HISTORICAL_FDA_DIRECTION_V1"
+    },
+    {
+      "event_id": "PDUFA26-TIMING-035",
+      "application_number": "BLA761363",
+      "review_cycle": "SUPPL:12",
+      "drug": "WINREVAIR",
+      "indication": "Pulmonary arterial hypertension",
+      "decision_date": "2026-09-21",
+      "level": "L03",
+      "cutoff_date": "2026-08-22",
+      "prediction": "ABSTAIN",
+      "reason": "incomplete_or_inconclusive_level_evidence",
+      "criterion_references": [
+        "NCT04811092:statisticalAnalysisPlan:NOT_ASSESSED",
+        "NCT04811092:missingDataHandling:NOT_ASSESSED",
+        "NCT04811092:multiplicityAdjustment:NOT_ASSESSED"
+      ],
+      "protocol": "CANONICAL_HISTORICAL_FDA_DIRECTION_V1"
+    },
+    {
+      "event_id": "PDUFA26-TIMING-035",
+      "application_number": "BLA761363",
+      "review_cycle": "SUPPL:12",
+      "drug": "WINREVAIR",
+      "indication": "Pulmonary arterial hypertension",
+      "decision_date": "2026-09-21",
+      "level": "L04",
+      "cutoff_date": "2026-08-22",
+      "prediction": "ABSTAIN",
+      "reason": "incomplete_or_inconclusive_level_evidence",
+      "criterion_references": [
+        "NCT04811092:adverseEvents:INCONCLUSIVE",
+        "NCT04811092:seriousAdverseEvents:NOT_ASSESSED",
+        "NCT04811092:exposureAndFollowup:INCONCLUSIVE",
+        "NCT04811092:discontinuations:NOT_ASSESSED",
+        "NCT04811092:benefitRiskInterpretation:NOT_ASSESSED"
+      ],
+      "protocol": "CANONICAL_HISTORICAL_FDA_DIRECTION_V1"
+    },
+    {
+      "event_id": "PDUFA26-TIMING-035",
+      "application_number": "BLA761363",
+      "review_cycle": "SUPPL:12",
+      "drug": "WINREVAIR",
+      "indication": "Pulmonary arterial hypertension",
+      "decision_date": "2026-09-21",
+      "level": "L05",
+      "cutoff_date": "2026-08-22",
+      "prediction": "ABSTAIN",
+      "reason": "incomplete_or_inconclusive_level_evidence",
+      "criterion_references": [
+        "NCT04811092:standardOfCareComparator:INCONCLUSIVE",
+        "NCT04811092:clinicalMeaningfulness:INCONCLUSIVE",
+        "NCT04811092:subgroupGeneralizability:NOT_ASSESSED",
+        "NCT04811092:unmetNeedContext:NOT_ASSESSED"
+      ],
+      "protocol": "CANONICAL_HISTORICAL_FDA_DIRECTION_V1"
+    },
+    {
+      "event_id": "PDUFA26-TIMING-035",
+      "application_number": "BLA761363",
+      "review_cycle": "SUPPL:12",
+      "drug": "WINREVAIR",
+      "indication": "Pulmonary arterial hypertension",
+      "decision_date": "2026-09-21",
+      "level": "L06",
+      "cutoff_date": "2026-08-22",
+      "prediction": "ABSTAIN",
+      "reason": "incomplete_or_inconclusive_level_evidence",
+      "criterion_references": [
+        "NCT04811092:regulatoryPathway:INCONCLUSIVE",
+        "NCT04811092:agencyInteractions:NOT_ASSESSED",
+        "NCT04811092:applicationDossier:NOT_ASSESSED",
+        "NCT04811092:manufacturingReadiness:NOT_ASSESSED",
+        "NCT04811092:labelingAndRiskMitigation:NOT_ASSESSED"
+      ],
+      "protocol": "CANONICAL_HISTORICAL_FDA_DIRECTION_V1"
+    }
+  ],
+  "feature_snapshots_sha256": "c90fdb16d4f93d963a87a15bfa6831b9e2f4ab0507e1e6af63398dd3ddf25b71",
+  "predictions_sha256": "224f902a95820a888235d9b0cc8011a4de89c02c669850ee171e91a1608bf599",
+  "lock_sha256": "809cdd5c9443598aa0cd574cfc247ad393d2ac06b25072fd258058a8bd38a8f6"
+}

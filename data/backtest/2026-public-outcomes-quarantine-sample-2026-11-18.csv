@@ -1,0 +1,7 @@
+event_id,ticker,drug,indication,reported_action_date,reported_outcome,source_url,ledger_status
+2026-SMMT-IVONESCIMAB,SMMT,ivonescimab,EGFR-mutated NSCLC,2026-11-13,CRL,https://www.pdufa.bio/fda-this-month,OUTCOME_ONLY_NOT_BLIND_READY
+2026-GSK-NELADALKIB,GSK,neladalkib,ALK-positive NSCLC,2026-11-17,APPROVE,https://www.pdufa.bio/fda-this-month,OUTCOME_ONLY_NOT_BLIND_READY
+2026-BAYRY-ASUNDEXIAN,BAYRY,asundexian,secondary stroke prevention,2026-11-09,APPROVE,https://www.pdufa.bio/fda-this-month,OUTCOME_ONLY_NOT_BLIND_READY
+2026-MKKGY-PIMICOTINIB,MKKGY,pimicotinib,tenosynovial giant cell tumor,2026-11-10,APPROVE,https://www.pdufa.bio/fda-this-month,OUTCOME_ONLY_NOT_BLIND_READY
+2026-RHHBY-GIREDESTREANT,RHHBY,giredestrant plus everolimus,ER-positive metastatic breast cancer,2026-11-16,APPROVE,https://www.pdufa.bio/fda-this-month,OUTCOME_ONLY_NOT_BLIND_READY
+2026-INO-3107,INO,INO-3107,HPV 6 and 11 recurrent respiratory papillomatosis,2026-10-30,APPROVE,https://www.pdufa.bio/fda-this-month,OUTCOME_ONLY_NOT_BLIND_READY

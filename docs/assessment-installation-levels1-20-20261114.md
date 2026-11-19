@@ -221,3 +221,19 @@ unknown qualified-trial count. Receipt:
 This correction reports uncertainty; it does not waive a source or scientific
 qualification requirement. The four new artifact regressions run in the broad PR
 pytest workflow; final-head CI counts supersede earlier committed check results.
+
+## November 19 FOCUS evidence integration
+
+FOCUS can load an exact program and select each installed scientific level.
+ASSESSMENTS exposes the same view from the 32-trial roster. The Level 1 view
+shows the exact registry link, posted version date, check date, and cutoff
+when the phase-first intake is eligible. Levels 2–6 render the existing
+scientific contracts and source receipts. The exact program view lists
+available saved versions with timestamps and SHA-256 hashes.
+
+The separate assessment runtime launcher continues to execute its Levels
+1–3 contract. The six-level view reads the installed candidate assessment
+contracts through the authenticated exact-program endpoint. Evidence
+availability and a successful regression do not establish owner review or
+validate an FDA prediction. Live access to current saved records requires
+the existing authenticated application and backend storage.

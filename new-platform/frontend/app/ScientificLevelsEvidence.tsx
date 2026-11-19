@@ -29,12 +29,12 @@ export function validScientificLevels(value:unknown):value is Record<string,Leve
   return x?.level===n&&typeof x.name==="string"&&typeof x.status==="string"&&x.score===null&&x.scientificValidation==="NOT_VERIFIED"&&x.fdaPrediction==="ABSTAIN"&&!!x.criteria&&typeof x.criteria==="object"&&!Array.isArray(x.criteria)&&Object.values(x.criteria).every(s=>typeof s==="string")&&validInventory(x.registryEvidenceInventory)&&validReviews(x.acceptedEvidence);
  });
 }
-export default function ScientificLevelsEvidence({value}:{value:unknown}){
+export default function ScientificLevelsEvidence({value,selectedLevel}:{value:unknown;selectedLevel?:number}){
  if(!validScientificLevels(value))return <p>Levels 2–6 evidence contracts unavailable or not verified.</p>;
  return <section aria-label="Scientific evidence Levels 2 through 6">
   <h3>Scientific evidence · Levels 2–6</h3>
   <p>Source collection is not scientific validation. Scores NOT_VALIDATED; FDA prediction ABSTAIN.</p>
-  {[2,3,4,5,6].map(n=>{const level=value[String(n)];return <details key={n}>
+  {[2,3,4,5,6].filter(n=>selectedLevel===undefined||selectedLevel===n).map(n=>{const level=value[String(n)];return <details key={n} open={selectedLevel===n||undefined}>
    <summary>Level {n}: {level.name} · {level.status}</summary>
    <ul>{Object.entries(level.criteria).map(([criterion,state])=>{
     const observation=level.registryEvidenceInventory?.[criterion];

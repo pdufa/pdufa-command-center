@@ -1,0 +1,12 @@
+{
+  "event_id": "PDUFA26-TIMING-035",
+  "cohort_scope": "INDEPENDENTLY_VERIFIED_ONE_CASE_PILOT",
+  "eligible_events": 1,
+  "scientific_levels": 6,
+  "protocol": "CANONICAL_HISTORICAL_FDA_DIRECTION_V1",
+  "rule_set": "SCIENTIFIC_L01_L06_HISTORICAL_DIRECTION_V1",
+  "cutoff_days": 30,
+  "locked_at_utc": "2026-11-19T17:48:29.733515384Z",
+  "lock_sha256": "809cdd5c9443598aa0cd574cfc247ad393d2ac06b25072fd258058a8bd38a8f6",
+  "outcome_access": "OUTCOME_NOT_OPENED_BY_PILOT_EXECUTOR"
+}

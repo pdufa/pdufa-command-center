@@ -71,8 +71,14 @@ def _source_matches_trial(source, trial_id):
         return False
 
 
-def assess_review_contracts(level_one, *, trial_id, evidence=None, definitions, not_yet_expected=()):
-    """Return independent level inventories; never convert coverage into a score."""
+def assess_review_contracts(level_one, *, trial_id, evidence=None, definitions,
+                            not_yet_expected=(), historical_versions=False):
+    """Return independent level inventories; never convert coverage into a score.
+
+    Historical version reviews preserve actual retrieval and review dates.
+    Their immutable source version must have been public by the cutoff.
+    The default continues to require contemporaneous review receipts.
+    """
     evidence = evidence if isinstance(evidence, dict) else {}
     if not isinstance(level_one, dict):
         level_one = {}
@@ -141,7 +147,7 @@ def assess_review_contracts(level_one, *, trial_id, evidence=None, definitions, 
             verification_day = _day(record.get("sourceVerifiedAt"))
             verification_actor = record.get("sourceVerifiedBy")
             verification_method = record.get("sourceVerificationMethod")
-            if (not verification_day or verification_day > cutoff
+            if (not verification_day or (not historical_versions and verification_day > cutoff)
                     or not isinstance(verification_actor, str)
                     or not verification_actor.strip()
                     or verification_method not in {"DIRECT_DOCUMENT_REVIEW", "REGISTRY_RECORD_REVIEW"}):
@@ -151,15 +157,26 @@ def assess_review_contracts(level_one, *, trial_id, evidence=None, definitions, 
             source_day = _day(record.get("sourceDate"))
             review_day = _day(record.get("reviewedAt"))
             retrieval_day = _day(record.get("sourceRetrievedAt"))
-            # Legacy reviews lacking a retrieval receipt remain explicitly
-            # incomplete provenance. Never invent a collection date. Supplied
-            # receipts must satisfy the same cutoff and source chronology.
-            if "sourceRetrievedAt" in record and (
+            if historical_versions:
+                version_day = _day(record.get("sourceVersionDate"))
+                version_url = record.get("sourceVersionUrl")
+                if (not source_day or not version_day or not retrieval_day or not review_day
+                        or not source_day <= version_day <= cutoff
+                        or not version_day <= retrieval_day <= verification_day <= review_day
+                        or not _valid_url(version_url)
+                        or not _source_matches_trial(version_url, trial_id)):
+                    states[criterion] = "REJECTED_EVIDENCE"
+                    rejection_reasons[criterion] = "INVALID_HISTORICAL_VERSION_PROVENANCE"
+                    continue
+            elif "sourceRetrievedAt" in record and (
                     not retrieval_day or not source_day or not review_day
                     or not source_day <= retrieval_day <= verification_day <= review_day <= cutoff):
                 states[criterion] = "REJECTED_EVIDENCE"
                 rejection_reasons[criterion] = "INVALID_RETRIEVAL_CHRONOLOGY"
                 continue
+            valid_chronology = bool(source_day and review_day
+                                    and source_day <= verification_day <= review_day
+                                    and (historical_versions or review_day <= cutoff))
             if record.get("conflict") is True:
                 states[criterion] = "REJECTED_EVIDENCE"
                 rejection_reasons[criterion] = "CONFLICTING_EVIDENCE"
@@ -167,9 +184,7 @@ def assess_review_contracts(level_one, *, trial_id, evidence=None, definitions, 
             url = record.get("source")
             if (record.get("nctId") != trial_id or not _valid_url(url)
                     or not _source_matches_trial(url, trial_id)
-                    or not source_day or not review_day
-                    or not source_day <= review_day <= cutoff
-                    or not source_day <= verification_day <= review_day <= cutoff
+                    or not valid_chronology
                     or record.get("judgment") not in {"SUPPORTS", "CONCERNS", "INCONCLUSIVE"}
                     or not isinstance(record.get("rationale"), str)
                     or not record["rationale"].strip()
@@ -184,9 +199,7 @@ def assess_review_contracts(level_one, *, trial_id, evidence=None, definitions, 
                     "INVALID_TRIAL_ID" if record.get("nctId") != trial_id else
                     "INVALID_SOURCE_URL" if not _valid_url(url) else
                     "SOURCE_TRIAL_MISMATCH" if not _source_matches_trial(url, trial_id) else
-                    "INVALID_CHRONOLOGY" if not source_day or not review_day
-                        or not source_day <= review_day <= cutoff
-                        or not source_day <= verification_day <= review_day <= cutoff else
+                    "INVALID_CHRONOLOGY" if not valid_chronology else
                     "INVALID_JUDGMENT" if record.get("judgment") not in {
                         "SUPPORTS", "CONCERNS", "INCONCLUSIVE"
                     } else
@@ -214,6 +227,9 @@ def assess_review_contracts(level_one, *, trial_id, evidence=None, definitions, 
                 "retrievalProvenance": "RECORDED" if retrieval_day else "NOT_RECORDED",
                 "evidenceExcerpt": record["evidenceExcerpt"],
             }
+            if historical_versions:
+                accepted[criterion].update(sourceVersionUrl=version_url,
+                                           sourceVersionDate=version_day.isoformat())
         required = [c for c in criteria if states[c] != "NOT_YET_EXPECTED"]
         rejected = [c for c in criteria if states[c] == "REJECTED_EVIDENCE"]
         unpublished = [c for c in criteria if states[c] == "UNPUBLISHED"]
@@ -250,5 +266,6 @@ def assess_review_contracts(level_one, *, trial_id, evidence=None, definitions, 
     return results
 
 
-def assess_levels_two_to_six(level_one, *, trial_id, evidence=None):
-    return assess_review_contracts(level_one, trial_id=trial_id, evidence=evidence, definitions=LEVELS)
+def assess_levels_two_to_six(level_one, *, trial_id, evidence=None, historical_versions=False):
+    return assess_review_contracts(level_one, trial_id=trial_id, evidence=evidence,
+                                   definitions=LEVELS, historical_versions=historical_versions)

@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "kind": "FOCUS_LEVEL16_COLLECTED_EVIDENCE_OWNER_RESEARCH",
   "evidenceCutoffDate": "2026-11-14",
-  "rosterAsOf": "2026-11-14",
+  "rosterAsOf": "2026-11-18",
   "sourceSnapshotDigests": {
     "focus-source-research-20261114.json": "2d839374e7beab6fef3b0161fb70a651fe617da0ac47198f698e6ae1863da9a6",
     "orca2-owner-research-dossier-20261114-v1.json": "e24f518027110fad442427050a5ffb8588649dc9e46ff979d455b75d8b7e8000",

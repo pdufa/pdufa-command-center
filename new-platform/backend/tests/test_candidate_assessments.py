@@ -915,3 +915,49 @@ def test_forged_review_and_source_dates_cannot_score_research_grades():
         assert metric["points"] is None
         assert result["scientificReadiness"]["fdaPrediction"] == "ABSTAIN"
 
+
+
+def test_all_focus_receipts_bind_to_the_phase_first_scientific_contracts():
+    from pathlib import Path
+
+    root = Path(__file__).resolve().parents[3]
+    roster = json.loads((root / "new-platform/frontend/data/p3PostDataActive.json").read_text())
+    research = json.loads(
+        (root / "reports/scientific-levels1-6/focus-source-research-20261114.json").read_text()
+    )
+    receipts = {row["nct"]: row["registrySource"] for row in research["trials"]}
+    roster_ncts = {row["nct"] for row in roster["records"]}
+    assert len(roster_ncts) == len(research["trials"]) == 32
+    assert set(receipts) == roster_ncts
+    cutoff = date.fromisoformat(research["evidenceCutoffDate"])
+    for nct, receipt in receipts.items():
+        captured = receipt["capturedRegistry"]
+        fields = captured["fields"]
+        assert receipt["nct"] == captured["nct"] == nct
+        assert captured["sha256"] == receipt["documentSha256"]
+        registry = {
+            "nct_id": nct,
+            "phases": receipt["phasesUnreviewed"],
+            "status": receipt["studyStatusUnreviewed"],
+            "last_update_posted": {"date": receipt["registryPostedVersionDateUnreviewed"]},
+            "primary_outcomes": receipt["primaryEndpointsUnreviewed"],
+            "treatment_groups": fields["arms"]["value"],
+        }
+        result = score_candidate(
+            {"id": f"TRIAL|{nct}", "nctId": nct},
+            registry,
+            today=cutoff,
+            registry_checked=receipt["retrievedAt"],
+        )
+        assert result["nctId"] == nct
+        payload = compact(result)
+        assert payload["levelOneIntake"]["scientificValidation"] == "NOT_VERIFIED"
+        assert payload["levelOneIntake"]["registrySourceDate"] == registry["last_update_posted"]["date"]
+        assert payload["levelOneIntake"]["fdaPrediction"] == "ABSTAIN"
+        contracts = payload["levelsTwoToSix"]
+        assert sorted(contracts) == ["2", "3", "4", "5", "6"]
+        assert all(
+            level["score"] is None and level["fdaPrediction"] == "ABSTAIN"
+            and level["scientificValidation"] == "NOT_VERIFIED"
+            for level in contracts.values()
+        )

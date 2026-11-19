@@ -52,3 +52,57 @@ test('Level 8 exposes event rates without substituting patient risks or FDA conf
  assert.match(html,/20.000/);assert.match(html,/not percentages of patients/);assert.match(html,/No FDA probability/);
  assert.equal(renderToStaticMarkup(React.createElement(SafetyExposure,{value:{8:{...level,score:99}}})), '');
 });
+
+test('each exact FOCUS trial can select and read all six installed contracts', async () => {
+ const {act,create}=require('react-test-renderer');
+ const {default:Exact}=require('../app/ExactTrialScientificIntake.tsx');
+ const {records}=require('../data/p3PostDataActive.json');
+ const {trials}=require('../data/level16AssessmentEvidence.json');
+ assert.equal(new Set(records.map(row=>row.nct)).size,32);
+ assert.deepEqual(new Set(records.map(row=>row.nct)),new Set(trials.map(row=>row.nct)));
+ const oldFetch=global.fetch,oldAct=global.IS_REACT_ACT_ENVIRONMENT,oldSelf=global.self;
+ global.self=globalThis;
+ global.IS_REACT_ACT_ENVIRONMENT=true;
+ try{
+  for(const {nct} of records){
+   const programIdentity='integration-fixture:'+nct;
+   const contracts=levels();
+   for(const level of Object.values(contracts))level.name='Exact evidence '+level.level;
+   const intake={
+    executionStatus:'INTAKE_ONLY',phase:'PHASE3',trialStatus:'COMPLETED',
+    fdaPrediction:'ABSTAIN',scientificValidation:'NOT_VERIFIED',
+    registrySourceDate:'2026-11-14',registryCheckedAt:'2026-11-15',assessmentCutoff:'2026-11-19',
+    endpointQuality:{scientificScoreStatus:'NOT_VALIDATED'},missingEvidence:[],
+    notYetExpected:[],evidenceInventory:{},
+   };
+   global.fetch=async url=>{
+    assert.equal(url,'/api/assessments?identity='+encodeURIComponent(programIdentity));
+    return Response.json({id:programIdentity,nctId:nct,levelOneIntake:intake,levelsTwoToSix:contracts,history:[{assessedAt:"2026-11-19T10:00:00Z",modelVersion:"candidate-assessments-v1",evidenceHash:"a".repeat(64)}]});
+   };
+   let tree;
+   try{
+    await act(async()=>{tree=create(React.createElement(Exact,{cohort:'FOCUS',nctId:nct,programIdentity}));});
+    await act(async()=>{tree.root.findByType('button').props.onClick();});
+    const control=()=>tree.root.findByType('select');
+    assert.deepEqual(control().findAllByType('option').map(option=>option.props.value),[0,1,2,3,4,5,6]);
+    await act(async()=>{control().props.onChange({target:{value:'1'}});});
+    assert.match(JSON.stringify(tree.toJSON()),new RegExp(nct+' · Registry intake available'));
+    assert.match(JSON.stringify(tree.toJSON()),/Version posted 2026-11-14/);
+    assert.deepEqual(tree.root.findByType('summary').children,['Saved assessment versions']);
+    assert.match(JSON.stringify(tree.toJSON()),/candidate-assessments-v1/);
+    for(const level of [2,3,4,5,6]){
+     await act(async()=>{control().props.onChange({target:{value:String(level)}});});
+     const [summary]=tree.root.findAllByType('summary');
+     assert.equal(summary.children.join(''),'Level '+level+': Exact evidence '+level+' · AWAITING_REVIEW');
+     assert.equal(tree.root.findAllByType('details')[0].props.open,true);
+    }
+   }finally{
+    if(tree)await act(async()=>tree.unmount());
+   }
+  }
+ }finally{
+  global.fetch=oldFetch;
+  if(oldSelf===undefined)delete global.self;else global.self=oldSelf;
+  if(oldAct===undefined)delete global.IS_REACT_ACT_ENVIRONMENT;else global.IS_REACT_ACT_ENVIRONMENT=oldAct;
+ }
+});
