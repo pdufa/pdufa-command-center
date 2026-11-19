@@ -1,0 +1,71 @@
+# November 19 FDA source reconciliation
+
+This audit covers FDA action dates from January 1 through November 18, 2026,
+inclusive. The requested 196 eligible PDUFA review cycles remain unverified.
+The scope uses actual action dates, which allows a 2026 action whose published
+goal date fell in 2027. Goal dates, FDA action dates and later announcement
+dates are recorded separately.
+
+| Snapshot | Distinct records | Scope |
+|---|---:|---|
+| Drugs@FDA originals, NDA | 90 | Full approval records |
+| Drugs@FDA originals, BLA | 31 | Full approval records |
+| Drugs@FDA efficacy supplements, NDA | 117 | Full approval records |
+| Drugs@FDA efficacy supplements, BLA | 84 | Full approval records |
+| openFDA 2026 letters | 39 | Published Complete Response Letter PDFs |
+| openFDA 2026 letter awaiting publication | 1 | Missing application identifier and published letter |
+| Versioned public timing sample v41 | 41 | Discovery records with separate goal-date and action-date source links |
+| Public 2026 decisions page | 179 | Publisher's reported snapshot total |
+
+The November 19 Drugs@FDA export contains 29,468 application records. Within
+the action window, 1,162 NDA/BLA submission status rows include 322 full
+approval records in the four selected classes. The audit deduplicates these on
+application number, submission type, submission number and action date. The
+number of duplicates under that key was zero. These classes capture actions to
+research. Drug brand and sponsor are registry values, which can be broader
+than the individual action and may reflect later transfers. Indication, target
+date and exact review cycle each need a separate source check. Tentative
+approvals, ANDAs, and supplements that FDA categorizes outside EFFICACY are
+outside this automated query. Clinical-data labeling supplements and relevant
+CBER approvals need separate review. Some CBER records are absent from the
+Drugs@FDA bulk file.
+
+The live openFDA query contained 40 records and was dated November 18. The
+endpoint overview's stated historical date range lagged the live data. One of
+the 40 is marked as under review for release and omits both an application ID
+and a structured letter type. The 39 published letters were deduplicated by
+filename. Letter IDs and approval submission keys represent different units.
+A prior letter and later action can describe different cycles of an original
+application. A single product announcement may also cover multiple FDA
+submissions. A combined denominator therefore requires an event-level
+crosswalk and cannot be computed by adding the source totals.
+
+The 41-row timing snapshot supersedes the branch's 38-row discovery list for
+source review. It groups some related applications and omits others. Exact
+FDA identifiers take precedence where the discovery site bundles an original
+application with a supplement or links a document from a different indication
+on the same action date. The three additional rows in v41 are discovery leads,
+independent of the count reported on the publisher's decisions page.
+
+## Reproduce the candidate inventory
+
+Compile and run `scripts/audit_2026_fda_action_candidates.py` against the
+November 19 Drugs@FDA bulk ZIP, November 18 CRL date-range response, and the v41
+timing CSV in a dedicated outcome-quarantine workspace. Pass that same
+quarantine directory with `--quarantine`. Stdout contains only aggregate
+counts, bounds and hashes. The script creates a private JSON file for
+record-level FDA source links and actions. Keep the source files and private
+JSON outside the prediction environment and the Git checkout.
+
+| Input | SHA-256 |
+|---|---|
+| Drugs@FDA ZIP | `cff8c75eb5e347b6075fe45c4e6f1e05e3fcb144810c447c3c87e72bd8c80b47` |
+| CRL query JSON | `b4a1081eb3c3d09a45f5fea2cca4ea9cd8e6b65e9680a579bd479eac867aa119` |
+| Timing sample v41 CSV | `b196131a21d62e1ac4645c9a888b795f5917601af68a03c97b62dcbbce871b52` |
+
+Outcome-team sources are the [openFDA download manifest](https://api.fda.gov/download.json),
+[CRL date-range API query](https://api.fda.gov/transparency/crl.json?search=letter_date%3A%5B2026-01-01+TO+2026-11-18%5D&limit=100),
+[CBER original BLA approvals](https://www.fda.gov/vaccines-blood-biologics/development-approval-process-cber/2026-biological-license-application-approvals),
+[CBER noteworthy BLA supplements](https://www.fda.gov/vaccines-blood-biologics/development-approval-process-cber/2026-biological-license-application-supplement-noteworthy-approvals),
+[versioned timing sample](https://www.pdufa.bio/research/fda-decision-timing/fda-decision-timing-2026-v41.csv),
+and [publisher decisions page](https://www.pdufa.bio/decisions/2026).

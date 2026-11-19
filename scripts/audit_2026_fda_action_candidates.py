@@ -11,6 +11,7 @@ from collections import Counter
 from datetime import date, datetime
 import hashlib
 import json
+import os
 from pathlib import Path
 import zipfile
 
@@ -144,9 +145,8 @@ def audit(drugs_path, crl_path, timing_path, quarantine, target):
     approval_counts = Counter((a["application_number"][:3], a["submission_type"]) for a in approvals)
     quarantine.mkdir(mode=0o700, parents=True, exist_ok=True)
     ledger = quarantine / "fda-action-candidates.private.json"
-    descriptor = ledger.open("x", encoding="utf-8")
-    with descriptor as stream:
-        ledger.chmod(0o600)
+    descriptor = os.open(ledger, os.O_WRONLY | os.O_CREAT | os.O_EXCL, 0o600)
+    with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
         json.dump(
             {"approval_candidates": approvals, "crl_letter_candidates": letters, "incomplete_letters": unresolved},
             stream,
