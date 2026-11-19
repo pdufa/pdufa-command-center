@@ -40,3 +40,13 @@ jobs:
           python -m unittest discover -s tests -p 'test_blind_six_levels_2026.py' -v
           python -m unittest discover -s tests -p 'test_report_blind_six_levels_2026.py' -v
           python -m unittest discover -s tests -p 'test_blind_scientific_2026.py' -v
+      - name: Regenerate retained-source Level 1-6 assessment evidence for review
+        run: |
+          python scripts/medical/export_level16_assessment_evidence.py
+          python -m json.tool new-platform/frontend/data/level16AssessmentEvidence.json > /dev/null
+      - name: Upload regenerated assessment evidence (review only)
+        uses: actions/upload-artifact@v4
+        with:
+          name: level16-regenerated-evidence
+          path: new-platform/frontend/data/level16AssessmentEvidence.json
+          retention-days: 7
