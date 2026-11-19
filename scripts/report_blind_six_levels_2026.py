@@ -11,7 +11,8 @@ LEVELS = tuple(f"L{number:02d}" for number in range(1, 7))
 OUTCOMES = ("APPROVE", "CRL")
 PREDICTIONS = (*OUTCOMES, "ABSTAIN")
 RESULT_FIELDS = (
-    "event_id", "ticker", "drug", "indication", "decision_date", "cutoff_date",
+    "event_id", "application_number", "review_cycle", "ticker", "drug", "indication",
+    "decision_date", "cutoff_date",
     "level", "prediction", "reason", "actual_outcome", "correct",
     "lock_sha256",
 )
