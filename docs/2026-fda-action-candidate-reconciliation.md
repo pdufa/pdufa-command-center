@@ -156,3 +156,9 @@ per-page SHA-256 hashes, the authoritative source URLs, and all exact status
 changes. The outcome-free handoff identifies the nine additional events.
 No claims about a complete eligible census, blind scoring or evaluator
 exposure follow from this source subset.
+
+## Application-level resolution of PDUFA26-TIMING-033
+
+The sponsor assigned one August 27, 2026 priority-review goal to its single-tablet combination NDA. The FDA parent application record identifies that regimen as NDA221104, original submission 1. Keep one source-corroborated timing record for that submission. The separate NDA221443 starter-pack record has a different filing identity, and its FDA correction retained the original action date. The available program goal source names the combination NDA. The starter-pack original and supplement remain in the separate-source queue pending their own goal-date corroboration, and are excluded from this timing row. The FDA action documents are retained in the outcome workspace. [Sponsor priority-review announcement](https://www.gilead.com/news/news-details/2026/u-s--fda-grants-priority-review-of-new-drug-application-for-gileads-once-daily-hiv-treatment-of-bictegravir-plus-lenacapavir)
+
+The reviewed subset now has 53 source-corroborated timing and FDA action records. The study-wide eligible denominator remains open.
