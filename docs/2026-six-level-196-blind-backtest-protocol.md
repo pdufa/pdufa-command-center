@@ -15,7 +15,9 @@ Status: TARGET COUNT UNVERIFIED. Do not manufacture 196 event rows. Eligibility 
 
 The [installed scientific contracts](assessment-installation-levels1-20-20261114.md#levels-16-integration-and-evidence) define L01 as trial identity, L02 as design, L03 as statistics and efficacy, L04 as safety, L05 as indication-specific relevance, and L06 as regulatory readiness. Those contracts produce scientific findings. Mapping their findings to APPROVE, CRL, or ABSTAIN requires a specified prediction rule before evaluating the 2026 cohort.
 
-The branch implements the following experimental gate baseline under the same level identifiers. Owner selection of the backtest definitions is pending. Test runs of the experimental baseline do not establish results for the installed scientific levels.
+The owner selected the installed scientific contracts for this backtest. The current scientific runtime emits ABSTAIN because it has no validated FDA decision model. A directional backtest requires a prespecified mapping from scientific findings to FDA decisions. Record canonical abstentions only for eligible cases with completed evidence reviews.
+
+The branch also retains the following separately scoped experimental gate baseline. Its test results do not establish results for the installed scientific levels.
 
 ### Experimental prediction gates
 L01: Accepted filing; pivotal primary efficacy; major safety signal; documented FDA regulatory deficiency.
