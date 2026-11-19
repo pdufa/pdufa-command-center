@@ -8,6 +8,7 @@ const ts = require("typescript");
 require.extensions[".tsx"] = (module, filename) => module._compile(
   ts.transpileModule(readFileSync(filename, "utf8"), {compilerOptions: {
     module: ts.ModuleKind.CommonJS,
+    esModuleInterop: true,
     jsx: ts.JsxEmit.ReactJSX,
   }}).outputText, filename
 );
@@ -76,4 +77,17 @@ test("wired surfaces use the one-case prereveal receipt and outcome-free metrics
     assert.match(show(surface, pilot), /Verified one-case pilot · 1 eligible FDA action/);
   }
   assert.equal((show("ASSESSMENTS", pilot).match(/0\.0%<\/td><td>Unavailable<\/td>/g) || []).length, 6);
+});
+
+test("the live assessment route includes the 32-trial six-level evidence chart", () => {
+  const Chart = require("../app/FocusScientificCoverageChart.tsx").default;
+  const html = renderToStaticMarkup(createElement(Chart));
+  assert.equal((html.match(/<th scope="row"/g) || []).length, 32);
+  assert.equal((html.match(/<td /g) || []).length, 192);
+  for (const level of ["L01", "L02", "L03", "L04", "L05", "L06"]) {
+    assert.match(html, new RegExp(level + " ·"));
+  }
+  assert.equal((html.match(/Awaiting review/g) || []).length, 70);
+  const route = readFileSync(require.resolve("../app/predictions/assessment/page.tsx"), "utf8");
+  assert.match(route, /<FocusScientificCoverageChart\/>/);
 });

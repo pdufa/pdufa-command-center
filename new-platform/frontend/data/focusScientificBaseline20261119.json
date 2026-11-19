@@ -2,30 +2,390 @@
   "assessmentDate": "2026-11-19",
   "trialCount": 32,
   "version": "focus-current-level16-v1",
-  "levels": [
+  "trials": [
     {
-      "level": 1,
-      "trialsWithFindings": 32
+      "nct": "NCT05507203",
+      "ticker": "ABVX",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
     },
     {
-      "level": 2,
-      "trialsWithFindings": 32
+      "nct": "NCT05507216",
+      "ticker": "ABVX",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
     },
     {
-      "level": 3,
-      "trialsWithFindings": 13
+      "nct": "NCT04576949",
+      "ticker": "ACHV",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
     },
     {
-      "level": 4,
-      "trialsWithFindings": 13
+      "nct": "NCT05206370",
+      "ticker": "ACHV",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
     },
     {
-      "level": 5,
-      "trialsWithFindings": 32
+      "nct": "NCT05031780",
+      "ticker": "AGIO",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
     },
     {
-      "level": 6,
-      "trialsWithFindings": 0
+      "nct": "NCT06747468",
+      "ticker": "AMLX",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT05811247",
+      "ticker": "APMD",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT05813275",
+      "ticker": "APMD",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT05059223",
+      "ticker": "AXSM",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT05113745",
+      "ticker": "AXSM",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT05244304",
+      "ticker": "BLTE",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT05126758",
+      "ticker": "CAPR",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT06445023",
+      "ticker": "CLDX",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT06455202",
+      "ticker": "CLDX",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT05208047",
+      "ticker": "COGT",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT03697109",
+      "ticker": "CORT",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT04308590",
+      "ticker": "CORT",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT05767346",
+      "ticker": "CYTK",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT06081894",
+      "ticker": "CYTK",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT04871282",
+      "ticker": "IMNM",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT06553768",
+      "ticker": "MIRM",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT06411379",
+      "ticker": "MLTX",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT06411899",
+      "ticker": "MLTX",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT06153693",
+      "ticker": "MLYS",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT06343779",
+      "ticker": "PHVS",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT06669754",
+      "ticker": "PHVS",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT06087276",
+      "ticker": "PRAX",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT02500381",
+      "ticker": "SRPT",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT04544293",
+      "ticker": "SVRA",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT06331299",
+      "ticker": "URGN",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT04716231",
+      "ticker": "VERA",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
+    },
+    {
+      "nct": "NCT05662241",
+      "ticker": "ZBIO",
+      "status": [
+        "INTAKE_ONLY",
+        "PARTIAL",
+        "AWAITING_REVIEW",
+        "AWAITING_REVIEW",
+        "PARTIAL",
+        "AWAITING_REVIEW"
+      ]
     }
   ]
 }

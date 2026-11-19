@@ -1,3 +1,4 @@
+import FocusScientificCoverageChart from "../../FocusScientificCoverageChart";
 import FocusSavedAssessments from "../../FocusSavedAssessments";
 import PastSavedAssessments from "../../PastSavedAssessments";
 import AssessmentWorkbench from "../../AssessmentWorkbench";
@@ -30,8 +31,9 @@ const label={fontSize:11,letterSpacing:".075em",fontWeight:800,color:"#216258"} 
 export default async function AssessmentPage({searchParams}:{searchParams:Promise<Params>}){
   const q=await searchParams;
   if(q.view!=="legacy")return <main style={{maxWidth:1300,margin:"0 auto",padding:"26px 15px 60px",color:"#122f32"}}>
-    <h1>ASSESSMENTS · Scientific Levels 1–3</h1>
-    <p><a href="#focus-chart-quick-view" style={{display:"inline-block",padding:"9px 13px",background:"#e8f3ed",border:"1px solid #7baf99",borderRadius:7,fontWeight:700}}>View FOCUS four-line score chart + FDA direction</a></p>
+    <h1>ASSESSMENTS</h1>
+    <FocusScientificCoverageChart/>
+    <p><a href="#focus-chart-quick-view" style={{display:"inline-block",padding:"9px 13px",background:"#e8f3ed",border:"1px solid #7baf99",borderRadius:7,fontWeight:700}}>View saved Levels 1–3 chart and FDA direction</a></p>
     <p>Run exact-trial verification, clinical design review, and efficacy/statistical assessment across FOCUS, POOL and PAST. Source statements, calculations, uncertainties and missing evidence remain separate.</p>
     <FocusSavedAssessments/>
     <PastSavedAssessments/>
