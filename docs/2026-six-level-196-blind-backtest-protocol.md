@@ -36,6 +36,9 @@ Stage prediction workers from an allowlist of code and predecision records. The 
 ## Data schema
 event_id,application_number,ticker,drug,indication,pdufa_date,actual_action_date,cutoff_date,level,source_publication_date,source_url,source_excerpt,feature_json,prediction,confidence_pct,abstain_reason,lock_hash,actual_outcome,correct
 
-## Current honest state
-196 requested; 0/196 verified as complete eligible historical event manifest; 0/1176 level-specific blind predictions locked; 0 verified accuracy rates.
-FDA 2026 novel approvals are a subset of total FDA actions. A third-party archive reports 178 decided 2026 events on Nov 18; its definition and deduplication need reconciliation. Neither source validates 196.
+## November 19 execution status
+
+- The [FDA source reconciliation](2026-fda-action-candidate-reconciliation.md) identifies 322 approval candidates and 39 published Complete Response Letter candidates. The sources use different record keys. The curated 41-row timing subset has 39 source-corroborated records and two review-cycle questions. The eligible denominator and the requested count of 196 remain unverified.
+- The [clinical evidence backlog](../data/backtest/2026-clinical-evidence-backlog.csv) records status for each timing candidate. The [provisional source research](../data/backtest/2026-provisional-source-research.csv) contains 48 leads for 12 candidates. Forty-one have asserted dates satisfying the predecision chronology check. Seven lack original publication and version dates. These are leads for source review, with no completed evidence packages.
+- Search results exposed the evidence researcher to outcome-bearing information for `PDUFA26-TIMING-002`, `PDUFA26-TIMING-004`, and `PDUFA26-TIMING-006`. Those reviews are ineligible for blind scoring. The evidence backlog signposts the affected records without outcome values.
+- There are zero finalized assessments or abstentions at each of L01–L06, zero locked historical predictions against the requested 1,176, and no measurable accuracy or coverage. The [dashboard draft](2026-six-level-backtest-dashboard-draft.md) defines a post-lock import contract.
