@@ -51,8 +51,11 @@ jobs:
           path: new-platform/frontend/data/level16AssessmentEvidence.json
           retention-days: 7
       - name: Commit regenerated evidence to development branch only
-        if: github.event_name == 'push' && github.ref == 'refs/heads/feature/2026-blind-l1-183-backtest'
+        if: (github.event_name == 'push' && github.ref == 'refs/heads/feature/2026-blind-l1-183-backtest') || (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.event.pull_request.head.ref == 'feature/2026-blind-l1-183-backtest')
         run: |
+          git fetch origin feature/2026-blind-l1-183-backtest
+          git checkout -B feature/2026-blind-l1-183-backtest origin/feature/2026-blind-l1-183-backtest
+          python scripts/medical/export_level16_assessment_evidence.py
           if ! git diff --quiet -- new-platform/frontend/data/level16AssessmentEvidence.json; then
             git config user.name 'github-actions[bot]'
             git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
