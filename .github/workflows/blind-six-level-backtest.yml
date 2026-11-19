@@ -9,6 +9,8 @@ on:
       - 'scripts/score_scientific_backtest_2026.py'
       - 'scripts/blind_scientific_2026.py'
       - 'scripts/validate_2026_level16_coverage.py'
+      - 'scripts/build_2026_blind_source_review_packets.py'
+      - 'data/backtest/2026-provisional-source-research.csv'
       - 'data/backtest/2026-level01-06-blind-assessment-coverage.csv'
       - 'data/backtest/2026-clinical-evidence-backlog.csv'
       - 'tests/test_blind_scientific_2026.py'
@@ -23,6 +25,8 @@ on:
       - 'scripts/score_scientific_backtest_2026.py'
       - 'scripts/blind_scientific_2026.py'
       - 'scripts/validate_2026_level16_coverage.py'
+      - 'scripts/build_2026_blind_source_review_packets.py'
+      - 'data/backtest/2026-provisional-source-research.csv'
       - 'data/backtest/2026-level01-06-blind-assessment-coverage.csv'
       - 'data/backtest/2026-clinical-evidence-backlog.csv'
       - 'tests/test_blind_scientific_2026.py'
@@ -48,6 +52,14 @@ jobs:
           python -m unittest discover -s tests -p 'test_blind_scientific_2026.py' -v
       - name: Validate 2026 historical six-level coverage
         run: python scripts/validate_2026_level16_coverage.py
+      - name: Build provisional 2026 blind source review packets
+        run: python scripts/build_2026_blind_source_review_packets.py
+      - name: Upload source review packets for research
+        uses: actions/upload-artifact@v4
+        with:
+          name: 2026-blind-source-review-packets
+          path: data/backtest/2026-blind-source-review-packets.json
+          retention-days: 14
       - name: Regenerate retained-source Level 1-6 assessment evidence for review
         run: |
           python scripts/medical/export_level16_assessment_evidence.py
