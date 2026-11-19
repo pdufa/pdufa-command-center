@@ -10,7 +10,7 @@ The selected assessment family is the installed scientific Levels 1–6: trial i
 
 ## Export contract
 
-The score command validates the independently retained digest when required by the lock protocol, validates the assessment grid and outcome event IDs, and writes an aggregate JSON array. It can also write `--summary-csv` (six rows) and `--results-csv` (one row per event and level). The CSVs use UTF-8 with BOM for spreadsheet import. Detailed results contain outcomes and belong in the authorized post-lock reporting environment.
+The score command validates the independently retained digest before opening the outcomes file, validates the assessment grid and outcome event IDs, and writes an aggregate JSON array. It can also write `--summary-csv` (six rows) and `--results-csv` (one row per event and level). The CSVs use UTF-8 with BOM for spreadsheet import. Detailed results contain outcomes and belong in the authorized post-lock reporting environment.
 
 The aggregate has `level`, `events`, `predicted`, `abstained`, `correct`, `incorrect`, `coverage`, `accuracy`, `accuracy_ci95_wilson_low`, `accuracy_ci95_wilson_high`, the always-approve comparisons, six actual/predicted cross-tab counts, `protocol`, `rule_set`, and `lock_sha256`. Interpret accuracy and its interval over answered cases and coverage over eligible cases. Display null accuracy and intervals as unavailable. Report the actual reconciled cohort denominator and label 196 only as the requested target. Treat nonbinary actions as explicit ledger exclusions.
 

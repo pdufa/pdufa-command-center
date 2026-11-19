@@ -17,6 +17,8 @@ The [installed scientific contracts](assessment-installation-levels1-20-20261114
 
 The owner selected the installed scientific contracts for this backtest. The current scientific runtime emits ABSTAIN because it has no validated FDA decision model. A directional backtest requires a prespecified mapping from scientific findings to FDA decisions. Record canonical abstentions only for eligible cases with completed evidence reviews.
 
+The installed `SCIENTIFIC_1_3` historical runtime requires a verified exact trial–application–decision date association and an original registry or retained source capture available by cutoff. A newly downloaded historical public version can support a retrospective evidence review when its original availability is established. It cannot be represented as a contemporaneously captured runtime record. The installed L02–L06 review contracts require original source and review chronology and do not expose a unified historical execution path for all six scientific levels.
+
 The branch also retains the following separately scoped experimental gate baseline. Its test results do not establish results for the installed scientific levels.
 
 ### Experimental prediction gates
