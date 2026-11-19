@@ -13,14 +13,17 @@ from fetch_focus_registry_evidence import retrieve
 
 
 class Response:
-    def __init__(self, payload):
+    def __init__(self, payload, url="https://clinicaltrials.gov/api/v2/studies/NCT05507203"):
         self.payload = payload
+        self.url = url
     def __enter__(self):
         return self
     def __exit__(self, *args):
         return False
     def read(self, limit):
         return self.payload
+    def geturl(self):
+        return self.url
 
 
 class RegistryEvidenceTests(unittest.TestCase):
@@ -53,6 +56,13 @@ class RegistryEvidenceTests(unittest.TestCase):
     def test_oversized_response_rejected(self):
         with patch("fetch_focus_registry_evidence.urlopen", return_value=Response(b"x" * 12_000_001)):
             with self.assertRaisesRegex(ValueError, "size limit"):
+                retrieve("NCT05507203")
+
+    def test_redirected_response_is_rejected(self):
+        raw = b'{"protocolSection":{"identificationModule":{"nctId":"NCT05507203"}}}'
+        response = Response(raw, "https://example.org/NCT05507203")
+        with patch("fetch_focus_registry_evidence.urlopen", return_value=response):
+            with self.assertRaisesRegex(ValueError, "did not originate"):
                 retrieve("NCT05507203")
 
 if __name__ == "__main__":
