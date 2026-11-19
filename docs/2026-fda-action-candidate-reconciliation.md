@@ -208,3 +208,27 @@ The November 19 capture of FDA's original BLA table still contains ten rows thro
 | PDUFA26-CBER-005 | BLA125251 SUPPL:454 | July 3, 2026 | WILATE prophylaxis in children younger than six years with von Willebrand disease |
 
 FDA action and review documents are retained separately from the metadata handoff. Later FDA reviews were used to verify the historical decision record and day-level goal. They are unavailable to the predecision assessor. CASGEVY BLA125787 SUPPL:457 and AREXVY BLA125775 SUPPL:414 have identifiable indication changes in this source but still need independent exact goal dates. The remaining noteworthy rows require cycle and scope screening. [FDA original BLA index](https://www.fda.gov/vaccines-blood-biologics/development-approval-process-cber/2026-biological-license-application-approvals) · [FDA noteworthy supplement index](https://www.fda.gov/vaccines-blood-biologics/development-approval-process-cber/2026-biological-license-application-supplement-noteworthy-approvals)
+
+## Original-application review records, batch 3
+
+The original-application batch adds 27 source-corroborated FDA review cycles.
+For 26, the outcome team examined FDA review documents linked from the
+original-application Drug@FDA records. The 27th has an exact target date in
+the sponsor's dated announcement. Some records also had a contemporaneous
+sponsor filing that resolved an earlier goal or a different review cycle.
+The team compared the application, submission, sponsor, indication, and
+action date against the official action record. Review documents published
+after an action were used only to verify historical case identity and
+target dates. They do not supply predecision features.
+
+Two FDA candidate records, PDUFA26-DRUGS-214 and PDUFA26-DRUGS-232, have
+conflicting day-level dates among the source review records. Their original
+target dates remain open. The official Drugs@FDA queue now has 262 open
+records, including those two conflicts. The 20 open published letters and
+one under-release letter remain. This was an FDA-record batch, so the 123 open
+publisher rows still await a page-level crosswalk and may overlap this batch.
+
+The restricted workspace contains the exact original-application crosswalk,
+FDA and target-date source URLs, and the disposition inventory. A metadata
+handoff lists these 27 cases without outcomes or source URLs. These records
+are a source-defined subset, and the 196-case denominator remains unverified.
