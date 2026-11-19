@@ -72,7 +72,7 @@ def fetch_one(row):
         row["registry_has_results_now"] = str(bool(study.get("hasResults", False))).lower()
         row["registry_last_update_posted"] = (
             study.get("protocolSection", {}).get("statusModule", {})
-            .get("studyFirstPostDateStruct", {}).get("date", "")
+            .get("lastUpdatePostDateStruct", {}).get("date", "")
         )
         row["historical_cutoff_eligibility"] = "NOT_VERIFIED"
         row["review_status"] = "CURRENT_SNAPSHOT_UNVERIFIED_AT_CUTOFF"
