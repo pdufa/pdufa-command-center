@@ -197,3 +197,14 @@ The exact crosswalk, primary source links and action records remain in the
 restricted workspace. The separate metadata handoff carries only
 source-corroborated review-cycle identities and dates, and omits actual
 outcome fields and links.
+
+## CBER supplement screening
+
+The November 19 capture of FDA's original BLA table still contains ten rows through September 17. The separately published noteworthy supplement table contains 14 rows through July 27. Its publication scope leaves later reviews and unlisted supplements outstanding. Two previously unmatched efficacy supplements have exact FDA application, action and goal-date documentation.
+
+| Event | Application and cycle | Original goal | Scope |
+| --- | --- | --- | --- |
+| PDUFA26-CBER-004 | BLA125814 SUPPL:428 | June 18, 2026 | CAPVAXIVE pediatric population at increased pneumococcal disease risk |
+| PDUFA26-CBER-005 | BLA125251 SUPPL:454 | July 3, 2026 | WILATE prophylaxis in children younger than six years with von Willebrand disease |
+
+FDA action and review documents are retained separately from the metadata handoff. Later FDA reviews were used to verify the historical decision record and day-level goal. They are unavailable to the predecision assessor. CASGEVY BLA125787 SUPPL:457 and AREXVY BLA125775 SUPPL:414 have identifiable indication changes in this source but still need independent exact goal dates. The remaining noteworthy rows require cycle and scope screening. [FDA original BLA index](https://www.fda.gov/vaccines-blood-biologics/development-approval-process-cber/2026-biological-license-application-approvals) · [FDA noteworthy supplement index](https://www.fda.gov/vaccines-blood-biologics/development-approval-process-cber/2026-biological-license-application-supplement-noteworthy-approvals)
