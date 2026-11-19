@@ -232,3 +232,19 @@ The restricted workspace contains the exact original-application crosswalk,
 FDA and target-date source URLs, and the disposition inventory. A metadata
 handoff lists these 27 cases without outcomes or source URLs. These records
 are a source-defined subset, and the 196-case denominator remains unverified.
+
+### Publisher crosswalk against batch 3
+
+The retained publisher snapshots match 25 open archive records to 21
+canonical events already counted in batch 3. Of these, 22 archive records
+state the same FDA application number and effective action date as the
+canonical event. Three identify the same product and FDA application but use a
+different date in the headline. The linked FDA record supplied the effective
+action date for those three. No cases were added to the verified subset in
+this crosswalk.
+
+The publisher queue is now 98 open records. Of these, 75 need primary goal
+and cycle checks, 17 lack a cited source, 3 report the goal only to the
+month, and 3 infer occurrence from stock-price movement. The exact alias
+and open-record inventories are retained in the workspace. Official-source
+queue counts and the unreconciled 196-case target are unchanged.
