@@ -61,10 +61,10 @@ def approval_candidates(applications):
                 {p["brand_name"] for p in application.get("products", []) if p.get("brand_name")}
             )
             documents = [
-                d["application_docs_url"]
+                d["url"]
                 for d in submission.get("application_docs", [])
-                if d.get("application_docs_url")
-                and d.get("application_docs_type") in ("Letter", "Approval Letter")
+                if d.get("url")
+                and d.get("type") in ("Letter", "Approval Letter")
             ]
             inventory[key] = {
                 "application_number": number,

@@ -116,3 +116,43 @@ Several links in the discovery CSV were replaced after that check.
 These batches have 43 source-corroborated records and one program grouping
 issue, across 44 distinct records reviewed. The counts still describe a
 source-defined subset.
+
+## Archive and published-letter crosswalk, batch 1
+
+The outcome team captured all 136 remaining publisher pages. Of these, 84
+include an FDA-record section, 107 explicitly lack a goal day on record, and
+4 report only a month. These are publisher statements checked for triage.
+They do not establish an action or original PDUFA date by themselves.
+
+| Disposition | Publisher pages |
+|---|---:|
+| Independently crosswalked to official FDA action and primary original goal | 6 |
+| Alias of an already crosswalked application event | 4 |
+| Requires primary goal and application-cycle review | 102 |
+| Publisher provides no source | 17 |
+| Publisher infers occurrence from market movement | 3 |
+| Requires day-level goal source | 4 |
+
+The six independently sourced rows are PDUFA26-ARCHIVE-008, -013, -040,
+-052, -077 and -078. Four aliases map to existing timing crosswalk rows.
+These are PDUFA26-ARCHIVE-080, -127, -137 and -138. The last had a link to a
+same-day but unrelated supplement and was matched on the intended program
+and action. The dataset retains one event for each verified review cycle.
+Three further application actions, PDUFA26-ADDITIONAL-001 through -003, came
+from official records outside this publisher index.
+
+The overall source-corroborated subset now contains 52 review-cycle
+records across 53 reviewed. Two of the nine new records had extensions,
+for which the ledger stores both the original and revised goal dates.
+A further publication date in the FDA letter index was a corrected letter
+for a December 2025 action. That letter record is excluded from the 2026
+action cohort and retains the official effective date in the restricted
+ledger. The official queues now contain 289 requested approval-record checks
+and 27 published letter checks, plus the single letter awaiting release.
+Those counts overlap the 126 publisher records still awaiting verification.
+
+The restricted workspace retains the 136 source HTML snapshots, their
+per-page SHA-256 hashes, the authoritative source URLs, and all exact status
+changes. The outcome-free handoff identifies the nine additional events.
+No claims about a complete eligible census, blind scoring or evaluator
+exposure follow from this source subset.

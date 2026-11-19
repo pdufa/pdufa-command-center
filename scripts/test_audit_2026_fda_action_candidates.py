@@ -15,6 +15,10 @@ class FdaCandidateAuditTests(unittest.TestCase):
             "submission_status": "AP",
             "submission_status_date": "20261118",
             "submission_number": "1",
+            "application_docs": [
+                {"type": "Letter", "url": "https://www.accessdata.fda.gov/letter.pdf"},
+                {"type": "Label", "url": "https://www.accessdata.fda.gov/label.pdf"},
+            ],
         }
         eligible = [
             supplement,
@@ -31,6 +35,9 @@ class FdaCandidateAuditTests(unittest.TestCase):
         self.assertEqual({row["submission_number"] for row in rows}, {"1", "2"})
         self.assertEqual(duplicates, 1)
         self.assertEqual(sum(classes.values()), 5)
+        self.assertEqual(
+            rows[0]["fda_source_urls"], ["https://www.accessdata.fda.gov/letter.pdf"]
+        )
 
     def test_letter_must_have_a_file_and_application(self):
         current = {
