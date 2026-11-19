@@ -12,7 +12,15 @@ const scientificLevelOptions=[
 ] as const;
 const NCT=/^NCT\d{8}$/;
 type Cohort="POOL"|"FOCUS"|"PAST";
-type Assessment={id?:unknown;nctId?:unknown;levelOneIntake?:unknown;levelsTwoToSix?:unknown;levelsSevenToTwenty?:unknown};
+type SavedVersion={assessedAt:string;modelVersion:string;evidenceHash:string};
+type Assessment={id?:unknown;nctId?:unknown;levelOneIntake?:unknown;levelsTwoToSix?:unknown;levelsSevenToTwenty?:unknown;history?:unknown};
+function verifiedHistory(value:unknown):SavedVersion[]|null {
+ if(!Array.isArray(value)||value.length>25)return null;
+ return value.every(row=>row&&typeof row.assessedAt==="string"&&Number.isFinite(Date.parse(row.assessedAt))&&
+  typeof row.modelVersion==="string"&&row.modelVersion.length>0&&
+  typeof row.evidenceHash==="string"&&/^[0-9a-f]{64}$/.test(row.evidenceHash))
+  ? value.map(({assessedAt,modelVersion,evidenceHash})=>({assessedAt,modelVersion,evidenceHash})) : null;
+}
 function validIntake(value:unknown):value is PhaseFirstIntake {
  if(!value||typeof value!=="object"||Array.isArray(value))return false;
  const x=value as Record<string,unknown>;
@@ -29,13 +37,14 @@ export default function ExactTrialScientificIntake({cohort,nctId,programIdentity
  const [intake,setIntake]=useState<PhaseFirstIntake|null>(null);
  const [levels,setLevels]=useState<unknown>(null);
  const [extensions,setExtensions]=useState<unknown>(null);
+ const [history,setHistory]=useState<SavedVersion[]|null>(null);
  const [error,setError]=useState("");
  const [busy,setBusy]=useState(false);
  const requestSequence=useRef(0);
  useEffect(()=>()=>{++requestSequence.current;},[nctId,programIdentity]);
  async function load(){
   const sequence=++requestSequence.current;
-  setIntake(null);setError("");setLevels(null);setExtensions(null);
+  setIntake(null);setError("");setLevels(null);setExtensions(null);setHistory(null);
   if(!NCT.test(nctId)||!programIdentity.trim()||programIdentity.length>512){
    setError("An exact NCT and program identity are required.");return;
   }
@@ -51,6 +60,7 @@ export default function ExactTrialScientificIntake({cohort,nctId,programIdentity
    if(sequence===requestSequence.current)setIntake(record.levelOneIntake);
    if(sequence===requestSequence.current)setLevels(record.levelsTwoToSix);
    if(sequence===requestSequence.current)setExtensions(record.levelsSevenToTwenty);
+   if(sequence===requestSequence.current)setHistory(verifiedHistory(record.history));
   }catch(e){if(sequence===requestSequence.current)setError(e instanceof Error?e.message:"Assessment unavailable.");}
   finally{if(sequence===requestSequence.current)setBusy(false);}
  }
@@ -67,6 +77,12 @@ export default function ExactTrialScientificIntake({cohort,nctId,programIdentity
   </>}
   {intake&&selectedLevel===0&&<ScientificSafetyExposureEvidence value={extensions}/>}
   {intake&&selectedLevel===0&&<ScientificPopulationEvidence value={extensions}/>}
+  {intake&&history!==null&&<details>
+   <summary>Saved assessment versions</summary>
+   {history.length===0?<p>No saved versions for this program.</p>:<ol>{history.map((version,index)=><li key={version.assessedAt+":"+version.evidenceHash+":"+index}>
+    <time dateTime={version.assessedAt}>{version.assessedAt}</time> · {version.modelVersion} · Evidence SHA-256 <code>{version.evidenceHash}</code>
+   </li>)}</ol>}
+  </details>}
  </section>;
 }
 

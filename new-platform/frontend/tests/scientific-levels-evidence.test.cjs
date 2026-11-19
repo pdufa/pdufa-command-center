@@ -77,7 +77,7 @@ test('each exact FOCUS trial can select and read all six installed contracts', a
    };
    global.fetch=async url=>{
     assert.equal(url,'/api/assessments?identity='+encodeURIComponent(programIdentity));
-    return Response.json({id:programIdentity,nctId:nct,levelOneIntake:intake,levelsTwoToSix:contracts});
+    return Response.json({id:programIdentity,nctId:nct,levelOneIntake:intake,levelsTwoToSix:contracts,history:[{assessedAt:"2026-11-19T10:00:00Z",modelVersion:"candidate-assessments-v1",evidenceHash:"a".repeat(64)}]});
    };
    let tree;
    try{
@@ -88,12 +88,13 @@ test('each exact FOCUS trial can select and read all six installed contracts', a
     await act(async()=>{control().props.onChange({target:{value:'1'}});});
     assert.match(JSON.stringify(tree.toJSON()),new RegExp(nct+' · Registry intake available'));
     assert.match(JSON.stringify(tree.toJSON()),/Version posted 2026-11-14/);
-    assert.equal(tree.root.findAllByType('summary').length,0);
+    assert.deepEqual(tree.root.findByType('summary').children,['Saved assessment versions']);
+    assert.match(JSON.stringify(tree.toJSON()),/candidate-assessments-v1/);
     for(const level of [2,3,4,5,6]){
      await act(async()=>{control().props.onChange({target:{value:String(level)}});});
-     const summary=tree.root.findByType('summary');
+     const [summary]=tree.root.findAllByType('summary');
      assert.equal(summary.children.join(''),'Level '+level+': Exact evidence '+level+' · AWAITING_REVIEW');
-     assert.equal(tree.root.findByType('details').props.open,true);
+     assert.equal(tree.root.findAllByType('details')[0].props.open,true);
     }
    }finally{
     if(tree)await act(async()=>tree.unmount());
