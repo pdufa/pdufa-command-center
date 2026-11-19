@@ -145,7 +145,7 @@ def write_csv(path, rows, fields):
         } for row in rows)
 
 
-def score(args, verify_lock, load_csv):
+def score(args, verify_lock, load_csv, validate_ledger=None):
     output = Path(args.output)
     summary_csv = getattr(args, "summary_csv", None)
     results_csv = getattr(args, "results_csv", None)
@@ -160,7 +160,10 @@ def score(args, verify_lock, load_csv):
     event_ids = prediction_grid(predictions)
     if locked.get("expected_events") != len(event_ids):
         raise ValueError("Prediction lock event count differs from the assessment grid")
-    truth = verified_truth(load_csv(args.outcomes), event_ids)
+    outcome_rows = load_csv(args.outcomes)
+    if validate_ledger is not None:
+        validate_ledger(outcome_rows, predictions)
+    truth = verified_truth(outcome_rows, event_ids)
     lock_digest = frozen_digest or locked["predictions_sha256"]
     results = assessment_results(predictions, truth, lock_digest)
     summary = accuracy_by_level(results, truth, lock_digest, locked)

@@ -101,3 +101,35 @@ class SixLevelReportingTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "separate from input files"):
             report.score(self.args, self.verify_lock, self.load_csv)
         self.load_csv.assert_not_called()
+
+
+class CanonicalLedgerTests(unittest.TestCase):
+    def setUp(self):
+        self.identity = {
+            "event_id": "FIXTURE",
+            "application_number": "NDA000000",
+            "review_cycle": "original-1",
+            "decision_date": "2026-04-21",
+        }
+        self.action = {
+            **self.identity,
+            "identity_status": "VERIFIED_ELIGIBLE",
+            "fda_source_url": "https://www.fda.gov/fixture",
+            "actual_outcome": "APPROVE",
+        }
+
+    def test_verified_identity_matches(self):
+        from score_scientific_backtest_2026 import validate_ledger
+
+        validate_ledger([self.action], [self.identity])
+
+    def test_rejects_wrong_cycle_unresolved_action_and_unofficial_url(self):
+        from score_scientific_backtest_2026 import validate_ledger
+
+        for field, value, message in (
+            ("review_cycle", "resubmission-2", "locked application cycle"),
+            ("identity_status", "SOURCE_CORROBORATED_SUBSET", "not verified eligible"),
+            ("fda_source_url", "https://fda.gov.example.org/fixture", "official FDA source"),
+        ):
+            with self.subTest(field=field), self.assertRaisesRegex(ValueError, message):
+                validate_ledger([{**self.action, field: value}], [self.identity])
