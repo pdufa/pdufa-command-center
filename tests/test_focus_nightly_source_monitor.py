@@ -58,6 +58,7 @@ class FocusNightlySourceMonitorTest(unittest.TestCase):
         second = self.run_check(first)
         self.assertEqual(second["summary"]["newOrChangedEvidenceTrials"], 0)
         self.assertEqual(second["reassessmentQueue"], [])
+        self.assertEqual(second["extendedAssessmentQueue"], [])
         self.assertEqual(second["summary"]["sourceRetrieved"], 2)
 
     def test_only_changed_application_cycles_queued(self):
@@ -70,6 +71,10 @@ class FocusNightlySourceMonitorTest(unittest.TestCase):
         r = self.run_check(first, changed)
         self.assertEqual(r["summary"]["newOrChangedEvidenceTrials"], 1)
         self.assertEqual([x["cycleId"] for x in r["reassessmentQueue"]], ["two-first"])
+        self.assertEqual(r["extendedAssessmentQueue"], [{
+            "nct": "NCT00000002", "sourceHash": r["trials"][1]["sourceHash"],
+            "levels": list(range(7, 21)), "status": "QUEUED_FOR_DEVELOPMENT_REASSESSMENT", "publish": False,
+        }])
 
     def test_outage_keeps_previous_fingerprint_and_marks_incomplete(self):
         first = self.run_check()

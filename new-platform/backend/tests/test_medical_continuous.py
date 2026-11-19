@@ -104,6 +104,26 @@ def test_packaged_focus_roster_matches_frontend_snapshot():
     assert packaged.is_file(), "FOCUS roster must ship in the backend image"
     bundled = json.loads(packaged.read_text(encoding="utf-8"))
     original = json.loads(frontend.read_text(encoding="utf-8"))
+    if bundled["asOf"] != original["asOf"]:
+        # Diagnose CI working-tree changes without altering the canonical source.
+        import subprocess
+        root = Path(__file__).resolve().parents[3]
+        status = subprocess.run(
+            ["git", "status", "--short", "--",
+             "new-platform/frontend/data/p3PostDataActive.json",
+             "new-platform/backend/app/data/focus_snapshot.json"],
+            cwd=root, capture_output=True, text=True, check=False,
+        )
+        diff = subprocess.run(
+            ["git", "diff", "--", "new-platform/frontend/data/p3PostDataActive.json"],
+            cwd=root, capture_output=True, text=True, check=False,
+        )
+        pytest.fail(
+            "FOCUS snapshot date drift: packaged=" + str(bundled["asOf"]) +
+            ", frontend=" + str(original["asOf"]) +
+            "; git status=" + repr(status.stdout) +
+            "; frontend diff=" + repr(diff.stdout[:3000])
+        )
     assert bundled["asOf"] == original["asOf"]
     assert len(bundled["records"]) == 32
     assert bundled["records"] == original["records"]
@@ -203,8 +223,9 @@ def test_duplicate_active_run_and_no_auto_start_from_read(engine):
 
 
 
-def test_startup_requeues_all_29_unfinished_focus_runs(engine, monkeypatch):
-    # Simulate the full FOCUS roster and a restart with more than 25 pending runs.
+def test_startup_requeues_all_29_unfinished_focus_runs(engine, monkeypatch, tmp_path):
+    # Simulate the full FOCUS roster without modifying the packaged source snapshot.
+    monkeypatch.setattr(medical, "FOCUS", tmp_path / "synthetic_focus_roster.json")
     records = [{"nct": f"NCT{i:08d}", "ticker": "TEST", "company": "Fixture"}
                for i in range(1, 30)]
     medical.FOCUS.write_text(json.dumps({"records": records}), encoding="utf-8")

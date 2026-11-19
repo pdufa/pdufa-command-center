@@ -31,7 +31,7 @@ export async function GET(req:NextRequest){
   return relay(req,'/trials?'+new URLSearchParams({population:population!,q:term}));
  }
  const id=q.get('nct'),run=q.get('runId'),level=q.get('level');
- if(!nct(id)||(level!==null&&!/^[1-6]$/.test(level))||(run!==null&&!/^[a-f0-9-]{36}$/.test(run)))return json({error:'Exact NCT, optional run UUID and level 1–6 required'},422);
+ if(!nct(id)||(level!==null&&!/^(?:[1-9]|1[0-9]|20)$/.test(level))||(run!==null&&!/^[a-f0-9-]{36}$/.test(run)))return json({error:'Exact NCT, optional run UUID and level 1–20 required'},422);
  return relay(req,run?'/runs/'+id+'/'+run:'/history/'+id+(level?'?level='+level:''));
 }
 export async function POST(req:NextRequest){
@@ -46,8 +46,11 @@ export async function POST(req:NextRequest){
   data=JSON.parse(Buffer.concat(chunks).toString('utf8'));
  }catch{return json({error:'Invalid JSON'},422);}
  if(data&&data.action==='FOCUS_BATCH'&&Object.keys(data).length===1)return relay(req,'/focus/batch',{});
- if(!data||typeof data!=='object'||Array.isArray(data)||Object.keys(data).some(k=>!['nct','level','mode','cutoffDate','contract'].includes(k))||typeof data.nct!=='string'||!nct(data.nct)||!Number.isInteger(data.level)||Number(data.level)<1||Number(data.level)>6||!['CURRENT_EVIDENCE','BLIND_HISTORICAL'].includes(String(data.mode)))return json({error:'Exact NCT, selected level 1–6 and assessment mode required; no caller evidence or scoring claims allowed'},422);
- if('contract' in data&&(!['LEGACY_SOURCE_AUDIT','SCIENTIFIC_1_3'].includes(String(data.contract))||(data.contract==='SCIENTIFIC_1_3'&&Number(data.level)>3)))return json({error:'Scientific contract supports Levels 1–3 only'},422);
+ if(!data||typeof data!=='object'||Array.isArray(data)||Object.keys(data).some(k=>!['nct','level','mode','cutoffDate','contract'].includes(k))||typeof data.nct!=='string'||!nct(data.nct)||!Number.isInteger(data.level)||Number(data.level)<1||Number(data.level)>20||!['CURRENT_EVIDENCE','BLIND_HISTORICAL'].includes(String(data.mode)))return json({error:'Exact NCT, selected level 1–20 and assessment mode required; no caller evidence or scoring claims allowed'},422);
+ const extended=Number(data.level)>=7;
+ if(extended!==(data.contract==='EXTENDED_7_20'))return json({error:'Levels 7–20 require the extended assessment contract'},422);
+ if(!extended&&'contract' in data&&(!['LEGACY_SOURCE_AUDIT','SCIENTIFIC_1_3'].includes(String(data.contract))||(data.contract==='SCIENTIFIC_1_3'&&Number(data.level)>3)))return json({error:'Scientific contract supports Levels 1–3 only'},422);
+ if(extended&&process.env.NEXT_PUBLIC_PDUFA_EXTENDED_ASSESSMENTS!=='1')return json({error:'Extended assessments require the isolated development runtime'},503);
  if(data.mode==='CURRENT_EVIDENCE'&&'cutoffDate' in data)return json({error:'Current mode does not accept historical cutoff'},422);
  if(data.mode==='BLIND_HISTORICAL'&&(typeof data.cutoffDate!=='string'||!/^\d{4}-\d{2}-\d{2}$/.test(data.cutoffDate)||!Number.isFinite(Date.parse(data.cutoffDate+'T00:00:00Z'))||new Date(data.cutoffDate+'T00:00:00Z').toISOString().slice(0,10)!==data.cutoffDate||data.cutoffDate>=new Date().toISOString().slice(0,10)))return json({error:'Valid past historical cutoff required'},422);
  return relay(req,'/runs',data);

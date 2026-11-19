@@ -18,12 +18,14 @@ NCT_RE = re.compile(r"^NCT[0-9]{8}$")
 BASE = "https://clinicaltrials.gov/api/v2/studies/"
 
 
-def retrieve(nct: str, timeout: int = 20) -> tuple[dict, dict]:
+def retrieve_with_bytes(nct: str, timeout: int = 20) -> tuple[dict, dict, bytes]:
     if not NCT_RE.fullmatch(nct):
         raise ValueError("Expected NCT followed by exactly eight digits")
     url = BASE + nct
     req = Request(url, headers={"Accept": "application/json", "User-Agent": "PDUFA-Research-SourceAudit/1.0"})
     with urlopen(req, timeout=timeout) as response:
+        if response.geturl() != url:
+            raise ValueError("Registry response did not originate at the requested study URL")
         raw = response.read(12_000_001)
         if len(raw) > 12_000_000:
             raise ValueError("Registry response exceeds size limit")
@@ -42,6 +44,11 @@ def retrieve(nct: str, timeout: int = 20) -> tuple[dict, dict]:
         "independent_review": "NOT_COMPLETED",
         "fda_probability": None,
     }
+    return record, metadata, raw
+
+
+def retrieve(nct: str, timeout: int = 20) -> tuple[dict, dict]:
+    record, metadata, _ = retrieve_with_bytes(nct, timeout)
     return record, metadata
 
 

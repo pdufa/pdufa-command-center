@@ -25,6 +25,8 @@ jobs:
         run: pip install -r requirements-test.txt
       - name: Verify permanent retirement safeguards
         run: python scripts/audit_raas_retirement.py --check
+      - name: Verify Level 7 provenance and FOCUS reconciliation tests
+        run: python -m pytest -q tests/test_level7*.py tests/test_focus_snapshot_alignment.py
       - name: Run the broad root suite with explicit per-test dispositions
         run: python -m pytest tests -q --disposition-report="$RUNNER_TEMP/test-dispositions.json" --junitxml="$RUNNER_TEMP/root-tests.xml"
       - name: Retain executed and retired test dispositions

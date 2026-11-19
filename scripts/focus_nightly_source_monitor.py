@@ -157,6 +157,10 @@ def build_report(roster, applications, prior, fetcher, now=None):
                  "reason": "NEW_OR_CHANGED_REGISTRY_EVIDENCE",
                  "action": "INDEPENDENT_PHASE_FIRST_SCIENCE_AND_FDA_REGULATORY_REVIEW"}
                 for c in queue],
+            "extendedAssessmentQueue": [
+                {"nct": row["nct"], "sourceHash": row["sourceHash"], "levels": list(range(7, 21)),
+                 "status": "QUEUED_FOR_DEVELOPMENT_REASSESSMENT", "publish": False}
+                for row in trials if row["nct"] in changed],
             "unmappedApplicationReviewQueue": [{"nct": nct, "ticker": rows[nct]["ticker"],
                 "reason":"CURRENT_FOCUS_TRIAL_HAS_NO_MAPPED_APPLICATION_CYCLE",
                 "action":"INDEPENDENT_DRUG_INDICATION_AND_FDA_CYCLE_RECONCILIATION"} for nct in unlinked],
@@ -167,7 +171,13 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--current", type=Path, default=CURRENT_PATH)
     parser.add_argument("--archive", type=Path, required=True)
+    parser.add_argument("--level7-db", type=Path, default=None,
+                        help="Opt-in local Level 7 SQLite provenance ledger; no production DB")
+    parser.add_argument("--level7-coverage-output", type=Path, default=None,
+                        help="Opt-in 32-trial coverage JSON; requires --level7-db")
     args = parser.parse_args()
+    if args.level7_coverage_output is not None and args.level7_db is None:
+        parser.error("--level7-coverage-output requires --level7-db")
     report = build_report(load_json(ROSTER_PATH), load_json(APPLICATIONS_PATH),
                           load_json(args.current, missing_ok=True), fetch_registry)
     summary = report["summary"]
@@ -177,6 +187,29 @@ def main():
         raise SystemExit("Refuse to overwrite immutable run archive")
     args.archive.parent.mkdir(parents=True, exist_ok=True)
     args.current.parent.mkdir(parents=True, exist_ok=True)
+    if args.level7_db is not None:
+        import sys
+        sys.path.insert(0, str(ROOT))
+        from level7_store import EvidenceStore
+        from level7_focus_monitor_adapter import persist_focus_monitor_report
+        persisted = persist_focus_monitor_report(EvidenceStore(args.level7_db), report)
+        print("Level 7 opt-in evidence observations:", canonical(persisted))
+        if args.level7_coverage_output is not None:
+            from level7_focus_coverage import focus_level7_coverage
+            roster = load_json(ROSTER_PATH)
+            members = roster.get("records")
+            if not isinstance(members, list) or len(members) != 32:
+                raise ValueError("Level 7 coverage requires exactly 32 FOCUS members")
+            coverage = focus_level7_coverage(
+                EvidenceStore(args.level7_db, read_only=True), members)
+            coverage["rosterAsOf"] = roster.get("asOf")
+            coverage["source"] = roster.get("source")
+            output = args.level7_coverage_output
+            output.parent.mkdir(parents=True, exist_ok=True)
+            temp = output.with_suffix(output.suffix + ".tmp")
+            temp.write_text(json.dumps(coverage, indent=2, sort_keys=True) + "\n",
+                            encoding="utf-8")
+            temp.replace(output)
     data = json.dumps(report, indent=2, sort_keys=True) + "\n"
     args.archive.write_text(data, encoding="utf-8")
     args.current.write_text(data, encoding="utf-8")

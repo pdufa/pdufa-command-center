@@ -126,7 +126,10 @@ def build():
             'publishedSafety':publications.get(nct,{}).get('publishedSafetyObservation'),
             'statisticalChronology':dossier['chronologyReconciliation'] if nct==dossier['nct'] else None})
     return {'schemaVersion':1,'kind':'FOCUS_LEVEL16_COLLECTED_EVIDENCE_OWNER_RESEARCH',
-        'evidenceCutoffDate':research['evidenceCutoffDate'],'rosterAsOf':roster['asOf'],
+        # Preserve the retained evidence cutoff despite current roster refreshes.
+        # Current exact-NCT membership is validated separately above.
+        'evidenceCutoffDate':research['evidenceCutoffDate'],
+        'rosterAsOf':research['evidenceCutoffDate'],
         'sourceSnapshotDigests':{name:hashlib.sha256((REPORTS/name).read_bytes()).hexdigest() for name in SOURCES},
         'historicalPredictionInputPermitted':False,'ownerReviewStatus':'OWNER_NOT_REVIEWED',
         'externalVerificationRequired':False,'trials':rows}

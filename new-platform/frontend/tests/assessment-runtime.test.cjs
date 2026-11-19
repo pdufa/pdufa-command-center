@@ -158,18 +158,31 @@ test('saved scientific findings render actual source passages and contrasts with
 });
 test('shared saved FOCUS table renders persisted independent levels and explicit unscorable values',async()=>{
  const React=require('react'),{act,create}=require('react-test-renderer'),Saved=require('../app/FocusSavedAssessments.tsx').default;globalThis.IS_REACT_ACT_ENVIRONMENT=true;
- const old=global.fetch,oldSelf=global.self;global.self=globalThis;let tree;const levels={};for(let level=1;level<=3;level++)levels[level]={state:'COMPLETED',attempts:1,error:null,missingEvidence:[{id:'unresolved',state:'UNVERIFIED',explanation:'Synthetic missing evidence'}],report:{runId:'synthetic-'+level,nct,level,executionStatus:'COMPLETED_WITH_LIMITATIONS',executedAt:'2026-11-15',engineVersion:'synthetic/level-'+level,score:{value:null,kind:'NOT_VALIDATED',method:'No validated formula'},fdaPrediction:{outcome:'ABSTAIN',probability:null,confidence:'NOT_VALIDATED'},trialIdentity:{candidate:'Synthetic drug'},context:{phases:['PHASE3']}}};
+ const old=global.fetch,oldSelf=global.self,oldWindow=global.window;global.self=globalThis;global.window={addEventListener(){},removeEventListener(){}};let tree;const levels={};for(let level=1;level<=3;level++)levels[level]={state:'COMPLETED',attempts:1,error:null,missingEvidence:[{id:'unresolved',state:'UNVERIFIED',explanation:'Synthetic missing evidence'}],report:{runId:'synthetic-'+level,nct,level,executionStatus:'COMPLETED_WITH_LIMITATIONS',executedAt:'2026-11-15',engineVersion:'synthetic/level-'+level,score:{value:null,kind:'NOT_VALIDATED',method:'No validated formula'},fdaPrediction:{outcome:'ABSTAIN',probability:null,confidence:'NOT_VALIDATED'},trialIdentity:{candidate:'Synthetic drug'},context:{phases:['PHASE3']}}};
  global.fetch=async url=>{assert.equal(url,'/api/assessments/runtime?focus=true');return Response.json({total:1,fullyProcessed:1,status:'SYNTHETIC_SAVED_FIXTURE',counts:{},source:null,trials:[{nct,ticker:'SYN',company:'Synthetic',pdufaDate:null,levels}]});};
- try{await act(async()=>{tree=create(React.createElement(Saved));});const rendered=JSON.stringify(tree.toJSON());for(let l=1;l<=3;l++)assert.ok(tree.root.findAllByType('th').some(th=>React.Children.toArray(th.props.children).join('')==='L'+l+' Score'));assert.match(rendered,/NOT VALIDATED \/ UNSCORABLE/);assert.match(rendered,/ABSTAIN/);assert.equal(tree.root.findAllByType('tbody')[0].findAllByType('tr').length,1);}
- finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;if(oldSelf===undefined)delete global.self;else global.self=oldSelf;}
+ try{await act(async()=>{tree=create(React.createElement(Saved));});const rendered=JSON.stringify(tree.toJSON());for(let l=1;l<=3;l++)assert.ok(tree.root.findAllByType('th').some(th=>React.Children.toArray(th.props.children).join('')==='L'+l+' Scientific result and evidence'));assert.match(rendered,/NOT VALIDATED \/ UNSCORABLE/);assert.match(rendered,/ABSTAIN/);assert.equal(tree.root.findAllByType('tbody')[0].findAllByType('tr').length,32);}
+ finally{if(tree)await act(async()=>tree.unmount());global.fetch=old;if(oldSelf===undefined)delete global.self;else global.self=oldSelf;if(oldWindow===undefined)delete global.window;else global.window=oldWindow;}
 });
 
 test('FOCUS columns show the same saved scientific records as the shared assessment table',async()=>{
  const React=require('react'),{act,create}=require('react-test-renderer');globalThis.IS_REACT_ACT_ENVIRONMENT=true;
- const old={fetch:global.fetch,self:global.self,window:global.window};global.self=globalThis;global.window={addEventListener(){},removeEventListener(){}};let tree;
- global.fetch=async url=>{assert.equal(url,'/api/assessments/runtime?focus=true');return Response.json({trials:[{nct,levels:Object.fromEntries([1,2,3].map(level=>[String(level),{report:{runId:'saved-'+level,nct,level,mode:'CURRENT_EVIDENCE',executedAt:'2026-11-15',score:{value:null,kind:'NOT_VALIDATED'},fdaPrediction:{outcome:'ABSTAIN',confidence:'NOT_VALIDATED'}}}]))}]});};
- try{const Cells=require('../app/FocusLevelColumns.tsx').FocusLevelCells;await act(async()=>{tree=create(React.createElement(Cells,{nct}));});const json=JSON.stringify(tree.toJSON());assert.equal((json.match(/NOT VALIDATED \/ UNSCORABLE/g)||[]).length,3);assert.equal((json.match(/ABSTAIN · not predicted/g)||[]).length,3);for(let l=1;l<=3;l++)assert.match(json,new RegExp('Saved assessment saved-'+l));}
- finally{if(tree)await act(async()=>tree.unmount());Object.assign(global,old);}
+ const Cells=require('../app/FocusLevelColumns.tsx').FocusLevelCells;let tree;const oldSelf=global.self;global.self=globalThis;
+ // The parent owns the authenticated roster request and supplies exact-NCT slots.
+ const levels=Object.fromEntries([1,2,3].map(level=>[String(level),{
+  state:'COMPLETED',report:{runId:'saved-'+level,nct,level,mode:'CURRENT_EVIDENCE',executedAt:'2026-11-15',
+   score:{value:null,kind:'NOT_VALIDATED'},fdaPrediction:{outcome:'ABSTAIN',confidence:'NOT_VALIDATED'}}
+ }]));
+ try{
+  await act(async()=>{tree=create(React.createElement('table',null,React.createElement('tbody',null,
+   React.createElement('tr',null,React.createElement(Cells,{nct,levels})))));});
+  const cells=tree.root.findAllByType('td');assert.equal(cells.length,6);
+  const markup=JSON.stringify(tree.toJSON());
+  for(let level=1;level<=3;level++){
+   assert.match(markup,/ABSTAIN · not validated/);
+   assert.match(markup,/NOT VALIDATED · saved/);
+   assert.equal(cells[(level-1)*2].props.title,'Saved saved-'+level);
+  }
+ }finally{if(tree)await act(async()=>tree.unmount());if(oldSelf===undefined)delete global.self;else global.self=oldSelf;}
 });
 
 test('launcher uses the scientific contract and cannot count an unpersisted completion',async()=>{
@@ -260,5 +273,47 @@ test('dedicated production Level 1–3 API credentials are scoped and fail close
   delete process.env.PDUFA_INTERNAL_API_KEY;
   delete process.env.PDUFA_LEVEL123_API_BASE_URL;
   delete process.env.PDUFA_LEVEL123_INTERNAL_API_KEY;
+ }
+});
+
+test('extended workbench routes exact-NCT Level 20 and sorts abstentions by level',async()=>{
+ const React=require('react'),{act,create}=require('react-test-renderer'),Workbench=require('../app/AssessmentWorkbench.tsx').default;
+ globalThis.IS_REACT_ACT_ENVIRONMENT=true;
+ const oldFetch=global.fetch, oldFlag=process.env.NEXT_PUBLIC_PDUFA_EXTENDED_ASSESSMENTS;
+ process.env.NEXT_PUBLIC_PDUFA_EXTENDED_ASSESSMENTS='1';
+ let tree, submitted;
+ const makeReport=(level,executedAt)=>({
+  runId:(level===20?'a':'b').repeat(36),nct,level,executedAt,name:'Evidence',mode:'CURRENT_EVIDENCE',
+  cutoffDate:null,engineVersion:'test',reportHash:'c'.repeat(64),scientificStatus:'NOT_VALIDATED',
+  activationStatus:'RESEARCH_EXECUTION_ONLY',ownerReviewStatus:'OWNER_NOT_REVIEWED',evidenceStatus:'INSUFFICIENT',
+  score:{kind:'NOT_VALIDATED',value:null},fdaPrediction:{outcome:'ABSTAIN',confidence:'NOT_VALIDATED',calibration:'NONE'},
+  context:{phases:[],phaseVerification:'UNVERIFIED',indicationAnalysis:[]},
+  checks:[],observations:[],risks:[],recommendations:[],limitations:[],evidence:{source_url:'https://clinicaltrials.gov/api/v2/studies/'+nct},
+ });
+ const latest=makeReport(20,'2026-11-18'),older=makeReport(7,'2026-11-17');
+ global.fetch=async(url,init={})=>{
+  if(init.method==='POST'){
+   submitted=JSON.parse(init.body);
+   return Response.json({runId:latest.runId},{status:202});
+  }
+  return Response.json(String(url).includes('runId=')?{status:'COMPLETED',progress:[],report:latest}:{runs:[older,latest]});
+ };
+ try{
+  await act(async()=>{tree=create(React.createElement(Workbench,{selectedNct:nct}));});
+  const level=tree.root.findByProps({'aria-label':'Assessment level'});
+  assert.equal(level.findAllByType('option').length,17);
+  await act(async()=>{level.props.onChange({target:{value:'20'}});});
+  await act(async()=>{tree.root.findAllByType('button').find(b=>b.props.children==='Run Assessment').props.onClick();});
+  assert.deepEqual(submitted,{nct,level:20,mode:'CURRENT_EVIDENCE',contract:'EXTENDED_7_20'});
+  const cards=()=>tree.root.findAllByType('article').map(c=>c.props['aria-label']);
+  assert.deepEqual(cards(),['Level 20 saved assessment','Level 7 saved assessment']);
+  await act(async()=>{tree.root.findAllByType('select').find(s=>s.props.value==='newest').props.onChange({target:{value:'level'}});});
+  assert.deepEqual(cards(),['Level 7 saved assessment','Level 20 saved assessment']);
+  assert.match(JSON.stringify(tree.toJSON()),/NOT SCORED/);
+ }finally{
+  if(tree)await act(async()=>tree.unmount());
+  global.fetch=oldFetch;
+  if(oldFlag===undefined)delete process.env.NEXT_PUBLIC_PDUFA_EXTENDED_ASSESSMENTS;
+  else process.env.NEXT_PUBLIC_PDUFA_EXTENDED_ASSESSMENTS=oldFlag;
  }
 });
